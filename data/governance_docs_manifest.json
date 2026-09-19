@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-09-19T17:35:28",
- "git_commit": "751f4e2",
+ "generated_at": "2026-09-19T19:19:57",
+ "git_commit": "e9744bb",
  "files": [
   {
    "path": "References/architecture_架构演进/271_架构批判_阙疑v3十问_判据密度不足与收敛手术.md",
@@ -1658,6 +1658,11 @@
    "size": 30224
   },
   {
+   "path": "References/architecture_架构演进/603_建设包_编译可复现性显性化_replay隐式能力升级为可证属性_metrics指标.md",
+   "sha256": "a75216353d2055aa8fcd7a3ca6e29b6d578f006104d08f064f51944a23c79f3d",
+   "size": 20375
+  },
+  {
    "path": "References/architecture_架构演进/archive_312_backup_pre_compress.md",
    "sha256": "cbbb058e34c3029dc15d2d35704c5d67795a37ee1d427e8df02764a14e9967d8",
    "size": 37910
@@ -1704,8 +1709,8 @@
   },
   {
    "path": "References/architecture_架构演进/PM_六维度成熟度评分与路线图_20260919更新.md",
-   "sha256": "de78f3141baf711f542afb66801ea68454ae96fceb3bbc6130566d7d6f7d2e6d",
-   "size": 13269
+   "sha256": "a842f8eb888a44e6718fc7f90688e23b199692290f30ecc43fabc6e6e5dd908e",
+   "size": 18801
   },
   {
    "path": "References/architecture_架构演进/PUSH_健康状态总览_20260919.md",
@@ -1718,5 +1723,5 @@
    "size": 29338
   }
  ],
- "self_hash": "f858e2aeac7231807d2851d85634fcc1f0f978c15d2900b63b284c1d5cf194fd"
+ "self_hash": "4ec5bbc98cd8d2f717eccd0b94378d763f2171c115473be22646478eb1a9d62c"
 }

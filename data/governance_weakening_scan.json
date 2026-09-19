@@ -1,5 +1,5 @@
 {
- "scan_time": "2026-09-19T17:59:40",
+ "scan_time": "2026-09-19T19:19:58",
  "docs_root": "References/architecture_架构演进",
  "findings": [
   {
@@ -2298,6 +2298,15 @@
    "needs_human_review": true
   },
   {
+   "path": "References/architecture_架构演进/603_建设包_编译可复现性显性化_replay隐式能力升级为可证属性_metrics指标.md",
+   "line": 4,
+   "risk": "low",
+   "label": "纪律用语：warn 起步（观察期），非弱化指令",
+   "match": "warn 起步",
+   "text": "> 严格按本仓铁律：一任务一 commit + 正反毒样例 + 存量零误伤 + 新收紧 warn 起步 + 护栏不许裸 except Exception + 改 CORE 必须同 commit --update 带 .tool_checksums。",
+   "needs_human_review": true
+  },
+  {
    "path": "References/architecture_架构演进/archive_312_backup_pre_compress.md",
    "line": 70,
    "risk": "medium",
@@ -2478,6 +2487,15 @@
    "needs_human_review": true
   },
   {
+   "path": "References/architecture_架构演进/PM_六维度成熟度评分与路线图_20260919更新.md",
+   "line": 88,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "| 攻击2 毒样例自证 | 豁免台账入 SUPPLY_CHAIN_FILES + Merkle 覆盖 data/ | 篡改豁免台账 → tool_integrity/Merkle 检出 |",
+   "needs_human_review": true
+  },
+  {
    "path": "References/architecture_架构演进/PUSH_健康状态总览_20260919.md",
    "line": 108,
    "risk": "medium",
@@ -2498,8 +2516,8 @@
  ],
  "summary": {
   "high": 55,
-  "medium": 185,
-  "low": 37
+  "medium": 186,
+  "low": 38
  },
  "note": "模式匹配、非语义理解 ⇒ 必然有误报（历史投喂词本身也在讨论这些词）；全部命中标 needs_human_review=true，是**人审清单**、不是自动判决。"
 }
