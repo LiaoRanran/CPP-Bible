@@ -60,6 +60,7 @@ SERIAL_EXTRA = frozenset({
     #   挂 `replay_serial` 只挡 replay 一家 ⇒ 挡不住其余写者，故按本仓既有机制整模块串行。
     "test_mutation_isolation_579.py",   # 579：跑批对真实仓零副作用（Examples 指纹 + manifest 字节）
     "test_mutation_parallel_580.py",    # 580：并行跑批后真实根指纹/真实锁不动
+    "test_replay_lock_serial.py",        # 592：整模块操作全局 build/.replay_lock，并发下与 replay 抢锁假红
 })
 
 

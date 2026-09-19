@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-09-19T15:27:00",
- "git_commit": "5d2a6ae",
+ "generated_at": "2026-09-19T16:40:04",
+ "git_commit": "95eae3a",
  "files": [
   {
    "path": "References/architecture_架构演进/271_架构批判_阙疑v3十问_判据密度不足与收敛手术.md",
@@ -1608,6 +1608,26 @@
    "size": 22849
   },
   {
+   "path": "References/architecture_架构演进/592_建设包_数据层诚实化_命题闭包_metrics_v7_overturned通道.md",
+   "sha256": "43e0351d11a948bf2685b4785988d1099973695c23a8375e741920683e5d6104",
+   "size": 9870
+  },
+  {
+   "path": "References/architecture_架构演进/593_异族调研_grounded论证系统深度调研_Dung框架_79命题落地路径_只读_arch_v12.md",
+   "sha256": "eefe48ed43ee6f18b961ab20e6423c3f454ce63de5fb0e3a43c4234e8db59fe0",
+   "size": 11922
+  },
+  {
+   "path": "References/architecture_架构演进/594_异族调研_攻击关系自动生成与加权论证框架_grounded落地路径_只读_arch_v13.md",
+   "sha256": "097207e680adc48bfafe04bcb9f11aec5c50c0b09608ebb7f7934012646d27a0",
+   "size": 14752
+  },
+  {
+   "path": "References/architecture_架构演进/595_异族调研_人审层效率与论证可视化_grounded标注人机交互_只读_arch_v14.md",
+   "sha256": "904cee75eeea66b3af5450b9b424c646ef5ba4a98a8b55c42d01c3aeb1a9934c",
+   "size": 17913
+  },
+  {
    "path": "References/architecture_架构演进/archive_312_backup_pre_compress.md",
    "sha256": "cbbb058e34c3029dc15d2d35704c5d67795a37ee1d427e8df02764a14e9967d8",
    "size": 37910
@@ -1641,6 +1661,16 @@
    "path": "References/architecture_架构演进/MATRIX_攻击面与防御.md",
    "sha256": "ab2c078dcdefb5d9dd25dbcedbf2dfd79d33c355594f31aadf6e5b1b39aa56e2",
    "size": 9519
+  },
+  {
+   "path": "References/architecture_架构演进/PM_产品经理仓库整理报告_20260919.md",
+   "sha256": "358a5d4368c5a80610437ed2bafe828a6b4b6cc9a7b3f99ab6a6e5d2497d5904",
+   "size": 13027
+  },
+  {
+   "path": "References/architecture_架构演进/PUSH_健康状态总览_20260919.md",
+   "sha256": "44d448f589a936d8019a08325364a9f92c7b486aabb635f6da3611951f353a2c",
+   "size": 8765
   },
   {
    "path": "References/architecture_架构演进/README_INDEX.md",

@@ -73,8 +73,13 @@ def test_poison_surface_map_committed(snapshot):
 
 
 # ── kg：节点/边/概念/命题边/连通分量计数（tmp 库，绝不写真实 db）──────────
-def test_kg_stats_counts(snapshot, tmp_path: Path):
-    """kg stats：节点/边/概念/命题边/最大连通分量等计数（tmp db + 真实卡，只读仓）。"""
+def test_kg_stats_counts(snapshot, tmp_path: Path, replay_serial):
+    """kg stats：节点/边/概念/命题边/最大连通分量等计数（tmp db + 真实卡，只读仓）。
+
+    592：挂 replay_serial——kg.build 读真实 atoms/evidence 卡面，并发下别的 worker
+    跑 replay 删-重建工件时虽不改卡面，但 kg.build 的全库扫描窗口与 replay 写盘
+    重叠会导致计数瞬态不一致（实测 -n auto 假红、串行绿）。
+    """
     conn = kg.connect(tmp_path / "kg.db")
     kg.build(conn, verbose=False)
     st = kg.stats(conn)
