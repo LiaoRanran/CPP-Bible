@@ -450,7 +450,7 @@ def collect(*, with_heavy: bool = True, with_gate: bool = True) -> dict:
     # 606：replay 不变量状态采集（I1/I2/I3/I4），失败不 crash
     try:
         import replay_invariants as ri
-        inv_results = ri.run_checks()
+        inv_results = ri.run_checks(heavy=with_heavy)
         snap["invariants"] = {r["name"]: r["passed"] for r in inv_results}
         snap["invariants_all_pass"] = all(r["passed"] for r in inv_results)
     except Exception as exc:                 # noqa: BLE001
