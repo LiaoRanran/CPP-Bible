@@ -155,10 +155,14 @@ pythonpath = ["tools"]   # 与 tests/conftest.py 的 sys.path 注入等效（pyt
 #      worker：**实测无效**（同组测试仍散在 gw0/gw1/gw2/gw3）。分组依赖调度器能看到
 #      item 上的 marker，而本版本（xdist 3.8）经 controller 侧调度时读不到。
 #   3. 因此把"并行"改为**按标记切分两阶段**执行（不依赖分组，构造上安全）：
-#         pytest -m "not slow" -n auto     # 纯逻辑，并行安全（~10s）
-#         pytest -m slow -n0               # 共享锁/工件，串行（~140s）
-#      总 wall ≈ 150s，与"全量 -n auto"持平（下限由 test_golden_lock_json ~125s 决定），
-#      但不再有锁竞争假红。CI 的 pytest job 用的就是这两条命令。
+#         pytest -m "not slow" -n auto     # 纯逻辑，并行安全
+#         pytest -m slow -n0               # 共享锁/工件，串行
+#      墙钟（589 任务4b 实测，Windows 本机 **32 核**，2026-09-19；命令即上面两条：
+#        fast `-n auto` 两次 = 87.3s / 86.8s（各 464 passed, 2 skipped）；
+#        slow `-n0` = 644.8s（334 passed / 1 failed = test_golden_lock_json 预期红））：
+#        ⇒ 参考区间 fast ≈ 85–90s、slow ≈ 10–11 min。**会随机器负载/核数漂移，是参考值、非契约。**
+#      （旧注释的 ~10s / ~140s 是更早的粗估，与实测相差大，589 已更正。）
+#      CI 的 pytest job 用的就是这两条命令。
 # 串行全量想临时改并行：`pytest -n auto -m "not slow"` 只跑纯逻辑部分。
 #
 # 559 Part C · 临时目录移入仓内（`.pytest_tmp/`，已进 .gitignore）：
