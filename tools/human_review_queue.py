@@ -283,6 +283,104 @@ def cmd_check(groups: list[dict], edges: list[dict] | None = None,
     return 0
 
 
+def cmd_feedback(groups: list[dict], edges: list[dict] | None = None) -> int:
+    """人审反馈闭环（**只建议不执行**）：基于已审边生成生成器改进 / W2 校准建议，
+    并做 automation-bias 检测（595：agree_rate==1.0 且理由过短 ⇒ 疑似 rubber-stamp）。
+    """
+    if edges is None:
+        edges = aeg.load_edges()
+    ann = aer.load_annotations()
+    eff = _effective_annotations(ann)
+    if not eff:
+        print("无反馈数据（当前 0 条已审；人审结果文件 "
+              "`data/human_attack_edge_annotations.jsonl` 尚不存在或为空）。")
+        return 0
+
+    edge_by_id = {e["id"]: e for e in edges}
+    group_by_mis = {g["mis_id"]: g for g in groups}
+    # 建议 verdict：W2 节点 OUT ⇒ reject；IN ⇒ approve
+    def sugg_of(mid: str) -> str:
+        return "reject" if group_by_mis.get(mid, {}).get("w2_label") == "OUT" else "approve"
+
+    cnt = {"approve": 0, "reject": 0, "modify": 0}
+    gen_sugg: list[str] = []      # 生成器改进（来自 reject）
+    w2_sugg: list[str] = []       # W2 校准（来自 modify）
+    aligned = 0
+    short_reason = False
+    reviewed = 0
+
+    for eid, action in eff.items():
+        e = edge_by_id.get(eid)
+        if e is None or action not in ACTIONS:
+            continue
+        reviewed += 1
+        cnt[action] += 1
+        mid = _mis_of(e)
+        prop = _prop_of(e)
+        direction = e["direction"]
+        kind = e.get("kind")
+        orig_conf = e.get("confidence")
+        # 该条人审的 reason（从 annotations 取最后一条有效 reason）
+        reason = ""
+        for a in ann:
+            if a.get("edge_id") == eid and a.get("action") == action:
+                reason = str(a.get("reason") or "")
+        if len(reason) < 20:
+            short_reason = True
+        # 与建议 verdict 是否一致（建议统一为 reject，因 W2 全 OUT）
+        if action == sugg_of(mid):
+            aligned += 1
+
+        if action == "reject":
+            assoc = ("related_atoms" if kind == "related_atom"
+                     else "refutations/misconceptions" if kind in ("misconception", "misconception_refutation")
+                     else "关联字段")
+            gen_sugg.append(
+                f"- 边 `{eid}`（{mid} → `{prop}`，方向 {direction}，kind {kind}）：人工 **reject** "
+                f"⇒ 建议复核生成器对 `{mid}` 的 `{assoc}` 关联是否过宽 / 命题映射是否不准确"
+                f"（只建议，不改 `attack_edge_generator.py`）。")
+        elif action == "modify":
+            new_conf = None
+            for a in ann:
+                if a.get("edge_id") == eid and a.get("action") == "modify":
+                    new_conf = a.get("confidence")
+            w2_sugg.append(
+                f"- 边 `{eid}`（{mid} → `{prop}`）：人工将可信度 `{orig_conf}` → `{new_conf}` "
+                f"⇒ 建议 `weighted_af_solver` 对该 MIS 可信度档同步调整（只建议，不执行）。")
+
+    agree_rate = (aligned / reviewed) if reviewed else 0.0
+    L = ["# 人审反馈闭环建议（只建议不执行）\n",
+         "## 概况\n",
+         f"- 已审生效：{reviewed}（approve={cnt['approve']} / reject={cnt['reject']} "
+         f"/ modify={cnt['modify']}）",
+         f"- 与建议 verdict 一致率：{agree_rate * 100:.1f}%（建议 verdict 来自 W2：全 OUT ⇒ reject）\n"]
+
+    # automation-bias 预警（595）
+    if reviewed and agree_rate == 1.0 and short_reason:
+        L.append("## ⚠️ automation-bias 预警\n")
+        L.append("- 一致率 = 100% 且存在理由过短（<20 字符）的审查 ⇒ **疑似 rubber-stamp，建议复核**"
+                 "（595 调研：人审在工具给出强建议时易不假思索地同意）。\n")
+    elif reviewed and agree_rate == 1.0:
+        L.append("## ⚠️ automation-bias 提示\n")
+        L.append("- 一致率 = 100%（全与建议 reject 一致）；理由均充分，但仍建议抽样复核确认非 rubber-stamp。\n")
+
+    L.append("## 生成器改进建议（来自 reject 边）\n")
+    if gen_sugg:
+        L.extend(gen_sugg)
+    else:
+        L.append("- 暂无（当前 0 条 reject）。\n")
+
+    L.append("\n## W2 权重校准建议（来自 modify 边）\n")
+    if w2_sugg:
+        L.extend(w2_sugg)
+    else:
+        L.append("- 暂无（当前 0 条 modify）。\n")
+    L.append("\n> 所有条目均为**建议**，本工具绝不自动修改 `attack_edge_generator.py` / "
+             "`weighted_af_solver.py`（人审权力）。\n")
+    print("\n".join(L))
+    return 0
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────────
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="候选攻击边 MIS 群组级人审队列（只读）")
@@ -294,11 +392,13 @@ def main(argv: list[str] | None = None) -> int:
                     help="人审进度统计（按 MIS 组 + 命题）")
     ap.add_argument("--check", action="store_true",
                     help="与 attack_edge_review 数据一致性校验（fail-loud）")
+    ap.add_argument("--feedback", action="store_true",
+                    help="人审反馈闭环：基于已审边生成生成器改进/W2校准建议（只建议不执行）")
 
     args = ap.parse_args(argv)
 
-    if not (args.list or args.stats or args.check or args.show is not None):
-        ap.error("必须指定一个动作：--list / --show / --stats / --check")
+    if not (args.list or args.stats or args.check or args.feedback or args.show is not None):
+        ap.error("必须指定一个动作：--list / --show / --stats / --check / --feedback")
 
     # 懒加载（四个动作都需要聚合）
     edges = aeg.load_edges()
@@ -307,6 +407,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.check:
         return cmd_check(groups, edges, w2)
+    if args.feedback:
+        return cmd_feedback(groups, edges)
     if args.show is not None:
         return cmd_show(groups, args.show)
     if args.list:
