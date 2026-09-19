@@ -7,10 +7,8 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-import pytest
-
-import mutation_shape_audit as audit
 import mutation_fuzz as mf
+import mutation_shape_audit as audit
 from mutation_fuzz import _mut_matrix_values
 
 N = "\n"

@@ -309,7 +309,6 @@ def crlf_audit() -> dict[str, object]:
         else:
             lf += 1
     # LF/CRLF 同构对拍：在 BASE 与 EV-MEM-004 上，对各算子比对变体集（归一 \r）
-    probes = [("BASE", BASE), ("EV-MEM-004", None)]
     # 取一张真实含多算子的卡做对拍（EV-MEM-004 含 matrix + id）
     ev_text = None
     for rel, t in _all_card_texts():
