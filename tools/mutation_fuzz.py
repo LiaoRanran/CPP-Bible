@@ -200,17 +200,38 @@ def _gate_read_spans(text: str) -> list[tuple[int, int]]:
     return spans
 
 
+_COMMENT_HASH_RE = re.compile(r"(?:^|[ \t])#")
+
+
+def _is_within_yaml_comment(text: str, idx: int) -> bool:
+    r"""判断字符偏移 `idx` 是否落在其所在行的 YAML 注释段内。
+
+    YAML 规定 `#` 只有在**行首**或**前面是空白/TAB** 时才开始注释（口径与 M6 里
+    `ln.split("#", 1)[0]` 剥注释一致）。**保守**：只认这两种形态，不去猜引号内的 `#`
+    （真实路径里的 `#` 前通常紧跟非空白字符，不会误判）。
+    """
+    ls = text.rfind("\n", 0, idx) + 1          # 本行行首
+    return _COMMENT_HASH_RE.search(text[ls:idx]) is not None
+
+
 def mut_m2(text: str) -> list[tuple[str, str | None]]:
     """M2 路径变形：对**门禁读取字段内**第一个带 `/` 的路径做三种写法变形。
 
     558 Part B2 收口：只认 `GATE_PATH_KEYS` 区间内的路径。若门禁读取面里没有可变形路径，
     返回**单例 out_of_scope**（`vtext=None`）⇒ 由 `run_fuzz` 计 `n_a(out_of_scope)`，
     **不再**去注释/正文里挑路径造出与门禁无关的"逃逸"。
+
+    589 任务 2：跳过**字段块内注释行**（`   # ...路径...`）里的示意路径——它们落在
+    `_gate_read_spans` 区间内，但改的是注释（YAML 解析后丢弃），此前造出 27 条等价伪变异
+    （588 实测 9 卡 × 3）。加 `_is_within_yaml_comment`：在 span 内但落在注释里 ⇒ `continue`
+    找下一个匹配；遍历完仍无真实路径 ⇒ 维持 out_of_scope 单例语义不变。
     """
     spans = _gate_read_spans(text)
     for m in _PATHP.finditer(text):
         if not any(s <= m.start() < e for s, e in spans):
             continue                       # 门禁不读的字段 / 正文 / 注释 ⇒ 不在提问面内
+        if _is_within_yaml_comment(text, m.start()):
+            continue                       # 落在字段块内注释行的示意路径 ⇒ 不是可变异目标
         p = m.group(0)
         if "/" not in p or p.startswith("./"):
             continue
