@@ -110,3 +110,6 @@ _bypass_test/
 
 # local secrets (never commit)
 .env
+
+# observability trace logs (large JSONL, archived but not tracked)
+_archive/observability_logs/
