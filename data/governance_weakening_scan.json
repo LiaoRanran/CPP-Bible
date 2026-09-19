@@ -1,5 +1,5 @@
 {
- "scan_time": "2026-09-19T15:27:00",
+ "scan_time": "2026-09-19T17:59:40",
  "docs_root": "References/architecture_架构演进",
  "findings": [
   {
@@ -2073,6 +2073,231 @@
    "needs_human_review": true
   },
   {
+   "path": "References/architecture_架构演进/592_建设包_数据层诚实化_命题闭包_metrics_v7_overturned通道.md",
+   "line": 5,
+   "risk": "low",
+   "label": "纪律用语：warn 起步（观察期），非弱化指令",
+   "match": "warn 起步",
+   "text": "> 铁律：存量零误伤、新收紧 warn 起步、不信自报只信独立复跑、一任务一 commit + 正反例、护栏不许裸 except Exception。",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/596_建设包_攻击关系数据地基_W2加权AF落地_grounded论证层可用化.md",
+   "line": 4,
+   "risk": "low",
+   "label": "纪律用语：warn 起步（观察期），非弱化指令",
+   "match": "warn 起步",
+   "text": "> 严格按本仓铁律：一任务一 commit + 正反毒样例 + 存量零误伤 + 新收紧 warn 起步 + 护栏不许裸 except Exception + 改 CORE 必须同 commit --update 带 .tool_checksums。",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/598_建设包_人审效率工具_MIS群组级队列_主动排序_automation_bias护栏_反馈闭环.md",
+   "line": 4,
+   "risk": "low",
+   "label": "纪律用语：warn 起步（观察期），非弱化指令",
+   "match": "warn 起步",
+   "text": "> 严格按本仓铁律：一任务一 commit + 正反毒样例 + 存量零误伤 + 新收紧 warn 起步 + 护栏不许裸 except Exception + 改 CORE 必须同 commit --update 带 .tool_checksums。",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/600_异族深度调研_供应链溯源证明_in-toto_SLSA_OpenTimestamps_封堵585三meta攻击_只读_arch_v16.md",
+   "line": 24,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "2. **毒样例自证攻击**：覆盖率 covered 是正则在 poison_drill 自己源码里 grep 文本——注入 0 个真载荷、一行注释即谎报覆盖+1；豁免台账自写一条 id 即被原样接受。",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/600_异族深度调研_供应链溯源证明_in-toto_SLSA_OpenTimestamps_封堵585三meta攻击_只读_arch_v16.md",
+   "line": 222,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "- 攻击方式：覆盖率 covered 是正则在 poison_drill 自己源码里 grep 文本——注入 0 个真载荷、一行注释即谎报覆盖+1；豁免台账自写一条 id 即被原样接受",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/600_异族深度调研_供应链溯源证明_in-toto_SLSA_OpenTimestamps_封堵585三meta攻击_只读_arch_v16.md",
+   "line": 223,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "- 当前防护：581 已改为行为级 covered（真实 gate 命中规则 ID），但豁免台账仍然是自写自验",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/600_异族深度调研_供应链溯源证明_in-toto_SLSA_OpenTimestamps_封堵585三meta攻击_只读_arch_v16.md",
+   "line": 225,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "- in-toto layout：把\"毒样例编写\"作为一个 step，functionary 必须是人，products 是 poison_drill.py + 豁免台账的 hash",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/600_异族深度调研_供应链溯源证明_in-toto_SLSA_OpenTimestamps_封堵585三meta攻击_只读_arch_v16.md",
+   "line": 226,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "- in-toto inspection：每次 poison 运行前，inspection 验证毒样例文件和豁免台账的 hash",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/600_异族深度调研_供应链溯源证明_in-toto_SLSA_OpenTimestamps_封堵585三meta攻击_只读_arch_v16.md",
+   "line": 227,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "- 豁免台账的人审绑定：新增豁免必须经过人审（git 作者绑定 + 理由必填 + 记录到 supply chain link）",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/600_异族深度调研_供应链溯源证明_in-toto_SLSA_OpenTimestamps_封堵585三meta攻击_只读_arch_v16.md",
+   "line": 229,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "- Merkle 树：poison_drill.py + 所有毒样例定义 + 豁免台账的 Merkle 根",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/600_异族深度调研_供应链溯源证明_in-toto_SLSA_OpenTimestamps_封堵585三meta攻击_只读_arch_v16.md",
+   "line": 230,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "- 具体机制：poison 运行时，验证豁免台账的每条豁免都有对应的人审记录和 supply chain link",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/600_异族深度调研_供应链溯源证明_in-toto_SLSA_OpenTimestamps_封堵585三meta攻击_只读_arch_v16.md",
+   "line": 300,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "- 封堵 585 攻击 2（毒样例自证）：豁免台账人审绑定 + Merkle 树",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/601_建设大包_信任根溯源层_Merkle_in-toto_封堵585三攻击_问题修复.md",
+   "line": 4,
+   "risk": "low",
+   "label": "纪律用语：warn 起步（观察期），非弱化指令",
+   "match": "warn 起步",
+   "text": "> 严格按本仓铁律：一任务一 commit + 正反毒样例 + 存量零误伤 + 新收紧 warn 起步 + 护栏不许裸 except Exception + 改 CORE 必须同 commit --update 带 .tool_checksums。",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/601_建设大包_信任根溯源层_Merkle_in-toto_封堵585三攻击_问题修复.md",
+   "line": 33,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "2. **tool_integrity 覆盖范围不足**（600 指出的 585 攻击1 真盲点）：tool_integrity 只钉 5 核心工具 + 2 测试配置，不覆盖规则定义文件（gate_engine.py 内嵌的规则？还是独立文件？先核实）、poison 豁免台账、governance manifest。修复：扩展 CORE_TOOLS 或新增 SUPPLY_CHAIN_TOOLS 覆",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/601_建设大包_信任根溯源层_Merkle_in-toto_封堵585三攻击_问题修复.md",
+   "line": 51,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "8. 手动统计：tool_integrity 当前覆盖的文件列表 / 未覆盖但应该覆盖的文件列表（规则定义、豁免台账、manifest 等）",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/601_建设大包_信任根溯源层_Merkle_in-toto_封堵585三攻击_问题修复.md",
+   "line": 62,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "**先核实**：gate_engine.py 的规则是内嵌在代码里还是独立文件？poison 豁免台账在哪里？governance manifest 在哪里？",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/601_建设大包_信任根溯源层_Merkle_in-toto_封堵585三攻击_问题修复.md",
+   "line": 69,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "- poison 豁免台账（`data/poison_exemptions.json` 或类似路径，先核实）",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/601_建设大包_信任根溯源层_Merkle_in-toto_封堵585三攻击_问题修复.md",
+   "line": 299,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "**攻击方式**：覆盖率 covered 是正则在 poison_drill 自己源码里 grep 文本——注入 0 个真载荷、一行注释即谎报覆盖+1；豁免台账自写一条 id 即被原样接受。",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/601_建设大包_信任根溯源层_Merkle_in-toto_封堵585三攻击_问题修复.md",
+   "line": 301,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "**当前防护**：581 已改为行为级 covered（真实 gate 命中规则 ID），但豁免台账仍然是自写自验。",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/601_建设大包_信任根溯源层_Merkle_in-toto_封堵585三攻击_问题修复.md",
+   "line": 304,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "- 豁免台账入 SUPPLY_CHAIN_FILES → 篡改豁免台账 → tool_integrity --check exit 1",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/601_建设大包_信任根溯源层_Merkle_in-toto_封堵585三攻击_问题修复.md",
+   "line": 305,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "- Merkle 树覆盖 data/ 目录（如果包含豁免台账）→ 篡改后 Merkle 根不匹配",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/601_建设大包_信任根溯源层_Merkle_in-toto_封堵585三攻击_问题修复.md",
+   "line": 306,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "- in-toto layout：poison_test step 的 products 包含豁免台账 → 篡改后 link 验证失败",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/601_建设大包_信任根溯源层_Merkle_in-toto_封堵585三攻击_问题修复.md",
+   "line": 309,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "- 手动模拟攻击：在测试沙箱中篡改 poison 豁免台账（新增一条假豁免）→ 运行 `tool_integrity.py --check` → exit 1",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/601_建设大包_信任根溯源层_Merkle_in-toto_封堵585三攻击_问题修复.md",
+   "line": 342,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "- 攻击2 回归：篡改豁免台账 → tool_integrity/merkle 至少一层检出",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/601_建设大包_信任根溯源层_Merkle_in-toto_封堵585三攻击_问题修复.md",
+   "line": 390,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "| D2 | poison 豁免台账路径 | （实跑结果） | 按实测路径加入 SUPPLY_CHAIN_FILES |",
+   "needs_human_review": true
+  },
+  {
    "path": "References/architecture_架构演进/archive_312_backup_pre_compress.md",
    "line": 70,
    "risk": "medium",
@@ -2242,12 +2467,39 @@
    "match": "warn 起步",
    "text": "3. **warn 起步是铁律**：所有新收紧一律 warn 不 block，观察期 N 轮 + 人审裁决后才升级——541 的两次存量翻车（block 0→38）就是因为没遵守。",
    "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/PM_产品经理仓库整理报告_20260919.md",
+   "line": 31,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "| **度量诚实层** | 8/10 | 覆盖率不可伪造（行为级 covered）、豁免二人锁、诚实口径 95.2%、matrix 值校验；metrics curves 正在升 v7（592） |",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/PUSH_健康状态总览_20260919.md",
+   "line": 108,
+   "risk": "medium",
+   "label": "提及『豁免』（需人审上下文判定）",
+   "match": "豁免",
+   "text": "| 🟢 低 | 27 条 legacy 豁免复核 | poison_drill 豁免台账，全标 redteam_seen: legacy |",
+   "needs_human_review": true
+  },
+  {
+   "path": "References/architecture_架构演进/PUSH_健康状态总览_20260919.md",
+   "line": 174,
+   "risk": "low",
+   "label": "纪律用语：warn 起步（观察期），非弱化指令",
+   "match": "warn 起步",
+   "text": "5. 存量零误伤、新收紧 warn 起步",
+   "needs_human_review": true
   }
  ],
  "summary": {
   "high": 55,
-  "medium": 162,
-  "low": 32
+  "medium": 185,
+  "low": 37
  },
  "note": "模式匹配、非语义理解 ⇒ 必然有误报（历史投喂词本身也在讨论这些词）；全部命中标 needs_human_review=true，是**人审清单**、不是自动判决。"
 }
