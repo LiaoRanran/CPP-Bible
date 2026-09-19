@@ -1,0 +1,2935 @@
+{
+ "credibility_levels": {
+  "high": 3,
+  "low": 1,
+  "medium": 2
+ },
+ "defeating_edges": 194,
+ "edges": 388,
+ "model": "W2_credibility_weighted_grounded",
+ "nodes": {
+  "ATOM-CONC-FENCE-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-CONC-FENCE-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-CONC-FENCE-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-CONC-FENCE-001::prop-2": {
+   "attackers": [],
+   "card": "ATOM-CONC-FENCE-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-CONC-FENCE-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-CONC-LOCK-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-CONC-LOCK-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-CONC-LOCK-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-CONC-LOCK-001::prop-2": {
+   "attackers": [],
+   "card": "ATOM-CONC-LOCK-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-CONC-LOCK-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-CONC-RACE-001::prop-1": {
+   "attackers": [
+    "MIS-CONC-003"
+   ],
+   "card": "ATOM-CONC-RACE-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-CONC-003"
+   ],
+   "defenders": [
+    "ATOM-CONC-RACE-001::prop-2",
+    "ATOM-CONC-RACE-001::prop-3"
+   ],
+   "id": "ATOM-CONC-RACE-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-CONC-RACE-001::prop-2": {
+   "attackers": [
+    "MIS-CONC-003"
+   ],
+   "card": "ATOM-CONC-RACE-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-CONC-003"
+   ],
+   "defenders": [
+    "ATOM-CONC-RACE-001::prop-1",
+    "ATOM-CONC-RACE-001::prop-3"
+   ],
+   "id": "ATOM-CONC-RACE-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-CONC-RACE-001::prop-3": {
+   "attackers": [
+    "MIS-CONC-003"
+   ],
+   "card": "ATOM-CONC-RACE-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-CONC-003"
+   ],
+   "defenders": [
+    "ATOM-CONC-RACE-001::prop-1",
+    "ATOM-CONC-RACE-001::prop-2"
+   ],
+   "id": "ATOM-CONC-RACE-001::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-HIST-AUTOPTR-001::prop-1": {
+   "attackers": [
+    "MIS-HIST-001",
+    "MIS-HIST-002",
+    "MIS-HIST-003",
+    "MIS-MEM-011"
+   ],
+   "card": "ATOM-HIST-AUTOPTR-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-HIST-001",
+    "MIS-HIST-002",
+    "MIS-HIST-003",
+    "MIS-MEM-011"
+   ],
+   "defenders": [
+    "ATOM-HIST-AUTOPTR-001::prop-2",
+    "ATOM-HIST-AUTOPTR-001::prop-3",
+    "ATOM-HIST-AUTOPTR-001::prop-4"
+   ],
+   "id": "ATOM-HIST-AUTOPTR-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-HIST-AUTOPTR-001::prop-2": {
+   "attackers": [
+    "MIS-HIST-001",
+    "MIS-HIST-002",
+    "MIS-HIST-003",
+    "MIS-MEM-011"
+   ],
+   "card": "ATOM-HIST-AUTOPTR-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-HIST-001",
+    "MIS-HIST-002",
+    "MIS-HIST-003",
+    "MIS-MEM-011"
+   ],
+   "defenders": [
+    "ATOM-HIST-AUTOPTR-001::prop-1",
+    "ATOM-HIST-AUTOPTR-001::prop-3",
+    "ATOM-HIST-AUTOPTR-001::prop-4"
+   ],
+   "id": "ATOM-HIST-AUTOPTR-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-HIST-AUTOPTR-001::prop-3": {
+   "attackers": [
+    "MIS-HIST-001",
+    "MIS-HIST-002",
+    "MIS-HIST-003",
+    "MIS-MEM-011"
+   ],
+   "card": "ATOM-HIST-AUTOPTR-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-HIST-001",
+    "MIS-HIST-002",
+    "MIS-HIST-003",
+    "MIS-MEM-011"
+   ],
+   "defenders": [
+    "ATOM-HIST-AUTOPTR-001::prop-1",
+    "ATOM-HIST-AUTOPTR-001::prop-2",
+    "ATOM-HIST-AUTOPTR-001::prop-4"
+   ],
+   "id": "ATOM-HIST-AUTOPTR-001::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-HIST-AUTOPTR-001::prop-4": {
+   "attackers": [
+    "MIS-HIST-001",
+    "MIS-HIST-002",
+    "MIS-HIST-003",
+    "MIS-MEM-011"
+   ],
+   "card": "ATOM-HIST-AUTOPTR-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-HIST-001",
+    "MIS-HIST-002",
+    "MIS-HIST-003",
+    "MIS-MEM-011"
+   ],
+   "defenders": [
+    "ATOM-HIST-AUTOPTR-001::prop-1",
+    "ATOM-HIST-AUTOPTR-001::prop-2",
+    "ATOM-HIST-AUTOPTR-001::prop-3"
+   ],
+   "id": "ATOM-HIST-AUTOPTR-001::prop-4",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-LANG-INLINE-001::prop-1": {
+   "attackers": [
+    "MIS-LANG-001"
+   ],
+   "card": "ATOM-LANG-INLINE-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-LANG-001"
+   ],
+   "defenders": [
+    "ATOM-LANG-INLINE-001::prop-2",
+    "ATOM-LANG-INLINE-001::prop-3"
+   ],
+   "id": "ATOM-LANG-INLINE-001::prop-1",
+   "label": "IN",
+   "signoff_state": "unsigned",
+   "type": "proposition"
+  },
+  "ATOM-LANG-INLINE-001::prop-2": {
+   "attackers": [
+    "MIS-LANG-001"
+   ],
+   "card": "ATOM-LANG-INLINE-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-LANG-001"
+   ],
+   "defenders": [
+    "ATOM-LANG-INLINE-001::prop-1",
+    "ATOM-LANG-INLINE-001::prop-3"
+   ],
+   "id": "ATOM-LANG-INLINE-001::prop-2",
+   "label": "IN",
+   "signoff_state": "unsigned",
+   "type": "proposition"
+  },
+  "ATOM-LANG-INLINE-001::prop-3": {
+   "attackers": [
+    "MIS-LANG-001"
+   ],
+   "card": "ATOM-LANG-INLINE-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-LANG-001"
+   ],
+   "defenders": [
+    "ATOM-LANG-INLINE-001::prop-1",
+    "ATOM-LANG-INLINE-001::prop-2"
+   ],
+   "id": "ATOM-LANG-INLINE-001::prop-3",
+   "label": "IN",
+   "signoff_state": "unsigned",
+   "type": "proposition"
+  },
+  "ATOM-MEM-ALIGN-001::prop-1": {
+   "attackers": [
+    "MIS-MEM-015"
+   ],
+   "card": "ATOM-MEM-ALIGN-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-015"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALIGN-001::prop-2",
+    "ATOM-MEM-ALIGN-001::prop-3"
+   ],
+   "id": "ATOM-MEM-ALIGN-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-ALIGN-001::prop-2": {
+   "attackers": [
+    "MIS-MEM-015"
+   ],
+   "card": "ATOM-MEM-ALIGN-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-015"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALIGN-001::prop-1",
+    "ATOM-MEM-ALIGN-001::prop-3"
+   ],
+   "id": "ATOM-MEM-ALIGN-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-ALIGN-001::prop-3": {
+   "attackers": [
+    "MIS-MEM-015"
+   ],
+   "card": "ATOM-MEM-ALIGN-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-015"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALIGN-001::prop-1",
+    "ATOM-MEM-ALIGN-001::prop-2"
+   ],
+   "id": "ATOM-MEM-ALIGN-001::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-ALLOC-001::prop-1": {
+   "attackers": [
+    "MIS-MEM-021",
+    "MIS-MEM-023",
+    "MIS-MEM-028",
+    "MIS-MEM-030"
+   ],
+   "card": "ATOM-MEM-ALLOC-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-021",
+    "MIS-MEM-023",
+    "MIS-MEM-028",
+    "MIS-MEM-030"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-ALLOC-002::prop-1",
+    "ATOM-MEM-ALLOC-002::prop-2",
+    "ATOM-MEM-ALLOC-002::prop-3",
+    "ATOM-MEM-NEW-001::prop-1",
+    "ATOM-MEM-NEW-001::prop-2",
+    "ATOM-MEM-NEW-001::prop-3",
+    "ATOM-MEM-PERF-002::prop-1",
+    "ATOM-MEM-PERF-002::prop-2",
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-003::prop-3"
+   ],
+   "id": "ATOM-MEM-ALLOC-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-ALLOC-001::prop-2": {
+   "attackers": [
+    "MIS-MEM-021",
+    "MIS-MEM-023",
+    "MIS-MEM-028",
+    "MIS-MEM-030"
+   ],
+   "card": "ATOM-MEM-ALLOC-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-021",
+    "MIS-MEM-023",
+    "MIS-MEM-028",
+    "MIS-MEM-030"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-ALLOC-002::prop-1",
+    "ATOM-MEM-ALLOC-002::prop-2",
+    "ATOM-MEM-ALLOC-002::prop-3",
+    "ATOM-MEM-NEW-001::prop-1",
+    "ATOM-MEM-NEW-001::prop-2",
+    "ATOM-MEM-NEW-001::prop-3",
+    "ATOM-MEM-PERF-002::prop-1",
+    "ATOM-MEM-PERF-002::prop-2",
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-003::prop-3"
+   ],
+   "id": "ATOM-MEM-ALLOC-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-ALLOC-001::prop-3": {
+   "attackers": [
+    "MIS-MEM-021",
+    "MIS-MEM-023",
+    "MIS-MEM-028",
+    "MIS-MEM-030"
+   ],
+   "card": "ATOM-MEM-ALLOC-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-021",
+    "MIS-MEM-023",
+    "MIS-MEM-028",
+    "MIS-MEM-030"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-ALLOC-002::prop-1",
+    "ATOM-MEM-ALLOC-002::prop-2",
+    "ATOM-MEM-ALLOC-002::prop-3",
+    "ATOM-MEM-NEW-001::prop-1",
+    "ATOM-MEM-NEW-001::prop-2",
+    "ATOM-MEM-NEW-001::prop-3",
+    "ATOM-MEM-PERF-002::prop-1",
+    "ATOM-MEM-PERF-002::prop-2",
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-003::prop-3"
+   ],
+   "id": "ATOM-MEM-ALLOC-001::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-ALLOC-001::prop-4": {
+   "attackers": [
+    "MIS-MEM-021",
+    "MIS-MEM-023",
+    "MIS-MEM-028",
+    "MIS-MEM-030"
+   ],
+   "card": "ATOM-MEM-ALLOC-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-021",
+    "MIS-MEM-023",
+    "MIS-MEM-028",
+    "MIS-MEM-030"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-002::prop-1",
+    "ATOM-MEM-ALLOC-002::prop-2",
+    "ATOM-MEM-ALLOC-002::prop-3",
+    "ATOM-MEM-NEW-001::prop-1",
+    "ATOM-MEM-NEW-001::prop-2",
+    "ATOM-MEM-NEW-001::prop-3",
+    "ATOM-MEM-PERF-002::prop-1",
+    "ATOM-MEM-PERF-002::prop-2",
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-003::prop-3"
+   ],
+   "id": "ATOM-MEM-ALLOC-001::prop-4",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-ALLOC-002::prop-1": {
+   "attackers": [
+    "MIS-MEM-030"
+   ],
+   "card": "ATOM-MEM-ALLOC-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-030"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-ALLOC-002::prop-2",
+    "ATOM-MEM-ALLOC-002::prop-3"
+   ],
+   "id": "ATOM-MEM-ALLOC-002::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-ALLOC-002::prop-2": {
+   "attackers": [
+    "MIS-MEM-030"
+   ],
+   "card": "ATOM-MEM-ALLOC-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-030"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-ALLOC-002::prop-1",
+    "ATOM-MEM-ALLOC-002::prop-3"
+   ],
+   "id": "ATOM-MEM-ALLOC-002::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-ALLOC-002::prop-3": {
+   "attackers": [
+    "MIS-MEM-030"
+   ],
+   "card": "ATOM-MEM-ALLOC-002",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-030"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-ALLOC-002::prop-1",
+    "ATOM-MEM-ALLOC-002::prop-2"
+   ],
+   "id": "ATOM-MEM-ALLOC-002::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-LEAK-001::prop-1": {
+   "attackers": [
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "card": "ATOM-MEM-LEAK-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "defenders": [
+    "ATOM-MEM-LEAK-001::prop-2",
+    "ATOM-MEM-LEAK-001::prop-3",
+    "ATOM-MEM-LEAK-002::prop-1",
+    "ATOM-MEM-LEAK-002::prop-2",
+    "ATOM-MEM-LEAK-002::prop-3",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "id": "ATOM-MEM-LEAK-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-LEAK-001::prop-2": {
+   "attackers": [
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "card": "ATOM-MEM-LEAK-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "defenders": [
+    "ATOM-MEM-LEAK-001::prop-1",
+    "ATOM-MEM-LEAK-001::prop-3",
+    "ATOM-MEM-LEAK-002::prop-1",
+    "ATOM-MEM-LEAK-002::prop-2",
+    "ATOM-MEM-LEAK-002::prop-3",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "id": "ATOM-MEM-LEAK-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-LEAK-001::prop-3": {
+   "attackers": [
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "card": "ATOM-MEM-LEAK-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "defenders": [
+    "ATOM-MEM-LEAK-001::prop-1",
+    "ATOM-MEM-LEAK-001::prop-2",
+    "ATOM-MEM-LEAK-002::prop-1",
+    "ATOM-MEM-LEAK-002::prop-2",
+    "ATOM-MEM-LEAK-002::prop-3",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "id": "ATOM-MEM-LEAK-001::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-LEAK-002::prop-1": {
+   "attackers": [
+    "MIS-MEM-031"
+   ],
+   "card": "ATOM-MEM-LEAK-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-031"
+   ],
+   "defenders": [
+    "ATOM-MEM-LEAK-001::prop-1",
+    "ATOM-MEM-LEAK-001::prop-2",
+    "ATOM-MEM-LEAK-001::prop-3",
+    "ATOM-MEM-LEAK-002::prop-2",
+    "ATOM-MEM-LEAK-002::prop-3",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "id": "ATOM-MEM-LEAK-002::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-LEAK-002::prop-2": {
+   "attackers": [
+    "MIS-MEM-031"
+   ],
+   "card": "ATOM-MEM-LEAK-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-031"
+   ],
+   "defenders": [
+    "ATOM-MEM-LEAK-001::prop-1",
+    "ATOM-MEM-LEAK-001::prop-2",
+    "ATOM-MEM-LEAK-001::prop-3",
+    "ATOM-MEM-LEAK-002::prop-1",
+    "ATOM-MEM-LEAK-002::prop-3",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "id": "ATOM-MEM-LEAK-002::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-LEAK-002::prop-3": {
+   "attackers": [
+    "MIS-MEM-031"
+   ],
+   "card": "ATOM-MEM-LEAK-002",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-031"
+   ],
+   "defenders": [
+    "ATOM-MEM-LEAK-001::prop-1",
+    "ATOM-MEM-LEAK-001::prop-2",
+    "ATOM-MEM-LEAK-001::prop-3",
+    "ATOM-MEM-LEAK-002::prop-1",
+    "ATOM-MEM-LEAK-002::prop-2",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "id": "ATOM-MEM-LEAK-002::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-MOVE-002::prop-1": {
+   "attackers": [
+    "MIS-MEM-001",
+    "MIS-MEM-002",
+    "MIS-MEM-003",
+    "MIS-MEM-004",
+    "MIS-MEM-005",
+    "MIS-MEM-012",
+    "MIS-MEM-017",
+    "MIS-MEM-019"
+   ],
+   "card": "ATOM-MEM-MOVE-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-001",
+    "MIS-MEM-002",
+    "MIS-MEM-003",
+    "MIS-MEM-004",
+    "MIS-MEM-005",
+    "MIS-MEM-012",
+    "MIS-MEM-017",
+    "MIS-MEM-019"
+   ],
+   "defenders": [
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-1",
+    "ATOM-MEM-RAII-002::prop-2",
+    "ATOM-MEM-RAII-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-4",
+    "ATOM-MEM-RVREF-001::prop-1",
+    "ATOM-MEM-RVREF-001::prop-2",
+    "ATOM-MEM-RVREF-001::prop-3",
+    "ATOM-MEM-VALUE-002::prop-1",
+    "ATOM-MEM-VALUE-002::prop-2",
+    "ATOM-MEM-VALUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-MOVE-002::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-MOVE-002::prop-2": {
+   "attackers": [
+    "MIS-MEM-001",
+    "MIS-MEM-002",
+    "MIS-MEM-003",
+    "MIS-MEM-004",
+    "MIS-MEM-005",
+    "MIS-MEM-012",
+    "MIS-MEM-017",
+    "MIS-MEM-019"
+   ],
+   "card": "ATOM-MEM-MOVE-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-001",
+    "MIS-MEM-002",
+    "MIS-MEM-003",
+    "MIS-MEM-004",
+    "MIS-MEM-005",
+    "MIS-MEM-012",
+    "MIS-MEM-017",
+    "MIS-MEM-019"
+   ],
+   "defenders": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-1",
+    "ATOM-MEM-RAII-002::prop-2",
+    "ATOM-MEM-RAII-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-4",
+    "ATOM-MEM-RVREF-001::prop-1",
+    "ATOM-MEM-RVREF-001::prop-2",
+    "ATOM-MEM-RVREF-001::prop-3",
+    "ATOM-MEM-VALUE-002::prop-1",
+    "ATOM-MEM-VALUE-002::prop-2",
+    "ATOM-MEM-VALUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-MOVE-002::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-MOVE-002::prop-3": {
+   "attackers": [
+    "MIS-MEM-001",
+    "MIS-MEM-002",
+    "MIS-MEM-003",
+    "MIS-MEM-004",
+    "MIS-MEM-005",
+    "MIS-MEM-012",
+    "MIS-MEM-017",
+    "MIS-MEM-019"
+   ],
+   "card": "ATOM-MEM-MOVE-002",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-001",
+    "MIS-MEM-002",
+    "MIS-MEM-003",
+    "MIS-MEM-004",
+    "MIS-MEM-005",
+    "MIS-MEM-012",
+    "MIS-MEM-017",
+    "MIS-MEM-019"
+   ],
+   "defenders": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-RAII-002::prop-1",
+    "ATOM-MEM-RAII-002::prop-2",
+    "ATOM-MEM-RAII-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-4",
+    "ATOM-MEM-RVREF-001::prop-1",
+    "ATOM-MEM-RVREF-001::prop-2",
+    "ATOM-MEM-RVREF-001::prop-3",
+    "ATOM-MEM-VALUE-002::prop-1",
+    "ATOM-MEM-VALUE-002::prop-2",
+    "ATOM-MEM-VALUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-MOVE-002::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-NEW-001::prop-1": {
+   "attackers": [
+    "MIS-MEM-021",
+    "MIS-MEM-022",
+    "MIS-MEM-025"
+   ],
+   "card": "ATOM-MEM-NEW-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-021",
+    "MIS-MEM-022",
+    "MIS-MEM-025"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-NEW-001::prop-2",
+    "ATOM-MEM-NEW-001::prop-3",
+    "ATOM-MEM-PERF-002::prop-1",
+    "ATOM-MEM-PERF-002::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-1",
+    "ATOM-MEM-UNIQUE-002::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-NEW-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-NEW-001::prop-2": {
+   "attackers": [
+    "MIS-MEM-021",
+    "MIS-MEM-022",
+    "MIS-MEM-025"
+   ],
+   "card": "ATOM-MEM-NEW-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-021",
+    "MIS-MEM-022",
+    "MIS-MEM-025"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-NEW-001::prop-1",
+    "ATOM-MEM-NEW-001::prop-3",
+    "ATOM-MEM-PERF-002::prop-1",
+    "ATOM-MEM-PERF-002::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-1",
+    "ATOM-MEM-UNIQUE-002::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-NEW-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-NEW-001::prop-3": {
+   "attackers": [
+    "MIS-MEM-021",
+    "MIS-MEM-022",
+    "MIS-MEM-025"
+   ],
+   "card": "ATOM-MEM-NEW-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-021",
+    "MIS-MEM-022",
+    "MIS-MEM-025"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-NEW-001::prop-1",
+    "ATOM-MEM-NEW-001::prop-2",
+    "ATOM-MEM-PERF-002::prop-1",
+    "ATOM-MEM-PERF-002::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-1",
+    "ATOM-MEM-UNIQUE-002::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-NEW-001::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-PERF-001::prop-1": {
+   "attackers": [
+    "MIS-MEM-029"
+   ],
+   "card": "ATOM-MEM-PERF-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-029"
+   ],
+   "defenders": [
+    "ATOM-MEM-PERF-001::prop-2",
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-003::prop-3"
+   ],
+   "id": "ATOM-MEM-PERF-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-PERF-001::prop-2": {
+   "attackers": [
+    "MIS-MEM-029"
+   ],
+   "card": "ATOM-MEM-PERF-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-029"
+   ],
+   "defenders": [
+    "ATOM-MEM-PERF-001::prop-1",
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-003::prop-3"
+   ],
+   "id": "ATOM-MEM-PERF-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-PERF-002::prop-1": {
+   "attackers": [
+    "MIS-MEM-022",
+    "MIS-MEM-023",
+    "MIS-MEM-028"
+   ],
+   "card": "ATOM-MEM-PERF-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-022",
+    "MIS-MEM-023",
+    "MIS-MEM-028"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-NEW-001::prop-1",
+    "ATOM-MEM-NEW-001::prop-2",
+    "ATOM-MEM-NEW-001::prop-3",
+    "ATOM-MEM-PERF-002::prop-2",
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-003::prop-3"
+   ],
+   "id": "ATOM-MEM-PERF-002::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-PERF-002::prop-2": {
+   "attackers": [
+    "MIS-MEM-022",
+    "MIS-MEM-023",
+    "MIS-MEM-028"
+   ],
+   "card": "ATOM-MEM-PERF-002",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-022",
+    "MIS-MEM-023",
+    "MIS-MEM-028"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-NEW-001::prop-1",
+    "ATOM-MEM-NEW-001::prop-2",
+    "ATOM-MEM-NEW-001::prop-3",
+    "ATOM-MEM-PERF-002::prop-1",
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-003::prop-3"
+   ],
+   "id": "ATOM-MEM-PERF-002::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-PERF-003::prop-1": {
+   "attackers": [
+    "MIS-MEM-028",
+    "MIS-MEM-029",
+    "MIS-MEM-032"
+   ],
+   "card": "ATOM-MEM-PERF-003",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-028",
+    "MIS-MEM-029",
+    "MIS-MEM-032"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-PERF-001::prop-1",
+    "ATOM-MEM-PERF-001::prop-2",
+    "ATOM-MEM-PERF-002::prop-1",
+    "ATOM-MEM-PERF-002::prop-2",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-003::prop-3",
+    "ATOM-MEM-PERF-004::prop-1",
+    "ATOM-MEM-PERF-004::prop-2",
+    "ATOM-MEM-PERF-004::prop-3"
+   ],
+   "id": "ATOM-MEM-PERF-003::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-PERF-003::prop-2": {
+   "attackers": [
+    "MIS-MEM-028",
+    "MIS-MEM-029",
+    "MIS-MEM-032"
+   ],
+   "card": "ATOM-MEM-PERF-003",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-028",
+    "MIS-MEM-029",
+    "MIS-MEM-032"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-PERF-001::prop-1",
+    "ATOM-MEM-PERF-001::prop-2",
+    "ATOM-MEM-PERF-002::prop-1",
+    "ATOM-MEM-PERF-002::prop-2",
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-3",
+    "ATOM-MEM-PERF-004::prop-1",
+    "ATOM-MEM-PERF-004::prop-2",
+    "ATOM-MEM-PERF-004::prop-3"
+   ],
+   "id": "ATOM-MEM-PERF-003::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-PERF-003::prop-3": {
+   "attackers": [
+    "MIS-MEM-028",
+    "MIS-MEM-029",
+    "MIS-MEM-032"
+   ],
+   "card": "ATOM-MEM-PERF-003",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-028",
+    "MIS-MEM-029",
+    "MIS-MEM-032"
+   ],
+   "defenders": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-PERF-001::prop-1",
+    "ATOM-MEM-PERF-001::prop-2",
+    "ATOM-MEM-PERF-002::prop-1",
+    "ATOM-MEM-PERF-002::prop-2",
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-004::prop-1",
+    "ATOM-MEM-PERF-004::prop-2",
+    "ATOM-MEM-PERF-004::prop-3"
+   ],
+   "id": "ATOM-MEM-PERF-003::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-PERF-004::prop-1": {
+   "attackers": [
+    "MIS-MEM-032"
+   ],
+   "card": "ATOM-MEM-PERF-004",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-032"
+   ],
+   "defenders": [
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-003::prop-3",
+    "ATOM-MEM-PERF-004::prop-2",
+    "ATOM-MEM-PERF-004::prop-3"
+   ],
+   "id": "ATOM-MEM-PERF-004::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-PERF-004::prop-2": {
+   "attackers": [
+    "MIS-MEM-032"
+   ],
+   "card": "ATOM-MEM-PERF-004",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-032"
+   ],
+   "defenders": [
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-003::prop-3",
+    "ATOM-MEM-PERF-004::prop-1",
+    "ATOM-MEM-PERF-004::prop-3"
+   ],
+   "id": "ATOM-MEM-PERF-004::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-PERF-004::prop-3": {
+   "attackers": [
+    "MIS-MEM-032"
+   ],
+   "card": "ATOM-MEM-PERF-004",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-032"
+   ],
+   "defenders": [
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-003::prop-3",
+    "ATOM-MEM-PERF-004::prop-1",
+    "ATOM-MEM-PERF-004::prop-2"
+   ],
+   "id": "ATOM-MEM-PERF-004::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-RAII-001::prop-1": {
+   "attackers": [
+    "MIS-MEM-013",
+    "MIS-MEM-014"
+   ],
+   "card": "ATOM-MEM-RAII-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-013",
+    "MIS-MEM-014"
+   ],
+   "defenders": [
+    "ATOM-MEM-RAII-001::prop-2",
+    "ATOM-MEM-RAII-001::prop-3"
+   ],
+   "id": "ATOM-MEM-RAII-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-RAII-001::prop-2": {
+   "attackers": [
+    "MIS-MEM-013",
+    "MIS-MEM-014"
+   ],
+   "card": "ATOM-MEM-RAII-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-013",
+    "MIS-MEM-014"
+   ],
+   "defenders": [
+    "ATOM-MEM-RAII-001::prop-1",
+    "ATOM-MEM-RAII-001::prop-3"
+   ],
+   "id": "ATOM-MEM-RAII-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-RAII-001::prop-3": {
+   "attackers": [
+    "MIS-MEM-013",
+    "MIS-MEM-014"
+   ],
+   "card": "ATOM-MEM-RAII-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-013",
+    "MIS-MEM-014"
+   ],
+   "defenders": [
+    "ATOM-MEM-RAII-001::prop-1",
+    "ATOM-MEM-RAII-001::prop-2"
+   ],
+   "id": "ATOM-MEM-RAII-001::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-RAII-002::prop-1": {
+   "attackers": [
+    "MIS-MEM-019",
+    "MIS-MEM-020"
+   ],
+   "card": "ATOM-MEM-RAII-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-019",
+    "MIS-MEM-020"
+   ],
+   "defenders": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-2",
+    "ATOM-MEM-RAII-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-4",
+    "ATOM-MEM-UNIQUE-001::prop-1",
+    "ATOM-MEM-UNIQUE-001::prop-2",
+    "ATOM-MEM-UNIQUE-001::prop-3"
+   ],
+   "id": "ATOM-MEM-RAII-002::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-RAII-002::prop-2": {
+   "attackers": [
+    "MIS-MEM-019",
+    "MIS-MEM-020"
+   ],
+   "card": "ATOM-MEM-RAII-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-019",
+    "MIS-MEM-020"
+   ],
+   "defenders": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-1",
+    "ATOM-MEM-RAII-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-4",
+    "ATOM-MEM-UNIQUE-001::prop-1",
+    "ATOM-MEM-UNIQUE-001::prop-2",
+    "ATOM-MEM-UNIQUE-001::prop-3"
+   ],
+   "id": "ATOM-MEM-RAII-002::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-RAII-002::prop-3": {
+   "attackers": [
+    "MIS-MEM-019",
+    "MIS-MEM-020"
+   ],
+   "card": "ATOM-MEM-RAII-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-019",
+    "MIS-MEM-020"
+   ],
+   "defenders": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-1",
+    "ATOM-MEM-RAII-002::prop-2",
+    "ATOM-MEM-RAII-002::prop-4",
+    "ATOM-MEM-UNIQUE-001::prop-1",
+    "ATOM-MEM-UNIQUE-001::prop-2",
+    "ATOM-MEM-UNIQUE-001::prop-3"
+   ],
+   "id": "ATOM-MEM-RAII-002::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-RAII-002::prop-4": {
+   "attackers": [
+    "MIS-MEM-019",
+    "MIS-MEM-020"
+   ],
+   "card": "ATOM-MEM-RAII-002",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-019",
+    "MIS-MEM-020"
+   ],
+   "defenders": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-1",
+    "ATOM-MEM-RAII-002::prop-2",
+    "ATOM-MEM-RAII-002::prop-3",
+    "ATOM-MEM-UNIQUE-001::prop-1",
+    "ATOM-MEM-UNIQUE-001::prop-2",
+    "ATOM-MEM-UNIQUE-001::prop-3"
+   ],
+   "id": "ATOM-MEM-RAII-002::prop-4",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-RVREF-001::prop-1": {
+   "attackers": [
+    "MIS-MEM-005"
+   ],
+   "card": "ATOM-MEM-RVREF-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-005"
+   ],
+   "defenders": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3",
+    "ATOM-MEM-RVREF-001::prop-2",
+    "ATOM-MEM-RVREF-001::prop-3"
+   ],
+   "id": "ATOM-MEM-RVREF-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-RVREF-001::prop-2": {
+   "attackers": [
+    "MIS-MEM-005"
+   ],
+   "card": "ATOM-MEM-RVREF-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-005"
+   ],
+   "defenders": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3",
+    "ATOM-MEM-RVREF-001::prop-1",
+    "ATOM-MEM-RVREF-001::prop-3"
+   ],
+   "id": "ATOM-MEM-RVREF-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-RVREF-001::prop-3": {
+   "attackers": [
+    "MIS-MEM-005"
+   ],
+   "card": "ATOM-MEM-RVREF-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-005"
+   ],
+   "defenders": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3",
+    "ATOM-MEM-RVREF-001::prop-1",
+    "ATOM-MEM-RVREF-001::prop-2"
+   ],
+   "id": "ATOM-MEM-RVREF-001::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-SHARED-001::prop-1": {
+   "attackers": [
+    "MIS-MEM-016",
+    "MIS-MEM-024",
+    "MIS-MEM-026",
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "card": "ATOM-MEM-SHARED-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-016",
+    "MIS-MEM-024",
+    "MIS-MEM-026",
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "defenders": [
+    "ATOM-MEM-LEAK-001::prop-1",
+    "ATOM-MEM-LEAK-001::prop-2",
+    "ATOM-MEM-LEAK-001::prop-3",
+    "ATOM-MEM-LEAK-002::prop-1",
+    "ATOM-MEM-LEAK-002::prop-2",
+    "ATOM-MEM-LEAK-002::prop-3",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-SHARED-002::prop-1",
+    "ATOM-MEM-SHARED-002::prop-2",
+    "ATOM-MEM-SHARED-002::prop-3",
+    "ATOM-MEM-UNIQUE-001::prop-1",
+    "ATOM-MEM-UNIQUE-001::prop-2",
+    "ATOM-MEM-UNIQUE-001::prop-3",
+    "ATOM-MEM-UNIQUE-002::prop-1",
+    "ATOM-MEM-UNIQUE-002::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "id": "ATOM-MEM-SHARED-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-SHARED-001::prop-2": {
+   "attackers": [
+    "MIS-MEM-016",
+    "MIS-MEM-024",
+    "MIS-MEM-026",
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "card": "ATOM-MEM-SHARED-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-016",
+    "MIS-MEM-024",
+    "MIS-MEM-026",
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "defenders": [
+    "ATOM-MEM-LEAK-001::prop-1",
+    "ATOM-MEM-LEAK-001::prop-2",
+    "ATOM-MEM-LEAK-001::prop-3",
+    "ATOM-MEM-LEAK-002::prop-1",
+    "ATOM-MEM-LEAK-002::prop-2",
+    "ATOM-MEM-LEAK-002::prop-3",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-SHARED-002::prop-1",
+    "ATOM-MEM-SHARED-002::prop-2",
+    "ATOM-MEM-SHARED-002::prop-3",
+    "ATOM-MEM-UNIQUE-001::prop-1",
+    "ATOM-MEM-UNIQUE-001::prop-2",
+    "ATOM-MEM-UNIQUE-001::prop-3",
+    "ATOM-MEM-UNIQUE-002::prop-1",
+    "ATOM-MEM-UNIQUE-002::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "id": "ATOM-MEM-SHARED-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-SHARED-001::prop-3": {
+   "attackers": [
+    "MIS-MEM-016",
+    "MIS-MEM-024",
+    "MIS-MEM-026",
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "card": "ATOM-MEM-SHARED-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-016",
+    "MIS-MEM-024",
+    "MIS-MEM-026",
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "defenders": [
+    "ATOM-MEM-LEAK-001::prop-1",
+    "ATOM-MEM-LEAK-001::prop-2",
+    "ATOM-MEM-LEAK-001::prop-3",
+    "ATOM-MEM-LEAK-002::prop-1",
+    "ATOM-MEM-LEAK-002::prop-2",
+    "ATOM-MEM-LEAK-002::prop-3",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-002::prop-1",
+    "ATOM-MEM-SHARED-002::prop-2",
+    "ATOM-MEM-SHARED-002::prop-3",
+    "ATOM-MEM-UNIQUE-001::prop-1",
+    "ATOM-MEM-UNIQUE-001::prop-2",
+    "ATOM-MEM-UNIQUE-001::prop-3",
+    "ATOM-MEM-UNIQUE-002::prop-1",
+    "ATOM-MEM-UNIQUE-002::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "id": "ATOM-MEM-SHARED-001::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-SHARED-002::prop-1": {
+   "attackers": [
+    "MIS-MEM-026"
+   ],
+   "card": "ATOM-MEM-SHARED-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-026"
+   ],
+   "defenders": [
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-SHARED-002::prop-2",
+    "ATOM-MEM-SHARED-002::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "id": "ATOM-MEM-SHARED-002::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-SHARED-002::prop-2": {
+   "attackers": [
+    "MIS-MEM-026"
+   ],
+   "card": "ATOM-MEM-SHARED-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-026"
+   ],
+   "defenders": [
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-SHARED-002::prop-1",
+    "ATOM-MEM-SHARED-002::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "id": "ATOM-MEM-SHARED-002::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-SHARED-002::prop-3": {
+   "attackers": [
+    "MIS-MEM-026"
+   ],
+   "card": "ATOM-MEM-SHARED-002",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-026"
+   ],
+   "defenders": [
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-SHARED-002::prop-1",
+    "ATOM-MEM-SHARED-002::prop-2",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "id": "ATOM-MEM-SHARED-002::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-UNIQUE-001::prop-1": {
+   "attackers": [
+    "MIS-MEM-020",
+    "MIS-MEM-024"
+   ],
+   "card": "ATOM-MEM-UNIQUE-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-020",
+    "MIS-MEM-024"
+   ],
+   "defenders": [
+    "ATOM-MEM-RAII-002::prop-1",
+    "ATOM-MEM-RAII-002::prop-2",
+    "ATOM-MEM-RAII-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-4",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-UNIQUE-001::prop-2",
+    "ATOM-MEM-UNIQUE-001::prop-3",
+    "ATOM-MEM-UNIQUE-002::prop-1",
+    "ATOM-MEM-UNIQUE-002::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-UNIQUE-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-UNIQUE-001::prop-2": {
+   "attackers": [
+    "MIS-MEM-020",
+    "MIS-MEM-024"
+   ],
+   "card": "ATOM-MEM-UNIQUE-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-020",
+    "MIS-MEM-024"
+   ],
+   "defenders": [
+    "ATOM-MEM-RAII-002::prop-1",
+    "ATOM-MEM-RAII-002::prop-2",
+    "ATOM-MEM-RAII-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-4",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-UNIQUE-001::prop-1",
+    "ATOM-MEM-UNIQUE-001::prop-3",
+    "ATOM-MEM-UNIQUE-002::prop-1",
+    "ATOM-MEM-UNIQUE-002::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-UNIQUE-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-UNIQUE-001::prop-3": {
+   "attackers": [
+    "MIS-MEM-020",
+    "MIS-MEM-024"
+   ],
+   "card": "ATOM-MEM-UNIQUE-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-020",
+    "MIS-MEM-024"
+   ],
+   "defenders": [
+    "ATOM-MEM-RAII-002::prop-1",
+    "ATOM-MEM-RAII-002::prop-2",
+    "ATOM-MEM-RAII-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-4",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-UNIQUE-001::prop-1",
+    "ATOM-MEM-UNIQUE-001::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-1",
+    "ATOM-MEM-UNIQUE-002::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-UNIQUE-001::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-UNIQUE-002::prop-1": {
+   "attackers": [
+    "MIS-MEM-024",
+    "MIS-MEM-025"
+   ],
+   "card": "ATOM-MEM-UNIQUE-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-024",
+    "MIS-MEM-025"
+   ],
+   "defenders": [
+    "ATOM-MEM-NEW-001::prop-1",
+    "ATOM-MEM-NEW-001::prop-2",
+    "ATOM-MEM-NEW-001::prop-3",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-UNIQUE-001::prop-1",
+    "ATOM-MEM-UNIQUE-001::prop-2",
+    "ATOM-MEM-UNIQUE-001::prop-3",
+    "ATOM-MEM-UNIQUE-002::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-UNIQUE-002::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-UNIQUE-002::prop-2": {
+   "attackers": [
+    "MIS-MEM-024",
+    "MIS-MEM-025"
+   ],
+   "card": "ATOM-MEM-UNIQUE-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-024",
+    "MIS-MEM-025"
+   ],
+   "defenders": [
+    "ATOM-MEM-NEW-001::prop-1",
+    "ATOM-MEM-NEW-001::prop-2",
+    "ATOM-MEM-NEW-001::prop-3",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-UNIQUE-001::prop-1",
+    "ATOM-MEM-UNIQUE-001::prop-2",
+    "ATOM-MEM-UNIQUE-001::prop-3",
+    "ATOM-MEM-UNIQUE-002::prop-1",
+    "ATOM-MEM-UNIQUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-UNIQUE-002::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-UNIQUE-002::prop-3": {
+   "attackers": [
+    "MIS-MEM-024",
+    "MIS-MEM-025"
+   ],
+   "card": "ATOM-MEM-UNIQUE-002",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-024",
+    "MIS-MEM-025"
+   ],
+   "defenders": [
+    "ATOM-MEM-NEW-001::prop-1",
+    "ATOM-MEM-NEW-001::prop-2",
+    "ATOM-MEM-NEW-001::prop-3",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-UNIQUE-001::prop-1",
+    "ATOM-MEM-UNIQUE-001::prop-2",
+    "ATOM-MEM-UNIQUE-001::prop-3",
+    "ATOM-MEM-UNIQUE-002::prop-1",
+    "ATOM-MEM-UNIQUE-002::prop-2"
+   ],
+   "id": "ATOM-MEM-UNIQUE-002::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-VALUE-001::prop-1": {
+   "attackers": [
+    "MIS-MEM-018"
+   ],
+   "card": "ATOM-MEM-VALUE-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-018"
+   ],
+   "defenders": [
+    "ATOM-MEM-VALUE-001::prop-2",
+    "ATOM-MEM-VALUE-001::prop-3",
+    "ATOM-MEM-VALUE-002::prop-1",
+    "ATOM-MEM-VALUE-002::prop-2",
+    "ATOM-MEM-VALUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-VALUE-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-VALUE-001::prop-2": {
+   "attackers": [
+    "MIS-MEM-018"
+   ],
+   "card": "ATOM-MEM-VALUE-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-018"
+   ],
+   "defenders": [
+    "ATOM-MEM-VALUE-001::prop-1",
+    "ATOM-MEM-VALUE-001::prop-3",
+    "ATOM-MEM-VALUE-002::prop-1",
+    "ATOM-MEM-VALUE-002::prop-2",
+    "ATOM-MEM-VALUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-VALUE-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-VALUE-001::prop-3": {
+   "attackers": [
+    "MIS-MEM-018"
+   ],
+   "card": "ATOM-MEM-VALUE-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-018"
+   ],
+   "defenders": [
+    "ATOM-MEM-VALUE-001::prop-1",
+    "ATOM-MEM-VALUE-001::prop-2",
+    "ATOM-MEM-VALUE-002::prop-1",
+    "ATOM-MEM-VALUE-002::prop-2",
+    "ATOM-MEM-VALUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-VALUE-001::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-VALUE-002::prop-1": {
+   "attackers": [
+    "MIS-MEM-017",
+    "MIS-MEM-018"
+   ],
+   "card": "ATOM-MEM-VALUE-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-017",
+    "MIS-MEM-018"
+   ],
+   "defenders": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3",
+    "ATOM-MEM-VALUE-001::prop-1",
+    "ATOM-MEM-VALUE-001::prop-2",
+    "ATOM-MEM-VALUE-001::prop-3",
+    "ATOM-MEM-VALUE-002::prop-2",
+    "ATOM-MEM-VALUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-VALUE-002::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-VALUE-002::prop-2": {
+   "attackers": [
+    "MIS-MEM-017",
+    "MIS-MEM-018"
+   ],
+   "card": "ATOM-MEM-VALUE-002",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-017",
+    "MIS-MEM-018"
+   ],
+   "defenders": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3",
+    "ATOM-MEM-VALUE-001::prop-1",
+    "ATOM-MEM-VALUE-001::prop-2",
+    "ATOM-MEM-VALUE-001::prop-3",
+    "ATOM-MEM-VALUE-002::prop-1",
+    "ATOM-MEM-VALUE-002::prop-3"
+   ],
+   "id": "ATOM-MEM-VALUE-002::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-VALUE-002::prop-3": {
+   "attackers": [
+    "MIS-MEM-017",
+    "MIS-MEM-018"
+   ],
+   "card": "ATOM-MEM-VALUE-002",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-017",
+    "MIS-MEM-018"
+   ],
+   "defenders": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3",
+    "ATOM-MEM-VALUE-001::prop-1",
+    "ATOM-MEM-VALUE-001::prop-2",
+    "ATOM-MEM-VALUE-001::prop-3",
+    "ATOM-MEM-VALUE-002::prop-1",
+    "ATOM-MEM-VALUE-002::prop-2"
+   ],
+   "id": "ATOM-MEM-VALUE-002::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-WEAK-001::prop-1": {
+   "attackers": [
+    "MIS-MEM-016",
+    "MIS-MEM-026",
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "card": "ATOM-MEM-WEAK-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-016",
+    "MIS-MEM-026",
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "defenders": [
+    "ATOM-MEM-LEAK-001::prop-1",
+    "ATOM-MEM-LEAK-001::prop-2",
+    "ATOM-MEM-LEAK-001::prop-3",
+    "ATOM-MEM-LEAK-002::prop-1",
+    "ATOM-MEM-LEAK-002::prop-2",
+    "ATOM-MEM-LEAK-002::prop-3",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-SHARED-002::prop-1",
+    "ATOM-MEM-SHARED-002::prop-2",
+    "ATOM-MEM-SHARED-002::prop-3",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "id": "ATOM-MEM-WEAK-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-WEAK-001::prop-2": {
+   "attackers": [
+    "MIS-MEM-016",
+    "MIS-MEM-026",
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "card": "ATOM-MEM-WEAK-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-016",
+    "MIS-MEM-026",
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "defenders": [
+    "ATOM-MEM-LEAK-001::prop-1",
+    "ATOM-MEM-LEAK-001::prop-2",
+    "ATOM-MEM-LEAK-001::prop-3",
+    "ATOM-MEM-LEAK-002::prop-1",
+    "ATOM-MEM-LEAK-002::prop-2",
+    "ATOM-MEM-LEAK-002::prop-3",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-SHARED-002::prop-1",
+    "ATOM-MEM-SHARED-002::prop-2",
+    "ATOM-MEM-SHARED-002::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "id": "ATOM-MEM-WEAK-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-WEAK-001::prop-3": {
+   "attackers": [
+    "MIS-MEM-016",
+    "MIS-MEM-026",
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "card": "ATOM-MEM-WEAK-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-MEM-016",
+    "MIS-MEM-026",
+    "MIS-MEM-027",
+    "MIS-MEM-031"
+   ],
+   "defenders": [
+    "ATOM-MEM-LEAK-001::prop-1",
+    "ATOM-MEM-LEAK-001::prop-2",
+    "ATOM-MEM-LEAK-001::prop-3",
+    "ATOM-MEM-LEAK-002::prop-1",
+    "ATOM-MEM-LEAK-002::prop-2",
+    "ATOM-MEM-LEAK-002::prop-3",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-SHARED-002::prop-1",
+    "ATOM-MEM-SHARED-002::prop-2",
+    "ATOM-MEM-SHARED-002::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2"
+   ],
+   "id": "ATOM-MEM-WEAK-001::prop-3",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-UB-GRAY-001::prop-1": {
+   "attackers": [
+    "MIS-CONC-001",
+    "MIS-UB-001",
+    "MIS-UB-002",
+    "MIS-UB-003",
+    "MIS-UB-004",
+    "MIS-UB-008",
+    "MIS-UB-012",
+    "MIS-UB-013",
+    "MIS-UB-014",
+    "MIS-UB-015"
+   ],
+   "card": "ATOM-UB-GRAY-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-CONC-001",
+    "MIS-UB-001",
+    "MIS-UB-002",
+    "MIS-UB-003",
+    "MIS-UB-004",
+    "MIS-UB-008",
+    "MIS-UB-012",
+    "MIS-UB-013",
+    "MIS-UB-014",
+    "MIS-UB-015"
+   ],
+   "defenders": [
+    "ATOM-UB-GRAY-001::prop-2"
+   ],
+   "id": "ATOM-UB-GRAY-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-UB-GRAY-001::prop-2": {
+   "attackers": [
+    "MIS-CONC-001",
+    "MIS-UB-001",
+    "MIS-UB-002",
+    "MIS-UB-003",
+    "MIS-UB-004",
+    "MIS-UB-008",
+    "MIS-UB-012",
+    "MIS-UB-013",
+    "MIS-UB-014",
+    "MIS-UB-015"
+   ],
+   "card": "ATOM-UB-GRAY-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [
+    "MIS-CONC-001",
+    "MIS-UB-001",
+    "MIS-UB-002",
+    "MIS-UB-003",
+    "MIS-UB-004",
+    "MIS-UB-008",
+    "MIS-UB-012",
+    "MIS-UB-013",
+    "MIS-UB-014",
+    "MIS-UB-015"
+   ],
+   "defenders": [
+    "ATOM-UB-GRAY-001::prop-1"
+   ],
+   "id": "ATOM-UB-GRAY-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "MIS-CONC-001": {
+   "attackers": [
+    "ATOM-UB-GRAY-001::prop-1",
+    "ATOM-UB-GRAY-001::prop-2"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-CONC-001",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-CONC-003": {
+   "attackers": [
+    "ATOM-CONC-RACE-001::prop-1",
+    "ATOM-CONC-RACE-001::prop-2",
+    "ATOM-CONC-RACE-001::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-CONC-003",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-HIST-001": {
+   "attackers": [
+    "ATOM-HIST-AUTOPTR-001::prop-1",
+    "ATOM-HIST-AUTOPTR-001::prop-2",
+    "ATOM-HIST-AUTOPTR-001::prop-3",
+    "ATOM-HIST-AUTOPTR-001::prop-4"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-HIST-001",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-HIST-002": {
+   "attackers": [
+    "ATOM-HIST-AUTOPTR-001::prop-1",
+    "ATOM-HIST-AUTOPTR-001::prop-2",
+    "ATOM-HIST-AUTOPTR-001::prop-3",
+    "ATOM-HIST-AUTOPTR-001::prop-4"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-HIST-002",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-HIST-003": {
+   "attackers": [
+    "ATOM-HIST-AUTOPTR-001::prop-1",
+    "ATOM-HIST-AUTOPTR-001::prop-2",
+    "ATOM-HIST-AUTOPTR-001::prop-3",
+    "ATOM-HIST-AUTOPTR-001::prop-4"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-HIST-003",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-LANG-001": {
+   "attackers": [
+    "ATOM-LANG-INLINE-001::prop-1",
+    "ATOM-LANG-INLINE-001::prop-2",
+    "ATOM-LANG-INLINE-001::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-LANG-001",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-001": {
+   "attackers": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-001",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-002": {
+   "attackers": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-002",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-003": {
+   "attackers": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-003",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-004": {
+   "attackers": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-004",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-005": {
+   "attackers": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3",
+    "ATOM-MEM-RVREF-001::prop-1",
+    "ATOM-MEM-RVREF-001::prop-2",
+    "ATOM-MEM-RVREF-001::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-005",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-011": {
+   "attackers": [
+    "ATOM-HIST-AUTOPTR-001::prop-1",
+    "ATOM-HIST-AUTOPTR-001::prop-2",
+    "ATOM-HIST-AUTOPTR-001::prop-3",
+    "ATOM-HIST-AUTOPTR-001::prop-4"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-011",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-012": {
+   "attackers": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-012",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-013": {
+   "attackers": [
+    "ATOM-MEM-RAII-001::prop-1",
+    "ATOM-MEM-RAII-001::prop-2",
+    "ATOM-MEM-RAII-001::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-013",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-014": {
+   "attackers": [
+    "ATOM-MEM-RAII-001::prop-1",
+    "ATOM-MEM-RAII-001::prop-2",
+    "ATOM-MEM-RAII-001::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-014",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-015": {
+   "attackers": [
+    "ATOM-MEM-ALIGN-001::prop-1",
+    "ATOM-MEM-ALIGN-001::prop-2",
+    "ATOM-MEM-ALIGN-001::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-015",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-016": {
+   "attackers": [
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-016",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-017": {
+   "attackers": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3",
+    "ATOM-MEM-VALUE-002::prop-1",
+    "ATOM-MEM-VALUE-002::prop-2",
+    "ATOM-MEM-VALUE-002::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-017",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-018": {
+   "attackers": [
+    "ATOM-MEM-VALUE-001::prop-1",
+    "ATOM-MEM-VALUE-001::prop-2",
+    "ATOM-MEM-VALUE-001::prop-3",
+    "ATOM-MEM-VALUE-002::prop-1",
+    "ATOM-MEM-VALUE-002::prop-2",
+    "ATOM-MEM-VALUE-002::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-018",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-019": {
+   "attackers": [
+    "ATOM-MEM-MOVE-002::prop-1",
+    "ATOM-MEM-MOVE-002::prop-2",
+    "ATOM-MEM-MOVE-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-1",
+    "ATOM-MEM-RAII-002::prop-2",
+    "ATOM-MEM-RAII-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-4"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-019",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-020": {
+   "attackers": [
+    "ATOM-MEM-RAII-002::prop-1",
+    "ATOM-MEM-RAII-002::prop-2",
+    "ATOM-MEM-RAII-002::prop-3",
+    "ATOM-MEM-RAII-002::prop-4",
+    "ATOM-MEM-UNIQUE-001::prop-1",
+    "ATOM-MEM-UNIQUE-001::prop-2",
+    "ATOM-MEM-UNIQUE-001::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-020",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-021": {
+   "attackers": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-NEW-001::prop-1",
+    "ATOM-MEM-NEW-001::prop-2",
+    "ATOM-MEM-NEW-001::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-021",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-022": {
+   "attackers": [
+    "ATOM-MEM-NEW-001::prop-1",
+    "ATOM-MEM-NEW-001::prop-2",
+    "ATOM-MEM-NEW-001::prop-3",
+    "ATOM-MEM-PERF-002::prop-1",
+    "ATOM-MEM-PERF-002::prop-2"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-022",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-023": {
+   "attackers": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-PERF-002::prop-1",
+    "ATOM-MEM-PERF-002::prop-2"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-023",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-024": {
+   "attackers": [
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-UNIQUE-001::prop-1",
+    "ATOM-MEM-UNIQUE-001::prop-2",
+    "ATOM-MEM-UNIQUE-001::prop-3",
+    "ATOM-MEM-UNIQUE-002::prop-1",
+    "ATOM-MEM-UNIQUE-002::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-024",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-025": {
+   "attackers": [
+    "ATOM-MEM-NEW-001::prop-1",
+    "ATOM-MEM-NEW-001::prop-2",
+    "ATOM-MEM-NEW-001::prop-3",
+    "ATOM-MEM-UNIQUE-002::prop-1",
+    "ATOM-MEM-UNIQUE-002::prop-2",
+    "ATOM-MEM-UNIQUE-002::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-025",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-026": {
+   "attackers": [
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-SHARED-002::prop-1",
+    "ATOM-MEM-SHARED-002::prop-2",
+    "ATOM-MEM-SHARED-002::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-026",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-027": {
+   "attackers": [
+    "ATOM-MEM-LEAK-001::prop-1",
+    "ATOM-MEM-LEAK-001::prop-2",
+    "ATOM-MEM-LEAK-001::prop-3",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-027",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-028": {
+   "attackers": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-PERF-002::prop-1",
+    "ATOM-MEM-PERF-002::prop-2",
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-003::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-028",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-029": {
+   "attackers": [
+    "ATOM-MEM-PERF-001::prop-1",
+    "ATOM-MEM-PERF-001::prop-2",
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-003::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-029",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-030": {
+   "attackers": [
+    "ATOM-MEM-ALLOC-001::prop-1",
+    "ATOM-MEM-ALLOC-001::prop-2",
+    "ATOM-MEM-ALLOC-001::prop-3",
+    "ATOM-MEM-ALLOC-001::prop-4",
+    "ATOM-MEM-ALLOC-002::prop-1",
+    "ATOM-MEM-ALLOC-002::prop-2",
+    "ATOM-MEM-ALLOC-002::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-030",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-031": {
+   "attackers": [
+    "ATOM-MEM-LEAK-001::prop-1",
+    "ATOM-MEM-LEAK-001::prop-2",
+    "ATOM-MEM-LEAK-001::prop-3",
+    "ATOM-MEM-LEAK-002::prop-1",
+    "ATOM-MEM-LEAK-002::prop-2",
+    "ATOM-MEM-LEAK-002::prop-3",
+    "ATOM-MEM-SHARED-001::prop-1",
+    "ATOM-MEM-SHARED-001::prop-2",
+    "ATOM-MEM-SHARED-001::prop-3",
+    "ATOM-MEM-WEAK-001::prop-1",
+    "ATOM-MEM-WEAK-001::prop-2",
+    "ATOM-MEM-WEAK-001::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-031",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-MEM-032": {
+   "attackers": [
+    "ATOM-MEM-PERF-003::prop-1",
+    "ATOM-MEM-PERF-003::prop-2",
+    "ATOM-MEM-PERF-003::prop-3",
+    "ATOM-MEM-PERF-004::prop-1",
+    "ATOM-MEM-PERF-004::prop-2",
+    "ATOM-MEM-PERF-004::prop-3"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-MEM-032",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-UB-001": {
+   "attackers": [
+    "ATOM-UB-GRAY-001::prop-1",
+    "ATOM-UB-GRAY-001::prop-2"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-UB-001",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-UB-002": {
+   "attackers": [
+    "ATOM-UB-GRAY-001::prop-1",
+    "ATOM-UB-GRAY-001::prop-2"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-UB-002",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-UB-003": {
+   "attackers": [
+    "ATOM-UB-GRAY-001::prop-1",
+    "ATOM-UB-GRAY-001::prop-2"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-UB-003",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-UB-004": {
+   "attackers": [
+    "ATOM-UB-GRAY-001::prop-1",
+    "ATOM-UB-GRAY-001::prop-2"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-UB-004",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-UB-008": {
+   "attackers": [
+    "ATOM-UB-GRAY-001::prop-1",
+    "ATOM-UB-GRAY-001::prop-2"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-UB-008",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-UB-012": {
+   "attackers": [
+    "ATOM-UB-GRAY-001::prop-1",
+    "ATOM-UB-GRAY-001::prop-2"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-UB-012",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-UB-013": {
+   "attackers": [
+    "ATOM-UB-GRAY-001::prop-1",
+    "ATOM-UB-GRAY-001::prop-2"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-UB-013",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-UB-014": {
+   "attackers": [
+    "ATOM-UB-GRAY-001::prop-1",
+    "ATOM-UB-GRAY-001::prop-2"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-UB-014",
+   "label": "OUT",
+   "type": "misconception"
+  },
+  "MIS-UB-015": {
+   "attackers": [
+    "ATOM-UB-GRAY-001::prop-1",
+    "ATOM-UB-GRAY-001::prop-2"
+   ],
+   "confidence": "low",
+   "credibility": 1,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "MIS-UB-015",
+   "label": "OUT",
+   "type": "misconception"
+  }
+ },
+ "rounds": 3,
+ "summary": {
+  "IN": 79,
+  "IN_misconceptions": 0,
+  "IN_propositions": 79,
+  "OUT": 42,
+  "UNDEC": 0,
+  "nodes": 121
+ },
+ "tool": "weighted_af_solver",
+ "version": "1.0"
+}
