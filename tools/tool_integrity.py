@@ -45,6 +45,17 @@ CORE_TOOLS: tuple[str, ...] = (
     "cppbible.py",
 )
 
+# 591 任务 3：**测试器配置**（A2 防御）——与 CORE_TOOLS 并列、不合并。
+# 病（590）：`tests/conftest.py` 在收集前执行，可通过 `pytest_runtest_makereport` 把 failed 改判
+#   passed，但它不在 CORE_TOOLS、无完整性校验 ⇒ 篡改它可让"pytest 全绿"而判决被全面抽空。
+#   把"跑测试的配置"也钉进哈希面：conftest（钩子）+ pyproject（pytest markers/addopts/ruff select）。
+#   注意它们是 **ROOT 相对路径**（不在 tools/ 下），故走独立的 compute/verify 路径。
+TEST_CONFIG_TOOLS: tuple[str, ...] = (
+    "tests/conftest.py",
+    "pyproject.toml",
+)
+_TEST_CONFIG_MARK = "# test_config"          # .tool_checksums 里的节标记
+
 
 def sha256_of(p: Path) -> str:
     h = hashlib.sha256()
@@ -69,16 +80,78 @@ def write_baseline(path: Path | None = None, tools_dir: Path | None = None,
 
 
 def load_baseline(path: Path | None = None) -> dict[str, str] | None:
-    """解析 `<sha256>  <filename>`；缺失 → None（调用方须 exit 2，不静默放行）。"""
+    """解析 `<sha256>  <filename>`（**只读 core 节**）；缺失 → None（调用方须 exit 2，不静默放行）。
+
+    591：遇 `#` 注释/节标记即**停止**——core 节在前，`# test_config` 之后的条目不进 core 基准
+    （否则 `verify()` 会把 `tests/conftest.py` 当"tools/ 下缺失"而误报）。
+    """
     src = path or CHECKSUMS
     if not src.is_file():
         return None
     out: dict[str, str] = {}
     for line in src.read_text(encoding="utf-8", errors="replace").splitlines():
+        if line.lstrip().startswith("#"):
+            break
         parts = line.split()
         if len(parts) == 2:
             out[parts[1]] = parts[0]
     return out
+
+
+def load_test_config_baseline(path: Path | None = None) -> dict[str, str] | None:
+    """解析 `.tool_checksums` 的 `# test_config` 节；节缺失 → None。"""
+    src = path or CHECKSUMS
+    if not src.is_file():
+        return None
+    out: dict[str, str] = {}
+    in_sec = False
+    for line in src.read_text(encoding="utf-8", errors="replace").splitlines():
+        if line.lstrip().startswith("#"):
+            in_sec = _TEST_CONFIG_MARK in line
+            continue
+        if in_sec:
+            parts = line.split()
+            if len(parts) == 2:
+                out[parts[1]] = parts[0]
+    return out or None
+
+
+def compute_test_config(root: Path | None = None,
+                        names: tuple[str, ...] = TEST_CONFIG_TOOLS) -> dict[str, str]:
+    d = root or ROOT
+    return {n: sha256_of(d / n) for n in names if (d / n).is_file()}
+
+
+def write_test_config_baseline(path: Path | None = None, root: Path | None = None,
+                               names: tuple[str, ...] = TEST_CONFIG_TOOLS) -> Path:
+    """把 test_config 节**追加**到基准文件末（须先 `write_baseline` 覆盖 core 段 ⇒ 不重复）。"""
+    dst = path or CHECKSUMS
+    rows = compute_test_config(root, names)
+    with dst.open("a", encoding="utf-8") as f:
+        f.write(_TEST_CONFIG_MARK + "\n")
+        for n, h in sorted(rows.items()):
+            f.write(f"{h}  {n}\n")
+    return dst
+
+
+def verify_test_config(path: Path | None = None, root: Path | None = None
+                       ) -> tuple[list[tuple[str, str, str]], list[str], int]:
+    """校验 test_config 节；返回 (changed, missing, exit_code)（缺节/缺基准 → 2）。"""
+    base = load_test_config_baseline(path)
+    if base is None:
+        return [], [], 2
+    d = root or ROOT
+    changed: list[tuple[str, str, str]] = []
+    missing: list[str] = []
+    for name, want in sorted(base.items()):
+        f = d / name
+        if not f.is_file():
+            missing.append(name)
+            continue
+        got = sha256_of(f)
+        if got != want:
+            changed.append((name, want, got))
+    return changed, missing, (0 if not changed and not missing else 1)
 
 
 def verify(path: Path | None = None, tools_dir: Path | None = None
@@ -136,18 +209,35 @@ def enforce(tool_name: str, path: Path | None = None, tools_dir: Path | None = N
 
 def main(argv: list[str] | None = None) -> int:
     ensure_utf8()
-    ap = argparse.ArgumentParser(description="核心工具完整性校验（498 任务 3 / 567 任务 1-2）")
+    ap = argparse.ArgumentParser(description="核心工具完整性校验（498 任务 3 / 567 任务 1-2 / 591 任务 3）")
     ap.add_argument("--update", action="store_true",
-                    help="计算并写入 tools/.tool_checksums（须在功能改动 commit 之后跑）")
+                    help="计算并写入 tools/.tool_checksums（core 节 + test_config 节；须在功能改动 commit 之后跑）")
     ap.add_argument("--check", action="store_true",
                     help="独立验证（= 无参数的默认动作）：全匹配 exit 0 / 改动或缺失 exit 1 / 缺基准 exit 2")
+    ap.add_argument("--check-test-config", action="store_true",
+                    help="591：只校验**测试器配置**（conftest/pyproject）的 test_config 节；exit 0/1/2")
     a = ap.parse_args(argv)
 
     if a.update:
         dst = write_baseline()
-        n = len(compute())
-        print(f"[tool_integrity] 基准已更新：{dst.relative_to(ROOT).as_posix()}（{n} 个文件）")
+        write_test_config_baseline()
+        print(f"[tool_integrity] 基准已更新：{dst.relative_to(ROOT).as_posix()}"
+              f"（core {len(compute())} 个 + test_config {len(compute_test_config())} 个文件）")
         return 0
+
+    if a.check_test_config:
+        changed, missing, code = verify_test_config()
+        if code == 2:
+            print("[tool_integrity] 缺 test_config 节（tools/.tool_checksums）—— "
+                  "先跑 `python tools/tool_integrity.py --update`", file=sys.stderr)
+            return 2
+        for name, want, got in changed:
+            print(f"[tool_integrity] ❌ {name} 被改动（期望 {want[:12]}… 实际 {got[:12]}…）")
+        for name in missing:
+            print(f"[tool_integrity] ❌ {name} 缺失（基准里有、磁盘上没有）")
+        if code == 0:
+            print(f"[tool_integrity] OK：{len(compute_test_config())} 个测试器配置与基准一致")
+        return code
 
     changed, missing, code = verify()
     if code == 2:

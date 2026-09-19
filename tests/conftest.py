@@ -4,6 +4,7 @@
 本目录的测试专门锁定**真实发生过的回归**，详见各文件的 docstring。
 """
 import os
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -91,6 +92,20 @@ def replay_serial():
 
 
 def pytest_configure(config: pytest.Config) -> None:
+    # ── 591 任务 3：测试器配置完整性自检（conftest/pyproject 被篡改 ⇒ 拒绝开跑）──────────
+    # 病（590 A2）：conftest.py 在收集前执行，可通过 `pytest_runtest_makereport` 把 failed 改判
+    #   passed；而它不在 CORE_TOOLS、无完整性校验 ⇒ 篡改它可让"pytest 全绿"而判决被抽空。
+    # 纵深防御边界（如实登记）：钩子本身在 conftest 里，攻击者"改钩子 + 重签基准"仍可绕过
+    #   ⇒ 防得住"只改内容不改哈希"，防不住"改钩子并重签"；根治需 conftest 入 CORE_TOOLS 且
+    #   enforce() 在 pytest 之外独立校验（会改架构），故本批不做、只上这一层。
+    _r = subprocess.run(
+        [sys.executable, "tools/tool_integrity.py", "--check-test-config"],
+        capture_output=True, text=True,
+        cwd=str(Path(__file__).resolve().parent.parent))
+    if _r.returncode != 0:
+        pytest.exit(
+            f"测试器配置完整性校验失败（conftest/pyproject 被篡改）：\n{_r.stderr}",
+            returncode=2)
     # ── 559 Part C：把 pytest 临时目录移进仓内（`.pytest_tmp/`，已 .gitignore）──────
     # 病（实测）：默认 tmp 在系统 `%TEMP%\pytest-of-<user>\`，会话收尾要把整批
     # `tmp_path` 一次 rmtree 掉；本环境有一层删除拦截（safe-delete），单次操作子树
