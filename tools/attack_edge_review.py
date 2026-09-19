@@ -211,6 +211,130 @@ def check(edges: list[dict], annotations: list[dict]) -> list[str]:
     return problems
 
 
+# ── 群组级人审 + automation bias + 反馈闭环（604 任务1-3）────────────────────
+DEFAULT_AUDIT = ROOT / "data" / "human_review_audit.json"
+
+
+def mis_groups(edges: list[dict], mis_dir: Path | str = DEFAULT_MIS_DIR) -> list[dict]:
+    """42 个 MIS 群组：歧义度 = 关联卡数 × 每卡命题数总体标准差。"""
+    import statistics as _stat
+    mis = aeg.read_mis(mis_dir)
+    ap = aeg.atom_props()
+    groups: list[dict] = []
+    for mid, m in sorted(mis.items()):
+        if not m["related_atoms"]:
+            continue
+        cards = m["related_atoms"]
+        ppc = [len(ap.get(c, [])) for c in cards]
+        std = _stat.pstdev(ppc) if len(ppc) > 1 else 0.0
+        mis_edges = [e for e in edges if mid in (e.get("source", ""), e.get("target", ""))]
+        groups.append({
+            "mis_id": mid, "n_cards": len(cards), "cards": cards,
+            "n_props": sum(ppc), "std": round(std, 2),
+            "ambiguity": round(len(cards) * std, 2),
+            "n_edges": len(mis_edges), "edge_ids": [e["id"] for e in mis_edges],
+            "refutations": len(m["refutations"]),
+        })
+    groups.sort(key=lambda g: g["ambiguity"], reverse=True)
+    return groups
+
+
+def approve_group(mis_id: str, prop_ids: list[str], reason: str, *,
+                   reviewer: str | None = None,
+                   annotations_path: Path | str = DEFAULT_ANN,
+                   edges_path: Path | str = DEFAULT_EDGES,
+                   mis_dir: Path | str = DEFAULT_MIS_DIR) -> list[dict]:
+    """群组级 approve：选了命题后自动 approve 对应 MIS→命题边 + 对称边。"""
+    by_id = {str(e["id"]): e for e in load_edges(edges_path)}
+    target_ids = set()
+    for e in by_id.values():
+        if mis_id not in (e.get("source", ""), e.get("target", "")):
+            continue
+        other = e["target"] if e["source"] == mis_id else e["source"]
+        if other in prop_ids:
+            target_ids.add(str(e["id"]))
+    recs: list[dict] = []
+    for eid in sorted(target_ids):
+        recs.append(append_annotation(eid, "approve", reason, reviewer=reviewer,
+                                       path=annotations_path, edges_path=edges_path, mis_dir=mis_dir))
+    return recs
+
+
+def load_audit(path: Path | str = DEFAULT_AUDIT) -> dict:
+    p = Path(path)
+    if not p.is_file():
+        return {"total_reviews": 0, "approve_count": 0, "reject_count": 0,
+                "skip_count": 0, "suspicious_count": 0, "trap_correct": 0,
+                "trap_total": 0, "avg_review_seconds": 0.0, "alerts": [],
+                "review_seconds": [], "reason_lengths": []}
+    return json.loads(p.read_text(encoding="utf-8"))
+
+
+def save_audit(audit: dict, path: Path | str = DEFAULT_AUDIT) -> None:
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(audit, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
+def record_review(audit: dict, action: str, reason: str, review_seconds: float,
+                   *, is_trap: bool = False, trap_correct: bool | None = None) -> list[str]:
+    """记录一次人审并做 automation bias 检测。返回告警列表。"""
+    audit["total_reviews"] += 1
+    audit["review_seconds"].append(round(review_seconds, 1))
+    audit["reason_lengths"].append(len(str(reason or "").strip()))
+    if action == "approve":
+        audit["approve_count"] += 1
+    elif action == "reject":
+        audit["reject_count"] += 1
+    elif action == "skip":
+        audit["skip_count"] += 1
+    alerts: list[str] = []
+    if len(str(reason or "").strip()) < 10 or review_seconds < 5:
+        audit["suspicious_count"] += 1
+        alerts.append(f"suspicious: reason={len(str(reason or '').strip())}ch/{review_seconds:.1f}s")
+    if audit["total_reviews"] >= 10 and audit["approve_count"] / audit["total_reviews"] > 0.9:
+        alerts.append("agree_rate>90%: rubber-stamp pattern detected")
+    if is_trap:
+        audit["trap_total"] += 1
+        if trap_correct:
+            audit["trap_correct"] += 1
+        else:
+            alerts.append("TRAP QUESTION ANSWERED WRONG")
+    audit["avg_review_seconds"] = round(sum(audit["review_seconds"]) / len(audit["review_seconds"]), 1)
+    audit["alerts"].extend(alerts)
+    audit["alerts"] = audit["alerts"][-50:]
+    return alerts
+
+
+def progress_summary(edges: list[dict], annotations: list[dict], groups: list[dict]) -> dict:
+    last = latest_by_edge(annotations)
+    done_edges = sum(1 for e in edges if status_of(str(e["id"]), last) != "pending")
+    done_groups = sum(1 for g in groups
+                       if not any(status_of(str(eid), last) == "pending" for eid in g["edge_ids"]))
+    return {
+        "total_groups": len(groups), "done_groups": done_groups,
+        "pending_groups": len(groups) - done_groups,
+        "total_edges": len(edges), "done_edges": done_edges,
+        "pending_edges": len(edges) - done_edges,
+        "est_remaining_minutes": round((len(groups) - done_groups) * 35 / 60, 1),
+        "completion_pct": round(done_groups / len(groups) * 100, 1) if groups else 0,
+    }
+
+
+def feedback_summary(annotations: list[dict]) -> dict:
+    rejects = [a for a in annotations if a["action"] == "reject"]
+    return {
+        "total_annotations": len(annotations),
+        "reject_count": len(rejects),
+        "reject_reasons": [r["reason"][:80] for r in rejects[:10]],
+        "suggestions": [
+            "reject-heavy MIS: check if related_atoms is too broad",
+            "skip with 'ambiguous': needs more proposition-level anchors",
+            "approve reason patterns: optimize next round candidate priority",
+        ],
+    }
+
+
 # ── CLI ────────────────────────────────────────────────────────────────────────
 def _short(s: str, n: int = 60) -> str:
     return s if len(s) <= n else s[:n] + "…"
@@ -246,6 +370,28 @@ def main(argv: list[str] | None = None) -> int:
         if name == "modify":
             sp.add_argument("--confidence", required=True,
                             choices=sorted(aeg.CONFIDENCE_WEIGHT))
+    # 604 新命令
+    q_sp = sub.add_parser("queue", help="MIS 群组级队列（按歧义度降序）")
+    q_sp.add_argument("--sort", choices=["ambiguity", "confidence", "impact"], default="ambiguity")
+    q_sp.add_argument("--json", action="store_true")
+    q_sp.add_argument("--edges", default=str(DEFAULT_EDGES))
+    q_sp.add_argument("--mis-dir", default=str(DEFAULT_MIS_DIR))
+    rg = sub.add_parser("review-group", help="群组级审核（选命题→自动 approve 对应边）")
+    rg.add_argument("mis_id")
+    rg.add_argument("--props", default="", help="逗号分隔的命题 id（卡id::prop-N）")
+    rg.add_argument("--reason", default="")
+    rg.add_argument("--reviewer", default=None)
+    rg.add_argument("--edges", default=str(DEFAULT_EDGES))
+    rg.add_argument("--annotations", default=str(DEFAULT_ANN))
+    rg.add_argument("--mis-dir", default=str(DEFAULT_MIS_DIR))
+    pg = sub.add_parser("progress", help="人审进度汇总")
+    pg.add_argument("--json", action="store_true")
+    pg.add_argument("--edges", default=str(DEFAULT_EDGES))
+    pg.add_argument("--annotations", default=str(DEFAULT_ANN))
+    pg.add_argument("--mis-dir", default=str(DEFAULT_MIS_DIR))
+    fb = sub.add_parser("feedback", help="人审结果反馈（生成器改进建议）")
+    fb.add_argument("--json", action="store_true")
+    fb.add_argument("--annotations", default=str(DEFAULT_ANN))
     a = ap.parse_args(argv)
 
     if a.check:
@@ -277,6 +423,94 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[review] 已审 {st['annotated_edges']} 条（历史记录 {st['annotations']} 条）· "
               f"通过率 {st['approve_rate']} · 拒绝率 {st['reject_rate']}")
         print("[review] 注：**系统绝不自动 approve/reject**；生效规则见 effective_edges()")
+        return 0
+
+    if a.cmd == "queue":
+        groups = mis_groups(edges, a.mis_dir)
+        if a.sort == "confidence":
+            groups.sort(key=lambda g: g["n_edges"], reverse=True)
+        elif a.sort == "impact":
+            groups.sort(key=lambda g: g["n_props"], reverse=True)
+        if a.json:
+            print(json.dumps({"count": len(groups), "groups": groups}, ensure_ascii=False, indent=1))
+            return 0
+        print(f"[queue] {len(groups)} 个 MIS 群组（按{a.sort}降序）· 候选边 {sum(g['n_edges'] for g in groups)}")
+        for i, g in enumerate(groups, 1):
+            pending = sum(1 for eid in g["edge_ids"] if status_of(str(eid), last) == "pending")
+            print(f"{i:2d}. {g['mis_id']:20s} amb={g['ambiguity']:5.2f} cards={g['n_cards']} "
+                  f"props={g['n_props']} edges={g['n_edges']}(pending={pending})")
+        return 0
+
+    if a.cmd == "review-group":
+        t0 = time.time()
+        prop_ids = [p.strip() for p in (a.props or "").split(",") if p.strip()]
+        if not prop_ids:
+            # 显示该群组的命题列表供选择
+            groups = {g["mis_id"]: g for g in mis_groups(edges, a.mis_dir)}
+            g = groups.get(a.mis_id)
+            if g is None:
+                print(f"[review-group] MIS 不存在：{a.mis_id}", file=sys.stderr)
+                return 1
+            ap_dict = aeg.atom_props()
+            print(f"[review-group] {a.mis_id}（关联 {g['n_cards']} 卡 / {g['n_props']} 命题 / {g['n_edges']} 边）")
+            for cid in g["cards"]:
+                for pid in ap_dict.get(cid, []):
+                    pending = any(status_of(str(eid), last) == "pending"
+                                  for eid in g["edge_ids"] if pid in eid)
+                    print(f"  {pid}  {'[pending]' if pending else '[done]'}")
+            print("用法：review-group MIS-XXX --props '卡id::prop-1,卡id::prop-2' --reason '...'")
+            return 0
+        if not str(a.reason or "").strip():
+            print("[review-group] 缺 --reason（理由必填，拒绝 rubber-stamp）", file=sys.stderr)
+            return 2
+        try:
+            recs = approve_group(a.mis_id, prop_ids, a.reason, reviewer=a.reviewer,
+                                  annotations_path=a.annotations, edges_path=a.edges, mis_dir=a.mis_dir)
+        except ValueError as exc:
+            print(f"[review-group] 拒绝写入：{exc}", file=sys.stderr)
+            return 2
+        elapsed = time.time() - t0
+        # automation bias 检测
+        audit = load_audit()
+        alerts = record_review(audit, "approve", a.reason, elapsed)
+        save_audit(audit)
+        print(f"[review-group] 已 approve {len(recs)} 条边（{a.mis_id} → {len(prop_ids)} 命题）"
+              f" by {recs[0]['reviewer'] if recs else '?'} @ {elapsed:.1f}s")
+        for al in alerts:
+            print(f"  ⚠ {al}")
+        return 0
+
+    if a.cmd == "progress":
+        groups = mis_groups(edges, a.mis_dir)
+        prog = progress_summary(edges, anns, groups)
+        if a.json:
+            print(json.dumps(prog, ensure_ascii=False, indent=1))
+            return 0
+        bar_len = 30
+        filled = int(bar_len * prog["completion_pct"] / 100)
+        bar = "█" * filled + "░" * (bar_len - filled)
+        print(f"[progress] {bar} {prog['completion_pct']}%")
+        print(f"  群组：{prog['done_groups']}/{prog['total_groups']}（待审 {prog['pending_groups']}）")
+        print(f"  边：  {prog['done_edges']}/{prog['total_edges']}（待审 {prog['pending_edges']}）")
+        print(f"  预计剩余：{prog['est_remaining_minutes']} 分钟（按 595 实证 35s/组）")
+        audit = load_audit()
+        if audit["alerts"]:
+            print(f"  automation bias 告警：{len(audit['alerts'])} 条（最近：{audit['alerts'][-1]}）")
+        return 0
+
+    if a.cmd == "feedback":
+        fb = feedback_summary(anns)
+        if a.json:
+            print(json.dumps(fb, ensure_ascii=False, indent=1))
+            return 0
+        print(f"[feedback] 标注 {fb['total_annotations']} 条 · reject {fb['reject_count']} 条")
+        if fb["reject_reasons"]:
+            print("  reject 原因（前10）：")
+            for r in fb["reject_reasons"]:
+                print(f"    - {r}")
+        print("  改进建议：")
+        for s in fb["suggestions"]:
+            print(f"    - {s}")
         return 0
 
     if a.cmd in ("approve", "reject", "modify"):
