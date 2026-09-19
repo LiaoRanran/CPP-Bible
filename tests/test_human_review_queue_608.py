@@ -6,7 +6,7 @@
   * --stats：初始 0 已审 / 388 待审
   * --check：聚合与 attack_edge_review 权威数据一致（exit 0）
   * --feedback：0 已审时输出「无反馈数据」
-  * 只读：跑完工具后 attack_edge_review 结果文件不被创建、候选边文件 mtime 不变
+  * 只读：跑完工具后人审通道文件不被创建/改动（596 入库为空）、候选边文件 mtime 不变
   * 反例：--show 不存在的 MIS ⇒ 非 0 退出
 """
 from __future__ import annotations
@@ -76,6 +76,9 @@ def test_readonly_never_creates_annotation_and_keeps_edges_mtime():
     ann_path = hrq.aer.DEFAULT_ANN
     edges_path = hrq.aeg.DEFAULT_OUT
     before = os.path.getmtime(edges_path)
+    # 人审通道文件由 596 入库为空（必须存在）；工具只读，绝不得创建/改动它（人审权力）。
+    ann_existed = os.path.exists(ann_path)
+    ann_mtime = os.path.getmtime(ann_path) if ann_existed else None
     _capture(["--check"])
     _capture(["--list"])
     _capture(["--stats"])
@@ -83,8 +86,15 @@ def test_readonly_never_creates_annotation_and_keeps_edges_mtime():
     time.sleep(0.01)
     after = os.path.getmtime(edges_path)
     assert before == after, "候选边文件 mtime 被改动 ⇒ 工具非只读"
-    assert not os.path.exists(ann_path), \
-        "工具不应创建人审结果文件（人审权力；违反只读硬纪律）"
+    if ann_existed:
+        assert os.path.exists(ann_path), "只读工具删除了人审通道文件"
+        assert os.path.getmtime(ann_path) == ann_mtime, \
+            "只读工具改动了人审通道文件 mtime ⇒ 违反只读硬纪律"
+        assert hrq.aer.load_annotations() == [], \
+            "只读工具向人审通道写入了内容（人审权力）"
+    else:
+        assert not os.path.exists(ann_path), \
+            "工具不应创建人审结果文件（人审权力；违反只读硬纪律）"
 
 
 def test_show_missing_mis_exits_nonzero():
