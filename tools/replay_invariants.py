@@ -30,7 +30,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 EXAMPLES_DIR = ROOT / "Examples"
-INVARIANTS = ("artifact_restore", "build_reproducibility", "sandbox_isolation", "lock_consistency")
+INVARIANTS = ("artifact_restore", "build_reproducibility", "sandbox_isolation",
+              "lock_consistency", "manifest_consistency")
 
 
 # ── 工具函数 ───────────────────────────────────────────────────────────────────
@@ -282,12 +283,78 @@ def check_lock_consistency() -> dict:
     }
 
 
+# ── I5：manifest 一致性不变量 ─────────────────────────────────────────────────
+def check_manifest_consistency() -> dict:
+    """I5：replay manifest 中记录的卡指纹必须与磁盘真实卡文件一致。
+
+    验证：读 build/replay_manifest.json，对每条记录的 fingerprint 与磁盘卡文件的
+    sha256 比对。如果 manifest 是 stale 的（卡文件被改但 manifest 没更新），
+    指纹不一致 ⇒ fail。同时验证 verdict 字段合法。
+    只读检查，不修改任何文件。
+    """
+    t0 = time.time()
+    manifest_path = ROOT / "build" / "replay_manifest.json"
+    if not manifest_path.is_file():
+        return {"name": "manifest_consistency", "passed": False, "elapsed_s": 0,
+                "detail": "build/replay_manifest.json not found"}
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return {"name": "manifest_consistency", "passed": False, "elapsed_s": 0,
+                "detail": f"manifest parse error: {type(exc).__name__}: {exc}"}
+    if not isinstance(manifest, dict):
+        return {"name": "manifest_consistency", "passed": False, "elapsed_s": 0,
+                "detail": f"manifest is not a dict (got {type(manifest).__name__})"}
+    mismatches = []
+    invalid_verdicts = []
+    checked = 0
+    try:
+        import atom_evidence_replay as aer
+    except ImportError as exc:
+        return {"name": "manifest_consistency", "passed": False, "elapsed_s": 0,
+                "detail": f"import error: {exc}"}
+    for card_rel, entry in manifest.items():
+        card_path = ROOT / card_rel
+        if not card_path.is_file():
+            mismatches.append(f"{card_rel}: file not found on disk")
+            continue
+        actual_fp = aer.card_fingerprint(card_path)
+        recorded_fp = str(entry.get("fingerprint", ""))
+        if actual_fp == "MISSING":
+            mismatches.append(f"{card_rel}: card_fingerprint returned MISSING (fixture/artifact missing)")
+        elif recorded_fp != actual_fp:
+            mismatches.append(f"{card_rel}: fingerprint mismatch (manifest={recorded_fp[:16]}… actual={actual_fp[:16]}…)")
+        verdict = str(entry.get("verdict", ""))
+        if verdict not in ("confirm", "refute", "infra_error") and not verdict.startswith("refute:"):
+            invalid_verdicts.append(f"{card_rel}: invalid verdict '{verdict}'")
+        checked += 1
+    elapsed = time.time() - t0
+    passed = len(mismatches) == 0 and len(invalid_verdicts) == 0
+    detail = (f"{checked} cards checked, {len(mismatches)} fingerprint mismatches, "
+              f"{len(invalid_verdicts)} invalid verdicts "
+              f"{'CONSISTENT ✓' if passed else 'INCONSISTENT ✗'}")
+    if mismatches:
+        detail += f" | mismatches: {'; '.join(mismatches[:3])}"
+    if invalid_verdicts:
+        detail += f" | invalid: {'; '.join(invalid_verdicts[:3])}"
+    return {
+        "name": "manifest_consistency",
+        "passed": passed,
+        "elapsed_s": round(elapsed, 2),
+        "detail": detail,
+        "cards_checked": checked,
+        "mismatches": len(mismatches),
+        "invalid_verdicts": len(invalid_verdicts),
+    }
+
+
 # ── 主检查 ─────────────────────────────────────────────────────────────────────
 CHECKS = {
     "artifact_restore": check_artifact_restore,
     "build_reproducibility": check_build_reproducibility,
     "sandbox_isolation": check_sandbox_isolation,
     "lock_consistency": check_lock_consistency,
+    "manifest_consistency": check_manifest_consistency,
 }
 
 

@@ -92,7 +92,7 @@ def test_cli_json_output():
     data = json.loads(result.stdout)
     assert "all_passed" in data
     assert "results" in data
-    assert len(data["results"]) == 4  # I1/I2/I3/I4
+    assert len(data["results"]) == 5  # I1/I2/I3/I4/I5
 
 
 # ── T6：I2 n_cards 配置 ──────────────────────────────────────────────────────
@@ -142,3 +142,14 @@ def test_no_heavy_skips_i2():
     assert i2["passed"] is True  # 跳过也算 pass
     assert "skipped" in i2["detail"].lower(), f"I2 should be skipped, got: {i2['detail']}"
     assert i2["elapsed_s"] == 0, "skipped check should have 0 elapsed"
+
+
+# ── T9：I5 manifest 一致性 ─────────────────────────────────────────────────────
+def test_i5_manifest_consistency():
+    """I5：manifest 中记录的卡指纹必须与磁盘真实卡文件一致。"""
+    result = ri.check_manifest_consistency()
+    assert result["name"] == "manifest_consistency"
+    assert result["cards_checked"] > 0, "manifest should have cards"
+    assert result["mismatches"] == 0, f"fingerprint mismatches: {result['detail']}"
+    assert result["invalid_verdicts"] == 0, f"invalid verdicts: {result['detail']}"
+    assert result["passed"], f"I5 failed: {result['detail']}"
