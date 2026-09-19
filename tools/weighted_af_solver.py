@@ -47,6 +47,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import attack_edge_generator as aeg  # noqa: E402
 import attack_edge_review as aer  # noqa: E402
+import human_review_cli as hrc  # noqa: E402   # 609 A3：人审标注的 `kind` 归一化
 import prop_graph as pg  # noqa: E402
 
 VERSION = "1.1"
@@ -260,6 +261,121 @@ def stats(doc: dict) -> dict:
             "edges": doc["edges"]}
 
 
+# ── 609 A3：人审介入的权重规则（**只改权重输入，不改 W2 击败规则**）────────────────
+# ⚠️ 与 596 `aer.effective_edges` 的差别：596 读 `action` 字段、无 trace；609 读任务书的
+#   `kind` 字段（兼容 `action`），并把**人审来源**带在边上（`human_reviewed` / `review_reason`），
+#   好让 `diff` 能把"哪条人审导致了这次翻转"追到边级。
+REVIEW_RULES = {
+    # kind      → (动作, 说明)
+    "approve": ("promote", "人审确认攻击边成立 ⇒ 可信度升一级（low→medium→high→high，档位见 PROMOTE）"),
+    "reject":  ("drop",    "人审拒绝攻击边 ⇒ 从攻击图中**移除**（不再参与击败）"),
+    "modify":  ("set",     "人审改档 ⇒ 直接用 annotation.confidence 替换（high/medium/low）"),
+}
+PROMOTE = {"low": "medium", "medium": "high", "high": "high"}
+
+
+def reviewed_edges(edges: list[dict], annotations: list[dict], *,
+                   latest: dict[str, dict] | None = None) -> tuple[list[dict], dict]:
+    """按人审结果生成**生效边**；返回 (生效边, 变更明细{edge_id: {...}})。
+
+    同一条边多次审查 ⇒ 取**最后一条**（`hrc.latest_by_edge`），历史仍留在文件里可追溯。
+    """
+    import human_review_cli as hrc  # 局部导入：596 的调用路径不该被迫加载 609 依赖
+
+    last = latest if latest is not None else hrc.latest_by_edge(annotations)
+    out: list[dict] = []
+    changes: dict[str, dict] = {}
+    for e in edges:
+        eid = str(e["id"])
+        a = last.get(eid)
+        if a is None:
+            out.append(e)
+            continue
+        kind = hrc.kind_of(a)
+        rule, why = REVIEW_RULES.get(kind, (None, None))
+        old_conf = str(e.get("confidence"))
+        if rule == "drop":
+            changes[eid] = {"action": "drop", "kind": kind, "old_confidence": old_conf,
+                            "new_confidence": None, "why": why,
+                            "review_reason": str(a.get("reason", ""))}
+            continue
+        if rule == "promote":
+            new_conf = PROMOTE.get(old_conf, old_conf)
+        elif rule == "set":
+            # 兼容 596 的 `new_confidence`（同 `attack_edge_review.py` 的写法）
+            new_conf = str(a.get("confidence") or a.get("new_confidence") or old_conf)
+        else:                                    # 未知 kind ⇒ fail-closed：保持原权重不动
+            out.append(e)
+            continue
+        ne = dict(e)
+        ne["confidence"] = new_conf
+        ne["human_reviewed"] = kind
+        ne["review_reason"] = str(a.get("reason", ""))
+        changes[eid] = {"action": rule, "kind": kind, "old_confidence": old_conf,
+                        "new_confidence": new_conf, "why": why,
+                        "review_reason": str(a.get("reason", ""))}
+        out.append(ne)
+    return out, changes
+
+
+def review_progress(edges: list[dict], annotations: list[dict]) -> dict:
+    """人审进度：reviewed / pending / total（同边多次审只算一条）。"""
+    last = hrc.latest_by_edge(annotations)
+    done = sum(1 for e in edges if str(e["id"]) in last)
+    return {"total": len(edges), "reviewed": done, "pending": len(edges) - done,
+            "annotations": len(annotations),
+            "reviewed_rate": round(done / len(edges), 4) if edges else None}
+
+
+def solve_reviewed(edges: list[dict], annotations: list[dict]) -> tuple[dict, dict]:
+    """端到端：原始候选边 + 人审 ⇒ 新 W2 doc，连同变更明细。"""
+    eff, changes = reviewed_edges(edges, annotations)
+    return solve(eff), changes
+
+
+def _incident(node: str, changes: dict[str, dict], edges: list[dict]) -> list[str]:
+    """某节点涉及的、被人审动过的边 id（用于把翻转追到边级）。"""
+    out = []
+    for e in edges:
+        s, t = str(e["source"]), str(e["target"])
+        if node in (s, t) and str(e["id"]) in changes:
+            out.append(str(e["id"]))
+    return sorted(out)
+
+
+def diff_verdicts(base: dict, new: dict, *, edges: list[dict] | None = None,
+                  changes: dict[str, dict] | None = None) -> dict:
+    """对比两份 W2 doc 的判决差异；翻转精确到**节点 + 触发它的人审边**。
+
+    `changes` 来自 `reviewed_edges`（含 drop / promote / set 明细）；没给 ⇒ 只报翻转不给归因。
+    """
+    flips: list[dict] = []
+    for nid in sorted(set(base.get("nodes", {})) | set(new.get("nodes", {}))):
+        b = base.get("nodes", {}).get(nid, {}).get("label", "∅")
+        n = new.get("nodes", {}).get(nid, {}).get("label", "∅")
+        if b == n:
+            continue
+        row = {"node_id": nid, "old": b, "new": n,
+               "node_type": new.get("nodes", {}).get(nid, {}).get("type", "?")}
+        if changes and edges is not None:
+            hit = _incident(nid, changes, edges)
+            kinds: dict[str, int] = {}
+            for eid in hit:
+                k = str(changes[eid]["kind"])
+                kinds[k] = kinds.get(k, 0) + 1
+            row["trigger_edge_ids"] = hit[:10]
+            row["trigger_edge_count"] = len(hit)
+            row["trigger_kinds"] = kinds
+            row["reason"] = (f"人审对该节点的 {len(hit)} 条攻击边动了手"
+                             f"（{kinds}）⇒ 可信度加权击败关系改变 ⇒ {b}→{n}")
+        else:
+            row["reason"] = "（未提供人审变更明细，无法归因）"
+        flips.append(row)
+    return {"flipped": len(flips), "flips": flips,
+            "base_summary": base.get("summary", {}), "new_summary": new.get("summary", {}),
+            "base_edges": base.get("edges"), "new_edges": new.get("edges")}
+
+
 def check(doc: dict, *, expect_594: bool = True) -> list[str]:
     """校验标注文档。`expect_594=False` ⇒ 只查结构不变量（人审介入后 594 基线不再适用）。"""
     problems: list[str] = []
@@ -290,7 +406,7 @@ def check(doc: dict, *, expect_594: bool = True) -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="W2 可信度加权 AF 求解器（只读求解；标注入库）")
     sub = ap.add_subparsers(dest="cmd")
-    for name in ("solve", "stats"):
+    for name in ("solve", "stats", "diff"):
         sp = sub.add_parser(name)
         sp.add_argument("--edges", default=str(DEFAULT_EDGES))
         sp.add_argument("--annotations", default=str(DEFAULT_ANNOTATIONS))
@@ -300,6 +416,9 @@ def main(argv: list[str] | None = None) -> int:
                         help="启用**已审**攻击边：approve 升一级 / reject 剔除 / modify 指定档（默认开）")
         sp.add_argument("--no-human-reviewed", dest="human", action="store_false",
                         help="只用原始候选边（忽略人审标注）")
+        if name == "diff":
+            sp.add_argument("--baseline", required=True,
+                            help="对比基线 W2 文档（通常是未人审的 grounded_labels_w2.json）")
     ap.add_argument("--check", action="store_true", help="与 594 实证对账（失败 exit 2）")
     ap.add_argument("--out", default=str(DEFAULT_OUT))
     ap.add_argument("--edges", default=str(DEFAULT_EDGES))
@@ -337,20 +456,59 @@ def main(argv: list[str] | None = None) -> int:
               f"UNDEC={doc['summary']['UNDEC']}（{doc['rounds']} 轮收敛）{tail}")
         return 0
 
-    edges = load_edges(a.edges)
-    if not edges:
+    raw_edges = load_edges(a.edges)
+    if not raw_edges:
         print(f"[w2] ❌ 候选边为空：{a.edges}（先跑 attack_edge_generator.py generate）", file=sys.stderr)
         return 2
+    changes: dict[str, dict] = {}
+    edges = raw_edges
     if a.human and anns:
-        eff = aer.effective_edges(edges, anns)
-        print(f"[w2] 人审标注生效：{len(anns)} 条历史 · 边 {len(edges)} ⇒ {len(eff)}"
-              f"（剔除 {len(edges) - len(eff)} 条被拒边；approve 已升一级 / modify 已改档）")
-        edges = eff
+        edges, changes = reviewed_edges(raw_edges, anns)
+        prog = review_progress(raw_edges, anns)
+        # 走 stderr：`--json` 时 stdout 必须是**纯 JSON**（可被 jq / json.loads 直接吃）
+        print(f"[w2] 人审标注生效：历史 {prog['annotations']} 条 · 已审边 "
+              f"{prog['reviewed']}/{prog['total']}（pending {prog['pending']}）"
+              f" · 边 {len(raw_edges)} ⇒ {len(edges)}（剔除 "
+              f"{len(raw_edges) - len(edges)} 条被拒边；approve 升一级 / modify 改档）",
+              file=sys.stderr)
     doc = solve(edges)
+
+    if a.cmd == "diff":
+        bp = Path(a.baseline)
+        if not bp.is_file():
+            print(f"[w2] ❌ 基线文件不存在：{bp}（先跑 solve 生成未人审的 W2 文档）", file=sys.stderr)
+            return 2
+        try:
+            base = json.loads(bp.read_text(encoding="utf-8"))
+        except ValueError as exc:
+            print(f"[w2] ❌ 基线文件不是合法 JSON：{exc}", file=sys.stderr)
+            return 2
+        d = diff_verdicts(base, doc, edges=raw_edges, changes=changes)
+        if a.json:
+            print(json.dumps(d, ensure_ascii=False, indent=1))
+            return 0
+        print(f"[w2] diff vs {bp.name}：翻转 {d['flipped']} 个节点"
+              f"（IN {d['base_summary'].get('IN')}→{d['new_summary'].get('IN')} · "
+              f"OUT {d['base_summary'].get('OUT')}→{d['new_summary'].get('OUT')} · "
+              f"UNDEC {d['base_summary'].get('UNDEC')}→{d['new_summary'].get('UNDEC')}）")
+        for f in d["flips"][:50]:
+            print(f"  - {f['node_id']}（{f['node_type']}）：{f['old']} → {f['new']}"
+                  f" · 触发人审边 {f.get('trigger_edge_count', 0)} 条 {f.get('trigger_kinds', {})}")
+            print(f"      {f['reason']}")
+        return 0
+
     if a.cmd == "stats":
         st = stats(doc)
+        extra = {}
+        if changes:
+            prog = review_progress(raw_edges, anns)
+            base = solve(raw_edges)
+            influence = diff_verdicts(base, doc, edges=raw_edges, changes=changes)
+            extra = {"review_progress": prog, "review_changes": len(changes),
+                     "flipped_nodes": influence["flipped"], "flips": influence["flips"]}
+        payload = {**st, **extra}
         if a.json:
-            print(json.dumps(st, ensure_ascii=False, indent=1))
+            print(json.dumps(payload, ensure_ascii=False, indent=1))
             return 0
         print(f"[w2] 节点 {st['total']}（命题 {st['propositions']} / 误解 {st['misconceptions']}）"
               f" · IN {st['by_label']['IN']} / OUT {st['by_label']['OUT']} / UNDEC {st['by_label']['UNDEC']}")
@@ -358,6 +516,15 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[w2] 平均攻击者 {st['avg_attackers']}（命题 {st['avg_attackers_prop']} / "
               f"误解 {st['avg_attackers_mis']}）· 平均辩护者 {st['avg_defenders']}")
         print(f"[w2] 击败边 {st['defeating_edges']}/{st['edges']} · {st['rounds']} 轮收敛")
+        if extra:
+            p = extra["review_progress"]
+            print(f"[w2] 人审进度 {p['reviewed']}/{p['total']}"
+                  f"（pending {p['pending']} · 历史 {p['annotations']} 条）"
+                  f" · 生效变更 {extra['review_changes']} 条边")
+            print(f"[w2] 判决影响：{extra['flipped_nodes']} 个节点翻转")
+            for f in extra["flips"][:20]:
+                print(f"  - {f['node_id']}（{f['node_type']}）：{f['old']} → {f['new']}"
+                      f" · 触发人审边 {f.get('trigger_edge_count', 0)} 条")
         return 0
 
     p = write_labels(doc, a.out)

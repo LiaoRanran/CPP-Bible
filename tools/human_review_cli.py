@@ -49,10 +49,14 @@ DEFAULT_EDGES = aeg.DEFAULT_OUT
 
 KINDS = ("approve", "reject", "modify")
 CONFIDENCES = tuple(sorted(aeg.CONFIDENCE_WEIGHT))     # low / medium / high
-REVIEWER = "human"
+REVIEWER = "human"                     # 本工具写出的 reviewer 字面量
 MIN_REASON = 20
 REQUIRED = ("edge_id", "kind", "reviewer", "timestamp", "reason")
 OPTIONAL = ("confidence",)
+#: 596 `attack_edge_review.py` 的历史写法（同人审通道上的**并存 schema**）：
+#:   `action` 顶替 `kind`、`new_confidence` 顶替 `confidence`、reviewer 写真实 git 署名。
+#: 609 读侧一律与之互认（"同一条通道两套笔迹"是既成事实，不是错误）。
+LEGACY_ALIASES = ("action", "new_confidence")
 TZ = timezone(timedelta(hours=8))
 
 STATUS_OF_KIND = {"approve": "approved", "reject": "rejected", "modify": "modified"}
@@ -104,21 +108,37 @@ def status_of(edge_id: str, last: dict[str, dict]) -> str:
 
 
 # ── 校验 ──────────────────────────────────────────────────────────────────────
+def human_identities() -> set[str]:
+    """被承认的"真人"署名集合 = 字面量 `human` ∪ 当前 git user.name。
+
+    **`action` 版记录**（596 的 `attack_edge_review.py`）写的是**真实 git 署名**，
+    它和 609 的字面量 `human` 是同一个通道上的两套笔迹 ⇒ 一并承认；
+    这条口子**只认 git 能证明的人**，机器写不出 git 身份 ⇒ 防冒名的目的不打折。
+    """
+    out = {REVIEWER}
+    who = aer.git_user_name()
+    if who:
+        out.add(who)
+    return out
+
+
 def validate_record(rec: dict, edge_ids: set[str]) -> list[str]:
     """返回问题列表（空 = 合法）。逐字段校验，一次报全部问题（便于人一次修完）。"""
     problems: list[str] = []
-    for k in REQUIRED:
+    if not kind_of(rec):
+        problems.append("缺 kind（或 596 的 action）")
+    for k in ("edge_id", "reviewer", "timestamp", "reason"):
         if not str(rec.get(k) or "").strip():
             problems.append(f"缺字符段 {k}")
-    unknown = set(rec) - set(REQUIRED) - set(OPTIONAL)
+    unknown = set(rec) - set(REQUIRED) - set(OPTIONAL) - set(LEGACY_ALIASES)
     if unknown:
         problems.append(f"含未知字段 {sorted(unknown)}")
     k = kind_of(rec)
     if k and k not in KINDS:
         problems.append(f"kind 非法：{k!r}（须 ∈ {KINDS}）")
     rv = str(rec.get("reviewer") or "")
-    if rv and rv != REVIEWER:
-        problems.append(f"reviewer 必须 = {REVIEWER!r}（防机器冒名），实得 {rv!r}")
+    if rv and rv not in human_identities():
+        problems.append(f"reviewer 不是可证明的真人身份（须 = {sorted(human_identities())}）：{rv!r}")
     ts = str(rec.get("timestamp") or "")
     if ts:
         if not parse_timestamp(ts):
@@ -129,12 +149,12 @@ def validate_record(rec: dict, edge_ids: set[str]) -> list[str]:
     eid = str(rec.get("edge_id") or "")
     if eid and edge_ids and eid not in edge_ids:
         problems.append(f"edge_id 不在候选边（共 {len(edge_ids)} 条）里：{eid!r}")
-    conf = rec.get("confidence")
+    conf = rec.get("confidence", rec.get("new_confidence"))   # 兼容 596 的 new_confidence
     if conf is not None:
         if conf not in CONFIDENCES:
             problems.append(f"confidence 非法：{conf!r}（须 ∈ {CONFIDENCES}）")
     elif k == "modify":
-        problems.append("kind=modify 缺 confidence")
+        problems.append("kind=modify 缺 confidence（或 596 的 new_confidence）")
     return problems
 
 
