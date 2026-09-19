@@ -10,6 +10,40 @@ from pathlib import Path
 import pytest
 
 import mutation_shape_audit as audit
+from mutation_fuzz import _mut_matrix_values
+
+N = "\n"
+
+# 588 任务 1.2 回归基线：含四键（compiler/std/opt/arch）的干净 matrix 卡，预期恰好 7 个变体。
+_CLEAN_MATRIX_CARD = (
+    "---" + N + "id: X" + N + "matrix:" + N
+    + "  compiler: [GCC 13.1.0]" + N + "  std: [c++17]" + N
+    + "  opt: [-O2]" + N + "  arch: [x86-64]" + N
+    + "fixture: a.cpp" + N + "---" + N + "b"
+)
+_EXPECTED_CLEAN_POINTS = {
+    "matrix 删键（移除 compiler: [GCC 13.1.0]）",
+    "matrix 非法值（compiler: [GCC 13.1.0] → 首元素 totally-not-a-compiler xyz）",
+    "matrix 删键（移除 std: [c++17]）",
+    "matrix 非法值（std: [c++17] → 首元素 c++99）",
+    "matrix 删键（移除 opt: [-O2]）",
+    "matrix 非法值（opt: [-O2] → 首元素 -O9）",
+    "matrix 非法值（arch: [x86-64] → 首元素 z80-nonexistent）",
+}
+
+
+def _tail_comment_card() -> str:
+    return ("---" + N + "id: Y" + N + "matrix:                          # 尾注释：笛卡尔声明"
+            + N + "  compiler: [GCC 13.1.0]" + N + "  std: [c++17]" + N
+            + "  opt: [-O2]" + N + "  arch: [x86-64]" + N
+            + "fixture: a.cpp" + N + "---" + N + "b")
+
+
+def _inline_comment_card() -> str:
+    return ("---" + N + "id: Z" + N + "matrix:" + N
+            + "  compiler: [GCC 13.1.0]" + N + "  # 注释：含冒号也不怕"
+            + N + "  std: [c++17]" + N + "  opt: [-O2]" + N + "  arch: [x86-64]"
+            + N + "fixture: a.cpp" + N + "---" + N + "b")
 
 REPO = Path(__file__).resolve().parent.parent
 CARDS = sorted((REPO / "evidence").rglob("EV-*.md")) + sorted(
@@ -61,3 +95,39 @@ def test_no_crlf_in_corpus_or_invariant():
     crlf = audit.crlf_audit()
     assert crlf["crlf"] == 0 and crlf["mixed"] == 0, "全库出现 CRLF，需重评"
     assert crlf["diffs"] == [], f"LF/CRLF 同构对拍有差异：{crlf['diffs']}"
+
+
+# ── 588 任务 1.2 · M6 matrix 正则放宽回归锁 ──────────────────────────────────────
+def test_m6_matrix_clean_path_unchanged():
+    """修尾注释不得顺手改正常路径：干净四键 matrix 卡仍恰产 7 个变体（3 删键 + 4 非法值）。"""
+    pts = {p for p, _ in _mut_matrix_values(_CLEAN_MATRIX_CARD)}
+    assert pts == _EXPECTED_CLEAN_POINTS, f"干净卡变体集漂移：{pts ^ _EXPECTED_CLEAN_POINTS}"
+
+
+def test_m6_matrix_tail_comment_now_mutates():
+    """① 矩阵键行带尾注释的卡，修后应正常产出 compiler/std/opt 三个删键变体（不再 0 变体）。"""
+    vs = _mut_matrix_values(_tail_comment_card())
+    pts = {p for p, _ in vs}
+    assert len(vs) == 7, f"尾注释卡变体数应为 7，实得 {len(vs)}"
+    for key in ("compiler", "std", "opt"):
+        assert any(f"matrix 删键（移除 {key}:" in p for p in pts), f"缺 {key} 删键变体"
+
+
+def test_m6_matrix_inline_comment_not_key():
+    """② 块内整行注释（含冒号）不得被当成 matrix 键、不得造伪变体；std/opt 变体仍在。"""
+    vs = _mut_matrix_values(_inline_comment_card())
+    pts = {p for p, _ in vs}
+    assert len(vs) == 7, f"块内注释卡变体数应为 7，实得 {len(vs)}"
+    # 注释文本绝不应出现在任何变体 point 里（未被当成键）
+    assert all("comment" not in p for p in pts), "注释行被误当成键/变体"
+    for key in ("compiler", "std", "opt"):
+        assert any(f"matrix 删键（移除 {key}:" in p for p in pts), f"缺 {key} 删键变体"
+
+
+def test_m6_matrix_crlf_eq_lf():
+    """④ CRLF 版与 LF 版同内容卡的 matrix 变体集（归一 \\r）应逐字相等。"""
+    lf = {(p, v.replace("\r\n", "\n").replace("\r", "\n"))
+          for p, v in _mut_matrix_values(_CLEAN_MATRIX_CARD)}
+    cr = {(p, v.replace("\r\n", "\n").replace("\r", "\n"))
+          for p, v in _mut_matrix_values(_CLEAN_MATRIX_CARD.replace("\n", "\r\n"))}
+    assert lf == cr, "matrix 变体在 CRLF 下与 LF 不一致"

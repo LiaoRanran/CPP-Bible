@@ -430,20 +430,27 @@ def _illegal_value_line(ln: str, bad: str) -> str | None:
 
 
 def _mut_matrix_values(text: str) -> list[tuple[str, str]]:
-    """586 任务2 删键 + **587 任务1 非法值替换**：对 `matrix:` 块做**值层**变异。
+    """586 任务2 删键 + **587 任务1 非法值替换** + **588 任务1 放宽键行尾注释 / 块内注释行**：
 
-    - 删键（compiler/std/opt，586 已有）：触发 `check_evidence_matrix`（EV-MATRIX block：matrix 缺键）；
-    - 非法值替换（compiler/std/opt/arch，587 新增）：只换列表内**第一个元素**，键与列表结构不变、
-      正文逐字不动 ⇒ 键还在、值变垃圾。586 实测这类变异**全逃逸**（门禁只校验键存在性），
-      本批先量出逐键逃逸数（任务 1.2），任务 2 加值校验后应归零（任务 2.3）。
+    - 键行允许尾注释与行尾空白：`^matrix:[ \t]*(?:#[^\n]*)?\\n`（覆盖 `matrix:` / `matrix:   ` /
+      `matrix:   # 任意注释` 三种形态）。原 `(matrix:)\\s*\\n` 在键行带 `#` 时失配 ⇒ 整块 0 变体
+      （EV-MEM-004 漏网，588 任务0 坐实）。
+    - 块体改为「连续的、缩进深于顶格的行」：`(?:[ \\t]+[^\\n]*\\n)+`，遇下一个顶格键 / `---` 自然终止
+      （不会多吃后续顶格键，如 `fixture:`）。
+    - 遍历时**先剥尾注释再解析键**：`s.split("#", 1)[0].strip()`；剥后为空（纯注释行）跳过；
+      再做 partition(":")，避免注释里的冒号被当成 matrix 键。matrix 真实取值（编译器名/标准/优化级/
+      arch）不含 `#`，剥注释对正常无注释行 / 值内含括号斜杠的行逐字无副作用（见 tests）。
     """
     out: list[tuple[str, str]] = []
-    m = re.search(r"(?m)^(matrix:)\s*\n((?:  [^\n]+\n)+)", text)
+    # `\r?\n` 兼容 CRLF：旧正则用 `\s*\n`（`\s` 含 `\r`）本就 CRLF 安全；本批把 `\s` 收紧为
+    # `[ \t]` 后必须显式补 `\r?`，否则 CRLF 卡会在 `matrix:` 行尾 `\r` 处失配（588 任务 3.1 反向利用）。
+    m = re.search(r"(?m)^matrix:[ \t]*(?:#[^\n]*)?\r?\n((?:[ \t]+[^\n]*\r?\n)+)", text)
     if not m:
         return out
-    block = m.group(2)
+    block = m.group(1)
     for ln in block.split("\n"):
-        s = ln.strip()
+        # 先剥尾注释（matrix 取值不含 #；值行尾注释随值替换，不影响解析）
+        s = ln.split("#", 1)[0].strip()
         if not s or ":" not in s:
             continue
         k, _, v = s.partition(":")
@@ -454,13 +461,13 @@ def _mut_matrix_values(text: str) -> list[tuple[str, str]]:
         if k in ("compiler", "std", "opt"):
             new_block = block.replace(ln + "\n", "", 1)
             out.append((f"matrix 删键（移除 {k}: {v.strip()}）",
-                        text[:m.start(2)] + new_block + text[m.end(2):]))
+                        text[:m.start(1)] + new_block + text[m.end(1):]))
         # 587 任务1：非法值替换（四键）
         bad_ln = _illegal_value_line(ln, _ILLEGAL_MATRIX_VALUE[k])
         if bad_ln is not None and bad_ln != ln:
             out.append((f"matrix 非法值（{k}: {v.strip()} → 首元素 {_ILLEGAL_MATRIX_VALUE[k]}）",
-                        text[:m.start(2)] + block.replace(ln + "\n", bad_ln + "\n", 1)
-                        + text[m.end(2):]))
+                        text[:m.start(1)] + block.replace(ln + "\n", bad_ln + "\n", 1)
+                        + text[m.end(1):]))
     return out
 
 
