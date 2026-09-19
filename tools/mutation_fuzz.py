@@ -262,10 +262,13 @@ def mut_m3(text: str) -> list[tuple[str, str | None]]:
     #     (a) 删掉一条断言条目 —— 卡少查一项（自带保证被削弱）；
     #     (b) 给 `contains` 断言追加一个**样板候选**（`.file` 这类恒真文本）—— 断言可被平凡输出满足。
     #   仍只在门禁读取面内动刀（558 B2 纪律）；带 `symbol:` 的条目留给 `_in` 路径，不互相抢。
-    for _m in re.finditer(r"(?m)^[ \t]*-[ \t]*\{[^\n}]*\}[ \t]*(?=\n)", text):
+    # 588 任务3：正则须**消费**整行行尾 `\r?\n`（而非 `(?=\n)` 前瞻 + 手工 `+1`）——
+    #   旧写法在 CRLF 卡上：前瞻撞 `\r` 失配 ⇒ 变体根本不产；即便补前瞻，`+1` 只吃 `\r` 会留一条空行
+    #   ⇒ LF/CRLF 同内容卡产出不一致。改为消费行尾后 LF 行为逐字不变（回归 `test_m3_crlf_eq_lf`）。
+    for _m in re.finditer(r"(?m)^[ \t]*-[ \t]*\{[^\n}]*\}[ \t]*\r?\n", text):
         if _in_gate(_m.start()):
             out.append(("删掉一条 flow 式断言条目（弱化：卡少查一项）",
-                        text[:_m.start()] + text[_m.end() + 1:]))
+                        text[:_m.start()] + text[_m.end():]))
             break
     for _m in re.finditer(r"\{[^\n}]*kind:[ \t]*contains[ \t]*,[^\n}]*\}", text):
         _seg = _m.group(0)
@@ -292,7 +295,7 @@ def mut_m3(text: str) -> list[tuple[str, str | None]]:
                 out.append((f"删掉一条 run_match_keys 声明（弱化：少声明读数键 {_items[0]}）",
                             text[:_mf.start()] + _new + text[_mf.end():]))
         # 注意：列表项常带引号（`- "ab_tu_a"`）——571 实测漏了引号导致本变体对块式卡也不触发。
-        for _m in re.finditer(r"(?m)^([ \t]*)-[ \t]*[\"']?([A-Za-z_][\w]*)[\"']?[ \t]*(?=\n)",
+        for _m in re.finditer(r"(?m)^([ \t]*)-[ \t]*[\"']?([A-Za-z_][\w]*)[\"']?[ \t]*\r?\n",
                               text):
             # 只删"缩进深于 run_match_keys 行"的列表项，且必须落在门禁读取面内
             _k = re.search(r"(?m)^([ \t]*)run_match_keys\s*:", text)
@@ -302,15 +305,21 @@ def mut_m3(text: str) -> list[tuple[str, str | None]]:
                 continue
             if _in_gate(_m.start()):
                 out.append((f"删掉一条 run_match_keys 声明（弱化：少声明一个读数键 {_m.group(2)}）",
-                            text[:_m.start()] + text[_m.end() + 1:]))
+                            text[:_m.start()] + text[_m.end():]))
                 break
     return out or [("M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:`/断言条目/run_match_keys"
                     " 的字面量都在正文/注释）", None)]
 
 
 def mut_m4(text: str) -> list[tuple[str, str]]:
-    """M4 恒真注入：往 artifact_assert 里塞通用符号 / ABI 帧符号 / `.file` 类恒真断言。"""
-    m = re.search(r"(?m)^(\s*)artifact_assert:\s*$", text)
+    r"""M4 恒真注入：往 artifact_assert 里塞通用符号 / ABI 帧符号 / `.file` 类恒真断言。
+
+    588 任务3：锚定正则旧式 `^(\s*)artifact_assert:\s*$` 无尾注释位 ⇒ `artifact_assert:  # 注`
+    （全库 6 张：EV-HIST-001 / EV-MEM-001/002/004 / EV-UB-001/002）**整块 0 变体**（与 M6 matrix
+    尾注释同类漏网）。改为消费整行行尾 `[ \t]*(?:#[^\n]*)?\r?\n`（兼容 CRLF、允许尾注释）；
+    对无尾注释卡 m.end()/插入点等价 ⇒ LF 行为逐字不变（回归 `test_m4_artifact_assert_tail_comment`）。
+    """
+    m = re.search(r"(?m)^(\s*)artifact_assert:[ \t]*(?:#[^\n]*)?\r?\n", text)
     if not m:
         return []
     ind = m.group(1) + "  "
@@ -324,7 +333,8 @@ def mut_m4(text: str) -> list[tuple[str, str]]:
             # 写错字段会让 `_assert_targets` 取空 ⇒ gate 跳过 ⇒ 造出**假逃逸**（542 的教训）。
             ("注入 contains_any: ['.file']（合法形态）",
              f'{ind}- {{kind: contains_any, symbol: main, texts: [".file"]}}')):
-        out.append((tag, text[:m.end()] + "\n" + line + text[m.end():]))
+        # m.end() 已消费行尾 ⇒ 注入行插在 `artifact_assert:…` 行的**下一行**（LF 下与旧写法逐字等价）
+        out.append((tag, text[:m.end()] + line + "\n" + text[m.end():]))
     return out
 
 
@@ -438,7 +448,7 @@ def _illegal_value_line(ln: str, bad: str) -> str | None:
 
 
 def _mut_matrix_values(text: str) -> list[tuple[str, str]]:
-    """586 任务2 删键 + **587 任务1 非法值替换** + **588 任务1 放宽键行尾注释 / 块内注释行**：
+    r"""586 任务2 删键 + **587 任务1 非法值替换** + **588 任务1 放宽键行尾注释 / 块内注释行**：
 
     - 键行允许尾注释与行尾空白：`^matrix:[ \t]*(?:#[^\n]*)?\\n`（覆盖 `matrix:` / `matrix:   ` /
       `matrix:   # 任意注释` 三种形态）。原 `(matrix:)\\s*\\n` 在键行带 `#` 时失配 ⇒ 整块 0 变体

@@ -162,3 +162,43 @@ def test_gateradkeys_matrix_no_effect_on_m2m3_output():
         assert not mismatches, f"GATE_READ_KEYS 补 matrix 改变了产出：{mismatches}"
     finally:
         mf.GATE_READ_KEYS = saved
+
+
+# ── 588 任务 3 · CRLF 健壮性 + M4 尾注释漏网 回归锁 ─────────────────────────────
+def _norm(s):
+    return None if s is None else s.replace("\r\n", "\n").replace("\r", "\n")
+
+
+def test_all_mutators_crlf_eq_lf_over_corpus():
+    """任务3.1：全库每张卡的每个算子，LF 与 CRLF 版产出（归一 \\r）必须逐条相等。"""
+    diffs = []
+    for rel, t in audit._all_card_texts():
+        cr = t.replace("\n", "\r\n")
+        for op in mf.MUTATORS:
+            a = {(p, _norm(v)) for p, v in mf.MUTATORS[op](t)}
+            b = {(p, _norm(v)) for p, v in mf.MUTATORS[op](cr)}
+            if a != b:
+                diffs.append(f"{rel}·{op}")
+    assert not diffs, f"CRLF 与 LF 产出不一致：{diffs[:20]}"
+
+
+def _artifact_assert_card(with_tail=False):
+    head = "artifact_assert:  # 尾注释" if with_tail else "artifact_assert:"
+    return ("---" + N + "id: EV-AUDIT-SYN-002" + N + "verdict: confirm" + N
+            + head + N
+            + "  - {kind: contains_in, symbol: main, text: \"main\"}" + N
+            + "command: g++ -O2 Examples/atoms/_atom_test.cpp -o Examples/atoms/_atom_test.out" + N
+            + "---" + N + "body")
+
+
+def test_m4_artifact_assert_tail_comment():
+    """任务3.2：`artifact_assert:` 带尾注释的卡（全库 6 张）修后应正常产出 4 个注入变体。"""
+    vs = mf.mut_m4(_artifact_assert_card(with_tail=True))
+    assert len(vs) == 4, f"带尾注释卡 mut_m4 变体数应为 4，实得 {len(vs)}"
+
+
+def test_m4_lf_path_unchanged():
+    """无尾注释卡的 M4 产出须与带尾注释卡**同一套 4 个 tag**（LF 正常路径未被顺手改动）。"""
+    a = sorted(p for p, _ in mf.mut_m4(_artifact_assert_card(with_tail=False)))
+    b = sorted(p for p, _ in mf.mut_m4(_artifact_assert_card(with_tail=True)))
+    assert a == b and len(a) == 4, f"正常路径漂移：{a} vs {b}"
