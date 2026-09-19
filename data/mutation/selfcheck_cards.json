@@ -1,0 +1,13 @@
+{
+ "_note": "589 任务1 · 确定性自检固定小卡集（全 7 算子 M1–M7 各 ≥1 blocked；M6 另含 1 equivalent）。卡路径相对仓库根。固定不随 --cards/--limit 变。卡数为 8（任务书建议 12–18，但 jobs=1 全算子串行墙钟须 <90s：8 卡实测 85.9s、13 卡实测 139.3s ⇒ 按‘超标缩减每算子卡数’取 8，见 _worklog_589.md §6 偏差 D3）。",
+ "cards": [
+  "evidence/conc/EV-CONC-003.md",
+  "evidence/conc/EV-CONC-004.md",
+  "evidence/hist/EV-HIST-001.md",
+  "evidence/lang/EV-LANG-001.md",
+  "atoms/conc/ATOM-CONC-RACE-001.md",
+  "atoms/mem/ATOM-MEM-PERF-003.md",
+  "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+  "atoms/lang/ATOM-LANG-INLINE-001.md"
+ ]
+}

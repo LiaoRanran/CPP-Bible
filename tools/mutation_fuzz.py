@@ -1181,8 +1181,41 @@ def _op_rates(per: list[dict[str, Any]]) -> tuple[dict[str, Any], list[str]]:
 # 为何必须自证：这类非确定性**只能靠重跑发现**——578 若不是"重跑一次核对提交产物"就完全看不见
 # （测试全绿、单次跑也自洽）。子集至少覆盖"动工件层"的 M1/M7（真实工件被删建的源头）与
 # "跨卡 finding"的 M6（034 幻影 finding 的观察面）。
-_SELFCHECK_OPS = ("M1", "M6", "M7")
+_SELFCHECK_OPS = tuple(MUTATORS)
 _SELFCHECK_FIELDS = ("verdict", "kind", "why", "new_block", "new_warn")
+_SELFCHECK_CARDS_PATH = ROOT / "data" / "mutation" / "selfcheck_cards.json"
+
+
+class SelfcheckCoverageError(RuntimeError):
+    """自检小卡集对某算子 0 blocked ⇒ 选卡无效、自检空转（绿得没有判别力）⇒ fail-loud。"""
+
+
+def _load_selfcheck_cards(path: Path | None = None) -> list[Path]:
+    """加载**固定自检小卡集**（`data/mutation/selfcheck_cards.json`，相对仓库根）。
+
+    该集固定、不随命令行 `--limit/--cards` 变化 ⇒ 自检结果跨运行稳定可比（主跑规模不再拖慢自检）。
+    """
+    p = Path(path) if path is not None else _SELFCHECK_CARDS_PATH
+    data = json.loads(p.read_text(encoding="utf-8"))
+    rels = data["cards"] if isinstance(data, dict) else data
+    cards = [ROOT / str(r) for r in rels]
+    missing = [str(c.relative_to(ROOT)) for c in cards if not c.is_file()]
+    if missing:
+        raise SelfcheckCoverageError(f"自检小卡集缺文件：{missing}")
+    return cards
+
+
+def _assert_selfcheck_coverage(rep: dict[str, Any], sub_ops: list[str]) -> None:
+    """小卡集必须对**每个**算子都产出 ≥1 条 `blocked`；否则该算子自检空转 ⇒ fail-loud。"""
+    blk: dict[str, int] = {o: 0 for o in sub_ops}
+    for r in rep["results"]:
+        if r["verdict"] == "blocked" and r["op"] in blk:
+            blk[r["op"]] += 1
+    bad = [o for o in sub_ops if blk[o] == 0]
+    if bad:
+        raise SelfcheckCoverageError(
+            f"选卡失效：算子 {bad} 在自检小卡集上 0 blocked（逐算子 blocked 数={blk}）"
+            " ⇒ 该算子自检空转、绿得没有判别力")
 
 
 def _variant_index(rep: dict[str, Any]) -> dict[tuple[str, str, str], tuple[str, ...]]:
@@ -1199,24 +1232,36 @@ def _variant_index(rep: dict[str, Any]) -> dict[tuple[str, str, str], tuple[str,
 
 
 def selfcheck_determinism(cards: list[Path], ops: list[str], limit: int, first: dict[str, Any],
-                          progress: bool = False, jobs: int = 1) -> tuple[bool, list[str]]:
-    """对关键子集**重跑一次**并逐变体比对；返回 (是否一致, 抖动清单)。
+                          progress: bool = False, jobs: int = 1,
+                          selfcheck_cards_path: Path | None = None) -> tuple[bool, list[str]]:
+    """对**固定自检小卡集 × 全 7 算子**重跑并逐变体比对；返回 (是否一致, 抖动清单)。
 
-    580 任务 3：`jobs > 1` 时**再**用 `jobs=1` 跑一遍同一子集 —— 跨 jobs 对账
-    （判决一致性硬门：并行不许改动任何一条判决，任何分歧即列出变体清单）。
+    589 任务 1（本包）：重跑对象从"`_SELFCHECK_OPS`（原 3 算子：M1/M6/M7）× **全卡**"改为
+    "**全 7 算子 × 固定小卡集**（`data/mutation/selfcheck_cards.json`）"，与主跑的
+    `--cards/--limit` 解耦 ⇒ 自检覆盖更全（M2–M5 的非确定性也看得见）且不再退化成全量串行。
+    启动前先断言小卡集对每个算子 ≥1 blocked（`_assert_selfcheck_coverage`，否则 fail-loud）。
+    `jobs > 1` 时**再**用 `jobs=1` 串行对账**同一小卡集**（跨 jobs 判决一致性硬门）。
     """
-    sub_ops = [o for o in ops if o in _SELFCHECK_OPS] or list(ops[:1])
-    a = _variant_index(first)
+    sc = _load_selfcheck_cards(selfcheck_cards_path)
+    sub_ops = list(_SELFCHECK_OPS)                  # 全 7，固定（不随主跑 --operators 变）
+    sc_rel = {c.relative_to(ROOT).as_posix() for c in sc}
+    ref = _run_jobs(sc, sub_ops, len(sc), jobs=jobs, progress=progress)
+    _assert_selfcheck_coverage(ref, sub_ops)        # 选卡有效性 fail-loud（0 blocked ⇒ 报错退出）
+    a = _variant_index(ref)
     diffs: list[str] = []
-    rounds: list[tuple[str, int]] = [(f"jobs{jobs}", jobs)]
-    if jobs > 1:
-        rounds.append(("jobs1（串行对账）", 1))
+    # ① 与主跑(first)的小卡集部分对账（主跑为全量时覆盖小卡集；--cards 很窄时该段自然为空）
+    b_main = {k: v for k, v in _variant_index(first).items() if k[0] in sc_rel}
+    for k in sorted(set(a) & set(b_main)):
+        if a[k] != b_main[k]:
+            diffs.append(f"[main] {k[0]} · {k[1]} · {k[2]}（{a[k]} ≠ {b_main[k]}）")
+    # ② 跨 jobs 对账（jobs>1）或同 jobs 重跑（jobs==1）
+    rounds: list[tuple[str, int]] = [("jobs1（串行对账）", 1)] if jobs > 1 else [("重跑", 1)]
     for tag, jn in rounds:
-        other = _run_jobs(cards, sub_ops, limit, jobs=jn, progress=progress)
+        other = _run_jobs(sc, sub_ops, len(sc), jobs=jn, progress=progress)
         b = _variant_index(other)
-        for k in sorted(set(a) & set(b)):
-            if a[k] != b[k]:
-                diffs.append(f"[{tag}] {k[0]} · {k[1]} · {k[2]}（{a[k]} ≠ {b[k]}）")
+        for k in sorted(set(a) | set(b)):
+            if a.get(k) != b.get(k):
+                diffs.append(f"[{tag}] {k[0]} · {k[1]} · {k[2]}（{a.get(k)} ≠ {b.get(k)}）")
     return (not diffs), diffs
 
 
@@ -1311,15 +1356,21 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         print("[mutation] ✓ 等价判据保守性自证：所有 equivalent 变体的 new_block/new_warn 均为空")
     if a.selfcheck_determinism:          # 579 任务 2：自证"同输入同输出"
-        ok, diffs = selfcheck_determinism(cards, ops, a.limit, rep, progress=a.progress, jobs=jobs)
+        try:
+            ok, diffs = selfcheck_determinism(cards, ops, a.limit, rep,
+                                              progress=a.progress, jobs=jobs)
+        except SelfcheckCoverageError as exc:      # 589 任务 1：选卡无效 ⇒ fail-loud（exit2）
+            print(f"[mutation] ❌ 确定性自检覆盖失效：{exc}", file=sys.stderr)
+            return 2
         if not ok:
             print(f"[mutation] ❌ 确定性自检不过：{len(diffs)} 个变体两次跑不一致"
                   "（尺子会抖 ⇒ 逃逸率不可复现）", file=sys.stderr)
             for d in diffs[:10]:
                 print(f"[mutation]   抖动：{d}", file=sys.stderr)
             return 2
-        print("[mutation] ✓ 确定性自检：关键子集两次跑逐变体一致"
-              f"（{len(_variant_index(rep))} 变体 / 子集算子 {[o for o in ops if o in _SELFCHECK_OPS]}）")
+        _scn = len(_load_selfcheck_cards())
+        print("[mutation] ✓ 确定性自检：全 7 算子 × 自检小卡集"
+              f"（{_scn} 卡）两次跑逐变体一致（子集算子 {list(_SELFCHECK_OPS)}）")
     return 1 if (a.fail_on_escaped and rep["escaped"]) else 0
 
 
