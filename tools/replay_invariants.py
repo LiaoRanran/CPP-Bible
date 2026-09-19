@@ -30,7 +30,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 EXAMPLES_DIR = ROOT / "Examples"
-INVARIANTS = ("artifact_restore", "build_reproducibility", "sandbox_isolation")
+INVARIANTS = ("artifact_restore", "build_reproducibility", "sandbox_isolation", "lock_consistency")
 
 
 # ── 工具函数 ───────────────────────────────────────────────────────────────────
@@ -163,11 +163,56 @@ def check_sandbox_isolation() -> dict:
     }
 
 
+# ── I3：锁一致性不变量 ─────────────────────────────────────────────────────────
+def check_lock_consistency() -> dict:
+    """I3：replay 并发锁路径跟随跑批根，且真实仓库无残留锁。
+
+    验证三件事：
+      1. 默认路径 = 真实 ROOT/build/.replay_lock（无 batch_root 时）
+      2. batch_root 上下文内，锁路径跟随 batch_root（不指向真实仓库）
+      3. 真实仓库无残留锁文件（replay 未运行时）
+    """
+    t0 = time.time()
+    try:
+        import atom_evidence_replay as aer
+    except ImportError as exc:
+        return {"name": "lock_consistency", "passed": False, "elapsed_s": 0,
+                "detail": f"import error: {exc}"}
+    failures = []
+    # 1. 默认路径正确
+    default_lock = aer._replay_lock_path()
+    expected_default = ROOT / "build" / ".replay_lock"
+    if default_lock != expected_default:
+        failures.append(f"default lock path mismatch: {default_lock} != {expected_default}")
+    # 2. batch_root 内路径跟随（用 contextvar 模拟）
+    try:
+        aer._RUN_ROOT.set(Path("/tmp/fake_batch_root"))
+        batch_lock = aer._replay_lock_path()
+        expected_batch = Path("/tmp/fake_batch_root") / "build" / ".replay_lock"
+        if batch_lock != expected_batch:
+            failures.append(f"batch lock path mismatch: {batch_lock} != {expected_batch}")
+    finally:
+        aer._RUN_ROOT.set(None)
+    # 3. 真实仓库无残留锁
+    if expected_default.exists():
+        failures.append(f"stale lock file exists in real repo: {expected_default}")
+    elapsed = time.time() - t0
+    return {
+        "name": "lock_consistency",
+        "passed": len(failures) == 0,
+        "elapsed_s": round(elapsed, 2),
+        "detail": "default path correct + batch_root follows + no stale lock" if not failures
+                  else "; ".join(failures),
+        "default_lock": str(default_lock),
+    }
+
+
 # ── 主检查 ─────────────────────────────────────────────────────────────────────
 CHECKS = {
     "artifact_restore": check_artifact_restore,
     "build_reproducibility": check_build_reproducibility,
     "sandbox_isolation": check_sandbox_isolation,
+    "lock_consistency": check_lock_consistency,
 }
 
 
