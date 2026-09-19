@@ -52,6 +52,7 @@ import tempfile
 import time
 from contextlib import contextmanager
 from contextvars import ContextVar
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Sequence
 
@@ -1406,8 +1407,195 @@ def check_negative_controls(meta: dict[str, Any], *, workdir: Path, env: dict,
     return "", log
 
 
+@dataclass
+class BuildReproResult:
+    """编译可复现性引擎的返回（603）。
+
+    `success` = 两次独立编译产出一致（sha 级；`check_level` 提升到 symbols/sections 时
+    一并要求符号表/关键段一致）。`first_hash`/`second_hash` 为两次二进制 sha256。
+    `compile_exit_code`：0=成功；非 0=编译失败（夹具故意编译失败属正常，用返回值表示，不抛）；
+    -1=源不存在/无法启动编译；-2=超时。
+    """
+    success: bool
+    first_hash: str
+    second_hash: str
+    symbols_match: bool | None
+    sections_match: bool | None
+    diff_detail: str | None
+    compile_exit_code: int
+    compile_stderr: str
+    duration_ms: int
+
+
+def _inject_output(cmd: str | list[str], out_path: Path) -> str | list[str]:
+    """把编译命令的 `-o` 目标改写为 `out_path`。支持 list（免 shell）与 str（shell）两种形态。
+
+    无 `-o` 时追加（list 直接加 `["-o", str]`；str 追加 ` -o "..."`）。绝不静默吞错：
+    list 形态下若 `-o` 后无值 ⇒ ValueError（由调用方转成 compile_exit_code=-1）。
+    """
+    if isinstance(cmd, (list, tuple)):
+        cs = list(cmd)
+        if "-o" in cs:
+            i = cs.index("-o")
+            if i + 1 >= len(cs):
+                raise ValueError("compile_cmd 含 -o 但缺目标")
+            cs[i + 1] = str(out_path)
+        else:
+            cs += ["-o", str(out_path)]
+        return cs
+    s = str(cmd)
+    if re.search(r"-o\s+\S", s):
+        return re.sub(r"-o\s+\S+", f'-o "{out_path.as_posix()}"', s, count=1)
+    return f'{s} -o "{out_path.as_posix()}"'
+
+
+def _symbols_equal(a: Path, b: Path, env: dict) -> bool | None:
+    """`nm` 符号表逐行排序后比较；工具不可用或失败 ⇒ None（不 crash、不误判）。"""
+    try:
+        r1 = subprocess.run(["nm", str(a)], capture_output=True, text=True,
+                            env=env, timeout=30)
+        r2 = subprocess.run(["nm", str(b)], capture_output=True, text=True,
+                            env=env, timeout=30)
+    except (subprocess.TimeoutExpired, OSError):
+        return None
+    if r1.returncode != 0 or r2.returncode != 0:
+        return None
+    return sorted(r1.stdout.splitlines()) == sorted(r2.stdout.splitlines())
+
+
+def _sections_equal(a: Path, b: Path, env: dict) -> bool | None:
+    """`objdump -h` 提取 .text/.data/.rodata 的 Size，比较是否一致；不可用/失败 ⇒ None。
+
+    注：MinGW 产出 PE（pei-x86-64），`readelf -S` 对 PE 不友好（非 ELF），故用 `objdump -h`
+    （输出列：Idx Name Size VMA ...，Size 在 parts[2]）。
+    """
+    def _sizes(p: Path) -> dict | None:
+        try:
+            r = subprocess.run(["objdump", "-h", str(p)], capture_output=True,
+                               text=True, env=env, timeout=30)
+        except (subprocess.TimeoutExpired, OSError):
+            return None
+        if r.returncode != 0:
+            return None
+        out: dict[str, int] = {}
+        for ln in r.stdout.splitlines():
+            parts = ln.split()
+            if len(parts) >= 3 and parts[1].startswith("."):
+                try:
+                    out[parts[1]] = int(parts[2], 16)
+                except ValueError:
+                    pass
+        return out
+    s1, s2 = _sizes(a), _sizes(b)
+    if s1 is None or s2 is None:
+        return None
+    return all(s1.get(k) == s2.get(k) for k in (".text", ".data", ".rodata"))
+
+
+def check_build_reproducibility(
+    source_path: Path,
+    compile_cmd: str | list[str],
+    work_dir: Path,
+    *,
+    output_name: str | None = None,
+    ccaches_disable: bool = True,
+    check_level: str = "sha",
+    cwd: str | None = None,
+) -> BuildReproResult:
+    """编译可复现性引擎（603）：同命令、**独立**编译两次，比较产出。
+
+    与历史 `_recompile_invariant` 的区别：后者比"重编译一次 vs 卡值 want_sha"（防篡改）；
+    本函数比"重编译一次 vs 重编译二次"（证自身确定），并把比较维度显式化
+    （`check_level`：sha / symbols / sections / full）。
+
+    行为纪律：
+      * 两次编译落 `work_dir/run1` 与 `work_dir/run2`（不同子目录，**隔离**）；调用方创建并负责清理。
+      * `CCACHE_DISABLE=1`：绕过编译缓存，保证独立编译（可由 `ccaches_disable` 关）。
+      * 编译失败（rc!=0）是正常情况（夹具可能故意编译失败），**用返回值表示，绝不抛异常**。
+      * 超时：单次 `_RECOMPILE_TIMEOUT`（原 300s）；超时记 `compile_exit_code=-2`，不抛。
+      * 绝不裸 except：仅捕获具体的 `subprocess.TimeoutExpired` / `OSError`。
+    """
+    t0 = time.perf_counter()
+    sp = Path(source_path)
+    if not sp.is_file():
+        return BuildReproResult(False, "", "", None, None,
+                                f"source 不存在: {sp}", -1, "", 0)
+    out_name = output_name or sp.name
+    wd = Path(work_dir)
+    run1 = wd / "run1"
+    run2 = wd / "run2"
+    run1.mkdir(parents=True, exist_ok=True)
+    run2.mkdir(parents=True, exist_ok=True)
+    o1 = run1 / out_name
+    o2 = run2 / out_name
+    env = dict(_compiler_env())
+    if ccaches_disable:
+        env["CCACHE_DISABLE"] = "1"
+    # list 形态（免 shell）下，把裸编译器名解析为绝对路径：否则 `g++` 驱动可能找不到
+    # 同目录的 cc1plus（PATH 解析差异）。与 shell=True 形态行为对齐，且更稳健/可隔离。
+    # 须在 `_inject_output` 之前做，否则 cmd1/cmd2 仍用裸名。
+    if isinstance(compile_cmd, (list, tuple)) and compile_cmd:
+        prog = compile_cmd[0]
+        if "\\" not in prog and "/" not in prog and not Path(prog).is_absolute():
+            resolved = shutil.which(prog, path=env.get("PATH"))
+            if resolved:
+                compile_cmd = [resolved, *compile_cmd[1:]]
+    try:
+        cmd1 = _inject_output(compile_cmd, o1)
+        cmd2 = _inject_output(compile_cmd, o2)
+    except ValueError as exc:
+        return BuildReproResult(False, "", "", None, None,
+                                f"无法改写 -o：{exc}", -1, "", 0)
+    run_cwd = cwd if cwd is not None else str(run_root())
+    try:
+        r1 = subprocess.run(cmd1, shell=isinstance(cmd1, str), cwd=run_cwd,
+                            capture_output=True, text=True, errors="replace",
+                            timeout=_RECOMPILE_TIMEOUT, env=env)
+        r2 = subprocess.run(cmd2, shell=isinstance(cmd2, str), cwd=run_cwd,
+                            capture_output=True, text=True, errors="replace",
+                            timeout=_RECOMPILE_TIMEOUT, env=env)
+    except subprocess.TimeoutExpired:
+        return BuildReproResult(False, "", "", None, None, "编译超时", -2, "",
+                                round((time.perf_counter() - t0) * 1000))
+    except OSError as exc:
+        return BuildReproResult(False, "", "", None, None, f"无法启动编译：{exc}", -1, "",
+                                round((time.perf_counter() - t0) * 1000))
+    if r1.returncode != 0 or r2.returncode != 0:
+        return BuildReproResult(False, "", "", None, None,
+                                (r1.stderr or r2.stderr or "")[:300],
+                                r1.returncode or r2.returncode,
+                                (r1.stderr or r2.stderr or "")[:300],
+                                round((time.perf_counter() - t0) * 1000))
+    h1 = _sha256(o1)
+    h2 = _sha256(o2)
+    success = (h1 == h2)
+    diff = None
+    if not success:
+        diff = f"run1={h1[:16]}… run2={h2[:16]}…"
+    sym = sec = None
+    if check_level in ("symbols", "full"):
+        sym = _symbols_equal(o1, o2, env)
+    if check_level in ("sections", "full"):
+        sec = _sections_equal(o1, o2, env)
+    if sym is False or sec is False:
+        success = False
+        if diff is None:
+            bits = []
+            if sym is False:
+                bits.append("符号表")
+            if sec is False:
+                bits.append("关键段")
+            diff = f"{'+'.join(bits)}不一致"
+    return BuildReproResult(success, h1, h2, sym, sec, diff, 0,
+                            "", round((time.perf_counter() - t0) * 1000))
+
+
 def _recompile_invariant(cmd: str, art_rel: str, want_sha: str) -> tuple[str, str]:
-    """P0-A（452 E01 根因修复）：临时目录独立重编译，比对 sha。
+    """P0-A（452 E01 根因修复）：临时目录独立重编译，比对 sha（防篡改）。
+
+    603 重构：委托 `check_build_reproducibility` 取 `first_hash`（run1 的二进制 sha）；
+    run2 仅用于可复现性证明（metrics / 测试），**不进入本函数判决**——replay 语义逐字不变
+    （仍比"重编译一次 vs 卡值 want_sha"，非比 run1 vs run2）。
 
     返回 (status, detail)：
       * ok          —— 重编译 sha == 卡值（工件未被篡改）
@@ -1427,26 +1615,19 @@ def _recompile_invariant(cmd: str, art_rel: str, want_sha: str) -> tuple[str, st
         return "unavailable", "command 中无产出该 artifact 的直接编译行（构建脚本？）"
     tmpdir = Path(tempfile.mkdtemp(prefix="recompile_"))
     try:
-        env = dict(_compiler_env(), CCACHE_DISABLE="1")
-        last_out: Path | None = None
-        for ln in lines:
-            out_name = tmpdir / Path(art_rel).name
-            new_ln = re.sub(r"-o\s+\S+", f'-o "{out_name.as_posix()}"', ln, count=1)
-            r = subprocess.run(new_ln, shell=True, cwd=str(run_root()), capture_output=True,
-                               text=True, errors="replace",
-                               timeout=_RECOMPILE_TIMEOUT, env=env)
-            if r.returncode != 0:
-                return "infra", f"重编译失败 rc={r.returncode}：{(r.stderr or '')[:160]}"
-            last_out = out_name
-        assert last_out is not None
-        if not last_out.is_file():
-            return "infra", "重编译未产出文件"
-        got = _sha256(last_out)
+        got = ""
+        for ln in lines:                      # 逐行覆写同一 -o 目标 ⇒ 仅最后一行决定最终工件（原行为）
+            out_name = Path(art_rel).name
+            res = check_build_reproducibility(
+                source_path=run_root() / art_rel,   # 仅做存在性校验（artifact 已重生成，必存在）
+                compile_cmd=ln, work_dir=tmpdir, output_name=out_name,
+                ccaches_disable=True, check_level="sha")
+            if res.compile_exit_code != 0:
+                return "infra", f"重编译失败 rc={res.compile_exit_code}：{(res.compile_stderr or '')[:160]}"
+            got = res.first_hash
         if got != want_sha:
             return "tampered", f"独立重编译 sha {got[:16]}… ≠ 卡值 {want_sha[:16]}…"
         return "ok", f"{got[:16]}… == 卡值（独立重编译复现）"
-    except subprocess.TimeoutExpired:
-        return "infra", "重编译超时"
     finally:
         shutil.rmtree(tmpdir, ignore_errors=True)
 
