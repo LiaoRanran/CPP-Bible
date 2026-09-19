@@ -60,6 +60,7 @@ stale 接管：`claimed` 且 `heartbeat_at`（无则 `claimed_at`）超过 `STAL
 from __future__ import annotations
 
 import argparse
+import atexit
 import datetime as _dt
 import fnmatch
 import hashlib
@@ -70,6 +71,7 @@ import socket
 import sqlite3
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path, PurePath
 from typing import Any
@@ -269,16 +271,118 @@ def _set_wal(conn: sqlite3.Connection, retries: int = 10) -> None:
             time.sleep(0.05 * (i + 1))
 
 
-def _connect(db_path: Path | str | None = None) -> sqlite3.Connection:
-    """独立连接（含 busy_timeout）；`isolation_level=None` ⇒ 事务显式写 `BEGIN IMMEDIATE`。"""
-    p = Path(db_path) if db_path else DB_PATH
-    p.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(p), timeout=10.0, isolation_level=None)
+# ── 609 B1：连接复用（608 D2 实测：20,952 次 connect/close + WAL ≈ 72% 耗时）──────
+# 语义保持不变的三条护栏：
+#  ① **每线程一把连接**（`check_same_thread` 默认 True ⇒ 按 thread ident 分池，不做跨线程共享）；
+#  ② **事务内的嵌套调用仍拿到自己的连接**（608 之前就是"每次调用开新连接"）：
+#     池按"当前是否已在事务里"分主连接与**溢出连接**，嵌套 ⇒ 走溢出，语义与改造前 1:1；
+#  ③ WAL / busy_timeout **只在真正新建时**执行一次（这两句才是 72% 的真身）。
+_POOL_LOCK = threading.Lock()
+_POOL: dict[tuple[int, str, bool], list[sqlite3.Connection]] = {}   # 空闲连接 → key
+_DEPTH: dict[tuple[int, str], int] = {}                             # 主连接借出深度
+POOL_MAX_IDLE = 4                                                   # 每个 key 的空闲上限
+POOL_STATS = {"opens": 0, "reuses": 0, "wal_pragmas": 0, "real_closes": 0, "evictions": 0}
+
+
+class _PooledConnection(sqlite3.Connection):
+    """`close()` = **归还池**而非真关（这样既有 `finally: conn.close()` 一行都不用改）。"""
+    _pool_key: tuple[int, str, bool] | None = None
+
+    def close(self) -> None:                     # type: ignore[override]
+        key = self._pool_key
+        if key is None:                          # 未入池 ⇒ 真关
+            sqlite3.Connection.close(self)
+            POOL_STATS["real_closes"] += 1
+            return
+        with _POOL_LOCK:
+            _DEPTH[(key[0], key[1])] = max(0, _DEPTH.get((key[0], key[1]), 0) - 1)
+            idle = _POOL.setdefault(key, [])
+            idle.append(self)
+            while len(idle) > POOL_MAX_IDLE:     # 空闲上限 ⇒ 关最老的（防句柄泄漏）
+                old = idle.pop(0)
+                sqlite3.Connection.close(old)
+                POOL_STATS["real_closes"] += 1
+                POOL_STATS["evictions"] += 1
+
+
+def _real_close(conn: sqlite3.Connection) -> None:
+    conn._pool_key = None                        # type: ignore[attr-defined]
+    sqlite3.Connection.close(conn)
+    POOL_STATS["real_closes"] += 1
+
+
+def _new_connection(p: Path) -> sqlite3.Connection:
+    conn = sqlite3.connect(str(p), timeout=10.0, isolation_level=None,
+                           factory=_PooledConnection)
     conn.row_factory = sqlite3.Row
     # 顺序：busy_timeout 先于 journal_mode（切 WAL 要排它锁，先有锁等待预算；见 _set_wal）
     conn.execute("PRAGMA busy_timeout=10000")
     _set_wal(conn)
+    POOL_STATS["opens"] += 1
+    POOL_STATS["wal_pragmas"] += 1
     return conn
+
+
+def close_pool(db_path: Path | str | None = None) -> int:
+    """显式归还/关闭池里的连接（换库、删临时目录前调用）。返回真正关闭的连接数。"""
+    with _POOL_LOCK:
+        keys = list(_POOL)
+        n = 0
+        for key in keys:
+            if db_path is not None and key[1] != str(Path(db_path)):
+                continue
+            for conn in _POOL.pop(key, []):
+                conn._pool_key = None            # type: ignore[attr-defined]
+                sqlite3.Connection.close(conn)
+                POOL_STATS["real_closes"] += 1
+                n += 1
+            _DEPTH.pop((key[0], key[1]), None)
+        return n
+
+
+def _pool_take(db_path: Path, *, spill: bool = False) -> sqlite3.Connection:
+    p = db_path
+    p.parent.mkdir(parents=True, exist_ok=True)
+    ident = threading.get_ident()
+    key = (ident, str(p), spill)
+    with _POOL_LOCK:
+        idle = _POOL.get(key)
+        if idle:
+            conn = idle.pop()
+            POOL_STATS["reuses"] += 1
+            conn._pool_key = key                 # type: ignore[attr-defined]
+            if not spill:
+                _DEPTH[(ident, str(p))] = _DEPTH.get((ident, str(p)), 0) + 1
+            return conn
+    conn = _new_connection(p)
+    with _POOL_LOCK:
+        conn._pool_key = key                     # type: ignore[attr-defined]
+        if not spill:
+            _DEPTH[(ident, str(p))] = _DEPTH.get((ident, str(p)), 0) + 1
+    return conn
+
+
+def _connect(db_path: Path | str | None = None) -> sqlite3.Connection:
+    """取一条连接（含 busy_timeout）；`isolation_level=None` ⇒ 事务显式写 `BEGIN IMMEDIATE`。
+
+    609 B1：**优先复用**（同一线程、同一库路径、当前不在事务里 ⇒ 同一条连接）；
+    WAL/busy_timeout 只在真新建时执行。若当前已持有事务中的连接（嵌套调用）⇒ 给溢出连接，
+    与改造前"每次调用开新连接"的语义一致，不引入嵌套事务风险。
+    """
+    p = Path(db_path) if db_path else DB_PATH
+    with _POOL_LOCK:
+        depth = _DEPTH.get((threading.get_ident(), str(p)), 0)
+    return _pool_take(p, spill=depth > 0)
+
+
+def _atexit_close_pool() -> None:
+    try:
+        close_pool()
+    except Exception:                            # 解释器退出路径不许再抛
+        pass
+
+
+atexit.register(_atexit_close_pool)
 
 
 def _exec_ddl(conn: sqlite3.Connection, script: str) -> None:
@@ -300,11 +404,9 @@ def migrate(db_path: Path | str | None = None) -> int:
     """
     p = Path(db_path) if db_path else DB_PATH
     p.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(p), timeout=15.0, isolation_level=None)
+    conn = _pool_take(p, spill=True)       # 609 B1：迁移也走池（嵌套调用 ⇒ 溢出连接）
     conn.row_factory = sqlite3.Row
     try:
-        conn.execute("PRAGMA busy_timeout=15000")
-        _set_wal(conn)
         conn.execute("BEGIN IMMEDIATE")
         ver = int(conn.execute("PRAGMA user_version").fetchone()[0])
         if ver < SCHEMA_VERSION:
