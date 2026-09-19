@@ -1,0 +1,1651 @@
+{
+ "generated_at": "2026-09-19T15:27:00",
+ "git_commit": "5d2a6ae",
+ "files": [
+  {
+   "path": "References/architecture_架构演进/271_架构批判_阙疑v3十问_判据密度不足与收敛手术.md",
+   "sha256": "6a553cbb6df3a9a25c42e7780e6ca211d9792ee86f29ba6b6dd19f2eeb0c3677",
+   "size": 24059
+  },
+  {
+   "path": "References/architecture_架构演进/272_执行层架构_脚手架SCAFFOLD_Agent上下限宪章.md",
+   "sha256": "48a15667efed8269a20c5a1c08affc346e87d228be137200c3f187eb563e5d3f",
+   "size": 10946
+  },
+  {
+   "path": "References/architecture_架构演进/273_压力测试协议_GAUNTLET严考_把架构逼出真问题.md",
+   "sha256": "a348a0e39ea3d167176675c253c855568042bc6e9c6048e5f8a4ef1070796370",
+   "size": 6594
+  },
+  {
+   "path": "References/architecture_架构演进/274_创造力架构_锻炉FORGE与前额叶META_睿智创造系统.md",
+   "sha256": "1a6148de03c1d88551a5c1a0af1360eeb78c4ed9bcf5bfa99e38158ec7bb9f41",
+   "size": 11030
+  },
+  {
+   "path": "References/architecture_架构演进/275_外部思想批判吸收_发散学习加固四层架构.md",
+   "sha256": "8b17f2dadf1cd75cd7687dc6ff4e6c6cc5035d9400523d40b4ce9be2c11bc927",
+   "size": 11752
+  },
+  {
+   "path": "References/architecture_架构演进/276_P0四项加固工程化_从吸收表到可执行机制.md",
+   "sha256": "2c395e7df20574fd17af035de667a8f22b19b43ea6205d5d7321213b7dbe4918",
+   "size": 8770
+  },
+  {
+   "path": "References/architecture_架构演进/277_架构宪法CONSTITUTION_v1_自律系统单一事实源.md",
+   "sha256": "7f34fab4e5611c429ee49acba4dfc28abbdf2b1343355b0026e9daf82f78b32f",
+   "size": 13085
+  },
+  {
+   "path": "References/architecture_架构演进/278_内部红利审计_榨干现有系统每一丝潜力.md",
+   "sha256": "ce9dccd18006121132043b35408fda9e2a695ceff8481aada85a3f359fdd40b4",
+   "size": 8684
+  },
+  {
+   "path": "References/architecture_架构演进/279_外部思想调研第二轮_六缺口定向深挖.md",
+   "sha256": "f97b91abe67ea1f8f2517769446af432d83a28b40f225de6fcb94f3d7c20a635",
+   "size": 15039
+  },
+  {
+   "path": "References/architecture_架构演进/280_外部思想调研第三轮_无人自纠错闭环理论栈.md",
+   "sha256": "c0bb6b83f45f041387adcc150adc087908af254a7d442cf2763b74b85dc20cb5",
+   "size": 12535
+  },
+  {
+   "path": "References/architecture_架构演进/281_外部思想调研第四轮_饱和轮与总收束.md",
+   "sha256": "301f9c29b5686781268a0dfee2d4425c68dc2bfe6e9eb765c0b9f244821aece8",
+   "size": 11711
+  },
+  {
+   "path": "References/architecture_架构演进/282_架构进化提案_宪法v1_1_五修正案与内卷批判.md",
+   "sha256": "847852cfd095656b019ef941804dcb848147aa58c9532f627a5952f5f4f1b98f",
+   "size": 13325
+  },
+  {
+   "path": "References/architecture_架构演进/283_工具层升级提案_从被动工具箱到主动执行加速层.md",
+   "sha256": "b9dc8430ae0032eaa73e26b1c0671f1a48d3b1d227e4585f9d8ee2667fef7f07",
+   "size": 12793
+  },
+  {
+   "path": "References/architecture_架构演进/284_元批判_对调研的调研_外部思想是否极致严谨.md",
+   "sha256": "d7db2e50fecd2266539d423fd7032faf9e923ab74e5d80fcc90e3793d9c07497",
+   "size": 10151
+  },
+  {
+   "path": "References/architecture_架构演进/285_深度调研第一轮_反例精读跨领域_ABC全开.md",
+   "sha256": "bb679bb170eb36da686d214198a47a6fd0692704470d68269ceab28a1be36fae",
+   "size": 17133
+  },
+  {
+   "path": "References/architecture_架构演进/286_对极致的追求_停止条件与退化检测.md",
+   "sha256": "15cb38021be1238d73979895299116f58627b512c8b54b3ffa2156268415ae71",
+   "size": 11004
+  },
+  {
+   "path": "References/architecture_架构演进/287_概念审计报告_266至286全量收敛.md",
+   "sha256": "bbd29535e2a72cb8fd488aeeee12e43d3d57ef7ad003785f0c532b6449b31b3d",
+   "size": 16322
+  },
+  {
+   "path": "References/architecture_架构演进/288_架构思想层与工具层首次落地实现提示词_v0_1.md",
+   "sha256": "a88fcf11f34737b49c88fc650e0adb129cac83dd91469fe9111b6acb796c5b99",
+   "size": 20781
+  },
+  {
+   "path": "References/architecture_架构演进/289_调研档案分类清洗报告_85份全量整理.md",
+   "sha256": "2e66976cf9ac2908501be5cd907dcd91a763d767ea3fc7763fa9d8cd511dc89a",
+   "size": 11258
+  },
+  {
+   "path": "References/architecture_架构演进/290_资料研究吸收状态与质量评级.md",
+   "sha256": "bc2c157a5890e1ae086c3441b859e45e1a4912e360b5d73b30898720b4e0f482",
+   "size": 13220
+  },
+  {
+   "path": "References/architecture_架构演进/291_架构文档落地状态与概念实现映射.md",
+   "sha256": "8d3dd946138f659e349efe5c8c339e8f48b8dd07deccbd3988d32ddac01f9cd8",
+   "size": 10069
+  },
+  {
+   "path": "References/architecture_架构演进/292_tools工具普查与分类_90个全量.md",
+   "sha256": "6ed7dd867881666125580ced8f6c78ad1b93ce1974e0099f361c60621c263f06",
+   "size": 12275
+  },
+  {
+   "path": "References/architecture_架构演进/293_动态维护机制设计_frontmatter驱动自动生成CI门禁.md",
+   "sha256": "17e4af210df625a5757982c4b6d87d85a67e5bfe794403e5b3a0033d89285b27",
+   "size": 10866
+  },
+  {
+   "path": "References/architecture_架构演进/294_跨领域深度调研第五轮_航空容错军事红队证明论密码学Meadows.md",
+   "sha256": "1e9cfc9cc71336806a1fe23b5a4ce2ee049c0a0897792a384b8f9b89bf1c0f03",
+   "size": 18143
+  },
+  {
+   "path": "References/architecture_架构演进/295_294调研吸收落地_P0三项_红队v1.1_limitations_RULE-COVERAGE.md",
+   "sha256": "7bc525f356dd460d463710a566a6bb71c2508a8c53347f6eb44506c4e8ac9ef8",
+   "size": 7956
+  },
+  {
+   "path": "References/architecture_架构演进/296_294调研P1吸收_claim契约化v0.2_证据链归约化_CurryHoward.md",
+   "sha256": "375fed961e02126fb93913cfc9b63c52b174ea26461a3e064a322017b9628b21",
+   "size": 8624
+  },
+  {
+   "path": "References/architecture_架构演进/297_294调研P2吸收_GameHopping_HighImpact_证据最小化_双向追溯.md",
+   "sha256": "14169d9cf901e8953184a5429df2614d4a6ce9a0de302b09fc10a0cc319bd856",
+   "size": 8755
+  },
+  {
+   "path": "References/architecture_架构演进/298_G5第六批原子生产提示词_纪律升级后首批.md",
+   "sha256": "44cc86f0258c22ceb3d9bb62a7f999a79bc4672c4bfb2ac3cc738c7846630b7c",
+   "size": 8336
+  },
+  {
+   "path": "References/architecture_架构演进/299_仓库深度整理方案_诊断与分级执行.md",
+   "sha256": "25a85cd701517901462f482a598db0a56a947bfe0d6431d23333d3f38622cd1f",
+   "size": 6365
+  },
+  {
+   "path": "References/architecture_架构演进/300_四级状态自动化体系_从人审驱动到机器自治.md",
+   "sha256": "549fe17d6004de1a24e08716a8d90fe2b5282431d8d0b0f2de385bcce8a7a8c1",
+   "size": 9126
+  },
+  {
+   "path": "References/architecture_架构演进/301_replay三分类架构调研_confirm_refute_infra_error.md",
+   "sha256": "5c97d20b1b338106ba1cf0c90c05bc24e9ab971377f525c8231385c96cf27fdf",
+   "size": 10616
+  },
+  {
+   "path": "References/architecture_架构演进/302_证据卡三层分离瘦身架构调研_核心卡留痕外置修订史git化.md",
+   "sha256": "f86890c4b8d72de6d426000187e3b8c1c735c3c24509c6aafc3657201f0bd120",
+   "size": 10719
+  },
+  {
+   "path": "References/architecture_架构演进/303_Writer阶段预防机制架构调研_把红队拦截前置到自检.md",
+   "sha256": "7924665d14f742c930850018830ad68d0972bb977fbb42a594df53cfdbb44106",
+   "size": 11672
+  },
+  {
+   "path": "References/architecture_架构演进/304_S6工具债收紧与证据卡迁移脚本架构调研.md",
+   "sha256": "141f66e8e46bc2c1583bb4e2ae878f3046da24225d53b7c93c67e7eb77d4918f",
+   "size": 13408
+  },
+  {
+   "path": "References/architecture_架构演进/305_红队制衡体系进化架构调研_从v1.1到v2.0_错误预测命中率与效能度量.md",
+   "sha256": "3876343ea36af0a51f671d89d8f4b2a69d4d21e84147288050d6ca4b9eb3123e",
+   "size": 9696
+  },
+  {
+   "path": "References/architecture_架构演进/306_原子知识图谱与关系网络架构调研_从扁平列表到可导航知识体系.md",
+   "sha256": "8d0587e1d40e4018cd398a513b79acdbbe98cd7e84260c992db77450eb0e7613",
+   "size": 10431
+  },
+  {
+   "path": "References/architecture_架构演进/307_CONC域前置勘察架构调研_从空白域到首批原子的选题与实验设计.md",
+   "sha256": "369f63c49f01fb48fb7a97864e2df86efc53561505f3dcb6e9a7cbff017fdd1c",
+   "size": 9963
+  },
+  {
+   "path": "References/architecture_架构演进/308_多模型协作架构调研_从单模型流水线到模型专长网络.md",
+   "sha256": "8a591104a542413d91f5daf24e5e338069f90de09a64a0e77f50faf353c3cf54",
+   "size": 10108
+  },
+  {
+   "path": "References/architecture_架构演进/309_Book与原子同步机制架构调研_从脱节到证据驱动的教材.md",
+   "sha256": "e843ebfc8436fdb6c7298d158f692185aebf101a490941275659203920b993d2",
+   "size": 7297
+  },
+  {
+   "path": "References/architecture_架构演进/310_CI加速架构调研_从串行1.5小时到并行20分钟.md",
+   "sha256": "9a6683d6cc0d68139733815f46edfb8e42282f5ba9b11b588c92290b35bee6c9",
+   "size": 7833
+  },
+  {
+   "path": "References/architecture_架构演进/311_教学转化体系架构调研_从原子证据到可教学的完整学习闭环.md",
+   "sha256": "d4f2639c4ebb0c913ae4802602e46afd230519ca1014625dd20b6ed86b7d47f8",
+   "size": 9429
+  },
+  {
+   "path": "References/architecture_架构演进/312_第六批CONC域首批原子生产提示词.md",
+   "sha256": "b0c40ac43cdfc6071d4f6d52560ba7bfc6003a0723e9dc9d28e9728a1fde67d2",
+   "size": 7278
+  },
+  {
+   "path": "References/architecture_架构演进/313_第六批CONC域执行提示词.md",
+   "sha256": "5312e1b01bfe0710e6fc6570bab41e61dd92e131a041affdf76df1dc3a62e2c6",
+   "size": 7288
+  },
+  {
+   "path": "References/architecture_架构演进/314_架构改进落地与CONC-001修正_执行提示词.md",
+   "sha256": "e9e7ad097aa12ddd66fd3f6f8ef428157bc3b574e234335985dca11a95140f3f",
+   "size": 9272
+  },
+  {
+   "path": "References/architecture_架构演进/315_外部思想吸收_突变测试_模型检查_双环自我改进.md",
+   "sha256": "ad11970da67c84ea8b529efa3c93ccaf6bfde639f167bdd4646b462a70e971fb",
+   "size": 10215
+  },
+  {
+   "path": "References/architecture_架构演进/316_多模型协作近期落地与可复现标准对齐.md",
+   "sha256": "3572c347389d66d5d82004952aa5a9820dfb0c711f36c54522a28a7be7b4fff7",
+   "size": 6248
+  },
+  {
+   "path": "References/architecture_架构演进/317_阙疑性能优化架构_从单窗口1文件到流水线并行.md",
+   "sha256": "5db6c99a0492159e307e4c15ef408a3b7526e6a610eaa9b0a7a1717af9c6c47a",
+   "size": 8884
+  },
+  {
+   "path": "References/architecture_架构演进/318_阙疑哲学底座_形式化验证_反脆弱_元认知_证伪主义.md",
+   "sha256": "9833065e8db92c315d0616594352efac8bd436927c1b75ba18bd87747c8a9a86",
+   "size": 12003
+  },
+  {
+   "path": "References/architecture_架构演进/319_工具链性能深度优化_ccache_WSL_IO_增量扫描.md",
+   "sha256": "bd68b634f294c3fc4fef7037a84b96af716e82f84afc76c7e1575911eec77f02",
+   "size": 8903
+  },
+  {
+   "path": "References/architecture_架构演进/320_第六批CONC域收口与工具链P0优化_执行提示词.md",
+   "sha256": "d09e0fffeaa22e04b76d9db2edb15a8da3584c729714c5561695f8c99e6154f1",
+   "size": 11226
+  },
+  {
+   "path": "References/architecture_架构演进/321_阙疑跨学科理论基础_机制设计_信息论_控制论_学习科学.md",
+   "sha256": "b286f07a7c3a2cf49f23b68b4be9f18cfd602c449960dbd77bcf1a2e6535c432",
+   "size": 11910
+  },
+  {
+   "path": "References/architecture_架构演进/322_阙疑六学科深度调研_形式化验证_认知架构_科学哲学_贝叶斯_分布式_编译器.md",
+   "sha256": "0cdae1563c31280e99483ebaf997d8ad3a7590a11b0b43273a6e8051263b484d",
+   "size": 17230
+  },
+  {
+   "path": "References/architecture_架构演进/323_阙疑六新学科深度调研_范畴论_复杂网络_自由能_进化算法_对抗鲁棒_可观测性.md",
+   "sha256": "5163b186d311f89d838931eb97b4e467a49caeed285f72ded1b83c6db1c10fc3",
+   "size": 14083
+  },
+  {
+   "path": "References/architecture_架构演进/324_阙疑第三轮六学科调研_量子_博弈论_认知偏差_符号执行_本体论_热力学.md",
+   "sha256": "5f82a9142121eb1b7b3faba6b5a291739c4be5da6b9294214461ca70412210ae",
+   "size": 14740
+  },
+  {
+   "path": "References/architecture_架构演进/325_阙疑第四轮六学科调研_运筹学_统计学_机器学习_密码学_人机交互_生态学.md",
+   "sha256": "97164b30c1da8b2210400418d57c5d17e860128aa692f801c328e64530f2a07f",
+   "size": 12354
+  },
+  {
+   "path": "References/architecture_架构演进/326_阙疑第五轮六学科调研_语言学_行为经济学_混沌理论_法学_医学诊断_建筑学.md",
+   "sha256": "f473eacd1555d74a9f5db28a9e5d3db8a2f6aee31ea1c1c7ea00f0dcc30748da",
+   "size": 13785
+  },
+  {
+   "path": "References/architecture_架构演进/327_第六批CONC域收口与工具链优化_综合执行提示词.md",
+   "sha256": "9ddd08821344dc765f621b055a05cf30167af09a4824b40225a24cd23bb59b82",
+   "size": 12091
+  },
+  {
+   "path": "References/architecture_架构演进/328_阙疑第六轮六学科调研_系统工程_安全工程_知识管理_决策科学_精益生产_科学史.md",
+   "sha256": "03e0cc716cfc2cec21990d4547fb982644cad00b4fbe2ee4c9f9d4f7ca2d341c",
+   "size": 16039
+  },
+  {
+   "path": "References/architecture_架构演进/329_阙疑AI Agent前沿十二方向调研_架构_评估_提示工程_RAG_多智能体_工具_记忆_推理_压缩_对齐_可解释性_安全.md",
+   "sha256": "c633ff707cd5a6a77a8e509ca2511369f2287a9947a44a187f1db01966983b7c",
+   "size": 15445
+  },
+  {
+   "path": "References/architecture_架构演进/330_阙疑第八轮六学科调研_分析哲学_现象学_设计理论_技术史_组织社会学_发展心理学.md",
+   "sha256": "530439917ba139aef860907d6bc3c70e58456bc5688a398c37e9e2ba5de7e4b2",
+   "size": 14197
+  },
+  {
+   "path": "References/architecture_架构演进/331_阙疑第九轮六方向调研_DevOps_SRE_数据库_操作系统_网络_认知科学_美学.md",
+   "sha256": "c5b36fa5099e5e9bb49d57623a239cbab6684c480cc098ad5784533be7270298",
+   "size": 14718
+  },
+  {
+   "path": "References/architecture_架构演进/332_阙疑第十轮六方向调研_数学基础_编译器深度_形式化方法_音乐理论_叙事学_人类学.md",
+   "sha256": "e83d64a127be9cf3858844d1e6c123f860e389d5569c0278148cb97cd5f48f68",
+   "size": 16669
+  },
+  {
+   "path": "References/architecture_架构演进/333_阙疑第十一轮六方向调研_代数拓扑_量子力学_分子生物学_微分几何_统计力学_神经科学.md",
+   "sha256": "6b1dfceded2eac9f2e8625fa41aac65b42035f0a5510e475809c96634b2a6b53",
+   "size": 4757
+  },
+  {
+   "path": "References/architecture_架构演进/334_阙疑第十二轮六方向调研_泛函分析_凝聚态物理_免疫学_组合数学_相对论_进化生物学.md",
+   "sha256": "aadccf4b800e2e5c555ddc6c0393a77f5197c7627e7c7e1ce663b86e6d0b8402",
+   "size": 5542
+  },
+  {
+   "path": "References/architecture_架构演进/335_阙疑第十三轮六方向调研_机器人学_计算机图形学_计算机视觉_NLP_推荐系统_数据挖掘.md",
+   "sha256": "52aed156dfee6218a32e9c02d929db6f49dab9d2c5f0ffa41e0ae55c584abe52",
+   "size": 5793
+  },
+  {
+   "path": "References/architecture_架构演进/336_阙疑第十四轮六方向调研_电影理论_戏剧理论_舞蹈理论_建筑理论_摄影理论_设计史.md",
+   "sha256": "dd78ce2447cf0e259baf4a8fa9af5f9a86a32a5c7ebfa4e2916855b56cc6f2e2",
+   "size": 6685
+  },
+  {
+   "path": "References/architecture_架构演进/337_阙疑第十五轮六方向调研_语言学_符号学_修辞学_诠释学_美学_伦理学.md",
+   "sha256": "f5fd7dafb157012e262cf124a01b360d3481b4ad0c2d7e5c6aabaaaeb17807a0",
+   "size": 6843
+  },
+  {
+   "path": "References/architecture_架构演进/338_阙疑第十六轮六方向调研_认识论_形而上学_逻辑学_科学哲学_心灵哲学_政治哲学.md",
+   "sha256": "b0af470ea0d7996b7e4f145278fe8a683e4820c6c55bf3487d5ae25ae03e9676",
+   "size": 7386
+  },
+  {
+   "path": "References/architecture_架构演进/339_阙疑第十七轮六方向调研_社会学_人类学_考古学_历史学_地理学_心理学.md",
+   "sha256": "914da8edbe3d79c96e1c4963bd3d289c78a6436e94bf772f4fd5e44035494449",
+   "size": 7660
+  },
+  {
+   "path": "References/architecture_架构演进/340_阙疑第十八轮六方向调研_经济学_管理学_法学_教育学_传播学_信息科学.md",
+   "sha256": "c546c6f77d510505e7d08aa772daf15295f416fcdb165e7598be5b68e755d9dd",
+   "size": 8003
+  },
+  {
+   "path": "References/architecture_架构演进/341_阙疑第十九轮六方向调研_数学_统计学_计算机科学_人工智能_认知科学_系统科学.md",
+   "sha256": "f97ccbe1dd7ba0fee178413f9f43f5be3cf37b80569ad9ecc6adebfa75546ee5",
+   "size": 8312
+  },
+  {
+   "path": "References/architecture_架构演进/342_阙疑第二十轮六方向调研_哲学_宗教学_神话学_文学理论_艺术理论_文化研究.md",
+   "sha256": "a97cfd5429b7cd9337500488a33ce19ca4a7eb8a8a4892c28260c5611c2fc4d4",
+   "size": 9405
+  },
+  {
+   "path": "References/architecture_架构演进/343_第六批CONC域收口与CONC-003生产_执行提示词.md",
+   "sha256": "84335653c9e24b3cc093b66f3da26a31d1b689fd02b80eb79d5d53f504d1a15c",
+   "size": 10234
+  },
+  {
+   "path": "References/architecture_架构演进/344_阙疑全量知识消化第一轮_126方向综合收敛与架构进化路线图.md",
+   "sha256": "72be1761cd823f0e4de98cf757fa3b9deb92c7ecf4e961ab2deec9c9469159bd",
+   "size": 11332
+  },
+  {
+   "path": "References/architecture_架构演进/345_阙疑全量知识消化第二轮_六层分解与每层进化清单.md",
+   "sha256": "5d41daa82c6a1f6ee96d6ec00e21d67c725e7eda55b8dc500cf2374f10a0fc26",
+   "size": 12616
+  },
+  {
+   "path": "References/architecture_架构演进/346_阙疑全量知识消化第三轮_批判式自我审查与盲区识别.md",
+   "sha256": "8efa8f1ec9eb13b27d3a87af57b22f512eb70b3aacb5bc4156655977270f4a2b",
+   "size": 13058
+  },
+  {
+   "path": "References/architecture_架构演进/347_阙疑全量知识消化第四轮_与现有系统深度对比_定位差距与差异化优势.md",
+   "sha256": "5958b02fc725eb02583a3ed797d4c70ccf86f997bf23c94a7f811715b08853eb",
+   "size": 13693
+  },
+  {
+   "path": "References/architecture_架构演进/348_阙疑全量知识消化第五轮_内卷式深度吸收_七原则的实现路径失败模式与验证.md",
+   "sha256": "a9403e988d04e8a33239fd45dd101d360506769dfd9f7442112b9651771f8411",
+   "size": 17105
+  },
+  {
+   "path": "References/architecture_架构演进/349_阙疑全量知识消化第六轮_跨学科联系发散矩阵_学科交叉产生的新架构洞察.md",
+   "sha256": "b0aaede40c74b10138fad0479dbf77c214839058738d7065c5edb6d0f50ae6da",
+   "size": 15224
+  },
+  {
+   "path": "References/architecture_架构演进/350_阙疑终极架构蓝图_从32%到100%的进化路线图.md",
+   "sha256": "109508b70e6cec80f87aafad267f1f7fa4b965551ef45ddf0872f8822eff04b7",
+   "size": 12164
+  },
+  {
+   "path": "References/architecture_架构演进/351_阶段A-1_错误预测命中率追踪_执行提示词.md",
+   "sha256": "e36038eac3b6eaf0a2be55e373975d2883e6cfc08b281a748d80209598ce6d27",
+   "size": 6523
+  },
+  {
+   "path": "References/architecture_架构演进/352_阶段A-2_S6工具债P4-P7收紧_执行提示词.md",
+   "sha256": "b9be3c1b6c0d10daa2e0e132a2f966eb915636eb49b771fac148b9cc2b2f4483",
+   "size": 7173
+  },
+  {
+   "path": "References/architecture_架构演进/353_阙疑架构完整规范v1.0_从原则到可执行的系统级设计.md",
+   "sha256": "f08db0b2dd2cf66d6d635b3f40b5e1367dca44ffc0364ba9afb749ad2459abfc",
+   "size": 36305
+  },
+  {
+   "path": "References/architecture_架构演进/354_架构规范v1.0内部批判_10个真实漏洞与攻击面.md",
+   "sha256": "8cef9ce6de3c61f79767a8439e854455edc7a8883281f0a0f3b7fd3d3b23bbb3",
+   "size": 13512
+  },
+  {
+   "path": "References/architecture_架构演进/355_外部攻击资料整合_6个方向的攻击面与阙疑映射.md",
+   "sha256": "d557be1f907d205bef2e1149ba386fc34704581c558c628b3bc68c412b8edfb3",
+   "size": 14044
+  },
+  {
+   "path": "References/architecture_架构演进/356_综合攻击面报告_内部10漏洞+外部6方向合并_按严重度排序.md",
+   "sha256": "eba5f758b23eb12f51519138905eabe311685283fbb787a9a1cc90330336e870",
+   "size": 11870
+  },
+  {
+   "path": "References/architecture_架构演进/357_阙疑架构规范v1.1_对抗级修订_从设计级到对抗级.md",
+   "sha256": "55b8c031b18128412de8607da654656db0534455ffe852164c782ac2b2943018",
+   "size": 25777
+  },
+  {
+   "path": "References/architecture_架构演进/358_阙疑架构v2.0_从质量管理系统到认知-生产-进化系统.md",
+   "sha256": "e404122cf6f8cbac4c7b8c5ce8ff356f5e0113b7c2320d8fcf004495e52bf27a",
+   "size": 19972
+  },
+  {
+   "path": "References/architecture_架构演进/359_认知层形式化_科学发现状态机_溯因推理_判别实验.md",
+   "sha256": "8f75346d586621776b031c14da04d451c33ee81e8bc0fcd9a74cc38c5d565a86",
+   "size": 13090
+  },
+  {
+   "path": "References/architecture_架构演进/360_知识进化论_理论综合_范式革命检测_研究纲领建模.md",
+   "sha256": "b6a78720f38d846fc5d6c9665cb37b512c7343db9c83066ddb3946e93745cc6b",
+   "size": 13261
+  },
+  {
+   "path": "References/architecture_架构演进/361_多认知角色网络_8认知角色契约_协作协议_异质模型配置.md",
+   "sha256": "654e9150635f73b323f46a3529fdb0f2067796b3c399c2963a5152b77c94147a",
+   "size": 14626
+  },
+  {
+   "path": "References/architecture_架构演进/362_理解验证体系_L0-L4理解度_评测题生成_掌握度评估.md",
+   "sha256": "e9b17d0998ed51b95168c8044e513bde51d8ec9418cd7bf0081e916532438959",
+   "size": 11666
+  },
+  {
+   "path": "References/architecture_架构演进/363_元认知与主动学习_知识边界地图_错误自分析_研究优先级_三环学习.md",
+   "sha256": "80becbd0147505d76f56cd1e258869811bf3eae245233bc2c6b1ceba805508ae",
+   "size": 15194
+  },
+  {
+   "path": "References/architecture_架构演进/364_v2.0数据模型扩展_新对象Schema_与v1.x契约的兼容迁移.md",
+   "sha256": "b8b549076da5343537e80b20aac89ac3fe4be3c1cb90dadcd1df6a2c7ccd5c14",
+   "size": 16961
+  },
+  {
+   "path": "References/architecture_架构演进/365_执行提示词_对抗性批判阙疑架构v2.0.md",
+   "sha256": "bc4d85cb61d8be1933e12ae72f7856a42e3d379ab044c3d155cc7d81d36201d9",
+   "size": 12226
+  },
+  {
+   "path": "References/architecture_架构演进/366_第三轮自我批判_元层面_v2.0的架构观之失.md",
+   "sha256": "dcf0c5d4ec4f47a8b0b8ec9b75bb4f74e12fd379921d64b469659817b30a277a",
+   "size": 17058
+  },
+  {
+   "path": "References/architecture_架构演进/367_阙疑v3.0_轻内核与演化架构_五条生成性原理.md",
+   "sha256": "e443a01969180eeaf04615f1e3e8b9bbaa4e06c250200d24f95b4f946f8e1c37",
+   "size": 12312
+  },
+  {
+   "path": "References/architecture_架构演进/368_独立红队对抗报告.md",
+   "sha256": "8ef6d0055a2dd691f74cae51799467f4f1ec92b51f179470d74f3eda8971dada",
+   "size": 46680
+  },
+  {
+   "path": "References/architecture_架构演进/369_执行提示词_架构收口与放权地基接线.md",
+   "sha256": "cf864c272e488cb5e6423a0f22a28a795c23d190a4345fb0db25c793a2ea186b",
+   "size": 12624
+  },
+  {
+   "path": "References/architecture_架构演进/370_差模型杂活_工作树卫生清理与只读盘点.md",
+   "sha256": "fe66464c0d99b0d71ee009931a3a082fe6aeac8bcc73d442d89c8ac07b04d147",
+   "size": 5948
+  },
+  {
+   "path": "References/architecture_架构演进/371_执行提示词_MCC首次落地与系统压力测试.md",
+   "sha256": "d051f3959b329e6f1dd88d07c8a87c07fae26d47cb1f5a7f83284e9e53aca1db",
+   "size": 7855
+  },
+  {
+   "path": "References/architecture_架构演进/372_阙疑架构进化_内卷到底版.md",
+   "sha256": "089a03c5ab71981e6f61f814bf5031625032eef7c2868394e12c279e6bbb404b",
+   "size": 13940
+  },
+  {
+   "path": "References/architecture_架构演进/373_阙疑v5_独立对抗渗透_投喂提示词.md",
+   "sha256": "17f828b62c3148779084d8f85874c1d7de9daa1494dcaab7ae8d9f1e6cf9fe74",
+   "size": 20750
+  },
+  {
+   "path": "References/architecture_架构演进/374_语义自律外部调研_从搜集到应用.md",
+   "sha256": "408655345b5beb71a922cc5ca6438c92c0fc3bfea4212310776802cb11b1cdcd",
+   "size": 8598
+  },
+  {
+   "path": "References/architecture_架构演进/375_证据智能与跨原子矛盾检测_从搜集到应用.md",
+   "sha256": "0da32540c9c066626556db61576c24440cd6cc94be4760824624fbecfa7f2418",
+   "size": 10562
+  },
+  {
+   "path": "References/architecture_架构演进/376_系统鲁棒性与多模型编排_从搜集到应用.md",
+   "sha256": "6e06dc8849217993c7886cf11bd5c29ad5a1394535fd5621244fec8fe84c223f",
+   "size": 10615
+  },
+  {
+   "path": "References/architecture_架构演进/377_认知智能与教学转化_从搜集到应用.md",
+   "sha256": "521769ee003c83c01ee872105051a0eed40835dd143fa5c92147ae0d012a659f",
+   "size": 10364
+  },
+  {
+   "path": "References/architecture_架构演进/378_平台化与专用脚手架_从搜集到应用.md",
+   "sha256": "b18b8aec5993d536a0d4b3fb93843c3e4c0abd9d094931b8900f566f299eff67",
+   "size": 10061
+  },
+  {
+   "path": "References/architecture_架构演进/379_自我进化与元认知闭环_从搜集到应用.md",
+   "sha256": "cc1b736b929b40059a116fe2dcd3c3f9d927b4601999ce06a1141b0b367abcf0",
+   "size": 11550
+  },
+  {
+   "path": "References/architecture_架构演进/380_知识网络化_从原子集合到可计算知识图谱.md",
+   "sha256": "73c71cc162c1aabd9dc6e7eb4a3da831e81fe20570b6245860572d56c21769bb",
+   "size": 12030
+  },
+  {
+   "path": "References/architecture_架构演进/381_多智能体协作与系统评估_从搜集到应用.md",
+   "sha256": "8031007d57bcdbb3ff1d0f98291973432c483bfb4a26a6a11ab3060fafb3a071",
+   "size": 10930
+  },
+  {
+   "path": "References/architecture_架构演进/382_对抗工程化与形式化验证_从一次性对抗到持续进化引擎.md",
+   "sha256": "44d90ae8dd54a06edc21de4fe9478e314201bb6eca89fd90ab1857a7c7f555d4",
+   "size": 12703
+  },
+  {
+   "path": "References/architecture_架构演进/383_上下文工程与长任务管理_解决吞吐下降的根因.md",
+   "sha256": "17d833bbc9d28a5aa55ceb84621de4dc316687be51fd43819e315a70cbbf0fc5",
+   "size": 13524
+  },
+  {
+   "path": "References/architecture_架构演进/384_多模型路由与混合编排_榨干每一丝性能的最直接杠杆.md",
+   "sha256": "ef36734e590a2db08cfeba9c03b57e48ea2be422a18e153446aa1df7d053860f",
+   "size": 13161
+  },
+  {
+   "path": "References/architecture_架构演进/385_数据飞轮与主动学习_让系统越用越强的核心机制.md",
+   "sha256": "6a73f6cf09c9bc9e03492f3fa843be673ced2e309a9bdff4b08ccdb212b94cd7",
+   "size": 14626
+  },
+  {
+   "path": "References/architecture_架构演进/386_提示词工程极致化_用最少的token写最有效的提示词.md",
+   "sha256": "e05270013ff9680916bb07ded268a12d503fe153992b513ab8937f839553de2c",
+   "size": 13967
+  },
+  {
+   "path": "References/architecture_架构演进/387_可观测性与Agent调试_知道Agent在干什么哪里慢哪里错.md",
+   "sha256": "25f633e285d95e23ab392b27ba6d8601a964ff64390fa116be5dbda5fc1bc985",
+   "size": 4903
+  },
+  {
+   "path": "References/architecture_架构演进/388_安全与PromptInjection防御_Agent系统的安全边界.md",
+   "sha256": "f132fe1a9770b182ce5cc285fc3813e573e9b6a57b304c8a7554c74e2ceec4f3",
+   "size": 5001
+  },
+  {
+   "path": "References/architecture_架构演进/389_Agent自评估与自纠错闭环_离开人也能自己纠错.md",
+   "sha256": "f794dd89b31af78e722ae1a54139ea49de2d78d23ae65da1ec54cdc261456cb1",
+   "size": 5916
+  },
+  {
+   "path": "References/architecture_架构演进/390_知识蒸馏与教学转化_从原子到教科书的完整链路.md",
+   "sha256": "4c314696e1541d55cc66bb417833bec06fc8b70e28b595ffbbe4ba2f40114500",
+   "size": 4253
+  },
+  {
+   "path": "References/architecture_架构演进/391_形式化验证与因果推断_claim的数学级验证.md",
+   "sha256": "4d54e8b813e1384f5aac4da41a6fcb58fcef8a616d6f0d5aa35513e25808b4ad",
+   "size": 4809
+  },
+  {
+   "path": "References/architecture_架构演进/392_编译器与工具链深度利用_榨干每一丝诊断能力.md",
+   "sha256": "14130a180efd740accf5cfe0f3362643b452aa8e8ce840ef8146f405b393e70b",
+   "size": 4951
+  },
+  {
+   "path": "References/architecture_架构演进/393_信息搜集与消化吸收外置_从搜一次就写到迭代检索加外置消化.md",
+   "sha256": "f5b0251ae0fc57a728cdbb9f7687ac208d83405b4f1de1fc0dea8728aee6bbe7",
+   "size": 10096
+  },
+  {
+   "path": "References/architecture_架构演进/394_脚手架提升与外置数据库_从Bash脚本到MCP标准从扁平文件到向量加图混合.md",
+   "sha256": "9bebf531b9dda3ce2176ac78245a8724f65dec6320ba0f52953ba0fde206d1e5",
+   "size": 8584
+  },
+  {
+   "path": "References/architecture_架构演进/395_Fuzzing自动化任务分解规划性能剖析_三个垂直领域的深度提升.md",
+   "sha256": "139cb1dbe362657c32c8536264bb90bea433e4b5e7db99c86ddf759143c8dfa0",
+   "size": 7882
+  },
+  {
+   "path": "References/architecture_架构演进/396_元调研_22份架构调研的消化吸收批判与落地路线图.md",
+   "sha256": "753946204513a6242b7e75dd79ab1738719fe78097617c268b73d2e619611bec",
+   "size": 11817
+  },
+  {
+   "path": "References/architecture_架构演进/397_批判的批判_对396落地路线图的六处深层质疑.md",
+   "sha256": "19243b752c2f13ada63de416bcb975d46c75c8cd57ff0cb28bd6ad0fa1d0b259",
+   "size": 8070
+  },
+  {
+   "path": "References/architecture_架构演进/398_P0落地实施方案与自我内卷_从7项精简到3项核心.md",
+   "sha256": "cccfc9acc48187857096b7b0a75c3756b83bb1d8360c9ebdbd02b389bc63e236",
+   "size": 8847
+  },
+  {
+   "path": "References/architecture_架构演进/399_阙疑v6.0_完整架构蓝图_整合25份调研的终极形态.md",
+   "sha256": "f913dff914ef5adc8cb3a1490e5e77c7917ae2f22d772cda61c8acc0b816261f",
+   "size": 16892
+  },
+  {
+   "path": "References/architecture_架构演进/400_阙疑v6.0逻辑自洽性审查_10个结构性问题与修复.md",
+   "sha256": "fcaaa51843b05d35682f1c32910253b18ce083387597de5ede9506c24f285dd3",
+   "size": 9561
+  },
+  {
+   "path": "References/architecture_架构演进/401_阙疑v6.1搭建执行提示词_极致版.md",
+   "sha256": "b4eaf464286f3527542849df166825d90191db00c7cf04e8dd1228663929f9fb",
+   "size": 13945
+  },
+  {
+   "path": "References/architecture_架构演进/402_阙疑v6.1架构对抗提示词_投喂独立模型.md",
+   "sha256": "a03a884994fe0b831864ae216abf6ef45da71c88fa6a4f470a00b6b169c1b9cd",
+   "size": 12277
+  },
+  {
+   "path": "References/architecture_架构演进/403_苦力Agent下一轮执行提示词_401剩余任务.md",
+   "sha256": "c40e2e7b8e29b54fcdcda4eadd6caab3d221c6e0519fb5978f5a6dc120e3a0da",
+   "size": 14161
+  },
+  {
+   "path": "References/architecture_架构演进/404_阙疑系统健康度评估体系_五维模型与对抗管道.md",
+   "sha256": "3f64bb717ab059a80269d7eee75d986706d6e4ecd615d5792242752c92fe39f1",
+   "size": 10873
+  },
+  {
+   "path": "References/architecture_架构演进/405_阙疑教学转化体系_从原子库到可学习内容.md",
+   "sha256": "e53944fd3303acc32ea580a34e7c0f688e65c723c2888a39dae52b07b9901462",
+   "size": 8851
+  },
+  {
+   "path": "References/architecture_架构演进/406_阙疑增量知识更新与版本管理_原子会老数据会过期schema会变.md",
+   "sha256": "6d4dd2133eb147dfebc93cdb6fe0af86164619515994916fabc9693095899897",
+   "size": 9536
+  },
+  {
+   "path": "References/architecture_架构演进/407_阙疑提示词压缩与Token成本优化_五层压缩与缓存联合优化.md",
+   "sha256": "66802b8e519b73356fb0f34d601259da8a4342086f649a024fd91160cb2805dc",
+   "size": 9443
+  },
+  {
+   "path": "References/architecture_架构演进/408_苦力Agent下一轮执行提示词_安全残留修复+版本管理P0+闪卡工具.md",
+   "sha256": "524da003e41f89cf20738de99142f8a874ce87611ff53fd64d09f8020a4c65b0",
+   "size": 8136
+  },
+  {
+   "path": "References/architecture_架构演进/409_阙疑对抗防御体系化_成熟度评估+攻击面分类+纵深防御+持续红队.md",
+   "sha256": "321a94fb3ceeb7d23ead5b9118b6936011ec9cd0d5e0e95bed7b8e440fe21a9e",
+   "size": 9456
+  },
+  {
+   "path": "References/architecture_架构演进/410_苦力Agent下一轮执行提示词_毒样例攻击面分类+健康度仪表盘+312压缩统计.md",
+   "sha256": "d3595e5cbecf29695f0891eac40c71f4d8ae50e5818bb1e7dbd426deab03bb75",
+   "size": 7181
+  },
+  {
+   "path": "References/architecture_架构演进/411_元调研_阙疑调研方法论的自我批判与升级.md",
+   "sha256": "9741a9544817f3724bbb65c6dfc289292ad0d23678e57779522fcd05c2810660",
+   "size": 8191
+  },
+  {
+   "path": "References/architecture_架构演进/412_阙疑成本核算与Token经济学_每颗原子多少钱+Pareto优化.md",
+   "sha256": "46972b6d16b97364ace2cbfbd8c1cbcd1d094e91dc46411898ec42a329a58fed",
+   "size": 9600
+  },
+  {
+   "path": "References/architecture_架构演进/413_阙疑错误分类与自动修复_哪些能机器修哪些必须人审.md",
+   "sha256": "7188991bbb7872e3e478b181544d1e216af4bc97dfabbc360bf1bad55e97f315",
+   "size": 9159
+  },
+  {
+   "path": "References/architecture_架构演进/414_苦力Agent执行提示词_402对抗修复批_P0三阻断+P1五高危.md",
+   "sha256": "306fc719b22e089f970a80815c3f1ae0be83990456d696a70a18947d044625f1",
+   "size": 8329
+  },
+  {
+   "path": "References/architecture_架构演进/415_知识冲突L1结构检查设计_relations矛盾+serves悬空+误解悬空.md",
+   "sha256": "25444404b2a2e6a0b45d88fb2b969d869531d018698ba17ae984a5099f8f1b63",
+   "size": 10506
+  },
+  {
+   "path": "References/architecture_架构演进/416_全量消化_42份调研的元模式转化率与未解决根本问题.md",
+   "sha256": "c26077bfadc351d1c43c755d8dcaa56df60e27e46a755086248b09c24900e7e3",
+   "size": 9756
+  },
+  {
+   "path": "References/architecture_架构演进/417_苦力Agent执行提示词_415D1_relations矛盾检测_ATOM-REL-CONFLICT.md",
+   "sha256": "25ecb559679b9ce3cae638899a492155fbcb44b1a911545f57218fb28ba5a490",
+   "size": 7881
+  },
+  {
+   "path": "References/architecture_架构演进/418_落地路线图_44份调研到可执行工程计划_带验证闭环.md",
+   "sha256": "1b5f5b4e404845220f55c8d25bdac4a0876677aff4f946c593811b87dfb60c8c",
+   "size": 8765
+  },
+  {
+   "path": "References/architecture_架构演进/419_验证闭环框架_从毒样例到攻击用例回归库到自治红队.md",
+   "sha256": "469d29e594a9beb285c6449542c9bc71bac8e680f6fc3083f4453c4e3a4a93bd",
+   "size": 10340
+  },
+  {
+   "path": "References/architecture_架构演进/420_苦力Agent执行提示词_413Writer自检层_7项确定性检查零token.md",
+   "sha256": "d0b2e6675a0300011c3e28ea721860e66e0416dbf469e4a3234857197e49a797",
+   "size": 8452
+  },
+  {
+   "path": "References/architecture_架构演进/421_苦力Agent执行提示词_412成本追踪_cost_tracker_CPVA基线.md",
+   "sha256": "7bc0d913e3c0fee292b215d3882e2537d8e99ae77eacbbf2f357068254bbbe09",
+   "size": 7234
+  },
+  {
+   "path": "References/architecture_架构演进/422_深度消化_剩余调研落地转化+反面教训系统化+后续调研方向.md",
+   "sha256": "96bb8abf762419d881662d24d10bb5173e70ec98ae4bae1de6739800eaedfb9b",
+   "size": 13705
+  },
+  {
+   "path": "References/architecture_架构演进/423_苦力Agent执行提示词_405闪卡导出工具_原子+误解→AnkiCSV.md",
+   "sha256": "8f8c0a2e064ab45f033c6f7e843abe54718fc7a107f3ac722d9a20207b5d406b",
+   "size": 6386
+  },
+  {
+   "path": "References/architecture_架构演进/424_苦力Agent执行提示词_409毒样例A1-A10分类+补A4A8A10盲区.md",
+   "sha256": "5dc11a3d43da486317047e726b94a63a0dba1961d7eea09ccb0345688943e67e",
+   "size": 8426
+  },
+  {
+   "path": "References/architecture_架构演进/425_苦力Agent执行提示词_415L2上游依赖遍历_改原子前先看谁依赖它.md",
+   "sha256": "20cb3ad62f2b677ec0694dc80302c4b38c7bcb6a1fcfa321c8519510df4e2a27",
+   "size": 5876
+  },
+  {
+   "path": "References/architecture_架构演进/426_架构设计_时序约束通用框架_不变量约束优于存在性检查.md",
+   "sha256": "b7566d921de502d898c28251b6c5e35015ddc998139d1198b9cd1ab5cfee2809",
+   "size": 11441
+  },
+  {
+   "path": "References/architecture_架构演进/427_v7.0基线整合_工具依赖图+数据流向+schema协调+验证矩阵统一.md",
+   "sha256": "a48b5db8d918ae2072d1117d7a3869ad7d392814ea5b21fd091dfb74e239ff7a",
+   "size": 11153
+  },
+  {
+   "path": "References/architecture_架构演进/428_架构设计_406数据新鲜度字段_原子会老数据会过期.md",
+   "sha256": "bd1508444a83c3ccd77b0e89357de40b01502563e3d595eeffcc982840780f7e",
+   "size": 6484
+  },
+  {
+   "path": "References/architecture_架构演进/429_架构设计_错误模式库+Writer自检自动转化管道.md",
+   "sha256": "4d4934d2dd1470fd474378553e0319b4e846c01a81ff6ad77930ed090bfaa1cc",
+   "size": 8217
+  },
+  {
+   "path": "References/architecture_架构演进/430_苦力Agent大任务包_v7.0工具层全量落地_8子任务串行.md",
+   "sha256": "249517f3a5b6a981fcab7d8f83a7398a3d61ea2cf2b844659312ab8588f4598f",
+   "size": 9507
+  },
+  {
+   "path": "References/architecture_架构演进/431_架构设计_阙疑v7.0到v8.0演进路线图_从工具层到语义层到自治层.md",
+   "sha256": "4131ac9be783699c73db677a6f246982539b2c2d0a599e7c3f92fa5cec50cb23",
+   "size": 8426
+  },
+  {
+   "path": "References/architecture_架构演进/432_架构设计_多模型协作架构_苦力好模型对抗模型的分工与协作协议.md",
+   "sha256": "9cb5922f70fa35e65d603ddf32ea56b7f47eb24cbb141857969bcdd3f6cf473d",
+   "size": 10453
+  },
+  {
+   "path": "References/architecture_架构演进/433_晚上好模型落地任务包_v7.0系统基线_419攻击用例库+426时序约束+系统整合.md",
+   "sha256": "c7b01ff861ec0fda015ef0e9bd4dd5605ca231857abe2c200a47e5bc0bd8fb37",
+   "size": 12328
+  },
+  {
+   "path": "References/architecture_架构演进/434_外部调研_属性测试+红队成熟度+性能统计+LLM可验证性+变形测试+知识图谱质量.md",
+   "sha256": "8af73110654b2940f54e885db64fbbbbe32dafcc43a90b565d9091f150826da1",
+   "size": 8955
+  },
+  {
+   "path": "References/architecture_架构演进/435_架构设计_六大外部思想落地整合_性能统计P0+夹具方法论+claim契约化+红队L3+KG质量.md",
+   "sha256": "1e31ad45c0befe0aff89928569f9d705a8272f6574f3a53721b103fbdef6ea1a",
+   "size": 7720
+  },
+  {
+   "path": "References/architecture_架构演进/436_外部调研_突变测试+形式化验证+因果推断+可复现性.md",
+   "sha256": "5fb144ab69064eb28f4ee1a19705a892d8e684ab5962c25528e20a7e9ffbcc2c",
+   "size": 8795
+  },
+  {
+   "path": "References/architecture_架构演进/437_架构设计_四大外部思想落地整合_突变测试评估+因果夹具+形式化claim+密封可复现.md",
+   "sha256": "2c8405a37cc3b68024285bac6ea63e8020043b13ce97f699572e846e84277a91",
+   "size": 8173
+  },
+  {
+   "path": "References/architecture_架构演进/438_外部调研_模糊测试+差分测试+技术债务管理+学习科学.md",
+   "sha256": "462c59d2711934f30f310d615e8ac8ed1242325ad1110667d5dfa52bae932317",
+   "size": 8563
+  },
+  {
+   "path": "References/architecture_架构演进/439_架构设计_四大外部思想落地整合_自动毒样例+差分一致性+债务治理+科学教学.md",
+   "sha256": "ea29739a8ce6c0fe835f6b4b3b396f3012358fb9035765ddf80b309d8df890bb",
+   "size": 7257
+  },
+  {
+   "path": "References/architecture_架构演进/440_外部调研_混沌工程+决策科学+知识管理+元认知.md",
+   "sha256": "612ce1a6dd2be7f0097403f1e068b44d8e5f9a1def3aa5e3a7d07826905a248c",
+   "size": 9983
+  },
+  {
+   "path": "References/architecture_架构演进/441_架构设计_四大外部思想落地整合_混沌对抗+决策质量+知识网络+校准进化.md",
+   "sha256": "867ed7b57a5ff9ce0773563595c11bfebe9480d47d2080809302978782c61974",
+   "size": 10266
+  },
+  {
+   "path": "References/architecture_架构演进/442_深度内卷_65份调研全量消化批判与终极整合.md",
+   "sha256": "72d4f8a9b06ca6a8aea0b790bc2d62dfc31b724190408b61a85e6525396347b2",
+   "size": 14327
+  },
+  {
+   "path": "References/architecture_架构演进/443_落地规格_第一批P0P1三项_夹具方法论v2+claim契约化v2+warn债务治理.md",
+   "sha256": "e96c3f7f711144b43703df81b8788b89b233b735ff3d74411e650a0632d4b2f1",
+   "size": 8667
+  },
+  {
+   "path": "References/architecture_架构演进/444_内卷的内卷_对改无可改的批判_元模式的元模式与系统极限.md",
+   "sha256": "16c37647ffe7603963bcf7ef5ccbe98d76270a29ec5abd2f8779018dc61c6456",
+   "size": 12327
+  },
+  {
+   "path": "References/architecture_架构演进/445_对系统极限的再批判_前沿研究能否突破四道墙.md",
+   "sha256": "7fdc2ab2dc63f4354370025a7c9219da02193b2d741419fc2520d59a8cec6467",
+   "size": 10737
+  },
+  {
+   "path": "References/architecture_架构演进/446_可突破部分的落地消化_现在就能干的5项+需要准备的3项.md",
+   "sha256": "79e5f2cb9a39af5e3cee59af7900ba72c8fcfafc6257abaa2ea5cd581e34615c",
+   "size": 9591
+  },
+  {
+   "path": "References/architecture_架构演进/447_架构更新_整合446五项突破_更新v7-v9路线图与验收标准.md",
+   "sha256": "f39712b9fef0d24cf52e27c7c9eda848d7bdc9437d009b6990b8f4c5df3746ca",
+   "size": 8207
+  },
+  {
+   "path": "References/architecture_架构演进/448_突破极限的再突破_8个渐近逼近策略.md",
+   "sha256": "67acbd57ea9da43b291db0ae26cc798bb1e0556fab62f0bdf76ae35cf7e48f37",
+   "size": 12920
+  },
+  {
+   "path": "References/architecture_架构演进/449_八大范式跃迁_从系统到生态从生产到进化从规则到学习从工具链到操作系统.md",
+   "sha256": "3dcba82914ae39571049c64b7c3774fe76c420ea2ef678e383277dee085eb91b",
+   "size": 14067
+  },
+  {
+   "path": "References/architecture_架构演进/450_智能层次八大跃迁_从验证到生成从检测到预测从单路径到交叉验证.md",
+   "sha256": "13e5cd6defc308f826886c6d735bd444facb6e6193c0e9cf4976ec364f051b5c",
+   "size": 13437
+  },
+  {
+   "path": "References/architecture_架构演进/451_交对抗前最终吸收_Harness范式定位_辩论失效免疫_同构扰动防御.md",
+   "sha256": "24978b0def211866cb933e1bf5c8aff48ab70f2aa63648af4cd4a7783887a555",
+   "size": 18724
+  },
+  {
+   "path": "References/architecture_架构演进/452_独立对抗渗透投喂提示词_第四轮_攻击v7架构基线.md",
+   "sha256": "a63872a7832485cec7a3a3db107a92485e3384093fe4fb59584bd497e5c35fe4",
+   "size": 13892
+  },
+  {
+   "path": "References/architecture_架构演进/453_对451的元批判_业界实践不是最优性证明_架构层证据标准.md",
+   "sha256": "c83924c09a4d967a6a71b588899b501249fbaa9d16e81081d8c890b646e3cf4d",
+   "size": 7763
+  },
+  {
+   "path": "References/architecture_架构演进/454_第五轮极限学习吸收_TDD范式_差分突变测试_学习科学_Sanitizer矩阵_GraphRAG.md",
+   "sha256": "938ba840942d2f767f9aa9bd8ba14bfe741495a71ffa42af8cccb7efe4a3cca4",
+   "size": 14456
+  },
+  {
+   "path": "References/architecture_架构演进/455_第六轮极限学习吸收_优化可解释性_标准引用规范_反例生成_科学调试_写作质量评估.md",
+   "sha256": "b4d2249f76f0d741832abe69de66f8d30c0754a2e065db96d9cccf638279ce8a",
+   "size": 14901
+  },
+  {
+   "path": "References/architecture_架构演进/456_第七轮极限学习吸收_IR中间表示_符号执行_认知负荷理论_MCP协议_模糊测试工程化.md",
+   "sha256": "9b111774e701cf5713442b39fe15226d3fa0cf306c87e724187f59dbc86f2e08",
+   "size": 13267
+  },
+  {
+   "path": "References/architecture_架构演进/457_第八轮极限学习吸收_Agent记忆架构_C++异常实现_覆盖率量化_Agent评估方法论_链接器ODR深化.md",
+   "sha256": "7510bf47a933aa2122798a2801d918aecbc959d1180ac467c54331b87c8a6f59",
+   "size": 13546
+  },
+  {
+   "path": "References/architecture_架构演进/458_第九轮极限学习吸收_移动语义RVO_虚函数RTTI_Agent任务规划DAG_提示词压缩深化_STL容器实现.md",
+   "sha256": "f862590f657f415112a0879b823083670b5e4a94968abd1874c891490e223991",
+   "size": 14466
+  },
+  {
+   "path": "References/architecture_架构演进/459_第十轮极限学习吸收_constexpr编译期计算_lambda实现_Agent可观测性_知识蒸馏规则迁移_异常安全保证.md",
+   "sha256": "6eee9d50ae698ba662d2bb6354fcd4a64894dae05cc8a7710066f90959945ad9",
+   "size": 13954
+  },
+  {
+   "path": "References/architecture_架构演进/460_全量消化整合_86份调研到可执行落地蓝图_v7.0-pre终版.md",
+   "sha256": "dfcffddde33ef7655b37481626fb12b6851c07d455c57ce073152f2d81dbea1c",
+   "size": 14910
+  },
+  {
+   "path": "References/architecture_架构演进/461_空白项定向调研_DAG调度器_Writer自检7项_突变测试自动化_handoff协议_教学评估.md",
+   "sha256": "62ef46e980ac317fb36e21fead5f13a641572631594e69f34337fcccaf315127",
+   "size": 11993
+  },
+  {
+   "path": "References/architecture_架构演进/462_增量构建_属性测试_差分测试_结构化输出_技术债量化.md",
+   "sha256": "209f41837e2d98cee0bc5b1566ae47dd3cadd606c9a13640b14bcb8c9ef42223",
+   "size": 10876
+  },
+  {
+   "path": "References/architecture_架构演进/463_十轮调研整合_优化报告_覆盖率_CI缓存_文档即代码_知识图谱_Agent评估_幻觉检测_语义检索_AgentUX_上下文管理.md",
+   "sha256": "8a19dbd58080fc166d5c4e0419e9f07408ba1a77ccb557831815cbf5836d570f",
+   "size": 15379
+  },
+  {
+   "path": "References/architecture_架构演进/464_二十轮调研整合_链接器_缓存_分析器_Sanitizer_性能方法论_分配器_无锁_DWARF_LLVM后端_特性开关_可观测性_版本化_测试工厂_混沌_ABI_构建图_代码审查_技术债_知识管理_元认知.md",
+   "sha256": "f24dd567b74741449808e6830dfc44c4bf574604fb42c804cded93a0df6febe9",
+   "size": 25701
+  },
+  {
+   "path": "References/architecture_架构演进/465_苦力Agent下一轮执行提示词_ccache加速_规则渐进发布_对抗稳态_成本trace_414P0收尾.md",
+   "sha256": "9d123a7eb33a56532a6eb745a46f1021ac4ffc5bf0a400132db61905a63c0daa",
+   "size": 10643
+  },
+  {
+   "path": "References/architecture_架构演进/466_全量调研消化与系统深度批判_六个结构性矛盾_调研冻结与纠偏.md",
+   "sha256": "59dd0f4a40618324d49efcb97cf629a28ff4a09b430225cbc98ad9753c5daead",
+   "size": 17258
+  },
+  {
+   "path": "References/architecture_架构演进/467_架构极致不变_执行渐进激活_单苦力约束下的分阶段路线_教学转化P0.md",
+   "sha256": "5aa1c533372755eb4c0acf5f6eea067644c53e393c11027093f32c1580f9beb2",
+   "size": 10179
+  },
+  {
+   "path": "References/architecture_架构演进/468_阙疑架构大一统_知识生命周期x验证金字塔x能力梯度_内卷攻击与五杠杆.md",
+   "sha256": "ab8b02087627ca9cf49322abdef42203ed2aed1e6f819bab164a912891eef717",
+   "size": 20891
+  },
+  {
+   "path": "References/architecture_架构演进/469_晚上好模型落地总提示词_452逃逸闭合_错误左移_效率数据.md",
+   "sha256": "0c3c5406803a843c56edf44d5b726a4bb5ad75ec672541d2146685fde4ee5f50",
+   "size": 23222
+  },
+  {
+   "path": "References/architecture_架构演进/470_今晚Agent干活报告v1_系统安全地基与范式升级.md",
+   "sha256": "c68613f871664429c71a465b6c1b63cf14f478a34e0a473f24b35596df1f8bc5",
+   "size": 79773
+  },
+  {
+   "path": "References/architecture_架构演进/471_调研消化成果_450-467_突破性发现与逻辑依赖.md",
+   "sha256": "9dd9c5fb328b967ebdc4260365c4f8cafd6a6b998689cdb6e5e6b0f9365828d0",
+   "size": 34973
+  },
+  {
+   "path": "References/architecture_架构演进/473_深度架构反思_从规则驱动到证据网驱动_范式级突破三方向.md",
+   "sha256": "cde929729a035322b5ea704be8c6f1593dfa3263a408c7762ca72f18411848aa",
+   "size": 13522
+  },
+  {
+   "path": "References/architecture_架构演进/474_代码级深度架构分析_91工具_56卡_27原子_CI74步实测.md",
+   "sha256": "ede4115bc71e169fb61ee1b0a69934df2840c10151fc9426064ca6d78b5a2aaf",
+   "size": 25070
+  },
+  {
+   "path": "References/architecture_架构演进/475_调研成果×18矛盾_交叉映射与填坑路线图.md",
+   "sha256": "4c8ac054a3ab3f8d98d62f782536247cf132394b90857a7308b37f95390c7476",
+   "size": 7263
+  },
+  {
+   "path": "References/architecture_架构演进/476_阙疑架构演进计划_v1.0_25矛盾整合_四波路线图.md",
+   "sha256": "0192b58dc65b81771c3f90b3a29298daa67b3b7191084fe1bcd56c6da9fdce8e",
+   "size": 8485
+  },
+  {
+   "path": "References/architecture_架构演进/477_调研成果遗漏补全_471中22项未落地的高价值成果.md",
+   "sha256": "1a6d90229896a8d28aaab17668a90792660b5d2f9d1ae65c6e979ebaad588c37",
+   "size": 9764
+  },
+  {
+   "path": "References/architecture_架构演进/478_三项零成本高ROI成果落地方案_TDD反转_级联路由_文档即代码.md",
+   "sha256": "6e9a7169561061f4baba8dfb61a884dea6e8ecc01eec1525f3e954d9aad54993",
+   "size": 8189
+  },
+  {
+   "path": "References/architecture_架构演进/480_第二波高价值项落地方案_覆盖率_差分测试_证据卡分层_科学调试.md",
+   "sha256": "ef497e518e9041cbf4c8335bc0a137d765b4456c7a1adb6fd8dd32c824eef5b8",
+   "size": 8221
+  },
+  {
+   "path": "References/architecture_架构演进/481_第三波落地方案_规则瘦身_毒样例外置_核心工具补测试_replay拆分_CI并行.md",
+   "sha256": "b4d170ed40f5032538aba0ed935e879f91a3db0f325793032bb3a144a6d17408",
+   "size": 8112
+  },
+  {
+   "path": "References/architecture_架构演进/482_第四波范式级突破落地方案_证据网_诊断引擎_预测性_修剪_硬核_CurryHoward.md",
+   "sha256": "cdacbd202d9691dde534ec7c0ce854e0c5b15eee8cf891fdf567389e1bc137b5",
+   "size": 14891
+  },
+  {
+   "path": "References/architecture_架构演进/483_架构规划盲区批判_四波路线图没覆盖的六个维度.md",
+   "sha256": "5efb9939c19dfda03e9c3ac4bd643d15eb2cae6069f3c45e0f67310f53c2f649",
+   "size": 11922
+  },
+  {
+   "path": "References/architecture_架构演进/484_成本与Token经济学详细方案_预算门禁_ROI评估_级联路由_成本趋势.md",
+   "sha256": "e3f795f83401f62d46fdacab3bb8c4dc70886725e5ae33a2e36044b9a091ad09",
+   "size": 9894
+  },
+  {
+   "path": "References/architecture_架构演进/485_系统自进化详细方案_数据飞轮_Distill红队到规则_Improve提示词回归.md",
+   "sha256": "87bdf6af91ed4c983f0b564bf355c11c2dc025e3e0f40895c772e1a9ca956ef8",
+   "size": 10782
+  },
+  {
+   "path": "References/architecture_架构演进/486_可观测性详细方案_trace日志_健康看板_告警系统.md",
+   "sha256": "8e1e5be126520ee8e9627d003bc77f94760539e9b4a6a705b367f0cacd24cdd2",
+   "size": 10311
+  },
+  {
+   "path": "References/architecture_架构演进/487_性能优化与队列设计详细方案_ccache接入_replay并行_增量replay_任务队列_资源分配.md",
+   "sha256": "340ccbd235f55ed7d2cf5a5ddab32370bdaf327c2f11f7b4de3c1966d6892ba9",
+   "size": 13132
+  },
+  {
+   "path": "References/architecture_架构演进/488_安全性与信任模型详细方案_身份信任_签名验证_供应链安全_对抗防御体系.md",
+   "sha256": "4ec5d851f42c029edd1601917722d921a0d6a891750cd9200bdfb2d68070345b",
+   "size": 10337
+  },
+  {
+   "path": "References/architecture_架构演进/489_教学效果衡量与反馈闭环详细方案_前置后置测试_误解挖掘_自适应路径_闪卡效果.md",
+   "sha256": "cf02165864877c00f8f6e28ee78099a912ef46bbc622ff0446dfea6839da6f49",
+   "size": 11638
+  },
+  {
+   "path": "References/architecture_架构演进/490_知识冲突与版本管理详细方案_claim版本_工件绑定_冲突检测_状态扩展_文档生命周期.md",
+   "sha256": "ace1f6fa5fd53dfda15652c67e91192e521ee85968b617ba476854c07d3e58fa",
+   "size": 11356
+  },
+  {
+   "path": "References/architecture_架构演进/491_人的因素与认知偏差防护方案_决策日志_预注册_回溯审计_异议机制_外部审计.md",
+   "sha256": "3bb87a68822bdee7cfe79ad4cdf32d9fee92f6cacc3b914e13ff2f04fffaf778",
+   "size": 11793
+  },
+  {
+   "path": "References/architecture_架构演进/492_多模型协作完整方案_模型市场_任务路由_结果融合_断点续跑_多Agent协议.md",
+   "sha256": "d6b318372430418a9a07d2a1a6f37f71f42cece075fecee9a21c71cf7dba77b9",
+   "size": 12690
+  },
+  {
+   "path": "References/architecture_架构演进/493_阙疑架构总纲与落地优先级_18份文档整合_P0P1P2排序_依赖关系_成功指标.md",
+   "sha256": "4bb573985f5c184b533470e33e5139cdd64074d7e12a4d38f4cb08023b4679db",
+   "size": 11595
+  },
+  {
+   "path": "References/architecture_架构演进/494_苦力提示词_409P0毒样例攻击面分类+健康度仪表盘v0.1.md",
+   "sha256": "2fa1b8861022d6d7e27e7f33686fe9d7769721f946bec62c6a11ccaef2f502ed",
+   "size": 12514
+  },
+  {
+   "path": "References/architecture_架构演进/495_阙疑知识图谱推理与跨域迁移_从静态relations到可推理知识系统.md",
+   "sha256": "d1dfe738cc82f9b96ea33f30922f7d83b5f489cb8739b906527ca60332297e7d",
+   "size": 9036
+  },
+  {
+   "path": "References/architecture_架构演进/496_两个用户直接痛点_断点续跑_多模型协作协议.md",
+   "sha256": "a1874b64904d3adaac656df5dec3d9c5659f70ebc45b8030739359e1bd502a40",
+   "size": 10450
+  },
+  {
+   "path": "References/architecture_架构演进/497_可观测性与失败恢复_结构化trace_健康度仪表盘_工件还原幂等_锁存活检测.md",
+   "sha256": "dbbff437b902d4aa74727592c0c9701be99b6ce1fb4f8ce31846a831d42326d9",
+   "size": 9096
+  },
+  {
+   "path": "References/architecture_架构演进/498_苦力Agent执行提示词_P0收尾_工件版本绑定_增量replay_trace日志_工具完整性.md",
+   "sha256": "274c395c2958a4f84044337ce04e9fa8d33b677f7d9041abff8a03a025612341",
+   "size": 14847
+  },
+  {
+   "path": "References/architecture_架构演进/499_苦力Agent执行提示词_分析审计批次_差模型版_pytest耗时_warn审计_skip审计_清理.md",
+   "sha256": "853c30354dce5471450fe142df2e407fa27448bb3997dffd754ad05c2f2ddcf6",
+   "size": 15901
+  },
+  {
+   "path": "References/architecture_架构演进/500_苦力Agent执行提示词_缺陷修复_变异验证_assert_haystack_M5M8逃逸_第二轮对抗.md",
+   "sha256": "63b871d19345d071ba75c8f657d10c929e4c34254d7e7296dd05315661283ce9",
+   "size": 17468
+  },
+  {
+   "path": "References/architecture_架构演进/501_诊断引擎与Agent编排队列_架构调研与落地设计.md",
+   "sha256": "8fe39a741eb21f93990ffaf9f1524e3d6e77f141893b0d5f64289f2f4002383c",
+   "size": 17005
+  },
+  {
+   "path": "References/architecture_架构演进/502_证据知识图谱_外置RAG_自进化机制_架构调研与落地设计.md",
+   "sha256": "0f46e1555a891a2c21ec377c2c22f7fd56fc9f4e01de31394b0980301bd9795b",
+   "size": 21732
+  },
+  {
+   "path": "References/architecture_架构演进/503_质量度量体系_多模型协作路由_教学转化链路_架构调研与落地设计.md",
+   "sha256": "7da6a5290de8d4509d05463e3e98433d6852b681c60b7938cd7e3f302232a2ff",
+   "size": 19433
+  },
+  {
+   "path": "References/architecture_架构演进/504_CICD优化_可观测性_插件架构_人机协作界面_架构调研与落地设计.md",
+   "sha256": "3cbae04ad073a617e0de930c80fa76ccee97d8fe9ac7c7742916e5f886210d40",
+   "size": 24597
+  },
+  {
+   "path": "References/architecture_架构演进/505_系统架构总览与落地路线图_501-504整合内化.md",
+   "sha256": "03ce70f9fdbdb9a12db687f48a17c20af3511d0bbe1e48949edf5e648d4d85fb",
+   "size": 14317
+  },
+  {
+   "path": "References/architecture_架构演进/506_架构落地映射与缺口补全_505工程化深化.md",
+   "sha256": "5cadd6aaf75d09e566734d48ec96ad0586af2d51fd1ea335754e9bdfc8f08dcd",
+   "size": 13475
+  },
+  {
+   "path": "References/architecture_架构演进/507_全栈性能优化蓝图_从汇编层到系统架构.md",
+   "sha256": "31b02670bd0827226684bac978de6e6742834dbfc94188aeb284f92f1a1aa371",
+   "size": 15325
+  },
+  {
+   "path": "References/architecture_架构演进/508_苦力Agent执行提示词_P0性能收尾_智能基建_可观测性_知识图谱_质量度量_备份.md",
+   "sha256": "dcfa0866fdefc24882108ca4620032e038b7ace8abd5291da5a37f722a77f390",
+   "size": 15454
+  },
+  {
+   "path": "References/architecture_架构演进/509_Agent工作流自动化_全链路编排_断点续接_级联路由_优先级队列.md",
+   "sha256": "8d30eb2dd5c57e09d90c22b9b04ba8386079ba15b2e2c7237a2d97ecb6cf603e",
+   "size": 12116
+  },
+  {
+   "path": "References/architecture_架构演进/510_知识生产流水线_规则自进化_文档治理_Agent质量保障.md",
+   "sha256": "b1ce85e85e544ea1263a8702ccc9e594b85b31aba91ffccccc5d524f366185b9",
+   "size": 11871
+  },
+  {
+   "path": "References/architecture_架构演进/511_前向兼容_人机协作决策_数据血缘_自适应学习.md",
+   "sha256": "02207dca95852b3973ead73ecfaf03e7628fc51bc0bd8097be3fa4082a4b82b5",
+   "size": 11260
+  },
+  {
+   "path": "References/architecture_架构演进/512_安全防护_容错降级_自认知自省_多领域可移植.md",
+   "sha256": "8ed0a669baf7f5769cec0a70aa63474be739d031b4ea6b2b5e56fd4545bcaa9a",
+   "size": 11529
+  },
+  {
+   "path": "References/architecture_架构演进/513_混沌工程_SLO错误预算_能力迁移蒸馏_知识层级压缩.md",
+   "sha256": "4dbfd387484b040f89a20479fcacb691c302db1a55d6c40e365146448215c273",
+   "size": 9311
+  },
+  {
+   "path": "References/architecture_架构演进/514_版本化回滚_并行多核_监控告警_集中配置.md",
+   "sha256": "0edfcd43d8bc94a62b56cfd6bc08e03b9c2554ad664e08e9da1e292a6d995516",
+   "size": 7421
+  },
+  {
+   "path": "References/architecture_架构演进/515_测试金字塔_备份灾难恢复_重试退避熔断_全文搜索.md",
+   "sha256": "6ca1b3ad1654882449b1cde535dcb26879dd47f9fe98d9333afdb48e13274a35",
+   "size": 8075
+  },
+  {
+   "path": "References/architecture_架构演进/516_全量内化组合_系统总验收_诚实完成度.md",
+   "sha256": "5316a3cdb5a4524cb9cbcc2ac1505802dbeeed208891b358e139fe2844e965f4",
+   "size": 8861
+  },
+  {
+   "path": "References/architecture_架构演进/517_内卷式全量重构_五层真实完成度_精确执行计划.md",
+   "sha256": "da64e8a822e043ea8667461166681de19219a09cbf31be81d632c6791eec911c",
+   "size": 7260
+  },
+  {
+   "path": "References/architecture_架构演进/518_终极收债批_P0P1投喂提示词.md",
+   "sha256": "479a0c65e1dad9c201583946a1d5adc72b86872dc8d288519ecb08b45a6f4940",
+   "size": 4140
+  },
+  {
+   "path": "References/architecture_架构演进/519_工具债解剖_100个工具真实生态_该砍该并该留.md",
+   "sha256": "454eac78d2a7cd441f9b44374314f4d5d19d868fa5051d2359c6d2bc8bf51ff0",
+   "size": 5816
+  },
+  {
+   "path": "References/architecture_架构演进/520_红队渗透报告_系统漏洞解剖_架构修补.md",
+   "sha256": "1eddf3e7ccccf94b6eeb6dab3accf8f467dbfec1c911624f96f600f3587b034c",
+   "size": 5922
+  },
+  {
+   "path": "References/architecture_架构演进/521_红队第二轮渗透_replay引擎深潜_三个深层逻辑漏洞.md",
+   "sha256": "7d0882704e4369ca96534575c03d0717dcd0ac94f699cc7218a81679f3e1c63c",
+   "size": 7456
+  },
+  {
+   "path": "References/architecture_架构演进/522_系统架构最终版_技术债清理_P0修复_极致苦力提示词.md",
+   "sha256": "b2067de3e067cc494de863cd78a7bc1ef8252f66202b575ea6c6abd8f452d25e",
+   "size": 7271
+  },
+  {
+   "path": "References/architecture_架构演进/523_业界坐标系中的阙疑_2026验证架构对照_结构性差距与吸收判断.md",
+   "sha256": "2b8bf4b3c45e3f54f78b976e7e65fe72d6bb07ad97c1ed1d50651319c56668b2",
+   "size": 11393
+  },
+  {
+   "path": "References/architecture_架构演进/524_终局架构_对极致目标负责_从NorthStar倒推.md",
+   "sha256": "5e5852598e5cab61f06d4419f09bab18e8cad4b9a224d52cf21031b49b72fe6d",
+   "size": 14699
+  },
+  {
+   "path": "References/architecture_架构演进/525_对508批次的批判性审视_产物依赖图vs概念语义图.md",
+   "sha256": "9bec7c873baefc3d8abe8e299592846ef706546f2ac82b05a91cde97c177f66d",
+   "size": 4772
+  },
+  {
+   "path": "References/architecture_架构演进/526_批次E投喂提示词_claim结构化v0.3_L3智能层点火.md",
+   "sha256": "369e8489fe85938d503d96981a730e5d992f81dc92205f0e4edf14db67335e58",
+   "size": 7354
+  },
+  {
+   "path": "References/architecture_架构演进/527_批次F投喂提示词_解锁push_概念归一_红队卡处置.md",
+   "sha256": "036f861442817dcd7c44565c9b850e66163ce5cbf3dcc14c2c20cd094119c8a7",
+   "size": 7118
+  },
+  {
+   "path": "References/architecture_架构演进/528_批次G夜间大建设提示词_claim全库回填_概念冲突检测_性能.md",
+   "sha256": "1ca0a8f42d0e2bb387401b6b13b984b8918cf2e3b81355695bc2228256f2996b",
+   "size": 10136
+  },
+  {
+   "path": "References/architecture_架构演进/530_批次H施工提示词_让已建结构兑现承诺_最终施工版.md",
+   "sha256": "1987b881cfb6bfbc0bb91c98ff2835e8cd7672a5907cd6390e732c9dbb808bda",
+   "size": 16417
+  },
+  {
+   "path": "References/architecture_架构演进/531_第二轮独立对抗投喂提示词_调研+方案批判+新逃逸.md",
+   "sha256": "51f707d9afe0a9fb9732d3d43a8756f6988f4e9c4b7408e6c199568384637514",
+   "size": 5919
+  },
+  {
+   "path": "References/architecture_架构演进/532_深度架构共建投喂词_强模型设计下一代_我验收.md",
+   "sha256": "9b542eeeb18233dddd560077aaeca27e8464e3dee1ad440d7c70fda902b2a64f",
+   "size": 9916
+  },
+  {
+   "path": "References/architecture_架构演进/533_V-iso做实轮投喂词_阴阳同构可施工规格+实测+自攻击.md",
+   "sha256": "99ca22c4517c18c21385d306fb621d5f1cbfce87cd65291b555490f56ec4b76f",
+   "size": 6971
+  },
+  {
+   "path": "References/architecture_架构演进/534_L2调度层做实轮投喂词_task_queue可施工+自动安全接管+自攻击.md",
+   "sha256": "2f462ee53f399c79a261a3f7aa5fff6597031ef9da1cd4883144b9b2a25f38fd",
+   "size": 13630
+  },
+  {
+   "path": "References/architecture_架构演进/535_夜间建设者大活_L2调度+V-iso+529收口落地.md",
+   "sha256": "7e02c7d087486a7022176203388ead16e92a699402e9b2d782b210aebdef7bc2",
+   "size": 10650
+  },
+  {
+   "path": "References/architecture_架构演进/536_第五轮独立对抗_L2队列与V-iso信任根.md",
+   "sha256": "cd7dc06367f21ff9b443054fe431c2ceb2760c329414e1b8482e8513c2e0243f",
+   "size": 7028
+  },
+  {
+   "path": "References/architecture_架构演进/537_苦力白天收尾_535遗留机械活.md",
+   "sha256": "39ff9849e60d6c47c0c2ef8a1f4635330b813683bd4fbb4a6588b4f70b4a4769",
+   "size": 5170
+  },
+  {
+   "path": "References/architecture_架构演进/538_建设批_修E1-touch归一化P0+537收尾.md",
+   "sha256": "395fb5e47ed2737a2b6e8f2cb44b15530d2b63b9dbe11dfe551fa33f4ad10787",
+   "size": 5027
+  },
+  {
+   "path": "References/architecture_架构演进/539_大建设_mutation自动变异器L3首块+技术债收尾.md",
+   "sha256": "c9d695d1e215c215d3c16e48c6a5b205c123e8eb62451563a7afe918fef38c5a",
+   "size": 6989
+  },
+  {
+   "path": "References/architecture_架构演进/540_进化闭环_修M3M4逃逸+mutation性能优化.md",
+   "sha256": "960c86b18f6da171ef89a2a924da44ef55654466edf07f9e7599cae60d2042db",
+   "size": 4983
+  },
+  {
+   "path": "References/architecture_架构演进/541_进化闭环二_判别力kind门控修复+mutation按卡批性能.md",
+   "sha256": "a8212956ef6ecb6f70266c1f1f09a629a462b88c6ea09dd76f266713b0d0017a",
+   "size": 4178
+  },
+  {
+   "path": "References/architecture_架构演进/542_进化闭环三_判别力互斥收口版+mutation性能.md",
+   "sha256": "34784a6dd49b251c7f1f9c01eb014158478f3990dacb21b6bff150ba91d17ad7",
+   "size": 4521
+  },
+  {
+   "path": "References/architecture_架构演进/543_进化闭环三修正_修mutation算子schema+变体合法性闸.md",
+   "sha256": "d95c7a3de6869bf2f4fc671e32f923ff82106f0296ba6cecb0cbcca61ac9d3ba",
+   "size": 5428
+  },
+  {
+   "path": "References/architecture_架构演进/545_第五轮独立对抗实战版_L2队列V-iso+mutation_fuzz.md",
+   "sha256": "ec872cb70cbbdeeddd3e8018eb2d64a415d037f1777bf3cecbddcc655c85f848",
+   "size": 7435
+  },
+  {
+   "path": "References/architecture_架构演进/546_修复批_L2队列三洞_深度上界未来心跳verify自证.md",
+   "sha256": "344556654760e5219b45608634910bff5e3ac3c0983922f5434394c33074feeb",
+   "size": 4790
+  },
+  {
+   "path": "References/architecture_架构演进/547_第五轮对抗续打_V-iso接缝mutation_fuzz.md",
+   "sha256": "17edfaecf3d1aec2f8bbf6af17f0e7b6a1e5e4cf9c9cec45cf02bf285ee183e8",
+   "size": 5877
+  },
+  {
+   "path": "References/architecture_架构演进/548_系统证据收集与优化大轮_mutation日常化全量逃逸基线收口.md",
+   "sha256": "d187ce59e615b62c204252e8a477d556d74fa695dd926500bd14bbf25333368b",
+   "size": 4577
+  },
+  {
+   "path": "References/architecture_架构演进/549_质变调研_共形放权门RIPR诚实分类蜕变阴面CQ概念图机械协同进化.md",
+   "sha256": "deb850f75a96721ae1412e73611d1077067de7a11190db1cda5a07ca1fb16847",
+   "size": 11053
+  },
+  {
+   "path": "References/architecture_架构演进/550_质变调研2_验证强度阶梯与风险匹配_ASIL分级BMC最强Oracle异族独立性AFL能量调度.md",
+   "sha256": "bcbbb42183facdb8edda719e37f3204843a64d7357cf01edd534bbce1f2ec2ce",
+   "size": 11455
+  },
+  {
+   "path": "References/architecture_架构演进/551_质变调研3_知识层数学_Dung论证信念修正TMS_SHACL约束_统一验证强度锚点_解析器差分_预注册.md",
+   "sha256": "8fbef31b1c86dd83efd4251e2ae7005d97bc4063bb3394bd3ca5607d07ded5ef",
+   "size": 11259
+  },
+  {
+   "path": "References/architecture_架构演进/552_质变调研4_成熟库替换手搓轮子_Hypothesis状态机_递归CTE_syrupy快照_DuckDB_Pydantic_依赖分层.md",
+   "sha256": "c8248ac6ce91fb52b33e467a3dcff30767fae3934560cefdfd7c8d5744c8a680",
+   "size": 11090
+  },
+  {
+   "path": "References/architecture_架构演进/553_投喂词_Viso准入两洞修复_B3身份锚升block_B5硬化拒flownc.md",
+   "sha256": "b516aa1a89fc4ca60e9b064f178da21607cea0846a9737e6ca056876365c1344",
+   "size": 7523
+  },
+  {
+   "path": "References/architecture_架构演进/554_投喂词_批次T成熟测试库加固_Hypothesis状态机_syrupy快照_parser差分.md",
+   "sha256": "bfc95cdcaee6778f0ffe61f3d2eba236f8f10f360a0e90c2c96356d486ecbd86",
+   "size": 9902
+  },
+  {
+   "path": "References/architecture_架构演进/555_质变调研5_L4进化层三块实体_概念真连通_人审经济学_换模型canary.md",
+   "sha256": "9f7c812941f51e57666746bb2f53f9104e3b7d06aebaf328b3097f9a04191cc6",
+   "size": 10331
+  },
+  {
+   "path": "References/architecture_架构演进/556_返工投喂词_554验收两问题_B5硬化补全nc非block形态_stateful_flaky根治.md",
+   "sha256": "9040683146595b5aecb61fb18230f51848ef31a0aeab50f41a4e6b1010d21354",
+   "size": 7719
+  },
+  {
+   "path": "References/architecture_架构演进/557_投喂词_人审解锁L4校准引擎第一块_warn分桶排序_L1补密Viso毒样例_M3区间_影响闭包.md",
+   "sha256": "3f14298a2009fd9df03fc0798439f4a661502fc6d43700402f8c9e3d088bcb3d",
+   "size": 10846
+  },
+  {
+   "path": "References/architecture_架构演进/558_投喂词_557收尾基线_Viso真编译毒载荷N1N7_M3区间_impact闭包.md",
+   "sha256": "5f6e2d15d20f198103f622b658884c669a9c5af82eef7dcf426bf1a2f41d088d",
+   "size": 6911
+  },
+  {
+   "path": "References/architecture_架构演进/559_投喂词_性能卫生批_nc_rewrite引号_并发串行隔离_basetemp.md",
+   "sha256": "cdcf70c4dfa965c5a4e9e768f80d9b800c439771833d998d93dde550e4087cb1",
+   "size": 6117
+  },
+  {
+   "path": "References/architecture_架构演进/560_异族调研投喂词_全局性能与调度架构优化_只读_arch_v4.md",
+   "sha256": "4665fb701944572f83b7305af9b210f8675397d702bb04abfc9252c5727e2067",
+   "size": 9713
+  },
+  {
+   "path": "References/architecture_架构演进/561_异族前沿调研投喂词_从测对到有界错误率_只读_arch_v4_round2.md",
+   "sha256": "cead67fcf07ebb200fbe163839a144c307b4dd733d5af3b2d277f13cacc3175d",
+   "size": 5608
+  },
+  {
+   "path": "References/architecture_架构演进/562_异族范式调研_仰望星空_没有终极可信底座_只读_arch_v5.md",
+   "sha256": "31b8fae14a939837f822559d3e16a61de9a515c52a0cbf48fb536b9906c77620",
+   "size": 5385
+  },
+  {
+   "path": "References/architecture_架构演进/563_异族前沿调研_把零误伤有上界收敛变成可计算算子_只读_arch_v6.md",
+   "sha256": "41860b36f2a333d27bee26bc1df9f8378d7a9849f219bbd45d8980a61fa74e05",
+   "size": 8684
+  },
+  {
+   "path": "References/architecture_架构演进/564_异族前沿调研_Oracle从哪来与信任根可靠性_只读_arch_v7.md",
+   "sha256": "38d6f3991c7402a6a15611f271a7d0ad62c6eab921d2a7a6414b15adb4980014",
+   "size": 9981
+  },
+  {
+   "path": "References/architecture_架构演进/565_苦力建设批_可计算质量内核_统计原语_报告区间_命题状态图.md",
+   "sha256": "f28afa6574287840865f54bdf1e9644153e66b2a7ea30b18102f3c0e03a9c604",
+   "size": 9168
+  },
+  {
+   "path": "References/architecture_架构演进/565b_565续跑_Part2报告区间_Part3命题图_Part4可观测性清理.md",
+   "sha256": "e20bf7567955d57d1a113403d4f6458cd20b5163fb928d5248db9fadcae13b4f",
+   "size": 5765
+  },
+  {
+   "path": "References/architecture_架构演进/566_prop图补丁_schema自愈_人审交接视图.md",
+   "sha256": "58b88538944b22d41d43f2cbdb690effe1d7f2d09e20bd06dab1eb6208444bb4",
+   "size": 3547
+  },
+  {
+   "path": "References/architecture_架构演进/567_供给链加固第一批_完整性自检强制化.md",
+   "sha256": "cf3887136ce897cd1500d18bf2137df2ffa32033f30f02295198b2dce24efa18",
+   "size": 3829
+  },
+  {
+   "path": "References/architecture_架构演进/568_一大批_日常门禁瘦身_golden去重_卫生债.md",
+   "sha256": "12e336d92b614ced15af2ad4303c017c485f5fa2ac20c03a8c8e2baf1a4b9890",
+   "size": 4277
+  },
+  {
+   "path": "References/architecture_架构演进/569_M3区间锚定收口_单点互斥判定.md",
+   "sha256": "7aa64c97aacfd6272b6d4844b550baf962d13f00025ce5082b26a6aac0f22ce6",
+   "size": 4399
+  },
+  {
+   "path": "References/architecture_架构演进/570_去Werror声明绑定_ruff钉select.md",
+   "sha256": "0cc06732df9deafc1f51a94cf310f9be79c4a1fde99b14dd807b11da6f0a7fbf",
+   "size": 3874
+  },
+  {
+   "path": "References/architecture_架构演进/571_夜间大包_L3L4攒数据_ruff分批_命题签署.md",
+   "sha256": "4b3cb37c45fe6e9711a05adbcdf19d1e482faac5a3984cebf3afc5bbf604af4e",
+   "size": 4726
+  },
+  {
+   "path": "References/architecture_架构演进/572_M3真洞收口_断言数人审基线_恒真样板.md",
+   "sha256": "0b9b4e56030d27b44989f8be940c7969a65d7c2cf96cb12985ce258c25105657",
+   "size": 3942
+  },
+  {
+   "path": "References/architecture_架构演进/573_夜间大包_推翻事件三曲线_ruff精选_阴面扩覆盖.md",
+   "sha256": "e9b020c5612ed8d86d9a2c869cd4e24484ead98d7a1ee1858ba53a8c352893c2",
+   "size": 7748
+  },
+  {
+   "path": "References/architecture_架构演进/574_续包_修M5尺子_v3基线_放权门接口_阴面样板.md",
+   "sha256": "3daa07f431cdfe7735edb7b311fe9147b4097d6765c02da94315d9527b59d54b",
+   "size": 6254
+  },
+  {
+   "path": "References/architecture_架构演进/575_夜间大包_堵M5活雷_命题级活性锚.md",
+   "sha256": "55e505bd4c76c02fd0d12a82f96599961d45d5b425233f56cc666689f42dd621",
+   "size": 6106
+  },
+  {
+   "path": "References/architecture_架构演进/576_单主题强模型_阴面3张_开门就做.md",
+   "sha256": "818f1a62d55063171ae2048296ee0512565b632872311064c61c6d57ce078a20",
+   "size": 4560
+  },
+  {
+   "path": "References/architecture_架构演进/577_trae异族_命题锚批判_N4N5深化_只读_arch_v8.md",
+   "sha256": "c52e05d77f92463f55cf98ede1789a00a6e3b1b2df4d20883567fd85c2bd60dd",
+   "size": 5611
+  },
+  {
+   "path": "References/architecture_架构演进/577_trae异族并行_命题锚评审_564续PoC.md",
+   "sha256": "2882a132e44f01cf2d5d9885fca1ac40eacdbcc7199f97633598d22790017bbc",
+   "size": 5767
+  },
+  {
+   "path": "References/architecture_架构演进/578_苦力收尾_M5报告口径翻盘_slow四红.md",
+   "sha256": "7463052137d3a9be015958debd5f532a9587b38d664fce4fce9359bdd758e9a4",
+   "size": 5925
+  },
+  {
+   "path": "References/architecture_架构演进/579_苦力_修死mutation非确定性_工件层根隔离.md",
+   "sha256": "32e8c81afb32a58ad3e176164996f795891745e82722e4e2d15be141cde21bb5",
+   "size": 5978
+  },
+  {
+   "path": "References/architecture_架构演进/580_苦力_卡间确定性并行_mutation提速_根隔离之上.md",
+   "sha256": "54a56936b08c04f730ae2f7c56a9f8aece53c217d794b1422b24414991de12ca",
+   "size": 13923
+  },
+  {
+   "path": "References/architecture_架构演进/581_苦力_覆盖率不可伪造_行为级covered与豁免二人锁.md",
+   "sha256": "4bc9ea171ae34e5bb082084885ea11346f3440517418157d7e20b925c1d9e5ca",
+   "size": 14540
+  },
+  {
+   "path": "References/architecture_架构演进/582_调研苦力_知识资产层_可累积可溯源可换代_只读_arch_v9.md",
+   "sha256": "ba0599faa740c2ead733b9d800aa3f2959ca6f652f9715e14b81d48bde5fee23",
+   "size": 14896
+  },
+  {
+   "path": "References/architecture_架构演进/583_苦力建设_知识资产层N5N1N3_只读视图与等价变异体.md",
+   "sha256": "73c3dfd8c44dc838c84004b87668ff392d9f750c3e0df709e6cd641f445c54f4",
+   "size": 14466
+  },
+  {
+   "path": "References/architecture_架构演进/584_规划_信任根收口与批次路线.md",
+   "sha256": "0f43fd4dc17d2bba8627cb687a87e4fdc48858fcfa09dfad5e7b3582e45d5617",
+   "size": 11829
+  },
+  {
+   "path": "References/architecture_架构演进/585_异族只读调研_信任根收口方案预审_arch_v10.md",
+   "sha256": "91caabd7a7f06ed6b00004316e41ed3ceb7cf450e1638761228115c05c3b5eef",
+   "size": 11300
+  },
+  {
+   "path": "References/architecture_架构演进/586_建设包_度量诚实化债_v5转正_M6去无效变异_清偿背书债.md",
+   "sha256": "0df5def3c3b9ed3f4fa18729ecaa51471d281f77dcfe7a03c9e1f6f55e3c0b17",
+   "size": 9877
+  },
+  {
+   "path": "References/architecture_架构演进/587_建设包_M6矩阵值校验硬化_堵非法值逃逸_warn起步.md",
+   "sha256": "eca7d0c1fdbc83db10e61d19cbce15c2ddceed0f76d3e88346e7d45e4974cde8",
+   "size": 9165
+  },
+  {
+   "path": "References/architecture_架构演进/588_建设包_变异发现器完备性_matrix尾注释收口与全算子形态审计.md",
+   "sha256": "c46039dab6a5e144cc8e8f72810f0cb602cf913028aabcc39f410c89c12da106",
+   "size": 19510
+  },
+  {
+   "path": "References/architecture_架构演进/589_建设包_确定性自检全算子化与M2注释净化_v7尺子冻结.md",
+   "sha256": "1222bd3371daa9059929d96c28b2d32bd42c0cc55e5c51bd7511bb72e3496341",
+   "size": 19370
+  },
+  {
+   "path": "References/architecture_架构演进/590_异族全维度上限探测_自由探索新边界_只读_arch_v11.md",
+   "sha256": "d190f7c5bdea5365e089a1b2f4d48738389214da0c10d32e10b99847b6df09dd",
+   "size": 32518
+  },
+  {
+   "path": "References/architecture_架构演进/590_异族全维度上限探测_调研整理归档_arch_v11.md",
+   "sha256": "73131a8993720b9bbb9315cc8f0d0767e771476916b8961f60d0933cbb8fea18",
+   "size": 11834
+  },
+  {
+   "path": "References/architecture_架构演进/591_建设包_信任根扩边_v7冻结_治理文档防护_测试器入哈希.md",
+   "sha256": "58d4c1f11bbb0c40f0e0989cc37385a59f39a862c49abe2d7c0e5e58095ab3a9",
+   "size": 20430
+  },
+  {
+   "path": "References/architecture_架构演进/592_全库审视_状态盘点与问题清单.md",
+   "sha256": "a77774e51ab4d2a4f5fab5b591c70225fe38f1b8109f45990e5ee845f4717048",
+   "size": 22849
+  },
+  {
+   "path": "References/architecture_架构演进/archive_312_backup_pre_compress.md",
+   "sha256": "cbbb058e34c3029dc15d2d35704c5d67795a37ee1d427e8df02764a14e9967d8",
+   "size": 37910
+  },
+  {
+   "path": "References/architecture_架构演进/archive_365B_独立红队Agent_投喂提示词.md",
+   "sha256": "ce043a209eff9deb6f91fbfbd1f8e166908a83666098c3e3a8a0b6b48f6a1fb2",
+   "size": 9553
+  },
+  {
+   "path": "References/architecture_架构演进/archive_369_执行提示词_工程线恢复_MCC首次真实落地_已过时.md",
+   "sha256": "9de2d51262803f9120e9e82fd33d460f35f4fb26faf592337d5525a95225480e",
+   "size": 8535
+  },
+  {
+   "path": "References/architecture_架构演进/CHECKLIST_人审交人项.md",
+   "sha256": "798b91405bd5fee2e62067602747845ce3c1d3eed9df29574f8821421313db3d",
+   "size": 7370
+  },
+  {
+   "path": "References/architecture_架构演进/INDEX_530-592_活跃阶段分类.md",
+   "sha256": "8f6f3500edb24e3fd60b22a2402d88c1e7c333dc2d25b23ddb716112eedd38b9",
+   "size": 9643
+  },
+  {
+   "path": "References/architecture_架构演进/INDEX_tools_工具功能分类.md",
+   "sha256": "3c8314d52f8a446cc246fe5b34fcf4bc53fee374eedb6c86614cf4562f3c16d4",
+   "size": 9526
+  },
+  {
+   "path": "References/architecture_架构演进/MATRIX_攻击面与防御.md",
+   "sha256": "ab2c078dcdefb5d9dd25dbcedbf2dfd79d33c355594f31aadf6e5b1b39aa56e2",
+   "size": 9519
+  },
+  {
+   "path": "References/architecture_架构演进/README_INDEX.md",
+   "sha256": "5c26f720f4bc9a1aa8f3951e002d09f3740f0420664cae43cde1f78bc0821960",
+   "size": 29338
+  }
+ ]
+}
