@@ -447,6 +447,16 @@ def collect(*, with_heavy: bool = True, with_gate: bool = True) -> dict:
             notes["build_reproducibility"] = f"采集失败：{type(exc).__name__}: {exc}"
     else:
         notes.setdefault("build_reproducibility", "跳过（--no-heavy）")
+    # 606：replay 不变量状态采集（I1/I2/I3/I4），失败不 crash
+    try:
+        import replay_invariants as ri
+        inv_results = ri.run_checks()
+        snap["invariants"] = {r["name"]: r["passed"] for r in inv_results}
+        snap["invariants_all_pass"] = all(r["passed"] for r in inv_results)
+    except Exception as exc:                 # noqa: BLE001
+        snap["invariants"] = None
+        snap["invariants_all_pass"] = None
+        notes["invariants"] = f"采集失败：{type(exc).__name__}: {exc}"
     snap["alerts"] = evaluate_alerts(snap["metrics"])
     return snap
 
