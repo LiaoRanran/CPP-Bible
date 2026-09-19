@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-09-19T16:40:04",
- "git_commit": "95eae3a",
+ "generated_at": "2026-09-19T17:32:12",
+ "git_commit": "2af99a3",
  "files": [
   {
    "path": "References/architecture_架构演进/271_架构批判_阙疑v3十问_判据密度不足与收敛手术.md",
@@ -1628,6 +1628,31 @@
    "size": 17913
   },
   {
+   "path": "References/architecture_架构演进/596_建设包_攻击关系数据地基_W2加权AF落地_grounded论证层可用化.md",
+   "sha256": "cb870a95acfd84528a41baee597bcd4769683dac31c1b297ee13eeb375060211",
+   "size": 17580
+  },
+  {
+   "path": "References/architecture_架构演进/597_异族巨型调研_外界扩展思路_数学形式化论证理论统计学习可信计算对阙疑项目的适用性与缺口_只读_arch_v15.md",
+   "sha256": "1fa085bde26b29fe02391919e44728b23a13875440d97a496c9d13e7241e8dd4",
+   "size": 23035
+  },
+  {
+   "path": "References/architecture_架构演进/598_建设包_人审效率工具_MIS群组级队列_主动排序_automation_bias护栏_反馈闭环.md",
+   "sha256": "ae882d866657282f95434836b4755228596396b1e1a65dfa3a578c96e08de38b",
+   "size": 20577
+  },
+  {
+   "path": "References/architecture_架构演进/600_异族深度调研_供应链溯源证明_in-toto_SLSA_OpenTimestamps_封堵585三meta攻击_只读_arch_v16.md",
+   "sha256": "c29868b86122306ec3fe0139642a158bc4520c27321af16aada453d666c55894",
+   "size": 27643
+  },
+  {
+   "path": "References/architecture_架构演进/601_建设大包_信任根溯源层_Merkle_in-toto_封堵585三攻击_问题修复.md",
+   "sha256": "64dfbf96b5846c0c5017092d15b9e02e5b987ac1d740061a979a4aeea1591e8b",
+   "size": 26579
+  },
+  {
    "path": "References/architecture_架构演进/archive_312_backup_pre_compress.md",
    "sha256": "cbbb058e34c3029dc15d2d35704c5d67795a37ee1d427e8df02764a14e9967d8",
    "size": 37910
@@ -1648,6 +1673,11 @@
    "size": 7370
   },
   {
+   "path": "References/architecture_架构演进/grounded论证层从退化到可用的完整路径_593-595综合结论.md",
+   "sha256": "186b5dfe1f69aeff7f9742afec7f4c2f8c471b9f669321774a0aecfa5696ba59",
+   "size": 13982
+  },
+  {
    "path": "References/architecture_架构演进/INDEX_530-592_活跃阶段分类.md",
    "sha256": "8f6f3500edb24e3fd60b22a2402d88c1e7c333dc2d25b23ddb716112eedd38b9",
    "size": 9643
@@ -1666,6 +1696,11 @@
    "path": "References/architecture_架构演进/PM_产品经理仓库整理报告_20260919.md",
    "sha256": "358a5d4368c5a80610437ed2bafe828a6b4b6cc9a7b3f99ab6a6e5d2497d5904",
    "size": 13027
+  },
+  {
+   "path": "References/architecture_架构演进/PM_六维度成熟度评分与路线图_20260919更新.md",
+   "sha256": "de78f3141baf711f542afb66801ea68454ae96fceb3bbc6130566d7d6f7d2e6d",
+   "size": 13269
   },
   {
    "path": "References/architecture_架构演进/PUSH_健康状态总览_20260919.md",
