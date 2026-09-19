@@ -440,6 +440,8 @@ def collect(*, with_heavy: bool = True, with_gate: bool = True) -> dict:
             "metrics": {k: metrics.get(k) for k in ALL_METRICS},
             "notes": notes}
     snap["curves"] = collect_curves()          # 565 Part 4b：三曲线机制字段（1 个时点）
+    # 608 C1：新增 5 类指标（人审进度 / 论证层状态 / 编译可复现 / 逃逸率收敛 / C-P 上界）
+    snap["metrics_608"] = collect_608_new_metrics(notes, with_heavy=with_heavy)
     if with_heavy:
         try:
             snap["build_reproducibility"] = collect_build_reproducibility().to_dict()
@@ -632,6 +634,111 @@ def collect_curves() -> dict:
     }
     out["escape_survival_note"] = ("其余算子尚无'产生→收口'的完整批次 ⇒ None（不填 0）；"
                                    "M2/M6 的 0 是「真值 = 非逃逸」、与 None（缺数据）含义相反，别混读")
+    return out
+
+
+# ── 608 C1：metrics 新增 5 类指标（人审进度 / 论证层状态 / 编译可复现 / 逃逸率收敛 / C-P 上界）──
+def collect_608_new_metrics(notes: dict, *, with_heavy: bool = True) -> dict:
+    """608 C1：新增 5 类指标，挂载为快照的 `metrics_608`（嵌套，**不破坏既有 27 项扁平 schema**）。
+
+    只读聚合（绝不修改任何判决逻辑——人审权力 / replay 判决 / 度量口径分离）：
+      * G1 人审进度：读 `attack_edge_review` 标注 + `attack_edge_generator` 候选边（596 通道）；
+      * G2 论证层状态：读 `data/grounded_labels_w2.json`（W2 判决）+ 候选边按 MIS 分组；
+      * G3 编译可复现：读 `replay_invariants.check_build_reproducibility`（B1 跨时间/符号表/段）；
+      * G4+G5 逃逸率收敛曲线 + Clopper-Pearson 双侧 95% 上界：读 `data/mutation/full_baseline_v*.json`
+        （v7 冻结，591 起不重生成），v1→v5 标注"口径修正"（非同一量时间序列），不得声称单调收敛。
+    """
+    out: dict = {}
+    from collections import Counter
+
+    # G1 · 人审进度指标（基于 596 人审通道，只读）
+    try:
+        import attack_edge_generator as aeg
+        import attack_edge_review as aerv
+        edges = aeg.load_edges()
+        anns = aerv.load_annotations()
+        st = aerv.stats(edges, anns)
+        out["human_review"] = {
+            "total": st["total"], "pending": st["pending"],
+            "approved": st["approved"], "rejected": st["rejected"],
+            "modified": st["modified"],
+            "annotated_edges": st.get("annotated_edges", 0),
+        }
+    except Exception as exc:                     # noqa: BLE001
+        notes["human_review_608"] = f"采集失败：{type(exc).__name__}: {exc}"
+
+    # G2 · 论证层状态指标（W2 判决 + 候选边按 MIS 分组）
+    try:
+        import attack_edge_generator as aeg2
+        edges2 = aeg2.load_edges()
+        w2 = json.loads((ROOT / "data" / "grounded_labels_w2.json").read_text(encoding="utf-8"))
+        nodes = w2.get("nodes", {}) if isinstance(w2, dict) else {}
+        lab = Counter(v.get("label") for v in nodes.values())
+        mis_groups = set()
+        for e in edges2:
+            d = e["direction"]
+            mis_groups.add(e["source"] if d == "mis_to_prop" else e["target"])
+        out["grounded"] = {
+            "in": lab.get("IN", 0), "out": lab.get("OUT", 0),
+            "undec": lab.get("UNDEC", 0),
+            "candidate_edges_total": len(edges2),
+            "candidate_edges_by_mis": len(mis_groups),
+        }
+    except Exception as exc:                     # noqa: BLE001
+        notes["grounded_608"] = f"采集失败：{type(exc).__name__}: {exc}"
+
+    # G3 · 编译可复现指标（B1 I2：跨时间窗口 + 符号表 + 段一致；只读 replay_invariants 结果）
+    if with_heavy:
+        try:
+            import replay_invariants as ri
+            res = ri.check_build_reproducibility(n_cards=2, cross_time=True)
+            cards = res.get("cards", [])
+            out["build_reproducibility"] = {
+                "reproducible": all(c["match"] for c in cards) if cards else None,
+                "time_macro_drift": sum(1 for c in cards
+                                       if c.get("cross") == "时间宏漂移（可接受）"),
+                "symtab_consistent": (all("symtab=no" not in (c.get("detail") or "")
+                                           for c in cards) if cards else None),
+                "n_cards": len(cards),
+            }
+        except Exception as exc:                 # noqa: BLE001
+            notes["build_reproducibility_608"] = f"采集失败：{type(exc).__name__}: {exc}"
+    else:
+        notes.setdefault("build_reproducibility_608", "跳过（--no-heavy）")
+
+    # G4 + G5 · 逃逸率收敛曲线 + Clopper-Pearson 双侧 95% 上界（v1→v7，v7 冻结不重生成）
+    try:
+        from stat_bounds import proportion as _cp
+        baselines = {
+            "v1": "571 修 GATE_READ_KEYS 前，含 M2 假逃逸（口径修正，非同量）",
+            "v2": "571 修尺子后，含 M3 的 52 条真洞（口径修正）",
+            "v3": "574 修 M5 尺子后，M5 活雷未收（口径修正）",
+            "v4": "575 命题级活性锚，M5 规则已拦但被 diff 键吞（口径修正）",
+            "v5": "578 _findings_key 并入文案后，587 起 1/1375（口径修正）",
+            "v6": "588 发现器补全后 1/1379，被 v7 取代（口径修正）",
+            "v7": "591 当前口径：589 T2 注释净化 un-mask 27 条 fixture 路径变异 ⇒ "
+                  "M2 可判 141→168；唯一 escaped=1（M1/EV-CONC-001 冻结 TCE）",
+        }
+        conv = []
+        for ver, why in baselines.items():
+            p = ROOT / "data" / "mutation" / f"full_baseline_{ver}.json"
+            if not p.is_file():
+                continue
+            d = json.loads(p.read_text(encoding="utf-8"))
+            judged = d["blocked"] + d["escaped"]
+            r = _cp(d["escaped"], judged)
+            conv.append({
+                "version": ver, "judged": judged, "n_a": d.get("n_a"),
+                "numerator": r["numerator"], "denominator": r["denominator"],
+                "point": r["point"], "cp_lower": r["cp_low"], "cp_upper": r["cp_high"],
+                "note": why,
+            })
+        out["escape_rate_convergence"] = conv
+        out["escape_rate_note"] = ("v1→v5 为口径修正（非同一量时间序列），v6→v7 为真实进展；"
+                                   "不得声称单调收敛（仅 1 含曲线时点）；尺子变更史见各 version.note")
+    except Exception as exc:                     # noqa: BLE001
+        notes["escape_rate_convergence"] = f"采集失败：{type(exc).__name__}: {exc}"
+
     return out
 
 
