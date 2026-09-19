@@ -36,10 +36,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
+from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -277,6 +281,111 @@ def collect_health(notes: dict, assets: dict | None = None) -> dict:
     return out
 
 
+# ── 603 任务2：编译可复现性采样度量 ───────────────────────────────────────
+@dataclass
+class BuildReproducibilityMetrics:
+    """603 任务2：编译可复现性采样结果。
+
+    字段：`total`（实际采样卡数）/ `sampled` / `reproducible`（独立编译两次一致）/
+    `compile_failed`（rc≠0，无法评估）/ `not_reproducible`（rc=0 但两次不一致）/
+    `unavailable`（命令里提不出直接产出该 artifact 的编译行，跳过，不计入 total）/
+    `notes`（明细）/ `sampled_cards`（采到的卡 id）。
+    """
+    total: int
+    sampled: int
+    reproducible: int
+    compile_failed: int
+    not_reproducible: int
+    unavailable: int
+    notes: dict
+    sampled_cards: list
+
+    def to_dict(self) -> dict:
+        return {
+            "total": self.total, "sampled": self.sampled,
+            "reproducible": self.reproducible, "compile_failed": self.compile_failed,
+            "not_reproducible": self.not_reproducible, "unavailable": self.unavailable,
+            "notes": self.notes, "sampled_cards": self.sampled_cards,
+        }
+
+
+def collect_build_reproducibility(sample: int = 10, seed: int = 603,
+                                  work_dir: Path | None = None,
+                                  cards: list[dict] | None = None
+                                  ) -> BuildReproducibilityMetrics:
+    """603 任务2：采样 N 张证据卡的"重编译命令"，用 `check_build_reproducibility` 证独立编译确定性。
+
+    口径（诚实）：
+      * 仅采"命令里能提取出直接产出该 artifact 的编译行"的卡（无 ⇒ unavailable，跳过，不计入 total）；
+      * 注入 `-Wl,--no-insert-timestamp` **中性化 PE 时间戳**——否则 MinGW 时间戳随墙钟变，度量是"假非确定"；
+        这是**度量口径**，不进 replay 判决（replay 保 want_sha 匹配，存量零误伤）；
+      * 用**最后一行**编译命令（与 `_recompile_invariant` 同语义：逐行覆写同一 -o 目标）；
+      * total = 实际采样的卡数；reproducible / compile_failed / not_reproducible 三者之和 == total；
+      * `cards` 可外部注入（测试用），否则按 card id 排序取前 `sample` 张证据卡，**确定可复现**（不随机抖动）。
+    """
+    import atom_evidence_replay as replay
+    notes: dict = {}
+    if cards is None:
+        import gate_engine as ge
+        cards = []
+        for p in sorted(ge._cards(ge.EVIDENCE, "EV-*.md")):
+            fm = replay.parse_frontmatter(p.read_text(encoding="utf-8", errors="replace"))
+            if not isinstance(fm, dict):
+                continue
+            cmd = fm.get("command")
+            art = fm.get("artifact")
+            if not cmd or not art:
+                continue
+            cards.append({"card": fm.get("id") or p.stem, "command": cmd, "artifact": art})
+    ordered = sorted(cards, key=lambda c: str(c.get("card") or ""))
+    rng = random.Random(seed)                  # 确定性抽样（同 seed ⇒ 同卡集，不随机抖动）
+    chosen = rng.sample(ordered, min(sample, len(ordered)))
+    own_tmp = work_dir is None
+    wd = Path(work_dir) if work_dir is not None else Path(tempfile.mkdtemp(prefix="build_repro_"))
+    try:
+        total = sampled = reproducible = compile_failed = not_reproducible = 0
+        unavailable = 0
+        sampled_cards: list = []
+        for c in chosen:
+            cid = str(c.get("card") or "?")
+            cmd = str(c.get("command") or "")
+            art = str(c.get("artifact") or "")
+            lines = replay._artifact_compile_lines(cmd, art)
+            if not lines:
+                unavailable += 1
+                notes.setdefault("unavailable_cards", []).append(cid)
+                continue
+            line = lines[-1]                       # 与 _recompile_invariant 同语义
+            line = re.sub(r'^(\S+)', r'\1 -Wl,--no-insert-timestamp', line, count=1)
+            total += 1
+            sampled += 1
+            sampled_cards.append(cid)
+            res = replay.check_build_reproducibility(
+                source_path=replay.run_root() / art,
+                compile_cmd=line, work_dir=wd, output_name=Path(art).name,
+                ccaches_disable=True, check_level="sha", cwd=str(replay.run_root()))
+            if res.compile_exit_code != 0:
+                compile_failed += 1
+                notes.setdefault("compile_failed_cards", []).append(cid)
+            elif res.success:
+                reproducible += 1
+            else:
+                not_reproducible += 1
+                notes.setdefault("not_reproducible_cards", []).append(
+                    {"card": cid, "detail": res.diff_detail})
+    finally:
+        if own_tmp:
+            shutil.rmtree(wd, ignore_errors=True)
+    notes["sample_requested"] = sample
+    notes["sample_actual"] = total
+    if total:
+        notes["reproducible_rate"] = round(100.0 * reproducible / total, 1)
+    return BuildReproducibilityMetrics(
+        total=total, sampled=sampled, reproducible=reproducible,
+        compile_failed=compile_failed, not_reproducible=not_reproducible,
+        unavailable=unavailable, notes=notes, sampled_cards=sampled_cards)
+
+
 # ── 组装 / 告警 / 落盘 ────────────────────────────────────────────────────
 def evaluate_alerts(metrics: dict) -> list[dict]:
     """硬阈值告警（只 WARN/ERROR 记录，**不 BLOCK 任何流程**）。"""
@@ -331,6 +440,13 @@ def collect(*, with_heavy: bool = True, with_gate: bool = True) -> dict:
             "metrics": {k: metrics.get(k) for k in ALL_METRICS},
             "notes": notes}
     snap["curves"] = collect_curves()          # 565 Part 4b：三曲线机制字段（1 个时点）
+    if with_heavy:
+        try:
+            snap["build_reproducibility"] = collect_build_reproducibility().to_dict()
+        except Exception as exc:                 # noqa: BLE001
+            notes["build_reproducibility"] = f"采集失败：{type(exc).__name__}: {exc}"
+    else:
+        notes.setdefault("build_reproducibility", "跳过（--no-heavy）")
     snap["alerts"] = evaluate_alerts(snap["metrics"])
     return snap
 
