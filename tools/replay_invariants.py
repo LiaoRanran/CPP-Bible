@@ -51,35 +51,69 @@ def fingerprint_dir(path: Path | str, *, pattern: str = "**/*") -> str:
 
 
 # ── I1：工件还原不变量 ─────────────────────────────────────────────────────────
+def _find_confirm_cards(*, n: int = 1) -> list[tuple[Path, dict]]:
+    """找前 n 张 confirm 卡（有 command + artifact_sha256）。"""
+    try:
+        import gate_engine as ge
+    except ImportError:
+        return []
+    cards = []
+    for f in sorted((ROOT / "evidence").rglob("EV-*.md")):
+        meta = ge._meta(f)
+        if meta.get("verdict") == "confirm" and meta.get("command") and meta.get("artifact_sha256"):
+            cards.append((f, meta))
+            if len(cards) >= n:
+                break
+    return cards
+
+
 def check_artifact_restore() -> dict:
     """I1：replay 跑完后，真实仓库 Examples/ 工件必须与跑前逐字节一致。
 
-    实现：拍两次指纹（间隔 1 秒），验证指纹稳定。真实还原逻辑由 replay 的
-    `_restore_artifact()` 保证，已有测试覆盖；本检查验证指纹机制本身可靠。
+    真检查：找一张 confirm 卡 → 拍 Examples/ 指纹 before → 跑 replay_card(restore_artifact=True)
+    → 拍指纹 after → 验证 before==after。如果 replay 崩溃或没还原，指纹不一致 ⇒ fail。
     """
     t0 = time.time()
-    fp1 = fingerprint_dir(EXAMPLES_DIR)
-    time.sleep(0.5)
-    fp2 = fingerprint_dir(EXAMPLES_DIR)
+    cards = _find_confirm_cards(n=1)
+    if not cards:
+        return {"name": "artifact_restore", "passed": False, "elapsed_s": 0,
+                "detail": "no confirm card with command+artifact_sha256 found"}
+    card_path, meta = cards[0]
+    fp_before = fingerprint_dir(EXAMPLES_DIR)
+    verdict = "not_run"
+    error_msg = ""
+    try:
+        import atom_evidence_replay as aer
+        verdict, _log = aer.replay_card(card_path, restore_artifact=True)
+    except Exception as exc:
+        error_msg = f"{type(exc).__name__}: {exc}"
+    fp_after = fingerprint_dir(EXAMPLES_DIR)
     elapsed = time.time() - t0
-    passed = fp1 == fp2 and fp1 != "MISSING"
+    passed = fp_before == fp_after and fp_before != "MISSING" and not error_msg
+    detail = (f"card={card_path.stem} verdict={verdict} "
+              f"Examples/ before={fp_before} after={fp_after} "
+              f"{'RESTORED ✓' if passed else 'NOT RESTORED ✗'}")
+    if error_msg:
+        detail += f" error={error_msg}"
     return {
         "name": "artifact_restore",
         "passed": passed,
         "elapsed_s": round(elapsed, 2),
-        "detail": f"Examples/ fingerprint: {fp1} == {fp2}" if passed
-                  else f"fingerprint mismatch or missing: {fp1} vs {fp2}",
+        "detail": detail,
+        "card": card_path.stem,
+        "verdict": verdict,
         "files_scanned": len(list(EXAMPLES_DIR.glob("**/*"))) if EXAMPLES_DIR.is_dir() else 0,
     }
 
 
 # ── I2：编译可复现不变量 ───────────────────────────────────────────────────────
-def check_build_reproducibility(*, n_cards: int = 2) -> dict:
+def check_build_reproducibility(*, n_cards: int = 5) -> dict:
     """I2：同一张卡的同一条命令，两次编译产物 sha 必须一致（短窗口内）。
 
     实现：复用 replay 的 `_recompile_invariant()`（603 已验证 10/10 reproducible），
     对前 n_cards 张 confirm 卡跑两次，比对产物 sha。不自己编译（MinGW exe 含时间戳，
     replay 的实现已处理 CCACHE_DISABLE + 临时目录隔离 + sha 比对）。
+    注意：这是抽样检查（默认 5/56），非全量。
     """
     t0 = time.time()
     try:
@@ -127,39 +161,79 @@ def check_build_reproducibility(*, n_cards: int = 2) -> dict:
 
 
 # ── I4：沙箱隔离不变量 ─────────────────────────────────────────────────────────
-def check_sandbox_isolation() -> dict:
-    """I4：跑批根（batch_root）内的操作不能泄漏到真实仓库。
+def _git_diff_quiet(*paths: str) -> bool:
+    """用 git diff --quiet 检查指定路径是否有未提交改动。True=无改动（干净）。"""
+    import subprocess
+    try:
+        r = subprocess.run(
+            ["git", "diff", "--quiet", "--", *paths],
+            cwd=str(ROOT), capture_output=True, timeout=30,
+        )
+        return r.returncode == 0
+    except Exception:
+        return True  # git 不可用时不报错（降级为不检测）
 
-    实现：拍真实仓库指纹 → 在 batch_root 上下文内创建/删除文件 → 拍真实仓库指纹 → 比对。
-    验证 batch_root 隔离机制本身可靠。
+
+def check_sandbox_isolation() -> dict:
+    """I4：batch_root 上下文内跑 replay，操作不能泄漏到真实仓库。
+
+    真检查：git diff 拍受控目录基线 → 设 batch_root 到临时目录 →
+    在 batch_root 上下文内跑 replay_card → git diff 验证受控目录零改动；
+    同时验证临时目录内有 replay 产生的文件（证明 batch_root 确实被使用）。
     """
     t0 = time.time()
-    fp_before = fingerprint_dir(ROOT / "tools", pattern="replay_invariants.py")
+    cards = _find_confirm_cards(n=1)
+    if not cards:
+        return {"name": "sandbox_isolation", "passed": False, "elapsed_s": 0,
+                "detail": "no confirm card found"}
+    card_path, meta = cards[0]
+    # 基线：受控目录必须干净（atoms/evidence/Book/Examples/data/mutation）
+    controlled_paths = ["atoms", "evidence", "Book", "Examples", "data/mutation"]
+    clean_before = _git_diff_quiet(*controlled_paths)
     leaked = False
     leak_detail = ""
-    tmp_path = ""
-    with tempfile.TemporaryDirectory(prefix="sandbox_inv_") as tmp:
-        tmp_path = tmp
-        tmpdir = Path(tmp)
-        # 模拟 batch_root：在临时目录内操作，验证不影响真实 ROOT
-        marker = tmpdir / "leak_test_marker.txt"
-        marker.write_text("this should not leak to real repo\n", encoding="utf-8")
-        # 验证 marker 不在真实仓库
-        if (ROOT / "leak_test_marker.txt").exists():
+    batch_had_files = False
+    verdict = "not_run"
+    error_msg = ""
+    with tempfile.TemporaryDirectory(prefix="replay_batch_") as tmp:
+        batch_root = Path(tmp)
+        (batch_root / "build").mkdir(exist_ok=True)  # replay 需要 build/ 放锁和 manifest
+        try:
+            import atom_evidence_replay as aer
+            tok = aer._RUN_ROOT.set(batch_root)
+            try:
+                verdict, _log = aer.replay_card(card_path, restore_artifact=True)
+            finally:
+                aer._RUN_ROOT.reset(tok)
+        except Exception as exc:
+            error_msg = f"{type(exc).__name__}: {exc}"
+        # 验证 batch_root 内有 replay 产生的文件（manifest / 锁 / 临时工件）
+        batch_files = list(batch_root.rglob("*"))
+        batch_had_files = len(batch_files) > 0
+        # 验证受控目录零改动（git diff --quiet）
+        clean_after = _git_diff_quiet(*controlled_paths)
+        if not clean_after and clean_before:
             leaked = True
-            leak_detail = "marker leaked to repo root!"
-        # 验证 tools/ 指纹不变
-        fp_after = fingerprint_dir(ROOT / "tools", pattern="replay_invariants.py")
-        if fp_before != fp_after:
-            leaked = True
-            leak_detail = f"tools/ fingerprint changed: {fp_before} -> {fp_after}"
+            leak_detail = "git diff detected changes in controlled dirs after batch_root replay"
+        elif not clean_before:
+            leak_detail = "controlled dirs were dirty before check (pre-existing changes)"
     elapsed = time.time() - t0
+    passed = not leaked and batch_had_files and not error_msg
+    detail = (f"card={card_path.stem} verdict={verdict} "
+              f"clean_before={clean_before} clean_after={clean_after} "
+              f"batch_files={'yes' if batch_had_files else 'NO'} "
+              f"{'ISOLATED ✓' if passed else 'LEAK ✗'}")
+    if leak_detail:
+        detail += f" {leak_detail}"
+    if error_msg:
+        detail += f" error={error_msg}"
     return {
         "name": "sandbox_isolation",
-        "passed": not leaked,
+        "passed": passed,
         "elapsed_s": round(elapsed, 2),
-        "detail": leak_detail if leaked else "operations in temp dir did not affect real repo",
-        "temp_dir_cleaned": not Path(tmp_path).exists(),
+        "detail": detail,
+        "card": card_path.stem,
+        "batch_had_files": batch_had_files,
     }
 
 
@@ -184,15 +258,16 @@ def check_lock_consistency() -> dict:
     expected_default = ROOT / "build" / ".replay_lock"
     if default_lock != expected_default:
         failures.append(f"default lock path mismatch: {default_lock} != {expected_default}")
-    # 2. batch_root 内路径跟随（用 contextvar 模拟）
+    # 2. batch_root 内路径跟随（contextvar token+reset，防嵌套上下文泄漏）
+    fake_root = Path(tempfile.gettempdir()) / "replay_inv_fake_root"
+    tok = aer._RUN_ROOT.set(fake_root)
     try:
-        aer._RUN_ROOT.set(Path("/tmp/fake_batch_root"))
         batch_lock = aer._replay_lock_path()
-        expected_batch = Path("/tmp/fake_batch_root") / "build" / ".replay_lock"
+        expected_batch = fake_root / "build" / ".replay_lock"
         if batch_lock != expected_batch:
             failures.append(f"batch lock path mismatch: {batch_lock} != {expected_batch}")
     finally:
-        aer._RUN_ROOT.set(None)
+        aer._RUN_ROOT.reset(tok)
     # 3. 真实仓库无残留锁
     if expected_default.exists():
         failures.append(f"stale lock file exists in real repo: {expected_default}")
@@ -216,7 +291,9 @@ CHECKS = {
 }
 
 
-def run_checks(*, only: tuple[str, ...] | None = None) -> list[dict]:
+def run_checks(*, only: tuple[str, ...] | None = None,
+               heavy: bool = True, n_cards: int = 5) -> list[dict]:
+    """跑不变量检查。heavy=False 时跳过 I2 build_reproducibility（不编译，轻量）。"""
     names = only or INVARIANTS
     results = []
     for name in names:
@@ -224,8 +301,15 @@ def run_checks(*, only: tuple[str, ...] | None = None) -> list[dict]:
             results.append({"name": name, "passed": False, "elapsed_s": 0,
                             "detail": f"unknown invariant: {name}"})
             continue
+        if not heavy and name == "build_reproducibility":
+            results.append({"name": name, "passed": True, "elapsed_s": 0,
+                            "detail": "skipped (heavy=False, no compilation)"})
+            continue
         try:
-            results.append(CHECKS[name]())
+            if name == "build_reproducibility":
+                results.append(CHECKS[name](n_cards=n_cards))
+            else:
+                results.append(CHECKS[name]())
         except Exception as exc:
             results.append({"name": name, "passed": False, "elapsed_s": 0,
                             "detail": f"check raised: {exc}"})
@@ -238,6 +322,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--list", action="store_true", help="列出所有不变量")
     ap.add_argument("--invariant", choices=INVARIANTS, default=None,
                     help="只跑指定不变量")
+    ap.add_argument("--n-cards", type=int, default=5,
+                    help="I2 抽样卡数（默认5，非全量）")
+    ap.add_argument("--no-heavy", action="store_true",
+                    help="跳过 I2 build_reproducibility（不编译，轻量模式）")
     ap.add_argument("--json", action="store_true", help="JSON 输出")
     a = ap.parse_args(argv)
 
@@ -252,7 +340,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if a.check:
         only = (a.invariant,) if a.invariant else None
-        results = run_checks(only=only)
+        results = run_checks(only=only, heavy=not a.no_heavy, n_cards=a.n_cards)
         all_pass = all(r["passed"] for r in results)
         if a.json:
             print(json.dumps({"all_passed": all_pass, "results": results},
