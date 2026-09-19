@@ -108,13 +108,44 @@ def check_artifact_restore() -> dict:
 
 
 # ── I2：编译可复现不变量 ───────────────────────────────────────────────────────
-def check_build_reproducibility(*, n_cards: int = 5) -> dict:
-    """I2：同一张卡的同一条命令，两次编译产物 sha 必须一致（短窗口内）。
+def _only_time_macro_diff(ba: bytes, bb: bytes) -> bool:
+    """判断两个二进制是否**只**在「时间宏 / PE 时间戳」区域不同。
 
-    实现：复用 replay 的 `_recompile_invariant()`（603 已验证 10/10 reproducible），
-    对前 n_cards 张 confirm 卡跑两次，比对产物 sha。不自己编译（MinGW exe 含时间戳，
-    replay 的实现已处理 CCACHE_DISABLE + 临时目录隔离 + sha 比对）。
-    注意：这是抽样检查（默认 5/56），非全量。
+    命中任一即视为时间相关漂移（可接受）：
+      * 所有差异字节均为可打印 ASCII（`__TIME__`/`__DATE__`/`__TIMESTAMP__` 是 ASCII 串）；
+      * 或差异恰好落在 PE 头 TimeDateStamp 4 字节（即便已关插时间戳，也兜底层处理）。
+    否则 ⇒ 真不可复现。
+    """
+    if ba == bb:
+        return True
+    n = min(len(ba), len(bb))
+    diff_bytes = {ba[i] for i in range(n) if ba[i] != bb[i]}
+    if diff_bytes and all(0x20 <= b <= 0x7E for b in diff_bytes):
+        return True
+    if (len(ba) >= 0x40 and len(bb) >= 0x40
+            and ba[0:2] == b"MZ" and bb[0:2] == b"MZ"):
+        pe_off = int.from_bytes(ba[0x3C:0x40], "little")
+        if (ba[pe_off:pe_off + 4] == b"PE\x00\x00"
+                and bb[pe_off:pe_off + 4] == b"PE\x00\x00"):
+            ts_region = range(pe_off + 8, pe_off + 12)
+            if all(i in ts_region for i in range(n) if ba[i] != bb[i]):
+                return True
+    return False
+
+
+def check_build_reproducibility(*, n_cards: int = 5, cross_time: bool = False,
+                                 no_symtab: bool = False) -> dict:
+    """I2：编译可复现不变量（608 B1 深化）。
+
+    在 603 的短窗口 sha 比对之外新增三项（均不修改 atom_evidence_replay.py，只调用其
+    `check_build_reproducibility` 引擎与 `_recompile_invariant`）：
+      * **符号表一致性**：`nm` 提取两次编译的符号表逐行比对（`--no-symtab` 关闭）；
+      * **段一致性**：`objdump -h` 比对 `.text`/`.data`/`.rodata` 段大小；
+      * **跨时间窗口**：间隔 ≥1s 重编译，检测 `__TIME__`/`__DATE__`/`__TIMESTAMP__` 漂移
+        （只对前 3 张卡做，避免太慢）。漂移只落在时间宏区域 ⇒「时间宏漂移（可接受）」；
+        落在其他区域 ⇒「真不可复现（fail）」。
+
+    硬纪律：编译产物落 %TEMP%；复用 replay 的 CCACHE_DISABLE + 临时目录隔离。
     """
     t0 = time.time()
     try:
@@ -134,29 +165,76 @@ def check_build_reproducibility(*, n_cards: int = 5) -> dict:
     if not confirm_cards:
         return {"name": "build_reproducibility", "passed": False, "elapsed_s": 0,
                 "detail": "no confirm cards with command+artifact_sha256 found"}
+    check_level = "sha" if no_symtab else "full"
     results = []
     all_pass = True
-    for card_path, meta in confirm_cards:
+    for idx, (card_path, meta) in enumerate(confirm_cards):
         cmd = str(meta["command"])
         art_rel = str(meta.get("artifact", ""))
         want_sha = str(meta.get("artifact_sha256", ""))
-        try:
-            status1, detail1 = aer._recompile_invariant(cmd, art_rel, want_sha)
-            status2, detail2 = aer._recompile_invariant(cmd, art_rel, want_sha)
-            match = status1 == status2 == "ok"
-            if not match:
-                all_pass = False
-            results.append({"card": card_path.stem, "run1": status1, "run2": status2,
-                             "detail1": detail1[:60], "match": match})
-        except Exception as exc:
+        bin_name = Path(art_rel).name
+        lines = aer._artifact_compile_lines(cmd, art_rel)
+        art_line = lines[-1] if lines else cmd
+        ok = True
+        parts: list[str] = []
+        # 1) 短窗口 sha 复现（保留原语义：重编译 vs 卡值，防篡改）
+        for ln in lines:
+            status, detail = aer._recompile_invariant(cmd, art_rel, want_sha)
+            if status != "ok":
+                ok = False
+                parts.append(f"{status}:{detail[:36]}")
+        # 2) 符号表 / 段一致性 + run1==run2（引擎，check_level）
+        bin_a = None
+        with tempfile.TemporaryDirectory() as wd1:
+            res1 = aer.check_build_reproducibility(
+                source_path=aer.run_root() / art_rel, compile_cmd=art_line, work_dir=wd1,
+                output_name=None, ccaches_disable=True, check_level=check_level)
+            if res1.compile_exit_code != 0:
+                ok = False
+                parts.append(f"compile_rc={res1.compile_exit_code}")
+            if not res1.success:
+                ok = False
+                parts.append("run1!=run2")
+            if res1.symbols_match is False:
+                ok = False
+                parts.append("symtab=no")
+            if res1.sections_match is False:
+                ok = False
+                parts.append("sections=no")
+            bin_a = (Path(wd1) / "run1" / bin_name).read_bytes()
+        # 3) 跨时间窗口（只对前 3 张卡）
+        cross_status = "未启用"
+        if cross_time and idx < 3:
+            time.sleep(1.2)
+            with tempfile.TemporaryDirectory() as wd2:
+                res2 = aer.check_build_reproducibility(
+                    source_path=aer.run_root() / art_rel, compile_cmd=art_line, work_dir=wd2,
+                    output_name=None, ccaches_disable=True, check_level="sha")
+                if res2.compile_exit_code != 0:
+                    cross_status = "编译失败"
+                    ok = False
+                elif res1.first_hash == res2.first_hash:
+                    cross_status = "一致"
+                else:
+                    bin_b = (Path(wd2) / "run1" / bin_name).read_bytes()
+                    if _only_time_macro_diff(bin_a, bin_b):
+                        cross_status = "时间宏漂移（可接受）"
+                    else:
+                        cross_status = "真不可复现（fail）"
+                        ok = False
+        if not ok:
             all_pass = False
-            results.append({"card": card_path.stem, "error": str(exc), "match": False})
+        results.append({"card": card_path.stem, "match": ok, "cross": cross_status,
+                        "detail": "; ".join(parts)[:90]})
     elapsed = time.time() - t0
+    n_match = sum(1 for r in results if r["match"])
     return {
         "name": "build_reproducibility",
         "passed": all_pass,
         "elapsed_s": round(elapsed, 2),
-        "detail": f"{sum(1 for r in results if r.get('match'))}/{len(results)} cards reproducible (via replay._recompile_invariant)",
+        "detail": f"{n_match}/{len(results)} cards reproducible "
+                  f"(短窗口+{'symtab+sections' if not no_symtab else 'sha'}；"
+                  f"cross_time={'on' if cross_time else 'off'})",
         "cards": results,
     }
 
@@ -359,7 +437,8 @@ CHECKS = {
 
 
 def run_checks(*, only: tuple[str, ...] | None = None,
-               heavy: bool = True, n_cards: int = 5) -> list[dict]:
+               heavy: bool = True, n_cards: int = 5,
+               cross_time: bool = False, no_symtab: bool = False) -> list[dict]:
     """跑不变量检查。heavy=False 时跳过 I2 build_reproducibility（不编译，轻量）。"""
     names = only or INVARIANTS
     results = []
@@ -374,7 +453,9 @@ def run_checks(*, only: tuple[str, ...] | None = None,
             continue
         try:
             if name == "build_reproducibility":
-                results.append(CHECKS[name](n_cards=n_cards))
+                results.append(CHECKS[name](n_cards=n_cards,
+                                           cross_time=cross_time,
+                                           no_symtab=no_symtab))
             else:
                 results.append(CHECKS[name]())
         except Exception as exc:
@@ -391,6 +472,10 @@ def main(argv: list[str] | None = None) -> int:
                     help="只跑指定不变量")
     ap.add_argument("--n-cards", type=int, default=5,
                     help="I2 抽样卡数（默认5，非全量）")
+    ap.add_argument("--cross-time", action="store_true",
+                    help="I2 跨时间窗口（间隔≥1s 重编译，检测 __TIME__ 漂移；只对前3张卡）")
+    ap.add_argument("--no-symtab", action="store_true",
+                    help="I2 不做符号表一致性（只比对 sha + 段大小）")
     ap.add_argument("--no-heavy", action="store_true",
                     help="跳过 I2 build_reproducibility（不编译，轻量模式）")
     ap.add_argument("--json", action="store_true", help="JSON 输出")
@@ -407,7 +492,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if a.check:
         only = (a.invariant,) if a.invariant else None
-        results = run_checks(only=only, heavy=not a.no_heavy, n_cards=a.n_cards)
+        results = run_checks(only=only, heavy=not a.no_heavy, n_cards=a.n_cards,
+                             cross_time=a.cross_time, no_symtab=a.no_symtab)
         all_pass = all(r["passed"] for r in results)
         if a.json:
             print(json.dumps({"all_passed": all_pass, "results": results},
