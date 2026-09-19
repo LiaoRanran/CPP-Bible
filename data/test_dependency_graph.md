@@ -1,0 +1,191 @@
+# 测试依赖图（589 任务 4a · `tools/test_dependency_graph.py` 只读生成）
+
+> 本图仅为 560-B3（受影响测试选择）的前置数据；跳过判决测试属 W 档，须先攒依赖图与漏捕率，本包不做选择。
+
+
+统计：测试文件 **72** 个 · tools 模块 **114** 个（其中**无任何测试覆盖 75** 个）· 被引用的数据/工件 **64** 个。
+
+
+## 一、`tools/*.py` → 覆盖它的测试
+
+- `tools/_clean_junk.py`：**（无任何测试覆盖）**
+- `tools/adversarial_regression.py`：`tests/test_adversarial_regression.py`
+- `tools/artifact_version_stamp.py`：**（无任何测试覆盖）**
+- `tools/asm_prepush_guard.py`：**（无任何测试覆盖）**
+- `tools/asm_regen.py`：**（无任何测试覆盖）**
+- `tools/asm_repro_spotcheck.py`：**（无任何测试覆盖）**
+- `tools/atom_coverage_map.py`：`tests/test_atom_coverage_map.py`
+- `tools/atom_evidence_replay.py`：`tests/test_artifact_snapshot.py`, `tests/test_atom_evidence_replay.py`, `tests/test_ccache_prefix.py`, `tests/test_discriminative.py`, `tests/test_golden_reuse.py`, `tests/test_incremental_replay.py`, `tests/test_mutation_equivalent_583.py`, `tests/test_mutation_isolation_579.py`, `tests/test_mutation_parallel_580.py`, `tests/test_negative_controls.py`, `tests/test_oracle_gate.py`, `tests/test_p02_discriminative.py`, `tests/test_p0g_lock.py`, `tests/test_parser_differential.py`, `tests/test_recompile_invariant.py`, `tests/test_replay_lock_serial.py`, `tests/test_replay_lock_shard_580.py`, `tests/test_tool_integrity.py`
+- `tools/backup.py`：`tests/test_backup.py`
+- `tools/book_asm_freshness.py`：**（无任何测试覆盖）**
+- `tools/book_atom_sync.py`：**（无任何测试覆盖）**
+- `tools/caption_truncation_audit.py`：**（无任何测试覆盖）**
+- `tools/chapter_compile_check.py`：**（无任何测试覆盖）**
+- `tools/chapter_lint.py`：**（无任何测试覆盖）**
+- `tools/check_citations.py`：**（无任何测试覆盖）**
+- `tools/ci_local_precheck.py`：`tests/test_ci_local_precheck.py`
+- `tools/clean_root_artifacts.py`：**（无任何测试覆盖）**
+- `tools/codeblock_style.py`：**（无任何测试覆盖）**
+- `tools/collect_reports.py`：**（无任何测试覆盖）**
+- `tools/comment_blocks.py`：**（无任何测试覆盖）**
+- `tools/compile_all.py`：**（无任何测试覆盖）**
+- `tools/compile_classify.py`：**（无任何测试覆盖）**
+- `tools/compile_gate.py`：**（无任何测试覆盖）**
+- `tools/compile_run_sanitize_pipeline.py`：**（无任何测试覆盖）**
+- `tools/compile_triage.py`：`tests/test_toolchain_regressions.py`
+- `tools/consistency_check.py`：**（无任何测试覆盖）**
+- `tools/cost_tracker.py`：`tests/test_cost_tracker.py`
+- `tools/cppbible.py`：`tests/test_mutation_fuzz.py`
+- `tools/crossref_audit.py`：**（无任何测试覆盖）**
+- `tools/d5_appendix_audit.py`：**（无任何测试覆盖）**
+- `tools/d5_compile_gate.py`：**（无任何测试覆盖）**
+- `tools/d5_gap_scanner.py`：**（无任何测试覆盖）**
+- `tools/d5_runtime_gate.py`：**（无任何测试覆盖）**
+- `tools/d5_source_integrity.py`：**（无任何测试覆盖）**
+- `tools/dangling_ref_linter.py`：**（无任何测试覆盖）**
+- `tools/data_sanity_audit.py`：**（无任何测试覆盖）**
+- `tools/debt_ledger.py`：`tests/test_s1_s6.py`
+- `tools/deduplication_audit.py`：**（无任何测试覆盖）**
+- `tools/density_audit.py`：**（无任何测试覆盖）**
+- `tools/doc_frontmatter.py`：`tests/test_doc_frontmatter.py`
+- `tools/doc_lint.py`：`tests/test_doc_lint.py`
+- `tools/env_check.py`：**（无任何测试覆盖）**
+- `tools/example_caption_cleanup.py`：**（无任何测试覆盖）**
+- `tools/example_exercise_audit.py`：**（无任何测试覆盖）**
+- `tools/example_tag_inject.py`：**（无任何测试覆盖）**
+- `tools/exempt_audit.py`：**（无任何测试覆盖）**
+- `tools/exercise_dup_guard.py`：**（无任何测试覆盖）**
+- `tools/expand_assist.py`：**（无任何测试覆盖）**
+- `tools/expansion_audit.py`：**（无任何测试覆盖）**
+- `tools/fix_book_links.py`：**（无任何测试覆盖）**
+- `tools/flashcard_export.py`：`tests/test_flashcard_export.py`, `tests/test_p13_flashcard.py`
+- `tools/gate_engine.py`：`tests/test_artifact_version.py`, `tests/test_flashcard_export.py`, `tests/test_gate_engine.py`, `tests/test_golden_classify.py`, `tests/test_impact_analysis.py`, `tests/test_knowledge_graph.py`, `tests/test_meta_cache_579.py`, `tests/test_mutation_equivalent_583.py`, `tests/test_mutation_fuzz.py`, `tests/test_mutation_isolation_579.py`, `tests/test_oracle_gate.py`, `tests/test_output_snapshots.py`, `tests/test_overturned_curves.py`, `tests/test_p0b_echo.py`, `tests/test_p0d_hardening.py`, `tests/test_p0e_env.py`, `tests/test_p0f_zerodiag.py`, `tests/test_p13_flashcard.py`, `tests/test_p14_relations.py`, `tests/test_parser_differential.py`, `tests/test_poison_attack_type.py`, `tests/test_poison_coverage_581.py`, `tests/test_poison_exemptions_581.py`, `tests/test_prop_graph.py`, `tests/test_prop_signed_by.py`, `tests/test_review_triage.py`, `tests/test_s1_git_author_binding.py`, `tests/test_s1_s6.py`, `tests/test_tool_integrity.py`, `tests/test_verify_reason.py`, `tests/test_writer_selfcheck.py`
+- `tools/gen_indexes.py`：**（无任何测试覆盖）**
+- `tools/gen_metrics.py`：`tests/test_gen_metrics.py`
+- `tools/gen_mkdocs_nav.py`：**（无任何测试覆盖）**
+- `tools/golden_lock.py`：`tests/test_golden_classify.py`, `tests/test_golden_reuse.py`, `tests/test_s1_s6.py`
+- `tools/gray_zone_scan.py`：**（无任何测试覆盖）**
+- `tools/handover_check.py`：**（无任何测试覆盖）**
+- `tools/hy3_check.py`：**（无任何测试覆盖）**
+- `tools/impact_analysis.py`：`tests/test_impact_analysis.py`
+- `tools/json_project_gate.py`：**（无任何测试覆盖）**
+- `tools/knowledge_graph.py`：`tests/test_knowledge_graph.py`, `tests/test_output_snapshots.py`
+- `tools/l2_state.py`：**（无任何测试覆盖）**
+- `tools/learning_path.py`：**（无任何测试覆盖）**
+- `tools/log_query.py`：`tests/test_observability.py`
+- `tools/markdown_style_guard.py`：**（无任何测试覆盖）**
+- `tools/mermaid_audit.py`：**（无任何测试覆盖）**
+- `tools/metrics_collector.py`：`tests/test_metrics_collector.py`, `tests/test_metrics_collector_curves.py`, `tests/test_oracle_gate.py`, `tests/test_oracle_rotation_583.py`, `tests/test_overturned_curves.py`
+- `tools/metrics_snapshot.py`：`tests/test_toolchain_regressions.py`
+- `tools/mutation_fuzz.py`：`tests/test_m5_operator.py`, `tests/test_mutation_equivalent_583.py`, `tests/test_mutation_fuzz.py`, `tests/test_mutation_fuzz_report.py`, `tests/test_mutation_isolation_579.py`, `tests/test_mutation_m2_589.py`, `tests/test_mutation_parallel_580.py`, `tests/test_mutation_selfcheck_589.py`, `tests/test_mutation_shape_588.py`, `tests/test_oracle_gate.py`, `tests/test_output_snapshots.py`
+- `tools/mutation_shape_audit.py`：`tests/test_mutation_shape_588.py`
+- `tools/normalize_comments.py`：**（无任何测试覆盖）**
+- `tools/observability.py`：`tests/test_observability.py`
+- `tools/oracle_rotation.py`：`tests/test_oracle_rotation_583.py`
+- `tools/patch_blocks.py`：`tests/test_patch_blocks.py`
+- `tools/poison_drill.py`：`tests/test_gate_engine.py`, `tests/test_output_snapshots.py`, `tests/test_poison_attack_type.py`, `tests/test_poison_coverage_581.py`, `tests/test_poison_exemptions_581.py`, `tests/test_s1_s6.py`
+- `tools/preflight_check.py`：**（无任何测试覆盖）**
+- `tools/prepush_check.py`：**（无任何测试覆盖）**
+- `tools/prereq_topo_check.py`：**（无任何测试覆盖）**
+- `tools/prop_asof.py`：`tests/test_prop_asof_583.py`
+- `tools/prop_graph.py`：`tests/test_prop_asof_583.py`, `tests/test_prop_graph.py`
+- `tools/prose_density.py`：**（无任何测试覆盖）**
+- `tools/review_triage.py`：`tests/test_review_triage.py`
+- `tools/rewrite_links.py`：**（无任何测试覆盖）**
+- `tools/run_cpp_assertions.py`：**（无任何测试覆盖）**
+- `tools/run_expected.py`：`tests/test_toolchain_regressions.py`
+- `tools/s10_verify_mark.py`：**（无任何测试覆盖）**
+- `tools/scan_prose_backslash.py`：**（无任何测试覆盖）**
+- `tools/site_audit.py`：**（无任何测试覆盖）**
+- `tools/snapshot.py`：**（无任何测试覆盖）**
+- `tools/star_h2_audit.py`：`tests/test_star_h2_audit.py`
+- `tools/stat_bounds.py`：`tests/test_metrics_collector_curves.py`, `tests/test_mutation_fuzz_report.py`, `tests/test_overturned_curves.py`, `tests/test_stat_bounds.py`
+- `tools/structure_audit.py`：**（无任何测试覆盖）**
+- `tools/suggest.py`：**（无任何测试覆盖）**
+- `tools/sweep_fences.py`：**（无任何测试覆盖）**
+- `tools/table_style_audit.py`：**（无任何测试覆盖）**
+- `tools/task_queue.py`：`tests/test_task_queue.py`, `tests/test_task_queue_stateful.py`
+- `tools/task_state.py`：`tests/test_task_state.py`
+- `tools/teaching_audit.py`：**（无任何测试覆盖）**
+- `tools/template_audit.py`：**（无任何测试覆盖）**
+- `tools/terminology_normalize.py`：**（无任何测试覆盖）**
+- `tools/test_dependency_graph.py`：**（无任何测试覆盖）**
+- `tools/tool_integrity.py`：`tests/test_tool_integrity.py`
+- `tools/toolchain.py`：`tests/test_atom_evidence_replay.py`, `tests/test_recompile_invariant.py`
+- `tools/trace_logger.py`：`tests/test_trace_logger.py`
+- `tools/utf8_console.py`：**（无任何测试覆盖）**
+- `tools/verification_audit.py`：**（无任何测试覆盖）**
+- `tools/verify_asm_evidence.py`：**（无任何测试覆盖）**
+- `tools/verify_compiler_features.py`：**（无任何测试覆盖）**
+- `tools/verify_exercises.py`：**（无任何测试覆盖）**
+- `tools/viso_diff.py`：`tests/test_viso_diff.py`
+- `tools/whitespace_fix.py`：**（无任何测试覆盖）**
+- `tools/writer_selfcheck.py`：`tests/test_writer_selfcheck.py`
+- `tools/xref_check.py`：**（无任何测试覆盖）**
+
+## 二、数据 / 工件 → 引用它的测试
+
+- `Book/part03/ch28.md`：`tests/test_toolchain_regressions.py`
+- `Examples/a.out`：`tests/test_review_triage.py`
+- `Examples/atoms/_atom_align_ctrl.cpp`：`tests/test_viso_diff.py`
+- `Examples/atoms/_atom_fence_vs_atomic.cpp`：`tests/test_task_queue_stateful.py`, `tests/test_viso_diff.py`
+- `Examples/atoms/_atom_move_alloc.asm`：`tests/test_atom_evidence_replay.py`
+- `Examples/atoms/_atom_test.cpp`：`tests/test_mutation_shape_588.py`
+- `Examples/atoms/_atom_test.out`：`tests/test_mutation_shape_588.py`
+- `Examples/atoms/_nonexistent_500.asm`：`tests/test_gate_engine.py`
+- `Examples/atoms/_nope.asm`：`tests/test_knowledge_graph.py`
+- `Examples/atoms/_x.asm`：`tests/test_knowledge_graph.py`
+- `Examples/atoms/_x.cpp`：`tests/test_atom_evidence_replay.py`
+- `Examples/atoms/_x.nc1.cpp`：`tests/test_atom_evidence_replay.py`
+- `Examples/atoms/_x.out`：`tests/test_gate_engine.py`
+- `Examples/atoms/_x_mingw.out`：`tests/test_gate_engine.py`
+- `Examples/atoms/_x_wsl.out`：`tests/test_gate_engine.py`
+- `Examples/atoms/a.asm`：`tests/test_artifact_version.py`, `tests/test_knowledge_graph.py`
+- `Examples/atoms/a.out`：`tests/test_gate_engine.py`
+- `Examples/atoms/artifact_versions.json`：`tests/test_artifact_version.py`, `tests/test_backup.py`
+- `Examples/atoms/comment_only.cpp`：`tests/test_mutation_m2_589.py`
+- `Examples/atoms/f.cpp`：`tests/test_mutation_fuzz.py`
+- `Examples/atoms/other.asm`：`tests/test_artifact_version.py`, `tests/test_gate_engine.py`
+- `Examples/atoms/p69.cpp`：`tests/test_gate_engine.py`
+- `Examples/atoms/real_target.out`：`tests/test_mutation_m2_589.py`
+- `Examples/atoms/whatever.cpp`：`tests/test_viso_diff.py`
+- `Examples/atoms/whatever.nc1.cpp`：`tests/test_viso_diff.py`
+- `Examples/atoms/x.cpp`：`tests/test_mutation_m2_589.py`, `tests/test_viso_diff.py`
+- `Examples/atoms/x.nc1.cpp`：`tests/test_viso_diff.py`
+- `Examples/atoms/y.nc1.cpp`：`tests/test_viso_diff.py`
+- `Examples/b.out`：`tests/test_review_triage.py`
+- `Examples/x.cpp`：`tests/test_gate_engine.py`, `tests/test_mutation_m2_589.py`
+- `Examples/x.out`：`tests/test_mutation_m2_589.py`
+- `atoms/_t_x.md`：`tests/test_task_queue.py`
+- `atoms/lang/ATOM-LANG-INLINE-001.md`：`tests/test_prop_graph.py`
+- `atoms/mem/ATOM-MEM-STRAY.md`：`tests/test_task_queue.py`
+- `atoms/mem/ATOM-Y.md`：`tests/test_mutation_fuzz.py`
+- `atoms/x.md`：`tests/test_task_queue.py`
+- `atoms/x/ATOM-X.md`：`tests/test_mutation_fuzz.py`
+- `data/matrix_value_inventory.md`：`tests/test_gate_engine.py`
+- `data/metrics.json`：`tests/test_backup.py`, `tests/test_metrics_collector.py`, `tests/test_metrics_collector_curves.py`
+- `data/mutation/full_baseline_v1.json`：`tests/test_mutation_fuzz_report.py`
+- `data/mutation/full_baseline_v6.json`：`tests/test_mutation_m2_589.py`
+- `data/pytest_last.txt`：`tests/test_metrics_collector.py`
+- `data/tasks/a7g.out`：`tests/test_task_queue.py`
+- `data/tasks/c6c.out`：`tests/test_task_queue.py`
+- `data/tasks/ghost.handoff.json`：`tests/test_task_queue.py`
+- `data/tasks/x.out`：`tests/test_task_queue_stateful.py`
+- `data/tasks/y.out`：`tests/test_task_queue_stateful.py`
+- `evidence/conc/EV-CONC-001.md`：`tests/test_mutation_fuzz.py`, `tests/test_mutation_isolation_579.py`, `tests/test_mutation_m2_589.py`, `tests/test_prop_graph.py`
+- `evidence/conc/EV-CONC-002.md`：`tests/test_mutation_m2_589.py`
+- `evidence/conc/EV-CONC-003.md`：`tests/test_mutation_selfcheck_589.py`
+- `evidence/conc/EV-X.md`：`tests/test_mutation_fuzz.py`
+- `evidence/mem/EV-MEM-001.md`：`tests/test_atom_evidence_replay.py`, `tests/test_mutation_isolation_579.py`
+- `evidence/mem/EV-MEM-004.md`：`tests/test_mutation_shape_588.py`
+- `evidence/mem/EV-MEM-032.md`：`tests/test_mutation_equivalent_583.py`
+- `evidence/mem/EV-MEM-034.md`：`tests/test_mutation_isolation_579.py`
+- `evidence/mem/EV-MEM-038.md`：`tests/test_mutation_m2_589.py`
+- `evidence/mem/EV-MEM-040.md`：`tests/test_mutation_m2_589.py`
+- `evidence/mem/EV-MEM-041.md`：`tests/test_mutation_m2_589.py`
+- `evidence/mem/EV-MEM-042.md`：`tests/test_mutation_m2_589.py`
+- `evidence/mem/EV-MEM-043.md`：`tests/test_mutation_m2_589.py`
+- `evidence/mem/EV-MEM-044.md`：`tests/test_mutation_m2_589.py`
+- `evidence/mem/EV-MEM-045.md`：`tests/test_mutation_m2_589.py`
+- `evidence/other/EV-OTHER-999.md`：`tests/test_mutation_fuzz.py`
+- `evidence/ub/EV-UB-002.md`：`tests/test_mutation_equivalent_583.py`

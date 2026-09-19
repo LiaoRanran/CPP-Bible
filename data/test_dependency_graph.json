@@ -1,0 +1,556 @@
+{
+ "artifacts": {
+  "Book/part03/ch28.md": [
+   "tests/test_toolchain_regressions.py"
+  ],
+  "Examples/a.out": [
+   "tests/test_review_triage.py"
+  ],
+  "Examples/atoms/_atom_align_ctrl.cpp": [
+   "tests/test_viso_diff.py"
+  ],
+  "Examples/atoms/_atom_fence_vs_atomic.cpp": [
+   "tests/test_task_queue_stateful.py",
+   "tests/test_viso_diff.py"
+  ],
+  "Examples/atoms/_atom_move_alloc.asm": [
+   "tests/test_atom_evidence_replay.py"
+  ],
+  "Examples/atoms/_atom_test.cpp": [
+   "tests/test_mutation_shape_588.py"
+  ],
+  "Examples/atoms/_atom_test.out": [
+   "tests/test_mutation_shape_588.py"
+  ],
+  "Examples/atoms/_nonexistent_500.asm": [
+   "tests/test_gate_engine.py"
+  ],
+  "Examples/atoms/_nope.asm": [
+   "tests/test_knowledge_graph.py"
+  ],
+  "Examples/atoms/_x.asm": [
+   "tests/test_knowledge_graph.py"
+  ],
+  "Examples/atoms/_x.cpp": [
+   "tests/test_atom_evidence_replay.py"
+  ],
+  "Examples/atoms/_x.nc1.cpp": [
+   "tests/test_atom_evidence_replay.py"
+  ],
+  "Examples/atoms/_x.out": [
+   "tests/test_gate_engine.py"
+  ],
+  "Examples/atoms/_x_mingw.out": [
+   "tests/test_gate_engine.py"
+  ],
+  "Examples/atoms/_x_wsl.out": [
+   "tests/test_gate_engine.py"
+  ],
+  "Examples/atoms/a.asm": [
+   "tests/test_artifact_version.py",
+   "tests/test_knowledge_graph.py"
+  ],
+  "Examples/atoms/a.out": [
+   "tests/test_gate_engine.py"
+  ],
+  "Examples/atoms/artifact_versions.json": [
+   "tests/test_artifact_version.py",
+   "tests/test_backup.py"
+  ],
+  "Examples/atoms/comment_only.cpp": [
+   "tests/test_mutation_m2_589.py"
+  ],
+  "Examples/atoms/f.cpp": [
+   "tests/test_mutation_fuzz.py"
+  ],
+  "Examples/atoms/other.asm": [
+   "tests/test_artifact_version.py",
+   "tests/test_gate_engine.py"
+  ],
+  "Examples/atoms/p69.cpp": [
+   "tests/test_gate_engine.py"
+  ],
+  "Examples/atoms/real_target.out": [
+   "tests/test_mutation_m2_589.py"
+  ],
+  "Examples/atoms/whatever.cpp": [
+   "tests/test_viso_diff.py"
+  ],
+  "Examples/atoms/whatever.nc1.cpp": [
+   "tests/test_viso_diff.py"
+  ],
+  "Examples/atoms/x.cpp": [
+   "tests/test_mutation_m2_589.py",
+   "tests/test_viso_diff.py"
+  ],
+  "Examples/atoms/x.nc1.cpp": [
+   "tests/test_viso_diff.py"
+  ],
+  "Examples/atoms/y.nc1.cpp": [
+   "tests/test_viso_diff.py"
+  ],
+  "Examples/b.out": [
+   "tests/test_review_triage.py"
+  ],
+  "Examples/x.cpp": [
+   "tests/test_gate_engine.py",
+   "tests/test_mutation_m2_589.py"
+  ],
+  "Examples/x.out": [
+   "tests/test_mutation_m2_589.py"
+  ],
+  "atoms/_t_x.md": [
+   "tests/test_task_queue.py"
+  ],
+  "atoms/lang/ATOM-LANG-INLINE-001.md": [
+   "tests/test_prop_graph.py"
+  ],
+  "atoms/mem/ATOM-MEM-STRAY.md": [
+   "tests/test_task_queue.py"
+  ],
+  "atoms/mem/ATOM-Y.md": [
+   "tests/test_mutation_fuzz.py"
+  ],
+  "atoms/x.md": [
+   "tests/test_task_queue.py"
+  ],
+  "atoms/x/ATOM-X.md": [
+   "tests/test_mutation_fuzz.py"
+  ],
+  "data/matrix_value_inventory.md": [
+   "tests/test_gate_engine.py"
+  ],
+  "data/metrics.json": [
+   "tests/test_backup.py",
+   "tests/test_metrics_collector.py",
+   "tests/test_metrics_collector_curves.py"
+  ],
+  "data/mutation/full_baseline_v1.json": [
+   "tests/test_mutation_fuzz_report.py"
+  ],
+  "data/mutation/full_baseline_v6.json": [
+   "tests/test_mutation_m2_589.py"
+  ],
+  "data/pytest_last.txt": [
+   "tests/test_metrics_collector.py"
+  ],
+  "data/tasks/a7g.out": [
+   "tests/test_task_queue.py"
+  ],
+  "data/tasks/c6c.out": [
+   "tests/test_task_queue.py"
+  ],
+  "data/tasks/ghost.handoff.json": [
+   "tests/test_task_queue.py"
+  ],
+  "data/tasks/x.out": [
+   "tests/test_task_queue_stateful.py"
+  ],
+  "data/tasks/y.out": [
+   "tests/test_task_queue_stateful.py"
+  ],
+  "evidence/conc/EV-CONC-001.md": [
+   "tests/test_mutation_fuzz.py",
+   "tests/test_mutation_isolation_579.py",
+   "tests/test_mutation_m2_589.py",
+   "tests/test_prop_graph.py"
+  ],
+  "evidence/conc/EV-CONC-002.md": [
+   "tests/test_mutation_m2_589.py"
+  ],
+  "evidence/conc/EV-CONC-003.md": [
+   "tests/test_mutation_selfcheck_589.py"
+  ],
+  "evidence/conc/EV-X.md": [
+   "tests/test_mutation_fuzz.py"
+  ],
+  "evidence/mem/EV-MEM-001.md": [
+   "tests/test_atom_evidence_replay.py",
+   "tests/test_mutation_isolation_579.py"
+  ],
+  "evidence/mem/EV-MEM-004.md": [
+   "tests/test_mutation_shape_588.py"
+  ],
+  "evidence/mem/EV-MEM-032.md": [
+   "tests/test_mutation_equivalent_583.py"
+  ],
+  "evidence/mem/EV-MEM-034.md": [
+   "tests/test_mutation_isolation_579.py"
+  ],
+  "evidence/mem/EV-MEM-038.md": [
+   "tests/test_mutation_m2_589.py"
+  ],
+  "evidence/mem/EV-MEM-040.md": [
+   "tests/test_mutation_m2_589.py"
+  ],
+  "evidence/mem/EV-MEM-041.md": [
+   "tests/test_mutation_m2_589.py"
+  ],
+  "evidence/mem/EV-MEM-042.md": [
+   "tests/test_mutation_m2_589.py"
+  ],
+  "evidence/mem/EV-MEM-043.md": [
+   "tests/test_mutation_m2_589.py"
+  ],
+  "evidence/mem/EV-MEM-044.md": [
+   "tests/test_mutation_m2_589.py"
+  ],
+  "evidence/mem/EV-MEM-045.md": [
+   "tests/test_mutation_m2_589.py"
+  ],
+  "evidence/other/EV-OTHER-999.md": [
+   "tests/test_mutation_fuzz.py"
+  ],
+  "evidence/ub/EV-UB-002.md": [
+   "tests/test_mutation_equivalent_583.py"
+  ]
+ },
+ "test_count": 72,
+ "tools": {
+  "_clean_junk": [],
+  "adversarial_regression": [
+   "tests/test_adversarial_regression.py"
+  ],
+  "artifact_version_stamp": [],
+  "asm_prepush_guard": [],
+  "asm_regen": [],
+  "asm_repro_spotcheck": [],
+  "atom_coverage_map": [
+   "tests/test_atom_coverage_map.py"
+  ],
+  "atom_evidence_replay": [
+   "tests/test_artifact_snapshot.py",
+   "tests/test_atom_evidence_replay.py",
+   "tests/test_ccache_prefix.py",
+   "tests/test_discriminative.py",
+   "tests/test_golden_reuse.py",
+   "tests/test_incremental_replay.py",
+   "tests/test_mutation_equivalent_583.py",
+   "tests/test_mutation_isolation_579.py",
+   "tests/test_mutation_parallel_580.py",
+   "tests/test_negative_controls.py",
+   "tests/test_oracle_gate.py",
+   "tests/test_p02_discriminative.py",
+   "tests/test_p0g_lock.py",
+   "tests/test_parser_differential.py",
+   "tests/test_recompile_invariant.py",
+   "tests/test_replay_lock_serial.py",
+   "tests/test_replay_lock_shard_580.py",
+   "tests/test_tool_integrity.py"
+  ],
+  "backup": [
+   "tests/test_backup.py"
+  ],
+  "book_asm_freshness": [],
+  "book_atom_sync": [],
+  "caption_truncation_audit": [],
+  "chapter_compile_check": [],
+  "chapter_lint": [],
+  "check_citations": [],
+  "ci_local_precheck": [
+   "tests/test_ci_local_precheck.py"
+  ],
+  "clean_root_artifacts": [],
+  "codeblock_style": [],
+  "collect_reports": [],
+  "comment_blocks": [],
+  "compile_all": [],
+  "compile_classify": [],
+  "compile_gate": [],
+  "compile_run_sanitize_pipeline": [],
+  "compile_triage": [
+   "tests/test_toolchain_regressions.py"
+  ],
+  "consistency_check": [],
+  "cost_tracker": [
+   "tests/test_cost_tracker.py"
+  ],
+  "cppbible": [
+   "tests/test_mutation_fuzz.py"
+  ],
+  "crossref_audit": [],
+  "d5_appendix_audit": [],
+  "d5_compile_gate": [],
+  "d5_gap_scanner": [],
+  "d5_runtime_gate": [],
+  "d5_source_integrity": [],
+  "dangling_ref_linter": [],
+  "data_sanity_audit": [],
+  "debt_ledger": [
+   "tests/test_s1_s6.py"
+  ],
+  "deduplication_audit": [],
+  "density_audit": [],
+  "doc_frontmatter": [
+   "tests/test_doc_frontmatter.py"
+  ],
+  "doc_lint": [
+   "tests/test_doc_lint.py"
+  ],
+  "env_check": [],
+  "example_caption_cleanup": [],
+  "example_exercise_audit": [],
+  "example_tag_inject": [],
+  "exempt_audit": [],
+  "exercise_dup_guard": [],
+  "expand_assist": [],
+  "expansion_audit": [],
+  "fix_book_links": [],
+  "flashcard_export": [
+   "tests/test_flashcard_export.py",
+   "tests/test_p13_flashcard.py"
+  ],
+  "gate_engine": [
+   "tests/test_artifact_version.py",
+   "tests/test_flashcard_export.py",
+   "tests/test_gate_engine.py",
+   "tests/test_golden_classify.py",
+   "tests/test_impact_analysis.py",
+   "tests/test_knowledge_graph.py",
+   "tests/test_meta_cache_579.py",
+   "tests/test_mutation_equivalent_583.py",
+   "tests/test_mutation_fuzz.py",
+   "tests/test_mutation_isolation_579.py",
+   "tests/test_oracle_gate.py",
+   "tests/test_output_snapshots.py",
+   "tests/test_overturned_curves.py",
+   "tests/test_p0b_echo.py",
+   "tests/test_p0d_hardening.py",
+   "tests/test_p0e_env.py",
+   "tests/test_p0f_zerodiag.py",
+   "tests/test_p13_flashcard.py",
+   "tests/test_p14_relations.py",
+   "tests/test_parser_differential.py",
+   "tests/test_poison_attack_type.py",
+   "tests/test_poison_coverage_581.py",
+   "tests/test_poison_exemptions_581.py",
+   "tests/test_prop_graph.py",
+   "tests/test_prop_signed_by.py",
+   "tests/test_review_triage.py",
+   "tests/test_s1_git_author_binding.py",
+   "tests/test_s1_s6.py",
+   "tests/test_tool_integrity.py",
+   "tests/test_verify_reason.py",
+   "tests/test_writer_selfcheck.py"
+  ],
+  "gen_indexes": [],
+  "gen_metrics": [
+   "tests/test_gen_metrics.py"
+  ],
+  "gen_mkdocs_nav": [],
+  "golden_lock": [
+   "tests/test_golden_classify.py",
+   "tests/test_golden_reuse.py",
+   "tests/test_s1_s6.py"
+  ],
+  "gray_zone_scan": [],
+  "handover_check": [],
+  "hy3_check": [],
+  "impact_analysis": [
+   "tests/test_impact_analysis.py"
+  ],
+  "json_project_gate": [],
+  "knowledge_graph": [
+   "tests/test_knowledge_graph.py",
+   "tests/test_output_snapshots.py"
+  ],
+  "l2_state": [],
+  "learning_path": [],
+  "log_query": [
+   "tests/test_observability.py"
+  ],
+  "markdown_style_guard": [],
+  "mermaid_audit": [],
+  "metrics_collector": [
+   "tests/test_metrics_collector.py",
+   "tests/test_metrics_collector_curves.py",
+   "tests/test_oracle_gate.py",
+   "tests/test_oracle_rotation_583.py",
+   "tests/test_overturned_curves.py"
+  ],
+  "metrics_snapshot": [
+   "tests/test_toolchain_regressions.py"
+  ],
+  "mutation_fuzz": [
+   "tests/test_m5_operator.py",
+   "tests/test_mutation_equivalent_583.py",
+   "tests/test_mutation_fuzz.py",
+   "tests/test_mutation_fuzz_report.py",
+   "tests/test_mutation_isolation_579.py",
+   "tests/test_mutation_m2_589.py",
+   "tests/test_mutation_parallel_580.py",
+   "tests/test_mutation_selfcheck_589.py",
+   "tests/test_mutation_shape_588.py",
+   "tests/test_oracle_gate.py",
+   "tests/test_output_snapshots.py"
+  ],
+  "mutation_shape_audit": [
+   "tests/test_mutation_shape_588.py"
+  ],
+  "normalize_comments": [],
+  "observability": [
+   "tests/test_observability.py"
+  ],
+  "oracle_rotation": [
+   "tests/test_oracle_rotation_583.py"
+  ],
+  "patch_blocks": [
+   "tests/test_patch_blocks.py"
+  ],
+  "poison_drill": [
+   "tests/test_gate_engine.py",
+   "tests/test_output_snapshots.py",
+   "tests/test_poison_attack_type.py",
+   "tests/test_poison_coverage_581.py",
+   "tests/test_poison_exemptions_581.py",
+   "tests/test_s1_s6.py"
+  ],
+  "preflight_check": [],
+  "prepush_check": [],
+  "prereq_topo_check": [],
+  "prop_asof": [
+   "tests/test_prop_asof_583.py"
+  ],
+  "prop_graph": [
+   "tests/test_prop_asof_583.py",
+   "tests/test_prop_graph.py"
+  ],
+  "prose_density": [],
+  "review_triage": [
+   "tests/test_review_triage.py"
+  ],
+  "rewrite_links": [],
+  "run_cpp_assertions": [],
+  "run_expected": [
+   "tests/test_toolchain_regressions.py"
+  ],
+  "s10_verify_mark": [],
+  "scan_prose_backslash": [],
+  "site_audit": [],
+  "snapshot": [],
+  "star_h2_audit": [
+   "tests/test_star_h2_audit.py"
+  ],
+  "stat_bounds": [
+   "tests/test_metrics_collector_curves.py",
+   "tests/test_mutation_fuzz_report.py",
+   "tests/test_overturned_curves.py",
+   "tests/test_stat_bounds.py"
+  ],
+  "structure_audit": [],
+  "suggest": [],
+  "sweep_fences": [],
+  "table_style_audit": [],
+  "task_queue": [
+   "tests/test_task_queue.py",
+   "tests/test_task_queue_stateful.py"
+  ],
+  "task_state": [
+   "tests/test_task_state.py"
+  ],
+  "teaching_audit": [],
+  "template_audit": [],
+  "terminology_normalize": [],
+  "test_dependency_graph": [],
+  "tool_integrity": [
+   "tests/test_tool_integrity.py"
+  ],
+  "toolchain": [
+   "tests/test_atom_evidence_replay.py",
+   "tests/test_recompile_invariant.py"
+  ],
+  "trace_logger": [
+   "tests/test_trace_logger.py"
+  ],
+  "utf8_console": [],
+  "verification_audit": [],
+  "verify_asm_evidence": [],
+  "verify_compiler_features": [],
+  "verify_exercises": [],
+  "viso_diff": [
+   "tests/test_viso_diff.py"
+  ],
+  "whitespace_fix": [],
+  "writer_selfcheck": [
+   "tests/test_writer_selfcheck.py"
+  ],
+  "xref_check": []
+ },
+ "tools_without_tests": [
+  "_clean_junk",
+  "artifact_version_stamp",
+  "asm_prepush_guard",
+  "asm_regen",
+  "asm_repro_spotcheck",
+  "book_asm_freshness",
+  "book_atom_sync",
+  "caption_truncation_audit",
+  "chapter_compile_check",
+  "chapter_lint",
+  "check_citations",
+  "clean_root_artifacts",
+  "codeblock_style",
+  "collect_reports",
+  "comment_blocks",
+  "compile_all",
+  "compile_classify",
+  "compile_gate",
+  "compile_run_sanitize_pipeline",
+  "consistency_check",
+  "crossref_audit",
+  "d5_appendix_audit",
+  "d5_compile_gate",
+  "d5_gap_scanner",
+  "d5_runtime_gate",
+  "d5_source_integrity",
+  "dangling_ref_linter",
+  "data_sanity_audit",
+  "deduplication_audit",
+  "density_audit",
+  "env_check",
+  "example_caption_cleanup",
+  "example_exercise_audit",
+  "example_tag_inject",
+  "exempt_audit",
+  "exercise_dup_guard",
+  "expand_assist",
+  "expansion_audit",
+  "fix_book_links",
+  "gen_indexes",
+  "gen_mkdocs_nav",
+  "gray_zone_scan",
+  "handover_check",
+  "hy3_check",
+  "json_project_gate",
+  "l2_state",
+  "learning_path",
+  "markdown_style_guard",
+  "mermaid_audit",
+  "normalize_comments",
+  "preflight_check",
+  "prepush_check",
+  "prereq_topo_check",
+  "prose_density",
+  "rewrite_links",
+  "run_cpp_assertions",
+  "s10_verify_mark",
+  "scan_prose_backslash",
+  "site_audit",
+  "snapshot",
+  "structure_audit",
+  "suggest",
+  "sweep_fences",
+  "table_style_audit",
+  "teaching_audit",
+  "template_audit",
+  "terminology_normalize",
+  "test_dependency_graph",
+  "utf8_console",
+  "verification_audit",
+  "verify_asm_evidence",
+  "verify_compiler_features",
+  "verify_exercises",
+  "whitespace_fix",
+  "xref_check"
+ ]
+}
