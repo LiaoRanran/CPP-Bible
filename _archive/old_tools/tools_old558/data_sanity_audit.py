@@ -1,0 +1,297 @@
+#!/usr/bin/env python3
+"""tools/data_sanity_audit.py — 数据健全性审计（报告型，离线跑）。
+
+把 L2 深耕三轮沉淀的三类真实错误模式固化为可复用的全书扫描能力，
+防止同类错误再被批量生成流程灌进书稿：
+
+  1. HEX_QUANTITY (ERROR) —— 量级描述误用十六进制。
+     例：`≈ 0x0100 KB`、`0x0008 种组合`、`0x0040 字符`
+     （正确写法：256 KB / 8 种 / 64 字符）。
+     十六进制只该出现在地址 / 偏移 / 位掩码 / mangled 符号等真·机器语境。
+     历史事故：2026-09-02 全书扫描发现 8 章 10 处（ch72/ch61/ch50/ch16/
+     ch152/ch13/ch132/ch134）性能量级被写成十六进制，已修复并复扫清零。
+
+  2. PERF_CONFLICT (WARN) —— 同章内同一关键词 + 单位、跨行、差异落在 [3×, 10×) 的性能数字。
+     定位为「粗筛提示」：误报率较高——多数是不同负载 / 数据规模的合理差异，
+     或「移动 vs 拷贝」「vector vs deque」这类刻意对比；极少数才是「同规模自相矛盾」
+     （历史原型：ch96 同章既写 `sort ≈ 22ms` 又写 `~87ms`，真机 88.3ms 证 22ms 为坏数据）。
+     >10× 的差异已过滤（几乎必为刻意对比），<3× 视为噪声。仅供人工在有怀疑时复核，不进 CI。
+
+  3. UNANCHORED_EVIDENCE (WARN) —— 声称「实测 / 真机」却无 Examples 锚定的 asm 块，
+     即「推断示意伪装成真机证据」，违反 TEACHING「亲手跑过」红线。
+     历史事故：ch22 ⑨ 汇编节原为「[实现-推断] 示意」，后由真机 objdump 替换并锚定。
+
+可靠性：
+  * 跳过 ``` / ~~~ 代码围栏内的内容（汇编 / 代码里的 0x 是合法写法）。
+  * 真·十六进制语境自动豁免：≥8 位长串、0x7f… 栈地址、全 f 掩码，
+    以及「偏移 / offset / 地址 / 位掩码 / 掩码 / mangled」上下文。
+  * PERF_CONFLICT 仅在「同一关键词 + 同一单位」下比较且阈值 3×，仍可能误报，
+    故定位为 WARN 而非阻断。
+
+用法:
+    python tools/data_sanity_audit.py [path] [--json|--porcelain] [--fail-on ERROR|WARN|never]
+默认扫描 Book/。定位为报告型工具（与 disclaimer_audit / title_style_lint 同层），
+定期跑、看报告、人工处置；确需门禁时可用 `--fail-on ERROR`（HEX_QUANTITY 零误报）。
+"""
+from __future__ import annotations
+
+import argparse
+import io
+import json
+import os
+import re
+import sys
+
+SEVERITY: dict[str, str] = {
+    "HEX_QUANTITY": "ERROR",
+    "PERF_CONFLICT": "WARN",
+    "UNANCHORED_EVIDENCE": "WARN",
+    "PERF_REVIEWED": "INFO",
+}
+
+FENCE_RE = re.compile(r"^\s*(```|~~~)")
+
+# ① 量级描述误用十六进制：0x 后紧跟中文量词 / 时间·容量单位
+HEX_QUANTITY_RE = re.compile(
+    r"(?:≈\s*)?0x[0-9A-Fa-f]{1,4}\s*[`\s]*"
+    r"(?:字节行|字节|种|次|字符|路|对象|倍|个|行|位|项|ms|us|µs|ns|KB|MB|GB|GFLOP|FLOP)"
+)
+# 真·十六进制语境，命中则豁免：
+#   * HEX_LEGIT_RE  —— 长地址(0x7f…)、≥8 位长串、全 f 掩码
+#   * ABI_CTX_RE    —— ABI / 底层语境（偏移、对齐、标签、哨兵值、vptr、槽位、MSR…），
+#                      这些地方十六进制是惯例写法，改成十进制反而不专业
+#   * OFFSET_ARITH  —— `0x8 * i` 这类地址算术
+HEX_LEGIT_RE = re.compile(r"0x(?:7[fF][0-9A-Fa-f]{6,}|[0-9A-Fa-f]{8,}|[fF]{4,})")
+ABI_CTX_RE = re.compile(
+    r"(?:偏移|offset|对齐|align|标签|哨兵|vptr|槽|slot|标志|MSR|地址|位掩码|掩码"
+    r"|mangled|符号名|指针|首)",
+    re.I,
+)
+OFFSET_ARITH_RE = re.compile(r"0x[0-9A-Fa-f]+\s*\*")
+OFFSET_CTX_RE = re.compile(r"(?:偏移|offset|地址|位掩码|掩码|mangled|符号名)\s*[：:]?\s*0x", re.I)
+
+# PERF_CONFLICT 人工复核结论（2026-09-02 逐条核实：7 处全部为「不同场景/规模/来源」的
+# 合理并存，非矛盾数据）。key=(章文件名, 关键词, 单位, lo, hi)，value=豁免理由。
+# 正文数字一旦被改动，key 不再命中 → 自动重新 WARN 需重新复核（豁免不会过期滞留）。
+REVIEWED_PERF: dict[tuple[str, str, str, float, float], str] = {
+    ("ch03_cpp98_03.md", "std::sort", "ms", 85.0, 450.0):
+        "450 为「旧估偏高」的修正留痕说明，85 为真机值（正文 L130 已自证）",
+    ("ch36_stack_heap.md", "malloc", "ns", 10.0, 48.0):
+        "10ns 为 TCMalloc 线程缓存宣称值（已标 UNVERIFIED），48ns 为本机 glibc new int 实测",
+    ("ch38_allocator.md", "vector", "ms", 41.319, 144.898):
+        "默认 allocator 基线 vs monotonic 加速组，3.51× 即表格倍数列",
+    ("ch71_policy.md", "sort", "ms", 147.973, 487.992):
+        "模板策略 vs std::function 场景对比，3.30× 即表格倍数列",
+    ("ch93_thread_async.md", "std::atomic", "ns", 3.5, 20.0):
+        "relaxed 无争用精确实测 vs 标注「粗略」的量级表（含屏障/保守区间）",
+    ("ch100_ranges_algo.md", "vector", "ms", 91.4, 737.0):
+        "预填充含分配路径 vs 单循环基线，7.5× 即图注主题",
+    ("ch96_sorting.md", "std::sort", "ms", 87.0, 383.317):
+        "N=1M vs N=4M 规模差异，正文已注明 383÷4≈96 同量级",
+}
+
+# ② 性能数字 + 算法关键词（长词在前，保证 std::stable_sort 优先于 sort）
+PERF_NUM_RE = re.compile(r"(\d+(?:\.\d+)?)\s*(ms|us|µs|ns)\b")
+ALGO_KEYWORDS: tuple[str, ...] = (
+    "std::stable_sort",
+    "std::sort",
+    "stable_sort",
+    "sort_heap",
+    "push_back",
+    "std::atomic",
+    "atomic",
+    "malloc",
+    "mutex",
+    "vector",
+    "sort",
+)
+
+# ③ 实测声称与 asm 锚定
+CLAIM_RE = re.compile(r"(?:本机实测|真机|实测输出|本机运行结果|实测)")
+# asm 块的「有据」信号：标准锚定(节选自 Examples/)、_asm_demo 源、证据源码、工具链、objdump，
+# 以及各种 Examples 引用写法（见/文件：/裸路径）
+ANCHOR_RE = re.compile(r"节选自|_asm_demo/|证据源码|工具链|objdump|Examples/", re.I)
+# 「示意/推断」诚实标注（声明非真机产物，不算伪装）：
+#   「示意」几乎总出现在诚实声明语境（汇编示意/仅示意/示意：…），直接认；
+#   「推断」只认 [xx-推断] 形式，避免误伤「类型推断」这类正常术语
+MARKED_RE = re.compile(r"示意|\[[^\]]*推断\]", re.I)
+
+
+def _join(lines: list[str], start: int, end: int) -> str:
+    return "\n".join(lines[max(0, start):end])
+
+
+def scan_lines(lines: list[str], fname: str = "") -> list[tuple[int, str, str]]:
+    """扫描单个文件的行序列，返回 [(行号(1-based), 类别, 说明)]。"""
+    issues: list[tuple[int, str, str]] = []
+    perf: dict[tuple[str, str], list[tuple[float, int]]] = {}
+
+    in_fence = False
+    fence_lang = ""
+    fence_start = 0
+    fence_buf: list[str] = []
+
+    for i, ln in enumerate(lines):
+        if FENCE_RE.match(ln):
+            if not in_fence:
+                in_fence = True
+                fence_lang = ln.strip().lstrip("`~").strip().lower()
+                fence_start = i
+                fence_buf = []
+            else:
+                in_fence = False
+                if fence_lang.startswith("asm"):
+                    body = "\n".join(fence_buf)
+                    before = _join(lines, fence_start - 6, fence_start)
+                    zone = body + "\n" + before
+                    anchored = ANCHOR_RE.search(zone) is not None
+                    marked = MARKED_RE.search(zone) is not None
+                    if not anchored and not marked and CLAIM_RE.search(before):
+                        issues.append((
+                            fence_start + 1,
+                            "UNANCHORED_EVIDENCE",
+                            "声称「实测/真机」的 asm 块既无锚定"
+                            "（节选自/_asm_demo/证据源码），也无「示意/推断」标注"
+                            "——疑似推断示意伪装成真机证据",
+                        ))
+                fence_buf = []
+            continue
+
+        if in_fence:
+            fence_buf.append(ln)
+            continue
+
+        # ① HEX_QUANTITY
+        for m in HEX_QUANTITY_RE.finditer(ln):
+            tok = m.group(0)
+            if HEX_LEGIT_RE.search(tok):
+                continue
+            # 扩大上下文窗口，命中 ABI / 底层语境（偏移、对齐、vptr、槽位…）即豁免
+            ctx = ln[max(0, m.start() - 30): m.end() + 12]
+            if ABI_CTX_RE.search(ctx) or OFFSET_CTX_RE.search(ctx):
+                continue
+            if OFFSET_ARITH_RE.search(ctx):
+                continue
+            issues.append((i + 1, "HEX_QUANTITY", f"量级描述误用十六进制：{tok.strip()}"))
+
+        # ② 采集性能数字（按该行命中的第一个关键词归类）
+        nums = PERF_NUM_RE.findall(ln)
+        if nums:
+            for kw in ALGO_KEYWORDS:
+                if kw in ln:
+                    for val, unit in nums:
+                        perf.setdefault((kw, unit), []).append((float(val), i + 1))
+                    break
+
+    # ② PERF_CONFLICT：同关键词 + 同单位下，极值比 ≥3× 即提示复核
+    for (kw, unit), items in perf.items():
+        if len(items) < 2:
+            continue
+        vals = sorted(v for v, _ in items)
+        lo, hi = vals[0], vals[-1]
+        # 只报 [3×, 10×) 区间：<3× 视为噪声；>10× 几乎必为「不同场景/规模对比」
+        # （如移动 vs 拷贝 ≈23 万倍、vector::push_front vs deque ≈3150 倍），非同规模矛盾
+        if lo <= 0 or hi / lo < 3.0 or hi / lo >= 10.0:
+            continue
+        lo_ln = min(ln for v, ln in items if v == lo)
+        hi_ln = min(ln for v, ln in items if v == hi)
+        # 同一行出现的「X vs Y」是对比表述（如 sort vs stable_sort、reserve vs 无 reserve），
+        # 不是自相矛盾——只有跨行独立声明才值得人工复核
+        if lo_ln == hi_ln:
+            continue
+        reviewed = REVIEWED_PERF.get((os.path.basename(fname), kw, unit, lo, hi))
+        if reviewed is not None:
+            issues.append((
+                lo_ln,
+                "PERF_REVIEWED",
+                f"已人工复核豁免（同章「{kw}」{lo:g}{unit} vs {hi:g}{unit}）：{reviewed}",
+            ))
+            continue
+        issues.append((
+            lo_ln,
+            "PERF_CONFLICT",
+            f"同章「{kw}」性能数字差 {hi / lo:.1f}×（{lo:g}{unit} @L{lo_ln} vs "
+            f"{hi:g}{unit} @L{hi_ln}）——请核哪一个是真机值"
+            "（不同负载本就可能差数倍，需人工判定）",
+        ))
+
+    issues.sort(key=lambda t: (t[0], t[1]))
+    return issues
+
+
+def _iter_md(root: str) -> list[str]:
+    if os.path.isdir(root):
+        out: list[str] = []
+        for r, _dirs, fs in os.walk(root):
+            for fn in fs:
+                if fn.endswith(".md"):
+                    out.append(os.path.join(r, fn))
+        return sorted(out)
+    return [root]
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(
+        description="数据健全性审计：十六进制污染 / 性能数字冲突 / 未锚定证据",
+    )
+    ap.add_argument("path", nargs="?", default="Book", help="扫描根（默认 Book/）")
+    ap.add_argument("--json", action="store_true", help="JSON 输出")
+    ap.add_argument("--porcelain", action="store_true", help="机器可读：file:line:kind:msg")
+    ap.add_argument(
+        "--fail-on",
+        choices=("ERROR", "WARN", "never"),
+        default="never",
+        help="ERROR=存在 ERROR 即 exit 1；WARN=存在任意问题即 exit 1；never=始终 0（默认）",
+    )
+    args = ap.parse_args()
+
+    files = _iter_md(args.path)
+    rows: list[dict[str, object]] = []
+    for fp in files:
+        with open(fp, "r", encoding="utf-8", newline="") as f:
+            lines = f.read().split("\n")
+        for ln, kind, msg in scan_lines(lines, fp):
+            rows.append({
+                "file": fp,
+                "line": ln,
+                "kind": kind,
+                "severity": SEVERITY[kind],
+                "msg": msg,
+            })
+
+    if args.json:
+        print(json.dumps(rows, ensure_ascii=False, indent=2))
+    elif args.porcelain:
+        for it in rows:
+            print(f"{it['file']}:{it['line']}:{it['kind']}:{it['msg']}")
+    else:
+        cur = ""
+        for it in rows:
+            fp = str(it["file"])
+            if fp != cur:
+                cur = fp
+                n = sum(1 for x in rows if str(x["file"]) == cur)
+                print(f"== {cur} ({n}) ==")
+            print(f"   L{it['line']}: [{it['severity']}] {it['kind']} — {it['msg']}")
+        n_err = sum(1 for x in rows if x["severity"] == "ERROR")
+        n_warn = sum(1 for x in rows if x["severity"] == "WARN")
+        n_info = sum(1 for x in rows if x["severity"] == "INFO")
+        print(
+            f"\n合计 {len(rows)} 处（ERROR {n_err} / WARN {n_warn} / 已复核豁免 {n_info}），"
+            f"扫描 {len(files)} 文件；HEX_QUANTITY 零误报可用 --fail-on ERROR 接门禁"
+        )
+
+    if args.fail_on == "ERROR" and any(x["severity"] == "ERROR" for x in rows):
+        return 1
+    if args.fail_on == "WARN" and any(
+        x["severity"] in ("ERROR", "WARN") for x in rows
+    ):
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    # 仅对真实 TextIOWrapper 重配编码（本机 GBK 终端直接 print 中文会抛 UnicodeEncodeError）
+    if isinstance(sys.stdout, io.TextIOWrapper):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    raise SystemExit(main())

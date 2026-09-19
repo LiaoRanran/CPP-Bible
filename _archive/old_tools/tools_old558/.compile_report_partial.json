@@ -1,0 +1,15 @@
+{
+  "gcc": "C:\\Qt\\Tools\\mingw1530_64\\bin\\g++.exe",
+  "flags": "-std=c++23 -O0 -fsyntax-only",
+  "main_only": true,
+  "partial": true,
+  "total_chapters": 1,
+  "passed_chapters": 1,
+  "failed_chapters": 0,
+  "total_blocks_checked": 11,
+  "failed_blocks": 0,
+  "failures": [],
+  "processed_paths": [
+    "Book/part03_language/ch21_const_family.md"
+  ]
+}

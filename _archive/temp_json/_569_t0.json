@@ -1,0 +1,204 @@
+{
+ "cards": [
+  "evidence/conc/EV-CONC-001.md",
+  "evidence/conc/EV-CONC-002.md",
+  "evidence/conc/EV-CONC-003.md",
+  "evidence/conc/EV-CONC-004.md",
+  "evidence/conc/EV-CONC-005.md"
+ ],
+ "operators": [
+  "M3"
+ ],
+ "variants": 7,
+ "blocked": 4,
+ "escaped": 0,
+ "n_a": 3,
+ "malformed": 0,
+ "out_of_scope": 3,
+ "strict_blocked": 0,
+ "strict_rate": 0.0,
+ "treated_rate": 1.0,
+ "rates": {
+  "judged": 4,
+  "n_a": 3,
+  "malformed": 0,
+  "strict": {
+   "numerator": 0,
+   "denominator": 4,
+   "point": 0.0,
+   "cp_low": 0.0,
+   "cp_high": 0.602365,
+   "conf": 0.95
+  },
+  "treated": {
+   "numerator": 4,
+   "denominator": 4,
+   "point": 1.0,
+   "cp_low": 0.397635,
+   "cp_high": 1.0,
+   "conf": 0.95
+  },
+  "escape": {
+   "numerator": 0,
+   "denominator": 4,
+   "point": 0.0,
+   "cp_low": 0.0,
+   "cp_high": 0.602365,
+   "conf": 0.95
+  },
+  "treated_all": {
+   "numerator": 4,
+   "denominator": 7,
+   "point": 0.571429,
+   "cp_low": 0.184052,
+   "cp_high": 0.901012,
+   "conf": 0.95
+  }
+ },
+ "by_operator_rates": {
+  "M3": {
+   "judged": 4,
+   "n_a": 3,
+   "strict": {
+    "numerator": 0,
+    "denominator": 4,
+    "point": 0.0,
+    "cp_low": 0.0,
+    "cp_high": 0.602365,
+    "conf": 0.95
+   },
+   "treated": {
+    "numerator": 4,
+    "denominator": 4,
+    "point": 1.0,
+    "cp_low": 0.397635,
+    "cp_high": 1.0,
+    "conf": 0.95
+   },
+   "escape": {
+    "numerator": 0,
+    "denominator": 4,
+    "point": 0.0,
+    "cp_low": 0.0,
+    "cp_high": 0.602365,
+    "conf": 0.95
+   }
+  }
+ },
+ "rate_flags": [
+  "M3：可判样本仅 4 < 59 ⇒ 样本不足；要宣称'逃逸率≤5%@95%'需补样至 n≥59"
+ ],
+ "by_operator": {
+  "M3": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 3
+  }
+ },
+ "by_card": {
+  "evidence/conc/EV-CONC-001.md": {
+   "blocked": 2,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/conc/EV-CONC-002.md": {
+   "blocked": 2,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/conc/EV-CONC-003.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/conc/EV-CONC-004.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/conc/EV-CONC-005.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  }
+ },
+ "elapsed_s": 5.28,
+ "ge_runs": 5,
+ "replay_runs": 0,
+ "replay_skipped": 0,
+ "escaped_list": [],
+ "results": [
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M3",
+   "point": "contains_in → contains（区间断言降级为全文存在性）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_71ij4fml\\evidence\\conc\\EV-CONC-001.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M3",
+   "point": "absent_in → absent（区间断言降级为全文不存在）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_71ij4fml\\evidence\\conc\\EV-CONC-001.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M3",
+   "point": "contains_in → contains（区间断言降级为全文存在性）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_71ij4fml\\evidence\\conc\\EV-CONC-002.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M3",
+   "point": "absent_in → absent（区间断言降级为全文不存在）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_71ij4fml\\evidence\\conc\\EV-CONC-002.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-003.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-004.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-005.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  }
+ ]
+}

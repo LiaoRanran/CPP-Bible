@@ -1,0 +1,1 @@
+{"timestamp": "2026-09-15T00:16:02", "level": "INFO", "tool": "t", "trace_id": "batch-20260915-001552-10f1", "surface": "operation", "message": "timed", "duration_ms": 12.3, "pid": 26112}

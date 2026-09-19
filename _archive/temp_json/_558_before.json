@@ -1,0 +1,74 @@
+{
+ "cards": [
+  "evidence/conc/EV-CONC-001.md"
+ ],
+ "operators": [
+  "M3"
+ ],
+ "variants": 2,
+ "blocked": 0,
+ "escaped": 2,
+ "n_a": 0,
+ "malformed": 0,
+ "strict_blocked": 0,
+ "strict_rate": 0.0,
+ "treated_rate": 0.0,
+ "by_operator": {
+  "M3": {
+   "blocked": 0,
+   "escaped": 2,
+   "n_a": 0
+  }
+ },
+ "by_card": {
+  "evidence/conc/EV-CONC-001.md": {
+   "blocked": 0,
+   "escaped": 2,
+   "n_a": 0
+  }
+ },
+ "elapsed_s": 3.53,
+ "ge_runs": 3,
+ "replay_runs": 0,
+ "replay_skipped": 0,
+ "escaped_list": [
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M3",
+   "point": "contains_in → contains（区间断言降级为全文存在性）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M3 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M3",
+   "point": "absent_in → absent（区间断言降级为全文不存在）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M3 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  }
+ ],
+ "results": [
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M3",
+   "point": "contains_in → contains（区间断言降级为全文存在性）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M3 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M3",
+   "point": "absent_in → absent（区间断言降级为全文不存在）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M3 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  }
+ ]
+}

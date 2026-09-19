@@ -1,0 +1,260 @@
+{
+ "cards": [
+  "evidence/conc/EV-CONC-001.md"
+ ],
+ "operators": [
+  "M3",
+  "M4",
+  "M5"
+ ],
+ "variants": 7,
+ "blocked": 6,
+ "escaped": 0,
+ "n_a": 1,
+ "malformed": 0,
+ "out_of_scope": 0,
+ "strict_blocked": 4,
+ "strict_rate": 0.6667,
+ "treated_rate": 1.0,
+ "rates": {
+  "judged": 6,
+  "n_a": 1,
+  "malformed": 0,
+  "strict": {
+   "numerator": 4,
+   "denominator": 6,
+   "point": 0.666667,
+   "cp_low": 0.222778,
+   "cp_high": 0.956728,
+   "conf": 0.95
+  },
+  "treated": {
+   "numerator": 6,
+   "denominator": 6,
+   "point": 1.0,
+   "cp_low": 0.540742,
+   "cp_high": 1.0,
+   "conf": 0.95
+  },
+  "escape": {
+   "numerator": 0,
+   "denominator": 6,
+   "point": 0.0,
+   "cp_low": 0.0,
+   "cp_high": 0.459258,
+   "conf": 0.95
+  },
+  "treated_all": {
+   "numerator": 6,
+   "denominator": 7,
+   "point": 0.857143,
+   "cp_low": 0.421277,
+   "cp_high": 0.99639,
+   "conf": 0.95
+  }
+ },
+ "by_operator_rates": {
+  "M3": {
+   "judged": 2,
+   "n_a": 0,
+   "strict": {
+    "numerator": 0,
+    "denominator": 2,
+    "point": 0.0,
+    "cp_low": 0.0,
+    "cp_high": 0.841886,
+    "conf": 0.95
+   },
+   "treated": {
+    "numerator": 2,
+    "denominator": 2,
+    "point": 1.0,
+    "cp_low": 0.158114,
+    "cp_high": 1.0,
+    "conf": 0.95
+   },
+   "escape": {
+    "numerator": 0,
+    "denominator": 2,
+    "point": 0.0,
+    "cp_low": 0.0,
+    "cp_high": 0.841886,
+    "conf": 0.95
+   }
+  },
+  "M4": {
+   "judged": 4,
+   "n_a": 0,
+   "strict": {
+    "numerator": 4,
+    "denominator": 4,
+    "point": 1.0,
+    "cp_low": 0.397635,
+    "cp_high": 1.0,
+    "conf": 0.95
+   },
+   "treated": {
+    "numerator": 4,
+    "denominator": 4,
+    "point": 1.0,
+    "cp_low": 0.397635,
+    "cp_high": 1.0,
+    "conf": 0.95
+   },
+   "escape": {
+    "numerator": 0,
+    "denominator": 4,
+    "point": 0.0,
+    "cp_low": 0.0,
+    "cp_high": 0.602365,
+    "conf": 0.95
+   }
+  },
+  "M5": {
+   "judged": 0,
+   "n_a": 1,
+   "strict": {
+    "numerator": 0,
+    "denominator": 0,
+    "point": null,
+    "cp_low": null,
+    "cp_high": null,
+    "conf": 0.95,
+    "note": "insufficient evidence（可判样本 n=0：不算率、不填 0）"
+   },
+   "treated": {
+    "numerator": 0,
+    "denominator": 0,
+    "point": null,
+    "cp_low": null,
+    "cp_high": null,
+    "conf": 0.95,
+    "note": "insufficient evidence（可判样本 n=0：不算率、不填 0）"
+   },
+   "escape": {
+    "numerator": 0,
+    "denominator": 0,
+    "point": null,
+    "cp_low": null,
+    "cp_high": null,
+    "conf": 0.95,
+    "note": "insufficient evidence（可判样本 n=0：不算率、不填 0）"
+   }
+  }
+ },
+ "rate_flags": [
+  "M3：可判样本仅 2 < 59 ⇒ 样本不足；要宣称'逃逸率≤5%@95%'需补样至 n≥59",
+  "M4：可判样本仅 4 < 59 ⇒ 样本不足；要宣称'逃逸率≤5%@95%'需补样至 n≥59",
+  "M5：可判样本 n=0 ⇒ insufficient evidence（不算率、不填 0）"
+ ],
+ "by_operator": {
+  "M3": {
+   "blocked": 2,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "M4": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "M5": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  }
+ },
+ "by_card": {
+  "evidence/conc/EV-CONC-001.md": {
+   "blocked": 6,
+   "escaped": 0,
+   "n_a": 1
+  }
+ },
+ "elapsed_s": 5.19,
+ "ge_runs": 7,
+ "replay_runs": 0,
+ "replay_skipped": 0,
+ "escaped_list": [],
+ "results": [
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M3",
+   "point": "contains_in → contains（区间断言降级为全文存在性）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_7lmym_hy\\evidence\\conc\\EV-CONC-001.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M3",
+   "point": "absent_in → absent（区间断言降级为全文不存在）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_7lmym_hy\\evidence\\conc\\EV-CONC-001.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M4",
+   "point": "注入通用符号 main",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M4 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_7lmym_hy\\evidence\\conc\\EV-CONC-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M4",
+   "point": "注入通用符号 ret",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M4 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_7lmym_hy\\evidence\\conc\\EV-CONC-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M4",
+   "point": "注入 ABI 帧符号 .p2align",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M4 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_7lmym_hy\\evidence\\conc\\EV-CONC-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M4",
+   "point": "注入 contains_any: ['.file']（合法形态）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M4 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_7lmym_hy\\evidence\\conc\\EV-CONC-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  }
+ ]
+}

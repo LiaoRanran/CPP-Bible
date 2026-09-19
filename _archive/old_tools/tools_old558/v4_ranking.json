@@ -1,0 +1,1178 @@
+[
+  {
+    "quality": 24,
+    "dup_rate": 0.0156,
+    "water_rate": 0.0,
+    "industry_hits": 22,
+    "depth_hits": 174,
+    "path": "Book\\part01_history\\ch03_cpp98_03.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 33,
+    "depth_hits": 97,
+    "path": "Book\\part01_history\\ch04_cpp11.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 32,
+    "depth_hits": 92,
+    "path": "Book\\part01_history\\ch06_cpp17.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0139,
+    "water_rate": 0.0,
+    "industry_hits": 35,
+    "depth_hits": 58,
+    "path": "Book\\part01_history\\ch07_cpp20.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 37,
+    "depth_hits": 109,
+    "path": "Book\\part01_history\\ch10_version_matrix.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 80,
+    "depth_hits": 60,
+    "path": "Book\\part02_toolchain\\ch13_packaging.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 20,
+    "depth_hits": 96,
+    "path": "Book\\part03_language\\ch22_auto_decltype.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0227,
+    "water_rate": 0.0,
+    "industry_hits": 23,
+    "depth_hits": 110,
+    "path": "Book\\part03_language\\ch24_enum.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.009,
+    "water_rate": 0.0,
+    "industry_hits": 35,
+    "depth_hits": 94,
+    "path": "Book\\part03_language\\ch25_union_variant.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 31,
+    "depth_hits": 120,
+    "path": "Book\\part03_language\\ch26_lambda.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 35,
+    "depth_hits": 84,
+    "path": "Book\\part03_language\\ch28_lifetime_ub.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 24,
+    "depth_hits": 62,
+    "path": "Book\\part04_memory\\ch35_memory_layout.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 32,
+    "depth_hits": 69,
+    "path": "Book\\part05_oo\\ch47_virtual_functions.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 22,
+    "depth_hits": 50,
+    "path": "Book\\part05_oo\\ch49_virtual_inheritance.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 30,
+    "depth_hits": 60,
+    "path": "Book\\part05_oo\\ch50_multiple_inheritance.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 34,
+    "depth_hits": 57,
+    "path": "Book\\part06_templates\\ch65_type_traits.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0094,
+    "water_rate": 0.0,
+    "industry_hits": 33,
+    "depth_hits": 62,
+    "path": "Book\\part06_templates\\ch66_sfinae.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.025,
+    "water_rate": 0.0,
+    "industry_hits": 28,
+    "depth_hits": 115,
+    "path": "Book\\part06_templates\\ch68_tmp.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 33,
+    "depth_hits": 377,
+    "path": "Book\\part06_templates\\ch69_constexpr.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 35,
+    "depth_hits": 61,
+    "path": "Book\\part06_templates\\ch70_tag_dispatch.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 32,
+    "depth_hits": 75,
+    "path": "Book\\part07_stl\\ch83_map.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 38,
+    "depth_hits": 58,
+    "path": "Book\\part07_stl\\ch88_optional_variant.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 23,
+    "depth_hits": 52,
+    "path": "Book\\part07_stl\\ch91_filesystem.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 32,
+    "depth_hits": 62,
+    "path": "Book\\part07_stl\\ch92_chrono.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0152,
+    "water_rate": 0.0,
+    "industry_hits": 32,
+    "depth_hits": 59,
+    "path": "Book\\part09_concurrency\\ch109_fence.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 33,
+    "depth_hits": 51,
+    "path": "Book\\part09_concurrency\\ch110_lockfree.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 31,
+    "depth_hits": 82,
+    "path": "Book\\part10_modern\\ch117_copy_elision.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0213,
+    "water_rate": 0.0,
+    "industry_hits": 32,
+    "depth_hits": 56,
+    "path": "Book\\part10_modern\\ch120_coroutine_app.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 296,
+    "depth_hits": 53,
+    "path": "Book\\part11_source\\ch128_boost.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 118,
+    "depth_hits": 58,
+    "path": "Book\\part11_source\\ch133_clickhouse_redis.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 43,
+    "depth_hits": 71,
+    "path": "Book\\part12_patterns\\ch142_ecs.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.006,
+    "water_rate": 0.0,
+    "industry_hits": 32,
+    "depth_hits": 58,
+    "path": "Book\\part12_patterns\\ch143_dod.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 38,
+    "depth_hits": 51,
+    "path": "Book\\part13_engineering\\ch147_code_review.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0072,
+    "water_rate": 0.0,
+    "industry_hits": 37,
+    "depth_hits": 59,
+    "path": "Book\\part13_engineering\\ch149_ci_cd.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 39,
+    "depth_hits": 64,
+    "path": "Book\\part14_perf\\ch152_perf_model.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0122,
+    "water_rate": 0.0,
+    "industry_hits": 30,
+    "depth_hits": 55,
+    "path": "Book\\part14_perf\\ch153_cpu_micro.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0057,
+    "water_rate": 0.0,
+    "industry_hits": 53,
+    "depth_hits": 50,
+    "path": "Book\\part15_cases\\ch161_logger.md"
+  },
+  {
+    "quality": 24,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 27,
+    "depth_hits": 51,
+    "path": "Book\\part15_cases\\ch163_net.md"
+  },
+  {
+    "quality": 23,
+    "dup_rate": 0.037,
+    "water_rate": 0.0,
+    "industry_hits": 19,
+    "depth_hits": 79,
+    "path": "Book\\part01_history\\ch08_cpp23.md"
+  },
+  {
+    "quality": 23,
+    "dup_rate": 0.0,
+    "water_rate": 0.238,
+    "industry_hits": 112,
+    "depth_hits": 88,
+    "path": "Book\\part03_language\\ch27_cast.md"
+  },
+  {
+    "quality": 23,
+    "dup_rate": 0.0091,
+    "water_rate": 0.0,
+    "industry_hits": 25,
+    "depth_hits": 46,
+    "path": "Book\\part06_templates\\ch60_template_basics.md"
+  },
+  {
+    "quality": 23,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 19,
+    "depth_hits": 77,
+    "path": "Book\\part07_stl\\ch87_bitset.md"
+  },
+  {
+    "quality": 23,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 33,
+    "depth_hits": 48,
+    "path": "Book\\part10_modern\\ch116_perfect_forwarding.md"
+  },
+  {
+    "quality": 23,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 89,
+    "depth_hits": 46,
+    "path": "Book\\part11_source\\ch129_qt.md"
+  },
+  {
+    "quality": 23,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 297,
+    "depth_hits": 47,
+    "path": "Book\\part11_source\\ch131_fmt_spdlog.md"
+  },
+  {
+    "quality": 23,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 40,
+    "depth_hits": 46,
+    "path": "Book\\part13_engineering\\ch146_error_handling.md"
+  },
+  {
+    "quality": 23,
+    "dup_rate": 0.0081,
+    "water_rate": 0.0,
+    "industry_hits": 34,
+    "depth_hits": 49,
+    "path": "Book\\part15_cases\\ch159_threadpool.md"
+  },
+  {
+    "quality": 23,
+    "dup_rate": 0.0069,
+    "water_rate": 0.0,
+    "industry_hits": 32,
+    "depth_hits": 47,
+    "path": "Book\\part15_cases\\ch164_framework.md"
+  },
+  {
+    "quality": 22,
+    "dup_rate": 0.0,
+    "water_rate": 0.0749,
+    "industry_hits": 54,
+    "depth_hits": 46,
+    "path": "Book\\part03_language\\ch20_reference_pointer.md"
+  },
+  {
+    "quality": 22,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 25,
+    "depth_hits": 44,
+    "path": "Book\\part03_language\\ch32_initialization.md"
+  },
+  {
+    "quality": 22,
+    "dup_rate": 0.0042,
+    "water_rate": 0.0,
+    "industry_hits": 21,
+    "depth_hits": 43,
+    "path": "Book\\part04_memory\\ch39_raii_rule.md"
+  },
+  {
+    "quality": 22,
+    "dup_rate": 0.0071,
+    "water_rate": 0.0,
+    "industry_hits": 26,
+    "depth_hits": 44,
+    "path": "Book\\part05_oo\\ch46_encapsulation_inheritance.md"
+  },
+  {
+    "quality": 22,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 26,
+    "depth_hits": 43,
+    "path": "Book\\part06_templates\\ch64_fold.md"
+  },
+  {
+    "quality": 22,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 18,
+    "depth_hits": 49,
+    "path": "Book\\part06_templates\\ch67_concepts.md"
+  },
+  {
+    "quality": 22,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 26,
+    "depth_hits": 43,
+    "path": "Book\\part07_stl\\ch77_vector.md"
+  },
+  {
+    "quality": 22,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 20,
+    "depth_hits": 44,
+    "path": "Book\\part07_stl\\ch80_array.md"
+  },
+  {
+    "quality": 22,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 26,
+    "depth_hits": 45,
+    "path": "Book\\part07_stl\\ch90_ranges.md"
+  },
+  {
+    "quality": 22,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 28,
+    "depth_hits": 43,
+    "path": "Book\\part08_algorithms\\ch96_sorting.md"
+  },
+  {
+    "quality": 22,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 21,
+    "depth_hits": 45,
+    "path": "Book\\part10_modern\\ch118_modules.md"
+  },
+  {
+    "quality": 22,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 153,
+    "depth_hits": 42,
+    "path": "Book\\part11_source\\ch132_leveldb_rocksdb.md"
+  },
+  {
+    "quality": 22,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 31,
+    "depth_hits": 42,
+    "path": "Book\\part12_patterns\\ch137_structural.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 16,
+    "depth_hits": 104,
+    "path": "Book\\part01_history\\ch02_standardization.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 35,
+    "depth_hits": 40,
+    "path": "Book\\part02_toolchain\\ch11_compilers.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 15,
+    "depth_hits": 295,
+    "path": "Book\\part03_language\\ch21_const_family.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 16,
+    "depth_hits": 97,
+    "path": "Book\\part04_memory\\ch42_strict_aliasing.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 43,
+    "depth_hits": 38,
+    "path": "Book\\part06_templates\\ch61_template_overload.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0112,
+    "water_rate": 0.0,
+    "industry_hits": 23,
+    "depth_hits": 41,
+    "path": "Book\\part06_templates\\ch72_expression_templates.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 16,
+    "depth_hits": 50,
+    "path": "Book\\part07_stl\\ch76_stl_arch.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 22,
+    "depth_hits": 39,
+    "path": "Book\\part07_stl\\ch78_deque.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 45,
+    "depth_hits": 41,
+    "path": "Book\\part07_stl\\ch79_list.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 22,
+    "depth_hits": 41,
+    "path": "Book\\part07_stl\\ch89_tuple_any.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 19,
+    "depth_hits": 43,
+    "path": "Book\\part09_concurrency\\ch107_atomic.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 27,
+    "depth_hits": 39,
+    "path": "Book\\part10_modern\\ch119_ranges_deep.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0076,
+    "water_rate": 0.0,
+    "industry_hits": 21,
+    "depth_hits": 40,
+    "path": "Book\\part11_source\\ch124_libstdcxx.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0077,
+    "water_rate": 0.0,
+    "industry_hits": 22,
+    "depth_hits": 40,
+    "path": "Book\\part11_source\\ch126_msstl.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 101,
+    "depth_hits": 41,
+    "path": "Book\\part11_source\\ch127_llvm.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 27,
+    "depth_hits": 40,
+    "path": "Book\\part11_source\\ch134_unreal.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0162,
+    "water_rate": 0.0,
+    "industry_hits": 27,
+    "depth_hits": 40,
+    "path": "Book\\part12_patterns\\ch136_creational.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 16,
+    "depth_hits": 56,
+    "path": "Book\\part12_patterns\\ch138_behavioral.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 25,
+    "depth_hits": 38,
+    "path": "Book\\part13_engineering\\ch148_gitflow.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 34,
+    "depth_hits": 41,
+    "path": "Book\\part14_perf\\ch156_compiler_opt.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 16,
+    "depth_hits": 50,
+    "path": "Book\\part15_cases\\ch162_json.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 25,
+    "depth_hits": 41,
+    "path": "Book\\part16_reading\\ch165_roadmap.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 22,
+    "depth_hits": 34,
+    "path": "Book\\part02_toolchain\\ch12_buildsystems.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0059,
+    "water_rate": 0.0,
+    "industry_hits": 28,
+    "depth_hits": 35,
+    "path": "Book\\part02_toolchain\\ch14_debugging.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 20,
+    "depth_hits": 34,
+    "path": "Book\\part02_toolchain\\ch15_profiling.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 28,
+    "depth_hits": 36,
+    "path": "Book\\part02_toolchain\\ch16_ide.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 22,
+    "depth_hits": 37,
+    "path": "Book\\part02_toolchain\\ch18_buildconfig.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 21,
+    "depth_hits": 34,
+    "path": "Book\\part03_language\\ch29_friend.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0833,
+    "water_rate": 0.0,
+    "industry_hits": 28,
+    "depth_hits": 34,
+    "path": "Book\\part03_language\\ch31_operator_overloading.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0081,
+    "water_rate": 0.0,
+    "industry_hits": 14,
+    "depth_hits": 66,
+    "path": "Book\\part04_memory\\ch41_smart_pointers.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 27,
+    "depth_hits": 35,
+    "path": "Book\\part05_oo\\ch48_rtti.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0109,
+    "water_rate": 0.0,
+    "industry_hits": 21,
+    "depth_hits": 36,
+    "path": "Book\\part06_templates\\ch71_policy.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 21,
+    "depth_hits": 36,
+    "path": "Book\\part07_stl\\ch85_unordered.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 25,
+    "depth_hits": 36,
+    "path": "Book\\part07_stl\\ch86_adapters.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 31,
+    "depth_hits": 37,
+    "path": "Book\\part07_stl\\ch93_thread_async.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 27,
+    "depth_hits": 34,
+    "path": "Book\\part07_stl\\ch94_stop_token.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 32,
+    "depth_hits": 35,
+    "path": "Book\\part08_algorithms\\ch101_algo_theory.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 26,
+    "depth_hits": 34,
+    "path": "Book\\part08_algorithms\\ch95_algo_overview.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 14,
+    "depth_hits": 68,
+    "path": "Book\\part08_algorithms\\ch99_numeric.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0192,
+    "water_rate": 0.0,
+    "industry_hits": 27,
+    "depth_hits": 36,
+    "path": "Book\\part09_concurrency\\ch113_coroutine.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0099,
+    "water_rate": 0.0,
+    "industry_hits": 41,
+    "depth_hits": 36,
+    "path": "Book\\part11_source\\ch125_libcxx.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 39,
+    "depth_hits": 37,
+    "path": "Book\\part12_patterns\\ch135_patterns_intro.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 43,
+    "depth_hits": 37,
+    "path": "Book\\part12_patterns\\ch139_crtp_pattern.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 37,
+    "depth_hits": 37,
+    "path": "Book\\part13_engineering\\ch150_testing.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0072,
+    "water_rate": 0.0,
+    "industry_hits": 14,
+    "depth_hits": 58,
+    "path": "Book\\part14_perf\\ch154_cache_opt.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 14,
+    "depth_hits": 129,
+    "path": "Book\\part14_perf\\ch155_simd.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 12,
+    "depth_hits": 127,
+    "path": "Book\\part01_history\\ch05_cpp14.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 13,
+    "depth_hits": 53,
+    "path": "Book\\part03_language\\ch23_namespace_adl.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 24,
+    "depth_hits": 33,
+    "path": "Book\\part03_language\\ch30_volatile.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 33,
+    "depth_hits": 31,
+    "path": "Book\\part04_memory\\ch36_stack_heap.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 12,
+    "depth_hits": 72,
+    "path": "Book\\part04_memory\\ch38_allocator.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0132,
+    "water_rate": 0.0,
+    "industry_hits": 22,
+    "depth_hits": 31,
+    "path": "Book\\part07_stl\\ch82_span.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 28,
+    "depth_hits": 33,
+    "path": "Book\\part07_stl\\ch84_set.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 33,
+    "depth_hits": 33,
+    "path": "Book\\part08_algorithms\\ch100_ranges_algo.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 32,
+    "depth_hits": 32,
+    "path": "Book\\part09_concurrency\\ch112_hazard_rcu.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 30,
+    "depth_hits": 30,
+    "path": "Book\\part10_modern\\ch115_move.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 108,
+    "depth_hits": 33,
+    "path": "Book\\part11_source\\ch130_chromium_abseil.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 12,
+    "depth_hits": 84,
+    "path": "Book\\part13_engineering\\ch151_benchmark.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 22,
+    "depth_hits": 33,
+    "path": "Book\\part14_perf\\ch157_compiler_explorer.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 51,
+    "depth_hits": 32,
+    "path": "Book\\part14_perf\\ch158_perf_antipatterns.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 21,
+    "depth_hits": 32,
+    "path": "Book\\part15_cases\\ch160_mempool.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 22,
+    "depth_hits": 29,
+    "path": "Book\\part01_history\\ch01_c_history.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 22,
+    "depth_hits": 28,
+    "path": "Book\\part02_toolchain\\ch17_crosscompile.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.005,
+    "water_rate": 0.0,
+    "industry_hits": 11,
+    "depth_hits": 130,
+    "path": "Book\\part03_language\\ch19_variables.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 10,
+    "depth_hits": 112,
+    "path": "Book\\part04_memory\\ch37_new_delete.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 11,
+    "depth_hits": 51,
+    "path": "Book\\part04_memory\\ch40_exception_safety.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0044,
+    "water_rate": 0.0,
+    "industry_hits": 11,
+    "depth_hits": 92,
+    "path": "Book\\part04_memory\\ch43_cache_locality.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 10,
+    "depth_hits": 55,
+    "path": "Book\\part04_memory\\ch44_memory_pool.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.004,
+    "water_rate": 0.0,
+    "industry_hits": 10,
+    "depth_hits": 68,
+    "path": "Book\\part05_oo\\ch45_oop_object_model.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 45,
+    "depth_hits": 27,
+    "path": "Book\\part05_oo\\ch51_crtp.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 19,
+    "depth_hits": 28,
+    "path": "Book\\part05_oo\\ch52_ebo.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 23,
+    "depth_hits": 29,
+    "path": "Book\\part06_templates\\ch62_specialization.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0101,
+    "water_rate": 0.0,
+    "industry_hits": 10,
+    "depth_hits": 52,
+    "path": "Book\\part06_templates\\ch63_variadic.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 27,
+    "depth_hits": 28,
+    "path": "Book\\part07_stl\\ch81_string.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 44,
+    "depth_hits": 28,
+    "path": "Book\\part08_algorithms\\ch97_search.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 26,
+    "depth_hits": 25,
+    "path": "Book\\part08_algorithms\\ch98_heap.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 35,
+    "depth_hits": 26,
+    "path": "Book\\part09_concurrency\\ch108_memory_order.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0087,
+    "water_rate": 0.0,
+    "industry_hits": 28,
+    "depth_hits": 28,
+    "path": "Book\\part09_concurrency\\ch111_aba.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 11,
+    "depth_hits": 50,
+    "path": "Book\\part10_modern\\ch121_contracts.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 22,
+    "depth_hits": 27,
+    "path": "Book\\part10_modern\\ch122_pmr.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 10,
+    "depth_hits": 162,
+    "path": "Book\\part10_modern\\ch123_ct_programming.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 11,
+    "depth_hits": 53,
+    "path": "Book\\part12_patterns\\ch140_policy_pattern.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 16,
+    "depth_hits": 37,
+    "path": "Book\\part12_patterns\\ch141_di.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 30,
+    "depth_hits": 26,
+    "path": "Book\\part13_engineering\\ch144_style.md"
+  },
+  {
+    "quality": 18,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 28,
+    "depth_hits": 29,
+    "path": "Book\\part13_engineering\\ch145_naming_api.md"
+  },
+  {
+    "quality": 16,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 8,
+    "depth_hits": 61,
+    "path": "Book\\part01_history\\ch09_cpp26.md"
+  }
+]

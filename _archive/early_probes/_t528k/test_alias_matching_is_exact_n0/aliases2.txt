@@ -1,0 +1,2 @@
+互斥量(mutex) <- 锁
+内存屏障(fence) <- fence

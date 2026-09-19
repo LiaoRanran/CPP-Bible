@@ -1,0 +1,19 @@
+{
+ "task_id": "fix_gate_20260915_001604",
+ "type": "fix_gate",
+ "description": "修 494 的 gate 规则",
+ "status": "pending",
+ "assigned_to": "cheap_agent",
+ "created_at": "2026-09-15T00:16:04",
+ "updated_at": "2026-09-15T00:16:04",
+ "current_step": 0,
+ "total_step": 8,
+ "steps_completed": [],
+ "steps_pending": [
+  "从第 1/8 步继续（见续跑提示词）"
+ ],
+ "context_summary": "",
+ "artifacts": [],
+ "request_count": 0,
+ "request_limit": 500
+}

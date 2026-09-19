@@ -1,0 +1,29 @@
+{
+  "schema": "cppbible-backup/1.0",
+  "created": "2026-09-15T00:15:48",
+  "root": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\_t528base\\test_snapshot_copies_whitelist0",
+  "files": [
+    {
+      "path": "data/metrics.jsonl",
+      "bytes": 9,
+      "sha256": "f1a17cd3a617b592b2b880aaa0b820017502a3fbf1e2b7de73eac69f735d9876",
+      "mtime": "2026-09-15T00:15:48"
+    },
+    {
+      "path": "Examples/atoms/artifact_versions.json",
+      "bytes": 2,
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mtime": "2026-09-15T00:15:48"
+    },
+    {
+      "path": "tools/golden_state.json",
+      "bytes": 30,
+      "sha256": "8cd69d1214c2e8703052cf0e9bf50bc028e6987fee9765f6b9a5686531f70081",
+      "mtime": "2026-09-15T00:15:48"
+    }
+  ],
+  "skipped": [
+    "data/golden_state.json",
+    "data/knowledge_graph.db"
+  ]
+}

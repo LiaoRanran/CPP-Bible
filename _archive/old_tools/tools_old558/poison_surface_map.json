@@ -1,0 +1,605 @@
+{
+ "schema": 1,
+ "tool": "poison_drill.py",
+ "task": "424",
+ "generated_at": "2026-09-16T23:19:23",
+ "source_commit": "9092f82",
+ "drill": {
+  "passed": 105,
+  "total": 105
+ },
+ "attack_types": {
+  "A1": {
+   "label": "记录层伪造：状态/身份/绑定不实（无证据 verified、留痕不足、id 漂移、空名签收）",
+   "count": 19
+  },
+  "A2": {
+   "label": "声明-实现脱钩：工件/证据与声明不符（借用、陈旧、cat 式证据）",
+   "count": 13
+  },
+  "A3": {
+   "label": "断言无判别力：恒真/自证/通用符号/全样板（contains·contains_in·absent）",
+   "count": 13
+  },
+  "A4": {
+   "label": "时序穿链：编译后覆写、留痕比夹具旧",
+   "count": 4
+  },
+  "A5": {
+   "label": "环境量污染：机器/时钟量进入读数键或断言键",
+   "count": 2
+  },
+  "A6": {
+   "label": "解析走私：缩进/重复键/全角键绕过 YAML 语义",
+   "count": 7
+  },
+  "A7": {
+   "label": "关系图失配：环、矛盾、未知关系类型",
+   "count": 5
+  },
+  "A8": {
+   "label": "间接注入：注释/知识库内容伪造出处",
+   "count": 2
+  },
+  "A9": {
+   "label": "编译器配置逃逸：零诊断判据未配 -Werror",
+   "count": 1
+  },
+  "A10": {
+   "label": "供应链与工件完整性：工具冒充、非编译器产出、快照幂等",
+   "count": 4
+  },
+  "A11": {
+   "label": "并发与可用性：僵尸锁 DoS、活锁误接管",
+   "count": 2
+  }
+ },
+ "coverage": {
+  "covered": 11,
+  "total": 11,
+  "uncovered": []
+ },
+ "rule_coverage": {
+  "covered": 36,
+  "total": 61,
+  "exempt": 27
+ },
+ "payloads": [
+  {
+   "name": "P1 假论断（verified 无证据+无人工签收）",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P2 过期工件（sha256 与重生成不符）",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "P3 缺反例（无证伪对照）",
+   "pass": true,
+   "type": "A3"
+  },
+  {
+   "name": "P4 自证断言（断言被夹具自身定义满足）",
+   "pass": true,
+   "type": "A3"
+  },
+  {
+   "name": "P5 伪证伪（无量化对照值，不可复核）",
+   "pass": true,
+   "type": "A3"
+  },
+  {
+   "name": "P6 恒真观测（存在性判断无判别力）",
+   "pass": true,
+   "type": "A3"
+  },
+  {
+   "name": "P7 无留痕矩阵（多编译器声明无工件支撑）",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P8 身份漂移（stem≠id / id 重复）",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P9 证据失配（verified 绑 refute 证据）",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P10 伪证据（期望值硬编码进夹具字面量）",
+   "pass": true,
+   "type": "A3"
+  },
+  {
+   "name": "P11 零诊断判据缺 -Werror（须 block，472 P1-1）",
+   "pass": true,
+   "type": "A9"
+  },
+  {
+   "name": "P12 留痕锚自证（锚仅在 actual 段）",
+   "pass": true,
+   "type": "A3"
+  },
+  {
+   "name": "P13 空名签收（human: 前缀无实名，三处）",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P14 .out 未声明读数键（373-B3 编造载荷）",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P15 通用符号断言（373-B2 恒真载荷）",
+   "pass": true,
+   "type": "A3"
+  },
+  {
+   "name": "P15 断言符号无出处（拼错/平台专属拼写）",
+   "pass": true,
+   "type": "A3"
+  },
+  {
+   "name": "P16 新卡缺 artifact_producer（不写字段即绕过）",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "P16 借工件（cp 复制，非编译产出）",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "P17 证据 id 重复（373-N2 同 id 双卡）",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P18 mapping-form 环必须可见（373-N1）",
+   "pass": true,
+   "type": "A7"
+  },
+  {
+   "name": "P19 命令自证不再算留痕（373-N3）",
+   "pass": true,
+   "type": "A3"
+  },
+  {
+   "name": "P20 声明-实现脱钩（producer 不在 command，cp 借工件）",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "P20 -o 目标≠artifact（编译产物非本工件）",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "P21 通用符号无论在哪都 block（工件含 main 仍拦）",
+   "pass": true,
+   "type": "A3"
+  },
+  {
+   "name": "P21 注释伪造出处（absent 配注释）必须被拦",
+   "pass": true,
+   "type": "A8"
+  },
+  {
+   "name": "P29 relations 矛盾（A 依赖 B 且 B contradicts A）",
+   "pass": true,
+   "type": "A7"
+  },
+  {
+   "name": "P30 自相矛盾（A contradicts 自身）",
+   "pass": true,
+   "type": "A7"
+  },
+  {
+   "name": "P32 cl卡标confirm（不可复算卡宣称已验证）",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P33 编译后python覆写（时序约束）",
+   "pass": true,
+   "type": "A4"
+  },
+  {
+   "name": "P34 编译后powershell覆写（时序约束）",
+   "pass": true,
+   "type": "A4"
+  },
+  {
+   "name": "P35 contains_in text=通用助记符（F03）",
+   "pass": true,
+   "type": "A3"
+  },
+  {
+   "name": "P36 重复 verdict 键（F09 after-wins 遮蔽）",
+   "pass": true,
+   "type": "A6"
+  },
+  {
+   "name": "P37 全角键 .out 未声明（F04）",
+   "pass": true,
+   "type": "A6"
+  },
+  {
+   "name": "P38 .out 比夹具旧（F06 陈旧留痕）",
+   "pass": true,
+   "type": "A4"
+  },
+  {
+   "name": "P39 注释伪造符号出处（A8 间接注入）",
+   "pass": true,
+   "type": "A8"
+  },
+  {
+   "name": "P40 工具冒充（producer 声明≠实际编译器，A10）",
+   "pass": true,
+   "type": "A10"
+  },
+  {
+   "name": "P41 非编译器产出工件（生成脚本冒充编译，A10）",
+   "pass": true,
+   "type": "A10"
+  },
+  {
+   "name": "P42 环境值进读数键（nproc 未声明，A5）",
+   "pass": true,
+   "type": "A5"
+  },
+  {
+   "name": "P43 缩进走私（E07 缩进 verdict 提升顶层键）",
+   "pass": true,
+   "type": "A6"
+  },
+  {
+   "name": "P43b flow 式 negative_controls 须 [nc-flow] 拦下",
+   "pass": true,
+   "type": "A6"
+  },
+  {
+   "name": "P43c 借品阴面未锚阳夹具须 block",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "P43d 非块式 negative_controls（nc-scalar）须 [nc-form] 拦下",
+   "pass": true,
+   "type": "A6"
+  },
+  {
+   "name": "P43e 非块式 negative_controls（nc-map）须 [nc-form] 拦下",
+   "pass": true,
+   "type": "A6"
+  },
+  {
+   "name": "P43f 门禁键 YAML1.1 隐式类型陷阱须 [type-diverge] 拦下",
+   "pass": true,
+   "type": "A6"
+  },
+  {
+   "name": "N1 阳过阴也过（逐字复制+加注释）须 refute",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "N2 冒名阴面（整个换成别的程序）须 refute",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "N3 阴面写坏（anchor 内删声明行 ⇒ 真编译 rc≠0）须 refute",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "N4 形式阴面（删 anchor 外的行）须 refute",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "N5 阴面缺失（阴夹具文件不存在）须 refute",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "N6 连主体删除（anchor 内删机制+返回 ⇒ retain 缺）须 refute",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P44 环境量进断言键（nproc 声明为比对目标，A5）",
+   "pass": true,
+   "type": "A5"
+  },
+  {
+   "name": "P45 僵尸锁(pid已死)须立即接管",
+   "pass": true,
+   "type": "A11"
+  },
+  {
+   "name": "P46 活锁(当前pid)不得被接管",
+   "pass": true,
+   "type": "A11"
+  },
+  {
+   "name": "P51 工件快照须能幂等还原（中断不丢工件）",
+   "pass": true,
+   "type": "A10"
+  },
+  {
+   "name": "P52 阴性·正常路径不留 .bak 残留",
+   "pass": true,
+   "type": "A10"
+  },
+  {
+   "name": "P55 refutes 同义词归一时须检出矛盾",
+   "pass": true,
+   "type": "A7"
+  },
+  {
+   "name": "P56 未知 relations 类型须可见（不静默丢弃）",
+   "pass": true,
+   "type": "A7"
+  },
+  {
+   "name": "P57 cat 式证据须被拦（升 warn 后）",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "P58 签收与 git 作者不符（须 warn，观察期）",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P59 人级签署无理由（须命中 warn）",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P60 版本漂移（卡 2 ≠ 台账 1，须 block）",
+   "pass": true,
+   "type": "A4"
+  },
+  {
+   "name": "P47 contains_any 全样板须判无判别力",
+   "pass": true,
+   "type": "A3"
+  },
+  {
+   "name": "P48 阴性·命中含非样板须放行",
+   "pass": true,
+   "type": "A3"
+  },
+  {
+   "name": "P61 run_match_keys 假键（.out 无此键）须 block",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "P62 artifact 指向不存在文件须 block",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "P63 新卡无 claim_structured 须 block",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P64 observation 无工件断言须 block",
+   "pass": true,
+   "type": "A2"
+  },
+  {
+   "name": "P65 inference 机器独自晋升 verified 须 block",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P66 inference 命题级无签+卡级无人签+无基准 ⇒ block",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P67 object 是句子非概念须 warn",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P68 只挂 run_match 卡的 observation 须 warn（缺活性对照）",
+   "pass": true,
+   "type": "A1"
+  },
+  {
+   "name": "P69 卡内路径非 posix 规范/大小写与磁盘不符 ⇒ warn",
+   "pass": true,
+   "type": "A2"
+  }
+ ],
+ "negative_controls": [
+  {
+   "name": "P14-阴 声明完整的 .out 必须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P15-阴 工件内有出处的断言必须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P15-阴 symbol_map 显式声明必须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P16-阴 编译器产出声明必须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P16-阴 迁移名单内存量卡缺字段放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P17-阴 唯一且 stem==id 必须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P18-阴 mapping-form 指向已存在目标必须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P19-阴 两处可核对留痕必须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P20-阴 声明与 command 一致且 -o==artifact 必须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P21-阴 工件真实代码里有出处须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P31-阴 合法对比（contrasts 非矛盾）必须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "N7-阴 干净卡（无 negative_controls 字段）须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "N7-阴 合法真阴面（合规 nc1 ⇒ flip verified）须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P58-阴 签收与 git 作者一致须放行（宽松匹配）",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P59-阴 人级签署有理由须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P60-阴 版本一致（1 == 1）须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P60-阴2 卡缺 artifact_version 须 warn",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P61-阴 声明键全在 .out 中须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P62-阴 artifact 存在须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P63-阴1 STAGING 存量卡（ATOM-CONC-FENCE-001）只 warn 不 block",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P63-阴2 合规 claim_structured 须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P63-阴3 claim_type 非法须 block",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P64-阴 observation 有工件断言须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P64-阴2 observation 未声明 evidence 须 block",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P65-阴1 basis 已登记独立来源 ⇒ 降级 warn",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P65-阴2 卡级人签无命题级签署 ⇒ warn（建议精确化，不 block）",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P65-阴3 空名签收（human: 无实名）不算签署须 block",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P66-阴1 卡级有签命题级无签 ⇒ warn（建议精确化，不 block）",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P66-阴2 命题级 signed_by 在册实名 ⇒ 放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P67-阴 object=规范概念须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P68-阴 有活性对照（特有符号+量化证伪）须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "P69-阴 规范 posix 写法（大小写逐字一致）须放行",
+   "pass": true,
+   "type": null
+  },
+  {
+   "name": "阴性对照（干净原子+干净卡）",
+   "pass": true,
+   "type": null
+  }
+ ],
+ "viso_dual_metrics": {
+  "trap_block_rate": 100.0,
+  "trap_blocked": 6,
+  "trap_total": 6,
+  "clean_pass_rate": 100.0,
+  "clean_passed": 2,
+  "clean_total": 2
+ },
+ "note": "A1-A11 = 代码实际口径（标签由成员样例归纳），非 409 原表逐字；A11 为 472 新增（并发/可用性）。口径差异与裁决见 _worklog_472.md。"
+}

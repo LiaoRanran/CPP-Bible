@@ -1,0 +1,13 @@
+{
+  "_doc": "T1 软门禁基线——悬空引用 / 前置拓扑的已知债务阈值。CI 若出现 *新增* 债务即判红。用 `python tools/ci_gate.py --update-baseline` 刷新。",
+  "T1-2": {
+    "dangling_count": 53,
+    "orphan_links": [],
+    "doc": "53 处悬空引用，源于 18 个编号空缺（设计性「删章留空、不重排」）。增量即回归。层清计划：高优先 ch33→ch28、ch102-105（互斥量/条件变量内容缺口）。"
+  },
+  "T1-3": {
+    "inverted": 6,
+    "dangling_pre": 1,
+    "doc": "6 处前置倒置（ch7→ch60/63, ch9→ch67/113, ch19→ch20/31）+ 1 处悬空前置（ch9→ch114）。"
+  }
+}

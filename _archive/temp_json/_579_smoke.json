@@ -1,0 +1,216 @@
+{
+ "cards": [
+  "evidence/conc/EV-CONC-001.md",
+  "evidence/conc/EV-CONC-002.md"
+ ],
+ "operators": [
+  "M6"
+ ],
+ "variants": 8,
+ "blocked": 8,
+ "escaped": 0,
+ "n_a": 0,
+ "malformed": 0,
+ "out_of_scope": 0,
+ "strict_blocked": 6,
+ "strict_rate": 0.75,
+ "treated_rate": 1.0,
+ "rates": {
+  "judged": 8,
+  "n_a": 0,
+  "malformed": 0,
+  "strict": {
+   "numerator": 6,
+   "denominator": 8,
+   "point": 0.75,
+   "cp_low": 0.349144,
+   "cp_high": 0.968146,
+   "conf": 0.95
+  },
+  "treated": {
+   "numerator": 8,
+   "denominator": 8,
+   "point": 1.0,
+   "cp_low": 0.630583,
+   "cp_high": 1.0,
+   "conf": 0.95
+  },
+  "escape": {
+   "numerator": 0,
+   "denominator": 8,
+   "point": 0.0,
+   "cp_low": 0.0,
+   "cp_high": 0.369417,
+   "conf": 0.95
+  },
+  "treated_all": {
+   "numerator": 8,
+   "denominator": 8,
+   "point": 1.0,
+   "cp_low": 0.630583,
+   "cp_high": 1.0,
+   "conf": 0.95
+  }
+ },
+ "by_operator_rates": {
+  "M6": {
+   "judged": 8,
+   "n_a": 0,
+   "strict": {
+    "numerator": 6,
+    "denominator": 8,
+    "point": 0.75,
+    "cp_low": 0.349144,
+    "cp_high": 0.968146,
+    "conf": 0.95
+   },
+   "treated": {
+    "numerator": 8,
+    "denominator": 8,
+    "point": 1.0,
+    "cp_low": 0.630583,
+    "cp_high": 1.0,
+    "conf": 0.95
+   },
+   "escape": {
+    "numerator": 0,
+    "denominator": 8,
+    "point": 0.0,
+    "cp_low": 0.0,
+    "cp_high": 0.369417,
+    "conf": 0.95
+   }
+  }
+ },
+ "rate_flags": [
+  "M6：可判样本仅 8 < 59 ⇒ 样本不足；要宣称'逃逸率≤5%@95%'需补样至 n≥59"
+ ],
+ "by_operator": {
+  "M6": {
+   "blocked": 8,
+   "escaped": 0,
+   "n_a": 0
+  }
+ },
+ "by_card": {
+  "evidence/conc/EV-CONC-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/conc/EV-CONC-002.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  }
+ },
+ "elapsed_s": 9.59,
+ "ge_runs": 9,
+ "replay_runs": 0,
+ "replay_skipped": 0,
+ "escaped_list": [],
+ "results": [
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:evidence/conc/EV-CONC-001.md",
+    "EV-FM-YAML-HARDENING:evidence/conc/EV-CONC-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:evidence/conc/EV-CONC-001.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:evidence/conc/EV-CONC-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:evidence/conc/EV-CONC-001.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:evidence/conc/EV-CONC-001.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:evidence/conc/EV-CONC-002.md",
+    "EV-FM-YAML-HARDENING:evidence/conc/EV-CONC-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:evidence/conc/EV-CONC-002.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:evidence/conc/EV-CONC-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:evidence/conc/EV-CONC-002.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:evidence/conc/EV-CONC-002.md"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,401 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""metrics_collector.py — 质量度量 L1（508 任务6）。
+
+为什么（497/508）：仓库里已有 `gen_metrics.py`（**文档数字 vs 事实源**的一致性门禁）、
+`cost_tracker.py`（单原子成本）、`golden_lock.py`（质量指标基线）——但它们各自回答一个问题，
+**没有一份"某个时刻全仓健康度的横截面快照"**。于是"这周比上周好在哪"只能靠人回忆。
+L1 把 5 类指标采成一行 JSON 追加到 `data/metrics.jsonl`，供趋势查询与阈值告警。
+
+与既有工具的分工（**不是替代**）：
+  * `gen_metrics.py`：文档里写死的数字对不对（门禁，会红）。
+  * `golden_lock.py`：质量指标**恶化**即红（基线比对）。
+  * `metrics_collector.py`（本文件）：**只采集 + 只 WARN**，不阻断任何流程；
+    它产出的是"历史序列"，让"趋势"从口头变成可查。
+
+5 类 27 指标（提示词写"25 项"，逐条数列实际是 27 —— 如实记录）：
+  Quality 9 / Assets 7 / Performance 4 / Cost 3 / Health 4。
+
+阈值（硬编码，**只 WARN 不 BLOCK** —— 采集器不该让任何流程变红）：
+
+| 条件 | 级别 |
+|---|---|
+| `gate_block_count > 0` | ERROR |
+| `replay_refute_count > 0` | ERROR |
+| `pytest_wall_seconds > 300` | WARN |
+| `poison_coverage_pct < 50` | WARN |
+
+用法
+====
+    python tools/metrics_collector.py                     # 全量采集（含 poison/replay，分钟级）
+    python tools/metrics_collector.py --no-heavy          # 跳过 poison/replay（秒级）
+    python tools/metrics_collector.py --json              # 只打印，不落盘
+    python tools/metrics_collector.py history --last 10   # 最近 10 次采集的趋势
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+METRICS_FILE = ROOT / "data" / "metrics.jsonl"
+PYTHON = sys.executable
+
+QUALITY = ("gate_block_count", "gate_warn_count", "gate_rule_count",
+           "poison_pass_count", "poison_total_count", "poison_coverage_pct",
+           "replay_confirm_count", "replay_refute_count", "replay_infra_error_count")
+ASSETS = ("atoms_total", "atoms_verified", "atoms_draft", "evidence_total",
+          "evidence_confirm", "misconceptions_total", "asm_files_count")
+PERFORMANCE = ("pytest_wall_seconds", "replay_wall_seconds", "gate_wall_seconds",
+               "ci_total_seconds")
+COST = ("cost_tracker_total_tokens", "cost_tracker_atoms_per_batch",
+        "cost_tracker_avg_per_atom")
+HEALTH = ("git_ahead_count", "git_untracked_count", "debt_ledger_open_count",
+          "golden_state_atoms_match")
+GROUPS = {"quality": QUALITY, "assets": ASSETS, "performance": PERFORMANCE,
+          "cost": COST, "health": HEALTH}
+ALL_METRICS = tuple(m for g in GROUPS.values() for m in g)
+
+THRESHOLDS = (
+    ("gate_block_count", lambda v: v > 0, "ERROR", "门禁有 block"),
+    ("replay_refute_count", lambda v: v > 0, "ERROR", "有证据卡被证伪"),
+    ("pytest_wall_seconds", lambda v: v > 300, "WARN", "pytest 墙钟超 300s"),
+    ("poison_coverage_pct", lambda v: v < 50, "WARN", "毒样例规则覆盖率低于 50%"),
+)
+
+
+def _run(args: list[str], timeout: int = 1800) -> tuple[int, str, float]:
+    """跑子进程并返回 (exit, stdout+stderr, wall_seconds)。异常不抛，返回 rc=-1。"""
+    t0 = time.perf_counter()
+    try:
+        p = subprocess.run([PYTHON, *args], cwd=str(ROOT), capture_output=True,
+                           text=True, encoding="utf-8", errors="replace", timeout=timeout)
+        out = (p.stdout or "") + (p.stderr or "")
+        return p.returncode, out, time.perf_counter() - t0
+    except Exception as exc:                     # noqa: BLE001
+        return -1, f"{type(exc).__name__}: {exc}", time.perf_counter() - t0
+
+
+def _run_raw(argv: list[str], timeout: int = 300) -> tuple[int, str, float]:
+    """跑**外部命令**（git 等，不经 Python 解释器）。与 `_run` 分开，
+    否则会把 `git` 当脚本喂给 python ⇒ `rc=2`（508 首版实测踩到）。"""
+    t0 = time.perf_counter()
+    try:
+        p = subprocess.run(argv, cwd=str(ROOT), capture_output=True, text=True,
+                           encoding="utf-8", errors="replace", timeout=timeout)
+        return p.returncode, (p.stdout or "") + (p.stderr or ""), time.perf_counter() - t0
+    except Exception as exc:                     # noqa: BLE001
+        return -1, f"{type(exc).__name__}: {exc}", time.perf_counter() - t0
+
+
+def _num(v: object) -> float | None:
+    return float(v) if isinstance(v, (int, float)) else None
+
+
+# ── Quality ──────────────────────────────────────────────────────────────
+def replay_counts_from_manifest(man: Path | None = None) -> dict | None:
+    """从 replay 清单统计 verdict 分布（`build/replay_manifest.json`）。
+
+    增量 replay 在"全部命中缓存"时不打印汇总行，此时这是唯一可核对的历史结果来源。
+    返回 `{"confirm":n, "refute":n, "infra_error":n, "_total":n}`；不可读返回 None。
+    """
+    p = man or (ROOT / "build" / "replay_manifest.json")
+    try:
+        d = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:                            # noqa: BLE001
+        return None
+    if not isinstance(d, dict):
+        return None
+    counts: dict = {"confirm": 0, "refute": 0, "infra_error": 0, "_total": 0}
+    for v in d.values():
+        if not isinstance(v, dict):
+            continue
+        key = str(v.get("verdict") or "").split(":")[0]
+        counts[key] = counts.get(key, 0) + 1
+        counts["_total"] += 1
+    return counts
+
+
+def collect_quality(notes: dict, *, with_heavy: bool = True) -> dict:
+    out: dict = dict.fromkeys(QUALITY)
+
+    # gate：**进程内**跑（比开子进程省一次解释器启动；规则实现与 CLI 完全相同）
+    import gate_engine as ge
+    t0 = time.perf_counter()
+    try:
+        findings = ge.run(include_advice=False)
+        out["gate_wall_seconds"] = round(time.perf_counter() - t0, 2)
+        out["gate_block_count"] = sum(1 for f in findings if f.severity == "block")
+        out["gate_warn_count"] = sum(1 for f in findings if f.severity == "warn")
+        out["gate_rule_count"] = len(ge.RULES)
+    except Exception as exc:                     # noqa: BLE001
+        notes["gate"] = f"采集失败：{type(exc).__name__}: {exc}"
+
+    if not with_heavy:
+        notes["poison"] = "跳过（--no-heavy）"
+        notes["replay"] = "跳过（--no-heavy）"
+        return out
+
+    import poison_drill as pd
+    try:
+        passed, total, _fails = pd.drill()
+        covered, rules_total, _unc = pd.rule_coverage()
+        out["poison_pass_count"] = passed
+        out["poison_total_count"] = total
+        out["poison_coverage_pct"] = round(100.0 * covered / rules_total, 1) \
+            if rules_total else None
+    except Exception as exc:                     # noqa: BLE001
+        notes["poison"] = f"采集失败：{type(exc).__name__}: {exc}"
+
+    rc, text, wall = _run(["tools/atom_evidence_replay.py", "--check", "--incremental"])
+    out["replay_wall_seconds"] = round(wall, 2)
+    m = re.search(r"confirm=(\d+)\s+refute=(\d+)\s+infra_error=(\d+)", text)
+    if m:
+        out["replay_confirm_count"] = int(m.group(1))
+        out["replay_refute_count"] = int(m.group(2))
+        out["replay_infra_error_count"] = int(m.group(3))
+        notes["replay"] = "本次实跑（增量，有卡重算）"
+    else:
+        # 增量模式下"全部命中缓存"时**不打印 confirm= 汇总**（508 实测）——
+        # 这恰是度量采集的常态。此时计数只能取自清单 `build/replay_manifest.json`，
+        # 语义 = "上次实跑的结果"，必须在 note 里写明来源，不能冒充"本次实跑"。
+        counts = replay_counts_from_manifest()
+        if counts is None:
+            notes["replay"] = f"无汇总行且清单不可读（rc={rc}）"
+            return out
+        out["replay_confirm_count"] = counts["confirm"]
+        out["replay_refute_count"] = counts["refute"]
+        out["replay_infra_error_count"] = counts["infra_error"]
+        notes["replay"] = (f"增量全命中缓存（未跑编译）⇒ 计数取自 build/replay_manifest.json"
+                           f"（上次实跑，共 {counts['_total']} 张）")
+    return out
+
+
+# ── Assets ───────────────────────────────────────────────────────────────
+def collect_assets(notes: dict) -> dict:
+    out: dict = dict.fromkeys(ASSETS)
+    import atom_evidence_replay as replay
+    import gate_engine as ge
+    try:
+        atoms = list(ge._cards(ge.ATOMS, "ATOM-*.md"))
+        out["atoms_total"] = len(atoms)
+        st: dict[str, int] = {}
+        for p in atoms:
+            m = replay.parse_frontmatter(p.read_text(encoding="utf-8", errors="replace"))
+            s = str(m.get("status") or "?")
+            st[s] = st.get(s, 0) + 1
+        out["atoms_verified"] = st.get("verified", 0)
+        out["atoms_draft"] = st.get("draft", 0)
+        ev = list(ge._cards(ge.EVIDENCE, "EV-*.md"))
+        out["evidence_total"] = len(ev)
+        out["evidence_confirm"] = sum(
+            1 for p in ev
+            if str(replay.parse_frontmatter(
+                p.read_text(encoding="utf-8", errors="replace")).get("verdict") or "")
+            == "confirm")
+    except Exception as exc:                     # noqa: BLE001
+        notes["assets"] = f"采集失败：{type(exc).__name__}: {exc}"
+    mis = ROOT / "misconceptions"
+    if mis.is_dir():
+        out["misconceptions_total"] = sum(
+            1 for p in mis.rglob("*.md") if not p.name.startswith("README"))
+    ex = ROOT / "Examples"
+    if ex.is_dir():
+        out["asm_files_count"] = sum(1 for _ in ex.rglob("*.asm"))
+    return out
+
+
+# ── Cost ─────────────────────────────────────────────────────────────────
+def collect_cost(notes: dict) -> dict:
+    out: dict = dict.fromkeys(COST)
+    rc, text, _ = _run(["tools/cost_tracker.py", "--json", "report"], timeout=120)
+    try:
+        d = json.loads(text[text.index("{"):text.rindex("}") + 1])
+    except Exception:                            # noqa: BLE001
+        notes["cost"] = f"cost_tracker 未返回可解析 JSON（rc={rc}）"
+        return out
+    atoms = _num(d.get("atoms"))
+    tokens = _num(d.get("total_tokens_est"))
+    out["cost_tracker_total_tokens"] = int(tokens) if tokens is not None else None
+    out["cost_tracker_atoms_per_batch"] = int(atoms) if atoms is not None else None
+    out["cost_tracker_avg_per_atom"] = round(tokens / atoms, 1) \
+        if tokens and atoms else None
+    return out
+
+
+# ── Health ───────────────────────────────────────────────────────────────
+def collect_health(notes: dict, assets: dict | None = None) -> dict:
+    out: dict = dict.fromkeys(HEALTH)
+    rc, text, _ = _run_raw(["git", "rev-list", "--count", "origin/master..HEAD"])
+    if rc == 0:
+        out["git_ahead_count"] = int(text.strip() or 0)
+    else:
+        notes["git_ahead"] = f"git 未取到（rc={rc}）"
+    rc, text, _ = _run_raw(["git", "status", "--porcelain"])
+    if rc == 0:
+        out["git_untracked_count"] = sum(1 for ln in text.splitlines()
+                                         if ln.startswith("??"))
+    # 债务台账：开放式条目数（读 `debt_ledger show` 的 JSON；失败则记 null + note）
+    rc, text, _ = _run(["tools/debt_ledger.py", "show"], timeout=120)
+    try:
+        d = json.loads(text[text.index("{"):text.rindex("}") + 1])
+        items = d.get("open") or d.get("items") or d.get("debts") or []
+        out["debt_ledger_open_count"] = len(items) if isinstance(items, list) else None
+    except Exception:                            # noqa: BLE001
+        notes["debt_ledger"] = "台账未返回可解析 JSON（`show` 无 --json 时属预期）"
+    # 黄金状态：tools/golden_state.json 的原子数与磁盘实际是否一致
+    gs = ROOT / "tools" / "golden_state.json"
+    if gs.is_file():
+        try:
+            d = json.loads(gs.read_text(encoding="utf-8"))
+            # 真实结构：{"schema":..., "metrics": {"atoms_total": 27, ...}}（508 实测）
+            m = d.get("metrics") if isinstance(d, dict) else None
+            rec = _num((m or {}).get("atoms_total") if isinstance(m, dict)
+                       else d.get("atoms"))
+            # 磁盘实际值来自 collect_assets 的返回值（**不能**读本函数自己的 out：
+            # 它的键集只有 HEALTH，永远取到 None —— 508 实测踩到，恒 None 指标）
+            cur = _num((assets or {}).get("atoms_total"))
+            out["golden_state_atoms_match"] = (
+                None if rec is None or cur is None else rec == cur)
+            if rec is None:
+                notes["golden_state"] = "未找到 metrics.atoms_total 字段"
+        except Exception:                        # noqa: BLE001
+            notes["golden_state"] = "golden_state.json 解析失败"
+    else:
+        notes["golden_state"] = "tools/golden_state.json 不存在"
+    return out
+
+
+# ── 组装 / 告警 / 落盘 ────────────────────────────────────────────────────
+def evaluate_alerts(metrics: dict) -> list[dict]:
+    """硬阈值告警（只 WARN/ERROR 记录，**不 BLOCK 任何流程**）。"""
+    alerts = []
+    for name, pred, level, why in THRESHOLDS:
+        v = metrics.get(name)
+        if isinstance(v, (int, float)) and pred(v):
+            alerts.append({"level": level, "metric": name, "value": v, "reason": why})
+    return alerts
+
+
+def collect(*, with_heavy: bool = True, with_gate: bool = True) -> dict:
+    """采集一次全量快照：{timestamp, metrics{27}, notes, alerts}。"""
+    notes: dict = {}
+    metrics: dict = {}
+    metrics.update(collect_quality(notes, with_heavy=with_heavy and with_gate))
+    assets = collect_assets(notes)
+    metrics.update(assets)
+    metrics.update(collect_cost(notes))
+    metrics.update(collect_health(notes, assets))
+    # pytest_wall_seconds：**没有可靠的机读来源**（pytest 把汇总写 stdout，本仓
+    # 的沙箱还会吞掉收尾汇总）⇒ 约定落盘文件 `data/pytest_last.txt`（把 pytest 输出
+    # `tee` 到它即可，CI 的 pytest job 已如此做）。无该文件则留 null + note，
+    # **不猜、不编**（铁律 #4）。
+    pl = ROOT / "data" / "pytest_last.txt"
+    if pl.is_file():
+        text = pl.read_text(encoding="utf-8", errors="replace")
+        # 优先认**显式标记** `[pytest-wall] total=NN.Ns`：两阶段跑法（fast -n16 + slow -n0）
+        # 会产生两条 pytest 汇总行，若只按 `in Xs` 近似匹配会错取到 phase1 的值。
+        # 其次才退回近似匹配（单次全量跑的场景）。
+        m = (re.search(r"\[pytest-wall\]\s*total=([\d.]+)s", text)
+             or re.search(r"\bin ([\d.]+)s\b", text))
+        if m:
+            metrics["pytest_wall_seconds"] = float(m.group(1))
+            notes.setdefault("pytest_wall_seconds",
+                             "来源 data/pytest_last.txt"
+                             + ("（显式标记）" if "[pytest-wall]" in text else "（近似匹配 `in Xs`）"))
+        else:
+            notes["pytest_wall_seconds"] = "data/pytest_last.txt 中未匹配到 `in Xs` 汇总"
+    else:
+        notes["pytest_wall_seconds"] = ("无 data/pytest_last.txt；"
+                                        "把 pytest 输出 tee 到该文件即可自动采集")
+    # ci_total_seconds：**估算**（pytest 未采时只累加 replay+gate）——口径写在 notes 里，
+    # 避免以后有人把它当成"CI 实测墙钟"。
+    parts = [metrics.get("replay_wall_seconds"), metrics.get("gate_wall_seconds")]
+    metrics["ci_total_seconds"] = round(sum(p for p in parts if p), 2)
+    notes.setdefault("ci_total_seconds", "估算 = replay + gate 墙钟（不含 pytest / poison / 编译）")
+    missing = [m for m in ALL_METRICS if m not in metrics]
+    if missing:
+        notes["missing"] = f"未采集到：{missing}"
+    snap = {"timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            "metrics": {k: metrics.get(k) for k in ALL_METRICS},
+            "notes": notes}
+    snap["alerts"] = evaluate_alerts(snap["metrics"])
+    return snap
+
+
+def append(snap: dict, path: Path | None = None) -> Path:
+    p = path or METRICS_FILE
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with p.open("a", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(snap, ensure_ascii=False) + "\n")
+    return p
+
+
+def read_history(path: Path | None = None) -> list[dict]:
+    p = path or METRICS_FILE
+    if not p.is_file():
+        return []
+    out = []
+    for line in p.read_text(encoding="utf-8", errors="replace").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            d = json.loads(line)
+        except ValueError:
+            continue                            # 半行/坏行不拖垮历史查询
+        if isinstance(d, dict) and isinstance(d.get("metrics"), dict):
+            out.append(d)
+    return out
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description="质量度量 L1（508 任务6）")
+    sub = ap.add_subparsers(dest="cmd")
+    hi = sub.add_parser("history", help="看历史趋势")
+    hi.add_argument("--last", type=int, default=10)
+    hi.add_argument("--metrics", nargs="+",
+                    default=["gate_block_count", "gate_warn_count", "poison_coverage_pct",
+                             "replay_confirm_count", "atoms_verified", "git_ahead_count"])
+    sub.add_parser("collect", help="采集一次（默认子命令）")
+    ap.add_argument("--no-heavy", action="store_true", help="跳过 poison / replay（秒级）")
+    ap.add_argument("--json", action="store_true", help="只打印，不落盘")
+    ap.add_argument("--out", default=None, help="覆盖 metrics.jsonl 路径")
+    a = ap.parse_args(argv)
+
+    if a.cmd == "history":
+        rows = read_history(Path(a.out) if a.out else None)[-a.last:]
+        if not rows:
+            print("[metrics] 暂无历史（先跑一次 collect）")
+            return 0
+        names = [n for n in a.metrics if n in ALL_METRICS]
+        print(f"{'timestamp':<20} " + " ".join(f"{n[:18]:>19}" for n in names))
+        for r in rows:
+            vals = " ".join(f"{str(r['metrics'].get(n)):>19}" for n in names)
+            print(f"{r['timestamp']:<20} {vals}")
+        return 0
+
+    snap = collect(with_heavy=not a.no_heavy)
+    if a.json:
+        print(json.dumps(snap, ensure_ascii=False, indent=2))
+        return 0
+    p = append(snap, Path(a.out) if a.out else None)
+    got = sum(1 for v in snap["metrics"].values() if v is not None)
+    print(f"[metrics] 采集 {got}/{len(ALL_METRICS)} 项 → {p.relative_to(ROOT).as_posix()}")
+    for al in snap["alerts"]:
+        print(f"  [{al['level']:5}] {al['metric']}={al['value']}  {al['reason']}")
+    if snap["notes"]:
+        print("  注：" + "；".join(f"{k}:{v}" for k, v in snap["notes"].items()))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

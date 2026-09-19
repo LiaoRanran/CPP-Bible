@@ -1,0 +1,30 @@
+# verified_reason 迁移期豁免名单（494 任务 5，2026-09-14）
+# 这些原子在本规则落地时已是 verified/human-verified 且**签署时未要求写理由**，允许暂缺
+# verified_reason（规则对它们只提示不强制）。补齐一颗就从本名单删一行。
+# 名单清空后，verified 原子缺 reason 即为持续债务（新卡自落地起即受约束）。
+# 迁移积压 = 本文件 ATOM- 行数（= 23）。
+#
+# 语义边界（铁律 4）：理由内容需**人判断**，苦力只建机制不填内容——本名单不代填理由。
+ATOM-CONC-FENCE-001
+ATOM-CONC-LOCK-001
+ATOM-CONC-RACE-001
+ATOM-HIST-AUTOPTR-001
+ATOM-MEM-ALIGN-001
+ATOM-MEM-ALLOC-001
+ATOM-MEM-LEAK-001
+ATOM-MEM-MOVE-002
+ATOM-MEM-NEW-001
+ATOM-MEM-PERF-001
+ATOM-MEM-PERF-002
+ATOM-MEM-PERF-003
+ATOM-MEM-RAII-001
+ATOM-MEM-RAII-002
+ATOM-MEM-RVREF-001
+ATOM-MEM-SHARED-001
+ATOM-MEM-SHARED-002
+ATOM-MEM-UNIQUE-001
+ATOM-MEM-UNIQUE-002
+ATOM-MEM-VALUE-001
+ATOM-MEM-VALUE-002
+ATOM-MEM-WEAK-001
+ATOM-UB-GRAY-001

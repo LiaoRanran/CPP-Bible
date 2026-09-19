@@ -1,0 +1,144 @@
+{
+ "cards": [
+  "evidence/lang/EV-LANG-001.md"
+ ],
+ "operators": [
+  "M3"
+ ],
+ "variants": 3,
+ "blocked": 3,
+ "escaped": 0,
+ "n_a": 0,
+ "malformed": 0,
+ "out_of_scope": 0,
+ "strict_blocked": 1,
+ "strict_rate": 0.3333,
+ "treated_rate": 1.0,
+ "rates": {
+  "judged": 3,
+  "n_a": 0,
+  "malformed": 0,
+  "strict": {
+   "numerator": 1,
+   "denominator": 3,
+   "point": 0.333333,
+   "cp_low": 0.008404,
+   "cp_high": 0.905701,
+   "conf": 0.95
+  },
+  "treated": {
+   "numerator": 3,
+   "denominator": 3,
+   "point": 1.0,
+   "cp_low": 0.292402,
+   "cp_high": 1.0,
+   "conf": 0.95
+  },
+  "escape": {
+   "numerator": 0,
+   "denominator": 3,
+   "point": 0.0,
+   "cp_low": 0.0,
+   "cp_high": 0.707598,
+   "conf": 0.95
+  },
+  "treated_all": {
+   "numerator": 3,
+   "denominator": 3,
+   "point": 1.0,
+   "cp_low": 0.292402,
+   "cp_high": 1.0,
+   "conf": 0.95
+  }
+ },
+ "by_operator_rates": {
+  "M3": {
+   "judged": 3,
+   "n_a": 0,
+   "strict": {
+    "numerator": 1,
+    "denominator": 3,
+    "point": 0.333333,
+    "cp_low": 0.008404,
+    "cp_high": 0.905701,
+    "conf": 0.95
+   },
+   "treated": {
+    "numerator": 3,
+    "denominator": 3,
+    "point": 1.0,
+    "cp_low": 0.292402,
+    "cp_high": 1.0,
+    "conf": 0.95
+   },
+   "escape": {
+    "numerator": 0,
+    "denominator": 3,
+    "point": 0.0,
+    "cp_low": 0.0,
+    "cp_high": 0.707598,
+    "conf": 0.95
+   }
+  }
+ },
+ "rate_flags": [
+  "M3：可判样本仅 3 < 59 ⇒ 样本不足；要宣称'逃逸率≤5%@95%'需补样至 n≥59"
+ ],
+ "by_operator": {
+  "M3": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  }
+ },
+ "by_card": {
+  "evidence/lang/EV-LANG-001.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  }
+ },
+ "elapsed_s": 4.62,
+ "ge_runs": 4,
+ "replay_runs": 0,
+ "replay_skipped": 0,
+ "escaped_list": [],
+ "results": [
+  {
+   "card": "evidence/lang/EV-LANG-001.md",
+   "op": "M3",
+   "point": "contains_in → contains（区间断言降级为全文存在性）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_h_bahc1i\\evidence\\lang\\EV-LANG-001.md"
+   ]
+  },
+  {
+   "card": "evidence/lang/EV-LANG-001.md",
+   "op": "M3",
+   "point": "absent_in → absent（区间断言降级为全文不存在）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_h_bahc1i\\evidence\\lang\\EV-LANG-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/lang/EV-LANG-001.md",
+   "op": "M3",
+   "point": "-Werror 被删（编译告警不再算失败）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-WERROR-DECL-BIND:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_h_bahc1i\\evidence\\lang\\EV-LANG-001.md"
+   ]
+  }
+ ]
+}

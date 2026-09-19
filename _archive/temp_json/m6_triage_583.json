@@ -1,0 +1,117 @@
+{
+ "note": "583 任务 1.4：逃逸定性（只读分析；**未改任何判决**）",
+ "gate_read_keys": [
+  "actual",
+  "artifact",
+  "artifact_assert",
+  "artifact_producer",
+  "artifact_version",
+  "artifacts",
+  "audience",
+  "claim_structured",
+  "cognitive_load",
+  "command",
+  "dal",
+  "dal_reviewed_by",
+  "domain",
+  "evidence",
+  "extracted_by",
+  "first_hand",
+  "fixture",
+  "gray_zone",
+  "human_review",
+  "id",
+  "kind",
+  "level",
+  "misconceptions",
+  "name",
+  "pedagogy",
+  "prerequisites_readable",
+  "refutations",
+  "relations",
+  "source",
+  "sources",
+  "status",
+  "status_history",
+  "superiority",
+  "symbol_map",
+  "type",
+  "verdict",
+  "verified_by",
+  "verified_reason"
+ ],
+ "triage": [
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M1",
+   "point": "删 negative_controls",
+   "mutated_key": "-",
+   "equivalent": false,
+   "label": "需 TCE/工件比对（M1/M7，冻结）"
+  },
+  {
+   "card": "evidence/hist/EV-HIST-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "mutated_key": "matrix",
+   "equivalent": true,
+   "label": "equivalent（无效变异）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "mutated_key": "matrix",
+   "equivalent": true,
+   "label": "equivalent（无效变异）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-033.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "mutated_key": "matrix",
+   "equivalent": true,
+   "label": "equivalent（无效变异）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-034.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "mutated_key": "matrix",
+   "equivalent": true,
+   "label": "equivalent（无效变异）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-035.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "mutated_key": "matrix",
+   "equivalent": true,
+   "label": "equivalent（无效变异）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-036.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "mutated_key": "matrix",
+   "equivalent": true,
+   "label": "equivalent（无效变异）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-037.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "mutated_key": "matrix",
+   "equivalent": true,
+   "label": "equivalent（无效变异）"
+  },
+  {
+   "card": "evidence/ub/EV-UB-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "mutated_key": "matrix",
+   "equivalent": true,
+   "label": "equivalent（无效变异）"
+  }
+ ]
+}

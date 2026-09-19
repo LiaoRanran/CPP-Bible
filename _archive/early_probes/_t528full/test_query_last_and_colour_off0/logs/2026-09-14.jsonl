@@ -1,0 +1,5 @@
+{"timestamp": "2026-09-14T10:00:00", "level": "INFO", "tool": "t", "trace_id": "batch-C", "surface": "operation", "message": "m0"}
+{"timestamp": "2026-09-14T10:00:01", "level": "INFO", "tool": "t", "trace_id": "batch-C", "surface": "operation", "message": "m1"}
+{"timestamp": "2026-09-14T10:00:02", "level": "INFO", "tool": "t", "trace_id": "batch-C", "surface": "operation", "message": "m2"}
+{"timestamp": "2026-09-14T10:00:03", "level": "INFO", "tool": "t", "trace_id": "batch-C", "surface": "operation", "message": "m3"}
+{"timestamp": "2026-09-14T10:00:04", "level": "INFO", "tool": "t", "trace_id": "batch-C", "surface": "operation", "message": "m4"}

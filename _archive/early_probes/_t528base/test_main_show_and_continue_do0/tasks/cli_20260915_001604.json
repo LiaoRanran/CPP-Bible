@@ -1,0 +1,19 @@
+{
+ "task_id": "cli_20260915_001604",
+ "type": "cli",
+ "description": "d",
+ "status": "in_progress",
+ "assigned_to": "unassigned",
+ "created_at": "2026-09-15T00:16:04",
+ "updated_at": "2026-09-15T00:16:04",
+ "current_step": 1,
+ "total_step": 2,
+ "steps_completed": [],
+ "steps_pending": [
+  "从第 2/2 步继续（见续跑提示词）"
+ ],
+ "context_summary": "s",
+ "artifacts": [],
+ "request_count": 0,
+ "request_limit": 500
+}

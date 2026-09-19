@@ -1,0 +1,297 @@
+{
+ "cards": [
+  "evidence/mem/EV-MEM-030.md",
+  "evidence/mem/EV-MEM-031.md",
+  "evidence/mem/EV-MEM-032.md"
+ ],
+ "operators": [
+  "M6"
+ ],
+ "variants": 12,
+ "blocked": 11,
+ "escaped": 1,
+ "n_a": 0,
+ "malformed": 0,
+ "out_of_scope": 0,
+ "equivalent": 1,
+ "strict_blocked": 8,
+ "strict_rate": 0.6667,
+ "treated_rate": 0.9167,
+ "rates": {
+  "judged": 12,
+  "n_a": 0,
+  "malformed": 0,
+  "strict": {
+   "numerator": 8,
+   "denominator": 12,
+   "point": 0.666667,
+   "cp_low": 0.348876,
+   "cp_high": 0.900754,
+   "conf": 0.95
+  },
+  "treated": {
+   "numerator": 11,
+   "denominator": 12,
+   "point": 0.916667,
+   "cp_low": 0.615204,
+   "cp_high": 0.997892,
+   "conf": 0.95
+  },
+  "escape": {
+   "numerator": 1,
+   "denominator": 12,
+   "point": 0.083333,
+   "cp_low": 0.002108,
+   "cp_high": 0.384796,
+   "conf": 0.95
+  },
+  "treated_all": {
+   "numerator": 11,
+   "denominator": 12,
+   "point": 0.916667,
+   "cp_low": 0.615204,
+   "cp_high": 0.997892,
+   "conf": 0.95
+  }
+ },
+ "by_operator_rates": {
+  "M6": {
+   "judged": 12,
+   "n_a": 0,
+   "strict": {
+    "numerator": 8,
+    "denominator": 12,
+    "point": 0.666667,
+    "cp_low": 0.348876,
+    "cp_high": 0.900754,
+    "conf": 0.95
+   },
+   "treated": {
+    "numerator": 11,
+    "denominator": 12,
+    "point": 0.916667,
+    "cp_low": 0.615204,
+    "cp_high": 0.997892,
+    "conf": 0.95
+   },
+   "escape": {
+    "numerator": 1,
+    "denominator": 12,
+    "point": 0.083333,
+    "cp_low": 0.002108,
+    "cp_high": 0.384796,
+    "conf": 0.95
+   }
+  }
+ },
+ "rate_flags": [
+  "M6：可判样本仅 12 < 59 ⇒ 样本不足；要宣称'逃逸率≤5%@95%'需补样至 n≥59"
+ ],
+ "by_operator": {
+  "M6": {
+   "blocked": 11,
+   "escaped": 1,
+   "n_a": 0
+  }
+ },
+ "by_card": {
+  "evidence/mem/EV-MEM-030.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-031.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-032.md": {
+   "blocked": 3,
+   "escaped": 1,
+   "n_a": 0
+  }
+ },
+ "elapsed_s": 12.91,
+ "ge_runs": 13,
+ "replay_runs": 0,
+ "replay_skipped": 0,
+ "escaped_list": [
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": [],
+   "equivalent": true
+  }
+ ],
+ "equivalent_keys": [
+  "evidence/mem/EV-MEM-032.md · M6 · 块式 → flow 写法（matrix）"
+ ],
+ "jobs": 1,
+ "parallel": false,
+ "results": [
+  {
+   "card": "evidence/mem/EV-MEM-030.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-030.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:evidence/mem/EV-MEM-030.md",
+    "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-030.md"
+   ],
+   "new_warn": [],
+   "equivalent": false
+  },
+  {
+   "card": "evidence/mem/EV-MEM-030.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-030.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-030.md"
+   ],
+   "equivalent": false
+  },
+  {
+   "card": "evidence/mem/EV-MEM-030.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-030.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:evidence/mem/EV-MEM-030.md"
+   ],
+   "new_warn": [],
+   "equivalent": false
+  },
+  {
+   "card": "evidence/mem/EV-MEM-030.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-030.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:evidence/mem/EV-MEM-030.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-030.md"
+   ],
+   "equivalent": false
+  },
+  {
+   "card": "evidence/mem/EV-MEM-031.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-031.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:evidence/mem/EV-MEM-031.md",
+    "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-031.md"
+   ],
+   "new_warn": [],
+   "equivalent": false
+  },
+  {
+   "card": "evidence/mem/EV-MEM-031.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-031.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-031.md"
+   ],
+   "equivalent": false
+  },
+  {
+   "card": "evidence/mem/EV-MEM-031.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-031.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:evidence/mem/EV-MEM-031.md"
+   ],
+   "new_warn": [],
+   "equivalent": false
+  },
+  {
+   "card": "evidence/mem/EV-MEM-031.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-031.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:evidence/mem/EV-MEM-031.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-031.md"
+   ],
+   "equivalent": false
+  },
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:evidence/mem/EV-MEM-032.md",
+    "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-032.md"
+   ],
+   "new_warn": [],
+   "equivalent": false
+  },
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:evidence/mem/EV-MEM-032.md"
+   ],
+   "equivalent": false
+  },
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:evidence/mem/EV-MEM-032.md"
+   ],
+   "new_warn": [],
+   "equivalent": false
+  },
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": [],
+   "equivalent": true
+  }
+ ]
+}

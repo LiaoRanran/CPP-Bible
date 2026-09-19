@@ -1,0 +1,860 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""cppbible.py — 《现代 C++ 终极圣经》统一工具链 CLI
+
+设计原则
+========
+- 只包装、不替代现有 tools/ 脚本，确保现有 CI/本地工作流零破坏。
+- 自动处理 Windows Git Bash POSIX 路径（/c/...）与 Windows 原生 Python 路径问题。
+- 所有子命令返回标准退出码：0 = 成功，非 0 = 失败。
+
+用法
+====
+    python tools/cppbible.py check                 # 本地秒级质量门禁
+    python tools/cppbible.py check --stage quality # 等价 CI quality job
+    python tools/cppbible.py build site            # 构建静态站点
+    python tools/cppbible.py clean                 # 清理构建副产物
+    python tools/cppbible.py install-hooks         # 安装 git pre-push hook
+    python tools/cppbible.py --version             # 显示工具链版本
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+from typing import Sequence
+
+# 工具链路径解析：唯一事实源 = 仓库根 toolchain.toml（见 tools/toolchain.py）
+_TOOLS_DIR = str(Path(__file__).resolve().parent)
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+from toolchain import resolve_gpp as _resolve_gpp  # noqa: E402
+from toolchain import resolve_python as _resolve_python  # noqa: E402
+from utf8_console import ensure_utf8  # noqa: E402
+
+
+# ---------------------------------------------------------------------------
+# 路径与配置发现
+# ---------------------------------------------------------------------------
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parent
+
+
+def _win_path_from_posix(path: str | Path) -> str:
+    """Git Bash /c/... -> C:/...，供 Windows 原生 Python/EXE 使用。"""
+    p = Path(path).as_posix()
+    if sys.platform == "win32" and len(p) >= 3 and p.startswith("/") and p[2] == "/":
+        # /c/foo -> C:/foo
+        drive = p[1].upper()
+        p = f"{drive}:{p[2:]}"
+    return p
+
+
+def find_managed_python() -> str:
+    """优先 .workbuddy 记忆，否则委托 toolchain.toml 唯一事实源（resolve_python）。"""
+    managed = ROOT / ".workbuddy" / "managed_python.txt"
+    if managed.exists():
+        exe = managed.read_text(encoding="utf-8").strip()
+        if Path(exe).exists():
+            return exe
+    return _resolve_python()
+
+
+def find_gcc() -> str:
+    """解析 g++：唯一事实源为仓库根 toolchain.toml（经 tools/toolchain.py）。
+
+    prefer 列表顺序探测（默认 mingw1530 → mingw1310），全缺失才回退 PATH。
+    换机器 / 换 CI 镜像只需编辑 toolchain.toml，不要改本文件。
+    """
+    return _resolve_gpp()
+
+
+PYTHON_EXE = find_managed_python()
+GCC_EXE = find_gcc()
+
+
+# ---------------------------------------------------------------------------
+# 底层执行 helpers
+# ---------------------------------------------------------------------------
+
+def _child_env() -> dict[str, str]:
+    """子进程环境：强制 stdio 用 UTF-8。
+
+    ``tools/`` 下 70+ 个脚本里只有少数几个做了 ``sys.stdout.reconfigure``，
+    其余在 Windows 中文控制台（GBK）打印 ✅/⟶ 时会抛 UnicodeEncodeError。
+    子进程 stdout 是管道，不受父进程 reconfigure 影响，且它在「写出前」就
+    已经崩了——父进程按 UTF-8 解码救不回来。这里注入 ``PYTHONIOENCODING``
+    一次性覆盖全部子脚本，避免逐个补 reconfigure。
+
+    只设 stdio，不设 ``PYTHONUTF8``：后者会改变 ``open()`` 默认编码与文件
+    系统编码，属于面更大的行为变更，不在本次修复范围内。
+    """
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8:replace"
+    return env
+
+
+def run(cmd: Sequence[str | Path], *, cwd: Path | None = None, check: bool = True, timeout: int | None = None) -> subprocess.CompletedProcess:
+    """统一封装 subprocess.run，输出命令本身便于调试。"""
+    cmd_str = [str(c) for c in cmd]
+    print(f"  $ {' '.join(cmd_str)}", flush=True)
+    # 子进程（tools/*.py 等）统一输出 UTF-8（见 _child_env）；这里显式按
+    # UTF-8 解码，与子进程编码端对齐，避免 Windows 中文控制台下门禁 runner
+    # 因编解码不一致而崩。
+    return subprocess.run(cmd_str, cwd=cwd or ROOT, check=check, text=True,
+                          encoding="utf-8", errors="replace",
+                          capture_output=True, timeout=timeout,
+                          env=_child_env())
+
+
+def run_python(script: str | Path, *args: str, check: bool = True) -> subprocess.CompletedProcess:
+    """用本工具链的 Python 执行 tools/ 下的脚本。"""
+    return run([PYTHON_EXE, str(script), *args], check=check)
+
+
+# ---------------------------------------------------------------------------
+# 子命令实现
+# ---------------------------------------------------------------------------
+
+def cmd_version(_args: argparse.Namespace) -> int:
+    """显示工具链版本与关键路径。"""
+    print("CPP-Bible Toolchain v1.0.0")
+    print(f"  ROOT      : {ROOT}")
+    print(f"  Python    : {PYTHON_EXE}")
+    print(f"  GCC       : {GCC_EXE}")
+    # 尝试获取 GCC 版本
+    try:
+        r = run([GCC_EXE, "--version"], check=False)
+        first = r.stdout.splitlines()[0] if r.stdout else "unknown"
+        print(f"  GCC ver   : {first}")
+    except Exception as e:
+        print(f"  GCC ver   : (无法调用: {e})")
+    print(f"  Platform  : {sys.platform}")
+    return 0
+
+
+def cmd_env(_args: argparse.Namespace) -> int:
+    """工具链自检：探测关键可执行文件与版本，缺失/不匹配即非零退出。
+
+    用于 bootstrap 与 CI 的 `self-check`：保证开发/测试/发布环境一致
+    （对应 UPGRADE_PLAN §1.5「dev/test/prod 平滑切换」）。
+    """
+
+    print("[cppbible] environment self-check")
+    failures = 0
+
+    def probe(label, name, expected=None, prefer=None):
+        nonlocal failures
+        # prefer 优先（toolchain.toml 同款策略）
+        for cand in (prefer or []):
+            if os.path.isfile(cand):
+                print(f"  [OK] {label}: {cand}")
+                return True
+        found = shutil.which(name)
+        if found:
+            ver = ""
+            try:
+                r = subprocess.run([found, "--version"], capture_output=True,
+                                   text=True, encoding="utf-8", errors="replace",
+                                   timeout=10)
+                ver = (r.stdout or r.stderr).splitlines()[0] if (r.stdout or r.stderr) else ""
+            except Exception:
+                pass
+            ok = (expected is None) or (expected in ver)
+            print(f"  [{'OK' if ok else 'MISMATCH'}] {label}: {found} {ver}")
+            if not ok:
+                failures += 1
+            return ok
+        print(f"  [FAIL] {label}: 未找到 {name}")
+        failures += 1
+        return False
+
+    probe("Python", "python", PYTHON_EXE and "3.", prefer=[str(PYTHON_EXE)] if PYTHON_EXE else None)
+    probe("GCC/g++", "g++", "15.3.0", prefer=[str(GCC_EXE)] if GCC_EXE else None)
+    probe("objdump", "objdump")
+    probe("c++filt", "c++filt")
+    probe("uv", "uv")
+    probe("git", "git")
+
+    print(f"  lock file: uv.lock={'存在' if (ROOT/'uv.lock').exists() else '缺失'}; "
+          f"requirements.lock.txt={'存在' if (ROOT/'requirements.lock.txt').exists() else '缺失'}")
+    if not (ROOT / "uv.lock").exists():
+        failures += 1
+
+    if failures:
+        print(f"\n[FAIL] env self-check: {failures} 项异常")
+        return 1
+    print("\n[OK] env self-check: 工具链完备")
+    return 0
+
+
+def cmd_check(args: argparse.Namespace) -> int:
+    """运行质量门禁。"""
+    stage = args.stage or "fast"
+    print(f"\n[cppbible] running check --stage={stage}\n")
+
+    # 508 任务4：可观测性入口——建 trace_id 并写一条**上下文面**日志（工具版本 / git HEAD /
+    # 参数）。各 gate 是子进程，会继承 `TRACE_ID` 环境变量，故一次
+    # `check --stage quality` 的全部 gate 日志可用同一 trace_id 串成一条链。
+    # 观测失败不得影响门禁（日志是旁路）。
+    try:
+        import observability as _obs
+        _obs.context_snapshot("cppbible", ["check", "--stage", stage])
+        print(f"[cppbible] trace_id={_obs.trace_id()}  日志: {_obs.log_file().name}")
+    except Exception:                                  # noqa: BLE001
+        pass
+
+    if stage == "fast":
+        gates = [
+            ("Preflight", [PYTHON_EXE, "tools/preflight_check.py"]),
+            ("Consistency", [PYTHON_EXE, "tools/consistency_check.py"]),
+            ("Cross-Reference", [PYTHON_EXE, "tools/crossref_audit.py"]),
+            ("Xref", [PYTHON_EXE, "tools/xref_check.py"]),
+            ("Index Freshness", [PYTHON_EXE, "tools/gen_indexes.py", "--check"]),
+            ("Density", [PYTHON_EXE, "tools/density_audit.py", "--check", "20"]),
+            ("Whitespace", [PYTHON_EXE, "tools/whitespace_fix.py", "--check"]),
+            ("Fence Sweep", [PYTHON_EXE, "tools/sweep_fences.py", "--check"]),
+            ("Terminology", [PYTHON_EXE, "tools/terminology_normalize.py", "--check"]),
+        ]
+    elif stage == "quality":
+        # 完整 quality job：调用 CI 中所有硬门禁（跳过咨询/软门禁）
+        gates = [
+            ("Preflight", [PYTHON_EXE, "tools/preflight_check.py"]),
+            ("Consistency", [PYTHON_EXE, "tools/consistency_check.py"]),
+            ("Cross-Reference", [PYTHON_EXE, "tools/crossref_audit.py"]),
+            ("Xref", [PYTHON_EXE, "tools/xref_check.py"]),
+            ("Index Freshness", [PYTHON_EXE, "tools/gen_indexes.py", "--check"]),
+            ("Density", [PYTHON_EXE, "tools/density_audit.py", "--check", "20"]),
+            ("D5 Appendix", [PYTHON_EXE, "tools/d5_appendix_audit.py"]),
+            ("D5 Source Integrity", [PYTHON_EXE, "tools/d5_source_integrity.py", "--check"]),
+            ("Terminology", [PYTHON_EXE, "tools/terminology_normalize.py", "--check"]),
+            ("Exercise Dup", [PYTHON_EXE, "tools/exercise_dup_guard.py"]),
+            ("ASM Evidence", [PYTHON_EXE, "tools/verify_asm_evidence.py", "--root", "Book", "--examples", "Examples"]),
+            ("Book ASM Freshness", [PYTHON_EXE, "tools/book_asm_freshness.py"]),
+            ("Structure", [PYTHON_EXE, "tools/structure_audit.py", "--check"]),
+            ("Atom Coverage", [PYTHON_EXE, "tools/atom_coverage_map.py", "--check",
+                               "--check-doc"]),
+            ("Evidence Replay", [PYTHON_EXE, "tools/atom_evidence_replay.py", "--check"]),
+            ("Gate Engine", [PYTHON_EXE, "tools/gate_engine.py", "--check"]),
+            ("Golden Lock", [PYTHON_EXE, "tools/golden_lock.py", "check"]),
+            ("Debt Ledger", [PYTHON_EXE, "tools/debt_ledger.py", "check"]),
+            ("Poison Drill", [PYTHON_EXE, "tools/poison_drill.py"]),
+            ("Fence Sweep", [PYTHON_EXE, "tools/sweep_fences.py", "--check"]),
+            ("Whitespace", [PYTHON_EXE, "tools/whitespace_fix.py", "--check"]),
+            ("S10 Verify", [PYTHON_EXE, "tools/s10_verify_mark.py", "--check"]),
+            ("Book Link Integrity", [PYTHON_EXE, "tools/fix_book_links.py", "--check"]),
+            # 373 §5（2026-09-13）收编：Book ↔ 原子双向同步（孤立脚本入库并登记双清单）
+            ("Book-Atom Sync", [PYTHON_EXE, "tools/book_atom_sync.py", "--check"]),
+            # 413 Writer 自检层（420）：提交红队前拦 E1/E2 机械错误（存量 0 fail 基线）
+            ("Writer Selfcheck", [PYTHON_EXE, "tools/writer_selfcheck.py", "--all"]),
+            # 494 任务 6：对抗回归看板（实跑最新轮探针 + 转述其自述判定 + 校验回归锁映射）。
+            # 注：`_adv_v*/` 是 untracked 沙箱 ⇒ CI/新克隆上无探针，工具自动空转 exit 0；
+            # 本地（有沙箱）才有判定价值。skip ≠ pass：由工具自行计数并打印。
+            ("Adversarial Regression", [PYTHON_EXE, "tools/adversarial_regression.py"]),
+            # 498 任务 3：核心工具完整性（5 个工具 sha256 基准；缺基准 exit 2 不静默放行）
+            ("Tool Integrity", [PYTHON_EXE, "tools/tool_integrity.py"]),
+        ]
+    elif stage == "compile":
+        gates = [
+            ("Compile All", [PYTHON_EXE, "tools/compile_all.py", "--main-only", "--parallel"]),
+            ("Compile Gate", [PYTHON_EXE, "tools/compile_gate.py"]),
+            ("Exempt Audit", [PYTHON_EXE, "tools/exempt_audit.py", "--check"]),
+            ("D5 Compile Gate", [PYTHON_EXE, "tools/d5_compile_gate.py", "--check"]),
+            ("Assertions", [PYTHON_EXE, "tools/run_cpp_assertions.py", "--gcc", GCC_EXE]),
+        ]
+    else:
+        print(f"Unknown stage: {stage}")
+        return 2
+
+    passed = 0
+    failed = 0
+    for name, cmd in gates:
+        print(f"\n[{name}]")
+        try:
+            run(cmd, check=True)
+            print(f"  ✅ {name} PASS")
+            passed += 1
+        except subprocess.CalledProcessError as e:
+            print(f"  ❌ {name} FAIL")
+            # 527 任务A：先打**失败摘要**（含 ❌/FAIL/Traceback 的行），再打尾部。
+            # 只打尾部 800 字符时，像 poison 那样 80+ 行的输出会把真正失败的那行
+            # （在输出中段）截掉——527 定位"quality 里 Poison FAIL、单跑却绿"时，
+            # 恰恰卡在这里只能靠另写复现脚本才拿到证据。
+            for stream in (e.stdout, e.stderr):
+                digest = _fail_digest(stream)
+                if digest:
+                    print(digest)
+            if e.stdout:
+                print(e.stdout[-800:])
+            if e.stderr:
+                print(e.stderr[-800:])
+            failed += 1
+
+    # 508 任务7：quality 的**最后一步**自动备份关键数据（质量基线 / 度量序列 / 知识图谱 /
+    # 工件台账）。放在最后是刻意的：此刻基线类文件刚被上面的步骤读/写过，快照最贴近
+    # "这次门禁看到的状态"。**失败绝不影响门禁结论**（备份是安全网，不是判据）——
+    # 只打印一行提示，不改 return 码。
+    if stage == "quality":
+        try:
+            import backup as _bk
+            d = _bk.snapshot()
+            import json as _json
+            m = _json.loads((d / _bk.MANIFEST).read_text(encoding="utf-8"))
+            print(f"\n[cppbible] 已备份 {len(m['files'])} 个关键数据文件 → "
+                  f"{d.relative_to(ROOT).as_posix()}")
+        except Exception as exc:                       # noqa: BLE001
+            print(f"\n[cppbible] ⚠️ 备份跳过（不影响门禁）：{type(exc).__name__}: {exc}")
+
+    print("\n────────────────────────────────────────")
+    print(f"  Result: {passed} passed / {failed} failed")
+    print("────────────────────────────────────────")
+    return 1 if failed else 0
+
+
+_FAIL_MARKERS = ("❌", "FAIL", "Traceback", "error:", "Error:", "infra_error",
+                 "漏网", "未覆盖", "✗")
+
+
+def _fail_digest(text: str, limit: int = 12) -> str:
+    """从失败步骤的输出里挑出**信号行**（含 ❌/FAIL/Traceback 等），供 CI 一眼定位。
+
+    527 任务A 的教训：只打印输出尾部时，中段的失败行会被截掉，于是"哪个样例失败、
+    为什么失败"在日志里根本看不到——根因排查被迫另写复现脚本。
+    """
+    if not text:
+        return ""
+    rows: list[str] = []
+    for ln in text.splitlines():
+        s = ln.rstrip()
+        if any(m in s for m in _FAIL_MARKERS):
+            rows.append("      " + s.strip()[:200])
+        if len(rows) >= limit:
+            rows.append("      …（更多信号行已省略）")
+            break
+    return "  ── 失败摘要 ──\n" + "\n".join(rows) if rows else ""
+
+
+def cmd_build(args: argparse.Namespace) -> int:
+    """构建发布产物。"""
+    target = args.target
+    print(f"\n[cppbible] build {target}\n")
+    if target == "site":
+        run_python("tools/rewrite_links.py", "--mode", "site")
+        run_python("tools/gen_mkdocs_nav.py")
+        return run(["mkdocs", "build", "--strict", "--config-file", "build/site/mkdocs.yml"]).returncode
+    elif target == "pdf":
+        run_python("tools/rewrite_links.py", "--mode", "pdf")
+        return run(["bash", "tools/generate_pdf.sh", "--by-part"]).returncode
+    elif target == "epub":
+        run_python("tools/rewrite_links.py", "--mode", "pdf")
+        return run(["bash", "tools/generate_epub.sh"]).returncode
+    else:
+        print(f"Unknown build target: {target}")
+        return 2
+
+
+def cmd_clean(_args: argparse.Namespace) -> int:
+    """清理构建副产物与根目录泄漏。"""
+    print("\n[cppbible] clean\n")
+    # 1. 调用现有清理脚本
+    if (ROOT / "tools" / "clean_root_artifacts.py").exists():
+        run_python("tools/clean_root_artifacts.py")
+
+    # 2. 清理 build/ 下的临时日志/轮询文件（保留 site_out/ pdf/ epub/ 等发布产物）
+    build = ROOT / "build"
+    if build.exists():
+        removed = 0
+        for pattern in ["_ci_poll*.log", "_compile_job.log", "_intake_*.log", "*.log"]:
+            for p in build.glob(pattern):
+                p.unlink()
+                removed += 1
+        print(f"  Removed {removed} build scratch log(s)")
+
+    # 3. 清理根目录编译产物（未被 git 跟踪）
+    root_removed = 0
+    for ext in ["*.cpp", "*.exe", "*.o", "*.obj"]:
+        for p in ROOT.glob(ext):
+            r = subprocess.run(["git", "ls-files", "--error-unmatch", str(p)], capture_output=True)
+            if r.returncode != 0:  # 未跟踪
+                p.unlink()
+                root_removed += 1
+    print(f"  Removed {root_removed} untracked root artifact(s)")
+    return 0
+
+
+def cmd_install_hooks(_args: argparse.Namespace) -> int:
+    """安装 git pre-push hook。"""
+    hooks_dir = ROOT / ".git" / "hooks"
+    if not hooks_dir.exists():
+        print("Error: .git/hooks not found. Are you in a git repo?")
+        return 1
+
+    hook = hooks_dir / "pre-push"
+    # Git hook 需要正斜杠路径，即便在 Windows 上
+    python_posix = Path(PYTHON_EXE).as_posix()
+    root_posix = ROOT.as_posix()
+    content = f"""#!/bin/sh
+# Auto-installed by cppbible install-hooks
+exec "{python_posix}" "{root_posix}/tools/cppbible.py" preflight
+"""
+    hook.write_text(content, encoding="utf-8", newline="\n")
+    # POSIX 系统加执行权限；Windows Git 忽略权限但仍可执行
+    if sys.platform != "win32":
+        hook.chmod(hook.stat().st_mode | 0o111)
+    print(f"Installed pre-push hook: {hook}")
+    return 0
+
+
+def cmd_preflight(_args: argparse.Namespace) -> int:
+    """推送前快速预检（等价原 pre_push_check.sh 7 项 + data_sanity 第 8 项）。"""
+    print("\n[cppbible] preflight (push guard)\n")
+    checks = [
+        ("Consistency", [PYTHON_EXE, "tools/consistency_check.py"]),
+        ("Cross-Ref", [PYTHON_EXE, "tools/crossref_audit.py"]),
+        ("Deduplication", [PYTHON_EXE, "tools/deduplication_audit.py"]),
+        ("Chapter Lint HIGH", [PYTHON_EXE, "tools/chapter_lint.py", "--fail-on", "HIGH"]),
+        ("ASM Evidence", [PYTHON_EXE, "tools/verify_asm_evidence.py"]),
+        # data_sanity 第 8 项：HEX_QUANTITY（十六进制污染）经 ABI 豁免后零误报，
+        # --fail-on ERROR 只拦 ERROR，PERF_CONFLICT/UNANCHORED_EVIDENCE 为 WARN 不阻断。
+        ("Data Sanity (HEX)", [PYTHON_EXE, "tools/data_sanity_audit.py", "--fail-on", "ERROR"]),
+        # 标题截断污染已清零（60fb2c8），门禁防回归：新增截断即阻断
+        ("Caption Truncation", [PYTHON_EXE, "tools/caption_truncation_audit.py", "--check"]),
+        # 错误左移补充：LaTeX 致命反斜杠 + 行尾卫生（秒级，与 CI quality 一致）
+        ("Preflight (LaTeX)", [PYTHON_EXE, "tools/preflight_check.py"]),
+        ("Whitespace", [PYTHON_EXE, "tools/whitespace_fix.py", "--check"]),
+    ]
+
+    passed = 0
+    failed = 0
+
+    # 卫生检查：只关注未跟踪的泄漏产物；已跟踪的 _bench_d5_*.cpp 等是合法源
+    bak = list((ROOT / "Book").rglob("*.bak"))
+    probes = [p for p in (ROOT / "tools").glob("_*.py") if p.name != "_clean_junk.py"]
+    root_arts = []
+    for ext in ["*.cpp", "*.exe", "*.o"]:
+        for p in ROOT.glob(ext):
+            r = subprocess.run(["git", "ls-files", "--error-unmatch", str(p)], capture_output=True)
+            if r.returncode != 0:  # 未跟踪才视为泄漏产物
+                root_arts.append(p)
+    if not bak and not probes and not root_arts:
+        print("  [Hygiene] ✅")
+        passed += 1
+    else:
+        print(f"  [Hygiene] ❌ .bak={len(bak)} probes={len(probes)} untracked_root_artifacts={len(root_arts)}")
+        failed += 1
+
+    # 断言缓存
+    cache = ROOT / "build" / "assert_report.txt"
+    if cache.exists() and "FAIL-CLAIM] 0" in cache.read_text(encoding="utf-8"):
+        print("  [Assertions] ✅ (cache FAIL=0)")
+        passed += 1
+    else:
+        print("  [Assertions] ⚠️  cache missing or FAIL>0; run: cppbible check --stage compile")
+        # 断言缓存不阻断预检，仅警告
+
+    # 度量看板：每次推送重新生成 build/metrics.json（单一真相源）并打印 15 条验收看板。
+    # 非阻塞（与 Assertions 同款）：当前 14/15 未达标，若启用 --strict 会阻断全部真实
+    # 工作；待指标接近达标后再于此处加 --strict 升级为 blocking 门禁。
+    print("\n[Metrics]")
+    try:
+        r = run([PYTHON_EXE, "tools/metrics_snapshot.py", "--check"], check=True)
+        if r.stdout:
+            print(r.stdout, end="")
+        print("  ✅ Metrics snapshot OK (build/metrics.json regenerated)")
+    except subprocess.CalledProcessError as e:
+        print("  ⚠️  Metrics snapshot failed to run (non-blocking)")
+        if e.stdout:
+            print(e.stdout, end="")
+        if e.stderr:
+            print(e.stderr[-500:])
+
+    for name, cmd in checks:
+        print(f"\n[{name}]")
+        try:
+            run(cmd, check=True)
+            print(f"  ✅ {name} PASS")
+            passed += 1
+        except subprocess.CalledProcessError as e:
+            print(f"  ❌ {name} FAIL")
+            if e.stderr:
+                print(e.stderr[-500:])
+            failed += 1
+
+    # 报告型提示（非阻断）：编造轶事嫌疑 + 数据 WARN，仅供 push 前人工扫一眼
+    print("\n[Report-type hints (non-blocking)]")
+    for name, cmd in [
+        ("Teaching (anecdote)", [PYTHON_EXE, "tools/teaching_audit.py", "--porcelain"]),
+        ("Data Sanity WARN", [PYTHON_EXE, "tools/data_sanity_audit.py", "--porcelain"]),
+    ]:
+        try:
+            r = run(cmd, check=False)
+            lines = [ln for ln in (r.stdout or "").splitlines() if ln.strip()]
+            # porcelain 第三段是类别；已复核豁免（PERF_REVIEWED）单列，避免误读为待复核
+            n_reviewed = sum(1 for ln in lines if ":PERF_REVIEWED:" in ln)
+            n = len(lines) - n_reviewed
+            extra = f"，另有 {n_reviewed} 条已复核豁免" if n_reviewed else ""
+            print(f"  [{name}] {n} 条提示{extra}（不阻断，人工复核）")
+        except Exception:
+            print(f"  [{name}] ⚠️ 无法运行")
+
+    print(f"\nResult: {passed} passed / {failed} failed")
+    return 1 if failed else 0
+
+
+def cmd_report(_args: argparse.Namespace) -> int:
+    """汇总并归集各门禁报告到 build/reports/（T4 归集器 + M1 版式守门员）。
+
+    非阻塞：仅产出可见性报告，不 fail CI。源报告 writer 不动，避免回归。
+    """
+    print("\n[cppbible] report (collect + style audit)\n")
+
+    # 1) M1 版式守门员：生成 build/markdown_style_report.json（仅报告）
+    style_report = ROOT / "build" / "markdown_style_report.json"
+    try:
+        run([PYTHON_EXE, "tools/markdown_style_guard.py", "--root", "Book",
+             "--json", str(style_report)], check=True)
+        print("  ✅ markdown_style_guard 完成（非阻塞，详见报告）")
+    except subprocess.CalledProcessError as e:
+        print(f"  ⚠️  markdown_style_guard 异常（不阻断）: {e}")
+
+    # 2) T4 归集：散落报告 -> build/reports/ + INDEX.json
+    reports_out = ROOT / "build" / "reports"
+    try:
+        run([PYTHON_EXE, "tools/collect_reports.py", "--root", str(ROOT),
+             "--out", str(reports_out)], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"  ⚠️  collect_reports 异常（不阻断）: {e}")
+
+    # 3) 摘要
+    if reports_out.exists():
+        idx = reports_out / "INDEX.json"
+        n = 0
+        if idx.exists():
+            data = json.loads(idx.read_text(encoding="utf-8"))
+            n = len(data.get("reports", {}))
+        files = sorted(reports_out.glob("*.json"))
+        print(f"\n  build/reports/ 共 {n} 个报告条目（物理文件 {len(files)}）:")
+        for f in files[:25]:
+            print(f"    - {f.name}")
+        if len(files) > 25:
+            print(f"    ... and {len(files)-25} more")
+    return 0
+
+
+def _compile_extra_args(args: argparse.Namespace, *, changed: bool) -> list:
+    """Build compile_all.py args for the chosen scope."""
+    extra = ["--main-only"]
+    if changed:
+        extra.append("--changed")
+        base = getattr(args, "base", None)
+        if base:
+            extra += ["--base", base]
+    if getattr(args, "parallel", False):
+        extra.append("--parallel")
+    return extra
+
+
+def cmd_impact(args: argparse.Namespace) -> int:
+    """上游/下游依赖遍历（425，415 L2 最小闭环）：改一颗原子前先看谁依赖它。
+
+    依赖 = prerequisite/specializes/realizes；contrasts/see_also 等为引用、不构成依赖。
+    零风险：只读 relations。实现单点在 tools/impact_analysis.py。
+    """
+    cmd = [PYTHON_EXE, "tools/impact_analysis.py", args.direction, args.atom_id]
+    if args.json:
+        cmd.append("--json")
+    try:
+        r = run(cmd, check=False)
+    except FileNotFoundError:
+        print("  ❌ tools/impact_analysis.py 不可用")
+        return 1
+    if r.stdout:
+        print(r.stdout, end="")
+    if r.stderr:
+        print(r.stderr, end="")
+    return r.returncode
+
+
+def cmd_task(args: argparse.Namespace) -> int:
+    """任务状态文件（494 任务 7 / 492 §4）：断点续跑——把参数透传给 tools/task_state.py。
+
+    实现单点在 task_state.py；本命令只做转发（与 impact/cost/flashcards 同款）。
+    状态写在 data/tasks/（已 gitignore）：运行时状态不入库。
+    """
+    cmd = [PYTHON_EXE, "tools/task_state.py", args.sub]
+    if args.sub in ("update", "continue-prompt", "show"):
+        if not args.task_id:
+            print("  ❌ update/continue-prompt/show 需要 task_id")
+            return 1
+        cmd.append(args.task_id)
+    for flag, val in (("--type", args.type), ("--desc", args.desc),
+                      ("--total", args.total), ("--assigned-to", args.assigned_to),
+                      ("--step", args.step), ("--summary", args.summary),
+                      ("--request-count", args.request_count),
+                      ("--pending", args.pending)):
+        if val is not None:
+            cmd += [flag, str(val)]
+    for art in args.artifact or []:
+        cmd += ["--artifact", art]
+    if args.done:
+        cmd.append("--done")
+    if getattr(args, "needs_continue", False):
+        cmd.append("--needs-continue")
+    try:
+        r = run(cmd, check=False)
+    except FileNotFoundError:
+        print("  ❌ tools/task_state.py 不可用")
+        return 1
+    if r.stdout:
+        print(r.stdout, end="")
+    if r.stderr:
+        print(r.stderr, end="")
+    return r.returncode
+
+
+def cmd_trace(args: argparse.Namespace) -> int:
+    """结构化操作日志（498 任务 4 / 497）：转发给 tools/trace_logger.py（实现单点）。"""
+    cmd = [PYTHON_EXE, "tools/trace_logger.py", args.sub]
+    if args.sub == "log":
+        for flag, val in (("--actor", args.actor), ("--action", args.action),
+                          ("--target", args.target), ("--result", args.result),
+                          ("--details", args.details)):
+            if val is not None:
+                cmd += [flag, val]
+    else:                                  # read
+        if args.date:
+            cmd += ["--date", args.date]
+        if args.action:
+            cmd += ["--action", args.action]
+        if args.fail_only:
+            cmd.append("--fail-only")
+    try:
+        r = run(cmd, check=False)
+    except FileNotFoundError:
+        print("  ❌ tools/trace_logger.py 不可用")
+        return 1
+    if r.stdout:
+        print(r.stdout, end="")
+    if r.stderr:
+        print(r.stderr, end="")
+    return r.returncode
+
+
+def cmd_cost(args: argparse.Namespace) -> int:
+    """成本追踪（421）：report/cpva，只记录只读，不改生产逻辑。"""
+    cmd = [PYTHON_EXE, "tools/cost_tracker.py", args.sub]
+    if getattr(args, "atom", None):
+        cmd += ["--atom", args.atom]
+    if args.json:
+        cmd.append("--json")
+    r = run(cmd, check=False)
+    if r.stdout:
+        print(r.stdout, end="")
+    if r.stderr:
+        print(r.stderr, end="")
+    return r.returncode
+
+
+def cmd_mutation(args: argparse.Namespace) -> int:
+    """自动变异器（539 Part B / 548 Part 0）：对真实卡批量变异，找毒样例没覆盖的新逃逸。
+
+    escaped 是本工具的**产物**不是红灯 ⇒ 默认恒 0；要当红灯用请显式 `--fail-on-escaped`。
+    """
+    cmd = [PYTHON_EXE, "tools/mutation_fuzz.py",
+           "--cards", "all" if args.all else args.cards,
+           "--operators", args.operators,
+           "--limit", str(args.limit),
+           "--report", args.report or args.out or "data/mutation/last.json"]
+    if args.fail_on_escaped:
+        cmd.append("--fail-on-escaped")
+    r = run(cmd, check=False)
+    if r.stdout:
+        print(r.stdout, end="")
+    if r.stderr:
+        print(r.stderr, end="")
+    return r.returncode
+
+
+def cmd_flashcards(args: argparse.Namespace) -> int:
+    """闪卡导出（423）：只读 atoms/misconceptions，输出 data/flashcards/。"""
+    cmd = [PYTHON_EXE, "tools/flashcard_export.py", args.sub]
+    if args.sub == "export":
+        cmd += ["--format", args.format]
+    if args.json:
+        cmd.append("--json")
+    r = run(cmd, check=False)
+    if r.stdout:
+        print(r.stdout, end="")
+    if r.stderr:
+        print(r.stderr, end="")
+    return r.returncode
+
+
+def cmd_compile(args: argparse.Namespace) -> int:
+    """Incremental/full compile of chapters (produces compile_report.json).
+
+    Default is incremental (--changed): only Book/*.md changed vs git base are
+    compiled; if nothing changed it auto-falls back to a full run.  The actual
+    regression gate (compile_gate.py) is a separate step/command so CI keeps an
+    explicit hard-fail gate; locally follow up with `cppbible check --stage compile`.
+    """
+    changed = not getattr(args, "full", False)  # 默认增量
+    scope = "changed (incremental)" if changed else "full"
+    print(f"\n[cppbible] compile --{scope}\n")
+    run([PYTHON_EXE, "tools/compile_all.py", *_compile_extra_args(args, changed=changed)],
+        check=True)
+    print("\n[cppbible] compile done -> tools/compile_report.json")
+    print("          下一步: cppbible check --stage compile  (含编译门禁)")
+    return 0
+
+
+def cmd_compile_changed(args: argparse.Namespace) -> int:
+    """Alias for `compile --changed`."""
+    args.full = False
+    return cmd_compile(args)
+
+
+# ---------------------------------------------------------------------------
+# CLI 入口
+# ---------------------------------------------------------------------------
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="cppbible",
+        description="CPP-Bible unified toolchain CLI",
+    )
+    parser.add_argument("--version", action="store_true", help="show version and paths")
+    sub = parser.add_subparsers(dest="command", metavar="COMMAND")
+
+    check = sub.add_parser("check", help="run quality/compile gates")
+    check.add_argument("--stage", choices=["fast", "quality", "compile"], default="fast",
+                       help="fast=local seconds, quality=full CI quality job, compile=compile job")
+
+    build_cmd = sub.add_parser("build", help="build site/pdf/epub")
+    build_cmd.add_argument("target", choices=["site", "pdf", "epub"])
+
+    sub.add_parser("clean", help="clean build artifacts and root leaks")
+    sub.add_parser("env", help="toolchain self-check (bootstrap/CI)")
+    sub.add_parser("install-hooks", help="install git pre-push hook")
+    sub.add_parser("preflight", help="pre-push local checks")
+    sub.add_parser("report", help="summarize build reports")
+
+    compile_cmd = sub.add_parser("compile", help="compile chapters (incremental/full)")
+    compile_cmd.add_argument("--changed", action="store_true",
+                             help="only changed chapters (default)")
+    compile_cmd.add_argument("--full", dest="full", action="store_true",
+                             help="all 151 chapters")
+    compile_cmd.add_argument("--base", default=None,
+                             help="git base ref for --changed")
+    compile_cmd.add_argument("--parallel", action="store_true",
+                             help="parallel by part")
+
+    compile_changed = sub.add_parser("compile-changed",
+                                     help="alias: compile --changed")
+    compile_changed.add_argument("--base", default=None)
+    compile_changed.add_argument("--parallel", action="store_true")
+
+    impact = sub.add_parser("impact", help="上游/下游依赖遍历（425：改原子前先看谁依赖它）")
+    impact.add_argument("direction", choices=["upstream", "downstream"])
+    impact.add_argument("atom_id", help="目标原子 id")
+    impact.add_argument("--json", action="store_true")
+
+    cost = sub.add_parser("cost", help="成本追踪（421：CPVA 基线）")
+    cost.add_argument("sub", choices=["report", "cpva"])
+    cost.add_argument("--atom", default=None)
+    cost.add_argument("--json", action="store_true")
+
+    mut = sub.add_parser("mutation", help="自动变异器（539/548）：找毒样例没覆盖的新逃逸")
+    mut.add_argument("--all", action="store_true", help="全量：所有证据卡 + 原子卡（= --cards all）")
+    mut.add_argument("--cards", default="all", help="卡选择：all 或相对仓库根的 glob")
+    mut.add_argument("--operators", default="M1,M2,M3,M4,M5,M6,M7", help="逗号分隔的算子")
+    mut.add_argument("--limit", type=int, default=5, help="最多处理多少张卡")
+    mut.add_argument("--report", default=None, help="JSON 报告落盘路径")
+    mut.add_argument("--out", default=None, help="--report 的别名（二者都给时以 --report 为准）")
+    mut.add_argument("--fail-on-escaped", action="store_true",
+                     help="有 escaped 即 exit 1（默认恒 0：escaped 是产物不是红灯）")
+
+    fc = sub.add_parser("flashcards", help="闪卡导出（423：原子+误解→Anki CSV）")
+    fc.add_argument("sub", choices=["export", "stats"])
+    fc.add_argument("--format", choices=["anki", "markdown", "both"], default="both")
+    fc.add_argument("--json", action="store_true")
+
+    task = sub.add_parser("task", help="任务状态文件（494/492 §4：断点续跑）")
+    task.add_argument("sub", choices=["create", "update", "continue-prompt", "show"])
+    task.add_argument("task_id", nargs="?", default=None, help="update/continue-prompt/show 用")
+    task.add_argument("--type", default=None)
+    task.add_argument("--desc", default=None)
+    task.add_argument("--total", type=int, default=None)
+    task.add_argument("--assigned-to", default=None)
+    task.add_argument("--step", default=None, help="形如 3/8")
+    task.add_argument("--summary", default=None)
+    task.add_argument("--artifact", action="append", default=[])
+    task.add_argument("--request-count", type=int, default=None)
+    task.add_argument("--pending", default=None)
+    task.add_argument("--done", action="store_true")
+    task.add_argument("--needs-continue", dest="needs_continue", action="store_true")
+
+    trace = sub.add_parser("trace", help="结构化操作日志（498/497：写入/读取 trace JSONL）")
+    trace.add_argument("sub", choices=["log", "read"])
+    trace.add_argument("--actor", default=None)
+    trace.add_argument("--action", default=None)
+    trace.add_argument("--target", default=None)
+    trace.add_argument("--result", default=None)
+    trace.add_argument("--details", default=None, help="JSON 对象字符串（仅 log）")
+    trace.add_argument("--date", default=None, help="仅 read：YYYY-MM-DD")
+    trace.add_argument("--fail-only", dest="fail_only", action="store_true")
+
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+
+    if args.version:
+        return cmd_version(args)
+    if args.command == "check":
+        return cmd_check(args)
+    if args.command == "build":
+        return cmd_build(args)
+    if args.command == "clean":
+        return cmd_clean(args)
+    if args.command == "env":
+        return cmd_env(args)
+    if args.command == "install-hooks":
+        return cmd_install_hooks(args)
+    if args.command == "preflight":
+        return cmd_preflight(args)
+    if args.command == "report":
+        return cmd_report(args)
+    if args.command == "compile":
+        return cmd_compile(args)
+    if args.command == "compile-changed":
+        return cmd_compile_changed(args)
+    if args.command == "impact":
+        return cmd_impact(args)
+    if args.command == "cost":
+        return cmd_cost(args)
+    if args.command == "mutation":
+        return cmd_mutation(args)
+    if args.command == "flashcards":
+        return cmd_flashcards(args)
+    if args.command == "task":
+        return cmd_task(args)
+    if args.command == "trace":
+        return cmd_trace(args)
+
+    parser.print_help()
+    return 0
+
+
+if __name__ == "__main__":
+    # Windows 中文控制台（GBK）无法编码 ✅/⟶ 等字符：统一按 UTF-8 输出，
+    # 避免门禁 runner 在打印时抛 UnicodeEncodeError（见审计报告 §5.1）。
+    ensure_utf8()
+    sys.exit(main())

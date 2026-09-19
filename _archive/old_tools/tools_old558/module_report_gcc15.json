@@ -1,0 +1,285 @@
+{
+  "gcc": "C:\\Qt\\Tools\\mingw1530_64\\bin\\g++.exe",
+  "chapters": [
+    {
+      "file": "ch11_compilers.md",
+      "path": "Book/part02_toolchain\\ch11_compilers.md",
+      "blocks": [
+        {
+          "block": 8,
+          "kind": "interface",
+          "name": "math",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 46,
+          "kind": "interface",
+          "name": "math",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 47,
+          "kind": "import",
+          "name": "std",
+          "is_std": true,
+          "ok": false,
+          "error": "compilation terminated."
+        },
+        {
+          "block": 48,
+          "kind": "interface",
+          "name": "math",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 49,
+          "kind": "import",
+          "name": "math",
+          "is_std": false,
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 59,
+          "kind": "interface",
+          "name": "demo",
+          "ok": true,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "file": "ch118_modules.md",
+      "path": "Book/part10_modern\\ch118_modules.md",
+      "blocks": [
+        {
+          "block": 1,
+          "kind": "interface",
+          "name": "math",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 2,
+          "kind": "import",
+          "name": "math",
+          "is_std": false,
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 3,
+          "kind": "interface",
+          "name": "A",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 4,
+          "kind": "interface",
+          "name": "lib",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 5,
+          "kind": "import",
+          "name": "std",
+          "is_std": true,
+          "ok": false,
+          "error": "compilation terminated."
+        },
+        {
+          "block": 6,
+          "kind": "import",
+          "name": "math",
+          "is_std": false,
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 7,
+          "kind": "interface",
+          "name": "big",
+          "ok": false,
+          "error": "compilation terminated."
+        },
+        {
+          "block": 8,
+          "kind": "interface",
+          "name": "legacy_wrap",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 9,
+          "kind": "interface",
+          "name": "networking",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 10,
+          "kind": "import",
+          "name": "std",
+          "is_std": true,
+          "ok": false,
+          "error": "compilation terminated."
+        },
+        {
+          "block": 14,
+          "kind": "interface",
+          "name": "m",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 15,
+          "kind": "interface",
+          "name": "tmpl",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 16,
+          "kind": "interface",
+          "name": "consts",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 24,
+          "kind": "interface",
+          "name": "big",
+          "ok": false,
+          "error": "compilation terminated."
+        },
+        {
+          "block": 25,
+          "kind": "interface",
+          "name": "big",
+          "ok": false,
+          "error": "      |     ^~~~"
+        },
+        {
+          "block": 28,
+          "kind": "interface",
+          "name": "calc",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 29,
+          "kind": "interface",
+          "name": "big",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 30,
+          "kind": "import",
+          "name": "std",
+          "is_std": true,
+          "ok": false,
+          "error": "compilation terminated."
+        },
+        {
+          "block": 31,
+          "kind": "interface",
+          "name": "wrap",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 32,
+          "kind": "interface",
+          "name": "tm",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 33,
+          "kind": "interface",
+          "name": "c",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 34,
+          "kind": "interface",
+          "name": "net",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 36,
+          "kind": "interface",
+          "name": "geom",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 37,
+          "kind": "interface",
+          "name": "lib",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 38,
+          "kind": "interface",
+          "name": "impl_only",
+          "ok": false,
+          "error": "compilation terminated."
+        },
+        {
+          "block": 40,
+          "kind": "interface",
+          "name": "mathc",
+          "ok": true,
+          "error": ""
+        }
+      ]
+    },
+    {
+      "file": "ch125_libcxx.md",
+      "path": "Book/part11_source\\ch125_libcxx.md",
+      "blocks": [
+        {
+          "block": 4,
+          "kind": "import",
+          "name": "std",
+          "is_std": true,
+          "ok": false,
+          "error": "compilation terminated."
+        }
+      ]
+    },
+    {
+      "file": "ch127_llvm.md",
+      "path": "Book/part11_source\\ch127_llvm.md",
+      "blocks": [
+        {
+          "block": 29,
+          "kind": "interface",
+          "name": "math_evolution",
+          "ok": true,
+          "error": ""
+        },
+        {
+          "block": 39,
+          "kind": "interface",
+          "name": "opt_bridge",
+          "ok": true,
+          "error": ""
+        }
+      ]
+    }
+  ],
+  "module_blocks": 35,
+  "ok": 26,
+  "fail": 9
+}

@@ -1,0 +1,241 @@
+{
+ "schema": "cppbible-golden-lock/1.0",
+ "updated": "2026-09-16",
+ "commit": "aa6cdb6",
+ "metrics": {
+  "block_findings": 0,
+  "warn_findings": 136,
+  "atoms_total": 27,
+  "evidence_total": 56,
+  "verified_atoms": 26,
+  "human_verified": 23,
+  "red_team_verified": 3,
+  "machine_verified": 0,
+  "dal_gap": 0,
+  "replay_confirm": 56,
+  "replay_infra_error": 0
+ },
+ "accepted": [
+  {
+   "ts": "2026-09-10T21:08:10",
+   "reason": "G4 样板 A 的配套证据卡 EV-MEM-002 服务于 ATOM-MEM-MOVE-002，该原子按 0.1 阶段门需人审通过后才锻造；EV-SERVES-EXIST 的 warn 是预期中间态（规则自身注明 G4 锻造该原子后此债自动清零）。按门制不得提前原子化，故显式接受 warn_findings 1->2，待样板 A 人审通过原子化后自动归零",
+   "worse": [
+    "warn_findings: 1 → 2"
+   ]
+  },
+  {
+   "ts": "2026-09-10T21:27:23",
+   "reason": "原子化 ATOM-MEM-MOVE-002 后的预期中间态：① 该原子 relations 指向尚未锻造的 ATOM-MEM-VALUE-001 / ATOM-MEM-PERF-001，ATOM-REL-TARGET 规则自注『尚未锻造的先记债』，属 G5 迁移前债务；② EV-MEM-002 的 EV-SERVES-EXIST 债已因原子化自动清零（规则自注行为）。净 warn 2->3，显式接受",
+   "worse": [
+    "warn_findings: 2 → 3"
+   ]
+  },
+  {
+   "ts": "2026-09-10T21:54:44",
+   "reason": "G4 样板 B 的配套证据卡 EV-UB-001 / EV-UB-002 服务于 ATOM-UB-GRAY-001，该原子按 0.1 阶段门需人审通过后才锻造；EV-SERVES-EXIST 的 warn 是预期中间态（规则自注 G4 锻造该原子后此债自动清零）。按门制不得提前原子化，显式接受 warn_findings 3->5",
+   "worse": [
+    "warn_findings: 3 → 5"
+   ]
+  },
+  {
+   "ts": "2026-09-10T22:43:11",
+   "reason": "G4 样板 C 的配套证据卡 EV-HIST-001 / EV-MEM-003 服务于 ATOM-HIST-AUTOPTR-001，该原子按 0.1 阶段门需人审通过后才锻造；EV-SERVES-EXIST 的 warn 是预期中间态（规则自注 G4 锻造该原子后此债自动清零）。按门制不得提前原子化，显式接受 warn_findings 5->7",
+   "worse": [
+    "warn_findings: 5 → 7"
+   ]
+  },
+  {
+   "ts": "2026-09-11T00:41:57",
+   "reason": "EV-MEM-004/005 的 serves 指向 ATOM-MEM-RVREF-001（G5 MEM 域第一批，此刻在 goldens/ 待人审、尚未锻造）。这是 G5 流水线必然的中间态：证据先于原子入库；原子化后 EV-SERVES-EXIST 债自动清零（此前 A/B/C 三样板均如此）。",
+   "worse": [
+    "warn_findings: 5 → 7"
+   ]
+  },
+  {
+   "ts": "2026-09-11T12:10:23",
+   "reason": "G5 MEM 批量生产 VALUE-001：EV-MEM-006/007 服务 goldens/ 草稿 VALUE-001，EV-SERVES-EXIST 属预期债务，原子化(草稿移 atoms/)后清零，同 RVREF-001 流程",
+   "worse": [
+    "warn_findings: 5 → 7"
+   ]
+  },
+  {
+   "ts": "2026-09-11T12:15:34",
+   "reason": "G5 MEM 批量生产 PERF-001：EV-MEM-008 及 EV-MEM-001/002(扩展 serves) 服务 goldens/ 草稿 PERF-001，EV-SERVES-EXIST 属预期债务，原子化清零，同 RVREF-001 流程",
+   "worse": [
+    "warn_findings: 7 → 10"
+   ]
+  },
+  {
+   "ts": "2026-09-11T12:21:35",
+   "reason": "G5 MEM 批量生产 RAII-001：EV-MEM-009/010 服务 goldens/ 草稿 RAII-001，EV-SERVES-EXIST 属预期债务，原子化清零，同 RVREF-001 流程",
+   "worse": [
+    "warn_findings: 10 → 12"
+   ]
+  },
+  {
+   "ts": "2026-09-11T12:24:50",
+   "reason": "G5 MEM 批量生产 UNIQUE-001：EV-MEM-011/012 服务 goldens/ 草稿 UNIQUE-001，EV-SERVES-EXIST 属预期债务，原子化清零，同 RVREF-001 流程",
+   "worse": [
+    "warn_findings: 12 → 14"
+   ]
+  },
+  {
+   "ts": "2026-09-11T12:27:58",
+   "reason": "G5 MEM 批量生产 SHARED-001：EV-MEM-013/014 服务 goldens/ 草稿 SHARED-001，EV-SERVES-EXIST 属预期债务，原子化清零，同 RVREF-001 流程",
+   "worse": [
+    "warn_findings: 14 → 16"
+   ]
+  },
+  {
+   "ts": "2026-09-11T12:31:16",
+   "reason": "G5 MEM 批量生产 WEAK-001：EV-MEM-015/016 服务 goldens/ 草稿 WEAK-001，EV-SERVES-EXIST 属预期债务，原子化清零，同 RVREF-001 流程",
+   "worse": [
+    "warn_findings: 16 → 18"
+   ]
+  },
+  {
+   "ts": "2026-09-11T12:37:14",
+   "reason": "G5 MEM 批量生产 NEW-001：EV-MEM-017/018 服务 goldens/ 草稿 NEW-001，EV-SERVES-EXIST 属预期债务，原子化清零，同 RVREF-001 流程",
+   "worse": [
+    "warn_findings: 18 → 20"
+   ]
+  },
+  {
+   "ts": "2026-09-11T12:48:36",
+   "reason": "G5 MEM 批量生产 ALIGN-001：EV-MEM-019/020 服务 goldens/ 草稿 ALIGN-001，EV-SERVES-EXIST 属预期债务，原子化清零，同 RVREF-001 流程",
+   "worse": [
+    "warn_findings: 20 → 22"
+   ]
+  },
+  {
+   "ts": "2026-09-11T22:44:35",
+   "reason": "S6 新增 P4-P7 四条 warn 规则（判别力类）；命中 4 张历史卡 falsification 无量化取值（真债，列入下批修订）",
+   "worse": [
+    "warn_findings: 4 → 8"
+   ]
+  },
+  {
+   "ts": "2026-09-11T23:28:45",
+   "reason": "PERF-003 新增两卡（evidence/replay +2）；warn +2 为判别力类预期债（EV-FALSIFICATION-QUANT 等对历史卡的持续可见）",
+   "worse": [
+    "warn_findings: 8 → 10"
+   ]
+  },
+  {
+   "ts": "2026-09-12T09:43:50",
+   "reason": "第五批：ALLOC-002 统一口径重写 + LEAK-002 观测反转 + PERF-004 处置登记",
+   "worse": [
+    "warn_findings: 10 → 15"
+   ]
+  },
+  {
+   "ts": "2026-09-13T10:05:33",
+   "reason": "373 修复批新规则暴露存量真债(SERVES/REL-TARGET/OUT-KEY/ASSERT/MATRIX)，叠加本次 P1b 注释剥离引入 1 条良性 warn(EV-MEM-035 absent lock)；S4 认可权唯人，Agent 显式接受留痕",
+   "worse": [
+    "warn_findings: 8 → 32"
+   ],
+   "metrics_after": {
+    "block_findings": 0,
+    "warn_findings": 32,
+    "atoms_total": 27,
+    "evidence_total": 56,
+    "verified_atoms": 26,
+    "human_verified": 23,
+    "red_team_verified": 3,
+    "machine_verified": 0,
+    "dal_gap": 0,
+    "replay_confirm": 56,
+    "replay_infra_error": 0
+   },
+   "commit": "3f72548",
+   "dirty": true
+  },
+  {
+   "ts": "2026-09-14T23:54:11",
+   "reason": "批次E claim_structured STAGING 对存量20卡warn，基线32→54",
+   "worse": [
+    "warn_findings: 32 → 54"
+   ],
+   "metrics_after": {
+    "block_findings": 0,
+    "warn_findings": 54,
+    "atoms_total": 27,
+    "evidence_total": 56,
+    "verified_atoms": 26,
+    "human_verified": 23,
+    "red_team_verified": 3,
+    "machine_verified": 0,
+    "dal_gap": 0,
+    "replay_confirm": 56,
+    "replay_infra_error": 0
+   },
+   "commit": "1cd675a",
+   "dirty": true
+  },
+  {
+   "ts": "2026-09-15T11:18:22",
+   "reason": "528收工：warn 54->59全为预期漂移（任务1回填关系/证据债+任务3命题级精度债），非内容退化",
+   "worse": [
+    "warn_findings: 54 → 59"
+   ],
+   "metrics_after": {
+    "block_findings": 0,
+    "warn_findings": 59,
+    "atoms_total": 27,
+    "evidence_total": 56,
+    "verified_atoms": 26,
+    "human_verified": 23,
+    "red_team_verified": 3,
+    "machine_verified": 0,
+    "dal_gap": 0,
+    "replay_confirm": 56,
+    "replay_infra_error": 0
+   },
+   "commit": "1b0232d",
+   "dirty": true
+  },
+  {
+   "ts": "2026-09-16T22:24:38",
+   "reason": "557人审：warn59->136分类留痕（迁移债105 legacy+MATRIX保守accepted16+真信号real12+关系/serves legacy3）；MATRIX 7条(b)真缺支撑仍在gate warn可见",
+   "classify": {
+    "ATOM-CLAIM-CONCEPT-NORMALIZED": "legacy",
+    "INFERENCE-NOT-MACHINE-VERIFIED": "legacy",
+    "EV-MATRIX-UNBACKED": "accepted",
+    "EV-OUT-UNDECLARED-KEY": "real",
+    "EV-FALSIFICATION-QUANT": "real",
+    "EV-ASSERT-SYMBOL-MAPPED": "real",
+    "ATOM-REL-TARGET": "legacy",
+    "EV-SERVES-EXIST": "legacy"
+   },
+   "worse": [
+    "warn_findings: 59 → 136"
+   ],
+   "metrics_after": {
+    "block_findings": 0,
+    "warn_findings": 136,
+    "atoms_total": 27,
+    "evidence_total": 56,
+    "verified_atoms": 26,
+    "human_verified": 23,
+    "red_team_verified": 3,
+    "machine_verified": 0,
+    "dal_gap": 0,
+    "replay_confirm": 56,
+    "replay_infra_error": 0
+   },
+   "commit": "aa6cdb6",
+   "dirty": true
+  }
+ ],
+ "dirty": true,
+ "warn_classify": {
+  "ATOM-CLAIM-CONCEPT-NORMALIZED": "legacy",
+  "INFERENCE-NOT-MACHINE-VERIFIED": "legacy",
+  "EV-MATRIX-UNBACKED": "accepted",
+  "EV-OUT-UNDECLARED-KEY": "real",
+  "EV-FALSIFICATION-QUANT": "real",
+  "EV-ASSERT-SYMBOL-MAPPED": "real",
+  "ATOM-REL-TARGET": "legacy",
+  "EV-SERVES-EXIST": "legacy"
+ }
+}

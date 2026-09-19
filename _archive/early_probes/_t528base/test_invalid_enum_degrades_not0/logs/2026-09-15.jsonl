@@ -1,0 +1,1 @@
+{"timestamp": "2026-09-15T00:16:02", "level": "WARN", "tool": "t", "trace_id": "batch-20260915-001552-10f1", "surface": "operation", "message": "m", "invalid": "level='NOT_A_LEVEL' surface='NOT_A_SURFACE'", "pid": 26112}

@@ -1,0 +1,344 @@
+{
+  "version": 1,
+  "generated_from": "compile_all.py --main-only",
+  "gcc": "mingw1530 / gcc-15.3.0",
+  "taxonomy": {
+    "MULTI_FILE": "示例引用同章/外部 .cpp/.h，需多文件联合编译",
+    "MODULE": "C++20 模块示例，需模块编译管线",
+    "MSVC": "MSVC 专属 API/宏(_MSC_VER)，非 GCC/Clang 可编译",
+    "POSIX": "POSIX 专属系统调用(<sys/mman.h>等)",
+    "WINDOWS": "Windows 专属 API(<windows.h>)，非 Linux 可编译",
+    "EXT_LIB": "依赖未分发的第三方库(boost/Qt/fmt/spdlog/gtest)",
+    "INTENTIONAL_ERROR": "故意演示编译错误以教学，本就不应通过",
+    "INTENTIONAL_UB": "故意演示未定义行为以教学",
+    "CROSS_BLOCK": "符号定义在更早代码块，顺读可编；隔离审计看不到",
+    "LIBSTDCPP": "窥探 libstdc++ 内部实现，非标准接口",
+    "GUARDED_COMPILE": "需额外编译宏(如 -DTRACK_LEAK)才成立的受控示例",
+    "BARE_METAL": "bare-metal 嵌入式外设寄存器访问（内存映射 I/O），无法在 x86 主机运行（如 STM32 RCC/USART）"
+  },
+  "exempt": [
+    {
+      "file": "ch11_compilers.md",
+      "block": 49,
+      "reason": "MODULE"
+    },
+    {
+      "file": "ch12_buildsystems.md",
+      "block": 20,
+      "reason": "MULTI_FILE"
+    },
+    {
+      "file": "ch12_buildsystems.md",
+      "block": 21,
+      "reason": "MULTI_FILE"
+    },
+    {
+      "file": "ch14_debugging.md",
+      "block": 11,
+      "reason": "GUARDED_COMPILE",
+      "note": "需 -DTRACK_LEAK 等附加宏"
+    },
+    {
+      "file": "ch18_buildconfig.md",
+      "block": 13,
+      "reason": "MULTI_FILE"
+    },
+    {
+      "file": "ch19_variables.md",
+      "block": 14,
+      "reason": "MULTI_FILE"
+    },
+    {
+      "file": "ch23_namespace_adl.md",
+      "block": 27,
+      "reason": "MODULE"
+    },
+    {
+      "file": "ch26_lambda.md",
+      "block": 15,
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块"
+    },
+    {
+      "file": "ch28_lifetime_ub.md",
+      "block": 5,
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块"
+    },
+    {
+      "file": "ch28_lifetime_ub.md",
+      "block": 13,
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块"
+    },
+    {
+      "file": "ch28_lifetime_ub.md",
+      "block": 17,
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块"
+    },
+    {
+      "file": "ch28_lifetime_ub.md",
+      "block": 55,
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块"
+    },
+    {
+      "file": "ch29_friend.md",
+      "block": 15,
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块"
+    },
+    {
+      "file": "ch35_memory_layout.md",
+      "block": 6,
+      "reason": "POSIX",
+      "note": "mmap 演示依赖 <sys/mman.h>，MinGW/Windows 不可编译（Linux 可编）"
+    },
+    {
+      "file": "ch35_memory_layout.md",
+      "block": 14,
+      "reason": "POSIX",
+      "note": "fork()/COW 演示依赖 <sys/wait.h>，MinGW/Windows 不可编译"
+    },
+    {
+      "file": "ch39_raii_rule.md",
+      "block": 34,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch39_raii_rule.md",
+      "block": 53,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 6,
+      "reason": "MULTI_FILE"
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 15,
+      "reason": "MULTI_FILE"
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 21,
+      "reason": "MULTI_FILE"
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 22,
+      "reason": "MULTI_FILE"
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 23,
+      "reason": "MULTI_FILE"
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 25,
+      "reason": "MULTI_FILE"
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 29,
+      "reason": "MULTI_FILE"
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 37,
+      "reason": "MULTI_FILE"
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 38,
+      "reason": "MULTI_FILE"
+    },
+    {
+      "file": "ch65_type_traits.md",
+      "block": 32,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch96_sorting.md",
+      "block": 4,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch108_memory_order.md",
+      "block": 18,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch117_copy_elision.md",
+      "block": 6,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch118_modules.md",
+      "block": 5,
+      "reason": "MODULE"
+    },
+    {
+      "file": "ch118_modules.md",
+      "block": 10,
+      "reason": "MODULE"
+    },
+    {
+      "file": "ch118_modules.md",
+      "block": 24,
+      "reason": "MODULE"
+    },
+    {
+      "file": "ch118_modules.md",
+      "block": 25,
+      "reason": "MODULE"
+    },
+    {
+      "file": "ch126_msstl.md",
+      "block": 19,
+      "reason": "MSVC"
+    },
+    {
+      "file": "ch126_msstl.md",
+      "block": 32,
+      "reason": "MSVC"
+    },
+    {
+      "file": "ch128_boost.md",
+      "block": 1,
+      "reason": "EXT_LIB"
+    },
+    {
+      "file": "ch129_qt.md",
+      "block": 11,
+      "reason": "EXT_LIB"
+    },
+    {
+      "file": "ch131_fmt_spdlog.md",
+      "block": 1,
+      "reason": "EXT_LIB"
+    },
+    {
+      "file": "ch131_fmt_spdlog.md",
+      "block": 2,
+      "reason": "EXT_LIB"
+    },
+    {
+      "file": "ch131_fmt_spdlog.md",
+      "block": 8,
+      "reason": "EXT_LIB"
+    },
+    {
+      "file": "ch135_patterns_intro.md",
+      "block": 11,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch136_creational.md",
+      "block": 23,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch138_behavioral.md",
+      "block": 2,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch142_ecs.md",
+      "block": 41,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch144_style.md",
+      "block": 11,
+      "reason": "MULTI_FILE"
+    },
+    {
+      "file": "ch145_naming_api.md",
+      "block": 42,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch145_naming_api.md",
+      "block": 53,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch145_naming_api.md",
+      "block": 57,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch146_error_handling.md",
+      "block": 58,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义(divide_error_code 在 #blk57 定义, 本块调用)"
+    },
+    {
+      "file": "ch150_testing.md",
+      "block": 6,
+      "reason": "EXT_LIB"
+    },
+    {
+      "file": "ch159_threadpool.md",
+      "block": 40,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch160_mempool.md",
+      "block": 6,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch160_mempool.md",
+      "block": 14,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch160_mempool.md",
+      "block": 20,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch161_logger.md",
+      "block": 2,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch161_logger.md",
+      "block": 19,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch161_logger.md",
+      "block": 32,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义"
+    }
+  ],
+  "audited_at": "2026-08-14",
+  "audited_against": "M2 全库铺示例标题(7751)+主题清理(1453)；ch124#4 代码已修复(私有类型static_assert→公开接口)故移出豁免；ch118#42 实测可编译(冗余)移出；其余 61 失败块沿用既有豁免分类(MODULE/MULTI_FILE/POSIX/MSVC/EXT_LIB/CROSS_BLOCK/INTENTIONAL_ERROR)",
+  "exempt_count": 58
+}

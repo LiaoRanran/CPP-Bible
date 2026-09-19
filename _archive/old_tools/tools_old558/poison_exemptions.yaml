@@ -1,0 +1,49 @@
+# tools/poison_exemptions.yaml —— S6 毒样例豁免台账（369 任务4）
+#
+# 作用：poison_drill 的 RULE-COVERAGE 分母 = 注册规则数（gate_engine.RULES）。
+#       未覆盖且未登记于此 → 退出码非 0（CI 红）。这是 368 P1-2 的修复：
+#       旧实现"只打印不红"，台账不存在＝永久免检。
+#
+# 格式（**零依赖行解析**，不引 PyYAML；由 poison_drill.load_exemptions() 读取）：
+#       每条一行：- {id: RULE-ID, reason: "原因", date: YYYY-MM-DD}
+#       reason 内请勿含英文逗号/双引号（解析器按单行 flow 映射匹配）。
+#
+# 纪律：**豁免 ≠ 免检**。登记在此的规则必须另有 pytest 正反例兜底（reason 中注明）；
+#       豁免只说明"端到端毒样例不适用/不经济"，不说明"该规则不重要"。
+
+schema: cppbible-poison-exemptions/1.0
+updated: 2026-09-12
+
+exemptions:
+  # ── 字段/枚举/结构类：pytest 单测已有正反例；端到端路径与 P1-P10 同（无新增判别面）──
+  - {id: ATOM-FM-REQUIRED, reason: "必填字段存在性；pytest test_atom_missing_field_triggers 正反例已覆盖；端到端路径与 P1 同为 frontmatter 解析", date: 2026-09-12}
+  - {id: ATOM-ID-FORMAT, reason: "ID 格式/域/目录一致；pytest test_bad_id_and_wrong_dir_block 已覆盖；端到端无新增判别面", date: 2026-09-12}
+  - {id: ATOM-NO-UNVERIFIED, reason: "新卡禁未验证状态；pytest 已覆盖（status 取值对）", date: 2026-09-12}
+  - {id: ATOM-STATUS-VALUE, reason: "枚举外取值必须显式拦；pytest test_status_value_pair 已覆盖", date: 2026-09-12}
+  - {id: ATOM-STATUS-TRANSITION, reason: "status_history 跃迁链；pytest test_status_transition_pair 四段正反例已覆盖", date: 2026-09-12}
+  - {id: ATOM-DAL-MATCH, reason: "DAL 与人审要求一致性；pytest test_dal_match_pair 已覆盖", date: 2026-09-12}
+  - {id: ATOM-REL-TARGET, reason: "关系目标存在性（warn 级）；pytest 已覆盖", date: 2026-09-12}
+  - {id: ATOM-REL-DAG, reason: "学习路径 DAG 无环；pytest test_dag_cycle_blocks 已覆盖", date: 2026-09-12}
+  - {id: ATOM-SUPERIORITY-WORDS, reason: "superiority 禁词表；pytest 已覆盖", date: 2026-09-12}
+  - {id: EV-FM-REQUIRED, reason: "证据卡必填字段完整性；pytest 已覆盖", date: 2026-09-12}
+  - {id: EV-MATRIX, reason: "版本矩阵字段完整性；pytest test_matrix_missing_keys_blocks 已覆盖", date: 2026-09-12}
+  - {id: EV-SERVES-EXIST, reason: "证据服务的原子存在（warn 级）；pytest 已覆盖", date: 2026-09-12}
+  # ── G5 教学/误解资产类：pytest 单测已覆盖；端到端毒样例需引入误解库夹具（重复建设）──
+  - {id: ATOM-GRAY-ZONE, reason: "UB 域灰色地带标注；pytest test_ub_atom_requires_gray_zone 已覆盖", date: 2026-09-12}
+  - {id: ATOM-MISCONCEPTION-LEVELS, reason: "误解分层与 deep 反例；pytest test_misconception_levels_blocks_and_passes 已覆盖", date: 2026-09-12}
+  - {id: ATOM-MISCONCEPTION-REF, reason: "引用的误解 ID 必须存在；pytest test_misconception_ref_must_exist 已覆盖", date: 2026-09-12}
+  - {id: MIS-LIBRARY, reason: "误解库自身合规；pytest test_mis_library_deep_needs_two_refutations 已覆盖", date: 2026-09-12}
+  - {id: ATOM-AUDIENCE, reason: "认知适切与 beginner 类比段；pytest test_audience_required_and_beginner_needs_analogy 已覆盖", date: 2026-09-12}
+  - {id: ATOM-PREREQ-READABLE, reason: "前置可读声明与实算一致；pytest test_prereq_readable_declaration_must_match_reality 已覆盖", date: 2026-09-12}
+  # ── advice 级（只建议不阻断）：与 drill「拦截=✅」判据语义相反；当前 covered 正则只认拦截者──
+  - {id: PED-MISCONCEPTION, reason: "advice 级；drill 判据是拦截而 advice 永不阻断；pytest 369 任务2 已补 4 条正反例（单数/复数/顶层/全空）", date: 2026-09-12}
+  - {id: PED-MOTIVATION, reason: "advice 级非阻断；与 drill 判据相反；pytest 覆盖缺项报警", date: 2026-09-12}
+  - {id: PED-SOCRATIC, reason: "advice 级非阻断；与 drill 判据相反；pytest 覆盖缺项报警", date: 2026-09-12}
+  - {id: PED-PREDICT-FIRST, reason: "advice 级非阻断；与 drill 判据相反；pytest 覆盖缺项报警", date: 2026-09-12}
+  # ── 仓库级元检查：不适合真编译毒样例（原文注释同口径）────────────────────────
+  - {id: DOC-ZERO-PLACEHOLDER, reason: "占位符扫描为文本级检查；不适合真编译毒样例；pytest test_daibu_is_not_placeholder 已锁误报边界", date: 2026-09-12}
+  - {id: META-MANIFEST, reason: "双清单一致性为仓库级元检查；不适合毒样例；pytest test_manifest_has_no_drift_in_repo 已锁", date: 2026-09-12}
+  # ── 非程序化象限（llm/hybrid/human）：无 check 函数、机器无从触发──────────────
+  - {id: LLM-SUPERIORITY-QUALITY, reason: "llm 象限无 check 函数；机器无从触发（进人工队列）", date: 2026-09-12}
+  - {id: HYBRID-TEACHING-DEPTH, reason: "hybrid 象限无 check 函数；机器只做初筛", date: 2026-09-12}
+  - {id: HUMAN-GOLDEN-REVIEW, reason: "human 象限无 check 函数；认可权唯人（规程 0.1）", date: 2026-09-12}

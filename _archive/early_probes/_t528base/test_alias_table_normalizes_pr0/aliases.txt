@@ -1,0 +1,3 @@
+# 测试表
+内存屏障(fence) <- 栅栏, memory fence
+互斥量(mutex) <- 互斥锁

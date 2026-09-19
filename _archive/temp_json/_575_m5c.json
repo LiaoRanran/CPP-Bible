@@ -1,0 +1,1346 @@
+{
+ "cards": [
+  "evidence/conc/EV-CONC-001.md",
+  "evidence/conc/EV-CONC-002.md",
+  "evidence/conc/EV-CONC-003.md",
+  "evidence/conc/EV-CONC-004.md",
+  "evidence/conc/EV-CONC-005.md",
+  "evidence/conc/EV-CONC-006.md",
+  "evidence/hist/EV-HIST-001.md",
+  "evidence/lang/EV-LANG-001.md",
+  "evidence/lang/EV-LANG-002.md",
+  "evidence/mem/EV-MEM-001.md",
+  "evidence/mem/EV-MEM-002.md",
+  "evidence/mem/EV-MEM-003.md",
+  "evidence/mem/EV-MEM-004.md",
+  "evidence/mem/EV-MEM-005.md",
+  "evidence/mem/EV-MEM-006.md",
+  "evidence/mem/EV-MEM-007.md",
+  "evidence/mem/EV-MEM-008.md",
+  "evidence/mem/EV-MEM-009.md",
+  "evidence/mem/EV-MEM-010.md",
+  "evidence/mem/EV-MEM-011.md",
+  "evidence/mem/EV-MEM-012.md",
+  "evidence/mem/EV-MEM-013.md",
+  "evidence/mem/EV-MEM-014.md",
+  "evidence/mem/EV-MEM-015.md",
+  "evidence/mem/EV-MEM-016.md",
+  "evidence/mem/EV-MEM-017.md",
+  "evidence/mem/EV-MEM-018.md",
+  "evidence/mem/EV-MEM-019.md",
+  "evidence/mem/EV-MEM-020.md",
+  "evidence/mem/EV-MEM-021.md",
+  "evidence/mem/EV-MEM-022.md",
+  "evidence/mem/EV-MEM-023.md",
+  "evidence/mem/EV-MEM-024.md",
+  "evidence/mem/EV-MEM-025.md",
+  "evidence/mem/EV-MEM-026.md",
+  "evidence/mem/EV-MEM-027.md",
+  "evidence/mem/EV-MEM-028.md",
+  "evidence/mem/EV-MEM-029.md",
+  "evidence/mem/EV-MEM-030.md",
+  "evidence/mem/EV-MEM-031.md",
+  "evidence/mem/EV-MEM-032.md",
+  "evidence/mem/EV-MEM-033.md",
+  "evidence/mem/EV-MEM-034.md",
+  "evidence/mem/EV-MEM-035.md",
+  "evidence/mem/EV-MEM-036.md",
+  "evidence/mem/EV-MEM-037.md",
+  "evidence/mem/EV-MEM-038.md",
+  "evidence/mem/EV-MEM-039.md",
+  "evidence/mem/EV-MEM-040.md",
+  "evidence/mem/EV-MEM-041.md",
+  "evidence/mem/EV-MEM-042.md",
+  "evidence/mem/EV-MEM-043.md",
+  "evidence/mem/EV-MEM-044.md",
+  "evidence/mem/EV-MEM-045.md",
+  "evidence/ub/EV-UB-001.md",
+  "evidence/ub/EV-UB-002.md",
+  "atoms/conc/ATOM-CONC-FENCE-001.md",
+  "atoms/conc/ATOM-CONC-LOCK-001.md",
+  "atoms/conc/ATOM-CONC-RACE-001.md",
+  "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+  "atoms/lang/ATOM-LANG-INLINE-001.md",
+  "atoms/mem/ATOM-MEM-ALIGN-001.md",
+  "atoms/mem/ATOM-MEM-ALLOC-001.md",
+  "atoms/mem/ATOM-MEM-ALLOC-002.md",
+  "atoms/mem/ATOM-MEM-LEAK-001.md",
+  "atoms/mem/ATOM-MEM-LEAK-002.md",
+  "atoms/mem/ATOM-MEM-MOVE-002.md",
+  "atoms/mem/ATOM-MEM-NEW-001.md",
+  "atoms/mem/ATOM-MEM-PERF-001.md",
+  "atoms/mem/ATOM-MEM-PERF-002.md",
+  "atoms/mem/ATOM-MEM-PERF-003.md",
+  "atoms/mem/ATOM-MEM-PERF-004.md",
+  "atoms/mem/ATOM-MEM-RAII-001.md",
+  "atoms/mem/ATOM-MEM-RAII-002.md",
+  "atoms/mem/ATOM-MEM-RVREF-001.md",
+  "atoms/mem/ATOM-MEM-SHARED-001.md",
+  "atoms/mem/ATOM-MEM-SHARED-002.md",
+  "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+  "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+  "atoms/mem/ATOM-MEM-VALUE-001.md",
+  "atoms/mem/ATOM-MEM-VALUE-002.md",
+  "atoms/mem/ATOM-MEM-WEAK-001.md",
+  "atoms/ub/ATOM-UB-GRAY-001.md"
+ ],
+ "operators": [
+  "M5"
+ ],
+ "variants": 85,
+ "blocked": 29,
+ "escaped": 0,
+ "n_a": 56,
+ "malformed": 0,
+ "out_of_scope": 0,
+ "strict_blocked": 2,
+ "strict_rate": 0.069,
+ "treated_rate": 1.0,
+ "rates": {
+  "judged": 29,
+  "n_a": 56,
+  "malformed": 0,
+  "strict": {
+   "numerator": 2,
+   "denominator": 29,
+   "point": 0.068966,
+   "cp_low": 0.008464,
+   "cp_high": 0.227662,
+   "conf": 0.95
+  },
+  "treated": {
+   "numerator": 29,
+   "denominator": 29,
+   "point": 1.0,
+   "cp_low": 0.880555,
+   "cp_high": 1.0,
+   "conf": 0.95
+  },
+  "escape": {
+   "numerator": 0,
+   "denominator": 29,
+   "point": 0.0,
+   "cp_low": 0.0,
+   "cp_high": 0.119445,
+   "conf": 0.95
+  },
+  "treated_all": {
+   "numerator": 29,
+   "denominator": 85,
+   "point": 0.341176,
+   "cp_low": 0.241751,
+   "cp_high": 0.452025,
+   "conf": 0.95
+  }
+ },
+ "by_operator_rates": {
+  "M5": {
+   "judged": 29,
+   "n_a": 56,
+   "strict": {
+    "numerator": 2,
+    "denominator": 29,
+    "point": 0.068966,
+    "cp_low": 0.008464,
+    "cp_high": 0.227662,
+    "conf": 0.95
+   },
+   "treated": {
+    "numerator": 29,
+    "denominator": 29,
+    "point": 1.0,
+    "cp_low": 0.880555,
+    "cp_high": 1.0,
+    "conf": 0.95
+   },
+   "escape": {
+    "numerator": 0,
+    "denominator": 29,
+    "point": 0.0,
+    "cp_low": 0.0,
+    "cp_high": 0.119445,
+    "conf": 0.95
+   }
+  }
+ },
+ "rate_flags": [
+  "M5：可判样本仅 29 < 59 ⇒ 样本不足；要宣称'逃逸率≤5%@95%'需补样至 n≥59"
+ ],
+ "by_operator": {
+  "M5": {
+   "blocked": 29,
+   "escaped": 0,
+   "n_a": 56
+  }
+ },
+ "by_card": {
+  "evidence/conc/EV-CONC-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/conc/EV-CONC-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/conc/EV-CONC-003.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/conc/EV-CONC-004.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/conc/EV-CONC-005.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/conc/EV-CONC-006.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/hist/EV-HIST-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/lang/EV-LANG-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/lang/EV-LANG-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-003.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-004.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-005.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-006.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-007.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-008.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-009.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-010.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-011.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-012.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-013.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-014.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-015.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-016.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-017.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-018.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-019.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-020.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-021.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-022.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-023.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-024.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-025.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-026.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-027.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-028.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-029.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-030.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-031.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-032.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-033.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-034.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-035.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-036.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-037.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-038.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-039.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-040.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-041.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-042.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-043.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-044.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-045.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/ub/EV-UB-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/ub/EV-UB-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/conc/ATOM-CONC-FENCE-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/conc/ATOM-CONC-LOCK-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/conc/ATOM-CONC-RACE-001.md": {
+   "blocked": 2,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/hist/ATOM-HIST-AUTOPTR-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/lang/ATOM-LANG-INLINE-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-ALIGN-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-ALLOC-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-ALLOC-002.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-LEAK-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-LEAK-002.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-MOVE-002.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-NEW-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-PERF-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-PERF-002.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-PERF-003.md": {
+   "blocked": 2,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-PERF-004.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-RAII-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-RAII-002.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-RVREF-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-SHARED-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-SHARED-002.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-UNIQUE-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-UNIQUE-002.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-VALUE-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-VALUE-002.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-WEAK-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/ub/ATOM-UB-GRAY-001.md": {
+   "blocked": 1,
+   "escaped": 0,
+   "n_a": 0
+  }
+ },
+ "elapsed_s": 23.36,
+ "ge_runs": 30,
+ "replay_runs": 0,
+ "replay_skipped": 0,
+ "escaped_list": [],
+ "results": [
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-003.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-004.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-005.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-006.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/hist/EV-HIST-001.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/lang/EV-LANG-001.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/lang/EV-LANG-002.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-001.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-002.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-003.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-004.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-005.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-006.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-007.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-008.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-009.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-010.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-011.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-012.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-013.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-014.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-015.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-016.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-017.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-018.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-019.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-020.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-021.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-022.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-023.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-024.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-025.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-026.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-027.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-028.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-029.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-030.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-031.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-033.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-034.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-035.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-036.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-037.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-038.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-039.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-040.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-041.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-042.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-043.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-044.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-045.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/ub/EV-UB-001.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/ub/EV-UB-002.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+   "op": "M5",
+   "point": "[命题 prop-2] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-FENCE-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\conc\\ATOM-CONC-FENCE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+   "op": "M5",
+   "point": "[命题 prop-2] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-LOCK-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ARTIFACT-FILE-EXISTS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\evidence\\mem\\EV-MEM-001.md"
+   ],
+   "new_warn": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\evidence\\mem\\EV-MEM-001.md",
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\conc\\ATOM-CONC-LOCK-001.md"
+   ]
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+   "op": "M5",
+   "point": "[命题 prop-2] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-RACE-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\conc\\ATOM-CONC-RACE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-RACE-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\conc\\ATOM-CONC-RACE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/hist/ATOM-HIST-AUTOPTR-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\hist\\ATOM-HIST-AUTOPTR-001.md"
+   ]
+  },
+  {
+   "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/lang/ATOM-LANG-INLINE-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\lang\\ATOM-LANG-INLINE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALIGN-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-ALIGN-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+   "op": "M5",
+   "point": "[命题 prop-4] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-ALLOC-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-002.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-ALLOC-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-LEAK-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-002.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-LEAK-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-MOVE-002.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-MOVE-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-NEW-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-NEW-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+   "op": "M5",
+   "point": "[命题 prop-2] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ARTIFACT-FILE-EXISTS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\evidence\\mem\\EV-MEM-002.md"
+   ],
+   "new_warn": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\evidence\\mem\\EV-MEM-002.md",
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-PERF-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+   "op": "M5",
+   "point": "[命题 prop-2] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-002.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-PERF-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+   "op": "M5",
+   "point": "[命题 prop-2] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-003.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-PERF-003.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-003.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-PERF-003.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-004.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-PERF-004.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RAII-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-RAII-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+   "op": "M5",
+   "point": "[命题 prop-4] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RAII-002.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-RAII-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RVREF-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-RVREF-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-SHARED-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-002.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-SHARED-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-UNIQUE-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-UNIQUE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-UNIQUE-002.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-UNIQUE-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-VALUE-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-VALUE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-VALUE-002.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-VALUE-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+   "op": "M5",
+   "point": "[命题 prop-3] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-WEAK-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\mem\\ATOM-MEM-WEAK-001.md"
+   ]
+  },
+  {
+   "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+   "op": "M5",
+   "point": "[命题 prop-2] claim_type: inference → observation（自标绕过）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/ub/ATOM-UB-GRAY-001.md --operators M5 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "OBSERVATION-LIVENESS:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_m8iat7tb\\atoms\\ub\\ATOM-UB-GRAY-001.md"
+   ]
+  }
+ ]
+}

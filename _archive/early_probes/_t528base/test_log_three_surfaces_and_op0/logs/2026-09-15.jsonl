@@ -1,0 +1,4 @@
+{"timestamp": "2026-09-15T00:16:02", "level": "INFO", "tool": "t", "trace_id": "batch-20260915-001552-10f1", "surface": "operation", "message": "op", "pid": 26112}
+{"timestamp": "2026-09-15T00:16:02", "level": "INFO", "tool": "t", "trace_id": "batch-20260915-001552-10f1", "surface": "context", "message": "context snapshot", "details": {"argv": ["--check"], "git_head": "72687a4", "python": "3.13.13", "cwd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible"}, "pid": 26112}
+{"timestamp": "2026-09-15T00:16:02", "level": "INFO", "tool": "worklog", "trace_id": "batch-20260915-001552-10f1", "surface": "cognition", "message": "worklog 摘要", "details": {"agent": "coolie"}, "pid": 26112}
+{"timestamp": "2026-09-15T00:16:02", "level": "INFO", "tool": "t", "trace_id": "batch-20260915-001552-10f1", "surface": "operation", "message": "no duration", "pid": 26112}

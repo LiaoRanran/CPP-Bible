@@ -1,0 +1,22 @@
+{
+ "atom_id": "ATOM-T-001",
+ "created_at": "2026-09-15",
+ "stages": {
+  "fixture": {
+   "chars": 15000,
+   "windows": 2,
+   "tokens_est": 5000,
+   "duration_min": 30
+  },
+  "redteam": {
+   "chars": 30000,
+   "windows": 1,
+   "tokens_est": 10000
+  }
+ },
+ "total_chars": 45000,
+ "total_tokens_est": 15000,
+ "total_windows": 3,
+ "total_duration_min": 30,
+ "cpva": 15000
+}

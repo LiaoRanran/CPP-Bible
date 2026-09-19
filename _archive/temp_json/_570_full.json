@@ -1,0 +1,1324 @@
+{
+ "cards": [
+  "evidence/conc/EV-CONC-001.md",
+  "evidence/conc/EV-CONC-002.md",
+  "evidence/conc/EV-CONC-003.md",
+  "evidence/conc/EV-CONC-004.md",
+  "evidence/conc/EV-CONC-005.md",
+  "evidence/conc/EV-CONC-006.md",
+  "evidence/hist/EV-HIST-001.md",
+  "evidence/lang/EV-LANG-001.md",
+  "evidence/lang/EV-LANG-002.md",
+  "evidence/mem/EV-MEM-001.md",
+  "evidence/mem/EV-MEM-002.md",
+  "evidence/mem/EV-MEM-003.md",
+  "evidence/mem/EV-MEM-004.md",
+  "evidence/mem/EV-MEM-005.md",
+  "evidence/mem/EV-MEM-006.md",
+  "evidence/mem/EV-MEM-007.md",
+  "evidence/mem/EV-MEM-008.md",
+  "evidence/mem/EV-MEM-009.md",
+  "evidence/mem/EV-MEM-010.md",
+  "evidence/mem/EV-MEM-011.md",
+  "evidence/mem/EV-MEM-012.md",
+  "evidence/mem/EV-MEM-013.md",
+  "evidence/mem/EV-MEM-014.md",
+  "evidence/mem/EV-MEM-015.md",
+  "evidence/mem/EV-MEM-016.md",
+  "evidence/mem/EV-MEM-017.md",
+  "evidence/mem/EV-MEM-018.md",
+  "evidence/mem/EV-MEM-019.md",
+  "evidence/mem/EV-MEM-020.md",
+  "evidence/mem/EV-MEM-021.md",
+  "evidence/mem/EV-MEM-022.md",
+  "evidence/mem/EV-MEM-023.md",
+  "evidence/mem/EV-MEM-024.md",
+  "evidence/mem/EV-MEM-025.md",
+  "evidence/mem/EV-MEM-026.md",
+  "evidence/mem/EV-MEM-027.md",
+  "evidence/mem/EV-MEM-028.md",
+  "evidence/mem/EV-MEM-029.md",
+  "evidence/mem/EV-MEM-030.md",
+  "evidence/mem/EV-MEM-031.md",
+  "evidence/mem/EV-MEM-032.md",
+  "evidence/mem/EV-MEM-033.md",
+  "evidence/mem/EV-MEM-034.md",
+  "evidence/mem/EV-MEM-035.md",
+  "evidence/mem/EV-MEM-036.md",
+  "evidence/mem/EV-MEM-037.md",
+  "evidence/mem/EV-MEM-038.md",
+  "evidence/mem/EV-MEM-039.md",
+  "evidence/mem/EV-MEM-040.md",
+  "evidence/mem/EV-MEM-041.md",
+  "evidence/mem/EV-MEM-042.md",
+  "evidence/mem/EV-MEM-043.md",
+  "evidence/mem/EV-MEM-044.md",
+  "evidence/mem/EV-MEM-045.md",
+  "evidence/ub/EV-UB-001.md",
+  "evidence/ub/EV-UB-002.md",
+  "atoms/conc/ATOM-CONC-FENCE-001.md",
+  "atoms/conc/ATOM-CONC-LOCK-001.md",
+  "atoms/conc/ATOM-CONC-RACE-001.md",
+  "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+  "atoms/lang/ATOM-LANG-INLINE-001.md",
+  "atoms/mem/ATOM-MEM-ALIGN-001.md",
+  "atoms/mem/ATOM-MEM-ALLOC-001.md",
+  "atoms/mem/ATOM-MEM-ALLOC-002.md",
+  "atoms/mem/ATOM-MEM-LEAK-001.md",
+  "atoms/mem/ATOM-MEM-LEAK-002.md",
+  "atoms/mem/ATOM-MEM-MOVE-002.md",
+  "atoms/mem/ATOM-MEM-NEW-001.md",
+  "atoms/mem/ATOM-MEM-PERF-001.md",
+  "atoms/mem/ATOM-MEM-PERF-002.md",
+  "atoms/mem/ATOM-MEM-PERF-003.md",
+  "atoms/mem/ATOM-MEM-PERF-004.md",
+  "atoms/mem/ATOM-MEM-RAII-001.md",
+  "atoms/mem/ATOM-MEM-RAII-002.md",
+  "atoms/mem/ATOM-MEM-RVREF-001.md",
+  "atoms/mem/ATOM-MEM-SHARED-001.md",
+  "atoms/mem/ATOM-MEM-SHARED-002.md",
+  "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+  "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+  "atoms/mem/ATOM-MEM-VALUE-001.md",
+  "atoms/mem/ATOM-MEM-VALUE-002.md",
+  "atoms/mem/ATOM-MEM-WEAK-001.md",
+  "atoms/ub/ATOM-UB-GRAY-001.md"
+ ],
+ "operators": [
+  "M3"
+ ],
+ "variants": 87,
+ "blocked": 7,
+ "escaped": 0,
+ "n_a": 80,
+ "malformed": 0,
+ "out_of_scope": 80,
+ "strict_blocked": 1,
+ "strict_rate": 0.1429,
+ "treated_rate": 1.0,
+ "rates": {
+  "judged": 7,
+  "n_a": 80,
+  "malformed": 0,
+  "strict": {
+   "numerator": 1,
+   "denominator": 7,
+   "point": 0.142857,
+   "cp_low": 0.00361,
+   "cp_high": 0.578723,
+   "conf": 0.95
+  },
+  "treated": {
+   "numerator": 7,
+   "denominator": 7,
+   "point": 1.0,
+   "cp_low": 0.590384,
+   "cp_high": 1.0,
+   "conf": 0.95
+  },
+  "escape": {
+   "numerator": 0,
+   "denominator": 7,
+   "point": 0.0,
+   "cp_low": 0.0,
+   "cp_high": 0.409616,
+   "conf": 0.95
+  },
+  "treated_all": {
+   "numerator": 7,
+   "denominator": 87,
+   "point": 0.08046,
+   "cp_low": 0.032962,
+   "cp_high": 0.158775,
+   "conf": 0.95
+  }
+ },
+ "by_operator_rates": {
+  "M3": {
+   "judged": 7,
+   "n_a": 80,
+   "strict": {
+    "numerator": 1,
+    "denominator": 7,
+    "point": 0.142857,
+    "cp_low": 0.00361,
+    "cp_high": 0.578723,
+    "conf": 0.95
+   },
+   "treated": {
+    "numerator": 7,
+    "denominator": 7,
+    "point": 1.0,
+    "cp_low": 0.590384,
+    "cp_high": 1.0,
+    "conf": 0.95
+   },
+   "escape": {
+    "numerator": 0,
+    "denominator": 7,
+    "point": 0.0,
+    "cp_low": 0.0,
+    "cp_high": 0.409616,
+    "conf": 0.95
+   }
+  }
+ },
+ "rate_flags": [
+  "M3：可判样本仅 7 < 59 ⇒ 样本不足；要宣称'逃逸率≤5%@95%'需补样至 n≥59"
+ ],
+ "by_operator": {
+  "M3": {
+   "blocked": 7,
+   "escaped": 0,
+   "n_a": 80
+  }
+ },
+ "by_card": {
+  "evidence/conc/EV-CONC-001.md": {
+   "blocked": 2,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/conc/EV-CONC-002.md": {
+   "blocked": 2,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/conc/EV-CONC-003.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/conc/EV-CONC-004.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/conc/EV-CONC-005.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/conc/EV-CONC-006.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/hist/EV-HIST-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/lang/EV-LANG-001.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/lang/EV-LANG-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-003.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-004.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-005.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-006.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-007.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-008.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-009.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-010.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-011.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-012.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-013.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-014.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-015.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-016.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-017.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-018.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-019.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-020.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-021.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-022.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-023.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-024.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-025.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-026.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-027.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-028.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-029.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-030.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-031.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-032.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-033.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-034.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-035.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-036.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-037.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-038.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-039.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-040.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-041.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-042.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-043.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-044.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/mem/EV-MEM-045.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/ub/EV-UB-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "evidence/ub/EV-UB-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/conc/ATOM-CONC-FENCE-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/conc/ATOM-CONC-LOCK-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/conc/ATOM-CONC-RACE-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/hist/ATOM-HIST-AUTOPTR-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/lang/ATOM-LANG-INLINE-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-ALIGN-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-ALLOC-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-ALLOC-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-LEAK-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-LEAK-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-MOVE-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-NEW-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-PERF-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-PERF-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-PERF-003.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-PERF-004.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-RAII-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-RAII-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-RVREF-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-SHARED-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-SHARED-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-UNIQUE-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-UNIQUE-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-VALUE-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-VALUE-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-WEAK-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/ub/ATOM-UB-GRAY-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  }
+ },
+ "elapsed_s": 6.96,
+ "ge_runs": 8,
+ "replay_runs": 0,
+ "replay_skipped": 0,
+ "escaped_list": [],
+ "results": [
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M3",
+   "point": "contains_in → contains（区间断言降级为全文存在性）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4bkvz_bi\\evidence\\conc\\EV-CONC-001.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M3",
+   "point": "absent_in → absent（区间断言降级为全文不存在）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4bkvz_bi\\evidence\\conc\\EV-CONC-001.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M3",
+   "point": "contains_in → contains（区间断言降级为全文存在性）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4bkvz_bi\\evidence\\conc\\EV-CONC-002.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M3",
+   "point": "absent_in → absent（区间断言降级为全文不存在）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4bkvz_bi\\evidence\\conc\\EV-CONC-002.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-003.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-004.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-005.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-006.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/hist/EV-HIST-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/lang/EV-LANG-001.md",
+   "op": "M3",
+   "point": "contains_in → contains（区间断言降级为全文存在性）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4bkvz_bi\\evidence\\lang\\EV-LANG-001.md"
+   ]
+  },
+  {
+   "card": "evidence/lang/EV-LANG-001.md",
+   "op": "M3",
+   "point": "absent_in → absent（区间断言降级为全文不存在）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4bkvz_bi\\evidence\\lang\\EV-LANG-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/lang/EV-LANG-001.md",
+   "op": "M3",
+   "point": "-Werror 被删（编译告警不再算失败）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M3 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-WERROR-DECL-BIND:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4bkvz_bi\\evidence\\lang\\EV-LANG-001.md"
+   ]
+  },
+  {
+   "card": "evidence/lang/EV-LANG-002.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-002.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-003.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-004.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-005.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-006.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-007.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-008.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-009.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-010.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-011.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-012.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-013.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-014.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-015.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-016.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-017.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-018.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-019.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-020.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-021.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-022.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-023.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-024.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-025.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-026.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-027.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-028.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-029.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-030.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-031.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-033.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-034.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-035.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-036.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-037.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-038.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-039.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-040.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-041.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-042.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-043.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-044.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/mem/EV-MEM-045.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/ub/EV-UB-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "evidence/ub/EV-UB-002.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  },
+  {
+   "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+   "op": "M3",
+   "point": "M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）",
+   "verdict": "n_a",
+   "out_of_scope": true,
+   "why": "out_of_scope：M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:` 的字面量都在正文/注释）"
+  }
+ ]
+}

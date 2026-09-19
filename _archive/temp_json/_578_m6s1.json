@@ -1,0 +1,4862 @@
+{
+ "cards": [
+  "evidence/conc/EV-CONC-001.md",
+  "evidence/conc/EV-CONC-002.md",
+  "evidence/conc/EV-CONC-003.md",
+  "evidence/conc/EV-CONC-004.md",
+  "evidence/conc/EV-CONC-005.md",
+  "evidence/conc/EV-CONC-006.md",
+  "evidence/hist/EV-HIST-001.md",
+  "evidence/lang/EV-LANG-001.md",
+  "evidence/lang/EV-LANG-002.md",
+  "evidence/mem/EV-MEM-001.md",
+  "evidence/mem/EV-MEM-002.md",
+  "evidence/mem/EV-MEM-003.md",
+  "evidence/mem/EV-MEM-004.md",
+  "evidence/mem/EV-MEM-005.md",
+  "evidence/mem/EV-MEM-006.md",
+  "evidence/mem/EV-MEM-007.md",
+  "evidence/mem/EV-MEM-008.md",
+  "evidence/mem/EV-MEM-009.md",
+  "evidence/mem/EV-MEM-010.md",
+  "evidence/mem/EV-MEM-011.md",
+  "evidence/mem/EV-MEM-012.md",
+  "evidence/mem/EV-MEM-013.md",
+  "evidence/mem/EV-MEM-014.md",
+  "evidence/mem/EV-MEM-015.md",
+  "evidence/mem/EV-MEM-016.md",
+  "evidence/mem/EV-MEM-017.md",
+  "evidence/mem/EV-MEM-018.md",
+  "evidence/mem/EV-MEM-019.md",
+  "evidence/mem/EV-MEM-020.md",
+  "evidence/mem/EV-MEM-021.md",
+  "evidence/mem/EV-MEM-022.md",
+  "evidence/mem/EV-MEM-023.md",
+  "evidence/mem/EV-MEM-024.md",
+  "evidence/mem/EV-MEM-025.md",
+  "evidence/mem/EV-MEM-026.md",
+  "evidence/mem/EV-MEM-027.md",
+  "evidence/mem/EV-MEM-028.md",
+  "evidence/mem/EV-MEM-029.md",
+  "evidence/mem/EV-MEM-030.md",
+  "evidence/mem/EV-MEM-031.md",
+  "evidence/mem/EV-MEM-032.md",
+  "evidence/mem/EV-MEM-033.md",
+  "evidence/mem/EV-MEM-034.md",
+  "evidence/mem/EV-MEM-035.md",
+  "evidence/mem/EV-MEM-036.md",
+  "evidence/mem/EV-MEM-037.md",
+  "evidence/mem/EV-MEM-038.md",
+  "evidence/mem/EV-MEM-039.md",
+  "evidence/mem/EV-MEM-040.md",
+  "evidence/mem/EV-MEM-041.md",
+  "evidence/mem/EV-MEM-042.md",
+  "evidence/mem/EV-MEM-043.md",
+  "evidence/mem/EV-MEM-044.md",
+  "evidence/mem/EV-MEM-045.md",
+  "evidence/ub/EV-UB-001.md",
+  "evidence/ub/EV-UB-002.md",
+  "atoms/conc/ATOM-CONC-FENCE-001.md",
+  "atoms/conc/ATOM-CONC-LOCK-001.md",
+  "atoms/conc/ATOM-CONC-RACE-001.md",
+  "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+  "atoms/lang/ATOM-LANG-INLINE-001.md",
+  "atoms/mem/ATOM-MEM-ALIGN-001.md",
+  "atoms/mem/ATOM-MEM-ALLOC-001.md",
+  "atoms/mem/ATOM-MEM-ALLOC-002.md",
+  "atoms/mem/ATOM-MEM-LEAK-001.md",
+  "atoms/mem/ATOM-MEM-LEAK-002.md",
+  "atoms/mem/ATOM-MEM-MOVE-002.md",
+  "atoms/mem/ATOM-MEM-NEW-001.md",
+  "atoms/mem/ATOM-MEM-PERF-001.md",
+  "atoms/mem/ATOM-MEM-PERF-002.md",
+  "atoms/mem/ATOM-MEM-PERF-003.md",
+  "atoms/mem/ATOM-MEM-PERF-004.md",
+  "atoms/mem/ATOM-MEM-RAII-001.md",
+  "atoms/mem/ATOM-MEM-RAII-002.md",
+  "atoms/mem/ATOM-MEM-RVREF-001.md",
+  "atoms/mem/ATOM-MEM-SHARED-001.md",
+  "atoms/mem/ATOM-MEM-SHARED-002.md",
+  "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+  "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+  "atoms/mem/ATOM-MEM-VALUE-001.md",
+  "atoms/mem/ATOM-MEM-VALUE-002.md",
+  "atoms/mem/ATOM-MEM-WEAK-001.md",
+  "atoms/ub/ATOM-UB-GRAY-001.md"
+ ],
+ "operators": [
+  "M6"
+ ],
+ "variants": 332,
+ "blocked": 324,
+ "escaped": 8,
+ "n_a": 0,
+ "malformed": 0,
+ "out_of_scope": 0,
+ "strict_blocked": 211,
+ "strict_rate": 0.6355,
+ "treated_rate": 0.9759,
+ "rates": {
+  "judged": 332,
+  "n_a": 0,
+  "malformed": 0,
+  "strict": {
+   "numerator": 211,
+   "denominator": 332,
+   "point": 0.635542,
+   "cp_low": 0.581239,
+   "cp_high": 0.687403,
+   "conf": 0.95
+  },
+  "treated": {
+   "numerator": 324,
+   "denominator": 332,
+   "point": 0.975904,
+   "cp_low": 0.953074,
+   "cp_high": 0.989541,
+   "conf": 0.95
+  },
+  "escape": {
+   "numerator": 8,
+   "denominator": 332,
+   "point": 0.024096,
+   "cp_low": 0.010459,
+   "cp_high": 0.046926,
+   "conf": 0.95
+  },
+  "treated_all": {
+   "numerator": 324,
+   "denominator": 332,
+   "point": 0.975904,
+   "cp_low": 0.953074,
+   "cp_high": 0.989541,
+   "conf": 0.95
+  }
+ },
+ "by_operator_rates": {
+  "M6": {
+   "judged": 332,
+   "n_a": 0,
+   "strict": {
+    "numerator": 211,
+    "denominator": 332,
+    "point": 0.635542,
+    "cp_low": 0.581239,
+    "cp_high": 0.687403,
+    "conf": 0.95
+   },
+   "treated": {
+    "numerator": 324,
+    "denominator": 332,
+    "point": 0.975904,
+    "cp_low": 0.953074,
+    "cp_high": 0.989541,
+    "conf": 0.95
+   },
+   "escape": {
+    "numerator": 8,
+    "denominator": 332,
+    "point": 0.024096,
+    "cp_low": 0.010459,
+    "cp_high": 0.046926,
+    "conf": 0.95
+   }
+  }
+ },
+ "rate_flags": [],
+ "by_operator": {
+  "M6": {
+   "blocked": 324,
+   "escaped": 8,
+   "n_a": 0
+  }
+ },
+ "by_card": {
+  "evidence/conc/EV-CONC-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/conc/EV-CONC-002.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/conc/EV-CONC-003.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/conc/EV-CONC-004.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/conc/EV-CONC-005.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/conc/EV-CONC-006.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/hist/EV-HIST-001.md": {
+   "blocked": 3,
+   "escaped": 1,
+   "n_a": 0
+  },
+  "evidence/lang/EV-LANG-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/lang/EV-LANG-002.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-002.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-003.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-004.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-005.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-006.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-007.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-008.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-009.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-010.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-011.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-012.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-013.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-014.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-015.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-016.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-017.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-018.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-019.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-020.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-021.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-022.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-023.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-024.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-025.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-026.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-027.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-028.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-029.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-030.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-031.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-032.md": {
+   "blocked": 3,
+   "escaped": 1,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-033.md": {
+   "blocked": 3,
+   "escaped": 1,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-034.md": {
+   "blocked": 3,
+   "escaped": 1,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-035.md": {
+   "blocked": 3,
+   "escaped": 1,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-036.md": {
+   "blocked": 3,
+   "escaped": 1,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-037.md": {
+   "blocked": 3,
+   "escaped": 1,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-038.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-039.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-040.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-041.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-042.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-043.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-044.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-045.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/ub/EV-UB-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/ub/EV-UB-002.md": {
+   "blocked": 3,
+   "escaped": 1,
+   "n_a": 0
+  },
+  "atoms/conc/ATOM-CONC-FENCE-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/conc/ATOM-CONC-LOCK-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/conc/ATOM-CONC-RACE-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/hist/ATOM-HIST-AUTOPTR-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/lang/ATOM-LANG-INLINE-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-ALIGN-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-ALLOC-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-ALLOC-002.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-LEAK-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-LEAK-002.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-MOVE-002.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-NEW-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-PERF-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-PERF-002.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-PERF-003.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-PERF-004.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-RAII-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-RAII-002.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-RVREF-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-SHARED-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-SHARED-002.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-UNIQUE-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-UNIQUE-002.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-VALUE-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-VALUE-002.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-WEAK-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/ub/ATOM-UB-GRAY-001.md": {
+   "blocked": 4,
+   "escaped": 0,
+   "n_a": 0
+  }
+ },
+ "elapsed_s": 201.0,
+ "ge_runs": 333,
+ "replay_runs": 0,
+ "replay_skipped": 0,
+ "escaped_list": [
+  {
+   "card": "evidence/hist/EV-HIST-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/hist/EV-HIST-001.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-033.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-033.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-034.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-034.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-035.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-035.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-036.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-036.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-037.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-037.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/ub/EV-UB-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-002.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  }
+ ],
+ "results": [
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-001.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-001.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-001.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-002.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-002.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-002.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-003.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-003.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-003.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-003.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-003.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-003.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-003.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-003.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-003.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-003.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-003.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（controlled_vars）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-003.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-003.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-004.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-004.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-004.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-004.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-004.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-004.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-004.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-004.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-004.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-004.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-004.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（controlled_vars）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-004.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-004.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-005.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-005.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-005.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-005.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-005.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-005.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-005.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-005.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-005.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-005.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-005.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（controlled_vars）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-005.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-005.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-006.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-006.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-006.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-006.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-006.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-006.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-006.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-006.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-006.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-006.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-006.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（controlled_vars）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-006.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\conc\\EV-CONC-006.md"
+   ]
+  },
+  {
+   "card": "evidence/hist/EV-HIST-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/hist/EV-HIST-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\hist\\EV-HIST-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\hist\\EV-HIST-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/hist/EV-HIST-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/hist/EV-HIST-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\hist\\EV-HIST-001.md"
+   ]
+  },
+  {
+   "card": "evidence/hist/EV-HIST-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/hist/EV-HIST-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\hist\\EV-HIST-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/hist/EV-HIST-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/hist/EV-HIST-001.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/lang/EV-LANG-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\lang\\EV-LANG-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\lang\\EV-LANG-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/lang/EV-LANG-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\lang\\EV-LANG-001.md"
+   ]
+  },
+  {
+   "card": "evidence/lang/EV-LANG-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\lang\\EV-LANG-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/lang/EV-LANG-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（controlled_vars）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\lang\\EV-LANG-001.md"
+   ]
+  },
+  {
+   "card": "evidence/lang/EV-LANG-002.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\lang\\EV-LANG-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\lang\\EV-LANG-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/lang/EV-LANG-002.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\lang\\EV-LANG-002.md"
+   ]
+  },
+  {
+   "card": "evidence/lang/EV-LANG-002.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\lang\\EV-LANG-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/lang/EV-LANG-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（controlled_vars）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\lang\\EV-LANG-002.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-001.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-001.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-001.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-002.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-002.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-002.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-002.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-002.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-002.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-003.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-003.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-003.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-003.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-003.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-003.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-003.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-003.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-003.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-003.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-003.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-003.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-003.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-003.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-004.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-004.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-004.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-004.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-004.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-004.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-004.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-004.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-004.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-004.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-004.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（expected）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-004.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-004.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-005.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-005.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-005.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-005.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-005.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-005.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-005.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-005.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-005.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-005.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-005.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-005.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-005.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-005.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-006.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-006.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-006.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-006.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-006.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-006.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-006.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-006.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-006.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-006.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-006.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-006.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-006.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-006.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-007.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-007.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-007.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-007.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-007.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-007.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-007.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-007.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-007.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-007.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-007.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-007.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-007.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-007.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-008.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-008.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-008.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-008.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-008.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-008.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-008.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-008.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-008.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-008.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-008.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-008.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-008.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-008.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-009.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-009.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-009.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-009.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-009.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-009.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-009.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-009.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-009.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-009.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-009.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-009.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-009.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-009.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-010.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-010.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-010.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-010.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-010.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-010.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-010.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-010.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-010.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-010.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-010.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-010.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-010.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-010.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-011.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-011.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-011.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-011.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-011.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-011.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-011.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-011.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-011.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-011.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-011.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-011.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-011.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-011.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-012.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-012.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-012.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-012.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-012.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-012.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-012.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-012.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-012.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-012.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-012.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-012.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-012.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-012.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-013.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-013.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-013.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-013.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-013.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-013.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-013.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-013.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-013.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-013.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-013.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-013.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-013.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-013.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-014.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-014.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-014.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-014.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-014.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-014.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-014.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-014.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-014.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-014.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-014.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-014.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-014.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-014.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-015.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-015.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-015.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-015.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-015.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-015.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-015.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-015.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-015.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-015.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-015.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-015.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-015.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-015.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-016.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-016.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-016.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-016.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-016.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-016.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-016.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-016.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-016.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-016.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-016.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-016.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-016.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-016.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-017.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-017.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-017.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-017.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-017.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-017.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-017.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-017.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-017.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-017.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-017.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-017.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-017.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-017.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-018.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-018.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-018.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-018.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-018.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-018.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-018.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-018.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-018.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-018.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-018.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-018.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-018.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-018.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-019.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-019.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-019.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-019.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-019.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-019.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-019.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-019.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-019.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-019.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-019.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-019.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-019.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-019.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-020.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-020.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-020.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-020.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-020.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-020.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-020.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-020.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-020.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-020.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-020.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-020.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-020.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-020.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-021.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-021.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-021.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-021.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-021.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-021.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-021.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-021.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-021.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-021.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-021.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-021.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-021.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-021.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-022.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-022.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-022.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-022.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-022.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-022.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-022.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-022.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-022.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-022.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-022.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-022.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-022.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-022.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-023.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-023.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-023.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-023.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-023.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-023.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-023.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-023.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-023.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-023.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-023.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-023.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-023.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-023.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-024.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-024.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-024.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-024.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-024.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-024.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-024.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-024.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-024.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-024.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-024.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-024.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-024.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-024.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-025.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-025.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-025.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-025.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-025.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-025.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-025.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-025.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-025.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-025.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-025.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-025.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-025.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-025.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-026.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-026.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-026.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-026.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-026.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-026.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-026.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-026.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-026.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-026.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-026.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-026.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-026.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-026.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-027.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-027.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-027.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-027.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-027.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-027.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-027.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-027.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-027.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-027.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-027.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-027.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-027.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-027.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-028.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-028.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-028.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-028.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-028.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-028.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-028.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-028.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-028.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-028.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-028.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-028.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-028.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-028.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-029.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-029.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-029.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-029.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-029.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-029.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-029.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-029.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-029.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-029.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-029.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-029.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-029.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-029.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-030.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-030.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-030.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-030.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-030.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-030.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-030.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-030.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-030.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-030.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-030.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-030.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-030.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-030.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-031.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-031.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-031.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-031.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-031.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-031.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-031.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-031.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-031.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-031.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-031.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-031.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-031.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-031.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-032.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-032.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-032.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-032.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-033.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-033.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-033.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-033.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-033.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-033.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-033.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-033.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-033.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-033.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-033.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-033.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-034.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-034.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-034.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-034.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-034.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-034.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-034.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-034.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-034.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-034.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-034.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-034.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-035.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-035.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-035.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-035.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-035.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-035.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-035.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-035.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-035.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-035.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-035.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-035.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-036.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-036.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-036.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-036.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-036.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-036.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-036.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-036.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-036.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-036.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-036.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-036.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-037.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-037.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-037.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-037.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-037.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-037.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-037.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-037.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-037.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-037.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-037.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-037.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-038.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-038.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-038.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-038.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-038.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-038.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-038.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-038.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-038.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-038.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-039.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-039.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-039.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-039.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-039.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-039.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-039.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-039.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-039.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-039.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-039.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-039.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-039.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-039.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-040.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-040.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-040.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-040.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-040.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-040.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-040.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-040.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-040.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-040.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-041.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-041.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-041.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-041.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-041.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-041.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-041.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-041.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-041.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-041.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-042.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-042.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-042.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-042.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-042.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-042.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-042.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-042.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-042.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-042.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-043.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-043.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-043.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-043.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-043.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-043.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-043.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-043.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-043.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-043.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-044.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-044.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-044.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-044.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-044.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-044.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-044.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-044.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-044.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-044.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-045.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-045.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-045.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-045.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-045.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-045.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-045.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-045.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-045.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\mem\\EV-MEM-045.md"
+   ]
+  },
+  {
+   "card": "evidence/ub/EV-UB-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\ub\\EV-UB-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\ub\\EV-UB-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/ub/EV-UB-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\ub\\EV-UB-001.md"
+   ]
+  },
+  {
+   "card": "evidence/ub/EV-UB-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\ub\\EV-UB-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/ub/EV-UB-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\ub\\EV-UB-001.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\ub\\EV-UB-001.md"
+   ]
+  },
+  {
+   "card": "evidence/ub/EV-UB-002.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\ub\\EV-UB-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\ub\\EV-UB-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/ub/EV-UB-002.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\ub\\EV-UB-002.md"
+   ]
+  },
+  {
+   "card": "evidence/ub/EV-UB-002.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\evidence\\ub\\EV-UB-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/ub/EV-UB-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-002.md --operators M6 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-FENCE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-FENCE-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-FENCE-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-FENCE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-FENCE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-FENCE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-FENCE-001.md"
+   ],
+   "new_warn": [
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-LOCK-001.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-RACE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（status_history）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-FENCE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-STATUS-TRANSITION:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-FENCE-001.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-FENCE-001.md",
+    "INFERENCE-NOT-MACHINE-VERIFIED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-FENCE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-LOCK-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-LOCK-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-LOCK-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-LOCK-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-LOCK-001.md"
+   ]
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-LOCK-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-LOCK-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（status_history）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-LOCK-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-STATUS-TRANSITION:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-LOCK-001.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-LOCK-001.md",
+    "INFERENCE-NOT-MACHINE-VERIFIED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-LOCK-001.md"
+   ]
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-RACE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-RACE-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-RACE-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-RACE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-RACE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-RACE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-RACE-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（status_history）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-RACE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-STATUS-TRANSITION:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-RACE-001.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-RACE-001.md",
+    "INFERENCE-NOT-MACHINE-VERIFIED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\conc\\ATOM-CONC-RACE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/hist/ATOM-HIST-AUTOPTR-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\hist\\ATOM-HIST-AUTOPTR-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\hist\\ATOM-HIST-AUTOPTR-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/hist/ATOM-HIST-AUTOPTR-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\hist\\ATOM-HIST-AUTOPTR-001.md"
+   ]
+  },
+  {
+   "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/hist/ATOM-HIST-AUTOPTR-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\hist\\ATOM-HIST-AUTOPTR-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/hist/ATOM-HIST-AUTOPTR-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\hist\\ATOM-HIST-AUTOPTR-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\hist\\ATOM-HIST-AUTOPTR-001.md"
+   ]
+  },
+  {
+   "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/lang/ATOM-LANG-INLINE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\lang\\ATOM-LANG-INLINE-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\lang\\ATOM-LANG-INLINE-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/lang/ATOM-LANG-INLINE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\lang\\ATOM-LANG-INLINE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/lang/ATOM-LANG-INLINE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\lang\\ATOM-LANG-INLINE-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（status_history）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/lang/ATOM-LANG-INLINE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-STATUS-TRANSITION:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\lang\\ATOM-LANG-INLINE-001.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\lang\\ATOM-LANG-INLINE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALIGN-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALIGN-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALIGN-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALIGN-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALIGN-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALIGN-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALIGN-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALIGN-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALIGN-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALIGN-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALLOC-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALLOC-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALLOC-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALLOC-001.md"
+   ],
+   "new_warn": [
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALLOC-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALLOC-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALLOC-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALLOC-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALLOC-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALLOC-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALLOC-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（pedagogy）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALLOC-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-LEAK-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-LEAK-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-LEAK-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-LEAK-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-LEAK-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-LEAK-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-LEAK-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-LEAK-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-LEAK-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-LEAK-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（pedagogy）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-LEAK-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-MOVE-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-MOVE-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-MOVE-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-MOVE-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-MOVE-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-MOVE-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-MOVE-002.md"
+   ],
+   "new_warn": [
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-001.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RAII-002.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RVREF-001.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-VALUE-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-MOVE-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-MOVE-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-MOVE-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-NEW-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-NEW-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-NEW-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-NEW-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-NEW-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-NEW-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-NEW-001.md"
+   ],
+   "new_warn": [
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALLOC-001.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-NEW-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-NEW-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-NEW-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-001.md"
+   ],
+   "new_warn": [
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-002.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-003.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-004.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-003.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-003.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-003.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-003.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-003.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-003.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-003.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（pedagogy）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-003.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-003.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-004.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-004.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-004.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-004.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-004.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-004.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-004.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（pedagogy）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-004.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-PERF-004.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RAII-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RAII-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RAII-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RAII-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RAII-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RAII-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RAII-001.md"
+   ],
+   "new_warn": [
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-ALLOC-001.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-NEW-001.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RAII-002.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-UNIQUE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RAII-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RAII-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RAII-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RAII-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RAII-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RAII-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RAII-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RAII-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RAII-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RAII-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RAII-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RAII-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RAII-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RVREF-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RVREF-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RVREF-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RVREF-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RVREF-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RVREF-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RVREF-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RVREF-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RVREF-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-RVREF-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-SHARED-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-SHARED-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-SHARED-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-SHARED-001.md"
+   ],
+   "new_warn": [
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-LEAK-001.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-LEAK-002.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-SHARED-002.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-WEAK-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-SHARED-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-SHARED-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-SHARED-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-SHARED-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-SHARED-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-SHARED-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-SHARED-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-SHARED-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-UNIQUE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-UNIQUE-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-UNIQUE-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-UNIQUE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-UNIQUE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-UNIQUE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-UNIQUE-001.md"
+   ],
+   "new_warn": [
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-SHARED-001.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-UNIQUE-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-UNIQUE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-UNIQUE-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-UNIQUE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-UNIQUE-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-UNIQUE-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-UNIQUE-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-UNIQUE-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-UNIQUE-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-UNIQUE-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-UNIQUE-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-UNIQUE-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-UNIQUE-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-UNIQUE-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-VALUE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-VALUE-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-VALUE-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-VALUE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-VALUE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-VALUE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-VALUE-001.md"
+   ],
+   "new_warn": [
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-MOVE-002.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-VALUE-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-VALUE-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-VALUE-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-VALUE-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-VALUE-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-VALUE-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-VALUE-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-VALUE-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-VALUE-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-VALUE-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-VALUE-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-VALUE-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-VALUE-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-VALUE-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-WEAK-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-WEAK-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-WEAK-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-WEAK-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-WEAK-001.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-WEAK-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-WEAK-001.md"
+   ],
+   "new_warn": [
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-LEAK-001.md",
+    "ATOM-PREREQ-READABLE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-LEAK-002.md"
+   ]
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-WEAK-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-WEAK-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\mem\\ATOM-MEM-WEAK-001.md"
+   ]
+  },
+  {
+   "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/ub/ATOM-UB-GRAY-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\ub\\ATOM-UB-GRAY-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\ub\\ATOM-UB-GRAY-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/ub/ATOM-UB-GRAY-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\ub\\ATOM-UB-GRAY-001.md"
+   ]
+  },
+  {
+   "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/ub/ATOM-UB-GRAY-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "ATOM-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\ub\\ATOM-UB-GRAY-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（claim_structured）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/ub/ATOM-UB-GRAY-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "ATOM-CLAIM-STRUCTURED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\ub\\ATOM-UB-GRAY-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_4iihuuf3\\atoms\\ub\\ATOM-UB-GRAY-001.md"
+   ]
+  }
+ ]
+}

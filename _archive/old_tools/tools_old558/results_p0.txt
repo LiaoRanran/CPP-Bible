@@ -1,0 +1,11 @@
+# P0 compile results (main-only)
+ch120_coroutine_app.md              main= 45 fail= 1
+    block#37: invalid conversion from 'AsyncR*' to 'int' [-fpermissive]
+ch121_contracts.md                  main= 45 fail= 0
+ch122_pmr.md                        main= 36 fail= 0
+ch157_compiler_explorer.md          main= 54 fail= 0
+ch158_perf_antipatterns.md          main= 43 fail= 0
+ch26_lambda.md                      main= 54 fail= 1
+    block#15: increment of read-only variable 'n'
+ch90_ranges.md                      main= 44 fail= 0
+ch46_encapsulation_inheritance.md   main= 52 fail= 0

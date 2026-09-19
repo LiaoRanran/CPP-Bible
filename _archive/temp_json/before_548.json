@@ -1,0 +1,549 @@
+{
+ "cards": [
+  "evidence/conc/EV-CONC-001.md",
+  "evidence/conc/EV-CONC-002.md"
+ ],
+ "operators": [
+  "M1",
+  "M2",
+  "M3",
+  "M4",
+  "M5",
+  "M6",
+  "M7"
+ ],
+ "variants": 37,
+ "blocked": 24,
+ "escaped": 11,
+ "n_a": 2,
+ "malformed": 0,
+ "strict_blocked": 22,
+ "strict_rate": 0.6286,
+ "treated_rate": 0.6857,
+ "escaped_list": [
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M1",
+   "point": "删 negative_controls",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M1 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": [],
+   "replay": "confirm"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_ATOMIC.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\\atoms\\_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M3",
+   "point": "contains_in → contains（区间断言降级为全文存在性）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M3 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M3",
+   "point": "absent_in → absent（区间断言降级为全文不存在）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M3 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_ATOMIC.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\\atoms\\_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M3",
+   "point": "contains_in → contains（区间断言降级为全文存在性）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M3 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M3",
+   "point": "absent_in → absent（区间断言降级为全文不存在）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M3 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  }
+ ],
+ "results": [
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M1",
+   "point": "删 artifact_sha256",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M1 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-001.md",
+    "replay:missing_field"
+   ],
+   "new_warn": [],
+   "replay": "refute:missing_field"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M1",
+   "point": "删 run_match_file",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M1 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "replay:run_mismatch"
+   ],
+   "new_warn": [],
+   "replay": "refute:run_mismatch"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M1",
+   "point": "删 negative_controls",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M1 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": [],
+   "replay": "confirm"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_ATOMIC.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\\atoms\\_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M3",
+   "point": "contains_in → contains（区间断言降级为全文存在性）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M3 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M3",
+   "point": "absent_in → absent（区间断言降级为全文不存在）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M3 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M4",
+   "point": "注入通用符号 main",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M4 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M4",
+   "point": "注入通用符号 ret",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M4 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M4",
+   "point": "注入 ABI 帧符号 .p2align",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M4 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M4",
+   "point": "注入 contains_any: ['.file']（合法形态）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M4 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-001.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-001.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-001.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-001.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-001.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M7",
+   "point": "sha256 改一位（8dd19bc6… → 0dd19bc6…）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M7 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "replay:sha256_mismatch"
+   ],
+   "new_warn": [],
+   "replay": "refute:sha256_mismatch"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M7",
+   "point": "读数篡改（1 → 2）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M7 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ARTIFACT-PRODUCER:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-001.md",
+    "EV-ID-UNIQUE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-001.md",
+    "S2-EVIDENCE-VERDICT:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\atoms\\conc\\ATOM-CONC-FENCE-001.md"
+   ],
+   "new_warn": [],
+   "replay": "confirm"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M1",
+   "point": "删 artifact_sha256",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M1 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-002.md",
+    "replay:missing_field"
+   ],
+   "new_warn": [],
+   "replay": "refute:missing_field"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M1",
+   "point": "删 run_match_file",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M1 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "replay:run_mismatch"
+   ],
+   "new_warn": [],
+   "replay": "refute:run_mismatch"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_ATOMIC.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\\atoms\\_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M3",
+   "point": "contains_in → contains（区间断言降级为全文存在性）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M3 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M3",
+   "point": "absent_in → absent（区间断言降级为全文不存在）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M3 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M4",
+   "point": "注入通用符号 main",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M4 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M4",
+   "point": "注入通用符号 ret",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M4 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M4",
+   "point": "注入 ABI 帧符号 .p2align",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M4 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M4",
+   "point": "注入 contains_any: ['.file']（合法形态）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M4 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ASSERT-SYMBOL-MAPPED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M5",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M6",
+   "point": "重复 id 键（后写覆盖前写）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-DUP-KEY:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-002.md",
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M6",
+   "point": "缩进提升（id 多缩一格，改变嵌套归属）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-002.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M6",
+   "point": "全角键名（ｉｄ）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-FM-REQUIRED:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-002.md"
+   ],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M6",
+   "point": "块式 → flow 写法（matrix）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M6 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-MATRIX:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-002.md"
+   ],
+   "new_warn": [
+    "EV-FM-YAML-HARDENING:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-002.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M7",
+   "point": "sha256 改一位（8dd19bc6… → 0dd19bc6…）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M7 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "replay:sha256_mismatch"
+   ],
+   "new_warn": [],
+   "replay": "refute:sha256_mismatch"
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M7",
+   "point": "读数篡改（2 → 3）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M7 --limit 1",
+   "verdict": "blocked",
+   "kind": "strict",
+   "new_block": [
+    "EV-ARTIFACT-PRODUCER:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-002.md",
+    "EV-ID-UNIQUE:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\evidence\\conc\\EV-CONC-002.md",
+    "S2-EVIDENCE-VERDICT:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_dmm10ic2\\atoms\\conc\\ATOM-CONC-FENCE-001.md"
+   ],
+   "new_warn": [],
+   "replay": "confirm"
+  }
+ ]
+}

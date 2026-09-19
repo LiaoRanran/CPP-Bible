@@ -1,0 +1,3508 @@
+{
+ "cards": [
+  "evidence/conc/EV-CONC-001.md",
+  "evidence/conc/EV-CONC-002.md",
+  "evidence/conc/EV-CONC-003.md",
+  "evidence/conc/EV-CONC-004.md",
+  "evidence/conc/EV-CONC-005.md",
+  "evidence/conc/EV-CONC-006.md",
+  "evidence/hist/EV-HIST-001.md",
+  "evidence/lang/EV-LANG-001.md",
+  "evidence/lang/EV-LANG-002.md",
+  "evidence/mem/EV-MEM-001.md",
+  "evidence/mem/EV-MEM-002.md",
+  "evidence/mem/EV-MEM-003.md",
+  "evidence/mem/EV-MEM-004.md",
+  "evidence/mem/EV-MEM-005.md",
+  "evidence/mem/EV-MEM-006.md",
+  "evidence/mem/EV-MEM-007.md",
+  "evidence/mem/EV-MEM-008.md",
+  "evidence/mem/EV-MEM-009.md",
+  "evidence/mem/EV-MEM-010.md",
+  "evidence/mem/EV-MEM-011.md",
+  "evidence/mem/EV-MEM-012.md",
+  "evidence/mem/EV-MEM-013.md",
+  "evidence/mem/EV-MEM-014.md",
+  "evidence/mem/EV-MEM-015.md",
+  "evidence/mem/EV-MEM-016.md",
+  "evidence/mem/EV-MEM-017.md",
+  "evidence/mem/EV-MEM-018.md",
+  "evidence/mem/EV-MEM-019.md",
+  "evidence/mem/EV-MEM-020.md",
+  "evidence/mem/EV-MEM-021.md",
+  "evidence/mem/EV-MEM-022.md",
+  "evidence/mem/EV-MEM-023.md",
+  "evidence/mem/EV-MEM-024.md",
+  "evidence/mem/EV-MEM-025.md",
+  "evidence/mem/EV-MEM-026.md",
+  "evidence/mem/EV-MEM-027.md",
+  "evidence/mem/EV-MEM-028.md",
+  "evidence/mem/EV-MEM-029.md",
+  "evidence/mem/EV-MEM-030.md",
+  "evidence/mem/EV-MEM-031.md",
+  "evidence/mem/EV-MEM-032.md",
+  "evidence/mem/EV-MEM-033.md",
+  "evidence/mem/EV-MEM-034.md",
+  "evidence/mem/EV-MEM-035.md",
+  "evidence/mem/EV-MEM-036.md",
+  "evidence/mem/EV-MEM-037.md",
+  "evidence/mem/EV-MEM-038.md",
+  "evidence/mem/EV-MEM-039.md",
+  "evidence/mem/EV-MEM-040.md",
+  "evidence/mem/EV-MEM-041.md",
+  "evidence/mem/EV-MEM-042.md",
+  "evidence/mem/EV-MEM-043.md",
+  "evidence/mem/EV-MEM-044.md",
+  "evidence/mem/EV-MEM-045.md",
+  "evidence/ub/EV-UB-001.md",
+  "evidence/ub/EV-UB-002.md",
+  "atoms/conc/ATOM-CONC-FENCE-001.md",
+  "atoms/conc/ATOM-CONC-LOCK-001.md",
+  "atoms/conc/ATOM-CONC-RACE-001.md",
+  "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+  "atoms/lang/ATOM-LANG-INLINE-001.md",
+  "atoms/mem/ATOM-MEM-ALIGN-001.md",
+  "atoms/mem/ATOM-MEM-ALLOC-001.md",
+  "atoms/mem/ATOM-MEM-ALLOC-002.md",
+  "atoms/mem/ATOM-MEM-LEAK-001.md",
+  "atoms/mem/ATOM-MEM-LEAK-002.md",
+  "atoms/mem/ATOM-MEM-MOVE-002.md",
+  "atoms/mem/ATOM-MEM-NEW-001.md",
+  "atoms/mem/ATOM-MEM-PERF-001.md",
+  "atoms/mem/ATOM-MEM-PERF-002.md",
+  "atoms/mem/ATOM-MEM-PERF-003.md",
+  "atoms/mem/ATOM-MEM-PERF-004.md",
+  "atoms/mem/ATOM-MEM-RAII-001.md",
+  "atoms/mem/ATOM-MEM-RAII-002.md",
+  "atoms/mem/ATOM-MEM-RVREF-001.md",
+  "atoms/mem/ATOM-MEM-SHARED-001.md",
+  "atoms/mem/ATOM-MEM-SHARED-002.md",
+  "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+  "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+  "atoms/mem/ATOM-MEM-VALUE-001.md",
+  "atoms/mem/ATOM-MEM-VALUE-002.md",
+  "atoms/mem/ATOM-MEM-WEAK-001.md",
+  "atoms/ub/ATOM-UB-GRAY-001.md"
+ ],
+ "operators": [
+  "M2"
+ ],
+ "variants": 221,
+ "blocked": 141,
+ "escaped": 66,
+ "n_a": 14,
+ "malformed": 0,
+ "strict_blocked": 0,
+ "strict_rate": 0.0,
+ "treated_rate": 0.6812,
+ "by_operator": {
+  "M2": {
+   "blocked": 141,
+   "escaped": 66,
+   "n_a": 14
+  }
+ },
+ "by_card": {
+  "evidence/conc/EV-CONC-001.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "evidence/conc/EV-CONC-002.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "evidence/conc/EV-CONC-003.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/conc/EV-CONC-004.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/conc/EV-CONC-005.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/conc/EV-CONC-006.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/hist/EV-HIST-001.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/lang/EV-LANG-001.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/lang/EV-LANG-002.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-001.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-002.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-003.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-004.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-005.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-006.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-007.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-008.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-009.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-010.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-011.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-012.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-013.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-014.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-015.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-016.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-017.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-018.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-019.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-020.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-021.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-022.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-023.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-024.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-025.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-026.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-027.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-028.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-029.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-030.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-031.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-032.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-033.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-034.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-035.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-036.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-037.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-038.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-039.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-040.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-041.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-042.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-043.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-044.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "evidence/mem/EV-MEM-045.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "evidence/ub/EV-UB-001.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "evidence/ub/EV-UB-002.md": {
+   "blocked": 3,
+   "escaped": 0,
+   "n_a": 0
+  },
+  "atoms/conc/ATOM-CONC-FENCE-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/conc/ATOM-CONC-LOCK-001.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "atoms/conc/ATOM-CONC-RACE-001.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "atoms/hist/ATOM-HIST-AUTOPTR-001.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "atoms/lang/ATOM-LANG-INLINE-001.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-ALIGN-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-ALLOC-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-ALLOC-002.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-LEAK-001.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-LEAK-002.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-MOVE-002.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-NEW-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-PERF-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-PERF-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-PERF-003.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-PERF-004.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-RAII-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-RAII-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-RVREF-001.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-SHARED-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-SHARED-002.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  },
+  "atoms/mem/ATOM-MEM-UNIQUE-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-UNIQUE-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-VALUE-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-VALUE-002.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/mem/ATOM-MEM-WEAK-001.md": {
+   "blocked": 0,
+   "escaped": 0,
+   "n_a": 1
+  },
+  "atoms/ub/ATOM-UB-GRAY-001.md": {
+   "blocked": 0,
+   "escaped": 3,
+   "n_a": 0
+  }
+ },
+ "elapsed_s": 121.76,
+ "ge_runs": 208,
+ "replay_runs": 0,
+ "replay_skipped": 0,
+ "escaped_list": [
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_ATOMIC.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\\atoms\\_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_ATOMIC.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\\atoms\\_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-038.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_sso_portable.cpp → EXAMPLES/ATOMS/_ATOM_SSO_PORTABLE.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-038.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_sso_portable.cpp → ./Examples/atoms/_atom_sso_portable.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-038.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_sso_portable.cpp → Examples\\atoms\\_atom_sso_portable.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-040.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_alloc_strategies.cpp → EXAMPLES/ATOMS/_ATOM_ALLOC_STRATEGIES.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-040.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_alloc_strategies.cpp → ./Examples/atoms/_atom_alloc_strategies.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-040.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_alloc_strategies.cpp → Examples\\atoms\\_atom_alloc_strategies.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-041.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_alloc_strategies.cpp → EXAMPLES/ATOMS/_ATOM_ALLOC_STRATEGIES.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-041.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_alloc_strategies.cpp → ./Examples/atoms/_atom_alloc_strategies.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-041.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_alloc_strategies.cpp → Examples\\atoms\\_atom_alloc_strategies.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-042.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_leak_detection.cpp → EXAMPLES/ATOMS/_ATOM_LEAK_DETECTION.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-042.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_leak_detection.cpp → ./Examples/atoms/_atom_leak_detection.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-042.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_leak_detection.cpp → Examples\\atoms\\_atom_leak_detection.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-043.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_leak_detection.cpp → EXAMPLES/ATOMS/_ATOM_LEAK_DETECTION.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-043.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_leak_detection.cpp → ./Examples/atoms/_atom_leak_detection.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-043.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_leak_detection.cpp → Examples\\atoms\\_atom_leak_detection.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-044.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_false_sharing.cpp → EXAMPLES/ATOMS/_ATOM_FALSE_SHARING.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-044.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_false_sharing.cpp → ./Examples/atoms/_atom_false_sharing.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-044.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_false_sharing.cpp → Examples\\atoms\\_atom_false_sharing.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-045.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_false_sharing_perf.cpp → EXAMPLES/ATOMS/_ATOM_FALSE_SHARING_PERF.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-045.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_false_sharing_perf.cpp → ./Examples/atoms/_atom_false_sharing_perf.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-045.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_false_sharing_perf.cpp → Examples\\atoms\\_atom_false_sharing_perf.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_lock_cost.out → EXAMPLES/ATOMS/_ATOM_LOCK_COST.OUT）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-LOCK-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_lock_cost.out → ./Examples/atoms/_atom_lock_cost.out）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-LOCK-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_lock_cost.out → Examples\\atoms\\_atom_lock_cost.out）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-LOCK-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_data_race.cpp → EXAMPLES/ATOMS/_ATOM_DATA_RACE.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-RACE-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_data_race.cpp → ./Examples/atoms/_atom_data_race.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-RACE-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_data_race.cpp → Examples\\atoms\\_atom_data_race.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-RACE-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+   "op": "M2",
+   "point": "路径转大写（misconceptions/README.md → MISCONCEPTIONS/README.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/hist/ATOM-HIST-AUTOPTR-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+   "op": "M2",
+   "point": "路径加 ./（misconceptions/README.md → ./misconceptions/README.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/hist/ATOM-HIST-AUTOPTR-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（misconceptions/README.md → misconceptions\\README.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/hist/ATOM-HIST-AUTOPTR-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+   "op": "M2",
+   "point": "路径转大写（docs/kernel/M2_empirical.md → DOCS/KERNEL/M2_EMPIRICAL.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/lang/ATOM-LANG-INLINE-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+   "op": "M2",
+   "point": "路径加 ./（docs/kernel/M2_empirical.md → ./docs/kernel/M2_empirical.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/lang/ATOM-LANG-INLINE-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（docs/kernel/M2_empirical.md → docs\\kernel\\M2_empirical.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/lang/ATOM-LANG-INLINE-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+   "op": "M2",
+   "point": "路径转大写（docs/kernel/G6_status_levels.md → DOCS/KERNEL/G6_STATUS_LEVELS.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+   "op": "M2",
+   "point": "路径加 ./（docs/kernel/G6_status_levels.md → ./docs/kernel/G6_status_levels.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（docs/kernel/G6_status_levels.md → docs\\kernel\\G6_status_levels.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+   "op": "M2",
+   "point": "路径转大写（misconceptions/MIS-MEM-027.md → MISCONCEPTIONS/MIS-MEM-027.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+   "op": "M2",
+   "point": "路径加 ./（misconceptions/MIS-MEM-027.md → ./misconceptions/MIS-MEM-027.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（misconceptions/MIS-MEM-027.md → misconceptions\\MIS-MEM-027.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+   "op": "M2",
+   "point": "路径转大写（docs/kernel/G6_status_levels.md → DOCS/KERNEL/G6_STATUS_LEVELS.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+   "op": "M2",
+   "point": "路径加 ./（docs/kernel/G6_status_levels.md → ./docs/kernel/G6_status_levels.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（docs/kernel/G6_status_levels.md → docs\\kernel\\G6_status_levels.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+   "op": "M2",
+   "point": "路径转大写（misconceptions/README.md → MISCONCEPTIONS/README.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-MOVE-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+   "op": "M2",
+   "point": "路径加 ./（misconceptions/README.md → ./misconceptions/README.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-MOVE-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（misconceptions/README.md → misconceptions\\README.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-MOVE-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_allocator_bench.cpp → EXAMPLES/ATOMS/_ATOM_ALLOCATOR_BENCH.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-003.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_allocator_bench.cpp → ./Examples/atoms/_atom_allocator_bench.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-003.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_allocator_bench.cpp → Examples\\atoms\\_atom_allocator_bench.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-003.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+   "op": "M2",
+   "point": "路径转大写（docs/kernel/G6_status_levels.md → DOCS/KERNEL/G6_STATUS_LEVELS.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-004.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+   "op": "M2",
+   "point": "路径加 ./（docs/kernel/G6_status_levels.md → ./docs/kernel/G6_status_levels.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-004.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（docs/kernel/G6_status_levels.md → docs\\kernel\\G6_status_levels.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-004.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+   "op": "M2",
+   "point": "路径转大写（Book/part10_modern/ch115_move.md → BOOK/PART10_MODERN/CH115_MOVE.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RVREF-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+   "op": "M2",
+   "point": "路径加 ./（Book/part10_modern/ch115_move.md → ./Book/part10_modern/ch115_move.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RVREF-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Book/part10_modern/ch115_move.md → Book\\part10_modern\\ch115_move.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RVREF-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+   "op": "M2",
+   "point": "路径转大写（misconceptions/MIS-MEM-026.md → MISCONCEPTIONS/MIS-MEM-026.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+   "op": "M2",
+   "point": "路径加 ./（misconceptions/MIS-MEM-026.md → ./misconceptions/MIS-MEM-026.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（misconceptions/MIS-MEM-026.md → misconceptions\\MIS-MEM-026.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+   "op": "M2",
+   "point": "路径转大写（misconceptions/README.md → MISCONCEPTIONS/README.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/ub/ATOM-UB-GRAY-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+   "op": "M2",
+   "point": "路径加 ./（misconceptions/README.md → ./misconceptions/README.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/ub/ATOM-UB-GRAY-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（misconceptions/README.md → misconceptions\\README.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/ub/ATOM-UB-GRAY-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  }
+ ],
+ "results": [
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_ATOMIC.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\\atoms\\_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_ATOMIC.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-002.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\\atoms\\_atom_fence_vs_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/conc/EV-CONC-003.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_lock_cost.cpp → EXAMPLES/ATOMS/_ATOM_LOCK_COST.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-003.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\conc\\EV-CONC-003.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-003.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_lock_cost.cpp → ./Examples/atoms/_atom_lock_cost.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-003.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\conc\\EV-CONC-003.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-003.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_lock_cost.cpp → Examples\\atoms\\_atom_lock_cost.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-003.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\conc\\EV-CONC-003.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-004.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_lock_cost.cpp → EXAMPLES/ATOMS/_ATOM_LOCK_COST.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-004.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\conc\\EV-CONC-004.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-004.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_lock_cost.cpp → ./Examples/atoms/_atom_lock_cost.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-004.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\conc\\EV-CONC-004.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-004.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_lock_cost.cpp → Examples\\atoms\\_atom_lock_cost.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-004.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\conc\\EV-CONC-004.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-005.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_data_race.cpp → EXAMPLES/ATOMS/_ATOM_DATA_RACE.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-005.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\conc\\EV-CONC-005.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-005.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_data_race.cpp → ./Examples/atoms/_atom_data_race.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-005.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\conc\\EV-CONC-005.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-005.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_data_race.cpp → Examples\\atoms\\_atom_data_race.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-005.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\conc\\EV-CONC-005.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-006.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_data_race.cpp → EXAMPLES/ATOMS/_ATOM_DATA_RACE.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-006.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\conc\\EV-CONC-006.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-006.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_data_race.cpp → ./Examples/atoms/_atom_data_race.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-006.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\conc\\EV-CONC-006.md"
+   ]
+  },
+  {
+   "card": "evidence/conc/EV-CONC-006.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_data_race.cpp → Examples\\atoms\\_atom_data_race.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-006.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\conc\\EV-CONC-006.md"
+   ]
+  },
+  {
+   "card": "evidence/hist/EV-HIST-001.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_auto_ptr.cpp → EXAMPLES/ATOMS/_ATOM_AUTO_PTR.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/hist/EV-HIST-001.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\hist\\EV-HIST-001.md"
+   ]
+  },
+  {
+   "card": "evidence/hist/EV-HIST-001.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_auto_ptr.cpp → ./Examples/atoms/_atom_auto_ptr.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/hist/EV-HIST-001.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\hist\\EV-HIST-001.md"
+   ]
+  },
+  {
+   "card": "evidence/hist/EV-HIST-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_auto_ptr.cpp → Examples\\atoms\\_atom_auto_ptr.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/hist/EV-HIST-001.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\hist\\EV-HIST-001.md"
+   ]
+  },
+  {
+   "card": "evidence/lang/EV-LANG-001.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_inline_odr_main.cpp → EXAMPLES/ATOMS/_ATOM_INLINE_ODR_MAIN.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\lang\\EV-LANG-001.md"
+   ]
+  },
+  {
+   "card": "evidence/lang/EV-LANG-001.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_inline_odr_main.cpp → ./Examples/atoms/_atom_inline_odr_main.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\lang\\EV-LANG-001.md"
+   ]
+  },
+  {
+   "card": "evidence/lang/EV-LANG-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_inline_odr_main.cpp → Examples\\atoms\\_atom_inline_odr_main.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-001.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\lang\\EV-LANG-001.md"
+   ]
+  },
+  {
+   "card": "evidence/lang/EV-LANG-002.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_inline_odr_main.cpp → EXAMPLES/ATOMS/_ATOM_INLINE_ODR_MAIN.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-002.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\lang\\EV-LANG-002.md"
+   ]
+  },
+  {
+   "card": "evidence/lang/EV-LANG-002.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_inline_odr_main.cpp → ./Examples/atoms/_atom_inline_odr_main.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-002.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\lang\\EV-LANG-002.md"
+   ]
+  },
+  {
+   "card": "evidence/lang/EV-LANG-002.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_inline_odr_main.cpp → Examples\\atoms\\_atom_inline_odr_main.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/lang/EV-LANG-002.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\lang\\EV-LANG-002.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-001.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_move_alloc.cpp → EXAMPLES/ATOMS/_ATOM_MOVE_ALLOC.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-001.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-001.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-001.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_move_alloc.cpp → ./Examples/atoms/_atom_move_alloc.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-001.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-001.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_move_alloc.cpp → Examples\\atoms\\_atom_move_alloc.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-001.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-001.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-002.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_move_no_gain.cpp → EXAMPLES/ATOMS/_ATOM_MOVE_NO_GAIN.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-002.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-002.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-002.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_move_no_gain.cpp → ./Examples/atoms/_atom_move_no_gain.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-002.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-002.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-002.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_move_no_gain.cpp → Examples\\atoms\\_atom_move_no_gain.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-002.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-002.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-003.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_auto_ptr.cpp → EXAMPLES/ATOMS/_ATOM_AUTO_PTR.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-003.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-003.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-003.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_auto_ptr.cpp → ./Examples/atoms/_atom_auto_ptr.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-003.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-003.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-003.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_auto_ptr.cpp → Examples\\atoms\\_atom_auto_ptr.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-003.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-003.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-004.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_named_rvalue.cpp → EXAMPLES/ATOMS/_ATOM_NAMED_RVALUE.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-004.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-004.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-004.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_named_rvalue.cpp → ./Examples/atoms/_atom_named_rvalue.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-004.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-004.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-004.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_named_rvalue.cpp → Examples\\atoms\\_atom_named_rvalue.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-004.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-004.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-005.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_rvref_return.cpp → EXAMPLES/ATOMS/_ATOM_RVREF_RETURN.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-005.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-005.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-005.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_rvref_return.cpp → ./Examples/atoms/_atom_rvref_return.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-005.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-005.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-005.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_rvref_return.cpp → Examples\\atoms\\_atom_rvref_return.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-005.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-005.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-006.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_value_cat.cpp → EXAMPLES/ATOMS/_ATOM_VALUE_CAT.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-006.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-006.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-006.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_value_cat.cpp → ./Examples/atoms/_atom_value_cat.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-006.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-006.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-006.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_value_cat.cpp → Examples\\atoms\\_atom_value_cat.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-006.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-006.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-007.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_value_xvalue.cpp → EXAMPLES/ATOMS/_ATOM_VALUE_XVALUE.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-007.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-007.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-007.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_value_xvalue.cpp → ./Examples/atoms/_atom_value_xvalue.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-007.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-007.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-007.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_value_xvalue.cpp → Examples\\atoms\\_atom_value_xvalue.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-007.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-007.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-008.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_perf_move.cpp → EXAMPLES/ATOMS/_ATOM_PERF_MOVE.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-008.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-008.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-008.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_perf_move.cpp → ./Examples/atoms/_atom_perf_move.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-008.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-008.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-008.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_perf_move.cpp → Examples\\atoms\\_atom_perf_move.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-008.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-008.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-009.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_raii.cpp → EXAMPLES/ATOMS/_ATOM_RAII.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-009.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-009.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-009.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_raii.cpp → ./Examples/atoms/_atom_raii.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-009.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-009.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-009.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_raii.cpp → Examples\\atoms\\_atom_raii.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-009.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-009.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-010.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_raii_order.cpp → EXAMPLES/ATOMS/_ATOM_RAII_ORDER.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-010.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-010.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-010.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_raii_order.cpp → ./Examples/atoms/_atom_raii_order.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-010.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-010.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-010.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_raii_order.cpp → Examples\\atoms\\_atom_raii_order.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-010.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-010.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-011.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_unique_size.cpp → EXAMPLES/ATOMS/_ATOM_UNIQUE_SIZE.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-011.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-011.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-011.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_unique_size.cpp → ./Examples/atoms/_atom_unique_size.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-011.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-011.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-011.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_unique_size.cpp → Examples\\atoms\\_atom_unique_size.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-011.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-011.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-012.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_unique_move.cpp → EXAMPLES/ATOMS/_ATOM_UNIQUE_MOVE.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-012.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-012.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-012.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_unique_move.cpp → ./Examples/atoms/_atom_unique_move.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-012.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-012.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-012.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_unique_move.cpp → Examples\\atoms\\_atom_unique_move.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-012.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-012.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-013.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_shared_count.cpp → EXAMPLES/ATOMS/_ATOM_SHARED_COUNT.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-013.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-013.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-013.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_shared_count.cpp → ./Examples/atoms/_atom_shared_count.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-013.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-013.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-013.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_shared_count.cpp → Examples\\atoms\\_atom_shared_count.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-013.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-013.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-014.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_shared_cycle.cpp → EXAMPLES/ATOMS/_ATOM_SHARED_CYCLE.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-014.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-014.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-014.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_shared_cycle.cpp → ./Examples/atoms/_atom_shared_cycle.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-014.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-014.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-014.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_shared_cycle.cpp → Examples\\atoms\\_atom_shared_cycle.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-014.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-014.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-015.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_weak_obs.cpp → EXAMPLES/ATOMS/_ATOM_WEAK_OBS.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-015.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-015.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-015.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_weak_obs.cpp → ./Examples/atoms/_atom_weak_obs.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-015.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-015.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-015.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_weak_obs.cpp → Examples\\atoms\\_atom_weak_obs.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-015.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-015.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-016.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_weak_cycle.cpp → EXAMPLES/ATOMS/_ATOM_WEAK_CYCLE.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-016.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-016.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-016.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_weak_cycle.cpp → ./Examples/atoms/_atom_weak_cycle.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-016.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-016.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-016.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_weak_cycle.cpp → Examples\\atoms\\_atom_weak_cycle.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-016.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-016.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-017.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_new_layer.cpp → EXAMPLES/ATOMS/_ATOM_NEW_LAYER.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-017.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-017.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-017.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_new_layer.cpp → ./Examples/atoms/_atom_new_layer.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-017.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-017.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-017.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_new_layer.cpp → Examples\\atoms\\_atom_new_layer.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-017.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-017.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-018.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_new_array.cpp → EXAMPLES/ATOMS/_ATOM_NEW_ARRAY.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-018.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-018.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-018.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_new_array.cpp → ./Examples/atoms/_atom_new_array.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-018.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-018.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-018.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_new_array.cpp → Examples\\atoms\\_atom_new_array.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-018.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-018.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-019.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_align_pad.cpp → EXAMPLES/ATOMS/_ATOM_ALIGN_PAD.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-019.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-019.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-019.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_align_pad.cpp → ./Examples/atoms/_atom_align_pad.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-019.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-019.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-019.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_align_pad.cpp → Examples\\atoms\\_atom_align_pad.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-019.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-019.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-020.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_align_ctrl.cpp → EXAMPLES/ATOMS/_ATOM_ALIGN_CTRL.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-020.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-020.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-020.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_align_ctrl.cpp → ./Examples/atoms/_atom_align_ctrl.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-020.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-020.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-020.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_align_ctrl.cpp → Examples\\atoms\\_atom_align_ctrl.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-020.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-020.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-021.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_fwd_fold.cpp → EXAMPLES/ATOMS/_ATOM_FWD_FOLD.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-021.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-021.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-021.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_fwd_fold.cpp → ./Examples/atoms/_atom_fwd_fold.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-021.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-021.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-021.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_fwd_fold.cpp → Examples\\atoms\\_atom_fwd_fold.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-021.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-021.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-022.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_fwd_count.cpp → EXAMPLES/ATOMS/_ATOM_FWD_COUNT.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-022.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-022.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-022.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_fwd_count.cpp → ./Examples/atoms/_atom_fwd_count.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-022.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-022.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-022.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_fwd_count.cpp → Examples\\atoms\\_atom_fwd_count.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-022.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-022.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-023.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_rule_zero.cpp → EXAMPLES/ATOMS/_ATOM_RULE_ZERO.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-023.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-023.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-023.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_rule_zero.cpp → ./Examples/atoms/_atom_rule_zero.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-023.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-023.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-023.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_rule_zero.cpp → Examples\\atoms\\_atom_rule_zero.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-023.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-023.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-024.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_rule_three_bug.cpp → EXAMPLES/ATOMS/_ATOM_RULE_THREE_BUG.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-024.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-024.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-024.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_rule_three_bug.cpp → ./Examples/atoms/_atom_rule_three_bug.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-024.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-024.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-024.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_rule_three_bug.cpp → Examples\\atoms\\_atom_rule_three_bug.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-024.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-024.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-025.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_rule_five_noexcept.cpp → EXAMPLES/ATOMS/_ATOM_RULE_FIVE_NOEXCEPT.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-025.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-025.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-025.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_rule_five_noexcept.cpp → ./Examples/atoms/_atom_rule_five_noexcept.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-025.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-025.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-025.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_rule_five_noexcept.cpp → Examples\\atoms\\_atom_rule_five_noexcept.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-025.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-025.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-026.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_alloc_basic.cpp → EXAMPLES/ATOMS/_ATOM_ALLOC_BASIC.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-026.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-026.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-026.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_alloc_basic.cpp → ./Examples/atoms/_atom_alloc_basic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-026.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-026.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-026.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_alloc_basic.cpp → Examples\\atoms\\_atom_alloc_basic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-026.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-026.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-027.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_alloc_arena.cpp → EXAMPLES/ATOMS/_ATOM_ALLOC_ARENA.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-027.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-027.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-027.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_alloc_arena.cpp → ./Examples/atoms/_atom_alloc_arena.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-027.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-027.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-027.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_alloc_arena.cpp → Examples\\atoms\\_atom_alloc_arena.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-027.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-027.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-028.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_alloc_pmr.cpp → EXAMPLES/ATOMS/_ATOM_ALLOC_PMR.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-028.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-028.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-028.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_alloc_pmr.cpp → ./Examples/atoms/_atom_alloc_pmr.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-028.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-028.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-028.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_alloc_pmr.cpp → Examples\\atoms\\_atom_alloc_pmr.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-028.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-028.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-029.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_sso_threshold.cpp → EXAMPLES/ATOMS/_ATOM_SSO_THRESHOLD.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-029.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-029.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-029.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_sso_threshold.cpp → ./Examples/atoms/_atom_sso_threshold.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-029.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-029.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-029.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_sso_threshold.cpp → Examples\\atoms\\_atom_sso_threshold.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-029.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-029.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-030.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_sso_cost.cpp → EXAMPLES/ATOMS/_ATOM_SSO_COST.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-030.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-030.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-030.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_sso_cost.cpp → ./Examples/atoms/_atom_sso_cost.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-030.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-030.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-030.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_sso_cost.cpp → Examples\\atoms\\_atom_sso_cost.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-030.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-030.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-031.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_sso_size.cpp → EXAMPLES/ATOMS/_ATOM_SSO_SIZE.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-031.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-031.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-031.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_sso_size.cpp → ./Examples/atoms/_atom_sso_size.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-031.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-031.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-031.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_sso_size.cpp → Examples\\atoms\\_atom_sso_size.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-031.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-031.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_unique_deleter.cpp → EXAMPLES/ATOMS/_ATOM_UNIQUE_DELETER.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-032.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_unique_deleter.cpp → ./Examples/atoms/_atom_unique_deleter.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-032.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-032.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_unique_deleter.cpp → Examples\\atoms\\_atom_unique_deleter.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-032.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-033.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_shared_deleter_erase.cpp → EXAMPLES/ATOMS/_ATOM_SHARED_DELETER_ERASE.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-033.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-033.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-033.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_shared_deleter_erase.cpp → ./Examples/atoms/_atom_shared_deleter_erase.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-033.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-033.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-033.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_shared_deleter_erase.cpp → Examples\\atoms\\_atom_shared_deleter_erase.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-033.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-033.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-034.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_shared_atomic.cpp → EXAMPLES/ATOMS/_ATOM_SHARED_ATOMIC.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-034.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-034.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-034.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_shared_atomic.cpp → ./Examples/atoms/_atom_shared_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-034.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-034.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-034.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_shared_atomic.cpp → Examples\\atoms\\_atom_shared_atomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-034.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-034.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-035.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_unique_noatomic.cpp → EXAMPLES/ATOMS/_ATOM_UNIQUE_NOATOMIC.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-035.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-035.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-035.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_unique_noatomic.cpp → ./Examples/atoms/_atom_unique_noatomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-035.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-035.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-035.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_unique_noatomic.cpp → Examples\\atoms\\_atom_unique_noatomic.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-035.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-035.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-036.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_leak_tree_ok.cpp → EXAMPLES/ATOMS/_ATOM_LEAK_TREE_OK.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-036.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-036.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-036.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_leak_tree_ok.cpp → ./Examples/atoms/_atom_leak_tree_ok.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-036.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-036.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-036.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_leak_tree_ok.cpp → Examples\\atoms\\_atom_leak_tree_ok.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-036.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-036.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-037.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_leak_tree_bug.cpp → EXAMPLES/ATOMS/_ATOM_LEAK_TREE_BUG.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-037.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-037.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-037.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_leak_tree_bug.cpp → ./Examples/atoms/_atom_leak_tree_bug.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-037.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-037.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-037.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_leak_tree_bug.cpp → Examples\\atoms\\_atom_leak_tree_bug.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-037.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-037.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-038.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_sso_portable.cpp → EXAMPLES/ATOMS/_ATOM_SSO_PORTABLE.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-038.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_sso_portable.cpp → ./Examples/atoms/_atom_sso_portable.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-038.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_sso_portable.cpp → Examples\\atoms\\_atom_sso_portable.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-039.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_allocator_bench.cpp → EXAMPLES/ATOMS/_ATOM_ALLOCATOR_BENCH.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-039.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-039.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-039.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_allocator_bench.cpp → ./Examples/atoms/_atom_allocator_bench.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-039.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-039.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-039.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_allocator_bench.cpp → Examples\\atoms\\_atom_allocator_bench.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-039.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\mem\\EV-MEM-039.md"
+   ]
+  },
+  {
+   "card": "evidence/mem/EV-MEM-040.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_alloc_strategies.cpp → EXAMPLES/ATOMS/_ATOM_ALLOC_STRATEGIES.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-040.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_alloc_strategies.cpp → ./Examples/atoms/_atom_alloc_strategies.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-040.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_alloc_strategies.cpp → Examples\\atoms\\_atom_alloc_strategies.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-041.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_alloc_strategies.cpp → EXAMPLES/ATOMS/_ATOM_ALLOC_STRATEGIES.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-041.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_alloc_strategies.cpp → ./Examples/atoms/_atom_alloc_strategies.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-041.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_alloc_strategies.cpp → Examples\\atoms\\_atom_alloc_strategies.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-042.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_leak_detection.cpp → EXAMPLES/ATOMS/_ATOM_LEAK_DETECTION.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-042.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_leak_detection.cpp → ./Examples/atoms/_atom_leak_detection.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-042.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_leak_detection.cpp → Examples\\atoms\\_atom_leak_detection.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-043.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_leak_detection.cpp → EXAMPLES/ATOMS/_ATOM_LEAK_DETECTION.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-043.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_leak_detection.cpp → ./Examples/atoms/_atom_leak_detection.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-043.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_leak_detection.cpp → Examples\\atoms\\_atom_leak_detection.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-044.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_false_sharing.cpp → EXAMPLES/ATOMS/_ATOM_FALSE_SHARING.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-044.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_false_sharing.cpp → ./Examples/atoms/_atom_false_sharing.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-044.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_false_sharing.cpp → Examples\\atoms\\_atom_false_sharing.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-045.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_false_sharing_perf.cpp → EXAMPLES/ATOMS/_ATOM_FALSE_SHARING_PERF.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-045.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_false_sharing_perf.cpp → ./Examples/atoms/_atom_false_sharing_perf.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/mem/EV-MEM-045.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_false_sharing_perf.cpp → Examples\\atoms\\_atom_false_sharing_perf.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "evidence/ub/EV-UB-001.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_eval_order.cpp → EXAMPLES/ATOMS/_ATOM_EVAL_ORDER.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-001.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\ub\\EV-UB-001.md"
+   ]
+  },
+  {
+   "card": "evidence/ub/EV-UB-001.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_eval_order.cpp → ./Examples/atoms/_atom_eval_order.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-001.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\ub\\EV-UB-001.md"
+   ]
+  },
+  {
+   "card": "evidence/ub/EV-UB-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_eval_order.cpp → Examples\\atoms\\_atom_eval_order.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-001.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\ub\\EV-UB-001.md"
+   ]
+  },
+  {
+   "card": "evidence/ub/EV-UB-002.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_strict_alias.cpp → EXAMPLES/ATOMS/_ATOM_STRICT_ALIAS.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-002.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\ub\\EV-UB-002.md"
+   ]
+  },
+  {
+   "card": "evidence/ub/EV-UB-002.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_strict_alias.cpp → ./Examples/atoms/_atom_strict_alias.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-002.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\ub\\EV-UB-002.md"
+   ]
+  },
+  {
+   "card": "evidence/ub/EV-UB-002.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_strict_alias.cpp → Examples\\atoms\\_atom_strict_alias.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-002.md --operators M2 --limit 1",
+   "verdict": "blocked",
+   "kind": "warn_only",
+   "new_block": [],
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:C:\\Users\\ASUS\\AppData\\Local\\Temp\\mutfuzz_72_rt4z0\\evidence\\ub\\EV-UB-002.md"
+   ]
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+   "op": "M2",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_lock_cost.out → EXAMPLES/ATOMS/_ATOM_LOCK_COST.OUT）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-LOCK-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_lock_cost.out → ./Examples/atoms/_atom_lock_cost.out）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-LOCK-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_lock_cost.out → Examples\\atoms\\_atom_lock_cost.out）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-LOCK-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_data_race.cpp → EXAMPLES/ATOMS/_ATOM_DATA_RACE.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-RACE-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_data_race.cpp → ./Examples/atoms/_atom_data_race.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-RACE-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_data_race.cpp → Examples\\atoms\\_atom_data_race.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/conc/ATOM-CONC-RACE-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+   "op": "M2",
+   "point": "路径转大写（misconceptions/README.md → MISCONCEPTIONS/README.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/hist/ATOM-HIST-AUTOPTR-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+   "op": "M2",
+   "point": "路径加 ./（misconceptions/README.md → ./misconceptions/README.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/hist/ATOM-HIST-AUTOPTR-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（misconceptions/README.md → misconceptions\\README.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/hist/ATOM-HIST-AUTOPTR-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+   "op": "M2",
+   "point": "路径转大写（docs/kernel/M2_empirical.md → DOCS/KERNEL/M2_EMPIRICAL.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/lang/ATOM-LANG-INLINE-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+   "op": "M2",
+   "point": "路径加 ./（docs/kernel/M2_empirical.md → ./docs/kernel/M2_empirical.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/lang/ATOM-LANG-INLINE-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（docs/kernel/M2_empirical.md → docs\\kernel\\M2_empirical.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/lang/ATOM-LANG-INLINE-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+   "op": "M2",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+   "op": "M2",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+   "op": "M2",
+   "point": "路径转大写（docs/kernel/G6_status_levels.md → DOCS/KERNEL/G6_STATUS_LEVELS.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+   "op": "M2",
+   "point": "路径加 ./（docs/kernel/G6_status_levels.md → ./docs/kernel/G6_status_levels.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（docs/kernel/G6_status_levels.md → docs\\kernel\\G6_status_levels.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-ALLOC-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+   "op": "M2",
+   "point": "路径转大写（misconceptions/MIS-MEM-027.md → MISCONCEPTIONS/MIS-MEM-027.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+   "op": "M2",
+   "point": "路径加 ./（misconceptions/MIS-MEM-027.md → ./misconceptions/MIS-MEM-027.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（misconceptions/MIS-MEM-027.md → misconceptions\\MIS-MEM-027.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+   "op": "M2",
+   "point": "路径转大写（docs/kernel/G6_status_levels.md → DOCS/KERNEL/G6_STATUS_LEVELS.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+   "op": "M2",
+   "point": "路径加 ./（docs/kernel/G6_status_levels.md → ./docs/kernel/G6_status_levels.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（docs/kernel/G6_status_levels.md → docs\\kernel\\G6_status_levels.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-LEAK-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+   "op": "M2",
+   "point": "路径转大写（misconceptions/README.md → MISCONCEPTIONS/README.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-MOVE-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+   "op": "M2",
+   "point": "路径加 ./（misconceptions/README.md → ./misconceptions/README.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-MOVE-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（misconceptions/README.md → misconceptions\\README.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-MOVE-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+   "op": "M2",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+   "op": "M2",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+   "op": "M2",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+   "op": "M2",
+   "point": "路径转大写（Examples/atoms/_atom_allocator_bench.cpp → EXAMPLES/ATOMS/_ATOM_ALLOCATOR_BENCH.CPP）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-003.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+   "op": "M2",
+   "point": "路径加 ./（Examples/atoms/_atom_allocator_bench.cpp → ./Examples/atoms/_atom_allocator_bench.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-003.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Examples/atoms/_atom_allocator_bench.cpp → Examples\\atoms\\_atom_allocator_bench.cpp）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-003.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+   "op": "M2",
+   "point": "路径转大写（docs/kernel/G6_status_levels.md → DOCS/KERNEL/G6_STATUS_LEVELS.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-004.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+   "op": "M2",
+   "point": "路径加 ./（docs/kernel/G6_status_levels.md → ./docs/kernel/G6_status_levels.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-004.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（docs/kernel/G6_status_levels.md → docs\\kernel\\G6_status_levels.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-PERF-004.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+   "op": "M2",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+   "op": "M2",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+   "op": "M2",
+   "point": "路径转大写（Book/part10_modern/ch115_move.md → BOOK/PART10_MODERN/CH115_MOVE.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RVREF-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+   "op": "M2",
+   "point": "路径加 ./（Book/part10_modern/ch115_move.md → ./Book/part10_modern/ch115_move.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RVREF-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（Book/part10_modern/ch115_move.md → Book\\part10_modern\\ch115_move.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-RVREF-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+   "op": "M2",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+   "op": "M2",
+   "point": "路径转大写（misconceptions/MIS-MEM-026.md → MISCONCEPTIONS/MIS-MEM-026.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+   "op": "M2",
+   "point": "路径加 ./（misconceptions/MIS-MEM-026.md → ./misconceptions/MIS-MEM-026.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（misconceptions/MIS-MEM-026.md → misconceptions\\MIS-MEM-026.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/mem/ATOM-MEM-SHARED-002.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+   "op": "M2",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+   "op": "M2",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+   "op": "M2",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+   "op": "M2",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+   "op": "M2",
+   "point": "-",
+   "verdict": "n_a",
+   "why": "该卡本就没有被变异的字段（不适用）"
+  },
+  {
+   "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+   "op": "M2",
+   "point": "路径转大写（misconceptions/README.md → MISCONCEPTIONS/README.MD）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/ub/ATOM-UB-GRAY-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+   "op": "M2",
+   "point": "路径加 ./（misconceptions/README.md → ./misconceptions/README.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/ub/ATOM-UB-GRAY-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  },
+  {
+   "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+   "op": "M2",
+   "point": "分隔符换反斜杠（misconceptions/README.md → misconceptions\\README.md）",
+   "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards atoms/ub/ATOM-UB-GRAY-001.md --operators M2 --limit 1",
+   "verdict": "escaped",
+   "new_block": [],
+   "new_warn": []
+  }
+ ]
+}

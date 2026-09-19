@@ -1,0 +1,626 @@
+{
+  "prev_failed": 180,
+  "fixed": 104,
+  "still_failing": 76,
+  "by_class": {
+    "other": 20,
+    "env": 17,
+    "frag": 39
+  },
+  "remaining": [
+    {
+      "file": "ch08_cpp23.md",
+      "path": "Book/part01_history/ch08_cpp23.md",
+      "failures": [
+        {
+          "block": 34,
+          "error": "print: No such file or directory",
+          "class": "other"
+        },
+        {
+          "block": 37,
+          "error": "print: No such file or directory",
+          "class": "other"
+        },
+        {
+          "block": 40,
+          "error": "flat_map: No such file or directory",
+          "class": "other"
+        },
+        {
+          "block": 41,
+          "error": "flat_map: No such file or directory",
+          "class": "other"
+        },
+        {
+          "block": 44,
+          "error": "flat_map: No such file or directory",
+          "class": "other"
+        }
+      ]
+    },
+    {
+      "file": "ch11_compilers.md",
+      "path": "Book/part02_toolchain/ch11_compilers.md",
+      "failures": [
+        {
+          "block": 49,
+          "error": "'import' does not name a type",
+          "class": "env"
+        }
+      ]
+    },
+    {
+      "file": "ch12_buildsystems.md",
+      "path": "Book/part02_toolchain/ch12_buildsystems.md",
+      "failures": [
+        {
+          "block": 20,
+          "error": "_ch12_mylib.h: No such file or directory",
+          "class": "frag"
+        },
+        {
+          "block": 21,
+          "error": "fmt/core.h: No such file or directory",
+          "class": "env"
+        }
+      ]
+    },
+    {
+      "file": "ch13_packaging.md",
+      "path": "Book/part02_toolchain/ch13_packaging.md",
+      "failures": [
+        {
+          "block": 1,
+          "error": "fmt/core.h: No such file or directory",
+          "class": "env"
+        },
+        {
+          "block": 2,
+          "error": "fmt/core.h: No such file or directory",
+          "class": "env"
+        },
+        {
+          "block": 18,
+          "error": "_ch13_packlib.hpp: No such file or directory",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch14_debugging.md",
+      "path": "Book/part02_toolchain/ch14_debugging.md",
+      "failures": [
+        {
+          "block": 11,
+          "error": "'g_alloc' was not declared in this scope",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch18_buildconfig.md",
+      "path": "Book/part02_toolchain/ch18_buildconfig.md",
+      "failures": [
+        {
+          "block": 13,
+          "error": "'compute' was not declared in this scope",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch19_variables.md",
+      "path": "Book/part03_language/ch19_variables.md",
+      "failures": [
+        {
+          "block": 14,
+          "error": "counter.hpp: No such file or directory",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch20_reference_pointer.md",
+      "path": "Book/part03_language/ch20_reference_pointer.md",
+      "failures": [
+        {
+          "block": 13,
+          "error": "expected primary-expression before 'int'",
+          "class": "other"
+        }
+      ]
+    },
+    {
+      "file": "ch23_namespace_adl.md",
+      "path": "Book/part03_language/ch23_namespace_adl.md",
+      "failures": [
+        {
+          "block": 27,
+          "error": "'process' was not declared in this scope; did you mean 'thirdparty::process'?",
+          "class": "frag"
+        },
+        {
+          "block": 32,
+          "error": "'module' does not name a type",
+          "class": "env"
+        }
+      ]
+    },
+    {
+      "file": "ch26_lambda.md",
+      "path": "Book/part03_language/ch26_lambda.md",
+      "failures": [
+        {
+          "block": 15,
+          "error": "increment of read-only variable 'n'",
+          "class": "other"
+        }
+      ]
+    },
+    {
+      "file": "ch28_lifetime_ub.md",
+      "path": "Book/part03_language/ch28_lifetime_ub.md",
+      "failures": [
+        {
+          "block": 5,
+          "error": "cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int'",
+          "class": "other"
+        },
+        {
+          "block": 13,
+          "error": "declaration of 'arr' as array of references",
+          "class": "other"
+        },
+        {
+          "block": 17,
+          "error": "cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int'",
+          "class": "other"
+        },
+        {
+          "block": 55,
+          "error": "overflow in constant expression [-fpermissive]",
+          "class": "other"
+        }
+      ]
+    },
+    {
+      "file": "ch29_friend.md",
+      "path": "Book/part03_language/ch29_friend.md",
+      "failures": [
+        {
+          "block": 15,
+          "error": "'classA' does not name a type; did you mean 'class'?",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch35_memory_layout.md",
+      "path": "Book/part04_memory/ch35_memory_layout.md",
+      "failures": [
+        {
+          "block": 6,
+          "error": "sys/mman.h: No such file or directory",
+          "class": "env"
+        },
+        {
+          "block": 14,
+          "error": "sys/wait.h: No such file or directory",
+          "class": "env"
+        }
+      ]
+    },
+    {
+      "file": "ch39_raii_rule.md",
+      "path": "Book/part04_memory/ch39_raii_rule.md",
+      "failures": [
+        {
+          "block": 34,
+          "error": "'SCOPE_EXIT' was not declared in this scope",
+          "class": "frag"
+        },
+        {
+          "block": 53,
+          "error": "'m' was not declared in this scope",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch43_cache_locality.md",
+      "path": "Book/part04_memory/ch43_cache_locality.md",
+      "failures": [
+        {
+          "block": 11,
+          "error": "invalid conversion from 'unsigned int*' to 'PDWORD' {aka 'long unsigned int*'} [-fpermissive]",
+          "class": "env"
+        }
+      ]
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "path": "Book/part04_memory/ch44_memory_pool.md",
+      "failures": [
+        {
+          "block": 6,
+          "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+          "class": "frag"
+        },
+        {
+          "block": 15,
+          "error": "'mutex' in namespace 'std' does not name a type",
+          "class": "frag"
+        },
+        {
+          "block": 21,
+          "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+          "class": "frag"
+        },
+        {
+          "block": 22,
+          "error": "program_07_segregated.cpp: No such file or directory",
+          "class": "frag"
+        },
+        {
+          "block": 23,
+          "error": "program_08_thread_local.cpp: No such file or directory",
+          "class": "frag"
+        },
+        {
+          "block": 25,
+          "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+          "class": "frag"
+        },
+        {
+          "block": 29,
+          "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+          "class": "frag"
+        },
+        {
+          "block": 37,
+          "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+          "class": "frag"
+        },
+        {
+          "block": 38,
+          "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch65_type_traits.md",
+      "path": "Book/part06_templates/ch65_type_traits.md",
+      "failures": [
+        {
+          "block": 32,
+          "error": "expected class-name before '{' token",
+          "class": "other"
+        }
+      ]
+    },
+    {
+      "file": "ch83_map.md",
+      "path": "Book/part07_stl/ch83_map.md",
+      "failures": [
+        {
+          "block": 36,
+          "error": "flat_map: No such file or directory",
+          "class": "other"
+        }
+      ]
+    },
+    {
+      "file": "ch96_sorting.md",
+      "path": "Book/part08_algorithms/ch96_sorting.md",
+      "failures": [
+        {
+          "block": 4,
+          "error": "'introsort' was not declared in this scope",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch108_memory_order.md",
+      "path": "Book/part09_concurrency/ch108_memory_order.md",
+      "failures": [
+        {
+          "block": 18,
+          "error": "'push' was not declared in this scope",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch117_copy_elision.md",
+      "path": "Book/part10_modern/ch117_copy_elision.md",
+      "failures": [
+        {
+          "block": 6,
+          "error": "'Big' does not name a type",
+          "class": "frag"
+        },
+        {
+          "block": 55,
+          "error": "'close' was not declared in this scope; did you mean 'fclose'?",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch118_modules.md",
+      "path": "Book/part10_modern/ch118_modules.md",
+      "failures": [
+        {
+          "block": 5,
+          "error": "'import' does not name a type",
+          "class": "env"
+        },
+        {
+          "block": 10,
+          "error": "'import' does not name a type",
+          "class": "env"
+        },
+        {
+          "block": 24,
+          "error": "'module' does not name a type",
+          "class": "env"
+        },
+        {
+          "block": 25,
+          "error": "'module' does not name a type",
+          "class": "env"
+        }
+      ]
+    },
+    {
+      "file": "ch124_libstdcxx.md",
+      "path": "Book/part11_source/ch124_libstdcxx.md",
+      "failures": [
+        {
+          "block": 4,
+          "error": "'struct std::_Vector_base<int, std::allocator<int> >::_Vector_impl_data' is inaccessible within this context",
+          "class": "other"
+        }
+      ]
+    },
+    {
+      "file": "ch125_libcxx.md",
+      "path": "Book/part11_source/ch125_libcxx.md",
+      "failures": [
+        {
+          "block": 29,
+          "error": "print: No such file or directory",
+          "class": "other"
+        }
+      ]
+    },
+    {
+      "file": "ch126_msstl.md",
+      "path": "Book/part11_source/ch126_msstl.md",
+      "failures": [
+        {
+          "block": 19,
+          "error": "'_MSC_VER' was not declared in this scope",
+          "class": "frag"
+        },
+        {
+          "block": 22,
+          "error": "print: No such file or directory",
+          "class": "other"
+        },
+        {
+          "block": 32,
+          "error": "'_MSC_VER' was not declared in this scope",
+          "class": "frag"
+        },
+        {
+          "block": 40,
+          "error": "print: No such file or directory",
+          "class": "other"
+        }
+      ]
+    },
+    {
+      "file": "ch128_boost.md",
+      "path": "Book/part11_source/ch128_boost.md",
+      "failures": [
+        {
+          "block": 1,
+          "error": "boost/shared_ptr.hpp: No such file or directory",
+          "class": "env"
+        }
+      ]
+    },
+    {
+      "file": "ch129_qt.md",
+      "path": "Book/part11_source/ch129_qt.md",
+      "failures": [
+        {
+          "block": 11,
+          "error": "QApplication: No such file or directory",
+          "class": "other"
+        }
+      ]
+    },
+    {
+      "file": "ch131_fmt_spdlog.md",
+      "path": "Book/part11_source/ch131_fmt_spdlog.md",
+      "failures": [
+        {
+          "block": 1,
+          "error": "fmt/core.h: No such file or directory",
+          "class": "env"
+        },
+        {
+          "block": 2,
+          "error": "spdlog/spdlog.h: No such file or directory",
+          "class": "env"
+        },
+        {
+          "block": 8,
+          "error": "spdlog/spdlog.h: No such file or directory",
+          "class": "env"
+        }
+      ]
+    },
+    {
+      "file": "ch135_patterns_intro.md",
+      "path": "Book/part12_patterns/ch135_patterns_intro.md",
+      "failures": [
+        {
+          "block": 11,
+          "error": "'area_of' was not declared in this scope",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch136_creational.md",
+      "path": "Book/part12_patterns/ch136_creational.md",
+      "failures": [
+        {
+          "block": 23,
+          "error": "'Session' does not name a type",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch138_behavioral.md",
+      "path": "Book/part12_patterns/ch138_behavioral.md",
+      "failures": [
+        {
+          "block": 2,
+          "error": "'area_of' was not declared in this scope",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch142_ecs.md",
+      "path": "Book/part12_patterns/ch142_ecs.md",
+      "failures": [
+        {
+          "block": 41,
+          "error": "variable or field 'movement_system' declared void",
+          "class": "other"
+        }
+      ]
+    },
+    {
+      "file": "ch144_style.md",
+      "path": "Book/part13_engineering/ch144_style.md",
+      "failures": [
+        {
+          "block": 11,
+          "error": "_ch144_guard.h: No such file or directory",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch145_naming_api.md",
+      "path": "Book/part13_engineering/ch145_naming_api.md",
+      "failures": [
+        {
+          "block": 42,
+          "error": "'log' was not declared in this scope; did you mean 'long'?",
+          "class": "frag"
+        },
+        {
+          "block": 53,
+          "error": "'clamp' was not declared in this scope",
+          "class": "frag"
+        },
+        {
+          "block": 57,
+          "error": "'UserId' was not declared in this scope",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch146_error_handling.md",
+      "path": "Book/part13_engineering/ch146_error_handling.md",
+      "failures": [
+        {
+          "block": 57,
+          "error": "'divide_error_code' was not declared in this scope",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch150_testing.md",
+      "path": "Book/part13_engineering/ch150_testing.md",
+      "failures": [
+        {
+          "block": 6,
+          "error": "gtest/gtest.h: No such file or directory",
+          "class": "env"
+        }
+      ]
+    },
+    {
+      "file": "ch159_threadpool.md",
+      "path": "Book/part15_cases/ch159_threadpool.md",
+      "failures": [
+        {
+          "block": 40,
+          "error": "'ThreadPool' was not declared in this scope; did you mean 'thread_local'?",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch160_mempool.md",
+      "path": "Book/part15_cases/ch160_mempool.md",
+      "failures": [
+        {
+          "block": 6,
+          "error": "'malloc' is not a member of 'std'",
+          "class": "other"
+        },
+        {
+          "block": 14,
+          "error": "'FixedPool' was not declared in this scope",
+          "class": "frag"
+        },
+        {
+          "block": 20,
+          "error": "'MemoryPool' was not declared in this scope",
+          "class": "frag"
+        }
+      ]
+    },
+    {
+      "file": "ch161_logger.md",
+      "path": "Book/part15_cases/ch161_logger.md",
+      "failures": [
+        {
+          "block": 2,
+          "error": "'Level' does not name a type",
+          "class": "frag"
+        },
+        {
+          "block": 18,
+          "error": "'log_if' was not declared in this scope",
+          "class": "frag"
+        },
+        {
+          "block": 29,
+          "error": "'g_mtx' was not declared in this scope",
+          "class": "frag"
+        },
+        {
+          "block": 35,
+          "error": "'now' was not declared in this scope",
+          "class": "frag"
+        }
+      ]
+    }
+  ]
+}

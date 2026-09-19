@@ -1,0 +1,3 @@
+{"timestamp": "2026-09-15T00:37:14", "seq": 1, "pid": 41752, "actor": "coolie", "action": "gate_check", "target": "repo", "result": "fail", "details": {"rule": "EV-X"}}
+{"timestamp": "2026-09-15T00:37:14", "seq": 2, "pid": 41752, "actor": "coolie", "action": "replay", "target": "EV-A", "result": "pass"}
+{"timestamp": "2026-09-15T00:37:14", "seq": 3, "pid": 41752, "actor": "redteam", "action": "gate_check", "target": "repo", "result": "fail"}

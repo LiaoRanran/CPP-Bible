@@ -1,0 +1,662 @@
+{
+  "root": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible",
+  "chapters": [
+    {
+      "file": "Book/_legacy_ModernCppBible/00_总目录.md",
+      "errors": [],
+      "warns": [
+        "模板A元素缺失: 11,12,13,14,15,16,17,18,19,20/20",
+        "可编译示例(cpp块)=0 < 阈值30",
+        "未见立场分层标签[标准]/[实现]/[平台]/[经验]"
+      ],
+      "info": [
+        "ASCII框线字符数=175（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 10,
+      "cpp_blocks": 0,
+      "stance": false,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/_legacy_ModernCppBible/00_编写规范与约定.md",
+      "errors": [],
+      "warns": [
+        "可编译示例(cpp块)=0 < 阈值30"
+      ],
+      "info": [
+        "ASCII框线字符数=73（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 0,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/_legacy_ModernCppBible/part01_history/part01_ch01_cpp_history.md",
+      "errors": [],
+      "warns": [
+        "模板A元素缺失: 18,19,20/20",
+        "可编译示例(cpp块)=4 < 阈值30"
+      ],
+      "info": [
+        "ASCII框线字符数=137（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 17,
+      "cpp_blocks": 4,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part01_history/ch01_c_history.md",
+      "errors": [],
+      "warns": [
+        "可编译示例(cpp块)=1 < 阈值30"
+      ],
+      "info": [
+        "ASCII框线字符数=251（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 1,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part01_history/ch02_standardization.md",
+      "errors": [],
+      "warns": [
+        "可编译示例(cpp块)=0 < 阈值30"
+      ],
+      "info": [
+        "ASCII框线字符数=16（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 0,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part01_history/ch03_cpp98_03.md",
+      "errors": [],
+      "warns": [
+        "可编译示例(cpp块)=1 < 阈值30"
+      ],
+      "info": [
+        "ASCII框线字符数=94（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 1,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part01_history/ch04_cpp11.md",
+      "errors": [],
+      "warns": [
+        "可编译示例(cpp块)=1 < 阈值30"
+      ],
+      "info": [
+        "ASCII框线字符数=71（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 1,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part01_history/ch05_cpp14.md",
+      "errors": [],
+      "warns": [
+        "可编译示例(cpp块)=0 < 阈值30"
+      ],
+      "info": [
+        "ASCII框线字符数=16（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 0,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part01_history/ch06_cpp17.md",
+      "errors": [],
+      "warns": [
+        "可编译示例(cpp块)=1 < 阈值30"
+      ],
+      "info": [
+        "ASCII框线字符数=73（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 1,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part01_history/ch07_cpp20.md",
+      "errors": [],
+      "warns": [
+        "可编译示例(cpp块)=1 < 阈值30",
+        "源码剖析缺行号标注: ['每个']"
+      ],
+      "info": [
+        "ASCII框线字符数=29（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 1,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part01_history/ch08_cpp23.md",
+      "errors": [],
+      "warns": [
+        "可编译示例(cpp块)=1 < 阈值30"
+      ],
+      "info": [
+        "ASCII框线字符数=18（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 1,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part01_history/ch09_cpp26.md",
+      "errors": [],
+      "warns": [
+        "可编译示例(cpp块)=0 < 阈值30"
+      ],
+      "info": [
+        "ASCII框线字符数=16（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 0,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part01_history/ch10_version_matrix.md",
+      "errors": [],
+      "warns": [
+        "可编译示例(cpp块)=0 < 阈值30"
+      ],
+      "info": [],
+      "elements_hit": 20,
+      "cpp_blocks": 0,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part03_language/ch19_variables.md",
+      "errors": [],
+      "warns": [
+        "源码剖析缺行号标注: ['`libstdc++-v3/libsupc++/guard.h`（声明）**', '`libstdc++-v3/libsupc++/guard.cc`（Linux', '`libgcc/emutls.c`（真实结构节选）**']"
+      ],
+      "info": [
+        "示例数达标: 36",
+        "ASCII框线字符数=417（Bible允许ASCII图，仅统计）",
+        "源码路径(可能本机无): `libstdc++-v3/libsupc++/guard.h`（声明）**",
+        "源码路径(可能本机无): `libstdc++-v3/libsupc++/guard.cc`（Linux",
+        "源码路径(可能本机无): `libgcc/emutls.c`（真实结构节选）**",
+        "源码路径(可能本机无): `libstdc++-v3/include/std/numbers`（真实结构）**"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 36,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part03_language/ch20_reference_pointer.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 41",
+        "ASCII框线字符数=50（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 41,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part03_language/ch21_const_family.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 30"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 30,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part03_language/ch22_auto_decltype.md",
+      "errors": [],
+      "warns": [
+        "源码剖析缺行号标注: ['`ROOT/type_traits`']"
+      ],
+      "info": [
+        "示例数达标: 45",
+        "ASCII框线字符数=58（Bible允许ASCII图，仅统计）",
+        "源码路径(可能本机无): `ROOT/type_traits`"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 45,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part03_language/ch23_namespace_adl.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 38",
+        "ASCII框线字符数=50（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 38,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part03_language/ch24_enum.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 42",
+        "ASCII框线字符数=68（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 42,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part03_language/ch25_union_variant.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 67"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 67,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part03_language/ch26_lambda.md",
+      "errors": [],
+      "warns": [
+        "源码剖析缺行号标注: ['`/c/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/std_function.h`']"
+      ],
+      "info": [
+        "示例数达标: 57",
+        "ASCII框线字符数=149（Bible允许ASCII图，仅统计）",
+        "源码路径(可能本机无): `/c/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/std_function.h`"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 57,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part03_language/ch27_cast.md",
+      "errors": [],
+      "warns": [
+        "源码剖析缺行号标注: ['`type_traits`，行', '`bit`，行', '`bits/chrono.h`（被']"
+      ],
+      "info": [
+        "示例数达标: 54",
+        "ASCII框线字符数=41（Bible允许ASCII图，仅统计）",
+        "源码路径(可能本机无): `bits/chrono.h`（被"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 54,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part03_language/ch28_lifetime_ub.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 56",
+        "ASCII框线字符数=43（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 56,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part04_memory/ch35_memory_layout.md",
+      "errors": [],
+      "warns": [
+        "源码剖析缺行号标注: ['`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`，**第', '`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits`，**第']"
+      ],
+      "info": [
+        "示例数达标: 40",
+        "ASCII框线字符数=203（Bible允许ASCII图，仅统计）",
+        "源码路径(可能本机无): `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`，**第",
+        "源码路径(可能本机无): `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits`，**第"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 40,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part04_memory/ch36_stack_heap.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 40",
+        "ASCII框线字符数=244（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 40,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part04_memory/ch37_new_delete.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 51"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 51,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part04_memory/ch38_allocator.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 57"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 57,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part04_memory/ch39_raii_rule.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 51"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 51,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part04_memory/ch40_exception_safety.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 44"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 44,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part04_memory/ch41_smart_pointers.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 55"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 55,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part04_memory/ch42_strict_aliasing.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 41"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 41,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part04_memory/ch43_cache_locality.md",
+      "errors": [],
+      "warns": [
+        "源码剖析缺行号标注: ['`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`']"
+      ],
+      "info": [
+        "示例数达标: 47",
+        "ASCII框线字符数=176（Bible允许ASCII图，仅统计）",
+        "源码路径(可能本机无): `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 47,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part04_memory/ch44_memory_pool.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 40"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 40,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part05_oo/ch45_oop_object_model.md",
+      "errors": [],
+      "warns": [
+        "源码剖析缺行号标注: ['type_traits', 'type_traits', 'type_traits']"
+      ],
+      "info": [
+        "示例数达标: 48",
+        "源码路径(可能本机无): bits/stl_construct.h",
+        "源码路径(可能本机无): bits/stl_construct.h",
+        "源码路径(可能本机无): bits/uses_allocator.h",
+        "源码路径(可能本机无): bits/uses_allocator.h"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 48,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part05_oo/ch46_encapsulation_inheritance.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 53"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 53,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part05_oo/ch47_virtual_functions.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 31",
+        "ASCII框线字符数=452（Bible允许ASCII图，仅统计）",
+        "源码路径(可能本机无): `Examples/case47_plugin.cpp`",
+        "源码路径(可能本机无): `https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vtable`（规范）",
+        "源码路径(可能本机无): `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cxxabi.h`（声明"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 31,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part05_oo/ch48_rtti.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 30",
+        "ASCII框线字符数=503（Bible允许ASCII图，仅统计）",
+        "源码路径(可能本机无): `Examples/case48_dispatcher.cpp`",
+        "源码路径(可能本机无): `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/typeinfo`",
+        "源码路径(可能本机无): `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cxxabi.h`（声明"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 30,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part05_oo/ch49_virtual_inheritance.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 31",
+        "ASCII框线字符数=361（Bible允许ASCII图，仅统计）",
+        "源码路径(可能本机无): `https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vtable`（规范）",
+        "源码路径(可能本机无): `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`（vtable"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 31,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part05_oo/ch50_multiple_inheritance.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 31",
+        "ASCII框线字符数=180（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 31,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part05_oo/ch51_crtp.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 32",
+        "ASCII框线字符数=78（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 32,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part05_oo/ch52_ebo.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 31",
+        "ASCII框线字符数=86（Bible允许ASCII图，仅统计）"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 31,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part06_templates/ch60_template_basics.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 78"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 78,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part06_templates/ch61_template_overload.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 74"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 74,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part06_templates/ch62_specialization.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 87"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 87,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part06_templates/ch63_variadic.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 78"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 78,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part06_templates/ch64_fold.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 96"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 96,
+      "stance": true,
+      "broken_refs": []
+    },
+    {
+      "file": "Book/part06_templates/ch65_type_traits.md",
+      "errors": [],
+      "warns": [],
+      "info": [
+        "示例数达标: 32"
+      ],
+      "elements_hit": 20,
+      "cpp_blocks": 32,
+      "stance": true,
+      "broken_refs": []
+    }
+  ],
+  "glossary": {
+    "errors": [],
+    "warns": [],
+    "info": [
+      "glossary.json 术语数=112"
+    ]
+  },
+  "duplicate_chapter_numbers": [],
+  "totals": {
+    "errors": 0,
+    "warns": 24
+  }
+}

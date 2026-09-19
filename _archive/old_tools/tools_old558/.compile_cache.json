@@ -1,0 +1,16 @@
+{
+ "meta": {
+  "version": 1,
+  "gcc": "C:\\Qt\\Tools\\mingw1530_64\\bin\\g++.exe",
+  "flags": "-std=c++23 -O0 -fsyntax-only",
+  "main_only": true,
+  "quick": false
+ },
+ "entries": {
+  "Book/part03_language/ch21_const_family.md": {
+   "hash": "41bb3da1b86c10c1f6468965fa24fbed6516cb771cb208168bbbd5fbc52450be",
+   "blocks_checked": 11,
+   "failures": []
+  }
+ }
+}

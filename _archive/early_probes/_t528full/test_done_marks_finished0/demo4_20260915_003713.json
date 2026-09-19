@@ -1,0 +1,17 @@
+{
+ "task_id": "demo4_20260915_003713",
+ "type": "demo4",
+ "description": "d",
+ "status": "done",
+ "assigned_to": "unassigned",
+ "created_at": "2026-09-15T00:37:13",
+ "updated_at": "2026-09-15T00:37:13",
+ "current_step": 2,
+ "total_step": 2,
+ "steps_completed": [],
+ "steps_pending": [],
+ "context_summary": "做完",
+ "artifacts": [],
+ "request_count": 0,
+ "request_limit": 500
+}

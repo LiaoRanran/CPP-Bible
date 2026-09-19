@@ -1,0 +1,21 @@
+{
+ "task_id": "demo_20260915_003713",
+ "type": "demo",
+ "description": "d",
+ "status": "in_progress",
+ "assigned_to": "unassigned",
+ "created_at": "2026-09-15T00:37:13",
+ "updated_at": "2026-09-15T00:37:13",
+ "current_step": 2,
+ "total_step": 3,
+ "steps_completed": [
+  "step 1: 第一步完成"
+ ],
+ "steps_pending": [
+  "从第 3/3 步继续（见续跑提示词）"
+ ],
+ "context_summary": "第二步完成",
+ "artifacts": [],
+ "request_count": 0,
+ "request_limit": 500
+}
