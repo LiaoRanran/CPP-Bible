@@ -248,3 +248,55 @@ def test_copy_of_repo_dir_is_not_the_repo(tmp_path: Path):
     shutil.copytree(mi.ROOT / "atoms", dst)
     assert mi.build_tree(dst)["root"] == mi.build_tree(mi.ROOT / "atoms")["root"], \
         "同内容同相对路径 ⇒ 同根（与绝对位置无关）"
+
+
+# ── 601 任务1.2：tool_integrity 集成 ───────────────────────────────────────────
+def test_tool_integrity_check_includes_merkle():
+    import tool_integrity as ti
+
+    assert ti.main(["--check"]) == 0
+    assert ti.main(["--check", "--no-check-merkle"]) == 0
+
+
+def test_tool_integrity_check_red_on_tampered_fake_repo(tmp_path: Path, monkeypatch, capsys):
+    import tool_integrity as ti
+
+    fake = tmp_path / "repo"
+    (fake / "atoms").mkdir(parents=True)
+    (fake / "atoms" / "A.md").write_text("A\n", encoding="utf-8")
+    roots = fake / "data" / "supply_chain" / "merkle_roots.json"
+    monkeypatch.setattr(mi, "ROOT", fake)
+    monkeypatch.setattr(mi, "ROOTS_PATH", roots)
+    doc = mi.build_all(roots)
+    roots.parent.mkdir(parents=True, exist_ok=True)
+    roots.write_text(json.dumps(doc, ensure_ascii=False), encoding="utf-8")
+    assert ti.main(["--check"]) == 0, "未篡改时必须全绿（core + supply_chain + merkle）"
+    (fake / "atoms" / "A.md").write_text("A 被篡改\n", encoding="utf-8")
+    assert ti.main(["--check"]) == 1
+    out = capsys.readouterr().out
+    assert "[merkle]" in out and "根不匹配" in out, out
+
+
+def test_update_rebuilds_merkle_before_pinning(tmp_path: Path, monkeypatch):
+    """`--update` 顺序：先重建 Merkle 台账、再钉它的 hash（否则钉到的是旧台账）。"""
+    import tool_integrity as ti
+
+    fake = tmp_path / "repo"
+    (fake / "atoms").mkdir(parents=True)
+    (fake / "atoms" / "A.md").write_text("A\n", encoding="utf-8")
+    (fake / "tools").mkdir()
+    (fake / "tools" / "a_tool.py").write_text("# a\n", encoding="utf-8")
+    roots = fake / "data" / "supply_chain" / "merkle_roots.json"
+    cs = fake / "tools" / ".tool_checksums"          # 必须在假 ROOT 内（main 会 relative_to(ROOT)）
+    monkeypatch.setattr(mi, "ROOT", fake)
+    monkeypatch.setattr(mi, "ROOTS_PATH", roots)
+    monkeypatch.setattr(ti, "ROOT", fake)
+    monkeypatch.setattr(ti, "TOOLS", fake / "tools")
+    monkeypatch.setattr(ti, "CHECKSUMS", cs)
+    monkeypatch.setattr(ti, "SUPPLY_CHAIN_FILES", ("data/supply_chain/merkle_roots.json",))
+    assert ti.main(["--update"]) == 0
+    assert roots.is_file(), "update 必须重建 Merkle 台账"
+    got = ti.load_supply_chain_baseline(cs)
+    assert got is not None and got["data/supply_chain/merkle_roots.json"] == ti.sha256_of(roots), \
+        "钉的必须是**重建后**的台账 hash（顺序错的证据就是这里对不上）"
+

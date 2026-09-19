@@ -17,6 +17,10 @@
 `main()` 首行）强制调用——核心被改动且未重钉就 **fail-loud 拒绝运行**，而不是照跑规则把
 "判定核心已被改"静默放行（564 PoC#1/#2 的实锤根因）。
 
+601 任务 1.2：`--check` 默认同时校验**目录级 Merkle 根**（`merkle_integrity.check_all()`），
+`--update` 默认**先重建 Merkle 根再钉**（顺序有意义：台账变了它自己的 hash 也变）。
+`--no-check-merkle` / `--no-update-merkle` 可跳过；缺 Merkle 台账按"副本/部分检出"当警告。
+
 601 任务 0.3：哈希面从"工具"扩到"**信任根数据**"（`SUPPLY_CHAIN_FILES`，与 CORE_TOOLS 并列不混）：
 毒样例豁免台账 / 毒样例覆盖率台账 / 治理文档 manifest / Merkle 根 / in-toto layout ——
 改它们不动一行代码却能改"什么算通过"（585 攻击1/2 的真盲点）。判定口径见 `verify_supply_chain()`：
@@ -32,6 +36,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import sys
 from pathlib import Path
 
@@ -247,6 +252,28 @@ def verify_supply_chain(path: Path | None = None, root: Path | None = None,
     return changed, warnings, (1 if changed else 0)
 
 
+def verify_merkle(roots_path: Path | None = None) -> tuple[list[str], list[str], int]:
+    """目录级 Merkle 根校验（601 任务1.2）：委派给 `merkle_integrity.check_all()`。
+
+    局部导入：核心校验路径（`enforce()`）不该在 import 期就拉起 Merkle 模块（也无循环依赖）。
+    缺台账 ⇒ exit 2（调用方按"副本/部分检出"当**警告**处理，不误红）。
+    """
+    import merkle_integrity as mi
+
+    return mi.check_all(roots_path or mi.ROOTS_PATH)
+
+
+def update_merkle(roots_path: Path | None = None) -> Path:
+    """重建全部 Merkle 根并写台账（601 任务1.2）。**必须在写 supply_chain 基准之前调用**。"""
+    import merkle_integrity as mi
+
+    out = Path(roots_path or mi.ROOTS_PATH)
+    doc = mi.build_all(out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8", newline="\n")
+    return out
+
+
 def verify(path: Path | None = None, tools_dir: Path | None = None
            ) -> tuple[list[tuple[str, str, str]], list[str], int]:
     """返回 (changed[(name, want, got)], missing_names, exit_code)。"""
@@ -315,9 +342,21 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--check-supply-chain", action="store_true",
                     help="601：只校验**信任根数据文件**（豁免台账/覆盖率台账/manifest/Merkle 根/layout）；"
                          "内容变更 exit 1（未钉/缺文件只警告，理由见 verify_supply_chain）")
+    ap.add_argument("--check-merkle", dest="check_merkle", action="store_true", default=True,
+                    help="601：`--check` 时同时校验目录级 Merkle 根（默认开）")
+    ap.add_argument("--no-check-merkle", dest="check_merkle", action="store_false",
+                    help="跳过 Merkle 校验（急用时；正常验收不该用）")
+    ap.add_argument("--update-merkle", dest="update_merkle", action="store_true", default=True,
+                    help="601：`--update` 时重建全部 Merkle 根（默认开；须在写 supply_chain 基准之前）")
+    ap.add_argument("--no-update-merkle", dest="update_merkle", action="store_false",
+                    help="不重建 Merkle 根（如只想重钉文件 hash）")
     a = ap.parse_args(argv)
 
     if a.update:
+        # 顺序有意义：Merkle 台账变了 ⇒ 它的 hash 变了 ⇒ 必须**先**重建再钉 supply_chain 基准
+        if a.update_merkle:
+            mp = update_merkle()
+            print(f"[tool_integrity] Merkle 根已重建：{mp.relative_to(ROOT).as_posix()}")
         dst = write_baseline()
         write_test_config_baseline()
         write_supply_chain_baseline()
@@ -374,7 +413,19 @@ def main(argv: list[str] | None = None) -> int:
     if sc_code == 0 and code == 0:
         print(f"[tool_integrity] OK：信任根数据文件与基准一致"
               f"（{len(compute_supply_chain())} 个已存在，警告 {len(sc_warnings)} 条）")
-    return 1 if (code != 0 or sc_code != 0) else 0
+    m_code = 0
+    if a.check_merkle:
+        m_problems, m_skipped, m_code = verify_merkle()
+        for x in m_skipped:
+            print(f"[tool_integrity] ⚠ [merkle] {x}")
+        for x in m_problems:
+            print(f"[tool_integrity] ❌ [merkle] {x}")
+        if m_code == 0:
+            print(f"[tool_integrity] OK：目录级 Merkle 根与当前内容一致"
+                  f"（警告 {len(m_skipped)} 条）")
+        elif m_code == 2:
+            m_code = 0            # 缺台账（副本/部分检出）⇒ 警告而非红，理由同 supply_chain
+    return 1 if (code != 0 or sc_code != 0 or m_code != 0) else 0
 
 
 if __name__ == "__main__":
