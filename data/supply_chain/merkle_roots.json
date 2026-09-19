@@ -1,0 +1,43 @@
+{
+ "algo": "sha256-path-bound-count-bound-v1",
+ "tool": "merkle_integrity",
+ "version": "1.0",
+ "generated_at": null,
+ "dirs": {
+  "atoms": {
+   "path": "atoms",
+   "root": "11c0b3d982017229a6127fdcc5a801a84383155a4645df7c4b7bd178aa1e6597",
+   "file_count": 29,
+   "tree_height": 5,
+   "generated_at": null
+  },
+  "evidence": {
+   "path": "evidence",
+   "root": "bfc1d80e19a9a75e6c24019e8b4eeefa087728f23020670a70dc44d949370303",
+   "file_count": 57,
+   "tree_height": 6,
+   "generated_at": null
+  },
+  "Examples": {
+   "path": "Examples",
+   "root": "2e8063fe0d1aee5c1fd7b859a7fe68a36d547038e17768fb8f7c8dcad7a64894",
+   "file_count": 1541,
+   "tree_height": 11,
+   "generated_at": null
+  },
+  "Book": {
+   "path": "Book",
+   "root": "0a36f80b46c4d317505f6c4c4bb7976cd6264075b80f251c9556cf701c9bc12c",
+   "file_count": 183,
+   "tree_height": 8,
+   "generated_at": null
+  },
+  "mutation_baselines": {
+   "path": "data/mutation",
+   "root": "42829d7851991a3f502a18471094e1d89acb5a206d42cb04fc3d5c8a52aa4565",
+   "file_count": 7,
+   "tree_height": 3,
+   "generated_at": null
+  }
+ }
+}
