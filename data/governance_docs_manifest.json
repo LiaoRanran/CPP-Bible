@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-09-19T20:52:17",
- "git_commit": "c72c03c",
+ "generated_at": "2026-09-19T21:13:23",
+ "git_commit": "652f63c",
  "files": [
   {
    "path": "References/architecture_架构演进/271_架构批判_阙疑v3十问_判据密度不足与收敛手术.md",
@@ -1728,11 +1728,6 @@
    "size": 13982
   },
   {
-   "path": "_arch_free/mis_source_audit.md",
-   "sha256": "15e72b389109b11dd27b4b0c050acd44477beb1c304f4c12875664d2bd834d0a",
-   "size": 2261
-  },
-  {
    "path": "_arch_v10/00_总览_开工前必须先解决的设计洞.md",
    "sha256": "fb949d9251398106d7cfa2d252084409eafc57f7c6c6e210b4f362c0dc2f9934",
    "size": 5829
@@ -2533,5 +2528,5 @@
    "size": 15146
   }
  ],
- "self_hash": "a88c2ba4339e092b15abfe3917c10513e4c37bdc15b9ea034427d7467fb0e9c3"
+ "self_hash": "7561e2c7c9d6e220beb5e5f23bd2277e007c92285291e3a0c806157fb920163a"
 }
