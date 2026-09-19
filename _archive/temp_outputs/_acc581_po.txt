@@ -1,0 +1,129 @@
+﻿[poison] V-iso 双指标（N1–N6 假阴面 / N7 干净卡）：trap_block_rate=100% (6/6) · clean_pass_rate=100% (2/2)（nc 判决在 replay 路径 ⇒ 不进 RULE-COVERAGE 分子，见 557 D6）
+[poison] P1 假论断（verified 无证据+无人工签收）: 拦截者 ATOM-VERIFIED-BOUND, S1-AUTHOR-SELF-VERIFY ✅
+[poison] P2 过期工件（sha256 与重生成不符）: refute:sha256_mismatch · 期望 0000000000000000000000000000000000000000000000000000000000000000 · 实际 e8f6815384e87b43acb4828f89669d30080164a0e4ec3b5a7ff16c9648884362 ✅
+[poison] P3 缺反例（无证伪对照）: 拦截者 EV-FALSIFICATION ✅
+[poison] P4 自证断言（断言被夹具自身定义满足）: 拦截者 EV-SELF-SATISFIED-ASSERT ✅
+[poison] P5 伪证伪（无量化对照值，不可复核）: 拦截者 EV-FALSIFICATION-QUANT ✅
+[poison] P6 恒真观测（存在性判断无判别力）: 拦截者 EV-TRIVIAL-OBSERVATION ✅
+[poison] P7 无留痕矩阵（多编译器声明无工件支撑）: 拦截者 EV-MATRIX-UNBACKED ✅
+[poison] P8 身份漂移（stem≠id / id 重复）: 拦截者 ATOM-ID-UNIQUE ✅
+[poison] P9 证据失配（verified 绑 refute 证据）: 拦截者 S2-EVIDENCE-VERDICT ✅
+[poison] P10 伪证据（期望值硬编码进夹具字面量）: 拦截者 S3-EXPECTED-HARDCODED ✅
+[poison] P11 零诊断判据缺 -Werror（须 block，472 P1-1）: 拦截者 EV-ZERO-DIAG-WERROR · 级别 block ✅
+[poison] P12 留痕锚自证（锚仅在 actual 段）: 拦截者 EV-MATRIX-UNBACKED ✅
+[poison] P13 空名签收（human: 前缀无实名，三处）: 拦截者 ATOM-DAL-MATCH, ATOM-STATUS-TRANSITION, S1-AUTHOR-SELF-VERIFY ✅
+[poison] P14 .out 未声明读数键（373-B3 编造载荷）: 拦截者 EV-OUT-UNDECLARED-KEY ✅
+[poison] P14-阴 声明完整的 .out 必须放行: 误报 无 ✅
+[poison] P15 通用符号断言（373-B2 恒真载荷）: 级别 ['block'] ✅
+[poison] P15 断言符号无出处（拼错/平台专属拼写）: 级别 ['warn'] ✅
+[poison] P15-阴 工件内有出处的断言必须放行: 误报 无 ✅
+[poison] P15-阴 symbol_map 显式声明必须放行: 误报 无 ✅
+[poison] P16 新卡缺 artifact_producer（不写字段即绕过）: 级别 ['block'] ✅
+[poison] P16 借工件（cp 复制，非编译产出）: 级别 ['block'] ✅
+[poison] P16-阴 编译器产出声明必须放行: 误报 无 ✅
+[poison] P16-阴 迁移名单内存量卡缺字段放行: 误报 无 ✅
+[poison] P17 证据 id 重复（373-N2 同 id 双卡）: 拦截者 EV-ID-UNIQUE · 重复判定 1 条 ✅
+[poison] P17-阴 唯一且 stem==id 必须放行: 不得误伤 ✅
+[poison] P18 mapping-form 环必须可见（373-N1）: 拦截者 ATOM-REL-DAG ✅
+[poison] P18-阴 mapping-form 指向已存在目标必须放行: 误报 无 ✅
+[poison] P19 命令自证不再算留痕（373-N3）: 拦截者 EV-MATRIX-UNBACKED ✅
+[poison] P19-阴 两处可核对留痕必须放行: 误报 无 ✅
+[poison] P20 声明-实现脱钩（producer 不在 command，cp 借工件）: 级别 ['block'] ✅
+[poison] P20 -o 目标≠artifact（编译产物非本工件）: 级别 ['block'] ✅
+[poison] P20-阴 声明与 command 一致且 -o==artifact 必须放行: 误报 无 ✅
+[poison] P21 通用符号无论在哪都 block（工件含 main 仍拦）: 级别 ['block'] ✅
+[poison] P21 注释伪造出处（absent 配注释）必须被拦: 级别 ['warn'] ✅
+[poison] P21-阴 工件真实代码里有出处须放行: 误报 无 ✅
+[poison] P29 relations 矛盾（A 依赖 B 且 B contradicts A）: 拦截者 ATOM-REL-CONFLICT ✅
+[poison] P30 自相矛盾（A contradicts 自身）: 拦截者 ATOM-REL-CONFLICT ✅
+[poison] P31-阴 合法对比（contrasts 非矛盾）必须放行: 误报 无 ✅
+[poison] P32 cl卡标confirm（不可复算卡宣称已验证）: 拦截者 EV-MSCV-NO-VERIFY ✅
+[poison] P33 编译后python覆写（时序约束）: 拦截者 EV-ARTIFACT-PRODUCER ✅
+[poison] P34 编译后powershell覆写（时序约束）: 拦截者 EV-ARTIFACT-PRODUCER ✅
+[poison] P35 contains_in text=通用助记符（F03）: 拦截者 EV-ASSERT-SYMBOL-MAPPED ✅
+[poison] P36 重复 verdict 键（F09 after-wins 遮蔽）: 拦截者 EV-FM-DUP-KEY ✅
+[poison] P37 全角键 .out 未声明（F04）: 拦截者 EV-OUT-UNDECLARED-KEY ✅
+[poison] P38 .out 比夹具旧（F06 陈旧留痕）: 拦截者 EV-OUT-STALE-MTIME ✅
+[poison] P39 注释伪造符号出处（A8 间接注入）: 拦截者 EV-ASSERT-SYMBOL-MAPPED ✅
+[poison] P40 工具冒充（producer 声明≠实际编译器，A10）: 拦截者 EV-ARTIFACT-PRODUCER ✅
+[poison] P41 非编译器产出工件（生成脚本冒充编译，A10）: 拦截者 EV-ARTIFACT-PRODUCER ✅
+[poison] P42 环境值进读数键（nproc 未声明，A5）: 拦截者 EV-OUT-UNDECLARED-KEY ✅
+[poison] P43 缩进走私（E07 缩进 verdict 提升顶层键）: 拦截者 EV-FM-YAML-HARDENING ✅
+[poison] P43b flow 式 negative_controls 须 [nc-flow] 拦下: 拦截者 EV-FM-YAML-HARDENING ✅
+[poison] P43c 借品阴面未锚阳夹具须 block: errs=["nc1: 阴面 fixture 未锚定本卡阳夹具：'Examples/atoms/_atom_align_ctrl.cpp' 期望 `_atom_fence_vs_atomic.nc1<后缀>`（身份绑定，防借别卡产物冒充翻转证据）"] ✅
+[poison] P43d 非块式 negative_controls（nc-scalar）须 [nc-form] 拦下: 拦截者 EV-FM-YAML-HARDENING ✅
+[poison] P43e 非块式 negative_controls（nc-map）须 [nc-form] 拦下: 拦截者 EV-FM-YAML-HARDENING ✅
+[poison] P43f 门禁键 YAML1.1 隐式类型陷阱须 [type-diverge] 拦下: 拦截者 EV-FM-YAML-HARDENING ✅
+[poison] P70 M3 区间锚定丢失（contains 残留 symbol）须 warn 不 block: 命中 severity=['warn', 'warn'] ✅
+[poison] P70b M3 另一子情形：absent_in→absent（absent 残留 symbol）须 warn: 命中 severity=['warn', 'warn'] ✅
+[poison] P71 判据性 -Werror 被删（声明↔flag 绑定）须 warn 不 block: 命中 ['EV-WERROR-DECL-BIND/warn'] ✅
+[poison] P71-阴 装饰性 -Wall 无 -Werror（声明未声称该判据）须放行: 命中 （无） ✅
+[poison] P70-阴 合法全文散文 contains（无 symbol）须放行: 命中 （无） ✅
+[poison] P72 断言数少于人审基线（悄悄删项）须 warn 不 block: 命中 ['EV-ASSERT-COUNT-BELOW-BASELINE/warn'] ✅
+[poison] P72-阴 计数等于人审基线（未减项）须放行: 命中 （无） ✅
+[poison] P73 any-of 混入通用候选（追加样板）须 warn 不 block: 命中 ['EV-ASSERT-SYMBOL-MAPPED/warn'] ✅
+[poison] P73-阴 any-of 候选全有真实出处须放行: 命中 （无） ✅
+[poison] P74 observation 命题缺命题级活性锚（蹭卡级工件）须 warn: 命中 ['OBSERVATION-LIVENESS/warn'] ✅
+[poison] P74-阴 命题锚了真实的夹具特有符号须放行: 命中 （无） ✅
+[poison] P75 锚通用符号（.file）须 warn: 命中 ['warn'] ✅
+[poison] P76 锚不存在的符号须 warn: 命中 ['warn'] ✅
+[poison] N1 阳过阴也过（逐字复制+加注释）须 refute: verdict=refute:negative_control_diff（期望 refute:negative_control_diff） ✅
+[poison] N2 冒名阴面（整个换成别的程序）须 refute: verdict=refute:negative_control_diff（期望 refute:negative_control_diff） ✅
+[poison] N3 阴面写坏（anchor 内删声明行 ⇒ 真编译 rc≠0）须 refute: verdict=refute:negative_control_broken（期望 refute:negative_control_broken） ✅
+[poison] N4 形式阴面（删 anchor 外的行）须 refute: verdict=refute:negative_control_diff（期望 refute:negative_control_diff） ✅
+[poison] N5 阴面缺失（阴夹具文件不存在）须 refute: verdict=refute:negative_control_missing（期望 refute:negative_control_missing） ✅
+[poison] N6 连主体删除（anchor 内删机制+返回 ⇒ retain 缺）须 refute: verdict=refute:negative_control_diff（期望 refute:negative_control_diff） ✅
+[poison] N7-阴 干净卡（无 negative_controls 字段）须放行: verdict=（无）（期望：放行） ✅
+[poison] N7-阴 合法真阴面（合规 nc1 ⇒ flip verified）须放行: verdict=（无）（期望：放行） ✅
+[poison] P44 环境量进断言键（nproc 声明为比对目标，A5）: 拦截者 EV-ENV-DEPENDENT-KEY ✅
+[poison] P45 僵尸锁(pid已死)须立即接管: 耗时 0.0s（>3s 即仍逃逸） ✅
+[poison] P46 活锁(当前pid)不得被接管: 活锁时二次取锁须超时而非抢锁 ✅
+[poison] P51 工件快照须能幂等还原（中断不丢工件）: 还原后=ORIGINAL-BYTES ✅
+[poison] P52 阴性·正常路径不留 .bak 残留: bak 存在=False ✅
+[poison] P55 refutes 同义词归一时须检出矛盾: 拦截者 ATOM-REL-CONFLICT ✅
+[poison] P56 未知 relations 类型须可见（不静默丢弃）: 拦截者 ATOM-REL-UNKNOWN ✅
+[poison] P57 cat 式证据须被拦（升 warn 后）: 拦截者 EV-FIXTURE-NO-ECHO-DATA ✅
+[poison] P58 签收与 git 作者不符（须 warn，观察期）: 拦截者 S1-GIT-AUTHOR-BINDING · 级别 warn · 作者 someone-else ✅
+[poison] P58-阴 签收与 git 作者一致须放行（宽松匹配）: 拦截者 （未命中） · 级别 — · 作者 LiaoRanran ✅
+[poison] P59 人级签署无理由（须命中 warn）: 拦截者 ATOM-VERIFY-REASON · 级别 warn ✅
+[poison] P59-阴 人级签署有理由须放行: 拦截者 （未命中） · 级别 — ✅
+[poison] P60 版本漂移（卡 2 ≠ 台账 1，须 block）: 级别 ['block'] ✅
+[poison] P60-阴 版本一致（1 == 1）须放行: 级别 （未命中） ✅
+[poison] P60-阴2 卡缺 artifact_version 须 warn: 级别 ['warn'] ✅
+[poison] P47 contains_any 全样板须判无判别力: 命中候选全为工件样板（.file/.text）⇒ 断言零信息 ✅
+[poison] P48 阴性·命中含非样板须放行: 命中候选含 ret（非伪指令）⇒ 按原语义放行 ✅
+[poison] P61 run_match_keys 假键（.out 无此键）须 block: 拦截者 EV-RUN-KEY-DECLARED-EXISTS ✅
+[poison] P61-阴 声明键全在 .out 中须放行: 拦截者 （无） ✅
+[poison] P62 artifact 指向不存在文件须 block: 拦截者 EV-ARTIFACT-FILE-EXISTS ✅
+[poison] P62-阴 artifact 存在须放行: 拦截者 （无） ✅
+[poison] P63 新卡无 claim_structured 须 block: 拦截者 ATOM-CLAIM-STRUCTURED ✅
+[poison] P63-阴1 STAGING 存量卡（ATOM-CONC-FENCE-001）只 warn 不 block: 严重度 ['warn'] ✅
+[poison] P63-阴2 合规 claim_structured 须放行: 拦截者 （无） ✅
+[poison] P63-阴3 claim_type 非法须 block: 拦截者 ATOM-CLAIM-STRUCTURED ✅
+[poison] P64 observation 无工件断言须 block: 拦截者 OBSERVATION-NEEDS-ARTIFACT ✅
+[poison] P64-阴 observation 有工件断言须放行: 拦截者 （无） ✅
+[poison] P64-阴2 observation 未声明 evidence 须 block: 拦截者 OBSERVATION-NEEDS-ARTIFACT ✅
+[poison] P65 inference 机器独自晋升 verified 须 block: 拦截者 INFERENCE-NOT-MACHINE-VERIFIED ✅
+[poison] P65-阴1 basis 已登记独立来源 ⇒ 降级 warn: 严重度 ['warn'] ✅
+[poison] P65-阴2 卡级人签无命题级签署 ⇒ warn（建议精确化，不 block）: 严重度 ['warn'] ✅
+[poison] P65-阴3 空名签收（human: 无实名）不算签署须 block: 拦截者 INFERENCE-NOT-MACHINE-VERIFIED ✅
+[poison] P66 inference 命题级无签+卡级无人签+无基准 ⇒ block: 拦截者 INFERENCE-NOT-MACHINE-VERIFIED ✅
+[poison] P66-阴1 卡级有签命题级无签 ⇒ warn（建议精确化，不 block）: 严重度 ['warn'] ✅
+[poison] P66-阴2 命题级 signed_by 在册实名 ⇒ 放行: 拦截者 （无） ✅
+[poison] P67 object 是句子非概念须 warn: 拦截者 ATOM-CLAIM-CONCEPT-NORMALIZED ✅
+[poison] P67-阴 object=规范概念须放行: 拦截者 （无） ✅
+[poison] P68 只挂 run_match 卡的 observation 须 warn（缺活性对照）: 拦截者 OBSERVATION-LIVENESS；严重度 ['warn'] ✅
+[poison] P68-阴 有活性对照（特有符号+量化证伪）须放行: 拦截者 （无） ✅
+[poison] P69 卡内路径非 posix 规范/大小写与磁盘不符 ⇒ warn: 拦截者 CARD-PATH-NOT-CANONICAL；严重度 ['warn'] ✅
+[poison] P69-阴 规范 posix 写法（大小写逐字一致）须放行: 拦截者 （无） ✅
+[poison] 阴性对照（干净原子+干净卡）: gate block=0 · replay=confirm ✅
+
+[poison] 118/118 —— 制衡层有效（全部拦截 + 阴性放行）
+[poison] 攻击面分类（424 A1-A11，实测载荷）：{'A1': 19, 'A10': 4, 'A11': 2, 'A2': 13, 'A3': 21, 'A4': 4, 'A5': 2, 'A6': 7, 'A7': 5, 'A8': 2, 'A9': 1}
+[poison] 零覆盖攻击面：无
+[poison] RULE-COVERAGE: 38/63 注册规则被毒样例覆盖（另登记豁免 27 条）
+[poison] 表观覆盖率(含 legacy 豁免): 103.2% = 38 行为覆盖 + 0 签核豁免 + 27 legacy 豁免 / 63
+[poison] 诚实覆盖率(legacy 不计入已覆盖): 60.3% = 38 行为覆盖 + 0 签核豁免 / 63
+[poison] legacy 豁免(单列、不计入诚实口径, 27): ATOM-AUDIENCE, ATOM-DAL-MATCH, ATOM-FM-REQUIRED, ATOM-GRAY-ZONE, ATOM-ID-FORMAT, ATOM-MISCONCEPTION-LEVELS, ATOM-MISCONCEPTION-REF, ATOM-NO-UNVERIFIED, ATOM-PREREQ-READABLE, ATOM-REL-DAG, ATOM-REL-TARGET, ATOM-STATUS-TRANSITION, ATOM-STATUS-VALUE, ATOM-SUPERIORITY-WORDS, DOC-ZERO-PLACEHOLDER, EV-FM-REQUIRED, EV-MATRIX, EV-SERVES-EXIST, HUMAN-GOLDEN-REVIEW, HYBRID-TEACHING-DEPTH, LLM-SUPERIORITY-QUALITY, META-MANIFEST, MIS-LIBRARY, PED-MISCONCEPTION, PED-MOTIVATION, PED-PREDICT-FIRST, PED-SOCRATIC
+[poison] 背书不可核验(点名不删, 20): ATOM-DAL-MATCH:weak-test, ATOM-GRAY-ZONE:weak-test, ATOM-ID-FORMAT:weak-test, ATOM-MISCONCEPTION-REF:weak-test, ATOM-NO-UNVERIFIED:missing-test, ATOM-PREREQ-READABLE:weak-test, ATOM-REL-TARGET:missing-test, ATOM-STATUS-TRANSITION:weak-test, ATOM-SUPERIORITY-WORDS:missing-test, DOC-ZERO-PLACEHOLDER:weak-test, EV-FM-REQUIRED:missing-test, EV-SERVES-EXIST:missing-test, HUMAN-GOLDEN-REVIEW:missing-test, HYBRID-TEACHING-DEPTH:missing-test, LLM-SUPERIORITY-QUALITY:missing-test, META-MANIFEST:weak-test, PED-MISCONCEPTION:missing-test, PED-MOTIVATION:missing-test, PED-PREDICT-FIRST:missing-test, PED-SOCRATIC:missing-test
+poison exit=0

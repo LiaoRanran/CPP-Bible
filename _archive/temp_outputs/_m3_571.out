@@ -1,0 +1,59 @@
+[mutation] 卡 83 张 · 算子 1 类 · 变体 99 个
+[mutation] blocked=11（严格 5） escaped=46 n_a=42（其中 malformed=0）
+[mutation] 严格拦截率 8.8% · 含 warn 处置率 19.3%
+[mutation] 可判分母 = 57（变体 99 − n_a 42 − malformed 0）；n_a/malformed **永不进拦截率分母**
+[mutation] 严格拦截率 5/57 = 8.77% · C-P 95% 区间 [2.91%, 19.30%]
+[mutation] 含 warn 处置率 11/57 = 19.30% · C-P 95% 区间 [10.05%, 31.91%]
+[mutation] 逃逸率     46/57 = 80.70% · C-P 95% 区间 [68.09%, 89.95%]
+[mutation] 全分母率 treated_all 11/99 = 11.11% · C-P 95% 区间 [5.68%, 19.01%]（**全分母率只叫 treated_all，不得叫 strict**）
+[mutation] 分算子（可判 = blocked + escaped；n_a 单列）：
+[mutation]   M3  可判 57（n_a 42）· 严格 5/57 = 8.77% · 逃逸 46/57 = 80.70% · C-P95 [68.09%, 89.95%]
+[mutation] ⚠ M3：可判样本仅 57 < 59 ⇒ 样本不足；要宣称'逃逸率≤5%@95%'需补样至 n≥59
+[mutation] 全库扫描 ge.run=58 次 · replay=0 次（门禁已拦而跳过 0 次）· 耗时 36.79s
+[mutation] ✗ ESCAPED evidence/conc/EV-CONC-003.md · M3 · 删掉一条 flow 式断言条目（弱化：卡少查一项）
+[mutation] ✗ ESCAPED evidence/conc/EV-CONC-003.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/conc/EV-CONC-004.md · M3 · 删掉一条 flow 式断言条目（弱化：卡少查一项）
+[mutation] ✗ ESCAPED evidence/conc/EV-CONC-004.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/conc/EV-CONC-005.md · M3 · 删掉一条 flow 式断言条目（弱化：卡少查一项）
+[mutation] ✗ ESCAPED evidence/conc/EV-CONC-005.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/conc/EV-CONC-006.md · M3 · 删掉一条 flow 式断言条目（弱化：卡少查一项）
+[mutation] ✗ ESCAPED evidence/conc/EV-CONC-006.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/hist/EV-HIST-001.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/lang/EV-LANG-001.md · M3 · 删掉一条 flow 式断言条目（弱化：卡少查一项）
+[mutation] ✗ ESCAPED evidence/lang/EV-LANG-002.md · M3 · 删掉一条 flow 式断言条目（弱化：卡少查一项）
+[mutation] ✗ ESCAPED evidence/lang/EV-LANG-002.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-001.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-002.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-003.md · M3 · 删掉一条 flow 式断言条目（弱化：卡少查一项）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-003.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-004.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-005.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-006.md · M3 · 删掉一条 flow 式断言条目（弱化：卡少查一项）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-006.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-007.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-009.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-011.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-012.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-013.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-014.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-015.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-016.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-019.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-020.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-021.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-023.md · M3 · 删掉一条 flow 式断言条目（弱化：卡少查一项）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-023.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-025.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-026.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-027.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-028.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-029.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-030.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-031.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-036.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-037.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-040.md · M3 · 删掉一条 flow 式断言条目（弱化：卡少查一项）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-041.md · M3 · 删掉一条 flow 式断言条目（弱化：卡少查一项）
+[mutation] ✗ ESCAPED evidence/ub/EV-UB-001.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] ✗ ESCAPED evidence/ub/EV-UB-002.md · M3 · contains 追加样板候选（弱化：恒真文本即可满足）
+[mutation] 报告：data/mutation/_571_m3.json

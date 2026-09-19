@@ -1,0 +1,27 @@
+........................................................................ [ 24%]
+........................................................................ [ 48%]
+..................................................F..................... [ 72%]
+........................................................................ [ 96%]
+...........                                                              [100%]
+================================== FAILURES ===================================
+____________________________ test_golden_lock_json ____________________________
+
+    def test_golden_lock_json():
+        """559 B 说明：本用例**不**挂 `replay_serial` —— `golden_lock check` 自己会调
+        `replay_card` 复算（每卡取放同一把锁），若外层再持锁会把它逼成
+        `infra_error:replay_busy`（每卡等 120s）。它防的是"释放锁路径崩溃"那个真 bug
+        （`_release_replay_lock` 已改为绝不抛，见 atom_evidence_replay）。
+        """
+        p = _run(["tools/golden_lock.py", "check", "--json"])
+        data = _parse_json_only(p)
+        _check_schema(data, "golden_lock")
+        # 当前基线已 accept（warn 8→32），check 应无恶化 → status pass
+>       assert data["status"] == "pass"
+E       AssertionError: assert 'fail' == 'pass'
+E         
+E         - pass
+E         + fail
+
+tests\test_json_output.py:77: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_json_output.py::test_golden_lock_json - AssertionError: ass...

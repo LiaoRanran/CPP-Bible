@@ -1,0 +1,57 @@
+[mutation] 卡 83 张 · 算子 7 类 · 变体 1183 个
+[mutation] blocked=960（严格 619） escaped=38 n_a=185（其中 malformed=0）
+[mutation] 严格拦截率 62.0% · 含 warn 处置率 96.2%
+[mutation] 可判分母 = 998（变体 1183 − n_a 185 − malformed 0）；n_a/malformed **永不进拦截率分母**
+[mutation] 严格拦截率 619/998 = 62.02% · C-P 95% 区间 [58.93%, 65.05%]
+[mutation] 含 warn 处置率 960/998 = 96.19% · C-P 95% 区间 [94.81%, 97.29%]
+[mutation] 逃逸率     38/998 = 3.81% · C-P 95% 区间 [2.71%, 5.19%]
+[mutation] 全分母率 treated_all 960/1183 = 81.15% · C-P 95% 区间 [78.80%, 83.34%]（**全分母率只叫 treated_all，不得叫 strict**）
+[mutation] 分算子（可判 = blocked + escaped；n_a 单列）：
+[mutation]   M1  可判 65（n_a 27）· 严格 64/65 = 98.46% · 逃逸 1/65 = 1.54% · C-P95 [0.04%, 8.28%]
+[mutation]   M2  可判 168（n_a 27）· 严格 0/168 = 0.00% · 逃逸 0/168 = 0.00% · C-P95 [0.00%, 2.17%]
+[mutation]   M3  可判 65（n_a 42）· 严格 5/65 = 7.69% · 逃逸 0/65 = 0.00% · C-P95 [0.00%, 5.52%]
+[mutation]   M4  可判 200（n_a 33）· 严格 200/200 = 100.00% · 逃逸 0/200 = 0.00% · C-P95 [0.00%, 1.83%]
+[mutation]   M5  可判 29（n_a 56）· 严格 0/29 = 0.00% · 逃逸 29/29 = 100.00% · C-P95 [88.06%, 100.00%]
+[mutation]   M6  可判 332（n_a 0）· 严格 211/332 = 63.55% · 逃逸 8/332 = 2.41% · C-P95 [1.05%, 4.69%]
+[mutation]   M7  可判 139（n_a 0）· 严格 139/139 = 100.00% · 逃逸 0/139 = 0.00% · C-P95 [0.00%, 2.62%]
+[mutation] ⚠ M5：**活雷** —— 逃逸 29/29（区间 [88.06%, 100.00%]）
+[mutation] 全库扫描 ge.run=999 次 · replay=65 次（门禁已拦而跳过 139 次）· 耗时 738.55s
+[mutation] ✗ ESCAPED evidence/conc/EV-CONC-001.md · M1 · 删 negative_controls
+[mutation] ✗ ESCAPED evidence/hist/EV-HIST-001.md · M6 · 块式 → flow 写法（matrix）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-032.md · M6 · 块式 → flow 写法（matrix）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-033.md · M6 · 块式 → flow 写法（matrix）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-034.md · M6 · 块式 → flow 写法（matrix）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-035.md · M6 · 块式 → flow 写法（matrix）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-036.md · M6 · 块式 → flow 写法（matrix）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-037.md · M6 · 块式 → flow 写法（matrix）
+[mutation] ✗ ESCAPED evidence/ub/EV-UB-002.md · M6 · 块式 → flow 写法（matrix）
+[mutation] ✗ ESCAPED atoms/conc/ATOM-CONC-FENCE-001.md · M5 · [命题 prop-2] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/conc/ATOM-CONC-LOCK-001.md · M5 · [命题 prop-2] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/conc/ATOM-CONC-RACE-001.md · M5 · [命题 prop-2] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/conc/ATOM-CONC-RACE-001.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/hist/ATOM-HIST-AUTOPTR-001.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/lang/ATOM-LANG-INLINE-001.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-ALIGN-001.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-ALLOC-001.md · M5 · [命题 prop-4] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-ALLOC-002.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-LEAK-001.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-LEAK-002.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-MOVE-002.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-NEW-001.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-PERF-001.md · M5 · [命题 prop-2] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-PERF-002.md · M5 · [命题 prop-2] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-PERF-003.md · M5 · [命题 prop-2] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-PERF-003.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-PERF-004.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-RAII-001.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-RAII-002.md · M5 · [命题 prop-4] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-RVREF-001.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-SHARED-001.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-SHARED-002.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-UNIQUE-001.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-UNIQUE-002.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-VALUE-001.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-VALUE-002.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/mem/ATOM-MEM-WEAK-001.md · M5 · [命题 prop-3] claim_type: inference → observation（自标绕过）
+[mutation] ✗ ESCAPED atoms/ub/ATOM-UB-GRAY-001.md · M5 · [命题 prop-2] claim_type: inference → observation（自标绕过）
+[mutation] 报告：data/mutation/full_baseline_v4.json

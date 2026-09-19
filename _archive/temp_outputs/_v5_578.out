@@ -1,0 +1,28 @@
+[mutation] 卡 83 张 · 算子 7 类 · 变体 1183 个
+[mutation] blocked=989（严格 630） escaped=9 n_a=185（其中 malformed=0）
+[mutation] 严格拦截率 63.1% · 含 warn 处置率 99.1%
+[mutation] 可判分母 = 998（变体 1183 − n_a 185 − malformed 0）；n_a/malformed **永不进拦截率分母**
+[mutation] 严格拦截率 630/998 = 63.13% · C-P 95% 区间 [60.05%, 66.13%]
+[mutation] 含 warn 处置率 989/998 = 99.10% · C-P 95% 区间 [98.30%, 99.59%]
+[mutation] 逃逸率     9/998 = 0.90% · C-P 95% 区间 [0.41%, 1.70%]
+[mutation] 全分母率 treated_all 989/1183 = 83.60% · C-P 95% 区间 [81.37%, 85.67%]（**全分母率只叫 treated_all，不得叫 strict**）
+[mutation] 分算子（可判 = blocked + escaped；n_a 单列）：
+[mutation]   M1  可判 65（n_a 27）· 严格 64/65 = 98.46% · 逃逸 1/65 = 1.54% · C-P95 [0.04%, 8.28%]
+[mutation]   M2  可判 168（n_a 27）· 严格 2/168 = 1.19% · 逃逸 0/168 = 0.00% · C-P95 [0.00%, 2.17%]
+[mutation]   M3  可判 65（n_a 42）· 严格 6/65 = 9.23% · 逃逸 0/65 = 0.00% · C-P95 [0.00%, 5.52%]
+[mutation]   M4  可判 200（n_a 33）· 严格 200/200 = 100.00% · 逃逸 0/200 = 0.00% · C-P95 [0.00%, 1.83%]
+[mutation]   M5  可判 29（n_a 56）· 严格 3/29 = 10.34% · 逃逸 0/29 = 0.00% · C-P95 [0.00%, 11.94%]
+[mutation]   M6  可判 332（n_a 0）· 严格 216/332 = 65.06% · 逃逸 8/332 = 2.41% · C-P95 [1.05%, 4.69%]
+[mutation]   M7  可判 139（n_a 0）· 严格 139/139 = 100.00% · 逃逸 0/139 = 0.00% · C-P95 [0.00%, 2.62%]
+[mutation] ⚠ M5：可判样本仅 29 < 59 ⇒ 样本不足；要宣称'逃逸率≤5%@95%'需补样至 n≥59
+[mutation] 全库扫描 ge.run=999 次 · replay=64 次（门禁已拦而跳过 140 次）· 耗时 789.77s
+[mutation] ✗ ESCAPED evidence/conc/EV-CONC-001.md · M1 · 删 negative_controls
+[mutation] ✗ ESCAPED evidence/hist/EV-HIST-001.md · M6 · 块式 → flow 写法（matrix）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-032.md · M6 · 块式 → flow 写法（matrix）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-033.md · M6 · 块式 → flow 写法（matrix）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-034.md · M6 · 块式 → flow 写法（matrix）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-035.md · M6 · 块式 → flow 写法（matrix）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-036.md · M6 · 块式 → flow 写法（matrix）
+[mutation] ✗ ESCAPED evidence/mem/EV-MEM-037.md · M6 · 块式 → flow 写法（matrix）
+[mutation] ✗ ESCAPED evidence/ub/EV-UB-002.md · M6 · 块式 → flow 写法（matrix）
+[mutation] 报告：data/mutation/full_baseline_v5.json

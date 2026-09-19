@@ -1,0 +1,49 @@
+fix(prop): 566 prop_graph schema 自愈（真 bug）+ 人审交接视图 pending/backlog
+
+> ⚠️ 提交切分声明（偏差）：提示词要求"任务 0 / 任务 1 各一个 commit"；两者改的是**同两个文件**
+> 的**同批区块**（`tools/prop_graph.py`、`tests/test_prop_graph.py`），本环境无交互式
+> `git add -p`（agent 终端不可交互）⇒ 无法干净拆 hunk。故合并为一个 commit 并在 worklog
+> 记偏差；两条任务的改动在下面分节写明，可逐节 review。
+
+## 任务 0（真 bug，监工验收抓出）：build 对旧库不自愈 ⇒ 读路径崩
+
+病：565b 给 `props` 加了 `anchor_source`，但已存在的旧库（15 列、无 `schema_version`）不会被
+升级 ⇒ 直接跑 `stats`/`query` 崩 `sqlite3.OperationalError: no such column: anchor_source`
+（**测试用新临时库全绿、用户一跑真库就崩**；监工手动 build 一次才恢复）。
+
+治（按处方选更简单的一条，不做 ALTER 迁移）：
+  * 新增 `SCHEMA_VERSION="2"` 写进 `meta`；`PROPS_COLUMNS` 声明代码要求的列；
+  * `schema_state()` 体检：库内版本 + **props 表实际缺哪些列**；旧库无该键 ⇒ 记 "1"（正好触发重建）；
+  * `_needs_rebuild()` 给出人读理由；`build()` 开头调用并**打印**"旧 schema 自愈：… ⇒ 整库重建"
+    （纯派生视图，重建无损）——监工要求"自愈要可见"；
+  * **读路径 `_connect()` 先校验**：不兼容 ⇒ `SystemExit` + **直接给出重建命令**，
+    绝不把裸 `OperationalError` 抛给用户（那正是监工踩到的形态）。
+  * 正式库已用新逻辑重建（实跑输出：`[prop] 旧 schema 自愈：schema_version 1 ≠ 当前 2 ⇒ 整库重建`）。
+
+## 任务 1：人审交接视图（纯加法，不改卡、不改既有查询语义）
+
+  * `query --pending-signoff`：列未人签命题（`signoff_state='unsigned'`，**不与 card_signed 混**），
+    每条打印命题 id / 所属卡 / claim_type / statement 摘要 / evidence / 签署态；末尾给
+    **人签指引**——落在仓库**既有接口**上（卡面 `verified_by: human:<名>`，gate 会校验该名与
+    **该文件最后一次 git 提交作者**一致），并给出"编辑卡面 → `prop_graph.py build` → 复核"三步，
+    **不新造签署字段/协议**（全仓 grep 确认：`verified_by` 只有校验方、无写入 CLI）。
+  * `query --backlog`：列"还没有 `claim_structured` 的原子卡"（卡 id / status / 为什么没回填），
+    总数 = 总原子卡 − 带命题卡；**只列清单，不自动回填、不改卡**。
+  * 两视图都支持 `--json`，命题数为 0 / 空结果时 **fail-soft**（打印"无待办"不崩）。
+
+## 回归锁（`tests/test_prop_graph.py` 7 → 15 例，全绿）
+
+任务 0：旧 schema 被识别（版本 1 + 缺 anchor_source）· 读路径 fail-loud **且报错里含重建命令**
+（不是 OperationalError）· **监工场景端到端**（旧库 → build 自愈可见 → stats/query 不崩、列齐、
+命题数仍 79、unsigned 仍 3）· 正式库 schema 必须当前（防"测试绿、用户崩"重演）。
+任务 1：待签=unsigned 且与 card_signed 互斥（76+3=79）· backlog = 总原子卡 − 带命题卡 ·
+空结果 fail-soft + 两个 `--json` 视图 · 人签指引必须含 `verified_by: human:` / git 作者校验 /
+重建命令。
+
+## 偏差（详见 _worklog_566.md）
+
+1. 待签清单**实测不是**提示词说的三张红队卡（MEM-ALLOC-002/LEAK-002/PERF-004）——实测
+   unsigned 的 3 条全部来自 `ATOM-LANG-INLINE-001`（prop-1/2/3）；测试按**磁盘实测**锁。
+2. backlog **实测 = 0**（27 张原子卡全部已有 claim_structured），提示词说"待回填 26 张"不符；
+   视图走 fail-soft 打"无待办"，测试断言 `总数 − 带命题 = 0`。
+3. 两任务合并为一个 commit（同上切分声明）。

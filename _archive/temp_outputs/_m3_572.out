@@ -1,0 +1,12 @@
+[mutation] 卡 83 张 · 算子 1 类 · 变体 107 个
+[mutation] blocked=65（严格 5） escaped=0 n_a=42（其中 malformed=0）
+[mutation] 严格拦截率 7.7% · 含 warn 处置率 100.0%
+[mutation] 可判分母 = 65（变体 107 − n_a 42 − malformed 0）；n_a/malformed **永不进拦截率分母**
+[mutation] 严格拦截率 5/65 = 7.69% · C-P 95% 区间 [2.54%, 17.05%]
+[mutation] 含 warn 处置率 65/65 = 100.00% · C-P 95% 区间 [94.48%, 100.00%]
+[mutation] 逃逸率     0/65 = 0.00% · C-P 95% 区间 [0.00%, 5.52%]
+[mutation] 全分母率 treated_all 65/107 = 60.75% · C-P 95% 区间 [50.84%, 70.05%]（**全分母率只叫 treated_all，不得叫 strict**）
+[mutation] 分算子（可判 = blocked + escaped；n_a 单列）：
+[mutation]   M3  可判 65（n_a 42）· 严格 5/65 = 7.69% · 逃逸 0/65 = 0.00% · C-P95 [0.00%, 5.52%]
+[mutation] 全库扫描 ge.run=66 次 · replay=0 次（门禁已拦而跳过 0 次）· 耗时 46.39s
+[mutation] 报告：data/mutation/_572_m3.json

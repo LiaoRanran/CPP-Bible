@@ -1,0 +1,16 @@
+﻿530 任务2: 帧/伪指令断言收口到无判别力通用符号
+
+批判 B.4 / 521 漏洞7 半修：.seh_endproc/.cfi_* 等 ABI 帧伪指令在任何 gcc -S 产物里恒现，
+contains 它们=恒真断言，原只加 UNIVERSAL_SYMBOLS 因 _IDENT_RE 不提取 .-前缀串而漏网。
+
+改动（gate_engine）：
+- UNIVERSAL_SYMBOLS 扩展目录真实 .-伪指令（.file/.section/.seh_* 全族/.cfi_* 全族/.n  .text/.data/.p2align … 共 40+ 项，均经 Examples/atoms/*.asm grep 实证）；
+- 新增 _PSEUDO_RE(裸 .-伪指令) / _REG_RE(裸 %-寄存器) 与 _is_universal_symbol(t)，
+  fullmatch 仅命中裸 token，嵌入形态（如 movl , %eax 的 %eax、.refptr._ZSt4cout 真实符号）
+  不命中，避免误伤存量 contains_in 判别断言（护栏 5：零新增 block）；
+- 三处 	 in UNIVERSAL_SYMBOLS 判定统一改 _is_universal_symbol；
+- contains_in 的 .-伪指令 text 沿用既有口径（弱断言 advice，非阻断）。
+
+tests: 补 2 例（裸 .seh_endproc 全局 contains→block 反例；区间 contains_in 配真符号→放行 正例）。
+
+实测：gate block=0 / warn=59 与开工一致（存量 56 卡零新增 block/advice）；T2 相关 pytest 5 例全绿。

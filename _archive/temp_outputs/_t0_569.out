@@ -1,0 +1,13 @@
+[mutation] 卡 5 张 · 算子 1 类 · 变体 7 个
+[mutation] blocked=4（严格 0） escaped=0 n_a=3（其中 malformed=0）
+[mutation] 严格拦截率 0.0% · 含 warn 处置率 100.0%
+[mutation] 可判分母 = 4（变体 7 − n_a 3 − malformed 0）；n_a/malformed **永不进拦截率分母**
+[mutation] 严格拦截率 0/4 = 0.00% · C-P 95% 区间 [0.00%, 60.24%]
+[mutation] 含 warn 处置率 4/4 = 100.00% · C-P 95% 区间 [39.76%, 100.00%]
+[mutation] 逃逸率     0/4 = 0.00% · C-P 95% 区间 [0.00%, 60.24%]
+[mutation] 全分母率 treated_all 4/7 = 57.14% · C-P 95% 区间 [18.41%, 90.10%]（**全分母率只叫 treated_all，不得叫 strict**）
+[mutation] 分算子（可判 = blocked + escaped；n_a 单列）：
+[mutation]   M3  可判 4（n_a 3）· 严格 0/4 = 0.00% · 逃逸 0/4 = 0.00% · C-P95 [0.00%, 60.24%]
+[mutation] ⚠ M3：可判样本仅 4 < 59 ⇒ 样本不足；要宣称'逃逸率≤5%@95%'需补样至 n≥59
+[mutation] 全库扫描 ge.run=5 次 · replay=0 次（门禁已拦而跳过 0 次）· 耗时 5.28s
+[mutation] 报告：data/mutation/_569_t0.json

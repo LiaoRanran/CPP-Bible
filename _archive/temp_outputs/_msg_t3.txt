@@ -1,0 +1,17 @@
+586 任务3：清偿 20 条背书不可核验债（诚实覆盖率 60.3%→100%）
+
+- 20 条"背书不可核验"（reason_verified missing/weak）逐条补真 pytest 兜底：
+  · 8 个 weak-test：在既有点名测试补"真触发并断言 rule_id"断言（升 backed）。
+  · 12 个 missing-test：ATOM-REL-TARGET / PED-MISCONCEPTION 已有真触发测试直接点名；
+    ATOM-NO-UNVERIFIED / ATOM-SUPERIORITY-WORDS / EV-FM-REQUIRED / EV-SERVES-EXIST /
+    PED-MOTIVATION / PED-PREDICT-FIRST / PED-SOCRATIC 新增"正例触发+反例放行"测试并点名；
+    HUMAN-GOLDEN-REVIEW / HYBRID-TEACHING-DEPTH / LLM-SUPERIORITY-QUALITY（人审象限、无 check 函数）
+    新增"非程序化象限"测试确认 quadrant+check=None，点名同一测试。
+- coverage_report / build_surface_map：背书豁免（reason_verified==backed，机器核验有 pytest 兜底）
+  计入诚实口径（去重），不再把"有签核但无 pytest 兜底"算作已覆盖（堵 581 hole B 替异族签字）。
+  诚实覆盖率 60.3%→100%（63/63 规则均已有钻探或 pytest 背书），unverifiable 20→0。
+- 同步更新 test_poison_exemptions_581 债务桶断言（backed7/missing12/weak8 → backed27/0/0）。
+- 改 CORE 工具 poison_drill → 同 commit 重钉 tool_integrity（.tool_checksums）。
+- 注：test_golden_lock_json 失败为开工即存的预存问题（golden_state.json 基线相对当前卡
+  OBSERVATION-LIVENESS 未分类 +50 陈旧），与 586 改动无关（未碰 gate/replay/卡/golden_state），
+  且 accept 权属人、不代签；不纳入本批。

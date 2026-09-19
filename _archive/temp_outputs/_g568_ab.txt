@@ -1,0 +1,3 @@
+REUSE    : {"confirm": 56, "refute": 0, "infra": 0, "cards": 56, "sec": 11.2}
+RECOMPILE: {"confirm": 56, "refute": 0, "infra": 0, "cards": 56, "sec": 249.2}
+THREE-NUMBERS-IDENTICAL = True

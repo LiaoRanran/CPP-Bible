@@ -1,0 +1,14 @@
+[mutation] 卡 83 张 · 算子 1 类 · 变体 87 个
+[mutation] blocked=6（严格 1） escaped=1 n_a=80（其中 malformed=0）
+[mutation] 严格拦截率 14.3% · 含 warn 处置率 85.7%
+[mutation] 可判分母 = 7（变体 87 − n_a 80 − malformed 0）；n_a/malformed **永不进拦截率分母**
+[mutation] 严格拦截率 1/7 = 14.29% · C-P 95% 区间 [0.36%, 57.87%]
+[mutation] 含 warn 处置率 6/7 = 85.71% · C-P 95% 区间 [42.13%, 99.64%]
+[mutation] 逃逸率     1/7 = 14.29% · C-P 95% 区间 [0.36%, 57.87%]
+[mutation] 全分母率 treated_all 6/87 = 6.90% · C-P 95% 区间 [2.57%, 14.41%]（**全分母率只叫 treated_all，不得叫 strict**）
+[mutation] 分算子（可判 = blocked + escaped；n_a 单列）：
+[mutation]   M3  可判 7（n_a 80）· 严格 1/7 = 14.29% · 逃逸 1/7 = 14.29% · C-P95 [0.36%, 57.87%]
+[mutation] ⚠ M3：可判样本仅 7 < 59 ⇒ 样本不足；要宣称'逃逸率≤5%@95%'需补样至 n≥59
+[mutation] 全库扫描 ge.run=8 次 · replay=0 次（门禁已拦而跳过 0 次）· 耗时 7.25s
+[mutation] ✗ ESCAPED evidence/lang/EV-LANG-001.md · M3 · -Werror 被删（编译告警不再算失败）
+[mutation] 报告：data/mutation/_569_t0full.json

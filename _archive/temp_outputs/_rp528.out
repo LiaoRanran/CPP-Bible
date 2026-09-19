@@ -1,0 +1,456 @@
+[replay] evidence/conc/EV-CONC-001.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    3 个 key 与 .out 逐字一致（run_match_file 模式）
+  ✅ artifact_sha  8dd19bc6bf2facc2… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  8dd19bc6bf2facc2… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/conc/EV-CONC-002.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    2 个 key 与 .out 逐字一致（run_match_file 模式）
+  ✅ artifact_sha  8dd19bc6bf2facc2… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  8dd19bc6bf2facc2… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/conc/EV-CONC-003.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    8 个 key 与 .out 逐字一致（run_match_file 模式）
+  ✅ artifact_sha  d84c75168df0fda9… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  d84c75168df0fda9… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/conc/EV-CONC-004.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    7 个 key 与 .out 逐字一致（run_match_file 模式）
+  ✅ artifact_sha  d84c75168df0fda9… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  d84c75168df0fda9… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/conc/EV-CONC-005.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    4 个 key 与 .out 逐字一致（run_match_file 模式）
+  ✅ artifact_sha  5c5549aebfb148a0… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  5c5549aebfb148a0… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/conc/EV-CONC-006.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    4 个 key 与 .out 逐字一致（run_match_file 模式）
+  ✅ artifact_sha  5c5549aebfb148a0… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  5c5549aebfb148a0… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/hist/EV-HIST-001.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 3 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  b4f993189459e840… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  b4f993189459e840… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:\CodeLearnling\note\note\C++\CPP-Bible\Examples\atoms\_atom_auto_ptr.cpp: In function 'int main()':
+C:\CodeLearnling\n
+  → confirm
+
+[replay] evidence/lang/EV-LANG-001.md
+  ✅ compile_rc    27 条命令全部退出码 0
+  ✅ run_match    20 个 key 与 .out 逐字一致（run_match_file 模式）
+  ✅ artifact_sha  63c7e3b73ea9646c… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  63c7e3b73ea9646c… == 卡值（独立重编译复现）
+  ✅ artifacts  Examples/atoms/_atom_inline_odr_b.asm bc9c1ee45dad3bd0… == 卡值
+  ✅ artifacts  Examples/atoms/_atom_inline_odr_main.asm 34183ea9f66aa1e2… == 卡值
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/lang/EV-LANG-002.md
+  ✅ compile_rc    17 条命令全部退出码 0
+  ✅ run_match    8 个 key 与 .out 逐字一致（run_match_file 模式）
+  ✅ artifact_sha  63c7e3b73ea9646c… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  63c7e3b73ea9646c… == 卡值（独立重编译复现）
+  ✅ artifacts  Examples/atoms/_atom_inline_odr_b.asm bc9c1ee45dad3bd0… == 卡值
+  ✅ artifacts  Examples/atoms/_atom_inline_odr_main.asm 34183ea9f66aa1e2… == 卡值
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-001.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 2 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  d8b6b18dd8e955e8… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  d8b6b18dd8e955e8… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-002.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 3 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  d9f5a254fb21d2f2… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  d9f5a254fb21d2f2… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-003.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 3 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  b4f993189459e840… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  b4f993189459e840… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:\CodeLearnling\note\note\C++\CPP-Bible\Examples\atoms\_atom_auto_ptr.cpp: In function 'int main()':
+C:\CodeLearnling\n
+  → confirm
+
+[replay] evidence/mem/EV-MEM-004.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 1 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  f980469313725117… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  f980469313725117… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-005.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 1 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  2a834e60d6a2a738… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  2a834e60d6a2a738… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-006.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 5 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  99fc88c576dc2d12… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  99fc88c576dc2d12… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-007.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 2 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  988f921283b0be39… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  988f921283b0be39… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-008.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 3 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  fb588ba4ce07f41f… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  fb588ba4ce07f41f… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-009.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 2 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  7bba13b03d736f5a… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  7bba13b03d736f5a… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-010.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 6 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  fcd2b8d90bfa2707… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  fcd2b8d90bfa2707… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-011.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 3 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  e10ca794d9269a0c… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  e10ca794d9269a0c… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-012.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 3 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  23a91759d786ca66… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  23a91759d786ca66… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-013.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 5 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  323623959ff3114b… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  323623959ff3114b… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-014.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 3 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  343c5003d45ea763… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  343c5003d45ea763… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-015.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 7 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  cf0453ebd15e2343… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  cf0453ebd15e2343… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-016.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 3 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  4a824906da3e5eef… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  4a824906da3e5eef… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-017.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 2 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  094311a8f1728809… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  094311a8f1728809… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-018.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 3 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  360a35729ac710c5… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  360a35729ac710c5… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-019.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 4 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  e35737bdca1a8397… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  e35737bdca1a8397… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-020.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 3 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  0e3ffb202d91ab23… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  0e3ffb202d91ab23… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-021.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 10 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  59fc71f41e038996… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  59fc71f41e038996… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-022.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 3 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  0df0508167b3f71d… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  0df0508167b3f71d… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-023.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 3 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  6016c553283a4ef7… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  6016c553283a4ef7… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-024.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 2 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  09892f2e6ae5f048… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  09892f2e6ae5f048… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-025.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 2 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  4e6266ec32b5874f… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  4e6266ec32b5874f… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-026.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 4 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  595e63f3fde699a8… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  595e63f3fde699a8… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-027.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 2 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  e7e7d630dfb8afba… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  e7e7d630dfb8afba… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-028.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 2 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  1a9fc2e41d821784… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  1a9fc2e41d821784… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-029.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 8 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  75130ec6ea8b66b7… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  75130ec6ea8b66b7… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-030.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 4 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  06579f60872a4111… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  06579f60872a4111… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-031.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 3 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  77f1164c3dc0340e… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  77f1164c3dc0340e… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-032.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 24 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  a96938954e8f1004… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  a96938954e8f1004… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-033.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 12 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  a26740cd570112fd… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  a26740cd570112fd… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-034.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 9 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  2f8097b8b0b7e216… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  2f8097b8b0b7e216… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-035.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 5 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  94e96313b81f7d81… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  94e96313b81f7d81… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-036.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 4 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  0fd4a1acb85f83b5… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  0fd4a1acb85f83b5… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-037.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 4 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  e5a31cca38b9b908… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  e5a31cca38b9b908… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-038.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 13 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  d6bf1d9febd2021b… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  d6bf1d9febd2021b… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-039.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 4 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  bf7d01826185a168… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  bf7d01826185a168… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-040.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 43 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  4f482fdcdb7ec335… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  4f482fdcdb7ec335… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-041.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 43 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  4f482fdcdb7ec335… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  4f482fdcdb7ec335… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-042.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 8 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  ed44b0c6e06d2fcf… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  ed44b0c6e06d2fcf… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-043.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 8 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  ed44b0c6e06d2fcf… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  ed44b0c6e06d2fcf… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-044.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 12 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  9a97596f1792a725… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  9a97596f1792a725… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/mem/EV-MEM-045.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 10 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  590f3e721a564ee0… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  590f3e721a564ee0… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/ub/EV-UB-001.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 3 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  7122e45d05e3c8e0… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  7122e45d05e3c8e0… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] evidence/ub/EV-UB-002.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    输出 2 行与 run_* 逐字一致（行序归一化）
+  ✅ artifact_sha  900a3e43f70ed68b… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  900a3e43f70ed68b… == 卡值（独立重编译复现）
+  ⏭ sanitizer    工具链不支持 ASan/UBSan：C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find
+  → confirm
+
+[replay] confirm=56 refute=0 infra_error=0 共 56 张卡
+[replay] 清单已更新：build/replay_manifest.json（本次实跑 56 张）
