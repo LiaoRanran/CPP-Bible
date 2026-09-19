@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-09-19T17:32:12",
- "git_commit": "2af99a3",
+ "generated_at": "2026-09-19T17:35:28",
+ "git_commit": "751f4e2",
  "files": [
   {
    "path": "References/architecture_架构演进/271_架构批判_阙疑v3十问_判据密度不足与收敛手术.md",
@@ -1653,6 +1653,11 @@
    "size": 26579
   },
   {
+   "path": "References/architecture_架构演进/602_异族深度调研_TLA+与翻译验证_replay状态机从启发式到可证_只读_arch_v17.md",
+   "sha256": "c4673820946714c96de333238be294f29659ae07be2d8ffbfd9070e6cb73b2d7",
+   "size": 30224
+  },
+  {
    "path": "References/architecture_架构演进/archive_312_backup_pre_compress.md",
    "sha256": "cbbb058e34c3029dc15d2d35704c5d67795a37ee1d427e8df02764a14e9967d8",
    "size": 37910
@@ -1712,5 +1717,6 @@
    "sha256": "5c26f720f4bc9a1aa8f3951e002d09f3740f0420664cae43cde1f78bc0821960",
    "size": 29338
   }
- ]
+ ],
+ "self_hash": "f858e2aeac7231807d2851d85634fcc1f0f978c15d2900b63b284c1d5cf194fd"
 }

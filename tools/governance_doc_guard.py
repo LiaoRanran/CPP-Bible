@@ -12,12 +12,18 @@
 
 **边界诚实**：根仍是人读 diff —— manifest 只能发现"文档变了"，判不了"善意还是恶意"；scan 只能发现
 "含弱化关键词"，判不了语义。不做 PKI/数字签名/二人签（单用户阶段无意义）。只扫
-`References/architecture_架构演进/`，不扫 docs/README/其他目录。**manifest 自身不在校验范围内**
-（谁改基准仍可自签 = 与 `.tool_checksums` 同类信任边界，PoC-1 敞口的延伸）—— 已知限制，如实登记。
+`References/architecture_架构演进/`，不扫 docs/README/其他目录。
+
+601 任务 0.4（纵深防御）：manifest **多了 `self_hash` 自校验** —— manifest 自身是信任根的一部分，
+此前"谁改了基准谁就能自签"（与 `.tool_checksums` 同类边界）。现在 manifest 内容（排除 `self_hash`
+字段本身）的 sha256 写回自身，`verify`/`preflight` **先校 self_hash**：不符即
+`manifest self-hash mismatch` ⇒ exit 1。**这不是签名**（单用户阶段无密钥对，攻击者能同时改内容与
+self_hash）—— 它的价值是让"改了内容忘了/不想改 hash 的**单点篡改**"必被发现（纵深防御第 1 层），
+并与 `tool_integrity` 的 `SUPPLY_CHAIN_FILES` 形成**两条独立**的检出路径（第二条钉的是文件 hash）。
 
 用法：
-  python tools/governance_doc_guard.py verify            # 校验 manifest：exit0=一致 / exit1=不一致
-  python tools/governance_doc_guard.py update --force    # 更新 manifest（无 --force 拒绝）
+  python tools/governance_doc_guard.py verify            # 校验 self_hash + manifest：exit0=一致 / exit1=不一致
+  python tools/governance_doc_guard.py update --force    # 更新 manifest（无 --force 拒绝；重算 self_hash）
   python tools/governance_doc_guard.py scan              # 扫描弱化指令 → data/governance_weakening_scan.json
   python tools/governance_doc_guard.py preflight         # verify + scan：不一致 exit1 / 有 high 命中 exit2 / 干净 exit0
 """
@@ -36,6 +42,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DOCS_ROOT = ROOT / "References" / "architecture_架构演进"
 MANIFEST_PATH = ROOT / "data" / "governance_docs_manifest.json"
 SCAN_PATH = ROOT / "data" / "governance_weakening_scan.json"
+SELF_HASH_KEY = "self_hash"              # 601 任务 0.4：manifest 自校验字段（排除自身后算内容 hash）
 
 # 风险等级：high = 直接指令弱化判决 / medium = 描述性提及可能弱化 / low = 纪律用语上下文
 # 逐模式标注；命中一律 needs_human_review=true。
@@ -85,20 +92,48 @@ def scan_docs(docs_root: Path | None = None) -> list[dict]:
 
 
 def generate_manifest(docs_root: Path | None = None) -> dict:
-    return {"generated_at": datetime.now().isoformat(timespec="seconds"),
-            "git_commit": _git_commit(), "files": scan_docs(docs_root)}
+    """生成 manifest（含 `self_hash`：内容去掉 self_hash 字段后的 sha256）。"""
+    man = {"generated_at": datetime.now().isoformat(timespec="seconds"),
+           "git_commit": _git_commit(), "files": scan_docs(docs_root)}
+    man[SELF_HASH_KEY] = compute_self_hash(man)
+    return man
 
 
-def verify_manifest(manifest_path: Path | None = None,
-                    docs_root: Path | None = None) -> tuple[bool, list[str]]:
-    """当前文件 vs manifest 逐条比对；返回 (一致?, 差异清单)。"""
-    manifest_path = manifest_path or MANIFEST_PATH
-    docs_root = docs_root or DOCS_ROOT
-    if not manifest_path.is_file():
-        return False, [f"缺 manifest：{_rel(manifest_path)}（先跑 update --force）"]
-    man = json.loads(manifest_path.read_text(encoding="utf-8"))
-    old = {f["path"]: f for f in man.get("files", [])}
-    cur = {f["path"]: f for f in scan_docs(docs_root)}
+def compute_self_hash(man: dict) -> str:
+    """manifest 内容的 sha256（**排除 `self_hash` 字段本身**；键序/缩进规范化后再算）。
+
+    规范化（`sort_keys=True` + 固定 indent + ensure_ascii=False）是为了让"写出去再读回来"
+    得到同一个值——否则 json 键序变化会让自校验无故变红。
+    """
+    core = {k: v for k, v in man.items() if k != SELF_HASH_KEY}
+    blob = json.dumps(core, ensure_ascii=False, indent=1, sort_keys=True).encode("utf-8")
+    return hashlib.sha256(blob).hexdigest()
+
+
+def verify_self_hash(manifest_path: Path | None = None) -> tuple[bool, str]:
+    """校验 manifest 自身 hash；返回 (通过?, 说明)。**先于**任何文档比对调用。"""
+    p = manifest_path or MANIFEST_PATH
+    if not p.is_file():
+        return False, f"缺 manifest：{_rel(p)}（先跑 update --force）"
+    try:
+        man = json.loads(p.read_text(encoding="utf-8"))
+    except ValueError as exc:
+        return False, f"manifest 不是合法 JSON（{exc}）"
+    if not isinstance(man, dict):
+        return False, "manifest 不是 JSON 对象"
+    got = man.get(SELF_HASH_KEY)
+    if not got:
+        return False, (f"manifest 缺 `{SELF_HASH_KEY}` 字段（旧格式）⇒ 无法自证，"
+                       f"跑 `update --force` 重签")
+    want = compute_self_hash(man)
+    if got != want:
+        return False, (f"manifest self-hash mismatch（期望 {want[:12]}… 实际 {str(got)[:12]}…）"
+                       f"⇒ manifest 内容被改过而 hash 未同步")
+    return True, ""
+
+
+def diff_files(old: dict[str, dict], cur: dict[str, dict]) -> list[str]:
+    """两份 `{path: 记录}` 的差异清单（新增/删除/内容变更），排序确定。"""
     diffs: list[str] = []
     for path in sorted(set(cur) - set(old)):
         diffs.append(f"新增：{path}")
@@ -107,21 +142,48 @@ def verify_manifest(manifest_path: Path | None = None,
     for path in sorted(set(old) & set(cur)):
         if old[path]["sha256"] != cur[path]["sha256"]:
             diffs.append(f"内容变更：{path}")
+    return diffs
+
+
+def verify_manifest(manifest_path: Path | None = None,
+                    docs_root: Path | None = None) -> tuple[bool, list[str]]:
+    """**先校 self_hash**，再逐条比对文档；返回 (一致?, 差异清单)。"""
+    manifest_path = manifest_path or MANIFEST_PATH
+    docs_root = docs_root or DOCS_ROOT
+    ok_self, why = verify_self_hash(manifest_path)
+    if not ok_self:
+        return False, [why]
+    man = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+    old = {f["path"]: f for f in man.get("files", [])}
+    cur = {f["path"]: f for f in scan_docs(docs_root)}
+    diffs = diff_files(old, cur)
     return (not diffs), diffs
 
 
 def update_manifest(force: bool = False, manifest_path: Path | None = None,
                     docs_root: Path | None = None) -> tuple[bool, list[str]]:
-    """重新生成 manifest；**需 --force**（防误调用覆盖基准）。返回 (写没写, 变更清单)。"""
+    """重新生成 manifest（**含 self_hash**）；**需 --force**（防误调用覆盖基准）。
+
+    返回 (写没写, **文档**变更清单)。注意这里**不走** `verify_manifest()`：那条路径会先卡
+    自校验（旧格式 manifest 必然报"缺 self_hash"），会把"真实文档变更数"冲掉。
+    """
     manifest_path = manifest_path or MANIFEST_PATH
     docs_root = docs_root or DOCS_ROOT
     if not force:
         return False, ["拒绝写入：update 需显式 --force（防误调用覆盖基准）"]
-    ok, diffs = verify_manifest(manifest_path, docs_root)
+    old: dict[str, dict] = {}
+    if manifest_path.is_file():
+        try:
+            old = {f["path"]: f for f in json.loads(
+                manifest_path.read_text(encoding="utf-8")).get("files", [])}
+        except (ValueError, KeyError, TypeError):
+            old = {}                       # 旧 manifest 坏了 ⇒ 当"无旧基准"重签（不是静默放行：全量重算）
     man = generate_manifest(docs_root)
+    dic = diff_files(old, {f["path"]: f for f in man["files"]}) if old else \
+        [f"新增：{f['path']}" for f in man["files"]]
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     manifest_path.write_text(json.dumps(man, ensure_ascii=False, indent=1), encoding="utf-8")
-    return True, ([] if ok else diffs)
+    return True, dic
 
 
 def scan_weakening_instructions(docs_root: Path | None = None,
@@ -158,9 +220,14 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
 
     if a.cmd == "verify":
+        # 601 任务 0.4：**先校 self_hash**（manifest 是信任根的一部分，自身被改必须先显形）
+        ok_self, why = verify_self_hash()
+        if not ok_self:
+            print(f"[gov] ❌ {why}", file=sys.stderr)
+            return 1
         ok, diffs = verify_manifest()
         if ok:
-            print("[gov] manifest 一致 ✓")
+            print("[gov] manifest 一致 ✓（self_hash 已校验）")
             return 0
         print(f"[gov] manifest 不一致（{len(diffs)} 处）：", file=sys.stderr)
         for d in diffs[:20]:
@@ -172,8 +239,10 @@ def main(argv: list[str] | None = None) -> int:
         if not wrote:
             print(f"[gov] {diffs[0]}", file=sys.stderr)
             return 1
+        man = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
         print(f"[gov] manifest 已更新 → {_rel(MANIFEST_PATH)}"
-              + (f"（变更 {len(diffs)} 处）" if diffs else "（无变更）"))
+              + (f"（变更 {len(diffs)} 处）" if diffs else "（无变更）")
+              + f"（self_hash {str(man.get(SELF_HASH_KEY))[:12]}…）")
         return 0
 
     if a.cmd == "scan":
