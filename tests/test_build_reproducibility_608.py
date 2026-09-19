@@ -41,10 +41,12 @@ def test_only_time_macro_diff_binary_region():
 def test_only_time_macro_diff_pe_timestamp():
     # PE 头 TimeDateStamp 4 字节差异（即便已关插时间戳也兜底）⇒ 视为时间相关
     # 构造最小 MZ + PE 签名 + 4 字节时间戳差
-    base = bytearray(b"MZ" + b"\x00" * 0x3A + b"\x80\x00\x00\x00")  # 0x3C 指向 0x80
+    base = bytearray(b"MZ" + b"\x00" * 0x3A)
+    base[0x3C:0x40] = b"\x80\x00\x00\x00"   # DOS 头 e_lfanew @0x3C → PE 签名在 0x80
+    base += b"\x00" * (0x80 - len(base))    # 填洞到 0x80
     base += b"PE\x00\x00"
-    base += b"\x00\x00\x00\x00"          # COFF 头前 4 字节
-    ts_off = 0x80 + 8
+    base += b"\x00\x00\x00\x00"             # COFF 头 machine（4 字节）
+    ts_off = 0x80 + 8                        # COFF 头 +4 后为 TimeDateStamp
     a = bytearray(base)
     a[ts_off:ts_off + 4] = b"\x00\x00\x00\x01"
     b = bytearray(base)

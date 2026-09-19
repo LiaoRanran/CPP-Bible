@@ -503,6 +503,11 @@ def main(argv: list[str] | None = None) -> int:
             for r in results:
                 mark = "✓" if r["passed"] else "✗"
                 print(f"  {mark} {r['name']}: {r['detail']} ({r['elapsed_s']}s)")
+                if r["name"] == "build_reproducibility" and "cards" in r:
+                    for c in r["cards"]:
+                        extra = f" — {c['detail']}" if c.get("detail") else ""
+                        print(f"      · {c['card']}: match={c['match']} "
+                              f"cross={c['cross']}{extra}")
         return 0 if all_pass else 2
 
     ap.print_help()
