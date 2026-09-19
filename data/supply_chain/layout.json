@@ -1,0 +1,137 @@
+{
+ "layout_version": "1.0",
+ "tool": "supply_chain",
+ "generated_at": null,
+ "signature": null,
+ "steps": [
+  {
+   "name": "card_authoring",
+   "functionary": "human:*",
+   "depends_on": [],
+   "materials": [],
+   "products": [
+    "atoms",
+    "evidence",
+    "Examples"
+   ],
+   "说明": "卡面编写（人/苦力）：产出原子卡、证据卡与夹具"
+  },
+  {
+   "name": "gate_check",
+   "functionary": "machine:gate_engine.py",
+   "depends_on": [
+    "card_authoring"
+   ],
+   "materials": [
+    "atoms",
+    "evidence",
+    "Examples"
+   ],
+   "products": [],
+   "说明": "门禁校验：结果在 stdout（不落文件 ⇒ products 空）"
+  },
+  {
+   "name": "replay_verify",
+   "functionary": "machine:atom_evidence_replay.py",
+   "depends_on": [
+    "card_authoring"
+   ],
+   "materials": [
+    "atoms",
+    "evidence",
+    "Examples"
+   ],
+   "products": [],
+   "说明": "复算验证：结果在 stdout；`build/replay_manifest.json` 是**易变缓存**，不入链（否则链天天过期）"
+  },
+  {
+   "name": "poison_test",
+   "functionary": "machine:poison_drill.py",
+   "depends_on": [
+    "card_authoring"
+   ],
+   "materials": [
+    "atoms",
+    "evidence",
+    "tools/poison_exemptions.yaml"
+   ],
+   "products": [],
+   "说明": "毒样例攻击测试：结果在 stdout"
+  },
+  {
+   "name": "mutation_test",
+   "functionary": "machine:mutation_fuzz.py",
+   "depends_on": [
+    "card_authoring"
+   ],
+   "materials": [
+    "atoms",
+    "evidence",
+    "data/mutation"
+   ],
+   "products": [],
+   "说明": "变异攻击测试：结果在报告文件（显式产出）"
+  },
+  {
+   "name": "metrics_collect",
+   "functionary": "machine:metrics_collector.py",
+   "depends_on": [
+    "gate_check",
+    "replay_verify",
+    "poison_test",
+    "mutation_test"
+   ],
+   "materials": [
+    "atoms",
+    "evidence"
+   ],
+   "products": [],
+   "说明": "度量采集：落 data/metrics.jsonl（gitignore，不入链）"
+  },
+  {
+   "name": "human_review",
+   "functionary": "human:*",
+   "depends_on": [
+    "card_authoring"
+   ],
+   "materials": [
+    "data/attack_edges_candidates.jsonl",
+    "data/overturned_events.jsonl"
+   ],
+   "products": [
+    "data/human_attack_edge_annotations.jsonl"
+   ],
+   "说明": "人审确认：候选边/推翻事件 → 人审标注"
+  }
+ ],
+ "inspections": [
+  {
+   "name": "integrity_check",
+   "after": "card_authoring",
+   "command": [
+    "tools/tool_integrity.py",
+    "--check"
+   ],
+   "说明": "核心工具 + 信任根数据 + Merkle 根三层自检"
+  },
+  {
+   "name": "merkle_check",
+   "after": "card_authoring",
+   "command": [
+    "tools/merkle_integrity.py",
+    "--check"
+   ],
+   "说明": "目录级 Merkle 根 vs 当前内容"
+  },
+  {
+   "name": "governance_check",
+   "after": "card_authoring",
+   "command": [
+    "tools/governance_doc_guard.py",
+    "verify"
+   ],
+   "说明": "治理 manifest self_hash + 文档逐条一致"
+  }
+ ],
+ "note": "in-toto 最小子集：layout 声明步骤/顺序/授权/检查点；**只增不减**（删步骤须人审显式做并留 git 痕）；signature=生成时 git commit（非密码学签名）"
+}
