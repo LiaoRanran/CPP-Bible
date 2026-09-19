@@ -21,9 +21,21 @@
 self_hash）—— 它的价值是让"改了内容忘了/不想改 hash 的**单点篡改**"必被发现（纵深防御第 1 层），
 并与 `tool_integrity` 的 `SUPPLY_CHAIN_FILES` 形成**两条独立**的检出路径（第二条钉的是文件 hash）。
 
+607 任务 1（**扫描面扩边 + 增量机械登记**）：591 起台账只覆盖 `References/architecture_架构演进/`，
+而历轮的调研/过程文档（仓根 `_arch_*/**`、`_auto/inbox/*.md`、根下 `PM_/PUSH_/INDEX_/MATRIX_/CHECKLIST_*.md`）
+**从未进过扫描面** ⇒ 既不报"缺"、也永远没人登记。607 把扫描面扩到这些位置，并补上"增量登记"通道：
+  * `iter_governed_docs()` 是**唯一真源**（`verify` 与 `auto-update` 共用；若两边扫描面不一致，
+    新增条目会被 `verify` 判成"删除"而报红）；
+  * `auto_update()`：**只追加**新文档、**只标记**消失文档（`status: "missing"`，保留历史 hash），
+    **绝不刷新既有 hash**（刷新 = 全量重签，会把"内容被改过"顺手抹平 ⇒ 仍是人审 `update --force` 的活）；
+  * `verify` 比对时**跳过** `status == "missing"` 的条目（否则标记动作会立刻制造"删除"红）。
+**边界（诚实）**：`update --force`（全量重签）与 `auto-update`（增量登记）**都不做语义判断**；
+弱化扫描 `scan` 仍只扫 `DOCS_ROOT`（投喂词才是可执行政策，`_arch_*` 是过程文档），扩不扩面是另一个决策。
+
 用法：
   python tools/governance_doc_guard.py verify            # 校验 self_hash + manifest：exit0=一致 / exit1=不一致
   python tools/governance_doc_guard.py update --force    # 更新 manifest（无 --force 拒绝；重算 self_hash）
+  python tools/governance_doc_guard.py auto-update       # 607：增量机械登记（只追加 + 标记 missing；无变更不写盘）
   python tools/governance_doc_guard.py scan              # 扫描弱化指令 → data/governance_weakening_scan.json
   python tools/governance_doc_guard.py preflight         # verify + scan：不一致 exit1 / 有 high 命中 exit2 / 干净 exit0
 """
@@ -43,6 +55,15 @@ DOCS_ROOT = ROOT / "References" / "architecture_架构演进"
 MANIFEST_PATH = ROOT / "data" / "governance_docs_manifest.json"
 SCAN_PATH = ROOT / "data" / "governance_weakening_scan.json"
 SELF_HASH_KEY = "self_hash"              # 601 任务 0.4：manifest 自校验字段（排除自身后算内容 hash）
+
+# 607 任务 1：新增扫描面（历史上从未纳入台账的位置）
+#: 仓根下这些**目录**里的全部 `*.md`（递归）：`_arch_v2`…`_arch_v17`、`_arch_free` 等调研/过程文档
+GOVERNED_DIR_GLOBS: tuple[str, ...] = ("_arch_*",)
+#: `_auto/inbox/*.md`（各批投喂词的落盘位置）
+GOVERNED_INBOX_DIR: tuple[str, ...] = ("_auto", "inbox")
+#: 仓根下这些**文件模式**
+GOVERNED_ROOT_FILE_GLOBS: tuple[str, ...] = ("PM_*.md", "PUSH_*.md", "INDEX_*.md",
+                                             "MATRIX_*.md", "CHECKLIST_*.md")
 
 # 风险等级：high = 直接指令弱化判决 / medium = 描述性提及可能弱化 / low = 纪律用语上下文
 # 逐模式标注；命中一律 needs_human_review=true。
@@ -82,11 +103,43 @@ def _git_commit() -> str:
     return r.stdout.strip() if r.returncode == 0 else "unknown"
 
 
+def iter_governed_docs(docs_root: Path | None = None) -> list[Path]:
+    """受治理文档路径全集（**唯一真源**：`verify` 与 `auto-update` 必须共用）。
+
+    - `docs_root` **显式给出** ⇒ 只扫那一个目录（591 测试注入语义保持不变）；
+    - 省略（默认）⇒ 扫 607 扩边后的全集：`DOCS_ROOT` + 仓根 `_arch_*/**` + `_auto/inbox` + 根下 5 类文件。
+      去重（按仓根相对路径）后按路径排序，保证 manifest 顺序确定。
+    """
+    if docs_root is not None:
+        return sorted(p for p in Path(docs_root).rglob("*.md") if p.is_file())
+    found: dict[str, Path] = {}
+
+    def _collect(paths) -> None:
+        for p in paths:
+            if p.is_file() and p.suffix == ".md":
+                found.setdefault(_rel(p), p)       # 同一路径只留一份（同名不同根也按相对路径区分）
+
+    if DOCS_ROOT.is_dir():
+        _collect(DOCS_ROOT.rglob("*.md"))
+    inbox = ROOT.joinpath(*GOVERNED_INBOX_DIR)
+    if inbox.is_dir():
+        _collect(sorted(inbox.glob("*.md")))
+    for pat in GOVERNED_DIR_GLOBS:
+        for d in sorted(ROOT.glob(pat)):
+            if d.is_dir():
+                _collect(sorted(d.rglob("*.md")))
+    for pat in GOVERNED_ROOT_FILE_GLOBS:
+        _collect(sorted(ROOT.glob(pat)))
+    return [found[k] for k in sorted(found)]
+
+
 def scan_docs(docs_root: Path | None = None) -> list[dict]:
-    """扫描投喂词，返回按路径排序的 [{path, sha256, size}]。"""
-    docs_root = docs_root or DOCS_ROOT
+    """扫描受治理文档，返回按路径排序的 [{path, sha256, size}]。
+
+    `docs_root` 省略 ⇒ 607 扩边后的全集（见 `iter_governed_docs()`）。
+    """
     out = []
-    for p in sorted(docs_root.rglob("*.md")):
+    for p in iter_governed_docs(docs_root):
         out.append({"path": _rel(p), "sha256": _sha256(p), "size": p.stat().st_size})
     return out
 
@@ -147,14 +200,18 @@ def diff_files(old: dict[str, dict], cur: dict[str, dict]) -> list[str]:
 
 def verify_manifest(manifest_path: Path | None = None,
                     docs_root: Path | None = None) -> tuple[bool, list[str]]:
-    """**先校 self_hash**，再逐条比对文档；返回 (一致?, 差异清单)。"""
+    """**先校 self_hash**，再逐条比对文档；返回 (一致?, 差异清单)。
+
+    607：比对时**跳过** `status == "missing"` 的条目（它们已被 `auto-update` 标记为"文件已消失"，
+    仍留在 manifest 里当历史；若不跳过，标记动作本身就会制造一条"删除"红）。
+    `docs_root` 省略 ⇒ 用 607 扩边后的全集（与 `auto-update` 同一扫描面）。
+    """
     manifest_path = manifest_path or MANIFEST_PATH
-    docs_root = docs_root or DOCS_ROOT
     ok_self, why = verify_self_hash(manifest_path)
     if not ok_self:
         return False, [why]
     man = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
-    old = {f["path"]: f for f in man.get("files", [])}
+    old = {f["path"]: f for f in man.get("files", []) if f.get("status") != "missing"}
     cur = {f["path"]: f for f in scan_docs(docs_root)}
     diffs = diff_files(old, cur)
     return (not diffs), diffs
@@ -166,9 +223,11 @@ def update_manifest(force: bool = False, manifest_path: Path | None = None,
 
     返回 (写没写, **文档**变更清单)。注意这里**不走** `verify_manifest()`：那条路径会先卡
     自校验（旧格式 manifest 必然报"缺 self_hash"），会把"真实文档变更数"冲掉。
+    `docs_root` 省略 ⇒ 用 607 扩边后的全集（与 `verify` 同一扫描面）。
+
+    全量重签 ⇒ 会**抹平**"既有文档内容被改过"的痕迹；607 的日常机械更新走 `auto_update()`（增量）。
     """
     manifest_path = manifest_path or MANIFEST_PATH
-    docs_root = docs_root or DOCS_ROOT
     if not force:
         return False, ["拒绝写入：update 需显式 --force（防误调用覆盖基准）"]
     old: dict[str, dict] = {}
@@ -184,6 +243,70 @@ def update_manifest(force: bool = False, manifest_path: Path | None = None,
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     manifest_path.write_text(json.dumps(man, ensure_ascii=False, indent=1), encoding="utf-8")
     return True, dic
+
+
+def auto_update(manifest_path: Path | None = None,
+                docs_root: Path | None = None) -> tuple[dict, list[str]]:
+    """607 任务 1：**增量机械登记**（日常通道；替代"每次都全量重签"的 `update --force`）。
+
+    与 `update --force` 的**关键差别**（这是本函数存在的理由）：
+      * 只**追加**新发现的文档（算 sha256 后追加）；
+      * 只把"manifest 里有、磁盘上没了"的条目**标记** `status = "missing"`（**保留**历史 hash，不删条目）；
+      * **绝不刷新既有条目的 hash** ⇒ 既有文档被改过时 `verify` 依旧报"内容变更"（fail-closed）。
+        想接受内容变更必须走人审 `update --force`（全量重签）。
+
+    返回 `(统计, 人类可读变更清单)`；统计键：`added / reappeared / missing / changed / total / wrote`。
+    **无变更时不写盘**（保证可重复执行且不污染工作区）。
+    """
+    manifest_path = manifest_path or MANIFEST_PATH
+    man: dict = {}
+    if manifest_path.is_file():
+        try:
+            loaded = json.loads(manifest_path.read_text(encoding="utf-8"))
+            man = loaded if isinstance(loaded, dict) else {}
+        except ValueError:
+            man = {}                        # manifest 坏了 ⇒ 当空基准；既有信息无法恢复，如实报告
+    records: list[dict] = [f for f in man.get("files", []) if isinstance(f, dict) and f.get("path")]
+    by_path: dict[str, dict] = {f["path"]: f for f in records}
+
+    cur = {f["path"]: f for f in scan_docs(docs_root)}
+    added: list[str] = []
+    reappeared: list[str] = []
+    missing: list[str] = []
+    changed: list[str] = []
+
+    for path in sorted(cur):
+        rec = by_path.get(path)
+        if rec is None:
+            records.append(dict(cur[path]))
+            added.append(path)
+            continue
+        if rec.get("status") == "missing":          # 之前标记消失，现在又出现了
+            rec.pop("status", None)                 # 回到受治理范围（先恢复状态，hash 见下）
+            reappeared.append(path)
+        if rec.get("sha256") != cur[path]["sha256"]:
+            changed.append(path)                    # **不改 hash**：留给人审 update --force
+    for path in sorted(by_path):
+        if path not in cur and by_path[path].get("status") != "missing":
+            by_path[path]["status"] = "missing"
+            missing.append(path)
+
+    stats = {"added": len(added), "reappeared": len(reappeared), "missing": len(missing),
+             "changed": len(changed), "total": len(records), "wrote": False}
+    if not (added or reappeared or missing):
+        return stats, []                            # 无变更 ⇒ 不写盘（幂等；也避免无谓改 self_hash）
+
+    man = {"generated_at": datetime.now().isoformat(timespec="seconds"),
+           "git_commit": _git_commit(), "files": records}
+    man[SELF_HASH_KEY] = compute_self_hash(man)
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(json.dumps(man, ensure_ascii=False, indent=1), encoding="utf-8")
+    stats["wrote"] = True
+
+    diffs = [f"新增：{p}" for p in added] + [f"复现：{p}" for p in reappeared] \
+        + [f"标记 missing：{p}" for p in missing] \
+        + [f"内容变更（**未**自动重签，需人审 `update --force`）：{p}" for p in changed]
+    return stats, diffs
 
 
 def scan_weakening_instructions(docs_root: Path | None = None,
@@ -215,7 +338,7 @@ def scan_weakening_instructions(docs_root: Path | None = None,
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="591 · 治理文档完整性防护（只读/护栏）")
-    ap.add_argument("cmd", choices=["verify", "update", "scan", "preflight"])
+    ap.add_argument("cmd", choices=["verify", "update", "auto-update", "scan", "preflight"])
     ap.add_argument("--force", action="store_true", help="update 专用：显式确认覆盖基准")
     a = ap.parse_args(argv)
 
@@ -250,6 +373,23 @@ def main(argv: list[str] | None = None) -> int:
         s = res["summary"]
         print(f"[gov] 弱化指令扫描：high={s['high']} medium={s['medium']} low={s['low']}"
               f" → {_rel(SCAN_PATH)}")
+        return 0
+
+    if a.cmd == "auto-update":                    # 607 任务 1
+        stats, diffs = auto_update()
+        if not stats["wrote"]:
+            print(f"[gov] auto-update：无变更（未写盘；manifest 共 {stats['total']} 条）")
+            return 0
+        print(f"[gov] auto-update：新增 {stats['added']} / 标记 missing {stats['missing']}"
+              f" / 复现 {stats['reappeared']}（共 {stats['total']} 条）→ {_rel(MANIFEST_PATH)}")
+        for d in diffs[:20]:
+            print(f"[gov]   {d}")
+        if len(diffs) > 20:
+            print(f"[gov]   …（共 {len(diffs)} 处）")
+        if stats["changed"]:
+            print(f"[gov] ⚠ 内容变更 {stats['changed']} 处**未**自动重签（增量通道只登记新增/消失）"
+                  "⇒ `verify` 会报红，须人审后 `update --force`", file=sys.stderr)
+            return 1
         return 0
 
     # preflight
