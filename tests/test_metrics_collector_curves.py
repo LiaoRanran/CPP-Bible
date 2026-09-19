@@ -62,20 +62,20 @@ def test_curves_declare_single_timepoint():
 
 
 def test_curves_escape_rate_matches_stat_bounds():
-    """逃逸率块必须与 Part 1 原语逐值一致（双侧区间；分母是**可判** 1375）。"""
+    """逃逸率块必须与 Part 1 原语逐值一致（双侧区间；分母是**可判** 1406）。"""
     c = mc.collect_curves()["mutation_escape_rate"]
     # 586 任务2：M6 的 8 条 matrix 块式→flow 等价变体从 escaped 剔除、单列 equivalent_invalid，
     # 全量 escaped 由 9 降为 1（仅余 M1 真实逃逸）；M6 新增 matrix 删键值层变异使可判分母升到 1155。
-    # 587 任务1/2：M6 再增 matrix **非法值替换**变异 220 个（修前 204 逃逸），值校验（warn 起步）
-    # 落地后全部转为 warn_only ⇒ 可判分母 1155 → **1375**（escaped 仍 1 = M1 那条 TCE）。
-    # 数字按重跑实测，不照抄旧账。
-    assert c["judged"] == 1375 and c["n_a"] == 185
-    assert c["numerator"] == 1 and c["denominator"] == 1375      # 587：v5 的 1/1375（诚实口径）
-    lo, hi = sb.cp_interval(1, 1375)
-    assert abs(c["point"] - 1 / 1375) < 1e-6
+    # 587 任务1/2：M6 再增 matrix **非法值替换**变异 220 个，值校验（warn 起步）落地后全部转为 warn_only。
+    # 591（v7 冻结）：589 T2 注释净化 un-mask 27 条真实 fixture 路径变异 ⇒ M2 可判 141→168，
+    # 可判分母 1379 → **1406**（escaped 仍 1 = M1 那条 TCE）。数字按重跑实测，不照抄旧账。
+    assert c["judged"] == 1406 and c["n_a"] == 179
+    assert c["numerator"] == 1 and c["denominator"] == 1406      # 591：v7 的 1/1406（诚实口径）
+    lo, hi = sb.cp_interval(1, 1406)
+    assert abs(c["point"] - 1 / 1406) < 1e-6
     assert abs(c["cp_low"] - lo) < 1e-6 and abs(c["cp_high"] - hi) < 1e-6
     # 与单侧口径**不同**（防拿单侧当区间用来"更漂亮"）
-    assert sb.cp_upper_one_sided(1, 1375) != pytest.approx(hi, abs=1e-9)
+    assert sb.cp_upper_one_sided(1, 1406) != pytest.approx(hi, abs=1e-9)
 
 
 def test_curves_placeholders_are_honest():
@@ -101,4 +101,4 @@ def test_collect_snapshot_carries_curves(tmp_path: Path, monkeypatch: pytest.Mon
     p = tmp_path / "m.jsonl"
     mc.append(snap, p)
     again = json.loads(p.read_text(encoding="utf-8").splitlines()[-1])
-    assert again["curves"]["mutation_escape_rate"]["denominator"] == 1375   # 587：v5 口径
+    assert again["curves"]["mutation_escape_rate"]["denominator"] == 1406   # 591：v7 口径

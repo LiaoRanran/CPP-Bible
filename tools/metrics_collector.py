@@ -477,21 +477,19 @@ def collect_curves() -> dict:
             return {"source": str(path), "tag": tag,
                     "error": f"基线不可用：{type(exc).__name__}: {exc}"}
 
-    # 574 升 v3 → 575 升 v4 → **578 升 v5**（_findings_key 并入文案 ⇒ M5 活雷在报告口径翻盘）。
-    #   v1–v4 **保留为历史时点**，不覆盖——否则历史曲线会被改写。
+    # 574 升 v3 → 575 升 v4 → 578 升 v5 → **591 升 v7**（信任根扩边 v7 冻结：589 T2 注释净化
+    #   un-mask 27 条真实 fixture 路径变异 ⇒ M2 可判 141→168）。v1–v6 **保留为历史时点**，不覆盖。
+    v7 = ROOT / "data" / "mutation" / "full_baseline_v7.json"
+    v6 = ROOT / "data" / "mutation" / "full_baseline_v6.json"
     v5 = ROOT / "data" / "mutation" / "full_baseline_v5.json"
     v4 = ROOT / "data" / "mutation" / "full_baseline_v4.json"
     v3 = ROOT / "data" / "mutation" / "full_baseline_v3.json"
     v2 = ROOT / "data" / "mutation" / "full_baseline_v2.json"
     v1 = ROOT / "data" / "mutation" / "full_baseline_v1.json"
     out["mutation_escape_rate"] = (
-        _rate(v5, "v5（578 起当前口径：diff 键并入文案 ⇒ 同卡同规则的第二条告警不再被吞；"
-                  "M5 活雷由「沉默逃逸」变为「warn 可见」）"
-                  "【579 方差声明：该点估计含**运行间方差**（实测 ≥2/998，继承跑批残留状态时"
-                  "曾得 991/7）；下方 C-P 区间只覆盖**抽样误差**，不覆盖跑批非确定性。"
-                  "579 已把工件层根隔离进沙箱并加 `--selfcheck-determinism`，"
-                  "待自检稳定 N 轮后再撤此声明】")
-        if v5.is_file() else {"error": "缺 data/mutation/full_baseline_v5.json"})
+        _rate(v7, "v7（591 起当前口径：589 T2 注释净化 un-mask 27 条真实 fixture 路径变异 ⇒ "
+                  "M2 可判 141→168；唯一 escaped=1 = M1 / EV-CONC-001 冻结 TCE）")
+        if v7.is_file() else {"error": "缺 data/mutation/full_baseline_v7.json"})
     hist = []
     if v1.is_file():
         hist.append(_rate(v1, "v1（571 修 GATE_READ_KEYS 前，含 M2 假逃逸，仅历史）"))
@@ -501,6 +499,10 @@ def collect_curves() -> dict:
         hist.append(_rate(v3, "v3（574 修 M5 尺子后、M5 活雷未收，仅历史）"))
     if v4.is_file():
         hist.append(_rate(v4, "v4（575 命题级活性锚：M5 规则已拦但被 diff 键吞掉，仅历史）"))
+    if v5.is_file():
+        hist.append(_rate(v5, "v5（578 _findings_key 并入文案后；587 起 1/1375，仅历史）"))
+    if v6.is_file():
+        hist.append(_rate(v6, "v6（588 发现器补全后；1/1379，被 v7 取代）"))
     out["mutation_escape_rate_history"] = hist
 
     # 573 任务 A-2：overturned 从"恒 0 占位"变成**真读数**（读只追加事件流；写入见 log_overturned）。

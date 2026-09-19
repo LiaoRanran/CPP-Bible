@@ -94,50 +94,50 @@
   "M7"
  ],
  "variants": 1593,
- "blocked": 1378,
+ "blocked": 1405,
  "escaped": 1,
  "n_a": 179,
  "malformed": 0,
  "out_of_scope": 69,
- "equivalent": 35,
- "equivalent_invalid": 35,
+ "equivalent": 8,
+ "equivalent_invalid": 8,
  "strict_blocked": 811,
- "strict_rate": 0.5881,
+ "strict_rate": 0.5768,
  "treated_rate": 0.9993,
  "rates": {
-  "judged": 1379,
+  "judged": 1406,
   "n_a": 179,
   "malformed": 0,
   "strict": {
    "numerator": 811,
-   "denominator": 1379,
-   "point": 0.588107,
-   "cp_low": 0.561603,
-   "cp_high": 0.614235,
+   "denominator": 1406,
+   "point": 0.576814,
+   "cp_low": 0.550495,
+   "cp_high": 0.602811,
    "conf": 0.95
   },
   "treated": {
-   "numerator": 1378,
-   "denominator": 1379,
-   "point": 0.999275,
-   "cp_low": 0.995966,
+   "numerator": 1405,
+   "denominator": 1406,
+   "point": 0.999289,
+   "cp_low": 0.996044,
    "cp_high": 0.999982,
    "conf": 0.95
   },
   "escape": {
    "numerator": 1,
-   "denominator": 1379,
-   "point": 0.000725,
+   "denominator": 1406,
+   "point": 0.000711,
    "cp_low": 1.8e-05,
-   "cp_high": 0.004034,
+   "cp_high": 0.003956,
    "conf": 0.95
   },
   "treated_all": {
-   "numerator": 1378,
+   "numerator": 1405,
    "denominator": 1593,
-   "point": 0.865035,
-   "cp_low": 0.847268,
-   "cp_high": 0.881443,
+   "point": 0.881984,
+   "cp_low": 0.865119,
+   "cp_high": 0.897426,
    "conf": 0.95
   }
  },
@@ -172,31 +172,31 @@
    }
   },
   "M2": {
-   "judged": 141,
+   "judged": 168,
    "n_a": 27,
-   "equivalent_invalid": 27,
+   "equivalent_invalid": 0,
    "strict": {
     "numerator": 0,
-    "denominator": 141,
+    "denominator": 168,
     "point": 0.0,
     "cp_low": 0.0,
-    "cp_high": 0.025823,
+    "cp_high": 0.021718,
     "conf": 0.95
    },
    "treated": {
-    "numerator": 141,
-    "denominator": 141,
+    "numerator": 168,
+    "denominator": 168,
     "point": 1.0,
-    "cp_low": 0.974177,
+    "cp_low": 0.978282,
     "cp_high": 1.0,
     "conf": 0.95
    },
    "escape": {
     "numerator": 0,
-    "denominator": 141,
+    "denominator": 168,
     "point": 0.0,
     "cp_low": 0.0,
-    "cp_high": 0.025823,
+    "cp_high": 0.021718,
     "conf": 0.95
    }
   },
@@ -357,10 +357,10 @@
    "equivalent_invalid": 0
   },
   "M2": {
-   "blocked": 141,
+   "blocked": 168,
    "escaped": 0,
    "n_a": 27,
-   "equivalent_invalid": 27
+   "equivalent_invalid": 0
   },
   "M3": {
    "blocked": 65,
@@ -395,16 +395,16 @@
  },
  "by_card": {
   "evidence/conc/EV-CONC-001.md": {
-   "blocked": 22,
+   "blocked": 25,
    "escaped": 1,
    "n_a": 1,
-   "equivalent_invalid": 3
+   "equivalent_invalid": 0
   },
   "evidence/conc/EV-CONC-002.md": {
-   "blocked": 22,
+   "blocked": 25,
    "escaped": 0,
    "n_a": 1,
-   "equivalent_invalid": 3
+   "equivalent_invalid": 0
   },
   "evidence/conc/EV-CONC-003.md": {
    "blocked": 25,
@@ -671,10 +671,10 @@
    "equivalent_invalid": 1
   },
   "evidence/mem/EV-MEM-038.md": {
-   "blocked": 18,
+   "blocked": 21,
    "escaped": 0,
    "n_a": 2,
-   "equivalent_invalid": 3
+   "equivalent_invalid": 0
   },
   "evidence/mem/EV-MEM-039.md": {
    "blocked": 21,
@@ -683,40 +683,40 @@
    "equivalent_invalid": 0
   },
   "evidence/mem/EV-MEM-040.md": {
-   "blocked": 19,
+   "blocked": 22,
    "escaped": 0,
    "n_a": 1,
-   "equivalent_invalid": 3
+   "equivalent_invalid": 0
   },
   "evidence/mem/EV-MEM-041.md": {
-   "blocked": 19,
+   "blocked": 22,
    "escaped": 0,
    "n_a": 1,
-   "equivalent_invalid": 3
+   "equivalent_invalid": 0
   },
   "evidence/mem/EV-MEM-042.md": {
-   "blocked": 18,
+   "blocked": 21,
    "escaped": 0,
    "n_a": 2,
-   "equivalent_invalid": 3
+   "equivalent_invalid": 0
   },
   "evidence/mem/EV-MEM-043.md": {
-   "blocked": 18,
+   "blocked": 21,
    "escaped": 0,
    "n_a": 2,
-   "equivalent_invalid": 3
+   "equivalent_invalid": 0
   },
   "evidence/mem/EV-MEM-044.md": {
-   "blocked": 18,
+   "blocked": 21,
    "escaped": 0,
    "n_a": 2,
-   "equivalent_invalid": 3
+   "equivalent_invalid": 0
   },
   "evidence/mem/EV-MEM-045.md": {
-   "blocked": 18,
+   "blocked": 21,
    "escaped": 0,
    "n_a": 2,
-   "equivalent_invalid": 3
+   "equivalent_invalid": 0
   },
   "evidence/ub/EV-UB-001.md": {
    "blocked": 22,
@@ -893,7 +893,7 @@
    "equivalent_invalid": 0
   }
  },
- "elapsed_s": 269.51,
+ "elapsed_s": 857.5,
  "ge_runs": 1415,
  "replay_runs": 65,
  "replay_skipped": 139,
@@ -911,12 +911,6 @@
   }
  ],
  "equivalent_keys": [
-  "evidence/conc/EV-CONC-001.md · M2 · 路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_ATOMIC.CPP）",
-  "evidence/conc/EV-CONC-001.md · M2 · 路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_vs_atomic.cpp）",
-  "evidence/conc/EV-CONC-001.md · M2 · 分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\\atoms\\_atom_fence_vs_atomic.cpp）",
-  "evidence/conc/EV-CONC-002.md · M2 · 路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_ATOMIC.CPP）",
-  "evidence/conc/EV-CONC-002.md · M2 · 路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_vs_atomic.cpp）",
-  "evidence/conc/EV-CONC-002.md · M2 · 分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\\atoms\\_atom_fence_vs_atomic.cpp）",
   "evidence/hist/EV-HIST-001.md · M6 · 块式 → flow 写法（matrix）",
   "evidence/mem/EV-MEM-032.md · M6 · 块式 → flow 写法（matrix）",
   "evidence/mem/EV-MEM-033.md · M6 · 块式 → flow 写法（matrix）",
@@ -924,60 +918,9 @@
   "evidence/mem/EV-MEM-035.md · M6 · 块式 → flow 写法（matrix）",
   "evidence/mem/EV-MEM-036.md · M6 · 块式 → flow 写法（matrix）",
   "evidence/mem/EV-MEM-037.md · M6 · 块式 → flow 写法（matrix）",
-  "evidence/mem/EV-MEM-038.md · M2 · 路径转大写（Examples/atoms/_atom_sso_portable.cpp → EXAMPLES/ATOMS/_ATOM_SSO_PORTABLE.CPP）",
-  "evidence/mem/EV-MEM-038.md · M2 · 路径加 ./（Examples/atoms/_atom_sso_portable.cpp → ./Examples/atoms/_atom_sso_portable.cpp）",
-  "evidence/mem/EV-MEM-038.md · M2 · 分隔符换反斜杠（Examples/atoms/_atom_sso_portable.cpp → Examples\\atoms\\_atom_sso_portable.cpp）",
-  "evidence/mem/EV-MEM-040.md · M2 · 路径转大写（Examples/atoms/_atom_alloc_strategies.cpp → EXAMPLES/ATOMS/_ATOM_ALLOC_STRATEGIES.CPP）",
-  "evidence/mem/EV-MEM-040.md · M2 · 路径加 ./（Examples/atoms/_atom_alloc_strategies.cpp → ./Examples/atoms/_atom_alloc_strategies.cpp）",
-  "evidence/mem/EV-MEM-040.md · M2 · 分隔符换反斜杠（Examples/atoms/_atom_alloc_strategies.cpp → Examples\\atoms\\_atom_alloc_strategies.cpp）",
-  "evidence/mem/EV-MEM-041.md · M2 · 路径转大写（Examples/atoms/_atom_alloc_strategies.cpp → EXAMPLES/ATOMS/_ATOM_ALLOC_STRATEGIES.CPP）",
-  "evidence/mem/EV-MEM-041.md · M2 · 路径加 ./（Examples/atoms/_atom_alloc_strategies.cpp → ./Examples/atoms/_atom_alloc_strategies.cpp）",
-  "evidence/mem/EV-MEM-041.md · M2 · 分隔符换反斜杠（Examples/atoms/_atom_alloc_strategies.cpp → Examples\\atoms\\_atom_alloc_strategies.cpp）",
-  "evidence/mem/EV-MEM-042.md · M2 · 路径转大写（Examples/atoms/_atom_leak_detection.cpp → EXAMPLES/ATOMS/_ATOM_LEAK_DETECTION.CPP）",
-  "evidence/mem/EV-MEM-042.md · M2 · 路径加 ./（Examples/atoms/_atom_leak_detection.cpp → ./Examples/atoms/_atom_leak_detection.cpp）",
-  "evidence/mem/EV-MEM-042.md · M2 · 分隔符换反斜杠（Examples/atoms/_atom_leak_detection.cpp → Examples\\atoms\\_atom_leak_detection.cpp）",
-  "evidence/mem/EV-MEM-043.md · M2 · 路径转大写（Examples/atoms/_atom_leak_detection.cpp → EXAMPLES/ATOMS/_ATOM_LEAK_DETECTION.CPP）",
-  "evidence/mem/EV-MEM-043.md · M2 · 路径加 ./（Examples/atoms/_atom_leak_detection.cpp → ./Examples/atoms/_atom_leak_detection.cpp）",
-  "evidence/mem/EV-MEM-043.md · M2 · 分隔符换反斜杠（Examples/atoms/_atom_leak_detection.cpp → Examples\\atoms\\_atom_leak_detection.cpp）",
-  "evidence/mem/EV-MEM-044.md · M2 · 路径转大写（Examples/atoms/_atom_false_sharing.cpp → EXAMPLES/ATOMS/_ATOM_FALSE_SHARING.CPP）",
-  "evidence/mem/EV-MEM-044.md · M2 · 路径加 ./（Examples/atoms/_atom_false_sharing.cpp → ./Examples/atoms/_atom_false_sharing.cpp）",
-  "evidence/mem/EV-MEM-044.md · M2 · 分隔符换反斜杠（Examples/atoms/_atom_false_sharing.cpp → Examples\\atoms\\_atom_false_sharing.cpp）",
-  "evidence/mem/EV-MEM-045.md · M2 · 路径转大写（Examples/atoms/_atom_false_sharing_perf.cpp → EXAMPLES/ATOMS/_ATOM_FALSE_SHARING_PERF.CPP）",
-  "evidence/mem/EV-MEM-045.md · M2 · 路径加 ./（Examples/atoms/_atom_false_sharing_perf.cpp → ./Examples/atoms/_atom_false_sharing_perf.cpp）",
-  "evidence/mem/EV-MEM-045.md · M2 · 分隔符换反斜杠（Examples/atoms/_atom_false_sharing_perf.cpp → Examples\\atoms\\_atom_false_sharing_perf.cpp）",
   "evidence/ub/EV-UB-002.md · M6 · 块式 → flow 写法（matrix）"
  ],
  "equivalent_invalid_list": [
-  {
-   "card": "evidence/conc/EV-CONC-001.md",
-   "op": "M2",
-   "point": "路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_ATOMIC.CPP）"
-  },
-  {
-   "card": "evidence/conc/EV-CONC-001.md",
-   "op": "M2",
-   "point": "路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_vs_atomic.cpp）"
-  },
-  {
-   "card": "evidence/conc/EV-CONC-001.md",
-   "op": "M2",
-   "point": "分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\\atoms\\_atom_fence_vs_atomic.cpp）"
-  },
-  {
-   "card": "evidence/conc/EV-CONC-002.md",
-   "op": "M2",
-   "point": "路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_ATOMIC.CPP）"
-  },
-  {
-   "card": "evidence/conc/EV-CONC-002.md",
-   "op": "M2",
-   "point": "路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_vs_atomic.cpp）"
-  },
-  {
-   "card": "evidence/conc/EV-CONC-002.md",
-   "op": "M2",
-   "point": "分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\\atoms\\_atom_fence_vs_atomic.cpp）"
-  },
   {
    "card": "evidence/hist/EV-HIST-001.md",
    "op": "M6",
@@ -1014,118 +957,13 @@
    "point": "块式 → flow 写法（matrix）"
   },
   {
-   "card": "evidence/mem/EV-MEM-038.md",
-   "op": "M2",
-   "point": "路径转大写（Examples/atoms/_atom_sso_portable.cpp → EXAMPLES/ATOMS/_ATOM_SSO_PORTABLE.CPP）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-038.md",
-   "op": "M2",
-   "point": "路径加 ./（Examples/atoms/_atom_sso_portable.cpp → ./Examples/atoms/_atom_sso_portable.cpp）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-038.md",
-   "op": "M2",
-   "point": "分隔符换反斜杠（Examples/atoms/_atom_sso_portable.cpp → Examples\\atoms\\_atom_sso_portable.cpp）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-040.md",
-   "op": "M2",
-   "point": "路径转大写（Examples/atoms/_atom_alloc_strategies.cpp → EXAMPLES/ATOMS/_ATOM_ALLOC_STRATEGIES.CPP）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-040.md",
-   "op": "M2",
-   "point": "路径加 ./（Examples/atoms/_atom_alloc_strategies.cpp → ./Examples/atoms/_atom_alloc_strategies.cpp）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-040.md",
-   "op": "M2",
-   "point": "分隔符换反斜杠（Examples/atoms/_atom_alloc_strategies.cpp → Examples\\atoms\\_atom_alloc_strategies.cpp）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-041.md",
-   "op": "M2",
-   "point": "路径转大写（Examples/atoms/_atom_alloc_strategies.cpp → EXAMPLES/ATOMS/_ATOM_ALLOC_STRATEGIES.CPP）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-041.md",
-   "op": "M2",
-   "point": "路径加 ./（Examples/atoms/_atom_alloc_strategies.cpp → ./Examples/atoms/_atom_alloc_strategies.cpp）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-041.md",
-   "op": "M2",
-   "point": "分隔符换反斜杠（Examples/atoms/_atom_alloc_strategies.cpp → Examples\\atoms\\_atom_alloc_strategies.cpp）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-042.md",
-   "op": "M2",
-   "point": "路径转大写（Examples/atoms/_atom_leak_detection.cpp → EXAMPLES/ATOMS/_ATOM_LEAK_DETECTION.CPP）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-042.md",
-   "op": "M2",
-   "point": "路径加 ./（Examples/atoms/_atom_leak_detection.cpp → ./Examples/atoms/_atom_leak_detection.cpp）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-042.md",
-   "op": "M2",
-   "point": "分隔符换反斜杠（Examples/atoms/_atom_leak_detection.cpp → Examples\\atoms\\_atom_leak_detection.cpp）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-043.md",
-   "op": "M2",
-   "point": "路径转大写（Examples/atoms/_atom_leak_detection.cpp → EXAMPLES/ATOMS/_ATOM_LEAK_DETECTION.CPP）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-043.md",
-   "op": "M2",
-   "point": "路径加 ./（Examples/atoms/_atom_leak_detection.cpp → ./Examples/atoms/_atom_leak_detection.cpp）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-043.md",
-   "op": "M2",
-   "point": "分隔符换反斜杠（Examples/atoms/_atom_leak_detection.cpp → Examples\\atoms\\_atom_leak_detection.cpp）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-044.md",
-   "op": "M2",
-   "point": "路径转大写（Examples/atoms/_atom_false_sharing.cpp → EXAMPLES/ATOMS/_ATOM_FALSE_SHARING.CPP）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-044.md",
-   "op": "M2",
-   "point": "路径加 ./（Examples/atoms/_atom_false_sharing.cpp → ./Examples/atoms/_atom_false_sharing.cpp）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-044.md",
-   "op": "M2",
-   "point": "分隔符换反斜杠（Examples/atoms/_atom_false_sharing.cpp → Examples\\atoms\\_atom_false_sharing.cpp）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-045.md",
-   "op": "M2",
-   "point": "路径转大写（Examples/atoms/_atom_false_sharing_perf.cpp → EXAMPLES/ATOMS/_ATOM_FALSE_SHARING_PERF.CPP）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-045.md",
-   "op": "M2",
-   "point": "路径加 ./（Examples/atoms/_atom_false_sharing_perf.cpp → ./Examples/atoms/_atom_false_sharing_perf.cpp）"
-  },
-  {
-   "card": "evidence/mem/EV-MEM-045.md",
-   "op": "M2",
-   "point": "分隔符换反斜杠（Examples/atoms/_atom_false_sharing_perf.cpp → Examples\\atoms\\_atom_false_sharing_perf.cpp）"
-  },
-  {
    "card": "evidence/ub/EV-UB-002.md",
    "op": "M6",
    "point": "块式 → flow 写法（matrix）"
   }
  ],
- "jobs": 4,
- "parallel": true,
+ "jobs": 1,
+ "parallel": false,
  "results": [
   {
    "card": "evidence/conc/EV-CONC-001.md",
@@ -1171,30 +1009,39 @@
    "op": "M2",
    "point": "路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_ATOMIC.CPP）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/conc/EV-CONC-001.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/conc/EV-CONC-001.md",
    "op": "M2",
    "point": "路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_vs_atomic.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/conc/EV-CONC-001.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/conc/EV-CONC-001.md",
    "op": "M2",
    "point": "分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\\atoms\\_atom_fence_vs_atomic.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/conc/EV-CONC-001.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/conc/EV-CONC-001.md",
@@ -1506,30 +1353,39 @@
    "op": "M2",
    "point": "路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_ATOMIC.CPP）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/conc/EV-CONC-002.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/conc/EV-CONC-002.md",
    "op": "M2",
    "point": "路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_vs_atomic.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/conc/EV-CONC-002.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/conc/EV-CONC-002.md",
    "op": "M2",
    "point": "分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\\atoms\\_atom_fence_vs_atomic.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-002.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/conc/EV-CONC-002.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/conc/EV-CONC-002.md",
@@ -15443,30 +15299,39 @@
    "op": "M2",
    "point": "路径转大写（Examples/atoms/_atom_sso_portable.cpp → EXAMPLES/ATOMS/_ATOM_SSO_PORTABLE.CPP）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-038.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-038.md",
    "op": "M2",
    "point": "路径加 ./（Examples/atoms/_atom_sso_portable.cpp → ./Examples/atoms/_atom_sso_portable.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-038.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-038.md",
    "op": "M2",
    "point": "分隔符换反斜杠（Examples/atoms/_atom_sso_portable.cpp → Examples\\atoms\\_atom_sso_portable.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-038.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-038.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-038.md",
@@ -16032,30 +15897,39 @@
    "op": "M2",
    "point": "路径转大写（Examples/atoms/_atom_alloc_strategies.cpp → EXAMPLES/ATOMS/_ATOM_ALLOC_STRATEGIES.CPP）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-040.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-040.md",
    "op": "M2",
    "point": "路径加 ./（Examples/atoms/_atom_alloc_strategies.cpp → ./Examples/atoms/_atom_alloc_strategies.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-040.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-040.md",
    "op": "M2",
    "point": "分隔符换反斜杠（Examples/atoms/_atom_alloc_strategies.cpp → Examples\\atoms\\_atom_alloc_strategies.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-040.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-040.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-040.md",
@@ -16326,30 +16200,39 @@
    "op": "M2",
    "point": "路径转大写（Examples/atoms/_atom_alloc_strategies.cpp → EXAMPLES/ATOMS/_ATOM_ALLOC_STRATEGIES.CPP）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-041.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-041.md",
    "op": "M2",
    "point": "路径加 ./（Examples/atoms/_atom_alloc_strategies.cpp → ./Examples/atoms/_atom_alloc_strategies.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-041.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-041.md",
    "op": "M2",
    "point": "分隔符换反斜杠（Examples/atoms/_atom_alloc_strategies.cpp → Examples\\atoms\\_atom_alloc_strategies.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-041.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-041.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-041.md",
@@ -16620,30 +16503,39 @@
    "op": "M2",
    "point": "路径转大写（Examples/atoms/_atom_leak_detection.cpp → EXAMPLES/ATOMS/_ATOM_LEAK_DETECTION.CPP）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-042.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-042.md",
    "op": "M2",
    "point": "路径加 ./（Examples/atoms/_atom_leak_detection.cpp → ./Examples/atoms/_atom_leak_detection.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-042.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-042.md",
    "op": "M2",
    "point": "分隔符换反斜杠（Examples/atoms/_atom_leak_detection.cpp → Examples\\atoms\\_atom_leak_detection.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-042.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-042.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-042.md",
@@ -16910,30 +16802,39 @@
    "op": "M2",
    "point": "路径转大写（Examples/atoms/_atom_leak_detection.cpp → EXAMPLES/ATOMS/_ATOM_LEAK_DETECTION.CPP）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-043.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-043.md",
    "op": "M2",
    "point": "路径加 ./（Examples/atoms/_atom_leak_detection.cpp → ./Examples/atoms/_atom_leak_detection.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-043.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-043.md",
    "op": "M2",
    "point": "分隔符换反斜杠（Examples/atoms/_atom_leak_detection.cpp → Examples\\atoms\\_atom_leak_detection.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-043.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-043.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-043.md",
@@ -17200,30 +17101,39 @@
    "op": "M2",
    "point": "路径转大写（Examples/atoms/_atom_false_sharing.cpp → EXAMPLES/ATOMS/_ATOM_FALSE_SHARING.CPP）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-044.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-044.md",
    "op": "M2",
    "point": "路径加 ./（Examples/atoms/_atom_false_sharing.cpp → ./Examples/atoms/_atom_false_sharing.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-044.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-044.md",
    "op": "M2",
    "point": "分隔符换反斜杠（Examples/atoms/_atom_false_sharing.cpp → Examples\\atoms\\_atom_false_sharing.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-044.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-044.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-044.md",
@@ -17490,30 +17400,39 @@
    "op": "M2",
    "point": "路径转大写（Examples/atoms/_atom_false_sharing_perf.cpp → EXAMPLES/ATOMS/_ATOM_FALSE_SHARING_PERF.CPP）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-045.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-045.md",
    "op": "M2",
    "point": "路径加 ./（Examples/atoms/_atom_false_sharing_perf.cpp → ./Examples/atoms/_atom_false_sharing_perf.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-045.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-045.md",
    "op": "M2",
    "point": "分隔符换反斜杠（Examples/atoms/_atom_false_sharing_perf.cpp → Examples\\atoms\\_atom_false_sharing_perf.cpp）",
    "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-045.md --operators M2 --limit 1",
-   "verdict": "escaped",
+   "verdict": "blocked",
+   "kind": "warn_only",
    "new_block": [],
-   "new_warn": [],
-   "equivalent": true
+   "new_warn": [
+    "CARD-PATH-NOT-CANONICAL:evidence/mem/EV-MEM-045.md"
+   ],
+   "equivalent": false
   },
   {
    "card": "evidence/mem/EV-MEM-045.md",
@@ -21734,8 +21653,7 @@
    "equivalent": false
   }
  ],
- "parallel_baseline_scans": 4,
- "root_fingerprint_ok": true,
- "superseded_by": "full_baseline_v7.json",
- "frozen_at_commit": "55c01c8"
+ "frozen_at_commit": "d36d5c8",
+ "frozen_at_head": "6346b26",
+ "notes": "M2 可判 141→168 系 589 T2 注释净化 un-mask 真实 fixture 路径变异，非回归；唯一 escaped=1 = M1 / EV-CONC-001 / 删 negative_controls（冻结 TCE）"
 }
