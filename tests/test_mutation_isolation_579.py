@@ -132,12 +132,26 @@ def test_579_dirty_manifest_does_not_change_verdicts(tmp_path: Path, monkeypatch
 
 
 # ── ③ 确定性自检（正反例）────────────────────────────────────────────────────
-def test_579_selfcheck_passes_on_small_stable_subset():
-    """正例：小批 M6 两次跑一致 ⇒ (True, [])。"""
-    cards = [_evidence_card("EV-MEM-034.md"), _evidence_card("EV-MEM-029.md")]
-    rep = mf.run_fuzz(cards, ["M6"], 5)
-    ok, diffs = mf.selfcheck_determinism(cards, ["M6"], 5, rep)
-    assert ok and diffs == [], diffs
+# 589 任务 1（行为变更）：自检重跑对象从"传入 cards/ops × 全卡"改为"全 7 算子 × 固定小卡集"
+# ⇒ 本组改用替身（monkeypatch `_run_jobs`）直接喂自检"两次跑的产物"，锁定**报错能力**本身。
+def _syn_small_rep() -> dict:
+    """合成一份**全 7 算子 × 全 blocked** 的报告（满足覆盖断言：每算子 ≥1 blocked）。"""
+    cards_rel = [c.relative_to(ROOT).as_posix() for c in mf._load_selfcheck_cards()]
+    res = []
+    for c in cards_rel:
+        for op in mf._SELFCHECK_OPS:
+            for i in range(2):
+                res.append({"card": c, "op": op, "point": f"p{i}", "verdict": "blocked",
+                            "kind": "strict", "why": None, "new_block": ["X:t"],
+                            "new_warn": [], "replay_skipped": None, "equivalent": False})
+    return {"cards": [], "results": res, "variants": len(res), "blocked": len(res),
+            "escaped": 0, "n_a": 0, "malformed": 0, "out_of_scope": 0, "equivalent": 0,
+            "equivalent_invalid": 0, "strict_blocked": 0, "strict_rate": 0.0,
+            "treated_rate": 0.0, "rates": {}, "by_operator_rates": {}, "rate_flags": [],
+            "by_operator": {}, "by_card": {}, "elapsed_s": 0.0, "ge_runs": 0,
+            "replay_runs": 0, "replay_skipped": 0, "escaped_list": [],
+            "equivalent_keys": [], "equivalent_invalid_list": [], "jobs": 1,
+            "parallel": False, "parallel_baseline_scans": 0, "root_fingerprint_ok": True}
 
 
 def _flip_one(rep: dict) -> dict:
@@ -148,26 +162,39 @@ def _flip_one(rep: dict) -> dict:
     return out
 
 
-def test_579_selfcheck_detects_drift(tmp_path: Path):
-    """反例（**可证伪**）：基线被篡改一条 ⇒ 自检必须报不一致（否则自检是恒真摆设）。"""
-    cards = [_evidence_card("EV-MEM-034.md")]
-    real = mf.run_fuzz(cards, ["M6"], 5)
-    ok, diffs = mf.selfcheck_determinism(cards, ["M6"], 5, _flip_one(real))
-    assert not ok and diffs, "结果抖动必须被自检抓到"
-    assert "EV-MEM-034.md" in diffs[0], diffs[0]
+def test_579_selfcheck_passes_on_stable_small_set(monkeypatch):
+    """正例：小卡集两次跑一致 ⇒ (True, [])。"""
+    base = _syn_small_rep()
+    monkeypatch.setattr(mf, "_run_jobs", lambda *a, **k: base)
+    ok, diffs = mf.selfcheck_determinism([], [], 0, base, jobs=4)
+    assert ok and diffs == [], diffs
 
 
-def test_579_selfcheck_cli_exits_2_on_drift(tmp_path: Path, monkeypatch, capsys):
-    """反例（CLI 面）：主跑干净、自检重跑抖一条 ⇒ `--selfcheck-determinism` 必须 fail-loud exit 2。"""
-    cards = [_evidence_card("EV-MEM-034.md")]
-    real = mf.run_fuzz(cards, ["M6"], 5)
+def test_579_selfcheck_detects_drift(monkeypatch):
+    """反例（**可证伪**）：自检重跑抖一条 ⇒ 自检必须报不一致（否则自检是恒真摆设）。"""
+    base = _syn_small_rep()
     calls = {"n": 0}
 
     def _drifting(*_a, **_k):
         calls["n"] += 1
-        return real if calls["n"] == 1 else _flip_one(real)     # 自检那次才开始抖
+        return base if calls["n"] <= 1 else _flip_one(base)
 
-    monkeypatch.setattr(mf, "run_fuzz", _drifting)
+    monkeypatch.setattr(mf, "_run_jobs", _drifting)
+    ok, diffs = mf.selfcheck_determinism([], [], 0, base, jobs=4)
+    assert not ok and diffs, "结果抖动必须被自检抓到"
+    assert base["results"][0]["card"].split("/")[-1] in diffs[0], diffs[0]
+
+
+def test_579_selfcheck_cli_exits_2_on_drift(tmp_path: Path, monkeypatch, capsys):
+    """反例（CLI 面）：主跑干净、自检重跑抖一条 ⇒ `--selfcheck-determinism` 必须 fail-loud exit 2。"""
+    base = _syn_small_rep()
+    calls = {"n": 0}
+
+    def _drifting(*_a, **_k):
+        calls["n"] += 1
+        return base if calls["n"] <= 2 else _flip_one(base)     # 自检的重跑那次才开始抖
+
+    monkeypatch.setattr(mf, "_run_jobs", _drifting)
     rc = mf.main(["--cards", "evidence/mem/EV-MEM-034.md", "--operators", "M6", "--limit", "5",
                   "--selfcheck-determinism", "--report", str(tmp_path / "r.json")])
     assert rc == 2, rc
