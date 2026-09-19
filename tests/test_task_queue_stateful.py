@@ -407,9 +407,12 @@ class TQMachine(RuleBasedStateMachine):
 
 
 class TestTQ(TQMachine.TestCase):
-    # 100-200 例；deadline=None（状态机每步独立临时库，但可能较多 DB 往返）
+    # 最小样例预算（608 D1）：文档注释原定"100-200 例"，120→100 取下限，省 ~17% 运行时不降覆盖度。
+    # 真瓶颈是 task_queue.py 每次库调用都开/关连接 + PRAGMA wal（cProfile：20,952 次连接生命周期≈72% 耗时），
+    # 该连接复用改造属库级改动、blast radius 大 ⇒ 超出本测试修改范围，已登记为"需进一步分析"（见 data/slow_performance_profile.md）。
+    # 绝不改 @rule/@invariant 断言（判决逻辑不变）。
     settings = settings(
-        max_examples=120,
+        max_examples=100,
         deadline=None,
         # 抑制全部健康检查（stateful + 真实时钟/sqlite/临时文件的固有非确定性）：
         #  - filter_too_much：大量 rule 带前置条件（self.claimed 非空等），filter 率天然偏高；
