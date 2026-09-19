@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-09-19T20:13:01",
- "git_commit": "41a2768",
+ "generated_at": "2026-09-19T20:52:17",
+ "git_commit": "c72c03c",
  "files": [
   {
    "path": "References/architecture_架构演进/271_架构批判_阙疑v3十问_判据密度不足与收敛手术.md",
@@ -1663,29 +1663,9 @@
    "size": 20375
   },
   {
-   "path": "References/architecture_架构演进/archive_312_backup_pre_compress.md",
-   "sha256": "cbbb058e34c3029dc15d2d35704c5d67795a37ee1d427e8df02764a14e9967d8",
-   "size": 37910
-  },
-  {
-   "path": "References/architecture_架构演进/archive_365B_独立红队Agent_投喂提示词.md",
-   "sha256": "ce043a209eff9deb6f91fbfbd1f8e166908a83666098c3e3a8a0b6b48f6a1fb2",
-   "size": 9553
-  },
-  {
-   "path": "References/architecture_架构演进/archive_369_执行提示词_工程线恢复_MCC首次真实落地_已过时.md",
-   "sha256": "9de2d51262803f9120e9e82fd33d460f35f4fb26faf592337d5525a95225480e",
-   "size": 8535
-  },
-  {
    "path": "References/architecture_架构演进/CHECKLIST_人审交人项.md",
    "sha256": "798b91405bd5fee2e62067602747845ce3c1d3eed9df29574f8821421313db3d",
    "size": 7370
-  },
-  {
-   "path": "References/architecture_架构演进/grounded论证层从退化到可用的完整路径_593-595综合结论.md",
-   "sha256": "186b5dfe1f69aeff7f9742afec7f4c2f8c471b9f669321774a0aecfa5696ba59",
-   "size": 13982
   },
   {
    "path": "References/architecture_架构演进/INDEX_530-592_活跃阶段分类.md",
@@ -1713,6 +1693,11 @@
    "size": 18801
   },
   {
+   "path": "References/architecture_架构演进/PM_加工作密度规划_20260919.md",
+   "sha256": "aaadcb3928019ef240cbaf82974be1aa09df74ee72b962c42eebc6a4d90e1113",
+   "size": 7338
+  },
+  {
    "path": "References/architecture_架构演进/PUSH_健康状态总览_20260919.md",
    "sha256": "44d448f589a936d8019a08325364a9f92c7b486aabb635f6da3611951f353a2c",
    "size": 8765
@@ -1721,6 +1706,26 @@
    "path": "References/architecture_架构演进/README_INDEX.md",
    "sha256": "5c26f720f4bc9a1aa8f3951e002d09f3740f0420664cae43cde1f78bc0821960",
    "size": 29338
+  },
+  {
+   "path": "References/architecture_架构演进/archive_312_backup_pre_compress.md",
+   "sha256": "cbbb058e34c3029dc15d2d35704c5d67795a37ee1d427e8df02764a14e9967d8",
+   "size": 37910
+  },
+  {
+   "path": "References/architecture_架构演进/archive_365B_独立红队Agent_投喂提示词.md",
+   "sha256": "ce043a209eff9deb6f91fbfbd1f8e166908a83666098c3e3a8a0b6b48f6a1fb2",
+   "size": 9553
+  },
+  {
+   "path": "References/architecture_架构演进/archive_369_执行提示词_工程线恢复_MCC首次真实落地_已过时.md",
+   "sha256": "9de2d51262803f9120e9e82fd33d460f35f4fb26faf592337d5525a95225480e",
+   "size": 8535
+  },
+  {
+   "path": "References/architecture_架构演进/grounded论证层从退化到可用的完整路径_593-595综合结论.md",
+   "sha256": "186b5dfe1f69aeff7f9742afec7f4c2f8c471b9f669321774a0aecfa5696ba59",
+   "size": 13982
   },
   {
    "path": "_arch_free/mis_source_audit.md",
@@ -2523,10 +2528,10 @@
    "size": 6458
   },
   {
-   "path": "References/architecture_架构演进/PM_加工作密度规划_20260919.md",
-   "sha256": "aaadcb3928019ef240cbaf82974be1aa09df74ee72b962c42eebc6a4d90e1113",
-   "size": 7338
+   "path": "_auto/inbox/608.md",
+   "sha256": "521daa1263252cbe747a6adab2c8e333f9c1b0f7152a5680d51b93635c3b709d",
+   "size": 15146
   }
  ],
- "self_hash": "aa831e91ec413f6ec37503c043600e20cbf3fa8157de8394c12798be703b0a2d"
+ "self_hash": "a88c2ba4339e092b15abfe3917c10513e4c37bdc15b9ea034427d7467fb0e9c3"
 }
