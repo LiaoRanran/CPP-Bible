@@ -1,0 +1,17 @@
+{
+ "steps": [
+  "write_cards",
+  "gate_validate",
+  "replay_verify",
+  "poison_test",
+  "human_review"
+ ],
+ "functionaries": [
+  "2af99a31a184742dc5b76f5d71d39d49eb9b9269"
+ ],
+ "authored_by": "LiaoRanran",
+ "inspections": [
+  "tool_integrity --check"
+ ],
+ "_signed": "ac67a77c62e1178ceba9998b3beeeace610affc587263ec8180c5db628d0fdff"
+}

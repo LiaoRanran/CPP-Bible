@@ -1,0 +1,20 @@
+{
+ "step": "write_cards",
+ "command": "human edits atoms/*.md, misconceptions/*.md",
+ "materials": {},
+ "products": {
+  "atoms": {
+   "ATOM-CONC-FENCE-001.md": "2a7cd72c5752eb5c55df95d97c029d86ac23b1caf5aa2e0f43728bef5dd9f12a",
+   "ATOM-CONC-LOCK-001.md": "96f164d0252d71d9f66723eb04e86f637229b7328dc9c0dd2a2972f081b0636a",
+   "ATOM-CONC-RACE-001.md": "290ce5f9d612e61741bf17739a130944ddb0c60f8d4bb7e0094584c711192dc8"
+  },
+  "misconceptions": {
+   "MIS-CONC-001.md": "08e4ab5f9e84409e6d52a96211796ce515643e733ea92d1d2bc2d36d977782ac",
+   "MIS-CONC-002.md": "d30bd0ee00ec394c3003b80ffa5d1bf09d6672dcf98ddf100fdaf39cdd5de78f",
+   "MIS-CONC-003.md": "42f0078499bffc66852147199ec43c7713e216f3f9072eadcbe41590fdf32b4e"
+  }
+ },
+ "_functionary": "2af99a31a184742dc5b76f5d71d39d49eb9b9269",
+ "_timestamp": "2026-09-19T09:22:06.050158+00:00",
+ "_sig": "4fff4eca0e682b8ab2953767617464886ee65f46256f1c22304d94b540b1198e"
+}

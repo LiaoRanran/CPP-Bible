@@ -1,0 +1,16 @@
+{
+ "step": "poison_test",
+ "command": "python tools/poison_drill.py",
+ "materials": {
+  "replay": {
+   "atom_evidence_replay.py": "7c1febc13eb17893a71303251b75b963165064e9f75b5649ccbd2c99b3095f8a"
+  },
+  "poison_drill.py": "7ca38b6ea5a38adf3a9cc36e6a36c9b593fc6820c2fee4b68dd65ef0576480f0"
+ },
+ "products": {
+  "poison_drill.py": "7ca38b6ea5a38adf3a9cc36e6a36c9b593fc6820c2fee4b68dd65ef0576480f0"
+ },
+ "_functionary": "2af99a31a184742dc5b76f5d71d39d49eb9b9269",
+ "_timestamp": "2026-09-19T09:22:06.050158+00:00",
+ "_sig": "cf24f86431b8489d62d9bcf1bb6048a374d6b59cedceed818d5932bb63be2977"
+}

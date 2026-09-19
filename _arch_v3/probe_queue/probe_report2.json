@@ -1,0 +1,218 @@
+{
+ "scenarios": {
+  "S1_concurrency": {
+   "rounds": 10,
+   "double_claim_fails": [],
+   "atomic_ok": true
+  },
+  "S2_touch": {
+   "TA_rc": 0,
+   "B_claim": {
+    "claimed": {
+     "id": "TC",
+     "type": "custom",
+     "payload_ref": "docs/tc.md",
+     "status": "claimed",
+     "priority": 100,
+     "deps": [],
+     "claimed_by": "wB",
+     "claimed_at": "2026-09-15T17:18:34",
+     "heartbeat_at": "2026-09-15T17:18:34",
+     "attempts": 1,
+     "result_ref": null,
+     "error": null,
+     "created_at": "2026-09-15T17:18:34",
+     "updated_at": "2026-09-15T17:18:34",
+     "touch_set": "[\"work/c.txt\"]",
+     "budget_calls": 500,
+     "budget_used_calls": 0,
+     "handoff_path": null,
+     "verify_cmd": "",
+     "parent_task": null,
+     "produced_by_model": null,
+     "steps_total": 0,
+     "steps_done": 0,
+     "checkpoint": "{}",
+     "cp_fingerprint": "",
+     "claimed_token": "0e13f4e73f0ade1bb9c24bcf99f9fba7",
+     "verify_hash": null,
+     "last_hb_fp": null,
+     "hb_same_count": 0,
+     "handoff": null
+    },
+    "blocked_by_touch": [
+     {
+      "id": "TB",
+      "blocked_by": [
+       {
+        "task": "TA",
+        "files": [
+         "work/shared.txt"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "blocked_then_picked_TC": true
+  },
+  "MAIN_kill_resume": {
+   "kill_msg": "SUCCESS: The process with PID 37732 has been terminated.",
+   "killed_after_s": 3.69,
+   "naked_claim_got": false,
+   "soft_takeover_rc": 2,
+   "soft_takeover_msg": "TMAIN 心跳仅 2026-09-15T17:18:38（1s 前），疑似仍在跑；人确认旧会话已死后用 --takeover TMAIN --force --reason <原因>",
+   "A_did": [
+    1,
+    2,
+    3
+   ],
+   "B_trusted": [
+    1,
+    2,
+    3
+   ],
+   "B_did": [
+    4,
+    5
+   ],
+   "redo_overlap": [],
+   "B_exit": 0,
+   "final_status": "done",
+   "attempts": 2,
+   "verify_record": "undeclared_touch=['work/journal.log']",
+   "events": [
+    {
+     "actor": "harness",
+     "event": "enqueue"
+    },
+    {
+     "actor": "A",
+     "event": "claim"
+    },
+    {
+     "actor": "A",
+     "event": "checkpoint"
+    },
+    {
+     "actor": "A",
+     "event": "checkpoint"
+    },
+    {
+     "actor": "A",
+     "event": "checkpoint"
+    },
+    {
+     "actor": "B",
+     "event": "manual_takeover"
+    },
+    {
+     "actor": "B",
+     "event": "claim"
+    },
+    {
+     "actor": "B",
+     "event": "checkpoint"
+    },
+    {
+     "actor": "B",
+     "event": "checkpoint"
+    },
+    {
+     "actor": "B",
+     "event": "done"
+    }
+   ],
+   "zero_context_ok": true
+  },
+  "S4_yield": {
+   "A_exit": 0,
+   "parent_after_yield": "yielded",
+   "child": {
+    "id": "TY.c1",
+    "status": "queued",
+    "parent_task": "TY",
+    "steps_total": 3,
+    "handoff_path": "TY.c1.handoff.json"
+   },
+   "B_exit": 0,
+   "final": {
+    "TY": "done",
+    "TY.c1": "done"
+   },
+   "B_trust": [
+    1,
+    2
+   ],
+   "B_did": [
+    3,
+    4,
+    5
+   ],
+   "rollup_ok": true
+  },
+  "S5_verify_fail": {
+   "sequence": [
+    {
+     "worker": "A",
+     "exit": 0,
+     "status": "queued",
+     "attempts": 2
+    },
+    {
+     "worker": "B",
+     "exit": 0,
+     "status": "blocked",
+     "attempts": 4
+    }
+   ],
+   "events": [
+    "enqueue",
+    "claim",
+    "checkpoint",
+    "verify_failed",
+    "requeue",
+    "claim",
+    "verify_failed",
+    "blocked"
+   ],
+   "blocked_ok": true
+  },
+  "S6_timing": {
+   "enqueue_ext_inproc_ms_median": 7.55,
+   "heartbeat_inproc_ms_median": 8.25,
+   "cli_list_wall_ms_median": 151.9
+  },
+  "S7_wal": {
+   "journal_mode": "wal",
+   "rows": 40,
+   "all_rc0": true,
+   "wal_sidecars": [],
+   "proc_out": [
+    "loadgen X pid=35460 enqueued=20 errors=0",
+    "loadgen Y pid=18716 enqueued=20 errors=0"
+   ]
+  },
+  "S8_attacks": {
+   "impersonation": {
+    "bob_heartbeat_rc": 2,
+    "bob_complete_rc": 2,
+    "msg": "任务由 'alice' claim，'bob' 无权（认领者绑定）"
+   },
+   "self_cycle_rc": 2,
+   "self_cycle_msg": "deps 引用不存在任务：['LOOP']",
+   "missing_dep_rc": 2,
+   "zombie": {
+    "first": false,
+    "second": true,
+    "after_progress": false
+   },
+   "stale_claim": {
+    "rc": 0,
+    "got": "SEC",
+    "by": "bob",
+    "attempts": 2
+   }
+  }
+ }
+}

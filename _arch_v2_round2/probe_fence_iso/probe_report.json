@@ -1,0 +1,490 @@
+{
+  "gpp": "C:\\Qt\\Tools\\mingw1530_64\\bin\\g++.exe",
+  "cards": {
+    "yang": {
+      "compile_asm_rc": 0,
+      "compile_exe_rc": 0,
+      "asm_compile_s": 0.0807,
+      "exe_compile_s": 0.2,
+      "run_dt_s": 0.0791,
+      "run_rc": 0,
+      "stdout": "spin_plain_ret=7|spin_signal_fence_ret=8|spin_with_fence_ret=9|spin_volatile_ret=10\nspin_fence_outside_ret=11|writer_signal_fence_ret=3|writer_thread_fence_ret=3\nfunctions_present=7|spin_volatile_engaged=1\n",
+      "probe_counts": {
+        "s_sf_b": 2,
+        "je": 1,
+        "lock": 0
+      },
+      "unified_diff": "",
+      "judge_ok": false,
+      "judge_reasons": [
+        "零语义 diff（仅注释/空白）",
+        "变更组数=0（要求 1）",
+        "代码删除行=0（要求 1..3）",
+        "删除行 anchor 覆盖率=0%（要求 100%）",
+        "被删行中找不到声明的 remove 机制文本"
+      ],
+      "judge_metrics": {
+        "hunks": 0,
+        "inserted_lines": 0,
+        "deleted_lines": 0,
+        "code_deleted_lines": 0,
+        "comment_only_deleted": 0,
+        "tokens_yang": 448,
+        "tokens_changed": 0,
+        "token_change_ratio": 0.0,
+        "anchor_span": [
+          104,
+          111
+        ],
+        "anchor_coverage": 0.0,
+        "remove_hit": false,
+        "retain_hit": {
+          "while (!s_sf_b)": true,
+          "return s_sf_a;": true
+        },
+        "deleted_code": []
+      }
+    },
+    "yin_del_fence": {
+      "compile_asm_rc": 0,
+      "compile_exe_rc": 0,
+      "asm_compile_s": 0.0788,
+      "exe_compile_s": 0.1999,
+      "run_dt_s": 0.0767,
+      "run_rc": 0,
+      "stdout": "spin_plain_ret=7|spin_signal_fence_ret=8|spin_with_fence_ret=9|spin_volatile_ret=10\nspin_fence_outside_ret=11|writer_signal_fence_ret=3|writer_thread_fence_ret=3\nfunctions_present=7|spin_volatile_engaged=1\n",
+      "probe_counts": {
+        "s_sf_b": 0,
+        "je": 0,
+        "lock": 0
+      },
+      "unified_diff": "--- \n+++ \n@@ -107,3 +107,2 @@\n     while (!s_sf_b) {\n-        __atomic_signal_fence(__ATOMIC_SEQ_CST);\n     }",
+      "judge_ok": true,
+      "judge_reasons": [],
+      "judge_metrics": {
+        "hunks": 1,
+        "inserted_lines": 0,
+        "deleted_lines": 1,
+        "code_deleted_lines": 1,
+        "comment_only_deleted": 0,
+        "tokens_yang": 448,
+        "tokens_changed": 5,
+        "token_change_ratio": 0.01116,
+        "anchor_span": [
+          104,
+          111
+        ],
+        "anchor_coverage": 1.0,
+        "remove_hit": true,
+        "retain_hit": {
+          "while (!s_sf_b)": true,
+          "return s_sf_a;": true
+        },
+        "deleted_code": [
+          "__atomic_signal_fence(__ATOMIC_SEQ_CST);"
+        ]
+      },
+      "run_keys_flipped": {},
+      "probe_flipped": {
+        "s_sf_b": {
+          "yang": 2,
+          "yin": 0
+        },
+        "je": {
+          "yang": 1,
+          "yin": 0
+        }
+      }
+    },
+    "yin_formal_43": {
+      "compile_asm_rc": 0,
+      "compile_exe_rc": 0,
+      "asm_compile_s": 0.0779,
+      "exe_compile_s": 0.2083,
+      "run_dt_s": 0.0823,
+      "run_rc": 0,
+      "stdout": "spin_plain_ret=7|spin_signal_fence_ret=9|spin_with_fence_ret=9|spin_volatile_ret=10\nspin_fence_outside_ret=11|writer_signal_fence_ret=3|writer_thread_fence_ret=3\nfunctions_present=7|spin_volatile_engaged=1\n",
+      "probe_counts": {
+        "s_sf_b": 2,
+        "je": 1,
+        "lock": 0
+      },
+      "unified_diff": "--- \n+++ \n@@ -69,3 +69,3 @@\n     s_p_a = 7;\n-    s_sf_a = 8;\n+    s_sf_a = 9;\n     s_f_a = 9;",
+      "judge_ok": false,
+      "judge_reasons": [
+        "新增行=1（v1 纯删除形态要求 0，改名/替换即拒）",
+        "删除行 anchor 覆盖率=0%（要求 100%）",
+        "被删行中找不到声明的 remove 机制文本"
+      ],
+      "judge_metrics": {
+        "hunks": 1,
+        "inserted_lines": 1,
+        "deleted_lines": 1,
+        "code_deleted_lines": 1,
+        "comment_only_deleted": 0,
+        "tokens_yang": 448,
+        "tokens_changed": 2,
+        "token_change_ratio": 0.00446,
+        "anchor_span": [
+          104,
+          111
+        ],
+        "anchor_coverage": 0.0,
+        "remove_hit": false,
+        "retain_hit": {
+          "while (!s_sf_b)": true,
+          "return s_sf_a;": true
+        },
+        "deleted_code": [
+          "s_sf_a = 8;"
+        ]
+      },
+      "run_keys_flipped": {
+        "spin_plain_ret": {
+          "yang": "7|spin_signal_fence_ret=8|spin_with_fence_ret=9|spin_volatile_ret=10",
+          "yin": "7|spin_signal_fence_ret=9|spin_with_fence_ret=9|spin_volatile_ret=10"
+        }
+      },
+      "probe_flipped": {}
+    },
+    "yin_del_unrelated": {
+      "compile_asm_rc": 0,
+      "compile_exe_rc": 0,
+      "asm_compile_s": 0.0781,
+      "exe_compile_s": 0.2119,
+      "run_dt_s": 0.0822,
+      "run_rc": 0,
+      "stdout": "spin_plain_ret=7|spin_signal_fence_ret=0|spin_with_fence_ret=9|spin_volatile_ret=10\nspin_fence_outside_ret=11|writer_signal_fence_ret=3|writer_thread_fence_ret=3\nfunctions_present=7|spin_volatile_engaged=1\n",
+      "probe_counts": {
+        "s_sf_b": 2,
+        "je": 1,
+        "lock": 0
+      },
+      "unified_diff": "--- \n+++ \n@@ -69,3 +69,2 @@\n     s_p_a = 7;\n-    s_sf_a = 8;\n     s_f_a = 9;",
+      "judge_ok": false,
+      "judge_reasons": [
+        "删除行 anchor 覆盖率=0%（要求 100%）",
+        "被删行中找不到声明的 remove 机制文本"
+      ],
+      "judge_metrics": {
+        "hunks": 1,
+        "inserted_lines": 0,
+        "deleted_lines": 1,
+        "code_deleted_lines": 1,
+        "comment_only_deleted": 0,
+        "tokens_yang": 448,
+        "tokens_changed": 4,
+        "token_change_ratio": 0.00893,
+        "anchor_span": [
+          104,
+          111
+        ],
+        "anchor_coverage": 0.0,
+        "remove_hit": false,
+        "retain_hit": {
+          "while (!s_sf_b)": true,
+          "return s_sf_a;": true
+        },
+        "deleted_code": [
+          "s_sf_a = 8;"
+        ]
+      },
+      "run_keys_flipped": {
+        "spin_plain_ret": {
+          "yang": "7|spin_signal_fence_ret=8|spin_with_fence_ret=9|spin_volatile_ret=10",
+          "yin": "7|spin_signal_fence_ret=0|spin_with_fence_ret=9|spin_volatile_ret=10"
+        }
+      },
+      "probe_flipped": {}
+    },
+    "yin_loop_kill": {
+      "compile_asm_rc": 0,
+      "compile_exe_rc": 0,
+      "asm_compile_s": 0.0871,
+      "exe_compile_s": 0.2022,
+      "run_dt_s": 0.1455,
+      "run_rc": 0,
+      "stdout": "spin_plain_ret=7|spin_signal_fence_ret=8|spin_with_fence_ret=9|spin_volatile_ret=10\nspin_fence_outside_ret=11|writer_signal_fence_ret=3|writer_thread_fence_ret=3\nfunctions_present=7|spin_volatile_engaged=1\n",
+      "probe_counts": {
+        "s_sf_b": 0,
+        "je": 0,
+        "lock": 0
+      },
+      "unified_diff": "--- \n+++ \n@@ -106,5 +106,2 @@\n {\n-    while (!s_sf_b) {\n-        __atomic_signal_fence(__ATOMIC_SEQ_CST);\n-    }\n     return s_sf_a;",
+      "judge_ok": false,
+      "judge_reasons": [
+        "token 改动率=0.0268（≤0.02）",
+        "claim 主体支架被删/改：['while (!s_sf_b)']（retain 必须逐字保留）"
+      ],
+      "judge_metrics": {
+        "hunks": 1,
+        "inserted_lines": 0,
+        "deleted_lines": 3,
+        "code_deleted_lines": 3,
+        "comment_only_deleted": 0,
+        "tokens_yang": 448,
+        "tokens_changed": 12,
+        "token_change_ratio": 0.02679,
+        "anchor_span": [
+          104,
+          111
+        ],
+        "anchor_coverage": 1.0,
+        "remove_hit": true,
+        "retain_hit": {
+          "while (!s_sf_b)": false,
+          "return s_sf_a;": true
+        },
+        "deleted_code": [
+          "while (!s_sf_b) {",
+          "__atomic_signal_fence(__ATOMIC_SEQ_CST);",
+          "}"
+        ]
+      },
+      "run_keys_flipped": {},
+      "probe_flipped": {
+        "s_sf_b": {
+          "yang": 2,
+          "yin": 0
+        },
+        "je": {
+          "yang": 1,
+          "yin": 0
+        }
+      }
+    },
+    "diag_yang_hang": {
+      "compile_exe_rc": 0,
+      "run_rc": null,
+      "run_dt_s": 4.47,
+      "stdout": "",
+      "hung_timeout4s": true
+    },
+    "diag_yin_hang": {
+      "compile_exe_rc": 0,
+      "run_rc": null,
+      "run_dt_s": 0.144,
+      "stdout": "spin_plain_ret=7|spin_signal_fence_ret=8|spin_with_fence_ret=9|spin_volatile_ret=10\nspin_fence_outside_ret=11|writer_signal_fence_ret=3|writer_thread_fence_ret=3\nfunctions_present=7|spin_volatile_engaged=1\n",
+      "hung_timeout4s": false
+    },
+    "yin_smuggle_comment": {
+      "compile_asm_rc": 0,
+      "compile_exe_rc": 0,
+      "asm_compile_s": 0.0949,
+      "exe_compile_s": 0.2191,
+      "run_dt_s": 0.0868,
+      "run_rc": 0,
+      "stdout": "spin_plain_ret=7|spin_signal_fence_ret=8|spin_with_fence_ret=9|spin_volatile_ret=10\nspin_fence_outside_ret=11|writer_signal_fence_ret=3|writer_thread_fence_ret=3\nfunctions_present=7|spin_volatile_engaged=1\n",
+      "probe_counts": {
+        "s_sf_b": 2,
+        "je": 1,
+        "lock": 0
+      },
+      "unified_diff": "--- \n+++ \n@@ -1,2 +1,2 @@\n-// ATOM-CONC-001 夹具：__atomic_signal_fence ≠ __atomic_thread_fence（\"屏障\"不是一种东西）\n+// ATOM-CONC-001 夹具（阴面注释微调）：__atomic_signal_fence ≠ __atomic_thread_fence（\"屏障\"不是一种东西）\n //",
+      "judge_ok": false,
+      "judge_reasons": [
+        "零语义 diff（仅注释/空白）",
+        "新增行=1（v1 纯删除形态要求 0，改名/替换即拒）",
+        "代码删除行=0（要求 1..3）",
+        "删除行含纯注释行（噪声/凑 diff 稀释）",
+        "删除行 anchor 覆盖率=0%（要求 100%）",
+        "被删行中找不到声明的 remove 机制文本"
+      ],
+      "judge_metrics": {
+        "hunks": 1,
+        "inserted_lines": 1,
+        "deleted_lines": 1,
+        "code_deleted_lines": 0,
+        "comment_only_deleted": 1,
+        "tokens_yang": 448,
+        "tokens_changed": 0,
+        "token_change_ratio": 0.0,
+        "anchor_span": [
+          104,
+          111
+        ],
+        "anchor_coverage": 0.0,
+        "remove_hit": false,
+        "retain_hit": {
+          "while (!s_sf_b)": true,
+          "return s_sf_a;": true
+        },
+        "deleted_code": []
+      },
+      "run_keys_flipped": {},
+      "probe_flipped": {}
+    },
+    "yin_impostor": {
+      "compile_asm_rc": 0,
+      "compile_exe_rc": 0,
+      "asm_compile_s": 0.1028,
+      "exe_compile_s": 0.2217,
+      "run_dt_s": 0.1044,
+      "run_rc": 0,
+      "stdout": "spin_plain_ret=999|x\n",
+      "probe_counts": {
+        "s_sf_b": null,
+        "je": null,
+        "lock": null
+      },
+      "unified_diff": "--- \n+++ \n@@ -1,157 +1,2 @@\n-// ATOM-CONC-001 夹具：__atomic_signal_fence ≠ __atomic_thread_fence（\"屏障\"不是一种东西）\n-//\n-// ── 为什么零 #include ────────────────────────────────────────────────────\n-// riscv64-unknown-elf-g++ 是裸机工具链：**连 <cstdio> 都没有**（实测\n-// `fatal error: cstdio: No such file or directory`）。为了让同一份源码能同时喂给\n-// MinGW / Linux g++-14 / riscv64 三侧（312 §4.4 风险表只预警了 <atomic>，实际更窄），\n-// 这里只用编译器内建（__atomic_*、__ATOMIC_SEQ_CST）与手写 printf 声明。\n-//\n-// ── 为什么每个函数独占全局变量 ──────────────────────────────────────────\n-// ATOM-CONC-001 要说清的是\"**某个函数体内**有没有 load / 有没有屏障指令\"。\n-// 2026-09-12 起 artifact_assert 已支持**符号区间语义**（contains_in / absent_in：\n-// `<symbol>:` → 下一个列 0 标签或 .cfi_endproc/.seh_endproc），本卡即以区间断言为准。\n-// 独占命名仍然保留，作为**第二层保险**：区间切分一旦退化（例如又只认列 0 的收尾伪指令），\n-// 全局形态下的短读（`s_p_b` / `s_sf_b` …）还能兜住最关键的几条断言。\n-// 与之配套：main **不直接 load** 这些标志（置位走 noinline setter 的 store），于是\n-//     \"区间内 absent(s_xx_b)\"  ≡  \"该函数体内没有 load\"。\n-//\n-// ── 本轮实测（GCC 15.3 -O2，MinGW x86-64）确立的方向 ─────────────────────\n-//   ① spin_plain        ：循环**连同标志读取一起被整段删除**\n-//                          （函数体只剩 `mov eax, s_p_a[rip]; ret`，区间内无 s_p_b）\n-//   ② spin_signal_fence ：**循环被保留**——而 signal_fence 是**零指令**的：\n-//                          区间内有 `.L8: mov eax, s_sf_b[rip]; test; je .L8`,\n-//                          但一条屏障指令都没有。\n-//   ③ spin_with_fence   ：**循环被保留**——seq_cst thread_fence 在 x86-64 编译成\n-//                          `lock or QWORD PTR [rsp], 0`（**一次真实内存写**）。\n-//   ④ spin_volatile     ：volatile 访问保留（活性对照：证明\"消除\"不是观测通路坏了）\n-//   ⑤ spin_fence_outside：屏障挪到**循环之外**（同全局形态、同函数）⇒\n-//                          **循环又被整段删除**（区间内只有 `mov eax, s_o_a[rip]; ret`）。\n-// ② 与\"零成本的屏障拦不住优化\"的直觉相反，是本原子的落点：**只要循环体里有屏障\n-// （哪怕它零指令），\"无副作用的（可能不终止的）循环\"这一前提就不再成立**——C++\n-// [intro.progress] 只允许把无副作用的死循环当成 UB 删掉；屏障是同步操作，循环不再\n-// 满足该前提，于是必须保留。也就是说\"能不能阻止消除\"与\"屏障强不强\"无关，\n-// 差别只在指令层。这正是\"**屏障 ≠ 原子类型**\"：屏障约束的是**顺序**，不给普通变量\n-// 提供原子性（signal_fence 甚至对 CPU 零约束）。\n-//\n-// ⑤ 是②的机制隔离对照：把同一个屏障从循环体里挪到循环之前，若循环**又**被删掉，\n-// 就证明起作用的不是\"函数里存在屏障\"，而是\"**循环体里有屏障**\"（否决\"编译器只是\n-// 看到函数里有 barrier 就不敢动手\"这一竞争解释）。\n-\n-extern \"C\" int printf(const char *, ...);\n-\n-// ── writer 对照：普通写 / 普通写，中间分别放 signal_fence 与 thread_fence\n-int w_sf_a = 0;   // 仅 writer_signal_fence 引用\n-int w_sf_b = 0;   // 仅 writer_signal_fence 引用\n-int w_tf_a = 0;   // 仅 writer_thread_fence 引用\n-int w_tf_b = 0;   // 仅 writer_thread_fence 引用\n-\n-// ── spin 对照：四种\"等标志\"，各自独占一组全局\n-int s_p_a = 0;    // 仅 spin_plain 引用\n-int s_p_b = 0;    // 仅 spin_plain 读取（main 只做 store）\n-int s_sf_a = 0;   // 仅 spin_signal_fence 引用\n-int s_sf_b = 0;   // 仅 spin_signal_fence 读取\n-int s_f_a = 0;    // 仅 spin_with_fence 引用\n-int s_f_b = 0;    // 仅 spin_with_fence 读取\n-volatile int s_v_a = 0;   // 仅 spin_volatile 引用（全局自身 volatile）\n-volatile int s_v_b = 0;   // 仅 spin_volatile 读取\n-int s_o_a = 0;    // 仅 spin_fence_outside 引用\n-int s_o_b = 0;    // 仅 spin_fence_outside 读取\n-\n-// 置位器：**唯一**写这些标志的地方。返回值不用来观测（避免把 load 引进 main）。\n-__attribute__((noinline)) void set_all_flags(int v)\n-{\n-    s_p_b = v;\n-    s_sf_b = v;\n-    s_f_b = v;\n-    s_v_b = v;\n-    s_o_b = v;\n-    // 给\"被读的数据\"以互不相同的非零值：运行期打印 7/8/9/10/11 即证明观测通路活着\n-    s_p_a = 7;\n-    s_sf_a = 8;\n-    s_f_a = 9;\n-    s_v_a = 10;\n-    s_o_a = 11;\n-    w_sf_a = 1;\n-    w_tf_a = 1;\n-}\n-\n-// 普通写 + 普通写，中间是**编译期**屏障：期望产出的机器码里没有任何屏障指令\n-__attribute__((noinline)) int writer_signal_fence()\n-{\n-    w_sf_a = 1;\n-    __atomic_signal_fence(__ATOMIC_SEQ_CST);\n-    w_sf_b = 2;\n-    return w_sf_a + w_sf_b;\n-}\n-\n-// 普通写 + 普通写，中间是**硬件**屏障（x86-64 上编译为 lock 前缀空操作）\n-__attribute__((noinline)) int writer_thread_fence()\n-{\n-    w_tf_a = 1;\n-    __atomic_thread_fence(__ATOMIC_SEQ_CST);\n-    w_tf_b = 2;\n-    return w_tf_a + w_tf_b;\n-}\n-\n-// 无屏障、无 volatile：-O2 判定循环不变 ⇒ 整循环被消除\n-__attribute__((noinline)) int spin_plain()\n-{\n-    while (!s_p_b) {\n-    }\n-    return s_p_a;\n-}\n-\n-// 循环体里放**编译期**屏障：零指令，但仍足以保住整个循环（实测②）\n-__attribute__((noinline)) int spin_signal_fence()\n-{\n-    while (!s_sf_b) {\n-        __atomic_signal_fence(__ATOMIC_SEQ_CST);\n-    }\n-    return s_sf_a;\n-}\n-\n-// 循环体里放**硬件**屏障：在 x86-64 上产生真实内存写 ⇒ 循环被保留（实测）\n-__attribute__((noinline)) int spin_with_fence()\n-{\n-    while (!s_f_b) {\n-        __atomic_thread_fence(__ATOMIC_SEQ_CST);\n-    }\n-    return s_f_a;\n-}\n-\n-// volatile 读取：强制每次迭代真实访存（活性对照 + 有界兜底，保证不挂死）\n-__attribute__((noinline)) int spin_volatile()\n-{\n-    unsigned bound = 1000000;\n-    while (!s_v_b && --bound > 0) {\n-    }\n-    return s_v_a;\n-}\n-\n-// 机制隔离对照：**同一个屏障，挪到循环之外**（全局形态与 ② 完全同构）\n-__attribute__((noinline)) int spin_fence_outside()\n-{\n-    __atomic_signal_fence(__ATOMIC_SEQ_CST);   // 屏障在循环之外\n-    while (!s_o_b) {\n-    }\n-    return s_o_a;\n-}\n-\n-int main()\n-{\n-    set_all_flags(1);                  // 先置位再调用：即使某侧不消除也不会挂死\n-    int r_p = spin_plain();\n-    int r_sf = spin_signal_fence();\n-    int r_f = spin_with_fence();\n-    int r_v = spin_volatile();\n-    int r_o = spin_fence_outside();\n-    int r_wsf = writer_signal_fence();\n-    int r_wtf = writer_thread_fence();\n-\n-    printf(\"spin_plain_ret=%d|spin_signal_fence_ret=%d|spin_with_fence_ret=%d|spin_volatile_ret=%d\\n\",\n-           r_p, r_sf, r_f, r_v);\n-    printf(\"spin_fence_outside_ret=%d|writer_signal_fence_ret=%d|writer_thread_fence_ret=%d\\n\",\n-           r_o, r_wsf, r_wtf);\n-    printf(\"functions_present=7|spin_volatile_engaged=%d\\n\", (r_v != 0) ? 1 : 0);\n-    return 0;\n-}\n+#include <cstdio>\n+int main() { printf(\"spin_plain_ret=999|x\\n\"); return 0; }",
+      "judge_ok": false,
+      "judge_reasons": [
+        "新增行=3（v1 纯删除形态要求 0，改名/替换即拒）",
+        "代码删除行=95（要求 1..3）",
+        "删除行含纯注释行（噪声/凑 diff 稀释）",
+        "变动 token=439（≤40）",
+        "token 改动率=0.9799（≤0.02）",
+        "删除行 anchor 覆盖率=7%（要求 100%）",
+        "claim 主体支架被删/改：['while (!s_sf_b)', 'return s_sf_a;']（retain 必须逐字保留）"
+      ],
+      "judge_metrics": {
+        "hunks": 1,
+        "inserted_lines": 3,
+        "deleted_lines": 158,
+        "code_deleted_lines": 95,
+        "comment_only_deleted": 49,
+        "tokens_yang": 448,
+        "tokens_changed": 439,
+        "token_change_ratio": 0.97991,
+        "anchor_span": [
+          104,
+          111
+        ],
+        "anchor_coverage": 0.074,
+        "remove_hit": true,
+        "retain_hit": {
+          "while (!s_sf_b)": false,
+          "return s_sf_a;": false
+        },
+        "deleted_code": [
+          "extern \"C\" int printf(const char *, ...);",
+          "int w_sf_a = 0;   // 仅 writer_signal_fence 引用",
+          "int w_sf_b = 0;   // 仅 writer_signal_fence 引用",
+          "int w_tf_a = 0;   // 仅 writer_thread_fence 引用",
+          "int w_tf_b = 0;   // 仅 writer_thread_fence 引用",
+          "int s_p_a = 0;    // 仅 spin_plain 引用",
+          "int s_p_b = 0;    // 仅 spin_plain 读取（main 只做 store）",
+          "int s_sf_a = 0;   // 仅 spin_signal_fence 引用",
+          "int s_sf_b = 0;   // 仅 spin_signal_fence 读取",
+          "int s_f_a = 0;    // 仅 spin_with_fence 引用",
+          "int s_f_b = 0;    // 仅 spin_with_fence 读取",
+          "volatile int s_v_a = 0;   // 仅 spin_volatile 引用（全局自身 volatile）",
+          "volatile int s_v_b = 0;   // 仅 spin_volatile 读取",
+          "int s_o_a = 0;    // 仅 spin_fence_outside 引用",
+          "int s_o_b = 0;    // 仅 spin_fence_outside 读取",
+          "__attribute__((noinline)) void set_all_flags(int v)",
+          "{",
+          "s_p_b = v;",
+          "s_sf_b = v;",
+          "s_f_b = v;",
+          "s_v_b = v;",
+          "s_o_b = v;",
+          "s_p_a = 7;",
+          "s_sf_a = 8;",
+          "s_f_a = 9;",
+          "s_v_a = 10;",
+          "s_o_a = 11;",
+          "w_sf_a = 1;",
+          "w_tf_a = 1;",
+          "}",
+          "__attribute__((noinline)) int writer_signal_fence()",
+          "{",
+          "w_sf_a = 1;",
+          "__atomic_signal_fence(__ATOMIC_SEQ_CST);",
+          "w_sf_b = 2;",
+          "return w_sf_a + w_sf_b;",
+          "}",
+          "__attribute__((noinline)) int writer_thread_fence()",
+          "{",
+          "w_tf_a = 1;",
+          "__atomic_thread_fence(__ATOMIC_SEQ_CST);",
+          "w_tf_b = 2;",
+          "return w_tf_a + w_tf_b;",
+          "}",
+          "__attribute__((noinline)) int spin_plain()",
+          "{",
+          "while (!s_p_b) {",
+          "}",
+          "return s_p_a;",
+          "}",
+          "__attribute__((noinline)) int spin_signal_fence()",
+          "{",
+          "while (!s_sf_b) {",
+          "__atomic_signal_fence(__ATOMIC_SEQ_CST);",
+          "}",
+          "return s_sf_a;",
+          "}",
+          "__attribute__((noinline)) int spin_with_fence()",
+          "{",
+          "while (!s_f_b) {",
+          "__atomic_thread_fence(__ATOMIC_SEQ_CST);",
+          "}",
+          "return s_f_a;",
+          "}",
+          "__attribute__((noinline)) int spin_volatile()",
+          "{",
+          "unsigned bound = 1000000;",
+          "while (!s_v_b && --bound > 0) {",
+          "}",
+          "return s_v_a;",
+          "}",
+          "__attribute__((noinline)) int spin_fence_outside()",
+          "{",
+          "__atomic_signal_fence(__ATOMIC_SEQ_CST);   // 屏障在循环之外",
+          "while (!s_o_b) {",
+          "}",
+          "return s_o_a;",
+          "}",
+          "int main()",
+          "{",
+          "set_all_flags(1);                  // 先置位再调用：即使某侧不消除也不会挂死",
+          "int r_p = spin_plain();",
+          "int r_sf = spin_signal_fence();",
+          "int r_f = spin_with_fence();",
+          "int r_v = spin_volatile();",
+          "int r_o = spin_fence_outside();",
+          "int r_wsf = writer_signal_fence();",
+          "int r_wtf = writer_thread_fence();",
+          "printf(\"spin_plain_ret=%d|spin_signal_fence_ret=%d|spin_with_fence_ret=%d|spin_volatile_ret=%d\\n\",",
+          "r_p, r_sf, r_f, r_v);",
+          "printf(\"spin_fence_outside_ret=%d|writer_signal_fence_ret=%d|writer_thread_fence_ret=%d\\n\",",
+          "r_o, r_wsf, r_wtf);",
+          "printf(\"functions_present=7|spin_volatile_engaged=%d\\n\", (r_v != 0) ? 1 : 0);",
+          "return 0;",
+          "}"
+        ]
+      },
+      "run_keys_flipped": {
+        "spin_plain_ret": {
+          "yang": "7|spin_signal_fence_ret=8|spin_with_fence_ret=9|spin_volatile_ret=10",
+          "yin": "999|x"
+        },
+        "spin_fence_outside_ret": {
+          "yang": "11|writer_signal_fence_ret=3|writer_thread_fence_ret=3",
+          "yin": null
+        },
+        "functions_present": {
+          "yang": "7|spin_volatile_engaged=1",
+          "yin": null
+        }
+      },
+      "probe_flipped": {
+        "s_sf_b": {
+          "yang": 2,
+          "yin": null
+        },
+        "je": {
+          "yang": 1,
+          "yin": null
+        },
+        "lock": {
+          "yang": 0,
+          "yin": null
+        }
+      }
+    }
+  },
+  "yin_marginal_asm_compile_s": 0.0875,
+  "yin_marginal_exe_compile_s": 0.2602
+}

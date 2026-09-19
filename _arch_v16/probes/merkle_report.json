@@ -1,0 +1,8 @@
+{
+ "root": "35ad36b10e796852939d5ea67c853a7cc533a1e00a231cbb7a841d255d87f73f",
+ "height": 5,
+ "leaves": 17,
+ "inclusion_proof_ok": true,
+ "tamper_detected_inclusion": true,
+ "consistency_ok": true
+}

@@ -1,0 +1,104 @@
+﻿........................................................................ [ 24%]
+........................................................................ [ 48%]
+......................FF..........................F..................... [ 72%]
+...............................FF....................................... [ 96%]
+...........                                                              [100%]
+================================== FAILURES ===================================
+______________ test_observation_liveness_live_observation_passes ______________
+
+sandbox = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-25548-1789693998/test_observation_liveness_live0')
+
+    def test_observation_liveness_live_observation_passes(sandbox: Path):
+        """530 任务4（阴性）：证据卡锚**夹具特有符号**（symbol_map 显式声明）+ 量化证伪取值
+        ⇒ 活性条件成立，放行（复现验收 §1 正例形态 FENCE-001）。"""
+        _write_atom(sandbox, "ATOM-MEM-OBS1.md", "mem", id="ATOM-MEM-OBS1",
+                    claim_structured=_OBS_PROP)
+        _write_card(sandbox, "EV-MEM-OBS1.md", id="EV-MEM-OBS1",
+                    artifact_assert='\n  - {kind: contains, text: "spin_plain"}',
+                    symbol_map="\n  spin_plain: _Z10spin_plainv",
+                    falsification="对照取值 3 vs 0",
+                    actual="\n  run_match_file: x.out")
+>       assert ge.check_observation_liveness() == []
+E       AssertionError: assert [Finding(rule...ernal_basis')] == []
+E         
+E         Left contains one more item: Finding(rule_id='OBSERVATION-LIVENESS', severity='warn', target='.pytest_tmp/run-25548-1789693998/test_observation_liv...kind: fixture_symbol, symbol: <夹具特有符号>}`；该符号须真实出现在本命题引用卡的工件断言中且非通用符号。若本命题无法被单一工件读数证伪 ⇒ 改标 inference 并补 external_basis')
+E         Use -v to get more diff
+
+tests\test_gate_engine.py:1350: AssertionError
+_________ test_observation_liveness_skips_when_no_artifact_assertion __________
+
+sandbox = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-25548-1789693998/test_observation_liveness_skip0')
+
+    def test_observation_liveness_skips_when_no_artifact_assertion(sandbox: Path):
+        """530 任务4（边界）：证据卡连工件断言都没有时归 OBSERVATION-NEEDS-ARTIFACT（block）
+        管辖，本条不得重复报警（否则同一条缺陷两条规则各报一次）。"""
+        _write_atom(sandbox, "ATOM-MEM-OBS1.md", "mem", id="ATOM-MEM-OBS1",
+                    claim_structured=_OBS_PROP)
+        _write_card(sandbox, "EV-MEM-OBS1.md", id="EV-MEM-OBS1")
+>       assert ge.check_observation_liveness() == []
+E       AssertionError: assert [Finding(rule...ernal_basis')] == []
+E         
+E         Left contains one more item: Finding(rule_id='OBSERVATION-LIVENESS', severity='warn', target='.pytest_tmp/run-25548-1789693998/test_observation_liv...kind: fixture_symbol, symbol: <夹具特有符号>}`；该符号须真实出现在本命题引用卡的工件断言中且非通用符号。若本命题无法被单一工件读数证伪 ⇒ 改标 inference 并补 external_basis')
+E         Use -v to get more diff
+
+tests\test_gate_engine.py:1359: AssertionError
+____________________________ test_golden_lock_json ____________________________
+
+    def test_golden_lock_json():
+        """559 B 说明：本用例**不**挂 `replay_serial` —— `golden_lock check` 自己会调
+        `replay_card` 复算（每卡取放同一把锁），若外层再持锁会把它逼成
+        `infra_error:replay_busy`（每卡等 120s）。它防的是"释放锁路径崩溃"那个真 bug
+        （`_release_replay_lock` 已改为绝不抛，见 atom_evidence_replay）。
+        """
+        p = _run(["tools/golden_lock.py", "check", "--json"])
+        data = _parse_json_only(p)
+        _check_schema(data, "golden_lock")
+        # 当前基线已 accept（warn 8→32），check 应无恶化 → status pass
+>       assert data["status"] == "pass"
+E       AssertionError: assert 'fail' == 'pass'
+E         
+E         - pass
+E         + fail
+
+tests\test_json_output.py:77: AssertionError
+_________________________ test_surface_map_not_stale __________________________
+
+    def test_surface_map_not_stale():
+        """台账不得过期：每类「有无覆盖」须与静态登记表一致，且计数不低于静态下界。"""
+        m = pd.load_surface_map()
+        assert m is not None
+        static = _static_prefix_counts()
+        for a in pd.ALL_ATTACK_TYPES:
+            got = m["attack_types"][a]["count"]
+            assert (got > 0) == (static.get(a, 0) > 0), (
+                f"{a} 台账计数 {got} 与静态登记 {static.get(a, 0)} 覆盖性不一致——"
+                "增删毒样例后须重跑 --write-surface-map（否则 --by-type 会撒谎）")
+>           assert got >= static.get(a, 0), (
+                f"{a} 台账计数 {got} 低于静态登记 {static.get(a, 0)}（同前缀多载荷只多不少）")
+E           AssertionError: A3 台账计数 18 低于静态登记 20（同前缀多载荷只多不少）
+E           assert 18 >= 20
+E            +  where 20 = <built-in method get of dict object at 0x0000024C715C0100>('A3', 0)
+E            +    where <built-in method get of dict object at 0x0000024C715C0100> = {'A1': 19, 'A2': 11, 'A3': 20, 'A9': 1, ...}.get
+
+tests\test_poison_attack_type.py:140: AssertionError
+____________________ test_surface_map_payload_types_valid _____________________
+
+    def test_surface_map_payload_types_valid():
+        """逐条载荷类型必须落在 A1-A11（阴性对照 type=None），且全部为已拦截状态。"""
+        m = pd.load_surface_map()
+        assert m is not None
+        assert m["payloads"], "台账无载荷明细"
+        for p in m["payloads"]:
+>           assert p["type"] in pd.ALL_ATTACK_TYPES, f"未登记类型：{p}"
+E           AssertionError: 未登记类型：{'name': 'P74 observation 命题缺命题级活性锚（蹭卡级工件）须 warn', 'pass': True, 'type': 'A?'}
+E           assert 'A?' in ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', ...]
+E            +  where ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', ...] = pd.ALL_ATTACK_TYPES
+
+tests\test_poison_attack_type.py:150: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_gate_engine.py::test_observation_liveness_live_observation_passes
+FAILED tests/test_gate_engine.py::test_observation_liveness_skips_when_no_artifact_assertion
+FAILED tests/test_json_output.py::test_golden_lock_json - AssertionError: ass...
+FAILED tests/test_poison_attack_type.py::test_surface_map_not_stale - Asserti...
+FAILED tests/test_poison_attack_type.py::test_surface_map_payload_types_valid
+exit=1

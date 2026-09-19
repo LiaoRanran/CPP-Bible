@@ -1,0 +1,21 @@
+{
+ "mode": "read-only",
+ "functionary(git HEAD)": "2af99a31a184…",
+ "author": "LiaoRanran",
+ "chain_steps": [
+  "write_cards",
+  "gate_validate",
+  "replay_verify",
+  "poison_test",
+  "human_review"
+ ],
+ "chain_verify_ok": true,
+ "chain_errors": [],
+ "chain_tamper_detected": true,
+ "merkle_root": "35ad36b10e796852939d5ea67c853a7cc533a1e00a231cbb7a841d255d87f73f",
+ "merkle_height": 5,
+ "merkle_inclusion_ok": true,
+ "merkle_tamper_detected": true,
+ "merkle_consistency_ok": true,
+ "honest_note": "sim_sign 非密码学签名；RFC6962 简洁 consistency proof 留 W档；纯演示可行性。"
+}

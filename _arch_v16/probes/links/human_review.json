@@ -1,0 +1,16 @@
+{
+ "step": "human_review",
+ "command": "python tools/overturned_events.py append ...",
+ "materials": {
+  "poison": {
+   "poison_drill.py": "7ca38b6ea5a38adf3a9cc36e6a36c9b593fc6820c2fee4b68dd65ef0576480f0"
+  },
+  "overturned_events.jsonl.exists": "True"
+ },
+ "products": {
+  "overturned_events.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+ },
+ "_functionary": "2af99a31a184742dc5b76f5d71d39d49eb9b9269",
+ "_timestamp": "2026-09-19T09:22:06.050158+00:00",
+ "_sig": "4429ae72183ce1942dad6e26abe5da043958046ff00c465c6fe8ba974cd4a5ff"
+}

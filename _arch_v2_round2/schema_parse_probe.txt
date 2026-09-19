@@ -1,0 +1,14 @@
+---
+id: EV-X-1
+negative_controls:
+  - id: nc1
+    variant: v1
+    mutation: delete_mechanism
+    fixture: Examples/atoms/x.nc1.cpp
+    anchor: spin_signal_fence
+    remove: "__atomic_signal_fence(__ATOMIC_SEQ_CST);"
+    retain: ["while (!s_sf_b)", "return s_sf_a;"]
+    probe: {channel: artifact, symbol: _Z17spin_signal_fencev, text: "s_sf_b", op: becomes_absent}
+    note: "t"
+---
+body

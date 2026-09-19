@@ -74,6 +74,7 @@ SERIAL_EXTRA = frozenset({
     "test_replay_invariants_605.py",     # 607：断言真实 `Examples/` 工件指纹稳定（读真实仓）
     "test_replay_invariants_606.py",     # 607：断言真实锁不存在 + 真实 metrics 的 run_checks 全真
     "test_replay_invariants_608.py",     # 608：I1/I4 真跑 replay_card + T7 改 Examples/ 工件（读真实仓）
+    "test_build_reproducibility_608.py", # 608 B2：I2 真编译（符号表/段/跨时间窗口，读真实仓）
 })
 
 

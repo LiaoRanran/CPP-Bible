@@ -1,0 +1,15 @@
+﻿修法验证前先确认现状基线 gate 命中： 115 条 finding
+
+===== 三元组(现状 _findings_key) =====
+M5 变体总数 29: strict=0 warn_only=0 escaped=29 n_a=0 (可判 29)
+strict 命中的 block 规则分布: {}
+escaped 明细(前10): ['ATOM-CONC-FENCE-001[[命题 prop-2] claim_type: inference → observation（自标绕过）]', 'ATOM-CONC-LOCK-001[[命题 prop-2] claim_type: inference → observation（自标绕过）]', 'ATOM-CONC-RACE-001[[命题 prop-2] claim_type: inference → observation（自标绕过）]', 'ATOM-CONC-RACE-001[[命题 prop-3] claim_type: inference → observation（自标绕过）]', 'ATOM-HIST-AUTOPTR-001[[命题 prop-3] claim_type: inference → observation（自标绕过）]', 'ATOM-LANG-INLINE-001[[命题 prop-3] claim_type: inference → observation（自标绕过）]', 'ATOM-MEM-ALIGN-001[[命题 prop-3] claim_type: inference → observation（自标绕过）]', 'ATOM-MEM-ALLOC-001[[命题 prop-4] claim_type: inference → observation（自标绕过）]', 'ATOM-MEM-ALLOC-002[[命题 prop-3] claim_type: inference → observation（自标绕过）]', 'ATOM-MEM-LEAK-001[[命题 prop-3] claim_type: inference → observation（自标绕过）]']
+
+===== 四元组(并入文案=苦力修法) =====
+M5 变体总数 29: strict=0 warn_only=29 escaped=0 n_a=0 (可判 29)
+strict 命中的 block 规则分布: {}
+escaped 明细(前10): []
+
+===== 结论 =====
+escaped: 三元组 29 -> 四元组 0
+strict 是否非 warn 冒充: {}

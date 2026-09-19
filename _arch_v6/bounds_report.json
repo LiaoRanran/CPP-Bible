@@ -1,0 +1,111 @@
+{
+ "at": "2026-09-17",
+ "source_data": [
+  "56 卡 replay confirm=56；61 规则 block=0（投喂词与 ledger §4 口径）",
+  "data/mutation/full_baseline_v1.json (1188=729+227+232)"
+ ],
+ "q1_zero_falsepositive_56cards": {
+  "n": 56,
+  "failures": 0,
+  "conf": 0.95,
+  "rule_of_three_point": 0.05357142857142857,
+  "clopper_pearson_upper_95": 0.05208952720877946,
+  "clopper_pearson_upper_90": 0.04028373063207802,
+  "clopper_pearson_upper_99": 0.07894468231051832
+ },
+ "q2_mutation": {
+  "variants": 1188,
+  "blocked": 729,
+  "escaped": 227,
+  "n_a": 232,
+  "strict_blocked_rate": 0.6136,
+  "strict_rate_cp95": [
+   0.5853,
+   0.6414
+  ],
+  "strict_rate_wilson95": [
+   0.5856,
+   0.6409
+  ],
+  "treated_denominator": 956,
+  "treated_blocked_rate": 0.7626,
+  "treated_rate_cp95": [
+   0.7343,
+   0.7892
+  ],
+  "escape_rate_on_treated_cp95": [
+   0.2108,
+   0.2657
+  ]
+ },
+ "q3_sample_size": {
+  "claim_escape_le_5pct_conf95": {
+   "if_zero_escapes_n": 59,
+   "note": "0 逃逸时 rule-of-three/C-P 精确解 n>=ln(.05)/ln(.95)"
+  },
+  "wald_n_for_pm5pct_at_current_treated_rate": 279,
+  "wald_n_for_pm5pct_near_boundary_p0.5": 385,
+  "wald_n_for_pm2pct_p0.5": 2401
+ },
+ "q4_by_operator": {
+  "M1": {
+   "treated": 65,
+   "escaped": 1,
+   "escape_rate_cp95": [
+    0.0,
+    0.083
+   ]
+  },
+  "M2": {
+   "treated": 207,
+   "escaped": 207,
+   "escape_rate_cp95": [
+    0.982,
+    1.0
+   ]
+  },
+  "M3": {
+   "treated": 13,
+   "escaped": 11,
+   "escape_rate_cp95": [
+    0.546,
+    0.981
+   ]
+  },
+  "M4": {
+   "treated": 200,
+   "escaped": 0,
+   "escape_rate_cp95": [
+    0.0,
+    0.018
+   ]
+  },
+  "M5": {
+   "treated": 0,
+   "escaped": 0,
+   "escape_rate_cp95": null
+  },
+  "M6": {
+   "treated": 332,
+   "escaped": 8,
+   "escape_rate_cp95": [
+    0.01,
+    0.047
+   ]
+  },
+  "M7": {
+   "treated": 139,
+   "escaped": 0,
+   "escape_rate_cp95": [
+    0.0,
+    0.026
+   ]
+  }
+ },
+ "q5_n_needed_for_upper_bounds": {
+  "upper_10pct_95_n": 29,
+  "upper_5pct_95_n": 59,
+  "upper_2pct_95_n": 149,
+  "upper_5pct_99_n": 90
+ }
+}

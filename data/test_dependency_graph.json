@@ -93,6 +93,7 @@
    "tests/test_review_triage.py"
   ],
   "Examples/x.cpp": [
+   "tests/test_585_attack_regression_601.py",
    "tests/test_gate_engine.py",
    "tests/test_mutation_m2_589.py"
   ],
@@ -105,6 +106,9 @@
   "atoms/lang/ATOM-LANG-INLINE-001.md": [
    "tests/test_prop_graph.py"
   ],
+  "atoms/mem/A.md": [
+   "tests/test_585_attack_regression_601.py"
+  ],
   "atoms/mem/ATOM-MEM-STRAY.md": [
    "tests/test_task_queue.py"
   ],
@@ -116,6 +120,13 @@
   ],
   "atoms/x/ATOM-X.md": [
    "tests/test_mutation_fuzz.py"
+  ],
+  "data/governance_docs_manifest.json": [
+   "tests/test_585_attack_regression_601.py",
+   "tests/test_tool_integrity_supply_chain_601.py"
+  ],
+  "data/human_attack_edge_annotations.json": [
+   "tests/test_585_attack_regression_601.py"
   ],
   "data/matrix_value_inventory.md": [
    "tests/test_gate_engine.py"
@@ -131,8 +142,26 @@
   "data/mutation/full_baseline_v6.json": [
    "tests/test_mutation_m2_589.py"
   ],
+  "data/mutation/full_baseline_v7.json": [
+   "tests/test_metrics_curves_v7_592.py",
+   "tests/test_mutation_baseline_v7_591.py"
+  ],
+  "data/overturned_events.json": [
+   "tests/test_overturned_channel_592.py"
+  ],
+  "data/prop_network_inventory.md": [
+   "tests/test_prop_inventory_592.py"
+  ],
   "data/pytest_last.txt": [
    "tests/test_metrics_collector.py"
+  ],
+  "data/supply_chain/layout.json": [
+   "tests/test_supply_chain_chain_601.py"
+  ],
+  "data/supply_chain/merkle_roots.json": [
+   "tests/test_merkle_integrity_601.py",
+   "tests/test_supply_chain_chain_601.py",
+   "tests/test_tool_integrity_supply_chain_601.py"
   ],
   "data/tasks/a7g.out": [
    "tests/test_task_queue.py"
@@ -149,7 +178,11 @@
   "data/tasks/y.out": [
    "tests/test_task_queue_stateful.py"
   ],
+  "evidence/conc/E.md": [
+   "tests/test_585_attack_regression_601.py"
+  ],
   "evidence/conc/EV-CONC-001.md": [
+   "tests/test_mutation_baseline_v7_591.py",
    "tests/test_mutation_fuzz.py",
    "tests/test_mutation_isolation_579.py",
    "tests/test_mutation_m2_589.py",
@@ -205,7 +238,7 @@
    "tests/test_mutation_equivalent_583.py"
   ]
  },
- "test_count": 72,
+ "test_count": 99,
  "tools": {
   "_clean_junk": [],
   "adversarial_regression": [
@@ -221,6 +254,8 @@
   "atom_evidence_replay": [
    "tests/test_artifact_snapshot.py",
    "tests/test_atom_evidence_replay.py",
+   "tests/test_build_reproducibility_603.py",
+   "tests/test_build_reproducibility_metrics_603.py",
    "tests/test_ccache_prefix.py",
    "tests/test_discriminative.py",
    "tests/test_golden_reuse.py",
@@ -234,9 +269,22 @@
    "tests/test_p0g_lock.py",
    "tests/test_parser_differential.py",
    "tests/test_recompile_invariant.py",
+   "tests/test_replay_invariants_603.py",
+   "tests/test_replay_invariants_606.py",
+   "tests/test_replay_invariants_608.py",
    "tests/test_replay_lock_serial.py",
    "tests/test_replay_lock_shard_580.py",
    "tests/test_tool_integrity.py"
+  ],
+  "attack_edge_generator": [
+   "tests/test_attack_edge_generator_596.py",
+   "tests/test_human_review_queue_608.py",
+   "tests/test_weighted_af_solver_596.py"
+  ],
+  "attack_edge_review": [
+   "tests/test_585_attack_regression_601.py",
+   "tests/test_attack_edge_review_596.py",
+   "tests/test_attack_edge_review_604.py"
   ],
   "backup": [
    "tests/test_backup.py"
@@ -301,7 +349,10 @@
    "tests/test_p13_flashcard.py"
   ],
   "gate_engine": [
+   "tests/test_585_attack_regression_601.py",
    "tests/test_artifact_version.py",
+   "tests/test_attack_edge_review_596.py",
+   "tests/test_attack_edge_review_604.py",
    "tests/test_flashcard_export.py",
    "tests/test_gate_engine.py",
    "tests/test_golden_classify.py",
@@ -313,6 +364,7 @@
    "tests/test_mutation_isolation_579.py",
    "tests/test_oracle_gate.py",
    "tests/test_output_snapshots.py",
+   "tests/test_overturned_channel_592.py",
    "tests/test_overturned_curves.py",
    "tests/test_p0b_echo.py",
    "tests/test_p0d_hardening.py",
@@ -343,8 +395,20 @@
    "tests/test_golden_reuse.py",
    "tests/test_s1_s6.py"
   ],
+  "governance_doc_guard": [
+   "tests/test_585_attack_regression_601.py",
+   "tests/test_governance_auto_update_607.py",
+   "tests/test_governance_doc_guard_591.py",
+   "tests/test_governance_self_hash_601.py"
+  ],
   "gray_zone_scan": [],
+  "grounded_audit": [
+   "tests/test_grounded_audit_596.py"
+  ],
   "handover_check": [],
+  "human_review_queue": [
+   "tests/test_human_review_queue_608.py"
+  ],
   "hy3_check": [],
   "impact_analysis": [
    "tests/test_impact_analysis.py"
@@ -360,10 +424,18 @@
    "tests/test_observability.py"
   ],
   "markdown_style_guard": [],
+  "merkle_integrity": [
+   "tests/test_585_attack_regression_601.py",
+   "tests/test_merkle_integrity_601.py",
+   "tests/test_supply_chain_601.py",
+   "tests/test_supply_chain_chain_601.py"
+  ],
   "mermaid_audit": [],
   "metrics_collector": [
+   "tests/test_build_reproducibility_metrics_603.py",
    "tests/test_metrics_collector.py",
    "tests/test_metrics_collector_curves.py",
+   "tests/test_metrics_curves_v7_592.py",
    "tests/test_oracle_gate.py",
    "tests/test_oracle_rotation_583.py",
    "tests/test_overturned_curves.py"
@@ -394,6 +466,9 @@
   "oracle_rotation": [
    "tests/test_oracle_rotation_583.py"
   ],
+  "overturned_events": [
+   "tests/test_overturned_channel_592.py"
+  ],
   "patch_blocks": [
    "tests/test_patch_blocks.py"
   ],
@@ -411,11 +486,26 @@
   "prop_asof": [
    "tests/test_prop_asof_583.py"
   ],
+  "prop_closure": [
+   "tests/test_prop_closure_592.py"
+  ],
   "prop_graph": [
    "tests/test_prop_asof_583.py",
+   "tests/test_prop_closure_592.py",
    "tests/test_prop_graph.py"
   ],
+  "prop_network_inventory": [
+   "tests/test_prop_inventory_592.py"
+  ],
+  "proposition_liveness_audit": [
+   "tests/test_proposition_liveness_audit_607.py"
+  ],
   "prose_density": [],
+  "replay_invariants": [
+   "tests/test_replay_invariants_605.py",
+   "tests/test_replay_invariants_606.py",
+   "tests/test_replay_invariants_608.py"
+  ],
   "review_triage": [
    "tests/test_review_triage.py"
   ],
@@ -433,12 +523,18 @@
   ],
   "stat_bounds": [
    "tests/test_metrics_collector_curves.py",
+   "tests/test_metrics_curves_v7_592.py",
    "tests/test_mutation_fuzz_report.py",
    "tests/test_overturned_curves.py",
    "tests/test_stat_bounds.py"
   ],
   "structure_audit": [],
   "suggest": [],
+  "supply_chain": [
+   "tests/test_585_attack_regression_601.py",
+   "tests/test_supply_chain_601.py",
+   "tests/test_supply_chain_chain_601.py"
+  ],
   "sweep_fences": [],
   "table_style_audit": [],
   "task_queue": [
@@ -453,11 +549,18 @@
   "terminology_normalize": [],
   "test_dependency_graph": [],
   "tool_integrity": [
-   "tests/test_tool_integrity.py"
+   "tests/test_585_attack_regression_601.py",
+   "tests/test_merkle_integrity_601.py",
+   "tests/test_supply_chain_chain_601.py",
+   "tests/test_test_config_integrity_591.py",
+   "tests/test_tool_integrity.py",
+   "tests/test_tool_integrity_supply_chain_601.py"
   ],
   "toolchain": [
    "tests/test_atom_evidence_replay.py",
-   "tests/test_recompile_invariant.py"
+   "tests/test_build_reproducibility_603.py",
+   "tests/test_recompile_invariant.py",
+   "tests/test_replay_invariants_603.py"
   ],
   "trace_logger": [
    "tests/test_trace_logger.py"
@@ -469,6 +572,10 @@
   "verify_exercises": [],
   "viso_diff": [
    "tests/test_viso_diff.py"
+  ],
+  "weighted_af_solver": [
+   "tests/test_attack_edge_review_596.py",
+   "tests/test_weighted_af_solver_596.py"
   ],
   "whitespace_fix": [],
   "writer_selfcheck": [

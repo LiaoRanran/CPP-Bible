@@ -1,0 +1,94 @@
+﻿== top-level keys ==
+['blocked', 'by_card', 'by_operator', 'by_operator_rates', 'cards', 'elapsed_s', 'equivalent', 'equivalent_invalid', 'equivalent_invalid_list', 'equivalent_keys', 'escaped', 'escaped_list', 'ge_runs', 'jobs', 'malformed', 'n_a', 'operators', 'out_of_scope', 'parallel', 'parallel_baseline_scans', 'rate_flags', 'rates', 'replay_runs', 'replay_skipped', 'results', 'root_fingerprint_ok', 'strict_blocked', 'strict_rate', 'treated_rate', 'variants']
+variants = 1593
+blocked = 1378
+escaped = 1
+n_a = 179
+malformed = 0
+out_of_scope = 69
+equivalent = 35
+equivalent_invalid = 35
+strict_blocked = 811
+strict_rate = 0.5881
+treated_rate = 0.9993
+jobs = 4
+parallel = True
+elapsed_s = 269.51
+ge_runs = 1415
+replay_runs = 65
+replay_skipped = 139
+root_fingerprint_ok = True
+rates = {"judged": 1379, "n_a": 179, "malformed": 0, "strict": {"numerator": 811, "denominator": 1379, "point": 0.588107, "cp_low": 0.561603, "cp_high": 0.614235, "conf": 0.95}, "treated": {"numerator": 1378, "denominator": 1379, "point": 0.999275, "cp_low": 0.995966, "cp_high": 0.999982, "conf": 0.95}, "escape": {"numerator": 1, "denominator": 1379, "point": 0.000725, "cp_low": 1.8e-05, "cp_high": 0.004034, "conf": 0.95}, "treated_all": {"numerator": 1378, "denominator": 1593, "point": 0.865035, "cp_low": 0.847268, "cp_high": 0.881443, "conf": 0.95}}
+n cards = 83  operators = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7']
+
+== verdict x op (all variants) ==
+op      total  blocked escaped n_a    malformed out_of_scope equivalent
+M1          92     64       1     27         0           0          0
+M2         195    141      27     27         0          27         27
+M3         107     65       0     42         0          42          0
+M4         251    224       0     27         0           0          0
+M5          85     29       0     56         0           0          0
+M6         724    716       8      0         0           0          8
+M7         139    139       0      0         0           0          0
+
+== escaped_list (full) ==
+evidence/conc/EV-CONC-001.md | M1 | 删 negative_controls
+   detail: {"new_block": [], "new_warn": [], "why": null, "kind": null}
+
+== equivalent variants (grouped) ==
+total equivalent = 35
+('M2', 'escaped') 27
+('M6', 'escaped') 8
+  evidence/conc/EV-CONC-001.md | M2 | 路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_A
+  evidence/conc/EV-CONC-001.md | M2 | 路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_v
+  evidence/conc/EV-CONC-001.md | M2 | 分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\atoms\_atom_fence_vs
+  evidence/conc/EV-CONC-002.md | M2 | 路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp → EXAMPLES/ATOMS/_ATOM_FENCE_VS_A
+  evidence/conc/EV-CONC-002.md | M2 | 路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp → ./Examples/atoms/_atom_fence_v
+  evidence/conc/EV-CONC-002.md | M2 | 分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp → Examples\atoms\_atom_fence_vs
+  evidence/hist/EV-HIST-001.md | M6 | 块式 → flow 写法（matrix）
+  evidence/mem/EV-MEM-032.md | M6 | 块式 → flow 写法（matrix）
+  evidence/mem/EV-MEM-033.md | M6 | 块式 → flow 写法（matrix）
+  evidence/mem/EV-MEM-034.md | M6 | 块式 → flow 写法（matrix）
+  evidence/mem/EV-MEM-035.md | M6 | 块式 → flow 写法（matrix）
+  evidence/mem/EV-MEM-036.md | M6 | 块式 → flow 写法（matrix）
+  evidence/mem/EV-MEM-037.md | M6 | 块式 → flow 写法（matrix）
+  evidence/mem/EV-MEM-038.md | M2 | 路径转大写（Examples/atoms/_atom_sso_portable.cpp → EXAMPLES/ATOMS/_ATOM_SSO_PORTABLE.
+  evidence/mem/EV-MEM-038.md | M2 | 路径加 ./（Examples/atoms/_atom_sso_portable.cpp → ./Examples/atoms/_atom_sso_portab
+  evidence/mem/EV-MEM-038.md | M2 | 分隔符换反斜杠（Examples/atoms/_atom_sso_portable.cpp → Examples\atoms\_atom_sso_portabl
+  evidence/mem/EV-MEM-040.md | M2 | 路径转大写（Examples/atoms/_atom_alloc_strategies.cpp → EXAMPLES/ATOMS/_ATOM_ALLOC_STR
+  evidence/mem/EV-MEM-040.md | M2 | 路径加 ./（Examples/atoms/_atom_alloc_strategies.cpp → ./Examples/atoms/_atom_alloc_
+  evidence/mem/EV-MEM-040.md | M2 | 分隔符换反斜杠（Examples/atoms/_atom_alloc_strategies.cpp → Examples\atoms\_atom_alloc_s
+  evidence/mem/EV-MEM-041.md | M2 | 路径转大写（Examples/atoms/_atom_alloc_strategies.cpp → EXAMPLES/ATOMS/_ATOM_ALLOC_STR
+  evidence/mem/EV-MEM-041.md | M2 | 路径加 ./（Examples/atoms/_atom_alloc_strategies.cpp → ./Examples/atoms/_atom_alloc_
+  evidence/mem/EV-MEM-041.md | M2 | 分隔符换反斜杠（Examples/atoms/_atom_alloc_strategies.cpp → Examples\atoms\_atom_alloc_s
+  evidence/mem/EV-MEM-042.md | M2 | 路径转大写（Examples/atoms/_atom_leak_detection.cpp → EXAMPLES/ATOMS/_ATOM_LEAK_DETECT
+  evidence/mem/EV-MEM-042.md | M2 | 路径加 ./（Examples/atoms/_atom_leak_detection.cpp → ./Examples/atoms/_atom_leak_det
+  evidence/mem/EV-MEM-042.md | M2 | 分隔符换反斜杠（Examples/atoms/_atom_leak_detection.cpp → Examples\atoms\_atom_leak_dete
+  evidence/mem/EV-MEM-043.md | M2 | 路径转大写（Examples/atoms/_atom_leak_detection.cpp → EXAMPLES/ATOMS/_ATOM_LEAK_DETECT
+  evidence/mem/EV-MEM-043.md | M2 | 路径加 ./（Examples/atoms/_atom_leak_detection.cpp → ./Examples/atoms/_atom_leak_det
+  evidence/mem/EV-MEM-043.md | M2 | 分隔符换反斜杠（Examples/atoms/_atom_leak_detection.cpp → Examples\atoms\_atom_leak_dete
+  evidence/mem/EV-MEM-044.md | M2 | 路径转大写（Examples/atoms/_atom_false_sharing.cpp → EXAMPLES/ATOMS/_ATOM_FALSE_SHARIN
+  evidence/mem/EV-MEM-044.md | M2 | 路径加 ./（Examples/atoms/_atom_false_sharing.cpp → ./Examples/atoms/_atom_false_sha
+  evidence/mem/EV-MEM-044.md | M2 | 分隔符换反斜杠（Examples/atoms/_atom_false_sharing.cpp → Examples\atoms\_atom_false_shar
+  evidence/mem/EV-MEM-045.md | M2 | 路径转大写（Examples/atoms/_atom_false_sharing_perf.cpp → EXAMPLES/ATOMS/_ATOM_FALSE_S
+  evidence/mem/EV-MEM-045.md | M2 | 路径加 ./（Examples/atoms/_atom_false_sharing_perf.cpp → ./Examples/atoms/_atom_fals
+  evidence/mem/EV-MEM-045.md | M2 | 分隔符换反斜杠（Examples/atoms/_atom_false_sharing_perf.cpp → Examples\atoms\_atom_false
+  evidence/ub/EV-UB-002.md | M6 | 块式 → flow 写法（matrix）
+
+== n_a why categories ==
+110 该卡本就没有被变异的字段（不适用）
+42 out_of_scope：M3 门禁读取面内无可弱化点（`_
+27 out_of_scope：M2 门禁读取面内无可变形路径（变
+
+== cards per variant count top10 ==
+28 evidence/lang/EV-LANG-001.md
+27 evidence/conc/EV-CONC-001.md
+26 evidence/conc/EV-CONC-002.md
+26 evidence/conc/EV-CONC-003.md
+26 evidence/conc/EV-CONC-004.md
+26 evidence/conc/EV-CONC-005.md
+26 evidence/conc/EV-CONC-006.md
+26 evidence/lang/EV-LANG-002.md
+24 evidence/hist/EV-HIST-001.md
+24 evidence/mem/EV-MEM-003.md
+distinct cards = 83

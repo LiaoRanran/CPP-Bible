@@ -1,0 +1,9 @@
+﻿[replay] evidence/conc/EV-CONC-001.md
+  ✅ compile_rc    3 条命令全部退出码 0
+  ✅ run_match    3 个 key 与 .out 逐字一致（run_match_file 模式）
+  ✅ artifact_sha  8dd19bc6bf2facc2… == 卡值（归属 GCC 15.3.0 (MinGW-w64)）
+  ✅ recompile  8dd19bc6bf2facc2… == 卡值（独立重编译复现）
+  ⏭ sanitizer    已按 --no-sanitizer 跳过
+  → confirm
+
+[replay] confirm=1 refute=0 infra_error=0 共 1 张卡

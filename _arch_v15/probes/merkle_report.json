@@ -1,0 +1,11 @@
+{
+ "tool": "probe_merkle_integrity.py",
+ "mode": "read-only",
+ "scanned": 108,
+ "merkle_root": "27c22968f25d0c0f116713f32db28b0b849a752bf8fd8a3e9901fa653cb87fff",
+ "merkle_height": 7,
+ "chain_tail": "612b962872ac7ea13b14e69685f9b06d911ad3bb250fd63e4707b4b23f46e07e",
+ "tamper_detected": true,
+ "tamper_example_file": "atoms\\conc\\ATOM-CONC-FENCE-001.md",
+ "feasibility": "纯标准库即可实现；无需硬件/外部服务。可立即作为 tool_integrity 的增强层。"
+}
