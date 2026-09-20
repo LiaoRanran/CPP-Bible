@@ -167,11 +167,11 @@ def main(argv: list[str] | None = None) -> int:
 
     if a.check:
         errs = []
-        link = build_link("selftest", [__file__], [__file__], ["echo", "hi"], {"return-value": 0},
-                          b"k")
-        ok, e = verify_link(link, b"k")
+        me = Path(__file__)
+        link = build_link("selftest", [me], [me], ["echo", "hi"], {"return-value": 0}, b"k")
+        ok, verrs = verify_link(link, b"k")
         if not ok:
-            errs += e
+            errs += verrs
         ok2, _ = verify_link(link, b"wrong")
         if ok2:
             errs.append("错误密钥竟验签通过")
@@ -179,16 +179,16 @@ def main(argv: list[str] | None = None) -> int:
         ok3, _ = verify_link(unsigned, None)
         if ok3:
             errs.append("未签名 link 不应通过校验")
-        for e in errs:
-            print(f"[E2] ✗ {e}")
+        for err in errs:
+            print(f"[E2] ✗ {err}")
         print("[E2] " + ("✅ 自验证通过" if not errs else f"❌ {len(errs)} 项失败"))
         return 0 if not errs else 1
 
     if a.verify:
         link = json.loads(Path(a.verify).read_text(encoding="utf-8"))
         ok, errs = verify_link(link, _key())
-        for e in errs:
-            print(f"[E2] ✗ {e}")
+        for err in errs:
+            print(f"[E2] ✗ {err}")
         print(f"[E2] {'✅ 校验通过' if ok else '❌ 校验失败'}")
         return 0 if ok else 1
 

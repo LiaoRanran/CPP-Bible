@@ -68,7 +68,7 @@ def compute(nodes: dict[str, dict]) -> dict:
 
     single = [n for n, r in nodes.items() if len(defenders_of(r)) == 1]
     bare = [n for n, r in nodes.items() if not defenders_of(r)]
-    load = Counter()
+    load: Counter[str] = Counter()
     for r in nodes.values():
         for d in defenders_of(r):
             load[d] += 1
