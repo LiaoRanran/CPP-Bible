@@ -216,17 +216,37 @@ def test_deps_gate():
 
 
 def test_touch_normalization_same_lock():
-    """538/539 A1：touch 的大小写 / ./ / 正反斜杠异体必须撞同一把锁。"""
+    """538/539 A1：touch 的 ./ 前缀 / 正反斜杠异体跨平台必须撞同一把锁。
+
+    大小写变体（TOUCH_VARIANTS[1]）平台相关：
+    - Windows：os.path.normcase 转小写 ⇒ 撞锁（NTFS 大小写不敏感）
+    - Linux/Mac：os.path.normcase 原样返回 ⇒ 不撞锁（ext4 大小写敏感）
+    详见 tools/task_queue.py::_norm_touch 的注释（不许写死 .lower()）。
+    """
+    import sys
+    # 变体 2（./ 前缀）和变体 3（反斜杠）在所有平台上都归一
+    for variant_idx in (2, 3):
+        db = _new_db()
+        t1 = tq.enqueue("research", "T1", touch=[TOUCH_PHYS], priority=200, db_path=db)["id"]
+        t2 = tq.enqueue("research", "T2", touch=[TOUCH_VARIANTS[variant_idx]], db_path=db)["id"]
+        claimed_id = tq.claim("wA", db_path=db)["claimed"]["id"]
+        nb = tq.next_task(db_path=db).get("blocked_by_touch", [])
+        blocked_ids = {x["id"] for x in nb}
+        assert blocked_ids & {t1, t2} == {t1, t2} - {claimed_id}, \
+            f"变体 {variant_idx} 未归一（应挡下 {t1, t2} - {claimed_id}）：{nb}"
+    # 变体 1（大小写）：平台相关
     db = _new_db()
-    # T1 给最高优先级 ⇒ claim 必领 T1（占用其 touch 锁）；T2 用异体应被挡下
     t1 = tq.enqueue("research", "T1", touch=[TOUCH_PHYS], priority=200, db_path=db)["id"]
     t2 = tq.enqueue("research", "T2", touch=[TOUCH_VARIANTS[1]], db_path=db)["id"]
-    claimed_id = tq.claim("wA", db_path=db)["claimed"]["id"]   # 占住其 touch 锁
+    claimed_id = tq.claim("wA", db_path=db)["claimed"]["id"]
     nb = tq.next_task(db_path=db).get("blocked_by_touch", [])
     blocked_ids = {x["id"] for x in nb}
-    # 归一化成立 ⇒ T1/T2 争同一把锁：被领走的那个之外，另一个必被挡下
-    assert blocked_ids & {t1, t2} == {t1, t2} - {claimed_id}, \
-        f"touch 异体未归一（应挡下 {t1, t2} - {claimed_id}）：{nb}"
+    if sys.platform == "win32":
+        assert blocked_ids & {t1, t2} == {t1, t2} - {claimed_id}, \
+            f"Windows 上大小写变体应撞锁（NTFS 大小写不敏感）：{nb}"
+    else:
+        assert blocked_ids & {t1, t2} == set(), \
+            f"Linux 上大小写变体不应撞锁（ext4 大小写敏感）：{nb}"
 
 
 # ── 随机状态机：自动找违反序列 ─────────────────────────────────────────────
