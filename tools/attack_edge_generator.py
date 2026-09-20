@@ -40,6 +40,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import gate_engine as ge  # noqa: E402
+import perf_cache as pc  # noqa: E402   # 609 B3：目录快照缓存（仅加速读盘，不改任何口径）
 
 VERSION = "1.0"
 DEFAULT_MIS_DIR = ROOT / "misconceptions"
@@ -64,8 +65,30 @@ def _as_list(v: object) -> list[str]:
     return []
 
 
+def _cached_dir_scan(root: Path, pattern: str, uncached) -> dict:
+    """目录快照缓存（609 B3）：builder 是"整目录解析"的**无缓存版**。
+
+    空目录/不存在的目录 ⇒ 直接走 builder（不缓存"什么都没读到"，
+    否则目录后建起来时会一直拿到空快照）。
+    """
+    files = list(root.rglob(pattern)) if root.is_dir() else []
+    if not files:
+        return uncached(root)
+    return pc.cached_dir(root, pattern, lambda: uncached(root))
+
+
 def read_mis(mis_dir: Path | str = DEFAULT_MIS_DIR) -> dict[str, dict]:
-    """读误区库：`{mis_id: {related_atoms, misconceptions, refutations, confidence}}`（排序确定）。"""
+    """读误区库：`{mis_id: {related_atoms, misconceptions, refutations, confidence}}`（排序确定）。
+
+    609 B3：整目录 rglob + 逐卡解析是全批最热的读盘路径之一 ⇒ 走 `perf_cache.cached_dir`，
+    签名 = 目录里全部卡片的（相对路径,mtime_ns,size）哈希 ⇒ **任一卡被改/增/删，签名变、缓存自动失效**。
+    返回的是深拷贝（缓存对象不许被调用方改坏）。
+    """
+    return _cached_dir_scan(Path(mis_dir), "MIS-*.md", _read_mis_uncached)
+
+
+def _read_mis_uncached(mis_dir: Path | str = DEFAULT_MIS_DIR) -> dict[str, dict]:
+    """无缓存实现（缓存的 builder；口径与原实现逐字节一致）。"""
     out: dict[str, dict] = {}
     for f in sorted(Path(mis_dir).rglob("MIS-*.md")):
         if "README" in f.name:
@@ -93,7 +116,11 @@ def confidence_of(meta: dict) -> str:
 
 
 def atom_props(atoms_dir: Path | str = DEFAULT_ATOMS_DIR) -> dict[str, list[str]]:
-    """原子卡 → 它声明的命题 id 列表（`卡id::prop-N`，按 prop id 排序）。"""
+    """原子卡 → 它声明的命题 id 列表（`卡id::prop-N`，按 prop id 排序）。609 B3：同 `read_mis` 走缓存。"""
+    return _cached_dir_scan(Path(atoms_dir), "ATOM-*.md", _atom_props_uncached)
+
+
+def _atom_props_uncached(atoms_dir: Path | str = DEFAULT_ATOMS_DIR) -> dict[str, list[str]]:
     out: dict[str, list[str]] = {}
     for p in sorted(Path(atoms_dir).rglob("ATOM-*.md")):
         if "README" in p.name:
