@@ -46,6 +46,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 BOOK = ROOT / 'Book'
+# 613 B2：D5 基准源已迁至 `_archive/benchmarks/`（仍被 git 跟踪）。
+# 解析顺序：库根优先 → 归档目录兜底（契约「真实存在 + git 跟踪」不变）。
+ARCHIVE_BENCH = ROOT / '_archive' / 'benchmarks'
+
+
+def _resolve_bench(name: str):
+    """返回基准源的真实路径，或 None（两处都不存在）。"""
+    p = ROOT / name
+    if p.exists():
+        return p
+    q = ARCHIVE_BENCH / name
+    return q if q.exists() else None
 
 D5_HEADER_RE = re.compile(r'^##\s+附录 D5：真实基准与性能分析')
 # GCC 标签：接受全角（GCC 15.3.0）或半角 (GCC 15.3.0)，仅"完全缺标签"才报错
@@ -197,13 +209,16 @@ def audit_region(lines, chapter):
     if benches:
         tracked = tracked_files()
         for b in benches:
-            p = ROOT / b
-            if not p.exists():
+            p = _resolve_bench(b)
+            if p is None:
                 issues.append(('ERROR', 'BENCH_MISSING',
-                                f'{chapter}: 引用的基准源文件不存在于库根 -> {b}'))
-            elif b not in tracked:
-                issues.append(('INFO', 'BENCH_UNTRACKED',
-                                f'{chapter}: 基准源文件在库根但未被 git 跟踪（未提交）-> {b}'))
+                                f'{chapter}: 引用的基准源文件不存在（库根与 '
+                                f'_archive/benchmarks/ 均无）-> {b}'))
+            else:
+                rel = p.relative_to(ROOT).as_posix()
+                if rel not in tracked:
+                    issues.append(('INFO', 'BENCH_UNTRACKED',
+                                    f'{chapter}: 基准源文件存在但未被 git 跟踪（未提交）-> {rel}'))
     return issues
 
 

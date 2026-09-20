@@ -31,6 +31,11 @@ import sys
 
 ROOT = os.getcwd()
 BOOK = os.path.join(ROOT, 'Book')
+# 613 B2：D5 基准源历史上迁至 `_archive/benchmarks/`（仍被 git 跟踪，非丢失）。
+# 契约不变（每条声明须对应「真实存在 + git 跟踪」的 _bench_d5_X.cpp），只是解析时
+# 库根优先、归档目录兜底。ARCHIVE_REL 用 posix 分隔符（git pathspec 只认 /）。
+ARCHIVE_REL = '_archive/benchmarks'
+ARCHIVE_BENCH = os.path.join(ROOT, '_archive', 'benchmarks')
 
 CLAIM_RE = re.compile(r'基准源码见库根 `(_bench_d5_[^`]+\.cpp)`')
 D5_RE = re.compile(r'^###\s+D5\b', re.MULTILINE)
@@ -40,9 +45,13 @@ BENCH_RE = re.compile(r'_bench_d5_[^`\s]+\.cpp')
 
 
 def git_tracked(pattern):
+    """git 跟踪集合（basename）。613 B2：基准源可能已迁至 `_archive/benchmarks/`，
+    故同时查询库根与归档目录两个 pathspec（契约「真实存在且 git 跟踪」不变）。"""
     out = subprocess.run(['git', 'ls-files', pattern],
                          capture_output=True, text=True).stdout.split()
-    return set(os.path.basename(x) for x in out)
+    arc = subprocess.run(['git', 'ls-files', os.path.join(ARCHIVE_REL, pattern)],
+                         capture_output=True, text=True).stdout.split()
+    return set(os.path.basename(x) for x in (out + arc))
 
 
 def collect_claims():
@@ -60,7 +69,12 @@ def collect_claims():
 
 
 def collect_disk_files():
-    return set(os.path.basename(x) for x in glob_root('_bench_d5_*.cpp'))
+    """磁盘基准源（basename）。613 B2：库根 ∪ `_archive/benchmarks/`。"""
+    files = glob_root('_bench_d5_*.cpp')
+    if os.path.isdir(ARCHIVE_BENCH):
+        import glob
+        files += glob.glob(os.path.join(ARCHIVE_BENCH, '_bench_d5_*.cpp'))
+    return set(os.path.basename(x) for x in files)
 
 
 def glob_root(pat):
