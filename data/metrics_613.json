@@ -1,0 +1,65 @@
+{
+  "generated_at": "2026-09-21T00:09:55",
+  "A_liveness": {
+    "missing_anchors": 50,
+    "low_cost": 9,
+    "warn_before": 50,
+    "warn_after": 41
+  },
+  "B_d5": {
+    "appendix_error_before": 119,
+    "appendix_error_after": 0,
+    "source_integrity_exit": 0
+  },
+  "C_learner": {
+    "kc": 27,
+    "behavior_events": 0,
+    "avg_mastery": 0.1,
+    "path_nodes": 27
+  },
+  "D_argument": {
+    "candidates": 98,
+    "human_reviewed": 0,
+    "components_now": 11,
+    "components_projection": 7,
+    "max_defense_depth": 29
+  },
+  "E_trust": {
+    "ots_attestation": "pending（未 submit）",
+    "in_toto_scheme": "hmac-sha256（非标准非对称）",
+    "merkle_proofs_ok": 5,
+    "merkle_proofs_total": 5
+  },
+  "F_escape": [
+    {
+      "name": "① 官方契约（可判分母）",
+      "k": 1,
+      "n": 1406,
+      "p": 0.000711
+    },
+    {
+      "name": "② +等价变异（equivalent 算未杀）",
+      "k": 9,
+      "n": 1414,
+      "p": 0.006365
+    },
+    {
+      "name": "③ +n_a（n_a 算未杀）",
+      "k": 180,
+      "n": 1585,
+      "p": 0.113565
+    },
+    {
+      "name": "④ 最保守上界（n_a+equivalent 全算未杀）",
+      "k": 188,
+      "n": 1593,
+      "p": 0.118016
+    },
+    {
+      "name": "⑤ strict 口径（1 − strict_rate）",
+      "k": null,
+      "n": null,
+      "p": 0.4232
+    }
+  ]
+}
