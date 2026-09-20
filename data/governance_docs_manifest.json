@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-09-20T15:28:20",
- "git_commit": "16cc3ca",
+ "generated_at": "2026-09-20T15:54:47",
+ "git_commit": "04633da",
  "files": [
   {
    "path": "References/architecture_架构演进/271_架构批判_阙疑v3十问_判据密度不足与收敛手术.md",
@@ -1773,6 +1773,86 @@
    "size": 2993
   },
   {
+   "path": "_arch_v11/00_总览_维度上限与差距矩阵.md",
+   "sha256": "8ac56dc69a873e43f1ae64cbd3703ee9458a93f9c8d0f2f1d728acd1afda4d40",
+   "size": 6450
+  },
+  {
+   "path": "_arch_v11/01_发现器完备性_上限探测.md",
+   "sha256": "6a77aaa1069ef283779e3f421078299005518db6d881fa7fa5e41d071bb7479f",
+   "size": 8567
+  },
+  {
+   "path": "_arch_v11/02_门禁规则覆盖_上限探测.md",
+   "sha256": "6a607a2019c9a214a2b3116035efe3a738eb28f1640833ee28f7c0acac37d666",
+   "size": 7647
+  },
+  {
+   "path": "_arch_v11/03_度量诚实度_上限探测.md",
+   "sha256": "04fcd0b94bb776f59ba738885709c1eb9b5b77bdedf5fcac6dfe2ebfba4a1ddd",
+   "size": 7562
+  },
+  {
+   "path": "_arch_v11/04_确定性与可复现_上限探测.md",
+   "sha256": "a440812613f5d3bb5ddbc66da63e0e06f1dfc9d98e3d936ea4b4ee56b1d27857",
+   "size": 7606
+  },
+  {
+   "path": "_arch_v11/05_性能_上限探测.md",
+   "sha256": "e31dbc8c15029e6c328d5395bec02565d6ffc503a0114d5979b277ae509d7605",
+   "size": 6730
+  },
+  {
+   "path": "_arch_v11/06_命题与知识层_上限探测.md",
+   "sha256": "3af2c01c50299abda99c9091d024f3439f26d6e58ca1f41831ced1b15458197e",
+   "size": 7055
+  },
+  {
+   "path": "_arch_v11/07_Oracle与验证者_上限探测.md",
+   "sha256": "8b0cfcb165e9efd7f95e1e9f394668e08ed5573d2a7fc68e72f5eec45bd642d3",
+   "size": 7012
+  },
+  {
+   "path": "_arch_v11/08_统计与收敛_上限探测.md",
+   "sha256": "3f475e16a9a7b06d76db792fd5cf32add6a8070fd81d71105d00d98acfd808b8",
+   "size": 7239
+  },
+  {
+   "path": "_arch_v11/09_分权与论证_上限探测.md",
+   "sha256": "d0cb02a108b0215a570b66f1ecefaa54edea80ca4b60d01f012a3a0adb144f8f",
+   "size": 6602
+  },
+  {
+   "path": "_arch_v11/10_信任根与供应链_上限探测.md",
+   "sha256": "eaaa6b9b194e3156820086327e5088495e239d24472de85e010d45ceb0d9e111",
+   "size": 6973
+  },
+  {
+   "path": "_arch_v11/11_攻击面与红队_上限探测.md",
+   "sha256": "1a4f555784e7f16f0e20d76109ac396455983b60b497100c3ad890c3ab8c2f0a",
+   "size": 7415
+  },
+  {
+   "path": "_arch_v11/12_文档与可演示性_上限探测.md",
+   "sha256": "3f3607d231ad266e22bf43743864e1bc39bbdae5dfb18f456534df72976dc2a4",
+   "size": 6283
+  },
+  {
+   "path": "_arch_v11/13_自由探索_新维度新攻击面新技术.md",
+   "sha256": "168fe53ae47aa7731c1d70b9666c985cac3877086819a1f6e75fc5151e99810b",
+   "size": 8483
+  },
+  {
+   "path": "_arch_v11/14_拉满路线图建议.md",
+   "sha256": "74ed28a77b271d3080eec4d65d239257d31bca7b55be47a656f3be69b45c88b3",
+   "size": 5934
+  },
+  {
+   "path": "_arch_v11/zero_pollution.md",
+   "sha256": "b7095b7fa65a7d892f373f6cd57494e4f78a7742a4a48494bb02789776d02729",
+   "size": 3238
+  },
+  {
    "path": "_arch_v12/00_总览_grounded论证系统在本仓的落地路径与边界.md",
    "sha256": "9b948b256f85c1efa3fdf933d3afda666db643aaede618a594babae8772cc175",
    "size": 3810
@@ -2248,6 +2328,226 @@
    "size": 4365
   },
   {
+   "path": "_arch_v2/00_真实数据流图.md",
+   "sha256": "658c217e827652638335ddb39b395f58076cd8f9664617cd2f1ec2063320a39a",
+   "size": 11096
+  },
+  {
+   "path": "_arch_v2/01_七大根本假设的裁决.md",
+   "sha256": "16db59fae421405e56fc9cb5ef30c19cdd4aa7091e0e2afbac656b10ac0c72bd",
+   "size": 18508
+  },
+  {
+   "path": "_arch_v2/02_前沿调研与批判吸收.md",
+   "sha256": "f15495d991d454e6889d2eeaf70c32a3fccbaee2252f9101d63268b526fa4df9",
+   "size": 12724
+  },
+  {
+   "path": "_arch_v2/03_下一代架构蓝图.md",
+   "sha256": "e046de25cc793514bbdc202a1be952a41e1a139f87b9668fe078ce2d6cebe8f6",
+   "size": 17516
+  },
+  {
+   "path": "_arch_v2/04_蓝图自我对抗.md",
+   "sha256": "39f5b4b43431558a468033c04b6346682a552eb0e97bb72d8e419c961260bdf9",
+   "size": 7670
+  },
+  {
+   "path": "_arch_v2/05_演进路线图与批次序列.md",
+   "sha256": "96222e0424aa2b41e4f5b78995bbdb481f4bc17d7fa7dd6ab8f8933e2e3f604e",
+   "size": 7941
+  },
+  {
+   "path": "_arch_v2_round2/533_V-iso施工规格.md",
+   "sha256": "31f1210cf83f9c30284e2077ae637aec1cbfab710d3aac126ba9162cbd2f2edb",
+   "size": 40188
+  },
+  {
+   "path": "_arch_v3/534_L2调度层施工规格.md",
+   "sha256": "107888b2d4c5c2831882f0f68f83d17d8737e55271fdb221c2206cbd2c496aec",
+   "size": 37210
+  },
+  {
+   "path": "_arch_v3/HANDOFF.md",
+   "sha256": "9ac51c2d20f85939b577a9c395b940cfc1baecfc095fce924d824a754a2af80f",
+   "size": 2864
+  },
+  {
+   "path": "_arch_v4/560_00_总览与三档路线图.md",
+   "sha256": "fafd97cb81303bf4fa29cd52ff4efe0bb83f374e510f02e85944fc5a86711b12",
+   "size": 8240
+  },
+  {
+   "path": "_arch_v4/560_A_性能画像.md",
+   "sha256": "763e40b7be6459d82557f9c43296aa3a453405d32e20068e7d6595ad3716a133",
+   "size": 7254
+  },
+  {
+   "path": "_arch_v4/560_B_全局优化架构.md",
+   "sha256": "88b65e05cc670560f9836f326110b149a5e21e474e8a30a1c82cd6ac86837d84",
+   "size": 11987
+  },
+  {
+   "path": "_arch_v4/560_C_前沿调研.md",
+   "sha256": "f83136e48c6f4a13eef1ed79da60d5f08bb0c0abb2e33ab217e19405ea9182c6",
+   "size": 10102
+  },
+  {
+   "path": "_arch_v4/560_D_自攻击与风险.md",
+   "sha256": "487539a6eb68e482f4f94c2ac3f1bae00d47363e1036e64b15093365380c7e0b",
+   "size": 8343
+  },
+  {
+   "path": "_arch_v4/560_E_外置检索记忆知识层.md",
+   "sha256": "8158d866d927867d911175f00f328a5216e4ba5fc0548ef5524da12382a3e194",
+   "size": 11912
+  },
+  {
+   "path": "_arch_v5/01_范式对照.md",
+   "sha256": "e755b90311b2a8140709b80897ea16e7cca5e5e1d55c1316d7f4361657bb1a40",
+   "size": 14614
+  },
+  {
+   "path": "_arch_v5/02_元系统终局定位.md",
+   "sha256": "13e859993674813f03486ed104896c7cbccf35e379273222790f05725302bedf",
+   "size": 7162
+  },
+  {
+   "path": "_arch_v5/03_没有终极可信底座时怎么收敛.md",
+   "sha256": "2ccb597cabb4cc3faab120056d1755b226e77523851bd90c14cf2b374494f5d3",
+   "size": 7600
+  },
+  {
+   "path": "_arch_v5/04_现在借什么_等什么.md",
+   "sha256": "3897774b7779d6e3146df42f785c1a6062c74add0532d32a2f2a028361d7d6c5",
+   "size": 8148
+  },
+  {
+   "path": "_arch_v6/01_六组调研.md",
+   "sha256": "b4ce70cc933167fa7420e0fcd701d4666bf0b82007cc8aa5625d49c2c43030c2",
+   "size": 11329
+  },
+  {
+   "path": "_arch_v6/02_可计算判据集.md",
+   "sha256": "eb6ab87d407d85b353024506e2af4e74beaa35b30bf8c8e94bde7b2fd6f2f0a5",
+   "size": 8587
+  },
+  {
+   "path": "_arch_v6/03_分权与论证系统设计.md",
+   "sha256": "ed902216f76a1e56b6c19d2b11ab1434744aecd3c8ec4c0e940a2d6274acb5c4",
+   "size": 8654
+  },
+  {
+   "path": "_arch_v6/04_现在做_攒数据_等模型.md",
+   "sha256": "2afce4c3afdfe5402351c7ab0dc65bc970d23806ea5b3edf63dfb0ed4995bd07",
+   "size": 6875
+  },
+  {
+   "path": "_arch_v7/00_中断快照_续跑交接.md",
+   "sha256": "9eab758515d67be65b93ea955976533118b70d6f33830312df3c7108ed9367bc",
+   "size": 6489
+  },
+  {
+   "path": "_arch_v7/00_总览_现在做_攒数据_等模型.md",
+   "sha256": "5b8bcf594ec69a45ec7cf79e33c6bc8c2e446d4f2830742a59fcce717e9166d1",
+   "size": 6819
+  },
+  {
+   "path": "_arch_v7/01_Oracle类型学与跨域泛化.md",
+   "sha256": "8cb0d1bf25408ff3fa5dda677504a336c953999df9a5aa0e8bed52114154513a",
+   "size": 11867
+  },
+  {
+   "path": "_arch_v7/02_人审可靠性.md",
+   "sha256": "e5cfe69072e9b8a5f2cd51dc0da85961254b8a6f68d563a0798f6223c7f67143",
+   "size": 8716
+  },
+  {
+   "path": "_arch_v7/03_验证器自身安全.md",
+   "sha256": "63ff280d93c8a033354b480a8c351f2e3f674c8221a9dd21177f6f4cf55032b1",
+   "size": 8833
+  },
+  {
+   "path": "_arch_v7/04_推理引擎选型.md",
+   "sha256": "334e1eb68e2f1f48776537934a96de5695eec1d678ec3f4d5c2c1af934bf104c",
+   "size": 5220
+  },
+  {
+   "path": "_arch_v7/05_激励终局与冻结条件.md",
+   "sha256": "7cffdc2646592a70f3224ca8a39cc08b8fbe32de8689169e7f5c92a7370bb42b",
+   "size": 2856
+  },
+  {
+   "path": "_arch_v8/00_总览.md",
+   "sha256": "db3bd0bcc5bc9e8ff8fe3fb43adfc923a1b338948d127b17375662ca6386c2d0",
+   "size": 4008
+  },
+  {
+   "path": "_arch_v8/01_现状解剖.md",
+   "sha256": "bfb0bb39e6da560f1f4c614c3cf457650a3935bec568b0070708c1858b91507b",
+   "size": 7677
+  },
+  {
+   "path": "_arch_v8/02_外部做法.md",
+   "sha256": "dbfd906270f2815b9fb1fcb249d5c292b19627806485d21827e699ef1e9c8dae",
+   "size": 5127
+  },
+  {
+   "path": "_arch_v8/03_NDW三档.md",
+   "sha256": "e27b047acbcf7958b69820126e2a7dc1fd8f4199ad8f0a20e4d8da6a852c5879",
+   "size": 6214
+  },
+  {
+   "path": "_arch_v9/00_总览_现在借什么_攒什么_等什么.md",
+   "sha256": "35a711f007ffa572b73e1f80baaf3fa4799cef92b533a86cd9b4fdf959659f14",
+   "size": 11353
+  },
+  {
+   "path": "_arch_v9/01_双时序账本.md",
+   "sha256": "db734716650847449818059062b87b31a5bbab9800bd2e43de17c4f29e47a98a",
+   "size": 10170
+  },
+  {
+   "path": "_arch_v9/02_命题网络规模化.md",
+   "sha256": "c33e33d33e3855f46740cb5f8c329108079b30c7161f033841753dff7f42151e",
+   "size": 10375
+  },
+  {
+   "path": "_arch_v9/03_换验证者交接契约.md",
+   "sha256": "3265eb217737f915aa2eee3a8d54f21fab7fd86fd4eaae84e18e0a9a6a614a32",
+   "size": 11790
+  },
+  {
+   "path": "_arch_v9/04_可核验外置知识.md",
+   "sha256": "34c7c923eecbb554f5240b28df6d7018c2d8578ede7b18a8108d9f3bd9cb6984",
+   "size": 11420
+  },
+  {
+   "path": "_arch_v9/05_攻击生成系统化.md",
+   "sha256": "5a5b8784ec6dbf1aec1029be2b8357a91c27c43cdb4660729f199fb3d845f749",
+   "size": 12015
+  },
+  {
+   "path": "_arch_v9/06_在线收敛统计.md",
+   "sha256": "2325df2eab282be4dbf8f12518169ef1fe70be296cff43bd7d8918f20eb48bdf",
+   "size": 10512
+  },
+  {
+   "path": "_arch_v9/07_可计算判据集.md",
+   "sha256": "25ed18fa94a26e8ebec8caad5682c0ba75f484d131a5a64167336c6931f21887",
+   "size": 11386
+  },
+  {
+   "path": "_arch_v9/08_自攻击_这些方案在本仓会怎么失效.md",
+   "sha256": "1609e6cc36725690b819e0466251889fd47dfc7063b43310de39b6ab16bfb1e7",
+   "size": 9895
+  },
+  {
+   "path": "_arch_v9/zero_pollution.md",
+   "sha256": "cc75ae341f35fbacd0ecc1587146c5203e54315cf2e753b48eae4a0b98e7ea7a",
+   "size": 5965
+  },
+  {
    "path": "_auto/inbox/604.md",
    "sha256": "3d9c138cb25825d2282b98d15dae7ae8f7976ae3d60d70222d771d7597f512f6",
    "size": 6765
@@ -2288,5 +2588,5 @@
    "size": 21309
   }
  ],
- "self_hash": "596d81665bcd9ed67d0fd30e5136dbbe61a224d15437f6cbf8ce93b9b944951d"
+ "self_hash": "0e9b7e4849e60a737ff82476f08644a3b834c192c2c0d0dd3ecd817f237fbac5"
 }
