@@ -1,0 +1,95 @@
+<!DOCTYPE html><html lang='zh-CN'><head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>人审进度仪表盘 · 610 E2</title><style>
+body{font-family:sans-serif;margin:16px;color:#222}
+.cards{display:flex;flex-wrap:wrap;gap:12px}
+.card{border:1px solid #e0e0e0;border-radius:6px;padding:10px 14px;min-width:120px}
+.k{font-size:12px;color:#666}.v{font-size:20px;font-weight:700}
+svg{width:100%;height:auto;max-width:760px}
+table{border-collapse:collapse;margin-top:8px}
+th,td{border:1px solid #ddd;padding:4px 8px;font-size:12px}
+.out{color:#A14E50;font-weight:700}
+</style></head><body><h1>人审进度仪表盘</h1>
+<div class='cards'>
+<div class="card"><div class="k">记录数</div><div class="v" style="color:#333">388</div></div>
+<div class="card"><div class="k">完成度</div><div class="v" style="color:#2e7d32">100%</div></div>
+<div class="card"><div class="k">approve</div><div class="v" style="color:#2e7d32">354</div></div>
+<div class="card"><div class="k">modify</div><div class="v" style="color:#ef6c00">34</div></div>
+<div class="card"><div class="k">reject</div><div class="v" style="color:#666">0</div></div>
+<div class="card"><div class="k">MIS 组</div><div class="v" style="color:#333">42</div></div>
+</div>
+<h2>Top10 modify 比例最高的 MIS</h2>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 280" role="img" aria-label="modify 比例 Top10">
+<rect width="720" height="280" fill="#fff"/>
+<text x="150" y="26" font-size="11" text-anchor="end" fill="#333">MIS-LANG-001</text>
+<rect x="158" y="14" width="400" height="16" fill="#ef6c00" opacity="0.85"/>
+<text x="564" y="26" font-size="11" fill="#333">1.00（6/6）</text>
+<text x="150" y="52" font-size="11" text-anchor="end" fill="#333">MIS-MEM-001</text>
+<rect x="158" y="40" width="400" height="16" fill="#ef6c00" opacity="0.85"/>
+<text x="564" y="52" font-size="11" fill="#333">1.00（6/6）</text>
+<text x="150" y="78" font-size="11" text-anchor="end" fill="#333">MIS-MEM-003</text>
+<rect x="158" y="66" width="400" height="16" fill="#ef6c00" opacity="0.85"/>
+<text x="564" y="78" font-size="11" fill="#333">1.00（6/6）</text>
+<text x="150" y="104" font-size="11" text-anchor="end" fill="#333">MIS-UB-001</text>
+<rect x="158" y="92" width="400" height="16" fill="#ef6c00" opacity="0.85"/>
+<text x="564" y="104" font-size="11" fill="#333">1.00（4/4）</text>
+<text x="150" y="130" font-size="11" text-anchor="end" fill="#333">MIS-UB-004</text>
+<rect x="158" y="118" width="400" height="16" fill="#ef6c00" opacity="0.85"/>
+<text x="564" y="130" font-size="11" fill="#333">1.00（4/4）</text>
+<text x="150" y="156" font-size="11" text-anchor="end" fill="#333">MIS-UB-008</text>
+<rect x="158" y="144" width="400" height="16" fill="#ef6c00" opacity="0.85"/>
+<text x="564" y="156" font-size="11" fill="#333">1.00（4/4）</text>
+<text x="150" y="182" font-size="11" text-anchor="end" fill="#333">MIS-UB-014</text>
+<rect x="158" y="170" width="400" height="16" fill="#ef6c00" opacity="0.85"/>
+<text x="564" y="182" font-size="11" fill="#333">1.00（4/4）</text>
+<text x="150" y="208" font-size="11" text-anchor="end" fill="#333">MIS-MEM-031</text>
+<rect x="158" y="196" width="0" height="16" fill="#ef6c00" opacity="0.85"/>
+<text x="166" y="208" font-size="11" fill="#333">0.00（0/24）</text>
+<text x="150" y="234" font-size="11" text-anchor="end" fill="#333">MIS-MEM-024</text>
+<rect x="158" y="222" width="0" height="16" fill="#ef6c00" opacity="0.85"/>
+<text x="166" y="234" font-size="11" fill="#333">0.00（0/18）</text>
+<text x="150" y="260" font-size="11" text-anchor="end" fill="#333">MIS-MEM-026</text>
+<rect x="158" y="248" width="0" height="16" fill="#ef6c00" opacity="0.85"/>
+<text x="166" y="260" font-size="11" fill="#333">0.00（0/18）</text>
+</svg>
+<h2>主题分布</h2>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 260" role="img" aria-label="主题分布">
+<rect width="260" height="260" fill="#fff"/>
+<path d="M 130.0 130.0 L 130.0 12.0 A 118.0 118.0 0 1 1 18.8 90.6 Z" fill="#1565c0" opacity="0.85"><title>MEM: 312（80.4%）</title></path>
+<path d="M 130.0 130.0 L 18.8 90.6 A 118.0 118.0 0 0 1 58.8 35.9 Z" fill="#2e7d32" opacity="0.85"><title>UB: 36（9.3%）</title></path>
+<path d="M 130.0 130.0 L 58.8 35.9 A 118.0 118.0 0 0 1 99.8 15.9 Z" fill="#ef6c00" opacity="0.85"><title>HIST: 24（6.2%）</title></path>
+<path d="M 130.0 130.0 L 99.8 15.9 A 118.0 118.0 0 0 1 118.6 12.6 Z" fill="#6a1b9a" opacity="0.85"><title>CONC: 10（2.6%）</title></path>
+<path d="M 130.0 130.0 L 118.6 12.6 A 118.0 118.0 0 0 1 130.0 12.0 Z" fill="#00838f" opacity="0.85"><title>LANG: 6（1.5%）</title></path>
+</svg>
+<table><tr><th>主题</th><th>MIS 数</th><th>条数</th><th>占比</th></tr>
+<tr><td>MEM</td><td>27</td><td>312</td><td>80.4%</td></tr>
+<tr><td>UB</td><td>9</td><td>36</td><td>9.3%</td></tr>
+<tr><td>HIST</td><td>3</td><td>24</td><td>6.2%</td></tr>
+<tr><td>CONC</td><td>2</td><td>10</td><td>2.6%</td></tr>
+<tr><td>LANG</td><td>1</td><td>6</td><td>1.6%</td></tr>
+</table><h2>方向分布</h2><table><tr><th>direction</th><th>条数</th></tr>
+<tr><td>mis_to_prop</td><td>194</td></tr>
+<tr><td>prop_to_mis</td><td>194</td></tr>
+</table>
+<h2>OUT 的 MIS（7 个，红色高亮）</h2><ul>
+<li class='out'>MIS-LANG-001</li>
+<li class='out'>MIS-MEM-001</li>
+<li class='out'>MIS-MEM-003</li>
+<li class='out'>MIS-UB-001</li>
+<li class='out'>MIS-UB-004</li>
+<li class='out'>MIS-UB-008</li>
+<li class='out'>MIS-UB-014</li>
+</ul><h2>质量异常</h2><table><tr><th>类型</th><th>MIS</th><th>说明</th></tr>
+<tr><td>modify_ratio_1.0</td><td>MIS-LANG-001</td><td>6 条全部被判 modify ⇒ 歧义度最高，建议人工复核</td></tr>
+<tr><td>modify_ratio_1.0</td><td>MIS-MEM-001</td><td>6 条全部被判 modify ⇒ 歧义度最高，建议人工复核</td></tr>
+<tr><td>modify_ratio_1.0</td><td>MIS-MEM-003</td><td>6 条全部被判 modify ⇒ 歧义度最高，建议人工复核</td></tr>
+<tr><td>modify_ratio_1.0</td><td>MIS-UB-001</td><td>4 条全部被判 modify ⇒ 歧义度最高，建议人工复核</td></tr>
+<tr><td>modify_ratio_1.0</td><td>MIS-UB-004</td><td>4 条全部被判 modify ⇒ 歧义度最高，建议人工复核</td></tr>
+<tr><td>modify_ratio_1.0</td><td>MIS-UB-008</td><td>4 条全部被判 modify ⇒ 歧义度最高，建议人工复核</td></tr>
+<tr><td>modify_ratio_1.0</td><td>MIS-UB-014</td><td>4 条全部被判 modify ⇒ 歧义度最高，建议人工复核</td></tr>
+<tr><td>review_seconds_missing</td><td>*</td><td>388/388 条无 review_seconds ⇒ 耗时不可回溯测量（不伪造 0，short_time 判定对其不可用）</td></tr>
+</table><h2>时间线</h2>
+<table><tr><th>日期</th><th>条数</th></tr>
+<tr><td>2026-09-19</td><td>388</td></tr>
+</table>
+<p>数字全部来自 388 条授权人审与入库 W2 产物；本页**只读**。</p></body></html>
