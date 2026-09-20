@@ -121,7 +121,24 @@ def verify_consistency(old_levels: list[list[bytes]],
 
 
 def verify_append_only(old_text: str, new_text: str) -> tuple[bool, str]:
-    """逐行前缀验证：老行一个字节都不许变，只许末尾追加。"""
+    """append-only 验证：老内容一个字节都不许变，只许末尾追加。
+
+    **611 A1 新增字节前缀快路径**（`new_text.startswith(old_text)` ⇒ 纯追加，直接通过）：
+
+    为什么必须有这条快路径：**末行没有换行**的文件（实测 `data/supply_chain/merkle_roots.json`
+    末行就无 `\\n`）在末尾追加时，`splitlines(keepends=True)` 会把"旧末行 + 新内容"算作**同一行**，
+    于是逐行比对必然得出"第 N 行被改写"的**假红** —— 旧实现只能验证"以换行结尾的行级追加"。
+
+    慢路径（行级）**保留不动**：它能定位到**具体第几行**被改写，报文对排障更有用；
+    两条路径的**通过集合**一致（字节前缀成立 ⇒ 逐行前缀必然成立），故不改变既有判决语义。
+    """
+    if new_text.startswith(old_text):
+        added = len(new_text) - len(old_text)
+        tail = new_text[len(old_text):]
+        hook = "（末行无换行 ⇒ 快路径是唯一能通过的路）" if old_text and not old_text.endswith("\n") \
+            else ""
+        return True, (f"字节前缀成立 ⇒ 纯追加 {added} 字节"
+                      f"（旧 {len(old_text)} B 一字未变{hook}；新增尾巴 {tail[:24]!r}）")
     old_lines = old_text.splitlines(keepends=True)
     new_lines = new_text.splitlines(keepends=True)
     if len(new_lines) < len(old_lines):
@@ -178,6 +195,22 @@ def check() -> list[str]:
     ok2, _ = verify_append_only("a\nb\n", "a\nB\nc\n")
     if ok2:
         problems.append("append-only 反例竟然通过（改历史行未被发现）")
+    # 611 A1：字节前缀快路径自检（末行无换行 = 旧实现的假红场景）
+    cases_ok = (("", '{"a": 1}'),                      # 空 → 有内容
+                ('{"a": 1}', '{"a": 1}\n{"b": 2}'),    # 末行无换行 + 换行后追加
+                ('{"a": 1}', '{"a": 1}'),              # 一字未变
+                ("a\nb\n", "a\nb\nc\n"))               # 常规行级追加
+    for old, new in cases_ok:
+        okp, whyp = verify_append_only(old, new)
+        if not okp:
+            problems.append(f"append-only 正例失败（{old!r} → {new!r}）：{whyp}")
+    cases_bad = (('{"a": 1}', ''),                     # 截断（新更短）
+                 ("a\nb\n", "a\nB\nc\n"),              # 改历史行
+                 ('{"a": 1}', '{"a": 2}\n{"b": 2}'))   # 末行无换行但被改写 ⇒ 快慢路径都必须红
+    for old, new in cases_bad:
+        okb, _ = verify_append_only(old, new)
+        if okb:
+            problems.append(f"append-only 反例竟然通过：{old!r} → {new!r}")
     return problems
 
 
