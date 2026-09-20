@@ -35,6 +35,7 @@ DEFAULT_EDGES = aeg.DEFAULT_OUT
 DEFAULT_ANN = hrc.DEFAULT_ANN
 DEFAULT_LABELS = ROOT / "data" / "grounded_labels_w2.json"
 DEFAULT_REPORT = ROOT / "data" / "defense_chain_report.md"
+DEFAULT_HTML = ROOT / "data" / "defense_chain.html"
 
 CREDIBILITY_ORDER = {"low": 0, "medium": 1, "high": 2}
 PROP_CREDIBILITY = "medium"
@@ -353,6 +354,127 @@ def stats(edges: list[AttackEdge], verdicts: dict[str, str],
                                          for k in ("high", "medium", "low")}}
 
 
+HTML_HEAD = """<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>辩护链可视化 · 610 B3</title>
+<style>
+body{font-family:sans-serif;margin:16px;color:#222}
+svg{width:100%;height:auto;display:block}
+.wrap{display:flex;flex-wrap:wrap;gap:16px}
+.panel{flex:1 1 320px;min-width:280px;border:1px solid #e0e0e0;border-radius:6px;padding:12px}
+.legend span{display:inline-block;margin-right:14px;font-size:12px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid #ddd;padding:4px 8px;font-size:12px;text-align:left}
+code{background:#f5f5f5;padding:1px 4px}
+.node{cursor:pointer}
+.node:hover{stroke:#000;stroke-width:3}
+#detail{min-height:120px;font-size:13px}
+</style></head><body>
+<h1>辩护链可视化（智能原型 1）</h1>
+<p class="note">口径：命题 = medium；MIS = 有 approve 边 ⇒ medium，否则 low（modify 保持 low）。</p>
+<div class="wrap">
+  <div class="panel" style="flex:2 1 520px">
+    <div id="graph"></div>
+    <p class="legend">
+      <span><i class="dot" style="background:#35705A"></i>IN</span>
+      <span><i class="dot" style="background:#A14E50"></i>OUT</span>
+      <span><i class="dot" style="background:#9E9E9E"></i>UNDEC</span>
+      <span style="color:#A14E50"><b>━</b> 击败边（可信度严格大于）</span>
+      <span style="color:#9E9E9E">━ 非击败边</span>
+      <span>◯ 命题（外圈 79） · ◻ 误解（内圈 42）</span>
+    </p>
+  </div>
+  <div class="panel"><h2>节点详情</h2><div id="detail">点击左侧任一节点查看它的辩护链。</div></div>
+  <div class="panel"><h2>OUT 节点（静态兜底）</h2>__OUT_TABLE__</div>
+</div>
+<noscript><p>（未启用脚本：上方 SVG 与 OUT 节点表已给出静态视图。）</p></noscript>
+<script>
+const NODES = __NODES__;
+function show(id){
+  const n = NODES[id]; if(!n) return;
+  const rows = [];
+  rows.push('<h3>' + id + '</h3>');
+  rows.push('<p>类型 ' + n.type + ' · 判决 <b>' + n.verdict + '</b> · 可信度 ' + n.cred + '</p>');
+  rows.push('<p>被击败于：' + (n.defeated_by.length ? n.defeated_by.map(x=>'<code>'+x+'</code>').join(' ') : '—（不被击败）') + '</p>');
+  rows.push('<p>W2 辩护者：' + (n.w2_defenders.length ? n.w2_defenders.map(x=>'<code>'+x+'</code>').join(' ') : '—（无人辩护）') + '</p>');
+  rows.push('<table><tr><th>攻击者</th><th>人审</th><th>是否击败</th></tr>');
+  n.attackers.forEach(a=>{rows.push('<tr><td><code>'+a.source+'</code></td><td>'+a.verdict+'</td><td>'+(a.defeating?'✅ 击败':'—')+'</td></tr>');});
+  rows.push('</table>');
+  document.getElementById('detail').innerHTML = rows.join('');
+}
+</script>
+</body></html>
+"""
+
+
+def generate_defense_chain_html(edges: list[AttackEdge], verdicts: dict[str, str],
+                               credibilities: dict[str, str],
+                               output_path: Path | str | None = None) -> Path:
+    """生成自包含辩护链可视化（内圈 42 MIS / 外圈 79 命题；无任何外部资源）。"""
+    chains = {n: get_defense_chain(n, edges, verdicts, credibilities)
+              for n in sorted(verdicts)}
+    props = [n for n in sorted(verdicts) if chains[n].node_type == "proposition"]
+    mis = [n for n in sorted(verdicts) if chains[n].node_type == "misconception"]
+    W, H, CX, CY = 900, 760, 450, 380
+    R_OUT, R_IN = 340.0, 190.0
+
+    def pos(seq: list[str], r: float) -> dict[str, tuple[float, float]]:
+        import math
+        n = max(len(seq), 1)
+        out = {}
+        for i, nid in enumerate(seq):
+            ang = 2 * math.pi * i / n - math.pi / 2
+            out[nid] = (CX + r * math.cos(ang), CY + r * math.sin(ang))
+        return out
+
+    p_pos, m_pos = pos(props, R_OUT), pos(mis, R_IN)
+    svg = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
+           f'role="img" aria-label="辩护链图">',
+           f'<rect width="{W}" height="{H}" fill="#ffffff"/>']
+    for e in edges:                                     # 边：灰细（非击败）/ 红粗（击败）
+        defeating = is_defeating(e, credibilities)
+        a, b = p_pos.get(e.source) or m_pos.get(e.source), p_pos.get(e.target) or m_pos.get(e.target)
+        if not a or not b:
+            continue
+        stroke = "#A14E50" if defeating else "#9E9E9E"
+        width = 1.8 if defeating else 0.6
+        svg.append(f'<line x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}" '
+                   f'stroke="{stroke}" stroke-width="{width}" opacity="0.75"/>')
+    for nid in props + mis:                             # 节点
+        c = chains[nid]
+        fill = {"IN": "#35705A", "OUT": "#A14E50", "UNDEC": "#9E9E9E"}[c.verdict]
+        x, y = (p_pos if nid in p_pos else m_pos)[nid]
+        title = f"{nid} · {c.verdict} · cred {c.credibility}"
+        shape = (f'<circle class="node" cx="{x:.1f}" cy="{y:.1f}" r="7" fill="{fill}" '
+                 f'stroke="#333" onclick="show(\'{nid}\')"><title>{title}</title></circle>'
+                 if c.node_type == "proposition" else
+                 f'<rect class="node" x="{x - 6:.1f}" y="{y - 6:.1f}" width="12" height="12" '
+                 f'fill="{fill}" stroke="#333" onclick="show(\'{nid}\')"><title>{title}</title></rect>')
+        svg.append(shape)
+    svg.append("</svg>")
+
+    nodes_json = {n: {"type": c.node_type, "verdict": c.verdict, "cred": c.credibility,
+                      "defeated_by": c.defeated_by, "w2_defenders": c.w2_defenders,
+                      "attackers": [{"source": e.source, "verdict": e.human_verdict,
+                                     "defeating": is_defeating(e, credibilities)}
+                                    for e in c.attackers]}
+                  for n, c in chains.items()}
+    out_rows = [f"<tr><td><code>{n}</code></td><td>{chains[n].credibility}</td>"
+                f"<td>{len(chains[n].defeated_by)}</td></tr>"
+                for n in sorted(verdicts) if verdicts[n] == "OUT"]
+    html = (HTML_HEAD
+            .replace("__OUT_TABLE__", "<table><tr><th>节点</th><th>可信度</th><th>击败者数</th></tr>"
+                                      + "".join(out_rows) + "</table>")
+            .replace("__NODES__", json.dumps(nodes_json, ensure_ascii=False))
+            .replace("<div id=\"graph\"></div>", "<div id=\"graph\">" + "".join(svg) + "</div>"))
+    p = Path(output_path) if output_path else DEFAULT_HTML
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(html, encoding="utf-8", newline="\n")
+    return p
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="defense_chain",
                                  description="610 辩护链推理（确定性 · 只读）")
@@ -381,6 +503,8 @@ def main(argv: list[str] | None = None) -> int:
     sp.add_argument("node_id")
     sp.add_argument("--json", action="store_true", dest="json_sub")
     sp = _sp("report")
+    sp.add_argument("--out", default=None)
+    sp = _sp("html")
     sp.add_argument("--out", default=None)
     for name in ("list-out", "list-no-defenders", "list-no-attackers"):
         _sp(name).add_argument("--json", action="store_true", dest="json_sub")
@@ -441,6 +565,11 @@ def main(argv: list[str] | None = None) -> int:
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(batch_report(edges, verdicts, cred), encoding="utf-8", newline="\n")
         print(f"[chain] 已写 {p.relative_to(ROOT).as_posix() if str(p).startswith(str(ROOT)) else p}")
+        return 0
+    if a.cmd == "html":
+        p = generate_defense_chain_html(edges, verdicts, cred, a.out)
+        print(f"[chain] 已写 {p.relative_to(ROOT).as_posix() if str(p).startswith(str(ROOT)) else p}"
+              f"（自包含 HTML：内圈 42 MIS / 外圈 79 命题）")
         return 0
     st = stats(edges, verdicts, cred)
     key = {"list-out": "out_nodes", "list-no-defenders": "no_defender_nodes",
