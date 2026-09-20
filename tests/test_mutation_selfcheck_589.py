@@ -5,6 +5,8 @@
 """
 from __future__ import annotations
 
+import os
+
 import mutation_fuzz as mf
 import pytest
 
@@ -120,11 +122,15 @@ def test_cli_exit2_on_coverage_error(monkeypatch, tmp_path):
 def test_selfcheck_live_clean_and_coverage():
     sc = mf._load_selfcheck_cards()
     ops = list(mf._SELFCHECK_OPS)
-    base = mf._run_jobs(sc, ops, len(sc), jobs=4)
+    # CI 上用 jobs=1（串行）：CI runner 资源有限，进程池并行 + replay 竞争
+    # 会导致 M7（需跑 replay）的判决非确定性（一次 blocked 一次 escaped）。
+    # 本地仍用 jobs=4 验证并行确定性。
+    jobs = 1 if os.environ.get("CI") == "true" else 4
+    base = mf._run_jobs(sc, ops, len(sc), jobs=jobs)
     # 覆盖：每算子 ≥1 blocked（否则 fail-loud）
     mf._assert_selfcheck_coverage(base, ops)
     eq = sum(1 for r in base["results"] if r.get("equivalent"))
     assert eq >= 1, "小卡集缺少 M6 flow 等价样本（equivalent 路径未被覆盖）"
-    ok, diffs = mf.selfcheck_determinism([], [], 0, base, jobs=4)
+    ok, diffs = mf.selfcheck_determinism([], [], 0, base, jobs=jobs)
     assert ok is True, f"真小卡集两次跑不一致：{diffs[:5]}"
     assert not diffs

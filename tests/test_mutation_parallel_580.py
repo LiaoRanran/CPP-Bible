@@ -101,14 +101,19 @@ def test_580_worker_failure_is_fail_loud():
 
 
 def test_580_parallel_leaves_real_root_and_lock_untouched(replay_serial):
-    """(f) 跑完并行后：真实 `build/.replay_lock` 不存在；真实根指纹与跑前相同。
+    """(f) 跑完并行后：真实根指纹与跑前相同；测试期间未在真实 build/ 新建/删除锁。
 
     本用例比对**真实根全树指纹** ⇒ 与 replay 共用同一把锁串行（`-n auto` 下防假红）。
+
+    CI 注意：replay job 与 pytest job 并发，replay 可能预创建 `build/.replay_lock`。
+    故只断言"测试前后锁存在状态不变"，不断言"锁绝对不存在"。
     """
     cards = _tiny_cards(1)
     fp0 = mf._real_root_fingerprint()
+    lock_existed_before = (ROOT / "build" / ".replay_lock").exists()
     rep = mf._run_jobs(cards, ["M6"], 1, jobs=2)
     assert rep["root_fingerprint_ok"] is True
     assert mf._real_root_fingerprint() == fp0
-    assert not (ROOT / "build" / ".replay_lock").exists(), \
-        "并行期锁必须落在 worker tmp，不许碰真实 build/"
+    lock_existed_after = (ROOT / "build" / ".replay_lock").exists()
+    assert lock_existed_after == lock_existed_before, \
+        "并行期锁必须落在 worker tmp，不许在真实 build/ 新建/删除锁（CI replay job 预创建的锁除外）"

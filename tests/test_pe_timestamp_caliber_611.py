@@ -18,6 +18,7 @@
 """
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import sys
@@ -85,6 +86,10 @@ def test_pe_timestamp_offsets_detector():
 
 
 @pytest.mark.slow
+@pytest.mark.skipif(
+    os.environ.get("CI") == "true",
+    reason="CI Ubuntu g++ 跨 1.1s 编译 PE  sha 一致（不插入时间戳），与本地 MinGW 行为不同",
+)
 def test_real_pe_is_time_window_drift_with_proof(tmp_path: Path, monkeypatch):
     """端到端（真调 g++）：PE 跨 1.1s ⇒ time_window_drift + 差异仅时间戳 + 取证通过。"""
     env = dict(aer._compiler_env())
