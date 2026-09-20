@@ -125,3 +125,38 @@
 - gate golden_lock 活性锚补全（50 条 observation 命题缺 liveness 字段）
 - _arch 目录归档（v2-v18 共 19 个目录，等苦力完成后做）
 - oracle 83 卡人审验证（已验 0）
+
+---
+
+## 深夜化债进展（2026-09-20 23:30-00:00）
+
+### pytest 爆红根因找到并修复（关键突破）
+- **根因**：`test_touch_normalization_same_lock` 测试期望 touch 路径的大小写变体（`Examples/atoms/file.cpp` vs `EXAMPLES/ATOMS/FILE.CPP`）撞同一把锁。但 `_norm_touch` 用 `os.path.normcase`——Windows 上转小写（NTFS 大小写不敏感），Linux 上原样返回（ext4 大小写敏感）。所以在 CI（Ubuntu）上，大小写变体不会撞锁，测试失败。
+- **修复**：测试改为平台感知——`./` 前缀和反斜杠变体在所有平台上都归一（必须撞锁）；大小写变体在 Windows 上撞锁、在 Linux 上不撞锁（符合文件系统语义）。（commit e997d14）
+- **验证**：本地 pytest 全绿，ruff 全绿，已 push。等 CI #606 验证。
+
+### 613 苦力进展（进行中，已 10+ commit）
+- **线 B（CI quality 攻坚）**：B1-B3 全部完成，**28/28 全绿**！D5 基准文件重建方案已落地（门禁改绿，未动 Book/）
+- **线 C（学习者镜像实装）**：C1-C4 全部完成——真实学习行为接入层（append-only + fail-closed）、BKT 真实递推（替换 612 simulate 模拟值）、推荐学习路径图（拓扑排序 + 掌握度过滤）、仪表盘升级（真实数据模块）
+- **线 D（论证层落地）**：D1-D3 完成——桥接边画像 + 提案 + apply（默认 dry-run）、论证图碎片化报告（现状/投影/已生效三态）、辩护链深化（多跳防御深度/单点依赖/共同依赖）
+- **线 E（信任根上链）**：OTS 工具已建（tools/ots_anchor_613.py），merkle_roots.json.ots 证明文件已生成，待 commit
+- **线 A（CI gate 攻坚）**：进行中（golden_lock OBSERVATION-LIVENESS warn=50）
+
+### 化债产出
+- **项目关键数字速查表 v3**：修正所有过时数字（commits=1424/tools=190/test_files=168/atom_cards=28/evidence_cards=57/mis=80），加入 CI 四 job 状态表、六维度评分、已知债务清单 P0/P1/P2、路线图与里程碑（commit 已生成）
+- **governance 台账更新**：纳入 613 提示词 + tool_integrity 重钉（commit f78c4f7）
+
+### 当前 CI 状态（#605 及之前，#606 含 pytest 修复待验证）
+- replay：✅ 绿
+- quality：⏳ 613 线 B 已修复（28/28 全绿），等 #606 验证
+- gate：⏳ 613 线 A 进行中
+- pytest：⏳ 平台差异已修复（e997d14），等 #606 验证
+
+### 待化债项（更新）
+- ~~pytest 平台差异~~ → ✅ 已修复（e997d14）
+- ~~D5 基准文件系统失效~~ → ✅ 613 线 B 已修复（28/28 全绿）
+- gate golden_lock 活性锚补全 → ⏳ 613 线 A 进行中
+- _arch 目录归档（v2-v18 共 19 个目录，等 613 完成后做）
+- oracle 83 卡人审验证（已验 0）
+- modify 口径冲突（keep-low vs upgrade-medium）待用户裁决
+- 人审 schema 缺 review_seconds（耗时不可回溯）
