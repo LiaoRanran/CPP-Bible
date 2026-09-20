@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """S6 变异测试：向制衡层**注入毒样例**，门禁必须全部拦截且理由正确；阴性对照必须放行。
 
 这就是 G3 验收门「3 个毒样例现场攻击制衡层」的机器化自证（不采信自报，跑给监工看）：
@@ -44,7 +44,6 @@ import atom_evidence_replay as replay  # noqa: E402
 import gate_engine as ge  # noqa: E402
 import viso_diff as vd  # noqa: E402
 from toolchain import resolve_gpp  # noqa: E402
-
 
 # ── 581：行为级覆盖率（hole A 修复）─────────────────────────────────────────
 # 旧 rule_coverage 只从源码文本 grep `"X" in who`，会被注释/字符串污染（已见 RULE-ID 幽灵，
@@ -1648,7 +1647,8 @@ def drill() -> int:
                     fp.write_text(content, encoding="utf-8")
                 for fname, fields in cards:
                     _write(tmp / "evidence" / "mem" / fname, fields)
-                globals()['_CUR_WHO'] = set(_r := sorted({f.rule_id for f in fn()})); return _r
+                globals()['_CUR_WHO'] = set(_r := sorted({f.rule_id for f in fn()}))
+                return _r
             finally:
                 ge.ROOT = orig_root
 
@@ -1700,7 +1700,8 @@ def drill() -> int:
                     _write(tmp / "evidence" / "mem" / fname, fields)
                 for fname, fields in cards:
                     _write(tmp / "atoms" / "mem" / fname, fields)
-                globals()['_CUR_WHO'] = set(_r := sorted({f.rule_id for f in fn()})); return _r
+                globals()['_CUR_WHO'] = set(_r := sorted({f.rule_id for f in fn()}))
+                return _r
             finally:
                 ge.ROOT = orig_root
 

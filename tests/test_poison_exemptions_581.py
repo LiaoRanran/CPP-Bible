@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import gate_engine as ge
 import poison_drill as pd
-import pytest
 
 REAL_EXEMPTIONS = pd.EXEMPTIONS
 

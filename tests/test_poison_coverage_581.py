@@ -18,7 +18,6 @@ from pathlib import Path
 
 import gate_engine as ge
 import poison_drill as pd
-import pytest
 
 
 def _rule_ids() -> set[str]:
