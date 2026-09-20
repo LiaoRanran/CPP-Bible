@@ -1,0 +1,84 @@
+{
+ "mis_id": "MIS-LANG-001",
+ "count": 6,
+ "records": [
+  {
+   "edge_id": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-1",
+   "source": "MIS-LANG-001",
+   "target": "ATOM-LANG-INLINE-001::prop-1",
+   "direction": "mis_to_prop",
+   "kind": "related_atom",
+   "verdict": "modify",
+   "confidence": "medium",
+   "reviewer": "LiaoRanran",
+   "reviewed_at": "2026-09-19T23:18:32",
+   "reason_len": 47,
+   "reason": "用户授权批量调整：AI预标注modify(证据较充分但偏保守)，用户授权批量调整为medium"
+  },
+  {
+   "edge_id": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-2",
+   "source": "MIS-LANG-001",
+   "target": "ATOM-LANG-INLINE-001::prop-2",
+   "direction": "mis_to_prop",
+   "kind": "related_atom",
+   "verdict": "modify",
+   "confidence": "medium",
+   "reviewer": "LiaoRanran",
+   "reviewed_at": "2026-09-19T23:18:33",
+   "reason_len": 47,
+   "reason": "用户授权批量调整：AI预标注modify(证据较充分但偏保守)，用户授权批量调整为medium"
+  },
+  {
+   "edge_id": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-3",
+   "source": "MIS-LANG-001",
+   "target": "ATOM-LANG-INLINE-001::prop-3",
+   "direction": "mis_to_prop",
+   "kind": "related_atom",
+   "verdict": "modify",
+   "confidence": "medium",
+   "reviewer": "LiaoRanran",
+   "reviewed_at": "2026-09-19T23:18:33",
+   "reason_len": 47,
+   "reason": "用户授权批量调整：AI预标注modify(证据较充分但偏保守)，用户授权批量调整为medium"
+  },
+  {
+   "edge_id": "ae-ATOM-LANG-INLINE-001::prop-1->MIS-LANG-001",
+   "source": "ATOM-LANG-INLINE-001::prop-1",
+   "target": "MIS-LANG-001",
+   "direction": "prop_to_mis",
+   "kind": "misconception_refutation",
+   "verdict": "modify",
+   "confidence": "medium",
+   "reviewer": "LiaoRanran",
+   "reviewed_at": "2026-09-19T23:29:26",
+   "reason_len": 75,
+   "reason": "用户授权批量通过：命题->MIS对称边，对应MIS->命题边已人审modify，evidence为原子卡命题文本，对称关系成立，可信度设为medium"
+  },
+  {
+   "edge_id": "ae-ATOM-LANG-INLINE-001::prop-2->MIS-LANG-001",
+   "source": "ATOM-LANG-INLINE-001::prop-2",
+   "target": "MIS-LANG-001",
+   "direction": "prop_to_mis",
+   "kind": "misconception_refutation",
+   "verdict": "modify",
+   "confidence": "medium",
+   "reviewer": "LiaoRanran",
+   "reviewed_at": "2026-09-19T23:29:26",
+   "reason_len": 75,
+   "reason": "用户授权批量通过：命题->MIS对称边，对应MIS->命题边已人审modify，evidence为原子卡命题文本，对称关系成立，可信度设为medium"
+  },
+  {
+   "edge_id": "ae-ATOM-LANG-INLINE-001::prop-3->MIS-LANG-001",
+   "source": "ATOM-LANG-INLINE-001::prop-3",
+   "target": "MIS-LANG-001",
+   "direction": "prop_to_mis",
+   "kind": "misconception_refutation",
+   "verdict": "modify",
+   "confidence": "medium",
+   "reviewer": "LiaoRanran",
+   "reviewed_at": "2026-09-19T23:29:26",
+   "reason_len": 75,
+   "reason": "用户授权批量通过：命题->MIS对称边，对应MIS->命题边已人审modify，evidence为原子卡命题文本，对称关系成立，可信度设为medium"
+  }
+ ]
+}
