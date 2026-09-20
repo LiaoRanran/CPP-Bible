@@ -1,201 +1,108 @@
-# OUT 的 7 个 MIS 人工复核清单（2026-09-20）
+﻿# OUT 7 MIS 人工复核清单（H1 债务预标注）
 
-> 基于 W2 分层判决（IN114/OUT7），这 7 个 MIS 被命题击败（OUT）。
-> 复核目的：确认这些 MIS 是否真的应该被击败，还是应该 approve（提升到 medium，同可信度不击败，变成 IN）。
-> 复核人：LiaoRanran（用户本人）
-> 复核方式：逐条阅读 MIS 内容 + 对应命题 + evidence，决定是保持 OUT 还是改判 IN（追加 approve 记录，可逆）
+> 生成时间：2026-09-20 · 来源：data/grounded_labels_w2.json + data/human_attack_edge_annotations.jsonl
+> W2 全量人审后判决：IN114/OUT7/UNDEC0 · OUT 的 7 个 MIS 全部攻击边为 modify（保持 low 置信度）
 
-## 复核操作说明
+## 关键发现
 
-1. 阅读每个 MIS 的完整内容（在 data/misconceptions/ 或 atoms/ 下）
-2. 阅读对应命题的完整内容（在 atoms/ 下）
-3. 阅读 evidence（标准引用 + 实测数据）
-4. 决定：
-   - **保持 OUT**：这个误解确实是错误的，应该被命题击败
-   - **改判 IN**：这个误解有足够技术含量，不应该被简单击败，追加 approve 记录（提升 MIS 可信度到 medium）
-5. 如果改判 IN，用 tools/human_review_cli.py approve 追加记录（append-only，可逆）
+这 7 个 MIS 之所以被 W2 判为 OUT（被击败），**不是因为它们的攻击被拒绝**，而是因为它们的所有攻击边都被标记为 **modify**（保持 low 置信度）。
 
-## 复核清单
+在 W2 可信度加权击败模型中：
+- **approve**（升到 medium）：攻击边有足够可信度，可能击败命题
+- **modify**（保持 low，默认口径）：攻击边可信度不足，无法击败命题，反而被命题的辩护链击败 ⇒ MIS 被判 OUT
 
-### 1. MIS-LANG-001（ODR/inline）—— 优先级：最高（6 条 modify，最多）
+**裁决问题**：这 7 个 MIS 的攻击边是否应该从 modify 改为 approve？
+- 如果改为 approve（升到 medium），这些 MIS 可能从 OUT 变为 IN，W2 判决会改变
+- 如果保持 modify（保持 low），这些 MIS 继续是 OUT，当前判决不变
 
-| 项目 | 内容 |
-|---|---|
-| MIS ID | MIS-LANG-001 |
-| 主题 | ODR（One Definition Rule）/ inline |
-| 当前状态 | OUT（low，被 3 个命题击败） |
-| modify 边数 | 6 条（全库最多） |
-| 击败它的命题 | ATOM-LANG-INLINE-001::prop-1/2/3 |
-| 对应原子卡 | ATOM-LANG-INLINE-001（inline 与 ODR） |
+## 7 个 OUT MIS 明细
 
-**复核要点**：
-- [ ] MIS-LANG-001 的具体内容是什么？（请阅读完整文本）
-- [ ] 它关于 ODR/inline 的说法是否有部分合理性？
-- [ ] 6 条 modify 边的原因是什么？（人审时为什么选 modify 而不是 approve？）
-- [ ] 如果改判 IN，是否会影响其他节点的判决？（预计不会，因为只是提升这个 MIS 的可信度）
+### MIS-LANG-001
 
-**建议**：重点复核。MIS-LANG-001 是 modify 最多的 MIS（6 条），说明人审时认为它有较多部分合理性。ODR/inline 是 C++ 中最容易混淆的概念之一，误解可能有一定道理。
+- **W2 判决**：OUT（被击败）
+- **置信度**：low（credibility=1）
+- **攻击边数**：6（全部 action=modify）
+- **辩护者**：
+- **被击败的攻击者**：
+- **裁决建议**：需人审判断该 MIS 的攻击是否真实成立。若真实成立，建议将 modify 改为 approve（升到 medium）；若攻击不成立或证据不足，保持 modify
 
----
+### MIS-MEM-001
 
-### 2. MIS-UB-008（reinterpret_cast 类型双关）—— 优先级：高（4 条 modify，第二多）
+- **W2 判决**：OUT（被击败）
+- **置信度**：low（credibility=1）
+- **攻击边数**：6（全部 action=modify）
+- **辩护者**：MIS-MEM-002, MIS-MEM-004, MIS-MEM-005, MIS-MEM-012, MIS-MEM-017, MIS-MEM-019
+- **被击败的攻击者**：
+- **为什么 OUT**：被 6 个辩护者（IN 命题/MIS）的辩护链击败；攻击边保持 low 置信度，不足以突破辩护
+- **裁决建议**：需人审判断该 MIS 的攻击是否真实成立。若真实成立，建议将 modify 改为 approve（升到 medium）；若攻击不成立或证据不足，保持 modify
 
-| 项目 | 内容 |
-|---|---|
-| MIS ID | MIS-UB-008 |
-| 主题 | reinterpret_cast 类型双关（type punning） |
-| 当前状态 | OUT（low，被 2 个命题击败） |
-| modify 边数 | 4 条（全库第二多） |
-| 击败它的命题 | ATOM-UB-GRAY-001::prop-1/2 |
-| 对应原子卡 | ATOM-UB-GRAY-001（UB 的灰色地带） |
+### MIS-MEM-003
 
-**复核要点**：
-- [ ] MIS-UB-008 关于类型双关的说法是什么？
-- [ ] 它是否忽略了 C++ 标准中类型双关是 UB（除了 char*）？
-- [ ] 它是否提到了 GCC/Clang 的 -fstrict-aliasing 选项？
-- [ ] 实际代码中类型双关很常见（如网络协议解析），这个误解是否有实践合理性？
+- **W2 判决**：OUT（被击败）
+- **置信度**：low（credibility=1）
+- **攻击边数**：6（全部 action=modify）
+- **辩护者**：MIS-MEM-002, MIS-MEM-004, MIS-MEM-005, MIS-MEM-012, MIS-MEM-017, MIS-MEM-019
+- **被击败的攻击者**：
+- **为什么 OUT**：被 6 个辩护者（IN 命题/MIS）的辩护链击败；攻击边保持 low 置信度，不足以突破辩护
+- **裁决建议**：需人审判断该 MIS 的攻击是否真实成立。若真实成立，建议将 modify 改为 approve（升到 medium）；若攻击不成立或证据不足，保持 modify
 
-**建议**：重点复核。类型双关是 C++ 中最有争议的 UB 之一，标准说是 UB，但实际代码中大量使用，且编译器有选项控制。误解可能有部分实践合理性。
+### MIS-UB-001
 
----
+- **W2 判决**：OUT（被击败）
+- **置信度**：low（credibility=1）
+- **攻击边数**：4（全部 action=modify）
+- **辩护者**：MIS-CONC-001, MIS-UB-002, MIS-UB-003, MIS-UB-012, MIS-UB-013, MIS-UB-015
+- **被击败的攻击者**：
+- **为什么 OUT**：被 6 个辩护者（IN 命题/MIS）的辩护链击败；攻击边保持 low 置信度，不足以突破辩护
+- **裁决建议**：需人审判断该 MIS 的攻击是否真实成立。若真实成立，建议将 modify 改为 approve（升到 medium）；若攻击不成立或证据不足，保持 modify
 
-### 3. MIS-MEM-001（移动语义）—— 优先级：中（3 条 modify）
+### MIS-UB-004
 
-| 项目 | 内容 |
-|---|---|
-| MIS ID | MIS-MEM-001 |
-| 主题 | 移动语义（move semantics） |
-| 当前状态 | OUT（low，被 3 个命题击败） |
-| modify 边数 | 3 条 |
-| 击败它的命题 | ATOM-MEM-MOVE-002::prop-1/2/3 |
-| 对应原子卡 | ATOM-MEM-MOVE-002（移动后源对象状态） |
+- **W2 判决**：OUT（被击败）
+- **置信度**：low（credibility=1）
+- **攻击边数**：4（全部 action=modify）
+- **辩护者**：MIS-CONC-001, MIS-UB-002, MIS-UB-003, MIS-UB-012, MIS-UB-013, MIS-UB-015
+- **被击败的攻击者**：
+- **为什么 OUT**：被 6 个辩护者（IN 命题/MIS）的辩护链击败；攻击边保持 low 置信度，不足以突破辩护
+- **裁决建议**：需人审判断该 MIS 的攻击是否真实成立。若真实成立，建议将 modify 改为 approve（升到 medium）；若攻击不成立或证据不足，保持 modify
 
-**复核要点**：
-- [ ] MIS-MEM-001 关于移动语义的说法是什么？
-- [ ] 它是否说"移动后源对象一定是有效但未指定状态"？
-- [ ] 它是否忽略了某些类型（如 std::unique_ptr）移动后源对象一定是 nullptr？
-- [ ] C++ 标准确实说移动后源对象是"有效但未指定状态"，这个说法本身是否正确？
+### MIS-UB-008
 
-**建议**：复核。C++ 标准关于移动后源对象的说法确实是"有效但未指定状态"，但某些类型有更明确的保证。误解可能是"以偏概全"（把通用规则当成所有类型的规则），但通用规则本身是正确的。
+- **W2 判决**：OUT（被击败）
+- **置信度**：low（credibility=1）
+- **攻击边数**：4（全部 action=modify）
+- **辩护者**：MIS-CONC-001, MIS-UB-002, MIS-UB-003, MIS-UB-012, MIS-UB-013, MIS-UB-015
+- **被击败的攻击者**：
+- **为什么 OUT**：被 6 个辩护者（IN 命题/MIS）的辩护链击败；攻击边保持 low 置信度，不足以突破辩护
+- **裁决建议**：需人审判断该 MIS 的攻击是否真实成立。若真实成立，建议将 modify 改为 approve（升到 medium）；若攻击不成立或证据不足，保持 modify
 
----
+### MIS-UB-014
 
-### 4. MIS-MEM-003（移动语义）—— 优先级：中（3 条 modify）
+- **W2 判决**：OUT（被击败）
+- **置信度**：low（credibility=1）
+- **攻击边数**：4（全部 action=modify）
+- **辩护者**：MIS-CONC-001, MIS-UB-002, MIS-UB-003, MIS-UB-012, MIS-UB-013, MIS-UB-015
+- **被击败的攻击者**：
+- **为什么 OUT**：被 6 个辩护者（IN 命题/MIS）的辩护链击败；攻击边保持 low 置信度，不足以突破辩护
+- **裁决建议**：需人审判断该 MIS 的攻击是否真实成立。若真实成立，建议将 modify 改为 approve（升到 medium）；若攻击不成立或证据不足，保持 modify
 
-| 项目 | 内容 |
-|---|---|
-| MIS ID | MIS-MEM-003 |
-| 主题 | 移动语义（std::move） |
-| 当前状态 | OUT（low，被 3 个命题击败） |
-| modify 边数 | 3 条 |
-| 击败它的命题 | ATOM-MEM-MOVE-002::prop-1/2/3 |
-| 对应原子卡 | ATOM-MEM-MOVE-002（移动后源对象状态） |
+## 裁决影响预估
 
-**复核要点**：
-- [ ] MIS-MEM-003 关于 std::move 的说法是什么？
-- [ ] 它是否说"std::move 会移动对象"？（实际上 std::move 只是类型转换，不移动）
-- [ ] 这个误解是否明确错误？（如果是，保持 OUT）
+如果将这 7 个 MIS 的全部攻击边从 modify 改为 approve（升到 medium）：
+- W2 判决可能从 IN114/OUT7 变为 IN121/OUT0（所有 MIS 都变为 IN）
+- 这意味着没有任何误解被判定为'被击败'，论证框架的区分度下降
+- 建议**不要全部改为 approve**，而是逐条人审，只对真实成立的攻击改为 approve
 
-**建议**：这个误解很可能是明确错误的（std::move 不移动，只是类型转换），建议保持 OUT。但仍需阅读完整内容确认。
+## 人审操作指南
 
----
+1. 逐条阅读每个 MIS 的攻击边（见 data/human_attack_edge_annotations.jsonl）
+2. 判断该攻击是否真实成立（即该 MIS 是否真的驳斥了对应命题）
+3. 若真实成立：使用 attack_edge_review.py approve 命令将 modify 改为 approve
+4. 若不成立或证据不足：保持 modify
+5. 全部裁决后，重新运行 weighted_af_solver.py 生成新的 W2 判决
 
-### 5. MIS-UB-001（未定义行为）—— 优先级：低（1 条 modify）
+## 注意
 
-| 项目 | 内容 |
-|---|---|
-| MIS ID | MIS-UB-001 |
-| 主题 | 未定义行为（UB）的后果 |
-| 当前状态 | OUT（low，被 2 个命题击败） |
-| modify 边数 | 1 条 |
-| 击败它的命题 | ATOM-UB-GRAY-001::prop-1/2 |
-| 对应原子卡 | ATOM-UB-GRAY-001（UB 的灰色地带） |
-
-**复核要点**：
-- [ ] MIS-UB-001 关于 UB 后果的说法是什么？
-- [ ] 它是否说"UB 的后果在特定实现下可预测"？
-- [ ] 这个说法是否有部分合理性？（如 GCC 的 -fwrapv 使有符号溢出定义为回绕）
-- [ ] 作为通用规则，这个说法是否错误？（UB 的本质就是不可预测）
-
-**建议**：这个误解有部分实践合理性（特定编译器选项下 UB 可预测），但作为通用规则是错误的。modify 边数只有 1 条，说明人审时认为它大部分是错误的。建议保持 OUT。
-
----
-
-### 6. MIS-UB-004（未定义行为）—— 优先级：低（1 条 modify）
-
-| 项目 | 内容 |
-|---|---|
-| MIS ID | MIS-UB-004 |
-| 主题 | 未定义行为（UB） |
-| 当前状态 | OUT（low，被 2 个命题击败） |
-| modify 边数 | 1 条 |
-| 击败它的命题 | ATOM-UB-GRAY-001::prop-1/2 |
-| 对应原子卡 | ATOM-UB-GRAY-001（UB 的灰色地带） |
-
-**复核要点**：
-- [ ] 同 MIS-UB-001，阅读完整内容确认
-
-**建议**：同 MIS-UB-001，建议保持 OUT。
-
----
-
-### 7. MIS-UB-014（未定义行为）—— 优先级：低（1 条 modify）
-
-| 项目 | 内容 |
-|---|---|
-| MIS ID | MIS-UB-014 |
-| 主题 | 未定义行为（UB） |
-| 当前状态 | OUT（low，被 2 个命题击败） |
-| modify 边数 | 1 条 |
-| 击败它的命题 | ATOM-UB-GRAY-001::prop-1/2 |
-| 对应原子卡 | ATOM-UB-GRAY-001（UB 的灰色地带） |
-
-**复核要点**：
-- [ ] 同 MIS-UB-001，阅读完整内容确认
-
-**建议**：同 MIS-UB-001，建议保持 OUT。
-
----
-
-## 复核优先级排序
-
-| 优先级 | MIS ID | 主题 | modify 边数 | 预估复核时间 |
-|---|---|---|---:|---:|
-| P0（最高） | MIS-LANG-001 | ODR/inline | 6 | ~10 分钟 |
-| P0（最高） | MIS-UB-008 | reinterpret_cast 类型双关 | 4 | ~10 分钟 |
-| P1（中） | MIS-MEM-001 | 移动语义 | 3 | ~5 分钟 |
-| P1（中） | MIS-MEM-003 | 移动语义（std::move） | 3 | ~5 分钟 |
-| P2（低） | MIS-UB-001 | UB 后果 | 1 | ~3 分钟 |
-| P2（低） | MIS-UB-004 | UB | 1 | ~3 分钟 |
-| P2（低） | MIS-UB-014 | UB | 1 | ~3 分钟 |
-| **合计** | | | **19** | **~39 分钟** |
-
-## 复核后的影响预测
-
-| 复核结果 | W2 判决变化 | 说明 |
-|---|---|---|
-| 全部保持 OUT | IN114/OUT7（不变） | 所有误解都确实错误 |
-| MIS-LANG-001 改判 IN | IN115/OUT6 | ODR/inline 误解有部分合理性 |
-| MIS-UB-008 改判 IN | IN115/OUT6 | 类型双关误解有实践合理性 |
-| 两个都改判 IN | IN116/OUT5 | 两个最有争议的误解都改判 |
-| 全部改判 IN | IN121/OUT0 | 所有误解都有足够技术含量（不太可能） |
-
-**最可能的结果**：MIS-LANG-001 和 MIS-UB-008 改判 IN（IN116/OUT5），其他 5 个保持 OUT。因为这两个是 modify 最多的，说明人审时认为它们有较多部分合理性。
-
-## 复核记录模板
-
-复核完成后，在此记录：
-
-| MIS ID | 复核结果 | 原因 | 操作 |
-|---|---|---|---|
-| MIS-LANG-001 | 保持 OUT / 改判 IN | | |
-| MIS-UB-008 | 保持 OUT / 改判 IN | | |
-| MIS-MEM-001 | 保持 OUT / 改判 IN | | |
-| MIS-MEM-003 | 保持 OUT / 改判 IN | | |
-| MIS-UB-001 | 保持 OUT / 改判 IN | | |
-| MIS-UB-004 | 保持 OUT / 改判 IN | | |
-| MIS-UB-014 | 保持 OUT / 改判 IN | | |
-
----
-
-*生成时间：2026-09-20 / 基于 W2 分层判决 IN114/OUT7 / 复核人：LiaoRanran*
+- 这是人审权力，系统不自动裁决
+- modify 口径冲突（keep-low vs upgrade-medium）是 610 发现的 P0 待裁决项，本清单按默认 keep-low 口径分析
+- 建议先裁决 modify 口径冲突，再做 OUT 复核
