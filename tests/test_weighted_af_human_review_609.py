@@ -6,8 +6,12 @@
 权重规则（只改**权重输入**，W2 击败规则 `cred(A) > cred(B)` 一行未动）：
     approve ⇒ 可信度升一级（当前全盘 low ⇒ low→medium）
     reject  ⇒ 从攻击图移除
-    modify  ⇒ 直接取 annotation.confidence（high/medium/low）
+    modify  ⇒ **按 `--modify-mode` 决定**（611 B1 起默认 `keep-low` = 不生效；`upgrade-medium` 才落档）
     未审    ⇒ 原样保留
+
+> ⚠️ 611 B1 改了 modify 的**默认**口径（`upgrade-medium` → `keep-low`，对齐入库权威产物）。
+> 因此需要"modify 落档"语义的用例必须**显式**传 `modify_mode="upgrade-medium"`
+> —— 见 `test_modify_sets_exact_confidence_and_kind_normalization`。
 
 实测翻转（**真实跑出来的数，不是估计**）：
   * 单条 approve（`ae-ATOM-CONC-RACE-001::prop-1->MIS-CONC-003`）⇒ 该边 low→medium
@@ -148,14 +152,19 @@ def test_cli_stats_reports_progress_and_influence(tmp_path: Path, capsys):
 
 
 def test_modify_sets_exact_confidence_and_kind_normalization(tmp_path: Path):
-    """modify 直接落档；且 596 的 `action` 字段必须被归一化识别（读侧兼容）。"""
+    """modify 落档（**显式 upgrade-medium**）；且 596 的 `action` 字段必须被归一化识别。
+
+    611 B1 起 modify 的**默认**是 `keep-low`（不落档）⇒ 本用例显式要 `upgrade-medium`
+    才测得到"直接落档"这条语义（默认档由 611 的新用例覆盖）。
+    """
     old = [_rec(FIRST_ID, "modify", confidence="high")]
-    eff, changes = w2.reviewed_edges(EDGES, old)
+    eff, changes = w2.reviewed_edges(EDGES, old, modify_mode="upgrade-medium")
     assert changes[FIRST_ID]["new_confidence"] == "high"
 
     legacy = [{"edge_id": FIRST_ID, "action": "modify", "new_confidence": "medium",
                "reviewer": "human", "timestamp": "2026-09-19T10:00:00+08:00", "reason": REASON}]
     ann = _ann(tmp_path / "legacy.jsonl", legacy)
-    eff2, ch2 = w2.reviewed_edges(EDGES, hrc.load_annotations(ann))
+    eff2, ch2 = w2.reviewed_edges(EDGES, hrc.load_annotations(ann),
+                                  modify_mode="upgrade-medium")
     assert ch2[FIRST_ID]["new_confidence"] == "medium", "596 action 字段应被归一化识别"
     assert len(eff2) == 388

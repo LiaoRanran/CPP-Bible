@@ -269,17 +269,35 @@ REVIEW_RULES = {
     # kind      → (动作, 说明)
     "approve": ("promote", "人审确认攻击边成立 ⇒ 可信度升一级（low→medium→high→high，档位见 PROMOTE）"),
     "reject":  ("drop",    "人审拒绝攻击边 ⇒ 从攻击图中**移除**（不再参与击败）"),
-    "modify":  ("set",     "人审改档 ⇒ 直接用 annotation.confidence 替换（high/medium/low）"),
+    "modify":  ("set",     "人审改档 ⇒ **按 `--modify-mode` 决定是否采纳**（见 MODIFY_MODES）"),
 }
 PROMOTE = {"low": "medium", "medium": "high", "high": "high"}
 
+# ── 611 B1：modify 口径**双模式**（口径冲突不裁决，两档都能跑，默认对齐入库权威）──────────
+# 背景（610 交人项 ①）：388 条人审里 34 条 modify 的 `new_confidence` **全是 medium**。
+#   * `keep-low`（**默认**）：modify **不改变生效权重**（保持该边原有的 low）——
+#     这是 `data/grounded_labels_w2.json` 的实际生成口径 ⇒ IN114/OUT7/击败边 17；
+#   * `upgrade-medium`：modify 采纳 `confidence`/`new_confidence`（609 A3 的口径）⇒ IN121/OUT0/击败边 0。
+# 为什么默认取 `keep-low`：**默认值应该与入库权威产物一致**（否则"跑一遍默认"就得到与冻结产物
+#   不同的图）。两档都在，谁对谁错**由人裁决**（611 只做工具支持，不统一口径）。
+MODIFY_MODES = ("keep-low", "upgrade-medium")
+DEFAULT_MODIFY_MODE = "keep-low"
+
 
 def reviewed_edges(edges: list[dict], annotations: list[dict], *,
-                   latest: dict[str, dict] | None = None) -> tuple[list[dict], dict]:
+                   latest: dict[str, dict] | None = None,
+                   modify_mode: str = DEFAULT_MODIFY_MODE) -> tuple[list[dict], dict]:
     """按人审结果生成**生效边**；返回 (生效边, 变更明细{edge_id: {...}})。
 
     同一条边多次审查 ⇒ 取**最后一条**（`hrc.latest_by_edge`），历史仍留在文件里可追溯。
+
+    `modify_mode`（611 B1）：
+      * `keep-low` —— modify **不生效**（权重保持原值）；变更明细里记 `effective=False`，
+        好让 `diff` **不把它算成"导致翻转的人审"**（它确实没改任何东西）；
+      * `upgrade-medium` —— modify 采纳 `confidence`/`new_confidence`（609 A3 原语义）。
     """
+    if modify_mode not in MODIFY_MODES:
+        raise ValueError(f"modify_mode 须 ∈ {MODIFY_MODES}，实得 {modify_mode!r}")
     import human_review_cli as hrc  # 局部导入：596 的调用路径不该被迫加载 609 依赖
 
     last = latest if latest is not None else hrc.latest_by_edge(annotations)
@@ -296,12 +314,26 @@ def reviewed_edges(edges: list[dict], annotations: list[dict], *,
         old_conf = str(e.get("confidence"))
         if rule == "drop":
             changes[eid] = {"action": "drop", "kind": kind, "old_confidence": old_conf,
-                            "new_confidence": None, "why": why,
+                            "new_confidence": None, "why": why, "effective": True,
                             "review_reason": str(a.get("reason", ""))}
             continue
         if rule == "promote":
             new_conf = PROMOTE.get(old_conf, old_conf)
         elif rule == "set":
+            if modify_mode == "keep-low":
+                # 不生效：权重不动，但**留下痕迹**（人审过、理由是什么），便于复核
+                ne = dict(e)
+                ne["human_reviewed"] = kind
+                ne["review_reason"] = str(a.get("reason", ""))
+                ne["modify_ignored_by"] = modify_mode
+                changes[eid] = {"action": "keep", "kind": kind, "old_confidence": old_conf,
+                                "new_confidence": old_conf, "effective": False,
+                                "why": "keep-low 口径：modify 不改变生效权重（与入库权威产物一致）",
+                                "declared_confidence": str(a.get("confidence")
+                                                           or a.get("new_confidence") or ""),
+                                "review_reason": str(a.get("reason", ""))}
+                out.append(ne)
+                continue
             # 兼容 596 的 `new_confidence`（同 `attack_edge_review.py` 的写法）
             new_conf = str(a.get("confidence") or a.get("new_confidence") or old_conf)
         else:                                    # 未知 kind ⇒ fail-closed：保持原权重不动
@@ -312,7 +344,7 @@ def reviewed_edges(edges: list[dict], annotations: list[dict], *,
         ne["human_reviewed"] = kind
         ne["review_reason"] = str(a.get("reason", ""))
         changes[eid] = {"action": rule, "kind": kind, "old_confidence": old_conf,
-                        "new_confidence": new_conf, "why": why,
+                        "new_confidence": new_conf, "why": why, "effective": True,
                         "review_reason": str(a.get("reason", ""))}
         out.append(ne)
     return out, changes
@@ -327,19 +359,25 @@ def review_progress(edges: list[dict], annotations: list[dict]) -> dict:
             "reviewed_rate": round(done / len(edges), 4) if edges else None}
 
 
-def solve_reviewed(edges: list[dict], annotations: list[dict]) -> tuple[dict, dict]:
+def solve_reviewed(edges: list[dict], annotations: list[dict], *,
+                   modify_mode: str = DEFAULT_MODIFY_MODE) -> tuple[dict, dict]:
     """端到端：原始候选边 + 人审 ⇒ 新 W2 doc，连同变更明细。"""
-    eff, changes = reviewed_edges(edges, annotations)
+    eff, changes = reviewed_edges(edges, annotations, modify_mode=modify_mode)
     return solve(eff), changes
 
 
 def _incident(node: str, changes: dict[str, dict], edges: list[dict]) -> list[str]:
-    """某节点涉及的、被人审动过的边 id（用于把翻转追到边级）。"""
+    """某节点涉及的、**真正动了权重**的人审边 id（用于把翻转追到边级）。
+
+    611 B1：`effective=False` 的变更（keep-low 下被忽略的 modify）**不算触发者** ——
+    它没改任何权重，把它算进去会把反转归因到"其实什么都没做"的人审上。
+    """
     out = []
     for e in edges:
         s, t = str(e["source"]), str(e["target"])
-        if node in (s, t) and str(e["id"]) in changes:
-            out.append(str(e["id"]))
+        eid = str(e["id"])
+        if node in (s, t) and eid in changes and changes[eid].get("effective", True):
+            out.append(eid)
     return sorted(out)
 
 
@@ -416,6 +454,9 @@ def main(argv: list[str] | None = None) -> int:
                         help="启用**已审**攻击边：approve 升一级 / reject 剔除 / modify 指定档（默认开）")
         sp.add_argument("--no-human-reviewed", dest="human", action="store_false",
                         help="只用原始候选边（忽略人审标注）")
+        sp.add_argument("--modify-mode", choices=MODIFY_MODES, default=DEFAULT_MODIFY_MODE,
+                        help=f"modify 档位口径（默认 {DEFAULT_MODIFY_MODE} = 入库权威产物口径；"
+                             f"{' / '.join(MODIFY_MODES)}）")
         if name == "diff":
             sp.add_argument("--baseline", required=True,
                             help="对比基线 W2 文档（通常是未人审的 grounded_labels_w2.json）")
@@ -463,13 +504,16 @@ def main(argv: list[str] | None = None) -> int:
     changes: dict[str, dict] = {}
     edges = raw_edges
     if a.human and anns:
-        edges, changes = reviewed_edges(raw_edges, anns)
+        mode = getattr(a, "modify_mode", DEFAULT_MODIFY_MODE)
+        edges, changes = reviewed_edges(raw_edges, anns, modify_mode=mode)
         prog = review_progress(raw_edges, anns)
+        noop = sum(1 for v in changes.values() if not v.get("effective", True))
         # 走 stderr：`--json` 时 stdout 必须是**纯 JSON**（可被 jq / json.loads 直接吃）
         print(f"[w2] 人审标注生效：历史 {prog['annotations']} 条 · 已审边 "
               f"{prog['reviewed']}/{prog['total']}（pending {prog['pending']}）"
               f" · 边 {len(raw_edges)} ⇒ {len(edges)}（剔除 "
-              f"{len(raw_edges) - len(edges)} 条被拒边；approve 升一级 / modify 改档）",
+              f"{len(raw_edges) - len(edges)} 条被拒边；approve 升一级 / "
+              f"modify 口径 {mode}，其中 {noop} 条 modify 未生效）",
               file=sys.stderr)
     doc = solve(edges)
 
@@ -504,7 +548,10 @@ def main(argv: list[str] | None = None) -> int:
             prog = review_progress(raw_edges, anns)
             base = solve(raw_edges)
             influence = diff_verdicts(base, doc, edges=raw_edges, changes=changes)
+            ineff = [k for k, v in changes.items() if not v.get("effective", True)]
             extra = {"review_progress": prog, "review_changes": len(changes),
+                     "ineffective_changes": len(ineff),
+                     "modify_mode": getattr(a, "modify_mode", DEFAULT_MODIFY_MODE),
                      "flipped_nodes": influence["flipped"], "flips": influence["flips"]}
         payload = {**st, **extra}
         if a.json:
@@ -520,7 +567,9 @@ def main(argv: list[str] | None = None) -> int:
             p = extra["review_progress"]
             print(f"[w2] 人审进度 {p['reviewed']}/{p['total']}"
                   f"（pending {p['pending']} · 历史 {p['annotations']} 条）"
-                  f" · 生效变更 {extra['review_changes']} 条边")
+                  f" · 变更 {extra['review_changes']} 条边"
+                  f"（其中未生效 {extra['ineffective_changes']} 条 · modify 口径 "
+                  f"{extra['modify_mode']}）")
             print(f"[w2] 判决影响：{extra['flipped_nodes']} 个节点翻转")
             for f in extra["flips"][:20]:
                 print(f"  - {f['node_id']}（{f['node_type']}）：{f['old']} → {f['new']}"

@@ -22,6 +22,55 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 VERSION = "1.0"
 
 
+def two_mode_verdicts() -> dict:
+    """611 B1：两档 modify 口径各现算一遍 W2 判决 + 差值（**纯读**，不改任何文件）。
+
+    返回 `{"modes": {keep-low: {...}, upgrade-medium: {...}}, "default": ...,
+    "divergence": bool, "divergence_detail": str}`；任一档算不出来 ⇒ 抛异常（调用方记账）。
+    """
+    import human_review_cli as hrc
+    import weighted_af_solver as w2
+
+    edges = w2.load_edges()
+    anns = hrc.load_annotations()
+    modes: dict[str, dict] = {}
+    for mode in w2.MODIFY_MODES:
+        eff, _ch = w2.reviewed_edges(edges, anns, modify_mode=mode)
+        d = w2.solve(eff)
+        modes[mode] = {"in": d["summary"]["IN"], "out": d["summary"]["OUT"],
+                       "undec": d["summary"]["UNDEC"],
+                       "defeating_edges": d["defeating_edges"],
+                       "caliber": ("modify 保持 low（入库权威口径）" if mode == "keep-low"
+                                   else "modify ⇒ new_confidence（609 A3 口径）")}
+    lo, up = modes["keep-low"], modes["upgrade-medium"]
+    diff = {"in": up["in"] - lo["in"], "out": up["out"] - lo["out"],
+            "defeating_edges": up["defeating_edges"] - lo["defeating_edges"]}
+    return {"modes": modes, "default": w2.DEFAULT_MODIFY_MODE,
+            "divergence": modes["keep-low"] != modes["upgrade-medium"],
+            "divergence_detail": {k: v for k, v in diff.items() if v},
+            "note": ("两档口径判决不同 ⇒ 口径裁决未定（谁对由人定，工具只呈现）；"
+                     "引用 W2 数字必须标明用的哪一档") if modes["keep-low"] != modes["upgrade-medium"]
+            else "两档口径判决一致 ⇒ 该冲突对本图不产生影响"}
+
+
+def collect_modify_mode(metrics: dict, notes: dict | None = None) -> dict:
+    """611 B1：modify 口径指标（当前默认档 / 两档判决 / 分歧差值）。
+
+    为什么单列：口径冲突（610 交人项 ①）在裁决前必须**一直可见** —— 把它做成指标，
+    每次采集都会把"两档差多少"写进台账，避免"默认值悄悄换掉却没人发现"。
+    """
+    try:
+        out = two_mode_verdicts()
+        return {"current_mode": out["default"], "modes": out["modes"],
+                "divergence": out["divergence"],
+                "divergence_detail": out["divergence_detail"], "note": out["note"],
+                "source": "tools/weighted_af_solver.py --modify-mode（611 B1）"}
+    except Exception as exc:                     # noqa: BLE001
+        if notes is not None:
+            notes["modify_mode_611"] = f"采集失败：{type(exc).__name__}: {exc}"
+        return {"error": f"{type(exc).__name__}: {exc}"}
+
+
 def collect_grounded_status(metrics: dict, notes: dict | None = None) -> dict:
     """D1：W2 判决状态（产物权威值 + 求解器现算值 + 分歧标记）。"""
     try:
@@ -40,26 +89,44 @@ def collect_grounded_status(metrics: dict, notes: dict | None = None) -> dict:
             "source": "data/grounded_labels_w2.json（入库 W2 产物）",
             "artifact_path": str(art_path.relative_to(ROOT).as_posix()),
         }
-        try:                                   # 现算一遍（分歧显形，不用于覆盖权威值）
+        try:                                   # 现算**两口径**（分歧显形，不用于覆盖权威值）
             edges = w2.load_edges()
             anns = hrc.load_annotations()
-            eff, _changes = w2.reviewed_edges(edges, anns)
-            doc = w2.solve(eff)
-            recompute = {"in": doc["summary"]["IN"], "out": doc["summary"]["OUT"],
-                         "undec": doc["summary"]["UNDEC"],
-                         "defeating_edges": doc["defeating_edges"],
-                         "caliber": "modify ⇒ new_confidence（609 A3 口径）"}
-            out["solver_recompute"] = recompute
-            same = (recompute["in"] == out["in"] and recompute["out"] == out["out"]
-                    and recompute["defeating_edges"] == out["defeating_edges"])
-            out["divergence"] = not same
+            modes: dict[str, dict] = {}
+            for mode in w2.MODIFY_MODES:
+                eff, _ch = w2.reviewed_edges(edges, anns, modify_mode=mode)
+                d = w2.solve(eff)
+                modes[mode] = {"in": d["summary"]["IN"], "out": d["summary"]["OUT"],
+                               "undec": d["summary"]["UNDEC"],
+                               "defeating_edges": d["defeating_edges"],
+                               "caliber": ("modify 保持 low（入库权威口径）" if mode == "keep-low"
+                                           else "modify ⇒ new_confidence（609 A3 口径）")}
+            out["modes"] = modes
+            out["default_modify_mode"] = w2.DEFAULT_MODIFY_MODE
+            # 兼容 610 的字段语义：`solver_recompute` = **609 A3 口径**现算（611 B1 起它
+            # 不再是默认档 ⇒ 默认档单列在 `solver_recompute_default`，避免"默认"被静默改写）
+            out["solver_recompute"] = modes["upgrade-medium"]
+            out["solver_recompute_default"] = modes[w2.DEFAULT_MODIFY_MODE]
+            up = modes["upgrade-medium"]
+            same = (up["in"] == out["in"] and up["out"] == out["out"]
+                    and up["defeating_edges"] == out["defeating_edges"])
+            # `divergence` = **两口径判决是否不同**（口径冲突信号，与"默认档是否等于权威产物"分开记）
+            out["divergence"] = modes["keep-low"] != modes["upgrade-medium"]
+            out["default_matches_artifact"] = (
+                modes[w2.DEFAULT_MODIFY_MODE]["in"] == out["in"]
+                and modes[w2.DEFAULT_MODIFY_MODE]["out"] == out["out"]
+                and modes[w2.DEFAULT_MODIFY_MODE]["defeating_edges"] == out["defeating_edges"])
+            out["divergence_note"] = (
+                "口径分歧（610 A1 实测，611 B1 起**两档并存**）：入库产物用「modify 保持 low」⇒ "
+                f"IN{out['in']}/OUT{out['out']}/击败 {out['defeating_edges']}；"
+                f"「modify ⇒ new_confidence」⇒ IN{up['in']}/OUT{up['out']}/击败 "
+                f"{up['defeating_edges']}。当前默认档 `{w2.DEFAULT_MODIFY_MODE}` 与入库产物"
+                f"{'一致' if out['default_matches_artifact'] else '**不一致**'}；"
+                "需监工裁决，本采集不擅自统一。")
             if not same:
-                out["divergence_note"] = (
-                    "口径分歧（610 A1 实测）：入库产物用「modify 保持 low」⇒ "
-                    f"IN{out['in']}/OUT{out['out']}/击败 {out['defeating_edges']}；"
-                    f"weighted_af_solver.reviewed_edges 用「modify ⇒ new_confidence」⇒ "
-                    f"IN{recompute['in']}/OUT{recompute['out']}/击败 "
-                    f"{recompute['defeating_edges']}。需监工裁决，本采集不擅自统一。")
+                out["divergence_detail"] = (
+                    f"两档差 {up['in'] - out['in']} 个 IN / {up['out'] - out['out']} 个 OUT / "
+                    f"{up['defeating_edges'] - out['defeating_edges']} 条击败边")
         except Exception as exc:                 # noqa: BLE001
             out["solver_recompute"] = {"error": f"{type(exc).__name__}: {exc}"}
             out["divergence"] = None
