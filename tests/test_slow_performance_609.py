@@ -1,6 +1,5 @@
-﻿import pytest
+import pytest
 
-pytestmark = pytest.mark.slow
 
 """609 B1 · task_queue 连接池改造的性能回归锁 + 判决一致性锁。
 
@@ -13,6 +12,10 @@ pytestmark = pytest.mark.slow
     （608 D2 基线：20,952 次连接生命周期 ≈ 72% 耗时）
 """
 from __future__ import annotations
+
+import pytest
+
+pytestmark = pytest.mark.slow
 
 import importlib.util
 import tempfile

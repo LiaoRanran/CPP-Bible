@@ -1,6 +1,5 @@
-﻿import pytest
+import pytest
 
-pytestmark = pytest.mark.slow
 
 """608 D2 · slow 测试性能回归锁（锁定 test_task_queue_stateful 跑批时间）。
 
@@ -13,6 +12,10 @@ pytestmark = pytest.mark.slow
 本锁不重跑 70s 全量（避免 flaky 与拖慢门禁）；预算锁是无状态硬断言，探针只用 5 例。
 """
 from __future__ import annotations
+
+import pytest
+
+pytestmark = pytest.mark.slow
 
 import importlib.util
 import time
