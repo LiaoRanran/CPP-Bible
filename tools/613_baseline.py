@@ -138,9 +138,10 @@ def baseline_learner_twin() -> list[str]:
             keys.update(r.keys())
         L.append(f"- 记录数：**{len(st)}** ｜ 字段：{dict(keys)}")
         kcs = {r.get("kc_id") for r in st if r.get("kc_id")}
-        mastered = [r for r in st if float(r.get("mastery", 0) or 0) >= 0.5]
+        # 字段名是 mastery_prob（learner_state schema），不是 mastery
+        mastered = [r for r in st if float(r.get("mastery_prob", 0) or 0) >= 0.5]
         L.append(f"- 覆盖 KC 数={len(kcs)} ｜ 已掌握(≥0.5)={len(mastered)} ｜ "
-                 f"平均掌握度={sum(float(r.get('mastery', 0) or 0) for r in st) / max(len(st), 1):.3f}")
+                 f"平均掌握度={sum(float(r.get('mastery_prob', 0) or 0) for r in st) / max(len(st), 1):.3f}")
     L.append("")
 
     kc_json = DATA / "kc_inventory_612.json"
