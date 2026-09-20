@@ -100,7 +100,7 @@ def test_580_worker_failure_is_fail_loud():
     assert "worker 失败" in msg and "EV-NOPE-999.md" in msg, msg
 
 
-def test_580_parallel_leaves_real_root_and_lock_untouched(replay_serial):
+def test_580_parallel_leaves_real_root_and_lock_untouched():
     """(f) 跑完并行后：真实根指纹与跑前相同；测试期间未在真实 build/ 新建/删除锁。
 
     本用例比对**真实根全树指纹** ⇒ 与 replay 共用同一把锁串行（`-n auto` 下防假红）。
