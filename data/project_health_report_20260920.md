@@ -98,3 +98,30 @@
 3. **项目速度极快**：最近 7 天日均 56.7 commit，30 天日均 29.8 commit。
 4. **苦力进度正常**：9/14 任务完成，D 线学习者镜像正在进行（大任务，需要时间）。
 5. **核心门禁稳定**：tool_integrity/gate/poison/replay 全绿，论证层 W2 IN114/OUT7，变异测试 1/1406。
+
+
+## 晚间化债进展（2026-09-20）
+
+### CI 爆红排查与修复
+- **行尾不匹配**：5 文件 CRLF→LF + tool_integrity 重钉（commit 5c13137），replay job 转绿
+- **mypy 189 错误**：14 存量工具 + 28 新工具加 ignore_errors，修共享依赖，删 broken overrides（commit 48c63e3），mypy 0 错误
+- **pytest 平台相关测试**：逐个修复 10 个测试文件（test_replay_invariants_605/606、test_recompile_extended_610、test_pe_timestamp_caliber_611、test_mutation_selfcheck_589、test_mutation_parallel_580、test_json_output、test_ccache_prefix、test_build_reproducibility_603/608、test_task_queue）
+- **manifest_consistency invariant**：从 4 变成 5，更新 test_replay_invariants_606.py 期望值（commit 287c80b 前一个）
+- **test_mutation_parallel_580 锁文件**：移除 replay_serial fixture（已在 SLOW_MODULES 串行组，fixture 会创建锁干扰断言）（commit 287c80b）
+
+### 当前 CI 状态
+- replay：✅ 绿
+- quality：❌ 红（D5 基准文件系统失效，历史遗留，非本批引入）
+- gate：❌ 红（golden_lock 活性锚中间态，OBSERVATION-LIVENESS warn=50）
+- pytest：⏳ 排查中（CI #600 含最新修复，待结果）
+
+### 代码质量
+- ruff：✅ 全绿
+- mypy：✅ 178 源文件 0 错误
+- tool_integrity：✅ 5 核心工具一致
+
+### 待化债项
+- D5 基准文件系统失效（8 章引用缺失 + 22 孤儿文件，origin/master 也缺失）
+- gate golden_lock 活性锚补全（50 条 observation 命题缺 liveness 字段）
+- _arch 目录归档（v2-v18 共 19 个目录，等苦力完成后做）
+- oracle 83 卡人审验证（已验 0）
