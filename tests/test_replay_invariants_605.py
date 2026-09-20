@@ -8,9 +8,9 @@
   * check_sandbox_isolation pass（临时目录不泄漏）
   * run_checks 全部 pass（检查项集合 = `INVARIANTS`，条数不写死：606 加了 lock_consistency）
   * CLI --list 输出全部不变量（同上，不写死条数）
-  * CLI --check exit 0
+  * CLI --check exit 0（--no-heavy：build_reproducibility 依赖编译环境一致性，CI 跳过）
   * CLI --check --invariant artifact_restore 只跑一个
-  * CLI --json 输出合法 JSON 且 all_passed=true
+  * CLI --json 输出合法 JSON 且 all_passed=true（同 --no-heavy）
 """
 from __future__ import annotations
 
@@ -102,7 +102,10 @@ def test_cli_list():
 
 
 def test_cli_check_exit_0():
-    proc = subprocess.run([sys.executable, str(TOOL), "--check"],
+    # --no-heavy: build_reproducibility 依赖编译环境一致性（卡面 artifact_sha256=本地MinGW编译，
+    # CI Ubuntu g++ 重编译产物必然不同 ⇒ invariant 失败 exit 2）。CI 上跳过该 heavy invariant，
+    # 其余 4 项（artifact_restore/sandbox_isolation/lock_consistency/manifest_consistency）仍校验。
+    proc = subprocess.run([sys.executable, str(TOOL), "--check", "--no-heavy"],
                           capture_output=True, text=True, timeout=120)
     assert proc.returncode == 0
     assert "全部通过" in proc.stdout
@@ -116,7 +119,8 @@ def test_cli_check_single_invariant():
 
 
 def test_cli_json_valid():
-    proc = subprocess.run([sys.executable, str(TOOL), "--check", "--json"],
+    # 同 test_cli_check_exit_0：--no-heavy 跳过 build_reproducibility（CI 编译环境差异）
+    proc = subprocess.run([sys.executable, str(TOOL), "--check", "--json", "--no-heavy"],
                           capture_output=True, text=True, timeout=120)
     assert proc.returncode == 0
     data = json.loads(proc.stdout)
