@@ -49,6 +49,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import metrics_610 as m610  # noqa: E402  (610 D1/D2/D3 采集器：独立模块，逐任务可独立提交)
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 # 592 任务2：推翻事件通道的**唯一实现**在 tools/overturned_events.py（本模块只做委托，
 #   避免"同一套 fail-closed 规则两份实现"——两份迟早会分叉，而分歧点在"谁能推翻"上最危险）。
 import overturned_events as oe  # noqa: E402
@@ -442,6 +446,8 @@ def collect(*, with_heavy: bool = True, with_gate: bool = True) -> dict:
     snap["curves"] = collect_curves()          # 565 Part 4b：三曲线机制字段（1 个时点）
     # 608 C1：新增 5 类指标（人审进度 / 论证层状态 / 编译可复现 / 逃逸率收敛 / C-P 上界）
     snap["metrics_608"] = collect_608_new_metrics(notes, with_heavy=with_heavy)
+    # 610 D1/D2/D3：W2 重算状态（含口径分歧显形）/ 人审进度 / 辩护链统计（同级嵌套，不动扁平 schema）
+    snap["metrics_610"] = m610.collect_610_new_metrics(notes, with_heavy=with_heavy)
     if with_heavy:
         try:
             snap["build_reproducibility"] = collect_build_reproducibility().to_dict()
