@@ -133,3 +133,37 @@
 | star_h2 | ✅ |
 | worktree | ✅ |
 | hygiene | ⏭️（跳过，git status --ignored 超时，已知性能问题） |
+
+
+## 612 全批完成（2026-09-20 晚间）
+
+### 提交（7 commit，已 push）
+- 76831de D1：KC 知识组件台账工具（27 原子卡+难度分级+依赖推导）
+- ce8eaca D2：BKT 贝叶斯知识追踪最小实现（纯标准库+参数拟合+预测）
+- 386e768 D3：用户掌握度数据结构+存储（append-only+BKT 递推+模拟数据）
+- 912073d D4：基于掌握度的内容推荐原型（四维度加权+学习路径建议）
+- fbb0015 D5：学习者镜像可视化仪表盘（自包含HTML·四模块·模拟数据）
+- f88cdea E：metrics_612（E1-E3 度量，只读·不新增行为）
+- 73d70f0 Z：收工门禁 run_612_gate（16 工具 --check 全绿 + metrics + integrity + pytest + ruff + 零污染）
+
+### 门禁结果（全绿）
+- 16 工具 --check：16/16 ✅
+- metrics_612：✅
+- tool_integrity：✅
+- pytest (-m not slow)：✅ 245s，5 snapshots passed
+- ruff：✅ 全绿
+- 零污染（atoms/evidence/Examples/Book）：✅
+
+### 核心成果
+- **学习者镜像原型**：KC 台账（27 原子卡）+ BKT 求解器 + 掌握度存储 + 推荐引擎 + 可视化仪表盘
+- **modify 双模式锁定量级**：keep-low IN114/OUT7、upgrade-medium IN121/OUT0
+- **oracle 83 卡如实标注「零人审」**
+
+### 诚实说明
+- oracle 人审指标（verified_by_oracle 全空、已审 0）如实标注「零人审」，未臆造评审数字
+- 工作树另有 _adv_v80/probes/* 既有改动（非本批、不在受控目录），收工未纳入
+
+### CI 状态
+- push 后触发 CI #598（73d70f0）
+- pytest 仍有 ssert set() == {'research-1f93603db53b'} 错误（来源排查中，非 612 引入）
+- gate=golden_lock 活性锚中间态、quality=D5 历史遗留，仍红
