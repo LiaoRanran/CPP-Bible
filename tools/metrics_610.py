@@ -70,6 +70,38 @@ def collect_grounded_status(metrics: dict, notes: dict | None = None) -> dict:
         return {"error": f"{type(exc).__name__}: {exc}"}
 
 
+def collect_human_review_progress(metrics: dict, notes: dict | None = None) -> dict:
+    """D2：人审进度（读 388 条授权人审）。
+
+    * 计数走 610 A2 的报告统计（与"人审质量报告"**同一函数** ⇒ 跨工具单一真源）；
+    * `total_edges` 取候选边文件长度（不写死 388）；`progress_percent` = reviewed/total；
+    * `top_modify_mis` = modify 比例最高的前 5 个 MIS（歧义集中区）；
+    * 失败 ⇒ `{"error": ...}` + notes 记账，不中断其它采集器。
+    """
+    try:
+        import attack_edge_generator as aeg
+        import human_review_report as hrr
+        anns = hrr.load_annotations()
+        v = hrr.summarize_by_verdict(anns)
+        by_mis = hrr.summarize_by_mis(anns)
+        total = len(aeg.load_edges())
+        reviewed = len({str(a.get("edge_id")) for a in anns})
+        return {
+            "total_edges": total, "reviewed": reviewed, "unreviewed": total - reviewed,
+            "approve": v["approve"]["count"], "modify": v["modify"]["count"],
+            "reject": v["reject"]["count"],
+            "progress_percent": round(reviewed / total * 100, 2) if total else None,
+            "top_modify_mis": [r["mis_id"] for r in by_mis[:5]],
+            "mis_groups": len(by_mis),
+            "source": "data/human_attack_edge_annotations.jsonl（用户授权人审）",
+        }
+    except Exception as exc:                         # noqa: BLE001
+        if notes is not None:
+            notes["human_review_progress_610"] = f"采集失败：{type(exc).__name__}: {exc}"
+        return {"error": f"{type(exc).__name__}: {exc}"}
+
+
 def collect_610_new_metrics(notes: dict, *, with_heavy: bool = True) -> dict:
     """610 新增指标容器（挂 `metrics_610`，与 608 的 `metrics_608` 同级，**不动扁平 27 项**）。"""
-    return {"grounded_status": collect_grounded_status({}, notes)}
+    return {"grounded_status": collect_grounded_status({}, notes),
+            "human_review_progress": collect_human_review_progress({}, notes)}
