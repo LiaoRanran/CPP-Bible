@@ -103,8 +103,8 @@ def main(argv: list[str] | None = None) -> int:
                            "attestation_kind": None})
             if "OTS 上链凭据" not in page:
                 errs.append("报告渲染异常")
-        for e in errs:
-            print(f"[E1] ✗ {e}")
+        for err in errs:
+            print(f"[E1] ✗ {err}")
         print("[E1] " + ("✅ 自验证通过" if not errs else f"❌ {len(errs)} 项失败"))
         return 0 if not errs else 1
 

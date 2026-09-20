@@ -21,6 +21,7 @@ import argparse
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import cast
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
@@ -35,7 +36,7 @@ def load_roots() -> dict:
     doc = mi.load_roots()
     if doc is None:
         raise SystemExit("[E3] 缺 Merkle 根台账（先跑 merkle_integrity build-all）")
-    return doc
+    return cast("dict", doc)
 
 
 def sample_files(key: str, per_dir: int) -> list[Path]:
