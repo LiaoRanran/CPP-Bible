@@ -1,0 +1,1246 @@
+{
+ "generated_at": "2026-09-20T21:42:09",
+ "total_kc": 27,
+ "kcs": [
+  {
+   "id": "ATOM-CONC-FENCE-001",
+   "title": "内存屏障（fence）只约束顺序，不提供原子性；屏障在循环体内才阻止消除，但屏障≠原子类型",
+   "domain": "conc",
+   "path": "atoms/conc/ATOM-CONC-FENCE-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "屏障落在循环体内（含零机器指令的 atomic_signal_fence）即阻止编译器删除该循环；移到体外则与无屏障同形、整段被消除。",
+     "evidence": [
+      "EV-CONC-001",
+      "EV-CONC-002"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "inference",
+     "statement": "屏障≠原子类型——屏障只约束内存顺序，不为普通 int 提供原子性、不建立跨线程 happens-before，故普通 int 做标志加多少屏障仍是数据竞争（UB）。",
+     "evidence": [
+      "EV-CONC-002"
+     ]
+    }
+   ],
+   "n_propositions": 2,
+   "n_observation": 1,
+   "n_inference": 1,
+   "prerequisites": [],
+   "related_mis": [],
+   "n_related_mis": 0,
+   "difficulty": 1,
+   "successors": []
+  },
+  {
+   "id": "ATOM-CONC-LOCK-001",
+   "title": "锁的代价与无锁的代价：高竞争下 CAS 的原子 RMW 代价可能超过 mutex，但依赖核数与竞争度",
+   "domain": "conc",
+   "path": "atoms/conc/ATOM-CONC-LOCK-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "同夹具四路对照的机器读数（EV-CONC-003/004 共享 `Examples/atoms/_atom_lock_cost.out`）：nproc=32、single_thread_baseline=1 时单线程 single_result=200000，mutex、atomic fetch_add、CAS 三路 result 均为 800000，且 cas_retry_observed=1（CAS 路径发生重试）、atomic_fetch_ns=636900。",
+     "evidence": [
+      "EV-CONC-003",
+      "EV-CONC-004"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "inference",
+     "statement": "高竞争下 CAS 的原子 RMW 代价可能超过 mutex，但该结论依赖核数与竞争度（≤2 核环境可能反向）⇒ 锁与无锁各有适用域、无绝对最优。这条权衡依赖标准对同步语义的规定（标准**未规定**相对代价）与 cppreference 对 RMW 编译为 lock 前缀指令、lock-free 为非保证属性的说明，不由单次实测单独证明。",
+     "evidence": [
+      "EV-CONC-003",
+      "EV-CONC-004"
+     ]
+    }
+   ],
+   "n_propositions": 2,
+   "n_observation": 1,
+   "n_inference": 1,
+   "prerequisites": [],
+   "related_mis": [],
+   "n_related_mis": 0,
+   "difficulty": 1,
+   "successors": []
+  },
+  {
+   "id": "ATOM-CONC-RACE-001",
+   "title": "数据竞争是未定义行为；TSan 可检测，但『没被报 ≠ 没有』",
+   "domain": "conc",
+   "path": "atoms/conc/ATOM-CONC-RACE-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "三场景（single|race|safe）在 kIters=100000 下的机器读数：single_total=100000、race_ops_total=200000、safe_ops_total=200000，且安全组终值 safe_final=200000（等于两线程操作总数，结果确定）。",
+     "evidence": [
+      "EV-CONC-005",
+      "EV-CONC-006"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "inference",
+     "statement": "数据竞争（无同步的并发冲突访问、且至少一方为写）是 C++ **未定义行为**，不是\"结果偶尔算错\"——编译器可据此做激进优化、行为完全不可预测。这条定性依据标准对 data race 的定义，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-CONC-005",
+      "EV-CONC-006"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "TSan 能检测数据竞争，但\"没被 TSan 报 ≠ 没有数据竞争\"——其漏报边界（插桩盲区、必须全量插桩、时序偶发）使工具沉默不能当作安全证明。这条边界依据 ThreadSanitizer 的实现原理说明，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-CONC-005",
+      "EV-CONC-006"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 1,
+   "n_inference": 2,
+   "prerequisites": [],
+   "related_mis": [
+    "misconception_MIS-CONC-003"
+   ],
+   "n_related_mis": 1,
+   "difficulty": 2,
+   "successors": []
+  },
+  {
+   "id": "ATOM-HIST-AUTOPTR-001",
+   "title": "别看 auto_ptr 的名字像智能指针：它的\"拷贝\"是转移，而 C++98 只能这么表达",
+   "domain": "HIST",
+   "path": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "实测（GCC 15.3.0、-std=c++14 -O2）：auto_ptr 拷贝后源为空=是、目标值=42；从容器读元素后源为空=是、偷到值=7；unique_ptr 移动后源为空=是、目标值=9。",
+     "evidence": [
+      "EV-HIST-001",
+      "EV-MEM-003"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "编译期判定（四条 static_assert 全部通过）：auto_ptr 不满足 CopyConstructible（is_copy_constructible=false）却可从非 const 左值构造（is_constructible<T,T&>=true）；unique_ptr 不可拷贝但可移动（is_copy_constructible=false、is_move_constructible=true）。",
+     "evidence": [
+      "EV-HIST-001",
+      "EV-MEM-003"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "auto_ptr 是 C++98 缺少移动语义时的工程妥协——用拷贝的语法表达转移的语义，因此与容器\"拷贝后两对象等价\"的隐含约定从根上冲突；C++11 以移动语义（unique_ptr）给出正确表达后弃用。这条历史定性依据标准各版本对 auto_ptr 的规定与移除时间线，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-HIST-001",
+      "EV-MEM-003"
+     ]
+    },
+    {
+     "id": "prop-4",
+     "claim_type": "observation",
+     "statement": "实现层事实（EV-HIST-001 的 impl_ 读数）：同一夹具在 -std=c++17 与 -std=c++23 下**仍可编译**（rc=0）——libstdc++ 保留了已从标准移除的 auto_ptr；CI（Ubuntu、clang 18.1.3、默认 libstdc++）编译通过、四条 static_assert 全过、三行运行输出与 GCC 逐字一致。",
+     "evidence": [
+      "EV-HIST-001"
+     ]
+    }
+   ],
+   "n_propositions": 4,
+   "n_observation": 3,
+   "n_inference": 1,
+   "prerequisites": [],
+   "related_mis": [
+    "misconception_MIS-HIST-001",
+    "misconception_MIS-HIST-002",
+    "misconception_MIS-HIST-003",
+    "misconception_MIS-MEM-011"
+   ],
+   "n_related_mis": 4,
+   "difficulty": 3,
+   "successors": []
+  },
+  {
+   "id": "ATOM-LANG-INLINE-001",
+   "title": "inline 函数的定义必须跨 TU 一致：违反 ODR 是「无须诊断」的 UB，且形态由链接顺序与优化档决定",
+   "domain": "LANG",
+   "path": "atoms/lang/ATOM-LANG-INLINE-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "两个 TU 给出不同定义的 inline 函数，其可观测行为由链接顺序与优化档共同决定：-O0（未内联）链接顺序 a→b 时 ab_tu_a=1、ab_tu_b=1，顺序 b→a 时 ba_tu_a=2、ba_tu_b=2；-O2（发生内联）时 o2_tu_a=1、o2_tu_b=2，换顺序仍为 1/2（各 TU 内联自己看到的定义）。",
+     "evidence": [
+      "EV-LANG-001",
+      "EV-LANG-002"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "当各 TU 的定义由相同 token 序列构成时行为稳定：stable 组在 ab/ba/o2/o2b 四种链接与优化组合下 stable_a 与 stable_b 恒为 42。",
+     "evidence": [
+      "EV-LANG-001",
+      "EV-LANG-002"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "各定义须由相同的 token 序列构成（[basic.def.odr]/16.4），违反属 ill-formed 且 **no diagnostic required**——实测 GCC 家族零诊断这一事实本身既不能证明合规也不能证明违规，判据来自标准对 ODR 与\"行为如同单一定义\"的规定。",
+     "evidence": [
+      "EV-LANG-001",
+      "EV-LANG-002"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [],
+   "related_mis": [
+    "misconception_MIS-LANG-001"
+   ],
+   "n_related_mis": 1,
+   "difficulty": 2,
+   "successors": []
+  },
+  {
+   "id": "ATOM-MEM-ALIGN-001",
+   "title": "结构体有对齐与填充：成员按对齐排列插 padding，sizeof 含 padding；alignas 可控、memcpy 安全",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "编译器在成员间与末尾插入 padding 使每个成员与整体满足对齐：实测 sizeof(Padded)=8、offsetof a=0、offsetof b=4，显式计入的 padding bytes=3。",
+     "evidence": [
+      "EV-MEM-019"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "对齐可控且按字节搬运保真：实测 alignof(Aligned)=16、sizeof(Aligned)=16，且 memcpy 往返后 x=7（值不变）。",
+     "evidence": [
+      "EV-MEM-020"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "用 reinterpret_cast 强转指针做类型双关（以及不对齐访问）属未定义行为——这条定性依据标准对对齐与对象表示的规定、以及 cppreference 对 strict aliasing 的说明，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-MEM-019",
+      "EV-MEM-020"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [],
+   "related_mis": [
+    "misconception_MIS-MEM-015"
+   ],
+   "n_related_mis": 1,
+   "difficulty": 2,
+   "successors": []
+  },
+  {
+   "id": "ATOM-MEM-ALLOC-001",
+   "title": "allocator：STL 容器的内存策略抽象",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "分配与对象构造是两个独立动作：实测 allocate 路径 allocs=1 而 ctors=0（只分配不构造），separate construct 路径 ctors=2、destroy 路径 dtors=2、deallocate 路径 frees=1 ⇒ C++17 后 std::allocator 只剩纯分配层，构造/析构统一走 allocator_traits。",
+     "evidence": [
+      "EV-MEM-026"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "策略可整体替换：自定义 arena 分配器接入 vector 后，16 次 push_back 期间 calls=5、bytes=124、heap_new=0；std::allocator 对照路径 heap_new=5（增长式重分配）。",
+     "evidence": [
+      "EV-MEM-027"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "observation",
+     "statement": "std::pmr（C++17）把分配策略变成运行时多态：monotonic_buffer_resource 用栈缓冲伺候全部分配，实测 upstream_allocs=0（零堆、全程不触碰上游），而 delegating 路径 res_calls=5、bytes=124（走增长路径、堆支撑）。",
+     "evidence": [
+      "EV-MEM-028"
+     ]
+    },
+    {
+     "id": "prop-4",
+     "claim_type": "inference",
+     "statement": "把 allocator 定位为\"内存策略抽象\"（容器只经 allocator_traits 要内存、不直接调 new/delete）——这条定位依赖标准对分配器要求与有状态分配器契约的规定，属解释性表述，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-MEM-026"
+     ]
+    }
+   ],
+   "n_propositions": 4,
+   "n_observation": 3,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-NEW-001",
+    "ATOM-MEM-RAII-001"
+   ],
+   "related_mis": [
+    "misconception_MIS-MEM-021"
+   ],
+   "n_related_mis": 1,
+   "difficulty": 2,
+   "successors": [
+    "ATOM-MEM-ALLOC-002"
+   ]
+  },
+  {
+   "id": "ATOM-MEM-ALLOC-002",
+   "title": "分配器策略的时空权衡：arena / pool / bitmap（元数据换灵活性）",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "同一 workload（1000 次 24B 分配、-O2）下三种小对象策略的元数据可用统一口径（struct_bytes + bookkeeping_bytes）读出：arena 32B（32+0）、bitmap 181B（56+125，1 bit/块）、pool 8056B（56+8000，8B/块 free-list 指针）。",
+     "evidence": [
+      "EV-MEM-040",
+      "EV-MEM-041"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "bitmap 的 bookkeeping 是 1 bit/块、pool 是 8B/块指针，故元数据随块数线性增长：块数由 1000 增到 8000 时 pool 由 8056B 增至 64056B、bitmap 由 181B 增至 1056B（读数为 EV-MEM-040 的 n1/n2 两组键）。",
+     "evidence": [
+      "EV-MEM-040",
+      "EV-MEM-041"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "元数据开销排序（arena ≪ bitmap ≪ pool）与\"是否支持单块释放\"绑定——arena 的 bookkeeping=0 是用\"仅批量申请、只支持整体重置\"换来的（夹具 release_all() 中途释放单块会产生不可复用空洞），故\"元数据更少\"不等于\"策略更好\"；这层权衡的解释依赖标准对单调缓冲与池资源回收语义的区分，不单由本卡读数决定。",
+     "evidence": [
+      "EV-MEM-040",
+      "EV-MEM-041"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-ALLOC-001"
+   ],
+   "related_mis": [
+    "misconception_MIS-MEM-030"
+   ],
+   "n_related_mis": 1,
+   "difficulty": 2,
+   "successors": []
+  },
+  {
+   "id": "ATOM-MEM-LEAK-001",
+   "title": "内存泄漏的检测信号分层：为什么\"ASan 没报\"不等于\"没泄漏\"",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-LEAK-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "父用 weak_ptr 上行的无环树：实测 root children=2、parent reachable=1、constructed=3、destroyed after scope=3（三个对象全部析构），-O0 与 -O2 读数一致。",
+     "evidence": [
+      "EV-MEM-036"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "仅把上行改为 shared_ptr（与 EV-MEM-036 构成唯一变量对照）即成环：实测 root children=2、root use_count=3、constructed=3、destroyed after scope=0（一个都没析构）；改回 weak 后 destroyed 回到 3 ⇒ 因果由唯一变量确立。",
+     "evidence": [
+      "EV-MEM-037"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "ASan/LSan 的泄漏判定基于退出时的可达性分析（被存活栈帧或寄存器引用的块不算泄漏），因而对优化档与对象存活位置高度敏感；所以\"ASan 没报\"不能推出\"没泄漏\"，须用不依赖 sanitizer 的确定信号（析构计数、use_count）先定性。这条依据判据定义，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-MEM-036",
+      "EV-MEM-037"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-SHARED-001",
+    "ATOM-MEM-WEAK-001"
+   ],
+   "related_mis": [
+    "misconception_MIS-MEM-027"
+   ],
+   "n_related_mis": 1,
+   "difficulty": 2,
+   "successors": []
+  },
+  {
+   "id": "ATOM-MEM-LEAK-002",
+   "title": "泄漏检测的工具边界：报告与否不能等价于泄漏有无",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-LEAK-002.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "循环引用夹具上的零依赖观测（构造/析构计数、存活对象数）读出：cycle_allocated=2、cycle_destroyed=0、cycle_live_objects=2，而作用域对象 scoped_dtor_count=1、scoped_is_clean=1 ⇒ 闭环对象不可达但不析构，不经任何工具即可定性。",
+     "evidence": [
+      "EV-MEM-042",
+      "EV-MEM-043"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "同一循环引用夹具、同一编译器与档位（-O1 -g -fsanitize=address,undefined）下，仅给 Node 加一个与泄漏无关的 volatile 构造计数，LSan 即由零报告（stderr 0 字节）变为报告 `SUMMARY: AddressSanitizer: 64 byte(s) leaked in 2 allocation(s)`（stderr 1258 字节），且 64 B = 2 × 32 B 自洽（读数为 EV-MEM-043 的改前/改后表）。",
+     "evidence": [
+      "EV-MEM-042",
+      "EV-MEM-043"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "工具报告只反映\"可达性\"这一特定判据（受优化档、存活位置与运行环境影响），故判定泄漏应先用零依赖观测定性、工具报告仅作补充证据；这条方法论建议超出本卡读数本身，其成立依据是 LSan/ASan 文档对判据的定义。",
+     "evidence": [
+      "EV-MEM-042",
+      "EV-MEM-043"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-SHARED-001",
+    "ATOM-MEM-WEAK-001"
+   ],
+   "related_mis": [
+    "misconception_MIS-MEM-031"
+   ],
+   "n_related_mis": 1,
+   "difficulty": 2,
+   "successors": []
+  },
+  {
+   "id": "ATOM-MEM-MOVE-002",
+   "title": "用 std::move 申报所有权转移，真正的搬运发生在移动构造里",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-MOVE-002.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "移动不分配：六组组合（GCC 15.3/13.1/8.1 × -O0/-O2）读数一致——构造分配=1、拷贝分配=1、移动分配=0，证伪对照（假移动）分配=1；汇编层 main 中 call malloc 共 3 次（构造 1 + 拷贝 1 + 假移动对照 1），真实移动路径 0 次。",
+     "evidence": [
+      "EV-MEM-001"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "收益来自掏空源：持堆的 HeapBuf 拷贝分配=1、移动分配=0、移动后源被掏空=是；无可掏空间接资源的 FixedBuf 与 array 拷贝分配=0、移动分配=0、移动后源完好=是（退化成按字节搬运，汇编层见 pshufd + movaps 搬运 32 字节）。",
+     "evidence": [
+      "EV-MEM-002"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "std::move(x) 自身不分配、不复制、不改变 x，它只做一次类型转换以让移动构造参与重载；搬运的收益来自移动构造掏空源对象。这条语义依据标准对 std::move 与 static_cast 等价、以及\"移动后源有效但未指定\"的规定，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-MEM-001",
+      "EV-MEM-002"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-VALUE-001"
+   ],
+   "related_mis": [
+    "misconception_MIS-MEM-001",
+    "misconception_MIS-MEM-002",
+    "misconception_MIS-MEM-003",
+    "misconception_MIS-MEM-004",
+    "misconception_MIS-MEM-005",
+    "misconception_MIS-MEM-012"
+   ],
+   "n_related_mis": 6,
+   "difficulty": 4,
+   "successors": [
+    "ATOM-MEM-PERF-001",
+    "ATOM-MEM-RAII-002",
+    "ATOM-MEM-RVREF-001",
+    "ATOM-MEM-VALUE-002"
+   ]
+  },
+  {
+   "id": "ATOM-MEM-NEW-001",
+   "title": "new/delete 是两层：new=分配+构造、delete=析构+释放；new[]/delete[] 必须配对，nothrow 失败返 null",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-NEW-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "new 表达式先分配再构造、delete 表达式先析构再释放，两层各自独立发生一次：实测 after new 时 alloc=1、ctor=1，after delete 时 dealloc=1、dtor=1。",
+     "evidence": [
+      "EV-MEM-017"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "数组与 nothrow 的实测：array new[] calls=1、array delete[] calls=1（必须配对），且 new(std::nothrow) 在超大申请失败时返回值 recorded 为 null（nothrow huge returned null=1），不抛异常。",
+     "evidence": [
+      "EV-MEM-018"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "new[] 与 delete[] 必须配对、new/delete 必须配对，混用（如 new[] 配 delete）属**未定义行为**——这条定性依据标准对 new/delete 表达式两层语义与配对要求的规定，不由本卡读数单独证明；其工程含义是优先用容器与智能指针让配对自动化。",
+     "evidence": [
+      "EV-MEM-017",
+      "EV-MEM-018"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-RAII-001"
+   ],
+   "related_mis": [],
+   "n_related_mis": 0,
+   "difficulty": 2,
+   "successors": [
+    "ATOM-MEM-ALLOC-001",
+    "ATOM-MEM-PERF-002"
+   ]
+  },
+  {
+   "id": "ATOM-MEM-PERF-001",
+   "title": "移动比拷贝快多少？收益只来自\"掏空源对象\"，无动态资源的类型移动=拷贝",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-PERF-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "实测（-O0/-O2 一致）：无动态资源的 Value32（sizeof=32）移动与拷贝搬运字节数相同且源保持完好（value move source intact=1）；持堆类型则拷贝分配=1、移动分配=0（只偷指针并置空源）。",
+     "evidence": [
+      "EV-MEM-008"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "inference",
+     "statement": "移动构造的收益来自\"掏空源对象\"，语义由类型自定义而非语言强制 ⇒ 对无动态资源的纯值类型，移动等于拷贝、std::move 没有性能收益。这条依据标准对\"移动后源有效但未指定\"与 MoveConstructible 的规定，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-MEM-008",
+      "EV-MEM-001"
+     ]
+    }
+   ],
+   "n_propositions": 2,
+   "n_observation": 1,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-MOVE-002"
+   ],
+   "related_mis": [],
+   "n_related_mis": 0,
+   "difficulty": 1,
+   "successors": [
+    "ATOM-MEM-PERF-002",
+    "ATOM-MEM-PERF-003",
+    "ATOM-MEM-PERF-004"
+   ]
+  },
+  {
+   "id": "ATOM-MEM-PERF-002",
+   "title": "SSO：std::string 为什么短字符串不分配堆内存",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-PERF-002.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "本机 libstdc++（GCC 15.3.0）上 SSO 阈值为 15 字符：实测 len=0/14/15 时 allocs=0，len=16 起 allocs=1，且 max_zero_alloc_len=15、first_heap_len=16。",
+     "evidence": [
+      "EV-MEM-029"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "inference",
+     "statement": "SSO 是实现内建、标准并不要求它，且各实现参数不保证一致（libstdc++ 32/15、libc++ 24/22、MSVC 32/15）——故\"阈值不可移植\"这一结论依赖标准条文与实现文档，不能由本机单一实现的读数推出。",
+     "evidence": [
+      "EV-MEM-029"
+     ]
+    }
+   ],
+   "n_propositions": 2,
+   "n_observation": 1,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-NEW-001",
+    "ATOM-MEM-PERF-001"
+   ],
+   "related_mis": [
+    "misconception_MIS-MEM-022",
+    "misconception_MIS-MEM-023"
+   ],
+   "n_related_mis": 2,
+   "difficulty": 2,
+   "successors": []
+  },
+  {
+   "id": "ATOM-MEM-PERF-003",
+   "title": "小对象分配的真实开销：SSO 阈值不可移植 + 分配策略必须基准测量",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-PERF-003.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "libstdc++ 侧实测（cxx23 -O2 与 cxx17 -O0 一致）：sizeof_string=32、sizeof_size_t=8、capacity_at_len1=15、capacity_at_len8=15、first_heap_len=16、sso_capacity=15，且 heap_at_len14=0、heap_at_len15=0、heap_at_len16=1、heap_at_len17=1。",
+     "evidence": [
+      "EV-MEM-038"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "inference",
+     "statement": "SSO 阈值不是语言保证——同一判据、同一条 g++-14 驱动下，libstdc++ 实测 sizeof=32/容量 15，libc++-18 实测 sizeof=24/容量 22（唯一变量是标准库实现），两者都完全符合 [string.requirements] ⇒ 阈值不可移植。这条依据标准\"不要求 SSO、不约束 sizeof\"与各实现的布局文档，不由单一实现的读数推出。",
+     "evidence": [
+      "EV-MEM-038"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "连\"谁更快\"都是平台相关的：同一夹具同一工作量，MinGW/libstdc++ 上单调缓冲与池均胜过全局 new，Linux/glibc 上三者全部翻转 ⇒ \"池分配器更快\"不是可移植结论；可移植的是**因果链**（内存资源是否回收）与\"必须实测\"这条方法论。这条依据标准对两类内存资源语义差异的规定，不由单次基准推出（基准数字属留痕，不作断言锚）。",
+     "evidence": [
+      "EV-MEM-039"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 1,
+   "n_inference": 2,
+   "prerequisites": [
+    "ATOM-MEM-PERF-001"
+   ],
+   "related_mis": [
+    "misconception_MIS-MEM-028",
+    "misconception_MIS-MEM-029"
+   ],
+   "n_related_mis": 2,
+   "difficulty": 2,
+   "successors": []
+  },
+  {
+   "id": "ATOM-MEM-PERF-004",
+   "title": "伪共享：多线程\"独立变量\"为何慢 18 倍，以及对齐 padding 的代价",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-PERF-004.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "相邻布局两计数器落在同一缓存行（tight_offset_bytes=8、tight_same_line=1），alignas 隔离后落在不同行（padded_offset_bytes=64、padded_same_line=0），且隔离的结构代价是空间（padded_sizeof=128）——这三项读数由地址计算得出，与计时无关。",
+     "evidence": [
+      "EV-MEM-044",
+      "EV-MEM-045"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "4 线程各累加 1e7 次、7 轮下共享缓存行明显更慢：sharing_is_slower=1 且 counters_all_advanced=1（活性对照成立），逐轮中位数 562500600 ns vs 29824800 ns = 18.86×（Linux 同夹具 18.54×，方向一致）；**断言只锚方向与活性对照，不锚倍数**（倍数取 EV-MEM-045 逐轮表）。",
+     "evidence": [
+      "EV-MEM-044",
+      "EV-MEM-045"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "既然隔离的收益是\"消掉行竞争\"、代价是空间（padded_sizeof=128），则存在最优对齐粒度——\"padding 一定值得\"与\"padding 无用\"同为过度概括；该结论依赖标准对硬件干扰尺寸只是**提示值**（实现可给回退值）的定性，不单由本卡读数决定。",
+     "evidence": [
+      "EV-MEM-044",
+      "EV-MEM-045"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-PERF-001"
+   ],
+   "related_mis": [
+    "misconception_MIS-MEM-032"
+   ],
+   "n_related_mis": 1,
+   "difficulty": 2,
+   "successors": []
+  },
+  {
+   "id": "ATOM-MEM-RAII-001",
+   "title": "资源要绑在对象生命周期上：构造获取、析构释放，异常也安全",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-RAII-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "同夹具两条路径的对照读数：RAII 路径（safe_path）结束后 g_live=0（无存活资源），裸 new/delete 路径（leak_path）异常跳过 delete 后 g_live=1（资源仍存活）。",
+     "evidence": [
+      "EV-MEM-009"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "多个 RAII 对象在同一作用域时，析构按构造的逆序自动发生：实测输出为 ctor A、ctor B、ctor C，随后 dtor C、dtor B、dtor A。",
+     "evidence": [
+      "EV-MEM-010"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "RAII 的核心是\"资源生命周期绑定到对象生命周期\"——栈展开时（即使因异常提前返回）作用域内已构造完全的对象会被自动析构，故异常路径也不泄漏；裸 new/delete 没有这层绑定，异常会跳过 delete。这条依据标准对栈展开调用析构、以及析构释放资源的规定，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-MEM-009",
+      "EV-MEM-010"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [],
+   "related_mis": [
+    "misconception_MIS-MEM-013",
+    "misconception_MIS-MEM-014"
+   ],
+   "n_related_mis": 2,
+   "difficulty": 2,
+   "successors": [
+    "ATOM-MEM-ALLOC-001",
+    "ATOM-MEM-NEW-001",
+    "ATOM-MEM-RAII-002",
+    "ATOM-MEM-UNIQUE-001"
+   ]
+  },
+  {
+   "id": "ATOM-MEM-RAII-002",
+   "title": "Rule of 0/3/5：什么时候该写析构函数，什么时候不该",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-RAII-002.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "成员全是 RAII 类型（unique_ptr/vector/string）时一个特殊成员都不写也正确：实测 move_constructible=1、copy_constructible=0（类型系统层面），移动转移后 owner_changed=1 且 allocs=dtors=frees=1（恰好一次、无泄漏）——隐式语义按成员形状各得其所，并非一律\"删除拷贝\"。",
+     "evidence": [
+      "EV-MEM-023"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "管理裸资源时只写析构会得到隐式浅拷贝：实测 buggy 路径 allocs=1、same_ptr=1、dtor_runs=2（一块缓冲两次析构，析构真释放即 double free），三件套齐写的 correct 路径 allocs=2、same_ptr=0、dtor_runs=2（两块缓冲各自析构）。",
+     "evidence": [
+      "EV-MEM-024"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "observation",
+     "statement": "vector 扩容搬迁走移动还是退化拷贝取决于移动构造是否标 noexcept：实测 noexcept move 路径 relocation copies=0 / moves=4，throwing move 路径 copies=4 / moves=0。",
+     "evidence": [
+      "EV-MEM-025"
+     ]
+    },
+    {
+     "id": "prop-4",
+     "claim_type": "inference",
+     "statement": "该写哪几个特殊成员函数应由\"成员形状\"（是否管理裸资源、成员可否拷贝）判定，而非背 Rule of 0/3/5 口诀——口诀在成员形状变化时会给出错误结论；这层\"判据是形状而非口诀\"的表述依赖标准对隐式生成与删除的规定，属解释性结论。",
+     "evidence": [
+      "EV-MEM-023",
+      "EV-MEM-024",
+      "EV-MEM-025"
+     ]
+    }
+   ],
+   "n_propositions": 4,
+   "n_observation": 3,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-MOVE-002",
+    "ATOM-MEM-RAII-001"
+   ],
+   "related_mis": [
+    "misconception_MIS-MEM-019",
+    "misconception_MIS-MEM-020"
+   ],
+   "n_related_mis": 2,
+   "difficulty": 2,
+   "successors": []
+  },
+  {
+   "id": "ATOM-MEM-RVREF-001",
+   "title": "别以为形参写成 T&& 就会自动移动：进了函数体，它是左值",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-RVREF-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "形参声明为 T&& 时，形参名在函数体内表现为左值：十一档组合读数一致——原样使用（as_is）copy=1、move=0；std::move(x) 后 copy=0、move=1；而对无移动构造的 CopyOnly，即使写了 std::move(x) 仍是 copy=1（静默退化为拷贝）。",
+     "evidence": [
+      "EV-MEM-004"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "例外路径（return x;）随版本变化：cxx11、cxx14、cxx17 下 ret_plain 为 copy=1 / move=0；cxx20 与 cxx23 下（含 -O0）为 copy=0 / move=1 ⇒ C++20 起该路径已隐式移动。",
+     "evidence": [
+      "EV-MEM-005"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "值类别是表达式的属性、与变量的声明类型无关——命名的右值引用是左值，所以只有把 x 转成 xvalue（std::move）才会选中移动构造；对没有移动构造的类型则静默退化为拷贝。这条语义依据标准对值类别与 id-expression 的规定，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-MEM-004",
+      "EV-MEM-005"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-MOVE-002"
+   ],
+   "related_mis": [],
+   "n_related_mis": 0,
+   "difficulty": 2,
+   "successors": []
+  },
+  {
+   "id": "ATOM-MEM-SHARED-001",
+   "title": "std::shared_ptr 用引用计数共享所有权；但循环引用会泄漏，须用 weak_ptr 打破",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-SHARED-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "共享所有权的计数与释放：make 后 use_count=1、拷贝后=2、作用域内=3、离开作用域后=2，且 box destroyed count=1（计数归零时恰好析构一次）。",
+     "evidence": [
+      "EV-MEM-013"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "两个对象互相用 shared_ptr 持有时：a 与 b 的 use_count 均为 2，离开作用域后 nodes destroyed count=0（一个都没析构 ⇒ 计数永不归零而泄漏）。",
+     "evidence": [
+      "EV-MEM-014"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "shared_ptr 以引用计数实现共享所有权（拷贝加一、析构减一、归零释放），但它**不能**自动处理循环引用——环上的对象彼此把对方计数抬到 2，离开作用域后各减到 1 仍互指 ⇒ 必须用 weak_ptr 打破。这条依据标准对共享所有权与引用计数的规定，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-MEM-013",
+      "EV-MEM-014"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-UNIQUE-001"
+   ],
+   "related_mis": [
+    "misconception_MIS-MEM-016"
+   ],
+   "n_related_mis": 1,
+   "difficulty": 2,
+   "successors": [
+    "ATOM-MEM-LEAK-001",
+    "ATOM-MEM-LEAK-002",
+    "ATOM-MEM-SHARED-002",
+    "ATOM-MEM-WEAK-001"
+   ]
+  },
+  {
+   "id": "ATOM-MEM-SHARED-002",
+   "title": "shared_ptr 的线程安全边界与原子代价：控制块原子、对象不原子",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-SHARED-002.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "四线程各持副本并发拷贝：-O0/-O2 一致——sizeof(shared_ptr)=16、shared_ptr copyable=1 而 unique_ptr copyable=0、一次拷贝后 use_count=2、并发拷贝共 8000 次、join 后 use_count 回到 1、value=42（结果未被竞争破坏）。",
+     "evidence": [
+      "EV-MEM-034"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "控制块计数用原子 RMW 修改：工件断言在 `_Sp_counted_base::_M_release` 等符号附近命中带 lock 前缀的指令（lock add / lock sub / lock xadd / lock cmpxchg / lock inc 之一）。",
+     "evidence": [
+      "EV-MEM-034"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "各线程持有**各自副本**时的并发拷贝/销毁是安全的，但**被指对象**与**同一个 shared_ptr 实例**都不受这层保护（并发读写同一实例需外部同步，C++20 起可用 std::atomic<std::shared_ptr<T>>；use_count() 在并发下只是近似值）。这条边界依据标准与实现说明，不由本卡读数单独证明；其工程含义是\"要不要付原子代价\"应由 unique_ptr/shared_ptr 在编译期显式选择。",
+     "evidence": [
+      "EV-MEM-034",
+      "EV-MEM-035"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-SHARED-001"
+   ],
+   "related_mis": [
+    "misconception_MIS-MEM-026"
+   ],
+   "n_related_mis": 1,
+   "difficulty": 2,
+   "successors": []
+  },
+  {
+   "id": "ATOM-MEM-UNIQUE-001",
+   "title": "std::unique_ptr 是唯一所有权智能指针：移动转移、拷贝删除、sizeof 等于裸指针",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "零开销的第一个证据：实测 sizeof(unique_ptr<Big>)=8、sizeof(Big*)=8、equal=1（两者相等，没有额外字段）。",
+     "evidence": [
+      "EV-MEM-011"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "所有权转移与释放：移动后源被置空（a empty=1）、目标持有对象（b->v=7），且 box destroyed count=1（恰好析构一次，无双释放）。",
+     "evidence": [
+      "EV-MEM-012"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "unique_ptr 是唯一所有权智能指针——移动转移所有权、拷贝构造与拷贝赋值被删除（不可共享）、析构恰好 delete 一次（无双释放）；这些语义只在编译期生效，故运行时无额外字段（与 prop-1 的 sizeof 实测相互印证）。这条依据标准对唯一所有权与析构调用 deleter 的规定，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-MEM-011",
+      "EV-MEM-012"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-RAII-001"
+   ],
+   "related_mis": [],
+   "n_related_mis": 0,
+   "difficulty": 2,
+   "successors": [
+    "ATOM-MEM-SHARED-001",
+    "ATOM-MEM-UNIQUE-002"
+   ]
+  },
+  {
+   "id": "ATOM-MEM-UNIQUE-002",
+   "title": "unique_ptr 自定义删除器与数组：删除器进不进类型系统",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "删除器是 unique_ptr 类型的一部分，对象大小随之变化（-O0/-O2 一致）：default=8、stateless=8（空且非 final 被空基类优化吸收）、stateful=16、array=8、引用型删除器=16，而**空但 final 的删除器=16**（EBO 失效）。",
+     "evidence": [
+      "EV-MEM-032"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "删除器经类型擦除由控制块持有，与类型无关：sizeof(shared_ptr) default=16、带状态删除器仍=16（sizes equal=1）；行为上构造时按值拷贝一次（deleter copies on ctor=1）、共享时不再拷贝（copies on share=0）、全部 reset 后调用一次（deleter calls after all reset=1，tag seen=99）。",
+     "evidence": [
+      "EV-MEM-033"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "「空且非 final 的删除器被空基类优化吸收（sizeof 等于裸指针）」是 libstdc++ 的**实现边界**，标准并不保证——final 反例实测 16 即为证；数组特化 unique_ptr<T[]> 只提供 operator[]、不提供 operator* 与 operator->，默认删除器下走 delete[]。这条依据标准对 unique_ptr 删除器作为类型参数、以及数组特化接口的规定，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-MEM-032",
+      "EV-MEM-033"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-UNIQUE-001"
+   ],
+   "related_mis": [
+    "misconception_MIS-MEM-024",
+    "misconception_MIS-MEM-025"
+   ],
+   "n_related_mis": 2,
+   "difficulty": 2,
+   "successors": []
+  },
+  {
+   "id": "ATOM-MEM-VALUE-001",
+   "title": "C++ 的值不是\"左/右\"二分：glvalue×rvalue 正交出 lvalue / xvalue / prvalue 三类",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-VALUE-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "三类值类别的机器判定：decltype((x)) 得 lvalue（有身份、不可移动）、decltype(std::move(x)) 得 xvalue（有身份、可移动）、decltype(42) 得 prvalue（无身份、可移动），且具名右值引用在表达式体内按 lvalue 判定。",
+     "evidence": [
+      "EV-MEM-006"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "从 xvalue 移动（std::move(a)）后：源对象被标记为已掏空（a.v=-1），两个接收方均得到原值（b.v=7、c.v=7）。",
+     "evidence": [
+      "EV-MEM-007"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "C++11 起每个表达式属于两个正交维度（glvalue 有身份、rvalue 可移动）的交叉，故不是\"左/右\"二分而是三类；值类别是**表达式**的属性、与变量声明类型无关。这条依据标准对值类别与 id-expression 的规定，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-MEM-006",
+      "EV-MEM-007"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [],
+   "related_mis": [],
+   "n_related_mis": 0,
+   "difficulty": 2,
+   "successors": [
+    "ATOM-MEM-MOVE-002",
+    "ATOM-MEM-VALUE-002"
+   ]
+  },
+  {
+   "id": "ATOM-MEM-VALUE-002",
+   "title": "引用折叠与完美转发：为什么 std::forward 不能省",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-VALUE-002.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "四条折叠规则的实测：T& &⇒int&、T& &&⇒int&、T&& &⇒int&、T&& &&⇒int&&（唯一保持右值引用的是\"右值引用的右值引用\"）；auto&& 传左值推导为 int&、传右值推导为 int&&。",
+     "evidence": [
+      "EV-MEM-021"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "转发链对照：forward 右值实参时 copies=0、moves=1；forward 左值实参时 copies=1、moves=0；而省略 forward 时右值实参退化为拷贝（copies=1、moves=0）。",
+     "evidence": [
+      "EV-MEM-022"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "T&& 只有在**推导语境**（模板形参或 auto&&）下才是万能引用：传左值时特判推 T 为左值引用、经折叠回左值引用；const T&& 不是万能引用。std::forward<T>(x) 按推导出的 T 恢复实参值类别，故转发链里省略 forward 会把右值实参降级为拷贝。这条依据标准对引用折叠与推导特判的规定，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-MEM-021",
+      "EV-MEM-022"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-MOVE-002",
+    "ATOM-MEM-VALUE-001"
+   ],
+   "related_mis": [
+    "misconception_MIS-MEM-017",
+    "misconception_MIS-MEM-018"
+   ],
+   "n_related_mis": 2,
+   "difficulty": 2,
+   "successors": []
+  },
+  {
+   "id": "ATOM-MEM-WEAK-001",
+   "title": "std::weak_ptr 是非拥有观察者；用 weak_ptr 打破 shared_ptr 的循环引用",
+   "domain": "MEM",
+   "path": "atoms/mem/ATOM-MEM-WEAK-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "非拥有观察者的实测：持有 weak 时 use_count 仍为 1（不增加强引用）、expired before=0；.lock() 后 use_count=2 且 locked bool=1，lock 作用域结束后回到 1；reset 后 weak expired=1，且 box destroyed count=1（对象仍只析构一次）。",
+     "evidence": [
+      "EV-MEM-015"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "observation",
+     "statement": "把反向引用改为 weak 后：a use_count=1、b use_count=2，nodes destroyed count=2（两个节点全部析构）——与互相强持有时的 destroyed count=0 构成唯一变量对照。",
+     "evidence": [
+      "EV-MEM-016"
+     ]
+    },
+    {
+     "id": "prop-3",
+     "claim_type": "inference",
+     "statement": "weak_ptr 指向 shared_ptr 管理的对象但不增加引用计数，.lock() 可临时提升为 shared_ptr（对象存活则成功、计数 +1，已销毁则返回空即 expired）——因此它适用于\"需要旁观共享对象但不延长其寿命\"的场景（尤其子到父的反向引用）来打破环。这条依据标准对 weak_ptr 语义的规定，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-MEM-015",
+      "EV-MEM-016"
+     ]
+    }
+   ],
+   "n_propositions": 3,
+   "n_observation": 2,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-MEM-SHARED-001"
+   ],
+   "related_mis": [],
+   "n_related_mis": 0,
+   "difficulty": 2,
+   "successors": [
+    "ATOM-MEM-LEAK-001",
+    "ATOM-MEM-LEAK-002"
+   ]
+  },
+  {
+   "id": "ATOM-UB-GRAY-001",
+   "title": "先分清副作用是 unsequenced 还是 indeterminately sequenced：前者是 UB，后者只是未指定",
+   "domain": "UB",
+   "path": "atoms/ub/ATOM-UB-GRAY-001.md",
+   "propositions": [
+    {
+     "id": "prop-1",
+     "claim_type": "observation",
+     "statement": "f(g(), h()) 的实参求值顺序实测：四组组合（GCC 15.3.0 与 GCC 13.1.0、-O0 与 -O2、c++17）输出均为 h 先于 g、最终 f(1,2)——实测顺序一致**不代表可依赖**，标准只规定其为未指定/不确定序。",
+     "evidence": [
+      "EV-UB-001"
+     ]
+    },
+    {
+     "id": "prop-2",
+     "claim_type": "inference",
+     "statement": "未测序的同一标量修改（如 i = i++ + ++i）与通过不兼容类型指针访问对象（严格别名）属**未定义行为**——标准不再要求任何行为，优化器可据此删除访问；而函数实参 f(i++, i++) 自 C++17 起是 indeterminately sequenced ⇒ 只是 unspecified（C++11/14 下才是 UB）。这条版本边界依据标准对调用实参求值顺序、未测序与严格别名的规定，不由本卡读数单独证明。",
+     "evidence": [
+      "EV-UB-001"
+     ]
+    }
+   ],
+   "n_propositions": 2,
+   "n_observation": 1,
+   "n_inference": 1,
+   "prerequisites": [
+    "ATOM-UB-DEF-001"
+   ],
+   "related_mis": [
+    "misconception_MIS-CONC-001",
+    "misconception_MIS-UB-001",
+    "misconception_MIS-UB-002",
+    "misconception_MIS-UB-003",
+    "misconception_MIS-UB-004",
+    "misconception_MIS-UB-008",
+    "misconception_MIS-UB-012",
+    "misconception_MIS-UB-013",
+    "misconception_MIS-UB-014",
+    "misconception_MIS-UB-015"
+   ],
+   "n_related_mis": 10,
+   "difficulty": 5,
+   "successors": []
+  }
+ ],
+ "note": "只读台账：难度为自动估算建议（套用任务书分档）；前置依赖来自卡面 `relations.prerequisite`（自动推导，待人工复核）；关联 MIS 为 `misconception_*.md`「关联原子」反向索引。"
+}
