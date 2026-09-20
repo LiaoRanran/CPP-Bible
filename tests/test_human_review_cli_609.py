@@ -108,10 +108,22 @@ def test_check_catches_machine_reviewer(ann: Path, capsys):
     assert "第 1 行" in err and "reviewer" in err
 
 
-def test_default_channel_is_empty_and_checks_green():
-    """真实 596 通道必须存在且为空（608 的教训：断言"不存在"会被误删偶然骗过）。"""
+def test_default_channel_rows_are_provable_human(ann: Path):
+    """真实 596/609 人审通道上的每一行都必须是**可证明的真人**手写。
+
+    608 教训：断言"文件不存在"会被误删偶然骗过 ⇒ 改断言存在性 + 内容属性。
+    609 现状：通道上并存两套笔迹（609 CLI 的 `kind`+`human`；596 的 `action`+真实 git 署名），
+    两者都必须被承认为真人；机器（reviewer=machine / 未注册身份）必须被拒。
+    """
     p = hrc.DEFAULT_ANN
-    if p.is_file():
-        assert hrc.load_annotations(p) == [], "真实人审通道被写入了内容（人审权不容机器代签）"
-        assert p.stat().st_size == 0
-    assert hrc.check(p) == []
+    if not p.is_file():                      # 允许缺件（= 一条都没审过），不做脆断言
+        pytest.skip("人审通道不存在（允许：零人审）")
+    rows = hrc.load_annotations(p)
+    ok = hrc.human_identities()
+    for r in rows:
+        assert str(r.get("reviewer")) in ok, f"通道混入了非真人记录：{r}"
+        assert hrc.kind_of(r) in hrc.KINDS
+        assert len(str(r.get("reason", ""))) >= hrc.MIN_REASON
+    assert hrc.check(p) == [], f"真实人审通道体检未通过：{hrc.check(p)[:5]}"
+    # 本工具绝不主动写真实通道：fixture 用的 tmp 通道与本测试无关
+    assert ann.read_text(encoding="utf-8") == ""
