@@ -160,3 +160,47 @@
 - oracle 83 卡人审验证（已验 0）
 - modify 口径冲突（keep-low vs upgrade-medium）待用户裁决
 - 人审 schema 缺 review_seconds（耗时不可回溯）
+
+---
+
+## 2026-09-21 下午化债进展（第二轮）
+
+### 613 监工验收 ✅ 通过
+- 核心门禁全绿：tool_integrity / gate / poison / replay 全部 exit 0
+- 18/18 工具 --check 全绿
+- 22 建设 commit + 3 监工补 commit
+- 零污染：受控目录未动，_adv_v80 全部还原
+- 验收报告：_auto/review_613.md
+
+### _arch 归档 ✅ 完成
+- 10 目录 86 文件（_arch_v2-v9 + v2_round2）移到 _archive/old_research/
+- 根目录 _arch 从 19 减到 9（v10-v18）
+- 归档后 governance 台账 45 处变更 + supply_chain 重钉
+- 3 个失败测试（governance/supply_chain）转绿
+
+### 613 遗留代码质量改进 ✅ 批量 commit
+- in_toto_link.py：变量重命名（e → err/verrs）
+- defense_chain_deep_613.py：Counter[str] 类型注解
+- learner_behavior_ingest.py / path_graph / twin_dashboard：mypy 类型注解
+- merkle_proof_613.py / ots_anchor_613.py：mypy 修复
+- metrics_612.md：时间戳更新
+
+### 质量门禁
+- ruff 全量：All checks passed（196 工具 + 175 测试）
+- mypy 全量：Success: no issues found in 196 source files
+- fast pytest：归档后无回归（3 个 governance 失败已修复）
+- CI：#612-#616 cancelled（连续 push 自动取消旧 run），#617 正在跑
+
+### 项目规模（2026-09-21 下午）
+- 总 commit：1443
+- 工具：196
+- 测试文件：175
+- 根目录 _arch：9（v10-v18，归档后）
+- _archive：1321 文件
+- 614 提示词：已定稿（_auto/inbox/614_draft.md）
+
+### 待用户裁决
+1. 活性锚补丁集是否落卡（50 条，9 条低成本可补）
+2. golden_lock 是否 accept（gate 全绿必要条件）
+3. OTS 是否 submit（不可逆，凭据已生成）
+4. M1 TCE 是否攻坚（唯一 escaped=1/1406）
