@@ -24,6 +24,7 @@ import urllib.request
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
+from typing import cast
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
@@ -45,7 +46,7 @@ def gh_api(path: str) -> dict | list:
     try:
         req = urllib.request.Request(url, headers=UA)
         with urllib.request.urlopen(req, timeout=GH_TIMEOUT) as r:
-            return json.loads(r.read().decode("utf-8"))
+            return cast("dict | list", json.loads(r.read().decode("utf-8")))
     except Exception as e:  # 网络不可达 / 404 / 限流
         return {"__error__": f"{type(e).__name__}: {e}"}
 
@@ -74,7 +75,10 @@ def _head(title: str) -> list[str]:
 def baseline_ci() -> list[str]:
     L = _head("613 基线 0.1 · CI 四 job 现状台账")
     runs = gh_api(f"/repos/{REPO}/actions/runs?per_page=3")
-    if isinstance(runs, dict) and "__error__" in runs:
+    if not isinstance(runs, dict):
+        L += ["> ⚠ GitHub API 返回非 dict ⇒ 无法记录 CI 结论。", ""]
+        return L
+    if "__error__" in runs:
         L += [f"> ⚠ GitHub API 不可达：`{runs['__error__']}` ⇒ 无法记录 CI 结论（离线）。", ""]
         return L
 
@@ -87,8 +91,9 @@ def baseline_ci() -> list[str]:
         L.append(f"- head_sha：`{run.get('head_sha', '')[:12]}` ｜ 事件={run.get('event')} ｜ "
                  f"分支={run.get('head_branch')} ｜ 创建={run.get('created_at')}")
         jobs = gh_api(f"/repos/{REPO}/actions/runs/{rid}/jobs?per_page=50")
-        if isinstance(jobs, dict) and "__error__" in jobs:
-            L.append(f"- ⚠ job 明细拉取失败：`{jobs['__error__']}`")
+        if not isinstance(jobs, dict) or "__error__" in jobs:
+            why = jobs.get("__error__", "返回非 dict") if isinstance(jobs, dict) else "返回非 dict"
+            L.append(f"- ⚠ job 明细拉取失败：{why}")
             L.append("")
             continue
         rows = []
@@ -128,7 +133,7 @@ def baseline_learner_twin() -> list[str]:
     if not st:
         L.append("- **不存在**（612 未初始化或路径不同）")
     else:
-        keys = Counter()
+        keys: Counter[str] = Counter()
         for r in st:
             keys.update(r.keys())
         L.append(f"- 记录数：**{len(st)}** ｜ 字段：{dict(keys)}")
@@ -250,12 +255,12 @@ def baseline_d5() -> list[str]:
     L.append("## 计数")
     L.append("")
     L += _md_table([
-        ["Book 中声明的基准源（去重）", len(declared)],
-        ["仓库根 `_bench_d5_*.cpp`", len(root_files)],
-        ["`_archive/benchmarks/` 中", len(arc_files)],
-        ["磁盘合计（根 ∪ archive）", len(all_files)],
-        ["声明但两处都缺失", len([f for f in declared if f not in all_files])],
-        ["孤儿（存在但未被 Book 引用）", len(all_files - set(declared))],
+        ["Book 中声明的基准源（去重）", str(len(declared))],
+        ["仓库根 `_bench_d5_*.cpp`", str(len(root_files))],
+        ["`_archive/benchmarks/` 中", str(len(arc_files))],
+        ["磁盘合计（根 ∪ archive）", str(len(all_files))],
+        ["声明但两处都缺失", str(len([f for f in declared if f not in all_files]))],
+        ["孤儿（存在但未被 Book 引用）", str(len(all_files - set(declared)))],
     ], ["项", "数"])
     L.append("")
 

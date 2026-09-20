@@ -18,6 +18,7 @@ import argparse
 import json
 from datetime import datetime
 from pathlib import Path
+from typing import Any, cast
 
 ROOT = Path(__file__).resolve().parent.parent
 SNAP = ROOT / "tools" / "golden_state.json"
@@ -28,18 +29,26 @@ CURRENT = {"block": 0, "warn": 186, "advice": 5, "source": "612 C1 oracle_verifi
 
 
 def load_snapshot() -> dict:
-    return json.loads(SNAP.read_text(encoding="utf-8"))
+    return cast("dict", json.loads(SNAP.read_text(encoding="utf-8")))
+
+
+def _as_int(v: Any, default: int = 0) -> int:
+    """快照字段类型不保证（可能是 str/int），容错转 int，绝不抛异常。"""
+    try:
+        return int(v)
+    except (TypeError, ValueError):
+        return default
 
 
 def build() -> dict:
     snap = load_snapshot()
-    locked = snap.get("metrics", {})
-    locked_warn = int(locked.get("warn_findings", 0))
-    cur_warn = int(CURRENT["warn"])
+    locked = cast("dict[str, Any]", snap.get("metrics", {}))
+    locked_warn = _as_int(locked.get("warn_findings", 0))
+    cur_warn = _as_int(CURRENT["warn"])
     delta = cur_warn - locked_warn
     return {
         "locked_warn": locked_warn,
-        "locked_block": int(locked.get("block_findings", 0)),
+        "locked_block": _as_int(locked.get("block_findings", 0)),
         "locked_updated": snap.get("updated", "?"),
         "locked_commit": snap.get("commit", "?"),
         "current_warn": cur_warn,

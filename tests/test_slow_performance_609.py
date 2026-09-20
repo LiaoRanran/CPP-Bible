@@ -10,19 +10,18 @@
 """
 from __future__ import annotations
 
-import pytest
-
-pytestmark = pytest.mark.slow
-
 import importlib.util
 import tempfile
 import threading
 import time
 from pathlib import Path
 
+import pytest
 import task_queue as tq
 from hypothesis import HealthCheck
 from hypothesis import settings as HSettings
+
+pytestmark = pytest.mark.slow
 
 _HERE = Path(__file__).resolve().parent
 
