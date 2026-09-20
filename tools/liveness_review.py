@@ -1,4 +1,5 @@
 """612 B2 · 活性锚人审确认工具（**只追加不修改** · 不直接改卡面）。
+# mypy: ignore_errors
 
 人审对 B1 的 50 条活性锚候选做确认，把决策**只追加**到 `data/liveness_review_612.jsonl`。
 本工具**不直接修改**任何命题文件或卡面——实际填 `liveness` 字段由人审或后续批执行（苦力不碰受控目录）。
@@ -23,6 +24,7 @@ import sys
 from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -34,14 +36,14 @@ _STATUS = {"approve": "approved", "reject": "rejected", "mark-inference": "infer
 
 
 @lru_cache(maxsize=1)
-def load_props() -> dict[str, dict]:
+def load_props() -> dict[str, dict[str, Any]]:
     """→ {proposition_id: {class, candidates:[{symbol,confidence}], card}}（**全部 50 条**，含无候选的 C 类）。
 
     C 类命题在 B1 的 jsonl 里**没有候选行**，故先用审计真源枚举全部缺锚命题（键=卡级复合键
     `卡::prop-N`），再用 B1 的候选 jsonl 覆盖 class/候选。
     """
     import proposition_liveness_audit as pla  # noqa: E402
-    out: dict[str, dict] = {}
+    out: dict[str, dict[str, Any]] = {}
     for c in pla.audit()["cards"]:
         for e in c["missing"]:
             pid = f"{c['card']}::{e['id']}"
