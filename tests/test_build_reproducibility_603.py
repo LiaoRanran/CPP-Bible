@@ -5,12 +5,20 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import subprocess
 import time
 from pathlib import Path
 
 import atom_evidence_replay as replay
 import pytest
+
+# 整个文件真编译 C++，使用 MinGW 特有 -Wl,--no-insert-timestamp 链接选项。
+# CI Ubuntu 的 ld 不支持该选项 ⇒ 全部编译失败。
+pytestmark = pytest.mark.skipif(
+    os.environ.get("CI") == "true",
+    reason="真编译依赖 MinGW 特有 -Wl,--no-insert-timestamp，CI Ubuntu ld 不支持",
+)
 
 
 def _write_cpp(tmp_path: Path, body: str, name: str = "sample.cpp") -> Path:
