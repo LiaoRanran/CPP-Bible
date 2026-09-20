@@ -23,6 +23,7 @@ import sys
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
+from typing import Any, cast
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
@@ -37,7 +38,8 @@ USER = "default"
 def _kcs() -> list[dict]:
     if not KC_JSON.is_file():
         return []
-    return json.loads(KC_JSON.read_text(encoding="utf-8")).get("kcs", [])
+    return cast("list[dict[Any, Any]]",
+                json.loads(KC_JSON.read_text(encoding="utf-8")).get("kcs", []))
 
 
 def _state_rows() -> list[dict]:

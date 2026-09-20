@@ -262,8 +262,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[C1] ✗ 源文件不存在: {src}")
         return 1
     records = load_records(src)
-    kcs = None if a.no_kc_check else known_kcs()
-    res = ingest(records, path=DATA, write=a.write, kcs=kcs)
+    # 注意：本函数上方 --check 分支已有局部名 kcs（set[str]），此处另取别名避免重定义
+    kc_allow: set[str] | None = None if a.no_kc_check else known_kcs()
+    res = ingest(records, path=DATA, write=a.write, kcs=kc_allow)
     tag = "已写入" if a.write else "dry-run（未写入）"
     if res["aborted"]:
         print(f"[C1] ❌ 整批拒绝（fail-closed）：{res['rejected']} 条不合法，{tag}")

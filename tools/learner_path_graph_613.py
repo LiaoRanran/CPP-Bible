@@ -22,6 +22,7 @@ import sys
 from collections import deque
 from datetime import datetime
 from pathlib import Path
+from typing import Any, cast
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
@@ -35,7 +36,7 @@ DEFAULT_THRESHOLD = 0.5
 
 def load_kcs() -> list[dict]:
     d = json.loads(KC_JSON.read_text(encoding="utf-8"))
-    return d.get("kcs", [])
+    return cast("list[dict[Any, Any]]", d.get("kcs", []))
 
 
 def load_mastery() -> dict[str, float]:
