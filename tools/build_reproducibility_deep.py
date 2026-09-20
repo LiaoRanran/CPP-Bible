@@ -68,6 +68,25 @@ OBJDUMP_PARAMS: tuple[tuple[str, str, str], ...] = (
 #: 只比长度、不比逐字节的段（工具链会插版本串/时间戳）
 LEN_ONLY_SECTIONS = (".comment", ".note.gnu.build-id", ".note.GNU-stack", ".debug_info")
 
+#: 611 A3：PE 时间戳口径（把 610 E3 的实测结论**写进正式报告**，供人读与复核）。
+#: 每条都是"可复算的事实"，不是意见：(事实, 值/说明)
+PE_TIMESTAMP_FACTS: tuple[tuple[str, str], ...] = (
+    ("新状态名", "`time_window_drift`（与 `ok`/`not_reproducible`/`tampered` 并列，"
+                 "由 `atom_evidence_replay._recompile_invariant_extended` 给出）"),
+    ("PE 头时间戳偏移", "`0x88`（= e_lfanew 0x80 + 8，PE/COFF `TimeDateStamp`，32 位）"),
+    ("第二处同族偏移", "`0xd8`（debug 目录里与编译时刻同源的字段；两侧值正好相差 1 秒）"),
+    ("跨时间窗口差异量", "**2 字节**（仅上述两处；长度相同、其余字节逐字节一致）"),
+    ("语义维度", "`nm` 符号表 / `objdump` 段 / `strings` 字符串表**全一致**"
+                 "（差异不触达语义）"),
+    ("取证方法", "加 `-Wl,--no-insert-timestamp` 再编一对（同样跨 1.1s）⇒ **字节一致**；"
+                 "记 `timestamp_proof=no_insert_timestamp_pair_identical`"),
+    ("可复现配方", "链接加 `-Wl,--no-insert-timestamp`，或设 `SOURCE_DATE_EPOCH`（实测该开关有效）"),
+    ("本仓影响面", "56 张证据卡的 `artifact` **全部是 `.asm`**（`g++ -S` 线）⇒ 不受该漂移影响；"
+                   "PE 漂移只在**可执行产物**上出现"),
+    ("结论（诚实版）", "「同机同日两次编译一致」对 **PE 产物只在「同一秒内」成立**；"
+                       "跨时间窗口必变 2 字节。本批**不改** 603 既有口径、不重冻结，只**显形**并给配方"),
+)
+
 
 def diff_bytes(a: Path | str, b: Path | str, context: int = 16) -> dict:
     """纯标准库的 diffoscope 替代品：首个差异偏移 + 双侧 sha256 + 差异字节数 + hex 上下文。"""
@@ -122,7 +141,20 @@ def render_report() -> str:
               "- 仓里不引 diffoscope（依赖重、要外部工具）⇒ 自带 `diff` 子命令：",
               "  首个差异偏移 + 双侧 sha256 + 差异字节数 + 两侧 hex 上下文；",
               "- 定位：**给失败现场用**（谁在哪个字节上变了），不给「全量二进制 diff」能力。", "",
-              ]
+              "## 五、PE 时间戳口径（611 A3 · 610 E3 实测结论正式化）", "",
+              "> 为什么单列一节：603 锁的是「同机同日两次编译一致」。**对 PE 可执行产物，"
+              "这句话只在「同一秒内」成立** —— 跨秒必变 2 字节。不写清楚，"
+              "跨窗口复现测试就会把「时间戳漂移」误判成「内容不可复现」。", "",
+              "| 事实 | 值 / 说明 |", "|---|---|"]
+    for k, v in PE_TIMESTAMP_FACTS:
+        lines.append(f"| {k} | {v} |")
+    lines += ["", "**判读规则（写给复核者）**：", "",
+              "- `sha` 跨窗口**一致** ⇒ `ok`（本仓 56 张卡就是这一档）；",
+              "- `sha` 跨窗口**不同**但 `nm`/`objdump`/`strings` **全一致**、且差异只落在"
+              " PE 时间戳两处 ⇒ `time_window_drift`（**不是**不可复现，是「秒表在走」）；",
+              "- 上述之外（差异触达语义维度、或差异字节不在时间戳内、或加了"
+              " `--no-insert-timestamp` 仍不同）⇒ `not_reproducible`（**真问题**，须查工具链/环境）；",
+              "- 卡值比对失败（`want_sha` 不符）⇒ `tampered`（与时间窗口无关的另一条路）。", ""]
     return "\n".join(lines) + "\n"
 
 
@@ -142,6 +174,15 @@ def check() -> list[str]:
     same = diff_bytes(__file__, __file__)
     if not same["identical"] or same["first_diff"] is not None:
         problems.append("diff 自检失败：同一文件应判 identical")
+    # 611 A3：PE 时间戳口径必须**在渲染出的报告里**（文档即代码：删了报告就报红）
+    text = render_report()
+    if len(PE_TIMESTAMP_FACTS) < 8:
+        problems.append(f"PE 口径事实条数不足（= {len(PE_TIMESTAMP_FACTS)}，应 ≥8）")
+    for key, val in PE_TIMESTAMP_FACTS:
+        if f"| {key} | {val} |" not in text:
+            problems.append(f"报告缺 PE 口径条目：{key}")
+    if "time_window_drift" not in text or "no-insert-timestamp" not in text:
+        problems.append("报告缺 `time_window_drift` 状态名或 `--no-insert-timestamp` 配方")
     return problems
 
 
