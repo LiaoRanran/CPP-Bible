@@ -1,0 +1,146 @@
+{
+  "generated_at": "2026-09-20T23:32:35",
+  "patches": [
+    {
+      "proposition_id": "ATOM-HIST-AUTOPTR-001::prop-2",
+      "card": "ATOM-HIST-AUTOPTR-001",
+      "card_path": "",
+      "claim_type": "observation",
+      "liveness": {
+        "kind": "fixture_symbol",
+        "symbol": "is_copy_constructible"
+      },
+      "anchor_source": "EV-MEM-003",
+      "class": "A",
+      "confidence": "high",
+      "priority": 77.28
+    },
+    {
+      "proposition_id": "ATOM-MEM-PERF-003::prop-1",
+      "card": "ATOM-MEM-PERF-003",
+      "card_path": "",
+      "claim_type": "observation",
+      "liveness": {
+        "kind": "fixture_symbol",
+        "symbol": "capacity_at_len1"
+      },
+      "anchor_source": "EV-MEM-038",
+      "class": "A",
+      "confidence": "high",
+      "priority": 47.04
+    },
+    {
+      "proposition_id": "ATOM-MEM-RAII-002::prop-2",
+      "card": "ATOM-MEM-RAII-002",
+      "card_path": "",
+      "claim_type": "observation",
+      "liveness": {
+        "kind": "fixture_symbol",
+        "symbol": "Correct"
+      },
+      "anchor_source": "EV-MEM-024",
+      "class": "A",
+      "confidence": "high",
+      "priority": 47.04
+    },
+    {
+      "proposition_id": "ATOM-MEM-UNIQUE-001::prop-1",
+      "card": "ATOM-MEM-UNIQUE-001",
+      "card_path": "",
+      "claim_type": "observation",
+      "liveness": {
+        "kind": "fixture_symbol",
+        "symbol": "Big"
+      },
+      "anchor_source": "EV-MEM-011",
+      "class": "A",
+      "confidence": "high",
+      "priority": 43.68
+    },
+    {
+      "proposition_id": "ATOM-MEM-VALUE-001::prop-1",
+      "card": "ATOM-MEM-VALUE-001",
+      "card_path": "",
+      "claim_type": "observation",
+      "liveness": {
+        "kind": "fixture_symbol",
+        "symbol": "type_traits"
+      },
+      "anchor_source": "EV-MEM-006",
+      "class": "A",
+      "confidence": "high",
+      "priority": 43.68
+    },
+    {
+      "proposition_id": "ATOM-MEM-LEAK-002::prop-1",
+      "card": "ATOM-MEM-LEAK-002",
+      "card_path": "",
+      "claim_type": "observation",
+      "liveness": {
+        "kind": "fixture_symbol",
+        "symbol": "cycle_allocated"
+      },
+      "anchor_source": "EV-MEM-043",
+      "class": "A",
+      "confidence": "high",
+      "priority": 40.32
+    },
+    {
+      "proposition_id": "ATOM-MEM-PERF-004::prop-1",
+      "card": "ATOM-MEM-PERF-004",
+      "card_path": "",
+      "claim_type": "observation",
+      "liveness": {
+        "kind": "fixture_symbol",
+        "symbol": "padded_offset_bytes"
+      },
+      "anchor_source": "EV-MEM-044",
+      "class": "A",
+      "confidence": "high",
+      "priority": 40.32
+    },
+    {
+      "proposition_id": "ATOM-MEM-SHARED-002::prop-2",
+      "card": "ATOM-MEM-SHARED-002",
+      "card_path": "",
+      "claim_type": "observation",
+      "liveness": {
+        "kind": "fixture_symbol",
+        "symbol": "_M_release"
+      },
+      "anchor_source": "EV-MEM-034",
+      "class": "A",
+      "confidence": "high",
+      "priority": 40.32
+    },
+    {
+      "proposition_id": "ATOM-CONC-LOCK-001::prop-1",
+      "card": "ATOM-CONC-LOCK-001",
+      "card_path": "",
+      "claim_type": "observation",
+      "liveness": {
+        "kind": "fixture_symbol",
+        "symbol": "single_thread_baseline"
+      },
+      "anchor_source": "EV-CONC-003",
+      "class": "A",
+      "confidence": "high",
+      "priority": 16.8
+    }
+  ],
+  "projection": {
+    "mode": "partial:9",
+    "warn_before": 50,
+    "addressed": 9,
+    "warn_after": 41,
+    "by_class": {
+      "A": 9
+    },
+    "total_props": 50,
+    "class_totals": {
+      "A": 9,
+      "B": 26,
+      "C": 15
+    }
+  }
+}
