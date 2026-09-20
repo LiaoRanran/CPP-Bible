@@ -100,6 +100,35 @@ def summarize_by_mis(annotations: list[dict], edges_path: Path | str | None = No
     return rows[:top] if top else rows
 
 
+def summarize_review_seconds(annotations: list[dict]) -> dict:
+    """611 A2：`review_seconds` 耗时统计（平均/中位数/最大/最小/来源分布）。
+
+    **诚实口径**：只有**显式测到**的记录才算进统计（`measured_count`）；缺字段或 `null` 的一律
+    记为 `null_count`，**不按 0 计入**（0 秒是个真实值，不能当"没测"用；反之"没测"也绝不能当 0）。
+    存量 388 条**全部未测量** ⇒ `measured=false`，此时 avg/median/max/min 一律 `None`（不编数）。
+    """
+    vals = [a["review_seconds"] for a in annotations
+            if isinstance(a.get("review_seconds"), (int, float))
+            and not isinstance(a.get("review_seconds"), bool)]
+    total = len(annotations)
+    out = {"total": total, "measured_count": len(vals), "null_count": total - len(vals),
+           "measured": bool(vals),
+           "measured_ratio": round(len(vals) / total, 4) if total else None,
+           "avg": round(sum(vals) / len(vals), 1) if vals else None,
+           "median": round(sorted(vals)[len(vals) // 2], 1) if vals else None,
+           "max": max(vals) if vals else None, "min": min(vals) if vals else None,
+           "sum": round(sum(vals), 1) if vals else None,
+           "by_source": dict(sorted(Counter(str(a.get("review_seconds_source") or "unlabeled")
+                                           for a in annotations
+                                           if isinstance(a.get("review_seconds"), (int, float))
+                                           and not isinstance(a.get("review_seconds"), bool)
+                                           ).items())),
+           "note": ("存量人审未测耗时 ⇒ 统计不可回溯（measured=false，不伪造 0）"
+                    if not vals else
+                    f"仅 {len(vals)}/{total} 条测得耗时；未测的 {total - len(vals)} 条不进统计")}
+    return out
+
+
 def summarize_by_topic(annotations: list[dict], edges_path: Path | str | None = None) -> dict:
     by_mis = _mis_counter(annotations, edges_path)
     out: dict[str, dict] = {}
@@ -221,9 +250,25 @@ def generate_report(annotations: list[dict], edges_path: Path | str | None = Non
     lines += ["", "## 8. 后续建议", "",
               "- 上表 `modify_ratio_1.0` 的 MIS 是**歧义度最高**的一组：建议优先安排第二轮人审"
               "（把'证据较充分但偏保守'的档位判断沉淀成判据）；",
-              "- 存量人审**没有** `review_seconds`/`reason_len` 字段 ⇒ 耗时类质量指标**不可回溯**，"
-              "若要在下一轮落地 automation bias 检测，需先扩展人审 CLI 的记录 schema（需授权）；",
+              "- 耗时类质量指标（automation bias / 单位时间产出）：人审 CLI 的 schema **已扩**"
+              "（611 A2 新增 `review_seconds`），新记录起即可测；存量 388 条**不可回溯**"
+              "（如实标 measured=false，**不伪造 0**）；",
               "- 本报告只呈现事实与异常清单，**不自动执行任何人审**、不修改任何注解。", ""]
+    # 611 A2：耗时统计单列一节（放在 §8 之后 ⇒ 610 的"## 8. 后续建议"断言不受影响）
+    rs = summarize_review_seconds(annotations)
+    lines += ["## 9. 耗时统计（review_seconds · 611 A2）", "", "| 指标 | 值 |", "|---|---:|",
+              f"| 记录总数 | {rs['total']} |",
+              f"| **测得** | {rs['measured_count']} |",
+              f"| 未测得（null/缺字段） | {rs['null_count']} |",
+              f"| measured | {'true' if rs['measured'] else '**false**'} |"]
+    for k, label in (("avg", "平均（s）"), ("median", "中位数（s）"), ("max", "最大（s）"),
+                     ("min", "最小（s）"), ("sum", "合计（s）")):
+        v = rs[k]
+        lines.append(f"| {label} | {'—' if v is None else v} |")
+    lines += [f"| 计时来源 | {rs['by_source'] if rs['by_source'] else '—'} |", "",
+              f"- {rs['note']}", "",
+              "- **口径**：只统计**显式测得**的记录；未测的既不按 0 计入、也不参与均值"
+              "（0 秒是真实值，缺测是另一种状态，两者不可混同）。", ""]
     return "\n".join(lines)
 
 
@@ -297,7 +342,8 @@ def main(argv: list[str] | None = None) -> int:
                           "by_direction": summarize_by_direction(anns, a.edges),
                           "by_topic": summarize_by_topic(anns, a.edges),
                           "mis_count": len(summarize_by_mis(anns, a.edges)),
-                          "top_modify_mis": summarize_by_mis(anns, a.edges)[:5]},
+                          "top_modify_mis": summarize_by_mis(anns, a.edges)[:5],
+                          "review_seconds": summarize_review_seconds(anns)},   # 611 A2
                          ensure_ascii=False, indent=1))
         return 0
     if a.cmd == "anomalies":
