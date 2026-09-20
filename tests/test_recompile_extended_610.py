@@ -20,6 +20,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import shutil
 import subprocess
 import sys
@@ -30,7 +31,15 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
 import atom_evidence_replay as aer  # noqa: E402
 
-pytestmark = pytest.mark.slow
+# 全部标 slow（要真调 g++ 编译）：fast 门禁不受影响，本文件需显式跑。
+# CI 上跳过：依赖本地 MinGW 编译的 .asm 工件 sha，CI Ubuntu g++ 重编译产物必然不同。
+pytestmark = [
+    pytest.mark.slow,
+    pytest.mark.skipif(
+        os.environ.get("CI") == "true",
+        reason="依赖本地 MinGW 编译环境（.asm 工件 sha），CI Ubuntu g++ 产物 sha 必然不同",
+    ),
+]
 
 CARD = aer.run_root() / "evidence" / "conc" / "EV-CONC-001.md"
 ASM_REL = "Examples/atoms/_atom_fence_vs_atomic.asm"
