@@ -47,14 +47,14 @@ def bridge_distribution() -> dict:
     rows = [json.loads(line) for line in CAND_IN.read_text(encoding="utf-8").splitlines() if line.strip()]
     topic = Counter(r["basis"]["topic"] for r in rows)
     comp_pairs = Counter(tuple(r["components"]) for r in rows)
-    mis_appear = Counter()
+    mis_appear: Counter[str] = Counter()
     for r in rows:
         mis_appear[r["source"]] += 1
         mis_appear[r["target"]] += 1
     # 论证关系强度预估：两 MIS 的 refutations 文本词频 Jaccard（纯词频，不调 LLM）
     import bridge_edge_candidates as c2  # noqa: E402
     mi = c2.load_mis_index()
-    strength = Counter()
+    strength: Counter[str] = Counter()
     for r in rows:
         a, b = r["source"], r["target"]
         ta, tb = _tokens(" ".join(mi.get(a, {}).get("refutations", []))), \
@@ -83,7 +83,7 @@ def liveness_classification() -> dict:
     for card_dir in (ROOT / "atoms", ROOT / "evidence"):
         for p in sorted(card_dir.rglob("*.md")):
             ev_text[p.stem] = p.read_text(encoding="utf-8", errors="replace")
-    classes = {"A": [], "B": [], "C": []}
+    classes: dict[str, list[dict[str, object]]] = {"A": [], "B": [], "C": []}
     detail = []
     for e in missing:
         stmt = e.get("statement") or ""
@@ -172,7 +172,7 @@ def kc_ledger() -> dict:
         kcs.append({"id": p.stem, "props_obs": obs, "props_inf": inf,
                     "related_mis": rel_mis, "difficulty": diff,
                     "prereq_note": "前置依赖基于 evidence 引用推导，待人工复核（本基线仅列关联 MIS）"})
-    kcs.sort(key=lambda d: d["id"])
+    kcs.sort(key=lambda d: str(d["id"]))
     return {"total_atoms": len(kcs), "kcs": kcs,
             "note": "KC=27 原子卡；难度为自动估算建议，非客观难度；前置依赖待 D1 结合 evidence 引用细化"}
 
@@ -262,7 +262,7 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def br_tot(b: dict) -> int:
-    return b["bridge"]["total"]
+    return int(b["bridge"]["total"])
 
 
 if __name__ == "__main__":

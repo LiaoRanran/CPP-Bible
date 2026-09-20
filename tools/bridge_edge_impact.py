@@ -185,7 +185,7 @@ def check(results: list[dict]) -> list[str]:
     problems: list[str] = []
     for r in results:
         if r["what_if"] == "approved-only" and r["bridges_applied"] == 0:
-            want = KNOWN_BASE[r["modify_mode"]]
+            want: dict[str, int] = KNOWN_BASE[r["modify_mode"]]  # type: ignore[assignment]
             got = r["base_summary"]
             for k, v in want.items():
                 if got.get(k) != v:

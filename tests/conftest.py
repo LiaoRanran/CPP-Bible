@@ -142,6 +142,7 @@ def pytest_configure(config: pytest.Config) -> None:
     #   故留给人工/CI 清理，不影响测试判定）。
     if not config.option.basetemp:
         _repo = Path(__file__).resolve().parent.parent
+        (_repo / ".pytest_tmp").mkdir(parents=True, exist_ok=True)
         config.option.basetemp = str(
             _repo / ".pytest_tmp" / f"run-{os.getpid()}-{int(time.time())}")
     config.addinivalue_line(
