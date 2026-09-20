@@ -54,7 +54,8 @@ def load_missing_props() -> list[dict]:
     out: list[dict] = []
     for c in res["cards"]:
         for e in c["missing"]:
-            out.append({"proposition_id": e["id"], "card": c["card"],
+            # 命题 id 在卡内唯一、跨卡重名 ⇒ 用卡级复合键（与 weighted_af_solver 的 `卡::prop-N` 同源）
+            out.append({"proposition_id": f"{c['card']}::{e['id']}", "card": c["card"],
                         "statement": e.get("statement") or "",
                         "evidence": [x for x in (e.get("evidence") or []) if isinstance(x, str)]})
     return out
@@ -186,6 +187,9 @@ def check(d: dict) -> list[str]:
     problems: list[str] = []
     if d["total_props"] != 50:
         problems.append(f"缺锚命题应为 50（实测 {d['total_props']}）")
+    ids = [p["proposition_id"] for p in d["per_prop"]]
+    if len(set(ids)) != len(ids):
+        problems.append(f"proposition_id 不唯一（{len(ids)} 条中仅 {len(set(ids))} 个）")
     if any(d["counts"][k] == 0 for k in ("A", "B", "C")):
         problems.append(f"A/B/C 分类退化（应三类都有）：{d['counts']}")
     # 通用符号不得为 high

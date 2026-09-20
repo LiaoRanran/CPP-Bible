@@ -12,36 +12,36 @@
 
 | 命题 | 卡 | 类 | 候选（符号/置信度） |
 |---|---|---|---|
-| `prop-1` | `ATOM-CONC-FENCE-001` | B | `_Z10spin_plainv`(medium), `_Z13spin_volatilev`(medium), `_Z15spin_with_fencev`(medium) |
-| `prop-1` | `ATOM-CONC-LOCK-001` | A | `single_thread_baseline`(high), `_Z11bench_mutexv`(medium), `_Z12bench_singlev`(medium) |
-| `prop-1` | `ATOM-CONC-RACE-001` | B | `_Z10bench_racev`(medium), `_Z10bench_safev`(medium), `_Z12bench_singlev`(medium) |
-| `prop-1` | `ATOM-HIST-AUTOPTR-001` | B | `CopyConstructible`(medium), `_ZNSt8auto_ptr`(medium), `auto_ptr`(medium) |
-| `prop-2` | `ATOM-HIST-AUTOPTR-001` | A | `is_copy_constructible`(high), `CopyConstructible`(medium), `_ZNSt8auto_ptr`(medium) |
-| `prop-4` | `ATOM-HIST-AUTOPTR-001` | B | `_ZNSt8auto_ptr`(medium), `auto_ptr`(medium), `static_assert`(medium) |
-| `prop-1` | `ATOM-LANG-INLINE-001` | B | `_ASSERT_ALLOWED_KEYS`(medium), `_Z10tu_a_valuev`(medium), `artifact_assert`(medium) |
-| `prop-2` | `ATOM-LANG-INLINE-001` | B | `_ASSERT_ALLOWED_KEYS`(medium), `_Z10tu_a_valuev`(medium), `artifact_assert`(medium) |
-| `prop-1` | `ATOM-MEM-ALIGN-001` | C | —（无） |
-| `prop-2` | `ATOM-MEM-ALIGN-001` | C | —（无） |
-| `prop-1` | `ATOM-MEM-ALLOC-001` | C | —（无） |
-| `prop-2` | `ATOM-MEM-ALLOC-001` | C | —（无） |
-| `prop-3` | `ATOM-MEM-ALLOC-001` | C | —（无） |
-| `prop-1` | `ATOM-MEM-ALLOC-002` | B | `bookkeeping_bytes`(medium), `struct_bytes`(medium), `artifact_sha256`(low) |
-| `prop-2` | `ATOM-MEM-ALLOC-002` | B | `bookkeeping_bytes`(medium), `struct_bytes`(medium), `artifact_sha256`(low) |
-| `prop-1` | `ATOM-MEM-LEAK-001` | C | —（无） |
-| `prop-2` | `ATOM-MEM-LEAK-001` | B | `ASAN_OPTIONS`(medium), `do_sanitizer`(medium), `shared_ptr`(medium) |
-| `prop-1` | `ATOM-MEM-LEAK-002` | A | `cycle_allocated`(high), `cycle_destroyed`(high), `cycle_live_objects`(high) |
-| `prop-2` | `ATOM-MEM-LEAK-002` | B | `Node`(medium), `cycle_allocated`(medium), `cycle_destroyed`(medium) |
-| `prop-1` | `ATOM-MEM-MOVE-002` | B | `BadBuf`(medium) |
-| `prop-2` | `ATOM-MEM-MOVE-002` | B | `FixedBuf`(medium), `HeapBuf`(medium), `claim_boundary`(medium) |
-| `prop-1` | `ATOM-MEM-NEW-001` | C | —（无） |
-| `prop-2` | `ATOM-MEM-NEW-001` | B | `_Znam`(medium), `_Znay`(medium), `artifact_sha256`(low) |
-| `prop-1` | `ATOM-MEM-PERF-001` | B | `_Znam`(medium), `_Znay`(medium), `artifact_sha256`(low) |
-| `prop-1` | `ATOM-MEM-PERF-002` | C | —（无） |
-| `prop-1` | `ATOM-MEM-PERF-003` | A | `capacity_at_len1`(high), `first_heap_len`(high), `sizeof_string`(high) |
-| `prop-1` | `ATOM-MEM-PERF-004` | A | `padded_offset_bytes`(high), `padded_same_line`(high), `padded_sizeof`(high) |
-| `prop-2` | `ATOM-MEM-PERF-004` | B | `cache_line_size`(medium), `cross_object_same_line`(medium), `hardware_destructive_interference_size`(medium) |
-| `prop-1` | `ATOM-MEM-RAII-001` | C | —（无） |
-| `prop-2` | `ATOM-MEM-RAII-001` | B | `_ZN3TagD1Ev`(medium), `_ZN3TagD2Ev`(medium), `artifact_sha256`(low) |
+| `ATOM-CONC-FENCE-001::prop-1` | `ATOM-CONC-FENCE-001` | B | `_Z10spin_plainv`(medium), `_Z13spin_volatilev`(medium), `_Z15spin_with_fencev`(medium) |
+| `ATOM-CONC-LOCK-001::prop-1` | `ATOM-CONC-LOCK-001` | A | `single_thread_baseline`(high), `_Z11bench_mutexv`(medium), `_Z12bench_singlev`(medium) |
+| `ATOM-CONC-RACE-001::prop-1` | `ATOM-CONC-RACE-001` | B | `_Z10bench_racev`(medium), `_Z10bench_safev`(medium), `_Z12bench_singlev`(medium) |
+| `ATOM-HIST-AUTOPTR-001::prop-1` | `ATOM-HIST-AUTOPTR-001` | B | `CopyConstructible`(medium), `_ZNSt8auto_ptr`(medium), `auto_ptr`(medium) |
+| `ATOM-HIST-AUTOPTR-001::prop-2` | `ATOM-HIST-AUTOPTR-001` | A | `is_copy_constructible`(high), `CopyConstructible`(medium), `_ZNSt8auto_ptr`(medium) |
+| `ATOM-HIST-AUTOPTR-001::prop-4` | `ATOM-HIST-AUTOPTR-001` | B | `_ZNSt8auto_ptr`(medium), `auto_ptr`(medium), `static_assert`(medium) |
+| `ATOM-LANG-INLINE-001::prop-1` | `ATOM-LANG-INLINE-001` | B | `_ASSERT_ALLOWED_KEYS`(medium), `_Z10tu_a_valuev`(medium), `artifact_assert`(medium) |
+| `ATOM-LANG-INLINE-001::prop-2` | `ATOM-LANG-INLINE-001` | B | `_ASSERT_ALLOWED_KEYS`(medium), `_Z10tu_a_valuev`(medium), `artifact_assert`(medium) |
+| `ATOM-MEM-ALIGN-001::prop-1` | `ATOM-MEM-ALIGN-001` | C | —（无） |
+| `ATOM-MEM-ALIGN-001::prop-2` | `ATOM-MEM-ALIGN-001` | C | —（无） |
+| `ATOM-MEM-ALLOC-001::prop-1` | `ATOM-MEM-ALLOC-001` | C | —（无） |
+| `ATOM-MEM-ALLOC-001::prop-2` | `ATOM-MEM-ALLOC-001` | C | —（无） |
+| `ATOM-MEM-ALLOC-001::prop-3` | `ATOM-MEM-ALLOC-001` | C | —（无） |
+| `ATOM-MEM-ALLOC-002::prop-1` | `ATOM-MEM-ALLOC-002` | B | `bookkeeping_bytes`(medium), `struct_bytes`(medium), `artifact_sha256`(low) |
+| `ATOM-MEM-ALLOC-002::prop-2` | `ATOM-MEM-ALLOC-002` | B | `bookkeeping_bytes`(medium), `struct_bytes`(medium), `artifact_sha256`(low) |
+| `ATOM-MEM-LEAK-001::prop-1` | `ATOM-MEM-LEAK-001` | C | —（无） |
+| `ATOM-MEM-LEAK-001::prop-2` | `ATOM-MEM-LEAK-001` | B | `ASAN_OPTIONS`(medium), `do_sanitizer`(medium), `shared_ptr`(medium) |
+| `ATOM-MEM-LEAK-002::prop-1` | `ATOM-MEM-LEAK-002` | A | `cycle_allocated`(high), `cycle_destroyed`(high), `cycle_live_objects`(high) |
+| `ATOM-MEM-LEAK-002::prop-2` | `ATOM-MEM-LEAK-002` | B | `Node`(medium), `cycle_allocated`(medium), `cycle_destroyed`(medium) |
+| `ATOM-MEM-MOVE-002::prop-1` | `ATOM-MEM-MOVE-002` | B | `BadBuf`(medium) |
+| `ATOM-MEM-MOVE-002::prop-2` | `ATOM-MEM-MOVE-002` | B | `FixedBuf`(medium), `HeapBuf`(medium), `claim_boundary`(medium) |
+| `ATOM-MEM-NEW-001::prop-1` | `ATOM-MEM-NEW-001` | C | —（无） |
+| `ATOM-MEM-NEW-001::prop-2` | `ATOM-MEM-NEW-001` | B | `_Znam`(medium), `_Znay`(medium), `artifact_sha256`(low) |
+| `ATOM-MEM-PERF-001::prop-1` | `ATOM-MEM-PERF-001` | B | `_Znam`(medium), `_Znay`(medium), `artifact_sha256`(low) |
+| `ATOM-MEM-PERF-002::prop-1` | `ATOM-MEM-PERF-002` | C | —（无） |
+| `ATOM-MEM-PERF-003::prop-1` | `ATOM-MEM-PERF-003` | A | `capacity_at_len1`(high), `first_heap_len`(high), `sizeof_string`(high) |
+| `ATOM-MEM-PERF-004::prop-1` | `ATOM-MEM-PERF-004` | A | `padded_offset_bytes`(high), `padded_same_line`(high), `padded_sizeof`(high) |
+| `ATOM-MEM-PERF-004::prop-2` | `ATOM-MEM-PERF-004` | B | `cache_line_size`(medium), `cross_object_same_line`(medium), `hardware_destructive_interference_size`(medium) |
+| `ATOM-MEM-RAII-001::prop-1` | `ATOM-MEM-RAII-001` | C | —（无） |
+| `ATOM-MEM-RAII-001::prop-2` | `ATOM-MEM-RAII-001` | B | `_ZN3TagD1Ev`(medium), `_ZN3TagD2Ev`(medium), `artifact_sha256`(low) |
 | … | | | 其余 20 条见 JSON |
 
 ## 三、口径与边界
