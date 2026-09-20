@@ -11,6 +11,7 @@
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import atom_evidence_replay as aer
@@ -118,12 +119,20 @@ def test_cross_time_only_first_three(monkeypatch: pytest.MonkeyPatch):
 
 
 # ── 真实卡（慢组，真编译）──────────────────────────────────────────────────────
+@pytest.mark.skipif(
+    os.environ.get("CI") == "true",
+    reason="真编译依赖本地 MinGW 环境（卡面 artifact_sha256 是本地编译产物），CI Ubuntu g++ 产物不同",
+)
 def test_real_card_reproducible():
     res = ri.check_build_reproducibility(n_cards=1)
     assert res["passed"] is True
     assert res["cards"][0]["match"] is True
 
 
+@pytest.mark.skipif(
+    os.environ.get("CI") == "true",
+    reason="真编译依赖本地 MinGW 环境（卡面 artifact_sha256 是本地编译产物），CI Ubuntu g++ 产物不同",
+)
 def test_real_card_cross_time():
     res = ri.check_build_reproducibility(n_cards=1, cross_time=True)
     assert res["passed"] is True

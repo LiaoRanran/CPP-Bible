@@ -16,6 +16,13 @@ import pytest
 
 GXX = r"C:\Qt\Tools\mingw1530_64\bin\g++.exe"
 
+# 整个文件硬编码 Windows 路径（GXX/ccache.exe）。Linux 上 Path(r"C:\...\g++.exe").name
+# 返回整个字符串（无 / 分隔符），_wrap_ccache 判定"非编译器"⇒ 全部断言失效。
+pytestmark = pytest.mark.skipif(
+    os.environ.get("CI") == "true",
+    reason="硬编码 Windows 编译器/ccache 路径，Linux 上 Path().name 行为不同",
+)
+
 
 @pytest.fixture(autouse=True)
 def _restore_flag():
