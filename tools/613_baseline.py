@@ -174,8 +174,10 @@ def baseline_learner_twin() -> list[str]:
 # ───────────────────── 0.3 论证层桥接边 ─────────────────────
 
 def _find_candidates() -> Path | None:
-    for name in ("bridge_edge_candidates_612.json", "bridge_edge_candidates.json",
-                 "bridge_edge_pre_annotate_612.json"):
+    """候选边工件实际名为 **611**（`bridge_edge_candidates_611.jsonl`）——
+    本批初版只找 612 ⇒ 漏统计（实踩坑），故 611/612 与 .json/.jsonl 都纳入。"""
+    for name in ("bridge_edge_candidates_611.jsonl", "bridge_edge_candidates_612.jsonl",
+                 "bridge_edge_candidates_612.json", "bridge_edge_candidates.json"):
         p = DATA / name
         if p.is_file():
             return p
@@ -189,16 +191,21 @@ def baseline_argumentation() -> list[str]:
     L.append("## 桥接候选边")
     L.append("")
     if cp is None:
-        L.append("- ⚠ 未找到候选边工件（data/bridge_edge_candidates*.json）")
+        L.append("- ⚠ 未找到候选边工件（data/bridge_edge_candidates*.json*）")
     else:
-        try:
-            cand = json.loads(cp.read_text(encoding="utf-8"))
-            items = cand if isinstance(cand, list) else cand.get("candidates", [])
-            L.append(f"- 工件：`{cp.name}` ｜ 候选数：**{len(items)}**")
-            if items:
-                L.append(f"- 字段：{sorted(items[0].keys()) if isinstance(items[0], dict) else 'n/a'}")
-        except Exception as e:
-            L.append(f"- ⚠ 解析失败：{e}")
+        items = []
+        for ln in cp.read_text(encoding="utf-8").splitlines():
+            ln = ln.strip()
+            if ln:
+                try:
+                    items.append(json.loads(ln))
+                except json.JSONDecodeError:
+                    pass
+        L.append(f"- 工件：`{cp.name}` ｜ 候选数：**{len(items)}**")
+        if items and isinstance(items[0], dict):
+            L.append(f"- 字段：{sorted(items[0].keys())}")
+            prio = Counter(str(i.get("priority")) for i in items)
+            L.append(f"- 优先级分布：{dict(prio)}")
     L.append("")
 
     rev = DATA / "bridge_edge_review_612.jsonl"
@@ -216,12 +223,13 @@ def baseline_argumentation() -> list[str]:
         try:
             g = json.loads(gl.read_text(encoding="utf-8"))
             nodes = g.get("nodes", g) if isinstance(g, dict) else g
-            if isinstance(nodes, dict):
-                cnt = Counter(str(v).upper() for v in nodes.values())
-            else:
-                cnt = Counter(str(n.get("label", n.get("status", "?"))).upper() for n in nodes)
+            # nodes 可能是 dict{id: rec} 或 list[rec]；字段名**大写**（LABEL/TYPE）
+            recs = list(nodes.values()) if isinstance(nodes, dict) else list(nodes)
+            cnt = Counter(str(r.get("LABEL", r.get("label", "?"))).upper() for r in recs
+                          if isinstance(r, dict))
             L.append(f"- 判决分布：{dict(cnt)}")
             L.append(f"- 节点总数={sum(cnt.values())}")
+            L.append(f"- 顶层键：{sorted(g.keys()) if isinstance(g, dict) else 'list'}")
         except Exception as e:
             L.append(f"- ⚠ 解析失败：{e}")
     else:
