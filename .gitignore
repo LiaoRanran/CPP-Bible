@@ -113,3 +113,10 @@ _bypass_test/
 
 # observability trace logs (large JSONL, archived but not tracked)
 _archive/observability_logs/
+
+# 自动化协议目录（状态/提示词/临时脚本，运行时数据不入库）
+_auto/
+# cProfile 性能剖析输出（临时文件，不入库）
+data/profiles/
+# Trae 调研进行中（完成后再入库）
+_arch_v18/
