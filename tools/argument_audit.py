@@ -27,9 +27,13 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import defense_chain as dc  # noqa: E402
+import human_review_report as hrr  # noqa: E402
 
 VERSION = "1.0"
 CRED_ORDER = dc.CREDIBILITY_ORDER
+MODIFY_RATIO_THRESHOLD = 0.5      # 超过这条线算"歧义集中"
+IMBALANCE_THRESHOLD = 0.6         # 单一主题占比超过这条线算"分布不平衡"
+SHORT_REASON = 20
 
 
 # ── 数据 ──────────────────────────────────────────────────────────────────────
@@ -113,6 +117,90 @@ def detect_credibility_gaps(credibilities: dict[str, str]) -> dict:
     return {"distribution": dist, "gaps": gaps, "total": len(credibilities)}
 
 
+# ── C2 高级探测器 ─────────────────────────────────────────────────────────────
+def detect_high_modify_ratio_mis(annotations: list[dict], threshold: float = MODIFY_RATIO_THRESHOLD
+                                 ) -> list[dict]:
+    """modify 比例 > threshold 的 MIS（歧义集中区），按比例降序。"""
+    rows = hrr.summarize_by_mis(annotations)
+    return [{**r, "reason": "modify 比例高 ⇒ 档位判断有歧义，建议第二轮人审"}
+            for r in rows if (r["modify_ratio"] or 0) > threshold]
+
+
+def detect_rubber_stamp_risk(annotations: list[dict]) -> list[dict]:
+    """rubber-stamp 风险：**全部 approve** 且组内最短理由 < 20 字符的 MIS。
+
+    存量人审无 `review_seconds` ⇒ 只能用"理由长度"这一个可观测量（**不用不可得的量硬凑指标**）。
+    """
+    idx = hrr.edge_index()
+    reasons: dict[str, list[str]] = {}
+    for a in annotations:
+        e = idx.get(str(a.get("edge_id")))
+        if e is None:
+            continue
+        reasons.setdefault(hrr.mis_of(e), []).append(str(a.get("reason", "")))
+    out: list[dict] = []
+    for r in hrr.summarize_by_mis(annotations):
+        if r["total"] and r["approve"] == r["total"]:
+            lens = [len(x) for x in reasons.get(r["mis_id"], [])]
+            shortest = min(lens) if lens else 0
+            if shortest < SHORT_REASON:
+                out.append({"mis_id": r["mis_id"], "total": r["total"],
+                            "shortest_reason_len": shortest,
+                            "detail": f"全部 approve 且最短理由 {shortest} < {SHORT_REASON} 字符"})
+    return sorted(out, key=lambda x: x["shortest_reason_len"])
+
+
+def detect_topic_imbalance(annotations: list[dict]) -> dict:
+    """主题分布不平衡：单一主题占比 > threshold ⇒ 标出失衡与其代价（覆盖偏窄）。"""
+    topics = hrr.summarize_by_topic(annotations)
+    top = max(topics.items(), key=lambda kv: kv[1]["total"])
+    ratio = top[1]["ratio"]
+    return {"distribution": {k: {"total": v["total"], "mis_count": v["mis_count"],
+                                 "ratio": v["ratio"]} for k, v in topics.items()},
+            "dominant_topic": top[0], "dominant_ratio": ratio,
+            "imbalanced": ratio > IMBALANCE_THRESHOLD,
+            "note": (f"{top[0]} 占 {ratio:.1%}（阈值 {IMBALANCE_THRESHOLD:.0%}）⇒ "
+                     "论证覆盖偏向该主题，其它主题的误解密度低、结论外推需谨慎")
+            if ratio > IMBALANCE_THRESHOLD else "分布未超阈值"}
+
+
+def detect_proposition_overload(edges: list[dc.AttackEdge], top: int = 10) -> list[dict]:
+    """命题过载：被最多攻击者指向的命题（可能是表述太宽泛），Top N。"""
+    cnt: dict[str, set[str]] = {}
+    for e in edges:
+        if dc.node_type_of(e.target, edges) == "proposition":
+            cnt.setdefault(e.target, set()).add(e.source)
+    rows = [{"proposition": k, "attackers": len(v), "nodes": sorted(v)}
+            for k, v in cnt.items()]
+    rows.sort(key=lambda r: (-r["attackers"], r["proposition"]))
+    return rows[:top]
+
+
+def detect_mis_overload(edges: list[dc.AttackEdge], top: int = 10) -> list[dict]:
+    """MIS 过载：攻击最多**不同命题**的 MIS（可能是误解太宽泛），Top N。"""
+    cnt: dict[str, set[str]] = {}
+    for e in edges:
+        if dc.node_type_of(e.source, edges) == "misconception":
+            cnt.setdefault(e.source, set()).add(e.target)
+    rows = [{"mis_id": k, "propositions": len(v), "edges": sum(1 for e in edges
+                                                              if e.source == k),
+             "targets": sorted(v)} for k, v in cnt.items()]
+    rows.sort(key=lambda r: (-r["propositions"], r["mis_id"]))
+    return rows[:top]
+
+
+def detect_cycle_arguments(edges: list[dc.AttackEdge]) -> list[list[str]]:
+    """2-环（A→B 且 B→A）。本仓的对称边设计使 `prop↔mis` 成对出现 ⇒ 2-环数量 = 半对数。"""
+    pairs = {(e.source, e.target) for e in edges}
+    seen: set[tuple[str, str]] = set()
+    out: list[list[str]] = []
+    for a, b in sorted(pairs):
+        if (b, a) in pairs and (b, a) not in seen:
+            seen.add((a, b))
+            out.append([a, b])
+    return out
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────────
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="argument_audit",
@@ -124,7 +212,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--json", action="store_true")
     sub = ap.add_subparsers(dest="cmd")
     for name in ("no-attackers", "no-defenders", "isolated", "unreviewed",
-                 "credibility-gaps"):
+                 "credibility-gaps", "high-modify", "rubber-stamp", "topic-imbalance",
+                 "proposition-overload", "mis-overload", "cycles"):
         sp = sub.add_parser(name)
         sp.add_argument("--json", action="store_true", dest="json_sub")
     a = ap.parse_args(argv)
@@ -133,6 +222,7 @@ def main(argv: list[str] | None = None) -> int:
 
     edges, verdicts, cred = load_state(a.edges, a.annotations)
     nodes = all_nodes(verdicts, edges)
+    anns = dc.load_annotations(a.annotations)
 
     if a.check:
         problems = check(a.edges, a.annotations)
@@ -160,6 +250,18 @@ def main(argv: list[str] | None = None) -> int:
         res = [c for c in comps if len(c) == 1]
     elif a.cmd == "unreviewed":
         res = [e.edge_id for e in detect_unreviewed_edges(edges)]
+    elif a.cmd == "high-modify":
+        res = detect_high_modify_ratio_mis(anns)
+    elif a.cmd == "rubber-stamp":
+        res = detect_rubber_stamp_risk(anns)
+    elif a.cmd == "topic-imbalance":
+        res = detect_topic_imbalance(anns)
+    elif a.cmd == "proposition-overload":
+        res = detect_proposition_overload(edges)
+    elif a.cmd == "mis-overload":
+        res = detect_mis_overload(edges)
+    elif a.cmd == "cycles":
+        res = detect_cycle_arguments(edges)
     else:
         res = detect_credibility_gaps(cred)
     print(json.dumps(res, ensure_ascii=False, indent=1) if a.json
