@@ -73,7 +73,7 @@ def render_report(a: dict) -> str:
         "# 611 E3 · 辩护链推理深化（全图敏感性 · 只读）", "",
         "> 对每个节点做 demote(压 low) / escalate(升 high) 压力测试，量化其「承重程度」。"
         "所有翻转只存在于内存重算，不改仓、不裁决。", "",
-        f"## 一、总览", "",
+        "## 一、总览", "",
         f"- 节点 **{a['total_nodes']}** 个；有 {a['nodes_whose_demote_changes_something']} 个节点"
         f"被推翻时会引起其它判决翻转；最大级联 **{a['max_ripple']}** 个节点。",
         f"- OUT MIS 升 medium 的聚合影响：翻转 **{a['out_mis_escalate_medium']['flipped_count']}** 个节点"

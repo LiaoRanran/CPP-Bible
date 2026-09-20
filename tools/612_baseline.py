@@ -44,7 +44,7 @@ def _tokens(text: str) -> set[str]:
 
 # ── 1. 桥接候选分布 ────────────────────────────────────────────────────────
 def bridge_distribution() -> dict:
-    rows = [json.loads(l) for l in CAND_IN.read_text(encoding="utf-8").splitlines() if l.strip()]
+    rows = [json.loads(line) for line in CAND_IN.read_text(encoding="utf-8").splitlines() if line.strip()]
     topic = Counter(r["basis"]["topic"] for r in rows)
     comp_pairs = Counter(tuple(r["components"]) for r in rows)
     mis_appear = Counter()
@@ -144,8 +144,8 @@ def oracle_priority() -> dict:
 
 # ── 4. KC 台账基线 ───────────────────────────────────────────────────────
 def kc_ledger() -> dict:
-    import proposition_liveness_audit as pla  # noqa: E402
     import bridge_edge_candidates as c2  # noqa: E402
+    import proposition_liveness_audit as pla  # noqa: E402
     mi = c2.load_mis_index()
     kcs = []
     for p in sorted((ROOT / "atoms").rglob("ATOM-*.md")):

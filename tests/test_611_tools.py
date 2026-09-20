@@ -7,21 +7,20 @@
 """
 from __future__ import annotations
 
-import importlib
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-import bridge_edge_candidates as c2   # noqa: E402
+import bridge_edge_candidates as c2  # noqa: E402
+import defense_chain_deepen as e3  # noqa: E402
 import fragmentation_repair_analysis as c3  # noqa: E402
-import out_mis_review_support as d1   # noqa: E402
-import liveness_completion_plan as d2  # noqa: E402
-import oracle_verification_plan as d3  # noqa: E402
-import metrics_611 as e1              # noqa: E402
 import human_review_quality_deepen as e2  # noqa: E402
-import defense_chain_deepen as e3     # noqa: E402
+import liveness_completion_plan as d2  # noqa: E402
+import metrics_611 as e1  # noqa: E402
+import oracle_verification_plan as d3  # noqa: E402
+import out_mis_review_support as d1  # noqa: E402
 
 
 def test_c2_bridge_candidates():
