@@ -1,6 +1,6 @@
 # 613 基线 0.2 · 学习者镜像数据缺口台账
 
-> 生成：`python tools/613_baseline.py` ｜ 时间：2026-09-20T23:49:33
+> 生成：`python tools/613_baseline.py` ｜ 时间：2026-09-20T23:54:27
 > 口径：只读统计；CI 结论取自 GitHub Actions API；**未运行**监工类 --check。
 
 ## 掌握度存储 `data/learner_state_612.jsonl`

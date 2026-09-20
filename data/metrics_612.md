@@ -1,6 +1,6 @@
 # 612 线 E · metrics_612（E1-E3 · 只读）
 
-> 生成时间：2026-09-20T22:38:46 ｜ 命令：`python tools/metrics_612.py`
+> 生成时间：2026-09-21T00:13:31 ｜ 命令：`python tools/metrics_612.py`
 >
 > 复用既有工具口径（weighted_af_solver / atoms / oracle plan），不新增行为；人审相关指标如实标注当前状态。
 
