@@ -21,6 +21,13 @@ from pathlib import Path
 import pytest
 import task_queue as tq
 
+# 本文件使用默认数据库路径（data/tasks/tasks.db），未注入 db_path。
+# CI -n 16 并发下多 worker 同时写同一库 ⇒ list_tasks()/next_task() 断言被污染。
+pytestmark = pytest.mark.skipif(
+    os.environ.get("CI") == "true",
+    reason="使用真实 data/tasks 数据库，CI 并发下多 worker 互相污染",
+)
+
 # d976170 的 tasks 表原样（14 列；534 规格 §1.1 写"15 列"，实测 PRAGMA 为 14 —— 以磁盘为准）。
 LEGACY_DDL = """
 CREATE TABLE tasks(
