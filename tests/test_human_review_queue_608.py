@@ -53,11 +53,12 @@ def test_ambiguity_sort_order():
 
 
 def test_stats_initial_zero_reviewed():
+    """（历史名保留：596/608 时代人审为 0）610 起经用户两次授权人审**全量完成** ⇒ 断言更新为真实状态。"""
     rc, out = _capture(["--stats"])
     assert rc == 0
-    assert "已审（生效）：0" in out, out
-    assert "待审：388" in out, out
-    assert "approve=0" in out and "reject=0" in out and "modify=0" in out
+    assert "已审（生效）：388" in out, out
+    assert "待审：0" in out, out
+    assert "approve=354" in out and "reject=0" in out and "modify=34" in out
 
 
 def test_check_consistency_passes():
@@ -67,18 +68,21 @@ def test_check_consistency_passes():
 
 
 def test_feedback_empty_output():
+    """（历史名保留）人审全量 388 条已生效 ⇒ 反馈闭环有真实数据，不得再报"无反馈数据"。"""
     rc, out = _capture(["--feedback"])
     assert rc == 0
-    assert "无反馈数据" in out, out
+    assert "无反馈数据" not in out, "人审 388 条已生效，不该报'无反馈数据'"
+    assert "已审生效：388" in out and "建议" in out, out
 
 
 def test_readonly_never_creates_annotation_and_keeps_edges_mtime():
     ann_path = hrq.aer.DEFAULT_ANN
     edges_path = hrq.aeg.DEFAULT_OUT
     before = os.path.getmtime(edges_path)
-    # 人审通道文件由 596 入库为空（必须存在）；工具只读，绝不得创建/改动它（人审权力）。
+    # 人审通道文件由 596 入库（610 起含用户授权的人审 388 条）；工具只读，绝不得创建/改动它。
     ann_existed = os.path.exists(ann_path)
     ann_mtime = os.path.getmtime(ann_path) if ann_existed else None
+    ann_rows = len(hrq.aer.load_annotations(ann_path)) if ann_existed else 0
     _capture(["--check"])
     _capture(["--list"])
     _capture(["--stats"])
@@ -90,8 +94,8 @@ def test_readonly_never_creates_annotation_and_keeps_edges_mtime():
         assert os.path.exists(ann_path), "只读工具删除了人审通道文件"
         assert os.path.getmtime(ann_path) == ann_mtime, \
             "只读工具改动了人审通道文件 mtime ⇒ 违反只读硬纪律"
-        assert hrq.aer.load_annotations() == [], \
-            "只读工具向人审通道写入了内容（人审权力）"
+        assert len(hrq.aer.load_annotations(ann_path)) == ann_rows, \
+            "只读工具增删了人审通道记录（人审权力）"
     else:
         assert not os.path.exists(ann_path), \
             "工具不应创建人审结果文件（人审权力；违反只读硬纪律）"

@@ -150,10 +150,30 @@ def test_check_is_falsifiable(tmp_path):
 
 
 def test_cli_solve_stats_check_exit_codes(tmp_path):
+    """默认行为（不含人审）仍是 596 口径 IN79/OUT42 ⇒ 594 基线对账 exit 0（回归锁）。
+
+    ⚠️ 已知跨批口径冲突（610 A1 实测，已登记 610 outbox P0 交人项）：
+       * 人审**全量后**的权威 W2 产物 `data/grounded_labels_w2.json` = **IN114 / OUT7 / 击败边 17**，
+         其口径是"**modify 保持 low**"（实测该口径重算与入库产物逐项一致）；
+       * 而 `weighted_af_solver.reviewed_edges`（609 A3）对 modify 取 `new_confidence`（=medium）
+         ⇒ 重算得 **IN121 / OUT0 / 击败边 0**，与权威产物**不一致**。
+    本测试只锁"能够确证的两种行为"；口径冲突本身归监工裁决（A1 铁律：不改生产代码）。
+    """
     out = tmp_path / "labels.json"
-    assert w2.main(["solve", "--edges", str(w2.DEFAULT_EDGES), "--out", str(out)]) == 0
+    assert w2.main(["solve", "--no-human-reviewed", "--edges", str(w2.DEFAULT_EDGES),
+                    "--out", str(out)]) == 0
     assert out.is_file()
-    assert w2.main(["stats", "--edges", str(w2.DEFAULT_EDGES), "--out", str(out), "--json"]) == 0
-    assert w2.main(["--check", "--out", str(out)]) == 0
+    assert w2.main(["stats", "--no-human-reviewed", "--edges", str(w2.DEFAULT_EDGES),
+                    "--out", str(out), "--json"]) == 0
+    assert w2.main(["--check", "--no-human-reviewed", "--out", str(out)]) == 0
+    doc = json.loads(out.read_text(encoding="utf-8"))
+    assert doc["summary"]["IN"] == 79 and doc["summary"]["OUT"] == 42
+    assert doc["defeating_edges"] == 194
+
+    # 权威 W2 产物（人审全量后的入库件）
+    auth = json.loads((w2.ROOT / "data" / "grounded_labels_w2.json").read_text(encoding="utf-8"))
+    assert auth["summary"]["IN"] == 114 and auth["summary"]["OUT"] == 7
+    assert auth["defeating_edges"] == 17
+
     out.write_text("{}\n", encoding="utf-8")
-    assert w2.main(["--check", "--out", str(out)]) == 2
+    assert w2.main(["--check", "--no-human-reviewed", "--out", str(out)]) == 2

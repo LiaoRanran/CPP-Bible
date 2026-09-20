@@ -180,6 +180,7 @@ def test_cli_queue_json():
 
 
 def test_cli_progress_json():
+    """人审全量完成（388/388）⇒ progress 反映真实完成度（不再假设"零人审"）。"""
     import contextlib
     import io
     buf = io.StringIO()
@@ -188,7 +189,9 @@ def test_cli_progress_json():
     assert rc == 0
     data = json.loads(buf.getvalue())
     assert data["total_groups"] == 42
-    assert data["completion_pct"] == 0.0
+    assert data["done_groups"] == 42 and data["pending_groups"] == 0
+    assert data["done_edges"] == 388 and data["pending_edges"] == 0
+    assert data["completion_pct"] == 100.0
 
 
 def test_cli_feedback_json():

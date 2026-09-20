@@ -173,7 +173,13 @@ def test_cli_roundtrip_and_check(tmp_path: Path):
 
 
 def test_real_annotations_file_is_empty_and_valid():
-    """初始通道：真实标注文件必须存在、为空、校验通过（系统绝不自动产生标注）。"""
+    """（历史名保留：初始通道为空）610 起通道含用户两次授权的人审 388 条 ⇒ 断言更新为
+    "存在 + 388 条 + 每条字段齐全 + 校验通过"（系统仍绝不自动产生标注）。"""
     assert aer.DEFAULT_ANN.is_file(), "人审通道文件必须入库"
-    assert aer.load_annotations() == []
+    anns = aer.load_annotations()
+    assert len(anns) == 388, f"人审通道行数应为 388（实测 {len(anns)}）"
+    for i, a in enumerate(anns, 1):
+        miss = [k for k in aer.REQUIRED if not str(a.get(k) or "").strip()]
+        assert not miss, f"第 {i} 条缺字段 {miss}"
+        assert a["action"] in aer.ACTIONS, f"第 {i} 条 action 非法：{a['action']}"
     assert aer.main(["--check"]) == 0

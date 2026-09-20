@@ -22,15 +22,17 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def test_human_review_initial():
+    """（历史名保留）610 起人审全量 388 条完成 ⇒ pending=0 / approve=354 / modify=34。"""
     out = mc.collect_608_new_metrics({}, with_heavy=False)["human_review"]
     assert out["total"] == 388, out
-    assert out["pending"] == 388
-    assert out["approved"] == 0 and out["rejected"] == 0 and out["modified"] == 0
+    assert out["pending"] == 0 and out["annotated_edges"] == 388
+    assert out["approved"] == 354 and out["rejected"] == 0 and out["modified"] == 34
 
 
 def test_grounded_status():
+    """人审全量后 W2 判决为 IN114/OUT7（原 596 口径 IN79/OUT42）。"""
     out = mc.collect_608_new_metrics({}, with_heavy=False)["grounded"]
-    assert out["in"] == 79 and out["out"] == 42 and out["undec"] == 0
+    assert out["in"] == 114 and out["out"] == 7 and out["undec"] == 0
     assert out["candidate_edges_total"] == 388
     assert out["candidate_edges_by_mis"] == 42
 
