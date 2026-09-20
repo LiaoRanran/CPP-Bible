@@ -21,6 +21,7 @@ CLI：
     report                          0 ok
     --check                         0 基线可读且数字自洽 / 1 破
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

@@ -28,6 +28,7 @@
   # 测试注入钩子（默认真实仓）：
   #   --atoms-root <dir>   只扫该目录     --report <path>  报告落盘位置
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

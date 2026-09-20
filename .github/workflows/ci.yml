@@ -1,4 +1,4 @@
-name: CPP-Bible CI
+﻿name: CPP-Bible CI
 
 on:
   push:
@@ -390,7 +390,7 @@ jobs:
       # 失败可读性：job 日志下载需 admin（实测 API 403），故把失败摘要输出为 **error 注解**
       # （经 check-runs /annotations 端点可公开读取）。
       run: |
-        python3 -m pip install --quiet pytest pytest-xdist pyyaml
+        python3 -m pip install --quiet pytest pytest-xdist pyyaml hypothesis
         rc=0
         # 两阶段（508 实测结论）：纯逻辑并行、共享真实仓库状态的串行。
         # 为何不直接 `-n 16` 全量：~14 个模块共享 replay 全局锁与 Examples/atoms 工件，

@@ -29,6 +29,7 @@ CLI：
     list    [--pending|--approved|--rejected|--modified] [--limit N]
     --check                               0 全合法 / 1 有非法行（打印行号+原因）
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

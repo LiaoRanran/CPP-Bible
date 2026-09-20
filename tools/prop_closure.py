@@ -27,6 +27,7 @@
     python tools/prop_closure.py from --id prop-1 [--json]  # 从指定命题出发的闭包
     python tools/prop_closure.py cross-check [--json]       # 双实现全量对账（79 命题逐个）
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

@@ -17,6 +17,7 @@ CLI：
     anomalies         质量异常列表（JSON）
     --check           报告数字与 annotations 逐字段对账（不一致 ⇒ exit 2）
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

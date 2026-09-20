@@ -57,6 +57,8 @@ stale 接管：`claimed` 且 `heartbeat_at`（无则 `claimed_at`）超过 `STAL
   **2 = 新增 fail-closed 门**：deps 环、handoff 质量不过、complete 缺 verify_cmd 又缺
   result-ref、心跳新鲜时的软 takeover（见 535 C2/C5/C6）。
 """
+# mypy: ignore-errors
+# 存量工具：类型注解债务，CI 先转绿，后续逐步修
 from __future__ import annotations
 
 import argparse

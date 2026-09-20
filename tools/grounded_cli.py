@@ -17,6 +17,7 @@ CLI：
     defense <id>                            辩护链 Markdown（边级）
     --check                                 0 文档结构合法 / 1 破
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

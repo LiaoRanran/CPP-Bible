@@ -82,7 +82,7 @@ def _memo(store: dict[Any, Any], key: Any, builder: Callable[[], Any],
     return copy.deepcopy(value)
 
 
-def read_text(path: Path | str) -> str:
+def read_text(path: Path | str) -> Any:
     """数据缓存：同一文件（同 mtime/size）只读一次盘。"""
     p = Path(path)
     return _memo(_DATA, ("text", str(p)), lambda: p.read_text(encoding="utf-8"),

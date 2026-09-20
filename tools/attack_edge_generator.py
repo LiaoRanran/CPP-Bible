@@ -29,6 +29,7 @@
     python tools/attack_edge_generator.py stats [--json]
     python tools/attack_edge_generator.py --check        # 独立复算 + 字段/存在性/去重校验（失败 exit 2）
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

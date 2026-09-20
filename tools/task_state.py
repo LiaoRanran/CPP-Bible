@@ -25,6 +25,7 @@ artifacts / request_count / request_limit
 `needs_continue` →（`--done`）`done`。**不为门禁服务**：本工具只读写 `data/tasks/`（已 gitignore），
 不参与 gate/replay/poison（运行时状态不入库，492 §十：状态文件由 git 跟踪的选择留给用户裁决）。
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

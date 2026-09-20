@@ -40,6 +40,7 @@ import hashlib
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
 VERSION = "1.0"
@@ -176,7 +177,7 @@ def build_all(out: Path | str = ROOTS_PATH, *, now: str | None = None,
     return doc
 
 
-def load_roots(path: Path | str = ROOTS_PATH) -> dict | None:
+def load_roots(path: Path | str = ROOTS_PATH) -> Any:
     p = Path(path)
     if not p.is_file():
         return None

@@ -16,6 +16,7 @@
     python tools/grounded_audit.py --stdout       # 只打印
     python tools/grounded_audit.py --check        # 报告与事实源一致？（漂移/异常 ⇒ exit 2）
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

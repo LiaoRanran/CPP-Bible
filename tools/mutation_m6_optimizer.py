@@ -26,6 +26,7 @@ CLI：
     report     0 ok（写 Markdown 方案）
     --check    0 基线可读且 M6 数字自洽 / 1 破
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

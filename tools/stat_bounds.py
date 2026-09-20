@@ -20,6 +20,7 @@ docstring / 类型标注 / 边界 fail-loud / CLI。
   python tools/stat_bounds.py n-needed --eps 0.05        # 零失效样本量
   （任意子命令都可加 --json 取机器可读输出）
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

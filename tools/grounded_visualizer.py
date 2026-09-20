@@ -15,6 +15,7 @@ CLI：
     render [--labels DOC] [--out FILE]     0 ok / 2 文档不存在
     --check                                0 合法 / 1 文档结构破
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

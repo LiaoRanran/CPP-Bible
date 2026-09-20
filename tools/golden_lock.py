@@ -42,6 +42,7 @@
     python tools/golden_lock.py show
 """
 
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

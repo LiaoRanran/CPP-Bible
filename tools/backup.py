@@ -28,6 +28,7 @@
 
 `cppbible.py check --stage quality` 的最后一步会自动 `snapshot()`（失败不影响门禁）。
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

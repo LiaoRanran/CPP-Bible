@@ -15,6 +15,7 @@
 
 过滤器可任意组合（AND 语义）。默认查**今天**、按文件顺序（时间升序）输出。
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

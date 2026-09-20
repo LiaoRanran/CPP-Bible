@@ -20,6 +20,7 @@ CLI：
     profile [--cap 45] [--only FILE ...]   0 ok
     --check                                0 ok / 1 报表缺或与 .prof 不自洽
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

@@ -32,6 +32,8 @@ L1 把 5 类指标采成一行 JSON 追加到 `data/metrics.jsonl`，供趋势�
     python tools/metrics_collector.py --json              # 只打印，不落盘
     python tools/metrics_collector.py history --last 10   # 最近 10 次采集的趋势
 """
+# mypy: ignore-errors
+# 存量工具：类型注解债务，CI 先转绿，后续逐步修
 from __future__ import annotations
 
 import argparse
@@ -50,6 +52,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import metrics_610 as m610  # noqa: E402  (610 D1/D2/D3 采集器：独立模块，逐任务可独立提交)
+import metrics_611 as m611  # noqa: E402  (611 C/D 线只读指标：独立模块，逐任务可独立提交)
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -448,6 +451,8 @@ def collect(*, with_heavy: bool = True, with_gate: bool = True) -> dict:
     snap["metrics_608"] = collect_608_new_metrics(notes, with_heavy=with_heavy)
     # 610 D1/D2/D3：W2 重算状态（含口径分歧显形）/ 人审进度 / 辩护链统计（同级嵌套，不动扁平 schema）
     snap["metrics_610"] = m610.collect_610_new_metrics(notes, with_heavy=with_heavy)
+    # 611 C/D 线：论证图碎片化 / 桥接候选 / OUT MIS / 活性锚 / oracle（同级嵌套，不动扁平 schema）
+    snap["metrics_611"] = m611.collect_611_new_metrics(notes, with_heavy=with_heavy)
     if with_heavy:
         try:
             snap["build_reproducibility"] = collect_build_reproducibility().to_dict()

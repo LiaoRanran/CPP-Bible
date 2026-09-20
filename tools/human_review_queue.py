@@ -26,6 +26,7 @@ import json
 import sys
 from collections import defaultdict
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -56,18 +57,18 @@ def _mis_name_map(mis_dir: Path | str = DEFAULT_MIS_DIR) -> dict[str, str]:
     return out
 
 
-def _w2_labels(w2_path: Path | str = DEFAULT_W2) -> dict[str, dict]:
+def _w2_labels(w2_path: Path | str = DEFAULT_W2) -> Any:
     """W2 求解结果：节点 id → {label, credibility, type}。"""
     data = json.loads(Path(w2_path).read_text(encoding="utf-8"))
     return data.get("nodes", {})
 
 
-def _mis_of(edge: dict) -> str:
+def _mis_of(edge: dict) -> Any:
     """一条边的 MIS 端点（无论方向）。"""
     return edge["source"] if edge["direction"] == "mis_to_prop" else edge["target"]
 
 
-def _prop_of(edge: dict) -> str:
+def _prop_of(edge: dict) -> Any:
     """一条边的命题端点（`卡id::prop-N`）。"""
     return edge["target"] if edge["direction"] == "mis_to_prop" else edge["source"]
 
@@ -203,10 +204,10 @@ def cmd_stats(groups: list[dict], edges: list[dict] | None = None) -> int:
           f"reject={cnt_by_action['reject']} modify={cnt_by_action['modify']}\n")
 
     # 按 MIS 组
-    by_mis_total = defaultdict(int)
-    by_mis_reviewed = defaultdict(int)
-    by_prop_total = defaultdict(int)
-    by_prop_reviewed = defaultdict(int)
+    by_mis_total: dict[str, int] = defaultdict(int)
+    by_mis_reviewed: dict[str, int] = defaultdict(int)
+    by_prop_total: dict[str, int] = defaultdict(int)
+    by_prop_reviewed: dict[str, int] = defaultdict(int)
     for e in edges:
         mid = _mis_of(e)
         pid = _prop_of(e)

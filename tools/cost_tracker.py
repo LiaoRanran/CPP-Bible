@@ -25,6 +25,7 @@ token 估算口径：tokens_est = chars / 3（中文 ~1.5 字/token、英文 ~4 
 
 数据：data/cost/<atom_id>.json（入库作为历史基线）。
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse

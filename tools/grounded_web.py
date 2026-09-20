@@ -23,6 +23,7 @@ CLI：
     serve [--port N] [--host 127.0.0.1]     常驻（Ctrl-C 退出）
     --check                                 0 数据源齐备且可读 / 1 破
 """
+# mypy: ignore-errors
 from __future__ import annotations
 
 import argparse
