@@ -1,0 +1,31 @@
+{
+  "_type": "link",
+  "name": "613-trust-root",
+  "materials": {
+    "data/supply_chain/merkle_roots.json": {
+      "sha256": "47c330c9dca15032d80b7f78fd20024a94faabca70935dbdb53d6bd77f6e0db5"
+    }
+  },
+  "products": {
+    "data/ots_anchor_613.md": {
+      "sha256": "e315e7280533ebfcb1d02f4c909ee8656f193348353a5b2d8cd37897111e998b"
+    }
+  },
+  "command": [
+    "python",
+    "tools/ots_anchor_613.py"
+  ],
+  "byproducts": {
+    "return-value": 0
+  },
+  "environment": {
+    "tool": "in_toto_link.py",
+    "python": "3.13.13"
+  },
+  "generated_at": "2026-09-21T00:02:46",
+  "signature": {
+    "scheme": "hmac-sha256-not-in-toto-standard",
+    "keyid": "ea5c9a0c146cdb09",
+    "sig": "c12b01915d6407a4aa4e7bd997cfa6a2c4393b04c7eed195ff8cbb56afb87f31"
+  }
+}
