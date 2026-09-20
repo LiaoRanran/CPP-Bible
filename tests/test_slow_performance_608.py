@@ -1,3 +1,7 @@
+﻿import pytest
+
+pytestmark = pytest.mark.slow
+
 """608 D2 · slow 测试性能回归锁（锁定 test_task_queue_stateful 跑批时间）。
 
 两个锁：
