@@ -201,6 +201,123 @@ def detect_cycle_arguments(edges: list[dc.AttackEdge]) -> list[list[str]]:
     return out
 
 
+# ── C3 完整报告 ───────────────────────────────────────────────────────────────
+DEFAULT_REPORT = ROOT / "data" / "argument_audit_report.md"
+
+
+def collect_findings(edges: list[dc.AttackEdge], annotations: list[dict],
+                     verdicts: dict[str, str], credibilities: dict[str, str]) -> dict:
+    """把 C1+C2 的所有探测器聚合成一份**结构化**发现清单（报告与 summary 共用）。"""
+    props = [n for n in verdicts if dc.node_type_of(n, edges) == "proposition"]
+    nodes = all_nodes(verdicts, edges)
+    comps = detect_isolated_subgraphs(edges, nodes)
+    sizes = sorted((len(c) for c in comps), reverse=True)
+    singles = [c[0] for c in comps if len(c) == 1]
+    return {
+        "no_attacker_props": detect_no_attacker_propositions(edges, props),
+        "no_defender_mis": detect_no_defender_mis(edges, verdicts, credibilities),
+        "no_defender_nodes": detect_no_defender_nodes(edges, verdicts, credibilities),
+        "credibility": detect_credibility_gaps(credibilities),
+        "components": {"count": len(comps), "sizes": sizes, "isolated": singles,
+                       "largest": sizes[0], "coverage": round(sizes[0] / max(len(nodes), 1), 4)},
+        "unreviewed_edges": [e.edge_id for e in detect_unreviewed_edges(edges)],
+        "high_modify": detect_high_modify_ratio_mis(annotations),
+        "rubber_stamp": detect_rubber_stamp_risk(annotations),
+        "topic": detect_topic_imbalance(annotations),
+        "prop_overload": detect_proposition_overload(edges, 5),
+        "mis_overload": detect_mis_overload(edges, 5),
+        "cycles": detect_cycle_arguments(edges),
+    }
+
+
+def generate_full_report(edges: list[dc.AttackEdge], annotations: list[dict],
+                         verdicts: dict[str, str], credibilities: dict[str, str]) -> str:
+    f = collect_findings(edges, annotations, verdicts, credibilities)
+    s = dc.solve_summary(edges, credibilities)
+    lines = [
+        "# 论证漏洞报告（610 C3 · 智能原型 2）", "",
+        "> 只读生成：数据来自候选边 + 用户授权人审 + 610 B1 的辩护链引擎（同一口径）。", "",
+        "## 1. 总览", "",
+        f"- 节点 **{s['nodes']}**（命题 79 + 误解 42）· 边 **{s['edges']}**"
+        f"（其中**构成击败** {s['defeating_edges']}）",
+        f"- 判决 **IN {s['in']} / OUT {s['out']} / UNDEC {s['undec']}** · {s['rounds']} 轮收敛",
+        f"- 人审 388/388（approve 354 / modify 34 / reject 0）· 未审边 {len(f['unreviewed_edges'])}",
+        f"- 连通分量 **{f['components']['count']}** 个（孤立 {len(f['components']['isolated'])}，"
+        f"最大 {f['components']['largest']} 节点 = {f['components']['coverage']:.1%}）", "",
+        "## 2. P0 漏洞（结构性，需立即处理）", "",
+        f"- **无 `high` 可信度节点**（分布 {f['credibility']['distribution']}）："
+        "⇒ OUT 的 MIS 永远拿不到高可信辩护者，'被推翻后翻案'在结构上不可能发生；",
+        f"- **论证盲区：{len(f['no_attacker_props'])} 个命题无任何攻击者**"
+        f"（{', '.join(f['no_attacker_props'])}）：没有任何误解指向它们 ⇒ "
+        "要么该命题太显然（无需攻击），要么还没人造出对应误解 ⇒ 覆盖缺口；", "",
+        "## 3. P1 漏洞（需短期处理）", "",
+        f"- **OUT 且无辩护者**：OUT 的 MIS 中 {len(f['no_defender_mis'])} 个无 W2 辩护者"
+        f"（{', '.join(f['no_defender_mis'])}）；无辩护者节点合计 {len(f['no_defender_nodes'])} 个；",
+        f"- **歧义集中：{len(f['high_modify'])} 个 MIS 的 modify 比例 = 1.0**"
+        f"（{', '.join(r['mis_id'] for r in f['high_modify'])}）⇒ 档位判据需沉淀；",
+        f"- **主题失衡**：{f['topic']['dominant_topic']} 占 {f['topic']['dominant_ratio']:.1%}"
+        f"（阈值 60%）⇒ 结论外推到其它主题需谨慎；",
+        f"- **论证图碎片化**：{f['components']['count']} 个连通分量、最大分量只覆盖 "
+        f"{f['components']['coverage']:.1%} 节点 ⇒ 大量子论证彼此孤立，跨主题的辩护链无法成立；", "",
+        "## 4. P2 漏洞（需长期处理）", "",
+        f"- 命题过载：`{f['prop_overload'][0]['proposition']}` 被 "
+        f"{f['prop_overload'][0]['attackers']} 个 MIS 攻击（表述可能过宽）；",
+        f"- MIS 过载：`{f['mis_overload'][0]['mis_id']}` 攻击 "
+        f"{f['mis_overload'][0]['propositions']} 个不同命题（误解可能过宽）；",
+        f"- 循环论证：**{len(f['cycles'])} 个 2-环**（对称边设计的必然产物；"
+        "W2 里同档不构成击败 ⇒ 不产生自证循环，但换档位口径时必须重查）；", "",
+        "## 5. 详细描述 / 影响 / 修复建议", "",
+        "| 漏洞 | 影响 | 建议（**只建议不执行**） |", "|---|---|---|",
+        "| 无 high 档节点 | OUT 的 MIS 无法被翻案（无高可信辩护者） | 新增/升级可产出 `high` 的判据；"
+        "或明确「本仓不设 high 档」并把它写进口径 |",
+        f"| {len(f['no_attacker_props'])} 个无攻击者命题 | 论证盲区，覆盖度虚高 | "
+        "优先为这 4 条造误解或标注「无需攻击」的理由 |",
+        f"| {len(f['high_modify'])} 个 modify=1.0 的 MIS | 档位判断歧义，人审可信度打折 | "
+        "把「证据较充分但偏保守」沉淀成可复算的判据，再跑第二轮 |",
+        f"| 主题失衡（{f['topic']['dominant_ratio']:.1%}） | 跨主题结论外推风险 | "
+        "按主题设定覆盖配额（本批只提示，不改生成器） |",
+        f"| 论证图 {f['components']['count']} 分量 | 子论证孤立，跨主题辩护链断裂 | "
+        "优先补「桥接」攻击边（让大分量之间产生真实攻击关系），不硬造 |", "",
+        "## 6. 漏洞统计", "",
+        "| 优先级 | 条数 | 明细 |", "|---|---:|---|",
+        f"| P0 | 2 | 无 high 档节点 · 无攻击者命题 {len(f['no_attacker_props'])} |",
+        f"| P1 | 4 | 无辩护者 OUT MIS {len(f['no_defender_mis'])} · "
+        f"modify=1.0 的 MIS {len(f['high_modify'])} · 主题失衡 · 图碎片化 |",
+        f"| P2 | 3 | 命题过载 · MIS 过载 · 2-环 {len(f['cycles'])} |", "",
+        "## 7. 后续建议（NDW 分类）", "",
+        "- **Need（必须做）**：为 4 个无攻击者命题补误解或补「无需攻击」理由（否则覆盖度无法声明）；",
+        "- **Do（可做）**：把 7 个 modify=1.0 的 MIS 的判据沉淀成规则，作为下一轮人审的前置材料；",
+        "- **Won't（本批不做）**：不给 OUT 的 MIS 硬造辩护者、不改生成器阈值、不重冻结 W2、"
+        "不执行任何人审（人审权力在用户手中）；", "",
+        "> 本报告**只呈现事实与建议**；所有修复动作都需人确认后另行开批。", "",
+    ]
+    return "\n".join(lines)
+
+
+def write_report(report: str, path: Path | str | None = None) -> Path:
+    p = Path(path) if path else DEFAULT_REPORT
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(report, encoding="utf-8", newline="\n")
+    return p
+
+
+def summary_json(edges: list[dc.AttackEdge], annotations: list[dict], verdicts: dict[str, str],
+                 credibilities: dict[str, str]) -> dict:
+    f = collect_findings(edges, annotations, verdicts, credibilities)
+    return {"p0": {"no_high_credibility": f["credibility"]["distribution"]["high"] == 0,
+                   "no_attacker_propositions": len(f["no_attacker_props"])},
+            "p1": {"no_defender_out_mis": len(f["no_defender_mis"]),
+                   "high_modify_mis": len(f["high_modify"]),
+                   "topic_imbalanced": f["topic"]["imbalanced"],
+                   "components": f["components"]["count"]},
+            "p2": {"top_prop_overload": f["prop_overload"][0]["attackers"],
+                   "top_mis_overload": f["mis_overload"][0]["propositions"],
+                   "cycles": len(f["cycles"])},
+            "totals": {"p0": 2, "p1": 4, "p2": 3,
+                       "defeating_edges": dc.solve_summary(edges, credibilities)["defeating_edges"]},
+            "note": "P0/P1/P2 的条数口径见报告 §6；只统计**已判定**的漏洞，不估未知"}
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────────
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="argument_audit",
@@ -213,9 +330,11 @@ def main(argv: list[str] | None = None) -> int:
     sub = ap.add_subparsers(dest="cmd")
     for name in ("no-attackers", "no-defenders", "isolated", "unreviewed",
                  "credibility-gaps", "high-modify", "rubber-stamp", "topic-imbalance",
-                 "proposition-overload", "mis-overload", "cycles"):
+                 "proposition-overload", "mis-overload", "cycles", "summary"):
         sp = sub.add_parser(name)
         sp.add_argument("--json", action="store_true", dest="json_sub")
+    sp = sub.add_parser("report")
+    sp.add_argument("--out", default=None)
     a = ap.parse_args(argv)
     if getattr(a, "json_sub", False):
         a.json = True
@@ -262,6 +381,13 @@ def main(argv: list[str] | None = None) -> int:
         res = detect_mis_overload(edges)
     elif a.cmd == "cycles":
         res = detect_cycle_arguments(edges)
+    elif a.cmd == "report":
+        p = write_report(generate_full_report(edges, anns, verdicts, cred), a.out)
+        print(f"[audit] 已写 {p.relative_to(ROOT).as_posix() if str(p).startswith(str(ROOT)) else p}"
+              f"（P0 2 · P1 4 · P2 3）")
+        return 0
+    elif a.cmd == "summary":
+        res = summary_json(edges, anns, verdicts, cred)
     else:
         res = detect_credibility_gaps(cred)
     print(json.dumps(res, ensure_ascii=False, indent=1) if a.json
