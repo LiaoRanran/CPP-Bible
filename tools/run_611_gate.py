@@ -21,13 +21,13 @@ PY = sys.executable
 TOOLS = ["argument_graph_analysis", "bridge_edge_candidates", "fragmentation_repair_analysis",
          "out_mis_review_support", "liveness_completion_plan", "oracle_verification_plan",
          "human_review_quality_deepen", "defense_chain_deepen"]
-CHECKS: list[str] = []
+CHECKS: list[tuple[str, str]] = []
 
 
 def _run(modname: str, args: list[str]) -> int:
     try:
         mod = __import__(modname)
-        return mod.main(args)
+        return int(mod.main(args))
     except Exception as exc:                       # noqa: BLE001
         print(f"[gate] ❌ {modname} {' '.join(args)} 抛异常：{type(exc).__name__}: {exc}",
               file=sys.stderr)

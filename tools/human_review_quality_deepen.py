@@ -43,7 +43,7 @@ def analyze(annotations_path=None) -> dict:
     mis_verdicts: dict[str, set[str]] = defaultdict(set)
     reviewers: set[str] = set()
     reason_lens: list[int] = []
-    verdicts = Counter()
+    verdicts: Counter[str] = Counter()
     topic_edge: dict[str, int] = defaultdict(int)
     for a in anns:
         e = idx.get(str(a.get("edge_id")))
