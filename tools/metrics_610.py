@@ -101,7 +101,30 @@ def collect_human_review_progress(metrics: dict, notes: dict | None = None) -> d
         return {"error": f"{type(exc).__name__}: {exc}"}
 
 
+def collect_defense_chain_stats(metrics: dict, notes: dict | None = None) -> dict:
+    """D3：辩护链统计（调 610 B1 引擎 `defense_chain.stats`，同一口径 ⇒ 与 `--check` 同数）。
+
+    * 引擎缺失/异常 ⇒ `{"error": ...}` + notes 记账，不中断其它采集器；
+    * 额外带上可信度分布（`high/medium/low`）——它是 C 线 P0 漏洞的判据。
+    """
+    try:
+        import defense_chain as dc
+        edges, verdicts, cred = dc.load_data()
+        st = dc.stats(edges, verdicts, cred)
+        return {"total_nodes": st["total_nodes"], "in": st["in"], "out": st["out"],
+                "undec": st["undec"], "total_edges": st["total_edges"],
+                "defeating_edges": st["defeating_edges"], "no_defenders": st["no_defenders"],
+                "no_attackers": st["no_attackers"],
+                "credibility_distribution": st["credibility_distribution"],
+                "source": "defense_chain.py（610 B1 引擎）"}
+    except Exception as exc:                         # noqa: BLE001
+        if notes is not None:
+            notes["defense_chain_stats_610"] = f"采集失败：{type(exc).__name__}: {exc}"
+        return {"error": f"{type(exc).__name__}: {exc}"}
+
+
 def collect_610_new_metrics(notes: dict, *, with_heavy: bool = True) -> dict:
     """610 新增指标容器（挂 `metrics_610`，与 608 的 `metrics_608` 同级，**不动扁平 27 项**）。"""
     return {"grounded_status": collect_grounded_status({}, notes),
-            "human_review_progress": collect_human_review_progress({}, notes)}
+            "human_review_progress": collect_human_review_progress({}, notes),
+            "defense_chain_stats": collect_defense_chain_stats({}, notes)}
