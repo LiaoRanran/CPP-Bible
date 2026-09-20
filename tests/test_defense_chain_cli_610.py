@@ -1,0 +1,87 @@
+"""610 B2 · 辩护链 CLI + 批量报告回归锁（show/what-if/report/stats/list-*/--check）。
+
+锁八件事（任务书 B2 的 8 例）：
+  1. `show MIS-LANG-001` ⇒ 输出含判决/攻击者/击败关系；
+  2. `what-if MIS-LANG-001 medium` ⇒ 打印 **IN 115 / OUT 6**；
+  3. `what-if-overturned <命题>` ⇒ 打印受影响节点数（非空）；
+  4. `stats --json` ⇒ 字段齐全且数字与入库产物一致；
+  5. `list-out` ⇒ **7** 个 OUT 节点；
+  6. `list-no-defenders` ⇒ **7** 个节点；`list-no-attackers` ⇒ **4** 个命题；
+  7. `report --out` ⇒ 生成 `data/defense_chain_report.md`（幂等，两次逐字一致）；
+  8. `--check` ⇒ exit 0（与入库 W2 逐节点一致）。
+
+⚠️ 全部走真实数据（只读）；写盘只写 tmp_path，唯一写真实仓的是第 7 例的**产物报告**（任务书要求）。
+"""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import defense_chain as dc
+
+PROP = "ATOM-UB-GRAY-001::prop-1"
+
+
+def test_cli_show(capsys):
+    assert dc.main(["show", "MIS-LANG-001"]) == 0
+    out = capsys.readouterr().out
+    assert "# 辩护链 · MIS-LANG-001" in out
+    assert "判决 **OUT**" in out and "可信度 low" in out
+    assert "## 攻击者" in out and "构成击败" in out
+    assert "## 击败它的攻击者" in out
+    assert out.count("`ae-") >= 3
+
+
+def test_cli_what_if(capsys):
+    assert dc.main(["what-if", "MIS-LANG-001", "medium"]) == 0
+    out = capsys.readouterr().out
+    assert "IN 115 / OUT 6 / UNDEC 0" in out and "变化 1 个节点" in out
+    assert dc.main(["what-if", "MIS-LANG-001", "bogus"]) != 0
+
+
+def test_cli_what_if_overturned(capsys):
+    assert dc.main(["what-if-overturned", PROP]) == 0
+    out = capsys.readouterr().out
+    assert f"推翻 {PROP}" in out and "受影响" in out
+    assert "总 IN 113 / OUT 8" in out
+
+
+def test_cli_stats(capsys):
+    assert dc.main(["stats", "--json"]) == 0
+    st = json.loads(capsys.readouterr().out)
+    assert st["total_nodes"] == 121 and st["in"] == 114 and st["out"] == 7 and st["undec"] == 0
+    assert st["total_edges"] == 388 and st["defeating_edges"] == 17
+    assert st["no_defenders"] == 7 and st["no_attackers"] == 4
+    assert st["credibility_distribution"] == {"high": 0, "medium": 114, "low": 7}
+    assert len(st["out_nodes"]) == 7
+
+
+def test_cli_list_out(capsys):
+    assert dc.main(["list-out"]) == 0
+    lines = [x for x in capsys.readouterr().out.splitlines() if x.strip()]
+    assert len(lines) == 7
+    assert "MIS-LANG-001" in lines and "MIS-UB-014" in lines
+
+
+def test_cli_list_no_defenders_and_no_attackers(capsys):
+    assert dc.main(["list-no-defenders"]) == 0
+    nd = [x for x in capsys.readouterr().out.splitlines() if x.strip()]
+    assert len(nd) == 7, f"no-defenders 应为 7，实得 {nd}"
+    assert dc.main(["list-no-attackers"]) == 0
+    na = [x for x in capsys.readouterr().out.splitlines() if x.strip()]
+    assert na == ["ATOM-CONC-FENCE-001::prop-1", "ATOM-CONC-FENCE-001::prop-2",
+                  "ATOM-CONC-LOCK-001::prop-1", "ATOM-CONC-LOCK-001::prop-2"]
+
+
+def test_cli_report_is_idempotent(capsys):
+    p = Path(dc.DEFAULT_REPORT)
+    assert dc.main(["report"]) == 0
+    first = p.read_text(encoding="utf-8")
+    assert dc.main(["report"]) == 0
+    assert p.read_text(encoding="utf-8") == first, "批量报告必须幂等（不含时间戳）"
+    assert "IN 114 / OUT 7 / UNDEC 0" in first
+
+
+def test_check_consistency(capsys):
+    assert dc.main(["--check"]) == 0
+    assert "IN 114 / OUT 7 / UNDEC 0" in capsys.readouterr().out

@@ -413,7 +413,11 @@ def main(argv: list[str] | None = None) -> int:
         print(render_chain(get_defense_chain(a.node_id, edges, verdicts, cred)), end="")
         return 0
     if a.cmd == "what-if":
-        res = what_if(a.node_id, a.credibility, edges, verdicts, cred)
+        try:
+            res = what_if(a.node_id, a.credibility, edges, verdicts, cred)
+        except ValueError as exc:                  # 非法档位 ⇒ exit 2（fail-loud，但不甩栈）
+            print(f"[chain] {exc}", file=sys.stderr)
+            return 2
         print(json.dumps(res, ensure_ascii=False, indent=1) if a.json
               else f"[chain] {res['node_id']}：{res['from']} → {res['to']} ⇒ "
                    f"IN {res['total_in']} / OUT {res['total_out']} / UNDEC {res['total_undec']}"
