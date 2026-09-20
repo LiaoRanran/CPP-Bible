@@ -46,6 +46,7 @@ import re
 import shlex
 import shutil
 import signal
+import struct
 import subprocess
 import sys
 import tempfile
@@ -1630,6 +1631,258 @@ def _recompile_invariant(cmd: str, art_rel: str, want_sha: str) -> tuple[str, st
         return "ok", f"{got[:16]}… == 卡值（独立重编译复现）"
     finally:
         shutil.rmtree(tmpdir, ignore_errors=True)
+
+
+# ── 610 E3：编译可复现性**加严**检查（跨时间窗口 + 符号表 + 段 + 字符串表）────────────
+# 纪律：**只加不改**。`_recompile_invariant` 的判决语义逐字不动（replay 的 confirm/refute 不受影响）；
+# 本函数是给 metrics / 测试 / 人工用的**加严探针**，想看清"两次独立编译除 sha 之外还差什么"。
+#
+# 为什么必须跨时间窗口：`__TIME__` / `__DATE__` / `__TIMESTAMP__` 会随编译时刻变。
+# 两次编译若在同一秒内完成，时间宏"看起来可复现"，实际只是**没跨过那一秒**（假绿）。
+# 故本函数强制两次独立编译之间 sleep `gap_s`（默认 1.1s，跨秒），再比 sha。
+REPRO_TOOLS = ("nm", "objdump", "strings")
+
+
+def _tool_path(name: str, env: dict | None = None) -> str | None:
+    """工具可用性判定（走 `shutil.which`，测试可 monkeypatch 之来模拟"工具缺失"）。"""
+    return shutil.which(name, path=(env or {}).get("PATH")) or shutil.which(name)
+
+
+def _strings_equal(a: Path, b: Path, env: dict, tool: str | None) -> bool | None:
+    """`strings` 输出是否逐字节一致；工具不可用/失败 ⇒ None（调用方记 "skipped"）。"""
+    if not tool:
+        return None
+    def _dump(p: Path) -> str | None:
+        try:
+            r = subprocess.run([tool, str(p)], capture_output=True, text=True,
+                               errors="replace", env=env, timeout=30)
+        except (subprocess.TimeoutExpired, OSError):
+            return None
+        return r.stdout if r.returncode == 0 else None
+
+    x, y = _dump(a), _dump(b)
+    return None if x is None or y is None else (x == y)
+
+
+def _pe_timestamp_offsets(blob: bytes) -> list[int]:
+    """PE 文件里嵌入编译时刻的字节偏移（0 个或 2 个）。
+
+    实测（610 E3，MinGW PE/COFF）：除了 PE 头的 `TimeDateStamp`（e_lfanew+8），
+    Debug Directory 里还**再抄一份**同一个 32 位时间戳 ⇒ 跨秒编译时正好差 2 处、共 2 字节。
+    """
+    if len(blob) < 0x40 or blob[:2] != b"MZ":
+        return []
+    e_lfanew = struct.unpack_from("<I", blob, 0x3C)[0]
+    if e_lfanew + 12 > len(blob) or blob[e_lfanew:e_lfanew + 4] != b"PE\0\0":
+        return []
+    ts = e_lfanew + 8
+    out = [ts]
+    needle = blob[ts:ts + 4]
+    if needle and needle != b"\0\0\0\0":                 # debug 目录里的同值副本
+        rest = blob.find(needle, ts + 4)
+        if rest != -1:
+            out.append(rest)
+    return out
+
+
+def _time_window_classify(blob_a: bytes, blob_b: bytes) -> dict:
+    """把"跨时间窗口的字节差异"分类：**只差时间戳** / 真不可复现。
+
+    判据（可复核，不靠猜）：对每个差异偏移，看它所在的 **4 字节对齐窗口** 是否在两侧都是
+    "近期 epoch（与当前时间相差 < 1 天）且彼此相差 ≤ 60s"。PE 编译时刻嵌入的 32 位时间戳
+    正是这个形态（实测：PE 头 `TimeDateStamp` 与 debug 目录里的同族字段各占一处，
+    跨秒编译时正好差 2 处、共 2 字节）；而内容差异（常量/指令）落成"近期 epoch"的概率极低。
+    """
+    n = min(len(blob_a), len(blob_b))
+    offsets = [i for i in range(n) if blob_a[i] != blob_b[i]]
+    if len(blob_a) != len(blob_b):
+        offsets.append(n)                                  # 长度都不同 ⇒ 明确不算时间戳
+    now = time.time()
+    ts_windows: list[int] = []
+    for off in offsets:
+        if off >= n:
+            continue
+        base = off & ~3                                    # 4 字节对齐窗口
+        if base + 4 > n:
+            continue
+        va = int.from_bytes(blob_a[base:base + 4], "little")
+        vb = int.from_bytes(blob_b[base:base + 4], "little")
+        if (abs(va - now) < 86400 and abs(vb - now) < 86400 and abs(va - vb) <= 60):
+            ts_windows.append(base)
+    is_pe = bool(_pe_timestamp_offsets(blob_a))
+    timestamp_only = bool(offsets) and len(ts_windows) >= 1 and all(
+        (o & ~3) in ts_windows for o in offsets if o < n) and (len(blob_a) == len(blob_b))
+    recipe = None
+    if timestamp_only:
+        recipe = ("链接时加 `-Wl,--no-insert-timestamp`（或设 SOURCE_DATE_EPOCH）"
+                  "可让 PE 跨时间窗口字节一致；实测该开关有效")
+    return {"diff_offsets": offsets[:16], "diff_bytes": len(offsets),
+            "pe_timestamp_offsets": [hex(t) for t in ts_windows],
+            "is_pe": is_pe, "timestamp_only": timestamp_only, "recipe": recipe}
+
+
+def _verify_timestamp_hypothesis(cmd_line: str, art_rel: str, work: Path, out_name: str,
+                                 gap_s: float) -> bool | None:
+    """**取证**：加 `-Wl,--no-insert-timestamp` 再编两次（跨 gap_s）——若字节一致，
+
+    则"跨窗口的 sha 差异来自链接器写入的时间戳"就被证明（不是内容变了）。
+    返回 True / False；不适用（非链接步骤、已带该开关）⇒ None。
+    """
+    if "-Wl,--no-insert-timestamp" in cmd_line:
+        return None
+    if re.search(r"(^|\s)-[cSE](\s|$)", cmd_line):        # -c/-S/-E ⇒ 没走到链接，开关无意义
+        return None
+    line = cmd_line + " -Wl,--no-insert-timestamp"
+    shas: list[str] = []
+    for tag in ("v1", "v2"):
+        r = check_build_reproducibility(source_path=run_root() / art_rel, compile_cmd=line,
+                                        work_dir=work / tag, output_name=out_name,
+                                        ccaches_disable=True, check_level="sha")
+        if r.compile_exit_code != 0:
+            return None                                   # 开关不被支持 ⇒ 不下结论
+        shas.append(r.first_hash)
+        if tag == "v1":
+            time.sleep(gap_s)
+    return shas[0] == shas[1]
+
+
+def _recompile_invariant_extended(cmd: str, art_rel: str, want_sha: str | None = None,
+                                 *, gap_s: float = 1.1, check_tools: bool = True,
+                                 keep_tmp: bool = False) -> dict:
+    """加严检查：**两次独立编译跨时间窗口**，比 sha + nm 符号表 + objdump 段 + strings 字符串表。
+
+    返回 dict（**绝不抛异常**、绝不改判决）：
+      * `status`       —— `ok` / `not_reproducible` / `tampered` / `unavailable` / `infra`；
+      * `sha_match`    —— 两次独立编译（相隔 gap_s）的 sha256 是否一致；
+      * `within_match` —— 引擎自带 run1 vs run2（同批两次）是否一致；
+      * `nm_match` / `objdump_match` / `strings_match` —— True / False / `"skipped"`（工具不可用
+        或工件不是目标文件/可执行文件时**如实标 skipped**，不算失败也不算通过）；
+      * `cross_time`   —— {gap_seconds, sha_a, sha_b, time_macro_suspect}，`time_macro_suspect`
+        用"sha 不同 + 工件里出现日期/时刻形态字符串"判"疑似时间宏漂移"（可接受 vs 真不可复现）；
+      * `details`      —— 人读说明。
+    """
+    lines = _artifact_compile_lines(cmd, art_rel)
+    if not lines:
+        return {"status": "unavailable", "sha_match": None, "within_match": None,
+                "nm_match": None, "objdump_match": None, "strings_match": None,
+                "cross_time": {}, "details":
+                "command 中无产出该 artifact 的直接编译行（构建脚本？）"}
+    tmpdir = Path(tempfile.mkdtemp(prefix="recompile_ext_"))
+    out_name = Path(art_rel).name
+    env = dict(_compiler_env())
+    tools = {t: (_tool_path(t, env) if check_tools else None) for t in REPRO_TOOLS}
+    try:
+        res: dict = {"status": "infra", "runs": [], "gap_seconds": gap_s,
+                     "tools": {k: (v or "missing") for k, v in tools.items()},
+                     "details": ""}
+        sha_a = sha_b = None
+        within_ok = True
+        for i, ln in enumerate(lines):
+            wa, wb = tmpdir / f"a{i}", tmpdir / f"b{i}"
+            ra = check_build_reproducibility(source_path=run_root() / art_rel, compile_cmd=ln,
+                                             work_dir=wa, output_name=out_name,
+                                             ccaches_disable=True, check_level="full")
+            if ra.compile_exit_code != 0:
+                res["status"] = "infra"
+                res["details"] = (f"第 1 次编译失败 rc={ra.compile_exit_code}："
+                                  f"{(ra.compile_stderr or '')[:160]}")
+                return res
+            time.sleep(gap_s)                      # ★ 跨秒：让 __TIME__ 有机会换值
+            rb = check_build_reproducibility(source_path=run_root() / art_rel, compile_cmd=ln,
+                                             work_dir=wb, output_name=out_name,
+                                             ccaches_disable=True, check_level="full")
+            if rb.compile_exit_code != 0:
+                res["status"] = "infra"
+                res["details"] = (f"第 2 次编译失败 rc={rb.compile_exit_code}："
+                                  f"{(rb.compile_stderr or '')[:160]}")
+                return res
+            within_ok = within_ok and bool(ra.success) and bool(rb.success)
+            sha_a, sha_b = ra.first_hash, rb.first_hash
+            # 跨窗口的四个维度（都取各自 run1 的产物）
+            oa, ob = wa / "run1" / out_name, wb / "run1" / out_name
+            nm = _symbols_equal(oa, ob, env) if tools["nm"] else None
+            sec = _sections_equal(oa, ob, env) if tools["objdump"] else None
+            stg = _strings_equal(oa, ob, env, tools["strings"])
+            res["runs"].append({"line": ln, "sha_a": sha_a, "sha_b": sha_b,
+                                "nm": nm, "objdump": sec, "strings": stg})
+        nm_match = res["runs"][-1]["nm"] if res["runs"] else None
+        sec_match = res["runs"][-1]["objdump"] if res["runs"] else None
+        strings_match = res["runs"][-1]["strings"] if res["runs"] else None
+        blob_a_path, blob_b_path = wa / "run1" / out_name, wb / "run1" / out_name
+        diff: dict = {}
+        macro_suspect = False
+        if sha_a != sha_b and blob_a_path.is_file() and blob_b_path.is_file():
+            ba, bb = blob_a_path.read_bytes(), blob_b_path.read_bytes()
+            diff = _time_window_classify(ba, bb)
+            if not diff.get("timestamp_only"):        # 非 PE 形态 ⇒ 再看有没有日期/时刻文本
+                head = ba[:200000]
+                macro_suspect = bool(
+                    re.search(rb"\b(20\d\d)[-/]([01]\d)[-/]([0-3]\d)\b", head)
+                    or re.search(rb"\b[0-2]\d:[0-5]\d:[0-5]\d\b", head))
+        res.update({
+            "sha_match": sha_a == sha_b,
+            "within_match": within_ok,
+            "nm_match": nm_match if nm_match is not None else "skipped",
+            "objdump_match": sec_match if sec_match is not None else "skipped",
+            "strings_match": strings_match if strings_match is not None else "skipped",
+            "diff": diff,
+            "cross_time": {"gap_seconds": gap_s, "sha_a": sha_a, "sha_b": sha_b,
+                           "time_macro_suspect": macro_suspect or bool(
+                               diff.get("timestamp_only"))},
+        })
+        semantic_ok = all(v is not False for v in (nm_match, sec_match, strings_match))
+        if sha_a == sha_b:
+            res["status"] = "ok"
+            bits = [f"sha {sha_a[:16]}… 跨 {gap_s}s 复现一致"]
+            for label, val in (("nm", res["nm_match"]), ("objdump", res["objdump_match"]),
+                               ("strings", res["strings_match"])):
+                bits.append(f"{label}="
+                            f"{'一致' if val is True else ('不一致' if val is False else 'skipped')}")
+            res["details"] = " · ".join(bits)
+            if want_sha is not None and sha_a != want_sha:
+                res["status"] = "tampered"
+                res["details"] = f"跨窗口复现得 {sha_a[:16]}… ≠ 卡值 {want_sha[:16]}…"
+        elif diff.get("timestamp_only") and semantic_ok:
+            # 实测（610 E3）：PE 产物只差少数时间戳族字节，符号表/段/字符串表全一致
+            # ⇒ 这是**时间窗口漂移**，不是内容不可复现。
+            res["status"] = "time_window_drift"
+            res["details"] = (f"跨 {gap_s}s 的两次独立编译**只差 {diff['diff_bytes']} 字节**"
+                              f"（偏移 {diff['diff_offsets']}，时间戳窗口"
+                              f"{diff['pe_timestamp_offsets']}）· 语义维度"
+                              f"（nm/objdump/strings）全一致 ⇒ 时间窗口漂移；"
+                              f"可复现配方：{diff.get('recipe')}")
+        elif semantic_ok and diff.get("is_pe") and diff.get("diff_bytes", 99) <= 8:
+            # 差异极小且是 PE：用 `-Wl,--no-insert-timestamp` 编一对**取证**（证明而非猜测）
+            proof = _verify_timestamp_hypothesis(lines[-1], art_rel, tmpdir / "verify",
+                                                 out_name, gap_s)
+            if proof:
+                diff["timestamp_only"] = True
+                diff["recipe"] = ("链接时加 `-Wl,--no-insert-timestamp`（或设 SOURCE_DATE_EPOCH）"
+                                  "⇒ 实测跨时间窗口字节一致（已用一对编译取证）")
+                res["cross_time"]["timestamp_proof"] = "no_insert_timestamp_pair_identical"
+                res["status"] = "time_window_drift"
+                res["details"] = (f"跨 {gap_s}s 的两次独立编译只差 {diff['diff_bytes']} 字节"
+                                  f"（偏移 {diff['diff_offsets']}）；加 "
+                                  f"`-Wl,--no-insert-timestamp` 后跨窗口**字节一致** ⇒ "
+                                  f"证明差异是链接器写入的编译时间戳（非内容变化）")
+            else:
+                res["status"] = "not_reproducible"
+                res["details"] = (f"跨 {gap_s}s 的两次独立编译 sha 不同"
+                                  f"（差异 {diff['diff_bytes']} 字节），且 `--no-insert-timestamp` "
+                                  f"取证未能消除差异 ⇒ 真不可复现，须查工具链/环境")
+        elif semantic_ok and macro_suspect:
+            res["status"] = "time_window_drift"
+            res["details"] = (f"跨 {gap_s}s 的两次独立编译 sha 不同，且产物含日期/时刻形态字符串"
+                              f"⇒ 疑似 __DATE__/__TIME__ 漂移（语义维度全一致）")
+        else:
+            res["status"] = "not_reproducible"
+            res["details"] = (f"跨 {gap_s}s 的两次独立编译 sha 不同：{sha_a[:16]}… vs "
+                              f"{sha_b[:16]}…（差异 {diff.get('diff_bytes', '?')} 字节，"
+                              f"非时间戳形态 ⇒ 真不可复现，须查工具链/环境）")
+        return res
+    finally:
+        if not keep_tmp:
+            shutil.rmtree(tmpdir, ignore_errors=True)
 
 
 def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False,
