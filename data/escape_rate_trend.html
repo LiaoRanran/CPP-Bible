@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang='zh-CN'><head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>逃逸率收敛曲线 · 610 E1</title><style>
+body{font-family:sans-serif;margin:16px;color:#222}
+svg{width:100%;height:auto}table{border-collapse:collapse;margin-top:12px}
+th,td{border:1px solid #ddd;padding:4px 8px;font-size:12px}
+.warn{color:#c62828;font-weight:700}</style></head><body>
+<h1>逃逸率收敛曲线 v1→v7（C-P95 误差带）</h1>
+<p class='warn'>v1→v5 是**尺子变更史**，不是同一量的时间序列 ⇒ 不得据此宣称收敛。</p>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 420" role="img" aria-label="逃逸率收敛曲线">
+<rect width="920" height="420" fill="#fff"/>
+<line x1="70" y1="350" x2="890" y2="350" stroke="#333"/>
+<line x1="70" y1="30" x2="70" y2="350" stroke="#333"/>
+<line x1="70" y1="350.0" x2="890" y2="350.0" stroke="#eee"/>
+<text x="62" y="354.0" font-size="10" text-anchor="end" fill="#666">0.0%</text>
+<line x1="70" y1="270.0" x2="890" y2="270.0" stroke="#eee"/>
+<text x="62" y="274.0" font-size="10" text-anchor="end" fill="#666">7.6%</text>
+<line x1="70" y1="190.0" x2="890" y2="190.0" stroke="#eee"/>
+<text x="62" y="194.0" font-size="10" text-anchor="end" fill="#666">15.3%</text>
+<line x1="70" y1="110.0" x2="890" y2="110.0" stroke="#eee"/>
+<text x="62" y="114.0" font-size="10" text-anchor="end" fill="#666">22.9%</text>
+<line x1="70" y1="30.0" x2="890" y2="30.0" stroke="#eee"/>
+<text x="62" y="34.0" font-size="10" text-anchor="end" fill="#666">30.6%</text>
+<line x1="206.7" y1="30" x2="206.7" y2="350" stroke="#c62828" stroke-dasharray="4 3" opacity="0.6"/>
+<text x="209.7" y="42" font-size="10" fill="#c62828">尺子变更 v1→v2</text>
+<line x1="343.3" y1="30" x2="343.3" y2="350" stroke="#c62828" stroke-dasharray="4 3" opacity="0.6"/>
+<text x="346.3" y="42" font-size="10" fill="#c62828">尺子变更 v2→v3</text>
+<line x1="480.0" y1="30" x2="480.0" y2="350" stroke="#c62828" stroke-dasharray="4 3" opacity="0.6"/>
+<text x="483.0" y="42" font-size="10" fill="#c62828">尺子变更 v3→v4</text>
+<line x1="616.7" y1="30" x2="616.7" y2="350" stroke="#c62828" stroke-dasharray="4 3" opacity="0.6"/>
+<text x="619.7" y="42" font-size="10" fill="#c62828">尺子变更 v4→v5</text>
+<line x1="753.3" y1="30" x2="753.3" y2="350" stroke="#c62828" stroke-dasharray="4 3" opacity="0.6"/>
+<text x="756.3" y="42" font-size="10" fill="#c62828">尺子变更 v5→v6</text>
+<line x1="890.0" y1="30" x2="890.0" y2="350" stroke="#c62828" stroke-dasharray="4 3" opacity="0.6"/>
+<text x="893.0" y="42" font-size="10" fill="#c62828">尺子变更 v6→v7</text>
+<line x1="70.0" y1="129.3" x2="70.0" y2="71.7" stroke="#1565c0" stroke-width="1.2" opacity="0.55"/>
+<text x="70.0" y="366" font-size="11" text-anchor="middle" fill="#333">v1</text>
+<text x="70.0" y="380" font-size="9" text-anchor="middle" fill="#888">227/956</text>
+<line x1="206.7" y1="299.2" x2="206.7" y2="266.1" stroke="#1565c0" stroke-width="1.2" opacity="0.55"/>
+<text x="206.7" y="366" font-size="11" text-anchor="middle" fill="#333">v2</text>
+<text x="206.7" y="380" font-size="9" text-anchor="middle" fill="#888">61/969</text>
+<line x1="343.3" y1="321.6" x2="343.3" y2="295.6" stroke="#1565c0" stroke-width="1.2" opacity="0.55"/>
+<text x="343.3" y="366" font-size="11" text-anchor="middle" fill="#333">v3</text>
+<text x="343.3" y="380" font-size="9" text-anchor="middle" fill="#888">38/997</text>
+<line x1="480.0" y1="321.6" x2="480.0" y2="295.7" stroke="#1565c0" stroke-width="1.2" opacity="0.55"/>
+<text x="480.0" y="366" font-size="11" text-anchor="middle" fill="#333">v4</text>
+<text x="480.0" y="380" font-size="9" text-anchor="middle" fill="#888">38/998</text>
+<line x1="616.7" y1="350.0" x2="616.7" y2="345.8" stroke="#1565c0" stroke-width="1.2" opacity="0.55"/>
+<text x="616.7" y="366" font-size="11" text-anchor="middle" fill="#333">v5</text>
+<text x="616.7" y="380" font-size="9" text-anchor="middle" fill="#888">1/1375</text>
+<line x1="753.3" y1="350.0" x2="753.3" y2="345.8" stroke="#1565c0" stroke-width="1.2" opacity="0.55"/>
+<text x="753.3" y="366" font-size="11" text-anchor="middle" fill="#333">v6</text>
+<text x="753.3" y="380" font-size="9" text-anchor="middle" fill="#888">1/1379</text>
+<line x1="890.0" y1="350.0" x2="890.0" y2="345.9" stroke="#1565c0" stroke-width="1.2" opacity="0.55"/>
+<text x="890.0" y="366" font-size="11" text-anchor="middle" fill="#333">v7</text>
+<text x="890.0" y="380" font-size="9" text-anchor="middle" fill="#888">1/1406</text>
+<polyline points="70.0,101.4 206.7,284.1 343.3,310.1 480.0,310.1 616.7,349.2 753.3,349.2 890.0,349.3" fill="none" stroke="#2e7d32" stroke-width="1.6"/>
+<circle cx="70.0" cy="101.4" r="4" fill="#2e7d32"><title>v1 逃逸率 23.7448%（C-P95 上界 26.5729%）</title></circle>
+<circle cx="206.7" cy="284.1" r="4" fill="#2e7d32"><title>v2 逃逸率 6.2951%（C-P95 上界 8.0133%）</title></circle>
+<circle cx="343.3" cy="310.1" r="4" fill="#2e7d32"><title>v3 逃逸率 3.8114%（C-P95 上界 5.1942%）</title></circle>
+<circle cx="480.0" cy="310.1" r="4" fill="#2e7d32"><title>v4 逃逸率 3.8076%（C-P95 上界 5.1890%）</title></circle>
+<circle cx="616.7" cy="349.2" r="4" fill="#2e7d32"><title>v5 逃逸率 0.0727%（C-P95 上界 0.4045%）</title></circle>
+<circle cx="753.3" cy="349.2" r="4" fill="#2e7d32"><title>v6 逃逸率 0.0725%（C-P95 上界 0.4034%）</title></circle>
+<circle cx="890.0" cy="349.3" r="4" fill="#2e7d32"><title>v7 逃逸率 0.0711%（C-P95 上界 0.3956%）</title></circle>
+</svg>
+<h2>逐版本</h2><table><tr><th>版本</th><th>escaped</th><th>可判</th><th>n_a</th>
+<th>equivalent</th><th>点估计</th><th>C-P95 上界</th></tr>
+<tr><td>v1</td><td>227</td><td>956</td><td>232</td><td>None</td><td>23.7448%</td><td>26.5729%</td></tr>
+<tr><td>v2</td><td>61</td><td>969</td><td>212</td><td>None</td><td>6.2951%</td><td>8.0133%</td></tr>
+<tr><td>v3</td><td>38</td><td>997</td><td>186</td><td>None</td><td>3.8114%</td><td>5.1942%</td></tr>
+<tr><td>v4</td><td>38</td><td>998</td><td>185</td><td>None</td><td>3.8076%</td><td>5.1890%</td></tr>
+<tr><td>v5</td><td>1</td><td>1375</td><td>185</td><td>8</td><td>0.0727%</td><td>0.4045%</td></tr>
+<tr><td>v6</td><td>1</td><td>1379</td><td>179</td><td>35</td><td>0.0725%</td><td>0.4034%</td></tr>
+<tr><td>v7</td><td>1</td><td>1406</td><td>179</td><td>8</td><td>0.0711%</td><td>0.3956%</td></tr>
+</table><h2>尺子变更点</h2><ul>
+<li><b>v1→v2</b>：可判分母 956 → 969；n_a 232 → 212<br><span style='color:#666'>571 修尺子后，含 M3 的 52 条真洞（口径修正）</span></li>
+<li><b>v2→v3</b>：可判分母 969 → 997；n_a 212 → 186<br><span style='color:#666'>574 修 M5 尺子后，M5 活雷未收（口径修正）</span></li>
+<li><b>v3→v4</b>：可判分母 997 → 998；n_a 186 → 185<br><span style='color:#666'>575 命题级活性锚，M5 规则已拦但被 diff 键吞（口径修正）</span></li>
+<li><b>v4→v5</b>：可判分母 998 → 1375；引入 equivalent 字段（8 条）<br><span style='color:#666'>578 _findings_key 并入文案后，587 起 1/1375（口径修正）</span></li>
+<li><b>v5→v6</b>：可判分母 1375 → 1379；n_a 185 → 179；equivalent 8 → 35<br><span style='color:#666'>588 发现器补全后 1/1379，被 v7 取代（口径修正）</span></li>
+<li><b>v6→v7</b>：可判分母 1379 → 1406；equivalent 35 → 8<br><span style='color:#666'>591 当前口径：589 T2 注释净化 un-mask 27 条 fixture 路径变异 ⇒ M2 可判 141→168；唯一 escaped=1（M1/EV-CONC-001 冻结 TCE）</span></li>
+</ul><p>区间算法：Clopper-Pearson 精确双侧 95%（无 scipy）；数字全部读自 data/mutation/full_baseline_v*.json。</p></body></html>
