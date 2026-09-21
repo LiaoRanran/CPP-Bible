@@ -34,6 +34,13 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Install gate/quality tool dependencies (pyyaml / hypothesis)
+      # gate_engine.py 等门禁工具顶层 import yaml；ubuntu-latest 裸 python3 不含 pyyaml，
+      # 会致门禁 ModuleNotFoundError 静默 exit 1（#624 gate job 仍红根因之一）。
+      # 显式安装，与 pytest job 口径一致，避免依赖系统预装。
+      run: python3 -m pip install --quiet pyyaml hypothesis
+      continue-on-error: false
+
     - name: Ruff (tools/ 静态检查硬门禁)
       # P0-2 收口（TOOLCHAIN_UPGRADE_NEXT.md §2）：tools/ 的 ruff 债务已人工清零
       # （E741×34 / E701×27 / E702×21 / F841×17，逐个确认语义后修改，未用
@@ -459,6 +466,14 @@ jobs:
       uses: actions/setup-python@v7
       with:
         python-version: '3.11'
+
+    - name: Install gate tool dependencies (pyyaml / hypothesis)
+      # gate_engine.py 顶层 import yaml；ubuntu-latest 裸 python3 不含 pyyaml，会致
+      # gate_engine --check ModuleNotFoundError 静默 exit 1（#624 gate job 仍红根因）。
+      # 显式安装，与 pytest job 口径一致。
+      run: python3 -m pip install --quiet pyyaml hypothesis
+      continue-on-error: false
+
     - name: Gate Engine (M4 规则引擎：事实门禁 block + 双清单收敛)
       # 规则全集见 docs/kernel/M4_gate_engine.md；block 级违规即红，warn 记债不红，
       # advice（教学/文学）只建议不改文。规则可实现按 ADR-0004 挂在 cmd_check 上。
