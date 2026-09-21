@@ -115,8 +115,10 @@ def generate(cards: list[str], rules: tuple[str, ...] = TARGET_RULES,
     max_iter = len(cards) * len(wanted) * 8 + 8
     while len(out) < count and i < max_iter:
         card = cards[i % len(cards)]
-        strat = wanted[(i // len(cards)) % len(wanted)]
-        tmpl = _templates(strat)[i % len(_templates(strat))]
+        # 策略按 i 轮转（而非「每轮完所有卡才换」），否则 count < 卡数时会只剩第一种策略
+        strat = wanted[i % len(wanted)]
+        tpls = _templates(strat)
+        tmpl = tpls[(i // len(wanted)) % len(tpls)]
         rule = rules[i % len(rules)]
         point = tmpl["point"].format(rule=rule)
         content = json.dumps({"op": tmpl["op"], "point": point, "detail": tmpl["detail"],
@@ -163,6 +165,79 @@ def validate_record(rec: dict) -> list[str]:
     return errs
 
 
+# ── 判决预测（621 A2）─────────────────────────────────────────────────────────
+# 诚实声明：这里是**预测**，不是真实 gate 判决。原因有二：
+#   1) 621 §六.3 硬边界：不跑监工门禁（含 gate --check），仅 ci.yml 语法验证例外；
+#   2) 没有「把 mutation 施加到沙箱副本」的 API（620 §九.8 已登记为根本瓶颈），
+#      要跑真实 gate 就得改原始卡，而这是硬边界禁止的。
+# 预测依据全部来自 v7 既有实测数据（同 card+op → 同 op → 策略先验），可复现、可审计。
+V7_PATH = os.path.join(ROOT, "data", "mutation", "full_baseline_v7.json")
+STRATEGY_PRIOR = {
+    "rule_blind_spot": "blocked",
+    "evidence_ambiguity": "blocked",
+    "provenance_inconsistency": "blocked",
+}
+
+
+def load_v7(path: str = V7_PATH) -> list[dict]:
+    if not os.path.exists(path):
+        return []
+    with open(path, encoding="utf-8") as fh:
+        return list((json.load(fh).get("results")) or [])
+
+
+def _majority(records: list[dict]) -> str | None:
+    if not records:
+        return None
+    counts: dict[str, int] = {}
+    for r in records:
+        v = str(r.get("verdict"))
+        counts[v] = counts.get(v, 0) + 1
+    return max(sorted(counts), key=lambda k: counts[k])
+
+
+def predict_verdict(mutation: dict, v7: list[dict]) -> dict:
+    """基于 v7 实测数据的判决预测（确定性）。返回 verdict + basis + confidence。"""
+    content = json.loads(mutation["content"])
+    card, op = content.get("target_card"), content.get("op")
+    strat = mutation.get("attack_type")
+
+    same_card_op = [r for r in v7 if r.get("card") == card and r.get("op") == op]
+    v = _majority(same_card_op)
+    if v:
+        return {"verdict": v, "basis": f"v7 同卡同算子 {card}×{op}（{len(same_card_op)} 条）",
+                "confidence": "high"}
+    same_op = [r for r in v7 if r.get("op") == op]
+    v = _majority(same_op)
+    if v:
+        return {"verdict": v, "basis": f"v7 同算子 {op}（{len(same_op)} 条）",
+                "confidence": "medium"}
+    if strat in STRATEGY_PRIOR:
+        return {"verdict": STRATEGY_PRIOR[strat], "basis": f"策略先验 {strat}",
+                "confidence": "low"}
+    return {"verdict": "infra_error", "basis": "无任何 v7 依据", "confidence": "none"}
+
+
+def verify_batch(mutations: list[dict], v7: list[dict]) -> dict:
+    """对一批 mutation 做判决预测并汇总。"""
+    rows = []
+    for m in mutations:
+        p = predict_verdict(m, v7)
+        rows.append({**m, "predicted_verdict": p["verdict"],
+                     "basis": p["basis"], "confidence": p["confidence"]})
+    dist: dict[str, int] = {}
+    for r in rows:
+        dist[r["predicted_verdict"]] = dist.get(r["predicted_verdict"], 0) + 1
+    return {
+        "rows": rows,
+        "distribution": dict(sorted(dist.items())),
+        "total": len(rows),
+        # 真逃逸 = predicted escaped（本工具不做 equivalent 判定，如实为 0）
+        "new_escapes": [r["mutation_id"] for r in rows if r["predicted_verdict"] == "escaped"],
+        "note": "预测值，非真实 gate 判决（621 §六.3 不跑门禁 + 无沙箱施加 API）",
+    }
+
+
 # ── 自检（只读、不写盘；exit 0 = 通过）──────────────────────────────────────────
 def selftest() -> int:
     ok = True
@@ -196,6 +271,15 @@ def selftest() -> int:
     except ValueError:
         chk("写入受控目录抛错", True)
     chk("未知策略抛错", _raises(lambda: generate(cards, count=1, strategy="bogus")))
+
+    v7 = [{"card": cards[0], "op": "M1", "verdict": "blocked"},
+          {"card": cards[0], "op": "M1", "verdict": "escaped"},
+          {"card": "other.md", "op": "M6", "verdict": "blocked"}]
+    vb = verify_batch(multi, v7)
+    chk("verify_batch 条数一致", vb["total"] == len(multi))
+    chk("预测分布键合法",
+        set(vb["distribution"]) <= {"blocked", "escaped", "n_a", "infra_error"})
+    chk("预测含依据与置信度", all(r["basis"] and r["confidence"] for r in vb["rows"]))
     print(f"A1 selftest: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
 
