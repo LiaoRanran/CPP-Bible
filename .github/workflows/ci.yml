@@ -456,6 +456,15 @@ jobs:
       continue-on-error: false
 
   gate:
+    # 621 B1：**并发安全** —— gate 必须等 replay 跑完再启动。
+    # 根因：replay 的 recompile 会「删旧写新」重写 Examples/atoms/*.asm（如
+    # _atom_lock_cost.asm），而 gate 的 EV-ARTIFACT-FILE-EXISTS 要读同一批工件。
+    # 两者并行时，gate 可能采样到「删旧未写新」的中间窗口 ⇒ 报出**假的** BLOCK
+    # （619 验收的 2 条 BLOCK 误报即由此而来，620 任务1 已定位并证伪）。
+    # 故让 gate 依赖 replay：replay 写完后 gate 才读，读到的一定是最终状态。
+    # 注意：不要反向（replay needs gate）——那样 replay 会在 gate 判定之后继续改工件，
+    # gate 的结论立刻失效。方向必须是「写者先、读者后」。
+    needs: [replay]
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
