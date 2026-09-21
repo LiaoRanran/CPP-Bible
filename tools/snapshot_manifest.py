@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 """617 D2 · SNAPSHOT_MANIFEST 自动生成（治理数字漂移，纯标准库 + git 只读）
 
-生成 data/SNAPSHOT_MANIFEST_617.json：含【实时 git/filesystem 计数】+【冻结验证基线数字】。
+生成 data/SNAPSHOT_MANIFEST.json（**权威**）：含【实时 git/filesystem 计数】+【冻结验证基线数字】。
+619 C1 收敛：默认输出 `SNAPSHOT_MANIFEST.json`；`--batch <id>` 生成带版本号的交付快照
+（如 `SNAPSHOT_MANIFEST_619.json`），后者作为历史冻结 pin 保留（618 等工具仍读版本化归档）。
 本工具只读，不跑任何 --check；计数由 git/filesystem 直取，杜绝手写漂移。
 用途：README / qmd / quickref 的计数应引用本 manifest 的 live_counts，禁止手填。
 
@@ -130,9 +132,13 @@ def selftest():
 
 
 def main():
-    ap = argparse.ArgumentParser(description="617 D2 SNAPSHOT_MANIFEST 生成")
+    ap = argparse.ArgumentParser(description="617 D2 SNAPSHOT_MANIFEST 生成（619 C1 收敛）")
     ap.add_argument("--out",
-                    default=os.path.join(ROOT, "data", "SNAPSHOT_MANIFEST_617.json"))
+                    default=os.path.join(ROOT, "data", "SNAPSHOT_MANIFEST.json"),
+                    help="权威快照输出路径（默认 data/SNAPSHOT_MANIFEST.json）")
+    ap.add_argument("--batch", nargs="?", const="619", default=None,
+                    metavar="ID",
+                    help="生成带版本号的交付快照 data/SNAPSHOT_MANIFEST_<ID>.json（历史冻结 pin）")
     ap.add_argument("--check-clean", action="store_true",
                     help="要求工作区干净，否则非零退出")
     ap.add_argument("--check", action="store_true",
@@ -142,13 +148,16 @@ def main():
         fails = selftest()
         for f in fails:
             print("FAIL: %s" % f)
-        print("617 D2 --check: %s" % ("PASS" if not fails else "FAIL"))
+        print("snapshot_manifest --check: %s" % ("PASS" if not fails else "FAIL"))
         sys.exit(0 if not fails else 1)
     if args.check_clean and not verify_clean():
         print("ERROR: working tree not clean; refuse to snapshot", file=sys.stderr)
         sys.exit(2)
+    out = args.out
+    if args.batch:
+        out = os.path.join(ROOT, "data", "SNAPSHOT_MANIFEST_%s.json" % args.batch)
     m = build_manifest()
-    with open(args.out, "w", encoding="utf-8") as f:
+    with open(out, "w", encoding="utf-8") as f:
         json.dump(m, f, indent=2, ensure_ascii=False)
         f.write("\n")
     print(json.dumps(m, indent=2, ensure_ascii=False))

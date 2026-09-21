@@ -1,6 +1,6 @@
 # 项目关键数字 quickref（v7 · 617 D4/G2 · 由 SNAPSHOT_MANIFEST 直取，禁止手填）
 
-> **来源**：`data/SNAPSHOT_MANIFEST_617.json`（工具 `tools/snapshot_manifest.py` 生成，generated_at 见该文件）。
+> **来源**：`data/SNAPSHOT_MANIFEST.json`（工具 `tools/snapshot_manifest.py` 生成；619 C1 收敛后的**权威**快照，generated_at 见该文件。历史版本化归档 `SNAPSHOT_MANIFEST_617.json` 仍保留为冻结 pin）。
 > **铁律**：本表计数全部由 git/filesystem 直取，**禁止手写**；v6（手填 204/183/196/175）已废弃，存在漂移，勿再引用。
 > 重跑验证数字须走监工门禁；本表 frozen 段为冻结数字（last_verified 见 manifest）。
 
