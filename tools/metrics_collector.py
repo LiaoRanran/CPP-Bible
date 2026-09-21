@@ -657,6 +657,22 @@ def collect_curves() -> dict:
     }
     out["escape_survival_note"] = ("其余算子尚无'产生→收口'的完整批次 ⇒ None（不填 0）；"
                                    "M2/M6 的 0 是「真值 = 非逃逸」、与 None（缺数据）含义相反，别混读")
+    # 616 C3：Goodhart 漂移监控接入 metrics（嵌套，**不动既有 27 项扁平 schema**）。
+    try:
+        import goodhart_monitor as _gh  # 616 C3：只读监控
+        _g = _gh.compute()
+        out["goodhart"] = {
+            "goodhart_score": _g["score"],
+            "goodhart_warn_growth_rate": _g["warn_growth_per_batch"],
+            "goodhart_legacy_growth_rate": _g["legacy_growth_per_batch"],
+            "goodhart_block_rate": _g["block_rate"],
+            "goodhart_rule_coverage": _g["coverage_pct"],
+            "goodhart_human_reject_rate": _g["reject_rate"],
+            "danger_scale": "0-100（越高越危险）",
+            "note": "Goodhart 漂移危险分：block=0 + warn 增长 + reject=0 驱动；只作趋势提示，非判决",
+        }
+    except Exception as exc:                        # noqa: BLE001
+        out["goodhart"] = {"error": f"{type(exc).__name__}: {exc}"}
     return out
 
 
