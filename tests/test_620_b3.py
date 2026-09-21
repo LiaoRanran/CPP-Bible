@@ -46,8 +46,11 @@ def test_full_83_stats():
     st = S.stats(certs)
     assert st["total"] == 83
     assert st["validation_ok"] == 83
-    assert st["by_status"]["authorized"] == 23
-    assert st["by_status"]["unverified"] == 60
+    # C3（Authority 同步）后 approved 由 23 → 27、pending 由 60 → 56：
+    # 4 张原子卡在历史人审通道中有真实决策，被依日志补登为 approved。
+    assert st["by_status"]["authorized"] == 27
+    assert st["by_status"]["unverified"] == 56
+    assert st["by_status"]["authorized"] + st["by_status"]["unverified"] == 83
     assert st["by_verifier_count"][1] == 83
 
 

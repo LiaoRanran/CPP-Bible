@@ -29,7 +29,7 @@
 run_619_gate → 验收门: PASS (EXIT=0)
 [1/3] 受控目录零污染检查            ✅ 干净
 [2/3] 逐工具 --check（7 个）         ✅ adversarial_objective / attacker / vfdr / verifier / pilot_gen / renderer / snapshot
-[3/3] pytest（619 新增单测）          ✅ 57 例全绿
+[3/3] pytest（619 新增单测）          ✅ **53 例全绿**（原写 57，620 D1 已修正为实测 53）
 ```
 > 注：门禁**未**跑监工门禁（gate/poison/replay/tool_integrity 的 --check）——与 §六 硬边界 2 一致，
 > 那些数字以冻结基线 + `SNAPSHOT_MANIFEST.json` 为准。
@@ -42,7 +42,7 @@ run_619_gate → 验收门: PASS (EXIT=0)
 | 本地领先 origin/master | 41（不 push） |
 | live_counts.commits | **1550** |
 | live_counts.tools_py | **232**（619 新增 7 工具 + 改 1） |
-| live_counts.tests_py | **225**（619 新增 57 例） |
+| live_counts.tests_py | **225**（619 新增 **53** 例；原写 57，620 D1 修正） |
 | live_counts.atoms_md | 28（实际卡 27） |
 | live_counts.evidence_ev_md | 56 |
 
