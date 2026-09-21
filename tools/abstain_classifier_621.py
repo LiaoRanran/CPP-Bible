@@ -88,13 +88,16 @@ def build_state(fm: dict, card_rel: str, now: datetime | None = None) -> dict:
     conflicted = any(isinstance(r, dict)
                      and str(r.get("type", "")).lower().startswith("contradict")
                      for r in relations)
+    # yaml 会把 verified_at 解析成 datetime.date ⇒ 统一转成字符串，保证 JSON 可序列化
+    va = fm.get("verified_at")
+    va_str = str(va)[:10] if va else None
     return {
         "evidence_count": evidence_count,
         "conflicted": conflicted,
         "verdict": fm.get("verdict"),
         "status": fm.get("status"),
-        "verified_at": fm.get("verified_at"),
-        "days_since_verify": _days_since(fm.get("verified_at"), now),
+        "verified_at": va_str,
+        "days_since_verify": _days_since(va_str, now),
     }
 
 
