@@ -1,4 +1,4 @@
-# PCK 证书（620 B1 批量迁移，只读派生）
+# PCK 证书（620 B1 迁移 + C3 Authority 同步，只读派生）
 schema_version: 619-pck-v1
 claim:
   id: ATOM-MEM-NEW-001
@@ -45,6 +45,10 @@ verifiers:
 human_authority:
   status: approved
   review_method: batch_authorization
+  authority_ref: dec-000271
+  authority_power: ACCEPT
+  authority_decided_at: '2026-09-19T23:29:26'
+  authority_source: import:data/human_attack_edge_annotations.jsonl
 uncertainty:
   cs_upper_bound: 0.009062
   estimand: L1

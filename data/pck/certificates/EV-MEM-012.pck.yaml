@@ -1,4 +1,4 @@
-# PCK 证书（620 B1 批量迁移，只读派生）
+# PCK 证书（620 B1 迁移 + C3 Authority 同步，只读派生）
 schema_version: 619-pck-v1
 claim:
   id: EV-MEM-012
@@ -67,6 +67,8 @@ verifiers:
 human_authority:
   status: pending
   review_method: batch_authorization
+  authority_ref: null
+  authority_note: 无匹配的 Authority 决策（不代签，保持 pending）
 uncertainty:
   cs_upper_bound: 0.009062
   estimand: L1
