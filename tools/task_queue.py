@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """530 T7 · L2 调度最小骨架（task_queue）——"谁该干什么 / 干完没"。
 
 与 `tools/task_state.py` 的**分工（勿混）**：
@@ -589,7 +589,7 @@ def _touch_store(p: Any) -> str:
     形态**，审计侧 `git status` 输出也是 posix ⇒ 两侧可逐字比对）。
     **不在这里做 `normcase`**：那会让 Windows 入库值变成反斜杠（539 A1 裁决：库里统一 posix）。
     """
-    return PurePath(str(p).strip()).as_posix()
+    return PurePath(str(p).strip().replace("\\", "/")).as_posix()
 
 
 def _norm_touch(p: Any) -> str:
