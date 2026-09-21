@@ -25,6 +25,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 EXEMPTIONS = ROOT / "tools" / "poison_exemptions.yaml"
 GOLDEN = ROOT / "tools" / "golden_state.json"
 REPORT = ROOT / "data" / "exemption_expiry_615.md"
+DISPOSAL_REPORT = ROOT / "data" / "exemption_expiry_disposal_616.md"
 
 EXPIRY_BATCHES = 10        # 创建批次 + 10 = 到期批次
 DUE_SOON_BATCHES = 3       # 距到期 <= 3 批 ⇒ 即将到期
@@ -43,7 +44,8 @@ def load_exemptions() -> list[dict]:
         m = _ENTRY.search(ln)
         if m:
             out.append({"id": m.group("id"), "date": m.group("date"),
-                        "redteam_seen": m.group("seen") or "legacy"})
+                        "redteam_seen": m.group("seen") or "legacy",
+                        "reason": m.group("reason")})
     return out
 
 
@@ -127,7 +129,68 @@ def check() -> list[str]:
     r0 = assign(fake_tl)
     if r0 and r0[0]["current_batch"] != 15:
         problems.append("批次轴长度应等于时间线条数")
+    # 616 C2：处置建议覆盖全部豁免
+    if len(dispose()) != len(rows):
+        problems.append(f"处置建议应覆盖全部豁免（{len(dispose())} ≠ {len(rows)}）")
     return problems
+
+
+def dispose(rows: list[dict] | None = None) -> list[dict]:
+    """616 C2：为每条豁免生成**处置建议**（**不自动删除任何豁免**）。
+
+    判据（据 581 台账纪律"豁免 ≠ 免检；须有 pytest 正反例兜底"）：
+      * 理由含 pytest 兜底 ⇒ **继续豁免**（端到端毒样例不适用/不经济）；
+      * advice 级规则（drill 判据与"拦截"相反）⇒ **继续豁免**。
+    风险：**删豁免会改变 RULE-COVERAGE 分母**，若该规则无端到端毒样例 ⇒ `poison_drill` 可能非 0（CI 红）。
+    """
+    rows = rows if rows is not None else assign()
+    reasons = {e["id"]: e.get("reason", "") for e in load_exemptions()}
+    out: list[dict] = []
+    for r in rows:
+        reason = reasons.get(r["id"], "")
+        adv = ("advice" in reason.lower()) or ("非阻断" in reason) or ("advice 级" in reason)
+        teach = ("误解" in reason) or ("教学" in reason) or ("audience" in reason.lower())
+        cat = "advice级" if adv else ("教学/资产类" if teach else "字段/枚举/结构类")
+        has_pytest = "pytest" in reason
+        if adv or has_pytest:
+            sugg = "继续豁免（续期 +10 批）"
+        else:
+            sugg = "待裁决（缺 pytest 兜底证据）"
+        out.append({"rule": r["id"], "created_batch": r["created_batch"],
+                    "expiry_batch": r["expiry_batch"], "status": r["status"],
+                    "category": cat, "has_pytest_evidence": has_pytest,
+                    "suggestion": sugg,
+                    "rationale": f"{cat}：" + ("advice 级与 drill 判据相反" if adv else
+                                               "pytest 正反例已兜底、端到端毒样例不经济"),
+                    "risk": "删豁免改变 RULE-COVERAGE 分母 ⇒ 无端到端毒样例时 poison_drill 可能非 0（CI 红）"})
+    return out
+
+
+def disposal_report(rows: list[dict] | None = None) -> str:
+    disp = dispose(rows)
+    from collections import Counter
+    summ = Counter(x["suggestion"] for x in disp)
+    cats = Counter(x["category"] for x in disp)
+    L = ["# 616 C2 · 27 条 legacy 豁免到期处置清单（**只建议，不自动删除**）", "",
+         "> 依据：581 台账纪律「豁免 ≠ 免检；须有 pytest 正反例兜底」；到期 = 创建批次 + 10。", "",
+         "## 一、分类汇总", "",
+         "| 处置建议 | 条数 |", "|---|---|",
+         *[f"| {k} | {v} |" for k, v in sorted(summ.items())],
+         "", "| 类别 | 条数 |", "|---|---|",
+         *[f"| {k} | {v} |" for k, v in sorted(cats.items())], "",
+         "## 二、逐条处置建议", "",
+         "| 规则 ID | 类别 | 创建批次 | 到期批次 | 状态 | 建议 | 理由 |", "|---|---|---|---|---|---|---|",
+         *[f"| `{x['rule']}` | {x['category']} | {x['created_batch']} | {x['expiry_batch']} | "
+           f"{x['status']} | {x['suggestion']} | {x['rationale']} |" for x in disp],
+         "", "## 三、风险评估（统一）", "",
+         f"- {disp[0]['risk'] if disp else '—'}",
+         "- ⇒ **删除豁免前必须先补端到端毒样例**（或人审确认该规则确不适用）。", "",
+         "## 四、执行建议（如要执行）", "",
+         "1. **顺序**：先补毒样例/确认豁免理由 → 再删豁免（同 commit 跑 `poison_drill` 复核，注意那是监工门禁 ⇒ 交监工/人）；",
+         "2. **前置条件**：人审授权 + 逐条确认；**不得批量删除**；",
+         "3. **默认动作**：全部**继续豁免**（续期 +10 批）——本批 27 条全有 pytest 兜底 / advice 级。", "",
+         "> **重要声明**：本清单只做处置**建议**，**不自动删除任何豁免**。所有删除决策需要**人审授权**。", "", ""]
+    return "\n".join(L) + "\n"
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -135,6 +198,7 @@ def main(argv: list[str] | None = None) -> int:
                                  description="615 C2 legacy 豁免到期制（只算到期日与提醒）")
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--report", action="store_true")
+    ap.add_argument("--disposal", action="store_true")
     a = ap.parse_args(argv)
     if a.check:
         problems = check()
@@ -142,7 +206,12 @@ def main(argv: list[str] | None = None) -> int:
             for p in problems:
                 print(f"[C2] ❌ {p}", file=sys.stderr)
             return 1
-        print("[C2] ✅ 自验证通过：27 条豁免 / 到期=创建+10 / 状态计算 一致")
+        print("[C2] ✅ 自验证通过：27 条豁免 / 到期=创建+10 / 状态计算 / 处置建议 一致")
+        return 0
+    if a.disposal:
+        DISPOSAL_REPORT.parent.mkdir(parents=True, exist_ok=True)
+        DISPOSAL_REPORT.write_text(disposal_report(), encoding="utf-8", newline="\n")
+        print(f"[C2] 已写 {DISPOSAL_REPORT.relative_to(ROOT).as_posix()}（{len(dispose())} 条）")
         return 0
     rows = assign()
     if a.report:
