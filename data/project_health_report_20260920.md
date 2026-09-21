@@ -217,3 +217,30 @@
 - **化债**：`_arch_v10-v17` 归档 `_archive/old_research/`（136 文件）；governance 重钉（verify exit 0）；**既有 `test_supply_chain_chain_601` 漂移转绿**。
 - 实测数字：commits **1473** / tools **204** / tests **182** / 根 `_arch` **2**（v18,v19）/ `data` **446** 文件。
 - 待裁决更新：M1 已登记（不再"待攻坚"）；OTS/in-toto 仍交人；CI 四 job 待实跑确认。
+
+---
+
+### 2026-09-21 · 615 + 616 进展（止血 + 方法论修复）
+
+**615（止血优先，18 commit）**
+- **人审诚实化**：388 条 = 1 审阅者 × **5 理由模板**（**镜像边 194**、**逐条独立 0**）→ 打标 + 30 条逐条复核清单。
+- **规则双实现**：EV-MATRIX 独立第二实现一致率 **68.4%** → 根因（隐性剥 `artifact_sha256`）提案 → **100%**。
+- **尺子入根**：`tool_integrity` 保护 **12 → 22**（+ ruler 10，含自身）。
+- **warn 治理**：`warn_governance`（五桶）+ `exemption_expiry`（27 条到期制）+ `goodhart_monitor`（危险分 **80.1/100**）。
+- **学习门**：`learner_transition_detector` ⇒ **closed**（真实事件 0/50）。
+
+**616（方法论修复优先，P0 置信序列）**
+- **统计偷看修复（P0）**：`confidence_sequence.py`（Beta-混合 e-process，纯标准库）；
+  n=1406,x=1 ⇒ **CS anytime 0.9062%** vs 固定样本 CP 0.3370%（**2.69×**）；连续偷看虚报 **13.80% → 0.00%**。
+  v1–v7 重算对照表；**诚实声明**：历史 CP 上界在连续偷看下方法论无效。
+- **metrics 集成**：`collect_curves().mutation_escape_rate` 新增 `cs_*` + `peeking_correction`（`cp_*` 保留为历史参考）。
+- **EV-MATRIX 落地**：规则定义 v2（显式 P2）+ 第二实现补全（100%）+ **双实现一致性回归锁**（官方单规则函数 vs 独立实现 = **100%**）。
+- **warn 治理启用**：完整工作流（分类→观察期→采纳建议→到期提醒）+ 27 条豁免处置清单 + Goodhart 入 metrics。
+- **他验三件套**：架构设计 + **独立复核原型**（HMAC VSA 凭证，5 示例）+ 5 阶段路线图。
+- **交人项台账**：615 遗留 7 项 + 616 新增 3 项。
+
+**_arch_v20 核心发现**：① 统计偷看（P0，本批已修）；② 他验三件套（Lean Comparator / SLSA+Sigstore 收敛结构）；③ 保形预测/弃权三态（留 617+）。
+
+**六维度**：≈**8.4**（615 后）；616 定位于"度量诚实/信任根"继续加固（CP 口径纠正 + 双实现 + 他验原型）。
+**债务变化**：已修 = governance 漂移（601 转绿）、CI pyyaml、**CP 偷看口径**；新增 = 对外口径需裁决（cs_* vs cp_*）、他验实施待授权。
+- 实测：615 共 18 commit；616 见 `data/616_acceptance_report.md`。
