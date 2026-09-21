@@ -1,6 +1,6 @@
 # 614 · 信任根状态（诚实标注）
 
-> 生成：`python tools/trust_root_status_check.py` ｜ 时间：2026-09-21T11:58:11
+> 生成：`python tools/trust_root_status_check.py` ｜ 时间：2026-09-21T12:00:52
 > 只读检查；**绝不**把占位/替代证据说成已锚定。
 
 ## 一、逐项状态
