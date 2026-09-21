@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-09-21T00:24:48",
- "git_commit": "379c9fd",
+ "generated_at": "2026-09-21T10:58:50",
+ "git_commit": "512d991",
  "files": [
   {
    "path": "References/architecture_架构演进/271_架构批判_阙疑v3十问_判据密度不足与收敛手术.md",
@@ -2378,10 +2378,15 @@
    "size": 25350
   },
   {
+   "path": "_auto/inbox/614.md",
+   "sha256": "c25e0069262d518387d36eaecccd592fc2453ee9b9a17c84526d19601dddbc58",
+   "size": 31104
+  },
+  {
    "path": "_auto/inbox/614_draft.md",
-   "sha256": "f1003ef6b1bc32971c0c48f09cde6afea4149531811d129a7e9065426289dbda",
-   "size": 7258
+   "sha256": "6f3601a18ad3f4492f1caa59e32e93a4405a0592f0ae03b6933e559000199872",
+   "size": 7989
   }
  ],
- "self_hash": "ecfb5ebd49854c3aaafcf52e33d24be33b9589c796887f94bd8c9b298fea5dcc"
+ "self_hash": "51407a3347b98c93d9e0046994087689e8c3bd1ffa4c8f20568804b7cc79d9da"
 }
