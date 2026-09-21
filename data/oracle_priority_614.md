@@ -116,7 +116,7 @@
 ## 三、口径与边界
 
 - 612 基线五维见 `tools/oracle_priority.py`；614 叠加 known_tce×5、kc_related×1；
-- `known_tce` 读 `data/known_tce.jsonl`（status=known-structural）；
+- `known_tce` 读 `data/mutation/known_tce.jsonl`（status=known-structural）；
 - `kc_related` 读 `kc_inventory`（本仓 KC 图，联动学习者镜像线）；
 - **只读**、**建议**；不重跑任何监工门禁；**优先级≠裁决**（裁决权在人）。
 

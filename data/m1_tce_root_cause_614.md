@@ -43,7 +43,7 @@ escaped_list = [{
 
 ## 五、判定与去向
 - **性质**：known structural escape（已知结构性逃逸），**非**活雷。
-- **处置**：D2 做**结构性登记**（`data/known_tce.jsonl` + gate 规则豁免标注 + metrics 反映），**不**改 gate 行为（避免破坏冻结基线）。
+- **处置**：D2 做**结构性登记**（`data/mutation/known_tce.jsonl` + gate 规则豁免标注 + metrics 反映），**不**改 gate 行为（避免破坏冻结基线）。
 - **诚实口径**：逃逸率契约**仍为 1/1406**；报告须注明"该 1 为已登记的冻结 TCE"，**不得**宣称"0 逃逸"。
 
 ## 六、复现

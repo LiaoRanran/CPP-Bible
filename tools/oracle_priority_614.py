@@ -4,7 +4,7 @@
 在 612 C2 `oracle_priority.py` 的五维加权基线上，叠加 **614 维度**，使「危险卡」更优先：
 
   612 基线：score = 类型(证据2/原子1)×2 + 命题数×1 + 逃逸×3 + 覆盖缺口×2 + 关联MIS×1
-  614 叠加：+ **known_tce×5**（`data/known_tce.jsonl` 中登记为结构性逃逸的卡——最该先验）
+  614 叠加：+ **known_tce×5**（`data/mutation/known_tce.jsonl` 中登记为结构性逃逸的卡——最该先验）
             + **kc_related×1**（该卡是本仓 KC 图（`kc_inventory`）的核心 KC——联动学习者镜像）
 
 ⇒ 优先级是**建议**，最终验证顺序由人审决定（oracle 对人审负责，非自动裁决）。
@@ -30,7 +30,7 @@ import oracle_priority as op612  # noqa: E402
 
 VERSION = "1.0"
 REPORT_OUT = ROOT / "data" / "oracle_priority_614.md"
-KNOWN_TCE = ROOT / "data" / "known_tce.jsonl"
+KNOWN_TCE = ROOT / "data" / "mutation" / "known_tce.jsonl"
 
 
 def _known_tce_cards() -> set[str]:
@@ -97,7 +97,7 @@ def render(rows: list[dict], top: int | None) -> str:
         L.append(f"{i}. `{r['id']}` 得分 {r['score']}（基线 {r['base_score']}）：" + " · ".join(why))
     L += ["", "## 三、口径与边界", "",
           "- 612 基线五维见 `tools/oracle_priority.py`；614 叠加 known_tce×5、kc_related×1；",
-          "- `known_tce` 读 `data/known_tce.jsonl`（status=known-structural）；",
+          "- `known_tce` 读 `data/mutation/known_tce.jsonl`（status=known-structural）；",
           "- `kc_related` 读 `kc_inventory`（本仓 KC 图，联动学习者镜像线）；",
           "- **只读**、**建议**；不重跑任何监工门禁；**优先级≠裁决**（裁决权在人）。", ""]
     return "\n".join(L) + "\n"

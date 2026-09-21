@@ -1373,7 +1373,7 @@ def _fm_hardening_uncached(p: Path, yaml_mod: Any, ctor_error: type[Exception],
     # 的 schema 校验 ⇒ 门禁给出"干净"假象。故一律判 `[nc-form]` block。
     # 作用域**只限 `negative_controls` 这一个键**（其他字段合法用 flow/标量不受影响）；
     # 基于 frontmatter 原文，在 `yaml_mod is None` 早退之前也跑（无 pyyaml 环境同样拦）。
-    # ── 614 D2 · 已知结构性豁免（登记于 `data/known_tce.jsonl`，id=TCE-614-001）────────────────
+    # ── 614 D2 · 已知结构性豁免（登记于 `data/mutation/known_tce.jsonl`，id=TCE-614-001）────────────
     #   本规则**只在 `negative_controls` 键存在时**校验形态；**整键被删**不在其覆盖内，
     #   `EV-FM-REQUIRED` 的 `EV_REQUIRED` 亦不含该键，replay 缺字段仍 `confirm`
     #   ⇒ M1「删 negative_controls」对 `evidence/conc/EV-CONC-001.md` 逃逸（冻结 TCE，W2）。

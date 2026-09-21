@@ -3,7 +3,7 @@
 > 铁律：数字取自冻结基线 `data/mutation/full_baseline_v7.json`；**不**重跑 mutation 监工门禁。
 
 ## 一、登记条目
-- 文件：`data/known_tce.jsonl` ｜ 条目：**1**
+- 文件：`data/mutation/known_tce.jsonl` ｜ 条目：**1**
 - `id=TCE-614-001`：`M1 / evidence/conc/EV-CONC-001.md / 删 negative_controls`，`status=known-structural`。
 
 ## 二、metrics（M1 状态）
