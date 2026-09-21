@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh"><head><meta charset="utf-8">
+<title>学习者镜像仪表盘（真实数据版 · default）</title>
+<style>
+ body{font-family:system-ui,sans-serif;margin:0;padding:1.2rem;background:#fafafa;color:#222}
+ h1{font-size:1.3rem} .muted{color:#999} .sec{background:#fff;border:1px solid #eee;
+ border-radius:8px;padding:1rem;margin:1rem 0}
+ .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
+ .cell{border-radius:6px;padding:8px 4px;text-align:center;font-size:.72rem;color:#fff}
+ .stats{display:flex;flex-wrap:wrap;gap:1rem} .stat{background:#fff;border:1px solid #eee;
+ border-radius:8px;padding:.8rem 1.1rem;text-align:center} .stat b{display:block;font-size:1.4rem}
+ .stat span{font-size:.75rem;color:#888}
+ ul{margin:.3rem 0;padding-left:1.2rem}
+</style></head><body>
+<h1>学习者镜像仪表盘 · 真实数据版</h1>
+<p class="muted">数据源：C:\CodeLearnling\note\note\C++\CPP-Bible\data\learner_behaviors.jsonl（B1 行为日志，复用 BKT 递推，不硬编码）；用户 default；掌握度阈值 0.5</p>
+<div class="sec"><h2>① 掌握度热力图（27 KC）</h2><div class="grid"><div class="cell" style="background:#7E9B58" title="ATOM-CONC-FENCE-001：0.721">001<br>0.72</div>
+<div class="cell" style="background:#5EB55B" title="ATOM-CONC-LOCK-001：0.976">001<br>0.98</div>
+<div class="cell" style="background:#69AD5A" title="ATOM-CONC-RACE-001：0.896">001<br>0.90</div>
+<div class="cell" style="background:#879457" title="ATOM-HIST-AUTOPTR-001：0.651">001<br>0.65</div>
+<div class="cell" style="background:#7E9B58" title="ATOM-LANG-INLINE-001：0.721">001<br>0.72</div>
+<div class="cell" style="background:#67AE5A" title="ATOM-MEM-ALIGN-001：0.907">001<br>0.91</div>
+<div class="cell" style="background:#5EB55B" title="ATOM-MEM-ALLOC-001：0.976">001<br>0.98</div>
+<div class="cell" style="background:#63B15B" title="ATOM-MEM-ALLOC-002：0.938">002<br>0.94</div>
+<div class="cell" style="background:#B76E52" title="ATOM-MEM-LEAK-001：0.267">001<br>0.27</div>
+<div class="cell" style="background:#B96C52" title="ATOM-MEM-LEAK-002：0.254">002<br>0.25</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-MOVE-002：0.100">002<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-NEW-001：0.100">001<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-PERF-001：0.100">001<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-PERF-002：0.100">002<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-PERF-003：0.100">003<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-PERF-004：0.100">004<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-RAII-001：0.100">001<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-RAII-002：0.100">002<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-RVREF-001：0.100">001<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-SHARED-001：0.100">001<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-SHARED-002：0.100">002<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-UNIQUE-001：0.100">001<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-UNIQUE-002：0.100">002<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-VALUE-001：0.100">001<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-VALUE-002：0.100">002<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-MEM-WEAK-001：0.100">001<br>0.10</div>
+<div class="cell" style="background:#CC5D50" title="ATOM-UB-GRAY-001：0.100">001<br>0.10</div></div></div>
+<div class="sec"><h2>② 进度曲线（全局平均掌握度演化）</h2><svg viewBox="0 0 600 160" width="100%" height="160"><polyline fill="none" stroke="#337ab7" stroke-width="2" points="0.0,144.2 12.2,143.0 24.5,144.0 36.7,142.5 49.0,140.3 61.2,140.5 73.5,139.3 85.7,137.1 98.0,135.6 110.2,135.1 122.4,133.6 134.7,131.4 146.9,130.2 159.2,131.9 171.4,130.4 183.7,128.8 195.9,130.3 208.2,130.6 220.4,129.4 232.7,127.2 244.9,127.4 257.1,126.1 269.4,127.2 281.6,125.7 293.9,123.5 306.1,121.9 318.4,119.7 330.6,122.3 342.9,120.1 355.1,118.7 367.3,118.9 379.6,117.7 391.8,115.5 404.1,114.0 416.3,113.5 428.6,111.9 440.8,113.4 453.1,111.7 465.3,109.6 477.6,108.5 489.8,108.8 502.0,107.5 514.3,108.6 526.5,108.8 538.8,107.5 551.0,107.8 563.3,107.8 575.5,107.8 587.8,107.8 600.0,106.6"/></svg></div>
+<div class="sec"><h2>③ 推荐学习路径（掌握度&lt;0.5 且前置已满足）</h2><ul><li>ATOM-MEM-RAII-001</li><li>ATOM-MEM-VALUE-001</li><li>ATOM-UB-GRAY-001</li></ul></div>
+<div class="sec"><h2>④ 统计</h2><div class="stats"><div class='stat'><b>50</b><span>total_events</span></div><div class='stat'><b>50</b><span>answered</span></div><div class='stat'><b>0.64</b><span>accuracy</span></div><div class='stat'><b>0.2706</b><span>avg_mastery</span></div><div class='stat'><b>8</b><span>mastered_05</span></div><div class='stat'><b>4</b><span>mastered_09</span></div></div></div>
+</body></html>
