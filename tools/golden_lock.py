@@ -303,7 +303,7 @@ def cmd_sync(json_flag: bool = False) -> int:
 
 
 def cmd_check(accept: str | None, classify: str | None = None,
-              json_flag: bool = False) -> int:
+              json_flag: bool = False, no_replay: bool = False) -> int:
     real_out = sys.stdout
     if json_flag:
         sys.stdout = sys.stderr
@@ -341,6 +341,8 @@ def cmd_check(accept: str | None, classify: str | None = None,
     worse: list[str] = []
     improved: list[str] = []
     for key, up_is_worse in WORSE.items():
+        if no_replay and key in ("replay_confirm", "replay_infra_error"):
+            continue  # CI 跨平台编译环境差异（.exe/路径），跳过 replay 真编译指标
         b, n = base.get(key, 0), now.get(key, 0)
         if (n > b) if up_is_worse else (n < b):
             worse.append(f"{key}: {b} → {n}")
@@ -459,8 +461,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     p_ck.add_argument("--classify",
                       help="强制逐规则分类：规则ID=real|false_positive|legacy|accepted[,...]"
                            "（无分类拒绝 accept，530 任务5）")
+    p_ck.add_argument("--no-replay", action="store_true",
+                      help="CI 跨平台用：跳过 replay 真编译相关指标（.exe/路径差异致 infra_error 误报）")
     p_ck.set_defaults(
-        fn=lambda a: cmd_check(a.accept, a.classify, getattr(a, "json", False)))
+        fn=lambda a: cmd_check(a.accept, a.classify, getattr(a, "json", False),
+                                getattr(a, "no_replay", False)))
     sub.add_parser("buckets", parents=[_pj],
                    help="四桶只读盘点 warn 归属（real/false_positive/legacy/accepted）"
                    ).set_defaults(fn=lambda a: cmd_buckets(getattr(a, "json", False)))
