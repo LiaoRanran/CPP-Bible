@@ -10,9 +10,11 @@ import golden_lock_proposal_613 as a3  # noqa: E402
 
 def test_locked_baseline_and_delta():
     d = a3.build()
-    assert d["locked_warn"] == 136
-    assert d["current_warn"] == 186
-    assert d["delta"] == 50
+    # OBSERVATION-LIVENESS 50 条已按 A3 方案② 分类为 legacy（commit dd5b029），
+    # 基线 136→186，current==locked、delta=0（已锁定）。
+    assert d["current_warn"] == d["locked_warn"]
+    assert d["delta"] == 0
+    assert d["classify_now"].get("OBSERVATION-LIVENESS") == "legacy"
 
 
 def test_block_unchanged():

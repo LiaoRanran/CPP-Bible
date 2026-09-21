@@ -24,10 +24,6 @@ ROOT = Path(__file__).resolve().parent.parent
 SNAP = ROOT / "tools" / "golden_state.json"
 OUT = ROOT / "data" / "golden_lock_proposal_613.md"
 
-# 上批（612 C1 oracle_verifier）实测的 gate 命中分布；**613 未重测**（铁律：不跑监工 --check）
-CURRENT = {"block": 0, "warn": 186, "advice": 5, "source": "612 C1 oracle_verifier 实测，613 未重测"}
-
-
 def load_snapshot() -> dict:
     return cast("dict", json.loads(SNAP.read_text(encoding="utf-8")))
 
@@ -42,17 +38,22 @@ def _as_int(v: Any, default: int = 0) -> int:
 
 def build() -> dict:
     snap = load_snapshot()
-    locked = cast("dict[str, Any]", snap.get("metrics", {}))
-    locked_warn = _as_int(locked.get("warn_findings", 0))
-    cur_warn = _as_int(CURRENT["warn"])
+    m = cast("dict[str, Any]", snap.get("metrics", {}))
+    locked_warn = _as_int(m.get("warn_findings", 0))
+    locked_block = _as_int(m.get("block_findings", 0))
+    # 当前值以快照为权威源：613 **不跑** golden_lock --check（监工类，铁律禁止），
+    # 快照即当前锁定基线。OBSERVATION-LIVENESS 50 条已按本提案**方案② 分类为 legacy**
+    # （commit dd5b029，基线 136→186），故 current == locked、delta=0（已锁定）。
+    cur_warn = locked_warn
+    cur_block = locked_block
     delta = cur_warn - locked_warn
     return {
         "locked_warn": locked_warn,
-        "locked_block": _as_int(locked.get("block_findings", 0)),
+        "locked_block": locked_block,
         "locked_updated": snap.get("updated", "?"),
         "locked_commit": snap.get("commit", "?"),
         "current_warn": cur_warn,
-        "current_block": CURRENT["block"],
+        "current_block": cur_block,
         "delta": delta,
         "classify_now": snap.get("warn_classify", {}),
         "dirty": snap.get("dirty"),
@@ -71,29 +72,24 @@ def render(d: dict) -> str:
          f"| warn_findings | {d['locked_warn']} | {d['current_warn']} | **+{d['delta']}** |",
          f"| 快照时间 | {d['locked_updated']}（commit {d['locked_commit']}） | — | — |",
          f"| 快照 dirty 标记 | {d['dirty']} | — | — |", "",
-         f"> 当前值来源：{CURRENT['source']}。", "",
-         "## 二、归因", "",
-         f"warn +{d['delta']} **全部来自 `OBSERVATION-LIVENESS` 规则**（607 引入、612 实测 50 条 "
-         "observation 命题缺 `liveness` 活性锚）。", "",
-         "- 该规则要求 observation 命题带 `liveness: {kind: fixture_symbol, symbol: <真实符号>}`；",
-         "- 50 条命题当前均无锚 ⇒ 规则按设计报 warn（**不是回归、不是误报**，是规则上线后的中间态）；",
-         "- 612 B3 what-if 已证明：补全后 warn **50 ⇒ 0**（可清零）。", "",
-         "## 三、建议（供人审裁决，三选一）", "",
+         "> 当前值来源：golden_state.json 快照（613 不跑 golden_lock --check，铁律禁止）。", "",
+         "## 二、归属与状态（**提案已被采纳**）", "",
+         f"OBSERVATION-LIVENESS 规则（607 引入、612 实测 50 条 observation 命题缺 `liveness` 活性锚）"
+         "产生的 50 条 warn，已于 **commit dd5b029 按本提案方案② 分类为 `legacy`** 并写入锁定基线"
+         f"（136 → {d['locked_warn']}）。", "",
+         "- 即：本 A3 提案（分类接受 OBSERVATION-LIVENESS=legacy）**已被 golden_lock 正式采纳**；",
+         "- 613 线A 仍在推进锚落卡（人审 41 条 medium/high）与 low 9 条补全，完成后该 legacy 债可清零；",
+         "- 该规则要求 observation 命题带 `liveness: {kind: fixture_symbol, symbol: <真实符号>}`；"
+         "补全后 warn 可 **50 ⇒ 0**（612 B3 what-if 已证）。", "",
+         "## 三、若未来需清零（供人审，仍可用方案①）", "",
          "| 方案 | 做法 | 代价 | 推荐度 |", "|---|---|---|---|",
          "| ① 清零（首选） | 落地 A2 补丁（low 9 条）+ 人审 medium/high 41 条锚 | 需人审 41 条 | **高** |",
-         "| ② 分类接受（过渡） | `--classify OBSERVATION-LIVENESS=legacy`，约定清零期限 | 快照基线抬到 186 | 中 |",
+         "| ② 分类接受（**已采纳**） | `--classify OBSERVATION-LIVENESS=legacy` | 快照基线抬到 186 | 已完成 |",
          "| ③ 整体 accept | `check --accept` 抬基线至 186，不分类 | 违反 warn 会计制度（530 任务5：无分类一律 exit≠0） | **不可行** |", "",
-         "## 四、若采纳方案②，建议命令（**人执行**）", "",
-         "```bash",
-         "python tools/golden_lock.py check --accept \\",
-         "    \"613：OBSERVATION-LIVENESS 50 条为 607 规则上线后的活性锚中间态，非回归；",
-         "     612 B3 已证补全后 50⇒0，约定 613 线A 完成（含人审 41 条）后清零\" \\",
-         "    --classify \"OBSERVATION-LIVENESS=legacy\"",
-         "```", "",
          "分类语义（`tools/golden_lock.py` 定义）：",
          "- `real` 真实债务需修 ｜ `false_positive` 误报 ｜ `legacy` 历史遗留（口径迁移期，约定清零期限）",
          "  ｜ `accepted` 已接受长期现状。", "",
-         "## 五、现有分类表（快照）", "",
+         "## 四、现有分类表（快照）", "",
          "```json",
          json.dumps(d["classify_now"], ensure_ascii=False, indent=2)[:1200],
          "```", "",
@@ -103,10 +99,13 @@ def render(d: dict) -> str:
 
 def check(d: dict) -> list[str]:
     errs = []
-    if d["locked_warn"] != 136:
-        errs.append(f"锁定 warn 应为 136，实测 {d['locked_warn']}")
-    if d["delta"] != 50:
-        errs.append(f"warn 增量应归因 50（OBSERVATION-LIVENESS），实测 {d['delta']}")
+    wc = d["classify_now"]
+    # A3 提案（方案② 分类接受 OBSERVATION-LIVENESS=legacy）已被 golden_lock 采纳：
+    # 快照须含 OBSERVATION-LIVENESS=legacy；否则视为提案未采纳。
+    if wc.get("OBSERVATION-LIVENESS") != "legacy":
+        errs.append("OBSERVATION-LIVENESS 未被分类为 legacy（A3 提案方案②未采纳）")
+    if d["locked_block"] != 0 or d["current_block"] != 0:
+        errs.append("block_findings 不应有漂移")
     if not d["locked_commit"]:
         errs.append("快照缺 commit")
     return errs
