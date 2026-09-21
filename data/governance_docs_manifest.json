@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-09-21T12:41:06",
- "git_commit": "fa92ed6",
+ "generated_at": "2026-09-21T16:00:52",
+ "git_commit": "14df70c",
  "files": [
   {
    "path": "References/architecture_架构演进/271_架构批判_阙疑v3十问_判据密度不足与收敛手术.md",
@@ -1848,6 +1848,91 @@
    "size": 5409
   },
   {
+   "path": "_arch_v20/00_总览_向外求索_范式级突破候选与缺口分析.md",
+   "sha256": "c319051d8cc4eba88e6b7c2ed3b8eed582b3d06a7a851339052393b29cac16d6",
+   "size": 8955
+  },
+  {
+   "path": "_arch_v20/01_形式化验证与证明工程.md",
+   "sha256": "230dedd32e8bffbd3c11998d1b12fbbdf1e68a3c9a9cc7c3ae3658043ad5db1a",
+   "size": 7125
+  },
+  {
+   "path": "_arch_v20/02_AI对齐与可解释性.md",
+   "sha256": "5a9ebaac5701e40dcc0f24379ed20ec34dbe628c3f590d78cab8c7b9db786a58",
+   "size": 6220
+  },
+  {
+   "path": "_arch_v20/03_零知识证明与可信计算.md",
+   "sha256": "a7cb8a791825b35635a92e960328951cf1484d4a284c8314ae3a5a1e0b0f7115",
+   "size": 5826
+  },
+  {
+   "path": "_arch_v20/04_知识表示与神经符号.md",
+   "sha256": "7994032cb833e86a5089a1ba26740764fb76f25bb87d5284ea534beb06edb6a2",
+   "size": 5415
+  },
+  {
+   "path": "_arch_v20/05_统计学习序贯分析与因果推断.md",
+   "sha256": "b2eb82c50931856ee7dad9de6dfebb200f1ab0ecf238eed6e299d0209fe5f02f",
+   "size": 5874
+  },
+  {
+   "path": "_arch_v20/06_科学哲学与元科学.md",
+   "sha256": "990df532420bf2cf852cbe3331d7982fffdea5525fb5a28f5e4341ab17b873f3",
+   "size": 5180
+  },
+  {
+   "path": "_arch_v20/07_人机协作与众包.md",
+   "sha256": "1b2587cb61c1ce9bba72900fee3f40d489269783a9028e0f105faedd21f5bd1a",
+   "size": 6274
+  },
+  {
+   "path": "_arch_v20/08_软件工程混沌工程与可观测性.md",
+   "sha256": "dfe60b93783360185d285bfeb663f759bcb11626f11b6dcaf24cf8c3e412511e",
+   "size": 5993
+  },
+  {
+   "path": "_arch_v20/09_教育技术与学习科学.md",
+   "sha256": "772f1f2acf92ef7670f3a96a1b21d2bcd53872e6fc51bd564c92b37089348e47",
+   "size": 5019
+  },
+  {
+   "path": "_arch_v20/10_法律合规与证据标准.md",
+   "sha256": "e511dc74f820115ac88d25031d7fccf60c67f5bd6beb02ed409468481736576f",
+   "size": 5947
+  },
+  {
+   "path": "_arch_v20/11_复杂系统与网络科学.md",
+   "sha256": "2f42e819baadd3d224ed6c377ba47a8b09b09acf84c1f21a67876efd5b860210",
+   "size": 5967
+  },
+  {
+   "path": "_arch_v20/12_信息论与编码理论.md",
+   "sha256": "ef6f7edb2be730c6bb85982d319d7a82411c1d048c3bfb10fd4933c1a354db0f",
+   "size": 5393
+  },
+  {
+   "path": "_arch_v20/13_自由探索方向.md",
+   "sha256": "59c5b94b84758235014b691e3b1ce1d0de1276a69f670a23cff2a0e70e451758",
+   "size": 10932
+  },
+  {
+   "path": "_arch_v20/14_跨方向综合分析.md",
+   "sha256": "f198d209c82e99e3bbac844022845d5746fb59cf4585f624ce3d25d096e8a508",
+   "size": 11236
+  },
+  {
+   "path": "_arch_v20/probes/README.md",
+   "sha256": "9d4df191ea070681309ab631312f4c3a77d2652678b290c35a33850a836cb40f",
+   "size": 3031
+  },
+  {
+   "path": "_arch_v20/zero_pollution.md",
+   "sha256": "45b59c68cefb378c06425a520259d35b8b24a1d9a97c3811cec75c27252bec40",
+   "size": 5118
+  },
+  {
    "path": "_auto/inbox/604.md",
    "sha256": "3d9c138cb25825d2282b98d15dae7ae8f7976ae3d60d70222d771d7597f512f6",
    "size": 6765
@@ -1906,7 +1991,12 @@
    "path": "_auto/inbox/614_draft.md",
    "sha256": "6f3601a18ad3f4492f1caa59e32e93a4405a0592f0ae03b6933e559000199872",
    "size": 7989
+  },
+  {
+   "path": "_auto/inbox/615.md",
+   "sha256": "d687f3aac5233c5077724b22173a932141d44604f20a72652666d322ef53b746",
+   "size": 32010
   }
  ],
- "self_hash": "cd324b8ef230f9b608f3f23b8ad4da94577050a703931a30f39475c9f4239d90"
+ "self_hash": "ee6474273026203a8be2fcd1afcdd4c73f500fecfef00f700e8b30fb95d43178"
 }
