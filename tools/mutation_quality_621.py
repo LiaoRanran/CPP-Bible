@@ -168,6 +168,36 @@ def render_report(res: dict) -> str:
     return "\n".join(o)
 
 
+# ── 621 A4：闭环第二轮桥接 ────────────────────────────────────────────────────
+# 把新 mutation 转成 v7 形状的记录（verdict 取 A2 的**预测**），再交给 620 A1 的
+# 闭环沙箱（adversarial_loop_620.run_loop）跑迭代。
+# 诚实：verdict 是预测值 ⇒ 第二轮的 VFDR 也是"预测口径"，不是实测。
+
+
+def to_v7_records(mutations: list[dict], v7: list[dict]) -> list[dict]:
+    vb = MG.verify_batch(mutations, v7)
+    recs = []
+    for r in vb["rows"]:
+        c = json.loads(r["content"])
+        recs.append({
+            "card": c.get("target_card"), "op": c.get("op"), "point": c.get("point"),
+            "verdict": r["predicted_verdict"],
+            "kind": None, "new_block": [], "new_warn": [], "equivalent": False,
+            "mutation_id": r["mutation_id"], "attack_type": r["attack_type"],
+        })
+    return recs
+
+
+def run_round2(mutations: list[dict], v7: list[dict], rounds: int = 3,
+               top_n: int = 10, weights: str = "W2") -> dict:
+    import adversarial_loop_620 as LOOP  # 620 A1 闭环沙箱
+    recs = to_v7_records(mutations, v7)
+    res = LOOP.run_loop(recs, rounds=rounds, top_n=top_n, weights_name=weights)
+    res["candidate_total"] = len(recs)
+    res["verdict_note"] = "预测判决（621 §六.3 不跑门禁）"
+    return res
+
+
 # ── 自检（只读、不写盘；exit 0 = 通过）──────────────────────────────────────────
 def selftest() -> int:
     ok = True
