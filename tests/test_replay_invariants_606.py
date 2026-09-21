@@ -56,7 +56,8 @@ def test_cli_list_has_5_invariants():
 
 
 def test_cli_check_has_5_results():
-    proc = subprocess.run([sys.executable, str(TOOL), "--check", "--json"],
+    # CI 上无 g++/编译环境，build_reproducibility 必失败 ⇒ 用 --no-heavy 跳过
+    proc = subprocess.run([sys.executable, str(TOOL), "--check", "--json", "--no-heavy"],
                           capture_output=True, text=True, timeout=120)
     assert proc.returncode == 0
     data = json.loads(proc.stdout)
