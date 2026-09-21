@@ -85,9 +85,14 @@ def monitors() -> dict[str, dict]:
 
 def hygiene() -> dict[str, dict]:
     out = {}
-    for name, argv, to in (("ruff", ["-m", "ruff", "check", "tools/", "tests/"], 180),
-                           ("mypy", ["-m", "mypy", "tools/"], 300),
-                           ("pytest", ["-m", "pytest", "tests/", "-q", "-m", "not slow"], 600)):
+    for name, argv, to in (
+        ("ruff", ["-m", "ruff", "check", "tools/", "tests/"], 180),
+        ("mypy", ["-m", "mypy", "tools/"], 300),
+        # 全量回归（信息项；含非 613 的 supply_chain 等既有红灯，不计入 613 结论）
+        ("pytest_full", ["-m", "pytest", "tests/", "-q", "-m", "not slow"], 600),
+        # 613 自身回归（结论项）：仅跑 613 批次测试
+        ("pytest_613", ["-m", "pytest", "tests/", "-q", "-m", "not slow", "-k", "613"], 600),
+    ):
         rc, tail, dt = _run(argv, to)
         out[name] = {"rc": rc, "tail": tail[:110], "sec": dt}
     return out
