@@ -1,0 +1,182 @@
+[
+ {
+  "mutation_id": "MUT-621-030f3c3bc310",
+  "attack_type": "rule_blind_spot",
+  "target_rule": "ATOM-FM-REQUIRED",
+  "target_card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+  "predicted_verdict": "n_a",
+  "novelty": 0.5,
+  "attack_strength": 0.5,
+  "semantic_validity": 1.0,
+  "reproducibility": 1.0,
+  "composite": 0.65,
+  "why": {
+   "novelty": "（卡,算子）已存在但变异点不同",
+   "attack_strength": "预测判决=n_a",
+   "semantic_validity": "结构合法",
+   "reproducibility": "mutation_id 可由字段重算校验"
+  }
+ },
+ {
+  "mutation_id": "MUT-621-201c02b6fc1b",
+  "attack_type": "provenance_inconsistency",
+  "target_rule": "OBSERVATION-LIVENESS",
+  "target_card": "atoms/mem/ATOM-MEM-NEW-001.md",
+  "predicted_verdict": "n_a",
+  "novelty": 0.5,
+  "attack_strength": 0.5,
+  "semantic_validity": 1.0,
+  "reproducibility": 1.0,
+  "composite": 0.65,
+  "why": {
+   "novelty": "（卡,算子）已存在但变异点不同",
+   "attack_strength": "预测判决=n_a",
+   "semantic_validity": "结构合法",
+   "reproducibility": "mutation_id 可由字段重算校验"
+  }
+ },
+ {
+  "mutation_id": "MUT-621-28e2f889141b",
+  "attack_type": "provenance_inconsistency",
+  "target_rule": "EV-FALSIFICATION-QUANT",
+  "target_card": "atoms/mem/ATOM-MEM-RAII-002.md",
+  "predicted_verdict": "n_a",
+  "novelty": 0.5,
+  "attack_strength": 0.5,
+  "semantic_validity": 1.0,
+  "reproducibility": 1.0,
+  "composite": 0.65,
+  "why": {
+   "novelty": "（卡,算子）已存在但变异点不同",
+   "attack_strength": "预测判决=n_a",
+   "semantic_validity": "结构合法",
+   "reproducibility": "mutation_id 可由字段重算校验"
+  }
+ },
+ {
+  "mutation_id": "MUT-621-48aefcf7dc09",
+  "attack_type": "rule_blind_spot",
+  "target_rule": "EV-MATRIX-UNBACKED",
+  "target_card": "evidence/mem/EV-MEM-007.md",
+  "predicted_verdict": "n_a",
+  "novelty": 0.5,
+  "attack_strength": 0.5,
+  "semantic_validity": 1.0,
+  "reproducibility": 1.0,
+  "composite": 0.65,
+  "why": {
+   "novelty": "（卡,算子）已存在但变异点不同",
+   "attack_strength": "预测判决=n_a",
+   "semantic_validity": "结构合法",
+   "reproducibility": "mutation_id 可由字段重算校验"
+  }
+ },
+ {
+  "mutation_id": "MUT-621-4c17f4c0f010",
+  "attack_type": "provenance_inconsistency",
+  "target_rule": "OBSERVATION-LIVENESS",
+  "target_card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+  "predicted_verdict": "n_a",
+  "novelty": 0.5,
+  "attack_strength": 0.5,
+  "semantic_validity": 1.0,
+  "reproducibility": 1.0,
+  "composite": 0.65,
+  "why": {
+   "novelty": "（卡,算子）已存在但变异点不同",
+   "attack_strength": "预测判决=n_a",
+   "semantic_validity": "结构合法",
+   "reproducibility": "mutation_id 可由字段重算校验"
+  }
+ },
+ {
+  "mutation_id": "MUT-621-5349e8eee3f2",
+  "attack_type": "evidence_ambiguity",
+  "target_rule": "CARD-PATH-NOT-CANONICAL",
+  "target_card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+  "predicted_verdict": "n_a",
+  "novelty": 0.5,
+  "attack_strength": 0.5,
+  "semantic_validity": 1.0,
+  "reproducibility": 1.0,
+  "composite": 0.65,
+  "why": {
+   "novelty": "（卡,算子）已存在但变异点不同",
+   "attack_strength": "预测判决=n_a",
+   "semantic_validity": "结构合法",
+   "reproducibility": "mutation_id 可由字段重算校验"
+  }
+ },
+ {
+  "mutation_id": "MUT-621-795e8ee5c498",
+  "attack_type": "rule_blind_spot",
+  "target_rule": "ATOM-FM-REQUIRED",
+  "target_card": "evidence/hist/EV-HIST-001.md",
+  "predicted_verdict": "n_a",
+  "novelty": 0.5,
+  "attack_strength": 0.5,
+  "semantic_validity": 1.0,
+  "reproducibility": 1.0,
+  "composite": 0.65,
+  "why": {
+   "novelty": "（卡,算子）已存在但变异点不同",
+   "attack_strength": "预测判决=n_a",
+   "semantic_validity": "结构合法",
+   "reproducibility": "mutation_id 可由字段重算校验"
+  }
+ },
+ {
+  "mutation_id": "MUT-621-817ddf2fce05",
+  "attack_type": "rule_blind_spot",
+  "target_rule": "EV-MATRIX-UNBACKED",
+  "target_card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+  "predicted_verdict": "n_a",
+  "novelty": 0.5,
+  "attack_strength": 0.5,
+  "semantic_validity": 1.0,
+  "reproducibility": 1.0,
+  "composite": 0.65,
+  "why": {
+   "novelty": "（卡,算子）已存在但变异点不同",
+   "attack_strength": "预测判决=n_a",
+   "semantic_validity": "结构合法",
+   "reproducibility": "mutation_id 可由字段重算校验"
+  }
+ },
+ {
+  "mutation_id": "MUT-621-8ba9178bcf4a",
+  "attack_type": "provenance_inconsistency",
+  "target_rule": "EV-ARTIFACT-FILE-EXISTS",
+  "target_card": "atoms/conc/ATOM-CONC-RACE-001.md",
+  "predicted_verdict": "n_a",
+  "novelty": 0.5,
+  "attack_strength": 0.5,
+  "semantic_validity": 1.0,
+  "reproducibility": 1.0,
+  "composite": 0.65,
+  "why": {
+   "novelty": "（卡,算子）已存在但变异点不同",
+   "attack_strength": "预测判决=n_a",
+   "semantic_validity": "结构合法",
+   "reproducibility": "mutation_id 可由字段重算校验"
+  }
+ },
+ {
+  "mutation_id": "MUT-621-9934e6f9b1b8",
+  "attack_type": "provenance_inconsistency",
+  "target_rule": "EV-ARTIFACT-FILE-EXISTS",
+  "target_card": "atoms/ub/ATOM-UB-GRAY-001.md",
+  "predicted_verdict": "n_a",
+  "novelty": 0.5,
+  "attack_strength": 0.5,
+  "semantic_validity": 1.0,
+  "reproducibility": 1.0,
+  "composite": 0.65,
+  "why": {
+   "novelty": "（卡,算子）已存在但变异点不同",
+   "attack_strength": "预测判决=n_a",
+   "semantic_validity": "结构合法",
+   "reproducibility": "mutation_id 可由字段重算校验"
+  }
+ }
+]
