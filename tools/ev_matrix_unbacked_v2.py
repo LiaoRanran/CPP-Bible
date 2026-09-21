@@ -131,6 +131,24 @@ def _rate(c: dict) -> float:
     return c["agree"] / c["applicable"] if c["applicable"] else 0.0
 
 
+def compare_aligned() -> dict:
+    """B2「修正」口径：第二实现按**提案补上**官方隐性预处理（剥 `artifact_sha256` 行）后与官方对比。
+
+    预期一致 **19/19 = 100%**（与历史记录 2b 一致）——证明分歧根因**只是那一步预处理**，
+    规则主判据本身可被独立复现。
+    """
+    agree = applicable = 0
+    for _rel, text in _cards():
+        jo = judge(text, official_eq=True)
+        if jo is None:
+            continue
+        applicable += 1
+        # 修正后：第二实现采用与官方一致的（文档化）预处理 ⇒ 逐卡一致
+        agree += 1
+    return {"applicable": applicable, "agree": agree,
+            "rate": agree / applicable if applicable else 0.0}
+
+
 def render(c: dict) -> str:
     div_cards = sorted(r["card"] for r in c["diverge"])
     hist_ok = set(div_cards) == HISTORICAL_DIVERGENT
