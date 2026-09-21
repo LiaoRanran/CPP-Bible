@@ -1,0 +1,77 @@
+# PCK 证书（620 B1 批量迁移，只读派生）
+schema_version: 619-pck-v1
+claim:
+  id: EV-MEM-034
+  statement: shared_ptr 的控制块引用计数用**原子 RMW** 修改——汇编层带 `lock` 前缀（MinGW 工件 `lock add`
+    ×3 / `lock sub` ×5；gcc-14 工件 `lock add` ×3 / `lock xadd` ×5），且这些指令全部落在控制块符号的作用域
+    内（夹具自身**不含**任何原子计数器）；因此多线程**各持副本**时的并发拷贝/销毁是安全的：实测 4 线程 × 2000 次拷贝后引用计数收敛回 1、被指对象值完好。
+  domain: mem
+  type: observation
+evidence:
+- type: artifact
+  ref: evidence/mem/EV-MEM-034.md
+  hash: sha256:2f8097b8b0b7e21636c419f19934225093440bbdf57a7396311e41d70d72a97f
+negative_tests:
+- mutation_id: evidence/mem/EV-MEM-034.md|M1|删 artifact_sha256
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-034.md|M2|路径转大写（Examples/atoms/_atom_shared_atomic.cpp
+    → EXAMPLES/ATOMS/_ATOM_SHARED_ATOMIC.CPP）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-034.md|M2|路径加 ./（Examples/atoms/_atom_shared_atomic.cpp
+    → ./Examples/atoms/_atom_shared_atomic.cpp）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-034.md|M2|分隔符换反斜杠（Examples/atoms/_atom_shared_atomic.cpp
+    → Examples\atoms\_atom_shared_atomic.cpp）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-034.md|M3|M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:`/断言条目/run_match_keys
+    的字面量都在正文/注释）
+  result: n_a
+- mutation_id: evidence/mem/EV-MEM-034.md|M4|注入通用符号 main
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-034.md|M4|注入通用符号 ret
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-034.md|M4|注入 ABI 帧符号 .p2align
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-034.md|M4|注入 contains_any: [''.file'']（合法形态）'
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-034.md|M5|-
+  result: n_a
+- mutation_id: evidence/mem/EV-MEM-034.md|M6|重复 id 键（后写覆盖前写）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-034.md|M6|缩进提升（id 多缩一格，改变嵌套归属）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-034.md|M6|全角键名（ｉｄ）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-034.md|M6|块式 → flow 写法（matrix）
+  result: escaped
+- mutation_id: 'evidence/mem/EV-MEM-034.md|M6|matrix 删键（移除 compiler: [GCC 15.3.0]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-034.md|M6|matrix 非法值（compiler: [GCC 15.3.0] →
+    首元素 totally-not-a-compiler xyz）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-034.md|M6|matrix 删键（移除 std: [c++23]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-034.md|M6|matrix 非法值（std: [c++23] → 首元素 c++99）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-034.md|M6|matrix 删键（移除 opt: [-O0, -O2]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-034.md|M6|matrix 非法值（opt: [-O0, -O2] → 首元素 -O9）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-034.md|M6|matrix 非法值（arch: [x86-64] → 首元素 z80-nonexistent）'
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-034.md|M7|sha256 改一位（2f8097b8… → 0f8097b8…）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-034.md|M7|读数篡改（34 → 35）
+  result: blocked
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: d3b2cb709b2d84921d2e2571cdb8b90011ff8b3a
+  first_authorized_at: unknown

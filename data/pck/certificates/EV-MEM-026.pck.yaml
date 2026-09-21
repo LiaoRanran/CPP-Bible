@@ -1,0 +1,75 @@
+# PCK 证书（620 B1 批量迁移，只读派生）
+schema_version: 619-pck-v1
+claim:
+  id: EV-MEM-026
+  statement: std::allocator 的基本接口是两层分离的：allocator::allocate 只分配不构造（C++17 后 std::allocator
+    连 construct/destroy 成员都移除，构造/析构统一走 std::allocator_traits）——分配层（allocate/ deallocate）与对象生命周期（construct/destroy）是两个独立动作，各计各的数。
+  domain: mem
+  type: observation
+evidence:
+- type: artifact
+  ref: evidence/mem/EV-MEM-026.md
+  hash: sha256:595e63f3fde699a83ad6f1a4a4bbde8f0dcafaa34c9c14cb68c1457284b44559
+negative_tests:
+- mutation_id: evidence/mem/EV-MEM-026.md|M1|删 artifact_sha256
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-026.md|M2|路径转大写（Examples/atoms/_atom_alloc_basic.cpp
+    → EXAMPLES/ATOMS/_ATOM_ALLOC_BASIC.CPP）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-026.md|M2|路径加 ./（Examples/atoms/_atom_alloc_basic.cpp
+    → ./Examples/atoms/_atom_alloc_basic.cpp）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-026.md|M2|分隔符换反斜杠（Examples/atoms/_atom_alloc_basic.cpp
+    → Examples\atoms\_atom_alloc_basic.cpp）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-026.md|M3|contains 追加样板候选（弱化：恒真文本即可满足）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-026.md|M4|注入通用符号 main
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-026.md|M4|注入通用符号 ret
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-026.md|M4|注入 ABI 帧符号 .p2align
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-026.md|M4|注入 contains_any: [''.file'']（合法形态）'
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-026.md|M5|-
+  result: n_a
+- mutation_id: evidence/mem/EV-MEM-026.md|M6|重复 id 键（后写覆盖前写）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-026.md|M6|缩进提升（id 多缩一格，改变嵌套归属）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-026.md|M6|全角键名（ｉｄ）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-026.md|M6|块式 → flow 写法（matrix）
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-026.md|M6|matrix 删键（移除 compiler: [GCC 15.3.0]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-026.md|M6|matrix 非法值（compiler: [GCC 15.3.0] →
+    首元素 totally-not-a-compiler xyz）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-026.md|M6|matrix 删键（移除 std: [c++23]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-026.md|M6|matrix 非法值（std: [c++23] → 首元素 c++99）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-026.md|M6|matrix 删键（移除 opt: [-O0, -O2]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-026.md|M6|matrix 非法值（opt: [-O0, -O2] → 首元素 -O9）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-026.md|M6|matrix 非法值（arch: [x86-64] → 首元素 z80-nonexistent）'
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-026.md|M7|sha256 改一位（595e63f3… → 095e63f3…）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-026.md|M7|读数篡改（26 → 27）
+  result: blocked
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: d3b2cb709b2d84921d2e2571cdb8b90011ff8b3a
+  first_authorized_at: unknown

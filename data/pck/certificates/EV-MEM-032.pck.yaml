@@ -1,0 +1,77 @@
+# PCK 证书（620 B1 批量迁移，只读派生）
+schema_version: 619-pck-v1
+claim:
+  id: EV-MEM-032
+  statement: unique_ptr 的删除器是**类型的一部分**（`unique_ptr<T, D>` 的 D 进类型系统）：在 libstdc++
+    实现下， 空**且非 final** 的删除器被空基类优化吸收（sizeof == 裸指针 8 字节），有状态删除器必须作为对象 成员存储（sizeof 16）；数组特化
+    `unique_ptr<T[]>` 走 delete[] 而不是 delete，且只提供 operator[]、 不提供 operator* / operator->——这些差异全部在**编译期**就能被类型系统看见。
+  domain: mem
+  type: observation
+evidence:
+- type: artifact
+  ref: evidence/mem/EV-MEM-032.md
+  hash: sha256:a96938954e8f1004381f75acf61793996e281bf5167f3d14f98a5198ba84eb14
+negative_tests:
+- mutation_id: evidence/mem/EV-MEM-032.md|M1|删 artifact_sha256
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-032.md|M2|路径转大写（Examples/atoms/_atom_unique_deleter.cpp
+    → EXAMPLES/ATOMS/_ATOM_UNIQUE_DELETER.CPP）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-032.md|M2|路径加 ./（Examples/atoms/_atom_unique_deleter.cpp
+    → ./Examples/atoms/_atom_unique_deleter.cpp）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-032.md|M2|分隔符换反斜杠（Examples/atoms/_atom_unique_deleter.cpp
+    → Examples\atoms\_atom_unique_deleter.cpp）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-032.md|M3|M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:`/断言条目/run_match_keys
+    的字面量都在正文/注释）
+  result: n_a
+- mutation_id: evidence/mem/EV-MEM-032.md|M4|注入通用符号 main
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-032.md|M4|注入通用符号 ret
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-032.md|M4|注入 ABI 帧符号 .p2align
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-032.md|M4|注入 contains_any: [''.file'']（合法形态）'
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-032.md|M5|-
+  result: n_a
+- mutation_id: evidence/mem/EV-MEM-032.md|M6|重复 id 键（后写覆盖前写）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-032.md|M6|缩进提升（id 多缩一格，改变嵌套归属）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-032.md|M6|全角键名（ｉｄ）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-032.md|M6|块式 → flow 写法（matrix）
+  result: escaped
+- mutation_id: 'evidence/mem/EV-MEM-032.md|M6|matrix 删键（移除 compiler: [GCC 15.3.0]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-032.md|M6|matrix 非法值（compiler: [GCC 15.3.0] →
+    首元素 totally-not-a-compiler xyz）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-032.md|M6|matrix 删键（移除 std: [c++23]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-032.md|M6|matrix 非法值（std: [c++23] → 首元素 c++99）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-032.md|M6|matrix 删键（移除 opt: [-O0, -O2]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-032.md|M6|matrix 非法值（opt: [-O0, -O2] → 首元素 -O9）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-032.md|M6|matrix 非法值（arch: [x86-64] → 首元素 z80-nonexistent）'
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-032.md|M7|sha256 改一位（a9693895… → 09693895…）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-032.md|M7|读数篡改（32 → 33）
+  result: blocked
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: d3b2cb709b2d84921d2e2571cdb8b90011ff8b3a
+  first_authorized_at: unknown

@@ -1,0 +1,78 @@
+# PCK 证书（620 B1 批量迁移，只读派生）
+schema_version: 619-pck-v1
+claim:
+  id: EV-MEM-007
+  statement: xvalue 有身份（指代特定对象 x），prvalue 没有身份（不指代任何命名对象）。若 std::move(x) 真是 prvalue
+    （即"x 的一份临时副本"），则从它移动不应改动 x；实测移动后 x 被改动 => std::move(x) 指代真实对象 x => 它是 xvalue，不是
+    prvalue。
+  domain: mem
+  type: observation
+evidence:
+- type: artifact
+  ref: evidence/mem/EV-MEM-007.md
+  hash: sha256:988f921283b0be3977df0ca79baed518ca5d55c9e0b1db5e7b40856b74fa7006
+negative_tests:
+- mutation_id: evidence/mem/EV-MEM-007.md|M1|删 artifact_sha256
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-007.md|M2|路径转大写（Examples/atoms/_atom_value_xvalue.cpp
+    → EXAMPLES/ATOMS/_ATOM_VALUE_XVALUE.CPP）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-007.md|M2|路径加 ./（Examples/atoms/_atom_value_xvalue.cpp
+    → ./Examples/atoms/_atom_value_xvalue.cpp）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-007.md|M2|分隔符换反斜杠（Examples/atoms/_atom_value_xvalue.cpp
+    → Examples\atoms\_atom_value_xvalue.cpp）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-007.md|M3|删掉一条 flow 式断言条目（弱化：卡少查一项）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-007.md|M3|contains 追加样板候选（弱化：恒真文本即可满足）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-007.md|M4|注入通用符号 main
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-007.md|M4|注入通用符号 ret
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-007.md|M4|注入 ABI 帧符号 .p2align
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-007.md|M4|注入 contains_any: [''.file'']（合法形态）'
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-007.md|M5|-
+  result: n_a
+- mutation_id: evidence/mem/EV-MEM-007.md|M6|重复 id 键（后写覆盖前写）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-007.md|M6|缩进提升（id 多缩一格，改变嵌套归属）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-007.md|M6|全角键名（ｉｄ）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-007.md|M6|块式 → flow 写法（matrix）
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-007.md|M6|matrix 删键（移除 compiler: [GCC 15.3.0]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-007.md|M6|matrix 非法值（compiler: [GCC 15.3.0] →
+    首元素 totally-not-a-compiler xyz）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-007.md|M6|matrix 删键（移除 std: [c++23]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-007.md|M6|matrix 非法值（std: [c++23] → 首元素 c++99）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-007.md|M6|matrix 删键（移除 opt: [-O2]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-007.md|M6|matrix 非法值（opt: [-O2] → 首元素 -O9）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-007.md|M6|matrix 非法值（arch: [x86-64] → 首元素 z80-nonexistent）'
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-007.md|M7|sha256 改一位（988f9212… → 088f9212…）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-007.md|M7|读数篡改（7 → 8）
+  result: blocked
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: d3b2cb709b2d84921d2e2571cdb8b90011ff8b3a
+  first_authorized_at: unknown

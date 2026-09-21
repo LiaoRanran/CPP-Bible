@@ -1,0 +1,57 @@
+# PCK 证书（620 B1 批量迁移，只读派生）
+schema_version: 619-pck-v1
+claim:
+  id: ATOM-MEM-LEAK-002
+  statement: 泄漏检测工具的**报告与否高度依赖被测代码的具体形态**，因此不能直接等价于泄漏有无： 同一份循环引用夹具、同一编译器与档位（WSL/Linux
+    `-O1 -g -fsanitize=address,undefined`）， **改前**（无构造计数）LeakSanitizer **零报告**（stderr
+    0 字节），**改后**（仅给 `Node` 加一个 与泄漏无关的 `volatile` 构造计数）LSan **报告** `64 byte(s) leaked
+    in 2 allocation(s)` （stderr 1258 字节）——唯一变量是一个与泄漏无关的计数器，且报告数值自洽（64 B = 2 × 32 B）
+    ⇒ 判定泄漏应先用零依赖观测（构造/析构计数、存活对象数）定性，工具报告只作补充证据。
+  domain: mem
+  type: observation
+evidence:
+- type: replay
+  ref: evidence/mem/EV-MEM-042.md
+- type: replay
+  ref: evidence/mem/EV-MEM-043.md
+- type: replay
+  ref: evidence/mem/EV-MEM-042.md
+- type: replay
+  ref: evidence/mem/EV-MEM-043.md
+- type: replay
+  ref: evidence/mem/EV-MEM-042.md
+negative_tests:
+- mutation_id: atoms/mem/ATOM-MEM-LEAK-002.md|M1|-
+  result: n_a
+- mutation_id: atoms/mem/ATOM-MEM-LEAK-002.md|M2|M2 门禁读取面内无可变形路径（变异点会落在门禁不读的注释/正文）
+  result: n_a
+- mutation_id: atoms/mem/ATOM-MEM-LEAK-002.md|M3|M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:`/断言条目/run_match_keys
+    的字面量都在正文/注释）
+  result: n_a
+- mutation_id: atoms/mem/ATOM-MEM-LEAK-002.md|M4|-
+  result: n_a
+- mutation_id: 'atoms/mem/ATOM-MEM-LEAK-002.md|M5|[命题 prop-3] claim_type: inference
+    → observation（自标绕过）'
+  result: blocked
+- mutation_id: atoms/mem/ATOM-MEM-LEAK-002.md|M6|重复 id 键（后写覆盖前写）
+  result: blocked
+- mutation_id: atoms/mem/ATOM-MEM-LEAK-002.md|M6|缩进提升（id 多缩一格，改变嵌套归属）
+  result: blocked
+- mutation_id: atoms/mem/ATOM-MEM-LEAK-002.md|M6|全角键名（ｉｄ）
+  result: blocked
+- mutation_id: atoms/mem/ATOM-MEM-LEAK-002.md|M6|块式 → flow 写法（pedagogy）
+  result: blocked
+- mutation_id: atoms/mem/ATOM-MEM-LEAK-002.md|M7|读数篡改（2 → 3）
+  result: blocked
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: e60ed82dc7afe1f5857d5104f26bac6cc138cfae
+  first_authorized_at: '2026-09-12'

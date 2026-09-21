@@ -1,0 +1,74 @@
+# PCK 证书（620 B1 批量迁移，只读派生）
+schema_version: 619-pck-v1
+claim:
+  id: EV-MEM-002
+  statement: 移动的收益来自"掏空源对象"：对不含间接资源的纯值类型，移动退化为拷贝——既不减少分配， 也不改变源对象，只是把字节搬进新对象。
+  domain: mem
+  type: observation
+evidence:
+- type: artifact
+  ref: evidence/mem/EV-MEM-002.md
+  hash: sha256:d9f5a254fb21d2f2a05c74fedfbceb28be68aa8ea3361a0792ee4259d66639ff
+negative_tests:
+- mutation_id: evidence/mem/EV-MEM-002.md|M1|删 artifact_sha256
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-002.md|M2|路径转大写（Examples/atoms/_atom_move_no_gain.cpp
+    → EXAMPLES/ATOMS/_ATOM_MOVE_NO_GAIN.CPP）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-002.md|M2|路径加 ./（Examples/atoms/_atom_move_no_gain.cpp
+    → ./Examples/atoms/_atom_move_no_gain.cpp）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-002.md|M2|分隔符换反斜杠（Examples/atoms/_atom_move_no_gain.cpp
+    → Examples\atoms\_atom_move_no_gain.cpp）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-002.md|M3|contains 追加样板候选（弱化：恒真文本即可满足）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-002.md|M4|注入通用符号 main
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-002.md|M4|注入通用符号 ret
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-002.md|M4|注入 ABI 帧符号 .p2align
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-002.md|M4|注入 contains_any: [''.file'']（合法形态）'
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-002.md|M5|-
+  result: n_a
+- mutation_id: evidence/mem/EV-MEM-002.md|M6|重复 id 键（后写覆盖前写）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-002.md|M6|缩进提升（id 多缩一格，改变嵌套归属）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-002.md|M6|全角键名（ｉｄ）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-002.md|M6|块式 → flow 写法（matrix）
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-002.md|M6|matrix 删键（移除 compiler: [GCC 15.3.0]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-002.md|M6|matrix 非法值（compiler: [GCC 15.3.0] →
+    首元素 totally-not-a-compiler xyz）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-002.md|M6|matrix 删键（移除 std: [c++23]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-002.md|M6|matrix 非法值（std: [c++23] → 首元素 c++99）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-002.md|M6|matrix 删键（移除 opt: [-O0, -O2]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-002.md|M6|matrix 非法值（opt: [-O0, -O2] → 首元素 -O9）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-002.md|M6|matrix 非法值（arch: [x86-64] → 首元素 z80-nonexistent）'
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-002.md|M7|sha256 改一位（d9f5a254… → 09f5a254…）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-002.md|M7|读数篡改（2 → 3）
+  result: blocked
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: d3b2cb709b2d84921d2e2571cdb8b90011ff8b3a
+  first_authorized_at: unknown

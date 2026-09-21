@@ -1,0 +1,86 @@
+# PCK 证书（620 B1 批量迁移，只读派生）
+schema_version: 619-pck-v1
+claim:
+  id: EV-CONC-001
+  statement: '`while (!b) {}`（b 为非原子非 volatile 全局 `int`）在 `-O2` 下是否被整段消除， 由**同步操作落在循环体内还是体外**决定，而不是由"函数里有没有屏障"决定：
+    无屏障（`spin_plain`）与屏障在**循环体外**（`spin_fence_outside`）都被整段消除， 函数符号区间内**零** `s_*_b`
+    符号引用；屏障在**循环体内**（`spin_signal_fence` 零机器指令 / `spin_with_fence` 产 `lock`）则循环保留，区间内可见
+    `s_sf_b` / `s_f_b` 与循环回边。'
+  domain: conc
+  type: observation
+evidence:
+- type: artifact
+  ref: evidence/conc/EV-CONC-001.md
+  hash: sha256:8dd19bc6bf2facc23d1d09aef6ed4b856d0f33e98c36174b96d2893172319cb3
+negative_tests:
+- mutation_id: evidence/conc/EV-CONC-001.md|M1|删 artifact_sha256
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M1|删 run_match_file
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M1|删 negative_controls
+  result: escaped
+- mutation_id: evidence/conc/EV-CONC-001.md|M2|路径转大写（Examples/atoms/_atom_fence_vs_atomic.cpp
+    → EXAMPLES/ATOMS/_ATOM_FENCE_VS_ATOMIC.CPP）
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M2|路径加 ./（Examples/atoms/_atom_fence_vs_atomic.cpp
+    → ./Examples/atoms/_atom_fence_vs_atomic.cpp）
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M2|分隔符换反斜杠（Examples/atoms/_atom_fence_vs_atomic.cpp
+    → Examples\atoms\_atom_fence_vs_atomic.cpp）
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M3|contains_in → contains（区间断言降级为全文存在性）
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M3|absent_in → absent（区间断言降级为全文不存在）
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M3|删掉一条 run_match_keys 声明（弱化：少声明读数键 spin_plain_ret）
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M4|注入通用符号 main
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M4|注入通用符号 ret
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M4|注入 ABI 帧符号 .p2align
+  result: blocked
+- mutation_id: 'evidence/conc/EV-CONC-001.md|M4|注入 contains_any: [''.file'']（合法形态）'
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M5|-
+  result: n_a
+- mutation_id: evidence/conc/EV-CONC-001.md|M6|重复 id 键（后写覆盖前写）
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M6|缩进提升（id 多缩一格，改变嵌套归属）
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M6|全角键名（ｉｄ）
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M6|块式 → flow 写法（matrix）
+  result: blocked
+- mutation_id: 'evidence/conc/EV-CONC-001.md|M6|matrix 删键（移除 compiler: [GCC 15.3.0
+    (MinGW-w64), GCC 14.2.0 (WSL), GCC 13.3.0 (WSL)]）'
+  result: blocked
+- mutation_id: 'evidence/conc/EV-CONC-001.md|M6|matrix 非法值（compiler: [GCC 15.3.0 (MinGW-w64),
+    GCC 14.2.0 (WSL), GCC 13.3.0 (WSL)] → 首元素 totally-not-a-compiler xyz）'
+  result: blocked
+- mutation_id: 'evidence/conc/EV-CONC-001.md|M6|matrix 删键（移除 std: [c++23]）'
+  result: blocked
+- mutation_id: 'evidence/conc/EV-CONC-001.md|M6|matrix 非法值（std: [c++23] → 首元素 c++99）'
+  result: blocked
+- mutation_id: 'evidence/conc/EV-CONC-001.md|M6|matrix 删键（移除 opt: [-O2]）'
+  result: blocked
+- mutation_id: 'evidence/conc/EV-CONC-001.md|M6|matrix 非法值（opt: [-O2] → 首元素 -O9）'
+  result: blocked
+- mutation_id: 'evidence/conc/EV-CONC-001.md|M6|matrix 非法值（arch: [x86-64] → 首元素 z80-nonexistent）'
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M7|sha256 改一位（8dd19bc6… → 0dd19bc6…）
+  result: blocked
+- mutation_id: evidence/conc/EV-CONC-001.md|M7|读数篡改（1 → 2）
+  result: blocked
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: e374517d153b8a063b04317a13e3553787fb66d2
+  first_authorized_at: unknown
