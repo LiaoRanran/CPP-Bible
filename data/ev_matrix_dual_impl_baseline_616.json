@@ -1,0 +1,12 @@
+{
+ "ts": "2026-09-21T16:24:22",
+ "official": "gate_engine.check_evidence_matrix_backed (import, 非 --check)",
+ "independent": "ev_matrix_unbacked_v2 (P1+P2)",
+ "applicable": 19,
+ "agree": 19,
+ "rate": 1.0,
+ "official_hits": 16,
+ "diverge": [],
+ "status": "pass",
+ "pass_threshold": 0.95
+}
