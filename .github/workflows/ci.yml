@@ -17,6 +17,13 @@ permissions:
 
 jobs:
   quality:
+    # 621 B3：并发安全 —— quality 的「Worktree Cleanliness」步骤执行
+    # `git status --porcelain -- Examples/atoms/ atoms/ evidence/ …`，
+    # 即**读**共享资源 Examples/atoms/；而 replay 会重写该目录。二者并行时该步骤可能
+    # 读到「删旧未写新」的中间态 ⇒ 误判"工作树不干净"而假红（与 619 BLOCK 误报同构）。
+    # 故 quality 也须等 replay 完成。方向同样是「写者(replay)先、读者(quality)后」。
+    # 代价：quality 不再与 replay 并行，整体 wall 增加约一个 replay 时长 —— 用时间换正确性。
+    needs: [replay]
     runs-on: ubuntu-latest
     timeout-minutes: 30   # 防止门禁挂死占满 runner（quality 正常 <5min）
     strategy:
@@ -371,6 +378,28 @@ jobs:
       # `](../partXX/chYY.md)`，任何重新引入的 `](Book/...)` 即 BLOCK。
       # 裸文本 `⟶ Book/...` 引用除外（由 rewrite_links 构建期转链接，不在此列）。
       run: python3 tools/fix_book_links.py --check
+      continue-on-error: false
+
+  # ---- 621 B3：并发安全静态检查（防止再次引入 gate∥replay 那类竞态）----
+  concurrency-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+    - uses: actions/checkout@v7
+    - name: Set up Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.11'
+    - name: Install pyyaml (checker 依赖)
+      run: python3 -m pip install --quiet pyyaml
+    - name: CI Concurrency Safety Check (写者先、读者后)
+      # 621 B3：静态解析本文件，识别「会重写 Examples/atoms/ 的写者 job」与
+      # 「读该目录 / 跑 gate_engine 的读者 job」，要求读者的 needs 闭包覆盖全部写者。
+      # 背景：619 验收的 2 条 BLOCK 是 replay（写）与 gate（读）并发导致的**误报**；
+      # 621 B1 给 gate 加 needs:[replay] 修复，B3 再把该不变量固化为门禁，
+      # 防止未来有人拆 job / 改依赖时把竞态重新引入。
+      # 注意：检查基于步骤文本匹配，非深度静态分析 ⇒ 通过 ≠ 绝对无竞态。
+      run: python3 tools/ci_concurrency_check_621.py
       continue-on-error: false
 
   # ── 508 任务2：三路并行 job（彼此无依赖，也不依赖 quality；无 matrix ⇒ 不涉 fail-fast）──
