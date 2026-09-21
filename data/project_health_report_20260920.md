@@ -204,3 +204,16 @@
 2. golden_lock 是否 accept（gate 全绿必要条件）
 3. OTS 是否 submit（不可逆，凭据已生成）
 4. M1 TCE 是否攻坚（唯一 escaped=1/1406）
+
+---
+
+### 2026-09-21 · 614 批次进展（CI全绿收尾 + 学习者镜像真实验证 + 信任根评估 + M1登记）
+
+- **CI gate 根因定位并修复**：`gate`/`quality` job **缺 pyyaml**（`gate_engine.py` 顶层 `import yaml`，裸 `python3` 无该库 ⇒ 静默 exit 1）。ci.yml 在 setup-python 后补 `pip install -q pyyaml hypothesis`（commit `512d991`）。四 job 全绿**待 CI 实跑确认**（本机无 gh/网络通道）。
+- **学习者镜像：框架 → 真实数据**：新增 `learner_behavior_logger`（append-only 行为日志 + BKT 递推 + 推荐门槛）、`learner_twin_dashboard_614`（读真实行为日志的 HTML）、`learner_ood_evaluator`（OOD 题 + 跃迁判定）、`learner_argument_link`（KC→论证链→论证复盘推荐）。
+- **信任根诚实化**：`trust_root_status_check` 统一检查六项，总判定 **`partially_anchored`**（OTS `pending` 占位 + in-toto `hmac` 非标准）；真上链/真签名仍为**交人项**（见 C1/C2 评估）。
+- **M1 逃逸定性并登记**：M1 = **删 `negative_controls`**；根因 = 该键**存在性无人负责**（`EV_REQUIRED` 不含、`nc-form` 仅验存在时形态、replay 缺字段仍 `confirm`）；属**冻结 TCE** ⇒ 登记 `data/mutation/known_tce.jsonl`（TCE-614-001），逃逸率契约**仍 1/1406**。
+- **oracle 优先级 + 流程**：`oracle_priority_614`（五维 + 614 叠加 known_tce×5）⇒ Top1 = `EV-CONC-001`（18 分）；`oracle_verification_614` 设 **fail-closed** 流程（≥2 独立验证者 confirm / 任一 refute ⇒ refuted）。
+- **化债**：`_arch_v10-v17` 归档 `_archive/old_research/`（136 文件）；governance 重钉（verify exit 0）；**既有 `test_supply_chain_chain_601` 漂移转绿**。
+- 实测数字：commits **1473** / tools **204** / tests **182** / 根 `_arch` **2**（v18,v19）/ `data` **446** 文件。
+- 待裁决更新：M1 已登记（不再"待攻坚"）；OTS/in-toto 仍交人；CI 四 job 待实跑确认。
