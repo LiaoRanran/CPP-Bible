@@ -561,7 +561,9 @@ def collect_curves() -> dict:
     out: dict = {"timepoints": 1,
                  "monotone_convergence": "不可声称（尺子变更史 v1→v7，非同一量时间序列；仅 1 个含曲线时点）",
                  "note": "三曲线字段 565 Part 4b；补齐第二个时点前，这里只作机制占位"}
+    import confidence_sequence as _cs616  # 616 A3：置信序列（anytime-valid，修复统计偷看）
     from stat_bounds import proportion  # 565 Part 1 原语（局部导入：与 toolchain 同风格）
+    CS_ALPHA = 0.05
 
     # 573 升 v2 → **574 升 v3**（572 收 M3、574 修 M5 尺子后的全量基线）。
     #   v1/v2 **保留为历史时点**，不覆盖——否则历史曲线会被改写。
@@ -570,6 +572,7 @@ def collect_curves() -> dict:
             d = json.loads(path.read_text(encoding="utf-8"))
             judged = d["blocked"] + d["escaped"]
             blk = proportion(d["escaped"], judged)
+            _cs_iv = _cs616.cs_interval(judged, d["escaped"], CS_ALPHA)
             # 592 任务1：`baseline_version`/`frozen_at_commit` **从基线文件自身读**（v7 冻结时写入的
             #   `frozen_at_commit`），不在这里再抄一遍常量——否则基线重冻结后这里会静默脱节（正是
             #   "度量不诚实"的老病：报告层数字与真实基线各说各话）。
@@ -585,7 +588,16 @@ def collect_curves() -> dict:
                     #   任何 1e-9 级复算都必须在 `*_raw` 上做（别拿展示值当计算输入）。
                     "point_raw": blk["point"],
                     "cp_low_raw": blk["cp_low"], "cp_high_raw": blk["cp_high"],
-                    "conf": blk["conf"]}
+                    "conf": blk["conf"],
+                    # 616 A3：置信序列（anytime-valid，修复"连续偷看"口径）。
+                    #   cp_low/cp_high = 固定样本 CP（**历史参考**，连续偷看场景下方法论无效）；
+                    #   cs_lower/cs_upper = 置信序列（**推荐**，任意停止时刻有效）。
+                    "cs_alpha": CS_ALPHA,
+                    "cs_lower": round(_cs_iv[0], 6), "cs_upper": round(_cs_iv[1], 6),
+                    "cs_lower_raw": _cs_iv[0], "cs_upper_raw": _cs_iv[1],
+                    "peeking_correction": True,
+                    "cp_vs_cs_note": ("cp_low/cp_high=固定样本 CP（历史参考，连续偷看下无效）；"
+                                      "cs_lower/cs_upper=置信序列（anytime-valid，推荐）")}
         except (KeyError, ValueError) as exc:      # 数据坏了要显形，不许静默跳过
             return {"source": str(path), "tag": tag, "baseline_version": version or None,
                     "error": f"基线不可用：{type(exc).__name__}: {exc}"}
