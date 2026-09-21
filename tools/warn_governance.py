@@ -29,6 +29,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 GOLDEN = ROOT / "tools" / "golden_state.json"
 METRICS = ROOT / "data" / "metrics.jsonl"
 REPORT = ROOT / "data" / "warn_governance_615.md"
+WORKFLOW_REPORT = ROOT / "data" / "warn_governance_workflow_616.md"
 
 OBSERVATION_BATCHES = 3      # 观察期（批次）
 EXPIRY_BATCHES = 10          # 采纳后到期（批次）
@@ -200,7 +201,89 @@ def check() -> list[str]:
         problems.append("age≥到期批次应判 expired_reassess")
     # 5) 真实数据：已采纳规则都有授权
     problems.extend(approvals_ok(st))
+    # 6) 工作流：跟踪/建议/提醒计数自洽
+    tr = observation_tracking(st)
+    if len(tr) != len(st.get("warn_classify") or {}):
+        problems.append("observation_tracking 覆盖不全")
+    buckets = classify(st)
+    if len(adoption_suggestions(st)) != sum(1 for v in buckets.values() if v == "considerable"):
+        problems.append("采纳建议数与 considerable 不一致")
+    if len(expiry_reminders(st)) != sum(1 for v in buckets.values() if v == "expired_reassess"):
+        problems.append("到期提醒数与 expired_reassess 不一致")
     return problems
+
+
+def observation_tracking(state: dict | None = None) -> dict[str, dict]:
+    """每条 warn 规则的**观察期跟踪**：首次出现批次 / 已历批次数。"""
+    st = state if state is not None else load_state()
+    seen = rule_first_seen(st)
+    last = len(batches(st)) - 1
+    out: dict[str, dict] = {}
+    for rid in (st.get("warn_classify") or {}):
+        idx = seen.get(rid, last)
+        out[rid] = {"first_seen_batch": idx, "age_batches": last - idx}
+    return out
+
+
+def adoption_suggestions(state: dict | None = None) -> list[dict]:
+    """对「可考虑采纳」的 warn 生成**采纳建议**（**不自动采纳**，交人审）。"""
+    st = state if state is not None else load_state()
+    buckets = classify(st)
+    track = observation_tracking(st)
+    out: list[dict] = []
+    for rid, b in sorted(buckets.items()):
+        if b == "considerable":
+            out.append({"rule": rid, "age_batches": track[rid]["age_batches"],
+                        "suggestion": "可考虑采纳为 legacy（须人审授权 + 显式 acceptance 记录）",
+                        "action": "suggest_only"})
+    return out
+
+
+def expiry_reminders(state: dict | None = None) -> list[dict]:
+    """对「已到期需重评估」的 warn 生成**重评估提醒**（**不自动删除/续期**）。"""
+    st = state if state is not None else load_state()
+    buckets = classify(st)
+    track = observation_tracking(st)
+    out: list[dict] = []
+    for rid, b in sorted(buckets.items()):
+        if b == "expired_reassess":
+            out.append({"rule": rid, "age_batches": track[rid]["age_batches"],
+                        "reminder": "已到期，须重评估：继续豁免(续期+10) / 修规则后撤销 / 人审裁决",
+                        "action": "remind_only"})
+    return out
+
+
+def workflow_report(state: dict | None = None) -> str:
+    st = state if state is not None else load_state()
+    s = summarize(st)
+    track = observation_tracking(st)
+    adopt = adoption_suggestions(st)
+    expiry = expiry_reminders(st)
+    b = s["buckets"]
+    L = ["# 616 C1 · warn 治理完整工作流（分类→观察期→采纳建议→到期提醒→重评估）", "",
+         "> **只做分类、跟踪、建议和提醒；不自动采纳/删除任何 warn。所有采纳/删除决策需人审授权。**", "",
+         "## 一、工作流设计", "",
+         "1. **分类**：五桶（new / observation / considerable / adopted_legacy / expired_reassess）；",
+         f"2. **观察期跟踪**：记录每条 warn 首次出现批次；观察期 {OBSERVATION_BATCHES} 批；",
+         "3. **采纳建议**：对 `considerable` 生成建议（不自动采纳）；",
+         f"4. **到期提醒**：对 `expired_reassess`（采纳满 {EXPIRY_BATCHES} 批）生成重评估提醒（不自动删除）。", "",
+         "## 二、当前状态（五桶）", "",
+         "| 桶 | 规则数 |", "|---|---|",
+         *[f"| {k} | {b[k]} |" for k in BUCKETS],
+         f"| warn 总数 | {s['warn_total']} |", "",
+         "### 逐规则观察期", "",
+         "| 规则 | 首次批次 | 已历批次 | 桶 |", "|---|---|---|---|",
+         *[f"| `{rid}` | {track[rid]['first_seen_batch']} | {track[rid]['age_batches']} | "
+           f"{s['buckets_by_rule'][rid]} |" for rid in sorted(s["buckets_by_rule"])], "",
+         "## 三、采纳建议（交人审，**不自动执行**）", ""]
+    L += ([f"- `{x['rule']}`（已历 {x['age_batches']} 批）：{x['suggestion']}" for x in adopt]
+          or ["- （无）"])
+    L += ["", "## 四、到期重评估清单（交人审，**不自动执行**）", ""]
+    L += ([f"- `{x['rule']}`（已历 {x['age_batches']} 批）：{x['reminder']}" for x in expiry]
+          or ["- （无）"])
+    L += ["", "> **重要声明**：本工作流**只做分类、跟踪、建议和提醒**，"
+          "**不自动采纳/删除任何 warn**。所有采纳/删除决策需要**人审授权**。", "", ""]
+    return "\n".join(L) + "\n"
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -208,6 +291,7 @@ def main(argv: list[str] | None = None) -> int:
                                  description="615 C1 warn 不增锁机制（只分类与提醒）")
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--report", action="store_true")
+    ap.add_argument("--workflow", action="store_true")
     a = ap.parse_args(argv)
     if a.check:
         problems = check()
@@ -216,6 +300,11 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"[C1] ❌ {p}", file=sys.stderr)
             return 1
         print("[C1] ✅ 自验证通过：新 warn 不自动采纳 / 观察期 / 已采纳须授权 / 到期检测 均一致")
+        return 0
+    if a.workflow:
+        WORKFLOW_REPORT.parent.mkdir(parents=True, exist_ok=True)
+        WORKFLOW_REPORT.write_text(workflow_report(), encoding="utf-8", newline="\n")
+        print(f"[C1] 已写 {WORKFLOW_REPORT.relative_to(ROOT).as_posix()}")
         return 0
     s = summarize()
     if a.report:
