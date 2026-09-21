@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-09-21T10:46:08.357625+00:00",
+  "head_commit": "66328df4b60e85c439e447e8059a62c789dc6b64",
+  "live_counts": {
+    "commits": 1517,
+    "tools_py": 218,
+    "tests_py": 213,
+    "atoms_md": 28,
+    "evidence_ev_md": 56
+  },
+  "verification_baseline_frozen": {
+    "last_verified": "2026-09-21",
+    "source": "data/616_baseline.md",
+    "gate": {
+      "rules": 63,
+      "hits": 191,
+      "block": 0,
+      "warn": 186,
+      "advice": 5
+    },
+    "poison": {
+      "passed": 124,
+      "total": 124,
+      "coverage_apparent": "63/63",
+      "coverage_honest": "60/63"
+    },
+    "replay": {
+      "confirm": 56,
+      "refute": 0,
+      "infra_error": 0
+    },
+    "mutation_v7": {
+      "variants": 1593,
+      "blocked": 1405,
+      "escaped": 1,
+      "n_a": 179,
+      "equivalent": 8,
+      "judge_denom": 1406,
+      "escape_rate_contract": "1/1406"
+    },
+    "confidence": {
+      "cp_fixed_upper_95": 0.00337,
+      "cs_anytime_upper_95": 0.009062
+    },
+    "human_review": {
+      "total": 388,
+      "approve": 354,
+      "modify": 34,
+      "reject": 0,
+      "batch_authorization": 388,
+      "mirror_edge": 194
+    },
+    "independence": {
+      "verifier_count": 1,
+      "second_implementation": "1/63",
+      "discrete_level": 1,
+      "continuity_scalar": 0.153
+    },
+    "trust_root": "partially_anchored"
+  },
+  "note": "live_counts 由 git/filesystem 直取，为唯一可信计数源；README/qmd/quickref 应引用本 manifest，禁止手写。verification_baseline_frozen 为冻结数字，重跑须走监工门禁（本工具不跑）。"
+}
