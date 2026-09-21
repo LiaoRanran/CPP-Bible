@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-09-21T10:58:50",
- "git_commit": "512d991",
+ "generated_at": "2026-09-21T12:41:06",
+ "git_commit": "fa92ed6",
  "files": [
   {
    "path": "References/architecture_架构演进/271_架构批判_阙疑v3十问_判据密度不足与收敛手术.md",
@@ -1728,561 +1728,6 @@
    "size": 13982
   },
   {
-   "path": "_arch_v10/00_总览_开工前必须先解决的设计洞.md",
-   "sha256": "fb949d9251398106d7cfa2d252084409eafc57f7c6c6e210b4f362c0dc2f9934",
-   "size": 5829
-  },
-  {
-   "path": "_arch_v10/01_第二锚独立性与信任根.md",
-   "sha256": "6b9cbf780db5fccecc3de4e0cf31de10d31c0ca8975e8e8d0478058d964c8072",
-   "size": 8618
-  },
-  {
-   "path": "_arch_v10/02_双实现同谋与common-mode.md",
-   "sha256": "27af31ee3ae59dbcd672f3398a803fb9efe19cb38c15594310ec230cea39ed3c",
-   "size": 4714
-  },
-  {
-   "path": "_arch_v10/03_时间轴与bemporal再评估.md",
-   "sha256": "afd4a324836a0c4e99fa7d41ada3b54219f23173c86bd4eb0f05df541e3e58fa",
-   "size": 5018
-  },
-  {
-   "path": "_arch_v10/03_时间轴与bitemporal再评估.md",
-   "sha256": "d3a9c7d20f0412ec432585b894a1e8f5e7fc5b99d24cda3e59beb7da0d22683c",
-   "size": 4239
-  },
-  {
-   "path": "_arch_v10/04_人签威胁模型.md",
-   "sha256": "34e1b7789b2a56567748da458c30814690cdc4474a338c63835545b4ef5bfc41",
-   "size": 5891
-  },
-  {
-   "path": "_arch_v10/05_等价变异体判据边界.md",
-   "sha256": "64ba8a2665653900143466fbbd7a89bf9f9fdd1177b26acffada75e0fbff24e7",
-   "size": 7554
-  },
-  {
-   "path": "_arch_v10/06_反例剧本.md",
-   "sha256": "706c00ab47e5245bca599193176b4e29def41ce009d2cd3ab043e8fee6b9878c",
-   "size": 4415
-  },
-  {
-   "path": "_arch_v10/zero_pollution.md",
-   "sha256": "d848bcd62ab69638a1f461fa8f2ec1ce2193ef230076c68554bb03853a915a6a",
-   "size": 2993
-  },
-  {
-   "path": "_arch_v11/00_总览_维度上限与差距矩阵.md",
-   "sha256": "8ac56dc69a873e43f1ae64cbd3703ee9458a93f9c8d0f2f1d728acd1afda4d40",
-   "size": 6450
-  },
-  {
-   "path": "_arch_v11/01_发现器完备性_上限探测.md",
-   "sha256": "6a77aaa1069ef283779e3f421078299005518db6d881fa7fa5e41d071bb7479f",
-   "size": 8567
-  },
-  {
-   "path": "_arch_v11/02_门禁规则覆盖_上限探测.md",
-   "sha256": "6a607a2019c9a214a2b3116035efe3a738eb28f1640833ee28f7c0acac37d666",
-   "size": 7647
-  },
-  {
-   "path": "_arch_v11/03_度量诚实度_上限探测.md",
-   "sha256": "04fcd0b94bb776f59ba738885709c1eb9b5b77bdedf5fcac6dfe2ebfba4a1ddd",
-   "size": 7562
-  },
-  {
-   "path": "_arch_v11/04_确定性与可复现_上限探测.md",
-   "sha256": "a440812613f5d3bb5ddbc66da63e0e06f1dfc9d98e3d936ea4b4ee56b1d27857",
-   "size": 7606
-  },
-  {
-   "path": "_arch_v11/05_性能_上限探测.md",
-   "sha256": "e31dbc8c15029e6c328d5395bec02565d6ffc503a0114d5979b277ae509d7605",
-   "size": 6730
-  },
-  {
-   "path": "_arch_v11/06_命题与知识层_上限探测.md",
-   "sha256": "3af2c01c50299abda99c9091d024f3439f26d6e58ca1f41831ced1b15458197e",
-   "size": 7055
-  },
-  {
-   "path": "_arch_v11/07_Oracle与验证者_上限探测.md",
-   "sha256": "8b0cfcb165e9efd7f95e1e9f394668e08ed5573d2a7fc68e72f5eec45bd642d3",
-   "size": 7012
-  },
-  {
-   "path": "_arch_v11/08_统计与收敛_上限探测.md",
-   "sha256": "3f475e16a9a7b06d76db792fd5cf32add6a8070fd81d71105d00d98acfd808b8",
-   "size": 7239
-  },
-  {
-   "path": "_arch_v11/09_分权与论证_上限探测.md",
-   "sha256": "d0cb02a108b0215a570b66f1ecefaa54edea80ca4b60d01f012a3a0adb144f8f",
-   "size": 6602
-  },
-  {
-   "path": "_arch_v11/10_信任根与供应链_上限探测.md",
-   "sha256": "eaaa6b9b194e3156820086327e5088495e239d24472de85e010d45ceb0d9e111",
-   "size": 6973
-  },
-  {
-   "path": "_arch_v11/11_攻击面与红队_上限探测.md",
-   "sha256": "1a4f555784e7f16f0e20d76109ac396455983b60b497100c3ad890c3ab8c2f0a",
-   "size": 7415
-  },
-  {
-   "path": "_arch_v11/12_文档与可演示性_上限探测.md",
-   "sha256": "3f3607d231ad266e22bf43743864e1bc39bbdae5dfb18f456534df72976dc2a4",
-   "size": 6283
-  },
-  {
-   "path": "_arch_v11/13_自由探索_新维度新攻击面新技术.md",
-   "sha256": "168fe53ae47aa7731c1d70b9666c985cac3877086819a1f6e75fc5151e99810b",
-   "size": 8483
-  },
-  {
-   "path": "_arch_v11/14_拉满路线图建议.md",
-   "sha256": "74ed28a77b271d3080eec4d65d239257d31bca7b55be47a656f3be69b45c88b3",
-   "size": 5934
-  },
-  {
-   "path": "_arch_v11/zero_pollution.md",
-   "sha256": "b7095b7fa65a7d892f373f6cd57494e4f78a7742a4a48494bb02789776d02729",
-   "size": 3238
-  },
-  {
-   "path": "_arch_v12/00_总览_grounded论证系统在本仓的落地路径与边界.md",
-   "sha256": "9b948b256f85c1efa3fdf933d3afda666db643aaede618a594babae8772cc175",
-   "size": 3810
-  },
-  {
-   "path": "_arch_v12/01_Dung框架语义可计算性实测.md",
-   "sha256": "66e881e1499d1b2bcdbed266be4c91abd962b0a84afd35722755d0e0e6e85fcf",
-   "size": 3054
-  },
-  {
-   "path": "_arch_v12/02_本仓命题图grounded标注实测.md",
-   "sha256": "429c3be367860a2df61906dcedd1e372a9101f242b8475ce1dcb8fe4cf062f03",
-   "size": 3542
-  },
-  {
-   "path": "_arch_v12/03_攻击关系来源与可靠性.md",
-   "sha256": "4e1ff54102f382d55b059a61be7ff247120b5cf398589b533c3d2d4ec6cf8c7d",
-   "size": 3887
-  },
-  {
-   "path": "_arch_v12/04_AGM信念修正与suspect级联边界.md",
-   "sha256": "06dd83fd79e773df9acee7ffd7551cc414a5f4454fdaa957e5c24964f6e85f6a",
-   "size": 2366
-  },
-  {
-   "path": "_arch_v12/05_论证系统工具链调研_Windows可用性.md",
-   "sha256": "ba8a5a0888e4231bdb0a99b804456d92815e9581c5e17725f22772ace8332eac",
-   "size": 2323
-  },
-  {
-   "path": "_arch_v12/06_论证图可视化与解释.md",
-   "sha256": "e1b65d22470d6add1a0d30980e0d9067262bdd56acce7618da4a51b594a84494",
-   "size": 1662
-  },
-  {
-   "path": "_arch_v12/07_与现有三分类confirm_refute_infra的关系.md",
-   "sha256": "212f5406454a0372d00baf7e8fe1687fd5182460736647f903385342264f2c94",
-   "size": 1577
-  },
-  {
-   "path": "_arch_v12/08_增量更新与收敛.md",
-   "sha256": "84db5e64425c6688bcc71f0efa2c8f40994886310e94b790ed808ca19dac4640",
-   "size": 1561
-  },
-  {
-   "path": "_arch_v12/09_概率模糊扩展_是否需要.md",
-   "sha256": "f447868cf14c578af8159a1ead6a838b513eb1324223876a8c95d4da8cef4827",
-   "size": 1607
-  },
-  {
-   "path": "_arch_v12/10_论证框架在代码审查形式化验证中的应用.md",
-   "sha256": "bf617ed85db54d5baec5b4f0135e1bea1ce52733a38cefa1ec20053e36b9c422",
-   "size": 1834
-  },
-  {
-   "path": "_arch_v12/11_人审角色与边界.md",
-   "sha256": "467b60e6ad35e00c840328a6dd7e8977c662121cff29b4e71242f83bc626829c",
-   "size": 2015
-  },
-  {
-   "path": "_arch_v12/12_落地路径与风险_NDW分类.md",
-   "sha256": "ba815a185bb48e4650ab35555cbae90e0835ae4529e98834a55bb0168ae87c12",
-   "size": 2028
-  },
-  {
-   "path": "_arch_v12/13_自由探索_新维度新攻击面.md",
-   "sha256": "d864da6fd182a1670482f781728cbd2f916617ec92034289d28fd1c09d7861be",
-   "size": 1890
-  },
-  {
-   "path": "_arch_v12/14_路线图_从现在到grounded层上线.md",
-   "sha256": "a2510eb656265da6cd83216f1205697f2664a1b4f8450eaaa5e80cebac0d21d8",
-   "size": 1750
-  },
-  {
-   "path": "_arch_v12/zero_pollution.md",
-   "sha256": "356828f7bf1c20847ec9ea8ada0ad9b65c062d7f61127d7351b40999b594007c",
-   "size": 2683
-  },
-  {
-   "path": "_arch_v13/00_总览_攻击关系自动生成与加权论证框架_本仓落地路径.md",
-   "sha256": "a45bc184232cc1f57dde6265ee9c10baa2bdf94c67b8335e3d8122fe9448a99f",
-   "size": 3883
-  },
-  {
-   "path": "_arch_v13/01_论证挖掘前沿.md",
-   "sha256": "ec2804f1e91686db7f19c76141e7659e56b51716ec8847224ae9ceed1124a5cf",
-   "size": 1865
-  },
-  {
-   "path": "_arch_v13/02_加权论证框架_手搓实验.md",
-   "sha256": "fa29c9fb307a1b9e5e0edd16d0b43518dda3c982c51d4a4d44472d21dd094f13",
-   "size": 3166
-  },
-  {
-   "path": "_arch_v13/03_概率论证框架.md",
-   "sha256": "7166e72eb2a85a13cac6ea2b3275d15f4a9ace9db033910d04f45a3d6f4728f5",
-   "size": 2096
-  },
-  {
-   "path": "_arch_v13/04_Bipolar论证框架_支持+攻击双关系.md",
-   "sha256": "d11ee4c3ef0dff55af081f36e27976aa1920488dd8a676d7fe2967b147926983",
-   "size": 2381
-  },
-  {
-   "path": "_arch_v13/05_LLM辅助攻击关系标注_可靠性边界.md",
-   "sha256": "8c7c87a3bff5e1a1b48d6876bf026115bda584ae7125dcc99352e7274bdb72d4",
-   "size": 2050
-  },
-  {
-   "path": "_arch_v13/06_反驳文本语义相似度与攻击强度度量.md",
-   "sha256": "4b7c0fb849ab5d3029e1a3a6fa3b0747e58de165da41127d0ee711d909acaaa6",
-   "size": 2644
-  },
-  {
-   "path": "_arch_v13/07_知识图谱与论证框架融合.md",
-   "sha256": "2910bb23c29be49d9cbe9804d9674a1e648f87deac2b03c677c707ab1eb8d4ff",
-   "size": 1897
-  },
-  {
-   "path": "_arch_v13/08_因果推理与论证的关系.md",
-   "sha256": "1a4df319d91cbbf306407b2366da8ee47519398c79ab9d5d2d13307532a98bfd",
-   "size": 1781
-  },
-  {
-   "path": "_arch_v13/09_人审角色与质量控制.md",
-   "sha256": "3853b13517cbe6cf7a57d315082e44292c47acfebd1773c26cfb41442c5c9aed",
-   "size": 2189
-  },
-  {
-   "path": "_arch_v13/10_攻击关系可解释性与可验证性.md",
-   "sha256": "5a3a7099dc160921ed7180905222e52edb9787b3629cdafa3d1c778b81885470",
-   "size": 2801
-  },
-  {
-   "path": "_arch_v13/11_扩展语义_beyond_grounded.md",
-   "sha256": "90cba2863dcec5a1cf9c1088b096b60dda63739b366f94007d07dc8ec6dba988",
-   "size": 1827
-  },
-  {
-   "path": "_arch_v13/12_本仓落地路径_NDW分类.md",
-   "sha256": "deabefeb855bae879436fd7d8325645e4c56aec4fef86abd660fb9c9ccf78a98",
-   "size": 2062
-  },
-  {
-   "path": "_arch_v13/13_外部对标_教育知识生产应用.md",
-   "sha256": "7951c8082f108b33e50bc514b2836fb31b6fbcccdf4ecae14c80a5ee39bc369c",
-   "size": 1876
-  },
-  {
-   "path": "_arch_v13/14_风险与失败模式.md",
-   "sha256": "789826253540f3a1adb617bdb3a36c91f25ac385a598343f5c73a0c7a3562fa1",
-   "size": 2212
-  },
-  {
-   "path": "_arch_v13/zero_pollution.md",
-   "sha256": "c1c42b2ce8feee1820179840616ae81009cee4a9651f4498411179995a6741ad",
-   "size": 1934
-  },
-  {
-   "path": "_arch_v14/00_总览_人审层效率与论证可视化_本仓落地路径.md",
-   "sha256": "b093414f352db9e71a80ab920af48d88f932a8a9f2eb7d6c35c0d295ed895415",
-   "size": 3620
-  },
-  {
-   "path": "_arch_v14/01_人审标注工作流设计.md",
-   "sha256": "db1509f896c440ab7f84610903858c0af3c68ac5898940680fd83e77f7fd2562",
-   "size": 2229
-  },
-  {
-   "path": "_arch_v14/02_人审质量控制_单用户阶段.md",
-   "sha256": "0c246fde5c15953ca8cd823ccef6901ce33512ed9825474f54f0a822fb42e0a8",
-   "size": 2069
-  },
-  {
-   "path": "_arch_v14/03_automation_bias防护.md",
-   "sha256": "f1ab9d9ca43fea67fb2cb0d026df1565500db306ad12a6682ba11a6a6cb2bbdc",
-   "size": 2539
-  },
-  {
-   "path": "_arch_v14/04_论证图可视化.md",
-   "sha256": "9efe8b28f563ff2fc445fec531ed57a8c578bbca45df2a46a597ea517bf82392",
-   "size": 2651
-  },
-  {
-   "path": "_arch_v14/05_人审工作量估算与优化.md",
-   "sha256": "4f45d6912c00554a48780c498762ca61193374c626e78a2c1b86740503d72c8c",
-   "size": 2671
-  },
-  {
-   "path": "_arch_v14/06_人审标注可追溯性.md",
-   "sha256": "b78c34031d915e1de47c032c95028915ca76f0b073af9ee2a452acd752d48b41",
-   "size": 2548
-  },
-  {
-   "path": "_arch_v14/07_单用户独立性与多模型辅助.md",
-   "sha256": "e9bfcbbe1772dc4925b31e1b9e3328318af3bc70d29530a4b2611944acc171a8",
-   "size": 2244
-  },
-  {
-   "path": "_arch_v14/08_论证框架交互设计.md",
-   "sha256": "409bc8654b0af4fefbd258a31827196ff28afb8c45c72618b2efdd0025971839",
-   "size": 2399
-  },
-  {
-   "path": "_arch_v14/09_人审反馈闭环.md",
-   "sha256": "136c3a01a26d429407a52a347b700a12bf8e00773a4bb145470b5c401ff08f39",
-   "size": 2277
-  },
-  {
-   "path": "_arch_v14/10_与现有工具集成.md",
-   "sha256": "ac3204387260a2b9e56f48a91af6ba8137797c7f9e35cda68e291747a6b1c9fe",
-   "size": 2214
-  },
-  {
-   "path": "_arch_v14/11_外部对标_标注工具与人审平台.md",
-   "sha256": "1240e4db283aac66caaa6fc3af354a49f8fa06dc1c344636cdd1af1bb4ff00c2",
-   "size": 1833
-  },
-  {
-   "path": "_arch_v14/12_本仓落地路径_NDW分类.md",
-   "sha256": "e078cb2493fbc17219ac99dd61b5f7449a4a1284977e4e08be3f587ef7178079",
-   "size": 2127
-  },
-  {
-   "path": "_arch_v14/13_风险与失败模式.md",
-   "sha256": "f28ca156aee1fcf32b30d24155e068ad23364ab665555a7cac0d6fea26101a2e",
-   "size": 2159
-  },
-  {
-   "path": "_arch_v14/zero_pollution.md",
-   "sha256": "03d19c947c100ded5a33b0d9dd335c7b8fc2132db3b797782bc5665dc09b34dc",
-   "size": 2117
-  },
-  {
-   "path": "_arch_v15/00_总览_外界扩展思路_数学与形式化对阙疑项目的适用性与缺口.md",
-   "sha256": "d9ddc9471f39df1331435efcdbef0ea2e8d23ef8fafe5f7bee8df5f21e879855",
-   "size": 5533
-  },
-  {
-   "path": "_arch_v15/01_数理逻辑与证明论.md",
-   "sha256": "44210f364db99f38365e9a5ee7d51939fa6abb42e89d1d637cbca0d1aa9ea956",
-   "size": 2675
-  },
-  {
-   "path": "_arch_v15/02_形式化验证与证明助手.md",
-   "sha256": "cb13f1fd0ca0de8c2ad967de5590fac6f5d9155f8ae4e342dea8176d9f9baf97",
-   "size": 2888
-  },
-  {
-   "path": "_arch_v15/03_论证理论的扩展与前沿.md",
-   "sha256": "26ebafe19a1808cef89deb0f4f564d24cbb301807fdda9bd083d820b64c51159",
-   "size": 2768
-  },
-  {
-   "path": "_arch_v15/04_知识表示与本体工程.md",
-   "sha256": "3cebf9f096b4fa1d18b6044a6ff65ccc6774a280388b9adc98ecc4764e78a4ce",
-   "size": 2545
-  },
-  {
-   "path": "_arch_v15/05_统计学习理论与主动学习.md",
-   "sha256": "baacb912cee2bbb3df1f02107971fb019b88ba46277742c123f25773419e29f2",
-   "size": 3010
-  },
-  {
-   "path": "_arch_v15/06_可信计算与安全工程.md",
-   "sha256": "93ed0b06e2e3b7ff6add4c8b0c457f5737554432c0365e6681ebe0968bec2b8a",
-   "size": 3000
-  },
-  {
-   "path": "_arch_v15/07_科学哲学与知识论.md",
-   "sha256": "8f6772989ccd28fc49a9935cc17b0cc4795bcd6bfa64839de0aaa0e24722c125",
-   "size": 3250
-  },
-  {
-   "path": "_arch_v15/08_软件工程与测试理论前沿.md",
-   "sha256": "8b05f427bf8c2e373b5e02b49586bf2c47c6060ca6854b6bb4c5b8d1a89d64b9",
-   "size": 2793
-  },
-  {
-   "path": "_arch_v15/09_数据完整性与时态数据管理.md",
-   "sha256": "fbc8398e983140f7b561fa31e785dfd89e7422599744c967ab237acba5f73f6f",
-   "size": 2669
-  },
-  {
-   "path": "_arch_v15/10_人机协作与决策支持.md",
-   "sha256": "8c0dfd9ffa397ae736b4ec90c1e604f667ca492d6c4253b3c5907359ce6e14ce",
-   "size": 2816
-  },
-  {
-   "path": "_arch_v15/11_跨领域综合_哪些理论能组合使用.md",
-   "sha256": "aa3e81c74a626d10b021be7c9feeb22b2732d2ff0efc76128bab272a027e50c5",
-   "size": 2781
-  },
-  {
-   "path": "_arch_v15/12_缺口分析_本项目当前缺失的关键能力.md",
-   "sha256": "64e9b3d89589fe7725cd02358dc08c857bedfdcb45e0f6363a2004271a3e53c5",
-   "size": 2638
-  },
-  {
-   "path": "_arch_v15/13_路线图_外部理论引入的NDW分级.md",
-   "sha256": "33bba5216765e0010332066a073b0b915c99ff1bc35e38435e15c3a2a3aacd5d",
-   "size": 2869
-  },
-  {
-   "path": "_arch_v15/probes/README.md",
-   "sha256": "b42a312659ad48b38a49c488bc0ef984f5e448c23a04bf1fb3d03810989aaa30",
-   "size": 1562
-  },
-  {
-   "path": "_arch_v15/zero_pollution.md",
-   "sha256": "931ed9fdeb25cf21baa8b2679bd8661ef34a66b67f80e83396b0a6753ec94dbb",
-   "size": 3221
-  },
-  {
-   "path": "_arch_v16/00_总览_供应链溯源证明落地路径_封堵585三meta攻击.md",
-   "sha256": "ab2fa1abd1ddc5ab562fe6da4ea175ef8252c6a705a6aa9ec66f02d26f2d5c95",
-   "size": 3973
-  },
-  {
-   "path": "_arch_v16/01_in-toto深度调研与本项目落地设计.md",
-   "sha256": "dee4149ed342b4e001e2818b23b53a2b5092255fde2ff3927f654d37d8f1e2e8",
-   "size": 7182
-  },
-  {
-   "path": "_arch_v16/02_SLSA深度调研与本项目级别评估.md",
-   "sha256": "991fb34e51c5b43bdf94d7bd4ad4ff984d3520ad826b17a3955cf242611076d7",
-   "size": 5013
-  },
-  {
-   "path": "_arch_v16/03_OpenTimestamps深度调研与本项目落地设计.md",
-   "sha256": "4f98178dcacf28eb122d120750676773413f002e5b4822ca1695c5f27cc3830c",
-   "size": 5689
-  },
-  {
-   "path": "_arch_v16/04_Merkle树与哈希链深度调研.md",
-   "sha256": "a24d727cd62816b718ab3d8450fda1d93057c3272b70be61e18964649d854f60",
-   "size": 6076
-  },
-  {
-   "path": "_arch_v16/05_封堵585三个meta攻击的具体方案.md",
-   "sha256": "ac6936a54805551f3e052974a9c74d213df015cfca9c0cff069c65a9a270ce83",
-   "size": 5951
-  },
-  {
-   "path": "_arch_v16/06_落地路线图与分阶段实施方案.md",
-   "sha256": "9a57e8a2cb24b830602f97476c87af9fe66e22d4e45cf37a233f5ea6473b84e0",
-   "size": 4421
-  },
-  {
-   "path": "_arch_v16/07_数据结构与文件格式设计.md",
-   "sha256": "5ffb20ae6f0bb131a772d85a745af398a248f70ad0246548b3481c9d6ea9e357",
-   "size": 4793
-  },
-  {
-   "path": "_arch_v16/08_工具接口设计.md",
-   "sha256": "08d2a9e6437b845cf02b2f48c3474d516ee7e802a261d5a7cf4b2a4c17840366",
-   "size": 4220
-  },
-  {
-   "path": "_arch_v16/09_与现有系统集成方案.md",
-   "sha256": "7fb1c13075e65cf8d01b3bf492a42766fd9d64b6fa4146f99d9e321f8778ba6e",
-   "size": 4733
-  },
-  {
-   "path": "_arch_v16/probes/README.md",
-   "sha256": "b386f76e9184616384738070e492ff0462be201ca77d4e204ef512e43b3b69ba",
-   "size": 2321
-  },
-  {
-   "path": "_arch_v16/zero_pollution.md",
-   "sha256": "47cd1eeaf699c55f27cdb21774489399f7f4b40e31d5af4d457d81ff9ebc1030",
-   "size": 2909
-  },
-  {
-   "path": "_arch_v17/00_总览_TLA与翻译验证落地路径_replay状态机从启发式到可证.md",
-   "sha256": "bc9c688baf1fc563ca6ebd6c9222a3318c24f6c64d6ee090b3748fd54e995cb0",
-   "size": 6639
-  },
-  {
-   "path": "_arch_v17/01_TLA+核心概念与replay状态机建模.md",
-   "sha256": "40c4938dc5c4350d95122dcc21bd194a7e4150b3c0ecebbae164cd1e20af0062",
-   "size": 9733
-  },
-  {
-   "path": "_arch_v17/02_翻译验证深度调研与本项目落地设计.md",
-   "sha256": "b038c16d49de86343b2b83c58eaba0c4abada5ad0223ae713418a18cc2a92a2d",
-   "size": 7791
-  },
-  {
-   "path": "_arch_v17/03_形式化验证工具链深度调研.md",
-   "sha256": "6575842ab51e7c8941ab3ba7871e10f252d22428ddee88ba7f7954e481142cda",
-   "size": 5328
-  },
-  {
-   "path": "_arch_v17/04_replay不变量与活性属性的形式化规格.md",
-   "sha256": "1056d56d31351cf6ed17e191f52230ae263b478fbe77bb309b9a21106c277eae",
-   "size": 7436
-  },
-  {
-   "path": "_arch_v17/05_编译可复现性深度调研与本项目落地.md",
-   "sha256": "2cf4ed53204adc19f21fc02ca92f847d75b155edf72eebb47b23ca2cf93c8777",
-   "size": 6540
-  },
-  {
-   "path": "_arch_v17/06_落地路线图与分阶段实施方案.md",
-   "sha256": "6c73ef873754c48e1725325b59068c8d588024e5a28c6a2487e78c67fd3bdc0a",
-   "size": 6224
-  },
-  {
-   "path": "_arch_v17/07_TLA+规格草案.md",
-   "sha256": "f07a38e57e0a95496847ed258350f8196cb08134619ffb0754807711b8cac9e1",
-   "size": 6539
-  },
-  {
-   "path": "_arch_v17/08_不变量清单与优先级.md",
-   "sha256": "c165a808cdae1362420c84ec8f7d656f8b8032aa0fdde5cb6f3fce632a5ff520",
-   "size": 2578
-  },
-  {
-   "path": "_arch_v17/09_与现有系统集成方案.md",
-   "sha256": "298c856fcc1c4c50ace2acff24a053333d13b2cd4870b255cb3ac4a238861570",
-   "size": 3456
-  },
-  {
-   "path": "_arch_v17/zero_pollution.md",
-   "sha256": "aa1d46d19008e41cbe89142912d03fdfde7507e1155dff75f72ab321e9c6221e",
-   "size": 2970
-  },
-  {
    "path": "_arch_v18/00_总览_大突破方向调研.md",
    "sha256": "cda0918e90263b99fceac0f318737f72599606844c3237a0d7d52b7478b2b4e3",
    "size": 6014
@@ -2326,6 +1771,81 @@
    "path": "_arch_v18/zero_pollution.md",
    "sha256": "eb839fae35bc046a36642d6045f35cb2413eb3672832b6a6602dc66a8e95101b",
    "size": 4365
+  },
+  {
+   "path": "_arch_v19/00_总览_阙疑后续突破质变方向.md",
+   "sha256": "44063ad9395357907a079a254edae27df1b5fd3339f513cd979f25577e2a7016",
+   "size": 11108
+  },
+  {
+   "path": "_arch_v19/01_自进化系统.md",
+   "sha256": "c71a3525a2992e0339dc8c6a2d1d8a80282aed29885466300f43c0f7152c25a5",
+   "size": 8091
+  },
+  {
+   "path": "_arch_v19/02_验证驱动生成VDD.md",
+   "sha256": "d2f4f50501437a9a7a67cdf496d15f18b35a96732783625df7ee4cd6f2db301d",
+   "size": 8076
+  },
+  {
+   "path": "_arch_v19/03_元验证层.md",
+   "sha256": "2e83ce2afb6819d2fe879f389d03b03c94a7b2b227e5d0edf3aa7351adc2e533",
+   "size": 9498
+  },
+  {
+   "path": "_arch_v19/04_分布式验证协议.md",
+   "sha256": "6f130b084cddc4ab0647db1bf3b2b5f992d4db5588a3b6aa5d252b1d3d9a48e4",
+   "size": 8093
+  },
+  {
+   "path": "_arch_v19/05_人审即内容.md",
+   "sha256": "556b7ff9aac944f28e99a322a37db6f5a378f693572c2973f959d9df2462b1b6",
+   "size": 10235
+  },
+  {
+   "path": "_arch_v19/06_跨领域验证框架.md",
+   "sha256": "e3c6993f06316e1fddd820af057acc27121a2d4d8562c3ddf632b0c99b6cf02f",
+   "size": 8358
+  },
+  {
+   "path": "_arch_v19/07_超大规模靶场自进化.md",
+   "sha256": "0cf18794f6d42ed89e0a2e705e1b29cb5e10f3806c76fbf082766e0a9feffbf9",
+   "size": 8794
+  },
+  {
+   "path": "_arch_v19/08_大模型发展与涌现.md",
+   "sha256": "ad9ca6f1648de9ed8d6f6e1b6944a1da83bd50cb1bd666f96bb8cdcbca63f65c",
+   "size": 8158
+  },
+  {
+   "path": "_arch_v19/09_自由探索新维度.md",
+   "sha256": "bcd0530ddf2cb501bad93907d6e6bf2c901e50d45ac11e2c7f42dbb85919def3",
+   "size": 10561
+  },
+  {
+   "path": "_arch_v19/10_跨领域组合与协同.md",
+   "sha256": "95b10bbd51b21956a694e3f66242c272d4be0d671ffad1adbc54dcc71b783173",
+   "size": 5339
+  },
+  {
+   "path": "_arch_v19/11_缺口分析与优先级.md",
+   "sha256": "df60e9d1a76859c507e07cf14e5f1e43e544402a4e5bc0a41fb491769ead544a",
+   "size": 5648
+  },
+  {
+   "path": "_arch_v19/12_NDW路线图.md",
+   "sha256": "b9a8f3e7e66e3355ea3d8ad6477a9b43225bd085077696929260db84e667dcb8",
+   "size": 7644
+  },
+  {
+   "path": "_arch_v19/13_旧调研纠偏.md",
+   "sha256": "ca71f02f8b25fc092394a76334547fb6f4040f8fe790a03c445a1fad61c8e60f",
+   "size": 8460
+  },
+  {
+   "path": "_arch_v19/zero_pollution.md",
+   "sha256": "8bd63b9b5b826893c0050eecb06d134ca6dc814e879ec2dbddc74b6b501c7ac5",
+   "size": 5409
   },
   {
    "path": "_auto/inbox/604.md",
@@ -2388,5 +1908,5 @@
    "size": 7989
   }
  ],
- "self_hash": "51407a3347b98c93d9e0046994087689e8c3bd1ffa4c8f20568804b7cc79d9da"
+ "self_hash": "cd324b8ef230f9b608f3f23b8ad4da94577050a703931a30f39475c9f4239d90"
 }
