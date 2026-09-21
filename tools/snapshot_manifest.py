@@ -95,13 +95,55 @@ def verify_clean():
     return _git("status", "--porcelain") == ""
 
 
+def selftest():
+    """只读自验证（不写任何文件）。返回失败项列表，空列表 = 通过。"""
+    fails = []
+    m = build_manifest()
+    for k in ("generated_at", "head_commit", "live_counts",
+              "verification_baseline_frozen", "note"):
+        if k not in m:
+            fails.append("manifest 缺字段：%s" % k)
+    for k, v in m["live_counts"].items():
+        if not isinstance(v, int) or v <= 0:
+            fails.append("live_counts.%s 非正：%s" % (k, v))
+    if not m["head_commit"]:
+        fails.append("head_commit 为空")
+    f = m["verification_baseline_frozen"]
+    g = f["gate"]
+    if g["hits"] != g["block"] + g["warn"] + g["advice"]:
+        fails.append("gate hits != block+warn+advice")
+    mv = f["mutation_v7"]
+    if mv["judge_denom"] != mv["blocked"] + mv["escaped"]:
+        fails.append("mutation judge_denom != blocked+escaped")
+    if mv["variants"] != mv["blocked"] + mv["escaped"] + mv["n_a"] + mv["equivalent"]:
+        fails.append("mutation variants != blocked+escaped+n_a+equivalent")
+    if f["poison"]["passed"] != f["poison"]["total"]:
+        fails.append("poison passed != total")
+    if f["replay"]["confirm"] <= 0:
+        fails.append("replay confirm 非正")
+    try:
+        if not json.dumps(m, ensure_ascii=False):
+            fails.append("manifest JSON 序列化为空")
+    except (TypeError, ValueError) as e:
+        fails.append("manifest 不可 JSON 序列化：%s" % e)
+    return fails
+
+
 def main():
     ap = argparse.ArgumentParser(description="617 D2 SNAPSHOT_MANIFEST 生成")
     ap.add_argument("--out",
                     default=os.path.join(ROOT, "data", "SNAPSHOT_MANIFEST_617.json"))
     ap.add_argument("--check-clean", action="store_true",
                     help="要求工作区干净，否则非零退出")
+    ap.add_argument("--check", action="store_true",
+                    help="只读自验证（不写文件），exit 0=通过")
     args = ap.parse_args()
+    if args.check:
+        fails = selftest()
+        for f in fails:
+            print("FAIL: %s" % f)
+        print("617 D2 --check: %s" % ("PASS" if not fails else "FAIL"))
+        sys.exit(0 if not fails else 1)
     if args.check_clean and not verify_clean():
         print("ERROR: working tree not clean; refuse to snapshot", file=sys.stderr)
         sys.exit(2)

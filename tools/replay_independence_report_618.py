@@ -53,10 +53,36 @@ def render(d):
     return "\n".join(L) + "\n"
 
 
+def selftest():
+    """只读自验证（不写任何文件）。返回失败项列表，空列表 = 通过。"""
+    fails = []
+    d = build()
+    rp, lvl = d["replay"], d["independence"]
+    if rp["confirm"] <= 0:
+        fails.append("replay confirm 非正：%s" % rp["confirm"])
+    if min(rp["refute"], rp["infra_error"]) < 0:
+        fails.append("replay refute/infra_error 为负")
+    if lvl["discrete_level"] not in (0, 1, 2, 3):
+        fails.append("独立性离散等级越界：%s" % lvl["discrete_level"])
+    if not (0.0 <= lvl["continuity_scalar"] <= 1.0):
+        fails.append("独立性 scalar 越界：%s" % lvl["continuity_scalar"])
+    txt = render(d)
+    if "replay" not in txt or len(txt) < 300:
+        fails.append("render 输出异常（缺 replay 或长度不足）")
+    return fails
+
+
 def main():
     ap = argparse.ArgumentParser(description="618 B4 replay 独立性报告")
     ap.add_argument("--out", default=os.path.join(ROOT, "data", "replay_independence_report_618.md"))
+    ap.add_argument("--check", action="store_true", help="只读自验证（不写文件），exit 0=通过")
     args = ap.parse_args()
+    if args.check:
+        fails = selftest()
+        for f in fails:
+            print("FAIL: %s" % f)
+        print("618 B4 --check: %s" % ("PASS" if not fails else "FAIL"))
+        sys.exit(0 if not fails else 1)
     txt = render(build())
     with open(args.out, "w", encoding="utf-8") as f:
         f.write(txt)

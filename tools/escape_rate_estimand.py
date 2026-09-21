@@ -14,6 +14,7 @@ Wilson 仅为可复算近似代理（精确 CP 见 data/616_baseline.md）。esc
 import argparse
 import json
 import math
+import sys
 
 # frozen baseline (data/mutation/full_baseline_v7.json / 616)
 FROZEN = {
@@ -112,12 +113,58 @@ def enumerate_layers(escape_type, independence_level=1.0):
     }
 
 
+def selftest():
+    """只读自验证（不写任何文件）。返回失败项列表，空列表 = 通过。"""
+    fails = []
+    for t in ("blocked", "escaped", "equivalent"):
+        e = enumerate_layers(t, 0.153)
+        l1 = e["L1_descriptive"]
+        if not (0 <= l1["k"] <= l1["n"]):
+            fails.append("%s L1 k>n：%s/%s" % (t, l1["k"], l1["n"]))
+        if abs(l1["rate"] - l1["k"] / l1["n"]) > 1e-12:
+            fails.append("%s L1 rate 与 k/n 不一致" % t)
+        l2 = e["L2_inferential"]
+        if t in ("escaped", "equivalent") and l2["anytime_cs_upper_95"] is not None:
+            fails.append("%s L2b 应为 None 占位（禁填 0）" % t)
+        l3 = e["L3_causal_extrapolation"]["deployment_extrapolation_rate"]
+        lo, hi = min(l1["rate"], L3_PRIOR), max(l1["rate"], L3_PRIOR)
+        if not (lo - 1e-12 <= l3 <= hi + 1e-12):
+            fails.append("%s L3 未落在 [L1, prior] 区间" % t)
+    b = layer_l2("blocked")
+    if not (0.0 < b["fixed_endpoint_cp_upper_95"] < 1.0):
+        fails.append("blocked L2a 非正上界")
+    if not (0.0 < b["anytime_cs_upper_95"] < 1.0):
+        fails.append("blocked L2b 非正上界")
+    if b["anytime_cs_upper_95"] <= b["fixed_endpoint_cp_upper_95"]:
+        fails.append("blocked CS 应宽于 CP（连续查看代价）")
+    if wilson_upper(0, 0) is not None:
+        fails.append("wilson_upper(0,0) 应为 None（n=0 不得填 0）")
+    w = wilson_upper(1, FROZEN["judge_denom"])
+    if w is None or not (0.0 < w < 1.0):
+        fails.append("wilson_upper(1, judge_denom) 越界")
+    # L3 shrinkage 端点退化
+    if abs(layer_l3("blocked", 1.0)["deployment_extrapolation_rate"]
+           - layer_l1("blocked")["rate"]) > 1e-12:
+        fails.append("L3 在 independence_level=1 时未退化为 L1")
+    if abs(layer_l3("blocked", 0.0)["deployment_extrapolation_rate"] - L3_PRIOR) > 1e-12:
+        fails.append("L3 在 independence_level=0 时未退化为 prior")
+    return fails
+
+
 def main():
     ap = argparse.ArgumentParser(description="617 A1 逃逸率 estimand 三层枚举器")
-    ap.add_argument("--escape-type", required=True,
-                    choices=["blocked", "escaped", "equivalent"])
+    ap.add_argument("--escape-type", choices=["blocked", "escaped", "equivalent"])
     ap.add_argument("--independence-level", type=float, default=1.0)
+    ap.add_argument("--check", action="store_true", help="只读自验证（不写文件），exit 0=通过")
     args = ap.parse_args()
+    if args.check:
+        fails = selftest()
+        for f in fails:
+            print("FAIL: %s" % f)
+        print("617 A1 --check: %s" % ("PASS" if not fails else "FAIL"))
+        sys.exit(0 if not fails else 1)
+    if args.escape_type is None:
+        ap.error("--escape-type is required")
     out = enumerate_layers(args.escape_type, args.independence_level)
     print(json.dumps(out, indent=2, ensure_ascii=False))
 

@@ -71,12 +71,40 @@ def render_markdown(items):
     return "\n".join(L) + "\n"
 
 
+def selftest():
+    """只读自验证（不写任何文件）。返回失败项列表，空列表 = 通过。"""
+    fails = []
+    cards = collect_ev_cards(EVIDENCE, limit=30)
+    if not cards:
+        fails.append("evidence/ 未发现 EV-*.md")
+    if len(cards) > 30:
+        fails.append("卡片数(%s) 超过 limit=30" % len(cards))
+    items = build(30, EVIDENCE)
+    if len(items) != len(cards):
+        fails.append("条目数(%s) != 卡片数(%s)" % (len(items), len(cards)))
+    for it in items:
+        if it["status"] != "pending":
+            fails.append("条目 %s 状态非 pending（不得代签裁决）" % it["no"])
+        if it["decision_options"] != ["approve", "modify", "reject"]:
+            fails.append("条目 %s 裁决选项异常" % it["no"])
+    if not render_markdown(items).strip():
+        fails.append("render_markdown 输出为空")
+    return fails
+
+
 def main():
     ap = argparse.ArgumentParser(description="618 E2 人审待办清单生成")
     ap.add_argument("--evidence", default=EVIDENCE)
     ap.add_argument("--limit", type=int, default=30)
     ap.add_argument("--out", default=os.path.join(ROOT, "data", "human_review_todo_30_618.md"))
+    ap.add_argument("--check", action="store_true", help="只读自验证（不写文件），exit 0=通过")
     args = ap.parse_args()
+    if args.check:
+        fails = selftest()
+        for f in fails:
+            print("FAIL: %s" % f)
+        print("618 E2 --check: %s" % ("PASS" if not fails else "FAIL"))
+        sys.exit(0 if not fails else 1)
     items = build(args.limit, args.evidence)
     txt = render_markdown(items)
     with open(args.out, "w", encoding="utf-8") as f:

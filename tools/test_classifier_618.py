@@ -148,11 +148,43 @@ def render_markdown(results, summary):
     return "\n".join(L) + "\n"
 
 
+def selftest():
+    """只读自验证（不写任何文件）。返回失败项列表，空列表 = 通过。"""
+    fails = []
+    results = scan(TESTS)
+    if not results:
+        fails.append("tests/ 扫描结果为空")
+    s = summarize(results)
+    if s["total"] != len(results):
+        fails.append("total(%s) != 扫描数(%s)" % (s["total"], len(results)))
+    if s["real_verification"] + s["script_self_test"] + s["unclassified"] != s["total"]:
+        fails.append("真实验证+脚本自测+未分类 != total")
+    expect_other = sum(1 for m in results.values() if not ({"gate", "poison", "replay"} & set(m)))
+    if s["three_way"]["其他"] != expect_other:
+        fails.append("三向 其他 计数不一致")
+    members = set()
+    for m in results.values():
+        members.update(m)
+    for cat in ("gate", "replay"):
+        if cat not in members:
+            fails.append("分类结果未覆盖类别：%s" % cat)
+    if not render_markdown(results, s).strip():
+        fails.append("render_markdown 输出为空")
+    return fails
+
+
 def main():
     ap = argparse.ArgumentParser(description="618 C2 测试分类计数")
     ap.add_argument("--tests", default=TESTS)
     ap.add_argument("--out", default=os.path.join(ROOT, "data", "test_classification_618.md"))
+    ap.add_argument("--check", action="store_true", help="只读自验证（不写文件），exit 0=通过")
     args = ap.parse_args()
+    if args.check:
+        fails = selftest()
+        for f in fails:
+            print("FAIL: %s" % f)
+        print("618 C2 --check: %s" % ("PASS" if not fails else "FAIL"))
+        sys.exit(0 if not fails else 1)
     results = scan(args.tests)
     summary = summarize(results)
     txt = render_markdown(results, summary)

@@ -130,11 +130,51 @@ def render_markdown(r):
     return "\n".join(L) + "\n"
 
 
+def selftest():
+    """只读自验证（不写任何文件）。返回失败项列表，空列表 = 通过。"""
+    fails = []
+    r = compute(MANIFEST)
+    n = r["n_variants"]
+    if n <= 0:
+        fails.append("manifest variants 非正：%s" % n)
+    for name in ("escaped", "equivalent"):
+        d = r[name]
+        l1 = d["L1_descriptive_rate"]
+        l2b = d["L2b_eprocess_anytime_upper_95"]
+        l3 = d["L3_extrapolation_upper_95"]
+        if not (0.0 <= l1 <= 1.0):
+            fails.append("%s L1 越界：%s" % (name, l1))
+        if not (0.0 < l2b < 1.0):
+            fails.append("%s L2b 非正上界：%s（禁填 0）" % (name, l2b))
+        if l2b < l1:
+            fails.append("%s L2b(%s) < L1(%s)" % (name, l2b, l1))
+        if not (l1 <= l3 <= 1.0):
+            fails.append("%s L3 越界：%s" % (name, l3))
+    # 单调性：观测失败数越多，anytime 上界越松
+    if not (eprocess_upper_bound(5, 1000) > eprocess_upper_bound(0, 1000)):
+        fails.append("e-process 上界对 k 非单调")
+    # shrinkage 端点退化
+    if abs(layer_l3(0.0, independence_level=1.0) - 0.0) > 1e-12:
+        fails.append("layer_l3 在 independence_level=1 时未退化为 L1")
+    if abs(layer_l3(0.0, independence_level=0.0) - PRIOR) > 1e-12:
+        fails.append("layer_l3 在 independence_level=0 时未退化为 prior")
+    if not render_markdown(r).strip():
+        fails.append("render_markdown 输出为空")
+    return fails
+
+
 def main():
     ap = argparse.ArgumentParser(description="618 A3 escaped/equivalent L2b (e-process) + L3")
     ap.add_argument("--manifest", default=MANIFEST)
     ap.add_argument("--out", default=os.path.join(ROOT, "data", "escape_rate_l2b_618.md"))
+    ap.add_argument("--check", action="store_true", help="只读自验证（不写文件），exit 0=通过")
     args = ap.parse_args()
+    if args.check:
+        fails = selftest()
+        for f in fails:
+            print("FAIL: %s" % f)
+        print("618 A3 --check: %s" % ("PASS" if not fails else "FAIL"))
+        sys.exit(0 if not fails else 1)
     r = compute(args.manifest)
     txt = render_markdown(r)
     with open(args.out, "w", encoding="utf-8") as f:

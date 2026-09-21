@@ -51,11 +51,45 @@ def render(mapping):
     return meta
 
 
+def selftest():
+    """只读自验证（不写任何文件）。返回失败项列表，空列表 = 通过。"""
+    fails = []
+    mapping = build(tc.TESTS)
+    if not mapping:
+        fails.append("映射表为空")
+    for name, v in mapping.items():
+        if not v["categories"]:
+            fails.append("%s categories 为空" % name)
+        if not isinstance(v["is_real_verification"], bool):
+            fails.append("%s is_real_verification 非 bool" % name)
+        elif v["is_real_verification"] != any(c in REAL_CATS for c in v["categories"]):
+            fails.append("%s is_real_verification 与 categories 不一致" % name)
+    meta = render(mapping)
+    if meta["counts"]["total"] != len(mapping):
+        fails.append("counts.total 不一致")
+    if meta["counts"]["real_verification"] != sum(
+            1 for v in mapping.values() if v["is_real_verification"]):
+        fails.append("counts.real_verification 不一致")
+    try:
+        if json.loads(json.dumps(meta, ensure_ascii=False))["counts"]["total"] != len(mapping):
+            fails.append("JSON 往返不一致")
+    except (TypeError, ValueError) as e:
+        fails.append("JSON 序列化失败：%s" % e)
+    return fails
+
+
 def main():
     ap = argparse.ArgumentParser(description="618 C4 测试分类映射表 (JSON)")
     ap.add_argument("--tests", default=tc.TESTS)
     ap.add_argument("--out", default=MAP_OUT)
+    ap.add_argument("--check", action="store_true", help="只读自验证（不写文件），exit 0=通过")
     args = ap.parse_args()
+    if args.check:
+        fails = selftest()
+        for f in fails:
+            print("FAIL: %s" % f)
+        print("618 C4 --check: %s" % ("PASS" if not fails else "FAIL"))
+        sys.exit(0 if not fails else 1)
     meta = render(build(args.tests))
     with open(args.out, "w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2, ensure_ascii=False)

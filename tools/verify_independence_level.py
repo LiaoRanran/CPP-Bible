@@ -10,6 +10,7 @@
 """
 import argparse
 import json
+import sys
 
 # 当前事实（616 D 他验基线）
 DEFAULT_FACTS = {
@@ -72,10 +73,40 @@ def compute_level(facts):
     }
 
 
+def selftest():
+    """只读自验证（不写任何文件）。返回失败项列表，空列表 = 通过。"""
+    fails = []
+    d = compute_level(dict(DEFAULT_FACTS))
+    if d["discrete_level"] not in (0, 1, 2, 3):
+        fails.append("discrete_level 越界：%s" % d["discrete_level"])
+    if not (0.0 <= d["continuity_scalar"] <= 1.0):
+        fails.append("continuity_scalar 越界：%s" % d["continuity_scalar"])
+    if DEFAULT_FACTS["verifier_count"] == 1 and d["continuity_scalar"] > 0.2:
+        fails.append("verifier=1 时 scalar 超过 0.2 硬上限：%s" % d["continuity_scalar"])
+    strong = dict(DEFAULT_FACTS, verifier_count=2, external_verifiable_interface=True,
+                  third_party_review=True, trust_root_anchored=True)
+    ds = compute_level(strong)
+    if ds["discrete_level"] != 3:
+        fails.append("全满足事实应判 L3，实得 L%d" % ds["discrete_level"])
+    if ds["continuity_scalar"] < d["continuity_scalar"]:
+        fails.append("独立性增强后 scalar 反而下降")
+    zero = dict(DEFAULT_FACTS, second_implementation_rules=0)
+    if compute_level(zero)["discrete_level"] != 0:
+        fails.append("无第二实现应判 L0")
+    return fails
+
+
 def main():
     ap = argparse.ArgumentParser(description="617 B1 验证独立性 4 级判定")
     ap.add_argument("--facts", help="JSON 覆盖事实（如 '{\"verifier_count\":2}'）")
+    ap.add_argument("--check", action="store_true", help="只读自验证（不写文件），exit 0=通过")
     args = ap.parse_args()
+    if args.check:
+        fails = selftest()
+        for f in fails:
+            print("FAIL: %s" % f)
+        print("617 B1 --check: %s" % ("PASS" if not fails else "FAIL"))
+        sys.exit(0 if not fails else 1)
     facts = dict(DEFAULT_FACTS)
     if args.facts:
         facts.update(json.loads(args.facts))
