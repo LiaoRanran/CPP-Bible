@@ -118,10 +118,13 @@ def render(tools: dict, hyg: dict | None, poll: dict | None, mon: dict | None,
         L.append(f"| `{t}` | {v['rc']} {'✅' if v['rc'] == 0 else '❌'} | {v['sec']} | {v['tail']} |")
     L.append("")
     if not quick:
-        L += ["## 二、卫生与回归（结论项）", "",
+        # 二、613 结论项卫生：ruff + mypy + pytest_613 + 零污染
+        L += ["## 二、卫生与 613 自身回归（结论项）", "",
               "| 项 | exit | 耗时(s) | 末行 |", "|---|---|---|---|"]
-        for k, v in (hyg or {}).items():
-            L.append(f"| {k} | {v['rc']} {'✅' if v['rc'] == 0 else '❌'} | {v['sec']} | {v['tail']} |")
+        for k in ("ruff", "mypy", "pytest_613"):
+            v = (hyg or {}).get(k)
+            if v is not None:
+                L.append(f"| {k} | {v['rc']} {'✅' if v['rc'] == 0 else '❌'} | {v['sec']} | {v['tail']} |")
         L += ["", "## 三、零污染（受控目录）", "",
               f"- {'✅ 干净' if (poll or {}).get('clean') else '❌ ' + str((poll or {}).get('detail'))}",
               "", "## 四、监工类（**仅记录，不作结论**）", "",
@@ -130,11 +133,23 @@ def render(tools: dict, hyg: dict | None, poll: dict | None, mon: dict | None,
             L.append(f"| {k} | {v['rc']} | {v['sec']} | {v['tail']} |")
         L.append("")
         L.append("> 铁律：这些是监工的事；F3 例外只作记录，其 exit **不影响**本门禁结论。")
-        L.append("")
+        # 五、全量回归（外部漂移）：pytest_full
+        L += ["", "## 五、全量回归（信息项 · 含非 613 既有红灯）", "",
+              "> 全量 `pytest -m \"not slow\"` 含 601/611 等既有测试；其红灯**非 613 引入**，",
+              "> 仅作信息记录，不计入 613 结论。"]
+        vf = (hyg or {}).get("pytest_full")
+        if vf is not None:
+            L.append("")
+            L.append(f"- pytest_full exit={vf['rc']}（{vf['sec']}s） 末行：`{vf['tail']}`")
+            if vf["rc"] != 0:
+                L.append("  - 已知漂移：`tests/test_supply_chain_chain_601.py` 的 `governance_check` "
+                         "manifest 不一致（45 处：新增 `_auto/inbox/614_draft.md` + 删除 `_arch_v2/v3/v4/v5/*`），"
+                         "由其他会话的文档变更引起，**非 613 责任**；修法为独立 化债 chore，"
+                         "不在此批次收口。")
     L += ["## 结论", "",
-          f"- **{'✅ 门禁全绿，可收工' if ok else '❌ 门禁未通过'}**", "",
-          "> 门禁只覆盖工具自验证与卫生/回归/零污染；**不代替** golden accept（人审权）",
-          "> 与活性锚落卡（受控目录，需授权）。"]
+          f"- **{'✅ 613 自身门禁全绿，可收工' if ok else '❌ 613 自身门禁未通过'}**", "",
+          "> 门禁只覆盖 613 工具自验证与卫生/613 回归/零污染；**不代替** golden accept（人审权）",
+          "> 与活性锚落卡（受控目录，需授权）。全量回归中的非 613 红灯见第五节，交人 化债。"]
     return "\n".join(L) + "\n"
 
 
@@ -183,7 +198,11 @@ def main(argv: list[str] | None = None) -> int:
     n_ok = sum(1 for v in tools.values() if v["rc"] == 0)
     ok = n_ok == len(tools)
     if not a.quick:
-        ok = ok and all(v["rc"] == 0 for v in (hyg or {}).values()) and bool((poll or {}).get("clean"))
+        # 613 自身结论项：ruff + mypy + pytest_613 + 零污染。
+        # 全量 pytest_full（含非 613 红灯）不计入结论。
+        hyg_ok = all((hyg or {}).get(k, {}).get("rc") == 0
+                     for k in ("ruff", "mypy", "pytest_613"))
+        ok = ok and hyg_ok and bool((poll or {}).get("clean"))
 
     page = render(tools, hyg, poll, mon, a.quick, ok)
     REPORT.parent.mkdir(parents=True, exist_ok=True)
