@@ -1,0 +1,19 @@
+{
+ "vsa_version": "1.0",
+ "verifier_id": "ev_matrix_unbacked_v2",
+ "verified_at": "2026-09-21T16:29:39",
+ "input": {
+  "path": "evidence/conc/EV-CONC-001.md",
+  "sha256": "ff50c45b9baa0cc8c5e93a96c7cab4407ed387c66859dbbf519314dbe3c22530"
+ },
+ "result": {
+  "rule": "EV-MATRIX-UNBACKED",
+  "verdict": "UNBACKED",
+  "anchors": 1
+ },
+ "signature": {
+  "scheme": "hmac-sha256",
+  "keyid": "a208db4ef3690b9f",
+  "sig": "5503946293d3f3167ede63480a0a0068d1595184a35f231927542f5aba035740"
+ }
+}
