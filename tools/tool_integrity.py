@@ -83,6 +83,24 @@ SUPPLY_CHAIN_FILES: tuple[str, ...] = (
 )
 _SUPPLY_CHAIN_MARK = "# supply_chain"        # .tool_checksums 里的节标记
 
+# 615 B3：**判决尺子**（决定 pass/fail 的逻辑；_arch_v19 探针实测 11 关键尺子中 8 个裸露）。
+#   与 CORE_TOOLS 并列：这些尺子改一行即可改"什么算通过"，但此前不在哈希面。
+#   `tool_integrity.py` 自身也纳入（"怎么算"即可被篡改）；`.tool_checksums` 仍不纳入（递归无解）。
+#   语义：**内容变更或缺失都算红**（尺子必须存在且不被静默改）——同 test_config 节口径。
+RULER_TOOLS: tuple[str, ...] = (
+    "mutation_fuzz.py",              # 变异发现器（改它可让逃逸样本消失）
+    "golden_lock.py",                # 决定质量基线（改它可让恶化不红）
+    "replay_invariants.py",          # 决定 replay 不变量
+    "d5_compile_gate.py",            # D5 编译门
+    "d5_runtime_gate.py",            # D5 运行门
+    "d5_source_integrity.py",        # D5 源完整性
+    "attack_edge_generator.py",      # 攻击边生成（决定 W2 图）
+    "bkt_solver.py",                 # BKT 求解（决定学习者判决）
+    "learner_mastery_update_613.py",  # 掌握度更新
+    "tool_integrity.py",             # 元校验器自身
+)
+_RULER_MARK = "# ruler"                      # .tool_checksums 里的节标记
+
 
 def sha256_of(p: Path) -> str:
     h = hashlib.sha256()
@@ -252,6 +270,63 @@ def verify_supply_chain(path: Path | None = None, root: Path | None = None,
     return changed, warnings, (1 if changed else 0)
 
 
+def compute_ruler(tools_dir: Path | None = None,
+                  names: tuple[str, ...] = RULER_TOOLS) -> dict[str, str]:
+    """判决尺子文件的 sha256（不存在的跳过）。"""
+    d = tools_dir or TOOLS
+    return {n: sha256_of(d / n) for n in names if (d / n).is_file()}
+
+
+def write_ruler_baseline(path: Path | None = None, tools_dir: Path | None = None,
+                         names: tuple[str, ...] = RULER_TOOLS) -> Path:
+    """把 ruler 节**追加**到基准文件末（须在 core/test_config/supply_chain 之后）。"""
+    dst = path or CHECKSUMS
+    rows = compute_ruler(tools_dir, names)
+    with dst.open("a", encoding="utf-8") as f:
+        f.write(_RULER_MARK + "\n")
+        for n, h in sorted(rows.items()):
+            f.write(f"{h}  {n}\n")
+    return dst
+
+
+def load_ruler_baseline(path: Path | None = None) -> dict[str, str] | None:
+    """解析 `.tool_checksums` 的 `# ruler` 节；节缺失 ⇒ None（旧格式，向后兼容）。"""
+    src = path or CHECKSUMS
+    if not src.is_file():
+        return None
+    out: dict[str, str] = {}
+    in_sec = False
+    for line in src.read_text(encoding="utf-8", errors="replace").splitlines():
+        if line.lstrip().startswith("#"):
+            in_sec = _RULER_MARK in line
+            continue
+        if in_sec:
+            parts = line.split()
+            if len(parts) == 2:
+                out[parts[1]] = parts[0]
+    return out or None
+
+
+def verify_ruler(path: Path | None = None, tools_dir: Path | None = None
+                 ) -> tuple[list[tuple[str, str, str]], list[str], int]:
+    """校验 ruler 节；**内容变更或缺失都算红**（尺子必须存在且不被静默改）。缺节 ⇒ exit 2。"""
+    base = load_ruler_baseline(path)
+    if base is None:
+        return [], [], 2
+    d = tools_dir or TOOLS
+    changed: list[tuple[str, str, str]] = []
+    missing: list[str] = []
+    for name, want in sorted(base.items()):
+        f = d / name
+        if not f.is_file():
+            missing.append(name)
+            continue
+        got = sha256_of(f)
+        if got != want:
+            changed.append((name, want, got))
+    return changed, missing, (0 if not changed and not missing else 1)
+
+
 def verify_merkle(roots_path: Path | None = None) -> tuple[list[str], list[str], int]:
     """目录级 Merkle 根校验（601 任务1.2）：委派给 `merkle_integrity.check_all()`。
 
@@ -360,9 +435,10 @@ def main(argv: list[str] | None = None) -> int:
         dst = write_baseline()
         write_test_config_baseline()
         write_supply_chain_baseline()
+        write_ruler_baseline()
         print(f"[tool_integrity] 基准已更新：{dst.relative_to(ROOT).as_posix()}"
               f"（core {len(compute())} 个 + test_config {len(compute_test_config())} 个 + "
-              f"supply_chain {len(compute_supply_chain())} 个文件）")
+              f"supply_chain {len(compute_supply_chain())} 个 + ruler {len(compute_ruler())} 个文件）")
         return 0
 
     if a.check_test_config:
@@ -425,7 +501,18 @@ def main(argv: list[str] | None = None) -> int:
                   f"（警告 {len(m_skipped)} 条）")
         elif m_code == 2:
             m_code = 0            # 缺台账（副本/部分检出）⇒ 警告而非红，理由同 supply_chain
-    return 1 if (code != 0 or sc_code != 0 or m_code != 0) else 0
+    # 615 B3：`--check` 同时校验**判决尺子**节（尺子被改/缺失 ⇒ 红）
+    r_changed, r_missing, r_code = verify_ruler()
+    for name, want, got in r_changed:
+        print(f"[tool_integrity] ❌ [ruler] {name} 被改动（期望 {want[:12]}… 实际 {got[:12]}…）")
+    for name in r_missing:
+        print(f"[tool_integrity] ❌ [ruler] {name} 缺失（基准里有、磁盘上没有）")
+    if r_code == 0:
+        print(f"[tool_integrity] OK：判决尺子与基准一致（{len(compute_ruler())} 个）")
+    elif r_code == 2:
+        print("[tool_integrity] ⚠ [ruler] 缺 ruler 节（旧格式基准）—— 跑 --update 补齐")
+        r_code = 0            # 旧格式向后兼容：缺节只警告
+    return 1 if (code != 0 or sc_code != 0 or m_code != 0 or r_code != 0) else 0
 
 
 if __name__ == "__main__":
