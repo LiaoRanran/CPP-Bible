@@ -193,6 +193,38 @@ def pareto_front(rows: list[dict]) -> list[str]:
     return sorted(set(front))
 
 
+def pareto_front_vectors(records: list[dict]) -> list[tuple[float, ...]]:
+    """去重后的非支配 4-向量集合（A2 报告用，避免重复向量爆炸）。
+
+    与 `pareto_front` 同一支配定义，但按「子目标向量」去重返回 —— 409 个重复点坍缩为少量
+    不同向量，便于人类阅读。注意：等效变异体的向量会支配真逃逸向量（它同时拉高歧义与盲区），
+    故真逃逸向量**不在**前沿里 —— 这正是 A1 §五「W1 低估盲区」的交叉印证，属预期。"""
+    keys = COMPUTABLE_SUB_GOALS
+    vecs = sorted({(tuple(float(score_result(r)["sub"][k] or 0.0) for k in keys)) for r in records})
+    front: list[tuple[float, ...]] = []
+    for i, a in enumerate(vecs):
+        dominated = False
+        for j, b in enumerate(vecs):
+            if i == j:
+                continue
+            if all(y >= x for x, y in zip(a, b)) and any(y > x for x, y in zip(a, b)):
+                dominated = True
+                break
+        if not dominated:
+            front.append(a)
+    return front
+
+
+def pareto_members(records: list[dict]) -> dict[tuple[float, ...], list[str]]:
+    """向量 → 该向量上的 variant_id 列表（供报告展示每个前沿点有多少 mutation）。"""
+    keys = COMPUTABLE_SUB_GOALS
+    members: dict[tuple[float, ...], list[str]] = {}
+    for r in records:
+        v = tuple(float(score_result(r)["sub"][k] or 0.0) for k in keys)
+        members.setdefault(v, []).append(variant_id(r))
+    return members
+
+
 def summarize(records: list[dict]) -> dict:
     """按算子/按严重度聚合（A2 报告数据面；只读、确定性）。"""
     by_op: dict[str, dict] = {}
