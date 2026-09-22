@@ -1,0 +1,89 @@
+{
+  "checks": {
+    "count_consistency": {
+      "name": "count_consistency",
+      "status": "pass",
+      "details": "annotations=388 authority=418 ledger=452 review_unique=93",
+      "evidence": [
+        "expect annotations 388",
+        "expect authority 418",
+        "expect unique review 93"
+      ]
+    },
+    "id_uniqueness": {
+      "name": "id_uniqueness",
+      "status": "pass",
+      "details": "event_id 重复 0；review_item_id 重复 0",
+      "evidence": [
+        "events=452",
+        "review_items=93"
+      ]
+    },
+    "hash_chain": {
+      "name": "hash_chain",
+      "status": "pass",
+      "details": "Authority Ledger 哈希链完整",
+      "evidence": [
+        "events=452"
+      ]
+    },
+    "stale_report_detection": {
+      "name": "stale_report_detection",
+      "status": "pass",
+      "details": "REPORT_STATUS 含 STALE×7、UNREVIEWED×1",
+      "evidence": [
+        "human_review_deep_analysis_20260920.md = STALE",
+        "SNAPSHOT_MANIFEST.json = STALE"
+      ]
+    },
+    "path_validity": {
+      "name": "path_validity",
+      "status": "pass",
+      "details": "缺失关键路径 0",
+      "evidence": []
+    },
+    "control_chars": {
+      "name": "control_chars",
+      "status": "pass",
+      "details": "含控制字符文件 0",
+      "evidence": []
+    },
+    "source_refs": {
+      "name": "source_refs",
+      "status": "pass",
+      "details": "缺失 source 0",
+      "evidence": []
+    },
+    "cross_report_numerical_consistency": {
+      "name": "cross_report_numerical_consistency",
+      "status": "pass",
+      "details": "median/union/豁免 三数一致",
+      "evidence": [
+        "median=67.5",
+        "union=93",
+        "exemptions=31"
+      ]
+    },
+    "authority_projection_consistency": {
+      "name": "authority_projection_consistency",
+      "status": "pass",
+      "details": "W2 nodes=519；PCK=83；确定性=True",
+      "evidence": [
+        "W2 与 grounded_labels 粒度不同（留 627 归一化）"
+      ]
+    },
+    "review_pack_integrity": {
+      "name": "review_pack_integrity",
+      "status": "pass",
+      "details": "阙疑_人审决策包_20260922_v2.zip: entries=38 backslash=0 manifest=True",
+      "evidence": [
+        "阙疑_人审决策包_20260922_v2.zip"
+      ]
+    }
+  },
+  "total": 10,
+  "failed": 0,
+  "warned": 0,
+  "passed": 10,
+  "ok": true
+}
