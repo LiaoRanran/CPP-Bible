@@ -1,4 +1,4 @@
-# PCK 证书（620 B1 迁移 + C3 Authority 同步，只读派生）
+# PCK 证书（620 B1 迁移 + C3 Authority 同步 + 621 C3 ABSTAIN 同步）
 schema_version: 619-pck-v1
 claim:
   id: EV-MEM-004
@@ -75,6 +75,9 @@ human_authority:
 uncertainty:
   cs_upper_bound: 0.009062
   estimand: L1
+  abstain_state: SUPPORTED
+  abstain_reason: verdict=confirm 且证据充分、未过期
+  abstain_is_abstain: false
 provenance:
   commit: d3b2cb709b2d84921d2e2571cdb8b90011ff8b3a
   first_authorized_at: unknown
