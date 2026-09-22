@@ -213,7 +213,7 @@ def selftest() -> int:
         print(f"  [{'ok' if cond else 'FAIL'}] {name}")
         ok = ok and cond
 
-    rows = [
+    rows: list[dict] = [
         {"mutation_id": "a", "card": "atoms/x.md", "verdict": "blocked",
          "new_block_rules": ["ATOM-FM-REQUIRED"], "lost_rules": []},
         {"mutation_id": "b", "card": "evidence/y.md", "verdict": "neutral",

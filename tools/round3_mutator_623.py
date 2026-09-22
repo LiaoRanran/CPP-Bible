@@ -45,7 +45,7 @@ A2_TOUCHED = {
 
 # A4 定向目标规则（A2 未触达 or 触发不稳定，需复测/强化）
 # status_eq：可选，只选该 status 的卡
-RECIPES = [
+RECIPES: list[dict[str, object]] = [
     dict(rule="ATOM-VERIFIED-BOUND", op="M1", field="superiority", value=None,
          need="superiority", ctype="atom", status_eq="verified", strategy="H1"),
     dict(rule="ATOM-STATUS-TRANSITION", op="M1", field="status_history", value=None,

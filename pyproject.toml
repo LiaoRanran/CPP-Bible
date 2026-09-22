@@ -141,6 +141,12 @@ python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 
+# 625 A1：types-PyYAML 非本仓依赖（CI 只装 PyYAML 运行库，无 stub）⇒ yaml.* 允许缺 stub，
+# 否则 `import yaml` 在 7 处报 import-untyped，CI quality 恒红。属环境性 stub 缺口的集中声明。
+[[tool.mypy.overrides]]
+module = "yaml.*"
+ignore_missing_imports = true
+
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

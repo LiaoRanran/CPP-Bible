@@ -17,6 +17,7 @@ import json
 import os
 import subprocess
 import sys
+from typing import Any, cast
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RULES_CACHE = os.path.join(ROOT, "data", "_gate_rules.json")
@@ -29,7 +30,7 @@ HIGH_COMPLEXITY_WARN_ONLY = ["EV-SERVES-EXIST", "ATOM-REL-TARGET", "ATOM-REL-UNK
 
 def load_rules() -> list[dict]:
     if os.path.exists(RULES_CACHE):
-        return json.load(open(RULES_CACHE, encoding="utf-8"))
+        return cast("list[dict[str, Any]]", json.load(open(RULES_CACHE, encoding="utf-8")))
     out = subprocess.check_output([sys.executable, "tools/gate_engine.py", "--list"],
                                   cwd=ROOT, text=True)
     import re

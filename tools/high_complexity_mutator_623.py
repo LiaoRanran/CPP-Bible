@@ -100,7 +100,7 @@ OP_RULE_HINTS = {
 # value 中 {OTHER} 由生成时填入（另一张卡的 id）；None 表示无需值。
 # 注：规则含 block 与 warn 两级——"闭环触达规则数"以 63 条全量计（622 基线同口径），
 # 故 warn 级攻击（如 EV-SERVES-EXIST / ATOM-REL-TARGET）也计入触达。
-RECIPES = [
+RECIPES: list[dict] = [
     # H1 多规则组合攻击（删字段，触发多条规则）
     dict(rule="ATOM-FM-REQUIRED", op="M1", field="first_hand", value=None,
          need="first_hand", ctype="atom", domain=None, strategy="H1"),
@@ -195,7 +195,8 @@ def _get_value(fm: str, key: str) -> str | None:
 
 
 def collect_cards() -> tuple[list[dict], list[dict]]:
-    atoms, evidences = [], []
+    atoms: list[dict] = []
+    evidences: list[dict] = []
     for base, out in ((ATOMS_DIR, atoms), (EVIDENCE_DIR, evidences)):
         if not os.path.isdir(base):
             continue
@@ -246,7 +247,7 @@ def build_mutations(target_per_rule: int = 2, total_cap: int = 80) -> list[dict]
     other_ev_id = next((c["id"] for c in evidences if c["id"]), "EV-OTHER-001")
 
     # 卡池：按 (ctype, domain) 预分组
-    pools = {}
+    pools: dict[tuple[str, str], list[dict]] = {}
     for c in atoms + evidences:
         key = (c["rel"].split("/")[0], c["domain"])
         pools.setdefault(key, []).append(c)
@@ -321,9 +322,10 @@ def build_mutations(target_per_rule: int = 2, total_cap: int = 80) -> list[dict]
         i = 0
         while extras > 0 and out:
             src = out[i % len(out)]
-            c = next((x for x in (atoms if src["target_card"].startswith("atoms") else evidences)
-                      if x["rel"] == src["target_card"]), None)
-            if c:
+            _pool = atoms if src["target_card"].startswith("atoms") else evidences
+            _match = [x for x in _pool if x["rel"] == src["target_card"]]
+            _c = _match[0] if _match else None
+            if _c:
                 content = json.loads(src["content"])
                 mid_seed = json.dumps(content, sort_keys=True, ensure_ascii=False) + f"#x{i}"
                 mid = "MUT-623-" + hashlib.sha1(mid_seed.encode("utf-8")).hexdigest()[:12]

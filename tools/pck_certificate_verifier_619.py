@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from typing import Any, cast
 
 SCHEMA_VERSION = "619-pck-v1"
 CLAIM_TYPES = ("inference", "observation")
@@ -26,9 +27,9 @@ def load_cert(path: str) -> dict:
         text = fh.read()
     try:
         import yaml  # type: ignore
-        return yaml.safe_load(text)
+        return cast("dict[str, Any]", yaml.safe_load(text))
     except ImportError:
-        return json.loads(text)
+        return cast("dict[str, Any]", json.loads(text))
 
 
 def validate_cert(cert: object) -> dict:

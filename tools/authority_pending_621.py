@@ -119,7 +119,7 @@ def _load_log(path: str) -> list[dict]:
 def build_decision(proposal: dict, prev_id: str | None,
                    reviewer: str = REVIEWER_DEFAULT) -> dict:
     """把一条待审条目转成可写入决策日志的决策（带来源标注）。"""
-    power = SUGGESTION_TO_POWER.get(proposal.get("suggested_decision"), "ACCEPT")
+    power = SUGGESTION_TO_POWER.get(str(proposal.get("suggested_decision") or ""), "ACCEPT")
     dec = {
         "target": {"type": "attack_edge",
                    "id": (proposal.get("target") or {}).get("id")},

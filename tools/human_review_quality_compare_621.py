@@ -95,7 +95,7 @@ def decision_consistency(batch: list[dict], proposals: list[dict]) -> dict:
       **字面不同** ⇒ 会被计为"不一致"，但这是**词汇映射差异**，不是真分歧。
     - `normalized`：按**语义族**比较（MODIFY ≡ OVERRIDE，都是"改写"）⇒ 消除词汇噪音。
     """
-    by_edge: dict[str, str] = {}
+    by_edge: dict = {}   # 625 A1：值可能为 None（无记录）或 power 字符串，放宽注解
     for e in batch:
         tid = str((e.get("target") or {}).get("id") or "")
         if tid:
@@ -119,9 +119,9 @@ def decision_consistency(batch: list[dict], proposals: list[dict]) -> dict:
             lit_diff += 1
             detail.append({"edge": tid, "batch_power": actual, "suggested": sug,
                            "verdict": "字面不一致",
-                           "note": "词汇映射差异" if POWER_FAMILY.get(actual) == POWER_FAMILY.get(sug)
+                           "note": "词汇映射差异" if POWER_FAMILY.get(str(actual or "")) == POWER_FAMILY.get(str(sug or ""))
                                    else "语义分歧"})
-        if POWER_FAMILY.get(actual) == POWER_FAMILY.get(sug):
+        if POWER_FAMILY.get(str(actual or "")) == POWER_FAMILY.get(str(sug or "")):
             norm_same += 1
         else:
             norm_diff += 1

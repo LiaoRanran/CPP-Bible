@@ -118,7 +118,7 @@ def measure(rows: list[dict], mutations_by_id: dict,
 
     bands: dict[str, dict] = {}
     for s in scored:
-        det = is_detected(s.get("verdict"))
+        det = is_detected(str(s.get("verdict") or ""))
         b = bands.setdefault(band_of(s["complexity_score"]),
                              {"n": 0, "applicable": 0, "blocked": 0, "escaped": 0,
                               "neutral": 0, "detected_nonblock": 0})
@@ -211,9 +211,9 @@ def selftest() -> int:
     chk("is_detected：escaped=假", is_detected("escaped") is False)
     chk("is_detected：infra_error=None", is_detected("infra_error") is None)
 
-    rows = [{"mutation_id": "a", "card": "atoms/a.md", "verdict": "blocked",
-             "new_block_rules": ["R1"]},
-            {"mutation_id": "b", "card": "atoms/a.md", "verdict": "escaped"}]
+    rows: list[dict] = [{"mutation_id": "a", "card": "atoms/a.md", "verdict": "blocked",
+                         "new_block_rules": ["R1"]},
+                        {"mutation_id": "b", "card": "atoms/a.md", "verdict": "escaped"}]
     by = {"a": {"mutation_id": "a", "content": json.dumps({"op": "M1"})},
           "b": {"mutation_id": "b", "content": json.dumps({"op": "M9"})}}
     res = measure(rows, by)

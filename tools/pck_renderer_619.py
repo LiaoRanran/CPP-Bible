@@ -11,6 +11,7 @@ import argparse
 import json
 import os
 import sys
+from typing import Any, cast
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -23,9 +24,9 @@ def load_cert(path: str) -> dict:
         text = fh.read()
     try:
         import yaml  # type: ignore
-        return yaml.safe_load(text)
+        return cast("dict[str, Any]", yaml.safe_load(text))
     except ImportError:
-        return json.loads(text)
+        return cast("dict[str, Any]", json.loads(text))
 
 
 def render(cert: dict) -> str:

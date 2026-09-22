@@ -68,7 +68,7 @@ def anonymize_entry(entry: dict, keep_chain: bool = False) -> dict:
         else:
             out[k] = scrub_text(v)
     if "reviewer" in entry:
-        out["reviewer_pseudo"] = pseudonym(entry.get("reviewer"))
+        out["reviewer_pseudo"] = pseudonym(str(entry.get("reviewer") or ""))
     return out
 
 
@@ -170,7 +170,7 @@ def selftest() -> int:
     chk("化名稳定（同人同码）", pseudonym("LiaoRanran") == pseudonym("LiaoRanran"))
     chk("化名区分（异人异码）", pseudonym("A") != pseudonym("B"))
     chk("空名安全", pseudonym("") == "R-unknown")
-    chk("路径脱敏", scrub_text(r"C:\Users\ASUS\x.md").find("<user>") > 0)
+    chk("路径脱敏", str(scrub_text(r"C:\Users\ASUS\x.md")).find("<user>") > 0)
     chk("残留扫描可用",
         residual_identity_scan([{"a": "no names"}], ["LiaoRanran"])["clean"] is True)
     chk("残留可被检出",
@@ -193,8 +193,8 @@ def main(argv: list[str] | None = None) -> int:
         return selftest()
 
     res = anonymize_all(args.authority_log, args.legacy, args.keep_chain)
-    names = sorted({e.get("reviewer") for e in load_jsonl(args.authority_log) if e.get("reviewer")}
-                   | {e.get("reviewer") for e in load_jsonl(args.legacy) if e.get("reviewer")})
+    names = sorted({str(e.get("reviewer")) for e in load_jsonl(args.authority_log) if e.get("reviewer")}
+                   | {str(e.get("reviewer")) for e in load_jsonl(args.legacy) if e.get("reviewer")})
     res["residual_identity_scan"] = residual_identity_scan(res["rows"], names)
     write_jsonl(res["rows"], args.out)
     with open(args.report, "w", encoding="utf-8") as fh:

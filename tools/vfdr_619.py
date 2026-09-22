@@ -80,7 +80,7 @@ def apply_event(vuln: dict, event: str) -> str:
 def simulate(vuln: dict, events: tuple[str, ...]) -> str:
     for ev in events:
         apply_event(vuln, ev)
-    return vuln["state"]
+    return str(vuln["state"])
 
 
 def render_markdown() -> str:

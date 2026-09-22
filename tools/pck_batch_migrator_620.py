@@ -104,7 +104,7 @@ def build_cert(card_rel: str) -> dict:
             for ev in (c.get("evidence") or []):
                 if isinstance(ev, str) and ev.strip():
                     refs.append(_norm_evidence_ref(ev.strip(), domain))
-        evidence = [{"type": "replay", "ref": r} for r in refs[:5]] or [
+        evidence: list[dict] = [{"type": "replay", "ref": r} for r in refs[:5]] or [
             {"type": "replay", "ref": f"evidence/{domain}/(见 claim_structured.evidence)"}]
     else:
         claim_type = "observation"
@@ -144,7 +144,7 @@ def build_cert(card_rel: str) -> dict:
 
 def _dump(cert: dict) -> str:
     import yaml
-    return yaml.safe_dump(cert, allow_unicode=True, sort_keys=False, default_flow_style=False)
+    return str(yaml.safe_dump(cert, allow_unicode=True, sort_keys=False, default_flow_style=False))
 
 
 def cert_filename(cert: dict, card_rel: str) -> str:

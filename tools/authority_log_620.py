@@ -269,13 +269,13 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if good else 1
 
     if args.query_target or args.power:
-        for e in query(args.log, target_id=args.query_target, power=args.power):
-            print(_canonical(e))
+        for rec in query(args.log, target_id=args.query_target, power=args.power):
+            print(_canonical(rec))
         return 0
 
     if args.list:
-        for e in list_all(args.log):
-            print(_canonical(e))
+        for rec in list_all(args.log):
+            print(_canonical(rec))
         return 0
 
     ap.print_help()

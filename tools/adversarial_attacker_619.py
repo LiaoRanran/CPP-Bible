@@ -186,8 +186,8 @@ def selftest() -> int:
         and any(A.variant_id(r["rec"]) == A.variant_id(res[0]) for r in an["pareto_rows"]))
     chk("真逃逸进入 ranked 且 composite 在 ranked 靠前", an["escape_rank"] is not None)
     chk("n_a 不进 ranked", all(r["rec"]["verdict"] != "n_a" for r in an["top20"]))
-    equiv = {"card": "c", "op": "M6", "point": "块式 → flow 写法（matrix）", "verdict": "escaped",
-             "kind": None, "new_block": [], "new_warn": [], "equivalent": True}
+    equiv: dict = {"card": "c", "op": "M6", "point": "块式 → flow 写法（matrix）", "verdict": "escaped",
+                   "kind": None, "new_block": [], "new_warn": [], "equivalent": True}
     ane = analyze(res + [equiv])
     chk("等价剔除 ranked（ranked 不含 0.57 等效）",
         not any(r["rec"].get("equivalent") for r in ane["top20"]))

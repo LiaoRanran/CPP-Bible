@@ -34,7 +34,7 @@ def load_jobs(path: str = DEFAULT_CI) -> dict:
 
 
 def job_text(job: dict) -> str:
-    return yaml.safe_dump(job, allow_unicode=True, sort_keys=False)
+    return str(yaml.safe_dump(job, allow_unicode=True, sort_keys=False))
 
 
 def classify(jobs: dict) -> tuple[list[str], list[str]]:

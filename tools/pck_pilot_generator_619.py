@@ -83,9 +83,9 @@ def build_cert(card_rel: str) -> dict:
             for ev in (c.get("evidence") or []):
                 if isinstance(ev, str):
                     evidence_refs.append(ev)
-        evidence = [{"type": "replay", "ref": f"evidence/{domain}/{ev}.md"}
-                   for ev in evidence_refs[:5]] or \
-                  [{"type": "replay", "ref": f"evidence/{domain}/(见 claim_structured.evidence)"}]
+        evidence: list[dict] = [{"type": "replay", "ref": f"evidence/{domain}/{ev}.md"}
+                                for ev in evidence_refs[:5]] or \
+                               [{"type": "replay", "ref": f"evidence/{domain}/(见 claim_structured.evidence)"}]
     else:
         claim_type = "observation"
         statement = fm.get("hypothesis") or card_rel
@@ -143,7 +143,7 @@ def generate(out_dir: str) -> tuple[int, int, str]:
 
 def _dump(cert: dict) -> str:
     import yaml
-    return yaml.safe_dump(cert, allow_unicode=True, sort_keys=False, default_flow_style=False)
+    return str(yaml.safe_dump(cert, allow_unicode=True, sort_keys=False, default_flow_style=False))
 
 
 def selftest() -> int:

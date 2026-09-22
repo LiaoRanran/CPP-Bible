@@ -138,7 +138,7 @@ def score_result(rec: dict, weights: dict[str, float] | None = None) -> dict:
     """
     w = weights or WEIGHTS
     subs: dict[str, float | None] = {
-        "verifier_disagreement": sub_verifier_disagreement(rec),
+        "verifier_disagreement": sub_verifier_disagreement(rec),  # type: ignore[func-returns-value]  # 该子评分按设计恒 N/A（返回 None），此处显式取 None
         "verdict_regime_disagreement": sub_verdict_regime_disagreement(rec),
         "evidence_ambiguity": sub_evidence_ambiguity(rec),
         "rule_blind_spot": sub_rule_blind_spot(rec),

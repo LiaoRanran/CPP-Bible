@@ -77,8 +77,8 @@ def sync(cert_dir: str = DEFAULT_CERT_DIR,
 
     for path, cert in certs:
         cid = str((cert.get("claim") or {}).get("id", ""))
-        ha_before[(cert.get("human_authority") or {}).get("status")] = \
-            ha_before.get((cert.get("human_authority") or {}).get("status"), 0) + 1
+        _stb = str((cert.get("human_authority") or {}).get("status") or "")
+        ha_before[_stb] = ha_before.get(_stb, 0) + 1
 
         info = cls.get(cid)
         u = cert.setdefault("uncertainty", {})
@@ -95,8 +95,8 @@ def sync(cert_dir: str = DEFAULT_CERT_DIR,
             unmatched += 1
 
         # human_authority 一律不动（不代签）
-        ha_after[(cert.get("human_authority") or {}).get("status")] = \
-            ha_after.get((cert.get("human_authority") or {}).get("status"), 0) + 1
+        _sta = str((cert.get("human_authority") or {}).get("status") or "")
+        ha_after[_sta] = ha_after.get(_sta, 0) + 1
 
         rows.append({"cert_id": cid, "abstain_state": u["abstain_state"],
                      "abstain": u["abstain_is_abstain"],
@@ -160,7 +160,7 @@ def selftest() -> int:
         print(f"  [{'ok' if cond else 'FAIL'}] {name}")
         ok = ok and cond
 
-    base = {
+    base: dict = {
         "schema_version": B2.SCHEMA_VERSION,
         "claim": {"id": "ATOM-CONC-FENCE-001", "statement": "s", "domain": "conc",
                   "type": "inference"},
@@ -195,7 +195,7 @@ def selftest() -> int:
 
         # 无分类 ⇒ UNKNOWN
         c2 = dict(base)
-        c2["claim"] = dict(base["claim"], id="EV-CONC-999")
+        c2["claim"] = {**base["claim"], "id": "EV-CONC-999"}
         with open(os.path.join(cdir, "EV-CONC-999.pck.yaml"), "w", encoding="utf-8") as fh:
             fh.write(yaml.safe_dump(c2, allow_unicode=True))
         res2 = sync(cdir, cpath, write=True)

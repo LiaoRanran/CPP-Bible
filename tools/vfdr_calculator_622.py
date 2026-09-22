@@ -25,6 +25,7 @@ import argparse
 import json
 import os
 import sys
+from typing import Any, cast
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -42,7 +43,7 @@ def _load(path: str) -> dict | None:
     if not os.path.exists(path):
         return None
     with open(path, encoding="utf-8") as fh:
-        return json.load(fh)
+        return cast("dict[str, Any]", json.load(fh))
 
 
 def load_rounds() -> list[dict]:

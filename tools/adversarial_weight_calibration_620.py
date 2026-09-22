@@ -103,7 +103,7 @@ def calibrate(records: list[dict], top_n: int = 20) -> dict:
             "ranked_n": len(ranked),
             "top20": top20,
             "escape_rank": rank_pos,
-            "overlap_with_w1": None if name == "W1" else round(overlap, 4),
+            "overlap_with_w1": None if name == "W1" else (round(overlap, 4) if overlap is not None else None),
             "dist": distribution(ranked),
             "pareto": None,
         }

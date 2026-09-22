@@ -62,7 +62,7 @@ def stats(certs: list[tuple[str, dict]]) -> dict:
 
     for _fname, cert in certs:
         ha = (cert.get("human_authority") or {})
-        lvl = STATUS_MAP.get(ha.get("status"), "unverified")
+        lvl = STATUS_MAP.get(str(ha.get("status") or ""), "unverified")
         by_status[lvl] = by_status.get(lvl, 0) + 1
 
         cs = (cert.get("uncertainty") or {}).get("cs_upper_bound")

@@ -94,7 +94,7 @@ def _dominant_subgoal(score: dict) -> str:
     subs = {k: float(v or 0.0) for k, v in score["sub"].items() if v is not None}
     if not subs or max(subs.values()) <= 0:
         return "none"
-    return max(sorted(subs), key=lambda k: subs[k])
+    return str(max(sorted(subs), key=lambda k: subs[k]))
 
 
 def _vfdr_event(rec: dict, score: dict, seq: int) -> dict:
@@ -119,8 +119,8 @@ def run_round(ranked: list[dict], start: int, top_n: int, round_no: int,
     """执行一轮：取 [start, start+top_n) 窗口，统计判决，登记 VFDR。"""
     window = ranked[start:start + top_n]
     blocked = escaped = n_a = equivalent = 0
-    new_escapes: list[dict] = []
-    known_escapes: list[dict] = []
+    new_escapes: list[str] = []
+    known_escapes: list[str] = []
     events: list[dict] = []
 
     for i, row in enumerate(window):

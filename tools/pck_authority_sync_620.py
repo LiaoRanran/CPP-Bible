@@ -71,7 +71,7 @@ def sync(cert_dir: str = DEFAULT_CERT_DIR, log_path: str = DEFAULT_LOG,
         if hits:
             # 取**最后一条**（时间序）决策为当前生效
             last = hits[-1]
-            new_status = POWER_TO_STATUS.get(last.get("power"), "pending")
+            new_status = POWER_TO_STATUS.get(str(last.get("power") or ""), "pending")
             ha["status"] = new_status
             ha["review_method"] = last.get("review_method") or "batch_authorization"
             ha["authority_ref"] = last.get("decision_id")
@@ -146,7 +146,7 @@ def selftest() -> int:
         print(f"  [{'ok' if cond else 'FAIL'}] {name}")
         ok = ok and cond
 
-    sample = {
+    sample: dict = {
         "schema_version": B2.SCHEMA_VERSION,
         "claim": {"id": "ATOM-MEM-PERF-003", "statement": "s", "domain": "mem",
                   "type": "inference"},
@@ -191,7 +191,7 @@ def selftest() -> int:
         # 无匹配的证书保持 pending
         p2 = os.path.join(cdir, "EV-CONC-001.pck.yaml")
         s2 = dict(sample)
-        s2["claim"] = dict(sample["claim"], id="EV-CONC-001")
+        s2["claim"] = {**sample["claim"], "id": "EV-CONC-001"}
         with open(p2, "w", encoding="utf-8") as fh:
             fh.write(yaml.safe_dump(s2, allow_unicode=True))
         res2 = sync(cdir, lpath, write=True)
