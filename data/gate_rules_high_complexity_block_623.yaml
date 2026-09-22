@@ -1,0 +1,56 @@
+# 623 E2 · 高复杂度带 block 级结构规则（规则定义文件）
+#
+# 背景（622 E2 Horizon 曲线 + 623 E1 攻击面分析）：高复杂度带（complexity 60-80+/80-100）
+# 只触发 warn 级规则（EV-SERVES-EXIST / ATOM-REL-TARGET / ATOM-REL-UNKNOWN / CARD-PATH-NOT-CANONICAL），
+# 无 block 级结构规则兜底——攻击者可构造"高复杂度但仅被 warn 记债、不被阻断"的提交。
+#
+# 本文件补 4 条高复杂度带 block 级规则：把上述 warn 级攻击面在"高复杂度上下文"提升为 block 级。
+# 遵循铁律：本文件为"规则定义文件"，不改动 gate_engine.py 检测逻辑；接入 gate_engine.py 的 register()
+# 属 CORE_TOOLS 改动，由人审/624 接线（见各规则 bind 提示）。
+#
+# 字段说明：
+#   id           新规则 ID（带 -HC 后缀标识高复杂度带）
+#   title        人类可读标题
+#   severity     block（必须）
+#   scope        atom | evidence
+#   promotes     被提升的既有 warn 级规则 ID（须存在于 gate --list）
+#   bind         建议绑定的既有 check 函数（gate_engine.py 内，接线时复用，不新写逻辑）
+#   rationale    为何在高复杂度带须升 block
+
+rules:
+  - id: EV-SERVES-EXIST-HC
+    title: 高复杂度证据 serves 目标必须存在（block 兜底）
+    severity: block
+    scope: evidence
+    promotes: EV-SERVES-EXIST
+    bind: check_evidence_serves_exist
+    rationale: >
+      622 E2 实测 M9 cross_reference 指向不存在目标仅触发 EV-SERVES-EXIST(warn)，0% 被拦。
+      高复杂度证据若 serves 到虚无目标，应直接阻断而非记债。
+
+  - id: ATOM-REL-TARGET-HC
+    title: 高复杂度原子 relations 目标必须存在（block 兜底）
+    severity: block
+    scope: atom
+    promotes: ATOM-REL-TARGET
+    bind: check_relations_target_exists
+    rationale: >
+      relations 指向不存在/拼错的目标，在高复杂度带仅 warn。提升至 block 防止悬空引用进入基线。
+
+  - id: ATOM-REL-UNKNOWN-HC
+    title: 高复杂度原子 relations 类型必须已知（block 兜底）
+    severity: block
+    scope: atom
+    promotes: ATOM-REL-UNKNOWN
+    bind: check_relations_unknown_type
+    rationale: >
+      未知 relations 类型（如拼写错误）在高复杂度带仅 warn。提升至 block 防止结构污染。
+
+  - id: CARD-PATH-NOT-CANONICAL-HC
+    title: 高复杂度卡路径必须规范（block 兜底）
+    severity: block
+    scope: atom
+    promotes: CARD-PATH-NOT-CANONICAL
+    bind: check_card_path_canonical
+    rationale: >
+      非规范路径（大小写异体等）在高复杂度带仅 warn。提升至 block 防止跨平台/大小写敏感 FS 下漏检。
