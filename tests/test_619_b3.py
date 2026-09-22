@@ -8,8 +8,8 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
-import pck_pilot_generator_619 as G  # noqa: E402
 import pck_certificate_verifier_619 as B2  # noqa: E402
+import pck_pilot_generator_619 as G  # noqa: E402
 
 
 def test_ten_pilot_cards_exist():

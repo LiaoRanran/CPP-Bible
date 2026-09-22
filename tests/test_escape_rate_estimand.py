@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """617 A1 · escape_rate_estimand 单测（纯标准库）"""
-import math
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "tools"))
 import escape_rate_estimand as m  # noqa: E402

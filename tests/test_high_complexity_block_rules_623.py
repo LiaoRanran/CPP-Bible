@@ -1,7 +1,6 @@
 """623 E2 · 高复杂度带 block 级规则 单元测试（≥3 例，规则定义文件校验）"""
 from __future__ import annotations
 
-import importlib.util
 import json
 import os
 

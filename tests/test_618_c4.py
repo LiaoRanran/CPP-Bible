@@ -9,13 +9,14 @@ import tempfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import test_category_map as m  # noqa: E402
-import test_classifier_618 as tc  # noqa: E402
 
 
 def test_build_has_entry():
     with tempfile.TemporaryDirectory() as d:
-        p1 = os.path.join(d, "test_g.py"); open(p1, "w").write("import gate_engine\n")
-        p2 = os.path.join(d, "test_u.py"); open(p2, "w").write("q=1\n")
+        p1 = os.path.join(d, "test_g.py")
+        open(p1, "w").write("import gate_engine\n")
+        p2 = os.path.join(d, "test_u.py")
+        open(p2, "w").write("q=1\n")
         mapping = m.build(d)
         assert "test_g.py" in mapping and "test_u.py" in mapping
         assert "gate" in mapping["test_g.py"]["categories"]
