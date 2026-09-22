@@ -1,0 +1,50 @@
+{
+ "rows": [
+  {
+   "round": 1,
+   "name": "R1 · 620 第一轮（v7 既有）",
+   "budget": 1406,
+   "escaped": 0,
+   "escape_rate": 0.0,
+   "cum_budget": 1406,
+   "cum_escaped": 0,
+   "vfdr_cumulative": 0.0,
+   "source": "data/adversarial_loop_round1_620.md（620 实测）",
+   "verdict_mode": "v7 已记录判决（回放）"
+  },
+  {
+   "round": 2,
+   "name": "R2 · 622 A2（621 生成器 50 条）",
+   "budget": 50,
+   "escaped": 0,
+   "escape_rate": 0.0,
+   "cum_budget": 1456,
+   "cum_escaped": 0,
+   "vfdr_cumulative": 0.0,
+   "source": "data/mutation_sandbox_run_622_results.json",
+   "verdict_mode": "真实 gate（沙箱）"
+  },
+  {
+   "round": 3,
+   "name": "R3 · 622 A4（v2 生成器 30 条）",
+   "budget": 30,
+   "escaped": 0,
+   "escape_rate": 0.0,
+   "cum_budget": 1486,
+   "cum_escaped": 0,
+   "vfdr_cumulative": 0.0,
+   "source": "data/mutation_sandbox_run_622_round2_results.json",
+   "verdict_mode": "真实 gate（沙箱）"
+  }
+ ],
+ "series": [
+  0,
+  0,
+  0
+ ],
+ "slope": 0.0,
+ "total_budget": 1486,
+ "total_escaped": 0,
+ "vfdr_final": 0.0,
+ "flat_zero": true
+}
