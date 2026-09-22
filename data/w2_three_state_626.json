@@ -1,0 +1,23 @@
+{
+  "argument_status": {
+    "IN": 114,
+    "OUT": 7,
+    "UNDEC": 0,
+    "source": "grounded_labels_w2.json"
+  },
+  "truth_support": {
+    "supported": 27,
+    "refuted": 0,
+    "unresolved": 56,
+    "source": "data/pck/certificates"
+  },
+  "publication_status": {
+    "authorized": 0,
+    "blocked": 0,
+    "pending": 0,
+    "cards_with_authority": 0,
+    "aggregation_policy": "v0.1-strict",
+    "source": "decision_event_v2_ledger.jsonl"
+  },
+  "note": "三套状态独立：IN≠真、OUT≠假；publication_status 须有显式 aggregation policy。本批只读取输出，不改 gate_engine 的 W2 计算逻辑。"
+}

@@ -1,0 +1,988 @@
+{
+  "total_candidates": 388,
+  "mirror_edges": 194,
+  "with_symmetry_proof": 0,
+  "without_symmetry_proof": 194,
+  "source_missing_field": 194,
+  "sample_source_missing": [
+    "ae-MIS-CONC-001->ATOM-UB-GRAY-001::prop-1",
+    "ae-MIS-CONC-001->ATOM-UB-GRAY-001::prop-2",
+    "ae-MIS-CONC-003->ATOM-CONC-RACE-001::prop-1",
+    "ae-MIS-CONC-003->ATOM-CONC-RACE-001::prop-2",
+    "ae-MIS-CONC-003->ATOM-CONC-RACE-001::prop-3"
+  ],
+  "records_have_field": true,
+  "records": [
+    {
+      "edge_id": "ae-MIS-CONC-001->ATOM-UB-GRAY-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-CONC-001->ATOM-UB-GRAY-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-CONC-003->ATOM-CONC-RACE-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-CONC-003->ATOM-CONC-RACE-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-CONC-003->ATOM-CONC-RACE-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-HIST-001->ATOM-HIST-AUTOPTR-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-HIST-001->ATOM-HIST-AUTOPTR-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-HIST-001->ATOM-HIST-AUTOPTR-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-HIST-001->ATOM-HIST-AUTOPTR-001::prop-4",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-HIST-002->ATOM-HIST-AUTOPTR-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-HIST-002->ATOM-HIST-AUTOPTR-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-HIST-002->ATOM-HIST-AUTOPTR-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-HIST-002->ATOM-HIST-AUTOPTR-001::prop-4",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-HIST-003->ATOM-HIST-AUTOPTR-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-HIST-003->ATOM-HIST-AUTOPTR-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-HIST-003->ATOM-HIST-AUTOPTR-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-HIST-003->ATOM-HIST-AUTOPTR-001::prop-4",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-002->ATOM-MEM-MOVE-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-002->ATOM-MEM-MOVE-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-002->ATOM-MEM-MOVE-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-004->ATOM-MEM-MOVE-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-004->ATOM-MEM-MOVE-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-004->ATOM-MEM-MOVE-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-005->ATOM-MEM-MOVE-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-005->ATOM-MEM-MOVE-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-005->ATOM-MEM-MOVE-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-005->ATOM-MEM-RVREF-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-005->ATOM-MEM-RVREF-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-005->ATOM-MEM-RVREF-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-011->ATOM-HIST-AUTOPTR-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-011->ATOM-HIST-AUTOPTR-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-011->ATOM-HIST-AUTOPTR-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-011->ATOM-HIST-AUTOPTR-001::prop-4",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-012->ATOM-MEM-MOVE-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-012->ATOM-MEM-MOVE-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-012->ATOM-MEM-MOVE-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-013->ATOM-MEM-RAII-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-013->ATOM-MEM-RAII-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-013->ATOM-MEM-RAII-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-014->ATOM-MEM-RAII-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-014->ATOM-MEM-RAII-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-014->ATOM-MEM-RAII-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-015->ATOM-MEM-ALIGN-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-015->ATOM-MEM-ALIGN-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-015->ATOM-MEM-ALIGN-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-016->ATOM-MEM-SHARED-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-016->ATOM-MEM-SHARED-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-016->ATOM-MEM-SHARED-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-016->ATOM-MEM-WEAK-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-016->ATOM-MEM-WEAK-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-016->ATOM-MEM-WEAK-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-017->ATOM-MEM-MOVE-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-017->ATOM-MEM-MOVE-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-017->ATOM-MEM-MOVE-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-017->ATOM-MEM-VALUE-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-017->ATOM-MEM-VALUE-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-017->ATOM-MEM-VALUE-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-018->ATOM-MEM-VALUE-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-018->ATOM-MEM-VALUE-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-018->ATOM-MEM-VALUE-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-018->ATOM-MEM-VALUE-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-018->ATOM-MEM-VALUE-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-018->ATOM-MEM-VALUE-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-019->ATOM-MEM-MOVE-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-019->ATOM-MEM-MOVE-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-019->ATOM-MEM-MOVE-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-019->ATOM-MEM-RAII-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-019->ATOM-MEM-RAII-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-019->ATOM-MEM-RAII-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-019->ATOM-MEM-RAII-002::prop-4",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-020->ATOM-MEM-RAII-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-020->ATOM-MEM-RAII-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-020->ATOM-MEM-RAII-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-020->ATOM-MEM-RAII-002::prop-4",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-020->ATOM-MEM-UNIQUE-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-020->ATOM-MEM-UNIQUE-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-020->ATOM-MEM-UNIQUE-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-021->ATOM-MEM-ALLOC-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-021->ATOM-MEM-ALLOC-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-021->ATOM-MEM-ALLOC-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-021->ATOM-MEM-ALLOC-001::prop-4",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-021->ATOM-MEM-NEW-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-021->ATOM-MEM-NEW-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-021->ATOM-MEM-NEW-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-022->ATOM-MEM-NEW-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-022->ATOM-MEM-NEW-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-022->ATOM-MEM-NEW-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-022->ATOM-MEM-PERF-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-022->ATOM-MEM-PERF-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-023->ATOM-MEM-ALLOC-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-023->ATOM-MEM-ALLOC-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-023->ATOM-MEM-ALLOC-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-023->ATOM-MEM-ALLOC-001::prop-4",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-023->ATOM-MEM-PERF-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-023->ATOM-MEM-PERF-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-SHARED-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-SHARED-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-SHARED-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-025->ATOM-MEM-NEW-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-025->ATOM-MEM-NEW-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-025->ATOM-MEM-NEW-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-025->ATOM-MEM-UNIQUE-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-025->ATOM-MEM-UNIQUE-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-025->ATOM-MEM-UNIQUE-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-SHARED-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-SHARED-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-SHARED-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-SHARED-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-SHARED-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-SHARED-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-WEAK-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-WEAK-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-WEAK-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-LEAK-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-LEAK-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-LEAK-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-SHARED-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-SHARED-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-SHARED-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-WEAK-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-WEAK-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-WEAK-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-ALLOC-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-ALLOC-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-ALLOC-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-ALLOC-001::prop-4",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-PERF-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-PERF-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-PERF-003::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-PERF-003::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-PERF-003::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-029->ATOM-MEM-PERF-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-029->ATOM-MEM-PERF-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-029->ATOM-MEM-PERF-003::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-029->ATOM-MEM-PERF-003::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-029->ATOM-MEM-PERF-003::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-001::prop-4",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-LEAK-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-LEAK-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-LEAK-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-LEAK-002::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-LEAK-002::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-LEAK-002::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-SHARED-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-SHARED-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-SHARED-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-WEAK-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-WEAK-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-WEAK-001::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-032->ATOM-MEM-PERF-003::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-032->ATOM-MEM-PERF-003::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-032->ATOM-MEM-PERF-003::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-032->ATOM-MEM-PERF-004::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-032->ATOM-MEM-PERF-004::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-MEM-032->ATOM-MEM-PERF-004::prop-3",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-001->ATOM-UB-GRAY-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-001->ATOM-UB-GRAY-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-002->ATOM-UB-GRAY-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-002->ATOM-UB-GRAY-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-003->ATOM-UB-GRAY-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-003->ATOM-UB-GRAY-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-004->ATOM-UB-GRAY-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-004->ATOM-UB-GRAY-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-008->ATOM-UB-GRAY-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-008->ATOM-UB-GRAY-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-012->ATOM-UB-GRAY-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-012->ATOM-UB-GRAY-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-013->ATOM-UB-GRAY-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-013->ATOM-UB-GRAY-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-014->ATOM-UB-GRAY-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-014->ATOM-UB-GRAY-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-015->ATOM-UB-GRAY-001::prop-1",
+      "symmetry_proof_id": null,
+      "verified": false
+    },
+    {
+      "edge_id": "ae-MIS-UB-015->ATOM-UB-GRAY-001::prop-2",
+      "symmetry_proof_id": null,
+      "verified": false
+    }
+  ],
+  "note": "默认 symmetry_proof_id=null ⇒ 镜像关系未经验证，不可作为实质性攻击边的已验证事实（判据 9）。源数据缺该字段，审计层已归一为 null。"
+}
