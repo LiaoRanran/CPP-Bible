@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-09-21T16:00:52",
- "git_commit": "14df70c",
+ "generated_at": "2026-09-22T16:15:15",
+ "git_commit": "708e7782",
  "files": [
   {
    "path": "References/architecture_架构演进/271_架构批判_阙疑v3十问_判据密度不足与收敛手术.md",
@@ -1933,6 +1933,31 @@
    "size": 5118
   },
   {
+   "path": "_arch_v21/00_总览.md",
+   "sha256": "73c4350913b649aeff245163093815dc64d0ecd6c9d87662fecacf10b56da0c2",
+   "size": 11783
+  },
+  {
+   "path": "_arch_v21/01_第一波_10项逐项审查.md",
+   "sha256": "4621544927be327fbea2ff87f2e81d8a54a0f055bdff41e595da7a7a69fed4c1",
+   "size": 18916
+  },
+  {
+   "path": "_arch_v21/02_第二波_八条雷霆架构方向.md",
+   "sha256": "f980603baf0170994cb76a606b79cc9758d431d8a5c16869734aba426d1f04e1",
+   "size": 14208
+  },
+  {
+   "path": "_arch_v21/03_产品经理内化与决策点.md",
+   "sha256": "f5be003a9e6e9890b02d64adb7ad72a336d08f0a689358cb9923abca2b412bee",
+   "size": 16252
+  },
+  {
+   "path": "_arch_v21/zero_pollution.md",
+   "sha256": "5832e26d7e8ea34da6c0cb5b4242f7c088414fe8158c14cda428c0898c0ea7a2",
+   "size": 5118
+  },
+  {
    "path": "_auto/inbox/604.md",
    "sha256": "3d9c138cb25825d2282b98d15dae7ae8f7976ae3d60d70222d771d7597f512f6",
    "size": 6765
@@ -1996,7 +2021,62 @@
    "path": "_auto/inbox/615.md",
    "sha256": "d687f3aac5233c5077724b22173a932141d44604f20a72652666d322ef53b746",
    "size": 32010
+  },
+  {
+   "path": "_auto/inbox/616.md",
+   "sha256": "0a90a82c2e163660fffc7816d24576648cfb1cf4a24260cfe36f5177c8bb8a4d",
+   "size": 35195
+  },
+  {
+   "path": "_auto/inbox/617.md",
+   "sha256": "7068131dec850071c3b98799f3853b39e4b5530026d0e37e008f79be1d110941",
+   "size": 62260
+  },
+  {
+   "path": "_auto/inbox/618.md",
+   "sha256": "9c12708262d4f0a75f2008d748e2556fb1fbdc374343f90d0afc13910e41aa5f",
+   "size": 19813
+  },
+  {
+   "path": "_auto/inbox/619.md",
+   "sha256": "cd470eb4f796423d4e1991e429af2aebb938aee783cac70b5031a52842af7d69",
+   "size": 19004
+  },
+  {
+   "path": "_auto/inbox/619_codebuddy_review_prompt.md",
+   "sha256": "0cb22d64b84de0c7fb1d7e0c483ee391b3bef80849d8c4f2e1b8c629db92d7c0",
+   "size": 6141
+  },
+  {
+   "path": "_auto/inbox/619_independent_review_prompt.md",
+   "sha256": "2d28b7f2fda269d94a0c6f3c26a17fb7700262083650d0b0be7104ca88a42525",
+   "size": 9647
+  },
+  {
+   "path": "_auto/inbox/620.md",
+   "sha256": "9985f84e2a70e0f8bdf881d795041e67775f5d64e0d2367e230105c41b848ec6",
+   "size": 27093
+  },
+  {
+   "path": "_auto/inbox/620_v2.md",
+   "sha256": "2c8ece64cec079299c3a91f5c9eb071ef74eea79f08ad53efbcdd74c150d1db4",
+   "size": 26910
+  },
+  {
+   "path": "_auto/inbox/621.md",
+   "sha256": "ae83509df4f1c109369d407b5f1901b260f2e6c2668c816ef7ac923f9c5b9a38",
+   "size": 22017
+  },
+  {
+   "path": "_auto/inbox/622.md",
+   "sha256": "1e918708bfd2ccfac6ae75a1f207169bef42f360996bca8e9fd1b9ba20ba0b29",
+   "size": 27571
+  },
+  {
+   "path": "_auto/inbox/623.md",
+   "sha256": "2786d27bda69d8942b4b2f6261f97397357325541b3c5d661b36c193f0ce2007",
+   "size": 34183
   }
  ],
- "self_hash": "ee6474273026203a8be2fcd1afcdd4c73f500fecfef00f700e8b30fb95d43178"
+ "self_hash": "e5c50b676f35da4eaae7be6c3f94a85f8f97d7898385a344a025dff65aa77eaa"
 }
