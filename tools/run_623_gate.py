@@ -49,13 +49,36 @@ def run_ruff(paths: list[str]) -> tuple[int, str]:
     return proc.returncode, proc.stdout + proc.stderr
 
 
+def check(dirs: list[str]) -> int:
+    """只读自检（不写盘）：目录存在 / 有 .py 文件 / ruff 可用。"""
+    ok = True
+
+    def chk(name: str, cond: bool) -> None:
+        nonlocal ok
+        print(f"  [{'ok' if cond else 'FAIL'}] {name}")
+        ok = ok and cond
+
+    missing = [d for d in dirs if not os.path.isdir(d)]
+    chk("目标目录存在", not missing)
+    files = collect_py_files(dirs)
+    chk("枚举到 .py 文件", len(files) > 0)
+    rc, _out = run_ruff(files[:1]) if files else (0, "")
+    chk("ruff 可用（探针 exit ∈ {0,1}）", rc in (0, 1))
+    print(f"gate check: {'PASS' if ok else 'FAIL'}")
+    return 0 if ok else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="623 C1 收工门禁：整目录 ruff")
     ap.add_argument("--dirs", nargs="+", default=["tools", "tests"],
                     help="要检查的目录（默认 tools tests，整目录）")
     ap.add_argument("--only-batch", nargs="+", default=None,
                     help="若提供，仅检查匹配该 glob 的本批文件（演示反模式，默认关闭）")
+    ap.add_argument("--check", action="store_true", help="只读自检（不写盘），exit 0 = 通过")
     args = ap.parse_args(argv)
+
+    if args.check:
+        return check(args.dirs)
 
     if args.only_batch:
         targets = collect_batch_files(args.dirs, args.only_batch)

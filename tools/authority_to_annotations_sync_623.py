@@ -79,12 +79,47 @@ def sync(authority, annotations):
     return list(by_edge.values()), {"added": added, "updated": updated, "unchanged": unchanged}
 
 
+def check() -> int:
+    """只读自检（不写盘）：输入存在 / JSONL 合法 / 字段映射 / sync 可计算。"""
+    ok = True
+
+    def chk(name: str, cond: bool) -> None:
+        nonlocal ok
+        print(f"  [{'ok' if cond else 'FAIL'}] {name}")
+        ok = ok and cond
+
+    chk("authority 日志存在", os.path.exists(AUTH))
+    chk("annotations 文件存在", os.path.exists(ANN))
+    try:
+        authority = load_jsonl(AUTH)
+        chk("authority JSONL 可解析", True)
+    except (OSError, ValueError) as exc:
+        authority = []
+        chk(f"authority JSONL 可解析（{exc}）", False)
+    try:
+        annotations = load_jsonl(ANN)
+        chk("annotations JSONL 可解析", True)
+    except (OSError, ValueError) as exc:
+        annotations = []
+        chk(f"annotations JSONL 可解析（{exc}）", False)
+    unmapped = {str(d.get("power", "")).upper() for d in authority} - set(POWER_MAP)
+    print(f"  [info] 未在映射表的 power 值：{sorted(unmapped) or '无'}")
+    _, stats = sync(authority, annotations)
+    chk("sync() 可计算且返回统计字典", isinstance(stats, dict) and "added" in stats)
+    print(f"D1 check: {'PASS' if ok else 'FAIL'}")
+    return 0 if ok else 1
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="623 D1 Authority→annotations 同步")
     ap.add_argument("--authority", default=AUTH)
     ap.add_argument("--annotations", default=ANN)
     ap.add_argument("--out", default=SYNCED)
+    ap.add_argument("--check", action="store_true", help="只读自检（不写盘），exit 0 = 通过")
     args = ap.parse_args(argv)
+
+    if args.check:
+        return check()
 
     authority = load_jsonl(args.authority)
     annotations = load_jsonl(args.annotations)

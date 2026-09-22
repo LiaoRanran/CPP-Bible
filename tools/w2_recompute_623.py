@@ -56,11 +56,41 @@ def load(path):
     return out
 
 
+def check() -> int:
+    """只读自检（不写盘）：输入存在 / JSONL 合法 / verdicts 可加载。"""
+    ok = True
+
+    def chk(name: str, cond: bool) -> None:
+        nonlocal ok
+        print(f"  [{'ok' if cond else 'FAIL'}] {name}")
+        ok = ok and cond
+
+    chk("annotations 文件存在", os.path.exists(ANN))
+    chk("synced 文件存在", os.path.exists(SYNCED))
+    try:
+        load(ANN)
+        chk("annotations JSONL 可解析", True)
+    except (OSError, ValueError) as exc:
+        chk(f"annotations JSONL 可解析（{exc}）", False)
+    try:
+        load(SYNCED)
+        chk("synced JSONL 可解析", True)
+    except (OSError, ValueError) as exc:
+        chk(f"synced JSONL 可解析（{exc}）", False)
+    chk("verdicts() 可加载（空输入→空判决）", verdicts([]) == {})
+    print(f"D2 check: {'PASS' if ok else 'FAIL'}")
+    return 0 if ok else 1
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="623 D2 W2 重算")
     ap.add_argument("--annotations", default=ANN)
     ap.add_argument("--synced", default=SYNCED)
+    ap.add_argument("--check", action="store_true", help="只读自检（不写盘），exit 0 = 通过")
     args = ap.parse_args(argv)
+
+    if args.check:
+        return check()
 
     orig = verdicts(load(args.annotations))
     sync = verdicts(load(args.synced))
