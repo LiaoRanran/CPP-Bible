@@ -60,8 +60,10 @@ def test_verify_exemption_reason_weak_test():
 
 def test_load_exemptions_legacy_stock_all_legacy(tmp_path):
     ex = pd.load_exemptions()
-    assert len(ex) == 27, f"存量豁免须 27 条，实际 {len(ex)}"
-    assert all(d["redteam_seen"] == "legacy" for d in ex.values()), \
+    # 625 A3：624 B1 新增 4 条非 legacy 豁免（-HC 规则）⇒ 只核「存量 legacy 部分」= 27
+    stock = {k: v for k, v in ex.items() if v["redteam_seen"] == "legacy"}
+    assert len(stock) == 27, f"存量 legacy 豁免须 27 条，实际 {len(stock)}"
+    assert all(d["redteam_seen"] == "legacy" for d in stock.values()), \
         "存量豁免必须全部标 legacy，严禁替异族签字"
 
 
@@ -107,7 +109,7 @@ def test_reason_missing_test_is_unverifiable_pointed(tmp_path):
 
 def test_coverage_report_two_rates_computable():
     rep = pd.coverage_report()
-    assert rep["total"] == 63
+    assert rep["total"] == 67   # 625 A3：624 B1 后规则数 63→67
     # 587 任务3：新增 P77/P78/P79（matrix 非法值）毒载荷 ⇒ EV-MATRIX 由"仅豁免"升为
     # **行为级覆盖**，行为覆盖 38 → 39（非回归，是新增毒样例带来的真实增量）。
     assert rep["behavioral_covered"] == 39
@@ -119,7 +121,9 @@ def test_coverage_report_two_rates_computable():
     # 归 machine-untriggerable 单列、**不计入**诚实分子（防"声明当背书"虚高），其余 24 条 backed。
     ex = pd.load_exemptions()
     buckets = [d["reason_verified"] for d in ex.values()]
-    assert buckets.count("backed") == 24
+    # 625 A3：624 B1 新增 4 条 -HC 豁免（reason 引用 test_hc_rules_are_block_and_automated，核验 backed）
+    # ⇒ backed 24 → 28；missing/weak 仍为 0。
+    assert buckets.count("backed") == 28
     assert buckets.count("machine-untriggerable") == 3
     assert buckets.count("missing-test") == 0
     assert buckets.count("weak-test") == 0
