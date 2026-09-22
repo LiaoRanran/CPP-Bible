@@ -68,7 +68,7 @@ INFERENCE-NOT-MACHINE-VERIFIED 3、EV-FM-REQUIRED 3、EV-FALSIFICATION 2、EV-MA
 
 ### 6.2 证据层（evidence 卡）
 
-- 证据卡上大量字段（rtifact / alsification / claim_structured / matrix）
+- 证据卡上大量字段（rtifact / alsification / claim_structured / matrix）
   **在部分卡上并不存在** ⇒ 生成器应**先读卡再选 op**（schema-aware）。
 - 建议给证据卡补一份**字段清单 schema**，供生成器查表。
 

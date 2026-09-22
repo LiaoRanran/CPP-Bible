@@ -65,7 +65,7 @@
 - **27 张原子卡的"UNDECIDED"是"缺字段"造成的，不是"真弃权"**：
   用 status / evidence / claim_structured.claim_type 三个既有信号即可提取出 verdict。
 - 提取结果：**SUPPORTED 27**（status=verified 23 + status=red-team-verified 3 + evidence_only 1）。
-- ⇒ 与 Authority（27 张原子卡全部 pproved）**方向一致**，为 C3 的"对齐"提供了基础。
+- ⇒ 与 Authority（27 张原子卡全部 pproved）**方向一致**，为 C3 的"对齐"提供了基础。
 - ⚠ **但这只解决了 27 张原子卡**；56 张证据卡的问题方向相反（机器 SUPPORTED、人 pending），
   C3 需单独分析。
 
@@ -80,5 +80,5 @@
 4. **claim_type 只区分 observation/inference**（实测 50/29），
    未对"inference 型命题证据是否充分"做进一步判定。
 5. **不修改原始卡**（硬边界）：提取结果只落 data/。
-   是否把 erdict **写回原子卡** = 622 §八.3 **人拍板项**。
+   是否把 erdict **写回原子卡** = 622 §八.3 **人拍板项**。
 6. **未做人审复核**：本批**不代签**；提取结果的可信度上限 = status 字段本身的可信度。

@@ -64,10 +64,10 @@
 
 1. 开放「mutation 施加到沙箱副本」API（619 A4 §六.4 已登记为前置）——这是让 VFDR
    脱离"结构恒 0"的**唯一**根本手段。
-2. 引入**第二个独立 verifier**，使 erifier_disagreement 子目标可计算（当前恒 N/A）。
+2. 引入**第二个独立 verifier**，使 erifier_disagreement 子目标可计算（当前恒 N/A）。
 3. 权重拍板（W1/W2）后固定，跑更长轮次观察 Top20 消化曲线与边际收益。
 4. 对 57–60 条盲区暴露项做**定向** mutation，验证其是否真实可逃逸。
 
 ---
 
-> 本文件数字由 	ools/vfdr_realtime_620.py --rounds 3 --top-n 20 --weights W1 W2 生成。
+> 本文件数字由 ools/vfdr_realtime_620.py --rounds 3 --top-n 20 --weights W1 W2 生成。

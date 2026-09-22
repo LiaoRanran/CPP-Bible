@@ -42,7 +42,7 @@
 ## 六、局限性声明（诚实登记）
 
 1. **verifiers = 1（83/83，100%）**：全部仅 gate_engine 一个验证器
-   ⇒ erifier_disagreement 恒 N/A，无独立复核。这是**独立性硬上限**，不是迁移缺陷。
+   ⇒ erifier_disagreement 恒 N/A，无独立复核。这是**独立性硬上限**，不是迁移缺陷。
 2. **human_authority 绝大部分是 batch_authorization（83/83，100%）**：
    非逐条独立审阅（615 诚实审计结论）。unverified 60 张更是**根本未经人判定**。
 3. **uncertainty 全部引用全局 estimand L1 = 0.009062**：
@@ -55,4 +55,4 @@
 
 ---
 
-> 本文件由 	ools/pck_status_stats_620.py 生成；渲染产物见 data/pck/rendered/（83 个 .md）。
+> 本文件由 ools/pck_status_stats_620.py 生成；渲染产物见 data/pck/rendered/（83 个 .md）。

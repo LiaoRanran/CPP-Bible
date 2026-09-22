@@ -165,5 +165,5 @@
 
 ### CI 状态
 - push 后触发 CI #598（73d70f0）
-- pytest 仍有 ssert set() == {'research-1f93603db53b'} 错误（来源排查中，非 612 引入）
+- pytest 仍有 ssert set() == {'research-1f93603db53b'} 错误（来源排查中，非 612 引入）
 - gate=golden_lock 活性锚中间态、quality=D5 历史遗留，仍红

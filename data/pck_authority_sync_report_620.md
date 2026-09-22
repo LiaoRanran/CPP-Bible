@@ -62,7 +62,7 @@
 
 **+4 的来源**：ATOM-LANG-INLINE-001、ATOM-MEM-ALLOC-002、
 ATOM-MEM-LEAK-002、ATOM-MEM-PERF-004 —— 这 4 张原子卡 frontmatter status
-未标 erified*（故 B2 派生为 pending），但在**历史人审通道中有真实决策**，
+未标 erified*（故 B2 派生为 pending），但在**历史人审通道中有真实决策**，
 C3 依日志补登为 approved。⇒ **同步是对真实决策的回填，不是凭空提升**。
 
 ## 五、与现有人审通道的对比
@@ -71,7 +71,7 @@ C3 依日志补登为 approved。⇒ **同步是对真实决策的回填，不�
 |---|---|---|
 | 条数 | 388 | 388（**全部导入**） |
 | 形态 | attack_edge 标注 | 统一 AuthorityDecision |
-| 防篡改 | 无 | **哈希链**（erify() 已通过） |
+| 防篡改 | 无 | **哈希链**（erify() 已通过） |
 | 撤销语义 | 无显式的 | OVERRIDE 追加（不改不删） |
 | 弃权语义 | 无 | ABSTAIN 明确可用 |
 | reviewer | 有实名 | 必填且校验空名 |
@@ -80,7 +80,7 @@ C3 依日志补登为 approved。⇒ **同步是对真实决策的回填，不�
 
 1. **当前是从现有人审通道导入，不是独立的人审记录**：388 条决策的历史来源是
    「AI 预标注 + 用户批量授权」（reason 字段原文即写明"用户授权批量通过"），
-   ⇒ 其 eview_method **全部为 atch_authorization**，非逐条独立审阅。
+   ⇒ 其 eview_method **全部为 atch_authorization**，非逐条独立审阅。
 2. **匹配靠子串**：cert_id in decision.target.id。若卡 id 是另一卡 id 的
    子串（当前未发生），可能误匹配；更严谨的映射需 attack_edge → card 的结构化字段。
 3. **证据卡（EV-*）零匹配**：历史人审通道只覆盖 attack_edge（→原子卡），
