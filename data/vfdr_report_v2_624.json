@@ -1,0 +1,732 @@
+{
+  "total_rules": 63,
+  "rounds": [
+    {
+      "round": "R1",
+      "label": "622 A2（单卡低复杂）",
+      "file": "mutation_sandbox_run_622_results.json",
+      "total": 50,
+      "blocked": 13,
+      "detected_nonblock": 0,
+      "neutral": 14,
+      "infra_error": 23,
+      "escaped": 0,
+      "detect_rate": 0.4815,
+      "touched": [
+        "ATOM-FM-REQUIRED",
+        "ATOM-STATUS-TRANSITION",
+        "EV-FALSIFICATION",
+        "EV-FM-REQUIRED",
+        "EV-MATRIX"
+      ],
+      "n_touched": 5
+    },
+    {
+      "round": "R2",
+      "label": "622 A4（单卡 v2 M8/M9）",
+      "file": "mutation_sandbox_run_622_round2_results.json",
+      "total": 30,
+      "blocked": 15,
+      "detected_nonblock": 8,
+      "neutral": 2,
+      "infra_error": 5,
+      "escaped": 0,
+      "detect_rate": 0.92,
+      "touched": [
+        "ATOM-STATUS-VALUE",
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-SERVES-EXIST"
+      ],
+      "n_touched": 3
+    },
+    {
+      "round": "R3",
+      "label": "623 A2（单卡高复杂）",
+      "file": "high_complexity_sandbox_run_623.json",
+      "total": 80,
+      "blocked": 46,
+      "detected_nonblock": 16,
+      "neutral": 12,
+      "infra_error": 2,
+      "escaped": 4,
+      "detect_rate": 0.7949,
+      "touched": [
+        "ATOM-AUDIENCE",
+        "ATOM-CLAIM-STRUCTURED",
+        "ATOM-DAL-MATCH",
+        "ATOM-FM-REQUIRED",
+        "ATOM-GRAY-ZONE",
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE",
+        "ATOM-NO-UNVERIFIED",
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-UNKNOWN",
+        "ATOM-STATUS-VALUE",
+        "ATOM-VERIFY-REASON",
+        "CARD-PATH-NOT-CANONICAL",
+        "EV-ARTIFACT-PRODUCER",
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-ASSERT-COUNT-BELOW-BASELINE",
+        "EV-FM-DUP-KEY",
+        "EV-FM-REQUIRED",
+        "EV-FM-YAML-HARDENING",
+        "EV-ID-UNIQUE",
+        "EV-MATRIX",
+        "EV-MSCV-NO-VERIFY",
+        "EV-SERVES-EXIST"
+      ],
+      "n_touched": 25
+    },
+    {
+      "round": "R4",
+      "label": "623 A4（单卡定向）",
+      "file": "adversarial_loop_round3_sandbox_run_623.json",
+      "total": 40,
+      "blocked": 12,
+      "detected_nonblock": 14,
+      "neutral": 14,
+      "infra_error": 0,
+      "escaped": 0,
+      "detect_rate": 0.65,
+      "touched": [
+        "ATOM-FM-REQUIRED",
+        "CARD-PATH-NOT-CANONICAL",
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-ASSERT-COUNT-BELOW-BASELINE",
+        "EV-ASSERT-SYMBOL-MAPPED",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "n_touched": 6
+    },
+    {
+      "round": "R5",
+      "label": "624 A2（跨卡）",
+      "file": "cross_card_sandbox_run_624.json",
+      "total": 60,
+      "blocked": 47,
+      "detected_nonblock": 13,
+      "neutral": 0,
+      "infra_error": 0,
+      "escaped": 0,
+      "detect_rate": 1.0,
+      "touched": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE",
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-UNKNOWN",
+        "ATOM-VERIFY-REASON",
+        "EV-ARTIFACT-FILE-EXISTS",
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-ASSERT-SYMBOL-MAPPED",
+        "EV-FM-YAML-HARDENING",
+        "EV-SERVES-EXIST"
+      ],
+      "n_touched": 13
+    },
+    {
+      "round": "R6",
+      "label": "624 A4（跨卡定向 X5-X8）",
+      "file": "adversarial_loop_round5_624.json",
+      "total": 40,
+      "blocked": 40,
+      "detected_nonblock": 0,
+      "neutral": 0,
+      "infra_error": 0,
+      "escaped": 0,
+      "detect_rate": 1.0,
+      "touched": [
+        "ATOM-FM-REQUIRED",
+        "ATOM-MISCONCEPTION-REF",
+        "ATOM-VERIFIED-BOUND",
+        "OBSERVATION-NEEDS-ARTIFACT",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "n_touched": 5
+    }
+  ],
+  "cumulative_touched": [
+    "ATOM-AUDIENCE",
+    "ATOM-CLAIM-STRUCTURED",
+    "ATOM-DAL-MATCH",
+    "ATOM-FM-REQUIRED",
+    "ATOM-GRAY-ZONE",
+    "ATOM-ID-FORMAT",
+    "ATOM-ID-UNIQUE",
+    "ATOM-MISCONCEPTION-REF",
+    "ATOM-NO-UNVERIFIED",
+    "ATOM-PREREQ-READABLE",
+    "ATOM-REL-CONFLICT",
+    "ATOM-REL-DAG",
+    "ATOM-REL-TARGET",
+    "ATOM-REL-UNKNOWN",
+    "ATOM-STATUS-TRANSITION",
+    "ATOM-STATUS-VALUE",
+    "ATOM-VERIFIED-BOUND",
+    "ATOM-VERIFY-REASON",
+    "CARD-PATH-NOT-CANONICAL",
+    "EV-ARTIFACT-FILE-EXISTS",
+    "EV-ARTIFACT-PRODUCER",
+    "EV-ARTIFACT-VERSION-MATCH",
+    "EV-ASSERT-COUNT-BELOW-BASELINE",
+    "EV-ASSERT-SYMBOL-MAPPED",
+    "EV-FALSIFICATION",
+    "EV-FM-DUP-KEY",
+    "EV-FM-REQUIRED",
+    "EV-FM-YAML-HARDENING",
+    "EV-ID-UNIQUE",
+    "EV-MATRIX",
+    "EV-MSCV-NO-VERIFY",
+    "EV-SERVES-EXIST",
+    "OBSERVATION-NEEDS-ARTIFACT",
+    "S2-EVIDENCE-VERDICT"
+  ],
+  "cumulative_count": 34,
+  "untouched_v2": [
+    "ATOM-CLAIM-CONCEPT-NORMALIZED",
+    "ATOM-MISCONCEPTION-LEVELS",
+    "ATOM-SUPERIORITY-WORDS",
+    "DOC-ZERO-PLACEHOLDER",
+    "EV-ENV-DEPENDENT-KEY",
+    "EV-FALSIFICATION-QUANT",
+    "EV-FIXTURE-NO-ECHO-DATA",
+    "EV-MATRIX-UNBACKED",
+    "EV-OUT-STALE-MTIME",
+    "EV-OUT-UNDECLARED-KEY",
+    "EV-RUN-KEY-DECLARED-EXISTS",
+    "EV-SELF-SATISFIED-ASSERT",
+    "EV-TRIVIAL-OBSERVATION",
+    "EV-WERROR-DECL-BIND",
+    "EV-ZERO-DIAG-WERROR",
+    "HUMAN-GOLDEN-REVIEW",
+    "HYBRID-TEACHING-DEPTH",
+    "INFERENCE-NOT-MACHINE-VERIFIED",
+    "LLM-SUPERIORITY-QUALITY",
+    "META-MANIFEST",
+    "MIS-LIBRARY",
+    "OBSERVATION-LIVENESS",
+    "PED-MISCONCEPTION",
+    "PED-MOTIVATION",
+    "PED-PREDICT-FIRST",
+    "PED-SOCRATIC",
+    "S1-AUTHOR-SELF-VERIFY",
+    "S1-GIT-AUTHOR-BINDING",
+    "S3-EXPECTED-HARDCODED"
+  ],
+  "blind_count": 29,
+  "blind_reduction": {
+    "from": 37,
+    "to": 29,
+    "reduced_by": 8
+  },
+  "heatmap": {
+    "ATOM-FM-REQUIRED": {
+      "R1": true,
+      "R2": false,
+      "R3": true,
+      "R4": true,
+      "R5": false,
+      "R6": true
+    },
+    "ATOM-ID-FORMAT": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": true,
+      "R6": false
+    },
+    "ATOM-ID-UNIQUE": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": true,
+      "R6": false
+    },
+    "ATOM-VERIFIED-BOUND": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": true
+    },
+    "ATOM-NO-UNVERIFIED": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "ATOM-STATUS-VALUE": {
+      "R1": false,
+      "R2": true,
+      "R3": true,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "ATOM-STATUS-TRANSITION": {
+      "R1": true,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "ATOM-DAL-MATCH": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "ATOM-REL-TARGET": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": true,
+      "R6": false
+    },
+    "ATOM-REL-DAG": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": true,
+      "R6": false
+    },
+    "ATOM-REL-CONFLICT": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": true,
+      "R6": false
+    },
+    "ATOM-SUPERIORITY-WORDS": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-FM-REQUIRED": {
+      "R1": true,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-ID-UNIQUE": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-FALSIFICATION": {
+      "R1": true,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-MATRIX": {
+      "R1": true,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "ATOM-GRAY-ZONE": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "ATOM-MISCONCEPTION-LEVELS": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "MIS-LIBRARY": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "ATOM-MISCONCEPTION-REF": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": true
+    },
+    "ATOM-AUDIENCE": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "ATOM-PREREQ-READABLE": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": true,
+      "R6": false
+    },
+    "EV-SERVES-EXIST": {
+      "R1": false,
+      "R2": true,
+      "R3": true,
+      "R4": false,
+      "R5": true,
+      "R6": false
+    },
+    "DOC-ZERO-PLACEHOLDER": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "META-MANIFEST": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "S1-AUTHOR-SELF-VERIFY": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "S1-GIT-AUTHOR-BINDING": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "ATOM-VERIFY-REASON": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": true,
+      "R6": false
+    },
+    "EV-ARTIFACT-VERSION-MATCH": {
+      "R1": false,
+      "R2": true,
+      "R3": true,
+      "R4": true,
+      "R5": true,
+      "R6": false
+    },
+    "S2-EVIDENCE-VERDICT": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": true
+    },
+    "S3-EXPECTED-HARDCODED": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-SELF-SATISFIED-ASSERT": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-FALSIFICATION-QUANT": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-TRIVIAL-OBSERVATION": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-MATRIX-UNBACKED": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-ZERO-DIAG-WERROR": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-WERROR-DECL-BIND": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-ASSERT-COUNT-BELOW-BASELINE": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": true,
+      "R5": false,
+      "R6": false
+    },
+    "EV-OUT-UNDECLARED-KEY": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-RUN-KEY-DECLARED-EXISTS": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-ASSERT-SYMBOL-MAPPED": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": true,
+      "R5": true,
+      "R6": false
+    },
+    "EV-ARTIFACT-PRODUCER": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-ARTIFACT-FILE-EXISTS": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": true,
+      "R6": false
+    },
+    "EV-MSCV-NO-VERIFY": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-FM-DUP-KEY": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-FM-YAML-HARDENING": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": true,
+      "R5": true,
+      "R6": false
+    },
+    "EV-ENV-DEPENDENT-KEY": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "ATOM-REL-UNKNOWN": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": true,
+      "R6": false
+    },
+    "ATOM-CLAIM-STRUCTURED": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "OBSERVATION-NEEDS-ARTIFACT": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": true
+    },
+    "INFERENCE-NOT-MACHINE-VERIFIED": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "ATOM-CLAIM-CONCEPT-NORMALIZED": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "OBSERVATION-LIVENESS": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-FIXTURE-NO-ECHO-DATA": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "EV-OUT-STALE-MTIME": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "CARD-PATH-NOT-CANONICAL": {
+      "R1": false,
+      "R2": false,
+      "R3": true,
+      "R4": true,
+      "R5": false,
+      "R6": false
+    },
+    "PED-MOTIVATION": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "PED-MISCONCEPTION": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "PED-SOCRATIC": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "PED-PREDICT-FIRST": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "LLM-SUPERIORITY-QUALITY": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "HYBRID-TEACHING-DEPTH": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    },
+    "HUMAN-GOLDEN-REVIEW": {
+      "R1": false,
+      "R2": false,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false
+    }
+  }
+}
