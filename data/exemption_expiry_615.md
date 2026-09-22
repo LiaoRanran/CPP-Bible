@@ -1,6 +1,13 @@
 # 615 C2 · 豁免到期制（legacy + 624 新增）
 
-> 豁免总数 **31**；到期 = **创建批次 + 10**（批次轴 = `golden_state.accepted[]` 时间线）。**只算到期日与提醒，不删/不改任何豁免**。
+> **豁免总数 `31` = `27` legacy + `4` HC**（两个集合，**不可混用**）：
+> - **27 条 legacy**（`redteam_seen: legacy`，创建于 batch 15）；
+> - **4 条 HC**（`redteam_seen: 624_b2_regression`，创建于 batch 21；624 B1 高复杂度带 block 变体
+>   `EV-SERVES-EXIST-HC` / `ATOM-REL-TARGET-HC` / `ATOM-REL-UNKNOWN-HC` / `CARD-PATH-NOT-CANONICAL-HC`）。
+>
+> ⚠ **口径修正（2026-09-22，外部大模型发现 + 626 A1 核实）**：README 等处用「27 条 legacy 豁免」
+> 概括**总豁免数**是错误的——27 只是 legacy 子集，当前**总豁免为 31**。引用时必须写明是哪个集合。
+> 到期 = **创建批次 + 10**（批次轴 = `golden_state.accepted[]` 时间线）。**只算到期日与提醒，不删/不改任何豁免**。
 
 ## 一、状态汇总
 
