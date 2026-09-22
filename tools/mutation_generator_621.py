@@ -165,6 +165,113 @@ def validate_record(rec: dict) -> list[str]:
     return errs
 
 
+# ── 622 A4：生成器 v2（schema-aware + v7 排除 + 新算子 M8/M9）──────────────────
+# 依据 622 A3 的改进建议：
+#   ① schema-aware：先读目标卡 frontmatter 的真实字段，再决定算子（消除 46% 不适用）
+#   ② 排除 v7 已有 (卡, 算子) 对，并引入 v7 没有的算子 ⇒ 把 novelty 从 0.5 档拉到 1.0 档
+NEW_STRATEGIES = ("boundary_value", "cross_reference")
+
+# 算子 → 该算子能施加所需的 frontmatter 字段（任一命中即可）
+OP_REQUIRED_FIELDS = {
+    "M1": ("__any__",), "M6": ("__any__",),
+    "M7": ("artifact_sha256",), "M2": ("artifact", "fixture"),
+    "M3": ("run_match_keys",), "M4": ("artifact_assert",),
+    "M5": ("status",),
+    "M8": ("artifact_version", "status"),           # 边界值：版本号/枚举越界
+    "M9": ("serves", "relations"),                  # 交叉引用：指向不存在的目标
+}
+_M8_TEMPLATES = (
+    {"op": "M8", "point": "artifact_version 置 0（越界版本号）",
+     "detail": "把版本号改成 0，测试版本合法性校验的边界"},
+    {"op": "M8", "point": "status 置非法枚举值",
+     "detail": "把 status 改成未登记枚举，测试枚举白名单"},
+)
+_M9_TEMPLATES = (
+    {"op": "M9", "point": "serves 指向不存在的原子卡",
+     "detail": "把跨卡引用改成不存在的目标，测试引用完整性"},
+    {"op": "M9", "point": "relations 指向不存在的目标",
+     "detail": "把关系目标改成不存在的卡，测试 DAG/目标存在性"},
+)
+
+
+def card_fields(card_rel: str) -> list[str]:
+    """读目标卡 frontmatter 的真实字段名（schema-aware 的基础）。"""
+    path = os.path.join(ROOT, card_rel.replace(os.sep, "/"))
+    if not os.path.exists(path):
+        return []
+    sys.path.insert(0, HERE)
+    try:
+        import pck_batch_migrator_620 as M  # noqa: PLC0415
+        fm = M.read_frontmatter(path)
+        return sorted(str(k) for k in (fm or {}))
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def _op_applicable(op: str, fields: list[str]) -> bool:
+    need = OP_REQUIRED_FIELDS.get(op, ())
+    if "__any__" in need:
+        return bool(fields)
+    return any(f in fields for f in need)
+
+
+def _templates_v2(strategy: str) -> tuple[dict, ...]:
+    if strategy == "boundary_value":
+        return _M8_TEMPLATES
+    if strategy == "cross_reference":
+        return _M9_TEMPLATES
+    return _templates(strategy)
+
+
+def generate_v2(cards: list[str], v7: list[dict], count: int = 30,
+                include_classic: bool = True, now: datetime | None = None) -> list[dict]:
+    """schema-aware + v7 排除 的生成器 v2（确定性）。"""
+    v7_pairs = {(str(r.get("card")), str(r.get("op"))) for r in v7}
+    strategies = list(NEW_STRATEGIES) + (list(STRATEGIES) if include_classic else [])
+    ts = now_iso(now)
+    out: list[dict] = []
+    seen: set[str] = set()
+
+    # 先按卡读一次字段（缓存），避免重复 IO
+    field_cache: dict[str, list[str]] = {}
+
+    def fields_of(card: str) -> list[str]:
+        if card not in field_cache:
+            field_cache[card] = card_fields(card)
+        return field_cache[card]
+
+    i = 0
+    guard = len(cards) * len(strategies) * 8 + 64
+    while len(out) < count and i < guard:
+        card = cards[i % len(cards)]
+        # 策略按 i 轮转（不能按 i//len(cards)，否则 count < 卡数时只会用到第一种策略）
+        strat = strategies[i % len(strategies)]
+        tpls = _templates_v2(strat)
+        tmpl = tpls[(i // len(strategies)) % len(tpls)]
+        op = tmpl["op"]
+        flds = fields_of(card)
+        if not _op_applicable(op, flds):
+            i += 1
+            continue
+        if (card, op) in v7_pairs:          # 排除 v7 已有组合（提高新颖性）
+            i += 1
+            continue
+        rule = TARGET_RULES[i % len(TARGET_RULES)]
+        point = tmpl["point"].format(rule=rule)
+        content = json.dumps({"op": op, "point": point, "detail": tmpl["detail"],
+                              "target_rule": rule, "target_card": card},
+                             ensure_ascii=False, sort_keys=True)
+        mid = mutation_id(card, strat, content)
+        if mid not in seen:
+            seen.add(mid)
+            out.append({"mutation_id": mid, "attack_type": strat,
+                        "target_rule": rule, "target_card": card,
+                        "content": content, "generated_at": ts,
+                        "generator": "v2"})
+        i += 1
+    return out[:count]
+
+
 # ── 判决预测（621 A2）─────────────────────────────────────────────────────────
 # 诚实声明：这里是**预测**，不是真实 gate 判决。原因有二：
 #   1) 621 §六.3 硬边界：不跑监工门禁（含 gate --check），仅 ci.yml 语法验证例外；

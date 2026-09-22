@@ -1,0 +1,456 @@
+{
+ "rows": [
+  {
+   "mutation_id": "MUT-621-d35bf5922181",
+   "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+   "attack_type": "boundary_value",
+   "target_rule": "EV-FM-REQUIRED",
+   "edit": "status → bogus_enum（非法枚举）",
+   "verdict": "blocked",
+   "new_block_rules": [
+    "ATOM-STATUS-VALUE"
+   ],
+   "new_nonblock_rules": [],
+   "lost_rules": [
+    "INFERENCE-NOT-MACHINE-VERIFIED"
+   ],
+   "n_findings_before": 3,
+   "n_findings_after": 3,
+   "elapsed_ms": 6989
+  },
+  {
+   "mutation_id": "MUT-621-0f61b36064e2",
+   "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+   "verdict": "infra_error",
+   "reason": "无法施加 op=M9（目标卡缺少该算子所需字段）",
+   "elapsed_ms": 1
+  },
+  {
+   "mutation_id": "MUT-621-80cebf7844fa",
+   "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+   "attack_type": "boundary_value",
+   "target_rule": "EV-FALSIFICATION-QUANT",
+   "edit": "status → bogus_enum（非法枚举）",
+   "verdict": "blocked",
+   "new_block_rules": [
+    "ATOM-STATUS-VALUE"
+   ],
+   "new_nonblock_rules": [],
+   "lost_rules": [
+    "INFERENCE-NOT-MACHINE-VERIFIED"
+   ],
+   "n_findings_before": 3,
+   "n_findings_after": 3,
+   "elapsed_ms": 6795
+  },
+  {
+   "mutation_id": "MUT-621-40ff8a4d6bf5",
+   "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+   "verdict": "infra_error",
+   "reason": "无法施加 op=M9（目标卡缺少该算子所需字段）",
+   "elapsed_ms": 0
+  },
+  {
+   "mutation_id": "MUT-621-b3c351d2de75",
+   "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+   "attack_type": "boundary_value",
+   "target_rule": "CARD-PATH-NOT-CANONICAL",
+   "edit": "status → bogus_enum（非法枚举）",
+   "verdict": "blocked",
+   "new_block_rules": [
+    "ATOM-STATUS-VALUE"
+   ],
+   "new_nonblock_rules": [],
+   "lost_rules": [
+    "INFERENCE-NOT-MACHINE-VERIFIED"
+   ],
+   "n_findings_before": 3,
+   "n_findings_after": 3,
+   "elapsed_ms": 6705
+  },
+  {
+   "mutation_id": "MUT-621-817e39e1a4d9",
+   "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+   "verdict": "infra_error",
+   "reason": "无法施加 op=M9（目标卡缺少该算子所需字段）",
+   "elapsed_ms": 0
+  },
+  {
+   "mutation_id": "MUT-621-96c1ce498b9f",
+   "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+   "attack_type": "boundary_value",
+   "target_rule": "EV-ARTIFACT-PRODUCER",
+   "edit": "status → bogus_enum（非法枚举）",
+   "verdict": "blocked",
+   "new_block_rules": [
+    "ATOM-STATUS-VALUE"
+   ],
+   "new_nonblock_rules": [],
+   "lost_rules": [
+    "INFERENCE-NOT-MACHINE-VERIFIED"
+   ],
+   "n_findings_before": 3,
+   "n_findings_after": 3,
+   "elapsed_ms": 6806
+  },
+  {
+   "mutation_id": "MUT-621-caf910313ce5",
+   "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+   "attack_type": "cross_reference",
+   "target_rule": "EV-FALSIFICATION",
+   "edit": "relations 引用 UNIQUE-001 → ATOM-NOPE-999（不存在）",
+   "verdict": "neutral",
+   "new_block_rules": [],
+   "new_nonblock_rules": [],
+   "lost_rules": [],
+   "n_findings_before": 3,
+   "n_findings_after": 3,
+   "elapsed_ms": 6740
+  },
+  {
+   "mutation_id": "MUT-621-a3d606f9d73e",
+   "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+   "attack_type": "boundary_value",
+   "target_rule": "ATOM-ID-UNIQUE",
+   "edit": "status → bogus_enum（非法枚举）",
+   "verdict": "blocked",
+   "new_block_rules": [
+    "ATOM-STATUS-VALUE"
+   ],
+   "new_nonblock_rules": [],
+   "lost_rules": [
+    "INFERENCE-NOT-MACHINE-VERIFIED"
+   ],
+   "n_findings_before": 3,
+   "n_findings_after": 3,
+   "elapsed_ms": 6736
+  },
+  {
+   "mutation_id": "MUT-621-c6b0e7e9441b",
+   "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+   "verdict": "infra_error",
+   "reason": "无法施加 op=M9（目标卡缺少该算子所需字段）",
+   "elapsed_ms": 0
+  },
+  {
+   "mutation_id": "MUT-621-68a341f1de7f",
+   "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+   "attack_type": "boundary_value",
+   "target_rule": "EV-FM-DUP-KEY",
+   "edit": "status → bogus_enum（非法枚举）",
+   "verdict": "blocked",
+   "new_block_rules": [
+    "ATOM-STATUS-VALUE"
+   ],
+   "new_nonblock_rules": [],
+   "lost_rules": [
+    "INFERENCE-NOT-MACHINE-VERIFIED"
+   ],
+   "n_findings_before": 3,
+   "n_findings_after": 3,
+   "elapsed_ms": 6702
+  },
+  {
+   "mutation_id": "MUT-621-96ca4dca318c",
+   "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+   "verdict": "infra_error",
+   "reason": "无法施加 op=M9（目标卡缺少该算子所需字段）",
+   "elapsed_ms": 0
+  },
+  {
+   "mutation_id": "MUT-621-9027192dd708",
+   "card": "evidence/conc/EV-CONC-004.md",
+   "attack_type": "boundary_value",
+   "target_rule": "EV-MATRIX-UNBACKED",
+   "edit": "artifact_version → 0（越界）",
+   "verdict": "blocked",
+   "new_block_rules": [
+    "EV-ARTIFACT-VERSION-MATCH"
+   ],
+   "new_nonblock_rules": [],
+   "lost_rules": [],
+   "n_findings_before": 3,
+   "n_findings_after": 4,
+   "elapsed_ms": 6695
+  },
+  {
+   "mutation_id": "MUT-621-5e91da23b93a",
+   "card": "evidence/conc/EV-CONC-005.md",
+   "attack_type": "cross_reference",
+   "target_rule": "ATOM-CLAIM-STRUCTURED",
+   "edit": "serves 引用 ATOM-CONC-RACE-001 → ATOM-NOPE-999（不存在）",
+   "verdict": "detected_nonblock",
+   "new_block_rules": [],
+   "new_nonblock_rules": [
+    "EV-SERVES-EXIST"
+   ],
+   "lost_rules": [],
+   "n_findings_before": 2,
+   "n_findings_after": 3,
+   "elapsed_ms": 6839
+  },
+  {
+   "mutation_id": "MUT-621-9cd020ef77ed",
+   "card": "evidence/lang/EV-LANG-002.md",
+   "attack_type": "boundary_value",
+   "target_rule": "OBSERVATION-LIVENESS",
+   "edit": "artifact_version → 0（越界）",
+   "verdict": "blocked",
+   "new_block_rules": [
+    "EV-ARTIFACT-VERSION-MATCH"
+   ],
+   "new_nonblock_rules": [],
+   "lost_rules": [],
+   "n_findings_before": 2,
+   "n_findings_after": 3,
+   "elapsed_ms": 6731
+  },
+  {
+   "mutation_id": "MUT-621-71b9e5fdbec7",
+   "card": "evidence/mem/EV-MEM-001.md",
+   "attack_type": "cross_reference",
+   "target_rule": "EV-FM-REQUIRED",
+   "edit": "serves 引用 ATOM-MEM-MOVE-001 → ATOM-NOPE-999（不存在）",
+   "verdict": "neutral",
+   "new_block_rules": [],
+   "new_nonblock_rules": [],
+   "lost_rules": [],
+   "n_findings_before": 2,
+   "n_findings_after": 2,
+   "elapsed_ms": 6641
+  },
+  {
+   "mutation_id": "MUT-621-3a55d607a8e1",
+   "card": "evidence/mem/EV-MEM-005.md",
+   "attack_type": "boundary_value",
+   "target_rule": "EV-FALSIFICATION",
+   "edit": "artifact_version → 0（越界）",
+   "verdict": "blocked",
+   "new_block_rules": [
+    "EV-ARTIFACT-VERSION-MATCH"
+   ],
+   "new_nonblock_rules": [],
+   "lost_rules": [],
+   "n_findings_before": 0,
+   "n_findings_after": 1,
+   "elapsed_ms": 6783
+  },
+  {
+   "mutation_id": "MUT-621-a91d1f8e90a0",
+   "card": "evidence/mem/EV-MEM-006.md",
+   "attack_type": "cross_reference",
+   "target_rule": "EV-FALSIFICATION-QUANT",
+   "edit": "serves 引用 ATOM-MEM-VALUE-001 → ATOM-NOPE-999（不存在）",
+   "verdict": "detected_nonblock",
+   "new_block_rules": [],
+   "new_nonblock_rules": [
+    "EV-SERVES-EXIST"
+   ],
+   "lost_rules": [],
+   "n_findings_before": 1,
+   "n_findings_after": 2,
+   "elapsed_ms": 6735
+  },
+  {
+   "mutation_id": "MUT-621-22b0aff287bb",
+   "card": "evidence/mem/EV-MEM-010.md",
+   "attack_type": "boundary_value",
+   "target_rule": "ATOM-FM-REQUIRED",
+   "edit": "artifact_version → 0（越界）",
+   "verdict": "blocked",
+   "new_block_rules": [
+    "EV-ARTIFACT-VERSION-MATCH"
+   ],
+   "new_nonblock_rules": [],
+   "lost_rules": [],
+   "n_findings_before": 1,
+   "n_findings_after": 2,
+   "elapsed_ms": 6668
+  },
+  {
+   "mutation_id": "MUT-621-9377d22b7fac",
+   "card": "evidence/mem/EV-MEM-011.md",
+   "attack_type": "cross_reference",
+   "target_rule": "CARD-PATH-NOT-CANONICAL",
+   "edit": "serves 引用 ATOM-MEM-UNIQUE-001 → ATOM-NOPE-999（不存在）",
+   "verdict": "detected_nonblock",
+   "new_block_rules": [],
+   "new_nonblock_rules": [
+    "EV-SERVES-EXIST"
+   ],
+   "lost_rules": [],
+   "n_findings_before": 0,
+   "n_findings_after": 1,
+   "elapsed_ms": 6622
+  },
+  {
+   "mutation_id": "MUT-621-15bd364521ec",
+   "card": "evidence/mem/EV-MEM-015.md",
+   "attack_type": "boundary_value",
+   "target_rule": "EV-ARTIFACT-FILE-EXISTS",
+   "edit": "artifact_version → 0（越界）",
+   "verdict": "blocked",
+   "new_block_rules": [
+    "EV-ARTIFACT-VERSION-MATCH"
+   ],
+   "new_nonblock_rules": [],
+   "lost_rules": [],
+   "n_findings_before": 0,
+   "n_findings_after": 1,
+   "elapsed_ms": 6792
+  },
+  {
+   "mutation_id": "MUT-621-2004398c39e2",
+   "card": "evidence/mem/EV-MEM-016.md",
+   "attack_type": "cross_reference",
+   "target_rule": "EV-ARTIFACT-PRODUCER",
+   "edit": "serves 引用 ATOM-MEM-WEAK-001 → ATOM-NOPE-999（不存在）",
+   "verdict": "detected_nonblock",
+   "new_block_rules": [],
+   "new_nonblock_rules": [
+    "EV-SERVES-EXIST"
+   ],
+   "lost_rules": [],
+   "n_findings_before": 0,
+   "n_findings_after": 1,
+   "elapsed_ms": 6649
+  },
+  {
+   "mutation_id": "MUT-621-8aa35a0c4c7b",
+   "card": "evidence/mem/EV-MEM-020.md",
+   "attack_type": "boundary_value",
+   "target_rule": "ATOM-CLAIM-STRUCTURED",
+   "edit": "artifact_version → 0（越界）",
+   "verdict": "blocked",
+   "new_block_rules": [
+    "EV-ARTIFACT-VERSION-MATCH"
+   ],
+   "new_nonblock_rules": [],
+   "lost_rules": [],
+   "n_findings_before": 0,
+   "n_findings_after": 1,
+   "elapsed_ms": 6692
+  },
+  {
+   "mutation_id": "MUT-621-b303f48897c0",
+   "card": "evidence/mem/EV-MEM-021.md",
+   "attack_type": "cross_reference",
+   "target_rule": "ATOM-ID-UNIQUE",
+   "edit": "serves 引用 ATOM-MEM-VALUE-002 → ATOM-NOPE-999（不存在）",
+   "verdict": "detected_nonblock",
+   "new_block_rules": [],
+   "new_nonblock_rules": [
+    "EV-SERVES-EXIST"
+   ],
+   "lost_rules": [],
+   "n_findings_before": 0,
+   "n_findings_after": 1,
+   "elapsed_ms": 6698
+  },
+  {
+   "mutation_id": "MUT-621-73e34737fde7",
+   "card": "evidence/mem/EV-MEM-025.md",
+   "attack_type": "boundary_value",
+   "target_rule": "EV-FM-REQUIRED",
+   "edit": "artifact_version → 0（越界）",
+   "verdict": "blocked",
+   "new_block_rules": [
+    "EV-ARTIFACT-VERSION-MATCH"
+   ],
+   "new_nonblock_rules": [],
+   "lost_rules": [],
+   "n_findings_before": 0,
+   "n_findings_after": 1,
+   "elapsed_ms": 6735
+  },
+  {
+   "mutation_id": "MUT-621-0ee97879991c",
+   "card": "evidence/mem/EV-MEM-026.md",
+   "attack_type": "cross_reference",
+   "target_rule": "EV-FM-DUP-KEY",
+   "edit": "serves 引用 ATOM-MEM-ALLOC-001 → ATOM-NOPE-999（不存在）",
+   "verdict": "detected_nonblock",
+   "new_block_rules": [],
+   "new_nonblock_rules": [
+    "EV-SERVES-EXIST"
+   ],
+   "lost_rules": [],
+   "n_findings_before": 0,
+   "n_findings_after": 1,
+   "elapsed_ms": 6642
+  },
+  {
+   "mutation_id": "MUT-621-1a8031b6cb4c",
+   "card": "evidence/mem/EV-MEM-030.md",
+   "attack_type": "boundary_value",
+   "target_rule": "EV-FALSIFICATION-QUANT",
+   "edit": "artifact_version → 0（越界）",
+   "verdict": "blocked",
+   "new_block_rules": [
+    "EV-ARTIFACT-VERSION-MATCH"
+   ],
+   "new_nonblock_rules": [],
+   "lost_rules": [],
+   "n_findings_before": 0,
+   "n_findings_after": 1,
+   "elapsed_ms": 6547
+  },
+  {
+   "mutation_id": "MUT-621-938df21fdb47",
+   "card": "evidence/mem/EV-MEM-031.md",
+   "attack_type": "cross_reference",
+   "target_rule": "EV-MATRIX-UNBACKED",
+   "edit": "serves 引用 ATOM-MEM-PERF-002 → ATOM-NOPE-999（不存在）",
+   "verdict": "detected_nonblock",
+   "new_block_rules": [],
+   "new_nonblock_rules": [
+    "EV-SERVES-EXIST"
+   ],
+   "lost_rules": [],
+   "n_findings_before": 0,
+   "n_findings_after": 1,
+   "elapsed_ms": 6628
+  },
+  {
+   "mutation_id": "MUT-621-0b09bc22602b",
+   "card": "evidence/mem/EV-MEM-035.md",
+   "attack_type": "boundary_value",
+   "target_rule": "CARD-PATH-NOT-CANONICAL",
+   "edit": "artifact_version → 0（越界）",
+   "verdict": "blocked",
+   "new_block_rules": [
+    "EV-ARTIFACT-VERSION-MATCH"
+   ],
+   "new_nonblock_rules": [],
+   "lost_rules": [],
+   "n_findings_before": 1,
+   "n_findings_after": 2,
+   "elapsed_ms": 6672
+  },
+  {
+   "mutation_id": "MUT-621-efafdbb289ee",
+   "card": "evidence/mem/EV-MEM-036.md",
+   "attack_type": "cross_reference",
+   "target_rule": "OBSERVATION-LIVENESS",
+   "edit": "serves 引用 ATOM-MEM-LEAK-001 → ATOM-NOPE-999（不存在）",
+   "verdict": "detected_nonblock",
+   "new_block_rules": [],
+   "new_nonblock_rules": [
+    "EV-SERVES-EXIST"
+   ],
+   "lost_rules": [],
+   "n_findings_before": 0,
+   "n_findings_after": 1,
+   "elapsed_ms": 6708
+  }
+ ],
+ "distribution": {
+  "blocked": 15,
+  "detected_nonblock": 8,
+  "infra_error": 5,
+  "neutral": 2
+ },
+ "escaped": [],
+ "total": 30,
+ "elapsed_s": 168.1
+}

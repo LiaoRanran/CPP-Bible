@@ -161,6 +161,35 @@ def plan_edit(content: dict, text: str) -> tuple[str, str] | None:
         return text + "\nartifact_assert:\n - {kind: exists, text: \"main\"}\n", \
             "注入恒真断言 exists:main（新建键）"
 
+    if op == "M8":  # 622 A4 新算子：边界值（版本号越界 / 枚举越界）
+        m = _key_line(text, "artifact_version")
+        if m:
+            return text[:m.start()] + re.sub(r"(artifact_version\s*:\s*).*", r"\g<1>0",
+                                             m.group(0)) + text[m.end():], \
+                "artifact_version → 0（越界）"
+        m = _key_line(text, "status")
+        if not m:
+            return None
+        return text[:m.start()] + re.sub(r"(status\s*:\s*).*", r"\g<1>bogus_enum",
+                                         m.group(0)) + text[m.end():], \
+            "status → bogus_enum（非法枚举）"
+
+    if op == "M9":  # 622 A4 新算子：交叉引用指向不存在的目标
+        for key in ("serves", "relations"):
+            m = _key_line(text, key)
+            if not m:
+                continue
+            line = m.group(0)
+            mm = re.search(r"([A-Z][A-Z0-9-]{3,})", line)
+            if not mm:
+                continue
+            bogus = "ATOM-NOPE-999"
+            if mm.group(1) == bogus:
+                continue
+            return text[:m.start()] + line.replace(mm.group(1), bogus, 1) + text[m.end():], \
+                f"{key} 引用 {mm.group(1)} → {bogus}（不存在）"
+        return None
+
     if op == "M5":  # claim 自标：status 改成 draft
         m = _key_line(text, "status")
         if not m:
@@ -268,8 +297,10 @@ class Sandbox:
         content = json.loads(mutation.get("content") or "null") or {}
         planned = plan_edit(content, text)
         if planned is None:
-            return {"applied": False, "reason": f"无法施加 op={content.get('op')} "
-                                                f"field={RULE_FIELD.get(content.get('target_rule'), 'id')}",
+            # 只报 op（不报 RU-LE_FIELD 推测的字段——M8/M9 的编辑目标与 target_rule 无对应关系）
+            return {"applied": False,
+                    "reason": f"无法施加 op={content.get('op')}"
+                              f"（目标卡缺少该算子所需字段）",
                     "backup_sha256": _sha256_bytes(raw)}
         new_text, desc = planned
         with open(path, "w", encoding="utf-8", newline="") as fh:
@@ -312,11 +343,16 @@ class Sandbox:
         before = {(str(f.get("rule")), str(f.get("severity")))
                   for f in (baseline_findings or [])}
         new_blocks = sorted({r for r, s in (after - before) if s == "block"})
+        # 新增的**非 block** 检出（warn/advice）：622 A4 补充，用于区分
+        # "编辑对判定完全无影响" 与 "编辑触发了非 block 级检出"
+        new_nonblock = sorted({r for r, s in (after - before) if s != "block"})
         lost = sorted({r for r, s in (before - after)})
         if new_blocks:
             verdict = "blocked"
         elif lost:
             verdict = "escaped"
+        elif new_nonblock:
+            verdict = "detected_nonblock"
         else:
             verdict = "neutral"
         return {
@@ -327,6 +363,7 @@ class Sandbox:
             "edit": backup.get("desc"),
             "verdict": verdict,
             "new_block_rules": new_blocks,
+            "new_nonblock_rules": new_nonblock,
             "lost_rules": lost,
             "n_findings_before": len(before),
             "n_findings_after": len(after),
