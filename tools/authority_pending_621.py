@@ -87,6 +87,76 @@ def write(out: str, proposals: list[dict]) -> str:
     return out
 
 
+# ── 622 D1：把待审条目**按用户授权**执行，写入 Authority 决策日志 ─────────────
+# 硬边界（622 §六.5）：人审执行必须标注来源（615 决策清单 + 用户授权日期），
+# 不伪装成系统自动决策。故每条决策都带 authorized_by / source / review_method。
+REVIEWER_DEFAULT = "human:LiaoRanran"
+AUTHORIZATION = "user_authorization_2026-09-21"
+SOURCE = "615_decision_list"
+REVIEW_METHOD = "item_by_item_executed"
+
+# 建议决策 → Authority 决策日志的 power
+SUGGESTION_TO_POWER = {"ACCEPT": "ACCEPT", "MODIFY": "OVERRIDE", "REJECT": "REJECT"}
+
+
+def existing_decision_index(log_path: str = DECISION_LOG) -> dict[str, str]:
+    """edge_id → 该边最后一条决策的 decision_id（用于 OVERRIDE 指名）。"""
+    idx: dict[str, str] = {}
+    for e in _load_log(log_path):
+        tid = str((e.get("target") or {}).get("id") or "")
+        if tid:
+            idx[tid] = str(e.get("decision_id") or "")
+    return idx
+
+
+def _load_log(path: str) -> list[dict]:
+    if not os.path.exists(path):
+        return []
+    with open(path, encoding="utf-8") as fh:
+        return [json.loads(ln) for ln in fh if ln.strip()]
+
+
+def build_decision(proposal: dict, prev_id: str | None,
+                   reviewer: str = REVIEWER_DEFAULT) -> dict:
+    """把一条待审条目转成可写入决策日志的决策（带来源标注）。"""
+    power = SUGGESTION_TO_POWER.get(proposal.get("suggested_decision"), "ACCEPT")
+    dec = {
+        "target": {"type": "attack_edge",
+                   "id": (proposal.get("target") or {}).get("id")},
+        "power": power,
+        "reviewer": reviewer,
+        "reason": f"[615决策清单] {proposal.get('suggested_reason')}",
+        "review_method": REVIEW_METHOD,
+        "authorized_by": AUTHORIZATION,
+        "source": SOURCE,
+        "proposal_id": proposal.get("proposal_id"),
+        "confidence": proposal.get("confidence"),
+        "note": "按用户授权执行 615 决策清单（逐条）；非系统自动决策",
+    }
+    if power == "OVERRIDE":
+        dec["overrides"] = prev_id or f"legacy:pre_annotation:{(proposal.get('target') or {}).get('id')}"
+    return dec
+
+
+def execute_all(proposals: list[dict], log_path: str = DECISION_LOG,
+                reviewer: str = REVIEWER_DEFAULT) -> dict:
+    """逐条执行（append-only）；返回执行统计与链校验结果。"""
+    sys.path.insert(0, HERE)
+    import authority_log_620 as AL  # noqa: PLC0415
+    before = decision_log_count(log_path)
+    idx = existing_decision_index(log_path)
+    entries = []
+    for p in proposals:
+        edge = (p.get("target") or {}).get("id")
+        dec = build_decision(p, idx.get(str(edge)), reviewer)
+        entries.append(AL.append(log_path, dec))
+    after = decision_log_count(log_path)
+    ok, errs = AL.verify(log_path)
+    return {"executed": len(entries), "before": before, "after": after,
+            "delta": after - before, "chain_ok": ok, "chain_errors": errs[:5],
+            "entries": entries}
+
+
 def decision_log_count(path: str = DECISION_LOG) -> int:
     if not os.path.exists(path):
         return 0
