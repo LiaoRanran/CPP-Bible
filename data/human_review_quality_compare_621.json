@@ -1,0 +1,164 @@
+{
+ "batch": {
+  "count": 388,
+  "length": {
+   "n": 388,
+   "mean": 69.2,
+   "median": 67.5,
+   "min": 47,
+   "max": 80
+  },
+  "unique_reasons": 5,
+  "total_reasons": 388,
+  "diversity": 0.0129
+ },
+ "item": {
+  "count": 30,
+  "length": {
+   "n": 30,
+   "mean": 21.9,
+   "median": 31.0,
+   "min": 10,
+   "max": 31
+  },
+  "unique_reasons": 2,
+  "total_reasons": 30,
+  "diversity": 0.0667
+ },
+ "consistency": {
+  "same": 13,
+  "diff": 17,
+  "unknown": 0,
+  "detail": [
+   {
+    "edge": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-1",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-2",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-3",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-1",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-2",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-3",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-1",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-2",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-3",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-UB-001->ATOM-UB-GRAY-001::prop-1",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-UB-001->ATOM-UB-GRAY-001::prop-2",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-UB-004->ATOM-UB-GRAY-001::prop-1",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-UB-004->ATOM-UB-GRAY-001::prop-2",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-UB-008->ATOM-UB-GRAY-001::prop-1",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-UB-008->ATOM-UB-GRAY-001::prop-2",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-UB-014->ATOM-UB-GRAY-001::prop-1",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   },
+   {
+    "edge": "ae-MIS-UB-014->ATOM-UB-GRAY-001::prop-2",
+    "batch_power": "OVERRIDE",
+    "suggested": "MODIFY",
+    "verdict": "字面不一致",
+    "note": "词汇映射差异"
+   }
+  ],
+  "consistency_rate": 0.4333,
+  "norm_same": 30,
+  "norm_diff": 0,
+  "norm_rate": 1.0,
+  "semantic_disagreements": []
+ },
+ "mirror": {
+  "with_direction": 30,
+  "total": 30,
+  "reversed_pairs_found": 0
+ }
+}
