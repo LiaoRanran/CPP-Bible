@@ -83,10 +83,28 @@ def band_of(score: float) -> str:
 
 
 def is_detected(verdict: str) -> bool | None:
-    """检出判定：blocked=检出；escaped=漏判；neutral=未击发；infra_error 不计入。"""
-    if verdict == "infra_error":
+    """检出判定：blocked=检出；escaped/neutral=未检出；infra_error 与 n_a **不计入分母**。"""
+    if verdict in ("infra_error", "n_a"):
         return None
     return verdict == "blocked"
+
+
+def measure_records(records: list[dict], threshold: float = DETECT_THRESHOLD) -> dict:
+    """适配 v1–v7 基线（`op` 在**顶层**、无 `content` JSON）的便捷入口。"""
+    rows = []
+    by_id: dict[str, dict] = {}
+    for i, r in enumerate(records):
+        mid = f"r{i}"
+        rows.append({
+            "mutation_id": mid, "card": r.get("card"), "verdict": r.get("verdict"),
+            "new_block_rules": [str(x).split(":")[0] for x in (r.get("new_block") or [])],
+            "new_nonblock_rules": [str(x).split(":")[0] for x in (r.get("new_warn") or [])],
+            "lost_rules": [],
+        })
+        by_id[mid] = {"mutation_id": mid,
+                      "content": json.dumps({"op": r.get("op"),
+                                             "target_card": r.get("card")})}
+    return measure(rows, by_id, threshold)
 
 
 def measure(rows: list[dict], mutations_by_id: dict,

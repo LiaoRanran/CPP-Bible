@@ -1,0 +1,128 @@
+[
+ {
+  "version": "v1",
+  "n": 1188,
+  "blocked": 729,
+  "escaped": 227,
+  "equivalent": 0,
+  "n_a": 232,
+  "denominator": 956,
+  "escape_rate": 0.2374,
+  "applicable": 956,
+  "horizon_band": "60-80",
+  "horizon_score": 80,
+  "bands": {
+   "20-40": 0.574,
+   "40-60": 0.9699,
+   "60-80": 1.0
+  }
+ },
+ {
+  "version": "v2",
+  "n": 1181,
+  "blocked": 908,
+  "escaped": 61,
+  "equivalent": 0,
+  "n_a": 212,
+  "denominator": 969,
+  "escape_rate": 0.063,
+  "applicable": 969,
+  "horizon_band": "60-80",
+  "horizon_score": 80,
+  "bands": {
+   "20-40": 0.97,
+   "40-60": 0.9113,
+   "60-80": 1.0
+  }
+ },
+ {
+  "version": "v3",
+  "n": 1183,
+  "blocked": 959,
+  "escaped": 38,
+  "equivalent": 0,
+  "n_a": 186,
+  "denominator": 997,
+  "escape_rate": 0.0381,
+  "applicable": 997,
+  "horizon_band": "60-80",
+  "horizon_score": 80,
+  "bands": {
+   "20-40": 0.8841,
+   "40-60": 1.0,
+   "60-80": 1.0
+  }
+ },
+ {
+  "version": "v4",
+  "n": 1183,
+  "blocked": 960,
+  "escaped": 38,
+  "equivalent": 0,
+  "n_a": 185,
+  "denominator": 998,
+  "escape_rate": 0.0381,
+  "applicable": 998,
+  "horizon_band": "60-80",
+  "horizon_score": 80,
+  "bands": {
+   "20-40": 0.8845,
+   "40-60": 1.0,
+   "60-80": 1.0
+  }
+ },
+ {
+  "version": "v5",
+  "n": 1568,
+  "blocked": 1374,
+  "escaped": 9,
+  "equivalent": 8,
+  "n_a": 185,
+  "denominator": 1375,
+  "escape_rate": 0.0065,
+  "applicable": 1383,
+  "horizon_band": "60-80",
+  "horizon_score": 80,
+  "bands": {
+   "20-40": 0.9871,
+   "40-60": 1.0,
+   "60-80": 1.0
+  }
+ },
+ {
+  "version": "v6",
+  "n": 1593,
+  "blocked": 1378,
+  "escaped": 36,
+  "equivalent": 35,
+  "n_a": 179,
+  "denominator": 1379,
+  "escape_rate": 0.0261,
+  "applicable": 1414,
+  "horizon_band": "60-80",
+  "horizon_score": 80,
+  "bands": {
+   "20-40": 0.9506,
+   "40-60": 1.0,
+   "60-80": 1.0
+  }
+ },
+ {
+  "version": "v7",
+  "n": 1593,
+  "blocked": 1405,
+  "escaped": 9,
+  "equivalent": 8,
+  "n_a": 179,
+  "denominator": 1406,
+  "escape_rate": 0.0064,
+  "applicable": 1414,
+  "horizon_band": "60-80",
+  "horizon_score": 80,
+  "bands": {
+   "20-40": 0.9872,
+   "40-60": 1.0,
+   "60-80": 1.0
+  }
+ }
+]
