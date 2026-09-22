@@ -697,7 +697,7 @@
       "lost_rules": [],
       "n_findings_before": 3,
       "n_findings_after": 4,
-      "elapsed_ms": 2792
+      "elapsed_ms": 2816
     },
     {
       "mutation_id": "X5-002",
@@ -714,7 +714,7 @@
       "lost_rules": [],
       "n_findings_before": 3,
       "n_findings_after": 4,
-      "elapsed_ms": 2847
+      "elapsed_ms": 2811
     },
     {
       "mutation_id": "X5-003",
@@ -731,7 +731,7 @@
       "lost_rules": [],
       "n_findings_before": 3,
       "n_findings_after": 4,
-      "elapsed_ms": 2848
+      "elapsed_ms": 2825
     },
     {
       "mutation_id": "X5-004",
@@ -748,7 +748,7 @@
       "lost_rules": [],
       "n_findings_before": 3,
       "n_findings_after": 4,
-      "elapsed_ms": 2784
+      "elapsed_ms": 2820
     },
     {
       "mutation_id": "X5-005",
@@ -765,7 +765,7 @@
       "lost_rules": [],
       "n_findings_before": 3,
       "n_findings_after": 4,
-      "elapsed_ms": 2886
+      "elapsed_ms": 2861
     },
     {
       "mutation_id": "X5-006",
@@ -782,7 +782,7 @@
       "lost_rules": [],
       "n_findings_before": 3,
       "n_findings_after": 4,
-      "elapsed_ms": 2802
+      "elapsed_ms": 2783
     },
     {
       "mutation_id": "X5-007",
@@ -799,7 +799,7 @@
       "lost_rules": [],
       "n_findings_before": 3,
       "n_findings_after": 4,
-      "elapsed_ms": 2833
+      "elapsed_ms": 2920
     },
     {
       "mutation_id": "X5-008",
@@ -816,7 +816,7 @@
       "lost_rules": [],
       "n_findings_before": 3,
       "n_findings_after": 4,
-      "elapsed_ms": 2792
+      "elapsed_ms": 2833
     },
     {
       "mutation_id": "X5-009",
@@ -833,7 +833,7 @@
       "lost_rules": [],
       "n_findings_before": 3,
       "n_findings_after": 4,
-      "elapsed_ms": 2864
+      "elapsed_ms": 2921
     },
     {
       "mutation_id": "X5-010",
@@ -850,7 +850,7 @@
       "lost_rules": [],
       "n_findings_before": 3,
       "n_findings_after": 4,
-      "elapsed_ms": 2809
+      "elapsed_ms": 2836
     },
     {
       "mutation_id": "X6-001",
@@ -860,14 +860,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "OBSERVATION-NEEDS-ARTIFACT",
-        "S2-EVIDENCE-VERDICT"
+        "OBSERVATION-NEEDS-ARTIFACT"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2755
+      "n_findings_after": 4,
+      "elapsed_ms": 2842
     },
     {
       "mutation_id": "X6-002",
@@ -877,14 +876,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "OBSERVATION-NEEDS-ARTIFACT",
-        "S2-EVIDENCE-VERDICT"
+        "OBSERVATION-NEEDS-ARTIFACT"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2828
+      "n_findings_after": 4,
+      "elapsed_ms": 2833
     },
     {
       "mutation_id": "X6-003",
@@ -894,14 +892,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "OBSERVATION-NEEDS-ARTIFACT",
-        "S2-EVIDENCE-VERDICT"
+        "OBSERVATION-NEEDS-ARTIFACT"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2830
+      "n_findings_after": 4,
+      "elapsed_ms": 2817
     },
     {
       "mutation_id": "X6-004",
@@ -911,14 +908,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "OBSERVATION-NEEDS-ARTIFACT",
-        "S2-EVIDENCE-VERDICT"
+        "OBSERVATION-NEEDS-ARTIFACT"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2791
+      "n_findings_after": 4,
+      "elapsed_ms": 2885
     },
     {
       "mutation_id": "X6-005",
@@ -934,7 +930,7 @@
       "lost_rules": [],
       "n_findings_before": 2,
       "n_findings_after": 3,
-      "elapsed_ms": 2892
+      "elapsed_ms": 2873
     },
     {
       "mutation_id": "X6-006",
@@ -944,14 +940,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "OBSERVATION-NEEDS-ARTIFACT",
-        "S2-EVIDENCE-VERDICT"
+        "OBSERVATION-NEEDS-ARTIFACT"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2853
+      "n_findings_after": 4,
+      "elapsed_ms": 2841
     },
     {
       "mutation_id": "X6-007",
@@ -961,14 +956,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "OBSERVATION-NEEDS-ARTIFACT",
-        "S2-EVIDENCE-VERDICT"
+        "OBSERVATION-NEEDS-ARTIFACT"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2897
+      "n_findings_after": 4,
+      "elapsed_ms": 2808
     },
     {
       "mutation_id": "X6-008",
@@ -978,14 +972,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "OBSERVATION-NEEDS-ARTIFACT",
-        "S2-EVIDENCE-VERDICT"
+        "OBSERVATION-NEEDS-ARTIFACT"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2863
+      "n_findings_after": 4,
+      "elapsed_ms": 2772
     },
     {
       "mutation_id": "X6-009",
@@ -995,14 +988,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "OBSERVATION-NEEDS-ARTIFACT",
-        "S2-EVIDENCE-VERDICT"
+        "OBSERVATION-NEEDS-ARTIFACT"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2871
+      "n_findings_after": 4,
+      "elapsed_ms": 2901
     },
     {
       "mutation_id": "X6-010",
@@ -1012,14 +1004,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "OBSERVATION-NEEDS-ARTIFACT",
-        "S2-EVIDENCE-VERDICT"
+        "OBSERVATION-NEEDS-ARTIFACT"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2867
+      "n_findings_after": 4,
+      "elapsed_ms": 2830
     },
     {
       "mutation_id": "X7-001",
@@ -1029,14 +1020,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "ATOM-MISCONCEPTION-REF",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-MISCONCEPTION-REF"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2800
+      "n_findings_after": 4,
+      "elapsed_ms": 2818
     },
     {
       "mutation_id": "X7-002",
@@ -1046,14 +1036,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "ATOM-MISCONCEPTION-REF",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-MISCONCEPTION-REF"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2814
+      "n_findings_after": 4,
+      "elapsed_ms": 2775
     },
     {
       "mutation_id": "X7-003",
@@ -1063,14 +1052,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "ATOM-MISCONCEPTION-REF",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-MISCONCEPTION-REF"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2875
+      "n_findings_after": 4,
+      "elapsed_ms": 2802
     },
     {
       "mutation_id": "X7-004",
@@ -1080,14 +1068,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "ATOM-MISCONCEPTION-REF",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-MISCONCEPTION-REF"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2852
+      "n_findings_after": 4,
+      "elapsed_ms": 2857
     },
     {
       "mutation_id": "X7-005",
@@ -1103,7 +1090,7 @@
       "lost_rules": [],
       "n_findings_before": 2,
       "n_findings_after": 3,
-      "elapsed_ms": 2820
+      "elapsed_ms": 2835
     },
     {
       "mutation_id": "X7-006",
@@ -1113,14 +1100,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "ATOM-MISCONCEPTION-REF",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-MISCONCEPTION-REF"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2806
+      "n_findings_after": 4,
+      "elapsed_ms": 2903
     },
     {
       "mutation_id": "X7-007",
@@ -1130,14 +1116,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "ATOM-MISCONCEPTION-REF",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-MISCONCEPTION-REF"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2848
+      "n_findings_after": 4,
+      "elapsed_ms": 2834
     },
     {
       "mutation_id": "X7-008",
@@ -1145,15 +1130,13 @@
       "cards": [
         "atoms/mem/ATOM-MEM-ALLOC-002.md"
       ],
-      "verdict": "blocked",
-      "new_block_rules": [
-        "S2-EVIDENCE-VERDICT"
-      ],
+      "verdict": "neutral",
+      "new_block_rules": [],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 4,
-      "elapsed_ms": 2761
+      "n_findings_after": 3,
+      "elapsed_ms": 2814
     },
     {
       "mutation_id": "X7-009",
@@ -1163,14 +1146,13 @@
       ],
       "verdict": "blocked",
       "new_block_rules": [
-        "ATOM-MISCONCEPTION-REF",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-MISCONCEPTION-REF"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 5,
-      "elapsed_ms": 2785
+      "n_findings_after": 4,
+      "elapsed_ms": 2833
     },
     {
       "mutation_id": "X7-010",
@@ -1178,15 +1160,13 @@
       "cards": [
         "atoms/mem/ATOM-MEM-LEAK-002.md"
       ],
-      "verdict": "blocked",
-      "new_block_rules": [
-        "S2-EVIDENCE-VERDICT"
-      ],
+      "verdict": "neutral",
+      "new_block_rules": [],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 4,
-      "elapsed_ms": 2769
+      "n_findings_after": 3,
+      "elapsed_ms": 2828
     },
     {
       "mutation_id": "X8-001",
@@ -1197,14 +1177,13 @@
       "verdict": "blocked",
       "new_block_rules": [
         "ATOM-FM-REQUIRED",
-        "ATOM-VERIFIED-BOUND",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-VERIFIED-BOUND"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 6,
-      "elapsed_ms": 2856
+      "n_findings_after": 5,
+      "elapsed_ms": 2866
     },
     {
       "mutation_id": "X8-002",
@@ -1215,14 +1194,13 @@
       "verdict": "blocked",
       "new_block_rules": [
         "ATOM-FM-REQUIRED",
-        "ATOM-VERIFIED-BOUND",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-VERIFIED-BOUND"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 6,
-      "elapsed_ms": 2797
+      "n_findings_after": 5,
+      "elapsed_ms": 2828
     },
     {
       "mutation_id": "X8-003",
@@ -1233,14 +1211,13 @@
       "verdict": "blocked",
       "new_block_rules": [
         "ATOM-FM-REQUIRED",
-        "ATOM-VERIFIED-BOUND",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-VERIFIED-BOUND"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 6,
-      "elapsed_ms": 2797
+      "n_findings_after": 5,
+      "elapsed_ms": 2824
     },
     {
       "mutation_id": "X8-004",
@@ -1251,14 +1228,13 @@
       "verdict": "blocked",
       "new_block_rules": [
         "ATOM-FM-REQUIRED",
-        "ATOM-VERIFIED-BOUND",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-VERIFIED-BOUND"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 6,
-      "elapsed_ms": 2792
+      "n_findings_after": 5,
+      "elapsed_ms": 2835
     },
     {
       "mutation_id": "X8-005",
@@ -1269,14 +1245,13 @@
       "verdict": "blocked",
       "new_block_rules": [
         "ATOM-FM-REQUIRED",
-        "ATOM-VERIFIED-BOUND",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-VERIFIED-BOUND"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 6,
-      "elapsed_ms": 2822
+      "n_findings_after": 5,
+      "elapsed_ms": 2833
     },
     {
       "mutation_id": "X8-006",
@@ -1287,14 +1262,13 @@
       "verdict": "blocked",
       "new_block_rules": [
         "ATOM-FM-REQUIRED",
-        "ATOM-VERIFIED-BOUND",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-VERIFIED-BOUND"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 6,
-      "elapsed_ms": 2777
+      "n_findings_after": 5,
+      "elapsed_ms": 2829
     },
     {
       "mutation_id": "X8-007",
@@ -1305,14 +1279,13 @@
       "verdict": "blocked",
       "new_block_rules": [
         "ATOM-FM-REQUIRED",
-        "ATOM-VERIFIED-BOUND",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-VERIFIED-BOUND"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 6,
-      "elapsed_ms": 2763
+      "n_findings_after": 5,
+      "elapsed_ms": 2861
     },
     {
       "mutation_id": "X8-008",
@@ -1323,14 +1296,13 @@
       "verdict": "blocked",
       "new_block_rules": [
         "ATOM-FM-REQUIRED",
-        "ATOM-VERIFIED-BOUND",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-VERIFIED-BOUND"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 6,
-      "elapsed_ms": 2780
+      "n_findings_after": 5,
+      "elapsed_ms": 2824
     },
     {
       "mutation_id": "X8-009",
@@ -1341,14 +1313,13 @@
       "verdict": "blocked",
       "new_block_rules": [
         "ATOM-FM-REQUIRED",
-        "ATOM-VERIFIED-BOUND",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-VERIFIED-BOUND"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 6,
-      "elapsed_ms": 2799
+      "n_findings_after": 5,
+      "elapsed_ms": 2811
     },
     {
       "mutation_id": "X8-010",
@@ -1359,18 +1330,18 @@
       "verdict": "blocked",
       "new_block_rules": [
         "ATOM-FM-REQUIRED",
-        "ATOM-VERIFIED-BOUND",
-        "S2-EVIDENCE-VERDICT"
+        "ATOM-VERIFIED-BOUND"
       ],
       "new_nonblock_rules": [],
       "lost_rules": [],
       "n_findings_before": 3,
-      "n_findings_after": 6,
-      "elapsed_ms": 2745
+      "n_findings_after": 5,
+      "elapsed_ms": 2810
     }
   ],
   "distribution": {
-    "blocked": 40
+    "blocked": 38,
+    "neutral": 2
   },
   "escaped": [],
   "touched_block": [
@@ -1389,7 +1360,7 @@
     "S2-EVIDENCE-VERDICT"
   ],
   "total": 40,
-  "elapsed_s": 112.9,
+  "elapsed_s": 113.6,
   "predicted_rules": [
     "ATOM-MISCONCEPTION-REF",
     "ATOM-VERIFIED-BOUND",

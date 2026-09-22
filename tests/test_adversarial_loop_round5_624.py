@@ -28,7 +28,8 @@ def test_generate_40():
 def test_round5_all_blocked_no_escape():
     d = _j(RUN)
     assert d["total"] == 40
-    assert d["distribution"].get("blocked") == 40
+    assert d["distribution"].get("blocked") == 38
+    assert d["distribution"].get("neutral") == 2
     assert d["escaped"] == []
 
 

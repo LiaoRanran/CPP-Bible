@@ -221,6 +221,10 @@ def plan_edit_624(content: dict, text: str) -> tuple[str, str] | None:
 class CrossCardSandbox(base.Sandbox):
     """多卡 apply/restore（继承 622 的单卡 Sandbox：并发锁/gate/校验/白名单）。"""
 
+    def _plan(self, content: dict, text: str) -> tuple[str, str] | None:
+        """编辑原语（子类可覆盖，如 A4 的 X5–X8）。"""
+        return plan_edit_624(content, text)
+
     def apply_mutation(self, mutation: dict, card_rel: str) -> dict:  # noqa: D102
         if not base.is_allowed(card_rel):
             return {"applied": False, "reason": f"路径不在白名单 {ALLOWED_PREFIXES}"}
@@ -230,7 +234,7 @@ class CrossCardSandbox(base.Sandbox):
         raw = open(path, "rb").read()
         text = raw.decode("utf-8")
         content = json.loads(mutation.get("content") or "null") or {}
-        planned = plan_edit_624(content, text)
+        planned = self._plan(content, text)
         if planned is None:
             return {"applied": False, "reason": f"无法施加 op={content.get('op')}",
                     "backup_sha256": base._sha256_bytes(raw)}
@@ -241,17 +245,54 @@ class CrossCardSandbox(base.Sandbox):
                 "backup_sha256": base._sha256_bytes(raw), "backup_bytes": raw}
 
     def apply_multi(self, edits: list[dict]) -> dict:
-        """把一组 edits（多卡）一次性施加；任一失败则回滚已施加的卡。"""
-        backups: list[dict] = []
+        """把一组 edits（多卡）一次性施加；任一失败则回滚已施加的卡。
+
+        **关键修复（624 A1 修正）**：同一张卡可能被多条 edit 命中（如 X4 对同一证据卡
+        同时改 serves 与 artifact）。必须**每张卡只备份一次原始字节**、把多条 edit 顺序
+        施加到同一文本上；否则 restore 按 edit 逐条还原时，会把中间态写回 ⇒ 受控目录残留。
+        """
+        order: list[str] = []
+        by: dict[str, list[dict]] = {}
         for e in edits:
-            r = self.apply_mutation({"content": json.dumps(e, ensure_ascii=False)}, e["card"])
-            backups.append({"card": e["card"], **r})
-            if not r.get("applied"):
-                for b in backups:
-                    if b.get("applied"):
-                        self.restore(b["card"], b)
-                return {"applied": False, "reason": r.get("reason"),
-                        "failed_card": e["card"], "n_edits": len(edits)}
+            c = e.get("card")
+            if not c:
+                return {"applied": False, "reason": "edit 缺 card", "n_edits": len(edits)}
+            if c not in by:
+                by[c] = []
+                order.append(c)
+            by[c].append(e)
+
+        backups: list[dict] = []
+
+        def _rollback() -> None:
+            for b in reversed(backups):
+                self.restore(b["card"], b)
+
+        for c in order:
+            if not base.is_allowed(c):
+                _rollback()
+                return {"applied": False, "reason": f"路径不在白名单 {ALLOWED_PREFIXES}",
+                        "failed_card": c, "n_edits": len(edits)}
+            path = self._abs(c)
+            if not os.path.exists(path):
+                _rollback()
+                return {"applied": False, "reason": "卡不存在", "failed_card": c,
+                        "n_edits": len(edits)}
+            raw = open(path, "rb").read()
+            text = raw.decode("utf-8")
+            descs: list[str] = []
+            for e in by[c]:
+                planned = self._plan(e, text)
+                if planned is None:
+                    _rollback()
+                    return {"applied": False, "reason": f"无法施加 op={e.get('op')}",
+                            "failed_card": c, "n_edits": len(edits)}
+                text, d = planned
+                descs.append(d)
+            with open(path, "w", encoding="utf-8", newline="") as fh:
+                fh.write(text)
+            backups.append({"card": c, "applied": True, "desc": "; ".join(descs), "path": path,
+                            "backup_bytes": raw, "backup_sha256": base._sha256_bytes(raw)})
         return {"applied": True, "backups": backups, "n_edits": len(edits)}
 
     def restore_multi(self, backups: list[dict]) -> dict:
@@ -476,6 +517,18 @@ def selftest() -> int:
     sha_after = base._sha256_bytes(open(sb._abs(target), "rb").read())
     chk("多卡 apply+restore 后 sha256 不变",
         bool(applied.get("applied")) and restored.get("restored") and sha_before == sha_after)
+
+    # 同一张卡多编辑（X4 场景）：必须只备份一次、还原后 sha256 不变
+    sha_b1 = base._sha256_bytes(open(sb._abs(target), "rb").read())
+    applied2 = sb.apply_multi([
+        {"card": target, "op": "APPEND_REL", "rtype": "supports", "target": "ATOM-SELFTEST-998"},
+        {"card": target, "op": "APPEND_REL", "rtype": "contradicts", "target": "ATOM-SELFTEST-997"},
+    ])
+    restored2 = sb.restore_multi(applied2.get("backups", [])) if applied2.get("applied") else {"restored": False}
+    sha_b2 = base._sha256_bytes(open(sb._abs(target), "rb").read())
+    chk("同卡多编辑 apply+restore 后 sha256 不变（备份去重）",
+        bool(applied2.get("applied")) and len(applied2.get("backups", [])) == 1
+        and restored2.get("restored") and sha_b1 == sha_b2)
 
     print(f"A1 selftest: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1

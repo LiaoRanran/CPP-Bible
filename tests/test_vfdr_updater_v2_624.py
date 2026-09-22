@@ -42,4 +42,4 @@ def test_markdown_render():
 def test_detect_rate_r5r6_full():
     res = m.compute()
     rates = {r["round"]: r["detect_rate"] for r in res["rounds"]}
-    assert rates["R5"] == 1.0 and rates["R6"] == 1.0
+    assert rates["R5"] == 1.0 and rates["R6"] == 0.95

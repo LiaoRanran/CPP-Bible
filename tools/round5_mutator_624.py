@@ -95,26 +95,10 @@ def plan_edit_r5(content: dict, text: str):
 
 
 class Round5Sandbox(cc.CrossCardSandbox):
-    """用 X5–X8 原语覆盖 plan_edit 的跨卡沙箱。"""
+    """用 X5–X8 原语覆盖编辑原语的跨卡沙箱（备份/还原仍走 A1 修复后的 apply_multi）。"""
 
-    def apply_mutation(self, mutation: dict, card_rel: str) -> dict:
-        if not cc.base.is_allowed(card_rel):
-            return {"applied": False, "reason": f"路径不在白名单 {cc.ALLOWED_PREFIXES}"}
-        path = self._abs(card_rel)
-        if not os.path.exists(path):
-            return {"applied": False, "reason": "卡不存在"}
-        raw = open(path, "rb").read()
-        text = raw.decode("utf-8")
-        content = json.loads(mutation.get("content") or "null") or {}
-        planned = plan_edit_r5(content, text)
-        if planned is None:
-            return {"applied": False, "reason": f"无法施加 op={content.get('op')}",
-                    "backup_sha256": cc.base._sha256_bytes(raw)}
-        new_text, desc = planned
-        with open(path, "w", encoding="utf-8", newline="") as fh:
-            fh.write(new_text)
-        return {"applied": True, "desc": desc, "path": path,
-                "backup_sha256": cc.base._sha256_bytes(raw), "backup_bytes": raw}
+    def _plan(self, content: dict, text: str):
+        return plan_edit_r5(content, text)
 
 
 def _text(card_rel: str) -> str:
