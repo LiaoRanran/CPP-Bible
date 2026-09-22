@@ -1,0 +1,1399 @@
+{
+  "mutations": [
+    {
+      "mutation_id": "X5-001",
+      "strategy": "X5",
+      "attack_type": "幽灵证据引用",
+      "complexity": 74,
+      "predicted_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-NOPE-999"
+        },
+        {
+          "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-GHOST-624"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X5-002",
+      "strategy": "X5",
+      "attack_type": "幽灵证据引用",
+      "complexity": 74,
+      "predicted_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-NOPE-999"
+        },
+        {
+          "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-GHOST-624"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X5-003",
+      "strategy": "X5",
+      "attack_type": "幽灵证据引用",
+      "complexity": 74,
+      "predicted_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-NOPE-999"
+        },
+        {
+          "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-GHOST-624"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X5-004",
+      "strategy": "X5",
+      "attack_type": "幽灵证据引用",
+      "complexity": 74,
+      "predicted_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-NOPE-999"
+        },
+        {
+          "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-GHOST-624"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X5-005",
+      "strategy": "X5",
+      "attack_type": "幽灵证据引用",
+      "complexity": 74,
+      "predicted_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-GHOST-624"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X5-006",
+      "strategy": "X5",
+      "attack_type": "幽灵证据引用",
+      "complexity": 74,
+      "predicted_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-GHOST-624"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X5-007",
+      "strategy": "X5",
+      "attack_type": "幽灵证据引用",
+      "complexity": 74,
+      "predicted_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-GHOST-624"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X5-008",
+      "strategy": "X5",
+      "attack_type": "幽灵证据引用",
+      "complexity": 74,
+      "predicted_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-GHOST-624"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X5-009",
+      "strategy": "X5",
+      "attack_type": "幽灵证据引用",
+      "complexity": 74,
+      "predicted_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-GHOST-624"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X5-010",
+      "strategy": "X5",
+      "attack_type": "幽灵证据引用",
+      "complexity": 74,
+      "predicted_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+          "op": "APPEND_EVIDENCE",
+          "value": "EV-GHOST-624"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X6-001",
+      "strategy": "X6",
+      "attack_type": "观测断链",
+      "complexity": 76,
+      "predicted_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+          "op": "SET_PROP_EVIDENCE",
+          "value": "EV-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X6-002",
+      "strategy": "X6",
+      "attack_type": "观测断链",
+      "complexity": 76,
+      "predicted_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+          "op": "SET_PROP_EVIDENCE",
+          "value": "EV-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X6-003",
+      "strategy": "X6",
+      "attack_type": "观测断链",
+      "complexity": 76,
+      "predicted_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+          "op": "SET_PROP_EVIDENCE",
+          "value": "EV-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X6-004",
+      "strategy": "X6",
+      "attack_type": "观测断链",
+      "complexity": 76,
+      "predicted_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+          "op": "SET_PROP_EVIDENCE",
+          "value": "EV-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X6-005",
+      "strategy": "X6",
+      "attack_type": "观测断链",
+      "complexity": 76,
+      "predicted_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+          "op": "SET_PROP_EVIDENCE",
+          "value": "EV-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X6-006",
+      "strategy": "X6",
+      "attack_type": "观测断链",
+      "complexity": 76,
+      "predicted_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+          "op": "SET_PROP_EVIDENCE",
+          "value": "EV-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X6-007",
+      "strategy": "X6",
+      "attack_type": "观测断链",
+      "complexity": 76,
+      "predicted_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+          "op": "SET_PROP_EVIDENCE",
+          "value": "EV-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X6-008",
+      "strategy": "X6",
+      "attack_type": "观测断链",
+      "complexity": 76,
+      "predicted_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+          "op": "SET_PROP_EVIDENCE",
+          "value": "EV-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X6-009",
+      "strategy": "X6",
+      "attack_type": "观测断链",
+      "complexity": 76,
+      "predicted_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+          "op": "SET_PROP_EVIDENCE",
+          "value": "EV-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X6-010",
+      "strategy": "X6",
+      "attack_type": "观测断链",
+      "complexity": 76,
+      "predicted_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+          "op": "SET_PROP_EVIDENCE",
+          "value": "EV-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X7-001",
+      "strategy": "X7",
+      "attack_type": "误解引用孤儿",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-MISCONCEPTION-REF"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+          "op": "SET_PED_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X7-002",
+      "strategy": "X7",
+      "attack_type": "误解引用孤儿",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-MISCONCEPTION-REF"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+          "op": "SET_PED_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X7-003",
+      "strategy": "X7",
+      "attack_type": "误解引用孤儿",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-MISCONCEPTION-REF"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+          "op": "SET_PED_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X7-004",
+      "strategy": "X7",
+      "attack_type": "误解引用孤儿",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-MISCONCEPTION-REF"
+      ],
+      "edits": [
+        {
+          "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+          "op": "SET_PED_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X7-005",
+      "strategy": "X7",
+      "attack_type": "误解引用孤儿",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-MISCONCEPTION-REF"
+      ],
+      "edits": [
+        {
+          "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+          "op": "SET_PED_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X7-006",
+      "strategy": "X7",
+      "attack_type": "误解引用孤儿",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-MISCONCEPTION-REF"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+          "op": "SET_PED_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X7-007",
+      "strategy": "X7",
+      "attack_type": "误解引用孤儿",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-MISCONCEPTION-REF"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+          "op": "SET_PED_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X7-008",
+      "strategy": "X7",
+      "attack_type": "误解引用孤儿",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-MISCONCEPTION-REF"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+          "op": "SET_PED_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X7-009",
+      "strategy": "X7",
+      "attack_type": "误解引用孤儿",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-MISCONCEPTION-REF"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+          "op": "SET_PED_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X7-010",
+      "strategy": "X7",
+      "attack_type": "误解引用孤儿",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-MISCONCEPTION-REF"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+          "op": "SET_PED_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X8-001",
+      "strategy": "X8",
+      "attack_type": "verified未绑定",
+      "complexity": 71,
+      "predicted_rules": [
+        "ATOM-VERIFIED-BOUND"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+          "op": "DEL_FIRST_HAND"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X8-002",
+      "strategy": "X8",
+      "attack_type": "verified未绑定",
+      "complexity": 71,
+      "predicted_rules": [
+        "ATOM-VERIFIED-BOUND"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+          "op": "DEL_FIRST_HAND"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X8-003",
+      "strategy": "X8",
+      "attack_type": "verified未绑定",
+      "complexity": 71,
+      "predicted_rules": [
+        "ATOM-VERIFIED-BOUND"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+          "op": "DEL_FIRST_HAND"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X8-004",
+      "strategy": "X8",
+      "attack_type": "verified未绑定",
+      "complexity": 71,
+      "predicted_rules": [
+        "ATOM-VERIFIED-BOUND"
+      ],
+      "edits": [
+        {
+          "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+          "op": "DEL_FIRST_HAND"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X8-005",
+      "strategy": "X8",
+      "attack_type": "verified未绑定",
+      "complexity": 71,
+      "predicted_rules": [
+        "ATOM-VERIFIED-BOUND"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+          "op": "DEL_FIRST_HAND"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X8-006",
+      "strategy": "X8",
+      "attack_type": "verified未绑定",
+      "complexity": 71,
+      "predicted_rules": [
+        "ATOM-VERIFIED-BOUND"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+          "op": "DEL_FIRST_HAND"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X8-007",
+      "strategy": "X8",
+      "attack_type": "verified未绑定",
+      "complexity": 71,
+      "predicted_rules": [
+        "ATOM-VERIFIED-BOUND"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+          "op": "DEL_FIRST_HAND"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X8-008",
+      "strategy": "X8",
+      "attack_type": "verified未绑定",
+      "complexity": 71,
+      "predicted_rules": [
+        "ATOM-VERIFIED-BOUND"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+          "op": "DEL_FIRST_HAND"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X8-009",
+      "strategy": "X8",
+      "attack_type": "verified未绑定",
+      "complexity": 71,
+      "predicted_rules": [
+        "ATOM-VERIFIED-BOUND"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+          "op": "DEL_FIRST_HAND"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X8-010",
+      "strategy": "X8",
+      "attack_type": "verified未绑定",
+      "complexity": 71,
+      "predicted_rules": [
+        "ATOM-VERIFIED-BOUND"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+          "op": "DEL_FIRST_HAND"
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "mutation_id": "X5-001",
+      "strategy": "X5",
+      "cards": [
+        "atoms/conc/ATOM-CONC-FENCE-001.md",
+        "atoms/conc/ATOM-CONC-FENCE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2792
+    },
+    {
+      "mutation_id": "X5-002",
+      "strategy": "X5",
+      "cards": [
+        "atoms/conc/ATOM-CONC-LOCK-001.md",
+        "atoms/conc/ATOM-CONC-LOCK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2847
+    },
+    {
+      "mutation_id": "X5-003",
+      "strategy": "X5",
+      "cards": [
+        "atoms/conc/ATOM-CONC-RACE-001.md",
+        "atoms/conc/ATOM-CONC-RACE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2848
+    },
+    {
+      "mutation_id": "X5-004",
+      "strategy": "X5",
+      "cards": [
+        "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+        "atoms/hist/ATOM-HIST-AUTOPTR-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2784
+    },
+    {
+      "mutation_id": "X5-005",
+      "strategy": "X5",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALIGN-001.md",
+        "atoms/mem/ATOM-MEM-ALIGN-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2886
+    },
+    {
+      "mutation_id": "X5-006",
+      "strategy": "X5",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-001.md",
+        "atoms/mem/ATOM-MEM-ALLOC-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2802
+    },
+    {
+      "mutation_id": "X5-007",
+      "strategy": "X5",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-002.md",
+        "atoms/mem/ATOM-MEM-ALLOC-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2833
+    },
+    {
+      "mutation_id": "X5-008",
+      "strategy": "X5",
+      "cards": [
+        "atoms/mem/ATOM-MEM-LEAK-001.md",
+        "atoms/mem/ATOM-MEM-LEAK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2792
+    },
+    {
+      "mutation_id": "X5-009",
+      "strategy": "X5",
+      "cards": [
+        "atoms/mem/ATOM-MEM-LEAK-002.md",
+        "atoms/mem/ATOM-MEM-LEAK-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2864
+    },
+    {
+      "mutation_id": "X5-010",
+      "strategy": "X5",
+      "cards": [
+        "atoms/mem/ATOM-MEM-MOVE-002.md",
+        "atoms/mem/ATOM-MEM-MOVE-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2809
+    },
+    {
+      "mutation_id": "X6-001",
+      "strategy": "X6",
+      "cards": [
+        "atoms/conc/ATOM-CONC-FENCE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2755
+    },
+    {
+      "mutation_id": "X6-002",
+      "strategy": "X6",
+      "cards": [
+        "atoms/conc/ATOM-CONC-LOCK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2828
+    },
+    {
+      "mutation_id": "X6-003",
+      "strategy": "X6",
+      "cards": [
+        "atoms/conc/ATOM-CONC-RACE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2830
+    },
+    {
+      "mutation_id": "X6-004",
+      "strategy": "X6",
+      "cards": [
+        "atoms/hist/ATOM-HIST-AUTOPTR-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2791
+    },
+    {
+      "mutation_id": "X6-005",
+      "strategy": "X6",
+      "cards": [
+        "atoms/lang/ATOM-LANG-INLINE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 2,
+      "n_findings_after": 3,
+      "elapsed_ms": 2892
+    },
+    {
+      "mutation_id": "X6-006",
+      "strategy": "X6",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALIGN-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2853
+    },
+    {
+      "mutation_id": "X6-007",
+      "strategy": "X6",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2897
+    },
+    {
+      "mutation_id": "X6-008",
+      "strategy": "X6",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2863
+    },
+    {
+      "mutation_id": "X6-009",
+      "strategy": "X6",
+      "cards": [
+        "atoms/mem/ATOM-MEM-LEAK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2871
+    },
+    {
+      "mutation_id": "X6-010",
+      "strategy": "X6",
+      "cards": [
+        "atoms/mem/ATOM-MEM-LEAK-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "OBSERVATION-NEEDS-ARTIFACT",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2867
+    },
+    {
+      "mutation_id": "X7-001",
+      "strategy": "X7",
+      "cards": [
+        "atoms/conc/ATOM-CONC-FENCE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-MISCONCEPTION-REF",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2800
+    },
+    {
+      "mutation_id": "X7-002",
+      "strategy": "X7",
+      "cards": [
+        "atoms/conc/ATOM-CONC-LOCK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-MISCONCEPTION-REF",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2814
+    },
+    {
+      "mutation_id": "X7-003",
+      "strategy": "X7",
+      "cards": [
+        "atoms/conc/ATOM-CONC-RACE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-MISCONCEPTION-REF",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2875
+    },
+    {
+      "mutation_id": "X7-004",
+      "strategy": "X7",
+      "cards": [
+        "atoms/hist/ATOM-HIST-AUTOPTR-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-MISCONCEPTION-REF",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2852
+    },
+    {
+      "mutation_id": "X7-005",
+      "strategy": "X7",
+      "cards": [
+        "atoms/lang/ATOM-LANG-INLINE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-MISCONCEPTION-REF"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 2,
+      "n_findings_after": 3,
+      "elapsed_ms": 2820
+    },
+    {
+      "mutation_id": "X7-006",
+      "strategy": "X7",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALIGN-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-MISCONCEPTION-REF",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2806
+    },
+    {
+      "mutation_id": "X7-007",
+      "strategy": "X7",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-MISCONCEPTION-REF",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2848
+    },
+    {
+      "mutation_id": "X7-008",
+      "strategy": "X7",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2761
+    },
+    {
+      "mutation_id": "X7-009",
+      "strategy": "X7",
+      "cards": [
+        "atoms/mem/ATOM-MEM-LEAK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-MISCONCEPTION-REF",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2785
+    },
+    {
+      "mutation_id": "X7-010",
+      "strategy": "X7",
+      "cards": [
+        "atoms/mem/ATOM-MEM-LEAK-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2769
+    },
+    {
+      "mutation_id": "X8-001",
+      "strategy": "X8",
+      "cards": [
+        "atoms/conc/ATOM-CONC-FENCE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED",
+        "ATOM-VERIFIED-BOUND",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 2856
+    },
+    {
+      "mutation_id": "X8-002",
+      "strategy": "X8",
+      "cards": [
+        "atoms/conc/ATOM-CONC-LOCK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED",
+        "ATOM-VERIFIED-BOUND",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 2797
+    },
+    {
+      "mutation_id": "X8-003",
+      "strategy": "X8",
+      "cards": [
+        "atoms/conc/ATOM-CONC-RACE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED",
+        "ATOM-VERIFIED-BOUND",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 2797
+    },
+    {
+      "mutation_id": "X8-004",
+      "strategy": "X8",
+      "cards": [
+        "atoms/hist/ATOM-HIST-AUTOPTR-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED",
+        "ATOM-VERIFIED-BOUND",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 2792
+    },
+    {
+      "mutation_id": "X8-005",
+      "strategy": "X8",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALIGN-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED",
+        "ATOM-VERIFIED-BOUND",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 2822
+    },
+    {
+      "mutation_id": "X8-006",
+      "strategy": "X8",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED",
+        "ATOM-VERIFIED-BOUND",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 2777
+    },
+    {
+      "mutation_id": "X8-007",
+      "strategy": "X8",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED",
+        "ATOM-VERIFIED-BOUND",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 2763
+    },
+    {
+      "mutation_id": "X8-008",
+      "strategy": "X8",
+      "cards": [
+        "atoms/mem/ATOM-MEM-LEAK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED",
+        "ATOM-VERIFIED-BOUND",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 2780
+    },
+    {
+      "mutation_id": "X8-009",
+      "strategy": "X8",
+      "cards": [
+        "atoms/mem/ATOM-MEM-LEAK-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED",
+        "ATOM-VERIFIED-BOUND",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 2799
+    },
+    {
+      "mutation_id": "X8-010",
+      "strategy": "X8",
+      "cards": [
+        "atoms/mem/ATOM-MEM-MOVE-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED",
+        "ATOM-VERIFIED-BOUND",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 2745
+    }
+  ],
+  "distribution": {
+    "blocked": 40
+  },
+  "escaped": [],
+  "touched_block": [
+    "ATOM-FM-REQUIRED",
+    "ATOM-MISCONCEPTION-REF",
+    "ATOM-VERIFIED-BOUND",
+    "OBSERVATION-NEEDS-ARTIFACT",
+    "S2-EVIDENCE-VERDICT"
+  ],
+  "touched_nonblock": [],
+  "touched_all": [
+    "ATOM-FM-REQUIRED",
+    "ATOM-MISCONCEPTION-REF",
+    "ATOM-VERIFIED-BOUND",
+    "OBSERVATION-NEEDS-ARTIFACT",
+    "S2-EVIDENCE-VERDICT"
+  ],
+  "total": 40,
+  "elapsed_s": 112.9,
+  "predicted_rules": [
+    "ATOM-MISCONCEPTION-REF",
+    "ATOM-VERIFIED-BOUND",
+    "OBSERVATION-NEEDS-ARTIFACT",
+    "S2-EVIDENCE-VERDICT"
+  ]
+}
