@@ -334,6 +334,66 @@ class Sandbox:
         }
 
 
+# ── 批量运行（A2/A4 用）────────────────────────────────────────────────────────
+def run_batch(mutations: list[dict], sandbox: Sandbox | None = None,
+              baseline: dict | None = None, log=print) -> dict:
+    """对一批 mutation 逐个 apply_and_run（串行 + 并发锁）。"""
+    sb = sandbox or Sandbox()
+    base = baseline if baseline is not None else sb.gate_all()
+    rows: list[dict] = []
+    t0 = time.time()
+    with sb:
+        for i, m in enumerate(mutations, 1):
+            try:
+                content = json.loads(m.get("content") or "null") or {}
+            except ValueError:
+                content = {}
+            card = content.get("target_card") or m.get("target_card")
+            if not card:
+                rows.append({"mutation_id": m.get("mutation_id"), "verdict": "infra_error",
+                             "reason": "无 target_card"})
+                continue
+            bf = Sandbox.findings_for(base, card)
+            rows.append(sb.apply_and_run(m, card, bf))
+            if i % 10 == 0:
+                log(f"  …{i}/{len(mutations)} 已完成（{int(time.time() - t0)}s）")
+    dist: dict[str, int] = {}
+    for r in rows:
+        dist[r["verdict"]] = dist.get(r["verdict"], 0) + 1
+    return {
+        "rows": rows,
+        "distribution": dict(sorted(dist.items())),
+        "escaped": [r for r in rows if r["verdict"] == "escaped"],
+        "total": len(rows),
+        "elapsed_s": round(time.time() - t0, 1),
+    }
+
+
+def compare_prediction(rows: list[dict], predictions: dict[str, str]) -> dict:
+    """实际判决 vs 621 的 v7 先验预测（按"是否被拦"二值比对）。"""
+    agree = disagree = missing = 0
+    detail = []
+    for r in rows:
+        mid = r.get("mutation_id")
+        pred = predictions.get(mid)
+        actual = r.get("verdict")
+        if pred is None or actual in ("infra_error", None):
+            missing += 1
+            continue
+        pred_caught = (pred == "blocked")
+        act_caught = (actual == "blocked")
+        if pred_caught == act_caught:
+            agree += 1
+        else:
+            disagree += 1
+            detail.append({"mutation_id": mid, "card": r.get("card"),
+                           "predicted": pred, "actual": actual})
+    n = agree + disagree
+    return {"agree": agree, "disagree": disagree, "skipped": missing,
+            "agreement_rate": round(agree / n, 4) if n else None,
+            "disagreements": detail}
+
+
 # ── 自检（只读、不写盘；exit 0 = 通过）──────────────────────────────────────────
 def selftest() -> int:
     ok = True
