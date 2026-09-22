@@ -1,0 +1,1432 @@
+{
+  "rows": [
+    {
+      "mutation_id": "MUT-623-3e2e5777d296",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6684
+    },
+    {
+      "mutation_id": "MUT-623-ae46085971cc",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6834
+    },
+    {
+      "mutation_id": "MUT-623-0d65ce612f86",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-VERIFIED-BOUND",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6676
+    },
+    {
+      "mutation_id": "MUT-623-d4ab2fb825f3",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-VERIFIED-BOUND",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6678
+    },
+    {
+      "mutation_id": "MUT-623-c1061dde39aa",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-STATUS-TRANSITION",
+      "edit": "删除字段 status",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [
+        "INFERENCE-NOT-MACHINE-VERIFIED"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6705
+    },
+    {
+      "mutation_id": "MUT-623-f7fa9062d04a",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-STATUS-TRANSITION",
+      "edit": "删除字段 status",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [
+        "INFERENCE-NOT-MACHINE-VERIFIED"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6683
+    },
+    {
+      "mutation_id": "MUT-623-d07e8ab9638b",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-CLAIM-STRUCTURED",
+      "edit": "删除字段 claim_structured",
+      "verdict": "escaped",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-CLAIM-STRUCTURED",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [
+        "ATOM-CLAIM-CONCEPT-NORMALIZED",
+        "INFERENCE-NOT-MACHINE-VERIFIED",
+        "OBSERVATION-LIVENESS"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 2,
+      "elapsed_ms": 7261
+    },
+    {
+      "mutation_id": "MUT-623-98299596ac4c",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-CLAIM-STRUCTURED",
+      "edit": "删除字段 claim_structured",
+      "verdict": "escaped",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-CLAIM-STRUCTURED",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [
+        "ATOM-CLAIM-CONCEPT-NORMALIZED",
+        "INFERENCE-NOT-MACHINE-VERIFIED",
+        "OBSERVATION-LIVENESS"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 2,
+      "elapsed_ms": 6858
+    },
+    {
+      "mutation_id": "MUT-623-2528f952714a",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H1",
+      "target_rule": "EV-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6744
+    },
+    {
+      "mutation_id": "MUT-623-54059d90fd8b",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H1",
+      "target_rule": "EV-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6721
+    },
+    {
+      "mutation_id": "MUT-623-58492dcfaf38",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H1",
+      "target_rule": "EV-MATRIX",
+      "edit": "删除字段 matrix",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-YAML-HARDENING",
+        "EV-MATRIX"
+      ],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 6809
+    },
+    {
+      "mutation_id": "MUT-623-f8b42c101cab",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H1",
+      "target_rule": "EV-MATRIX",
+      "edit": "删除字段 matrix",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-YAML-HARDENING",
+        "EV-MATRIX"
+      ],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 6640
+    },
+    {
+      "mutation_id": "MUT-623-e1700630ab4c",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H1",
+      "target_rule": "EV-ARTIFACT-FILE-EXISTS",
+      "edit": "路径大小写 Examples/atoms/_atom_fence_vs_atomic.asm → examples/atoms/_atom_fence_vs_atomic.asm",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "CARD-PATH-NOT-CANONICAL",
+        "EV-ARTIFACT-VERSION-MATCH"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 6656
+    },
+    {
+      "mutation_id": "MUT-623-5d37d0e922b5",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H1",
+      "target_rule": "EV-ARTIFACT-FILE-EXISTS",
+      "edit": "路径大小写 Examples/atoms/_atom_fence_vs_atomic.asm → examples/atoms/_atom_fence_vs_atomic.asm",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "CARD-PATH-NOT-CANONICAL",
+        "EV-ARTIFACT-VERSION-MATCH"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 6724
+    },
+    {
+      "mutation_id": "MUT-623-db97c969ee08",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H1",
+      "target_rule": "EV-SELF-SATISFIED-ASSERT",
+      "edit": "注入恒真断言 exists:main",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6774
+    },
+    {
+      "mutation_id": "MUT-623-9a51e78741c7",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H1",
+      "target_rule": "EV-SELF-SATISFIED-ASSERT",
+      "edit": "注入恒真断言 exists:main",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6837
+    },
+    {
+      "mutation_id": "MUT-623-af02f716c56d",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-STATUS-VALUE",
+      "edit": "设置 status → bogus_enum",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-STATUS-VALUE"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [
+        "INFERENCE-NOT-MACHINE-VERIFIED"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6809
+    },
+    {
+      "mutation_id": "MUT-623-afff607a7196",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-STATUS-VALUE",
+      "edit": "设置 status → bogus_enum",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-STATUS-VALUE"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [
+        "INFERENCE-NOT-MACHINE-VERIFIED"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6632
+    },
+    {
+      "mutation_id": "MUT-623-1c48e8843cd8",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-ID-FORMAT",
+      "edit": "设置 id → BAD ID 001",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 6707
+    },
+    {
+      "mutation_id": "MUT-623-c5d23ed9459a",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-ID-FORMAT",
+      "edit": "设置 id → BAD ID 001",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 6829
+    },
+    {
+      "mutation_id": "MUT-623-d99f6be040a3",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-ID-UNIQUE",
+      "edit": "设置 id → ATOM-CONC-FENCE-001",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6682
+    },
+    {
+      "mutation_id": "MUT-623-594de1d302b7",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-ID-UNIQUE",
+      "edit": "设置 id → ATOM-CONC-FENCE-001",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-UNIQUE",
+        "ATOM-REL-DAG"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 6712
+    },
+    {
+      "mutation_id": "MUT-623-7180d82cd81d",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-DAL-MATCH",
+      "edit": "设置 dal → Z",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-DAL-MATCH"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6797
+    },
+    {
+      "mutation_id": "MUT-623-3cae6ca9764f",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-DAL-MATCH",
+      "edit": "设置 dal → Z",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-DAL-MATCH"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6615
+    },
+    {
+      "mutation_id": "MUT-623-54c5d6d52655",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-AUDIENCE",
+      "edit": "设置 audience → toddler",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-AUDIENCE"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6673
+    },
+    {
+      "mutation_id": "MUT-623-c5b33b5d5a34",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-AUDIENCE",
+      "edit": "设置 audience → toddler",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-AUDIENCE"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6983
+    },
+    {
+      "mutation_id": "MUT-623-47bed5abe16f",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-PREREQ-READABLE",
+      "edit": "设置 prerequisites_readable → maybe",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6934
+    },
+    {
+      "mutation_id": "MUT-623-e2b0f814abc5",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-PREREQ-READABLE",
+      "edit": "设置 prerequisites_readable → maybe",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6679
+    },
+    {
+      "mutation_id": "MUT-623-e7f8c6f3200c",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-SUPERIORITY-WORDS",
+      "edit": "设置 superiority → obviously the best approach",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6841
+    },
+    {
+      "mutation_id": "MUT-623-bdba02158e0e",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-SUPERIORITY-WORDS",
+      "edit": "设置 superiority → obviously the best approach",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6709
+    },
+    {
+      "mutation_id": "MUT-623-29928c2b5a38",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H2",
+      "target_rule": "EV-ARTIFACT-VERSION-MATCH",
+      "edit": "设置 artifact_version → 0",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-VERSION-MATCH"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6838
+    },
+    {
+      "mutation_id": "MUT-623-844e9bcbfd56",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H2",
+      "target_rule": "EV-ARTIFACT-VERSION-MATCH",
+      "edit": "设置 artifact_version → 0",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-VERSION-MATCH"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6715
+    },
+    {
+      "mutation_id": "MUT-623-951c6b6bf6e2",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H2",
+      "target_rule": "EV-ID-UNIQUE",
+      "edit": "设置 id → EV-CONC-001",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6544
+    },
+    {
+      "mutation_id": "MUT-623-42d9effcceb7",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H2",
+      "target_rule": "EV-ID-UNIQUE",
+      "edit": "设置 id → EV-CONC-001",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6775
+    },
+    {
+      "mutation_id": "MUT-623-c40b3d275bc5",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H2",
+      "target_rule": "EV-FALSIFICATION",
+      "edit": "设置 falsification → it works as expected",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6661
+    },
+    {
+      "mutation_id": "MUT-623-a326eb76bec6",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H2",
+      "target_rule": "EV-FALSIFICATION",
+      "edit": "设置 falsification → it works as expected",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6764
+    },
+    {
+      "mutation_id": "MUT-623-e86347059cb4",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H2",
+      "target_rule": "EV-TRIVIAL-OBSERVATION",
+      "edit": "设置 actual → the program runs and prints expected output",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "new_nonblock_rules": [
+        "EV-ASSERT-COUNT-BELOW-BASELINE",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [
+        "EV-OUT-STALE-MTIME"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 6740
+    },
+    {
+      "mutation_id": "MUT-623-d29f1077da36",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H2",
+      "target_rule": "EV-TRIVIAL-OBSERVATION",
+      "edit": "设置 actual → the program runs and prints expected output",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "new_nonblock_rules": [
+        "EV-ASSERT-COUNT-BELOW-BASELINE",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [
+        "EV-OUT-STALE-MTIME",
+        "EV-OUT-UNDECLARED-KEY"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 7079
+    },
+    {
+      "mutation_id": "MUT-623-7f770ac50c42",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H2",
+      "target_rule": "S2-EVIDENCE-VERDICT",
+      "edit": "设置 verdict → disconfirm",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6727
+    },
+    {
+      "mutation_id": "MUT-623-0f9fb5c429e3",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H2",
+      "target_rule": "S2-EVIDENCE-VERDICT",
+      "edit": "设置 verdict → disconfirm",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6753
+    },
+    {
+      "mutation_id": "MUT-623-baf80940b535",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H3",
+      "target_rule": "EV-MSCV-NO-VERIFY",
+      "edit": "command 掺入 cl(MSVC)",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-MSCV-NO-VERIFY"
+      ],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 6843
+    },
+    {
+      "mutation_id": "MUT-623-7b32dcbf8a59",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H3",
+      "target_rule": "EV-MSCV-NO-VERIFY",
+      "edit": "command 掺入 cl(MSVC)",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-MSCV-NO-VERIFY"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6782
+    },
+    {
+      "mutation_id": "MUT-623-bba127b58bbc",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H3",
+      "target_rule": "EV-FM-DUP-KEY",
+      "edit": "重复键 id（走私）",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-DUP-KEY",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 6752
+    },
+    {
+      "mutation_id": "MUT-623-cfd74270d1a1",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H3",
+      "target_rule": "EV-FM-DUP-KEY",
+      "edit": "重复键 id（走私）",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-DUP-KEY",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 6833
+    },
+    {
+      "mutation_id": "MUT-623-1c966c17b881",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H3",
+      "target_rule": "EV-FM-YAML-HARDENING",
+      "edit": "YAML 走私注入",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-PRODUCER",
+        "EV-FM-DUP-KEY",
+        "EV-FM-YAML-HARDENING",
+        "EV-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 6768
+    },
+    {
+      "mutation_id": "MUT-623-cd64801e97fb",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H3",
+      "target_rule": "EV-FM-YAML-HARDENING",
+      "edit": "YAML 走私注入",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-PRODUCER",
+        "EV-FM-DUP-KEY",
+        "EV-FM-YAML-HARDENING",
+        "EV-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 6638
+    },
+    {
+      "mutation_id": "MUT-623-31fdb89f9acc",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H3",
+      "target_rule": "EV-ENV-DEPENDENT-KEY",
+      "edit": "环境量键声明为断言",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6902
+    },
+    {
+      "mutation_id": "MUT-623-fb67724bbd8c",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H3",
+      "target_rule": "EV-ENV-DEPENDENT-KEY",
+      "edit": "环境量键声明为断言",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6649
+    },
+    {
+      "mutation_id": "MUT-623-818d12b57491",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H3",
+      "target_rule": "EV-ASSERT-SYMBOL-MAPPED",
+      "edit": "断言文本改为不可定位符号",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6690
+    },
+    {
+      "mutation_id": "MUT-623-23ffcb988722",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H3",
+      "target_rule": "EV-ASSERT-SYMBOL-MAPPED",
+      "edit": "断言文本改为不可定位符号",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6781
+    },
+    {
+      "mutation_id": "MUT-623-23b906bf3e95",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H3",
+      "target_rule": "EV-SERVES-EXIST",
+      "edit": "serves 引用 ATOM-CONC-FENCE-001 → ATOM-NOPE-999（不存在）",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6908
+    },
+    {
+      "mutation_id": "MUT-623-817183fbb792",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H3",
+      "target_rule": "EV-SERVES-EXIST",
+      "edit": "serves 引用 ATOM-CONC-FENCE-001 → ATOM-NOPE-999（不存在）",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6725
+    },
+    {
+      "mutation_id": "MUT-623-45f3e4e27cfa",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H4",
+      "target_rule": "ATOM-REL-DAG",
+      "edit": "追加自环关系 supports:ATOM-CONC-FENCE-001",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-REL-TARGET",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 6875
+    },
+    {
+      "mutation_id": "MUT-623-ca83132e5a9b",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H4",
+      "target_rule": "ATOM-REL-DAG",
+      "edit": "追加自环关系 supports:ATOM-CONC-LOCK-001",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-REL-UNKNOWN",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 6726
+    },
+    {
+      "mutation_id": "MUT-623-4f30ef397625",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=M9（目标卡缺少该算子所需字段）",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "MUT-623-0c25b66db299",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=M9（目标卡缺少该算子所需字段）",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "MUT-623-960090208c4f",
+      "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+      "attack_type": "H4",
+      "target_rule": "ATOM-GRAY-ZONE",
+      "edit": "设置 gray_zone → not-a-category",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-GRAY-ZONE"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 4,
+      "n_findings_after": 5,
+      "elapsed_ms": 6852
+    },
+    {
+      "mutation_id": "MUT-623-6ecaf66bb00c",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H4",
+      "target_rule": "ATOM-NO-UNVERIFIED",
+      "edit": "设置 status → unverified",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-NO-UNVERIFIED",
+        "ATOM-STATUS-VALUE"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [
+        "INFERENCE-NOT-MACHINE-VERIFIED"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6754
+    },
+    {
+      "mutation_id": "MUT-623-dd315b272671",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H4",
+      "target_rule": "ATOM-NO-UNVERIFIED",
+      "edit": "设置 status → unverified",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-NO-UNVERIFIED",
+        "ATOM-STATUS-VALUE"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [
+        "INFERENCE-NOT-MACHINE-VERIFIED"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6494
+    },
+    {
+      "mutation_id": "MUT-623-be2f9fdfb0af",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H4",
+      "target_rule": "DOC-ZERO-PLACEHOLDER",
+      "edit": "claim 注入 TODO 占位符",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6775
+    },
+    {
+      "mutation_id": "MUT-623-00bbabf40cf4",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H4",
+      "target_rule": "DOC-ZERO-PLACEHOLDER",
+      "edit": "claim 注入 TODO 占位符",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6778
+    },
+    {
+      "mutation_id": "MUT-623-5f91616a01c1",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6799
+    },
+    {
+      "mutation_id": "MUT-623-740bdee9056f",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6760
+    },
+    {
+      "mutation_id": "MUT-623-2f003660267b",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-VERIFIED-BOUND",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6654
+    },
+    {
+      "mutation_id": "MUT-623-10c26f7448fa",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-VERIFIED-BOUND",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6842
+    },
+    {
+      "mutation_id": "MUT-623-e1ac222ea2fe",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-STATUS-TRANSITION",
+      "edit": "删除字段 status",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [
+        "INFERENCE-NOT-MACHINE-VERIFIED"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6543
+    },
+    {
+      "mutation_id": "MUT-623-e67dc4227aca",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-STATUS-TRANSITION",
+      "edit": "删除字段 status",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [
+        "INFERENCE-NOT-MACHINE-VERIFIED"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6745
+    },
+    {
+      "mutation_id": "MUT-623-2577ce9b0c37",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-CLAIM-STRUCTURED",
+      "edit": "删除字段 claim_structured",
+      "verdict": "escaped",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-CLAIM-STRUCTURED",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [
+        "ATOM-CLAIM-CONCEPT-NORMALIZED",
+        "INFERENCE-NOT-MACHINE-VERIFIED",
+        "OBSERVATION-LIVENESS"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 2,
+      "elapsed_ms": 6617
+    },
+    {
+      "mutation_id": "MUT-623-58b6278952fe",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-CLAIM-STRUCTURED",
+      "edit": "删除字段 claim_structured",
+      "verdict": "escaped",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-CLAIM-STRUCTURED",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [
+        "ATOM-CLAIM-CONCEPT-NORMALIZED",
+        "INFERENCE-NOT-MACHINE-VERIFIED",
+        "OBSERVATION-LIVENESS"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 2,
+      "elapsed_ms": 6739
+    },
+    {
+      "mutation_id": "MUT-623-0b8dfe855ac4",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H1",
+      "target_rule": "EV-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6669
+    },
+    {
+      "mutation_id": "MUT-623-9c939d524d65",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H1",
+      "target_rule": "EV-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6902
+    },
+    {
+      "mutation_id": "MUT-623-9b928add5614",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H1",
+      "target_rule": "EV-MATRIX",
+      "edit": "删除字段 matrix",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-YAML-HARDENING",
+        "EV-MATRIX"
+      ],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 6759
+    },
+    {
+      "mutation_id": "MUT-623-e7e16ee33857",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H1",
+      "target_rule": "EV-MATRIX",
+      "edit": "删除字段 matrix",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-YAML-HARDENING",
+        "EV-MATRIX"
+      ],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 6596
+    },
+    {
+      "mutation_id": "MUT-623-30566d040a16",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H1",
+      "target_rule": "EV-ARTIFACT-FILE-EXISTS",
+      "edit": "路径大小写 Examples/atoms/_atom_fence_vs_atomic.asm → examples/atoms/_atom_fence_vs_atomic.asm",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "CARD-PATH-NOT-CANONICAL",
+        "EV-ARTIFACT-VERSION-MATCH"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 6688
+    },
+    {
+      "mutation_id": "MUT-623-03c7774f97f8",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H1",
+      "target_rule": "EV-ARTIFACT-FILE-EXISTS",
+      "edit": "路径大小写 Examples/atoms/_atom_fence_vs_atomic.asm → examples/atoms/_atom_fence_vs_atomic.asm",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "CARD-PATH-NOT-CANONICAL",
+        "EV-ARTIFACT-VERSION-MATCH"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 6706
+    },
+    {
+      "mutation_id": "MUT-623-3c26d27713e6",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "H1",
+      "target_rule": "EV-SELF-SATISFIED-ASSERT",
+      "edit": "注入恒真断言 exists:main",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6753
+    },
+    {
+      "mutation_id": "MUT-623-317cdb912ba9",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "H1",
+      "target_rule": "EV-SELF-SATISFIED-ASSERT",
+      "edit": "注入恒真断言 exists:main",
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 6759
+    },
+    {
+      "mutation_id": "MUT-623-78b8fdaf22b6",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-STATUS-VALUE",
+      "edit": "设置 status → bogus_enum",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-STATUS-VALUE"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [
+        "INFERENCE-NOT-MACHINE-VERIFIED"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6744
+    },
+    {
+      "mutation_id": "MUT-623-750bb415483b",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-STATUS-VALUE",
+      "edit": "设置 status → bogus_enum",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-STATUS-VALUE"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [
+        "INFERENCE-NOT-MACHINE-VERIFIED"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 6837
+    },
+    {
+      "mutation_id": "MUT-623-2f458a2ee0b9",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H2",
+      "target_rule": "ATOM-ID-FORMAT",
+      "edit": "设置 id → BAD ID 001",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 6795
+    }
+  ],
+  "distribution": {
+    "blocked": 46,
+    "detected_nonblock": 16,
+    "escaped": 4,
+    "infra_error": 2,
+    "neutral": 12
+  },
+  "escaped": [
+    {
+      "mutation_id": "MUT-623-d07e8ab9638b",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-CLAIM-STRUCTURED",
+      "edit": "删除字段 claim_structured",
+      "verdict": "escaped",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-CLAIM-STRUCTURED",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [
+        "ATOM-CLAIM-CONCEPT-NORMALIZED",
+        "INFERENCE-NOT-MACHINE-VERIFIED",
+        "OBSERVATION-LIVENESS"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 2,
+      "elapsed_ms": 7261
+    },
+    {
+      "mutation_id": "MUT-623-98299596ac4c",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-CLAIM-STRUCTURED",
+      "edit": "删除字段 claim_structured",
+      "verdict": "escaped",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-CLAIM-STRUCTURED",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [
+        "ATOM-CLAIM-CONCEPT-NORMALIZED",
+        "INFERENCE-NOT-MACHINE-VERIFIED",
+        "OBSERVATION-LIVENESS"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 2,
+      "elapsed_ms": 6858
+    },
+    {
+      "mutation_id": "MUT-623-2577ce9b0c37",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-CLAIM-STRUCTURED",
+      "edit": "删除字段 claim_structured",
+      "verdict": "escaped",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-CLAIM-STRUCTURED",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [
+        "ATOM-CLAIM-CONCEPT-NORMALIZED",
+        "INFERENCE-NOT-MACHINE-VERIFIED",
+        "OBSERVATION-LIVENESS"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 2,
+      "elapsed_ms": 6617
+    },
+    {
+      "mutation_id": "MUT-623-58b6278952fe",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "attack_type": "H1",
+      "target_rule": "ATOM-CLAIM-STRUCTURED",
+      "edit": "删除字段 claim_structured",
+      "verdict": "escaped",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-CLAIM-STRUCTURED",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [
+        "ATOM-CLAIM-CONCEPT-NORMALIZED",
+        "INFERENCE-NOT-MACHINE-VERIFIED",
+        "OBSERVATION-LIVENESS"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 2,
+      "elapsed_ms": 6739
+    }
+  ],
+  "total": 80,
+  "elapsed_s": 527.1
+}
