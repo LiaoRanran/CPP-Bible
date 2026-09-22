@@ -1,0 +1,36 @@
+{
+ "bands": {
+  "20-40": {
+   "n": 33,
+   "applicable": 14,
+   "blocked": 10,
+   "escaped": 0,
+   "neutral": 4,
+   "detected_nonblock": 0,
+   "detect_rate": 0.7143
+  },
+  "40-60": {
+   "n": 32,
+   "applicable": 28,
+   "blocked": 18,
+   "escaped": 0,
+   "neutral": 10,
+   "detected_nonblock": 0,
+   "detect_rate": 0.6429
+  },
+  "60-80": {
+   "n": 15,
+   "applicable": 10,
+   "blocked": 0,
+   "escaped": 0,
+   "neutral": 2,
+   "detected_nonblock": 8,
+   "detect_rate": 0.0
+  }
+ },
+ "horizon_band": "40-60",
+ "horizon_score": 60,
+ "threshold": 0.5,
+ "total": 80,
+ "applicable": 52
+}
