@@ -30,11 +30,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 
+import authority_projection_compiler_626 as AP  # noqa: E402
+import control_char_cleaner as CC  # noqa: E402
 import decision_event_v2_626 as D  # noqa: E402
 import review_item_ledger_626 as R  # noqa: E402
 import stats_recalc_verifier_626 as S  # noqa: E402
-import control_char_cleaner as CC  # noqa: E402
-import authority_projection_compiler_626 as AP  # noqa: E402
 
 ANN = os.path.join(ROOT, "data", "human_attack_edge_annotations.jsonl")
 AUTH = os.path.join(ROOT, "data", "authority", "authority_log.jsonl")

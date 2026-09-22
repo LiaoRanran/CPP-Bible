@@ -134,7 +134,7 @@ def selftest() -> int:
         p2 = os.path.join(td, "sub", "b.md")
         open(p2, "wb").write(b"bad\x08ctrl\x0b\n")
         zp = os.path.join(td, "out.zip")
-        r = pack(td, zp)
+        pack(td, zp)
         chk("打包成功", os.path.exists(zp))
         rc, res = check(zp)
         chk("check 通过", rc == 0, f"(backslash={res['backslash']} ctrl={res['control_chars']})")

@@ -94,7 +94,9 @@ def build_events() -> tuple[list[tuple[D.DecisionEvent, int]], dict]:
         stats["annotations"] += 1
 
     # ── authority_log (418) ──
-    ann_targets = {e.target_id for e, _o in events}
+    # 注：annotations 的 target 集合用于判重参考；迁移保留两条（原始 + REPLACE 取代关系）
+
+
     for a in _jl(AUTH):
         tgt = a.get("target")
         tid = str(tgt.get("id")) if isinstance(tgt, dict) else str(tgt or "")

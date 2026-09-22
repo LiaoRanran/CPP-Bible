@@ -256,7 +256,7 @@ def selftest() -> int:
         f"({g.review.get_unique_count()})")
     with tempfile.TemporaryDirectory() as td:
         rp = os.path.join(td, "rp.zip")
-        r = g.generate_review_pack(rp)
+        g.generate_review_pack(rp)
         chk("Review Pack 生成", os.path.exists(rp))
         v = g.validate_pack(rp)
         chk("Review Pack 验证通过", v["ok"], str(v))

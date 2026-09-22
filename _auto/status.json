@@ -1,11 +1,11 @@
 {
   "state": "awaiting_review",
-  "active_batch": 625,
-  "next_batch": 626,
-  "last_completed_batch": 625,
-  "last_commit": "F2_PENDING",
+  "active_batch": 626,
+  "next_batch": 627,
+  "last_completed_batch": 626,
+  "last_commit": "156f2c36",
   "last_review_at": "2026-09-22",
-  "current_task": "625: 19/19 任务全完成（修债务+稳雷2+备雷1：mypy67→0+OTS重锚+pytest非slow全绿+尺子22→34+路径解耦26/130+雷2连续3轮稳(累计36/67)+人审D2可视化/D3框架/D4策略不代签+PCK32.5%未达），awaiting_review",
+  "current_task": "626: 17/17 任务全完成（Authority语义收口：8硬伤全修+4P0根治+DecisionEvent v2 452条+唯一账本93unique+5种投影+4层PCK验证+10项Snapshot CI+两层Review Pack；独立人审强度仍0，Blind Review工具就绪待执行），awaiting_review",
   "prev_current_task_621": "621: 17/17 任务全完成（新 mutation 生成 + CI 竞态根治 + 雷6 弃权三态 + 30 条逐条人审落地），awaiting_review",
   "worker_model": "CodeBuddy (free daily quota)",
   "consecutive_errors": 0,
@@ -123,11 +123,19 @@
       "verdict": "awaiting_review",
       "objective": "修债务+稳雷2+备雷1：mypy 67→0 / OTS re-anchor / pytest 红因修复 / 雷2 闭环连续3轮稳定 / QueYi Core 路径解耦 / 尺子入根22→34 / PCK提升策略+人审框架不代签",
       "notes": "15 commit (d9c186a0~F2)。① A1 **mypy 67处→0 errors**（24文件：yaml stub覆盖+cast/判空/注解/重命名；仅1处func-returns-value逐条ignore；pyproject 受保护已重钉）；② A2 OTS re-anchor（digest一致/--check通过/pending未上链诚实标注）；③ A3 pytest 红因=治理manifest重签+581豁免计数动态化(27/67/backed28)⇒ not-slow段全绿；replay manifest_consistency 5失配+DEBT-001到期登记留626；④ B1 闭环第7轮108条实跑 escaped **0**，新触达 ATOM-STATUS-TRANSITION+S1-AUTHOR-SELF-VERIFY（累计36/67，盲区33→31）；⑤ B2 雷2稳定指标：增长率2.9%<10%/VFDR收敛0.98%<1%/一致性99.02%>95%/覆盖波动8.9%>5%⇒4/5部分满足；⑥ B3 VFDR收敛+热力图v3（累计35/67 artifact口径，盲区32，0危险逃逸）；⑦ C1 **PathConfig** 核心6+辅助20工具ROOT接入，gate/replay56/poison/tool_integrity行为不变+重钉；⑧ C2 QueYi Core接口抽象v0.1（Claim/Evidence/Attack/Verify/Authority）；⑨ C3 剥离触发标准5条满足2/5（②③治理裁定需人，⑤余量留626）⇒建议再等1-2轮；⑩ D1 尺子入根22→34（RULER_TOOLS 10→22，新增12判决尺子，CORE_TOOLS未变，重钉后--check 34/34）；⑪ D2 人审深色科技风可视化（纯静态HTML，只读不判决）；⑫ D3 人审执行框架build_entry带哈希链+append_entry定义不调用（自检证未代签日志size不变）；⑬ D4 PCK提升策略设计（S1证据证人审队列/S2机器可确认候选/S3目标推算/S4口径统一），当前32.5%未达>48%不代签；⑭ E1 化债+遗留项处理；⑮ E2 PM报告；⑯ F1 run_625_gate PASS（整目录ruff+9个625新工具--check+tool_integrity 34/34+OTS+mypy0+受控零污染）；⑰ F2 验收报告+status/outbox。625 新增≈77例单测全过；未push/未golden accept/未开delegation/未代签。详见 data/625_acceptance_report.md。"
+    },
+    {
+      "batch": 626,
+      "status": "completed",
+      "completed_at": "2026-09-22T16:30:00",
+      "verdict": "awaiting_review",
+      "objective": "Authority 语义收口：修复 8 个硬事实错误 + 根治 4 个 P0 + Authority 单一真源架构落地（DecisionEvent v2 + 唯一审查账本 + Blind Review + Projection Compiler + PCK verifier + Snapshot CI + Review Pack v2）",
+      "notes": "15 commit (6003307a~F1)。① A1 修复 4 个数值错误：median 75→**67.5**、110 记录→**93 唯一**、27→**31 总豁免**、README 大小自动取值；② A2 打包质量：ZIP 正斜杠重打包 37entry、清洗 data/ **9 文件 339 控制字符**、deep_analysis **STALE** 标注、建 REPORT_STATUS.md 快照血缘；③ A3 30 条口径：622 执行标注 USER_AUTHORIZED_EXECUTION（**不计独立人审**）+ review_method 五级 + decision_origin 四级；④ A4 决策包 v2：README 加包定位/未包含文件/外部审查流程，authority_log(262KB) 入包，38entry 正斜杠验证全绿；⑤ B1 **DecisionEvent v2**（26 字段 + AuthorityLedger append-only 哈希链 + supersedes，修 event_id 循环依赖 bug）；⑥ B2 **数据迁移**：388+418=806 输入去重 354 ⇒ **452 条**（BATCH_AUTH228/MIRROR_DERIVED194/ITEM_OPEN30），哈希链完整，**旧文件未改**；⑦ B3 **唯一审查账本 110 记录→93 unique**（overlap17 合并标 615+624）；⑧ C1 **Blind Review v1**：Pass A 展示 AI 推荐即拒绝提交 + Pass B 一致性/automation_bias_risk + 3 条模拟示例；⑨ C2 OVERRIDE 语义（51 条 REPLACE **均有 result+supersedes，硬问题 0**，51 条旧式 ID 引用告警留 627）+ W2 三态独立（IN114/OUT7 + SUPPORTED27 + authorized0）+ 镜像边 194 条 symmetry_proof_id 归一 null（已验证 0）；⑩ D1/D2 **Projection Compiler**（W2/PCK/golden/dashboard/textbook 5 种，确定性+只读+可追溯；PCK 严格/宽松双策略均 0 authorized——因无 card-level authority，正是判据 7 生效）+ 投影规则 v0.1；⑪ D3 **Snapshot Integrity CI 10 项，实跑 10/10 pass**；⑫ E1 **PCK 4 层验证**：B2-S83/B2-R27/B2-E83/B2-A83，**发现 56 张 evidence.hash 与文件不匹配**（真实引用漂移，只验证不修改）；⑬ E2 **Review Pack v2 两层包** + 10 个最小闭环 HTML + 桌面实跑。**独立人类确认强度仍 = 0**（唯一途径是真实 Blind Review，需人授权）。新增 15 工具（--check 15/15）+ 143 例单测全绿；ruff/mypy(296 文件) 全绿；受控目录零污染；CORE_TOOLS 生产逻辑**未改动**（实测 5 个 CORE_TOOLS 均不读 annotations/PCK/golden 判定）。未 push / 未 golden accept / 未开 delegation / 未代签。详见 data/626_acceptance_report.md。"
     }
   ],
   "history_note": "610/611/613/614 已压缩；逐批原始 commit 见 git log。",
-  "notes": "625 收工（19/19 全完成，修债务+稳雷2+备雷1）：**CI 本地全绿**——mypy 67→0（A1）、OTS re-anchor（A2）、pytest not-slow 全绿+581计数修正（A3）、尺子入根22→34（D1）、路径解耦26/130（C1）、整目录ruff绿（F1）。**雷2 连续3轮稳定**（623-625，B2 4/5）：第7轮108条实跑0逃逸，累计36/67（54%），但**未达触达天花板**（编译/复算/git/多卡类规则跨卡sandbox亦不可达，留626）。**QueYi Core 备雷1**：PathConfig 路径解耦（核心6+辅助20）+接口抽象v0.1+剥离触发标准检查（2/5，②③治理裁定需人），余量留626。**人审线全部卡在人、不代签**：D2 深色可视化、D3 执行框架（append_entry定义不调用，自检证未代签）、D4 PCK提升策略（32.5%未达>48%因56证据证无人审来源）；110条人审清单待由人走框架执行。625 新增≈77例单测全过；受控目录零污染。**未 push**（铁律625不push），远程CI验证留626。详见 data/625_acceptance_report.md / data/625_pm_report.md。",
+  "notes": "626 收工（17/17 全完成，**Authority 语义收口**——项目迄今最大架构质变）：**8 个硬事实错误全部修复**（median 75→67.5、110 记录→93 唯一、27→31 总豁免、ZIP 正斜杠跨平台、清洗 9 文件 339 控制字符、deep_analysis 标 STALE、README 大小自动取值、30 条口径标注 USER_AUTHORIZED_EXECUTION）；**4 个 P0 全部根治**（A 五级 review_method+四级 decision_origin、B 唯一账本 93 unique、C Blind Review 工具就绪、D operation/result 拆开）。**Authority 单一真源落地**：DecisionEvent v2（26 字段 + append-only 哈希链）+ 数据迁移（806→去重 354→**452 条**，旧文件未改）+ **唯一审查账本 93 unique/110 record** + **Projection Compiler 5 种投影**（W2/PCK/golden/dashboard/textbook，确定性+只读+可追溯）+ PCK 4 层验证 + Snapshot Integrity CI（**10/10 pass**）+ Review Pack v2 两层包。**13 完成判据：11 项已完成、1 项工具就绪待执行（真实 Blind Review 需人授权）、1 项结构性完成（W2 与 grounded_labels 粒度偏差留 627 归一化）**。**⚠ 独立人类确认强度仍 = 0**——这是本项目最大诚信缺口，唯一途径是真实 Blind Review。**🔴 真实发现：56 张 PCK 的 evidence.hash 与当前文件不匹配**（引用漂移，只验证不修改，处置需人裁决）。新增 15 工具（--check 15/15）+ **143 例单测**全绿；ruff/mypy(296 文件) 全绿；受控目录零污染；**CORE_TOOLS 生产逻辑未改动**。**未 push**。详见 data/626_acceptance_report.md。",
   "status": "awaiting_review",
-  "batch": 625,
-  "updated_at": "2026-09-22T23:30:00"
+  "batch": 626,
+  "updated_at": "2026-09-22T16:30:00"
 }

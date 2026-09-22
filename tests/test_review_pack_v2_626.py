@@ -25,7 +25,7 @@ def test_selftest_passes():
 def test_review_pack_generation():
     with tempfile.TemporaryDirectory() as td:
         p = os.path.join(td, "rp.zip")
-        r = _g().generate_review_pack(p)
+        _g().generate_review_pack(p)
         assert os.path.exists(p)
         with zipfile.ZipFile(p) as z:
             names = z.namelist()
