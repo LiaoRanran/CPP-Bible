@@ -99,6 +99,19 @@ RULER_TOOLS: tuple[str, ...] = (
     "bkt_solver.py",                 # BKT 求解（决定学习者判决）
     "learner_mastery_update_613.py",  # 掌握度更新
     "tool_integrity.py",             # 元校验器自身
+    # ── 625 D1 扩展：把更多「判决尺子」钉进完整性根（622-624 已建可用） ──
+    "weighted_af_solver.py",         # W2 论证图判决（IN/OUT/UNRESOLVED）
+    "debt_ledger.py",                # 技术债务台账（决定 debt 是否红）
+    "governance_doc_guard.py",       # 治理文档 manifest 校验（改它可让治理漂移不红）
+    "human_review_queue.py",         # 人审队列（决定哪些需人审/如何汇总）
+    "exemption_expiry.py",           # 豁免到期判定（改它可让豁免永不过期）
+    "metrics_collector.py",          # 指标聚合（改它可让度量失真）
+    "merkle_integrity.py",           # 供应链 Merkle 完整性校验
+    "supply_chain.py",               # 供应链信任链校验
+    "authority_to_annotations_sync_623.py",  # Authority↔annotations 通道（决定 W2 输入）
+    "escape_rate_honest_613.py",     # 逃逸率诚实口径计算
+    "pck_certificate_verifier_619.py",       # PCK 证书校验（决定 PCK 是否可信）
+    "defense_chain.py",              # 防御链判定
 )
 _RULER_MARK = "# ruler"                      # .tool_checksums 里的节标记
 
