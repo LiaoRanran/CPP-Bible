@@ -1,0 +1,2732 @@
+{
+  "mutations": [
+    {
+      "mutation_id": "X1-001",
+      "strategy": "X1",
+      "attack_type": "悬空引用",
+      "complexity": 66,
+      "predicted_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-ID-UNIQUE",
+        "EV-SERVES-EXIST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+          "op": "SET_REL_TARGET",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+          "op": "SET_ID",
+          "value": "ATOM-ORPHAN-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X1-002",
+      "strategy": "X1",
+      "attack_type": "悬空引用",
+      "complexity": 66,
+      "predicted_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-ID-UNIQUE",
+        "EV-SERVES-EXIST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+          "op": "SET_REL_TARGET",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+          "op": "SET_ID",
+          "value": "ATOM-ORPHAN-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X1-003",
+      "strategy": "X1",
+      "attack_type": "悬空引用",
+      "complexity": 66,
+      "predicted_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-ID-UNIQUE",
+        "EV-SERVES-EXIST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+          "op": "SET_REL_TARGET",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+          "op": "SET_ID",
+          "value": "ATOM-ORPHAN-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X1-004",
+      "strategy": "X1",
+      "attack_type": "悬空引用",
+      "complexity": 66,
+      "predicted_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-ID-UNIQUE",
+        "EV-SERVES-EXIST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+          "op": "SET_REL_TARGET",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+          "op": "SET_ID",
+          "value": "ATOM-ORPHAN-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X1-005",
+      "strategy": "X1",
+      "attack_type": "悬空引用",
+      "complexity": 66,
+      "predicted_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-ID-UNIQUE",
+        "EV-SERVES-EXIST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+          "op": "SET_REL_TARGET",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+          "op": "SET_ID",
+          "value": "ATOM-ORPHAN-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X1-006",
+      "strategy": "X1",
+      "attack_type": "悬空引用",
+      "complexity": 66,
+      "predicted_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-ID-UNIQUE",
+        "EV-SERVES-EXIST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+          "op": "SET_REL_TARGET",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+          "op": "SET_ID",
+          "value": "ATOM-ORPHAN-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X1-007",
+      "strategy": "X1",
+      "attack_type": "悬空引用",
+      "complexity": 66,
+      "predicted_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-ID-UNIQUE",
+        "EV-SERVES-EXIST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+          "op": "SET_REL_TARGET",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+          "op": "SET_ID",
+          "value": "ATOM-ORPHAN-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X1-008",
+      "strategy": "X1",
+      "attack_type": "悬空引用",
+      "complexity": 66,
+      "predicted_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-ID-UNIQUE",
+        "EV-SERVES-EXIST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+          "op": "SET_REL_TARGET",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+          "op": "SET_ID",
+          "value": "ATOM-ORPHAN-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X1-009",
+      "strategy": "X1",
+      "attack_type": "悬空引用",
+      "complexity": 66,
+      "predicted_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-ID-UNIQUE",
+        "EV-SERVES-EXIST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+          "op": "SET_REL_TARGET",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+          "op": "SET_ID",
+          "value": "ATOM-ORPHAN-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X1-010",
+      "strategy": "X1",
+      "attack_type": "悬空引用",
+      "complexity": 66,
+      "predicted_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-ID-UNIQUE",
+        "EV-SERVES-EXIST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+          "op": "SET_REL_TARGET",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+          "op": "SET_ID",
+          "value": "ATOM-ORPHAN-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X1-011",
+      "strategy": "X1",
+      "attack_type": "悬空引用",
+      "complexity": 66,
+      "predicted_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-ID-UNIQUE",
+        "EV-SERVES-EXIST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+          "op": "SET_REL_TARGET",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+          "op": "SET_ID",
+          "value": "ATOM-ORPHAN-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X1-012",
+      "strategy": "X1",
+      "attack_type": "悬空引用",
+      "complexity": 66,
+      "predicted_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-ID-UNIQUE",
+        "EV-SERVES-EXIST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+          "op": "SET_REL_TARGET",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+          "op": "SET_ID",
+          "value": "ATOM-ORPHAN-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X1-013",
+      "strategy": "X1",
+      "attack_type": "悬空引用",
+      "complexity": 66,
+      "predicted_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-ID-UNIQUE",
+        "EV-SERVES-EXIST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+          "op": "SET_REL_TARGET",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+          "op": "SET_ID",
+          "value": "ATOM-ORPHAN-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X1-014",
+      "strategy": "X1",
+      "attack_type": "悬空引用",
+      "complexity": 66,
+      "predicted_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-ID-UNIQUE",
+        "EV-SERVES-EXIST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+          "op": "SET_REL_TARGET",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+          "op": "SET_ID",
+          "value": "ATOM-ORPHAN-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X1-015",
+      "strategy": "X1",
+      "attack_type": "悬空引用",
+      "complexity": 66,
+      "predicted_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-ID-UNIQUE",
+        "EV-SERVES-EXIST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+          "op": "SET_REL_TARGET",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+          "op": "SET_ID",
+          "value": "ATOM-ORPHAN-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X2-001",
+      "strategy": "X2",
+      "attack_type": "循环引用",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-CONC-LOCK-001"
+        },
+        {
+          "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-CONC-FENCE-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X2-002",
+      "strategy": "X2",
+      "attack_type": "循环引用",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-HIST-AUTOPTR-001"
+        },
+        {
+          "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-CONC-RACE-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X2-003",
+      "strategy": "X2",
+      "attack_type": "循环引用",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET"
+      ],
+      "edits": [
+        {
+          "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-ALIGN-001"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-LANG-INLINE-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X2-004",
+      "strategy": "X2",
+      "attack_type": "循环引用",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-ALLOC-002"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-ALLOC-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X2-005",
+      "strategy": "X2",
+      "attack_type": "循环引用",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-LEAK-002"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-LEAK-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X2-006",
+      "strategy": "X2",
+      "attack_type": "循环引用",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-NEW-001"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-MOVE-002"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X2-007",
+      "strategy": "X2",
+      "attack_type": "循环引用",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-PERF-002"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-PERF-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X2-008",
+      "strategy": "X2",
+      "attack_type": "循环引用",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-PERF-004"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-PERF-003"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X2-009",
+      "strategy": "X2",
+      "attack_type": "循环引用",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-RAII-002"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-RAII-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X2-010",
+      "strategy": "X2",
+      "attack_type": "循环引用",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-SHARED-001"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-RVREF-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X2-011",
+      "strategy": "X2",
+      "attack_type": "循环引用",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-UNIQUE-001"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-SHARED-002"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X2-012",
+      "strategy": "X2",
+      "attack_type": "循环引用",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-VALUE-001"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-UNIQUE-002"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X2-013",
+      "strategy": "X2",
+      "attack_type": "循环引用",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-WEAK-001"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-MEM-VALUE-002"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X2-014",
+      "strategy": "X2",
+      "attack_type": "循环引用",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET"
+      ],
+      "edits": [
+        {
+          "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-CONC-FENCE-001"
+        },
+        {
+          "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-UB-GRAY-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X2-015",
+      "strategy": "X2",
+      "attack_type": "循环引用",
+      "complexity": 72,
+      "predicted_rules": [
+        "ATOM-REL-DAG",
+        "ATOM-REL-TARGET"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-CONC-RACE-001"
+        },
+        {
+          "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+          "op": "APPEND_REL",
+          "rtype": "prerequisite",
+          "target": "ATOM-CONC-LOCK-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X3-001",
+      "strategy": "X3",
+      "attack_type": "矛盾引用",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-DAG"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+          "op": "APPEND_REL",
+          "rtype": "supports",
+          "target": "ATOM-CONC-RACE-001"
+        },
+        {
+          "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+          "op": "APPEND_REL",
+          "rtype": "contradicts",
+          "target": "ATOM-CONC-LOCK-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X3-002",
+      "strategy": "X3",
+      "attack_type": "矛盾引用",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-DAG"
+      ],
+      "edits": [
+        {
+          "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+          "op": "APPEND_REL",
+          "rtype": "supports",
+          "target": "ATOM-LANG-INLINE-001"
+        },
+        {
+          "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+          "op": "APPEND_REL",
+          "rtype": "contradicts",
+          "target": "ATOM-HIST-AUTOPTR-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X3-003",
+      "strategy": "X3",
+      "attack_type": "矛盾引用",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-DAG"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+          "op": "APPEND_REL",
+          "rtype": "supports",
+          "target": "ATOM-MEM-ALLOC-001"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+          "op": "APPEND_REL",
+          "rtype": "contradicts",
+          "target": "ATOM-MEM-ALIGN-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X3-004",
+      "strategy": "X3",
+      "attack_type": "矛盾引用",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-DAG"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+          "op": "APPEND_REL",
+          "rtype": "supports",
+          "target": "ATOM-MEM-LEAK-001"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+          "op": "APPEND_REL",
+          "rtype": "contradicts",
+          "target": "ATOM-MEM-ALLOC-002"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X3-005",
+      "strategy": "X3",
+      "attack_type": "矛盾引用",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-DAG"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+          "op": "APPEND_REL",
+          "rtype": "supports",
+          "target": "ATOM-MEM-MOVE-002"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+          "op": "APPEND_REL",
+          "rtype": "contradicts",
+          "target": "ATOM-MEM-LEAK-002"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X3-006",
+      "strategy": "X3",
+      "attack_type": "矛盾引用",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-DAG"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+          "op": "APPEND_REL",
+          "rtype": "supports",
+          "target": "ATOM-MEM-PERF-001"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+          "op": "APPEND_REL",
+          "rtype": "contradicts",
+          "target": "ATOM-MEM-NEW-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X3-007",
+      "strategy": "X3",
+      "attack_type": "矛盾引用",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-DAG"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+          "op": "APPEND_REL",
+          "rtype": "supports",
+          "target": "ATOM-MEM-PERF-003"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+          "op": "APPEND_REL",
+          "rtype": "contradicts",
+          "target": "ATOM-MEM-PERF-002"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X3-008",
+      "strategy": "X3",
+      "attack_type": "矛盾引用",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-DAG"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+          "op": "APPEND_REL",
+          "rtype": "supports",
+          "target": "ATOM-MEM-RAII-001"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+          "op": "APPEND_REL",
+          "rtype": "contradicts",
+          "target": "ATOM-MEM-PERF-004"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X3-009",
+      "strategy": "X3",
+      "attack_type": "矛盾引用",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-DAG"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+          "op": "APPEND_REL",
+          "rtype": "supports",
+          "target": "ATOM-MEM-RVREF-001"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+          "op": "APPEND_REL",
+          "rtype": "contradicts",
+          "target": "ATOM-MEM-RAII-002"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X3-010",
+      "strategy": "X3",
+      "attack_type": "矛盾引用",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-DAG"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+          "op": "APPEND_REL",
+          "rtype": "supports",
+          "target": "ATOM-MEM-SHARED-002"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+          "op": "APPEND_REL",
+          "rtype": "contradicts",
+          "target": "ATOM-MEM-SHARED-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X3-011",
+      "strategy": "X3",
+      "attack_type": "矛盾引用",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-DAG"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+          "op": "APPEND_REL",
+          "rtype": "supports",
+          "target": "ATOM-MEM-UNIQUE-002"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+          "op": "APPEND_REL",
+          "rtype": "contradicts",
+          "target": "ATOM-MEM-UNIQUE-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X3-012",
+      "strategy": "X3",
+      "attack_type": "矛盾引用",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-DAG"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+          "op": "APPEND_REL",
+          "rtype": "supports",
+          "target": "ATOM-MEM-VALUE-002"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+          "op": "APPEND_REL",
+          "rtype": "contradicts",
+          "target": "ATOM-MEM-VALUE-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X3-013",
+      "strategy": "X3",
+      "attack_type": "矛盾引用",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-DAG"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+          "op": "APPEND_REL",
+          "rtype": "supports",
+          "target": "ATOM-UB-GRAY-001"
+        },
+        {
+          "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+          "op": "APPEND_REL",
+          "rtype": "contradicts",
+          "target": "ATOM-MEM-WEAK-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X3-014",
+      "strategy": "X3",
+      "attack_type": "矛盾引用",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-DAG"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+          "op": "APPEND_REL",
+          "rtype": "supports",
+          "target": "ATOM-CONC-LOCK-001"
+        },
+        {
+          "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+          "op": "APPEND_REL",
+          "rtype": "contradicts",
+          "target": "ATOM-CONC-FENCE-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X3-015",
+      "strategy": "X3",
+      "attack_type": "矛盾引用",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-CONFLICT",
+        "ATOM-REL-TARGET",
+        "ATOM-REL-DAG"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+          "op": "APPEND_REL",
+          "rtype": "supports",
+          "target": "ATOM-HIST-AUTOPTR-001"
+        },
+        {
+          "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+          "op": "APPEND_REL",
+          "rtype": "contradicts",
+          "target": "ATOM-CONC-RACE-001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X4-001",
+      "strategy": "X4",
+      "attack_type": "孤儿引用",
+      "complexity": 73,
+      "predicted_rules": [
+        "EV-SERVES-EXIST",
+        "ATOM-MISCONCEPTION-REF",
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/conc/EV-CONC-001.md",
+          "op": "SET_SERVES",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "evidence/conc/EV-CONC-001.md",
+          "op": "SET_ARTIFACT",
+          "value": "Examples/nonexistent_zzz_624.asm"
+        },
+        {
+          "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+          "op": "SET_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X4-002",
+      "strategy": "X4",
+      "attack_type": "孤儿引用",
+      "complexity": 73,
+      "predicted_rules": [
+        "EV-SERVES-EXIST",
+        "ATOM-MISCONCEPTION-REF",
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/conc/EV-CONC-002.md",
+          "op": "SET_SERVES",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "evidence/conc/EV-CONC-002.md",
+          "op": "SET_ARTIFACT",
+          "value": "Examples/nonexistent_zzz_624.asm"
+        },
+        {
+          "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+          "op": "SET_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X4-003",
+      "strategy": "X4",
+      "attack_type": "孤儿引用",
+      "complexity": 73,
+      "predicted_rules": [
+        "EV-SERVES-EXIST",
+        "ATOM-MISCONCEPTION-REF",
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/conc/EV-CONC-003.md",
+          "op": "SET_SERVES",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "evidence/conc/EV-CONC-003.md",
+          "op": "SET_ARTIFACT",
+          "value": "Examples/nonexistent_zzz_624.asm"
+        },
+        {
+          "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+          "op": "SET_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X4-004",
+      "strategy": "X4",
+      "attack_type": "孤儿引用",
+      "complexity": 73,
+      "predicted_rules": [
+        "EV-SERVES-EXIST",
+        "ATOM-MISCONCEPTION-REF",
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/conc/EV-CONC-004.md",
+          "op": "SET_SERVES",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "evidence/conc/EV-CONC-004.md",
+          "op": "SET_ARTIFACT",
+          "value": "Examples/nonexistent_zzz_624.asm"
+        },
+        {
+          "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+          "op": "SET_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X4-005",
+      "strategy": "X4",
+      "attack_type": "孤儿引用",
+      "complexity": 73,
+      "predicted_rules": [
+        "EV-SERVES-EXIST",
+        "ATOM-MISCONCEPTION-REF",
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/conc/EV-CONC-005.md",
+          "op": "SET_SERVES",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "evidence/conc/EV-CONC-005.md",
+          "op": "SET_ARTIFACT",
+          "value": "Examples/nonexistent_zzz_624.asm"
+        },
+        {
+          "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+          "op": "SET_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X4-006",
+      "strategy": "X4",
+      "attack_type": "孤儿引用",
+      "complexity": 73,
+      "predicted_rules": [
+        "EV-SERVES-EXIST",
+        "ATOM-MISCONCEPTION-REF",
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/conc/EV-CONC-006.md",
+          "op": "SET_SERVES",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "evidence/conc/EV-CONC-006.md",
+          "op": "SET_ARTIFACT",
+          "value": "Examples/nonexistent_zzz_624.asm"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+          "op": "SET_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X4-007",
+      "strategy": "X4",
+      "attack_type": "孤儿引用",
+      "complexity": 73,
+      "predicted_rules": [
+        "EV-SERVES-EXIST",
+        "ATOM-MISCONCEPTION-REF",
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/hist/EV-HIST-001.md",
+          "op": "SET_SERVES",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "evidence/hist/EV-HIST-001.md",
+          "op": "SET_ARTIFACT",
+          "value": "Examples/nonexistent_zzz_624.asm"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+          "op": "SET_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X4-008",
+      "strategy": "X4",
+      "attack_type": "孤儿引用",
+      "complexity": 73,
+      "predicted_rules": [
+        "EV-SERVES-EXIST",
+        "ATOM-MISCONCEPTION-REF",
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/lang/EV-LANG-001.md",
+          "op": "SET_SERVES",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "evidence/lang/EV-LANG-001.md",
+          "op": "SET_ARTIFACT",
+          "value": "Examples/nonexistent_zzz_624.asm"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+          "op": "SET_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X4-009",
+      "strategy": "X4",
+      "attack_type": "孤儿引用",
+      "complexity": 73,
+      "predicted_rules": [
+        "EV-SERVES-EXIST",
+        "ATOM-MISCONCEPTION-REF",
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/lang/EV-LANG-002.md",
+          "op": "SET_SERVES",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "evidence/lang/EV-LANG-002.md",
+          "op": "SET_ARTIFACT",
+          "value": "Examples/nonexistent_zzz_624.asm"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+          "op": "SET_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X4-010",
+      "strategy": "X4",
+      "attack_type": "孤儿引用",
+      "complexity": 73,
+      "predicted_rules": [
+        "EV-SERVES-EXIST",
+        "ATOM-MISCONCEPTION-REF",
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-001.md",
+          "op": "SET_SERVES",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "evidence/mem/EV-MEM-001.md",
+          "op": "SET_ARTIFACT",
+          "value": "Examples/nonexistent_zzz_624.asm"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+          "op": "SET_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X4-011",
+      "strategy": "X4",
+      "attack_type": "孤儿引用",
+      "complexity": 73,
+      "predicted_rules": [
+        "EV-SERVES-EXIST",
+        "ATOM-MISCONCEPTION-REF",
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-002.md",
+          "op": "SET_SERVES",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "evidence/mem/EV-MEM-002.md",
+          "op": "SET_ARTIFACT",
+          "value": "Examples/nonexistent_zzz_624.asm"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+          "op": "SET_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X4-012",
+      "strategy": "X4",
+      "attack_type": "孤儿引用",
+      "complexity": 73,
+      "predicted_rules": [
+        "EV-SERVES-EXIST",
+        "ATOM-MISCONCEPTION-REF",
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-003.md",
+          "op": "SET_SERVES",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "evidence/mem/EV-MEM-003.md",
+          "op": "SET_ARTIFACT",
+          "value": "Examples/nonexistent_zzz_624.asm"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+          "op": "SET_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X4-013",
+      "strategy": "X4",
+      "attack_type": "孤儿引用",
+      "complexity": 73,
+      "predicted_rules": [
+        "EV-SERVES-EXIST",
+        "ATOM-MISCONCEPTION-REF",
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-004.md",
+          "op": "SET_SERVES",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "evidence/mem/EV-MEM-004.md",
+          "op": "SET_ARTIFACT",
+          "value": "Examples/nonexistent_zzz_624.asm"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+          "op": "SET_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X4-014",
+      "strategy": "X4",
+      "attack_type": "孤儿引用",
+      "complexity": 73,
+      "predicted_rules": [
+        "EV-SERVES-EXIST",
+        "ATOM-MISCONCEPTION-REF",
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-005.md",
+          "op": "SET_SERVES",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "evidence/mem/EV-MEM-005.md",
+          "op": "SET_ARTIFACT",
+          "value": "Examples/nonexistent_zzz_624.asm"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+          "op": "SET_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    },
+    {
+      "mutation_id": "X4-015",
+      "strategy": "X4",
+      "attack_type": "孤儿引用",
+      "complexity": 73,
+      "predicted_rules": [
+        "EV-SERVES-EXIST",
+        "ATOM-MISCONCEPTION-REF",
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-006.md",
+          "op": "SET_SERVES",
+          "value": "ATOM-NOPE-999"
+        },
+        {
+          "card": "evidence/mem/EV-MEM-006.md",
+          "op": "SET_ARTIFACT",
+          "value": "Examples/nonexistent_zzz_624.asm"
+        },
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+          "op": "SET_MIS",
+          "value": "MIS-NOPE-999"
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "mutation_id": "X1-001",
+      "strategy": "X1",
+      "cards": [
+        "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+        "atoms/mem/ATOM-MEM-MOVE-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 7,
+      "elapsed_ms": 2969
+    },
+    {
+      "mutation_id": "X1-002",
+      "strategy": "X1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-001.md",
+        "atoms/mem/ATOM-MEM-RAII-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 2870
+    },
+    {
+      "mutation_id": "X1-003",
+      "strategy": "X1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-002.md",
+        "atoms/mem/ATOM-MEM-PERF-003.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 2713
+    },
+    {
+      "mutation_id": "X1-004",
+      "strategy": "X1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-LEAK-001.md",
+        "atoms/mem/ATOM-MEM-SHARED-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 2748
+    },
+    {
+      "mutation_id": "X1-005",
+      "strategy": "X1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-LEAK-002.md",
+        "atoms/mem/ATOM-MEM-WEAK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 2731
+    },
+    {
+      "mutation_id": "X1-006",
+      "strategy": "X1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-NEW-001.md",
+        "atoms/mem/ATOM-MEM-RAII-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 2703
+    },
+    {
+      "mutation_id": "X1-007",
+      "strategy": "X1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-PERF-001.md",
+        "atoms/mem/ATOM-MEM-MOVE-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 2741
+    },
+    {
+      "mutation_id": "X1-008",
+      "strategy": "X1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-PERF-002.md",
+        "atoms/mem/ATOM-MEM-PERF-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 2671
+    },
+    {
+      "mutation_id": "X1-009",
+      "strategy": "X1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-PERF-003.md",
+        "atoms/mem/ATOM-MEM-PERF-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 2730
+    },
+    {
+      "mutation_id": "X1-010",
+      "strategy": "X1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-PERF-004.md",
+        "atoms/mem/ATOM-MEM-PERF-003.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 2704
+    },
+    {
+      "mutation_id": "X1-011",
+      "strategy": "X1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-RAII-002.md",
+        "atoms/mem/ATOM-MEM-MOVE-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 2721
+    },
+    {
+      "mutation_id": "X1-012",
+      "strategy": "X1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-RVREF-001.md",
+        "atoms/mem/ATOM-MEM-MOVE-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 2726
+    },
+    {
+      "mutation_id": "X1-013",
+      "strategy": "X1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-SHARED-001.md",
+        "atoms/mem/ATOM-MEM-UNIQUE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 2733
+    },
+    {
+      "mutation_id": "X1-014",
+      "strategy": "X1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-SHARED-002.md",
+        "atoms/mem/ATOM-MEM-WEAK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 2690
+    },
+    {
+      "mutation_id": "X1-015",
+      "strategy": "X1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+        "atoms/mem/ATOM-MEM-SHARED-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFY-REASON"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 8,
+      "elapsed_ms": 2724
+    },
+    {
+      "mutation_id": "X2-001",
+      "strategy": "X2",
+      "cards": [
+        "atoms/conc/ATOM-CONC-FENCE-001.md",
+        "atoms/conc/ATOM-CONC-LOCK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-DAG"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2751
+    },
+    {
+      "mutation_id": "X2-002",
+      "strategy": "X2",
+      "cards": [
+        "atoms/conc/ATOM-CONC-RACE-001.md",
+        "atoms/hist/ATOM-HIST-AUTOPTR-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-DAG"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2719
+    },
+    {
+      "mutation_id": "X2-003",
+      "strategy": "X2",
+      "cards": [
+        "atoms/lang/ATOM-LANG-INLINE-001.md",
+        "atoms/mem/ATOM-MEM-ALIGN-001.md"
+      ],
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-REL-TARGET",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2726
+    },
+    {
+      "mutation_id": "X2-004",
+      "strategy": "X2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-001.md",
+        "atoms/mem/ATOM-MEM-ALLOC-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-DAG"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2712
+    },
+    {
+      "mutation_id": "X2-005",
+      "strategy": "X2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-LEAK-001.md",
+        "atoms/mem/ATOM-MEM-LEAK-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-DAG"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2740
+    },
+    {
+      "mutation_id": "X2-006",
+      "strategy": "X2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-MOVE-002.md",
+        "atoms/mem/ATOM-MEM-NEW-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-DAG"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2752
+    },
+    {
+      "mutation_id": "X2-007",
+      "strategy": "X2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-PERF-001.md",
+        "atoms/mem/ATOM-MEM-PERF-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-DAG"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2796
+    },
+    {
+      "mutation_id": "X2-008",
+      "strategy": "X2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-PERF-003.md",
+        "atoms/mem/ATOM-MEM-PERF-004.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-DAG"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2792
+    },
+    {
+      "mutation_id": "X2-009",
+      "strategy": "X2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-RAII-001.md",
+        "atoms/mem/ATOM-MEM-RAII-002.md"
+      ],
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-REL-TARGET",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2761
+    },
+    {
+      "mutation_id": "X2-010",
+      "strategy": "X2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-RVREF-001.md",
+        "atoms/mem/ATOM-MEM-SHARED-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-DAG"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2781
+    },
+    {
+      "mutation_id": "X2-011",
+      "strategy": "X2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-SHARED-002.md",
+        "atoms/mem/ATOM-MEM-UNIQUE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-DAG"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2707
+    },
+    {
+      "mutation_id": "X2-012",
+      "strategy": "X2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+        "atoms/mem/ATOM-MEM-VALUE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-DAG"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2832
+    },
+    {
+      "mutation_id": "X2-013",
+      "strategy": "X2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-VALUE-002.md",
+        "atoms/mem/ATOM-MEM-WEAK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-DAG"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2847
+    },
+    {
+      "mutation_id": "X2-014",
+      "strategy": "X2",
+      "cards": [
+        "atoms/ub/ATOM-UB-GRAY-001.md",
+        "atoms/conc/ATOM-CONC-FENCE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-DAG"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 4,
+      "n_findings_after": 5,
+      "elapsed_ms": 2778
+    },
+    {
+      "mutation_id": "X2-015",
+      "strategy": "X2",
+      "cards": [
+        "atoms/conc/ATOM-CONC-LOCK-001.md",
+        "atoms/conc/ATOM-CONC-RACE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-DAG"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2705
+    },
+    {
+      "mutation_id": "X3-001",
+      "strategy": "X3",
+      "cards": [
+        "atoms/conc/ATOM-CONC-LOCK-001.md",
+        "atoms/conc/ATOM-CONC-RACE-001.md"
+      ],
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-REL-UNKNOWN"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2770
+    },
+    {
+      "mutation_id": "X3-002",
+      "strategy": "X3",
+      "cards": [
+        "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+        "atoms/lang/ATOM-LANG-INLINE-001.md"
+      ],
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-REL-UNKNOWN"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2824
+    },
+    {
+      "mutation_id": "X3-003",
+      "strategy": "X3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALIGN-001.md",
+        "atoms/mem/ATOM-MEM-ALLOC-001.md"
+      ],
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-REL-TARGET",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2728
+    },
+    {
+      "mutation_id": "X3-004",
+      "strategy": "X3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-002.md",
+        "atoms/mem/ATOM-MEM-LEAK-001.md"
+      ],
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-REL-UNKNOWN"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2843
+    },
+    {
+      "mutation_id": "X3-005",
+      "strategy": "X3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-LEAK-002.md",
+        "atoms/mem/ATOM-MEM-MOVE-002.md"
+      ],
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-REL-UNKNOWN"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2848
+    },
+    {
+      "mutation_id": "X3-006",
+      "strategy": "X3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-NEW-001.md",
+        "atoms/mem/ATOM-MEM-PERF-001.md"
+      ],
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-REL-UNKNOWN"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2853
+    },
+    {
+      "mutation_id": "X3-007",
+      "strategy": "X3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-PERF-002.md",
+        "atoms/mem/ATOM-MEM-PERF-003.md"
+      ],
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-REL-UNKNOWN"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2815
+    },
+    {
+      "mutation_id": "X3-008",
+      "strategy": "X3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-PERF-004.md",
+        "atoms/mem/ATOM-MEM-RAII-001.md"
+      ],
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-REL-TARGET",
+        "ATOM-REL-UNKNOWN",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 6,
+      "elapsed_ms": 2765
+    },
+    {
+      "mutation_id": "X3-009",
+      "strategy": "X3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-RAII-002.md",
+        "atoms/mem/ATOM-MEM-RVREF-001.md"
+      ],
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-REL-UNKNOWN"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2850
+    },
+    {
+      "mutation_id": "X3-010",
+      "strategy": "X3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-SHARED-001.md",
+        "atoms/mem/ATOM-MEM-SHARED-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-CONFLICT"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-REL-UNKNOWN"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2825
+    },
+    {
+      "mutation_id": "X3-011",
+      "strategy": "X3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+        "atoms/mem/ATOM-MEM-UNIQUE-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-CONFLICT"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-REL-UNKNOWN"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2842
+    },
+    {
+      "mutation_id": "X3-012",
+      "strategy": "X3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-VALUE-001.md",
+        "atoms/mem/ATOM-MEM-VALUE-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-CONFLICT"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-REL-UNKNOWN"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2760
+    },
+    {
+      "mutation_id": "X3-013",
+      "strategy": "X3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-WEAK-001.md",
+        "atoms/ub/ATOM-UB-GRAY-001.md"
+      ],
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-REL-UNKNOWN"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 4,
+      "n_findings_after": 5,
+      "elapsed_ms": 2843
+    },
+    {
+      "mutation_id": "X3-014",
+      "strategy": "X3",
+      "cards": [
+        "atoms/conc/ATOM-CONC-FENCE-001.md",
+        "atoms/conc/ATOM-CONC-LOCK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-REL-CONFLICT"
+      ],
+      "new_nonblock_rules": [
+        "ATOM-REL-UNKNOWN"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2867
+    },
+    {
+      "mutation_id": "X3-015",
+      "strategy": "X3",
+      "cards": [
+        "atoms/conc/ATOM-CONC-RACE-001.md",
+        "atoms/hist/ATOM-HIST-AUTOPTR-001.md"
+      ],
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-REL-UNKNOWN"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2838
+    },
+    {
+      "mutation_id": "X4-001",
+      "strategy": "X4",
+      "cards": [
+        "evidence/conc/EV-CONC-001.md",
+        "evidence/conc/EV-CONC-001.md",
+        "atoms/conc/ATOM-CONC-FENCE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "new_nonblock_rules": [
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-ASSERT-SYMBOL-MAPPED",
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 6,
+      "n_findings_after": 10,
+      "elapsed_ms": 2819
+    },
+    {
+      "mutation_id": "X4-002",
+      "strategy": "X4",
+      "cards": [
+        "evidence/conc/EV-CONC-002.md",
+        "evidence/conc/EV-CONC-002.md",
+        "atoms/conc/ATOM-CONC-LOCK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "new_nonblock_rules": [
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-ASSERT-SYMBOL-MAPPED",
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 6,
+      "n_findings_after": 10,
+      "elapsed_ms": 2791
+    },
+    {
+      "mutation_id": "X4-003",
+      "strategy": "X4",
+      "cards": [
+        "evidence/conc/EV-CONC-003.md",
+        "evidence/conc/EV-CONC-003.md",
+        "atoms/conc/ATOM-CONC-RACE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "new_nonblock_rules": [
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-ASSERT-SYMBOL-MAPPED",
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 6,
+      "n_findings_after": 10,
+      "elapsed_ms": 2772
+    },
+    {
+      "mutation_id": "X4-004",
+      "strategy": "X4",
+      "cards": [
+        "evidence/conc/EV-CONC-004.md",
+        "evidence/conc/EV-CONC-004.md",
+        "atoms/hist/ATOM-HIST-AUTOPTR-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "new_nonblock_rules": [
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-ASSERT-SYMBOL-MAPPED",
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 6,
+      "n_findings_after": 10,
+      "elapsed_ms": 2808
+    },
+    {
+      "mutation_id": "X4-005",
+      "strategy": "X4",
+      "cards": [
+        "evidence/conc/EV-CONC-005.md",
+        "evidence/conc/EV-CONC-005.md",
+        "atoms/lang/ATOM-LANG-INLINE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "new_nonblock_rules": [
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-ASSERT-SYMBOL-MAPPED",
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 4,
+      "n_findings_after": 8,
+      "elapsed_ms": 2838
+    },
+    {
+      "mutation_id": "X4-006",
+      "strategy": "X4",
+      "cards": [
+        "evidence/conc/EV-CONC-006.md",
+        "evidence/conc/EV-CONC-006.md",
+        "atoms/mem/ATOM-MEM-ALIGN-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "new_nonblock_rules": [
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-ASSERT-SYMBOL-MAPPED",
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 5,
+      "n_findings_after": 9,
+      "elapsed_ms": 2766
+    },
+    {
+      "mutation_id": "X4-007",
+      "strategy": "X4",
+      "cards": [
+        "evidence/hist/EV-HIST-001.md",
+        "evidence/hist/EV-HIST-001.md",
+        "atoms/mem/ATOM-MEM-ALLOC-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "new_nonblock_rules": [
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-ASSERT-SYMBOL-MAPPED",
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 4,
+      "n_findings_after": 8,
+      "elapsed_ms": 2810
+    },
+    {
+      "mutation_id": "X4-008",
+      "strategy": "X4",
+      "cards": [
+        "evidence/lang/EV-LANG-001.md",
+        "evidence/lang/EV-LANG-001.md",
+        "atoms/mem/ATOM-MEM-ALLOC-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "new_nonblock_rules": [
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 4,
+      "n_findings_after": 7,
+      "elapsed_ms": 2778
+    },
+    {
+      "mutation_id": "X4-009",
+      "strategy": "X4",
+      "cards": [
+        "evidence/lang/EV-LANG-002.md",
+        "evidence/lang/EV-LANG-002.md",
+        "atoms/mem/ATOM-MEM-LEAK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "new_nonblock_rules": [
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 5,
+      "n_findings_after": 8,
+      "elapsed_ms": 2819
+    },
+    {
+      "mutation_id": "X4-010",
+      "strategy": "X4",
+      "cards": [
+        "evidence/mem/EV-MEM-001.md",
+        "evidence/mem/EV-MEM-001.md",
+        "atoms/mem/ATOM-MEM-LEAK-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "new_nonblock_rules": [
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-ASSERT-SYMBOL-MAPPED"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 5,
+      "n_findings_after": 8,
+      "elapsed_ms": 2779
+    },
+    {
+      "mutation_id": "X4-011",
+      "strategy": "X4",
+      "cards": [
+        "evidence/mem/EV-MEM-002.md",
+        "evidence/mem/EV-MEM-002.md",
+        "atoms/mem/ATOM-MEM-MOVE-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "new_nonblock_rules": [
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-ASSERT-SYMBOL-MAPPED",
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 7,
+      "elapsed_ms": 2875
+    },
+    {
+      "mutation_id": "X4-012",
+      "strategy": "X4",
+      "cards": [
+        "evidence/mem/EV-MEM-003.md",
+        "evidence/mem/EV-MEM-003.md",
+        "atoms/mem/ATOM-MEM-NEW-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "new_nonblock_rules": [
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-ASSERT-SYMBOL-MAPPED",
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 4,
+      "n_findings_after": 8,
+      "elapsed_ms": 2804
+    },
+    {
+      "mutation_id": "X4-013",
+      "strategy": "X4",
+      "cards": [
+        "evidence/mem/EV-MEM-004.md",
+        "evidence/mem/EV-MEM-004.md",
+        "atoms/mem/ATOM-MEM-PERF-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "new_nonblock_rules": [
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-ASSERT-SYMBOL-MAPPED",
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 7,
+      "elapsed_ms": 2768
+    },
+    {
+      "mutation_id": "X4-014",
+      "strategy": "X4",
+      "cards": [
+        "evidence/mem/EV-MEM-005.md",
+        "evidence/mem/EV-MEM-005.md",
+        "atoms/mem/ATOM-MEM-PERF-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "new_nonblock_rules": [
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-ASSERT-SYMBOL-MAPPED",
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 7,
+      "elapsed_ms": 2788
+    },
+    {
+      "mutation_id": "X4-015",
+      "strategy": "X4",
+      "cards": [
+        "evidence/mem/EV-MEM-006.md",
+        "evidence/mem/EV-MEM-006.md",
+        "atoms/mem/ATOM-MEM-PERF-003.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "new_nonblock_rules": [
+        "EV-ARTIFACT-VERSION-MATCH",
+        "EV-SERVES-EXIST"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 4,
+      "n_findings_after": 7,
+      "elapsed_ms": 2777
+    }
+  ],
+  "distribution": {
+    "blocked": 47,
+    "detected_nonblock": 13
+  },
+  "escaped": [],
+  "touched_block": [
+    "ATOM-ID-FORMAT",
+    "ATOM-ID-UNIQUE",
+    "ATOM-REL-CONFLICT",
+    "ATOM-REL-DAG",
+    "EV-ARTIFACT-FILE-EXISTS"
+  ],
+  "touched_nonblock": [
+    "ATOM-PREREQ-READABLE",
+    "ATOM-REL-TARGET",
+    "ATOM-REL-UNKNOWN",
+    "ATOM-VERIFY-REASON",
+    "EV-ARTIFACT-VERSION-MATCH",
+    "EV-ASSERT-SYMBOL-MAPPED",
+    "EV-FM-YAML-HARDENING",
+    "EV-SERVES-EXIST"
+  ],
+  "touched_all": [
+    "ATOM-ID-FORMAT",
+    "ATOM-ID-UNIQUE",
+    "ATOM-PREREQ-READABLE",
+    "ATOM-REL-CONFLICT",
+    "ATOM-REL-DAG",
+    "ATOM-REL-TARGET",
+    "ATOM-REL-UNKNOWN",
+    "ATOM-VERIFY-REASON",
+    "EV-ARTIFACT-FILE-EXISTS",
+    "EV-ARTIFACT-VERSION-MATCH",
+    "EV-ASSERT-SYMBOL-MAPPED",
+    "EV-FM-YAML-HARDENING",
+    "EV-SERVES-EXIST"
+  ],
+  "total": 60,
+  "elapsed_s": 167.0,
+  "predicted_rules": [
+    "ATOM-ID-UNIQUE",
+    "ATOM-MISCONCEPTION-REF",
+    "ATOM-REL-CONFLICT",
+    "ATOM-REL-DAG",
+    "ATOM-REL-TARGET",
+    "EV-ARTIFACT-FILE-EXISTS",
+    "EV-SERVES-EXIST"
+  ]
+}
