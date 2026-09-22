@@ -1,5 +1,19 @@
 # 622 D1 · 30 条逐条人审执行（按用户授权）
 
+> # 🔴 口径警示（2026-09-22 补，外部大模型审阅发现 + 626 A3 落地）
+>
+> **本批 30 条为「按用户授权执行」，未新增独立人类语义判断。**
+>
+> - `review_method = USER_AUTHORIZED_EXECUTION`（v2 规范名：`ITEM_OPEN`）
+> - `decision_origin = user_authorized_execution`
+> - **独立人类确认强度仍为 `0` 条** —— 这 30 条**不得**计入独立人审证据
+>
+> 事实依据：第一批 17 条是 OVERRIDE，理由直接沿用清单模板；第二批 13 条是 ACCEPT，
+> 理由同样是模板化的「复核 approve」。文档自己即承认「本批未新增任何人工判断，只做了把授权落到日志」。
+> 「30 条日志已执行」与「30 条新的独立人类语义审查」必须彻底区分（判据 1）。
+>
+> 详细口径见：本文档 A3 标注 · `data/human_review_honesty_615.md` 第六节 · `tools/authority_schema_v2_626.py`。
+
 > ⚠ **这是按用户授权执行 615 决策清单，不是系统自动决策。**
 > 每条决策均标注 `source=615_decision_list` 与 `authorized_by=user_authorization_2026-09-21`。
 
