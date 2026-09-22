@@ -1,0 +1,989 @@
+[
+  {
+    "mutation_id": "MUT-623-3e2e5777d296",
+    "attack_type": "H1",
+    "target_rule": "ATOM-FM-REQUIRED",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"first_hand\", \"target_rule\": \"ATOM-FM-REQUIRED\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "ATOM-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-ae46085971cc",
+    "attack_type": "H1",
+    "target_rule": "ATOM-FM-REQUIRED",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"first_hand\", \"target_rule\": \"ATOM-FM-REQUIRED\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "ATOM-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-0d65ce612f86",
+    "attack_type": "H1",
+    "target_rule": "ATOM-VERIFIED-BOUND",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"superiority\", \"target_rule\": \"ATOM-VERIFIED-BOUND\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "ATOM-VERIFIED-BOUND",
+      "ATOM-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-d4ab2fb825f3",
+    "attack_type": "H1",
+    "target_rule": "ATOM-VERIFIED-BOUND",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"superiority\", \"target_rule\": \"ATOM-VERIFIED-BOUND\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "ATOM-VERIFIED-BOUND",
+      "ATOM-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-c1061dde39aa",
+    "attack_type": "H1",
+    "target_rule": "ATOM-STATUS-TRANSITION",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"status_history\", \"target_rule\": \"ATOM-STATUS-TRANSITION\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "ATOM-STATUS-TRANSITION"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-f7fa9062d04a",
+    "attack_type": "H1",
+    "target_rule": "ATOM-STATUS-TRANSITION",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"status_history\", \"target_rule\": \"ATOM-STATUS-TRANSITION\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "ATOM-STATUS-TRANSITION"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-d07e8ab9638b",
+    "attack_type": "H1",
+    "target_rule": "ATOM-CLAIM-STRUCTURED",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"claim_structured\", \"target_rule\": \"ATOM-CLAIM-STRUCTURED\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "ATOM-CLAIM-STRUCTURED",
+      "ATOM-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-98299596ac4c",
+    "attack_type": "H1",
+    "target_rule": "ATOM-CLAIM-STRUCTURED",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"claim_structured\", \"target_rule\": \"ATOM-CLAIM-STRUCTURED\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "ATOM-CLAIM-STRUCTURED",
+      "ATOM-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-2528f952714a",
+    "attack_type": "H1",
+    "target_rule": "EV-FM-REQUIRED",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"hypothesis\", \"target_rule\": \"EV-FM-REQUIRED\", \"target_card\": \"evidence/conc/EV-CONC-001.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "EV-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-54059d90fd8b",
+    "attack_type": "H1",
+    "target_rule": "EV-FM-REQUIRED",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"M1\", \"field\": \"hypothesis\", \"target_rule\": \"EV-FM-REQUIRED\", \"target_card\": \"evidence/conc/EV-CONC-002.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "EV-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-58492dcfaf38",
+    "attack_type": "H1",
+    "target_rule": "EV-MATRIX",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"matrix\", \"target_rule\": \"EV-MATRIX\", \"target_card\": \"evidence/conc/EV-CONC-001.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "EV-MATRIX",
+      "EV-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-f8b42c101cab",
+    "attack_type": "H1",
+    "target_rule": "EV-MATRIX",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"M1\", \"field\": \"matrix\", \"target_rule\": \"EV-MATRIX\", \"target_card\": \"evidence/conc/EV-CONC-002.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "EV-MATRIX",
+      "EV-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-e1700630ab4c",
+    "attack_type": "H1",
+    "target_rule": "EV-ARTIFACT-FILE-EXISTS",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"M2\", \"field\": \"artifact\", \"target_rule\": \"EV-ARTIFACT-FILE-EXISTS\", \"target_card\": \"evidence/conc/EV-CONC-001.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "EV-ARTIFACT-FILE-EXISTS",
+      "CARD-PATH-NOT-CANONICAL"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-5d37d0e922b5",
+    "attack_type": "H1",
+    "target_rule": "EV-ARTIFACT-FILE-EXISTS",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"M2\", \"field\": \"artifact\", \"target_rule\": \"EV-ARTIFACT-FILE-EXISTS\", \"target_card\": \"evidence/conc/EV-CONC-002.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "EV-ARTIFACT-FILE-EXISTS",
+      "CARD-PATH-NOT-CANONICAL"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-db97c969ee08",
+    "attack_type": "H1",
+    "target_rule": "EV-SELF-SATISFIED-ASSERT",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"M4\", \"field\": \"artifact_assert\", \"target_rule\": \"EV-SELF-SATISFIED-ASSERT\", \"target_card\": \"evidence/conc/EV-CONC-001.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "EV-SELF-SATISFIED-ASSERT"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-9a51e78741c7",
+    "attack_type": "H1",
+    "target_rule": "EV-SELF-SATISFIED-ASSERT",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"M4\", \"field\": \"artifact_assert\", \"target_rule\": \"EV-SELF-SATISFIED-ASSERT\", \"target_card\": \"evidence/conc/EV-CONC-002.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "EV-SELF-SATISFIED-ASSERT"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-af02f716c56d",
+    "attack_type": "H2",
+    "target_rule": "ATOM-STATUS-VALUE",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"status\", \"target_rule\": \"ATOM-STATUS-VALUE\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\", \"value\": \"bogus_enum\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "ATOM-STATUS-VALUE"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-afff607a7196",
+    "attack_type": "H2",
+    "target_rule": "ATOM-STATUS-VALUE",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"status\", \"target_rule\": \"ATOM-STATUS-VALUE\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\", \"value\": \"bogus_enum\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "ATOM-STATUS-VALUE"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-1c48e8843cd8",
+    "attack_type": "H2",
+    "target_rule": "ATOM-ID-FORMAT",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"id\", \"target_rule\": \"ATOM-ID-FORMAT\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\", \"value\": \"BAD ID 001\"}",
+    "complexity": 89,
+    "predicted_rules": [
+      "ATOM-ID-FORMAT",
+      "ATOM-ID-UNIQUE"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-c5d23ed9459a",
+    "attack_type": "H2",
+    "target_rule": "ATOM-ID-FORMAT",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"id\", \"target_rule\": \"ATOM-ID-FORMAT\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\", \"value\": \"BAD ID 001\"}",
+    "complexity": 89,
+    "predicted_rules": [
+      "ATOM-ID-FORMAT",
+      "ATOM-ID-UNIQUE"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-d99f6be040a3",
+    "attack_type": "H2",
+    "target_rule": "ATOM-ID-UNIQUE",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"id\", \"target_rule\": \"ATOM-ID-UNIQUE\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\", \"value\": \"ATOM-CONC-FENCE-001\"}",
+    "complexity": 89,
+    "predicted_rules": [
+      "ATOM-ID-UNIQUE",
+      "ATOM-ID-FORMAT"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-594de1d302b7",
+    "attack_type": "H2",
+    "target_rule": "ATOM-ID-UNIQUE",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"id\", \"target_rule\": \"ATOM-ID-UNIQUE\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\", \"value\": \"ATOM-CONC-FENCE-001\"}",
+    "complexity": 89,
+    "predicted_rules": [
+      "ATOM-ID-UNIQUE",
+      "ATOM-ID-FORMAT"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-7180d82cd81d",
+    "attack_type": "H2",
+    "target_rule": "ATOM-DAL-MATCH",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"dal\", \"target_rule\": \"ATOM-DAL-MATCH\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\", \"value\": \"Z\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "ATOM-DAL-MATCH"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-3cae6ca9764f",
+    "attack_type": "H2",
+    "target_rule": "ATOM-DAL-MATCH",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"dal\", \"target_rule\": \"ATOM-DAL-MATCH\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\", \"value\": \"Z\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "ATOM-DAL-MATCH"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-54c5d6d52655",
+    "attack_type": "H2",
+    "target_rule": "ATOM-AUDIENCE",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"audience\", \"target_rule\": \"ATOM-AUDIENCE\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\", \"value\": \"toddler\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "ATOM-AUDIENCE"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-c5b33b5d5a34",
+    "attack_type": "H2",
+    "target_rule": "ATOM-AUDIENCE",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"audience\", \"target_rule\": \"ATOM-AUDIENCE\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\", \"value\": \"toddler\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "ATOM-AUDIENCE"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-47bed5abe16f",
+    "attack_type": "H2",
+    "target_rule": "ATOM-PREREQ-READABLE",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"prerequisites_readable\", \"target_rule\": \"ATOM-PREREQ-READABLE\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\", \"value\": \"maybe\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "ATOM-PREREQ-READABLE"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-e2b0f814abc5",
+    "attack_type": "H2",
+    "target_rule": "ATOM-PREREQ-READABLE",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"prerequisites_readable\", \"target_rule\": \"ATOM-PREREQ-READABLE\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\", \"value\": \"maybe\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "ATOM-PREREQ-READABLE"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-e7f8c6f3200c",
+    "attack_type": "H2",
+    "target_rule": "ATOM-SUPERIORITY-WORDS",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"superiority\", \"target_rule\": \"ATOM-SUPERIORITY-WORDS\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\", \"value\": \"obviously the best approach\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "ATOM-SUPERIORITY-WORDS"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-bdba02158e0e",
+    "attack_type": "H2",
+    "target_rule": "ATOM-SUPERIORITY-WORDS",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"superiority\", \"target_rule\": \"ATOM-SUPERIORITY-WORDS\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\", \"value\": \"obviously the best approach\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "ATOM-SUPERIORITY-WORDS"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-29928c2b5a38",
+    "attack_type": "H2",
+    "target_rule": "EV-ARTIFACT-VERSION-MATCH",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"artifact_version\", \"target_rule\": \"EV-ARTIFACT-VERSION-MATCH\", \"target_card\": \"evidence/conc/EV-CONC-001.md\", \"value\": \"0\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "EV-ARTIFACT-VERSION-MATCH"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-844e9bcbfd56",
+    "attack_type": "H2",
+    "target_rule": "EV-ARTIFACT-VERSION-MATCH",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"artifact_version\", \"target_rule\": \"EV-ARTIFACT-VERSION-MATCH\", \"target_card\": \"evidence/conc/EV-CONC-002.md\", \"value\": \"0\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "EV-ARTIFACT-VERSION-MATCH"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-951c6b6bf6e2",
+    "attack_type": "H2",
+    "target_rule": "EV-ID-UNIQUE",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"id\", \"target_rule\": \"EV-ID-UNIQUE\", \"target_card\": \"evidence/conc/EV-CONC-001.md\", \"value\": \"EV-CONC-001\"}",
+    "complexity": 93,
+    "predicted_rules": [
+      "EV-ID-UNIQUE",
+      "ATOM-ID-FORMAT",
+      "ATOM-ID-UNIQUE"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-42d9effcceb7",
+    "attack_type": "H2",
+    "target_rule": "EV-ID-UNIQUE",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"id\", \"target_rule\": \"EV-ID-UNIQUE\", \"target_card\": \"evidence/conc/EV-CONC-002.md\", \"value\": \"EV-CONC-001\"}",
+    "complexity": 93,
+    "predicted_rules": [
+      "EV-ID-UNIQUE",
+      "ATOM-ID-FORMAT",
+      "ATOM-ID-UNIQUE"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-c40b3d275bc5",
+    "attack_type": "H2",
+    "target_rule": "EV-FALSIFICATION",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"falsification\", \"target_rule\": \"EV-FALSIFICATION\", \"target_card\": \"evidence/conc/EV-CONC-001.md\", \"value\": \"it works as expected\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "EV-FALSIFICATION"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-a326eb76bec6",
+    "attack_type": "H2",
+    "target_rule": "EV-FALSIFICATION",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"falsification\", \"target_rule\": \"EV-FALSIFICATION\", \"target_card\": \"evidence/conc/EV-CONC-002.md\", \"value\": \"it works as expected\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "EV-FALSIFICATION"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-e86347059cb4",
+    "attack_type": "H2",
+    "target_rule": "EV-TRIVIAL-OBSERVATION",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"actual\", \"target_rule\": \"EV-TRIVIAL-OBSERVATION\", \"target_card\": \"evidence/conc/EV-CONC-001.md\", \"value\": \"the program runs and prints expected output\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "EV-TRIVIAL-OBSERVATION"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-d29f1077da36",
+    "attack_type": "H2",
+    "target_rule": "EV-TRIVIAL-OBSERVATION",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"actual\", \"target_rule\": \"EV-TRIVIAL-OBSERVATION\", \"target_card\": \"evidence/conc/EV-CONC-002.md\", \"value\": \"the program runs and prints expected output\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "EV-TRIVIAL-OBSERVATION"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-7f770ac50c42",
+    "attack_type": "H2",
+    "target_rule": "S2-EVIDENCE-VERDICT",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"verdict\", \"target_rule\": \"S2-EVIDENCE-VERDICT\", \"target_card\": \"evidence/conc/EV-CONC-001.md\", \"value\": \"disconfirm\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "S2-EVIDENCE-VERDICT"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-0f9fb5c429e3",
+    "attack_type": "H2",
+    "target_rule": "S2-EVIDENCE-VERDICT",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"verdict\", \"target_rule\": \"S2-EVIDENCE-VERDICT\", \"target_card\": \"evidence/conc/EV-CONC-002.md\", \"value\": \"disconfirm\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "S2-EVIDENCE-VERDICT"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-baf80940b535",
+    "attack_type": "H3",
+    "target_rule": "EV-MSCV-NO-VERIFY",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"M34\", \"field\": \"command\", \"target_rule\": \"EV-MSCV-NO-VERIFY\", \"target_card\": \"evidence/conc/EV-CONC-001.md\"}",
+    "complexity": 82,
+    "predicted_rules": [
+      "EV-MSCV-NO-VERIFY"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-7b32dcbf8a59",
+    "attack_type": "H3",
+    "target_rule": "EV-MSCV-NO-VERIFY",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"M34\", \"field\": \"command\", \"target_rule\": \"EV-MSCV-NO-VERIFY\", \"target_card\": \"evidence/conc/EV-CONC-002.md\"}",
+    "complexity": 82,
+    "predicted_rules": [
+      "EV-MSCV-NO-VERIFY"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-bba127b58bbc",
+    "attack_type": "H3",
+    "target_rule": "EV-FM-DUP-KEY",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"M35\", \"field\": \"id\", \"target_rule\": \"EV-FM-DUP-KEY\", \"target_card\": \"evidence/conc/EV-CONC-001.md\"}",
+    "complexity": 82,
+    "predicted_rules": [
+      "EV-FM-DUP-KEY"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-cfd74270d1a1",
+    "attack_type": "H3",
+    "target_rule": "EV-FM-DUP-KEY",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"M35\", \"field\": \"id\", \"target_rule\": \"EV-FM-DUP-KEY\", \"target_card\": \"evidence/conc/EV-CONC-002.md\"}",
+    "complexity": 82,
+    "predicted_rules": [
+      "EV-FM-DUP-KEY"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-1c966c17b881",
+    "attack_type": "H3",
+    "target_rule": "EV-FM-YAML-HARDENING",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"M36\", \"field\": \"id\", \"target_rule\": \"EV-FM-YAML-HARDENING\", \"target_card\": \"evidence/conc/EV-CONC-001.md\"}",
+    "complexity": 82,
+    "predicted_rules": [
+      "EV-FM-YAML-HARDENING"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-cd64801e97fb",
+    "attack_type": "H3",
+    "target_rule": "EV-FM-YAML-HARDENING",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"M36\", \"field\": \"id\", \"target_rule\": \"EV-FM-YAML-HARDENING\", \"target_card\": \"evidence/conc/EV-CONC-002.md\"}",
+    "complexity": 82,
+    "predicted_rules": [
+      "EV-FM-YAML-HARDENING"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-31fdb89f9acc",
+    "attack_type": "H3",
+    "target_rule": "EV-ENV-DEPENDENT-KEY",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"M37\", \"field\": \"artifact_assert\", \"target_rule\": \"EV-ENV-DEPENDENT-KEY\", \"target_card\": \"evidence/conc/EV-CONC-001.md\"}",
+    "complexity": 82,
+    "predicted_rules": [
+      "EV-ENV-DEPENDENT-KEY"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-fb67724bbd8c",
+    "attack_type": "H3",
+    "target_rule": "EV-ENV-DEPENDENT-KEY",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"M37\", \"field\": \"artifact_assert\", \"target_rule\": \"EV-ENV-DEPENDENT-KEY\", \"target_card\": \"evidence/conc/EV-CONC-002.md\"}",
+    "complexity": 82,
+    "predicted_rules": [
+      "EV-ENV-DEPENDENT-KEY"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-818d12b57491",
+    "attack_type": "H3",
+    "target_rule": "EV-ASSERT-SYMBOL-MAPPED",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"M32\", \"field\": \"artifact_assert\", \"target_rule\": \"EV-ASSERT-SYMBOL-MAPPED\", \"target_card\": \"evidence/conc/EV-CONC-001.md\"}",
+    "complexity": 82,
+    "predicted_rules": [
+      "EV-ASSERT-SYMBOL-MAPPED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-23ffcb988722",
+    "attack_type": "H3",
+    "target_rule": "EV-ASSERT-SYMBOL-MAPPED",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"M32\", \"field\": \"artifact_assert\", \"target_rule\": \"EV-ASSERT-SYMBOL-MAPPED\", \"target_card\": \"evidence/conc/EV-CONC-002.md\"}",
+    "complexity": 82,
+    "predicted_rules": [
+      "EV-ASSERT-SYMBOL-MAPPED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-23b906bf3e95",
+    "attack_type": "H3",
+    "target_rule": "EV-SERVES-EXIST",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"M9\", \"field\": \"serves\", \"target_rule\": \"EV-SERVES-EXIST\", \"target_card\": \"evidence/conc/EV-CONC-001.md\"}",
+    "complexity": 82,
+    "predicted_rules": [
+      "EV-SERVES-EXIST"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-817183fbb792",
+    "attack_type": "H3",
+    "target_rule": "EV-SERVES-EXIST",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"M9\", \"field\": \"serves\", \"target_rule\": \"EV-SERVES-EXIST\", \"target_card\": \"evidence/conc/EV-CONC-002.md\"}",
+    "complexity": 82,
+    "predicted_rules": [
+      "EV-SERVES-EXIST"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-45f3e4e27cfa",
+    "attack_type": "H4",
+    "target_rule": "ATOM-REL-DAG",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"M16\", \"field\": \"relations\", \"target_rule\": \"ATOM-REL-DAG\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\"}",
+    "complexity": 90,
+    "predicted_rules": [
+      "ATOM-REL-DAG"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-ca83132e5a9b",
+    "attack_type": "H4",
+    "target_rule": "ATOM-REL-DAG",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"M16\", \"field\": \"relations\", \"target_rule\": \"ATOM-REL-DAG\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\"}",
+    "complexity": 90,
+    "predicted_rules": [
+      "ATOM-REL-DAG"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-4f30ef397625",
+    "attack_type": "H4",
+    "target_rule": "ATOM-REL-TARGET",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"M9\", \"field\": \"relations\", \"target_rule\": \"ATOM-REL-TARGET\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\"}",
+    "complexity": 90,
+    "predicted_rules": [
+      "ATOM-REL-TARGET"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-0c25b66db299",
+    "attack_type": "H4",
+    "target_rule": "ATOM-REL-TARGET",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"M9\", \"field\": \"relations\", \"target_rule\": \"ATOM-REL-TARGET\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\"}",
+    "complexity": 90,
+    "predicted_rules": [
+      "ATOM-REL-TARGET"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-960090208c4f",
+    "attack_type": "H4",
+    "target_rule": "ATOM-GRAY-ZONE",
+    "target_card": "atoms/ub/ATOM-UB-GRAY-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"gray_zone\", \"target_rule\": \"ATOM-GRAY-ZONE\", \"target_card\": \"atoms/ub/ATOM-UB-GRAY-001.md\", \"value\": \"not-a-category\"}",
+    "complexity": 90,
+    "predicted_rules": [
+      "ATOM-GRAY-ZONE"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-6ecaf66bb00c",
+    "attack_type": "H4",
+    "target_rule": "ATOM-NO-UNVERIFIED",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"status\", \"target_rule\": \"ATOM-NO-UNVERIFIED\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\", \"value\": \"unverified\"}",
+    "complexity": 94,
+    "predicted_rules": [
+      "ATOM-NO-UNVERIFIED",
+      "ATOM-STATUS-VALUE"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-dd315b272671",
+    "attack_type": "H4",
+    "target_rule": "ATOM-NO-UNVERIFIED",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"status\", \"target_rule\": \"ATOM-NO-UNVERIFIED\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\", \"value\": \"unverified\"}",
+    "complexity": 94,
+    "predicted_rules": [
+      "ATOM-NO-UNVERIFIED",
+      "ATOM-STATUS-VALUE"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-be2f9fdfb0af",
+    "attack_type": "H4",
+    "target_rule": "DOC-ZERO-PLACEHOLDER",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"M40\", \"field\": \"claim\", \"target_rule\": \"DOC-ZERO-PLACEHOLDER\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\"}",
+    "complexity": 90,
+    "predicted_rules": [
+      "DOC-ZERO-PLACEHOLDER"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-00bbabf40cf4",
+    "attack_type": "H4",
+    "target_rule": "DOC-ZERO-PLACEHOLDER",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"M40\", \"field\": \"claim\", \"target_rule\": \"DOC-ZERO-PLACEHOLDER\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\"}",
+    "complexity": 90,
+    "predicted_rules": [
+      "DOC-ZERO-PLACEHOLDER"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-5f91616a01c1",
+    "attack_type": "H1",
+    "target_rule": "ATOM-FM-REQUIRED",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"first_hand\", \"target_rule\": \"ATOM-FM-REQUIRED\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "ATOM-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-740bdee9056f",
+    "attack_type": "H1",
+    "target_rule": "ATOM-FM-REQUIRED",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"first_hand\", \"target_rule\": \"ATOM-FM-REQUIRED\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "ATOM-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-2f003660267b",
+    "attack_type": "H1",
+    "target_rule": "ATOM-VERIFIED-BOUND",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"superiority\", \"target_rule\": \"ATOM-VERIFIED-BOUND\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "ATOM-VERIFIED-BOUND",
+      "ATOM-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-10c26f7448fa",
+    "attack_type": "H1",
+    "target_rule": "ATOM-VERIFIED-BOUND",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"superiority\", \"target_rule\": \"ATOM-VERIFIED-BOUND\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "ATOM-VERIFIED-BOUND",
+      "ATOM-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-e1ac222ea2fe",
+    "attack_type": "H1",
+    "target_rule": "ATOM-STATUS-TRANSITION",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"status_history\", \"target_rule\": \"ATOM-STATUS-TRANSITION\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "ATOM-STATUS-TRANSITION"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-e67dc4227aca",
+    "attack_type": "H1",
+    "target_rule": "ATOM-STATUS-TRANSITION",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"status_history\", \"target_rule\": \"ATOM-STATUS-TRANSITION\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "ATOM-STATUS-TRANSITION"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-2577ce9b0c37",
+    "attack_type": "H1",
+    "target_rule": "ATOM-CLAIM-STRUCTURED",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"claim_structured\", \"target_rule\": \"ATOM-CLAIM-STRUCTURED\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "ATOM-CLAIM-STRUCTURED",
+      "ATOM-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-58b6278952fe",
+    "attack_type": "H1",
+    "target_rule": "ATOM-CLAIM-STRUCTURED",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"claim_structured\", \"target_rule\": \"ATOM-CLAIM-STRUCTURED\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "ATOM-CLAIM-STRUCTURED",
+      "ATOM-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-0b8dfe855ac4",
+    "attack_type": "H1",
+    "target_rule": "EV-FM-REQUIRED",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"hypothesis\", \"target_rule\": \"EV-FM-REQUIRED\", \"target_card\": \"evidence/conc/EV-CONC-001.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "EV-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-9c939d524d65",
+    "attack_type": "H1",
+    "target_rule": "EV-FM-REQUIRED",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"M1\", \"field\": \"hypothesis\", \"target_rule\": \"EV-FM-REQUIRED\", \"target_card\": \"evidence/conc/EV-CONC-002.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "EV-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-9b928add5614",
+    "attack_type": "H1",
+    "target_rule": "EV-MATRIX",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"M1\", \"field\": \"matrix\", \"target_rule\": \"EV-MATRIX\", \"target_card\": \"evidence/conc/EV-CONC-001.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "EV-MATRIX",
+      "EV-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-e7e16ee33857",
+    "attack_type": "H1",
+    "target_rule": "EV-MATRIX",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"M1\", \"field\": \"matrix\", \"target_rule\": \"EV-MATRIX\", \"target_card\": \"evidence/conc/EV-CONC-002.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "EV-MATRIX",
+      "EV-FM-REQUIRED"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-30566d040a16",
+    "attack_type": "H1",
+    "target_rule": "EV-ARTIFACT-FILE-EXISTS",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"M2\", \"field\": \"artifact\", \"target_rule\": \"EV-ARTIFACT-FILE-EXISTS\", \"target_card\": \"evidence/conc/EV-CONC-001.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "EV-ARTIFACT-FILE-EXISTS",
+      "CARD-PATH-NOT-CANONICAL"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-03c7774f97f8",
+    "attack_type": "H1",
+    "target_rule": "EV-ARTIFACT-FILE-EXISTS",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"M2\", \"field\": \"artifact\", \"target_rule\": \"EV-ARTIFACT-FILE-EXISTS\", \"target_card\": \"evidence/conc/EV-CONC-002.md\"}",
+    "complexity": 84,
+    "predicted_rules": [
+      "EV-ARTIFACT-FILE-EXISTS",
+      "CARD-PATH-NOT-CANONICAL"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-3c26d27713e6",
+    "attack_type": "H1",
+    "target_rule": "EV-SELF-SATISFIED-ASSERT",
+    "target_card": "evidence/conc/EV-CONC-001.md",
+    "content": "{\"op\": \"M4\", \"field\": \"artifact_assert\", \"target_rule\": \"EV-SELF-SATISFIED-ASSERT\", \"target_card\": \"evidence/conc/EV-CONC-001.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "EV-SELF-SATISFIED-ASSERT"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-317cdb912ba9",
+    "attack_type": "H1",
+    "target_rule": "EV-SELF-SATISFIED-ASSERT",
+    "target_card": "evidence/conc/EV-CONC-002.md",
+    "content": "{\"op\": \"M4\", \"field\": \"artifact_assert\", \"target_rule\": \"EV-SELF-SATISFIED-ASSERT\", \"target_card\": \"evidence/conc/EV-CONC-002.md\"}",
+    "complexity": 80,
+    "predicted_rules": [
+      "EV-SELF-SATISFIED-ASSERT"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-78b8fdaf22b6",
+    "attack_type": "H2",
+    "target_rule": "ATOM-STATUS-VALUE",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"status\", \"target_rule\": \"ATOM-STATUS-VALUE\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\", \"value\": \"bogus_enum\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "ATOM-STATUS-VALUE"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-750bb415483b",
+    "attack_type": "H2",
+    "target_rule": "ATOM-STATUS-VALUE",
+    "target_card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"status\", \"target_rule\": \"ATOM-STATUS-VALUE\", \"target_card\": \"atoms/conc/ATOM-CONC-LOCK-001.md\", \"value\": \"bogus_enum\"}",
+    "complexity": 85,
+    "predicted_rules": [
+      "ATOM-STATUS-VALUE"
+    ],
+    "schema_checked": true
+  },
+  {
+    "mutation_id": "MUT-623-2f458a2ee0b9",
+    "attack_type": "H2",
+    "target_rule": "ATOM-ID-FORMAT",
+    "target_card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+    "content": "{\"op\": \"MSET\", \"field\": \"id\", \"target_rule\": \"ATOM-ID-FORMAT\", \"target_card\": \"atoms/conc/ATOM-CONC-FENCE-001.md\", \"value\": \"BAD ID 001\"}",
+    "complexity": 89,
+    "predicted_rules": [
+      "ATOM-ID-FORMAT",
+      "ATOM-ID-UNIQUE"
+    ],
+    "schema_checked": true
+  }
+]

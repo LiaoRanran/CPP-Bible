@@ -197,6 +197,76 @@ def plan_edit(content: dict, text: str) -> tuple[str, str] | None:
         return text[:m.start()] + re.sub(r"(status\s*:\s*).*", r"\1draft", m.group(0)) + text[m.end():], \
             "status → draft"
 
+    # ── 623 A1 扩展算子（高复杂度带攻击面覆盖更多 block 规则）──────────────────────
+    # 说明：622 A1 的 M1–M9 只覆盖 ~12 条规则；623 为触达 >30 条 block 规则，
+    # 在不改 CORE_TOOLS（gate_engine 等）前提下，扩展 apply 原语。均为字段级编辑，
+    # 原地改+必还原护栏不变。
+    if op == "MSET":  # 通用：标量 frontmatter 字段设为指定值（仅用于单行标量键）
+        key = content.get("field")
+        val = content.get("value")
+        if not key or val is None:
+            return None
+        m = _key_line(text, key)
+        if not m:
+            return None
+        newline = re.sub(rf"^{re.escape(key)}\s*:\s*.*$", f"{key}: {val}", m.group(0))
+        return text[:m.start()] + newline + text[m.end():], f"设置 {key} → {val}"
+
+    if op == "M16":  # 自环关系（破坏 DAG）：追加 self supports 边
+        m = _key_line(text, "relations")
+        cm = _key_line(text, "id")
+        if not m or not cm:
+            return None
+        cid = cm.group(0).split(":", 1)[1].strip()
+        return text[:m.end()] + f"\n - supports: {cid}" + text[m.end():], \
+            f"追加自环关系 supports:{cid}"
+
+    if op == "M31":  # 声明不存在的 run_match_keys 键
+        blk = re.search(r"(?m)^run_match_keys[ \t]*:[ \t]*\n((?:[ \t]+-[^\n]*\n)+)", text)
+        if not blk:
+            return None
+        new_block = "run_match_keys:\n" + blk.group(1) + " - no_such_key_in_out\n"
+        return text[:blk.start()] + new_block + text[blk.end():], \
+            "追加不存在的 run_match 键"
+
+    if op == "M32":  # 把某断言文本改为不可定位符号
+        tm = re.search(r'text:\s*"([^"]*)"', text)
+        if not tm:
+            return None
+        new_text = text[:tm.start()] + 'text: "ZZZ_NO_SUCH_SYMBOL_XYZ"' + text[tm.end():]
+        return new_text, "断言文本改为不可定位符号"
+
+    if op == "M34":  # 命令掺入 MSVC cl 且卡为 confirm
+        m = _key_line(text, "command")
+        if not m:
+            return None
+        newline = m.group(0) + " && cl /EHsc dummy.cpp"
+        return text[:m.start()] + newline + text[m.end():], "command 掺入 cl(MSVC)"
+
+    if op == "M35":  # 重复 frontmatter 键（走私/遮蔽，after-wins）
+        m = _key_line(text, "id")
+        if not m:
+            return None
+        dup = m.group(0)
+        return text[:m.end()] + "\n" + dup + text[m.end():], "重复键 id（走私）"
+
+    if op == "M36":  # YAML 走私：注入破坏结构的重叠键
+        m = _key_line(text, "id")
+        if not m:
+            return None
+        smuggle = "\nid: ATOM-X-SMUGGLE-001\n  leaked: true"
+        return text[:m.end()] + smuggle + text[m.end():], "YAML 走私注入"
+
+    if op == "M37":  # 环境量键声明为断言（EV-ENV-DEPENDENT-KEY）
+        m = _key_line(text, "artifact_assert")
+        if not m:
+            return None
+        new = m.group(0) + '\n - {kind: exists, text: "$TEMP"}'
+        return text[:m.start()] + new + text[m.end():], "环境量键声明为断言"
+
+    if op == "M40":  # claim 注入零占位符（DOC-ZERO-PLACEHOLDER）
+        return text + "\n\nTODO: 待补充完整论证（零占位符）\n", "claim 注入 TODO 占位符"
+
     return None
 
 
