@@ -1,0 +1,22 @@
+{
+ "total": 83,
+ "state_distribution": {
+  "SUPPORTED": 83
+ },
+ "basis_distribution": {
+  "extracted_verdict": 27,
+  "card_verdict": 56
+ },
+ "alignment": {
+  "cross": {
+   "SUPPORTED×approved": 27,
+   "SUPPORTED×pending": 56
+  },
+  "total": 83,
+  "aligned": 27,
+  "aligned_rate": 0.3253,
+  "machine_supported_human_pending": 56,
+  "machine_abstain_human_approved": 0,
+  "abstain_count": 0
+ }
+}

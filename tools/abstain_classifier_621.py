@@ -156,24 +156,104 @@ def classify_v2(state: dict, authority: str | None = None,
             "reason": f"无 verdict（卡面/提取）且 Authority={a or 'none'}"}
 
 
+def pck_authority_map(cert_dir: str | None = None) -> dict[str, str]:
+    """从 PCK 证书读 `human_authority.status`（622 C3 规定的权威口径）。
+
+    注：PCK 证书是 620 C3 由「Authority 决策日志 + 卡面 status」派生出的**投影**，
+    覆盖面比决策日志广（决策日志只覆盖 25 张原子卡，PCK 覆盖全部 83 张）。
+    """
+    import glob as _glob  # noqa: PLC0415
+    try:
+        import yaml  # noqa: PLC0415
+    except ImportError:
+        return {}
+    d = cert_dir or os.path.join(ROOT, "data", "pck", "certificates")
+    out: dict[str, str] = {}
+    for p in sorted(_glob.glob(os.path.join(d, "*.pck.yaml"))):
+        try:
+            with open(p, encoding="utf-8") as fh:
+                cert = yaml.safe_load(fh.read())
+        except Exception:  # noqa: BLE001
+            continue
+        cid = str((cert.get("claim") or {}).get("id") or "")
+        st = (cert.get("human_authority") or {}).get("status")
+        if cid and st:
+            out[cid] = str(st)
+    return out
+
+
 def classify_card_v2(card_rel: str, authority_entries: list[dict] | None = None,
                      extracted: dict[str, str] | None = None,
+                     authority_map: dict[str, str] | None = None,
                      now: datetime | None = None) -> dict:
-    """按卡分类（v2）：自动取 Authority 状态与（可选的）C2 提取 verdict。"""
+    """按卡分类（v2）：自动取 Authority 状态与（可选的）C2 提取 verdict。
+
+    `authority_map` 优先（PCK 投影口径）；未提供时回退到决策日志子串匹配。
+    """
     sys.path.insert(0, HERE)
     import pck_batch_migrator_620 as M  # noqa: PLC0415
     fm = M.read_frontmatter(os.path.join(ROOT, card_rel))
     st = build_state(fm, card_rel, now)
     card_id = fm.get("id") or os.path.basename(card_rel).replace(".md", "")
-    entries = authority_entries if authority_entries is not None else load_authority_entries()
-    res = classify_v2(st, authority=authority_status_for(card_id, entries),
+    if authority_map is not None:
+        auth = authority_map.get(card_id)
+        auth_source = "pck_human_authority"
+    else:
+        entries = (authority_entries if authority_entries is not None
+                   else load_authority_entries())
+        auth = authority_status_for(card_id, entries)
+        auth_source = "authority_decision_log"
+    res = classify_v2(st, authority=auth,
                       extracted_verdict=(extracted or {}).get(card_id), now=now)
     return {"card": card_rel, "card_id": card_id,
             "kind": "atom" if card_rel.startswith("atoms/") else "evidence",
             "domain": card_rel.split("/")[1] if card_rel.count("/") > 1 else "unknown",
-            "authority": authority_status_for(card_id, entries),
+            "authority": auth, "authority_source": auth_source,
             "extracted_verdict": (extracted or {}).get(card_id),
             "input": st, **res}
+
+
+def classify_all_v2(cards: list[str], extracted: dict[str, str] | None = None,
+                    authority_entries: list[dict] | None = None,
+                    authority_map: dict[str, str] | None = None,
+                    now: datetime | None = None) -> list[dict]:
+    """对一批卡跑 v2 分类（只读）。
+
+    `authority_map`（PCK 口径）优先；否则回退决策日志。
+    """
+    amap = authority_map if authority_map is not None else pck_authority_map()
+    return [classify_card_v2(c, extracted=extracted, authority_map=amap, now=now)
+            for c in cards]
+
+
+# 对齐口径：机器判定 vs 人审授权
+ALIGNED_PAIRS = {("SUPPORTED", "approved"), ("REFUTED", "rejected")}
+MACHINE_ABSTAIN_STATES = ("UNDECIDED", "INSUFFICIENT_EVIDENCE", "CONFLICTED", "STALE")
+
+
+def alignment_crosstab(rows: list[dict]) -> dict:
+    """ABSTAIN × Authority 交叉表 + 对齐分析（622 C3）。"""
+    cross: dict[tuple, int] = {}
+    for r in rows:
+        cross[(r["state"], str(r.get("authority")))] = \
+            cross.get((r["state"], str(r.get("authority"))), 0) + 1
+    aligned = sum(n for (st, au), n in cross.items() if (st, au) in ALIGNED_PAIRS)
+    # 「机器说支持、人没批」与「机器弃权、人却批了」两类缺口
+    machine_supported_human_pending = sum(
+        n for (st, au), n in cross.items() if st == "SUPPORTED" and au == "pending")
+    machine_abstain_human_approved = sum(
+        n for (st, au), n in cross.items() if st in MACHINE_ABSTAIN_STATES and au == "approved")
+    total = len(rows)
+    return {
+        "cross": {f"{k[0]}×{k[1]}": v for k, v in sorted(cross.items())},
+        "total": total,
+        "aligned": aligned,
+        "aligned_rate": round(aligned / total, 4) if total else None,
+        "machine_supported_human_pending": machine_supported_human_pending,
+        "machine_abstain_human_approved": machine_abstain_human_approved,
+        "abstain_count": sum(n for (st, _au), n in cross.items()
+                             if st in MACHINE_ABSTAIN_STATES),
+    }
 
 
 def build_state(fm: dict, card_rel: str, now: datetime | None = None) -> dict:
