@@ -29,9 +29,12 @@ def test_poison_coverage_total_now_67():
     assert total == 67
 
 
-def test_hc_rules_uncovered_by_poison():
-    _covered, _total, uncovered = pd.rule_coverage()
-    assert HC_IDS <= set(uncovered)           # 诚实登记：新规则 poison 覆盖为 0
+def test_hc_rules_exempted_by_poison():
+    _covered, total, uncovered = pd.rule_coverage()
+    assert total == 67
+    # poison 端到端覆盖为 0 ⇒ 已登记豁免（非 uncovered）；豁免台账含 4 条 HC
+    assert HC_IDS.isdisjoint(set(uncovered))
+    assert HC_IDS <= set(pd.load_exemptions())
 
 
 def test_report_exists():

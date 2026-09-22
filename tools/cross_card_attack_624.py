@@ -485,7 +485,7 @@ def selftest() -> int:
     chk("枚举证据卡", len(inv["evidence"]) >= 30)
 
     muts = generate_mutations(inv, per_strategy=15)
-    by = {}
+    by: dict[str, list[dict]] = {}
     for m in muts:
         by.setdefault(m["strategy"], []).append(m)
     chk("生成 60 条（4 策略各 15）", len(muts) == 60)
@@ -516,7 +516,8 @@ def selftest() -> int:
     restored = sb.restore_multi(applied.get("backups", [])) if applied.get("applied") else {"restored": False}
     sha_after = base._sha256_bytes(open(sb._abs(target), "rb").read())
     chk("多卡 apply+restore 后 sha256 不变",
-        bool(applied.get("applied")) and restored.get("restored") and sha_before == sha_after)
+        bool(applied.get("applied")) and bool(restored.get("restored"))
+        and sha_before == sha_after)
 
     # 同一张卡多编辑（X4 场景）：必须只备份一次、还原后 sha256 不变
     sha_b1 = base._sha256_bytes(open(sb._abs(target), "rb").read())
@@ -528,7 +529,7 @@ def selftest() -> int:
     sha_b2 = base._sha256_bytes(open(sb._abs(target), "rb").read())
     chk("同卡多编辑 apply+restore 后 sha256 不变（备份去重）",
         bool(applied2.get("applied")) and len(applied2.get("backups", [])) == 1
-        and restored2.get("restored") and sha_b1 == sha_b2)
+        and bool(restored2.get("restored")) and sha_b1 == sha_b2)
 
     print(f"A1 selftest: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1

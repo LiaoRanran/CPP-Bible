@@ -56,6 +56,8 @@ def plan_edit_r5(content: dict, text: str):
         line = m.group(0)
         if re.search(r"evidence\s*:\s*\[", line):
             inline = re.search(r"evidence\s*:\s*\[([^\]]*)\]", line)
+            if inline is None:
+                return None
             items = [x.strip() for x in inline.group(1).split(",") if x.strip()]
             items.append(val)
             new = text[:m.start()] + f"evidence: [{', '.join(items)}]" + text[m.end():]

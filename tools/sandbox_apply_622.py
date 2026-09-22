@@ -202,15 +202,15 @@ def plan_edit(content: dict, text: str) -> tuple[str, str] | None:
     # 在不改 CORE_TOOLS（gate_engine 等）前提下，扩展 apply 原语。均为字段级编辑，
     # 原地改+必还原护栏不变。
     if op == "MSET":  # 通用：标量 frontmatter 字段设为指定值（仅用于单行标量键）
-        key = content.get("field")
+        mkey = content.get("field")
         val = content.get("value")
-        if not key or val is None:
+        if not mkey or val is None:
             return None
-        m = _key_line(text, key)
+        m = _key_line(text, mkey)
         if not m:
             return None
-        newline = re.sub(rf"^{re.escape(key)}\s*:\s*.*$", f"{key}: {val}", m.group(0))
-        return text[:m.start()] + newline + text[m.end():], f"设置 {key} → {val}"
+        newline = re.sub(rf"^{re.escape(mkey)}\s*:\s*.*$", f"{mkey}: {val}", m.group(0))
+        return text[:m.start()] + newline + text[m.end():], f"设置 {mkey} → {val}"
 
     if op == "M16":  # 自环关系（破坏 DAG）：追加 self supports 边
         m = _key_line(text, "relations")
@@ -319,7 +319,7 @@ class Sandbox:
             return {"status": "infra_error", "findings": [],
                     "infra_errors": ["无法解析 gate JSON"], "summary": {}}
         try:
-            return json.loads(out[i:])
+            return dict(json.loads(out[i:]))
         except ValueError as exc:
             return {"status": "infra_error", "findings": [],
                     "infra_errors": [f"gate JSON 解析失败：{exc}"], "summary": {}}
@@ -482,7 +482,7 @@ def compare_prediction(rows: list[dict], predictions: dict[str, str]) -> dict:
     detail = []
     for r in rows:
         mid = r.get("mutation_id")
-        pred = predictions.get(mid)
+        pred = predictions.get(mid) if mid is not None else None
         actual = r.get("verdict")
         if pred is None or actual in ("infra_error", None):
             missing += 1
@@ -537,8 +537,16 @@ def selftest() -> int:
                                      "---\nfoo: 1\n---\n") is None or True)
 
     sb = Sandbox()
-    chk("并发锁可获取/释放", (sb.acquire() or True) and (sb.release() or True))
-    chk("锁释放后可再获取", (sb.acquire() or True) and (sb.release() or True))
+    lock_ok = True
+    try:
+        sb.acquire()
+        sb.release()
+        sb.acquire()
+        sb.release()
+    except Exception:  # noqa: BLE001 —— 自检：锁不可重入/释放异常即失败
+        lock_ok = False
+    chk("并发锁可获取/释放", lock_ok)
+    chk("锁释放后可再获取", lock_ok)
     print(f"A1 selftest: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
 

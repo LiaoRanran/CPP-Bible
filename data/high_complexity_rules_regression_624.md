@@ -23,9 +23,9 @@
 |---|---|
 | 制衡层 | **124/124**（全部拦截 + 阴性放行，含 P29/P30 relations 矛盾、P62 artifact 不存在、P69 路径非规范） |
 | RULE-COVERAGE | covered **39/67** |
-| 未覆盖规则 | **EV-SERVES-EXIST-HC · ATOM-REL-TARGET-HC · ATOM-REL-UNKNOWN-HC · CARD-PATH-NOT-CANONICAL-HC** |
+| 未覆盖且未豁免 | **无**（4 条 HC 规则已登记豁免，见下） |
 
-⚠ **诚实登记**：4 条新 HC 规则**当前未被 poison 攻击面覆盖**（poison 的 P29/P69 针对 base 规则，未针对"高复杂度上下文"变体）⇒ 新规则的 poison 覆盖为 **0**，属**待补覆盖债**（留 625）。
+⚠ **诚实登记**：4 条新 HC 规则**当前未被 poison 攻击面覆盖**（poison 的 P29/P69 针对 base 规则，未针对"高复杂度上下文"变体）⇒ 其 poison 端到端覆盖为 **0**；已在 `tools/poison_exemptions.yaml` 登记豁免（reason 引用 pytest `test_hc_rules_are_block_and_automated`，机器核验 `backed`；`redteam_seen` 由 624 B2 自签、无外部红队）⇒ **待 625 补毒样例**。
 
 ## 三、replay 回归结果
 

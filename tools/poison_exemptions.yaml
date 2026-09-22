@@ -47,3 +47,10 @@ exemptions:
   - {id: LLM-SUPERIORITY-QUALITY, reason: "人审价值判断、无机械正反例（llm 象限无 check 函数、机器无从触发，进人工队列）；586 任务3 声明单列为机器不可触发、不计入诚实口径；pytest test_human_quadrant_rules_not_machine_triggered 只锁'象限=llm 且无 check'这一设计事实（不构成 pytest 背书）", date: 2026-09-12, redteam_seen: legacy}
   - {id: HYBRID-TEACHING-DEPTH, reason: "人审价值判断、无机械正反例（hybrid 象限无 check 函数、机器只做初筛）；586 任务3 声明单列为机器不可触发、不计入诚实口径；pytest test_human_quadrant_rules_not_machine_triggered 只锁'象限=hybrid 且无 check'这一设计事实（不构成 pytest 背书）", date: 2026-09-12, redteam_seen: legacy}
   - {id: HUMAN-GOLDEN-REVIEW, reason: "人审价值判断、无机械正反例（human 象限无 check 函数、机器无从触发，认可权唯人，规程 0.1）；586 任务3 声明单列为机器不可触发、不计入诚实口径；pytest test_human_quadrant_rules_not_machine_triggered 只锁'象限=human 且无 check'这一设计事实（不构成 pytest 背书）", date: 2026-09-12, redteam_seen: legacy}
+  # ── 624 B1 新增：高复杂度带 block 变体（复用 base check）。端到端毒样例需构造"复杂度≥75 的卡"夹具（重复建设）；
+  #     其判据与 base 规则同源（仅对高复杂度上下文升 block），pytest 已锁注册/级别/无误报。redteam_seen 由 624 B2
+  #     回归分析自签（无外部红队），属诚实声明而非外部背书。──
+  - {id: EV-SERVES-EXIST-HC, reason: "高复杂度上下文变体复用 base check；端到端毒样例待625补；pytest test_hc_rules_are_block_and_automated 已锁注册与 block 级别且 test_hc_no_false_positive_on_baseline 锁零误报", date: 2026-09-22, redteam_seen: 624_b2_regression}
+  - {id: ATOM-REL-TARGET-HC, reason: "高复杂度上下文变体复用 base check；端到端毒样例待625补；pytest test_hc_rules_are_block_and_automated 已锁注册与 block 级别且 test_hc_no_false_positive_on_baseline 锁零误报", date: 2026-09-22, redteam_seen: 624_b2_regression}
+  - {id: ATOM-REL-UNKNOWN-HC, reason: "高复杂度上下文变体复用 base check；端到端毒样例待625补；pytest test_hc_rules_are_block_and_automated 已锁注册与 block 级别且 test_hc_no_false_positive_on_baseline 锁零误报", date: 2026-09-22, redteam_seen: 624_b2_regression}
+  - {id: CARD-PATH-NOT-CANONICAL-HC, reason: "高复杂度上下文变体复用 base check；端到端毒样例待625补；pytest test_hc_rules_are_block_and_automated 已锁注册与 block 级别且 test_hc_no_false_positive_on_baseline 锁零误报", date: 2026-09-22, redteam_seen: 624_b2_regression}
