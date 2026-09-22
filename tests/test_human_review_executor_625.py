@@ -32,6 +32,7 @@ def test_no_signing_no_mutation():
     before = os.path.getsize(AUTH)
     # 调用框架自检 / 构造条目，但绝不调用 append_entry
     e = E.build_entry("EV-Y", "REJECT", "reject", "A", "r", prev_hash="GENESIS")
+    assert e["power"] == "REJECT" and e["hash"]
     assert callable(E.append_entry)
     after = os.path.getsize(AUTH)
     assert before == after, "本批绝不代签：Authority 日志不可被修改"
