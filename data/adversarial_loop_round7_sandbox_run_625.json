@@ -1,0 +1,3165 @@
+{
+  "mutations": [
+    {
+      "mutation_id": "Y1-ATOM-STATUS-TRANSITION-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:ATOM-STATUS-TRANSITION",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-STATUS-TRANSITION"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+          "op": "MSET",
+          "field": "status_history",
+          "value": "verified"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-ATOM-STATUS-TRANSITION-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:ATOM-STATUS-TRANSITION",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-STATUS-TRANSITION"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+          "op": "MSET",
+          "field": "status_history",
+          "value": "verified"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-ATOM-MISCONCEPTION-LEVELS-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:ATOM-MISCONCEPTION-LEVELS",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-MISCONCEPTION-LEVELS"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+          "op": "M1",
+          "field": "pedagogy"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-ATOM-MISCONCEPTION-LEVELS-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:ATOM-MISCONCEPTION-LEVELS",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-MISCONCEPTION-LEVELS"
+      ],
+      "edits": [
+        {
+          "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+          "op": "M1",
+          "field": "pedagogy"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-MIS-LIBRARY-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:MIS-LIBRARY",
+      "complexity": 78,
+      "predicted_rules": [
+        "MIS-LIBRARY"
+      ],
+      "edits": [
+        {
+          "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+          "op": "MSET",
+          "field": "object",
+          "value": "the thing"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-MIS-LIBRARY-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:MIS-LIBRARY",
+      "complexity": 78,
+      "predicted_rules": [
+        "MIS-LIBRARY"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+          "op": "MSET",
+          "field": "object",
+          "value": "the thing"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-DOC-ZERO-PLACEHOLDER-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:DOC-ZERO-PLACEHOLDER",
+      "complexity": 78,
+      "predicted_rules": [
+        "DOC-ZERO-PLACEHOLDER"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+          "op": "MSET",
+          "field": "claim",
+          "value": "TODO"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-DOC-ZERO-PLACEHOLDER-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:DOC-ZERO-PLACEHOLDER",
+      "complexity": 78,
+      "predicted_rules": [
+        "DOC-ZERO-PLACEHOLDER"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+          "op": "MSET",
+          "field": "claim",
+          "value": "TODO"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-META-MANIFEST-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:META-MANIFEST",
+      "complexity": 78,
+      "predicted_rules": [
+        "META-MANIFEST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-META-MANIFEST-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:META-MANIFEST",
+      "complexity": 78,
+      "predicted_rules": [
+        "META-MANIFEST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-S1-AUTHOR-SELF-VERIFY-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:S1-AUTHOR-SELF-VERIFY",
+      "complexity": 78,
+      "predicted_rules": [
+        "S1-AUTHOR-SELF-VERIFY"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+          "op": "MSET",
+          "field": "verified_by",
+          "value": "machine"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-S1-AUTHOR-SELF-VERIFY-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:S1-AUTHOR-SELF-VERIFY",
+      "complexity": 78,
+      "predicted_rules": [
+        "S1-AUTHOR-SELF-VERIFY"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+          "op": "MSET",
+          "field": "verified_by",
+          "value": "machine"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-S1-GIT-AUTHOR-BINDING-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:S1-GIT-AUTHOR-BINDING",
+      "complexity": 78,
+      "predicted_rules": [
+        "S1-GIT-AUTHOR-BINDING"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+          "op": "MSET",
+          "field": "author",
+          "value": "unknown"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-S1-GIT-AUTHOR-BINDING-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:S1-GIT-AUTHOR-BINDING",
+      "complexity": 78,
+      "predicted_rules": [
+        "S1-GIT-AUTHOR-BINDING"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+          "op": "MSET",
+          "field": "author",
+          "value": "unknown"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-S3-EXPECTED-HARDCODED-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:S3-EXPECTED-HARDCODED",
+      "complexity": 78,
+      "predicted_rules": [
+        "S3-EXPECTED-HARDCODED"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+          "op": "MSET",
+          "field": "expected",
+          "value": "42"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-S3-EXPECTED-HARDCODED-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:S3-EXPECTED-HARDCODED",
+      "complexity": 78,
+      "predicted_rules": [
+        "S3-EXPECTED-HARDCODED"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+          "op": "MSET",
+          "field": "expected",
+          "value": "42"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-SELF-SATISFIED-ASSERT-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-SELF-SATISFIED-ASSERT",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-SELF-SATISFIED-ASSERT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+          "op": "M4",
+          "field": "artifact_assert"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-SELF-SATISFIED-ASSERT-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-SELF-SATISFIED-ASSERT",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-SELF-SATISFIED-ASSERT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+          "op": "M4",
+          "field": "artifact_assert"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-FALSIFICATION-QUANT-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-FALSIFICATION-QUANT",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-FALSIFICATION-QUANT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+          "op": "MSET",
+          "field": "falsification",
+          "value": "works"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-FALSIFICATION-QUANT-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-FALSIFICATION-QUANT",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-FALSIFICATION-QUANT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+          "op": "MSET",
+          "field": "falsification",
+          "value": "works"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-TRIVIAL-OBSERVATION-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-TRIVIAL-OBSERVATION",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-TRIVIAL-OBSERVATION"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+          "op": "MSET",
+          "field": "actual",
+          "value": "the test passes as expected"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-TRIVIAL-OBSERVATION-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-TRIVIAL-OBSERVATION",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-TRIVIAL-OBSERVATION"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+          "op": "MSET",
+          "field": "actual",
+          "value": "the test passes as expected"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-MATRIX-UNBACKED-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-MATRIX-UNBACKED",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-MATRIX-UNBACKED"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+          "op": "M1",
+          "field": "artifact_sha256"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-MATRIX-UNBACKED-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-MATRIX-UNBACKED",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-MATRIX-UNBACKED"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+          "op": "M1",
+          "field": "artifact_sha256"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-ZERO-DIAG-WERROR-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-ZERO-DIAG-WERROR",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-ZERO-DIAG-WERROR"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+          "op": "MSET",
+          "field": "flags",
+          "value": "-Wall"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-ZERO-DIAG-WERROR-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-ZERO-DIAG-WERROR",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-ZERO-DIAG-WERROR"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+          "op": "MSET",
+          "field": "flags",
+          "value": "-Wall"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-WERROR-DECL-BIND-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-WERROR-DECL-BIND",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-WERROR-DECL-BIND"
+      ],
+      "edits": [
+        {
+          "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+          "op": "MSET",
+          "field": "compile_flags",
+          "value": "-Wall"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-WERROR-DECL-BIND-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-WERROR-DECL-BIND",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-WERROR-DECL-BIND"
+      ],
+      "edits": [
+        {
+          "card": "evidence/conc/EV-CONC-001.md",
+          "op": "MSET",
+          "field": "compile_flags",
+          "value": "-Wall"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-OUT-UNDECLARED-KEY-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-OUT-UNDECLARED-KEY",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-OUT-UNDECLARED-KEY"
+      ],
+      "edits": [
+        {
+          "card": "evidence/conc/EV-CONC-002.md",
+          "op": "MSET",
+          "field": "actual",
+          "value": "undeclared_key_xyz=1"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-OUT-UNDECLARED-KEY-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-OUT-UNDECLARED-KEY",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-OUT-UNDECLARED-KEY"
+      ],
+      "edits": [
+        {
+          "card": "evidence/conc/EV-CONC-003.md",
+          "op": "MSET",
+          "field": "actual",
+          "value": "undeclared_key_xyz=1"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-RUN-KEY-DECLARED-EXISTS-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-RUN-KEY-DECLARED-EXISTS",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-RUN-KEY-DECLARED-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/conc/EV-CONC-004.md",
+          "op": "MSET",
+          "field": "actual",
+          "value": "foo=1"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-RUN-KEY-DECLARED-EXISTS-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-RUN-KEY-DECLARED-EXISTS",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-RUN-KEY-DECLARED-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/conc/EV-CONC-005.md",
+          "op": "MSET",
+          "field": "actual",
+          "value": "foo=1"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-ENV-DEPENDENT-KEY-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-ENV-DEPENDENT-KEY",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-ENV-DEPENDENT-KEY"
+      ],
+      "edits": [
+        {
+          "card": "evidence/conc/EV-CONC-006.md",
+          "op": "MSET",
+          "field": "actual",
+          "value": "nproc=4"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-ENV-DEPENDENT-KEY-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-ENV-DEPENDENT-KEY",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-ENV-DEPENDENT-KEY"
+      ],
+      "edits": [
+        {
+          "card": "evidence/hist/EV-HIST-001.md",
+          "op": "MSET",
+          "field": "actual",
+          "value": "nproc=4"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-INFERENCE-NOT-MACHINE-VERIFIED-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:INFERENCE-NOT-MACHINE-VERIFIED",
+      "complexity": 78,
+      "predicted_rules": [
+        "INFERENCE-NOT-MACHINE-VERIFIED"
+      ],
+      "edits": [
+        {
+          "card": "evidence/lang/EV-LANG-001.md",
+          "op": "MSET",
+          "field": "basis",
+          "value": "machine"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-INFERENCE-NOT-MACHINE-VERIFIED-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:INFERENCE-NOT-MACHINE-VERIFIED",
+      "complexity": 78,
+      "predicted_rules": [
+        "INFERENCE-NOT-MACHINE-VERIFIED"
+      ],
+      "edits": [
+        {
+          "card": "evidence/lang/EV-LANG-002.md",
+          "op": "MSET",
+          "field": "basis",
+          "value": "machine"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-ATOM-CLAIM-CONCEPT-NORMALIZED-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:ATOM-CLAIM-CONCEPT-NORMALIZED",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-CLAIM-CONCEPT-NORMALIZED"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-001.md",
+          "op": "MSET",
+          "field": "object",
+          "value": "A sentence describing something."
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-ATOM-CLAIM-CONCEPT-NORMALIZED-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:ATOM-CLAIM-CONCEPT-NORMALIZED",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-CLAIM-CONCEPT-NORMALIZED"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-002.md",
+          "op": "MSET",
+          "field": "object",
+          "value": "A sentence describing something."
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-OBSERVATION-LIVENESS-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:OBSERVATION-LIVENESS",
+      "complexity": 78,
+      "predicted_rules": [
+        "OBSERVATION-LIVENESS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-003.md",
+          "op": "M1",
+          "field": "liveness"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-OBSERVATION-LIVENESS-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:OBSERVATION-LIVENESS",
+      "complexity": 78,
+      "predicted_rules": [
+        "OBSERVATION-LIVENESS"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-004.md",
+          "op": "M1",
+          "field": "liveness"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-FIXTURE-NO-ECHO-DATA-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-FIXTURE-NO-ECHO-DATA",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-FIXTURE-NO-ECHO-DATA"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-005.md",
+          "op": "M1",
+          "field": "fixture"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-FIXTURE-NO-ECHO-DATA-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-FIXTURE-NO-ECHO-DATA",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-FIXTURE-NO-ECHO-DATA"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-006.md",
+          "op": "M1",
+          "field": "fixture"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-OUT-STALE-MTIME-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-OUT-STALE-MTIME",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-OUT-STALE-MTIME"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-007.md",
+          "op": "MSET",
+          "field": "actual",
+          "value": "stale=1"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-OUT-STALE-MTIME-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-OUT-STALE-MTIME",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-OUT-STALE-MTIME"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-008.md",
+          "op": "MSET",
+          "field": "actual",
+          "value": "stale=1"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-SERVES-EXIST-HC-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-SERVES-EXIST-HC",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-SERVES-EXIST-HC"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-009.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-EV-SERVES-EXIST-HC-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:EV-SERVES-EXIST-HC",
+      "complexity": 78,
+      "predicted_rules": [
+        "EV-SERVES-EXIST-HC"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-010.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-ATOM-REL-TARGET-HC-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:ATOM-REL-TARGET-HC",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-TARGET-HC"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-011.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-ATOM-REL-TARGET-HC-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:ATOM-REL-TARGET-HC",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-TARGET-HC"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-012.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-ATOM-REL-UNKNOWN-HC-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:ATOM-REL-UNKNOWN-HC",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-UNKNOWN-HC"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-013.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-ATOM-REL-UNKNOWN-HC-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:ATOM-REL-UNKNOWN-HC",
+      "complexity": 78,
+      "predicted_rules": [
+        "ATOM-REL-UNKNOWN-HC"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-014.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-CARD-PATH-NOT-CANONICAL-HC-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:CARD-PATH-NOT-CANONICAL-HC",
+      "complexity": 78,
+      "predicted_rules": [
+        "CARD-PATH-NOT-CANONICAL-HC"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-015.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-CARD-PATH-NOT-CANONICAL-HC-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:CARD-PATH-NOT-CANONICAL-HC",
+      "complexity": 78,
+      "predicted_rules": [
+        "CARD-PATH-NOT-CANONICAL-HC"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-016.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-PED-MOTIVATION-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:PED-MOTIVATION",
+      "complexity": 78,
+      "predicted_rules": [
+        "PED-MOTIVATION"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-017.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-PED-MOTIVATION-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:PED-MOTIVATION",
+      "complexity": 78,
+      "predicted_rules": [
+        "PED-MOTIVATION"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-018.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-PED-MISCONCEPTION-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:PED-MISCONCEPTION",
+      "complexity": 78,
+      "predicted_rules": [
+        "PED-MISCONCEPTION"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-019.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-PED-MISCONCEPTION-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:PED-MISCONCEPTION",
+      "complexity": 78,
+      "predicted_rules": [
+        "PED-MISCONCEPTION"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-020.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-PED-SOCRATIC-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:PED-SOCRATIC",
+      "complexity": 78,
+      "predicted_rules": [
+        "PED-SOCRATIC"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-021.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-PED-SOCRATIC-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:PED-SOCRATIC",
+      "complexity": 78,
+      "predicted_rules": [
+        "PED-SOCRATIC"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-022.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-PED-PREDICT-FIRST-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:PED-PREDICT-FIRST",
+      "complexity": 78,
+      "predicted_rules": [
+        "PED-PREDICT-FIRST"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-023.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-PED-PREDICT-FIRST-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:PED-PREDICT-FIRST",
+      "complexity": 78,
+      "predicted_rules": [
+        "PED-PREDICT-FIRST"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-024.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-LLM-SUPERIORITY-QUALITY-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:LLM-SUPERIORITY-QUALITY",
+      "complexity": 78,
+      "predicted_rules": [
+        "LLM-SUPERIORITY-QUALITY"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-025.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-LLM-SUPERIORITY-QUALITY-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:LLM-SUPERIORITY-QUALITY",
+      "complexity": 78,
+      "predicted_rules": [
+        "LLM-SUPERIORITY-QUALITY"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-026.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-HYBRID-TEACHING-DEPTH-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:HYBRID-TEACHING-DEPTH",
+      "complexity": 78,
+      "predicted_rules": [
+        "HYBRID-TEACHING-DEPTH"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-027.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-HYBRID-TEACHING-DEPTH-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:HYBRID-TEACHING-DEPTH",
+      "complexity": 78,
+      "predicted_rules": [
+        "HYBRID-TEACHING-DEPTH"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-028.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-HUMAN-GOLDEN-REVIEW-1",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:HUMAN-GOLDEN-REVIEW",
+      "complexity": 78,
+      "predicted_rules": [
+        "HUMAN-GOLDEN-REVIEW"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-029.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y1-HUMAN-GOLDEN-REVIEW-2",
+      "strategy": "Y1",
+      "attack_type": "盲区定向:HUMAN-GOLDEN-REVIEW",
+      "complexity": 78,
+      "predicted_rules": [
+        "HUMAN-GOLDEN-REVIEW"
+      ],
+      "edits": [
+        {
+          "card": "evidence/mem/EV-MEM-030.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-001",
+      "strategy": "Y2",
+      "attack_type": "回归:ATOM-FM-REQUIRED",
+      "complexity": 70,
+      "predicted_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+          "op": "M1",
+          "field": "first_hand"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-002",
+      "strategy": "Y2",
+      "attack_type": "回归:ATOM-VERIFIED-BOUND",
+      "complexity": 70,
+      "predicted_rules": [
+        "ATOM-VERIFIED-BOUND"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+          "op": "M1",
+          "field": "superiority"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-003",
+      "strategy": "Y2",
+      "attack_type": "回归:ATOM-STATUS-TRANSITION",
+      "complexity": 70,
+      "predicted_rules": [
+        "ATOM-STATUS-TRANSITION"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+          "op": "M1",
+          "field": "status_history"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-004",
+      "strategy": "Y2",
+      "attack_type": "回归:ATOM-CLAIM-STRUCTURED",
+      "complexity": 70,
+      "predicted_rules": [
+        "ATOM-CLAIM-STRUCTURED"
+      ],
+      "edits": [
+        {
+          "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+          "op": "M1",
+          "field": "claim_structured"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-005",
+      "strategy": "Y2",
+      "attack_type": "回归:EV-FM-REQUIRED",
+      "complexity": 70,
+      "predicted_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "edits": [
+        {
+          "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+          "op": "M1",
+          "field": "hypothesis"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-006",
+      "strategy": "Y2",
+      "attack_type": "回归:EV-MATRIX",
+      "complexity": 70,
+      "predicted_rules": [
+        "EV-MATRIX"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+          "op": "M1",
+          "field": "matrix"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-007",
+      "strategy": "Y2",
+      "attack_type": "回归:EV-ARTIFACT-FILE-EXISTS",
+      "complexity": 70,
+      "predicted_rules": [
+        "EV-ARTIFACT-FILE-EXISTS"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+          "op": "M2",
+          "field": "artifact"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-008",
+      "strategy": "Y2",
+      "attack_type": "回归:EV-SELF-SATISFIED-ASSERT",
+      "complexity": 70,
+      "predicted_rules": [
+        "EV-SELF-SATISFIED-ASSERT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+          "op": "M4",
+          "field": "artifact_assert"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-009",
+      "strategy": "Y2",
+      "attack_type": "回归:ATOM-STATUS-VALUE",
+      "complexity": 70,
+      "predicted_rules": [
+        "ATOM-STATUS-VALUE"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+          "op": "MSET",
+          "field": "status",
+          "value": "bogus_enum"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-010",
+      "strategy": "Y2",
+      "attack_type": "回归:ATOM-ID-FORMAT",
+      "complexity": 70,
+      "predicted_rules": [
+        "ATOM-ID-FORMAT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+          "op": "MSET",
+          "field": "id",
+          "value": "BAD ID 001"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-011",
+      "strategy": "Y2",
+      "attack_type": "回归:ATOM-ID-UNIQUE",
+      "complexity": 70,
+      "predicted_rules": [
+        "ATOM-ID-UNIQUE"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+          "op": "MSET",
+          "field": "id",
+          "value": "{OTHER}"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-012",
+      "strategy": "Y2",
+      "attack_type": "回归:ATOM-DAL-MATCH",
+      "complexity": 70,
+      "predicted_rules": [
+        "ATOM-DAL-MATCH"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+          "op": "MSET",
+          "field": "dal",
+          "value": "Z"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-013",
+      "strategy": "Y2",
+      "attack_type": "回归:ATOM-AUDIENCE",
+      "complexity": 70,
+      "predicted_rules": [
+        "ATOM-AUDIENCE"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+          "op": "MSET",
+          "field": "audience",
+          "value": "toddler"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-014",
+      "strategy": "Y2",
+      "attack_type": "回归:ATOM-PREREQ-READABLE",
+      "complexity": 70,
+      "predicted_rules": [
+        "ATOM-PREREQ-READABLE"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+          "op": "MSET",
+          "field": "prerequisites_readable",
+          "value": "maybe"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-015",
+      "strategy": "Y2",
+      "attack_type": "回归:ATOM-SUPERIORITY-WORDS",
+      "complexity": 70,
+      "predicted_rules": [
+        "ATOM-SUPERIORITY-WORDS"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+          "op": "MSET",
+          "field": "superiority",
+          "value": "obviously the best approach"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-016",
+      "strategy": "Y2",
+      "attack_type": "回归:EV-ARTIFACT-VERSION-MATCH",
+      "complexity": 70,
+      "predicted_rules": [
+        "EV-ARTIFACT-VERSION-MATCH"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+          "op": "MSET",
+          "field": "artifact_version",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-017",
+      "strategy": "Y2",
+      "attack_type": "回归:EV-ID-UNIQUE",
+      "complexity": 70,
+      "predicted_rules": [
+        "EV-ID-UNIQUE"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+          "op": "MSET",
+          "field": "id",
+          "value": "{OTHER}"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-018",
+      "strategy": "Y2",
+      "attack_type": "回归:EV-FALSIFICATION",
+      "complexity": 70,
+      "predicted_rules": [
+        "EV-FALSIFICATION"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+          "op": "MSET",
+          "field": "falsification",
+          "value": "it works as expected"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-019",
+      "strategy": "Y2",
+      "attack_type": "回归:EV-TRIVIAL-OBSERVATION",
+      "complexity": 70,
+      "predicted_rules": [
+        "EV-TRIVIAL-OBSERVATION"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+          "op": "MSET",
+          "field": "actual",
+          "value": "the program runs and prints expected output"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y2-020",
+      "strategy": "Y2",
+      "attack_type": "回归:S2-EVIDENCE-VERDICT",
+      "complexity": 70,
+      "predicted_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+          "op": "MSET",
+          "field": "verdict",
+          "value": "disconfirm"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-001",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:ATOM-STATUS-TRANSITION",
+      "complexity": 74,
+      "predicted_rules": [
+        "ATOM-STATUS-TRANSITION"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+          "op": "MSET",
+          "field": "status_history",
+          "value": "verified"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-002",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:ATOM-STATUS-TRANSITION",
+      "complexity": 74,
+      "predicted_rules": [
+        "ATOM-STATUS-TRANSITION"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+          "op": "MSET",
+          "field": "status_history",
+          "value": "verified"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-003",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:ATOM-MISCONCEPTION-LEVELS",
+      "complexity": 74,
+      "predicted_rules": [
+        "ATOM-MISCONCEPTION-LEVELS"
+      ],
+      "edits": [
+        {
+          "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+          "op": "M1",
+          "field": "pedagogy"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-004",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:ATOM-MISCONCEPTION-LEVELS",
+      "complexity": 74,
+      "predicted_rules": [
+        "ATOM-MISCONCEPTION-LEVELS"
+      ],
+      "edits": [
+        {
+          "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+          "op": "M1",
+          "field": "pedagogy"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-005",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:MIS-LIBRARY",
+      "complexity": 74,
+      "predicted_rules": [
+        "MIS-LIBRARY"
+      ],
+      "edits": [
+        {
+          "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+          "op": "MSET",
+          "field": "object",
+          "value": "the thing"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-006",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:MIS-LIBRARY",
+      "complexity": 74,
+      "predicted_rules": [
+        "MIS-LIBRARY"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+          "op": "MSET",
+          "field": "object",
+          "value": "the thing"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-007",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:DOC-ZERO-PLACEHOLDER",
+      "complexity": 74,
+      "predicted_rules": [
+        "DOC-ZERO-PLACEHOLDER"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+          "op": "MSET",
+          "field": "claim",
+          "value": "TODO"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-008",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:DOC-ZERO-PLACEHOLDER",
+      "complexity": 74,
+      "predicted_rules": [
+        "DOC-ZERO-PLACEHOLDER"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+          "op": "MSET",
+          "field": "claim",
+          "value": "TODO"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-009",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:META-MANIFEST",
+      "complexity": 74,
+      "predicted_rules": [
+        "META-MANIFEST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-010",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:META-MANIFEST",
+      "complexity": 74,
+      "predicted_rules": [
+        "META-MANIFEST"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+          "op": "MSET",
+          "field": "status"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-011",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:S1-AUTHOR-SELF-VERIFY",
+      "complexity": 74,
+      "predicted_rules": [
+        "S1-AUTHOR-SELF-VERIFY"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+          "op": "MSET",
+          "field": "verified_by",
+          "value": "machine"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-012",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:S1-AUTHOR-SELF-VERIFY",
+      "complexity": 74,
+      "predicted_rules": [
+        "S1-AUTHOR-SELF-VERIFY"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+          "op": "MSET",
+          "field": "verified_by",
+          "value": "machine"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-013",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:S1-GIT-AUTHOR-BINDING",
+      "complexity": 74,
+      "predicted_rules": [
+        "S1-GIT-AUTHOR-BINDING"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+          "op": "MSET",
+          "field": "author",
+          "value": "unknown"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-014",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:S1-GIT-AUTHOR-BINDING",
+      "complexity": 74,
+      "predicted_rules": [
+        "S1-GIT-AUTHOR-BINDING"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+          "op": "MSET",
+          "field": "author",
+          "value": "unknown"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-015",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:S3-EXPECTED-HARDCODED",
+      "complexity": 74,
+      "predicted_rules": [
+        "S3-EXPECTED-HARDCODED"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+          "op": "MSET",
+          "field": "expected",
+          "value": "42"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-016",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:S3-EXPECTED-HARDCODED",
+      "complexity": 74,
+      "predicted_rules": [
+        "S3-EXPECTED-HARDCODED"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+          "op": "MSET",
+          "field": "expected",
+          "value": "42"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-017",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:EV-SELF-SATISFIED-ASSERT",
+      "complexity": 74,
+      "predicted_rules": [
+        "EV-SELF-SATISFIED-ASSERT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+          "op": "M4",
+          "field": "artifact_assert"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-018",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:EV-SELF-SATISFIED-ASSERT",
+      "complexity": 74,
+      "predicted_rules": [
+        "EV-SELF-SATISFIED-ASSERT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+          "op": "M4",
+          "field": "artifact_assert"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-019",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:EV-FALSIFICATION-QUANT",
+      "complexity": 74,
+      "predicted_rules": [
+        "EV-FALSIFICATION-QUANT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+          "op": "MSET",
+          "field": "falsification",
+          "value": "works"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-020",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:EV-FALSIFICATION-QUANT",
+      "complexity": 74,
+      "predicted_rules": [
+        "EV-FALSIFICATION-QUANT"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+          "op": "MSET",
+          "field": "falsification",
+          "value": "works"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-021",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:EV-TRIVIAL-OBSERVATION",
+      "complexity": 74,
+      "predicted_rules": [
+        "EV-TRIVIAL-OBSERVATION"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+          "op": "MSET",
+          "field": "actual",
+          "value": "the test passes as expected"
+        }
+      ]
+    },
+    {
+      "mutation_id": "Y3-022",
+      "strategy": "Y3",
+      "attack_type": "混合:盲区定向:EV-TRIVIAL-OBSERVATION",
+      "complexity": 74,
+      "predicted_rules": [
+        "EV-TRIVIAL-OBSERVATION"
+      ],
+      "edits": [
+        {
+          "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+          "op": "MSET",
+          "field": "actual",
+          "value": "the test passes as expected"
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "mutation_id": "Y1-ATOM-STATUS-TRANSITION-1",
+      "strategy": "Y1",
+      "cards": [
+        "atoms/conc/ATOM-CONC-FENCE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-STATUS-TRANSITION"
+      ],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2929
+    },
+    {
+      "mutation_id": "Y1-ATOM-STATUS-TRANSITION-2",
+      "strategy": "Y1",
+      "cards": [
+        "atoms/conc/ATOM-CONC-LOCK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-STATUS-TRANSITION"
+      ],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2969
+    },
+    {
+      "mutation_id": "Y1-ATOM-MISCONCEPTION-LEVELS-1",
+      "strategy": "Y1",
+      "cards": [
+        "atoms/conc/ATOM-CONC-RACE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2936
+    },
+    {
+      "mutation_id": "Y1-ATOM-MISCONCEPTION-LEVELS-2",
+      "strategy": "Y1",
+      "cards": [
+        "atoms/hist/ATOM-HIST-AUTOPTR-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2998
+    },
+    {
+      "mutation_id": "Y1-MIS-LIBRARY-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-MIS-LIBRARY-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-DOC-ZERO-PLACEHOLDER-1",
+      "strategy": "Y1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-001.md"
+      ],
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 3079
+    },
+    {
+      "mutation_id": "Y1-DOC-ZERO-PLACEHOLDER-2",
+      "strategy": "Y1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-002.md"
+      ],
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 2974
+    },
+    {
+      "mutation_id": "Y1-META-MANIFEST-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-META-MANIFEST-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-S1-AUTHOR-SELF-VERIFY-1",
+      "strategy": "Y1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-MOVE-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S1-AUTHOR-SELF-VERIFY"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 3000
+    },
+    {
+      "mutation_id": "Y1-S1-AUTHOR-SELF-VERIFY-2",
+      "strategy": "Y1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-NEW-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S1-AUTHOR-SELF-VERIFY"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2999
+    },
+    {
+      "mutation_id": "Y1-S1-GIT-AUTHOR-BINDING-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-PERF-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-S1-GIT-AUTHOR-BINDING-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-PERF-002.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-S3-EXPECTED-HARDCODED-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-PERF-003.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-S3-EXPECTED-HARDCODED-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-PERF-004.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-EV-SELF-SATISFIED-ASSERT-1",
+      "strategy": "Y1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-RAII-001.md"
+      ],
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 2960
+    },
+    {
+      "mutation_id": "Y1-EV-SELF-SATISFIED-ASSERT-2",
+      "strategy": "Y1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-RAII-002.md"
+      ],
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 3015
+    },
+    {
+      "mutation_id": "Y1-EV-FALSIFICATION-QUANT-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-EV-FALSIFICATION-QUANT-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-EV-TRIVIAL-OBSERVATION-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-EV-TRIVIAL-OBSERVATION-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-EV-MATRIX-UNBACKED-1",
+      "strategy": "Y1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-UNIQUE-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2952
+    },
+    {
+      "mutation_id": "Y1-EV-MATRIX-UNBACKED-2",
+      "strategy": "Y1",
+      "cards": [
+        "atoms/mem/ATOM-MEM-VALUE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2990
+    },
+    {
+      "mutation_id": "Y1-EV-ZERO-DIAG-WERROR-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-EV-ZERO-DIAG-WERROR-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-EV-WERROR-DECL-BIND-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/ub/ATOM-UB-GRAY-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-EV-WERROR-DECL-BIND-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/conc/EV-CONC-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-EV-OUT-UNDECLARED-KEY-1",
+      "strategy": "Y1",
+      "cards": [
+        "evidence/conc/EV-CONC-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "new_nonblock_rules": [
+        "EV-ASSERT-COUNT-BELOW-BASELINE",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [
+        "EV-OUT-STALE-MTIME",
+        "EV-OUT-UNDECLARED-KEY"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 3017
+    },
+    {
+      "mutation_id": "Y1-EV-OUT-UNDECLARED-KEY-2",
+      "strategy": "Y1",
+      "cards": [
+        "evidence/conc/EV-CONC-003.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "new_nonblock_rules": [
+        "EV-ASSERT-COUNT-BELOW-BASELINE",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [
+        "EV-ENV-DEPENDENT-KEY",
+        "EV-OUT-UNDECLARED-KEY"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2942
+    },
+    {
+      "mutation_id": "Y1-EV-RUN-KEY-DECLARED-EXISTS-1",
+      "strategy": "Y1",
+      "cards": [
+        "evidence/conc/EV-CONC-004.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "new_nonblock_rules": [
+        "EV-ASSERT-COUNT-BELOW-BASELINE",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [
+        "EV-ENV-DEPENDENT-KEY",
+        "EV-OUT-UNDECLARED-KEY"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2954
+    },
+    {
+      "mutation_id": "Y1-EV-RUN-KEY-DECLARED-EXISTS-2",
+      "strategy": "Y1",
+      "cards": [
+        "evidence/conc/EV-CONC-005.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "new_nonblock_rules": [
+        "EV-ASSERT-COUNT-BELOW-BASELINE",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [
+        "EV-OUT-UNDECLARED-KEY"
+      ],
+      "n_findings_before": 2,
+      "n_findings_after": 4,
+      "elapsed_ms": 2929
+    },
+    {
+      "mutation_id": "Y1-EV-ENV-DEPENDENT-KEY-1",
+      "strategy": "Y1",
+      "cards": [
+        "evidence/conc/EV-CONC-006.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "new_nonblock_rules": [
+        "EV-ASSERT-COUNT-BELOW-BASELINE",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [
+        "EV-OUT-UNDECLARED-KEY"
+      ],
+      "n_findings_before": 2,
+      "n_findings_after": 4,
+      "elapsed_ms": 2938
+    },
+    {
+      "mutation_id": "Y1-EV-ENV-DEPENDENT-KEY-2",
+      "strategy": "Y1",
+      "cards": [
+        "evidence/hist/EV-HIST-001.md"
+      ],
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 1,
+      "n_findings_after": 2,
+      "elapsed_ms": 3019
+    },
+    {
+      "mutation_id": "Y1-INFERENCE-NOT-MACHINE-VERIFIED-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/lang/EV-LANG-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-INFERENCE-NOT-MACHINE-VERIFIED-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/lang/EV-LANG-002.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-ATOM-CLAIM-CONCEPT-NORMALIZED-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-ATOM-CLAIM-CONCEPT-NORMALIZED-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-002.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-OBSERVATION-LIVENESS-1",
+      "strategy": "Y1",
+      "cards": [
+        "evidence/mem/EV-MEM-003.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 1,
+      "n_findings_after": 2,
+      "elapsed_ms": 2966
+    },
+    {
+      "mutation_id": "Y1-OBSERVATION-LIVENESS-2",
+      "strategy": "Y1",
+      "cards": [
+        "evidence/mem/EV-MEM-004.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 0,
+      "n_findings_after": 1,
+      "elapsed_ms": 2929
+    },
+    {
+      "mutation_id": "Y1-EV-FIXTURE-NO-ECHO-DATA-1",
+      "strategy": "Y1",
+      "cards": [
+        "evidence/mem/EV-MEM-005.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 0,
+      "n_findings_after": 1,
+      "elapsed_ms": 2994
+    },
+    {
+      "mutation_id": "Y1-EV-FIXTURE-NO-ECHO-DATA-2",
+      "strategy": "Y1",
+      "cards": [
+        "evidence/mem/EV-MEM-006.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 1,
+      "n_findings_after": 2,
+      "elapsed_ms": 2958
+    },
+    {
+      "mutation_id": "Y1-EV-OUT-STALE-MTIME-1",
+      "strategy": "Y1",
+      "cards": [
+        "evidence/mem/EV-MEM-007.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 0,
+      "n_findings_after": 2,
+      "elapsed_ms": 3006
+    },
+    {
+      "mutation_id": "Y1-EV-OUT-STALE-MTIME-2",
+      "strategy": "Y1",
+      "cards": [
+        "evidence/mem/EV-MEM-008.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 0,
+      "n_findings_after": 2,
+      "elapsed_ms": 2998
+    },
+    {
+      "mutation_id": "Y1-EV-SERVES-EXIST-HC-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-009.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-EV-SERVES-EXIST-HC-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-010.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-ATOM-REL-TARGET-HC-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-011.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-ATOM-REL-TARGET-HC-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-012.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-ATOM-REL-UNKNOWN-HC-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-013.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-ATOM-REL-UNKNOWN-HC-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-014.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-CARD-PATH-NOT-CANONICAL-HC-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-015.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-CARD-PATH-NOT-CANONICAL-HC-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-016.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-PED-MOTIVATION-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-017.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-PED-MOTIVATION-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-018.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-PED-MISCONCEPTION-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-019.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-PED-MISCONCEPTION-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-020.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-PED-SOCRATIC-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-021.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-PED-SOCRATIC-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-022.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-PED-PREDICT-FIRST-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-023.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-PED-PREDICT-FIRST-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-024.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-LLM-SUPERIORITY-QUALITY-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-025.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-LLM-SUPERIORITY-QUALITY-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-026.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-HYBRID-TEACHING-DEPTH-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-027.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-HYBRID-TEACHING-DEPTH-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-028.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-HUMAN-GOLDEN-REVIEW-1",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-029.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y1-HUMAN-GOLDEN-REVIEW-2",
+      "strategy": "Y1",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "evidence/mem/EV-MEM-030.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y2-001",
+      "strategy": "Y2",
+      "cards": [
+        "atoms/conc/ATOM-CONC-FENCE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2958
+    },
+    {
+      "mutation_id": "Y2-002",
+      "strategy": "Y2",
+      "cards": [
+        "atoms/conc/ATOM-CONC-LOCK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2987
+    },
+    {
+      "mutation_id": "Y2-003",
+      "strategy": "Y2",
+      "cards": [
+        "atoms/conc/ATOM-CONC-RACE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2976
+    },
+    {
+      "mutation_id": "Y2-004",
+      "strategy": "Y2",
+      "cards": [
+        "atoms/hist/ATOM-HIST-AUTOPTR-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2990
+    },
+    {
+      "mutation_id": "Y2-005",
+      "strategy": "Y2",
+      "cards": [
+        "atoms/lang/ATOM-LANG-INLINE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 2,
+      "n_findings_after": 3,
+      "elapsed_ms": 2999
+    },
+    {
+      "mutation_id": "Y2-006",
+      "strategy": "Y2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALIGN-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2928
+    },
+    {
+      "mutation_id": "Y2-007",
+      "strategy": "Y2",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=M2",
+      "failed_card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y2-008",
+      "strategy": "Y2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-002.md"
+      ],
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 2992
+    },
+    {
+      "mutation_id": "Y2-009",
+      "strategy": "Y2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-LEAK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-STATUS-VALUE"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [
+        "INFERENCE-NOT-MACHINE-VERIFIED"
+      ],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 2999
+    },
+    {
+      "mutation_id": "Y2-010",
+      "strategy": "Y2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-LEAK-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-ID-FORMAT",
+        "ATOM-ID-UNIQUE"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2988
+    },
+    {
+      "mutation_id": "Y2-011",
+      "strategy": "Y2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-MOVE-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2992
+    },
+    {
+      "mutation_id": "Y2-012",
+      "strategy": "Y2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-NEW-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-DAL-MATCH"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2987
+    },
+    {
+      "mutation_id": "Y2-013",
+      "strategy": "Y2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-PERF-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-AUDIENCE"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2960
+    },
+    {
+      "mutation_id": "Y2-014",
+      "strategy": "Y2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-PERF-002.md"
+      ],
+      "verdict": "detected_nonblock",
+      "new_block_rules": [],
+      "new_nonblock_rules": [
+        "ATOM-PREREQ-READABLE"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2978
+    },
+    {
+      "mutation_id": "Y2-015",
+      "strategy": "Y2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-PERF-003.md"
+      ],
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 2951
+    },
+    {
+      "mutation_id": "Y2-016",
+      "strategy": "Y2",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-PERF-004.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y2-017",
+      "strategy": "Y2",
+      "cards": [
+        "atoms/mem/ATOM-MEM-RAII-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2919
+    },
+    {
+      "mutation_id": "Y2-018",
+      "strategy": "Y2",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-RAII-002.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y2-019",
+      "strategy": "Y2",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y2-020",
+      "strategy": "Y2",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y3-001",
+      "strategy": "Y3",
+      "cards": [
+        "atoms/conc/ATOM-CONC-FENCE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-STATUS-TRANSITION"
+      ],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2970
+    },
+    {
+      "mutation_id": "Y3-002",
+      "strategy": "Y3",
+      "cards": [
+        "atoms/conc/ATOM-CONC-LOCK-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-STATUS-TRANSITION"
+      ],
+      "new_nonblock_rules": [
+        "EV-FM-YAML-HARDENING"
+      ],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 5,
+      "elapsed_ms": 2944
+    },
+    {
+      "mutation_id": "Y3-003",
+      "strategy": "Y3",
+      "cards": [
+        "atoms/conc/ATOM-CONC-RACE-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2951
+    },
+    {
+      "mutation_id": "Y3-004",
+      "strategy": "Y3",
+      "cards": [
+        "atoms/hist/ATOM-HIST-AUTOPTR-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2990
+    },
+    {
+      "mutation_id": "Y3-005",
+      "strategy": "Y3",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y3-006",
+      "strategy": "Y3",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y3-007",
+      "strategy": "Y3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-001.md"
+      ],
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 2975
+    },
+    {
+      "mutation_id": "Y3-008",
+      "strategy": "Y3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-ALLOC-002.md"
+      ],
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 2991
+    },
+    {
+      "mutation_id": "Y3-009",
+      "strategy": "Y3",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y3-010",
+      "strategy": "Y3",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y3-011",
+      "strategy": "Y3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-MOVE-002.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S1-AUTHOR-SELF-VERIFY"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2950
+    },
+    {
+      "mutation_id": "Y3-012",
+      "strategy": "Y3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-NEW-001.md"
+      ],
+      "verdict": "blocked",
+      "new_block_rules": [
+        "S1-AUTHOR-SELF-VERIFY"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 2957
+    },
+    {
+      "mutation_id": "Y3-013",
+      "strategy": "Y3",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-PERF-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y3-014",
+      "strategy": "Y3",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-PERF-002.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y3-015",
+      "strategy": "Y3",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-PERF-003.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y3-016",
+      "strategy": "Y3",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-PERF-004.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y3-017",
+      "strategy": "Y3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-RAII-001.md"
+      ],
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 3003
+    },
+    {
+      "mutation_id": "Y3-018",
+      "strategy": "Y3",
+      "cards": [
+        "atoms/mem/ATOM-MEM-RAII-002.md"
+      ],
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 3130
+    },
+    {
+      "mutation_id": "Y3-019",
+      "strategy": "Y3",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y3-020",
+      "strategy": "Y3",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y3-021",
+      "strategy": "Y3",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+      "elapsed_ms": 0
+    },
+    {
+      "mutation_id": "Y3-022",
+      "strategy": "Y3",
+      "verdict": "infra_error",
+      "reason": "无法施加 op=MSET",
+      "failed_card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+      "elapsed_ms": 0
+    }
+  ],
+  "distribution": {
+    "blocked": 37,
+    "detected_nonblock": 2,
+    "infra_error": 59,
+    "neutral": 10
+  },
+  "escaped": [],
+  "touched_block": [
+    "ATOM-AUDIENCE",
+    "ATOM-DAL-MATCH",
+    "ATOM-FM-REQUIRED",
+    "ATOM-ID-FORMAT",
+    "ATOM-ID-UNIQUE",
+    "ATOM-STATUS-TRANSITION",
+    "ATOM-STATUS-VALUE",
+    "EV-FM-REQUIRED",
+    "EV-FM-YAML-HARDENING",
+    "S1-AUTHOR-SELF-VERIFY"
+  ],
+  "touched_nonblock": [
+    "ATOM-PREREQ-READABLE",
+    "EV-ASSERT-COUNT-BELOW-BASELINE",
+    "EV-FM-YAML-HARDENING"
+  ],
+  "touched_all": [
+    "ATOM-AUDIENCE",
+    "ATOM-DAL-MATCH",
+    "ATOM-FM-REQUIRED",
+    "ATOM-ID-FORMAT",
+    "ATOM-ID-UNIQUE",
+    "ATOM-PREREQ-READABLE",
+    "ATOM-STATUS-TRANSITION",
+    "ATOM-STATUS-VALUE",
+    "EV-ASSERT-COUNT-BELOW-BASELINE",
+    "EV-FM-REQUIRED",
+    "EV-FM-YAML-HARDENING",
+    "S1-AUTHOR-SELF-VERIFY"
+  ],
+  "total": 108,
+  "elapsed_s": 146.1,
+  "predicted_rules": [
+    "ATOM-AUDIENCE",
+    "ATOM-CLAIM-CONCEPT-NORMALIZED",
+    "ATOM-CLAIM-STRUCTURED",
+    "ATOM-DAL-MATCH",
+    "ATOM-FM-REQUIRED",
+    "ATOM-ID-FORMAT",
+    "ATOM-ID-UNIQUE",
+    "ATOM-MISCONCEPTION-LEVELS",
+    "ATOM-PREREQ-READABLE",
+    "ATOM-REL-TARGET-HC",
+    "ATOM-REL-UNKNOWN-HC",
+    "ATOM-STATUS-TRANSITION",
+    "ATOM-STATUS-VALUE",
+    "ATOM-SUPERIORITY-WORDS",
+    "ATOM-VERIFIED-BOUND",
+    "CARD-PATH-NOT-CANONICAL-HC",
+    "DOC-ZERO-PLACEHOLDER",
+    "EV-ARTIFACT-FILE-EXISTS",
+    "EV-ARTIFACT-VERSION-MATCH",
+    "EV-ENV-DEPENDENT-KEY",
+    "EV-FALSIFICATION",
+    "EV-FALSIFICATION-QUANT",
+    "EV-FIXTURE-NO-ECHO-DATA",
+    "EV-FM-REQUIRED",
+    "EV-ID-UNIQUE",
+    "EV-MATRIX",
+    "EV-MATRIX-UNBACKED",
+    "EV-OUT-STALE-MTIME",
+    "EV-OUT-UNDECLARED-KEY",
+    "EV-RUN-KEY-DECLARED-EXISTS",
+    "EV-SELF-SATISFIED-ASSERT",
+    "EV-SERVES-EXIST-HC",
+    "EV-TRIVIAL-OBSERVATION",
+    "EV-WERROR-DECL-BIND",
+    "EV-ZERO-DIAG-WERROR",
+    "HUMAN-GOLDEN-REVIEW",
+    "HYBRID-TEACHING-DEPTH",
+    "INFERENCE-NOT-MACHINE-VERIFIED",
+    "LLM-SUPERIORITY-QUALITY",
+    "META-MANIFEST",
+    "MIS-LIBRARY",
+    "OBSERVATION-LIVENESS",
+    "PED-MISCONCEPTION",
+    "PED-MOTIVATION",
+    "PED-PREDICT-FIRST",
+    "PED-SOCRATIC",
+    "S1-AUTHOR-SELF-VERIFY",
+    "S1-GIT-AUTHOR-BINDING",
+    "S2-EVIDENCE-VERDICT",
+    "S3-EXPECTED-HARDCODED"
+  ]
+}
