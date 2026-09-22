@@ -1,12 +1,12 @@
-# 615 C2 · legacy 豁免到期制
+# 615 C2 · 豁免到期制（legacy + 624 新增）
 
-> 豁免总数 **27**（全部 `redteam_seen: legacy`）；到期 = **创建批次 + 10**（批次轴 = `golden_state.accepted[]` 时间线）。**只算到期日与提醒，不删/不改任何豁免**。
+> 豁免总数 **31**；到期 = **创建批次 + 10**（批次轴 = `golden_state.accepted[]` 时间线）。**只算到期日与提醒，不删/不改任何豁免**。
 
 ## 一、状态汇总
 
 | 状态 | 条数 |
 |---|---|
-| active（未到期） | 27 |
+| active（未到期） | 31 |
 | due_soon（≤3 批内到期） | 0 |
 | expired（已到期，须重评估） | 0 |
 
@@ -41,6 +41,10 @@
 | `PED-MOTIVATION` | 2026-09-12 | 15 | 25 | 21 | active |
 | `PED-PREDICT-FIRST` | 2026-09-12 | 15 | 25 | 21 | active |
 | `PED-SOCRATIC` | 2026-09-12 | 15 | 25 | 21 | active |
+| `ATOM-REL-TARGET-HC` | 2026-09-22 | 21 | 31 | 21 | active |
+| `ATOM-REL-UNKNOWN-HC` | 2026-09-22 | 21 | 31 | 21 | active |
+| `CARD-PATH-NOT-CANONICAL-HC` | 2026-09-22 | 21 | 31 | 21 | active |
+| `EV-SERVES-EXIST-HC` | 2026-09-22 | 21 | 31 | 21 | active |
 
 ## 三、即将到期 / 已到期
 

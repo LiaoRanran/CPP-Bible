@@ -12,7 +12,7 @@ import exemption_expiry as ex  # noqa: E402
 
 def test_all_27_have_disposal() -> None:
     disp = ex.dispose()
-    assert len(disp) == 27
+    assert len(disp) == len(ex.load_exemptions())     # 624 D3：动态口径
     for x in disp:
         assert x["suggestion"] and x["rationale"] and x["risk"]
         assert x["category"] in ("advice级", "教学/资产类", "字段/枚举/结构类")
@@ -21,7 +21,7 @@ def test_all_27_have_disposal() -> None:
 def test_category_summary_correct() -> None:
     disp = ex.dispose()
     cats = Counter(x["category"] for x in disp)
-    assert sum(cats.values()) == 27
+    assert sum(cats.values()) == len(ex.load_exemptions())
     # 每条的类别必须与其建议并存（分类汇总可复算）
     assert set(cats) <= {"advice级", "教学/资产类", "字段/枚举/结构类"}
 

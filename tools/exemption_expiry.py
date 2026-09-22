@@ -90,8 +90,8 @@ def render(rows: list[dict]) -> str:
         by[r["status"]] = by.get(r["status"], 0) + 1
     due = [r for r in rows if r["status"] == "due_soon"]
     exp = [r for r in rows if r["status"] == "expired"]
-    L = ["# 615 C2 · legacy 豁免到期制", "",
-         f"> 豁免总数 **{n}**（全部 `redteam_seen: legacy`）；到期 = **创建批次 + {EXPIRY_BATCHES}**"
+    L = ["# 615 C2 · 豁免到期制（legacy + 624 新增）", "",
+         f"> 豁免总数 **{n}**；到期 = **创建批次 + {EXPIRY_BATCHES}**"
          f"（批次轴 = `golden_state.accepted[]` 时间线）。**只算到期日与提醒，不删/不改任何豁免**。", "",
          "## 一、状态汇总", "", "| 状态 | 条数 |", "|---|---|",
          f"| active（未到期） | {by['active']} |",
@@ -118,8 +118,9 @@ def render(rows: list[dict]) -> str:
 def check() -> list[str]:
     problems: list[str] = []
     rows = assign()
-    if len(rows) != 27:
-        problems.append(f"豁免应为 27 条（实测 {len(rows)}）")
+    expected = len(load_exemptions())       # 624 D3：动态口径（新增豁免不再硬编码 27）
+    if len(rows) != expected:
+        problems.append(f"豁免应为 {expected} 条（实测 {len(rows)}）")
     for r in rows:
         if r["expiry_batch"] != r["created_batch"] + EXPIRY_BATCHES:
             problems.append(f"{r['id']} 到期批次 ≠ 创建批次+{EXPIRY_BATCHES}")
@@ -171,7 +172,7 @@ def disposal_report(rows: list[dict] | None = None) -> str:
     from collections import Counter
     summ = Counter(x["suggestion"] for x in disp)
     cats = Counter(x["category"] for x in disp)
-    L = ["# 616 C2 · 27 条 legacy 豁免到期处置清单（**只建议，不自动删除**）", "",
+    L = [f"# 616 C2 · 豁免到期处置清单（{len(disp)} 条，**只建议，不自动删除**）", "",
          "> 依据：581 台账纪律「豁免 ≠ 免检；须有 pytest 正反例兜底」；到期 = 创建批次 + 10。", "",
          "## 一、分类汇总", "",
          "| 处置建议 | 条数 |", "|---|---|",
@@ -206,7 +207,7 @@ def main(argv: list[str] | None = None) -> int:
             for p in problems:
                 print(f"[C2] ❌ {p}", file=sys.stderr)
             return 1
-        print("[C2] ✅ 自验证通过：27 条豁免 / 到期=创建+10 / 状态计算 / 处置建议 一致")
+        print(f"[C2] ✅ 自验证通过：{len(load_exemptions())} 条豁免 / 到期=创建+10 / 状态计算 / 处置建议 一致")
         return 0
     if a.disposal:
         DISPOSAL_REPORT.parent.mkdir(parents=True, exist_ok=True)

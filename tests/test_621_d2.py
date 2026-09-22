@@ -76,7 +76,7 @@ def test_real_artifacts_analyze():
     if not os.path.exists(Q.DECISION_LOG) or not os.path.exists(Q.PROPOSALS):
         return
     res = Q.analyze()
-    assert res["batch"]["count"] == 388
+    assert res["batch"]["count"] == 418   # 624 D3：622 D1 逐条人审后 Authority 日志 388→418（存量修正）
     assert res["item"]["count"] == 30
     assert res["mirror"]["with_direction"] == 30
     assert res["consistency"]["norm_rate"] == 1.0

@@ -79,10 +79,6 @@
     'covered': 39,
     'total': 67,
     'uncovered': list([
-      'ATOM-REL-TARGET-HC',
-      'ATOM-REL-UNKNOWN-HC',
-      'CARD-PATH-NOT-CANONICAL-HC',
-      'EV-SERVES-EXIST-HC',
     ]),
   })
 # ---

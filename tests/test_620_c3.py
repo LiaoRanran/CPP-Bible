@@ -100,7 +100,7 @@ def test_full_sync_against_real_log_and_certs():
     res = S.sync(S.DEFAULT_CERT_DIR, S.DEFAULT_LOG, write=False)
     assert res["total"] == 83
     assert res["synced"] + res["unmatched"] == 83
-    assert res["log_entries"] == 388
+    assert res["log_entries"] == 418   # 624 D3：622 D1 逐条人审后 Authority 日志 388→418（存量修正）
 
 
 def test_report_renders():
