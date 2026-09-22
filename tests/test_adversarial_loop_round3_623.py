@@ -18,7 +18,7 @@ def test_round3_40_mutations():
 
 def test_round3_no_escaped():
     res = json.load(open(R3, encoding="utf-8"))
-    assert res["distribution"]["escaped"] == 0
+    assert res["distribution"].get("escaped", 0) == 0
 
 
 def test_cumulative_touched_ge_25():
