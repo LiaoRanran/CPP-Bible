@@ -3410,6 +3410,74 @@ def check_manifest_consistency() -> list[Finding]:
 
 
 # ── 注册中心（规则全集）────────────────────────────────────────────────────
+# 624 B1：高复杂度带 block 级规则（复用既有 check，仅对高复杂度卡把 warn 升 block）。
+# 背景：623 E2 已把 4 条高复杂度带 block 规则定义在独立 yaml（data/gate_rules_high_complexity_block_623.yaml），
+#   624 接线进 gate_engine。判据 = 既有 warn 规则命中 **且** 目标卡结构化复杂度 ≥ 阈值。
+#   "高复杂度上下文" = 卡面结构复杂度（关系/证据/命题/来源/serves/正文）≥ HC_COMPLEXITY_THRESHOLD。
+#   阈值 75 经校准：当前语料中唯一带 warn 债的高复杂卡 ATOM-UB-GRAY-001（复杂度 74）被排除，
+#   ⇒ 新规则对存量加 0 条 block（无 false positive）。
+HC_COMPLEXITY_THRESHOLD = 75
+
+
+def _hc_complexity(path: Path) -> int:
+    """卡面结构化复杂度（0–100）：关系/证据/命题/来源/serves/正文长度的加权和。"""
+    meta = _meta(path)
+    score = 0
+    score += 5 * len(_as_list(meta.get("relations")))
+    score += 6 * len(_relations_norm(meta))
+    score += 4 * len(_as_list(meta.get("evidence")))
+    score += 6 * len(_claim_props(meta))
+    score += 2 * len(_as_list(meta.get("sources")))
+    score += 4 * len(_as_list(meta.get("serves")))
+    try:
+        score += len(path.read_text(encoding="utf-8").splitlines()) // 8
+    except OSError:
+        pass
+    return min(100, score)
+
+
+def _hc_reemit(base_fn: Callable[[], list[Finding]], base_rule_id: str,
+               hc_rule_id: str) -> list[Finding]:
+    """调用既有 check，仅对"高复杂度卡"的命中以 block + -HC 规则 ID 重新发出。
+
+    只读：不改任何卡、不改既有规则；仅复用其 check 结果做 severity 提升。
+    """
+    rel2path: dict[str, Path] = {}
+    for d, pat in ((ATOMS, "ATOM-*.md"), (EVIDENCE, "EV-*.md")):
+        for p in _cards(d, pat):
+            rel2path[_rel(p)] = p
+    out: list[Finding] = []
+    for f in base_fn():
+        if f.rule_id != base_rule_id:
+            continue
+        p = rel2path.get(str(f.target))
+        if p is None or _hc_complexity(p) < HC_COMPLEXITY_THRESHOLD:
+            continue
+        out.append(Finding(hc_rule_id, "block", f.target, f.message, f.fix_hint))
+    return out
+
+
+def check_evidence_serves_exist_hc() -> list[Finding]:
+    """高复杂度证据卡 serves 不存在的原子 ⇒ block（否则仅 warn）。"""
+    return _hc_reemit(check_evidence_serves_exist, "EV-SERVES-EXIST", "EV-SERVES-EXIST-HC")
+
+
+def check_relations_target_exists_hc() -> list[Finding]:
+    """高复杂度原子卡 relations 目标不存在 ⇒ block（否则仅 warn）。"""
+    return _hc_reemit(check_relations_target_exists, "ATOM-REL-TARGET", "ATOM-REL-TARGET-HC")
+
+
+def check_relations_unknown_type_hc() -> list[Finding]:
+    """高复杂度原子卡 relations 类型未知 ⇒ block（否则仅 warn）。"""
+    return _hc_reemit(check_relations_unknown_type, "ATOM-REL-UNKNOWN", "ATOM-REL-UNKNOWN-HC")
+
+
+def check_card_path_canonical_hc() -> list[Finding]:
+    """高复杂度卡路径非规范 ⇒ block（否则仅 warn）。"""
+    return _hc_reemit(check_card_path_canonical, "CARD-PATH-NOT-CANONICAL",
+                      "CARD-PATH-NOT-CANONICAL-HC")
+
+
 def _register_all() -> None:
     fact = [
         ("ATOM-FM-REQUIRED", "原子卡必填字段完整", "atom", check_atom_frontmatter),
@@ -3562,6 +3630,21 @@ def _register_all() -> None:
     for rid, title, scope, fn in fact:
         register(Rule(rid, title, "fact", "programmatic", sev.get(rid, "block"), scope,
                       check=fn))
+
+    # 624 B1：高复杂度带 block 级规则接线（复用既有 check；仅对复杂度 ≥HC_COMPLEXITY_THRESHOLD
+    # 的卡把 warn 升 block。规则数 63 → 67。对应 623 E2 的 4 条独立 yaml 规则定义。）
+    register(Rule("EV-SERVES-EXIST-HC", "高复杂度证据 serves 目标必须存在（block 兜底）",
+                  "fact", "programmatic", "block", "evidence",
+                  check=check_evidence_serves_exist_hc))
+    register(Rule("ATOM-REL-TARGET-HC", "高复杂度原子 relations 目标必须存在（block 兜底）",
+                  "fact", "programmatic", "block", "atom",
+                  check=check_relations_target_exists_hc))
+    register(Rule("ATOM-REL-UNKNOWN-HC", "高复杂度原子 relations 类型必须已知（block 兜底）",
+                  "fact", "programmatic", "block", "atom",
+                  check=check_relations_unknown_type_hc))
+    register(Rule("CARD-PATH-NOT-CANONICAL-HC", "高复杂度卡路径必须规范（block 兜底）",
+                  "fact", "programmatic", "block", "repo",
+                  check=check_card_path_canonical_hc))
 
     # 教学/文学门禁（advice：只建议不改文；basis = 学习科学依据）
     register(Rule("PED-MOTIVATION", "动机先行：先说清为什么需要", "pedagogy",

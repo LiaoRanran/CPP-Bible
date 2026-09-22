@@ -3,7 +3,7 @@
   dict({
     'advice': 5,
     'block': 0,
-    'rules': 63,
+    'rules': 67,
     'warn': 186,
   })
 # ---
@@ -25,14 +25,14 @@
       'USES': 56,
     }),
     'max_component': 3,
-    'nodes': 328,
+    'nodes': 332,
     'nodes_by_type': dict({
       'ARTIFACT': 51,
       'ATOM': 30,
       'EVIDENCE': 56,
       'FIXTURE': 49,
       'MISCONCEPTION': 79,
-      'RULE': 63,
+      'RULE': 67,
     }),
   })
 # ---
@@ -77,8 +77,12 @@
       'A11',
     ]),
     'covered': 39,
-    'total': 63,
+    'total': 67,
     'uncovered': list([
+      'ATOM-REL-TARGET-HC',
+      'ATOM-REL-UNKNOWN-HC',
+      'CARD-PATH-NOT-CANONICAL-HC',
+      'EV-SERVES-EXIST-HC',
     ]),
   })
 # ---
