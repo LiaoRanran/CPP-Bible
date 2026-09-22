@@ -157,6 +157,47 @@ def execute_all(proposals: list[dict], log_path: str = DECISION_LOG,
             "entries": entries}
 
 
+# ── 622 D2：把「已执行的 30 条」与 W2 求解器的真实输入（annotations）比对 ────────
+# 为什么要比：`weighted_af_solver` 读的是 `human_attack_edge_annotations.jsonl`，
+# **不是** Authority 决策日志 ⇒ 两条通道是否"同向"决定了 D1 对 W2 有无影响。
+ACTION_FOR_POWER = {"ACCEPT": "approve", "OVERRIDE": "modify", "REJECT": "reject"}
+
+
+def compare_with_annotations(decisions: list[dict],
+                             ann_path: str | None = None) -> dict:
+    """逐边比较「决策的 action」与「annotations 里既有的 action」是否同向。"""
+    p = ann_path or os.path.join(ROOT, "data", "human_attack_edge_annotations.jsonl")
+    ann: dict[str, dict] = {}
+    if os.path.exists(p):
+        with open(p, encoding="utf-8") as fh:
+            for ln in fh:
+                ln = ln.strip()
+                if ln:
+                    e = json.loads(ln)
+                    ann[str(e.get("edge_id"))] = e
+    same = diff = missing = 0
+    detail = []
+    for d in decisions:
+        edge = str((d.get("target") or {}).get("id"))
+        a = ann.get(edge)
+        if a is None:
+            missing += 1
+            detail.append({"edge": edge, "power": d.get("power"), "ann_action": None,
+                           "verdict": "annotations 无此边"})
+            continue
+        want = ACTION_FOR_POWER.get(str(d.get("power")))
+        got = str(a.get("action"))
+        if want == got:
+            same += 1
+        else:
+            diff += 1
+            detail.append({"edge": edge, "power": d.get("power"), "ann_action": got,
+                           "verdict": "与既有标注不同向"})
+    return {"total": len(decisions), "same": same, "diff": diff, "missing": missing,
+            "annotations_edges": len(ann), "differences": detail,
+            "all_same_direction": diff == 0 and missing == 0}
+
+
 def decision_log_count(path: str = DECISION_LOG) -> int:
     if not os.path.exists(path):
         return 0
