@@ -1,0 +1,68 @@
+{
+  "W2": {
+    "IN": 484,
+    "OUT": 35,
+    "UNDEC": 0
+  },
+  "PCK": {
+    "count": 83,
+    "strict_authorized": 0,
+    "relaxed_authorized": 0,
+    "delta_relaxed_minus_strict": 0,
+    "cross_granularity_warned": 25
+  },
+  "GOLDEN": {
+    "warn_disposition_events": 0,
+    "accepted_legacy": 0,
+    "accepted_legacy_events": [],
+    "rule": "任何自动采纳 legacy 的路径必须关闭；只有 Authority event 才能标记 accepted_legacy",
+    "source_authority_events": []
+  },
+  "DASHBOARD": {
+    "v2_enabled": false,
+    "review_items_unique": 93,
+    "review_items_records": 93,
+    "by_status": {
+      "pending": 93
+    },
+    "review_method_distribution": {
+      "ITEM_OPEN": 30,
+      "MIRROR_DERIVED": 194,
+      "BATCH_AUTH": 228
+    },
+    "decision_origin_distribution": {
+      "user_authorized_execution": 30,
+      "mirror_projection": 194,
+      "human_observed": 228
+    },
+    "ambiguity_distribution": {
+      "high": 30,
+      "medium": 63,
+      "low": 0
+    },
+    "independent_human_review_count": 0,
+    "authority_events": 452,
+    "generated_at": "2026-09-22T16:11:48Z"
+  },
+  "TEXTBOOK_SAMPLE": {
+    "atom_id": "ATOM-CONC-RACE-001",
+    "render_state": "ABSTAIN",
+    "pck_status": "pending",
+    "argument_status": {
+      "ATOM-CONC-RACE-001": "IN",
+      "ATOM-CONC-RACE-001::prop-1": "IN",
+      "ae-ATOM-CONC-RACE-001::prop-2->MIS-CONC-003": "IN",
+      "ATOM-CONC-RACE-001::prop-3": "IN",
+      "ATOM-CONC-RACE-001::prop-2": "IN",
+      "ae-MIS-CONC-003->ATOM-CONC-RACE-001::prop-1": "IN",
+      "ae-MIS-CONC-003->ATOM-CONC-RACE-001::prop-2": "IN",
+      "ae-MIS-CONC-003->ATOM-CONC-RACE-001::prop-3": "IN",
+      "ae-ATOM-CONC-RACE-001::prop-3->MIS-CONC-003": "IN",
+      "ae-ATOM-CONC-RACE-001::prop-1->MIS-CONC-003": "IN"
+    },
+    "source_authority_events": []
+  },
+  "projection_rules_version": "v0.1",
+  "deterministic": true,
+  "v2_enabled": false
+}
