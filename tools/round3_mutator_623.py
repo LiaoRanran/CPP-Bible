@@ -18,14 +18,15 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+import high_complexity_mutator_623 as base  # 复用 collect_cards / _key_present / _get_value
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 DATA = os.path.join(ROOT, "data")
-
-import sys
-sys.path.insert(0, HERE)
-import high_complexity_mutator_623 as base  # 复用 collect_cards / _key_present / _get_value
 
 ATOMS_DIR = base.ATOMS_DIR
 EVIDENCE_DIR = base.EVIDENCE_DIR

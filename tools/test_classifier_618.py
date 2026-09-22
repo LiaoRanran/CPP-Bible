@@ -94,7 +94,6 @@ def summarize(results):
     self_test = 0
     unclassified = 0
     for name, matched in results.items():
-        primary = classify_file if False else None
         # primary：第一个在 CATEGORIES 顺序中命中的类别
         prim = "其他"
         for cat, _r, _h in CATEGORIES:

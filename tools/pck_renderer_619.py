@@ -135,7 +135,9 @@ def selftest() -> int:
     chk("渲染含批量授权注释", "batch_authorization" in md)
     chk("渲染含负向测试表", "negative_tests" in md)
     # 含错证书应渲染 FAIL 徽标
-    bad = dict(cert); bad["schema_version"] = "old"; bad["evidence"] = []
+    bad = dict(cert)
+    bad["schema_version"] = "old"
+    bad["evidence"] = []
     md_bad = render(bad)
     chk("含错证书渲染 FAIL 徽标", "❌ FAIL" in md_bad)
     chk("含错证书列出结构错误", "结构错误" in md_bad)

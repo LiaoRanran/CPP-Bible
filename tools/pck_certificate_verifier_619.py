@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 
 SCHEMA_VERSION = "619-pck-v1"
