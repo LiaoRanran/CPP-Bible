@@ -1,0 +1,93 @@
+# 626 E1 · PCK semantic verifier 实跑报告（4 层验证）
+
+- PCK 总数：**83**；pass **27** / fail **56**
+- 各层 pass 数：`{'B2-S': 83, 'B2-R': 27, 'B2-E': 83, 'B2-A': 83}`
+
+| PCK | 状态 | 失败层 |
+|---|---|---|
+| `ATOM-CONC-FENCE-001` | pass | - |
+| `ATOM-CONC-LOCK-001` | pass | - |
+| `ATOM-CONC-RACE-001` | pass | - |
+| `ATOM-HIST-AUTOPTR-001` | pass | - |
+| `ATOM-LANG-INLINE-001` | pass | - |
+| `ATOM-MEM-ALIGN-001` | pass | - |
+| `ATOM-MEM-ALLOC-001` | pass | - |
+| `ATOM-MEM-ALLOC-002` | pass | - |
+| `ATOM-MEM-LEAK-001` | pass | - |
+| `ATOM-MEM-LEAK-002` | pass | - |
+| `ATOM-MEM-MOVE-002` | pass | - |
+| `ATOM-MEM-NEW-001` | pass | - |
+| `ATOM-MEM-PERF-001` | pass | - |
+| `ATOM-MEM-PERF-002` | pass | - |
+| `ATOM-MEM-PERF-003` | pass | - |
+| `ATOM-MEM-PERF-004` | pass | - |
+| `ATOM-MEM-RAII-001` | pass | - |
+| `ATOM-MEM-RAII-002` | pass | - |
+| `ATOM-MEM-RVREF-001` | pass | - |
+| `ATOM-MEM-SHARED-001` | pass | - |
+| `ATOM-MEM-SHARED-002` | pass | - |
+| `ATOM-MEM-UNIQUE-001` | pass | - |
+| `ATOM-MEM-UNIQUE-002` | pass | - |
+| `ATOM-MEM-VALUE-001` | pass | - |
+| `ATOM-MEM-VALUE-002` | pass | - |
+| `ATOM-MEM-WEAK-001` | pass | - |
+| `ATOM-UB-GRAY-001` | pass | - |
+| `EV-CONC-001` | fail | B2-R |
+| `EV-CONC-002` | fail | B2-R |
+| `EV-CONC-003` | fail | B2-R |
+| `EV-CONC-004` | fail | B2-R |
+| `EV-CONC-005` | fail | B2-R |
+| `EV-CONC-006` | fail | B2-R |
+| `EV-HIST-001` | fail | B2-R |
+| `EV-LANG-001` | fail | B2-R |
+| `EV-LANG-002` | fail | B2-R |
+| `EV-MEM-001` | fail | B2-R |
+| `EV-MEM-002` | fail | B2-R |
+| `EV-MEM-003` | fail | B2-R |
+| `EV-MEM-004` | fail | B2-R |
+| `EV-MEM-005` | fail | B2-R |
+| `EV-MEM-006` | fail | B2-R |
+| `EV-MEM-007` | fail | B2-R |
+| `EV-MEM-008` | fail | B2-R |
+| `EV-MEM-009` | fail | B2-R |
+| `EV-MEM-010` | fail | B2-R |
+| `EV-MEM-011` | fail | B2-R |
+| `EV-MEM-012` | fail | B2-R |
+| `EV-MEM-013` | fail | B2-R |
+| `EV-MEM-014` | fail | B2-R |
+| `EV-MEM-015` | fail | B2-R |
+| `EV-MEM-016` | fail | B2-R |
+| `EV-MEM-017` | fail | B2-R |
+| `EV-MEM-018` | fail | B2-R |
+| `EV-MEM-019` | fail | B2-R |
+| `EV-MEM-020` | fail | B2-R |
+| `EV-MEM-021` | fail | B2-R |
+| `EV-MEM-022` | fail | B2-R |
+| `EV-MEM-023` | fail | B2-R |
+| `EV-MEM-024` | fail | B2-R |
+| `EV-MEM-025` | fail | B2-R |
+| `EV-MEM-026` | fail | B2-R |
+| `EV-MEM-027` | fail | B2-R |
+| `EV-MEM-028` | fail | B2-R |
+| `EV-MEM-029` | fail | B2-R |
+| `EV-MEM-030` | fail | B2-R |
+| `EV-MEM-031` | fail | B2-R |
+| `EV-MEM-032` | fail | B2-R |
+| `EV-MEM-033` | fail | B2-R |
+| `EV-MEM-034` | fail | B2-R |
+| `EV-MEM-035` | fail | B2-R |
+| `EV-MEM-036` | fail | B2-R |
+| `EV-MEM-037` | fail | B2-R |
+| `EV-MEM-038` | fail | B2-R |
+| `EV-MEM-039` | fail | B2-R |
+| `EV-MEM-040` | fail | B2-R |
+| `EV-MEM-041` | fail | B2-R |
+| `EV-MEM-042` | fail | B2-R |
+| `EV-MEM-043` | fail | B2-R |
+| `EV-MEM-044` | fail | B2-R |
+| `EV-MEM-045` | fail | B2-R |
+| `EV-UB-001` | fail | B2-R |
+| `EV-UB-002` | fail | B2-R |
+
+> 说明：本批**只验证，不修改**任何 PCK 文件。
+
