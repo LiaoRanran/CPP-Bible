@@ -72,6 +72,110 @@ def classify(state: dict, now: datetime | None = None) -> dict:
             "is_abstain": True}
 
 
+# ── 622 C1：分类器 v2（verdict 识别 + Authority 交叉验证 + 证据充分性）──────────
+# 升级动因（621 C2 实测）：ABSTAIN 与 Authority **完全反相关**
+#   （SUPPORTED×pending 56、UNDECIDED×approved 27），
+# 根因是 v1 只看「卡上有没有 verdict 字段」，而 Authority 看「人是否批准」。
+#
+# v2 的判定顺序（在 v1 的 4 个硬前置之后，把"verdict 缺失"从死路改为**多源交叉**）：
+#   ① 证据数 0            → INSUFFICIENT_EVIDENCE
+#   ② relations 矛盾      → CONFLICTED
+#   ③ 超过 90 天          → STALE
+#   ④ 卡上 verdict=refute → REFUTED
+#   ⑤ 卡上 verdict=confirm→ SUPPORTED
+#   ⑥ **提取的 verdict**（C2）→ REFUTED / SUPPORTED
+#   ⑦ **Authority=approved** → SUPPORTED ；=rejected → REFUTED
+#   ⑧ 其余                → UNDECIDED
+#
+# 每条结论都带 `basis`，明确"是谁判的"，避免"机器说支持"与"人已批准"混为一谈。
+AUTHORITY_LOG = os.path.join(ROOT, "data", "authority", "authority_log.jsonl")
+
+
+def load_authority_entries(path: str = AUTHORITY_LOG) -> list[dict]:
+    if not os.path.exists(path):
+        return []
+    with open(path, encoding="utf-8") as fh:
+        return [json.loads(ln) for ln in fh if ln.strip()]
+
+
+def authority_status_for(card_id: str, entries: list[dict]) -> str | None:
+    """按 620 C3 的同一规则（子串匹配 target.id）取该卡的 Authority 状态。"""
+    if not card_id:
+        return None
+    hits = [e for e in entries if card_id in str((e.get("target") or {}).get("id", ""))]
+    if not hits:
+        return None
+    power = str(hits[-1].get("power") or "")
+    return {"ACCEPT": "approved", "OVERRIDE": "approved",
+            "REJECT": "rejected", "ABSTAIN": "abstained"}.get(power)
+
+
+def classify_v2(state: dict, authority: str | None = None,
+                extracted_verdict: str | None = None,
+                now: datetime | None = None) -> dict:
+    """分类器 v2：与 Authority 判定标准对齐。"""
+    ev = int(state.get("evidence_count") or 0)
+    if ev <= 0:
+        return {"state": "INSUFFICIENT_EVIDENCE", "is_abstain": True,
+                "basis": "evidence_count=0", "reason": "无任何证据锚"}
+    if state.get("conflicted"):
+        return {"state": "CONFLICTED", "is_abstain": True,
+                "basis": "relations", "reason": "relations 含 contradicts"}
+    days = state.get("days_since_verify")
+    if days is None:
+        days = _days_since(state.get("verified_at"), now)
+    if days is not None and days > STALE_DAYS:
+        return {"state": "STALE", "is_abstain": True, "basis": "verified_at",
+                "reason": f"距上次验证 {days} 天 > {STALE_DAYS} 天"}
+
+    v = str(state.get("verdict") or "").strip().lower()
+    if v == "refute":
+        return {"state": "REFUTED", "is_abstain": False, "basis": "card_verdict",
+                "reason": "卡面 verdict=refute"}
+    if v == "confirm":
+        return {"state": "SUPPORTED", "is_abstain": False, "basis": "card_verdict",
+                "reason": "卡面 verdict=confirm"}
+
+    ex = str(extracted_verdict or "").strip().lower()
+    if ex in ("supported", "confirm"):
+        return {"state": "SUPPORTED", "is_abstain": False, "basis": "extracted_verdict",
+                "reason": "由卡面内容提取出的 verdict=SUPPORTED"}
+    if ex in ("refuted", "refute"):
+        return {"state": "REFUTED", "is_abstain": False, "basis": "extracted_verdict",
+                "reason": "由卡面内容提取出的 verdict=REFUTED"}
+
+    a = str(authority or "").strip().lower()
+    if a == "approved":
+        return {"state": "SUPPORTED", "is_abstain": False, "basis": "authority_approved",
+                "reason": "卡面无 verdict，但 Authority 已批准（人审交叉验证）"}
+    if a == "rejected":
+        return {"state": "REFUTED", "is_abstain": False, "basis": "authority_rejected",
+                "reason": "卡面无 verdict，但 Authority 已否决"}
+
+    return {"state": "UNDECIDED", "is_abstain": True, "basis": "no_signal",
+            "reason": f"无 verdict（卡面/提取）且 Authority={a or 'none'}"}
+
+
+def classify_card_v2(card_rel: str, authority_entries: list[dict] | None = None,
+                     extracted: dict[str, str] | None = None,
+                     now: datetime | None = None) -> dict:
+    """按卡分类（v2）：自动取 Authority 状态与（可选的）C2 提取 verdict。"""
+    sys.path.insert(0, HERE)
+    import pck_batch_migrator_620 as M  # noqa: PLC0415
+    fm = M.read_frontmatter(os.path.join(ROOT, card_rel))
+    st = build_state(fm, card_rel, now)
+    card_id = fm.get("id") or os.path.basename(card_rel).replace(".md", "")
+    entries = authority_entries if authority_entries is not None else load_authority_entries()
+    res = classify_v2(st, authority=authority_status_for(card_id, entries),
+                      extracted_verdict=(extracted or {}).get(card_id), now=now)
+    return {"card": card_rel, "card_id": card_id,
+            "kind": "atom" if card_rel.startswith("atoms/") else "evidence",
+            "domain": card_rel.split("/")[1] if card_rel.count("/") > 1 else "unknown",
+            "authority": authority_status_for(card_id, entries),
+            "extracted_verdict": (extracted or {}).get(card_id),
+            "input": st, **res}
+
+
 def build_state(fm: dict, card_rel: str, now: datetime | None = None) -> dict:
     """从 frontmatter 构造 card_state（只读派生）。"""
     is_atom = card_rel.startswith("atoms/")
@@ -164,6 +268,34 @@ def selftest() -> int:
     chk("弃权态 4 个", len(ABSTAIN_STATES) == 4)
     chk("days_since 解析", _days_since("2026-09-01", now) == 21)
     chk("unknown 日期不解析", _days_since("unknown", now) is None)
+
+    # ── 622 C1：v2 升级项 ──
+    chk("v2：无 verdict 但 Authority 批准 ⇒ SUPPORTED",
+        classify_v2({"evidence_count": 3, "verdict": None}, authority="approved",
+                    now=now)["state"] == "SUPPORTED")
+    chk("v2：无 verdict 且 Authority 未批 ⇒ UNDECIDED",
+        classify_v2({"evidence_count": 3, "verdict": None}, authority="pending",
+                    now=now)["state"] == "UNDECIDED")
+    chk("v2：提取 verdict 优先于 Authority",
+        classify_v2({"evidence_count": 3, "verdict": None}, authority="approved",
+                    extracted_verdict="refuted", now=now)["state"] == "REFUTED")
+    chk("v2：卡面 verdict 优先于提取与 Authority",
+        classify_v2({"evidence_count": 3, "verdict": "refute"}, authority="approved",
+                    extracted_verdict="supported", now=now)["state"] == "REFUTED")
+    chk("v2：硬前置（无证据）仍优先",
+        classify_v2({"evidence_count": 0, "verdict": "confirm"}, authority="approved",
+                    now=now)["state"] == "INSUFFICIENT_EVIDENCE")
+    chk("v2：每态带 basis",
+        all(classify_v2(s, now=now).get("basis")
+            for s in ({"evidence_count": 0}, {"evidence_count": 1, "conflicted": True},
+                      {"evidence_count": 1, "verified_at": "2020-01-01"},
+                      {"evidence_count": 1, "verdict": "confirm"},
+                      {"evidence_count": 1, "verdict": "refute"},
+                      {"evidence_count": 1, "verdict": None})))
+    chk("v2：Authority 子串匹配",
+        authority_status_for("ATOM-MEM-PERF-003",
+                             [{"target": {"id": "ae-X->ATOM-MEM-PERF-003::prop-1"},
+                               "power": "ACCEPT"}]) == "approved")
     print(f"C1 selftest: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
 
