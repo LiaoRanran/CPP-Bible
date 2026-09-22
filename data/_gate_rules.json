@@ -1,0 +1,254 @@
+[
+  {
+    "rule": "ATOM-FM-REQUIRED",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-ID-FORMAT",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-ID-UNIQUE",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-VERIFIED-BOUND",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-NO-UNVERIFIED",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-STATUS-VALUE",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-STATUS-TRANSITION",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-DAL-MATCH",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-REL-TARGET",
+    "severity": "warn"
+  },
+  {
+    "rule": "ATOM-REL-DAG",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-REL-CONFLICT",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-SUPERIORITY-WORDS",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-FM-REQUIRED",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-ID-UNIQUE",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-FALSIFICATION",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-MATRIX",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-GRAY-ZONE",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-MISCONCEPTION-LEVELS",
+    "severity": "block"
+  },
+  {
+    "rule": "MIS-LIBRARY",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-MISCONCEPTION-REF",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-AUDIENCE",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-PREREQ-READABLE",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-SERVES-EXIST",
+    "severity": "warn"
+  },
+  {
+    "rule": "DOC-ZERO-PLACEHOLDER",
+    "severity": "block"
+  },
+  {
+    "rule": "META-MANIFEST",
+    "severity": "warn"
+  },
+  {
+    "rule": "S1-AUTHOR-SELF-VERIFY",
+    "severity": "block"
+  },
+  {
+    "rule": "S1-GIT-AUTHOR-BINDING",
+    "severity": "warn"
+  },
+  {
+    "rule": "ATOM-VERIFY-REASON",
+    "severity": "warn"
+  },
+  {
+    "rule": "EV-ARTIFACT-VERSION-MATCH",
+    "severity": "block"
+  },
+  {
+    "rule": "S2-EVIDENCE-VERDICT",
+    "severity": "block"
+  },
+  {
+    "rule": "S3-EXPECTED-HARDCODED",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-SELF-SATISFIED-ASSERT",
+    "severity": "warn"
+  },
+  {
+    "rule": "EV-FALSIFICATION-QUANT",
+    "severity": "warn"
+  },
+  {
+    "rule": "EV-TRIVIAL-OBSERVATION",
+    "severity": "warn"
+  },
+  {
+    "rule": "EV-MATRIX-UNBACKED",
+    "severity": "warn"
+  },
+  {
+    "rule": "EV-ZERO-DIAG-WERROR",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-WERROR-DECL-BIND",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-ASSERT-COUNT-BELOW-BASELINE",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-OUT-UNDECLARED-KEY",
+    "severity": "warn"
+  },
+  {
+    "rule": "EV-RUN-KEY-DECLARED-EXISTS",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-ASSERT-SYMBOL-MAPPED",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-ARTIFACT-PRODUCER",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-ARTIFACT-FILE-EXISTS",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-MSCV-NO-VERIFY",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-FM-DUP-KEY",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-FM-YAML-HARDENING",
+    "severity": "block"
+  },
+  {
+    "rule": "EV-ENV-DEPENDENT-KEY",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-REL-UNKNOWN",
+    "severity": "warn"
+  },
+  {
+    "rule": "ATOM-CLAIM-STRUCTURED",
+    "severity": "block"
+  },
+  {
+    "rule": "OBSERVATION-NEEDS-ARTIFACT",
+    "severity": "block"
+  },
+  {
+    "rule": "INFERENCE-NOT-MACHINE-VERIFIED",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-CLAIM-CONCEPT-NORMALIZED",
+    "severity": "warn"
+  },
+  {
+    "rule": "OBSERVATION-LIVENESS",
+    "severity": "warn"
+  },
+  {
+    "rule": "EV-FIXTURE-NO-ECHO-DATA",
+    "severity": "warn"
+  },
+  {
+    "rule": "EV-OUT-STALE-MTIME",
+    "severity": "warn"
+  },
+  {
+    "rule": "CARD-PATH-NOT-CANONICAL",
+    "severity": "warn"
+  },
+  {
+    "rule": "PED-MOTIVATION",
+    "severity": "advice"
+  },
+  {
+    "rule": "PED-MISCONCEPTION",
+    "severity": "advice"
+  },
+  {
+    "rule": "PED-SOCRATIC",
+    "severity": "advice"
+  },
+  {
+    "rule": "PED-PREDICT-FIRST",
+    "severity": "advice"
+  },
+  {
+    "rule": "LLM-SUPERIORITY-QUALITY",
+    "severity": "advice"
+  },
+  {
+    "rule": "HYBRID-TEACHING-DEPTH",
+    "severity": "advice"
+  },
+  {
+    "rule": "HUMAN-GOLDEN-REVIEW",
+    "severity": "advice"
+  }
+]
