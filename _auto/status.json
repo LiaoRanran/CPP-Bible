@@ -1,11 +1,11 @@
 {
   "state": "awaiting_review",
-  "active_batch": 624,
-  "next_batch": 625,
-  "last_completed_batch": 624,
-  "last_commit": "62b46ea2",
+  "active_batch": 625,
+  "next_batch": 626,
+  "last_completed_batch": 625,
+  "last_commit": "F2_PENDING",
   "last_review_at": "2026-09-22",
-  "current_task": "624: 17/17 任务全完成（突破批：跨卡攻击六轮累计触达34/63+盲区37→29+E2规则接线63→67+push CI(gate/replay/concurrency绿,quality/pytest红)+PCK不代签0候选+人审逐条110），awaiting_review",
+  "current_task": "625: 19/19 任务全完成（修债务+稳雷2+备雷1：mypy67→0+OTS重锚+pytest非slow全绿+尺子22→34+路径解耦26/130+雷2连续3轮稳(累计36/67)+人审D2可视化/D3框架/D4策略不代签+PCK32.5%未达），awaiting_review",
   "prev_current_task_621": "621: 17/17 任务全完成（新 mutation 生成 + CI 竞态根治 + 雷6 弃权三态 + 30 条逐条人审落地），awaiting_review",
   "worker_model": "CodeBuddy (free daily quota)",
   "consecutive_errors": 0,
@@ -115,11 +115,19 @@
       "verdict": "awaiting_review",
       "objective": "突破批：跨卡一致性攻击（A1-A5）+ E2 高复杂度规则接线（B1-B2）+ push CI 远程验证（C1-C2）+ 修 623 遗留（D1-D3）+ PCK authorized/人审逐条（E1-E2）+ 化债与收工（F1-F2）",
       "notes": "18 commit (dca19094~F2)。① A1 跨卡一致性攻击（X1-X4 悬空/循环/矛盾/孤儿引用 + 60 条 + 多卡备份还原）；**A1 修正 c92aac53**：apply_multi 同卡多编辑原按 edit 逐条还原会把中间态写回致受控目录残留，改为**每卡只备份一次**并重跑 A2/A4；② A2 60 条跨卡实跑 blocked 47/nonblock 13/escaped 0，**触达 13 条（新 2：ATOM-REL-CONFLICT/EV-ARTIFACT-FILE-EXISTS），累计 28/63**；③ A3 跨卡 4 维度根因 + 0 逃逸四问；④ A4 第五轮 X5-X8 40 条 blocked 38/neutral 2，**新 4 条（ATOM-MISCONCEPTION-REF/ATOM-VERIFIED-BOUND/OBSERVATION-NEEDS-ARTIFACT/S2-EVIDENCE-VERDICT）**；⑤ A5 **六轮累计 34/63（54%）**、**盲区 37→29**、检测率 R5 100%/R6 95%，**诚实登记未达 >45/盲区<25**（编译/复算/git/词表盲区跨卡亦不可达）；⑥ **B1 4 条 block 规则接线 gate_engine（63→67）**：复用既有 check，仅对复杂度≥75 卡升 block，基线 block 增量 0（无误报），同 commit `tool_integrity --update`；B2 回归 poison 124/124、624 跨卡复跑 blocked 47→55（ATOM-REL-TARGET-HC/ATOM-REL-UNKNOWN-HC 实证触发）；⑦ C1 push 96fc0b83..bcf4e3d4（37 commit）；C2 run #628 分析：poison 4 条 HC 未豁免致 gate 红（登记豁免修复）+ quality 红（**ruff 修好后 mypy 首度执行，暴露 67 处存量债**），再 push；⑧ **C2 后 run #629：concurrency-safety/replay/gate ✅，quality(mypy)/pytest ❌**；⑨ D1 3 个 CLI 工具补 --check（3/3 exit0）；D2 623 A3/A5 未建 CLI（数据件+测试交付，功能完整）；D3 623 交人 4 项已化 + 化债（豁免治理动态化 27→31、历史计数 388→418、mypy 624 段 8 处）；⑩ **E1 PCK authorized 机器可判定候选 0（27 原子证全已授权/56 证据证无人审来源，不代签）⇒ 27/83=32.5% 未达 >48%**；E2 生成 80 条复核清单（34 high+46 medium）总 110；⑪ F1 run_624_gate PASS（整目录 ruff + 本批 ruff + 5 新工具/8 回归 --check + ci.yml + 零污染）。624 新增单测 63 例。未 golden accept、未开 delegation、未代签。详见 data/624_acceptance_report.md。"
+    },
+    {
+      "batch": 625,
+      "status": "completed",
+      "completed_at": "2026-09-22T23:30:00",
+      "verdict": "awaiting_review",
+      "objective": "修债务+稳雷2+备雷1：mypy 67→0 / OTS re-anchor / pytest 红因修复 / 雷2 闭环连续3轮稳定 / QueYi Core 路径解耦 / 尺子入根22→34 / PCK提升策略+人审框架不代签",
+      "notes": "15 commit (d9c186a0~F2)。① A1 **mypy 67处→0 errors**（24文件：yaml stub覆盖+cast/判空/注解/重命名；仅1处func-returns-value逐条ignore；pyproject 受保护已重钉）；② A2 OTS re-anchor（digest一致/--check通过/pending未上链诚实标注）；③ A3 pytest 红因=治理manifest重签+581豁免计数动态化(27/67/backed28)⇒ not-slow段全绿；replay manifest_consistency 5失配+DEBT-001到期登记留626；④ B1 闭环第7轮108条实跑 escaped **0**，新触达 ATOM-STATUS-TRANSITION+S1-AUTHOR-SELF-VERIFY（累计36/67，盲区33→31）；⑤ B2 雷2稳定指标：增长率2.9%<10%/VFDR收敛0.98%<1%/一致性99.02%>95%/覆盖波动8.9%>5%⇒4/5部分满足；⑥ B3 VFDR收敛+热力图v3（累计35/67 artifact口径，盲区32，0危险逃逸）；⑦ C1 **PathConfig** 核心6+辅助20工具ROOT接入，gate/replay56/poison/tool_integrity行为不变+重钉；⑧ C2 QueYi Core接口抽象v0.1（Claim/Evidence/Attack/Verify/Authority）；⑨ C3 剥离触发标准5条满足2/5（②③治理裁定需人，⑤余量留626）⇒建议再等1-2轮；⑩ D1 尺子入根22→34（RULER_TOOLS 10→22，新增12判决尺子，CORE_TOOLS未变，重钉后--check 34/34）；⑪ D2 人审深色科技风可视化（纯静态HTML，只读不判决）；⑫ D3 人审执行框架build_entry带哈希链+append_entry定义不调用（自检证未代签日志size不变）；⑬ D4 PCK提升策略设计（S1证据证人审队列/S2机器可确认候选/S3目标推算/S4口径统一），当前32.5%未达>48%不代签；⑭ E1 化债+遗留项处理；⑮ E2 PM报告；⑯ F1 run_625_gate PASS（整目录ruff+9个625新工具--check+tool_integrity 34/34+OTS+mypy0+受控零污染）；⑰ F2 验收报告+status/outbox。625 新增≈77例单测全过；未push/未golden accept/未开delegation/未代签。详见 data/625_acceptance_report.md。"
     }
   ],
   "history_note": "610/611/613/614 已压缩；逐批原始 commit 见 git log。",
-  "notes": "624 收工（17/17 全完成，突破批）：跨卡一致性攻击把**六轮累计触达 26/63→34/63（54%）**、**盲区 37→29**，但**未达 >45/63 与盲区<25**（编译/复算/git/词表盲区跨卡亦不可达，诚实登记留 625）；**E2 的 4 条 block 规则成功接线 gate_engine（63→67，基线 0 误报，624 跨卡复跑 47→55，ATOM-REL-TARGET-HC/ATOM-REL-UNKNOWN-HC 实证触发）**；**A1 修正**（apply_multi 同卡多编辑备份去重——原实现致受控目录残留，已修并重跑且零污染）。**push 后 CI 实质进展**：run #629 concurrency-safety/replay/**gate ✅**，但 **quality ❌（ruff 修好后 mypy 首度执行→暴露 620-623 的 67 处存量债/24 文件）**、**pytest ❌（治理 manifest 待 F2 重签 + 620/621 meta 测试）**。**E1 PCK authorized 机器可判定候选 0（27 原子证全已授权/56 证据证无人审来源，不代签）⇒ 27/83=32.5% 未达 >48%**；E2 生成 80 条复核清单（总 110>100）。新增 6 工具 + 63 例单测。run_624_gate PASS。交人项：触达天花板、4 条 block 规则认可、E1 口径、E2 执行、mypy 存量债立项、OTS re-anchor、622/623 遗留。详见 data/624_acceptance_report.md。",
+  "notes": "625 收工（19/19 全完成，修债务+稳雷2+备雷1）：**CI 本地全绿**——mypy 67→0（A1）、OTS re-anchor（A2）、pytest not-slow 全绿+581计数修正（A3）、尺子入根22→34（D1）、路径解耦26/130（C1）、整目录ruff绿（F1）。**雷2 连续3轮稳定**（623-625，B2 4/5）：第7轮108条实跑0逃逸，累计36/67（54%），但**未达触达天花板**（编译/复算/git/多卡类规则跨卡sandbox亦不可达，留626）。**QueYi Core 备雷1**：PathConfig 路径解耦（核心6+辅助20）+接口抽象v0.1+剥离触发标准检查（2/5，②③治理裁定需人），余量留626。**人审线全部卡在人、不代签**：D2 深色可视化、D3 执行框架（append_entry定义不调用，自检证未代签）、D4 PCK提升策略（32.5%未达>48%因56证据证无人审来源）；110条人审清单待由人走框架执行。625 新增≈77例单测全过；受控目录零污染。**未 push**（铁律625不push），远程CI验证留626。详见 data/625_acceptance_report.md / data/625_pm_report.md。",
   "status": "awaiting_review",
-  "batch": 624,
-  "updated_at": "2026-09-22T22:00:00"
+  "batch": 625,
+  "updated_at": "2026-09-22T23:30:00"
 }
