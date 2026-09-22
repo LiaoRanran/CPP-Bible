@@ -37,8 +37,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Sequence
 
-ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from path_config_625 import root as _queyi_root  # noqa: E402  (625 C1 路径解耦)
+
+ROOT = _queyi_root()
 
 import atom_evidence_replay as replay  # noqa: E402  复用 frontmatter 解析（单一实现）
 import tool_integrity  # noqa: E402  567 任务 2：判定核心完整性（入口强制自检）

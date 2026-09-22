@@ -35,7 +35,9 @@ import math
 from datetime import datetime
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+from path_config_625 import root as _queyi_root  # noqa: E402  (625 C1 路径解耦)
+
+ROOT = _queyi_root()
 OUT = ROOT / "data" / "escape_rate_honest_613.md"
 Z = 1.959963984540054  # 双侧 95%
 

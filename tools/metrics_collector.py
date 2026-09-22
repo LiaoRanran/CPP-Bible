@@ -48,7 +48,9 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+from path_config_625 import root as _queyi_root  # noqa: E402  (625 C1 路径解耦)
+
+ROOT = _queyi_root()
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import metrics_610 as m610  # noqa: E402  (610 D1/D2/D3 采集器：独立模块，逐任务可独立提交)

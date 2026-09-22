@@ -62,8 +62,9 @@ from typing import Any, Callable, Sequence
 sys.path.insert(0, str(Path(__file__).resolve().parent))    # 同目录工具互 import
 import tool_integrity  # noqa: E402  567 任务 2：入口强制自检
 import viso_diff  # noqa: E402  535 V-iso 判据
+from path_config_625 import root as _queyi_root  # noqa: E402  (625 C1 路径解耦)
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = _queyi_root()
 EVIDENCE = ROOT / "evidence"
 
 # ── 579 任务 1：**跑批根**（工件层根重定向）─────────────────────────────────────

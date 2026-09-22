@@ -40,9 +40,10 @@ import json
 import sys
 from pathlib import Path
 
+from path_config_625 import root as _queyi_root  # noqa: E402  (625 C1 路径解耦)
 from utf8_console import ensure_utf8
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = _queyi_root()
 TOOLS = ROOT / "tools"
 CHECKSUMS = TOOLS / ".tool_checksums"
 

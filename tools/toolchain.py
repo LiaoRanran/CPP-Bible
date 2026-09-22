@@ -42,7 +42,9 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parent
+from path_config_625 import root as _queyi_root  # noqa: E402  (625 C1 路径解耦)
+
+ROOT = _queyi_root()
 CONFIG = ROOT / "toolchain.toml"
 
 # 与 toolchain.toml 同值的内置兜底：配置文件缺失时行为完全一致。

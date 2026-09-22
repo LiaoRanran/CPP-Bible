@@ -42,7 +42,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parent.parent
+from path_config_625 import root as _queyi_root  # noqa: E402  (625 C1 路径解耦)
+
+ROOT = _queyi_root()
 VERSION = "1.0"
 ALGO = "sha256-path-bound-count-bound-v1"
 ROOTS_PATH = ROOT / "data" / "supply_chain" / "merkle_roots.json"

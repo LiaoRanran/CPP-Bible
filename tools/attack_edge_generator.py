@@ -37,7 +37,9 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+from path_config_625 import root as _queyi_root  # noqa: E402  (625 C1 路径解耦)
+
+ROOT = _queyi_root()
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import gate_engine as ge  # noqa: E402

@@ -43,7 +43,9 @@ from utf8_console import ensure_utf8  # noqa: E402
 # ---------------------------------------------------------------------------
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parent
+from path_config_625 import root as _queyi_root  # noqa: E402  (625 C1 路径解耦)
+
+ROOT = _queyi_root()
 
 
 def _win_path_from_posix(path: str | Path) -> str:

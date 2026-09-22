@@ -50,7 +50,9 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+from path_config_625 import root as _queyi_root  # noqa: E402  (625 C1 路径解耦)
+
+ROOT = _queyi_root()
 DOCS_ROOT = ROOT / "References" / "architecture_架构演进"
 MANIFEST_PATH = ROOT / "data" / "governance_docs_manifest.json"
 SCAN_PATH = ROOT / "data" / "governance_weakening_scan.json"

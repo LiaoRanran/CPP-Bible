@@ -43,7 +43,9 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator
 
-ROOT = Path(__file__).resolve().parent.parent
+from path_config_625 import root as _queyi_root  # noqa: E402  (625 C1 路径解耦)
+
+ROOT = _queyi_root()
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import atom_evidence_replay as replay  # noqa: E402

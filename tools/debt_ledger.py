@@ -22,10 +22,11 @@ from __future__ import annotations
 import argparse
 import datetime as _dt
 import json
-from pathlib import Path
 from typing import Any, Sequence, cast
 
-ROOT = Path(__file__).resolve().parent.parent
+from path_config_625 import root as _queyi_root  # noqa: E402  (625 C1 路径解耦)
+
+ROOT = _queyi_root()
 LEDGER = ROOT / "tools/debt_ledger.json"
 SCHEMA = "cppbible-debt-ledger/1.0"
 MAX_AGE_DAYS = 90
