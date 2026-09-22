@@ -1,0 +1,117 @@
+{
+  "state": "awaiting_review",
+  "active_batch": 623,
+  "next_batch": 624,
+  "last_completed_batch": 623,
+  "last_commit": "bbf6193d",
+  "last_review_at": "2026-09-22",
+  "current_task": "623: 17/17 任务全完成（压力批：高复杂度带攻击触达26/63+VFDR 26%→77.5%/65%+CI存量债本地全绿+Authority/W2通道打通8原子翻转+高复杂度block规则4条已定义未接线），awaiting_review",
+  "prev_current_task_621": "621: 17/17 任务全完成（新 mutation 生成 + CI 竞态根治 + 雷6 弃权三态 + 30 条逐条人审落地），awaiting_review",
+  "worker_model": "CodeBuddy (free daily quota)",
+  "consecutive_errors": 0,
+  "history": [
+    {
+      "batch": 610,
+      "status": "completed",
+      "completed_at": "2026-09-20",
+      "objective": "治理台账 + 命题活性锚 + 人审队列 + 编译可复现 + metrics 新指标 + slow 性能",
+      "notes": "IN114/OUT7（keep-low）为入库权威；escape 契约 1/1406。"
+    },
+    {
+      "batch": 611,
+      "status": "completed",
+      "completed_at": "2026-09-20",
+      "objective": "交人项修复 + 桥接 + modify 口径双模式 + OUT 复核/活性锚/oracle 工具 + metrics_611",
+      "notes": "8 新工具 --check 锁定。"
+    },
+    {
+      "batch": 613,
+      "status": "completed",
+      "completed_at": "2026-09-21T10:24:59",
+      "objective": "六线：基线/活性锚/D5质量/学习者镜像/桥接碎片化辩护链/信任根三链/逃逸率诚实化+门禁",
+      "notes": "18 工具 --check 全绿。"
+    },
+    {
+      "batch": 614,
+      "status": "completed",
+      "completed_at": "2026-09-21T13:00:00",
+      "verdict": "PASS",
+      "objective": "CI全绿收尾 + 学习者镜像真实验证 + 信任根上链评估 + M1攻坚启动 + oracle优先级 + 化债/整理",
+      "notes": "23 commit；run_614_gate PASS。"
+    },
+    {
+      "batch": "615",
+      "at": "2026-09-21T16:07:31",
+      "verdict": "PASS"
+    },
+    {
+      "batch": 616,
+      "status": "completed",
+      "completed_at": "2026-09-21T18:30:00",
+      "verdict": "awaiting_supervisor_review",
+      "objective": "方法论修复优先：置信序列(e-process) / EV-MATRIX 双实现锁 / warn治理+Goodhart / 他验三件套",
+      "notes": "详见 data/616_acceptance_report.md。"
+    },
+    {
+      "batch": 617,
+      "status": "completed",
+      "completed_at": "2026-09-21T20:00:00",
+      "verdict": "awaiting_supervisor_review",
+      "objective": "外部评审内化 23 任务（estimand 三层 / 独立性 4 级 / 测试分类 / SNAPSHOT 治理 / 桌面离线包）",
+      "notes": "详见 data/617_acceptance_report.md。"
+    },
+    {
+      "batch": 618,
+      "status": "completed",
+      "completed_at": "2026-09-21T21:00:00",
+      "verdict": "awaiting_supervisor_review",
+      "objective": "执行 617 交接的 15 任务",
+      "notes": "16 commit (d077730~e050b00)。详见 data/618_acceptance_report.md。"
+    },
+    {
+      "batch": 619,
+      "status": "completed",
+      "completed_at": "2026-09-21T22:30:00",
+      "verdict": "awaiting_supervisor_review",
+      "objective": "八条雷霆正式开工：雷2 攻击者目标函数（A1-A4）+ 雷4 PCK 结构（B1-B4）+ D1 manifest 收敛（C1-C2）",
+      "notes": "11 commit (e050b00~7ec6128)。详见 data/619_acceptance_report.md。【620 更正】单测 57→53；CI 覆盖点 cbd0fbd→d2f412b。"
+    },
+    {
+      "batch": 620,
+      "status": "completed",
+      "completed_at": "2026-09-21T23:30:00",
+      "verdict": "awaiting_supervisor_review",
+      "objective": "18 任务：止血 + 雷2 闭环（A1-A4）+ 雷4 全量 83 张（B1-B3）+ 雷5 Authority（C1-C3）+ 化债（D1-D3）+ 收工门禁（E1-E2）",
+      "notes": "18 commit (d2f412b~d5edb14)。619 所报 2 条 BLOCK 经复测为并发竞态瞬时误报。详见 data/620_acceptance_report.md。"
+    },
+    {
+      "batch": 621,
+      "status": "completed",
+      "completed_at": "2026-09-22T01:00:00",
+      "verdict": "awaiting_supervisor_review",
+      "objective": "17 任务：新 mutation 生成引擎（A1-A4）+ CI 竞态根治（B1-B3）+ 雷6 弃权三态（C1-C3）+ 30 条逐条人审落地（D1-D3）+ 化债与收工（E1-E2）",
+      "notes": "16 个任务 commit (d5edb14~44f9694，区间另含 1 条并行 PM commit)。生成 50 条新 mutation 但新颖性不足（卡×算子 100% 与 v7 重合）；gate+quality 加 needs:[replay]；ABSTAIN 6 态分类（UNDECIDED 27/SUPPORTED 56，与 PCK 反相关）；30 条仅建待审条目。run_621_gate PASS。详见 data/621_acceptance_report.md。"
+    },
+    {
+      "batch": 622,
+      "status": "completed",
+      "completed_at": "2026-09-22T06:00:00",
+      "verdict": "awaiting_supervisor_review",
+      "objective": "17 任务：沙箱 apply API（A1）+ 50 条真正实跑（A2）+ 0 逃逸根因（A3）+ 闭环第二轮 M8/M9（A4）+ VFDR 真算（A5）+ push 620-622（B1）+ CI 实跑验证（B2）+ ABSTAIN 对齐（C1-C3）+ 30 条人审执行（D1）+ W2 重算（D2）+ 雷7 Horizon（E1-E2）+ 化债与收工（F1-F2）",
+      "notes": "17 个任务 commit (44f9694~HEAD)。① A1 沙箱 apply API 建成（apply/run_gate/restore/apply_and_run + 6 重护栏，原地改+必还原，实测受控目录零污染）—— 解除 620/621 连续两批登记的核心瓶颈；② A2 50 条**真跑 gate**：blocked 13/neutral 14/infra_error 23/escaped 0，与 621 v7 先验预测**一致率仅 51.85%** ⇒ 预测口径不可靠；23 条 infra_error 根因=生成器不查卡实际字段（46% 不适用）；③ A4 生成器 v2（schema-aware + 新算子 M8/M9）：可施加率 54%→83%、v7 重叠 100%→0%，30 条实跑 blocked 15/detected_nonblock 8/neutral 2/infra 5/escaped 0；**M9 只能触发 warn 级 EV-SERVES-EXIST（0% 被拦）**，M8 100% 被拦；④ A5 VFDR 3 轮 1486 预算仍 0.0（flat-zero）—— 从不可测变为可测；⑤ B1 push d2f412b..96fc0b8（43 commit）；B2 CI run #627：**replay 05:27:22 结束、gate 05:27:24 才启动 ⇒ needs:[replay] 强制生效，gate success 无 BLOCK 误报 ⇒ 竞态修复有效**；但 pytest/quality 仍失败（治理 manifest 未同步 + tools/ ruff 存量债，**均非 622 引入**，在 d2f412b 即存在）；⑥ C 线：分类器 v2 + 原子卡 verdict 提取（27/27 SUPPORTED）⇒ 83 张全 SUPPORTED、弃权率 0%、**UNDECIDED×approved 反相关 27→0 消除**（但已警示对齐部分构造性）；⑦ D1 按用户授权执行 30 条（Authority 日志 388→418，哈希链通过，每条标注 source/authorized_by）；D2 W2 重算 IN114/OUT7/UNDEC0 **变化 0**（三层原因：通道未打通 + 30 条同向 30/30 + modify keep-low）；⑧ E 线：Verification Horizon 定义+工具，**Horizon≈60，60-80 桶检出 0% 断崖**；v1-v7 曲线逃逸率 23.74%→0.64% 但 **Horizon 恒为 60-80（指标不敏感，已改用最低桶检出率）**，**622 首次突破地平线**。run_622_gate PASS（6 项：零污染 + 5 新工具 --check + 9 工具回归 + ci.yml 语法&并发安全 + ruff 18 文件 + pytest 119 例）。未 golden accept、未开 delegation、未代签。详见 data/622_acceptance_report.md。"
+    },
+    {
+      "batch": 623,
+      "status": "completed",
+      "completed_at": "2026-09-22T18:00:00",
+      "verdict": "awaiting_review",
+      "objective": "压力批：高复杂度带攻击（A1-A5）+ CI存量债修复（B1-B2）+ 门禁口径统一/尺子入根（C1-C2）+ Authority/W2通道打通（D1-D2）+ 高复杂度带block规则（E1-E2）+ 化债与收工（F1-F2）",
+      "notes": "17 个任务 commit (7e91fa02~F2)。① A1 高复杂度带生成器（H1-H4 四策略 + 80 条 + 复杂度>60）；② A2 80 条真跑 gate：**触达 25/63（39.7%，较622 +178%）**、blocked 46/detected_nonblock 16/neutral 12/escaped(strict)4/infra 2，4 条 escaped 经 A3 证实全为删字段假象、**危险逃逸 0**；③ A4 第三轮 40 条定向，R3 触达 6、**三轮累计 26/63（41.3%）**、危险逃逸 0；④ A5 VFDR **622 26%→623 77.5%/65%**（双轴逃逸口径），热力图暴露 37 条盲区；**诚实登记未达 A2>30/累计>40**（根因=gate-only单卡field-edit载体天花板，留624）；⑤ B1 治理 manifest 重签 16 文档 + tool_integrity 重钉 + verify 绿；B2 tools/ ruff 9 处修复全绿；⑥ C1 run_623_gate 整目录 ruff 口径统一；C2 审计 11/11 关键尺子已钉（_arch_v19 8/11 早已修复）；⑦ D1 Authority→annotations 同步（418决策映射388边，0新增51更新）；D2 W2 重算**8 原子 UNRESOLVED→IN**，坐实 622 D2 变化0是通道断伪影；⑧ E1 攻击面评分 87.5（高复杂度仅 warn 兜底）；E2 定义 4 条 block 规则（独立 yaml，**未接线 gate_engine**，铁律禁改 CORE_TOOLS）。F1 化债：清 tests/ 13 处 ruff 债使整目录门禁转绿 + 622 交人 16 项处理 4 项/留 12 项。收工门禁（run_623_gate 整目录 ruff）PASS；受控目录零污染；623 新增单测 47 例。未 golden accept、未 push、未开 delegation、未代签。详见 data/623_acceptance_report.md。"
+    }
+  ],
+  "history_note": "610/611/613/614 已压缩；逐批原始 commit 见 git log。",
+  "notes": "623 收工（17/17 全完成，压力批）：闭环触达从 622 的 9/63 跃升至 **26/63（41.3%）**，VFDR **26%→77.5%/65%**；但**未达 A2>30/累计>40 目标**，根因=gate-only 单卡 field-edit 载体天花板（约14条block规则需编译/复算/git/多卡构造），诚实登记留 624。CI 存量债本地已清（B1 治理重签 + B2 tools/ ruff 全绿 + F1 tests/ 13 处债清），但**未 push**（铁律），远程 CI 转绿交人。**Authority↔annotations↔W2 通道打通**：D2 实测 8 原子 UNRESOLVED→IN，证伪 622 D2 通道断假设。高复杂度带 4 条 block 规则已定义（E2）但**未接线 gate_engine**（铁律禁改 CORE_TOOLS），接线留人/624。新增 9 工具/脚本 + 47 例单测。run_623_gate（整目录 ruff）PASS。交人项：触达天花板决策、E2 接线、8原子判决认可、是否push、Horizon入metrics、622 遗留 12 项。详见 data/623_acceptance_report.md。",
+  "status": "awaiting_review",
+  "batch": 623,
+  "updated_at": "2026-09-22T18:00:00"
+}
