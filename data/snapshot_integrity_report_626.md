@@ -1,6 +1,6 @@
 # 626 D3 · Snapshot Integrity CI 实跑报告
 
-- 总检查 **10** 项：pass **10** / warn **0** / fail **0**
+- 总检查 **10** 项：pass **9** / warn **1** / fail **0**
 - 结论：**✅ 无 fail**
 
 | # | 检查 | 状态 | 说明 |
@@ -13,8 +13,8 @@
 | 6 | `control_chars` | **pass** | 含控制字符文件 0 |
 | 7 | `source_refs` | **pass** | 缺失 source 0 |
 | 8 | `cross_report_numerical_consistency` | **pass** | median/union/豁免 三数一致 |
-| 9 | `authority_projection_consistency` | **pass** | W2 nodes=519；PCK=83；确定性=True |
-| 10 | `review_pack_integrity` | **pass** | 阙疑_人审决策包_20260922_v2.zip: entries=38 backslash=0 manifest=True |
+| 9 | `authority_projection_consistency` | **pass** | W2 nodes=121；PCK=83；确定性=True |
+| 10 | `review_pack_integrity` | **warn** | 桌面未找到 Review Pack ZIP（未生成或非 Windows 路径） |
 
 ## 证据
 
@@ -24,4 +24,3 @@
 - **stale_report_detection**: human_review_deep_analysis_20260920.md = STALE; SNAPSHOT_MANIFEST.json = STALE
 - **cross_report_numerical_consistency**: median=67.5; union=93; exemptions=31
 - **authority_projection_consistency**: W2 与 grounded_labels 粒度不同（留 627 归一化）
-- **review_pack_integrity**: 阙疑_人审决策包_20260922_v2.zip

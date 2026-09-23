@@ -9,7 +9,7 @@
 | `tools/independent_verifier_628.py` | （无，零 import） | 8 个 | **否** |
 | `tools/vsa_verify_628.py` | （无，零 import） | 10 个 | **否** |
 
-- 仓库 `tools/` 下模块共 332 个；两个验证端**均零 import** 其中任何模块 ⇒ 代码层独立性（L2）成立。
+- 仓库 `tools/` 下模块共 336 个；两个验证端**均零 import** 其中任何模块 ⇒ 代码层独立性（L2）成立。
 
 ## 二、数据读取清单（含分类）
 

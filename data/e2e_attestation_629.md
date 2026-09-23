@@ -6,14 +6,14 @@
 
 | 步骤 | 耗时(s) | 结果 | 详情 |
 |---|---|---|---|
-| ① 独立验证者重算 | 0.19 | ✅ | W2 IN114/OUT7 · PCK authorized 27 · ledger 452 条 |
-| ② VSA 凭证（628 形态）+ HMAC 校验 | 0.44 | ✅ | HMAC valid=True · 输入锚定=True · 结果一致=True |
-| ③ 非对称升级（RSA-2048 私钥签/公钥验） | 1.75 | ✅ | RSA-2048/PKCS1v15-SHA256 · 公钥指纹 a12c348da9ea8ddc… |
-| ④ 透明日志入册（临时日志，隔离生产链） | 0.01 | ✅ | log_index=0 · entry_hash=e30e0c31b35fd95c… |
+| ① 独立验证者重算 | 0.18 | ✅ | W2 IN114/OUT7 · PCK authorized 27 · ledger 452 条 |
+| ② VSA 凭证（628 形态）+ HMAC 校验 | 0.41 | ✅ | HMAC valid=True · 输入锚定=True · 结果一致=True |
+| ③ 非对称升级（RSA-2048 私钥签/公钥验） | 1.08 | ✅ | RSA-2048/PKCS1v15-SHA256 · 公钥指纹 9b592e360e30778a… |
+| ④ 透明日志入册（临时日志，隔离生产链） | 0.01 | ✅ | log_index=0 · entry_hash=0cc3d0b8e0e10c32… |
 | ⑤ 从日志取回 + 独立重验 | 0.01 | ✅ | inclusion=True(index=0) · 公钥复验=True |
 | ⑥ 篡改检测（改 results 后重验必失败） | 0.0 | ✅ | tamper detected |
 
-**端到端全绿：True** · 总耗时 2.40s
+**端到端全绿：True** · 总耗时 1.69s
 
 ## 二、凭证链可视化
 
@@ -23,14 +23,14 @@
 │     ├─ verifier_sha256 绑定：a85cad4faa914506…
 │     └─ 重算：W2 IN114/OUT7 · PCK authorized 27 · ledger valid
 ├─ ② VSA 凭证（628 形态）
-│     ├─ HMAC-SHA256 attestation：3e4468e98a8451f6…
+│     ├─ HMAC-SHA256 attestation：599b2391bee0fb84…
 │     └─ 输入三重锚定：ledger ec8cbf5cca2d… / grounded … / pck_dir …
 ├─ ③ 非对称签名（629 C1）
 │     ├─ scheme：RSA-2048/PKCS1v15-SHA256
-│     └─ 公钥指纹：a12c348da9ea8ddc…
+│     └─ 公钥指纹：9b592e360e30778a…
 └─ ④ 透明日志（append-only 哈希链）
       ├─ log_index：0
-      ├─ entry_hash：e30e0c31b35fd95c…
+      ├─ entry_hash：0cc3d0b8e0e10c32…
       └─ prev_log_hash：GENESIS…
             ↑ ⑤ 从日志取回凭证 → 公钥复验 + inclusion 通过
 ```

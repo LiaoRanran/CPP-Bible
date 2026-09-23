@@ -67,23 +67,21 @@
     "authority_projection_consistency": {
       "name": "authority_projection_consistency",
       "status": "pass",
-      "details": "W2 nodes=519；PCK=83；确定性=True",
+      "details": "W2 nodes=121；PCK=83；确定性=True",
       "evidence": [
         "W2 与 grounded_labels 粒度不同（留 627 归一化）"
       ]
     },
     "review_pack_integrity": {
       "name": "review_pack_integrity",
-      "status": "pass",
-      "details": "阙疑_人审决策包_20260922_v2.zip: entries=38 backslash=0 manifest=True",
-      "evidence": [
-        "阙疑_人审决策包_20260922_v2.zip"
-      ]
+      "status": "warn",
+      "details": "桌面未找到 Review Pack ZIP（未生成或非 Windows 路径）",
+      "evidence": []
     }
   },
   "total": 10,
   "failed": 0,
-  "warned": 0,
-  "passed": 10,
+  "warned": 1,
+  "passed": 9,
   "ok": true
 }
