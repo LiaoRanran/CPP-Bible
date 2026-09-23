@@ -1,0 +1,313 @@
+{
+  "objective": "verifier_disagreement_rate × evidence_ambiguity × provenance_inconsistency",
+  "source": "data/mutation/full_baseline_v7.json",
+  "variants": 1593,
+  "top_n": 20,
+  "proxy_definitions": {
+    "disagreement": "escaped→1.0；否则 min(去重触发规则数/3,1.0)",
+    "ambiguity": "形态/结构/引用 三组关键词命中加权（上限 1.0）",
+    "provenance": "命中哈希/时间戳/artifact/provenance→1.0；evidence/ 卡→0.5；否则 0.2"
+  },
+  "seeds": [
+    {
+      "idx": 0,
+      "card": "evidence/conc/EV-CONC-001.md",
+      "op": "M1",
+      "point": "删 artifact_sha256",
+      "v7_verdict": "blocked",
+      "target_rule": "EV-FM-REQUIRED",
+      "fired_rules": [
+        "EV-FM-REQUIRED:evidence/conc/EV-CONC-001.md"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 25,
+      "card": "evidence/conc/EV-CONC-001.md",
+      "op": "M7",
+      "point": "sha256 改一位（8dd19bc6… → 0dd19bc6…）",
+      "v7_verdict": "blocked",
+      "target_rule": "replay",
+      "fired_rules": [
+        "replay:sha256_mismatch"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 27,
+      "card": "evidence/conc/EV-CONC-002.md",
+      "op": "M1",
+      "point": "删 artifact_sha256",
+      "v7_verdict": "blocked",
+      "target_rule": "EV-FM-REQUIRED",
+      "fired_rules": [
+        "EV-FM-REQUIRED:evidence/conc/EV-CONC-002.md"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 51,
+      "card": "evidence/conc/EV-CONC-002.md",
+      "op": "M7",
+      "point": "sha256 改一位（8dd19bc6… → 0dd19bc6…）",
+      "v7_verdict": "blocked",
+      "target_rule": "replay",
+      "fired_rules": [
+        "replay:sha256_mismatch"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 53,
+      "card": "evidence/conc/EV-CONC-003.md",
+      "op": "M1",
+      "point": "删 artifact_sha256",
+      "v7_verdict": "blocked",
+      "target_rule": "EV-FM-REQUIRED",
+      "fired_rules": [
+        "EV-FM-REQUIRED:evidence/conc/EV-CONC-003.md"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 77,
+      "card": "evidence/conc/EV-CONC-003.md",
+      "op": "M7",
+      "point": "sha256 改一位（d84c7516… → 084c7516…）",
+      "v7_verdict": "blocked",
+      "target_rule": "replay",
+      "fired_rules": [
+        "replay:sha256_mismatch"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 79,
+      "card": "evidence/conc/EV-CONC-004.md",
+      "op": "M1",
+      "point": "删 artifact_sha256",
+      "v7_verdict": "blocked",
+      "target_rule": "EV-FM-REQUIRED",
+      "fired_rules": [
+        "EV-FM-REQUIRED:evidence/conc/EV-CONC-004.md"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 103,
+      "card": "evidence/conc/EV-CONC-004.md",
+      "op": "M7",
+      "point": "sha256 改一位（d84c7516… → 084c7516…）",
+      "v7_verdict": "blocked",
+      "target_rule": "replay",
+      "fired_rules": [
+        "replay:sha256_mismatch"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 105,
+      "card": "evidence/conc/EV-CONC-005.md",
+      "op": "M1",
+      "point": "删 artifact_sha256",
+      "v7_verdict": "blocked",
+      "target_rule": "EV-FM-REQUIRED",
+      "fired_rules": [
+        "EV-FM-REQUIRED:evidence/conc/EV-CONC-005.md"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 129,
+      "card": "evidence/conc/EV-CONC-005.md",
+      "op": "M7",
+      "point": "sha256 改一位（5c5549ae… → 0c5549ae…）",
+      "v7_verdict": "blocked",
+      "target_rule": "replay",
+      "fired_rules": [
+        "replay:sha256_mismatch"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 131,
+      "card": "evidence/conc/EV-CONC-006.md",
+      "op": "M1",
+      "point": "删 artifact_sha256",
+      "v7_verdict": "blocked",
+      "target_rule": "EV-FM-REQUIRED",
+      "fired_rules": [
+        "EV-FM-REQUIRED:evidence/conc/EV-CONC-006.md"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 155,
+      "card": "evidence/conc/EV-CONC-006.md",
+      "op": "M7",
+      "point": "sha256 改一位（5c5549ae… → 0c5549ae…）",
+      "v7_verdict": "blocked",
+      "target_rule": "replay",
+      "fired_rules": [
+        "replay:sha256_mismatch"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 157,
+      "card": "evidence/hist/EV-HIST-001.md",
+      "op": "M1",
+      "point": "删 artifact_sha256",
+      "v7_verdict": "blocked",
+      "target_rule": "EV-FM-REQUIRED",
+      "fired_rules": [
+        "EV-FM-REQUIRED:evidence/hist/EV-HIST-001.md"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 179,
+      "card": "evidence/hist/EV-HIST-001.md",
+      "op": "M7",
+      "point": "sha256 改一位（b4f99318… → 04f99318…）",
+      "v7_verdict": "blocked",
+      "target_rule": "replay",
+      "fired_rules": [
+        "replay:sha256_mismatch"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 181,
+      "card": "evidence/lang/EV-LANG-001.md",
+      "op": "M1",
+      "point": "删 artifact_sha256",
+      "v7_verdict": "blocked",
+      "target_rule": "EV-FM-REQUIRED",
+      "fired_rules": [
+        "EV-FM-REQUIRED:evidence/lang/EV-LANG-001.md"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 207,
+      "card": "evidence/lang/EV-LANG-001.md",
+      "op": "M7",
+      "point": "sha256 改一位（63c7e3b7… → 03c7e3b7…）",
+      "v7_verdict": "blocked",
+      "target_rule": "replay",
+      "fired_rules": [
+        "replay:sha256_mismatch"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 209,
+      "card": "evidence/lang/EV-LANG-002.md",
+      "op": "M1",
+      "point": "删 artifact_sha256",
+      "v7_verdict": "blocked",
+      "target_rule": "EV-FM-REQUIRED",
+      "fired_rules": [
+        "EV-FM-REQUIRED:evidence/lang/EV-LANG-002.md"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 233,
+      "card": "evidence/lang/EV-LANG-002.md",
+      "op": "M7",
+      "point": "sha256 改一位（63c7e3b7… → 03c7e3b7…）",
+      "v7_verdict": "blocked",
+      "target_rule": "replay",
+      "fired_rules": [
+        "replay:sha256_mismatch"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 235,
+      "card": "evidence/mem/EV-MEM-001.md",
+      "op": "M1",
+      "point": "删 artifact_sha256",
+      "v7_verdict": "blocked",
+      "target_rule": "EV-FM-REQUIRED",
+      "fired_rules": [
+        "EV-FM-REQUIRED:evidence/mem/EV-MEM-001.md"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    },
+    {
+      "idx": 256,
+      "card": "evidence/mem/EV-MEM-001.md",
+      "op": "M7",
+      "point": "sha256 改一位（d8b6b18d… → 08b6b18d…）",
+      "v7_verdict": "blocked",
+      "target_rule": "replay",
+      "fired_rules": [
+        "replay:sha256_mismatch"
+      ],
+      "disagreement": 0.3333,
+      "ambiguity": 1.0,
+      "provenance": 1.0,
+      "score": 0.3333
+    }
+  ]
+}
