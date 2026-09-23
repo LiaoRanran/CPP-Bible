@@ -32,7 +32,8 @@ replay            ✅ 绿（629 未改受控目录）
 concurrency-safety✅ 绿（未改 ci.yml / 并发工具）
 gate              ⚠️ 未知（监工域，本地禁跑；628 监工时 block=0）
 quality           ⚠️ 中风险（本地 ruff/mypy 绿；35 步历史检查未逐项本地复现）
-pytest            ❌ 必红（19 项既有失败，见 data/629_baseline.md §六）
+pytest            ⚠️ 大概率红（本地 11 项既有失败；其中 4 项源于本地未跟踪 `_arch_v2x/`，
+                  **CI 检出无此文件 ⇒ CI 实际可能只剩 7 项**，见 data/629_baseline.md §六）
 compile/publish-check/site/pdf/epub/deploy → 预计 skipped（依赖链上游红）
 ```
 
