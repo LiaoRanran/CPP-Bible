@@ -1,0 +1,66 @@
+{
+  "measure": {
+    "standing": {
+      "gate_rules": 67,
+      "gate_hits": 191,
+      "gate_block": 0,
+      "gate_warn": 186,
+      "gate_advice": 5,
+      "poison": "124/124",
+      "replay": "confirm=56 refute=0 infra=0",
+      "tool_integrity": "22 尺子",
+      "w2": "IN114/OUT7/UNDEC0",
+      "pck": "83 张，authorized 27/83",
+      "authority_v2_ledger": 452,
+      "touched": "37/67",
+      "escape": "1/1406（CS 0.9062%）",
+      "autoimmune": "100%（23/23，其中 22 张口径级）",
+      "head": "2d13a508",
+      "remote": "793b5c45（624）",
+      "ahead": 80
+    },
+    "task_book_numbers": {
+      "pck_authorized": 27,
+      "autoimmune_cards": 23
+    },
+    "head": "c9c48c68",
+    "ahead": 96,
+    "remote": "793b5c45",
+    "log5": [
+      "c9c48c68 630 [D2]：修复报告（修4/不修11逐类理由+跨批脆弱型缺陷发现+两条断言判别力下降登记+未改任何断言逻辑）",
+      "e3c7d073 630 [D2] 修复2：625 mypy 测试全库 type:ignore 阈值 20→28（实测28，逐文件仍≤5；退化为快照已登记交人）",
+      "8e602261 630 [D2] 修复1：627 PCK hash 漂移分析断言过期（content_drift 56→0、ok 0→82且ref_missing 1、根因子≥1→≥0；只改数字不改逻辑，语义弱化已登记）",
+      "d2e3afeb 630 [D1]：既有测试失败分类（19项：断言过期4可修/环境依赖5/工具自检过期2/跨批脆弱4/本批自纠4；人工定根表逐条给理由；去掉-x以收集全部失败并登记偏差；测试6例）",
+      "2c7db9ae 630 [C3]：自身免疫率阈值对照（硬开火率0%达标≤5%+软警报率100%超疲劳线2.5倍；v23 5/10/20/40解析成功+外部依据4条+动作映射5条；紧迫度=调软层不动block层+测试6例）"
+    ],
+    "counts": {
+      "tools_py": 344,
+      "tests_py": 357,
+      "tools_629": 10,
+      "tools_630": 8
+    },
+    "dirty": [
+      " M data/629_baseline.md",
+      " M data/authority_v2_mode.json",
+      " M data/e2e_attestation_629.md",
+      " M data/human_review_dashboard_v2.html",
+      " M data/independence_static_check_629.md",
+      " M data/learner_behavior_events.jsonl",
+      " M data/learner_twin_gate_report_628.md",
+      " M data/metrics_612.md",
+      " M data/third_party_audit_demo_628.json",
+      " M data/third_party_audit_demo_report_628.md",
+      " M data/transparency_log.jsonl"
+    ]
+  },
+  "metrics": {
+    "clean_cards": 23,
+    "autoimmune_rate_pct": 100.0,
+    "caliber_cards": 22,
+    "coverage": "16/35 (45.7%)",
+    "test_failures": 19,
+    "test_fixable": 4,
+    "baseline_629_failures": 11,
+    "baseline_629_head": "889a3bc8"
+  }
+}
