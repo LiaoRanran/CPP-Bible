@@ -57,8 +57,13 @@ def test_report_sections_written(tmp_path):
 
 def test_selftest_and_baseline_failure_freeze():
     """基线为**修正版 11 项**：首测 19 项里 8 项是自伤（工作区里语法未完成的同名新文件）
-    或本批真实回归（C2 首版 anchor 非确定性），已在 baseline 注释与验收报告 §四.1 登记。"""
-    assert B.selftest() == 0
+    或本批真实回归（C2 首版 anchor 非确定性），已在 baseline 注释与验收报告 §四.1 登记。
+
+    631 A3：原用例还断言 `B.selftest() == 0`，而 629 工具的 selftest 断言
+    「push 前 ahead ≥ 62」——630 B2 完成 push 后 ahead = 0 ⇒ **工具自检过期**。
+    修它要改 629 工具（§零.11 越界）⇒ 本批**只去掉对 selftest 的依赖**（测试侧），
+    保留基线计数断言（这才是本用例真正要守的东西）。
+    """
     assert len(B.BASELINE_FAILURES) == 11
     assert sum(B.BASELINE_CATEGORIES.values()) == 11
     assert all(n.startswith("tests/") and "::" in n for n in B.BASELINE_FAILURES)
