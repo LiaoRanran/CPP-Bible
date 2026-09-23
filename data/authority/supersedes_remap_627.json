@@ -1,0 +1,265 @@
+{
+  "remap_table": [
+    {
+      "event_id": "AE-000001-bf00447a",
+      "old": "dec-000178",
+      "new": "AE-000001-bf00447a"
+    },
+    {
+      "event_id": "AE-000002-1bda190b",
+      "old": "dec-000179",
+      "new": "AE-000002-1bda190b"
+    },
+    {
+      "event_id": "AE-000003-8e485ecf",
+      "old": "dec-000180",
+      "new": "AE-000003-8e485ecf"
+    },
+    {
+      "event_id": "AE-000004-8b9e4c86",
+      "old": "dec-000181",
+      "new": "AE-000004-8b9e4c86"
+    },
+    {
+      "event_id": "AE-000005-d7feba0f",
+      "old": "dec-000182",
+      "new": "AE-000005-d7feba0f"
+    },
+    {
+      "event_id": "AE-000006-0e346b3e",
+      "old": "dec-000183",
+      "new": "AE-000006-0e346b3e"
+    },
+    {
+      "event_id": "AE-000007-b93e0d4c",
+      "old": "dec-000184",
+      "new": "AE-000007-b93e0d4c"
+    },
+    {
+      "event_id": "AE-000008-d8749887",
+      "old": "dec-000185",
+      "new": "AE-000008-d8749887"
+    },
+    {
+      "event_id": "AE-000009-2de8894d",
+      "old": "dec-000186",
+      "new": "AE-000009-2de8894d"
+    },
+    {
+      "event_id": "AE-000010-e58f6f2b",
+      "old": "dec-000187",
+      "new": "AE-000010-e58f6f2b"
+    },
+    {
+      "event_id": "AE-000011-8e27e4cf",
+      "old": "dec-000188",
+      "new": "AE-000011-8e27e4cf"
+    },
+    {
+      "event_id": "AE-000012-c6b742e6",
+      "old": "dec-000189",
+      "new": "AE-000012-c6b742e6"
+    },
+    {
+      "event_id": "AE-000013-3f773204",
+      "old": "dec-000190",
+      "new": "AE-000013-3f773204"
+    },
+    {
+      "event_id": "AE-000014-2c40d52d",
+      "old": "dec-000191",
+      "new": "AE-000014-2c40d52d"
+    },
+    {
+      "event_id": "AE-000015-941265da",
+      "old": "dec-000192",
+      "new": "AE-000015-941265da"
+    },
+    {
+      "event_id": "AE-000016-59e62e4c",
+      "old": "dec-000193",
+      "new": "AE-000016-59e62e4c"
+    },
+    {
+      "event_id": "AE-000017-809ddb2c",
+      "old": "dec-000194",
+      "new": "AE-000017-809ddb2c"
+    },
+    {
+      "event_id": "AE-000209-f8f187a7",
+      "old": "legacy:pre_annotation:ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-1",
+      "new": "AE-000001-bf00447a"
+    },
+    {
+      "event_id": "AE-000212-ea94f1e2",
+      "old": "legacy:pre_annotation:ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-2",
+      "new": "AE-000002-1bda190b"
+    },
+    {
+      "event_id": "AE-000213-09094a78",
+      "old": "legacy:pre_annotation:ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-3",
+      "new": "AE-000003-8e485ecf"
+    },
+    {
+      "event_id": "AE-000216-81d85f86",
+      "old": "legacy:pre_annotation:ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-1",
+      "new": "AE-000004-8b9e4c86"
+    },
+    {
+      "event_id": "AE-000217-281a2b6f",
+      "old": "legacy:pre_annotation:ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-2",
+      "new": "AE-000005-d7feba0f"
+    },
+    {
+      "event_id": "AE-000220-bba7e1c3",
+      "old": "legacy:pre_annotation:ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-3",
+      "new": "AE-000006-0e346b3e"
+    },
+    {
+      "event_id": "AE-000221-baa30e8e",
+      "old": "legacy:pre_annotation:ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-1",
+      "new": "AE-000007-b93e0d4c"
+    },
+    {
+      "event_id": "AE-000223-b734ce2e",
+      "old": "legacy:pre_annotation:ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-2",
+      "new": "AE-000008-d8749887"
+    },
+    {
+      "event_id": "AE-000226-67d73421",
+      "old": "legacy:pre_annotation:ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-3",
+      "new": "AE-000009-2de8894d"
+    },
+    {
+      "event_id": "AE-000227-bc13dae8",
+      "old": "legacy:pre_annotation:ae-MIS-UB-001->ATOM-UB-GRAY-001::prop-1",
+      "new": "AE-000010-e58f6f2b"
+    },
+    {
+      "event_id": "AE-000230-a4bb9408",
+      "old": "legacy:pre_annotation:ae-MIS-UB-001->ATOM-UB-GRAY-001::prop-2",
+      "new": "AE-000011-8e27e4cf"
+    },
+    {
+      "event_id": "AE-000231-135420b4",
+      "old": "legacy:pre_annotation:ae-MIS-UB-004->ATOM-UB-GRAY-001::prop-1",
+      "new": "AE-000012-c6b742e6"
+    },
+    {
+      "event_id": "AE-000233-5aaeaa9d",
+      "old": "legacy:pre_annotation:ae-MIS-UB-004->ATOM-UB-GRAY-001::prop-2",
+      "new": "AE-000013-3f773204"
+    },
+    {
+      "event_id": "AE-000236-a70e57f3",
+      "old": "legacy:pre_annotation:ae-MIS-UB-008->ATOM-UB-GRAY-001::prop-1",
+      "new": "AE-000014-2c40d52d"
+    },
+    {
+      "event_id": "AE-000237-9a11be4d",
+      "old": "legacy:pre_annotation:ae-MIS-UB-008->ATOM-UB-GRAY-001::prop-2",
+      "new": "AE-000015-941265da"
+    },
+    {
+      "event_id": "AE-000240-144a8c70",
+      "old": "legacy:pre_annotation:ae-MIS-UB-014->ATOM-UB-GRAY-001::prop-1",
+      "new": "AE-000016-59e62e4c"
+    },
+    {
+      "event_id": "AE-000241-a937fb00",
+      "old": "legacy:pre_annotation:ae-MIS-UB-014->ATOM-UB-GRAY-001::prop-2",
+      "new": "AE-000017-809ddb2c"
+    },
+    {
+      "event_id": "AE-000436-d494c37b",
+      "old": "legacy:pre_annotation:ae-ATOM-LANG-INLINE-001::prop-1->MIS-LANG-001",
+      "new": "AE-000419-8eb06e36"
+    },
+    {
+      "event_id": "AE-000437-cd51accc",
+      "old": "legacy:pre_annotation:ae-ATOM-LANG-INLINE-001::prop-2->MIS-LANG-001",
+      "new": "AE-000420-c4fb192e"
+    },
+    {
+      "event_id": "AE-000438-469450f1",
+      "old": "legacy:pre_annotation:ae-ATOM-LANG-INLINE-001::prop-3->MIS-LANG-001",
+      "new": "AE-000421-1cc4caf3"
+    },
+    {
+      "event_id": "AE-000439-70b54c25",
+      "old": "legacy:pre_annotation:ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-001",
+      "new": "AE-000422-a582e886"
+    },
+    {
+      "event_id": "AE-000440-4a78f87e",
+      "old": "legacy:pre_annotation:ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-003",
+      "new": "AE-000423-57cfd742"
+    },
+    {
+      "event_id": "AE-000441-2fa09ac4",
+      "old": "legacy:pre_annotation:ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-001",
+      "new": "AE-000424-f464715f"
+    },
+    {
+      "event_id": "AE-000442-42af4142",
+      "old": "legacy:pre_annotation:ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-003",
+      "new": "AE-000425-3759e993"
+    },
+    {
+      "event_id": "AE-000443-696912e6",
+      "old": "legacy:pre_annotation:ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-001",
+      "new": "AE-000426-5648fa23"
+    },
+    {
+      "event_id": "AE-000444-4d264bdd",
+      "old": "legacy:pre_annotation:ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-003",
+      "new": "AE-000427-71c87de5"
+    },
+    {
+      "event_id": "AE-000445-20b8cdf1",
+      "old": "legacy:pre_annotation:ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-001",
+      "new": "AE-000428-f50b604b"
+    },
+    {
+      "event_id": "AE-000446-c4a7f6d9",
+      "old": "legacy:pre_annotation:ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-004",
+      "new": "AE-000429-8fbae3fa"
+    },
+    {
+      "event_id": "AE-000447-24644270",
+      "old": "legacy:pre_annotation:ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-008",
+      "new": "AE-000430-3ecf2579"
+    },
+    {
+      "event_id": "AE-000448-5e530185",
+      "old": "legacy:pre_annotation:ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-014",
+      "new": "AE-000431-1fd26f90"
+    },
+    {
+      "event_id": "AE-000449-55132e53",
+      "old": "legacy:pre_annotation:ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-001",
+      "new": "AE-000432-6d1c8b29"
+    },
+    {
+      "event_id": "AE-000450-af3c2b08",
+      "old": "legacy:pre_annotation:ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-004",
+      "new": "AE-000433-dd2ffab7"
+    },
+    {
+      "event_id": "AE-000451-e089aff3",
+      "old": "legacy:pre_annotation:ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-008",
+      "new": "AE-000434-eba706fa"
+    },
+    {
+      "event_id": "AE-000452-807f513a",
+      "old": "legacy:pre_annotation:ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-014",
+      "new": "AE-000435-c38f4c5b"
+    }
+  ],
+  "summary": {
+    "replace_events": 51,
+    "resolved": 51,
+    "unresolved": 0,
+    "unresolved_refs_in_output": 0
+  }
+}
