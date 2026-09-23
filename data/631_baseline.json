@@ -1,0 +1,85 @@
+{
+  "measure": {
+    "standing": {
+      "gate_rules": 67,
+      "gate_hits": 191,
+      "gate_block": 0,
+      "gate_warn": 186,
+      "gate_advice": 5,
+      "poison": "124/124",
+      "replay": "confirm=56 refute=0 infra=0",
+      "tool_integrity": "22 尺子",
+      "w2": "IN114/OUT7/UNDEC0",
+      "pck": "83 张，authorized 27/83",
+      "authority_v2_ledger": 452,
+      "touched": "37/67",
+      "escape": "1/1406（CS 0.9062%）",
+      "autoimmune": "100%（23/23，132 条 warn：auto 42 / human 90）",
+      "coverage": "16/35 = 45.7%（19 向量从未跑过）",
+      "ci_pytest": "❌ 红（至少 7 项在 CI 同样成立）",
+      "head": "1438cd5e",
+      "remote": "1438cd5e（同步）"
+    },
+    "counts": {
+      "tools_py": 347,
+      "tests_py": 360,
+      "tools_629": 10,
+      "tools_630": 9,
+      "tools_631": 1
+    },
+    "git": {
+      "head": "1438cd5e",
+      "remote": "1438cd5e",
+      "ahead": 0,
+      "behind": 0,
+      "log3": [
+        "1438cd5e 630 [E1]：门禁终跑PASS存档（12项既有失败/新增0/基线消失0/受控零污染/push后ahead=0）+验收报告§五回填真实结果与基线11→12来历",
+        "ec297396 630 [E1/D2] 终跑修正：629 git facts 断言 62→>=0（push后ahead=0，只改数字）+ 门禁基线并入1项（629工具selftest断言push前ahead，修它越界⇒交人）基线11→12 + 门禁自检同步",
+        "c067872d 630 [E1]：status更新（last_completed_batch=630, next_batch=631, awaiting_review）+休工报告"
+      ]
+    },
+    "ci_failures": [
+      "tests/test_baseline_629.py::test_selftest_and_baseline_failure_freeze",
+      "tests/test_ci_pytest_fix_625.py::test_governance_manifest_verified",
+      "tests/test_governance_doc_guard_591.py::test_verify_real_manifest_matches",
+      "tests/test_governance_self_hash_601.py::test_real_manifest_has_valid_self_hash",
+      "tests/test_pe_timestamp_caliber_611.py::test_603_capture_untouched_by_this_batch",
+      "tests/test_pre_push_630.py::test_check_all_ok_and_ahead",
+      "tests/test_pre_push_checklist_627.py::test_run_all_aggregates_ok",
+      "tests/test_pre_push_checklist_627.py::test_tools_all_check_pass",
+      "tests/test_run_628_gate_628.py::test_acceptance_report_exists_and_complete",
+      "tests/test_run_628_gate_628.py::test_gate_other_steps_pass",
+      "tests/test_run_629_gate.py::test_gate_other_steps_pass",
+      "tests/test_run_629_gate.py::test_selftest_passes",
+      "tests/test_run_629_gate.py::test_tool_manifest_is_complete",
+      "tests/test_supply_chain_chain_601.py::test_chain_verify_with_real_inspections"
+    ],
+    "raw_present": true,
+    "dirty": [
+      " M data/629_baseline.md",
+      " M data/630_baseline.json",
+      " M data/630_baseline.md",
+      " M data/authority_v2_mode.json",
+      " M data/e2e_attestation_629.md",
+      " M data/human_review_dashboard_v2.html",
+      " M data/independence_static_check_629.md",
+      " M data/learner_behavior_events.jsonl",
+      " M data/learner_twin_gate_report_628.md",
+      " M data/metrics_612.md",
+      " M data/pre_push_check_630.json",
+      " M data/pre_push_check_630.md",
+      " M data/third_party_audit_demo_628.json",
+      " M data/third_party_audit_demo_report_628.md",
+      " M data/transparency_log.jsonl"
+    ]
+  },
+  "metrics": {
+    "clean_cards": 23,
+    "autoimmune_rate_pct": 100.0,
+    "caliber_cards": 22,
+    "hard_defect_cards": 1,
+    "coverage": "16/35 (45.7%)",
+    "coverage_never_ran": null,
+    "frozen_630_failures": 12
+  }
+}

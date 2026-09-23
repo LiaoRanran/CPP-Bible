@@ -1,0 +1,173 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................F............................... [ 30%]
+.......................................F................................ [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+..............................................................F......F.. [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 48%]
+........................................................................ [ 52%]
+........................................................................ [ 55%]
+........................................................................ [ 58%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 70%]
+........................................................................ [ 73%]
+........................................................F.....F..F....F. [ 76%]
+........................................................................ [ 79%]
+........................................................................ [ 82%]
+..........FFF..F.F...................................................... [ 85%]
+......................s...................................F............. [ 88%]
+............................................s........................... [ 91%]
+........................................................................ [ 94%]
+..............................................................ss........ [ 97%]
+.................................................                        [100%]
+================================== FAILURES ===================================
+E   assert 1 == 0
+     +  where 1 = <function selftest at 0x00000201479BF6A0>()
+     +    where <function selftest at 0x00000201479BF6A0> = B.selftest
+---------------------------- Captured stdout call -----------------------------
+  [ok] §一 冻结项读数成功 
+  [ok] gate 命中 = 191（= warn 186 + advice 5 + block 0） (191)
+  [ok] gate 规则数 = 67 (67)
+  [ok] ahead 数可读 (0)
+  [ok] 文件计数可读 (347/359)
+  [ok] 报告存在且含差异章节 
+  [FAIL] §一 硬项（gate/HEAD/远端）零漂移 ([('remote', '793b5c45（624）', '1438cd5e')])
+  [ok] 软项漂移已标注（vsa/日志，§十一.3） ([('vsa', '14 张（HMAC）', '26 张（HMAC）'), ('transparency_log', '23 条（GENESIS 起）', '37 条（GENESIS 起）')])
+629 baseline check: FAIL
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_baseline_629.py:61: assert 1 == 0
+E   AssertionError: [gov] manifest 不一致（31 处）：
+      [gov]   新增：_arch_v21/00_方向地图.md
+      [gov]   新增：_arch_v21/01_验证层.md
+      [gov]   新增：_arch_v21/02_治理层.md
+      [gov]   新增：_arch_v21/03_学习层.md
+      [gov]   新增：_arch_v21/04_生成层.md
+      [gov]   新增：_arch_v21/05_基础设施层.md
+      [gov]   新增：_arch_v21/06_跨层新兴方向.md
+      [gov]   新增：_arch_v21/07_统计分析.md
+      [gov]   新增：_arch_v21/08_推荐深挖Top5.md
+      [gov]   新增：_arch_v21/zero_pollution_v21_scan.md
+      [gov]   新增：_arch_v22/00_跨领域概念地图.md
+      [gov]   新增：_arch_v22/01_科学与认知.md
+      [gov]   新增：_arch_v22/02_制度与社会.md
+      [gov]   新增：_arch_v22/03_生物与物理.md
+      [gov]   新增：_arch_v22/04_历史与兴衰.md
+      [gov]   新增：_arch_v22/05_自由探索.md
+      [gov]   新增：_arch_v22/06_跨领域统计分析.md
+      [gov]   新增：_arch_v22/zero_pollution.md
+      [gov]   新增：_arch_v23/00_总览.md
+      [gov]   新增：_arch_v23/01_验证器攻击面分类学.md
+      
+    assert 1 == 0
+     +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling...计分析.md\n[gov]   新增：_arch_v22/zero_pollution.md\n[gov]   新增：_arch_v23/00_总览.md\n[gov]   新增：_arch_v23/01_验证器攻击面分类学.md\n').returncode
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_ci_pytest_fix_625.py:13: AssertionError: [gov] manifest 不一致（31 处）：
+E   AssertionError: ['新增：_arch_v21/00_方向地图.md', '新增：_arch_v21/01_验证层.md', '新增：_arch_v21/02_治理层.md', '新增：_arch_v21/03_学习层.md', '新增：_arch_v21/04_生成层.md', '新增：_arch_v21/05_基础设施层.md', ...]
+    assert (False is True)
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_governance_doc_guard_591.py:22: AssertionError: ['新增：_arch_v21/00_方向地图.md', '新增：_arch_v21/01_验证层.md', '新增：_arch_v21/02_治理层.md', '新增：_arch_v21/03_学习层.md', '新增：_arch_v21/04_生成层.md', '新增：_arch_v21/05_基础设施层.md', ...]
+E   AssertionError: assert (False, ['新增：...设施层.md', ...]) == (True, [])
+      
+      At index 0 diff: False != True
+      Use -v to get more diff
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_governance_self_hash_601.py:39: AssertionError: assert (False, ['新增：...设施层.md', ...]) == (True, [])
+E   UnicodeDecodeError: 'utf-16-le' codec can't decode byte 0x0a in position 352: truncated data
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_pe_timestamp_caliber_611.py:61: UnicodeDecodeError: 'utf-16-le' codec can't decode byte 0x0a in position 352: truncated data
+E   AssertionError: (['?? tests/test_baseline_631.py', '?? tools/baseline_631.py'], [])
+    assert False
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_pre_push_630.py:43: AssertionError: (['?? tests/test_baseline_631.py', '?? tools/baseline_631.py'], [])
+E   assert False
+     +  where False = all(<generator object test_tools_all_check_pass.<locals>.<genexpr> at 0x000002014B8C7030>)
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_pre_push_checklist_627.py:12: assert False
+E   assert False
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_pre_push_checklist_627.py:43: assert False
+E   AssertionError: 理 (83/{'renewed': 0, 'added': 0, 'needs_human': 0, 'already_ok': 162, 'certs_touched': 0})
+        [ok] A3 镜像边 194 条自动证明 (194)
+        [ok] A3 账本写入 76 条 symmetry_proof_id (76)
+        [ok] A4 DEBT-001 处置 + replay 修复报告存在 
+        [ok] B2 VSA 凭证 ≥ 1 张 (26 张)
+        [ok] B3 透明日志 ≥ 1 条 (37 条)
+        [ok] B4 端到端审计报告存在 
+        [ok] C1 仪表盘 v2 与设计说明存在 
+        [ok] independent_verifier_628.py 零 import 本项目工具 ([])
+        [ok] vsa_verify_628.py 零 import 本项目工具 ([])
+        [ok] 学习者镜像门 = closed（真实学习事件 0/50） (state=closed real=0/50 progress=0.0%)
+      628 收工门禁: FAIL ❌
+      
+    assert 1 == 0
+     +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling...本项目工具 ([])\n  [ok] 学习者镜像门 = closed（真实学习事件 0/50） (state=closed real=0/50 progress=0.0%)\n628 收工门禁: FAIL ❌\n", stderr='').returncode
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_628_gate_628.py:59: AssertionError: 理 (83/{'renewed': 0, 'added': 0, 'needs_human': 0, 'already_ok': 162, 'certs_touched': 0})
+E   assert (630 == 628)
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_628_gate_628.py:70: assert (630 == 628)
+E   AssertionError: 门禁漏掉本批新工具：['attack_surface_axes_630.py', 'autoimmune_diagnose_630.py', 'autoimmune_fix_proposal_630.py', 'autoimmune_recalc_630.py', 'autoimmune_threshold_630.py', 'baseline_630.py', 'coverage_metric_630.py', 'pre_push_630.py', 'run_630_gate.py', 'stale_test_triage_630.py']
+    assert not {'attack_surface_axes_630.py', 'autoimmune_diagnose_630.py', 'autoimmune_fix_proposal_630.py', 'autoimmune_recalc_630.py', 'autoimmune_threshold_630.py', 'baseline_630.py', ...}
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_629_gate.py:31: AssertionError: 门禁漏掉本批新工具：['attack_surface_axes_630.py', 'autoimmune_diagnose_630.py', 'autoimmune_fix_proposal_630.py', 'autoimmune_recalc_630.py', 'autoimmune_threshold_630.py', 'baseline_630.py', 'coverage_metric_630.py', 'pre_push_630.py', 'run_630_gate.py', 'stale_test_triage_630.py']
+E   AssertionError: 工具 authority_log_integration_629.py --check 
+        [ok] 工具 independence_static_check.py --check 
+        [ok] 工具 e2e_attestation_629.py --check 
+        [ok] 工具 attack_objective_629.py --check 
+        [ok] 工具 attack_round8_629.py --check 
+        [ok] 工具 loop_metrics_629.py --check 
+        [FAIL] 门禁覆盖本批全部新增工具（git 交叉核验） (['attack_surface_axes_630.py', 'autoimmune_diagnose_630.py', 'autoimmune_fix_proposal_630.py', 'autoimmune_recalc_630.py', 'autoimmune_threshold_630.py', 'baseline_630.py', 'coverage_metric_630.py', 'pre_push_630.py', 'run_630_gate.py', 'stale_test_triage_630.py'])
+        [ok] 整目录 ruff 全绿 
+        [ok] mypy tools/ = 0 errors 
+        [skip] 本批新增测试（24 文件）—— 由 --check 完整调用时执行
+        [skip] 非 slow 全量 pytest（--no-tests）
+        [ok] 受控目录零污染 ([])
+        [ok] 未跑监工四门禁（AST 扫描：无监工门禁调用） ([])
+        [ok] 未改 ci.yml / 未改 CORE_TOOLS 生产逻辑 
+      629 收工门禁: FAIL ❌
+      
+    assert 1 == 0
+     +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling...录零污染 ([])\n  [ok] 未跑监工四门禁（AST 扫描：无监工门禁调用） ([])\n  [ok] 未改 ci.yml / 未改 CORE_TOOLS 生产逻辑 \n629 收工门禁: FAIL ❌\n", stderr='').returncode
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_629_gate.py:52: AssertionError: 工具 authority_log_integration_629.py --check
+E   assert 1 == 0
+     +  where 1 = <function selftest at 0x000002014A0AD440>()
+     +    where <function selftest at 0x000002014A0AD440> = G.selftest
+---------------------------- Captured stdout call -----------------------------
+  [ok] 本批工具清单 14 项且文件都存在 
+  [ok] 基线失败清单已冻结（修正版 11 项） 
+  [FAIL] 新增工具交叉核验无遗漏 (['attack_surface_axes_630.py', 'autoimmune_diagnose_630.py', 'autoimmune_fix_proposal_630.py', 'autoimmune_recalc_630.py', 'autoimmune_threshold_630.py', 'baseline_630.py', 'coverage_metric_630.py', 'pre_push_630.py', 'run_630_gate.py', 'stale_test_triage_630.py'])
+  [ok] 非慢解析器可用 
+  [ok] 本轮受控目录洁净 
+  [ok] AST 自证：不调用监工四门禁 ([])
+  [ok] 新工具清单与监工门禁零交集 
+629 gate selftest: FAIL
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_629_gate.py:70: assert 1 == 0
+E   AssertionError: ['inspection governance_check 失败（exit 1）：[gov] manifest 不一致（31 处）：
+      [gov]   新增：_arch_v21/00_方向地图.md
+      [gov]   新增：_arch_...d
+      [gov]   新增：_arch_v21/02_治理层.md
+      [gov]   新增：_arch_v21/03_学习层.md
+      [gov]   新增：_arch_v21/04_生成层.md
+      [gov]   新增：_arch_v']
+    assert ['inspection ...  新增：_arch_v'] == []
+      
+      Left contains one more item: 'inspection governance_check 失败（exit 1）：[gov] manifest 不一致（31 处）：\n[gov]   新增：_arch_v21/00_方向地图.md\n[gov]   新增：_arch_v...md\n[gov]   新增：_arch_v21/02_治理层.md\n[gov]   新增：_arch_v21/03_学习层.md\n[gov]   新增：_arch_v21/04_生成层.md\n[gov]   新增：_arch_v'
+      Use -v to get more diff
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_supply_chain_chain_601.py:112: AssertionError: ['inspection governance_check 失败（exit 1）：[gov] manifest 不一致（31 处）：
+--------------------------- snapshot report summary ---------------------------
+5 snapshots passed.
+=========================== short test summary info ===========================
+FAILED tests/test_baseline_629.py::test_selftest_and_baseline_failure_freeze
+FAILED tests/test_ci_pytest_fix_625.py::test_governance_manifest_verified - A...
+FAILED tests/test_governance_doc_guard_591.py::test_verify_real_manifest_matches
+FAILED tests/test_governance_self_hash_601.py::test_real_manifest_has_valid_self_hash
+FAILED tests/test_pe_timestamp_caliber_611.py::test_603_capture_untouched_by_this_batch
+FAILED tests/test_pre_push_630.py::test_check_all_ok_and_ahead - AssertionErr...
+FAILED tests/test_pre_push_checklist_627.py::test_tools_all_check_pass - asse...
+FAILED tests/test_pre_push_checklist_627.py::test_run_all_aggregates_ok - ass...
+FAILED tests/test_run_628_gate_628.py::test_gate_other_steps_pass - Assertion...
+FAILED tests/test_run_628_gate_628.py::test_acceptance_report_exists_and_complete
+FAILED tests/test_run_629_gate.py::test_tool_manifest_is_complete - Assertion...
+FAILED tests/test_run_629_gate.py::test_gate_other_steps_pass - AssertionErro...
+FAILED tests/test_run_629_gate.py::test_selftest_passes - assert 1 == 0
+FAILED tests/test_supply_chain_chain_601.py::test_chain_verify_with_real_inspections
