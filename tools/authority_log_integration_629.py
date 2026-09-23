@@ -33,6 +33,8 @@ sys.path.insert(0, HERE)
 LEDGER = os.path.join(ROOT, "data", "authority", "decision_event_v2_ledger.jsonl")
 CHAIN = os.path.join(ROOT, "data", "authority", "authority_event_chain_629.jsonl")
 ANCHOR = os.path.join(ROOT, "data", "authority", "authority_event_chain_629_anchor.json")
+ANCHOR_CRED = os.path.join(ROOT, "data", "authority",
+                           "authority_chain_anchor_credential_629.json")
 OUT_MD = os.path.join(ROOT, "data", "authority_log_integration_629.md")
 
 
@@ -123,20 +125,63 @@ def verify_chain() -> dict[str, Any]:
             "root_hash": chain[-1]["entry_hash"] if chain else "GENESIS"}
 
 
-def write_anchor() -> dict[str, Any]:
-    """写 anchor 文件并（幂等）追加一条到 628 生产日志。"""
-    import transparency_log_628 as T
+def anchor_credential(anchor: dict[str, Any]) -> dict[str, Any]:
+    """构造一条**合规的 628 形态 VSA 凭证**，把 authority 链根纳入其字段。
 
+    为什么需要：628 B3/B4 的一致性契约是「日志尾部的 `vsa_file` 必须是一张**可通过
+    `vsa_attestation_628 --verify-path` 验证的凭证**」。629 C2 首版只追加了一个裸 anchor
+    JSON（无 `attestation`），导致 628 B4 的 `--check` 报 `logged_vsa_valid=False`
+    （门禁首跑实测到该回归）。修复方式：再追加一条**真凭证**（标准 input_hashes/results +
+    额外 `authority_chain` 字段 + **重算 HMAC**），把链根带进凭证本体。
+    原 anchor 条目按 append-only 原则**保留不删**。
+    """
+    import vsa_attestation_628 as V
+
+    cred = V.build_credential()
+    cred["authority_chain"] = {"events": anchor["events"],
+                               "root_hash": anchor["root_hash"],
+                               "ledger_sha256": anchor["ledger_sha256"]}
+    with open(V.SECRET, "rb") as fh:          # 只读密钥；缺失则抛错（不新建）
+        key = fh.read()
+    cred["attestation"] = V.compute_attestation(cred, key)
+    return cred
+
+
+def anchor_payload() -> dict[str, Any]:
+    """anchor 的可复现内容（**不含 volatile 时间戳** ⇒ 反复运行字节一致 ⇒ append 幂等）。
+
+    `generated_at` 取**链条目自己的最后一个时间戳**（已在盘上、稳定），而不是 `now()`——
+    这是 629 C2 首版踩过的坑：写入 `now()` 会让每次 `--build` 都改文件内容，
+    使 `append_vsa` 的按-hash 幂等失效，产生重复日志条目并让 628 B3 的
+    「日志引用文件哈希一致」检查漂移。
+    """
     v = verify_chain()
-    anchor = {"batch": "629", "kind": "authority_event_chain_anchor",
-              "ledger": os.path.relpath(LEDGER, ROOT).replace(os.sep, "/"),
-              "ledger_sha256": sha256_file(LEDGER),
-              "events": v["entries"], "chain_valid": bool(v["chain_valid"]),
-              "root_hash": v["root_hash"], "generated_at":
-              time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+    chain = _read_chain()
+    return {"batch": "629", "kind": "authority_event_chain_anchor",
+            "ledger": os.path.relpath(LEDGER, ROOT).replace(os.sep, "/"),
+            "ledger_sha256": sha256_file(LEDGER),
+            "events": v["entries"], "chain_valid": bool(v["chain_valid"]),
+            "root_hash": v["root_hash"],
+            "generated_at": (chain[-1]["timestamp"] if chain else "GENESIS")}
+
+
+def write_anchor() -> dict[str, Any]:
+    """写 anchor 文件 + 合规凭证，并（幂等）追加到 628 生产日志。"""
+    import transparency_log_628 as T
+    import vsa_attestation_628 as V
+
+    anchor = anchor_payload()
     with open(ANCHOR, "w", encoding="utf-8", newline="\n") as fh:
         json.dump(anchor, fh, ensure_ascii=False, indent=2)
-    return {"anchor": anchor, "append": T.append_vsa(ANCHOR),
+    # 凭证含 volatile 的 verified_at ⇒ **只写一次**（已存在则复用，保证幂等）
+    if not os.path.exists(ANCHOR_CRED):
+        cred = anchor_credential(anchor)
+        with open(ANCHOR_CRED, "w", encoding="utf-8", newline="\n") as fh:
+            json.dump(cred, fh, ensure_ascii=False, indent=2)
+    return {"anchor": anchor,
+            "anchor_append": T.append_vsa(ANCHOR),
+            "credential_verify": V.verify_credential(ANCHOR_CRED),
+            "credential_append": T.append_vsa(ANCHOR_CRED),
             "log_state": T.status()}
 
 
@@ -227,6 +272,13 @@ def selftest() -> int:
     chk("anchor 文件存在且字段齐全",
         bool(m["anchor"]) and all(k in (m["anchor"] or {}) for k in
                                   ("events", "root_hash", "ledger_sha256")))
+    chk("anchor 内容确定性（反复生成字节一致 ⇒ append 幂等）",
+        anchor_payload() == anchor_payload()
+        and json.dumps(anchor_payload(), ensure_ascii=False, indent=2)
+        == open(ANCHOR, encoding="utf-8").read(), "anchor 必须与 anchor_payload() 一致")
+    chk("628 日志引用文件哈希一致（无漂移）",
+        bool(m["vsa_log"]["files"]["ok"]) and not m["vsa_log"]["files"]["drifted"],
+        f"({m['vsa_log']['files']['drifted']})")
     chk("anchor 已锚定进 628 生产日志", m["anchor_in_vsa_log"],
         f"(index={m['anchor_log_index']})")
     chk("账本文件未被修改（只读）",
