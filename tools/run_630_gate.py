@@ -53,11 +53,15 @@ BASELINE_FAILURES = [
     "tests/test_run_629_gate.py::test_gate_other_steps_pass",
     "tests/test_run_629_gate.py::test_selftest_passes",
     "tests/test_supply_chain_chain_601.py::test_chain_verify_with_real_inspections",
+    # 630 终跑新增：push 后 ahead=0 使 629 工具**自身的 selftest** 断言过期
+    # （`tests/test_baseline_629.py::test_git_facts_readable` 的同类数字已由 D2 更新为 >=0；
+    #   本条失败在 **629 工具 selftest** 里 ⇒ 修它要改 625-629 工具，§零.11 越界 ⇒ 交人）
+    "tests/test_baseline_629.py::test_selftest_and_baseline_failure_freeze",
 ]
 BASELINE_CATEGORIES = {
     "环境依赖型（本地未跟踪 _arch_v2x/ / UTF-16 vs blob）": 5,
-    "工具自检过期型（修它要改 627 工具 ⇒ 越界）": 2,
-    "跨批脆弱型（门禁把「当时最新状态」写死）": 4,
+    "工具自检过期型（修它要改 625-629 工具 ⇒ 越界）": 3,
+    "跨批脆弱型（把「当时最新状态」写死）": 4,
 }
 
 
@@ -187,8 +191,8 @@ def selftest() -> int:
     chk("本批工具清单 9 项且都存在",
         len(NEW_TOOLS) == 9
         and all(os.path.exists(os.path.join(ROOT, "tools", t)) for t in NEW_TOOLS))
-    chk("冻结基线 11 项且分类合计一致",
-        len(BASELINE_FAILURES) == 11 and sum(BASELINE_CATEGORIES.values()) == 11)
+    chk("冻结基线 12 项且分类合计一致",
+        len(BASELINE_FAILURES) == 12 and sum(BASELINE_CATEGORIES.values()) == 12)
     chk("按批次标记核验无遗漏",
         not (set(added_files("tools", "_630")) - set(NEW_TOOLS) - {"run_630_gate.py"}),
         f"({sorted(set(added_files('tools', '_630')) - set(NEW_TOOLS) - {'run_630_gate.py'})})")

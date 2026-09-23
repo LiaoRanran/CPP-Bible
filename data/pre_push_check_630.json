@@ -27,23 +27,29 @@
   "status_other": [
     "M _adv_v80/probes/p57.cpp",
     " M data/629_baseline.md",
-    " M data/630_acceptance_report.md",
     " M data/630_baseline.json",
     " M data/630_baseline.md",
     " M data/authority_v2_mode.json",
     " M data/e2e_attestation_629.md",
     " M data/human_review_dashboard_v2.html",
     " M data/independence_static_check_629.md",
+    " M data/learner_behavior_events.jsonl",
     " M data/learner_twin_gate_report_628.md",
+    " M data/metrics_612.md",
     " M data/pre_push_check_630.json",
     " M data/pre_push_check_630.md",
-    " M tests/test_pre_push_630.py",
-    " M tools/pre_push_630.py"
+    " M data/third_party_audit_demo_628.json",
+    " M data/third_party_audit_demo_report_628.md",
+    " M data/transparency_log.jsonl",
+    " M tests/test_baseline_629.py",
+    " M tests/test_run_630_gate.py",
+    " M tools/run_630_gate.py",
+    "?? data/vsa/attestation_20260923T144453Z.json"
   ],
   "status_other_blocking": [
-    " M data/630_acceptance_report.md",
-    " M tests/test_pre_push_630.py",
-    " M tools/pre_push_630.py"
+    " M tests/test_baseline_629.py",
+    " M tests/test_run_630_gate.py",
+    " M tools/run_630_gate.py"
   ],
   "pending_batch_artifacts": [
     " M data/pre_push_check_630.json",
@@ -58,7 +64,13 @@
     " M data/e2e_attestation_629.md",
     " M data/human_review_dashboard_v2.html",
     " M data/independence_static_check_629.md",
-    " M data/learner_twin_gate_report_628.md"
+    " M data/learner_behavior_events.jsonl",
+    " M data/learner_twin_gate_report_628.md",
+    " M data/metrics_612.md",
+    " M data/third_party_audit_demo_628.json",
+    " M data/third_party_audit_demo_report_628.md",
+    " M data/transparency_log.jsonl",
+    "?? data/vsa/attestation_20260923T144453Z.json"
   ],
   "controlled_clean": true,
   "ci": {
@@ -73,8 +85,8 @@
     "ok": true
   },
   "uncommitted_630": [
-    " M tests/test_pre_push_630.py",
-    " M tools/pre_push_630.py"
+    " M tests/test_run_630_gate.py",
+    " M tools/run_630_gate.py"
   ],
   "ahead": 0,
   "all_ok": false

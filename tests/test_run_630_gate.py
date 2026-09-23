@@ -30,8 +30,9 @@ def test_tool_manifest_complete_by_batch_marker():
 
 
 def test_baseline_frozen_and_categorized():
-    assert len(G.BASELINE_FAILURES) == 11
-    assert sum(G.BASELINE_CATEGORIES.values()) == 11
+    """基线 = D1 的不可修 11 项 + 终跑新增 1 项（629 工具 selftest 断言 push 前 ahead）。"""
+    assert len(G.BASELINE_FAILURES) == 12
+    assert sum(G.BASELINE_CATEGORIES.values()) == 12
     assert all(n.startswith("tests/") and "::" in n for n in G.BASELINE_FAILURES)
     # 630 自己修的 4 项断言过期型**不在**基线里（应已转绿）
     assert not [n for n in G.BASELINE_FAILURES if "pck_hash_drift_analyzer_627::test_content"

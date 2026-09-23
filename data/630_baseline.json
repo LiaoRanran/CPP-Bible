@@ -23,15 +23,15 @@
       "pck_authorized": 27,
       "autoimmune_cards": 23
     },
-    "head": "6809b47e",
-    "ahead": 1,
-    "remote": "5daec9de",
+    "head": "c067872d",
+    "ahead": 0,
+    "remote": "c067872d",
     "log5": [
+      "c067872d 630 [E1]：status更新（last_completed_batch=630, next_batch=631, awaiting_review）+休工报告",
+      "53582fe2 630 [B1/E1] 修正：闸门显式豁免「测试再生产物」（否则B1在套件内自我判红）+ batch_path 正则化（路径以_开头时前缀剥离吃字）+ 登记「全量套件污染受控目录 ATOM-CONC-FENCE-001」发现（已还原，根因交人）",
+      "ebb1fe3f 630 [E1]：收工门禁+验收报告（14任务全完成+push99commit+CI四门禁全绿+自身免疫率132条诊断到方案+coverage第四元45.7%+两横切面+11项测试债定性；门禁按批次标记核验避免跨批脆弱+测试6例）",
       "6809b47e 630 [B2]+E1前置：执行push（793b5c45..5daec9de共99commit，ahead=0，受控目录push前后均净）+CI四门禁全绿/replay绿/concurrency绿/quality绿，仅pytest红（含跨批脆弱4+工具自检过期2+UTF-16 1）；代理偏差7890→7990已登记+630收工门禁",
-      "5daec9de 630 [B1]：push前检查（status仅预期残留+受控零污染+ci.yml真解析6 jobs+A/C/D交付物24项全commit+630文件无未提交；闸门脚本不执行push+测试6例）",
-      "aeb7812d 630 运行产物刷新：测试套件再生的 629/628 报告与快照 + B4 端到端新增凭证入册（日志 append-only 保持）",
-      "13fb9ee6 630 [任务0]：基线台账（§一 17项录入+实测核对=HEAD/ahead与任务书不符已登记+四元指标快照+工具/测试文件计数+ahead 96；只读自证+测试6例)",
-      "c9c48c68 630 [D2]：修复报告（修4/不修11逐类理由+跨批脆弱型缺陷发现+两条断言判别力下降登记+未改任何断言逻辑）"
+      "5daec9de 630 [B1]：push前检查（status仅预期残留+受控零污染+ci.yml真解析6 jobs+A/C/D交付物24项全commit+630文件无未提交；闸门脚本不执行push+测试6例）"
     ],
     "counts": {
       "tools_py": 346,
@@ -47,13 +47,16 @@
       " M data/e2e_attestation_629.md",
       " M data/human_review_dashboard_v2.html",
       " M data/independence_static_check_629.md",
+      " M data/learner_behavior_events.jsonl",
       " M data/learner_twin_gate_report_628.md",
+      " M data/metrics_612.md",
       " M data/pre_push_check_630.json",
       " M data/pre_push_check_630.md",
-      " M tests/test_baseline_630.py",
-      " M tests/test_pre_push_630.py",
-      " M tools/baseline_630.py",
-      " M tools/pre_push_630.py",
+      " M data/third_party_audit_demo_628.json",
+      " M data/third_party_audit_demo_report_628.md",
+      " M data/transparency_log.jsonl",
+      " M tests/test_baseline_629.py",
+      " M tests/test_run_630_gate.py",
       " M tools/run_630_gate.py"
     ]
   },

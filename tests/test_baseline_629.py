@@ -32,8 +32,10 @@ def test_head_anchor_is_ancestor():
 
 
 def test_git_facts_readable():
+    """630 D2 更新（只改数字）：629 当时断言 `ahead >= 62`；**630 B2 完成 push 后 ahead = 0**
+    ⇒ 硬编码下限过期。改为 `>= 0`（合法非负整数即可；HEAD/log3 关系仍锁住）。"""
     g = B.git_facts()
-    assert g["ahead"] >= 62 and len(g["head"]) >= 7
+    assert g["ahead"] >= 0 and len(g["head"]) >= 7
     assert len(g["log3"]) == 3 and g["log3"][0].startswith(g["head"])
 
 
