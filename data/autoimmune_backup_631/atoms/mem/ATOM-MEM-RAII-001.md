@@ -30,7 +30,6 @@ claim_structured:
     statement: 同夹具两条路径的对照读数：RAII 路径（safe_path）结束后 g_live=0（无存活资源），裸 new/delete 路径（leak_path）异常跳过 delete 后 g_live=1（资源仍存活）。
     evidence: [EV-MEM-009]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: g_live}
   - id: prop-2
     subject: 作用域内对象的析构顺序
     predicate: 实测为
@@ -39,7 +38,6 @@ claim_structured:
     statement: 多个 RAII 对象在同一作用域时，析构按构造的逆序自动发生：实测输出为 ctor A、ctor B、ctor C，随后 dtor C、dtor B、dtor A。
     evidence: [EV-MEM-010]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: dtor C}
   - id: prop-3
     subject: RAII 的异常安全性
     predicate: 来自

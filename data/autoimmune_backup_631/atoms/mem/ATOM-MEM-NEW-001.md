@@ -30,7 +30,6 @@ claim_structured:
     statement: new 表达式先分配再构造、delete 表达式先析构再释放，两层各自独立发生一次：实测 after new 时 alloc=1、ctor=1，after delete 时 dealloc=1、dtor=1。
     evidence: [EV-MEM-017]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: _Znwm}
   - id: prop-2
     subject: 数组形式与 nothrow
     predicate: 实测
@@ -39,7 +38,6 @@ claim_structured:
     statement: 数组与 nothrow 的实测：array new[] calls=1、array delete[] calls=1（必须配对），且 new(std::nothrow) 在超大申请失败时返回值 recorded 为 null（nothrow huge returned null=1），不抛异常。
     evidence: [EV-MEM-018]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: _Znay}
   - id: prop-3
     subject: new[] / delete[] 混用
     predicate: 属于

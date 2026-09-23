@@ -32,7 +32,6 @@ claim_structured:
     statement: 四条折叠规则的实测：T& &⇒int&、T& &&⇒int&、T&& &⇒int&、T&& &&⇒int&&（唯一保持右值引用的是"右值引用的右值引用"）；auto&& 传左值推导为 int&、传右值推导为 int&&。
     evidence: [EV-MEM-021]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: sink_lvalue}
   - id: prop-2
     subject: 转发链里有无 std::forward
     predicate: 实测（-O0/-O2 一致）
@@ -41,7 +40,6 @@ claim_structured:
     statement: 转发链对照：forward 右值实参时 copies=0、moves=1；forward 左值实参时 copies=1、moves=0；而省略 forward 时右值实参退化为拷贝（copies=1、moves=0）。
     evidence: [EV-MEM-022]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: wrap_forward}
   - id: prop-3
     subject: 万能引用（转发引用）
     predicate: 仅在推导语境成立，因此

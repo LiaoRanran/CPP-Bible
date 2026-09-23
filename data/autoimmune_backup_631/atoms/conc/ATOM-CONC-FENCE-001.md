@@ -31,7 +31,6 @@ claim_structured:
     statement: 屏障落在循环体内（含零机器指令的 atomic_signal_fence）即阻止编译器删除该循环；移到体外则与无屏障同形、整段被消除。
     evidence: [EV-CONC-001, EV-CONC-002]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: _Z10spin_plainv}
   - id: prop-2
     subject: 内存屏障(fence)
     predicate: 不提供

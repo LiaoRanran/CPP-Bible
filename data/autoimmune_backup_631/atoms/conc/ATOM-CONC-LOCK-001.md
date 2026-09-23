@@ -29,7 +29,6 @@ claim_structured:
     statement: 同夹具四路对照的机器读数（EV-CONC-003/004 共享 `Examples/atoms/_atom_lock_cost.out`）：nproc=32、single_thread_baseline=1 时单线程 single_result=200000，mutex、atomic fetch_add、CAS 三路 result 均为 800000，且 cas_retry_observed=1（CAS 路径发生重试）、atomic_fetch_ns=636900。
     evidence: [EV-CONC-003, EV-CONC-004]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: _Z12bench_singlev}
   - id: prop-2
     subject: 锁与无锁的优劣
     predicate: 依赖核数与竞争度，无绝对最优

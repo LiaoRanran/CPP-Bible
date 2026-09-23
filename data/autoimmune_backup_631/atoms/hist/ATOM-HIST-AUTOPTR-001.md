@@ -32,7 +32,6 @@ claim_structured:
     statement: 实测（GCC 15.3.0、-std=c++14 -O2）：auto_ptr 拷贝后源为空=是、目标值=42；从容器读元素后源为空=是、偷到值=7；unique_ptr 移动后源为空=是、目标值=9。
     evidence: [EV-HIST-001, EV-MEM-003]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: _ZNSt8auto_ptr}
   - id: prop-2
     subject: auto_ptr 与 unique_ptr 的类型判定
     predicate: 编译期 static_assert 显示
@@ -41,7 +40,6 @@ claim_structured:
     statement: 编译期判定（四条 static_assert 全部通过）：auto_ptr 不满足 CopyConstructible（is_copy_constructible=false）却可从非 const 左值构造（is_constructible<T,T&>=true）；unique_ptr 不可拷贝但可移动（is_copy_constructible=false、is_move_constructible=true）。
     evidence: [EV-HIST-001, EV-MEM-003]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: _ZNSt8auto_ptr}
   - id: prop-3
     subject: auto_ptr 的历史定位
     predicate: 是
@@ -59,7 +57,6 @@ claim_structured:
     statement: 实现层事实（EV-HIST-001 的 impl_ 读数）：同一夹具在 -std=c++17 与 -std=c++23 下**仍可编译**（rc=0）——libstdc++ 保留了已从标准移除的 auto_ptr；CI（Ubuntu、clang 18.1.3、默认 libstdc++）编译通过、四条 static_assert 全过、三行运行输出与 GCC 逐字一致。
     evidence: [EV-HIST-001]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: _ZNSt8auto_ptr}
 claim_boundary:
   standard: [C++98, C++11, C++14, C++17, C++23]
   compilers: [GCC 15.3.0, GCC 13.3.0, Clang 18.1.3]

@@ -30,7 +30,6 @@ claim_structured:
     statement: 非拥有观察者的实测：持有 weak 时 use_count 仍为 1（不增加强引用）、expired before=0；.lock() 后 use_count=2 且 locked bool=1，lock 作用域结束后回到 1；reset 后 weak expired=1，且 box destroyed count=1（对象仍只析构一次）。
     evidence: [EV-MEM-015]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: destroyed}
   - id: prop-2
     subject: 用 weak 打破环后的析构数
     predicate: 实测
@@ -39,7 +38,6 @@ claim_structured:
     statement: 把反向引用改为 weak 后：a use_count=1、b use_count=2，nodes destroyed count=2（两个节点全部析构）——与互相强持有时的 destroyed count=0 构成唯一变量对照。
     evidence: [EV-MEM-016]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: destroyed}
   - id: prop-3
     subject: weak_ptr 的语义
     predicate: 是

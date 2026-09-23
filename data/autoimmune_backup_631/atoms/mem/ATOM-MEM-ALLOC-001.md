@@ -32,7 +32,6 @@ claim_structured:
     statement: 分配与对象构造是两个独立动作：实测 allocate 路径 allocs=1 而 ctors=0（只分配不构造），separate construct 路径 ctors=2、destroy 路径 dtors=2、deallocate 路径 frees=1 ⇒ C++17 后 std::allocator 只剩纯分配层，构造/析构统一走 allocator_traits。
     evidence: [EV-MEM-026]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: allocation only}
   - id: prop-2
     subject: 自定义 arena 分配器
     predicate: 接入 vector 后
@@ -41,7 +40,6 @@ claim_structured:
     statement: 策略可整体替换：自定义 arena 分配器接入 vector 后，16 次 push_back 期间 calls=5、bytes=124、heap_new=0；std::allocator 对照路径 heap_new=5（增长式重分配）。
     evidence: [EV-MEM-027]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: arena}
   - id: prop-3
     subject: std::pmr::monotonic_buffer_resource
     predicate: 用栈缓冲伺候全部分配时
@@ -50,7 +48,6 @@ claim_structured:
     statement: std::pmr（C++17）把分配策略变成运行时多态：monotonic_buffer_resource 用栈缓冲伺候全部分配，实测 upstream_allocs=0（零堆、全程不触碰上游），而 delegating 路径 res_calls=5、bytes=124（走增长路径、堆支撑）。
     evidence: [EV-MEM-028]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: monotonic}
   - id: prop-4
     subject: allocator
     predicate: 在 STL 中的定位是

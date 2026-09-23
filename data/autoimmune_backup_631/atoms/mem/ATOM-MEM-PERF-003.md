@@ -48,7 +48,6 @@ claim_structured:
     statement: libstdc++ 侧实测（cxx23 -O2 与 cxx17 -O0 一致）：sizeof_string=32、sizeof_size_t=8、capacity_at_len1=15、capacity_at_len8=15、first_heap_len=16、sso_capacity=15，且 heap_at_len14=0、heap_at_len15=0、heap_at_len16=1、heap_at_len17=1。
     evidence: [EV-MEM-038]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: first_heap_len=}
   - id: prop-2
     subject: SSO 阈值
     predicate: 不是语言保证，因此

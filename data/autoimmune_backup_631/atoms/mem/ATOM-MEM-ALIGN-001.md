@@ -30,7 +30,6 @@ claim_structured:
     statement: 编译器在成员间与末尾插入 padding 使每个成员与整体满足对齐：实测 sizeof(Padded)=8、offsetof a=0、offsetof b=4，显式计入的 padding bytes=3。
     evidence: [EV-MEM-019]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: Padded}
   - id: prop-2
     subject: alignas 与按字节搬运
     predicate: 实测为
@@ -39,7 +38,6 @@ claim_structured:
     statement: 对齐可控且按字节搬运保真：实测 alignof(Aligned)=16、sizeof(Aligned)=16，且 memcpy 往返后 x=7（值不变）。
     evidence: [EV-MEM-020]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: Aligned}
   - id: prop-3
     subject: reinterpret_cast 强转指针做类型双关
     predicate: 是

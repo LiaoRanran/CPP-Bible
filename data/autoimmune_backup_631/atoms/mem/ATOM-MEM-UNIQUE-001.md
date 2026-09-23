@@ -30,7 +30,6 @@ claim_structured:
     statement: 零开销的第一个证据：实测 sizeof(unique_ptr<Big>)=8、sizeof(Big*)=8、equal=1（两者相等，没有额外字段）。
     evidence: [EV-MEM-011]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: unique_ptr}
   - id: prop-2
     subject: 移动转移与析构次数
     predicate: 实测
@@ -39,7 +38,6 @@ claim_structured:
     statement: 所有权转移与释放：移动后源被置空（a empty=1）、目标持有对象（b->v=7），且 box destroyed count=1（恰好析构一次，无双释放）。
     evidence: [EV-MEM-012]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: destroyed}
   - id: prop-3
     subject: unique_ptr 的所有权语义
     predicate: 体现在编译期（拷贝构造被删除、移动转移），因此

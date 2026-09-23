@@ -34,7 +34,6 @@ claim_structured:
     statement: f(g(), h()) 的实参求值顺序实测：四组组合（GCC 15.3.0 与 GCC 13.1.0、-O0 与 -O2、c++17）输出均为 h 先于 g、最终 f(1,2)——实测顺序一致**不代表可依赖**，标准只规定其为未指定/不确定序。
     evidence: [EV-UB-001]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: _Z1gv}
   - id: prop-2
     subject: 未测序修改与严格别名
     predicate: 属于

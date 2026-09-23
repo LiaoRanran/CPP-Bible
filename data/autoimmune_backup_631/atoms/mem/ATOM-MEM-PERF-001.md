@@ -29,7 +29,6 @@ claim_structured:
     statement: 实测（-O0/-O2 一致）：无动态资源的 Value32（sizeof=32）移动与拷贝搬运字节数相同且源保持完好（value move source intact=1）；持堆类型则拷贝分配=1、移动分配=0（只偷指针并置空源）。
     evidence: [EV-MEM-008]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: _Znay}
   - id: prop-2
     subject: std::move 的性能收益
     predicate: 只来自

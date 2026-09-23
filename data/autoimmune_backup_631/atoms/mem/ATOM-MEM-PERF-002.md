@@ -32,7 +32,6 @@ claim_structured:
     statement: 本机 libstdc++（GCC 15.3.0）上 SSO 阈值为 15 字符：实测 len=0/14/15 时 allocs=0，len=16 起 allocs=1，且 max_zero_alloc_len=15、first_heap_len=16。
     evidence: [EV-MEM-029]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: max_zero_alloc_len}
   - id: prop-2
     subject: SSO
     predicate: 是

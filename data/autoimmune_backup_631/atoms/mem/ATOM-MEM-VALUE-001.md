@@ -30,7 +30,6 @@ claim_structured:
     statement: 三类值类别的机器判定：decltype((x)) 得 lvalue（有身份、不可移动）、decltype(std::move(x)) 得 xvalue（有身份、可移动）、decltype(42) 得 prvalue（无身份、可移动），且具名右值引用在表达式体内按 lvalue 判定。
     evidence: [EV-MEM-006]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: xvalue}
   - id: prop-2
     subject: 从 xvalue 移动后的源与目标
     predicate: 实测
@@ -39,7 +38,6 @@ claim_structured:
     statement: 从 xvalue 移动（std::move(a)）后：源对象被标记为已掏空（a.v=-1），两个接收方均得到原值（b.v=7、c.v=7）。
     evidence: [EV-MEM-007]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: xvalue}
   - id: prop-3
     subject: 值类别的维度
     predicate: 是两个正交维度的交叉

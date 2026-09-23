@@ -35,7 +35,6 @@ claim_structured:
     statement: 删除器是 unique_ptr 类型的一部分，对象大小随之变化（-O0/-O2 一致）：default=8、stateless=8（空且非 final 被空基类优化吸收）、stateful=16、array=8、引用型删除器=16，而**空但 final 的删除器=16**（EBO 失效）。
     evidence: [EV-MEM-032]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: unique_ptrIi12StatelessDelE}
   - id: prop-2
     subject: shared_ptr 的删除器
     predicate: 被类型擦除，因此大小恒定（实测）
@@ -44,7 +43,6 @@ claim_structured:
     statement: 删除器经类型擦除由控制块持有，与类型无关：sizeof(shared_ptr) default=16、带状态删除器仍=16（sizes equal=1）；行为上构造时按值拷贝一次（deleter copies on ctor=1）、共享时不再拷贝（copies on share=0）、全部 reset 后调用一次（deleter calls after all reset=1，tag seen=99）。
     evidence: [EV-MEM-033]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: Sp_counted_deleterIPi6TagDel}
   - id: prop-3
     subject: 空删除器的空基类优化
     predicate: 是

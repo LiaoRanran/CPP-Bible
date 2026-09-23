@@ -30,7 +30,6 @@ claim_structured:
     statement: 共享所有权的计数与释放：make 后 use_count=1、拷贝后=2、作用域内=3、离开作用域后=2，且 box destroyed count=1（计数归零时恰好析构一次）。
     evidence: [EV-MEM-013]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: destroyed}
   - id: prop-2
     subject: 互相持有的循环引用
     predicate: 实测
@@ -39,7 +38,6 @@ claim_structured:
     statement: 两个对象互相用 shared_ptr 持有时：a 与 b 的 use_count 均为 2，离开作用域后 nodes destroyed count=0（一个都没析构 ⇒ 计数永不归零而泄漏）。
     evidence: [EV-MEM-014]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: destroyed}
   - id: prop-3
     subject: 循环引用的破法
     predicate: 必须用

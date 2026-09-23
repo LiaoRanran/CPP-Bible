@@ -30,7 +30,6 @@ claim_structured:
     statement: 三场景（single|race|safe）在 kIters=100000 下的机器读数：single_total=100000、race_ops_total=200000、safe_ops_total=200000，且安全组终值 safe_final=200000（等于两线程操作总数，结果确定）。
     evidence: [EV-CONC-005, EV-CONC-006]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: _Z12bench_singlev}
   - id: prop-2
     subject: 数据竞争
     predicate: 是

@@ -33,7 +33,6 @@ claim_structured:
     statement: 父用 weak_ptr 上行的无环树：实测 root children=2、parent reachable=1、constructed=3、destroyed after scope=3（三个对象全部析构），-O0 与 -O2 读数一致。
     evidence: [EV-MEM-036]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: destroyed after scope=}
   - id: prop-2
     subject: 强上行（shared）的成环树
     predicate: 实测
@@ -42,7 +41,6 @@ claim_structured:
     statement: 仅把上行改为 shared_ptr（与 EV-MEM-036 构成唯一变量对照）即成环：实测 root children=2、root use_count=3、constructed=3、destroyed after scope=0（一个都没析构）；改回 weak 后 destroyed 回到 3 ⇒ 因果由唯一变量确立。
     evidence: [EV-MEM-037]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: destroyed after scope=}
   - id: prop-3
     subject: ASan/LSan 的判定
     predicate: 依赖退出时的可达性分析，对优化档与存活位置敏感

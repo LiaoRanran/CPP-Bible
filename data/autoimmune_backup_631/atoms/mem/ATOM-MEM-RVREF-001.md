@@ -30,7 +30,6 @@ claim_structured:
     statement: 形参声明为 T&& 时，形参名在函数体内表现为左值：十一档组合读数一致——原样使用（as_is）copy=1、move=0；std::move(x) 后 copy=0、move=1；而对无移动构造的 CopyOnly，即使写了 std::move(x) 仍是 copy=1（静默退化为拷贝）。
     evidence: [EV-MEM-004]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: _ZN5Probe6copiesE}
   - id: prop-2
     subject: return 语句的隐式移动
     predicate: 随标准版本变化（实测）
@@ -39,7 +38,6 @@ claim_structured:
     statement: 例外路径（return x;）随版本变化：cxx11、cxx14、cxx17 下 ret_plain 为 copy=1 / move=0；cxx20 与 cxx23 下（含 -O0）为 copy=0 / move=1 ⇒ C++20 起该路径已隐式移动。
     evidence: [EV-MEM-005]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: _ZN5Probe6copiesE}
   - id: prop-3
     subject: 值类别
     predicate: 是表达式的属性，因此

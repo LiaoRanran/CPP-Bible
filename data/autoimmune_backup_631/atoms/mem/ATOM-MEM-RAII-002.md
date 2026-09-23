@@ -35,7 +35,6 @@ claim_structured:
     statement: 成员全是 RAII 类型（unique_ptr/vector/string）时一个特殊成员都不写也正确：实测 move_constructible=1、copy_constructible=0（类型系统层面），移动转移后 owner_changed=1 且 allocs=dtors=frees=1（恰好一次、无泄漏）——隐式语义按成员形状各得其所，并非一律"删除拷贝"。
     evidence: [EV-MEM-023]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: rule zero}
   - id: prop-2
     subject: 只写析构（Rule of Three 缺拷贝构造）
     predicate: 导致
@@ -44,7 +43,6 @@ claim_structured:
     statement: 管理裸资源时只写析构会得到隐式浅拷贝：实测 buggy 路径 allocs=1、same_ptr=1、dtor_runs=2（一块缓冲两次析构，析构真释放即 double free），三件套齐写的 correct 路径 allocs=2、same_ptr=0、dtor_runs=2（两块缓冲各自析构）。
     evidence: [EV-MEM-024]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: Buggy}
   - id: prop-3
     subject: 移动构造的 noexcept
     predicate: 决定 vector 扩容时的搬迁路径
@@ -53,7 +51,6 @@ claim_structured:
     statement: vector 扩容搬迁走移动还是退化拷贝取决于移动构造是否标 noexcept：实测 noexcept move 路径 relocation copies=0 / moves=4，throwing move 路径 copies=4 / moves=0。
     evidence: [EV-MEM-025]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: relocation}
   - id: prop-4
     subject: 特殊成员函数的取舍
     predicate: 应据「成员形状」判定
