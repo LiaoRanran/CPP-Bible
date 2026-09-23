@@ -1,0 +1,242 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+.................................F...................................... [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................F......F........ [ 43%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 52%]
+........................................................................ [ 55%]
+........................................................................ [ 58%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+F.F..................................................................... [ 71%]
+........................................................................ [ 74%]
+.....................FFF..........................F.FF...F.............. [ 77%]
+........................................................................ [ 80%]
+..........................................................F..........FFF [ 83%]
+..F.F................................................................s.. [ 86%]
+.................................F...................................... [ 89%]
+...................s.................................................... [ 92%]
+........................................................................ [ 95%]
+.....................................ss................................. [ 98%]
+........................                                                 [100%]
+================================== FAILURES ===================================
+______________________ test_governance_manifest_verified ______________________
+tests\test_ci_pytest_fix_625.py:13: in test_governance_manifest_verified
+    assert p.returncode == 0, p.stdout + p.stderr
+E   AssertionError: [gov] manifest 不一致（30 处）：
+E     [gov]   新增：_arch_v21/00_方向地图.md
+E     [gov]   新增：_arch_v21/01_验证层.md
+E     [gov]   新增：_arch_v21/02_治理层.md
+E     [gov]   新增：_arch_v21/03_学习层.md
+E     [gov]   新增：_arch_v21/04_生成层.md
+E     [gov]   新增：_arch_v21/05_基础设施层.md
+E     [gov]   新增：_arch_v21/06_跨层新兴方向.md
+E     [gov]   新增：_arch_v21/07_统计分析.md
+E     [gov]   新增：_arch_v21/08_推荐深挖Top5.md
+E     [gov]   新增：_arch_v21/zero_pollution_v21_scan.md
+E     [gov]   新增：_arch_v22/00_跨领域概念地图.md
+E     [gov]   新增：_arch_v22/01_科学与认知.md
+E     [gov]   新增：_arch_v22/02_制度与社会.md
+E     [gov]   新增：_arch_v22/03_生物与物理.md
+E     [gov]   新增：_arch_v22/04_历史与兴衰.md
+E     [gov]   新增：_arch_v22/05_自由探索.md
+E     [gov]   新增：_arch_v22/06_跨领域统计分析.md
+E     [gov]   新增：_arch_v22/zero_pollution.md
+E     [gov]   新增：_arch_v23/00_总览.md
+E     [gov]   新增：_arch_v23/01_验证器攻击面分类学.md
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling...计分析.md\n[gov]   新增：_arch_v22/zero_pollution.md\n[gov]   新增：_arch_v23/00_总览.md\n[gov]   新增：_arch_v23/01_验证器攻击面分类学.md\n').returncode
+______________________ test_verify_real_manifest_matches ______________________
+tests\test_governance_doc_guard_591.py:22: in test_verify_real_manifest_matches
+    assert ok is True and diffs == [], diffs
+E   AssertionError: ['新增：_arch_v21/00_方向地图.md', '新增：_arch_v21/01_验证层.md', '新增：_arch_v21/02_治理层.md', '新增：_arch_v21/03_学习层.md', '新增：_arch_v21/04_生成层.md', '新增：_arch_v21/05_基础设施层.md', ...]
+E   assert (False is True)
+___________________ test_real_manifest_has_valid_self_hash ____________________
+tests\test_governance_self_hash_601.py:39: in test_real_manifest_has_valid_self_hash
+    assert gd.verify_manifest() == (True, [])
+E   AssertionError: assert (False, ['新增：...设施层.md', ...]) == (True, [])
+E     
+E     At index 0 diff: False != True
+E     Use -v to get more diff
+____________________________ test_mypy_tools_clean ____________________________
+tests\test_mypy_fix_625.py:26: in test_mypy_tools_clean
+    assert p.returncode == 0, p.stdout + p.stderr
+E   AssertionError: tools\codeblock_style.py:245: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+E     tools\chapter_lint.py:105: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+E     tools\stale_test_triage_630.py:116: error: Item "None" of "Match[str] | None" has no attribute "group"  [union-attr]
+E     Found 1 error in 1 file (checked 343 source files)
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', '-m', 'mypy', 'too...[str] | None" has no attribute "group"  [union-attr]\nFound 1 error in 1 file (checked 343 source files)\n', stderr='').returncode
+__________________________ test_no_bulk_type_ignore ___________________________
+tests\test_mypy_fix_625.py:47: in test_no_bulk_type_ignore
+    assert total <= 20, f"全库 type: ignore 过多（{total}）"
+E   AssertionError: 全库 type: ignore 过多（28）
+E   assert 28 <= 20
+____________________________ test_content_drift_56 ____________________________
+tests\test_pck_hash_drift_analyzer_627.py:20: in test_content_drift_56
+    assert r["n_content_drift_certs"] == 56
+E   assert 0 == 56
+______________________________ test_all_have_gap ______________________________
+tests\test_pck_hash_drift_analyzer_627.py:25: in test_all_have_gap
+    assert r["by_worst_category"].get("ok", 0) == 0
+E   AssertionError: assert 82 == 0
+E    +  where 82 = <built-in method get of dict object at 0x00000142478E3800>('ok', 0)
+E    +    where <built-in method get of dict object at 0x00000142478E3800> = {'ok': 82, 'ref_missing': 1}.get
+_________________________ test_root_cause_classifies __________________________
+tests\test_pck_hash_drift_analyzer_627.py:32: in test_root_cause_classifies
+    assert len(r["root_cause_breakdown"]) >= 1
+E   assert 0 >= 1
+E    +  where 0 = len({})
+__________________ test_603_capture_untouched_by_this_batch ___________________
+tests\test_pe_timestamp_caliber_611.py:61: in test_603_capture_untouched_by_this_batch
+    text = raw.decode("utf-16")
+           ^^^^^^^^^^^^^^^^^^^^
+E   UnicodeDecodeError: 'utf-16-le' codec can't decode byte 0x0a in position 352: truncated data
+__________________________ test_tools_all_check_pass __________________________
+tests\test_pre_push_checklist_627.py:12: in test_tools_all_check_pass
+    assert all(t["ok"] for t in r["tools"])
+E   assert False
+E    +  where False = all(<generator object test_tools_all_check_pass.<locals>.<genexpr> at 0x00000142481CA400>)
+______________________________ test_static_clean ______________________________
+tests\test_pre_push_checklist_627.py:17: in test_static_clean
+    assert r["static"]["ruff_ok"] and r["static"]["mypy_ok"]
+E   assert (True and False)
+_________________________ test_run_all_aggregates_ok __________________________
+tests\test_pre_push_checklist_627.py:43: in test_run_all_aggregates_ok
+    assert r["all_ok"]
+E   assert False
+____________________________ test_full_gate_passes ____________________________
+tests\test_run_625_gate.py:26: in test_full_gate_passes
+    assert G.check() == 0
+E   assert 1 == 0
+E    +  where 1 = <function check at 0x0000014247133F60>()
+E    +    where <function check at 0x0000014247133F60> = G.check
+---------------------------- Captured stdout call -----------------------------
+  [ok] 整目录 ruff 全绿 
+  [ok] loop_stability_metrics_625 --check   [ok] 读取 7 轮   [ok] 累计触达 ≤ 67   [ok] VFDR 可计算（0≤vfdr）   [ok] 触发标准①有 5 项   [ok] satisfied 与 checks 一致   [ok] 合成：单调增长检测可算 B2 selftest: PASS 
+  [ok] vfdr_convergence_625 --check   [ok] 规则 67 条   [ok] 7 轮   [ok] 累计触达 0< cum ≤67   [ok] 盲区 = 67 - cum   [ok] 盲区缩减（≤ 623 的 37）   [ok] VFDR 可算 B3 selftest: PASS 
+  [ok] path_config_625 --check   [ok] 默认 root = tools 父目录   [ok] 默认 atoms/evidence/data 派生自 root   [ok] resolve_atom_path 派生正确   [ok] resolve_data_path 派生正确   [ok] 路径自检可调用 C1 selftest: PASS 
+  [ok] queyi_core_interface_design_625 --check   [ok] 5 个接口   [ok] 每接口有 attrs+methods   [ok] 版本 v0.1   [ok] 映射非空   [ok] 关系图非空   [ok] 实现计划含 5 接口 C2 selftest: PASS 
+  [ok] queyi_core_trigger_check_625 --check   [ok] 5 条标准   [ok] 状态取值合法   [ok] satisfied 计数一致   [ok] ① 至少部分满足   [ok] ⑤ 核心 6/6 C3 selftest: PASS 
+  [ok] round7_mutator_625 --check   [ok] 规则总数为 67   [ok] 盲区非空且 < 40   [ok] 生成 ~100 条（≥95 且 ≤110）   [ok] Y1/Y2/Y3 均存在   [ok] 每条含 edits   [ok] Y1 覆盖全部盲区 B1 selftest: PASS 
+  [ok] human_review_dashboard_625 --check   [ok] synced annotations 可读   [ok] 生成 ≥80 条复核项（624 E2 上限）   [ok] HTML 含关键元素   [ok] 含筛选脚本   [ok] 权威日志可读 D2 selftest: PASS 
+  [ok] human_review_executor_625 --check   [ok] build_entry 返回带 hash 的条目   [ok] 哈希链含前驱   [ok] 非法 power 抛错   [ok] 未代签：Authority 日志未被修改   [ok] append_entry 已定义但未调用 D3 selftest: PASS 
+  [ok] pck_upgrade_strategy_625 --check   [ok] 证书总数 83   [ok] authorized 27（624 E1）   [ok] 目标需净增 ≥1   [ok] 待人审证据证 >0   [ok] 未修改任何证书文件 D4 selftest: PASS 
+  [ok] tool_integrity --check（尺子 34/34） 
+  [ok] ots_anchor --check 
+  [FAIL] mypy tools/ = 0 errors (1 errors)
+  [ok] 受控目录零污染 
+F1 gate: FAIL
+_________________________ test_gate_other_steps_pass __________________________
+tests\test_run_628_gate_628.py:59: in test_gate_other_steps_pass
+    assert p.returncode == 0, p.stdout[-500:]
+E   AssertionError: 理 (83/{'renewed': 0, 'added': 0, 'needs_human': 0, 'already_ok': 162, 'certs_touched': 0})
+E       [ok] A3 镜像边 194 条自动证明 (194)
+E       [ok] A3 账本写入 76 条 symmetry_proof_id (76)
+E       [ok] A4 DEBT-001 处置 + replay 修复报告存在 
+E       [ok] B2 VSA 凭证 ≥ 1 张 (23 张)
+E       [ok] B3 透明日志 ≥ 1 条 (34 条)
+E       [ok] B4 端到端审计报告存在 
+E       [ok] C1 仪表盘 v2 与设计说明存在 
+E       [ok] independent_verifier_628.py 零 import 本项目工具 ([])
+E       [ok] vsa_verify_628.py 零 import 本项目工具 ([])
+E       [ok] 学习者镜像门 = closed（真实学习事件 0/50） (state=closed real=0/50 progress=0.0%)
+E     628 收工门禁: FAIL ❌
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling...本项目工具 ([])\n  [ok] 学习者镜像门 = closed（真实学习事件 0/50） (state=closed real=0/50 progress=0.0%)\n628 收工门禁: FAIL ❌\n", stderr='').returncode
+_________________ test_acceptance_report_exists_and_complete __________________
+tests\test_run_628_gate_628.py:70: in test_acceptance_report_exists_and_complete
+    assert (status["batch"] == 628 and status["state"] == "awaiting_review"
+E   assert (629 == 628)
+_______________________ test_tool_manifest_is_complete ________________________
+tests\test_run_629_gate.py:31: in test_tool_manifest_is_complete
+    assert not missing, f"门禁漏掉本批新工具：{sorted(missing)}"
+E   AssertionError: 门禁漏掉本批新工具：['attack_surface_axes_630.py', 'autoimmune_diagnose_630.py', 'autoimmune_fix_proposal_630.py', 'autoimmune_recalc_630.py', 'autoimmune_threshold_630.py', 'coverage_metric_630.py']
+E   assert not {'attack_surface_axes_630.py', 'autoimmune_diagnose_630.py', 'autoimmune_fix_proposal_630.py', 'autoimmune_recalc_630.py', 'autoimmune_threshold_630.py', 'coverage_metric_630.py'}
+_________________________ test_gate_other_steps_pass __________________________
+tests\test_run_629_gate.py:52: in test_gate_other_steps_pass
+    assert gate_run.returncode == 0, gate_run.stdout[-800:]
+E   AssertionError: n_629.py --check 
+E       [ok] 工具 attack_objective_629.py --check 
+E       [ok] 工具 attack_round8_629.py --check 
+E       [ok] 工具 loop_metrics_629.py --check 
+E       [FAIL] 门禁覆盖本批全部新增工具（git 交叉核验） (['attack_surface_axes_630.py', 'autoimmune_diagnose_630.py', 'autoimmune_fix_proposal_630.py', 'autoimmune_recalc_630.py', 'autoimmune_threshold_630.py', 'coverage_metric_630.py'])
+E       [ok] 整目录 ruff 全绿 
+E       [FAIL] mypy tools/ = 0 errors s\chapter_lint.py:105: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+E     Found 1 error in 1 file (checked 343 source files)
+E     
+E       [skip] 本批新增测试（20 文件）—— 由 --check 完整调用时执行
+E       [skip] 非 slow 全量 pytest（--no-tests）
+E       [ok] 受控目录零污染 ([])
+E       [ok] 未跑监工四门禁（AST 扫描：无监工门禁调用） ([])
+E       [ok] 未改 ci.yml / 未改 CORE_TOOLS 生产逻辑 
+E     629 收工门禁: FAIL ❌
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling...录零污染 ([])\n  [ok] 未跑监工四门禁（AST 扫描：无监工门禁调用） ([])\n  [ok] 未改 ci.yml / 未改 CORE_TOOLS 生产逻辑 \n629 收工门禁: FAIL ❌\n", stderr='').returncode
+____________________________ test_selftest_passes _____________________________
+tests\test_run_629_gate.py:70: in test_selftest_passes
+    assert G.selftest() == 0
+E   assert 1 == 0
+E    +  where 1 = <function selftest at 0x00000142471731A0>()
+E    +    where <function selftest at 0x00000142471731A0> = G.selftest
+---------------------------- Captured stdout call -----------------------------
+  [ok] 本批工具清单 14 项且文件都存在 
+  [ok] 基线失败清单已冻结（修正版 11 项） 
+  [FAIL] 新增工具交叉核验无遗漏 (['attack_surface_axes_630.py', 'autoimmune_diagnose_630.py', 'autoimmune_fix_proposal_630.py', 'autoimmune_recalc_630.py', 'autoimmune_threshold_630.py', 'coverage_metric_630.py'])
+  [ok] 非慢解析器可用 
+  [ok] 本轮受控目录洁净 
+  [ok] AST 自证：不调用监工四门禁 ([])
+  [ok] 新工具清单与监工门禁零交集 
+629 gate selftest: FAIL
+___________________ test_chain_verify_with_real_inspections ___________________
+tests\test_supply_chain_chain_601.py:112: in test_chain_verify_with_real_inspections
+    assert problems == [], problems
+E   AssertionError: ['inspection governance_check 失败（exit 1）：[gov] manifest 不一致（30 处）：
+E     [gov]   新增：_arch_v21/00_方向地图.md
+E     [gov]   新增：_arch_...d
+E     [gov]   新增：_arch_v21/02_治理层.md
+E     [gov]   新增：_arch_v21/03_学习层.md
+E     [gov]   新增：_arch_v21/04_生成层.md
+E     [gov]   新增：_arch_v']
+E   assert ['inspection ...  新增：_arch_v'] == []
+E     
+E     Left contains one more item: 'inspection governance_check 失败（exit 1）：[gov] manifest 不一致（30 处）：\n[gov]   新增：_arch_v21/00_方向地图.md\n[gov]   新增：_arch_v...md\n[gov]   新增：_arch_v21/02_治理层.md\n[gov]   新增：_arch_v21/03_学习层.md\n[gov]   新增：_arch_v21/04_生成层.md\n[gov]   新增：_arch_v'
+E     Use -v to get more diff
+--------------------------- snapshot report summary ---------------------------
+5 snapshots passed.
+=========================== short test summary info ===========================
+FAILED tests/test_ci_pytest_fix_625.py::test_governance_manifest_verified - A...
+FAILED tests/test_governance_doc_guard_591.py::test_verify_real_manifest_matches
+FAILED tests/test_governance_self_hash_601.py::test_real_manifest_has_valid_self_hash
+FAILED tests/test_mypy_fix_625.py::test_mypy_tools_clean - AssertionError: to...
+FAILED tests/test_mypy_fix_625.py::test_no_bulk_type_ignore - AssertionError:...
+FAILED tests/test_pck_hash_drift_analyzer_627.py::test_content_drift_56 - ass...
+FAILED tests/test_pck_hash_drift_analyzer_627.py::test_all_have_gap - Asserti...
+FAILED tests/test_pck_hash_drift_analyzer_627.py::test_root_cause_classifies
+FAILED tests/test_pe_timestamp_caliber_611.py::test_603_capture_untouched_by_this_batch
+FAILED tests/test_pre_push_checklist_627.py::test_tools_all_check_pass - asse...
+FAILED tests/test_pre_push_checklist_627.py::test_static_clean - assert (True...
+FAILED tests/test_pre_push_checklist_627.py::test_run_all_aggregates_ok - ass...
+FAILED tests/test_run_625_gate.py::test_full_gate_passes - assert 1 == 0
+FAILED tests/test_run_628_gate_628.py::test_gate_other_steps_pass - Assertion...
+FAILED tests/test_run_628_gate_628.py::test_acceptance_report_exists_and_complete
+FAILED tests/test_run_629_gate.py::test_tool_manifest_is_complete - Assertion...
+FAILED tests/test_run_629_gate.py::test_gate_other_steps_pass - AssertionErro...
+FAILED tests/test_run_629_gate.py::test_selftest_passes - assert 1 == 0
+FAILED tests/test_supply_chain_chain_601.py::test_chain_verify_with_real_inspections
