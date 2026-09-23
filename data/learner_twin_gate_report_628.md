@@ -1,22 +1,22 @@
 # 628 D1 · 学习者镜像门状态报告
 
-- 生成时刻：2026-09-23T12:01:10Z
+- 生成时刻：2026-09-23T13:16:31Z
 - **门状态：`closed`**（真实学习事件 0 / 阈值 50，进度 0.0%）
 - 近阈值线（50×0.8）：40 条
 
 ## 一、当前真实学习事件数量
 
 - **真实学习事件：0 条**
-- 候选事件合计：870 条
+- 候选事件合计：872 条
 - 其中不可判定归属：402 条（既无流水线标识、也无人类学习正向信号，**保守不计入**门）
-- 分来源：`{"git_commit": 546, "batch_record": 55, "file_mtime": 269}`
+- 分来源：`{"git_commit": 546, "batch_record": 57, "file_mtime": 269}`
 
 ## 二、采集来源
 
 | # | 来源 | 说明 |
 |---|---|---|
 | 1 | `git log --name-only -- Book atoms evidence Examples` | 涉及学习内容的提交 546 条 |
-| 2 | `_auto/inbox/` + `_auto/outbox/` | 批次记录 55 条 |
+| 2 | `_auto/inbox/` + `_auto/outbox/` | 批次记录 57 条 |
 | 3 | `Book/ atoms/ evidence/` 文件 mtime | 269 条 |
 | 4 | 会话日志存储位置探测 | `C:\Users\ASUS\AppData\Roaming\CodeBuddy CN\User\globalStorage\tencent-cloud.coding-copilot`（302 文件） |
 
