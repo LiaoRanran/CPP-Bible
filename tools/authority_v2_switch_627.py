@@ -152,7 +152,10 @@ def main(argv: Optional[list] = None) -> int:
                     choices=["enable", "rollback", "status", "run", "guide", "check"],
                     default="status")
     ap.add_argument("projection", nargs="?", default="w2")
+    ap.add_argument("--check", action="store_true", help="自检（等价 action=check）")
     args = ap.parse_args(argv)
+    if args.check:
+        return selftest()
     if args.action == "enable":
         m = write_mode(True)
         print("已记录启用意图：", json.dumps(m, ensure_ascii=False))

@@ -43,7 +43,8 @@ def _sha256_file(path: str) -> str:
 def _read_log() -> list[dict]:
     if not os.path.exists(LOG):
         return []
-    return [json.loads(l) for l in open(LOG, encoding="utf-8") if l.strip()]
+    return [json.loads(line) for line in open(LOG, encoding="utf-8")
+            if line.strip()]
 
 
 def _entry_hash(entry: dict) -> str:

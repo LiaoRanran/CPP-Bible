@@ -31,7 +31,8 @@ def test_tamper_history_detected(tmp_path):
     p = tmp_path / "tampered.jsonl"
     p.write_text("\n".join(json.dumps(e, ensure_ascii=False) for e in tampered) + "\n",
                  encoding="utf-8")
-    entries = [json.loads(l) for l in open(p, encoding="utf-8") if l.strip()]
+    entries = [json.loads(line) for line in open(p, encoding="utf-8")
+               if line.strip()]
     prev = "GENESIS"
     broken = False
     for e in entries:
@@ -51,7 +52,8 @@ def test_deletion_detected(tmp_path):
     p = tmp_path / "deleted.jsonl"
     p.write_text("\n".join(json.dumps(e, ensure_ascii=False) for e in trimmed) + "\n",
                  encoding="utf-8")
-    entries = [json.loads(l) for l in open(p, encoding="utf-8") if l.strip()]
+    entries = [json.loads(line) for line in open(p, encoding="utf-8")
+               if line.strip()]
     prev = entries[0]["entry_hash"]
     assert entries[1]["prev_log_hash"] != prev, "删除历史条目必须被检测"
 
