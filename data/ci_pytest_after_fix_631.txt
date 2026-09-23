@@ -1,0 +1,112 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+.............................................F.......................... [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+........................................................................ [ 42%]
+..F......F.............................................................. [ 45%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+........................................................................ [ 70%]
+........................................................................ [ 73%]
+....................................................................F... [ 76%]
+.....s....s............................................................. [ 79%]
+........................................................................ [ 82%]
+......................s....s.s....F..................................... [ 85%]
+..................................s...................................F. [ 88%]
+........................................................s............... [ 91%]
+........................................................................ [ 94%]
+........................................................................ [ 97%]
+..ss.........................................................            [100%]
+================================== FAILURES ===================================
+E   AssertionError: [gov] manifest 不一致（31 处）：
+      [gov]   新增：_arch_v21/00_方向地图.md
+      [gov]   新增：_arch_v21/01_验证层.md
+      [gov]   新增：_arch_v21/02_治理层.md
+      [gov]   新增：_arch_v21/03_学习层.md
+      [gov]   新增：_arch_v21/04_生成层.md
+      [gov]   新增：_arch_v21/05_基础设施层.md
+      [gov]   新增：_arch_v21/06_跨层新兴方向.md
+      [gov]   新增：_arch_v21/07_统计分析.md
+      [gov]   新增：_arch_v21/08_推荐深挖Top5.md
+      [gov]   新增：_arch_v21/zero_pollution_v21_scan.md
+      [gov]   新增：_arch_v22/00_跨领域概念地图.md
+      [gov]   新增：_arch_v22/01_科学与认知.md
+      [gov]   新增：_arch_v22/02_制度与社会.md
+      [gov]   新增：_arch_v22/03_生物与物理.md
+      [gov]   新增：_arch_v22/04_历史与兴衰.md
+      [gov]   新增：_arch_v22/05_自由探索.md
+      [gov]   新增：_arch_v22/06_跨领域统计分析.md
+      [gov]   新增：_arch_v22/zero_pollution.md
+      [gov]   新增：_arch_v23/00_总览.md
+      [gov]   新增：_arch_v23/01_验证器攻击面分类学.md
+      
+    assert 1 == 0
+     +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling...计分析.md\n[gov]   新增：_arch_v22/zero_pollution.md\n[gov]   新增：_arch_v23/00_总览.md\n[gov]   新增：_arch_v23/01_验证器攻击面分类学.md\n').returncode
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_ci_pytest_fix_625.py:13: AssertionError: [gov] manifest 不一致（31 处）：
+E   AssertionError: ['新增：_arch_v21/00_方向地图.md', '新增：_arch_v21/01_验证层.md', '新增：_arch_v21/02_治理层.md', '新增：_arch_v21/03_学习层.md', '新增：_arch_v21/04_生成层.md', '新增：_arch_v21/05_基础设施层.md', ...]
+    assert (False is True)
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_governance_doc_guard_591.py:22: AssertionError: ['新增：_arch_v21/00_方向地图.md', '新增：_arch_v21/01_验证层.md', '新增：_arch_v21/02_治理层.md', '新增：_arch_v21/03_学习层.md', '新增：_arch_v21/04_生成层.md', '新增：_arch_v21/05_基础设施层.md', ...]
+E   AssertionError: assert (False, ['新增：...设施层.md', ...]) == (True, [])
+      
+      At index 0 diff: False != True
+      Use -v to get more diff
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_governance_self_hash_601.py:39: AssertionError: assert (False, ['新增：...设施层.md', ...]) == (True, [])
+E   UnicodeDecodeError: 'utf-16-le' codec can't decode byte 0x0a in position 352: truncated data
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_pe_timestamp_caliber_611.py:61: UnicodeDecodeError: 'utf-16-le' codec can't decode byte 0x0a in position 352: truncated data
+E   AssertionError:   [ok] 工具 baseline_630.py --check 
+        [ok] 工具 autoimmune_diagnose_630.py --check 
+        [ok] 工具 autoimmune_fix_proposal_630.py --check 
+        [ok] 工具 autoimmune_recalc_630.py --check 
+        [ok] 工具 coverage_metric_630.py --check 
+        [ok] 工具 attack_surface_axes_630.py --check 
+        [ok] 工具 autoimmune_threshold_630.py --check 
+        [ok] 工具 stale_test_triage_630.py --check 
+        [ok] 工具 pre_push_630.py --check 
+        [ok] 门禁覆盖本批全部 630 工具（按批次标记核验） ([])
+        [ok] 整目录 ruff 全绿 
+        [ok] mypy tools/ = 0 errors 
+        [skip] 本批新增测试（10 文件）—— 由 --check 完整调用时执行
+        [skip] 非 slow 全量 pytest（--no-tests）
+        [ok] 受控目录零污染 ([])
+        [FAIL] push 后 `origin/master..HEAD` = 0 (ahead=9)
+        [ok] AST 自证：不调用监工四门禁 ([])
+      630 收工门禁: FAIL ❌
+      
+    assert 1 == 0
+     +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling...([])\n  [FAIL] push 后 `origin/master..HEAD` = 0 (ahead=9)\n  [ok] AST 自证：不调用监工四门禁 ([])\n630 收工门禁: FAIL ❌\n', stderr='').returncode
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_630_gate.py:55: AssertionError:   [ok] 工具 baseline_630.py --check
+E   AssertionError: ['inspection governance_check 失败（exit 1）：[gov] manifest 不一致（31 处）：
+      [gov]   新增：_arch_v21/00_方向地图.md
+      [gov]   新增：_arch_...d
+      [gov]   新增：_arch_v21/02_治理层.md
+      [gov]   新增：_arch_v21/03_学习层.md
+      [gov]   新增：_arch_v21/04_生成层.md
+      [gov]   新增：_arch_v']
+    assert ['inspection ...  新增：_arch_v'] == []
+      
+      Left contains one more item: 'inspection governance_check 失败（exit 1）：[gov] manifest 不一致（31 处）：\n[gov]   新增：_arch_v21/00_方向地图.md\n[gov]   新增：_arch_v...md\n[gov]   新增：_arch_v21/02_治理层.md\n[gov]   新增：_arch_v21/03_学习层.md\n[gov]   新增：_arch_v21/04_生成层.md\n[gov]   新增：_arch_v'
+      Use -v to get more diff
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_supply_chain_chain_601.py:112: AssertionError: ['inspection governance_check 失败（exit 1）：[gov] manifest 不一致（31 处）：
+--------------------------- snapshot report summary ---------------------------
+5 snapshots passed.
+=========================== short test summary info ===========================
+FAILED tests/test_ci_pytest_fix_625.py::test_governance_manifest_verified - A...
+FAILED tests/test_governance_doc_guard_591.py::test_verify_real_manifest_matches
+FAILED tests/test_governance_self_hash_601.py::test_real_manifest_has_valid_self_hash
+FAILED tests/test_pe_timestamp_caliber_611.py::test_603_capture_untouched_by_this_batch
+FAILED tests/test_run_630_gate.py::test_gate_other_steps_pass - AssertionErro...
+FAILED tests/test_supply_chain_chain_601.py::test_chain_verify_with_real_inspections
