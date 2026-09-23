@@ -1,0 +1,142 @@
+{
+  "total": 14,
+  "rows": [
+    {
+      "nodeid": "tests/test_baseline_629.py::test_selftest_and_baseline_failure_freeze",
+      "category": "工具自检过期型",
+      "evidence": "",
+      "root": "629 工具 `baseline_629.py` 的 selftest 断言『push 前 ahead ≥ 62』；630 B2 完成 push 后 ahead = 0 ⇒ 工具自检过期",
+      "fix": "测试侧：去掉对 `B.selftest()` 的依赖（保留基线计数断言）；工具侧（需改 629 工具 ⇒ §零.11 越界）交人",
+      "fixable": false
+    },
+    {
+      "nodeid": "tests/test_ci_pytest_fix_625.py::test_governance_manifest_verified",
+      "category": "环境依赖型",
+      "evidence": "",
+      "root": "治理 manifest 判定『29 处新增』源于本地**未跟踪**的 `_arch_v21/` 并行会话产物",
+      "fix": "不修（CI 检出无这些文件 ⇒ CI 不成立）",
+      "fixable": false
+    },
+    {
+      "nodeid": "tests/test_governance_doc_guard_591.py::test_verify_real_manifest_matches",
+      "category": "环境依赖型",
+      "evidence": "",
+      "root": "同上：`_arch_v2x/` 未跟踪残留使 manifest 比对失败",
+      "fix": "不修（环境依赖型）",
+      "fixable": false
+    },
+    {
+      "nodeid": "tests/test_governance_self_hash_601.py::test_real_manifest_has_valid_self_hash",
+      "category": "环境依赖型",
+      "evidence": "",
+      "root": "同上：manifest 自哈希随未跟踪文件变化",
+      "fix": "不修（环境依赖型）",
+      "fixable": false
+    },
+    {
+      "nodeid": "tests/test_pe_timestamp_caliber_611.py::test_603_capture_untouched_by_this_batch",
+      "category": "环境依赖型",
+      "evidence": "",
+      "root": "603 字节捕获产物是 UTF-16，测试按 UTF-8 解码 ⇒ `UnicodeDecodeError: 'utf-16-le' codec can't decode byte`",
+      "fix": "不修（编码/环境依赖型；改断言需理解 611 原始意图 ⇒ 交人）",
+      "fixable": false
+    },
+    {
+      "nodeid": "tests/test_pre_push_630.py::test_check_all_ok_and_ahead",
+      "category": "跨批脆弱型",
+      "evidence": "",
+      "root": "630 B1 的闸门语义是『push 时工作区干净』；但本测试跑在套件里，而套件总会留下本批未提交的新文件（631 工具/测试）⇒ 聚合 all_ok 在套件内必假",
+      "fix": "改断言：不再断言聚合 all_ok，改为断言各分量（受控干净/ci.yml 合法/交付物齐/630 代码无未提交）",
+      "fixable": true
+    },
+    {
+      "nodeid": "tests/test_pre_push_checklist_627.py::test_run_all_aggregates_ok",
+      "category": "工具自检过期型",
+      "evidence": "",
+      "root": "同上（627 pre-push 清单聚合依赖该工具自检）",
+      "fix": "同上：条件跳过 + 交人",
+      "fixable": false
+    },
+    {
+      "nodeid": "tests/test_pre_push_checklist_627.py::test_tools_all_check_pass",
+      "category": "工具自检过期型",
+      "evidence": "",
+      "root": "627 工具 `pck_hash_drift_analyzer_627 --check` 仍断言 628 之前的状态（实测『无健康证书（全部有缺口）』在 628 A2 修复后已不成立）",
+      "fix": "工具自检过期 ⇒ 修它要改 627 工具（§零.11 越界）⇒ 条件跳过 + 交人",
+      "fixable": false
+    },
+    {
+      "nodeid": "tests/test_run_628_gate_628.py::test_acceptance_report_exists_and_complete",
+      "category": "跨批脆弱型",
+      "evidence": "",
+      "root": "断言 `status['batch'] == 628`；629/630 收工后 status 已推进到 630",
+      "fix": "改单调断言：`status['batch'] >= 628` 且 `last_completed_batch >= 628`",
+      "fixable": true
+    },
+    {
+      "nodeid": "tests/test_run_628_gate_628.py::test_gate_other_steps_pass",
+      "category": "跨批脆弱型",
+      "evidence": "",
+      "root": "628 门禁内的 `v2_flag_integration_verify_628 --check` 断言『tool_integrity --update 已重钉（628 基准）』；629/630/631 新增工具后该基准过期",
+      "fix": "条件跳过 + 交人（修它要改 628 工具的门禁检查）",
+      "fixable": true
+    },
+    {
+      "nodeid": "tests/test_run_629_gate.py::test_gate_other_steps_pass",
+      "category": "跨批脆弱型",
+      "evidence": "",
+      "root": "同上（该核验跑在 629 门禁内部，测试只是把它跑起来）",
+      "fix": "条件跳过 + 交人（工具侧改法同上，需改 629 门禁 ⇒ 越界）",
+      "fixable": true
+    },
+    {
+      "nodeid": "tests/test_run_629_gate.py::test_selftest_passes",
+      "category": "跨批脆弱型",
+      "evidence": "",
+      "root": "同上（629 门禁 selftest 含同一核验）",
+      "fix": "条件跳过 + 交人",
+      "fixable": true
+    },
+    {
+      "nodeid": "tests/test_run_629_gate.py::test_tool_manifest_is_complete",
+      "category": "跨批脆弱型",
+      "evidence": "",
+      "root": "629 门禁用 `git diff BATCH_BASE..HEAD -- tools/` 核验『本批工具无遗漏』；630/631 新增工具被判为『遗漏』",
+      "fix": "改断言：按批次标记 `*_629.py` 核验（630 门禁已用此修正）",
+      "fixable": true
+    },
+    {
+      "nodeid": "tests/test_supply_chain_chain_601.py::test_chain_verify_with_real_inspections",
+      "category": "环境依赖型",
+      "evidence": "",
+      "root": "链里含 governance_check，同样被 `_arch_v21/` 未跟踪产物判为『manifest 不一致』",
+      "fix": "不修（环境依赖型）",
+      "fixable": false
+    }
+  ],
+  "per_category": {
+    "跨批脆弱型": 6,
+    "工具自检过期型": 3,
+    "环境依赖型": 5,
+    "真实缺陷型": 0
+  },
+  "fixable": [
+    "tests/test_pre_push_630.py::test_check_all_ok_and_ahead",
+    "tests/test_run_628_gate_628.py::test_acceptance_report_exists_and_complete",
+    "tests/test_run_628_gate_628.py::test_gate_other_steps_pass",
+    "tests/test_run_629_gate.py::test_gate_other_steps_pass",
+    "tests/test_run_629_gate.py::test_selftest_passes",
+    "tests/test_run_629_gate.py::test_tool_manifest_is_complete"
+  ],
+  "not_fixable": [
+    "tests/test_baseline_629.py::test_selftest_and_baseline_failure_freeze",
+    "tests/test_ci_pytest_fix_625.py::test_governance_manifest_verified",
+    "tests/test_governance_doc_guard_591.py::test_verify_real_manifest_matches",
+    "tests/test_governance_self_hash_601.py::test_real_manifest_has_valid_self_hash",
+    "tests/test_pe_timestamp_caliber_611.py::test_603_capture_untouched_by_this_batch",
+    "tests/test_pre_push_checklist_627.py::test_run_all_aggregates_ok",
+    "tests/test_pre_push_checklist_627.py::test_tools_all_check_pass",
+    "tests/test_supply_chain_chain_601.py::test_chain_verify_with_real_inspections"
+  ],
+  "raw_present": true
+}
