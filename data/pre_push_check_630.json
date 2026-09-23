@@ -1,0 +1,51 @@
+{
+  "status_expected": [
+    "?? _arch_v19/",
+    "?? _arch_v19_brief.md",
+    "?? _arch_v20/",
+    "?? _arch_v20_brief.md",
+    "?? \"_arch_v21/00_\\346\\226\\271\\345\\220\\221\\345\\234\\260\\345\\233\\276.md\"",
+    "?? \"_arch_v21/01_\\351\\252\\214\\350\\257\\201\\345\\261\\202.md\"",
+    "?? \"_arch_v21/02_\\346\\262\\273\\347\\220\\206\\345\\261\\202.md\"",
+    "?? \"_arch_v21/03_\\345\\255\\246\\344\\271\\240\\345\\261\\202.md\"",
+    "?? \"_arch_v21/04_\\347\\224\\237\\346\\210\\220\\345\\261\\202.md\"",
+    "?? \"_arch_v21/05_\\345\\237\\272\\347\\241\\200\\350\\256\\276\\346\\226\\275\\345\\261\\202.md\"",
+    "?? \"_arch_v21/06_\\350\\267\\250\\345\\261\\202\\346\\226\\260\\345\\205\\264\\346\\226\\271\\345\\220\\221.md\"",
+    "?? \"_arch_v21/07_\\347\\273\\237\\350\\256\\241\\345\\210\\206\\346\\236\\220.md\"",
+    "?? \"_arch_v21/08_\\346\\216\\250\\350\\215\\220\\346\\267\\261\\346\\214\\226Top5.md\"",
+    "?? _arch_v21/zero_pollution_v21_scan.md",
+    "?? _arch_v21_brief.md",
+    "?? _arch_v22/",
+    "?? _arch_v22_brief.md",
+    "?? _arch_v23/",
+    "?? _arch_v23_brief.md",
+    "?? data/queyi_core_interface_design_625.md",
+    "?? data/queyi_core_trigger_check_625.md",
+    "?? tools/queyi_core_interface_design_625.py",
+    "?? tools/queyi_core_trigger_check_625.py"
+  ],
+  "status_other": [
+    "?? data/pre_push_check_630.json",
+    "?? data/pre_push_check_630.md",
+    "?? tools/pre_push_630.py"
+  ],
+  "controlled_clean": true,
+  "ci": {
+    "ok": true,
+    "mode": "pyyaml",
+    "jobs": 11,
+    "note": "jobs=11"
+  },
+  "deliverables": {
+    "required": 25,
+    "missing": [],
+    "ok": true
+  },
+  "uncommitted_630": [
+    "?? data/pre_push_check_630.json",
+    "?? data/pre_push_check_630.md",
+    "?? tools/pre_push_630.py"
+  ],
+  "ahead": 98,
+  "all_ok": false
+}
