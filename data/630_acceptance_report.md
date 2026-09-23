@@ -119,11 +119,25 @@
 
 ## 五、收工门禁结果（E1）
 
-见 `data/630_gate_result.md`（终跑输出存档）。要点：
+完整输出存档：`data/630_gate_result.md`。
 
-- 9 个 630 工具 `--check` 全绿 + **按 630 标记**交叉核验（避免跨批脆弱）+ 整目录 ruff +
-  `mypy tools/` 0 errors + 630 测试全过 + 非 slow **失败集 ⊆ 冻结基线 11 项** +
-  受控目录零污染 + **push 后 ahead = 0** + AST 自证未调用监工四门禁。
+```text
+  [ok] 9 个 630 工具 --check 全过（清单 + **按 630 标记**交叉核验）
+  [ok] 整目录 ruff 全绿 · mypy tools/ = 0 errors
+  [ok] 本批新增测试全过（10 文件）
+  [i]  非 slow 全量：既有失败 12 项 · 新增失败 0 项 · 基线已消失 0 项
+  [ok] 非 slow 全量无新增失败（失败集 ⊆ 冻结基线）· 受控目录零污染
+  [ok] push 后 `origin/master..HEAD` = 0 · AST 自证未调用监工四门禁
+630 收工门禁: PASS ✅
+```
+
+- **基线 11 → 12 的来历**（诚实登记）：终跑新增
+  `tests/test_baseline_629.py::test_selftest_and_baseline_failure_freeze` 失败
+  —— 629 的**工具 selftest** 断言「push 前 ahead ≥ 62」，630 完成 push 后 ahead = 0。
+  同类数字断言在**测试侧**（`test_git_facts_readable`）已按 D2「只改数字」更新为 `>= 0`；
+  但本条失败点在 **629 工具内部**（修它要改 625-629 工具 ⇒ §零.11 越界）⇒ 并入基线并交人。
+- **新增失败 0 · 基线消失 0** 同时成立 ⇒ 证明批内 4 处 D2 修复与上述数字修正**没有掩盖**
+  任何失败（失败集变化完全可解释）。
 
 ---
 
