@@ -1,0 +1,1112 @@
+{
+  "items": [
+    {
+      "card_id": "ATOM-CONC-FENCE-001",
+      "card_rel": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_Z10spin_plainv"
+      },
+      "basis": "符号 '_Z10spin_plainv' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-CONC-LOCK-001",
+      "card_rel": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_Z12bench_singlev"
+      },
+      "basis": "符号 '_Z12bench_singlev' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-CONC-RACE-001",
+      "card_rel": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_Z12bench_singlev"
+      },
+      "basis": "符号 '_Z12bench_singlev' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-HIST-AUTOPTR-001",
+      "card_rel": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_ZNSt8auto_ptr"
+      },
+      "basis": "符号 '_ZNSt8auto_ptr' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-HIST-AUTOPTR-001",
+      "card_rel": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_ZNSt8auto_ptr"
+      },
+      "basis": "符号 '_ZNSt8auto_ptr' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-HIST-AUTOPTR-001",
+      "card_rel": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "prop_id": "prop-4",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_ZNSt8auto_ptr"
+      },
+      "basis": "符号 '_ZNSt8auto_ptr' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-ALIGN-001",
+      "card_rel": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "Padded"
+      },
+      "basis": "符号 'Padded' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-ALIGN-001",
+      "card_rel": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "Aligned"
+      },
+      "basis": "符号 'Aligned' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-ALLOC-001",
+      "card_rel": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "allocation only"
+      },
+      "basis": "符号 'allocation only' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-ALLOC-001",
+      "card_rel": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "arena"
+      },
+      "basis": "符号 'arena' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-ALLOC-001",
+      "card_rel": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+      "prop_id": "prop-3",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "monotonic"
+      },
+      "basis": "符号 'monotonic' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-LEAK-001",
+      "card_rel": "atoms/mem/ATOM-MEM-LEAK-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "destroyed after scope="
+      },
+      "basis": "符号 'destroyed after scope=' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-LEAK-001",
+      "card_rel": "atoms/mem/ATOM-MEM-LEAK-001.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "destroyed after scope="
+      },
+      "basis": "符号 'destroyed after scope=' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-MOVE-002",
+      "card_rel": "atoms/mem/ATOM-MEM-MOVE-002.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_ZL8g_allocs"
+      },
+      "basis": "符号 '_ZL8g_allocs' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-MOVE-002",
+      "card_rel": "atoms/mem/ATOM-MEM-MOVE-002.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_ZL8g_allocs"
+      },
+      "basis": "符号 '_ZL8g_allocs' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-NEW-001",
+      "card_rel": "atoms/mem/ATOM-MEM-NEW-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_Znwm"
+      },
+      "basis": "符号 '_Znwm' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-NEW-001",
+      "card_rel": "atoms/mem/ATOM-MEM-NEW-001.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_Znay"
+      },
+      "basis": "符号 '_Znay' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-PERF-001",
+      "card_rel": "atoms/mem/ATOM-MEM-PERF-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_Znay"
+      },
+      "basis": "符号 '_Znay' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-PERF-002",
+      "card_rel": "atoms/mem/ATOM-MEM-PERF-002.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "max_zero_alloc_len"
+      },
+      "basis": "符号 'max_zero_alloc_len' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-PERF-003",
+      "card_rel": "atoms/mem/ATOM-MEM-PERF-003.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "first_heap_len="
+      },
+      "basis": "符号 'first_heap_len=' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-RAII-001",
+      "card_rel": "atoms/mem/ATOM-MEM-RAII-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "g_live"
+      },
+      "basis": "符号 'g_live' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-RAII-001",
+      "card_rel": "atoms/mem/ATOM-MEM-RAII-001.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "dtor C"
+      },
+      "basis": "符号 'dtor C' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-RAII-002",
+      "card_rel": "atoms/mem/ATOM-MEM-RAII-002.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "rule zero"
+      },
+      "basis": "符号 'rule zero' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-RAII-002",
+      "card_rel": "atoms/mem/ATOM-MEM-RAII-002.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "Buggy"
+      },
+      "basis": "符号 'Buggy' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-RAII-002",
+      "card_rel": "atoms/mem/ATOM-MEM-RAII-002.md",
+      "prop_id": "prop-3",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "relocation"
+      },
+      "basis": "符号 'relocation' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-RVREF-001",
+      "card_rel": "atoms/mem/ATOM-MEM-RVREF-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_ZN5Probe6copiesE"
+      },
+      "basis": "符号 '_ZN5Probe6copiesE' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-RVREF-001",
+      "card_rel": "atoms/mem/ATOM-MEM-RVREF-001.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_ZN5Probe6copiesE"
+      },
+      "basis": "符号 '_ZN5Probe6copiesE' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-SHARED-001",
+      "card_rel": "atoms/mem/ATOM-MEM-SHARED-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "destroyed"
+      },
+      "basis": "符号 'destroyed' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-SHARED-001",
+      "card_rel": "atoms/mem/ATOM-MEM-SHARED-001.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "destroyed"
+      },
+      "basis": "符号 'destroyed' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-SHARED-002",
+      "card_rel": "atoms/mem/ATOM-MEM-SHARED-002.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv"
+      },
+      "basis": "符号 '_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-SHARED-002",
+      "card_rel": "atoms/mem/ATOM-MEM-SHARED-002.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv"
+      },
+      "basis": "符号 '_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-UNIQUE-001",
+      "card_rel": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "unique_ptr"
+      },
+      "basis": "符号 'unique_ptr' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-UNIQUE-001",
+      "card_rel": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "destroyed"
+      },
+      "basis": "符号 'destroyed' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-UNIQUE-002",
+      "card_rel": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "unique_ptrIi12StatelessDelE"
+      },
+      "basis": "符号 'unique_ptrIi12StatelessDelE' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-UNIQUE-002",
+      "card_rel": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "Sp_counted_deleterIPi6TagDel"
+      },
+      "basis": "符号 'Sp_counted_deleterIPi6TagDel' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-VALUE-001",
+      "card_rel": "atoms/mem/ATOM-MEM-VALUE-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "xvalue"
+      },
+      "basis": "符号 'xvalue' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-VALUE-001",
+      "card_rel": "atoms/mem/ATOM-MEM-VALUE-001.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "xvalue"
+      },
+      "basis": "符号 'xvalue' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-VALUE-002",
+      "card_rel": "atoms/mem/ATOM-MEM-VALUE-002.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "sink_lvalue"
+      },
+      "basis": "符号 'sink_lvalue' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-VALUE-002",
+      "card_rel": "atoms/mem/ATOM-MEM-VALUE-002.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "wrap_forward"
+      },
+      "basis": "符号 'wrap_forward' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-WEAK-001",
+      "card_rel": "atoms/mem/ATOM-MEM-WEAK-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "destroyed"
+      },
+      "basis": "符号 'destroyed' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-MEM-WEAK-001",
+      "card_rel": "atoms/mem/ATOM-MEM-WEAK-001.md",
+      "prop_id": "prop-2",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "destroyed"
+      },
+      "basis": "符号 'destroyed' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    },
+    {
+      "card_id": "ATOM-UB-GRAY-001",
+      "card_rel": "atoms/ub/ATOM-UB-GRAY-001.md",
+      "prop_id": "prop-1",
+      "rule": "OBSERVATION-LIVENESS",
+      "field": "liveness",
+      "diag_type": "字段缺失型",
+      "current": "（缺失）",
+      "mode": "auto",
+      "value": {
+        "kind": "fixture_symbol",
+        "symbol": "_Z1gv"
+      },
+      "basis": "符号 '_Z1gv' 取自本命题引用卡的 artifact_assert（非通用符号，gate 同口径判定）"
+    }
+  ],
+  "sources": [
+    {
+      "ok": true,
+      "symbol": "_Z10spin_plainv",
+      "refs": [
+        "EV-CONC-001",
+        "EV-CONC-002"
+      ],
+      "found_in": [
+        "evidence\\conc\\EV-CONC-001.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "_Z12bench_singlev",
+      "refs": [
+        "EV-CONC-003",
+        "EV-CONC-004"
+      ],
+      "found_in": [
+        "evidence\\conc\\EV-CONC-003.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "_Z12bench_singlev",
+      "refs": [
+        "EV-CONC-005",
+        "EV-CONC-006"
+      ],
+      "found_in": [
+        "evidence\\conc\\EV-CONC-005.md",
+        "evidence\\conc\\EV-CONC-006.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "_ZNSt8auto_ptr",
+      "refs": [
+        "EV-HIST-001",
+        "EV-MEM-003"
+      ],
+      "found_in": [
+        "evidence\\hist\\EV-HIST-001.md",
+        "evidence\\mem\\EV-MEM-003.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "_ZNSt8auto_ptr",
+      "refs": [
+        "EV-HIST-001",
+        "EV-MEM-003"
+      ],
+      "found_in": [
+        "evidence\\hist\\EV-HIST-001.md",
+        "evidence\\mem\\EV-MEM-003.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "_ZNSt8auto_ptr",
+      "refs": [
+        "EV-HIST-001"
+      ],
+      "found_in": [
+        "evidence\\hist\\EV-HIST-001.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "Padded",
+      "refs": [
+        "EV-MEM-019"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-019.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "Aligned",
+      "refs": [
+        "EV-MEM-020"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-020.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "allocation only",
+      "refs": [
+        "EV-MEM-026"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-026.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "arena",
+      "refs": [
+        "EV-MEM-027"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-027.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "monotonic",
+      "refs": [
+        "EV-MEM-028"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-028.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "destroyed after scope=",
+      "refs": [
+        "EV-MEM-036"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-036.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "destroyed after scope=",
+      "refs": [
+        "EV-MEM-037"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-037.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "_ZL8g_allocs",
+      "refs": [
+        "EV-MEM-001"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-001.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "_ZL8g_allocs",
+      "refs": [
+        "EV-MEM-002"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-002.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "_Znwm",
+      "refs": [
+        "EV-MEM-017"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-017.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "_Znay",
+      "refs": [
+        "EV-MEM-018"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-018.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "_Znay",
+      "refs": [
+        "EV-MEM-008"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-008.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "max_zero_alloc_len",
+      "refs": [
+        "EV-MEM-029"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-029.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "first_heap_len=",
+      "refs": [
+        "EV-MEM-038"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-038.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "g_live",
+      "refs": [
+        "EV-MEM-009"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-009.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "dtor C",
+      "refs": [
+        "EV-MEM-010"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-010.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "rule zero",
+      "refs": [
+        "EV-MEM-023"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-023.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "Buggy",
+      "refs": [
+        "EV-MEM-024"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-024.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "relocation",
+      "refs": [
+        "EV-MEM-025"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-025.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "_ZN5Probe6copiesE",
+      "refs": [
+        "EV-MEM-004"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-004.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "_ZN5Probe6copiesE",
+      "refs": [
+        "EV-MEM-005"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-005.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "destroyed",
+      "refs": [
+        "EV-MEM-013"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-013.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "destroyed",
+      "refs": [
+        "EV-MEM-014"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-014.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv",
+      "refs": [
+        "EV-MEM-034"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-034.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv",
+      "refs": [
+        "EV-MEM-034"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-034.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "unique_ptr",
+      "refs": [
+        "EV-MEM-011"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-011.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "destroyed",
+      "refs": [
+        "EV-MEM-012"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-012.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "unique_ptrIi12StatelessDelE",
+      "refs": [
+        "EV-MEM-032"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-032.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "Sp_counted_deleterIPi6TagDel",
+      "refs": [
+        "EV-MEM-033"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-033.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "xvalue",
+      "refs": [
+        "EV-MEM-006"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-006.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "xvalue",
+      "refs": [
+        "EV-MEM-007"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-007.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "sink_lvalue",
+      "refs": [
+        "EV-MEM-021"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-021.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "wrap_forward",
+      "refs": [
+        "EV-MEM-022"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-022.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "destroyed",
+      "refs": [
+        "EV-MEM-015"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-015.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "destroyed",
+      "refs": [
+        "EV-MEM-016"
+      ],
+      "found_in": [
+        "evidence\\mem\\EV-MEM-016.md"
+      ],
+      "reason": ""
+    },
+    {
+      "ok": true,
+      "symbol": "_Z1gv",
+      "refs": [
+        "EV-UB-001"
+      ],
+      "found_in": [
+        "evidence\\ub\\EV-UB-001.md"
+      ],
+      "reason": ""
+    }
+  ],
+  "fill": {
+    "dry_run": true,
+    "cards": 0,
+    "edits": 0
+  },
+  "after": null
+}
