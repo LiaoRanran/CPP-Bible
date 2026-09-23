@@ -54,8 +54,11 @@ def test_report_sections_written(tmp_path):
 
 
 def test_selftest_and_baseline_failure_freeze():
+    """基线为**修正版 11 项**：首测 19 项里 8 项是自伤（工作区里语法未完成的同名新文件）
+    或本批真实回归（C2 首版 anchor 非确定性），已在 baseline 注释与验收报告 §四.1 登记。"""
     assert B.selftest() == 0
-    assert len(B.BASELINE_FAILURES) == 19
+    assert len(B.BASELINE_FAILURES) == 11
+    assert sum(B.BASELINE_CATEGORIES.values()) == 11
     assert all(n.startswith("tests/") and "::" in n for n in B.BASELINE_FAILURES)
     assert not any(n.startswith("tests/test_") and "629" in n
                    for n in B.BASELINE_FAILURES)

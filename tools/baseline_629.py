@@ -60,31 +60,44 @@ TASK_BOOK_NUMBERS = {  # 任务书正文里出现的、需要对照的原始说�
 }
 
 
-# 开工时点（HEAD 889a3bc8）`pytest -m "not slow"` 的**既有失败**清单（629 开工冻结）。
-# 根因：多为**状态快照型断言**（627/625/624 批次冻结的当时状态），被 628 的 A2/A3 数据处置
-# 与 628 E1 之后新增的 tools/ tests/ 文件改变 ⇒ 断言过期。629 不修（§零.11 不动 628 工具），
-# 只在 F1 门禁用"无新增失败"口径核对。
+# 629 开工时点 `pytest -m "not slow"` 的既有失败（**已修正版**）。
+#
+# 修正说明（诚实登记，见验收报告偏差表）：开工首次测量时（19 项）工作区里存在一个
+# **语法尚未完成**的新文件 `tools/baseline_629.py`（首版含引号错误），导致 7 项
+# 「整目录 ruff/mypy 干净」类断言（test_mypy_fix_625 两条 / test_pre_push_checklist_627
+# ::test_static_clean / test_quality_gate_613 / test_run_623/624/625_gate）**自伤失败**
+# 并被误计入基线；另有 test_run_628_gate_628::test_gate_other_steps_pass 是**真正的 629 回归**
+# （C2 首版把裸 anchor 追加进 628 日志，破坏了 628 B3/B4 的一致性检查），已由 C2 修复。
+# 因此基线修正为下列 11 项，并按根因分四类（全部与本批代码无关）：
+#   (a) 628 数据处置使 627 断言过期（5）
+#   (b) 本地**未跟踪**并行会话产物 `_arch_v2x/` 使治理 manifest 不一致（4；CI 检出无这些文件，
+#       故 CI 中大概率不出现）
+#   (c) 625 时代阈值过期（type: ignore 全库 28 > 阈值 20）（1）
+#   (d) 611 快照口径（1）
 BASELINE_FAILURES: list[str] = [
-    "tests/test_ci_pytest_fix_625.py::test_governance_manifest_verified",
-    "tests/test_governance_doc_guard_591.py::test_verify_real_manifest_matches",
-    "tests/test_governance_self_hash_601.py::test_real_manifest_has_valid_self_hash",
-    "tests/test_mypy_fix_625.py::test_mypy_tools_clean",
-    "tests/test_mypy_fix_625.py::test_no_bulk_type_ignore",
-    "tests/test_mypy_fix_625.py::test_ruff_clean_after_fix",
+    # (a) 628 数据处置 → 627 断言过期
     "tests/test_pck_hash_drift_analyzer_627.py::test_content_drift_56",
     "tests/test_pck_hash_drift_analyzer_627.py::test_all_have_gap",
     "tests/test_pck_hash_drift_analyzer_627.py::test_root_cause_classifies",
-    "tests/test_pe_timestamp_caliber_611.py::test_603_capture_untouched_by_this_batch",
     "tests/test_pre_push_checklist_627.py::test_tools_all_check_pass",
-    "tests/test_pre_push_checklist_627.py::test_static_clean",
     "tests/test_pre_push_checklist_627.py::test_run_all_aggregates_ok",
-    "tests/test_quality_gate_613.py::test_run_step_reports_rc",
-    "tests/test_run_623_gate.py::test_real_tools_dir_green_after_b2",
-    "tests/test_run_624_gate.py::test_gate_passes",
-    "tests/test_run_625_gate.py::test_full_gate_passes",
-    "tests/test_run_628_gate_628.py::test_gate_other_steps_pass",
+    # (b) 本地未跟踪 `_arch_v2x/` → 治理 manifest 不一致（CI 中大概率不出现）
+    "tests/test_ci_pytest_fix_625.py::test_governance_manifest_verified",
+    "tests/test_governance_doc_guard_591.py::test_verify_real_manifest_matches",
+    "tests/test_governance_self_hash_601.py::test_real_manifest_has_valid_self_hash",
     "tests/test_supply_chain_chain_601.py::test_chain_verify_with_real_inspections",
+    # (c) 625 阈值过期
+    "tests/test_mypy_fix_625.py::test_no_bulk_type_ignore",
+    # (d) 611 快照口径
+    "tests/test_pe_timestamp_caliber_611.py::test_603_capture_untouched_by_this_batch",
 ]
+
+BASELINE_CATEGORIES = {
+    "(a) 628 数据处置 → 627 断言过期": 5,
+    "(b) 本地未跟踪 _arch_v2x/ → 治理 manifest 不一致（CI 大概率不出现）": 4,
+    "(c) 625 阈值过期（type: ignore 28 > 20）": 1,
+    "(d) 611 快照口径": 1,
+}
 
 
 def _run(args: list) -> str:
@@ -253,13 +266,21 @@ def write_report() -> str:
         "",
         "## 五、recent commits", "", "```", *gt["log3"], "```", "",
         "## 六、`pytest -m \"not slow\"` 既有失败（629 开工冻结，F1 用『无新增失败』口径）", "",
-        f"- 实测规模：**2200 例 collected**（414 slow 已 deselect）；既有失败 "
+        f"- 实测规模：**2200 例 collected**（414 slow 已 deselect）；修正后既有失败 "
         f"**{len(BASELINE_FAILURES)} 项**。",
-        "- 根因（逐项核对）：多为**状态快照型断言**——627/624/625 冻结的当时数据状态，"
-        "被 628 的 A2（PCK hash 重算）/A3（镜像边写入）与 628 收工后 tools/ 变化改变，"
-        "断言过期；另有治理 manifest 与 mypy/ruff 整目录口径类断言。",
-        "- **629 不修这些测试**（§零.11 不动 628 工具；测试属他批资产），"
-        "仅在 F1 登记为既有债 + 交人项。", "",
+        "- **修正说明（诚实登记）**：开工首测为 19 项，其中 7 项是**自伤**——测量时工作区里"
+        "存在一个语法未完成的同名新文件 `tools/baseline_629.py`（首版引号错误），使"
+        "「整目录 ruff/mypy 干净」类断言失败（`test_mypy_fix_625` ×2、"
+        "`test_pre_push_checklist_627::test_static_clean`、`test_quality_gate_613`、"
+        "`test_run_623/624/625_gate`）；另有 `test_run_628_gate_628::test_gate_other_steps_pass`"
+        "是**真实 629 回归**（C2 首版把裸 anchor 追加进 628 日志，破坏 628 B3/B4 的一致性检查），"
+        "已由 C2 修复（anchor 改确定性）⇒ 该 8 项均从基线剔除。",
+        "- 剩余 11 项按根因分四类（均与本批代码无关）：", "",
+        "| 类别 | 项数 |", "|---|---|",
+        *[f"| {k} | {v} |" for k, v in BASELINE_CATEGORIES.items()],
+        f"| **合计** | **{len(BASELINE_FAILURES)}** |", "",
+        "- **629 不修这些测试**（§零.11：不动 628 工具；测试属他批资产），"
+        "仅在 F1 登记为既有债 + 交人项（E3 第 12 项）。", "",
         "| # | 既有失败 nodeid |", "|---|---|",
         *[f"| {i} | `{n}` |" for i, n in enumerate(BASELINE_FAILURES, 1)], "",
     ]
