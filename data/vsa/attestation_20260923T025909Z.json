@@ -1,0 +1,20 @@
+{
+  "vsa_version": "1.0",
+  "verifier_id": "independent_verifier_628",
+  "verifier_sha256": "a85cad4faa914506cce09cc1f8f497137623dd56e038380c583b6a94bceb1883",
+  "verified_at": "2026-09-23T02:59:09Z",
+  "input_hashes": {
+    "ledger_sha256": "ec8cbf5cca2def3ded8517264ae163ad64658dfc8d85d96fa7ac9804c194b385",
+    "grounded_labels_sha256": "d06e9f7de92a38173b651ce2eb1b8205ea4f0ac1a05f9fbd630064945396d0d1",
+    "pck_dir_sha256": "a16075a0fb1b4f76aae0327e7c6602e7ad6db34e4a6e89a5311bdde37c24c275"
+  },
+  "results": {
+    "w2_in": 114,
+    "w2_out": 7,
+    "w2_undec": 0,
+    "pck_authorized": 27,
+    "ledger_hash_chain": "valid",
+    "unique_review_items": 93
+  },
+  "attestation": "de22061830176d468dcd344013d2a942fa9a1aba3dcd2c40f88544407be115a8"
+}

@@ -110,6 +110,8 @@ _bypass_test/
 
 # local secrets (never commit)
 .env
+# 628 B2：VSA HMAC 密钥（他验凭证签名密钥，绝不入库）
+data/vsa_secret.key
 
 # observability trace logs (large JSONL, archived but not tracked)
 _archive/observability_logs/

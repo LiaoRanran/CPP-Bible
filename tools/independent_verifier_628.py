@@ -312,7 +312,7 @@ def main(argv: Optional[list] = None) -> int:
         print(f"written {OUT_MD}")
     if args.check:
         return selftest()
-    print(json.dumps({k: v for k, v in r.items()}, ensure_ascii=False, indent=2)[:1500])
+    print(json.dumps(r, ensure_ascii=False))  # 完整 JSON（供 B2 凭证机读，勿截断）
     return 0
 
 
