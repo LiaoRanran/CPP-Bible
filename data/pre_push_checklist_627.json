@@ -1,0 +1,68 @@
+{
+  "tools": [
+    {
+      "tool": "w2_projection_normalizer_627",
+      "ok": true
+    },
+    {
+      "tool": "w2_projection_diff_627",
+      "ok": true
+    },
+    {
+      "tool": "supersedes_remapper_627",
+      "ok": true
+    },
+    {
+      "tool": "pck_hash_drift_analyzer_627",
+      "ok": true
+    },
+    {
+      "tool": "mirror_edge_symmetry_checker_627",
+      "ok": true
+    },
+    {
+      "tool": "authority_v2_e2e_627",
+      "ok": true
+    },
+    {
+      "tool": "v2_regression_627",
+      "ok": true
+    },
+    {
+      "tool": "authority_v2_switch_627",
+      "ok": true
+    },
+    {
+      "tool": "blind_review_execution_pack_627",
+      "ok": true
+    },
+    {
+      "tool": "blind_review_backfill_627",
+      "ok": true
+    }
+  ],
+  "static": {
+    "ruff_ok": true,
+    "mypy_ok": true
+  },
+  "tests": {
+    "test_files": 9,
+    "tests_passed": true,
+    "pytest_rc": 0
+  },
+  "controlled": {
+    "controlled_dirs": [
+      "atoms",
+      "evidence",
+      "Examples",
+      "Book"
+    ],
+    "dirty": [],
+    "clean": true
+  },
+  "core_untouched": {
+    "core_changed": [],
+    "untouched": true
+  },
+  "all_ok": true
+}
