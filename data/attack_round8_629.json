@@ -1,0 +1,322 @@
+{
+  "batch": "629",
+  "round": 8,
+  "seeds_source": "data/attack_objective_629.json",
+  "mutations": 20,
+  "distribution": {
+    "blocked": 10,
+    "neutral": 10
+  },
+  "escaped": [],
+  "touched_this_round": [
+    "EV-FM-REQUIRED"
+  ],
+  "touched_count": 1,
+  "touched_baseline": 36,
+  "elapsed_s": 70.2,
+  "rows": [
+    {
+      "mutation_id": "MUT-629-R8-01",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "round8_objective",
+      "target_rule": "EV-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 3525
+    },
+    {
+      "mutation_id": "MUT-629-R8-02",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "attack_type": "round8_objective",
+      "target_rule": "replay",
+      "edit": "篡改 sha256/值 8dd19bc6… → 0dd19bc6…",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 3452
+    },
+    {
+      "mutation_id": "MUT-629-R8-03",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "round8_objective",
+      "target_rule": "EV-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 3448
+    },
+    {
+      "mutation_id": "MUT-629-R8-04",
+      "card": "evidence/conc/EV-CONC-002.md",
+      "attack_type": "round8_objective",
+      "target_rule": "replay",
+      "edit": "篡改 sha256/值 8dd19bc6… → 0dd19bc6…",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 3525
+    },
+    {
+      "mutation_id": "MUT-629-R8-05",
+      "card": "evidence/conc/EV-CONC-003.md",
+      "attack_type": "round8_objective",
+      "target_rule": "EV-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 3453
+    },
+    {
+      "mutation_id": "MUT-629-R8-06",
+      "card": "evidence/conc/EV-CONC-003.md",
+      "attack_type": "round8_objective",
+      "target_rule": "replay",
+      "edit": "篡改 sha256/值 d84c7516… → 084c7516…",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 3506
+    },
+    {
+      "mutation_id": "MUT-629-R8-07",
+      "card": "evidence/conc/EV-CONC-004.md",
+      "attack_type": "round8_objective",
+      "target_rule": "EV-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 4,
+      "elapsed_ms": 3511
+    },
+    {
+      "mutation_id": "MUT-629-R8-08",
+      "card": "evidence/conc/EV-CONC-004.md",
+      "attack_type": "round8_objective",
+      "target_rule": "replay",
+      "edit": "篡改 sha256/值 d84c7516… → 084c7516…",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 3,
+      "n_findings_after": 3,
+      "elapsed_ms": 3491
+    },
+    {
+      "mutation_id": "MUT-629-R8-09",
+      "card": "evidence/conc/EV-CONC-005.md",
+      "attack_type": "round8_objective",
+      "target_rule": "EV-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 2,
+      "n_findings_after": 3,
+      "elapsed_ms": 3572
+    },
+    {
+      "mutation_id": "MUT-629-R8-10",
+      "card": "evidence/conc/EV-CONC-005.md",
+      "attack_type": "round8_objective",
+      "target_rule": "replay",
+      "edit": "篡改 sha256/值 5c5549ae… → 0c5549ae…",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 2,
+      "n_findings_after": 2,
+      "elapsed_ms": 3533
+    },
+    {
+      "mutation_id": "MUT-629-R8-11",
+      "card": "evidence/conc/EV-CONC-006.md",
+      "attack_type": "round8_objective",
+      "target_rule": "EV-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 2,
+      "n_findings_after": 3,
+      "elapsed_ms": 3482
+    },
+    {
+      "mutation_id": "MUT-629-R8-12",
+      "card": "evidence/conc/EV-CONC-006.md",
+      "attack_type": "round8_objective",
+      "target_rule": "replay",
+      "edit": "篡改 sha256/值 5c5549ae… → 0c5549ae…",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 2,
+      "n_findings_after": 2,
+      "elapsed_ms": 3465
+    },
+    {
+      "mutation_id": "MUT-629-R8-13",
+      "card": "evidence/hist/EV-HIST-001.md",
+      "attack_type": "round8_objective",
+      "target_rule": "EV-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 1,
+      "n_findings_after": 2,
+      "elapsed_ms": 3523
+    },
+    {
+      "mutation_id": "MUT-629-R8-14",
+      "card": "evidence/hist/EV-HIST-001.md",
+      "attack_type": "round8_objective",
+      "target_rule": "replay",
+      "edit": "篡改 sha256/值 b4f99318… → 04f99318…",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 1,
+      "n_findings_after": 1,
+      "elapsed_ms": 3474
+    },
+    {
+      "mutation_id": "MUT-629-R8-15",
+      "card": "evidence/lang/EV-LANG-001.md",
+      "attack_type": "round8_objective",
+      "target_rule": "EV-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 1,
+      "n_findings_after": 2,
+      "elapsed_ms": 3526
+    },
+    {
+      "mutation_id": "MUT-629-R8-16",
+      "card": "evidence/lang/EV-LANG-001.md",
+      "attack_type": "round8_objective",
+      "target_rule": "replay",
+      "edit": "篡改 sha256/值 63c7e3b7… → 03c7e3b7…",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 1,
+      "n_findings_after": 1,
+      "elapsed_ms": 3493
+    },
+    {
+      "mutation_id": "MUT-629-R8-17",
+      "card": "evidence/lang/EV-LANG-002.md",
+      "attack_type": "round8_objective",
+      "target_rule": "EV-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 2,
+      "n_findings_after": 3,
+      "elapsed_ms": 3516
+    },
+    {
+      "mutation_id": "MUT-629-R8-18",
+      "card": "evidence/lang/EV-LANG-002.md",
+      "attack_type": "round8_objective",
+      "target_rule": "replay",
+      "edit": "篡改 sha256/值 63c7e3b7… → 03c7e3b7…",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 2,
+      "n_findings_after": 2,
+      "elapsed_ms": 3506
+    },
+    {
+      "mutation_id": "MUT-629-R8-19",
+      "card": "evidence/mem/EV-MEM-001.md",
+      "attack_type": "round8_objective",
+      "target_rule": "EV-FM-REQUIRED",
+      "edit": "删除字段 id",
+      "verdict": "blocked",
+      "new_block_rules": [
+        "EV-FM-REQUIRED"
+      ],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 2,
+      "n_findings_after": 3,
+      "elapsed_ms": 3597
+    },
+    {
+      "mutation_id": "MUT-629-R8-20",
+      "card": "evidence/mem/EV-MEM-001.md",
+      "attack_type": "round8_objective",
+      "target_rule": "replay",
+      "edit": "篡改 sha256/值 d8b6b18d… → 08b6b18d…",
+      "verdict": "neutral",
+      "new_block_rules": [],
+      "new_nonblock_rules": [],
+      "lost_rules": [],
+      "n_findings_before": 2,
+      "n_findings_after": 2,
+      "elapsed_ms": 3470
+    }
+  ],
+  "repo_dirty_after": "",
+  "vfdr_baseline": "622 26% → 623 77.5%/65%（双轴逃逸口径）",
+  "rules_total": 67
+}
