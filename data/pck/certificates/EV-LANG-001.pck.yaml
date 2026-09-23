@@ -1,4 +1,3 @@
-# PCK 证书（620 B1 迁移 + C3 Authority 同步 + 621 C3 ABSTAIN 同步）
 schema_version: 619-pck-v1
 claim:
   id: EV-LANG-001
@@ -11,7 +10,7 @@ claim:
 evidence:
 - type: artifact
   ref: evidence/lang/EV-LANG-001.md
-  hash: sha256:63c7e3b73ea9646cbad081ba6b8c0a5ad6e5b77f780aebf944ffd65ba15fbc9f
+  hash: sha256:b9336987f20b76392cd78a938d08bf826c3575e6b80191b48d12bfe6d482bdcf
 negative_tests:
 - mutation_id: evidence/lang/EV-LANG-001.md|M1|删 artifact_sha256
   result: blocked

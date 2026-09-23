@@ -1,4 +1,3 @@
-# PCK 证书（620 B1 迁移 + C3 Authority 同步 + 621 C3 ABSTAIN 同步）
 schema_version: 619-pck-v1
 claim:
   id: ATOM-UB-GRAY-001
@@ -11,8 +10,10 @@ claim:
 evidence:
 - type: replay
   ref: evidence/ub/EV-UB-001.md
+  hash: sha256:e0ada99ba055b99c833e83c74b73e3ded87ef4d2fb1e077eca9445d283813dbc
 - type: replay
   ref: evidence/ub/EV-UB-001.md
+  hash: sha256:e0ada99ba055b99c833e83c74b73e3ded87ef4d2fb1e077eca9445d283813dbc
 negative_tests:
 - mutation_id: atoms/ub/ATOM-UB-GRAY-001.md|M1|-
   result: n_a

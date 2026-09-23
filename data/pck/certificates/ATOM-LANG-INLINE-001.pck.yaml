@@ -1,4 +1,3 @@
-# PCK 证书（620 B1 迁移 + C3 Authority 同步 + 621 C3 ABSTAIN 同步）
 schema_version: 619-pck-v1
 claim:
   id: ATOM-LANG-INLINE-001
@@ -10,14 +9,19 @@ claim:
 evidence:
 - type: replay
   ref: evidence/lang/EV-LANG-001.md
+  hash: sha256:b9336987f20b76392cd78a938d08bf826c3575e6b80191b48d12bfe6d482bdcf
 - type: replay
   ref: evidence/lang/EV-LANG-002.md
+  hash: sha256:d7787c7e950834cdfaf99ccd1f8a4dd32e4baf05a17526e4dfa267ee068d9e26
 - type: replay
   ref: evidence/lang/EV-LANG-001.md
+  hash: sha256:b9336987f20b76392cd78a938d08bf826c3575e6b80191b48d12bfe6d482bdcf
 - type: replay
   ref: evidence/lang/EV-LANG-002.md
+  hash: sha256:d7787c7e950834cdfaf99ccd1f8a4dd32e4baf05a17526e4dfa267ee068d9e26
 - type: replay
   ref: evidence/lang/EV-LANG-001.md
+  hash: sha256:b9336987f20b76392cd78a938d08bf826c3575e6b80191b48d12bfe6d482bdcf
 negative_tests:
 - mutation_id: atoms/lang/ATOM-LANG-INLINE-001.md|M1|-
   result: n_a

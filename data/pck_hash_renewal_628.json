@@ -1,0 +1,12 @@
+{
+  "total_certs": 83,
+  "applied": true,
+  "stats": {
+    "renewed": 0,
+    "added": 0,
+    "needs_human": 0,
+    "already_ok": 162,
+    "certs_touched": 0
+  },
+  "needs_human": []
+}

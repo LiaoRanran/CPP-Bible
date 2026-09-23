@@ -1,4 +1,3 @@
-# PCK 证书（620 B1 迁移 + C3 Authority 同步 + 621 C3 ABSTAIN 同步）
 schema_version: 619-pck-v1
 claim:
   id: EV-MEM-034
@@ -10,7 +9,7 @@ claim:
 evidence:
 - type: artifact
   ref: evidence/mem/EV-MEM-034.md
-  hash: sha256:2f8097b8b0b7e21636c419f19934225093440bbdf57a7396311e41d70d72a97f
+  hash: sha256:eaeba713364e9355cf25f6401ff145d43be8bae395f6a2938ef2d37a5179d85f
 negative_tests:
 - mutation_id: evidence/mem/EV-MEM-034.md|M1|删 artifact_sha256
   result: blocked

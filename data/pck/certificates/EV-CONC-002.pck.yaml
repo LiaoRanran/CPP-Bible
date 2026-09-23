@@ -1,4 +1,3 @@
-# PCK 证书（620 B1 迁移 + C3 Authority 同步 + 621 C3 ABSTAIN 同步）
 schema_version: 619-pck-v1
 claim:
   id: EV-CONC-002
@@ -12,7 +11,7 @@ claim:
 evidence:
 - type: artifact
   ref: evidence/conc/EV-CONC-002.md
-  hash: sha256:8dd19bc6bf2facc23d1d09aef6ed4b856d0f33e98c36174b96d2893172319cb3
+  hash: sha256:7705463752ba33b3f1fb7c9d162a58f3fb959f3ed2fd9e32e8f5e6f40a68a929
 negative_tests:
 - mutation_id: evidence/conc/EV-CONC-002.md|M1|删 artifact_sha256
   result: blocked

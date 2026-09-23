@@ -1,4 +1,3 @@
-# PCK 证书（620 B1 迁移 + C3 Authority 同步 + 621 C3 ABSTAIN 同步）
 schema_version: 619-pck-v1
 claim:
   id: ATOM-MEM-RVREF-001
@@ -10,12 +9,16 @@ claim:
 evidence:
 - type: replay
   ref: evidence/mem/EV-MEM-004.md
+  hash: sha256:18822c77b03ea7839a2618abfa844584b40193fd4a380c86f95413f807432e95
 - type: replay
   ref: evidence/mem/EV-MEM-005.md
+  hash: sha256:a9a8027ee6e43cace3433ec27664062314a551d1ba41ae75bb979d0b00b38dd7
 - type: replay
   ref: evidence/mem/EV-MEM-004.md
+  hash: sha256:18822c77b03ea7839a2618abfa844584b40193fd4a380c86f95413f807432e95
 - type: replay
   ref: evidence/mem/EV-MEM-005.md
+  hash: sha256:a9a8027ee6e43cace3433ec27664062314a551d1ba41ae75bb979d0b00b38dd7
 negative_tests:
 - mutation_id: atoms/mem/ATOM-MEM-RVREF-001.md|M1|-
   result: n_a

@@ -1,4 +1,3 @@
-# PCK 证书（620 B1 迁移 + C3 Authority 同步 + 621 C3 ABSTAIN 同步）
 schema_version: 619-pck-v1
 claim:
   id: ATOM-CONC-RACE-001
@@ -9,14 +8,19 @@ claim:
 evidence:
 - type: replay
   ref: evidence/conc/EV-CONC-005.md
+  hash: sha256:f01eb6f084557535fc219f00a80a76e3e713c52b2df3aeeb45c809bde6f8b1fc
 - type: replay
   ref: evidence/conc/EV-CONC-006.md
+  hash: sha256:06136b65a80b258b0e7fc573aeffec510c0eb9b4ea6ebd55a616bebde12b2f6e
 - type: replay
   ref: evidence/conc/EV-CONC-005.md
+  hash: sha256:f01eb6f084557535fc219f00a80a76e3e713c52b2df3aeeb45c809bde6f8b1fc
 - type: replay
   ref: evidence/conc/EV-CONC-006.md
+  hash: sha256:06136b65a80b258b0e7fc573aeffec510c0eb9b4ea6ebd55a616bebde12b2f6e
 - type: replay
   ref: evidence/conc/EV-CONC-005.md
+  hash: sha256:f01eb6f084557535fc219f00a80a76e3e713c52b2df3aeeb45c809bde6f8b1fc
 negative_tests:
 - mutation_id: atoms/conc/ATOM-CONC-RACE-001.md|M1|-
   result: n_a
