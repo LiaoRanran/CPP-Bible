@@ -83,7 +83,7 @@ def measure() -> dict[str, Any]:
         for f in sorted(files):
             if f.endswith(".md"):
                 cards.append(os.path.join(base, f))
-    rows = []
+    rows: list[dict[str, Any]] = []
     for p in sorted(cards):
         text = open(p, encoding="utf-8", errors="replace").read()
         props = scan_props(text)
