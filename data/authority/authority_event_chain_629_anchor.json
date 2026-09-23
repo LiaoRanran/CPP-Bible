@@ -1,0 +1,10 @@
+{
+  "batch": "629",
+  "kind": "authority_event_chain_anchor",
+  "ledger": "data/authority/decision_event_v2_ledger.jsonl",
+  "ledger_sha256": "ec8cbf5cca2def3ded8517264ae163ad64658dfc8d85d96fa7ac9804c194b385",
+  "events": 452,
+  "chain_valid": true,
+  "root_hash": "cffe6b36f13a80d1717cfd99270c454e9106ef29ae77bd5a2ebe2c9fbe61461a",
+  "generated_at": "2026-09-23T08:56:45Z"
+}
