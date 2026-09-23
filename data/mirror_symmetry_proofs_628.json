@@ -1,0 +1,1364 @@
+{
+  "auto_proved": 194,
+  "records": [
+    {
+      "forward": "ae-MIS-CONC-001->ATOM-UB-GRAY-001::prop-1",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-1->MIS-CONC-001",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-4166e98950b52fe4"
+    },
+    {
+      "forward": "ae-MIS-CONC-001->ATOM-UB-GRAY-001::prop-2",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-2->MIS-CONC-001",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-1726a1abe07372c0"
+    },
+    {
+      "forward": "ae-MIS-CONC-003->ATOM-CONC-RACE-001::prop-1",
+      "reverse": "ae-ATOM-CONC-RACE-001::prop-1->MIS-CONC-003",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-25eefcc3d6b54337"
+    },
+    {
+      "forward": "ae-MIS-CONC-003->ATOM-CONC-RACE-001::prop-2",
+      "reverse": "ae-ATOM-CONC-RACE-001::prop-2->MIS-CONC-003",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-9200a02b39a140cc"
+    },
+    {
+      "forward": "ae-MIS-CONC-003->ATOM-CONC-RACE-001::prop-3",
+      "reverse": "ae-ATOM-CONC-RACE-001::prop-3->MIS-CONC-003",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-3c55ca14b5366c32"
+    },
+    {
+      "forward": "ae-MIS-HIST-001->ATOM-HIST-AUTOPTR-001::prop-1",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-1->MIS-HIST-001",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-432c6f1ccf1b6255"
+    },
+    {
+      "forward": "ae-MIS-HIST-001->ATOM-HIST-AUTOPTR-001::prop-2",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-2->MIS-HIST-001",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-6085ca3a96040e9a"
+    },
+    {
+      "forward": "ae-MIS-HIST-001->ATOM-HIST-AUTOPTR-001::prop-3",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-3->MIS-HIST-001",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-5e0eeede3843fce5"
+    },
+    {
+      "forward": "ae-MIS-HIST-001->ATOM-HIST-AUTOPTR-001::prop-4",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-4->MIS-HIST-001",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-5713eebcb60c2dc1"
+    },
+    {
+      "forward": "ae-MIS-HIST-002->ATOM-HIST-AUTOPTR-001::prop-1",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-1->MIS-HIST-002",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-bea81a515e76bc1b"
+    },
+    {
+      "forward": "ae-MIS-HIST-002->ATOM-HIST-AUTOPTR-001::prop-2",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-2->MIS-HIST-002",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-f9fb198b639f8a12"
+    },
+    {
+      "forward": "ae-MIS-HIST-002->ATOM-HIST-AUTOPTR-001::prop-3",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-3->MIS-HIST-002",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-6cec4266af04b892"
+    },
+    {
+      "forward": "ae-MIS-HIST-002->ATOM-HIST-AUTOPTR-001::prop-4",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-4->MIS-HIST-002",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-c7481b3428d72ea1"
+    },
+    {
+      "forward": "ae-MIS-HIST-003->ATOM-HIST-AUTOPTR-001::prop-1",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-1->MIS-HIST-003",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-e90454d5451b0c18"
+    },
+    {
+      "forward": "ae-MIS-HIST-003->ATOM-HIST-AUTOPTR-001::prop-2",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-2->MIS-HIST-003",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-5163404791091d4b"
+    },
+    {
+      "forward": "ae-MIS-HIST-003->ATOM-HIST-AUTOPTR-001::prop-3",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-3->MIS-HIST-003",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-739224b14e513273"
+    },
+    {
+      "forward": "ae-MIS-HIST-003->ATOM-HIST-AUTOPTR-001::prop-4",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-4->MIS-HIST-003",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-9560569817798ffc"
+    },
+    {
+      "forward": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-1",
+      "reverse": "ae-ATOM-LANG-INLINE-001::prop-1->MIS-LANG-001",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-f169f7ec0e44206f"
+    },
+    {
+      "forward": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-2",
+      "reverse": "ae-ATOM-LANG-INLINE-001::prop-2->MIS-LANG-001",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-3a21cd8946381529"
+    },
+    {
+      "forward": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-3",
+      "reverse": "ae-ATOM-LANG-INLINE-001::prop-3->MIS-LANG-001",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-6aaac26b442c64d9"
+    },
+    {
+      "forward": "ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-1",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-001",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-cd7563f605883189"
+    },
+    {
+      "forward": "ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-2",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-001",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-0465320afeec6dc6"
+    },
+    {
+      "forward": "ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-3",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-001",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-68020b4fd4d09e19"
+    },
+    {
+      "forward": "ae-MIS-MEM-002->ATOM-MEM-MOVE-002::prop-1",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-002",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-f29f18596b2e06f5"
+    },
+    {
+      "forward": "ae-MIS-MEM-002->ATOM-MEM-MOVE-002::prop-2",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-002",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-ada3e4ef2ecbffbd"
+    },
+    {
+      "forward": "ae-MIS-MEM-002->ATOM-MEM-MOVE-002::prop-3",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-002",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-37af91c01cf7abfd"
+    },
+    {
+      "forward": "ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-1",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-003",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-5123d9f4ecba0ce6"
+    },
+    {
+      "forward": "ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-2",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-003",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-89c6a8324635a6f0"
+    },
+    {
+      "forward": "ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-3",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-003",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-1bb8350d6554ef0f"
+    },
+    {
+      "forward": "ae-MIS-MEM-004->ATOM-MEM-MOVE-002::prop-1",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-004",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-fea594ac5d5f5a83"
+    },
+    {
+      "forward": "ae-MIS-MEM-004->ATOM-MEM-MOVE-002::prop-2",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-004",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-e8d11b7f6928a9bf"
+    },
+    {
+      "forward": "ae-MIS-MEM-004->ATOM-MEM-MOVE-002::prop-3",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-004",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-6343b705dd8af70d"
+    },
+    {
+      "forward": "ae-MIS-MEM-005->ATOM-MEM-MOVE-002::prop-1",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-005",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-efa4f9b00583d5dc"
+    },
+    {
+      "forward": "ae-MIS-MEM-005->ATOM-MEM-MOVE-002::prop-2",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-005",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-fd6ec41070a6a084"
+    },
+    {
+      "forward": "ae-MIS-MEM-005->ATOM-MEM-MOVE-002::prop-3",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-005",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-f49fac7501bbdd19"
+    },
+    {
+      "forward": "ae-MIS-MEM-005->ATOM-MEM-RVREF-001::prop-1",
+      "reverse": "ae-ATOM-MEM-RVREF-001::prop-1->MIS-MEM-005",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-f1899046edab9be6"
+    },
+    {
+      "forward": "ae-MIS-MEM-005->ATOM-MEM-RVREF-001::prop-2",
+      "reverse": "ae-ATOM-MEM-RVREF-001::prop-2->MIS-MEM-005",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-18b743b03282e23d"
+    },
+    {
+      "forward": "ae-MIS-MEM-005->ATOM-MEM-RVREF-001::prop-3",
+      "reverse": "ae-ATOM-MEM-RVREF-001::prop-3->MIS-MEM-005",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-206be2343090fe5a"
+    },
+    {
+      "forward": "ae-MIS-MEM-011->ATOM-HIST-AUTOPTR-001::prop-1",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-1->MIS-MEM-011",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-b81f38fa9ab6ff87"
+    },
+    {
+      "forward": "ae-MIS-MEM-011->ATOM-HIST-AUTOPTR-001::prop-2",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-2->MIS-MEM-011",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-e63a8779025015d9"
+    },
+    {
+      "forward": "ae-MIS-MEM-011->ATOM-HIST-AUTOPTR-001::prop-3",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-3->MIS-MEM-011",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-850fba81dd8fb01e"
+    },
+    {
+      "forward": "ae-MIS-MEM-011->ATOM-HIST-AUTOPTR-001::prop-4",
+      "reverse": "ae-ATOM-HIST-AUTOPTR-001::prop-4->MIS-MEM-011",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-7abf2f3d54f562d1"
+    },
+    {
+      "forward": "ae-MIS-MEM-012->ATOM-MEM-MOVE-002::prop-1",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-012",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-6dc480818b85d123"
+    },
+    {
+      "forward": "ae-MIS-MEM-012->ATOM-MEM-MOVE-002::prop-2",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-012",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-9335013c9a58699f"
+    },
+    {
+      "forward": "ae-MIS-MEM-012->ATOM-MEM-MOVE-002::prop-3",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-012",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-e1821d4279cbb0c1"
+    },
+    {
+      "forward": "ae-MIS-MEM-013->ATOM-MEM-RAII-001::prop-1",
+      "reverse": "ae-ATOM-MEM-RAII-001::prop-1->MIS-MEM-013",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-375482c4a7eb746c"
+    },
+    {
+      "forward": "ae-MIS-MEM-013->ATOM-MEM-RAII-001::prop-2",
+      "reverse": "ae-ATOM-MEM-RAII-001::prop-2->MIS-MEM-013",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-fb2648ed88309fbb"
+    },
+    {
+      "forward": "ae-MIS-MEM-013->ATOM-MEM-RAII-001::prop-3",
+      "reverse": "ae-ATOM-MEM-RAII-001::prop-3->MIS-MEM-013",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-6358d4a40164de2d"
+    },
+    {
+      "forward": "ae-MIS-MEM-014->ATOM-MEM-RAII-001::prop-1",
+      "reverse": "ae-ATOM-MEM-RAII-001::prop-1->MIS-MEM-014",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-690d286138d93c83"
+    },
+    {
+      "forward": "ae-MIS-MEM-014->ATOM-MEM-RAII-001::prop-2",
+      "reverse": "ae-ATOM-MEM-RAII-001::prop-2->MIS-MEM-014",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-98b7be41bacff7b0"
+    },
+    {
+      "forward": "ae-MIS-MEM-014->ATOM-MEM-RAII-001::prop-3",
+      "reverse": "ae-ATOM-MEM-RAII-001::prop-3->MIS-MEM-014",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-d14ffb3fec024999"
+    },
+    {
+      "forward": "ae-MIS-MEM-015->ATOM-MEM-ALIGN-001::prop-1",
+      "reverse": "ae-ATOM-MEM-ALIGN-001::prop-1->MIS-MEM-015",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-bc420cb8018459a7"
+    },
+    {
+      "forward": "ae-MIS-MEM-015->ATOM-MEM-ALIGN-001::prop-2",
+      "reverse": "ae-ATOM-MEM-ALIGN-001::prop-2->MIS-MEM-015",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-f7e520d0e62d8718"
+    },
+    {
+      "forward": "ae-MIS-MEM-015->ATOM-MEM-ALIGN-001::prop-3",
+      "reverse": "ae-ATOM-MEM-ALIGN-001::prop-3->MIS-MEM-015",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-0633faa07b9702a2"
+    },
+    {
+      "forward": "ae-MIS-MEM-016->ATOM-MEM-SHARED-001::prop-1",
+      "reverse": "ae-ATOM-MEM-SHARED-001::prop-1->MIS-MEM-016",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-3bc8e4c8e642e06b"
+    },
+    {
+      "forward": "ae-MIS-MEM-016->ATOM-MEM-SHARED-001::prop-2",
+      "reverse": "ae-ATOM-MEM-SHARED-001::prop-2->MIS-MEM-016",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-ae9105b9daaa1456"
+    },
+    {
+      "forward": "ae-MIS-MEM-016->ATOM-MEM-SHARED-001::prop-3",
+      "reverse": "ae-ATOM-MEM-SHARED-001::prop-3->MIS-MEM-016",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-5ad01fa07a3246f1"
+    },
+    {
+      "forward": "ae-MIS-MEM-016->ATOM-MEM-WEAK-001::prop-1",
+      "reverse": "ae-ATOM-MEM-WEAK-001::prop-1->MIS-MEM-016",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-64e12cec50735701"
+    },
+    {
+      "forward": "ae-MIS-MEM-016->ATOM-MEM-WEAK-001::prop-2",
+      "reverse": "ae-ATOM-MEM-WEAK-001::prop-2->MIS-MEM-016",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-059c9d68b02d6805"
+    },
+    {
+      "forward": "ae-MIS-MEM-016->ATOM-MEM-WEAK-001::prop-3",
+      "reverse": "ae-ATOM-MEM-WEAK-001::prop-3->MIS-MEM-016",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-1c84ed505dc4f67f"
+    },
+    {
+      "forward": "ae-MIS-MEM-017->ATOM-MEM-MOVE-002::prop-1",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-017",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-42cc4a7fa035405b"
+    },
+    {
+      "forward": "ae-MIS-MEM-017->ATOM-MEM-MOVE-002::prop-2",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-017",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-51d31e6dc0ea27c9"
+    },
+    {
+      "forward": "ae-MIS-MEM-017->ATOM-MEM-MOVE-002::prop-3",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-017",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-69a1d5c3f9275cf6"
+    },
+    {
+      "forward": "ae-MIS-MEM-017->ATOM-MEM-VALUE-002::prop-1",
+      "reverse": "ae-ATOM-MEM-VALUE-002::prop-1->MIS-MEM-017",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-f9a6695980e9f0ee"
+    },
+    {
+      "forward": "ae-MIS-MEM-017->ATOM-MEM-VALUE-002::prop-2",
+      "reverse": "ae-ATOM-MEM-VALUE-002::prop-2->MIS-MEM-017",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-82a0426125db6356"
+    },
+    {
+      "forward": "ae-MIS-MEM-017->ATOM-MEM-VALUE-002::prop-3",
+      "reverse": "ae-ATOM-MEM-VALUE-002::prop-3->MIS-MEM-017",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-65fab985ab5943bb"
+    },
+    {
+      "forward": "ae-MIS-MEM-018->ATOM-MEM-VALUE-001::prop-1",
+      "reverse": "ae-ATOM-MEM-VALUE-001::prop-1->MIS-MEM-018",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-83d72429cb4ebbc3"
+    },
+    {
+      "forward": "ae-MIS-MEM-018->ATOM-MEM-VALUE-001::prop-2",
+      "reverse": "ae-ATOM-MEM-VALUE-001::prop-2->MIS-MEM-018",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-ef92ed8837b9a9a3"
+    },
+    {
+      "forward": "ae-MIS-MEM-018->ATOM-MEM-VALUE-001::prop-3",
+      "reverse": "ae-ATOM-MEM-VALUE-001::prop-3->MIS-MEM-018",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-3583ba57136f2c2d"
+    },
+    {
+      "forward": "ae-MIS-MEM-018->ATOM-MEM-VALUE-002::prop-1",
+      "reverse": "ae-ATOM-MEM-VALUE-002::prop-1->MIS-MEM-018",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-224999aa44a4f883"
+    },
+    {
+      "forward": "ae-MIS-MEM-018->ATOM-MEM-VALUE-002::prop-2",
+      "reverse": "ae-ATOM-MEM-VALUE-002::prop-2->MIS-MEM-018",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-0d9c29c3dce939bd"
+    },
+    {
+      "forward": "ae-MIS-MEM-018->ATOM-MEM-VALUE-002::prop-3",
+      "reverse": "ae-ATOM-MEM-VALUE-002::prop-3->MIS-MEM-018",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-d7d0f99fb0cd6ff9"
+    },
+    {
+      "forward": "ae-MIS-MEM-019->ATOM-MEM-MOVE-002::prop-1",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-019",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-7bed69d8dee64bcc"
+    },
+    {
+      "forward": "ae-MIS-MEM-019->ATOM-MEM-MOVE-002::prop-2",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-019",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-0b959f8c5c235c70"
+    },
+    {
+      "forward": "ae-MIS-MEM-019->ATOM-MEM-MOVE-002::prop-3",
+      "reverse": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-019",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-992bc30ec09e878c"
+    },
+    {
+      "forward": "ae-MIS-MEM-019->ATOM-MEM-RAII-002::prop-1",
+      "reverse": "ae-ATOM-MEM-RAII-002::prop-1->MIS-MEM-019",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-e0eebc79d5d237e0"
+    },
+    {
+      "forward": "ae-MIS-MEM-019->ATOM-MEM-RAII-002::prop-2",
+      "reverse": "ae-ATOM-MEM-RAII-002::prop-2->MIS-MEM-019",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-ed367d7ccd7ab6ab"
+    },
+    {
+      "forward": "ae-MIS-MEM-019->ATOM-MEM-RAII-002::prop-3",
+      "reverse": "ae-ATOM-MEM-RAII-002::prop-3->MIS-MEM-019",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-7d25bcad559b3eb1"
+    },
+    {
+      "forward": "ae-MIS-MEM-019->ATOM-MEM-RAII-002::prop-4",
+      "reverse": "ae-ATOM-MEM-RAII-002::prop-4->MIS-MEM-019",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-078c216f02fe74a5"
+    },
+    {
+      "forward": "ae-MIS-MEM-020->ATOM-MEM-RAII-002::prop-1",
+      "reverse": "ae-ATOM-MEM-RAII-002::prop-1->MIS-MEM-020",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-40f5f27960a86b4d"
+    },
+    {
+      "forward": "ae-MIS-MEM-020->ATOM-MEM-RAII-002::prop-2",
+      "reverse": "ae-ATOM-MEM-RAII-002::prop-2->MIS-MEM-020",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-1e112e5ce1b5af69"
+    },
+    {
+      "forward": "ae-MIS-MEM-020->ATOM-MEM-RAII-002::prop-3",
+      "reverse": "ae-ATOM-MEM-RAII-002::prop-3->MIS-MEM-020",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-9ce8d3ffd9a019ab"
+    },
+    {
+      "forward": "ae-MIS-MEM-020->ATOM-MEM-RAII-002::prop-4",
+      "reverse": "ae-ATOM-MEM-RAII-002::prop-4->MIS-MEM-020",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-37d4e19cd374e7c2"
+    },
+    {
+      "forward": "ae-MIS-MEM-020->ATOM-MEM-UNIQUE-001::prop-1",
+      "reverse": "ae-ATOM-MEM-UNIQUE-001::prop-1->MIS-MEM-020",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-f505ef01e09ed208"
+    },
+    {
+      "forward": "ae-MIS-MEM-020->ATOM-MEM-UNIQUE-001::prop-2",
+      "reverse": "ae-ATOM-MEM-UNIQUE-001::prop-2->MIS-MEM-020",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-cdf20d62f1c970ae"
+    },
+    {
+      "forward": "ae-MIS-MEM-020->ATOM-MEM-UNIQUE-001::prop-3",
+      "reverse": "ae-ATOM-MEM-UNIQUE-001::prop-3->MIS-MEM-020",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-822634e19b4cad17"
+    },
+    {
+      "forward": "ae-MIS-MEM-021->ATOM-MEM-ALLOC-001::prop-1",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-1->MIS-MEM-021",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-a7ce16a3ad34dd8b"
+    },
+    {
+      "forward": "ae-MIS-MEM-021->ATOM-MEM-ALLOC-001::prop-2",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-2->MIS-MEM-021",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-2efdbf8a58924748"
+    },
+    {
+      "forward": "ae-MIS-MEM-021->ATOM-MEM-ALLOC-001::prop-3",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-3->MIS-MEM-021",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-1a5b8bb3b10d8bb9"
+    },
+    {
+      "forward": "ae-MIS-MEM-021->ATOM-MEM-ALLOC-001::prop-4",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-4->MIS-MEM-021",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-71fbcde21f887986"
+    },
+    {
+      "forward": "ae-MIS-MEM-021->ATOM-MEM-NEW-001::prop-1",
+      "reverse": "ae-ATOM-MEM-NEW-001::prop-1->MIS-MEM-021",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-1e05517207578923"
+    },
+    {
+      "forward": "ae-MIS-MEM-021->ATOM-MEM-NEW-001::prop-2",
+      "reverse": "ae-ATOM-MEM-NEW-001::prop-2->MIS-MEM-021",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-d5e25edfe5f52218"
+    },
+    {
+      "forward": "ae-MIS-MEM-021->ATOM-MEM-NEW-001::prop-3",
+      "reverse": "ae-ATOM-MEM-NEW-001::prop-3->MIS-MEM-021",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-7c6358198be5212a"
+    },
+    {
+      "forward": "ae-MIS-MEM-022->ATOM-MEM-NEW-001::prop-1",
+      "reverse": "ae-ATOM-MEM-NEW-001::prop-1->MIS-MEM-022",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-83056ce22ef17ae8"
+    },
+    {
+      "forward": "ae-MIS-MEM-022->ATOM-MEM-NEW-001::prop-2",
+      "reverse": "ae-ATOM-MEM-NEW-001::prop-2->MIS-MEM-022",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-c93005db3ba3f106"
+    },
+    {
+      "forward": "ae-MIS-MEM-022->ATOM-MEM-NEW-001::prop-3",
+      "reverse": "ae-ATOM-MEM-NEW-001::prop-3->MIS-MEM-022",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-490d64329a8ace81"
+    },
+    {
+      "forward": "ae-MIS-MEM-022->ATOM-MEM-PERF-002::prop-1",
+      "reverse": "ae-ATOM-MEM-PERF-002::prop-1->MIS-MEM-022",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-250774a8dcc95384"
+    },
+    {
+      "forward": "ae-MIS-MEM-022->ATOM-MEM-PERF-002::prop-2",
+      "reverse": "ae-ATOM-MEM-PERF-002::prop-2->MIS-MEM-022",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-788d0361c4fc1495"
+    },
+    {
+      "forward": "ae-MIS-MEM-023->ATOM-MEM-ALLOC-001::prop-1",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-1->MIS-MEM-023",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-083d7c98127cd360"
+    },
+    {
+      "forward": "ae-MIS-MEM-023->ATOM-MEM-ALLOC-001::prop-2",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-2->MIS-MEM-023",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-ac11c447ab6c2402"
+    },
+    {
+      "forward": "ae-MIS-MEM-023->ATOM-MEM-ALLOC-001::prop-3",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-3->MIS-MEM-023",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-44cda83571300ebc"
+    },
+    {
+      "forward": "ae-MIS-MEM-023->ATOM-MEM-ALLOC-001::prop-4",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-4->MIS-MEM-023",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-eed9e90a6e7d7341"
+    },
+    {
+      "forward": "ae-MIS-MEM-023->ATOM-MEM-PERF-002::prop-1",
+      "reverse": "ae-ATOM-MEM-PERF-002::prop-1->MIS-MEM-023",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-695e334c91da0ac9"
+    },
+    {
+      "forward": "ae-MIS-MEM-023->ATOM-MEM-PERF-002::prop-2",
+      "reverse": "ae-ATOM-MEM-PERF-002::prop-2->MIS-MEM-023",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-32b7a042a146e4d9"
+    },
+    {
+      "forward": "ae-MIS-MEM-024->ATOM-MEM-SHARED-001::prop-1",
+      "reverse": "ae-ATOM-MEM-SHARED-001::prop-1->MIS-MEM-024",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-041c2b4df6bca6dd"
+    },
+    {
+      "forward": "ae-MIS-MEM-024->ATOM-MEM-SHARED-001::prop-2",
+      "reverse": "ae-ATOM-MEM-SHARED-001::prop-2->MIS-MEM-024",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-dd6b7038f7fbdf4f"
+    },
+    {
+      "forward": "ae-MIS-MEM-024->ATOM-MEM-SHARED-001::prop-3",
+      "reverse": "ae-ATOM-MEM-SHARED-001::prop-3->MIS-MEM-024",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-c94b5f162cd5cadd"
+    },
+    {
+      "forward": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-001::prop-1",
+      "reverse": "ae-ATOM-MEM-UNIQUE-001::prop-1->MIS-MEM-024",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-ed66d96bd9bed332"
+    },
+    {
+      "forward": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-001::prop-2",
+      "reverse": "ae-ATOM-MEM-UNIQUE-001::prop-2->MIS-MEM-024",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-81700daa513234bf"
+    },
+    {
+      "forward": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-001::prop-3",
+      "reverse": "ae-ATOM-MEM-UNIQUE-001::prop-3->MIS-MEM-024",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-1eb5448821e1bae8"
+    },
+    {
+      "forward": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-002::prop-1",
+      "reverse": "ae-ATOM-MEM-UNIQUE-002::prop-1->MIS-MEM-024",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-00d72bf9e672c528"
+    },
+    {
+      "forward": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-002::prop-2",
+      "reverse": "ae-ATOM-MEM-UNIQUE-002::prop-2->MIS-MEM-024",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-4d0b8b2c845dce84"
+    },
+    {
+      "forward": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-002::prop-3",
+      "reverse": "ae-ATOM-MEM-UNIQUE-002::prop-3->MIS-MEM-024",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-197be69c1ce1dc9f"
+    },
+    {
+      "forward": "ae-MIS-MEM-025->ATOM-MEM-NEW-001::prop-1",
+      "reverse": "ae-ATOM-MEM-NEW-001::prop-1->MIS-MEM-025",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-b6b993c5f25acb4e"
+    },
+    {
+      "forward": "ae-MIS-MEM-025->ATOM-MEM-NEW-001::prop-2",
+      "reverse": "ae-ATOM-MEM-NEW-001::prop-2->MIS-MEM-025",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-71f47f7b684f4d61"
+    },
+    {
+      "forward": "ae-MIS-MEM-025->ATOM-MEM-NEW-001::prop-3",
+      "reverse": "ae-ATOM-MEM-NEW-001::prop-3->MIS-MEM-025",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-00a728933eb300ed"
+    },
+    {
+      "forward": "ae-MIS-MEM-025->ATOM-MEM-UNIQUE-002::prop-1",
+      "reverse": "ae-ATOM-MEM-UNIQUE-002::prop-1->MIS-MEM-025",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-52254a5f3ffef0f6"
+    },
+    {
+      "forward": "ae-MIS-MEM-025->ATOM-MEM-UNIQUE-002::prop-2",
+      "reverse": "ae-ATOM-MEM-UNIQUE-002::prop-2->MIS-MEM-025",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-b17fe30c17e52d14"
+    },
+    {
+      "forward": "ae-MIS-MEM-025->ATOM-MEM-UNIQUE-002::prop-3",
+      "reverse": "ae-ATOM-MEM-UNIQUE-002::prop-3->MIS-MEM-025",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-a9418b051e66f27b"
+    },
+    {
+      "forward": "ae-MIS-MEM-026->ATOM-MEM-SHARED-001::prop-1",
+      "reverse": "ae-ATOM-MEM-SHARED-001::prop-1->MIS-MEM-026",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-cc536520e439d7d2"
+    },
+    {
+      "forward": "ae-MIS-MEM-026->ATOM-MEM-SHARED-001::prop-2",
+      "reverse": "ae-ATOM-MEM-SHARED-001::prop-2->MIS-MEM-026",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-05591f757130be25"
+    },
+    {
+      "forward": "ae-MIS-MEM-026->ATOM-MEM-SHARED-001::prop-3",
+      "reverse": "ae-ATOM-MEM-SHARED-001::prop-3->MIS-MEM-026",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-913966e5e68b7153"
+    },
+    {
+      "forward": "ae-MIS-MEM-026->ATOM-MEM-SHARED-002::prop-1",
+      "reverse": "ae-ATOM-MEM-SHARED-002::prop-1->MIS-MEM-026",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-58925a63489c735e"
+    },
+    {
+      "forward": "ae-MIS-MEM-026->ATOM-MEM-SHARED-002::prop-2",
+      "reverse": "ae-ATOM-MEM-SHARED-002::prop-2->MIS-MEM-026",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-56a072378dbcd29c"
+    },
+    {
+      "forward": "ae-MIS-MEM-026->ATOM-MEM-SHARED-002::prop-3",
+      "reverse": "ae-ATOM-MEM-SHARED-002::prop-3->MIS-MEM-026",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-6c510b562ffc3163"
+    },
+    {
+      "forward": "ae-MIS-MEM-026->ATOM-MEM-WEAK-001::prop-1",
+      "reverse": "ae-ATOM-MEM-WEAK-001::prop-1->MIS-MEM-026",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-91fe210beb3a26b9"
+    },
+    {
+      "forward": "ae-MIS-MEM-026->ATOM-MEM-WEAK-001::prop-2",
+      "reverse": "ae-ATOM-MEM-WEAK-001::prop-2->MIS-MEM-026",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-8246e6b2b3a3e377"
+    },
+    {
+      "forward": "ae-MIS-MEM-026->ATOM-MEM-WEAK-001::prop-3",
+      "reverse": "ae-ATOM-MEM-WEAK-001::prop-3->MIS-MEM-026",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-d1d5fa4d0879ab51"
+    },
+    {
+      "forward": "ae-MIS-MEM-027->ATOM-MEM-LEAK-001::prop-1",
+      "reverse": "ae-ATOM-MEM-LEAK-001::prop-1->MIS-MEM-027",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-60fd024fb325401e"
+    },
+    {
+      "forward": "ae-MIS-MEM-027->ATOM-MEM-LEAK-001::prop-2",
+      "reverse": "ae-ATOM-MEM-LEAK-001::prop-2->MIS-MEM-027",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-41ade6a6120a5879"
+    },
+    {
+      "forward": "ae-MIS-MEM-027->ATOM-MEM-LEAK-001::prop-3",
+      "reverse": "ae-ATOM-MEM-LEAK-001::prop-3->MIS-MEM-027",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-13829f2f5ac92724"
+    },
+    {
+      "forward": "ae-MIS-MEM-027->ATOM-MEM-SHARED-001::prop-1",
+      "reverse": "ae-ATOM-MEM-SHARED-001::prop-1->MIS-MEM-027",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-88b3d4e92ca60ab9"
+    },
+    {
+      "forward": "ae-MIS-MEM-027->ATOM-MEM-SHARED-001::prop-2",
+      "reverse": "ae-ATOM-MEM-SHARED-001::prop-2->MIS-MEM-027",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-67756a71429e2339"
+    },
+    {
+      "forward": "ae-MIS-MEM-027->ATOM-MEM-SHARED-001::prop-3",
+      "reverse": "ae-ATOM-MEM-SHARED-001::prop-3->MIS-MEM-027",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-ca051311186caa5f"
+    },
+    {
+      "forward": "ae-MIS-MEM-027->ATOM-MEM-WEAK-001::prop-1",
+      "reverse": "ae-ATOM-MEM-WEAK-001::prop-1->MIS-MEM-027",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-ccef600f7695dba5"
+    },
+    {
+      "forward": "ae-MIS-MEM-027->ATOM-MEM-WEAK-001::prop-2",
+      "reverse": "ae-ATOM-MEM-WEAK-001::prop-2->MIS-MEM-027",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-395a7258e2ec22e7"
+    },
+    {
+      "forward": "ae-MIS-MEM-027->ATOM-MEM-WEAK-001::prop-3",
+      "reverse": "ae-ATOM-MEM-WEAK-001::prop-3->MIS-MEM-027",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-8dc97918bc314e76"
+    },
+    {
+      "forward": "ae-MIS-MEM-028->ATOM-MEM-ALLOC-001::prop-1",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-1->MIS-MEM-028",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-e10f8d81a106d9a6"
+    },
+    {
+      "forward": "ae-MIS-MEM-028->ATOM-MEM-ALLOC-001::prop-2",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-2->MIS-MEM-028",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-f27dfca2f840b130"
+    },
+    {
+      "forward": "ae-MIS-MEM-028->ATOM-MEM-ALLOC-001::prop-3",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-3->MIS-MEM-028",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-63f3d4267ae48dea"
+    },
+    {
+      "forward": "ae-MIS-MEM-028->ATOM-MEM-ALLOC-001::prop-4",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-4->MIS-MEM-028",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-885478f7d156849c"
+    },
+    {
+      "forward": "ae-MIS-MEM-028->ATOM-MEM-PERF-002::prop-1",
+      "reverse": "ae-ATOM-MEM-PERF-002::prop-1->MIS-MEM-028",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-17813b99947de43c"
+    },
+    {
+      "forward": "ae-MIS-MEM-028->ATOM-MEM-PERF-002::prop-2",
+      "reverse": "ae-ATOM-MEM-PERF-002::prop-2->MIS-MEM-028",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-577f080657a9df20"
+    },
+    {
+      "forward": "ae-MIS-MEM-028->ATOM-MEM-PERF-003::prop-1",
+      "reverse": "ae-ATOM-MEM-PERF-003::prop-1->MIS-MEM-028",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-49a6cbd1896d406d"
+    },
+    {
+      "forward": "ae-MIS-MEM-028->ATOM-MEM-PERF-003::prop-2",
+      "reverse": "ae-ATOM-MEM-PERF-003::prop-2->MIS-MEM-028",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-c8c73c65f277d6e9"
+    },
+    {
+      "forward": "ae-MIS-MEM-028->ATOM-MEM-PERF-003::prop-3",
+      "reverse": "ae-ATOM-MEM-PERF-003::prop-3->MIS-MEM-028",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-d86dcf510021853b"
+    },
+    {
+      "forward": "ae-MIS-MEM-029->ATOM-MEM-PERF-001::prop-1",
+      "reverse": "ae-ATOM-MEM-PERF-001::prop-1->MIS-MEM-029",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-2dacbd9b9c6459b0"
+    },
+    {
+      "forward": "ae-MIS-MEM-029->ATOM-MEM-PERF-001::prop-2",
+      "reverse": "ae-ATOM-MEM-PERF-001::prop-2->MIS-MEM-029",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-1be9c59a34e6ee0d"
+    },
+    {
+      "forward": "ae-MIS-MEM-029->ATOM-MEM-PERF-003::prop-1",
+      "reverse": "ae-ATOM-MEM-PERF-003::prop-1->MIS-MEM-029",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-b611f6a38894f214"
+    },
+    {
+      "forward": "ae-MIS-MEM-029->ATOM-MEM-PERF-003::prop-2",
+      "reverse": "ae-ATOM-MEM-PERF-003::prop-2->MIS-MEM-029",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-d10d9f87f9155919"
+    },
+    {
+      "forward": "ae-MIS-MEM-029->ATOM-MEM-PERF-003::prop-3",
+      "reverse": "ae-ATOM-MEM-PERF-003::prop-3->MIS-MEM-029",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-9093027f91b1ae81"
+    },
+    {
+      "forward": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-001::prop-1",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-1->MIS-MEM-030",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-c732f2e5660c323d"
+    },
+    {
+      "forward": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-001::prop-2",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-2->MIS-MEM-030",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-45f66d660d7a76ce"
+    },
+    {
+      "forward": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-001::prop-3",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-3->MIS-MEM-030",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-c60a0f0a6926709f"
+    },
+    {
+      "forward": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-001::prop-4",
+      "reverse": "ae-ATOM-MEM-ALLOC-001::prop-4->MIS-MEM-030",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-c3b43214cd6b39b7"
+    },
+    {
+      "forward": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-002::prop-1",
+      "reverse": "ae-ATOM-MEM-ALLOC-002::prop-1->MIS-MEM-030",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-4bfe7e9e43935d2b"
+    },
+    {
+      "forward": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-002::prop-2",
+      "reverse": "ae-ATOM-MEM-ALLOC-002::prop-2->MIS-MEM-030",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-91d525dd548bdc35"
+    },
+    {
+      "forward": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-002::prop-3",
+      "reverse": "ae-ATOM-MEM-ALLOC-002::prop-3->MIS-MEM-030",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-0c982aeac255c8e8"
+    },
+    {
+      "forward": "ae-MIS-MEM-031->ATOM-MEM-LEAK-001::prop-1",
+      "reverse": "ae-ATOM-MEM-LEAK-001::prop-1->MIS-MEM-031",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-48d104c979897661"
+    },
+    {
+      "forward": "ae-MIS-MEM-031->ATOM-MEM-LEAK-001::prop-2",
+      "reverse": "ae-ATOM-MEM-LEAK-001::prop-2->MIS-MEM-031",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-b283f5861d12f33d"
+    },
+    {
+      "forward": "ae-MIS-MEM-031->ATOM-MEM-LEAK-001::prop-3",
+      "reverse": "ae-ATOM-MEM-LEAK-001::prop-3->MIS-MEM-031",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-66d71a5848c75215"
+    },
+    {
+      "forward": "ae-MIS-MEM-031->ATOM-MEM-LEAK-002::prop-1",
+      "reverse": "ae-ATOM-MEM-LEAK-002::prop-1->MIS-MEM-031",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-e2aa1ce75300111a"
+    },
+    {
+      "forward": "ae-MIS-MEM-031->ATOM-MEM-LEAK-002::prop-2",
+      "reverse": "ae-ATOM-MEM-LEAK-002::prop-2->MIS-MEM-031",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-3878cbe33bafc295"
+    },
+    {
+      "forward": "ae-MIS-MEM-031->ATOM-MEM-LEAK-002::prop-3",
+      "reverse": "ae-ATOM-MEM-LEAK-002::prop-3->MIS-MEM-031",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-029a76ca7e00f863"
+    },
+    {
+      "forward": "ae-MIS-MEM-031->ATOM-MEM-SHARED-001::prop-1",
+      "reverse": "ae-ATOM-MEM-SHARED-001::prop-1->MIS-MEM-031",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-46505e3c9df3ca78"
+    },
+    {
+      "forward": "ae-MIS-MEM-031->ATOM-MEM-SHARED-001::prop-2",
+      "reverse": "ae-ATOM-MEM-SHARED-001::prop-2->MIS-MEM-031",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-95990e767ba44082"
+    },
+    {
+      "forward": "ae-MIS-MEM-031->ATOM-MEM-SHARED-001::prop-3",
+      "reverse": "ae-ATOM-MEM-SHARED-001::prop-3->MIS-MEM-031",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-5a53ff2484129514"
+    },
+    {
+      "forward": "ae-MIS-MEM-031->ATOM-MEM-WEAK-001::prop-1",
+      "reverse": "ae-ATOM-MEM-WEAK-001::prop-1->MIS-MEM-031",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-44976337cadeb237"
+    },
+    {
+      "forward": "ae-MIS-MEM-031->ATOM-MEM-WEAK-001::prop-2",
+      "reverse": "ae-ATOM-MEM-WEAK-001::prop-2->MIS-MEM-031",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-74d0e1bf5c9e695c"
+    },
+    {
+      "forward": "ae-MIS-MEM-031->ATOM-MEM-WEAK-001::prop-3",
+      "reverse": "ae-ATOM-MEM-WEAK-001::prop-3->MIS-MEM-031",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-354c825f8248b8a8"
+    },
+    {
+      "forward": "ae-MIS-MEM-032->ATOM-MEM-PERF-003::prop-1",
+      "reverse": "ae-ATOM-MEM-PERF-003::prop-1->MIS-MEM-032",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-69545c14f1dba28c"
+    },
+    {
+      "forward": "ae-MIS-MEM-032->ATOM-MEM-PERF-003::prop-2",
+      "reverse": "ae-ATOM-MEM-PERF-003::prop-2->MIS-MEM-032",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-9cabb7fe6e8d10ca"
+    },
+    {
+      "forward": "ae-MIS-MEM-032->ATOM-MEM-PERF-003::prop-3",
+      "reverse": "ae-ATOM-MEM-PERF-003::prop-3->MIS-MEM-032",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-9ad3aae4c3f9a86d"
+    },
+    {
+      "forward": "ae-MIS-MEM-032->ATOM-MEM-PERF-004::prop-1",
+      "reverse": "ae-ATOM-MEM-PERF-004::prop-1->MIS-MEM-032",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-694c905cd5a8c6d7"
+    },
+    {
+      "forward": "ae-MIS-MEM-032->ATOM-MEM-PERF-004::prop-2",
+      "reverse": "ae-ATOM-MEM-PERF-004::prop-2->MIS-MEM-032",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-d9146446faffd9f5"
+    },
+    {
+      "forward": "ae-MIS-MEM-032->ATOM-MEM-PERF-004::prop-3",
+      "reverse": "ae-ATOM-MEM-PERF-004::prop-3->MIS-MEM-032",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-3ea4bffd71a76410"
+    },
+    {
+      "forward": "ae-MIS-UB-001->ATOM-UB-GRAY-001::prop-1",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-001",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-a770956e3baa0f28"
+    },
+    {
+      "forward": "ae-MIS-UB-001->ATOM-UB-GRAY-001::prop-2",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-001",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-ee981d268b861f98"
+    },
+    {
+      "forward": "ae-MIS-UB-002->ATOM-UB-GRAY-001::prop-1",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-002",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-250cac81234217c7"
+    },
+    {
+      "forward": "ae-MIS-UB-002->ATOM-UB-GRAY-001::prop-2",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-002",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-5f8ca1c467dad523"
+    },
+    {
+      "forward": "ae-MIS-UB-003->ATOM-UB-GRAY-001::prop-1",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-003",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-ee9a199e66350e29"
+    },
+    {
+      "forward": "ae-MIS-UB-003->ATOM-UB-GRAY-001::prop-2",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-003",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-84620f108bfe6803"
+    },
+    {
+      "forward": "ae-MIS-UB-004->ATOM-UB-GRAY-001::prop-1",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-004",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-7ef9c26abcf52290"
+    },
+    {
+      "forward": "ae-MIS-UB-004->ATOM-UB-GRAY-001::prop-2",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-004",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-00c508c5b26dffbc"
+    },
+    {
+      "forward": "ae-MIS-UB-008->ATOM-UB-GRAY-001::prop-1",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-008",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-3647e1e9b303a4c2"
+    },
+    {
+      "forward": "ae-MIS-UB-008->ATOM-UB-GRAY-001::prop-2",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-008",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-98d59ef511cd0e96"
+    },
+    {
+      "forward": "ae-MIS-UB-012->ATOM-UB-GRAY-001::prop-1",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-012",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-ad1d7fffb26586cd"
+    },
+    {
+      "forward": "ae-MIS-UB-012->ATOM-UB-GRAY-001::prop-2",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-012",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-36ffca3b534d240f"
+    },
+    {
+      "forward": "ae-MIS-UB-013->ATOM-UB-GRAY-001::prop-1",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-013",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-477cd6ece510b014"
+    },
+    {
+      "forward": "ae-MIS-UB-013->ATOM-UB-GRAY-001::prop-2",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-013",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-9a8436443525df06"
+    },
+    {
+      "forward": "ae-MIS-UB-014->ATOM-UB-GRAY-001::prop-1",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-014",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-2bfc635ea2750490"
+    },
+    {
+      "forward": "ae-MIS-UB-014->ATOM-UB-GRAY-001::prop-2",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-014",
+      "decision": "MODIFY",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-743533081449977d"
+    },
+    {
+      "forward": "ae-MIS-UB-015->ATOM-UB-GRAY-001::prop-1",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-015",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-96c9d6b5818f1e1e"
+    },
+    {
+      "forward": "ae-MIS-UB-015->ATOM-UB-GRAY-001::prop-2",
+      "reverse": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-015",
+      "decision": "APPROVE",
+      "via": "domain_symmetry_assertion",
+      "symmetry_proof_id": "sym-proof-a4bba2de2f4b86c9"
+    }
+  ],
+  "needs_human": []
+}
