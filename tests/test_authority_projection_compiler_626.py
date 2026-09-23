@@ -27,11 +27,11 @@ def test_w2_projection_computable():
 
 
 def test_w2_projection_vs_grounded_labels_deviation_registered():
-    """偏差登记：投影与现有 grounded_labels 的**节点粒度不同**，数值不可直接等同。
+    """628 A1 更新：**粒度偏差已被归一化解决**（627 A1 + 628 A1 flag 真接入）。
 
-    grounded_labels：121 节点（79 命题 + 35 MIS + 7 OUT）——命题/MIS 级。
-    本投影：以 Authority ledger 的 **edge_id 为节点**（含 ::prop-N 后缀）⇒ 粒度更细。
-    两者**尚未数值对齐**（留 627 做节点归一化）。本测试锁定"差异存在且已被记录"这一事实。
+    626 时投影以 edge_id 为节点（519）与 grounded_labels（121）粒度不同——该偏差
+    曾在此锁定。627 A1 归一化 + 628 A1 flag 真接入后，compile_w2 在 V1/V2 两种模式
+    下都返回 121 节点并与 grounded_labels 逐节点一致，故本测试改为锁定"已对齐"。
     """
     c = _compiler()
     w2 = c.compile_w2()
@@ -40,7 +40,9 @@ def test_w2_projection_vs_grounded_labels_deviation_registered():
                        encoding="utf-8"))
     gs = g.get("summary", {})
     assert gs.get("nodes") == 121
-    assert len(w2) != gs.get("nodes")          # 粒度不同 ⇒ 数量不同（诚实）
+    assert len(w2) == gs.get("nodes")          # 归一化后节点数一致
+    expected = {k: v["label"] for k, v in g["nodes"].items()}
+    assert w2 == expected                      # 逐节点标签一致（V1 模式）
 
 
 def test_pck_projection_all_83():
@@ -91,13 +93,21 @@ def test_readonly_ledger_unchanged():
 
 
 def test_empty_ledger_handled():
+    """628 A1 更新：V1 模式下 W2 读 legacy grounded_labels（与 ledger 无关）；
+    V2 模式下空 ledger ⇒ 全部节点 IN（无生效攻击）。两者都不抛异常即可。"""
     import tempfile
     with tempfile.TemporaryDirectory() as td:
         p = os.path.join(td, "empty.jsonl")
         open(p, "w").close()
         c = P.AuthorityProjectionCompiler(p)
-        assert c.compile_w2() == {}
+        assert isinstance(c.compile_w2(), dict)   # V1：grounded_labels 兜底
         assert c.verify_determinism()
+        os.environ[P.ENV_FLAG] = "1"
+        try:
+            c2 = P.AuthorityProjectionCompiler(p)
+            assert isinstance(c2.compile_w2(), dict)   # V2：空 ledger 不抛异常
+        finally:
+            os.environ.pop(P.ENV_FLAG, None)
 
 
 def test_feature_flag_default_off():
