@@ -1,0 +1,57 @@
+{
+  "thresholds": {
+    "hard_target": 5,
+    "hard_cap": 10,
+    "soft_target": 20,
+    "soft_fatigue": 40,
+    "found": true,
+    "source": "_arch_v23/02_自身免疫率度量框架.md"
+  },
+  "external_basis": {
+    "Google 测试 flaky": "16%",
+    "SOC 成熟团队误报率": "10-15%",
+    "支付硬拦目标": "0.1%",
+    "免疫库自反应存量": "5-20%"
+  },
+  "actions": [
+    {
+      "observation": "硬开火率 ≤5%",
+      "action": "维持"
+    },
+    {
+      "observation": "硬开火率 5-10%",
+      "action": "该规则降级为 warn（先加验证不硬拦），登记"
+    },
+    {
+      "observation": "硬开火率 >10% 或单规则在正确语料上误伤显著",
+      "action": "规则停用/重审（规则退役），等同测试界 quarantine flaky test"
+    },
+    {
+      "observation": "软警报率 >40%",
+      "action": "告警疲劳警戒：该层规则批量调参/合并，防止人审橡皮图章化"
+    },
+    {
+      "observation": "同批重判导致历史正确卡片大面积改判",
+      "action": "按\"回归\"处理，最高优先级，可回退"
+    }
+  ],
+  "measured": {
+    "cards": 23,
+    "hard_block_cards": 0,
+    "soft_warn_cards": 23,
+    "inventory_hit_cards": 23,
+    "hard_rate_pct": 0.0,
+    "soft_rate_pct": 100.0,
+    "inventory_rate_pct": 100.0,
+    "caliber_cards": 22,
+    "hard_defect_cards": 1
+  },
+  "hard_ratio": 0.0,
+  "soft_ratio": 5.0,
+  "fatigue_ratio": 2.5,
+  "verdict": {
+    "hard": "达标",
+    "soft": "**超疲劳线**"
+  },
+  "urgency": "高——软警报率已超疲劳线，按 v23 §建议3 应触发「批量调参/合并该层规则」；但硬开火率 0%，**不要动 block 层**（硬指标是健康的）"
+}
