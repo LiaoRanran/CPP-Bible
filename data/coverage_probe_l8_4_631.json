@@ -1,0 +1,54 @@
+{
+  "vector": "L8.4",
+  "name": "透明日志伪造",
+  "prod_entries": 39,
+  "scenarios": [
+    {
+      "id": 0,
+      "name": "原样拷贝（基线）",
+      "expect_valid": true,
+      "chain_valid": true,
+      "entries": 39,
+      "as_expected": true
+    },
+    {
+      "id": 1,
+      "name": "删中间条目",
+      "expect_valid": false,
+      "chain_valid": false,
+      "removed_index": 19,
+      "as_expected": true
+    },
+    {
+      "id": 2,
+      "name": "篡改 vsa_hash",
+      "expect_valid": false,
+      "chain_valid": false,
+      "broken_at": [
+        19
+      ],
+      "as_expected": true
+    },
+    {
+      "id": 3,
+      "name": "篡改 entry_hash",
+      "expect_valid": false,
+      "chain_valid": false,
+      "broken_at": [
+        19,
+        20
+      ],
+      "as_expected": true
+    },
+    {
+      "id": 4,
+      "name": "伪造追加（凭证不存在）",
+      "expect_rejected": true,
+      "ok": false,
+      "error": "not found: C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\vsa\\__does_not_exist__.json",
+      "rejected": true,
+      "as_expected": true
+    }
+  ],
+  "detected_all": true
+}
