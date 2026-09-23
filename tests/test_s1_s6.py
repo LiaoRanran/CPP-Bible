@@ -179,8 +179,15 @@ def _debt(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, tickets: list[dict]) 
 
 
 def _tk(**over: str) -> dict:
+    # 628 A4：日期动态化（原硬编码 due=2026-09-20 已过期，致 test_clean_ledger_passes
+    # 误报"DEBT-001 已到期未清"）。本测试验证的是台账**逻辑**而非具体日期，
+    # 故 clean 场景的 opened/due 跟随"今天"滚动；blocking 场景仍用固定过去日期。
+    from datetime import date, timedelta
+    today = date.today()
     t = {"id": "DEBT-001", "cause": "c", "risk": "r", "compensation": "cp",
-         "owner": "human:liaoranran", "opened": "2026-09-10", "due": "2026-09-20"}
+         "owner": "human:liaoranran",
+         "opened": (today - timedelta(days=10)).isoformat(),
+         "due": (today + timedelta(days=30)).isoformat()}
     t.update(over)
     return t
 
