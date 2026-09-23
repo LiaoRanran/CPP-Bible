@@ -1,0 +1,57 @@
+# PCK 证书（620 B1 迁移 + C3 Authority 同步 + 621 C3 ABSTAIN 同步）
+schema_version: 619-pck-v1
+claim:
+  id: ATOM-MEM-PERF-002
+  statement: SSO（Small String Optimization）：短于阈值的字符串存在 string 对象内部缓冲，零堆分配；达到阈值 才落堆——本机
+    libstdc++（GCC 15.3.0）阈值 15 字符、sizeof=32，len≤15 构造/拷贝 allocs=0（赋值 走同一实现路径），len=16
+    首次落堆。SSO 是实现内建（标准不要求），三实现参数不保证一致 （libstdc++ 32/15、libc++ 24/22、MSVC 32/15——libc++
+    与另两家不同），阈值不可移植。历史： C++11 禁 COW 后 libstdc++ 才全面转向 SSO。
+  domain: mem
+  type: observation
+evidence:
+- type: replay
+  ref: evidence/mem/EV-MEM-029.md
+- type: replay
+  ref: evidence/mem/EV-MEM-029.md
+negative_tests:
+- mutation_id: atoms/mem/ATOM-MEM-PERF-002.md|M1|-
+  result: n_a
+- mutation_id: atoms/mem/ATOM-MEM-PERF-002.md|M2|M2 门禁读取面内无可变形路径（变异点会落在门禁不读的注释/正文）
+  result: n_a
+- mutation_id: atoms/mem/ATOM-MEM-PERF-002.md|M3|M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:`/断言条目/run_match_keys
+    的字面量都在正文/注释）
+  result: n_a
+- mutation_id: atoms/mem/ATOM-MEM-PERF-002.md|M4|-
+  result: n_a
+- mutation_id: 'atoms/mem/ATOM-MEM-PERF-002.md|M5|[命题 prop-2] claim_type: inference
+    → observation（自标绕过）'
+  result: blocked
+- mutation_id: atoms/mem/ATOM-MEM-PERF-002.md|M6|重复 id 键（后写覆盖前写）
+  result: blocked
+- mutation_id: atoms/mem/ATOM-MEM-PERF-002.md|M6|缩进提升（id 多缩一格，改变嵌套归属）
+  result: blocked
+- mutation_id: atoms/mem/ATOM-MEM-PERF-002.md|M6|全角键名（ｉｄ）
+  result: blocked
+- mutation_id: atoms/mem/ATOM-MEM-PERF-002.md|M6|块式 → flow 写法（claim_structured）
+  result: blocked
+- mutation_id: atoms/mem/ATOM-MEM-PERF-002.md|M7|读数篡改（2 → 3）
+  result: blocked
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: approved
+  review_method: batch_authorization
+  authority_ref: dec-000279
+  authority_power: ACCEPT
+  authority_decided_at: '2026-09-19T23:29:26'
+  authority_source: import:data/human_attack_edge_annotations.jsonl
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+  abstain_state: UNDECIDED
+  abstain_reason: verdict=缺失，证据不足以判定（含 infra_error 情形）
+  abstain_is_abstain: true
+provenance:
+  commit: a0582f297c3cce6f0bea513a63b5a6b738834cd4
+  first_authorized_at: '2026-09-11'

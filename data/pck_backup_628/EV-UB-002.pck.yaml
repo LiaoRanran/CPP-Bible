@@ -1,0 +1,80 @@
+# PCK 证书（620 B1 迁移 + C3 Authority 同步 + 621 C3 ABSTAIN 同步）
+schema_version: 619-pck-v1
+claim:
+  id: EV-UB-002
+  statement: 通过不兼容类型指针访问对象（严格别名）是**未定义行为**：优化器会假定不同类型的指针不指向同一 对象，并据此**消除对同一对象的再次读取**——该假设在
+    -O2 下默认启用，在 -fno-strict-aliasing 下关闭。
+  domain: ub
+  type: observation
+evidence:
+- type: artifact
+  ref: evidence/ub/EV-UB-002.md
+  hash: sha256:900a3e43f70ed68bcdf621d907a39996f62ec289fe4e453c910aa435c027575e
+negative_tests:
+- mutation_id: evidence/ub/EV-UB-002.md|M1|删 artifact_sha256
+  result: blocked
+- mutation_id: evidence/ub/EV-UB-002.md|M2|路径转大写（Examples/atoms/_atom_strict_alias.cpp
+    → EXAMPLES/ATOMS/_ATOM_STRICT_ALIAS.CPP）
+  result: blocked
+- mutation_id: evidence/ub/EV-UB-002.md|M2|路径加 ./（Examples/atoms/_atom_strict_alias.cpp
+    → ./Examples/atoms/_atom_strict_alias.cpp）
+  result: blocked
+- mutation_id: evidence/ub/EV-UB-002.md|M2|分隔符换反斜杠（Examples/atoms/_atom_strict_alias.cpp
+    → Examples\atoms\_atom_strict_alias.cpp）
+  result: blocked
+- mutation_id: evidence/ub/EV-UB-002.md|M3|contains 追加样板候选（弱化：恒真文本即可满足）
+  result: blocked
+- mutation_id: evidence/ub/EV-UB-002.md|M4|注入通用符号 main
+  result: blocked
+- mutation_id: evidence/ub/EV-UB-002.md|M4|注入通用符号 ret
+  result: blocked
+- mutation_id: evidence/ub/EV-UB-002.md|M4|注入 ABI 帧符号 .p2align
+  result: blocked
+- mutation_id: 'evidence/ub/EV-UB-002.md|M4|注入 contains_any: [''.file'']（合法形态）'
+  result: blocked
+- mutation_id: evidence/ub/EV-UB-002.md|M5|-
+  result: n_a
+- mutation_id: evidence/ub/EV-UB-002.md|M6|重复 id 键（后写覆盖前写）
+  result: blocked
+- mutation_id: evidence/ub/EV-UB-002.md|M6|缩进提升（id 多缩一格，改变嵌套归属）
+  result: blocked
+- mutation_id: evidence/ub/EV-UB-002.md|M6|全角键名（ｉｄ）
+  result: blocked
+- mutation_id: evidence/ub/EV-UB-002.md|M6|块式 → flow 写法（matrix）
+  result: escaped
+- mutation_id: 'evidence/ub/EV-UB-002.md|M6|matrix 删键（移除 compiler: [GCC 15.3.0]）'
+  result: blocked
+- mutation_id: 'evidence/ub/EV-UB-002.md|M6|matrix 非法值（compiler: [GCC 15.3.0] → 首元素
+    totally-not-a-compiler xyz）'
+  result: blocked
+- mutation_id: 'evidence/ub/EV-UB-002.md|M6|matrix 删键（移除 std: [c++23]）'
+  result: blocked
+- mutation_id: 'evidence/ub/EV-UB-002.md|M6|matrix 非法值（std: [c++23] → 首元素 c++99）'
+  result: blocked
+- mutation_id: 'evidence/ub/EV-UB-002.md|M6|matrix 删键（移除 opt: [-O0, -O2]）'
+  result: blocked
+- mutation_id: 'evidence/ub/EV-UB-002.md|M6|matrix 非法值（opt: [-O0, -O2] → 首元素 -O9）'
+  result: blocked
+- mutation_id: 'evidence/ub/EV-UB-002.md|M6|matrix 非法值（arch: [x86-64] → 首元素 z80-nonexistent）'
+  result: blocked
+- mutation_id: evidence/ub/EV-UB-002.md|M7|sha256 改一位（900a3e43… → 000a3e43…）
+  result: blocked
+- mutation_id: evidence/ub/EV-UB-002.md|M7|读数篡改（2 → 3）
+  result: blocked
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+  authority_ref: null
+  authority_note: 无匹配的 Authority 决策（不代签，保持 pending）
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+  abstain_state: SUPPORTED
+  abstain_reason: verdict=confirm 且证据充分、未过期
+  abstain_is_abstain: false
+provenance:
+  commit: d3b2cb709b2d84921d2e2571cdb8b90011ff8b3a
+  first_authorized_at: unknown

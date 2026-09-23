@@ -1,0 +1,61 @@
+# PCK 证书（620 B1 迁移 + C3 Authority 同步 + 621 C3 ABSTAIN 同步）
+schema_version: 619-pck-v1
+claim:
+  id: ATOM-MEM-ALLOC-001
+  statement: allocator 是 STL 容器的内存**策略**抽象：容器只经 allocator_traits 要内存，不直接调 new/delete。
+    C++17 后 std::allocator 只剩 allocate/deallocate 纯分配层（construct/destroy 移除、统一走 traits），
+    分配与对象构造是两个独立动作。策略可整体替换：自定义 arena 分配器接入 vector 后 16 次 push_back 零堆分配；std::pmr（C++17）把策略变成运行时多态——monotonic_buffer_resource
+    用栈缓冲伺候全部 分配、全程不触碰上游。
+  domain: mem
+  type: observation
+evidence:
+- type: replay
+  ref: evidence/mem/EV-MEM-026.md
+- type: replay
+  ref: evidence/mem/EV-MEM-027.md
+- type: replay
+  ref: evidence/mem/EV-MEM-028.md
+- type: replay
+  ref: evidence/mem/EV-MEM-026.md
+negative_tests:
+- mutation_id: atoms/mem/ATOM-MEM-ALLOC-001.md|M1|-
+  result: n_a
+- mutation_id: atoms/mem/ATOM-MEM-ALLOC-001.md|M2|M2 门禁读取面内无可变形路径（变异点会落在门禁不读的注释/正文）
+  result: n_a
+- mutation_id: atoms/mem/ATOM-MEM-ALLOC-001.md|M3|M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:`/断言条目/run_match_keys
+    的字面量都在正文/注释）
+  result: n_a
+- mutation_id: atoms/mem/ATOM-MEM-ALLOC-001.md|M4|-
+  result: n_a
+- mutation_id: 'atoms/mem/ATOM-MEM-ALLOC-001.md|M5|[命题 prop-4] claim_type: inference
+    → observation（自标绕过）'
+  result: blocked
+- mutation_id: atoms/mem/ATOM-MEM-ALLOC-001.md|M6|重复 id 键（后写覆盖前写）
+  result: blocked
+- mutation_id: atoms/mem/ATOM-MEM-ALLOC-001.md|M6|缩进提升（id 多缩一格，改变嵌套归属）
+  result: blocked
+- mutation_id: atoms/mem/ATOM-MEM-ALLOC-001.md|M6|全角键名（ｉｄ）
+  result: blocked
+- mutation_id: atoms/mem/ATOM-MEM-ALLOC-001.md|M6|块式 → flow 写法（claim_structured）
+  result: blocked
+- mutation_id: atoms/mem/ATOM-MEM-ALLOC-001.md|M7|读数篡改（1 → 2）
+  result: blocked
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: approved
+  review_method: batch_authorization
+  authority_ref: dec-000232
+  authority_power: ACCEPT
+  authority_decided_at: '2026-09-19T23:29:26'
+  authority_source: import:data/human_attack_edge_annotations.jsonl
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+  abstain_state: UNDECIDED
+  abstain_reason: verdict=缺失，证据不足以判定（含 infra_error 情形）
+  abstain_is_abstain: true
+provenance:
+  commit: a0582f297c3cce6f0bea513a63b5a6b738834cd4
+  first_authorized_at: '2026-09-11'

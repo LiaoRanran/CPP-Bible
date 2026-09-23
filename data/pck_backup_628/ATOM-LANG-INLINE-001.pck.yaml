@@ -1,0 +1,62 @@
+# PCK 证书（620 B1 迁移 + C3 Authority 同步 + 621 C3 ABSTAIN 同步）
+schema_version: 619-pck-v1
+claim:
+  id: ATOM-LANG-INLINE-001
+  statement: '`inline` 函数（及变量）的定义可以出现在**多个翻译单元**，但各定义必须由**相同的 token 序列**构成 （[basic.def.odr]/16.4）；违反属
+    ill-formed, **no diagnostic required**——实测 GCC 家族**零诊断**， 且**当两个定义的可观测结果不同时**，其可观测行为由**链接顺序**与**优化档**共同决定：-O0（未内联）下链接器只保留同名符号的一个定义
+    （取先遇到的），行为随链接顺序改变；-O2（内联发生）下各 TU 内联「自己看到的定义」，行为与链接顺序 无关、两个值并列出现。'
+  domain: lang
+  type: observation
+evidence:
+- type: replay
+  ref: evidence/lang/EV-LANG-001.md
+- type: replay
+  ref: evidence/lang/EV-LANG-002.md
+- type: replay
+  ref: evidence/lang/EV-LANG-001.md
+- type: replay
+  ref: evidence/lang/EV-LANG-002.md
+- type: replay
+  ref: evidence/lang/EV-LANG-001.md
+negative_tests:
+- mutation_id: atoms/lang/ATOM-LANG-INLINE-001.md|M1|-
+  result: n_a
+- mutation_id: atoms/lang/ATOM-LANG-INLINE-001.md|M2|M2 门禁读取面内无可变形路径（变异点会落在门禁不读的注释/正文）
+  result: n_a
+- mutation_id: atoms/lang/ATOM-LANG-INLINE-001.md|M3|M3 门禁读取面内无可弱化点（`_in`/`-Werror`/`count:`/断言条目/run_match_keys
+    的字面量都在正文/注释）
+  result: n_a
+- mutation_id: atoms/lang/ATOM-LANG-INLINE-001.md|M4|-
+  result: n_a
+- mutation_id: 'atoms/lang/ATOM-LANG-INLINE-001.md|M5|[命题 prop-3] claim_type: inference
+    → observation（自标绕过）'
+  result: blocked
+- mutation_id: atoms/lang/ATOM-LANG-INLINE-001.md|M6|重复 id 键（后写覆盖前写）
+  result: blocked
+- mutation_id: atoms/lang/ATOM-LANG-INLINE-001.md|M6|缩进提升（id 多缩一格，改变嵌套归属）
+  result: blocked
+- mutation_id: atoms/lang/ATOM-LANG-INLINE-001.md|M6|全角键名（ｉｄ）
+  result: blocked
+- mutation_id: atoms/lang/ATOM-LANG-INLINE-001.md|M6|块式 → flow 写法（status_history）
+  result: blocked
+- mutation_id: atoms/lang/ATOM-LANG-INLINE-001.md|M7|读数篡改（1 → 2）
+  result: blocked
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: approved
+  review_method: batch_authorization
+  authority_ref: dec-000374
+  authority_power: OVERRIDE
+  authority_decided_at: '2026-09-19T23:29:26'
+  authority_source: import:data/human_attack_edge_annotations.jsonl
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+  abstain_state: UNDECIDED
+  abstain_reason: verdict=缺失，证据不足以判定（含 infra_error 情形）
+  abstain_is_abstain: true
+provenance:
+  commit: d6c3e0453d9ec341c4e760f86a7fae5b647f7fbc
+  first_authorized_at: unknown

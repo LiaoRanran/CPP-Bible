@@ -1,0 +1,81 @@
+# PCK 证书（620 B1 迁移 + C3 Authority 同步 + 621 C3 ABSTAIN 同步）
+schema_version: 619-pck-v1
+claim:
+  id: EV-MEM-030
+  statement: SSO 的操作代价差是确定性的分配次数差：短字符串（≤阈值）拷贝零堆分配（只搬对象内 32 字节 缓冲；赋值走同一实现路径，未单列观测行）；长字符串同样的操作每次都要
+    1 次堆分配；短+短拼接 一旦越过阈值（10+10=20>15），结果立即落堆 1 次。性能口径用分配次数而非墙钟（墙钟不可复现， 沿 EV-MEM-008
+    先例）。
+  domain: mem
+  type: observation
+evidence:
+- type: artifact
+  ref: evidence/mem/EV-MEM-030.md
+  hash: sha256:06579f60872a4111e9ff4a9531e30e1925a54507bafa7e09e329f7cfa754d77e
+negative_tests:
+- mutation_id: evidence/mem/EV-MEM-030.md|M1|删 artifact_sha256
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-030.md|M2|路径转大写（Examples/atoms/_atom_sso_cost.cpp
+    → EXAMPLES/ATOMS/_ATOM_SSO_COST.CPP）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-030.md|M2|路径加 ./（Examples/atoms/_atom_sso_cost.cpp
+    → ./Examples/atoms/_atom_sso_cost.cpp）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-030.md|M2|分隔符换反斜杠（Examples/atoms/_atom_sso_cost.cpp
+    → Examples\atoms\_atom_sso_cost.cpp）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-030.md|M3|contains 追加样板候选（弱化：恒真文本即可满足）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-030.md|M4|注入通用符号 main
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-030.md|M4|注入通用符号 ret
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-030.md|M4|注入 ABI 帧符号 .p2align
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-030.md|M4|注入 contains_any: [''.file'']（合法形态）'
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-030.md|M5|-
+  result: n_a
+- mutation_id: evidence/mem/EV-MEM-030.md|M6|重复 id 键（后写覆盖前写）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-030.md|M6|缩进提升（id 多缩一格，改变嵌套归属）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-030.md|M6|全角键名（ｉｄ）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-030.md|M6|块式 → flow 写法（matrix）
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-030.md|M6|matrix 删键（移除 compiler: [GCC 15.3.0]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-030.md|M6|matrix 非法值（compiler: [GCC 15.3.0] →
+    首元素 totally-not-a-compiler xyz）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-030.md|M6|matrix 删键（移除 std: [c++23]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-030.md|M6|matrix 非法值（std: [c++23] → 首元素 c++99）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-030.md|M6|matrix 删键（移除 opt: [-O0, -O2]）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-030.md|M6|matrix 非法值（opt: [-O0, -O2] → 首元素 -O9）'
+  result: blocked
+- mutation_id: 'evidence/mem/EV-MEM-030.md|M6|matrix 非法值（arch: [x86-64] → 首元素 z80-nonexistent）'
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-030.md|M7|sha256 改一位（06579f60… → 16579f60…）
+  result: blocked
+- mutation_id: evidence/mem/EV-MEM-030.md|M7|读数篡改（30 → 31）
+  result: blocked
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+  authority_ref: null
+  authority_note: 无匹配的 Authority 决策（不代签，保持 pending）
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+  abstain_state: SUPPORTED
+  abstain_reason: verdict=confirm 且证据充分、未过期
+  abstain_is_abstain: false
+provenance:
+  commit: d3b2cb709b2d84921d2e2571cdb8b90011ff8b3a
+  first_authorized_at: unknown
