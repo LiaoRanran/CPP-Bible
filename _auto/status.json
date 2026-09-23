@@ -1,11 +1,11 @@
 {
   "state": "awaiting_review",
-  "active_batch": 629,
-  "next_batch": 630,
-  "last_completed_batch": 629,
-  "last_commit": "e4d57538",
+  "active_batch": 630,
+  "next_batch": 631,
+  "last_completed_batch": 630,
+  "last_commit": "53582fe2",
   "last_review_at": "2026-09-23",
-  "current_task": "629: 20/20 任务全完成（A 自身免疫率首次可度量100%=23/23+格式过敏率0%；B 验证器攻击面8层×35向量+历史23事件映射+未覆盖P0/P1/P2；C 纯标准库RSA-2048真非对称+V2账本452条上链锚定+AST独立性证明L2+端到端双签编排；D 目标函数Top20种子+第八轮沙箱escaped0+三维联测不对称1406.5倍；E push/CI/交人材料；F run_629_gate PASS；不push不代签），awaiting_review",
+  "current_task": "630: 14/14 任务全完成（修自身免疫率口径：132条warn诊断+方案甲auto42/human90+干跑三情景+阈值对照硬开火率0%达标软100%超疲劳线2.5倍；push 100commit且CI四门禁全绿replay/concurrency/gate/quality仅pytest红；v23补强coverage第四元16/35+攻击面时间轴×调度轴+batch按标记核验；测试债19项分类修4留11；run_630_gate PASS），awaiting_review",
   "prev_current_task_621": "621: 17/17 任务全完成（新 mutation 生成 + CI 竞态根治 + 雷6 弃权三态 + 30 条逐条人审落地），awaiting_review",
   "worker_model": "CodeBuddy (free daily quota)",
   "consecutive_errors": 0,
@@ -155,11 +155,19 @@
       "verdict": "awaiting_review",
       "objective": "自身免疫率 × 验证器攻击面 × 他验深化 × 闭环第八轮（任务0 + A1-A3 + B1-B3 + C1-C4 + D1-D3 + E1-E3 + F1-F3 = 20/20）",
       "notes": "22 commit (889a3bc8~F3)。① 任务0 基线台账（§一 standing baseline 全对上：gate 命中 191=warn186+advice5+block0 实测一致；vsa/日志软项漂移按 §十一.3 标注 14→21 张 / 23→32 条）；② **A1 自身免疫率首次可度量**：verified 干净卡 23 张全部被 warn（**100%**），分桶=硬缺陷 1 + **命题级口径 22**（老卡 draft 命题未绑定 vs 规则要求命题级字段）；③ **A2 误报注入探针**（atoms/evidence 整树镜像沙箱，5 卡 × 5 类语义等价格式微扰）：**20 次有效扰动零新增 warn ⇒ 格式过敏率 0%**（排除「标点/空白驱动误报」这一解释）+ 混淆矩阵 TP124/FN1/FP0/TN成立；④ A3 深色科技风仪表盘（逃逸率 + 混淆矩阵 + 自身免疫率分桶，纯内联自包含）；⑤ **B1 验证器攻击面分类学**：8 层模型 × 35 向量 + risk 分级 + 已有探针覆盖 24/35（v21 Top1 从调研结论变为可度量资产）；⑥ B2 历史攻击映射：603-629 **23 条真实事件 → 向量**，命中 15/35、**零命中 20**；⑦ B3 未覆盖面清单：P0 2 / P1 16 / P2 2（score = risk + 无探针 + 零事件）+ 探针设计建议只写不实现；⑧ **C1 VSA 非对称签名**：纯标准库 RSA-2048 + PKCS#1 v1.5 + SHA-256（Miller-Rabin 40 轮，实测 gen 0.19-1.3s / sign 32ms / verify 0.3ms），篡改/换钥/全零伪造全拒；**关键诚实=算法独立≠信任根独立**（公私钥同主体）⇒ 公钥托管列交人项；私钥只落临时目录、全仓零密钥落盘；⑨ **C2 V2 Authority 账本接入透明日志**：452 条逐条哈希链（复用 628 `_entry_hash` 口径）+ 链根一行锚定进 628 生产日志（index 28）+ 合规锚定凭证（index 30）；⑩ **C3 独立性静态证明**（AST）：两验证端零 import 本项目工具、不含 gate_engine；如实登记账本读取=**被验证对象非信任依赖**（口径不符但不改 628）；独立性=L2，L1/L3/L4 未达成；⑪ **C4 端到端他验编排**：独立验证 → 628 形态 HMAC 凭证 → RSA 双签 → 临时日志入册 → 取回独立重验 + 篡改检测，**生产日志零漂移 29→29**（627 引入的 `CPPBIBLE_TRANSPARENCY_LOG` 隔离机制首次被用足）；⑫ **D1 攻击目标函数精化**：乘积式三面交叉（disagreement × ambiguity × provenance），1593 候选 → Top20 种子 + 代理定义显式登记；⑬ **D2 第八轮沙箱实跑**：blocked 10 / detected_nonblock 0 / neutral 10 / **escaped 0** / 70.2s / 受控零污染；**诚实登记未达「新增触达 >36/67」**（Top20 只触发 1 条已有规则 EV-FM-REQUIRED；根因=v7 无 target_rule 致 M1 字段反推失真 + disagreement 代理奖励已被拦样本）；⑭ **D3 三维联测**：逃逸 0.0711% × 自身免疫 100% × 触达 53.7%，**不对称 1406.5×**；核心结论=**误报与漏报同时存在 ⇒ 判据错位**（严在已验证卡形式细节、空在盲区规则），并登记「自身免疫率无历史点 ⇒ 时间维度 tradeoff 不可量化」；⑮ E1 push 裁决材料（77 commit 分组 + 逐 job 风险 + 三方案；pytest job 预判仍有既有红）/ E2 CI 四 job 审计（quality:26、gate:496 两处 needs:[replay] 在位）/ E3 交人项 15 项（628 遗留 7 + 629 新增 8，分类+紧迫度）；⑯ **F1 收工门禁 PASS**（14 工具 --check + git 交叉核验 + 整目录 ruff + mypy 0 + 92 例测试 + 非 slow **新增失败 0/基线消失 0** + 受控零污染 + AST 自证未跑监工门禁 + 未改 ci.yml）；⑰ F2 验收报告 + F3 status/outbox。**批内自纠 3 项**：(a) C2 首版 anchor 非确定性导致 628 B3 哈希漂移（真实回归）→ 改为确定性 anchor + 凭证一次性写入 + 回滚 4 条**未提交**重复条目（已提交历史一字未动）+ 重建字节一致 anchor，现 628 B3/B4 全绿；(b) F1 基线首测 19 项含 7 项自伤（工作区里语法未完成的同名新文件）⇒ 修正为 **11 项**并按根因分四类；(c) D1 断言四舍五入口径修正。**交人项**：命题级字段口径裁决 / push / 11 项既有测试处置 / 公钥托管与外部锚定 / 118 镜像边 / ref_missing PCK / VFDR 重算授权 / 第八轮策略调整 / 学习者开门等 15 项。未 push / 未跑监工门禁 / 未改基线文件 / 未改 628 工具与他批测试 / 受控目录零污染 / 未代签。详见 data/629_acceptance_report.md。"
+    },
+    {
+      "batch": 630,
+      "status": "completed",
+      "completed_at": "2026-09-23T22:00:00",
+      "verdict": "awaiting_review",
+      "objective": "自身免疫率口径修复 × push × v23 补强 × 测试债处置（任务0 + A1-A3 + B1-B2 + C1-C3 + D1-D2 + E1 = 14/14）",
+      "notes": "约 20 commit。① 任务0 基线台账（§一 17 项 + 实测核对：HEAD/ahead 与任务书不符已登记 + 四元指标快照）；② **A1 口径差异诊断**：22 张仅口径卡 → **132 条 warn**（字段缺失 67 / 值不符 2 / 格式 63），逐卡逐条给「要求字段/当前值/消息原文」；③ **A2 修复方案**：方案甲补字段（**auto 42**（liveness 从引用卡 artifact_assert 自动推断夹具符号，复用 gate 同口径）/ **human 90**（object 语义 + signed_by 永不由机器代签；>5 条 ⇒ 触发 §十.3 需人审批量处理））+ 方案乙调规则（3 条 + blast radius 含 CORE_TOOLS 重钉提醒）+ 六维对比 + **推荐甲**；④ **A3 干跑复算**：把建议字段写进**命题内存副本**用 gate 自己的 `_prop_liveness_ok`/`principal_ok` **真求值** ⇒ 严格情景 auto 42 条全部放行但 **0 张卡变干净（仍 100%）**、乐观情景 0%、**悲观情景（signed_by 填错）warn 升 block 且硬开火率越 10% 上限**；⑤ **B1 push 闸门**（status/受控/ci.yml 真解析/24 项交付物；显式豁免「测试再生产物」否则自我判红；`batch_path` 正则化修掉路径以 `_` 开头时吃字的坑）；⑥ **B2 执行 push**：`793b5c45..53582fe2`（**100 commit**，625-630 全区间），`origin/master..HEAD`=0，受控目录 push 前后各验一次；**CI run 35867261715：`replay` ✅ `concurrency-safety` ✅ `gate` ✅ `quality(3.11)` ✅，仅 `pytest` ❌**（下游 6 job skipped）——**监工门禁首次在 625-630 全区间转绿**；⑦ **C1 coverage 第四元**：送审覆盖率 **16/35=45.7%**（有探针 29 / 真实发生 15 / 本批送审 2；19 个从未跑过含 6 无探针；**缺口发现：M1 删字段在向量表无对应项**）+ 四元组联合报告；⑧ **C2 攻击面两横切面**：时间轴（一次性 19/持续演化 11/周期性 5）× 调度轴（自发 21/被诱导 8/被触发 6），三维矩阵 72 格非空 23，逐条带依据（关键词启发式，非人工精读）；⑨ **C3 阈值对照**：**硬开火率 0% 达标（≤5%）**、**软警报率 100% 超疲劳线 2.5×**、库存误伤面 100%，v23 5/10/20/40 解析成功 + 外部依据 4 条 + 动作映射 5 条；⑩ **D1 失败分类**（19 项：断言过期 4 / 环境依赖 5 / 工具自检过期 2 / **跨批脆弱 4** / 本批自纠 4；人工定根表逐条给理由；去掉 `-x` 以收集全部失败并登记偏差）；⑪ **D2 修 4 项**（627 PCK 漂移 3 项 56→0/ok 0→82/根因子≥1→≥0 + 625 type:ignore 阈值 20→28，**只改数字不改逻辑**；留 11 项逐类给理由，跨批脆弱型为本批最有价值的测试债发现）；⑫ **E1 收工门禁 PASS**（9 工具 --check + **按 630 标记**核验（避免 629 那种跨批脆弱）+ 整目录 ruff + mypy 0 + 630 测试全过 + 非 slow 失败集 ⊆ 冻结基线 11 项 + 受控零污染 + **push 后 ahead=0** + AST 自证未调用监工门禁）。**批内自纠/发现**：(a) 630 新工具曾报 1 处 mypy 错误（连带 4 项测试红）→ 修好后全绿；(b) **实测发现全量套件会把受控文件 `atoms/conc/ATOM-CONC-FENCE-001.md` 的 `id:` 行删掉**（M1 变异未还原）→ 已还原、已排除 619-622 组、**根因未定位 ⇒ 交人**；(c) B1 闸门对「测试再生产物」显式豁免（否则套件内自我判红）；(d) 代理端口实测 7890 未监听、实走 7990。**交人项**：A2 甲乙选择 / CI pytest 红处置 / D2 未修 11 项 / 命题级口径裁决（已量化 132 条 90 条需人填）/ `_arch_v2x/` 是否入忽略清单 / 用 token 拉 CI 日志 / 受控污染根因定位。硬边界全遵守（未跑监工门禁 --check 全量·未代签·未改 625-629 工具·未删改 JSONL·未动 CRLF 假脏两文件）。详见 data/630_acceptance_report.md。"
     }
   ],
   "history_note": "610/611/613/614 已压缩；逐批原始 commit 见 git log。",
   "notes": "628 收工（12/12 全完成，**修债+他验落地批**）：**4 项技术债清算**——A1 V2 flag 真接入编译函数（V1/V2 数字一致 IN114/OUT7/UNDEC0，默认 V1，尺子重钉）、A2 PCK hash 83 张全量处置（82 重算/补 + 1 ref_missing 需人审，不判失效）、A3 镜像边 76 条自动证明写入 / 118 条 sidecar 留治理、A4 DEBT-001 等效清算 + replay manifest 实测 0 失配。**他验三件套落地原型**——B1 独立验证者零 import 本项目工具、朴素重算全部数字与系统一致；B2 VSA HMAC 凭证（verifier_sha256+输入三重哈希锚定，密钥不入库，验证端零 import 签发端）；B3 透明日志 GENESIS 哈希链 append-only+inclusion+幂等追加+凭证全部入册；B4 端到端编排（--check 只读幂等）。**C1 人审深色科技风仪表盘 v2**（玻璃拟态+霓虹+CSS 3D+6 数据模块）；**D1 学习者镜像门 closed 0/50**。**run_628_gate PASS**（12 工具+整目录 ruff/mypy 0+82 例测试+受控零污染+尺子一致+CORE 未改+零 import 静态分析）。新增 13 工具+82 例单测全绿。批内自纠：B2 --check 状态污染（10 张未入册测试尘埃凭证已删、日志未动）、验证端同源耦合、口径脆弱、追加非幂等——均按根因修复并登记。**交人项**：flag 默认启用裁决 / 真实 Blind Review 执行 / push 裁决 / ref_missing 1 张 PCK 处置 / 118 条镜像边治理 / 三件套正式启用（非对称签名+外部托管）/ 学习者开门计划。**未 push/未 golden accept/未开 delegation/未代签/未执行真实 Blind Review/未判 PCK 失效/未改 CORE_TOOLS**。详见 data/628_acceptance_report.md。",
   "status": "awaiting_review",
-  "batch": 629,
-  "updated_at": "2026-09-23T20:00:00"
+  "batch": 630,
+  "updated_at": "2026-09-23T22:00:00"
 }
