@@ -1,0 +1,13 @@
+{
+  "batch": "631",
+  "kind": "sample_signed_message",
+  "message": {
+    "batch": "631",
+    "generated_at": "2026-09-23T18:20:45Z",
+    "public_key_fingerprint": "fcb40af83fb2cc7258655bca80062eff98c4217feab137f06711c04caf653a5c",
+    "statement": "631 E2 样例：本文件由 631 用同批生成的私钥签名，供第三方练习验证"
+  },
+  "signature_hex": "28b26d4325b08e9fc0299cb4fc0213c2f1a501771563007f08cdd35e66f0a13ebddbb911d567820703bfc987639f1dd29b0184629eb1e3e777db516bbfc9d0757e37085993ea994fcaaf46d5964706dd55e29631f4e17b36955e77dcf5db8dd5f49ceeedcc16dfcccc4982616d75b67e2ed049ac031a38b6cda7b11f73d1876ba17a0e1c44f0c735667ddff2f246a69144b967719ff244db2a241a966287cdd6c8f71fd865dc331a74f1699b968ab5f4f05fa250167af07f22702ee9e1bbcd50f4b333d1874a6b3879c912df6033732c5771a7b2ce6444f91d7d83ff04c6dba9afab954b13c3cc393eb8e8af15a5acfe66637fa8ea8cd17e7dc7816b7f0ac474",
+  "public_key_file": "data/vsa/public_key_631.json",
+  "verify_command": "python -c \"import sys,json;sys.path.insert(0,'tools');import vsa_asymmetric_signer_629 as S;pub=json.load(open('data/vsa/public_key_631.json'));pub={'n':int(pub['n_hex'],16),'e':pub['e']};s=json.load(open('data/vsa/sample_signed_631.json'));print(S.verify(pub, json.dumps(s['message'],ensure_ascii=False,sort_keys=True).encode(), s['signature_hex']))\""
+}

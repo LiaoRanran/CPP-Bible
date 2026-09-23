@@ -1,0 +1,12 @@
+{
+  "batch": "631",
+  "kind": "vsa_rsa_public_key",
+  "algorithm": "RSA-2048 / PKCS#1 v1.5 / SHA-256（纯标准库实现）",
+  "n_hex": "935c1fca83aad24206a1911dc06658d7977925dfffb9583aa91b3e8562f35fb7b388fd2f8bc72683a4c713fcb2f6b5c96d613d600da9e775f9365da5d6e329abe9b2f07e2e866cf8af6073f015111ce51829af3a349a05de7abb1de9c79ef05b56cf569656345899d00de08ba0c3bccad0ad8ba83903abcbe8d95417b4ab3e7453c208fd6223692914f2a4577b6c396450fc9d98493c5c06a55ce016d2466f6e1e5e2b029b70b3392ebc3866b6fd6dfa19f9392d1f9e03f3e5b3e5e64bb70bcbd3e33b89d51f5c4a3dad155d764853c7e89ef926de26f8c68dfd532729ec3ab22deb8816aa418bc5be3f84114b6519f747d1c461b99897f7c8f4020cb128b6ef",
+  "e": 65537,
+  "bits": 2048,
+  "generated_at": "2026-09-23T18:20:45Z",
+  "fingerprint_sha256": "fcb40af83fb2cc7258655bca80062eff98c4217feab137f06711c04caf653a5c",
+  "usage": "用于验证 629 C1 / 631 E2 产生的 RSA 签名；**不用于加密**",
+  "private_key": "不落盘（只存在于生成进程的内存中）"
+}
