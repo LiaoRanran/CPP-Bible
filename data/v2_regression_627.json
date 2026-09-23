@@ -1,0 +1,34 @@
+{
+  "core_tools": [
+    {
+      "tool": "gate_engine.py",
+      "forbidden_hits": [],
+      "isolated": true
+    },
+    {
+      "tool": "atom_evidence_replay.py",
+      "forbidden_hits": [],
+      "isolated": true
+    },
+    {
+      "tool": "poison_drill.py",
+      "forbidden_hits": [],
+      "isolated": true
+    },
+    {
+      "tool": "toolchain.py",
+      "forbidden_hits": [],
+      "isolated": true
+    },
+    {
+      "tool": "cppbible.py",
+      "forbidden_hits": [],
+      "isolated": true
+    }
+  ],
+  "all_isolated": true,
+  "w2_solver_unchanged": true,
+  "core_tools_modified_in_batch": [],
+  "no_core_change": true,
+  "passed": true
+}
