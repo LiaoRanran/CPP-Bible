@@ -32,10 +32,18 @@ def test_score_is_product_of_rounded_components():
 
 
 def test_escaped_gets_max_disagreement():
+    import pytest
+
     assert A.disagreement({"verdict": "escaped"}) == 1.0
     assert A.disagreement({"verdict": "neutral", "new_block": [], "new_warn": []}) == 0.0
     assert A.disagreement({"verdict": "blocked",
-                           "new_block": ["R:path"]}) == round(1 / 3, 4)
+                           "new_block": ["R:path"]}) == pytest.approx(1 / 3)
+    # 分量在 score_of 里才四舍五入（保证「报告数字相乘 == 报告 score」）
+    assert A.score_of({"verdict": "blocked", "new_block": ["R:path"],
+                       "point": "删 artifact_sha256",
+                       "card": "evidence/conc/EV-CONC-001.md"}) == {
+        "disagreement": 0.3333, "ambiguity": 1.0, "provenance": 1.0,
+        "score": 0.3333}
 
 
 def test_target_rule_reverse_extraction():
