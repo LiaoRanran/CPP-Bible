@@ -1,0 +1,53 @@
+{
+  "total_warns": 132,
+  "cards_total": 23,
+  "strict": {
+    "filled_auto": 42,
+    "verified_pass": 42,
+    "failed": [],
+    "remaining_warns": 90,
+    "cards_still_warned": 23,
+    "cards_became_clean": 0,
+    "soft_rate_pct": 100.0,
+    "hard_block_events": 0
+  },
+  "optimistic": {
+    "liveness_verified": 42,
+    "object_total": 65,
+    "object_verified_by_suggestion": 14,
+    "object_without_suggestion": 51,
+    "signed_by_total": 25,
+    "signoff_verified": {
+      "ok": true,
+      "why": "",
+      "principal": "human:liaoranran"
+    },
+    "remaining_warns": 0,
+    "soft_rate_pct": 0.0,
+    "hard_block_events": 0,
+    "assumptions": [
+      "liveness 由 gate 自己的 _prop_liveness_ok 在内存中真验证通过",
+      "signed_by 用**在册实名**（HUMAN_PRINCIPALS）真验证通过",
+      "object 只验证「候选∈规范概念集」；**语义正确性机器不能验证**（需人眼确认该概念确实表达该命题）"
+    ]
+  },
+  "pessimistic": {
+    "bad_signoff": "machine:writer",
+    "principal_ok": {
+      "ok": false,
+      "why": "前缀应为 human:"
+    },
+    "block_events": 25,
+    "soft_rate_pct": 100.0,
+    "hard_rate_pct": 108.7,
+    "note": "填错 signed_by 不改警告数，但把 warn **升格为 block** ⇒ 硬开火率从 0% 直接越过 v23 硬阈值"
+  },
+  "thresholds": {
+    "source": "_arch_v23/02_自身免疫率度量框架.md",
+    "hard_target_pct": 5,
+    "hard_cap_pct": 10,
+    "soft_target_pct": 20,
+    "soft_fatigue_pct": 40,
+    "found": true
+  }
+}
