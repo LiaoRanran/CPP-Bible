@@ -1,0 +1,1561 @@
+{
+  "total_candidates": 388,
+  "mirror_edges": 194,
+  "symmetric": 194,
+  "asymmetric": 0,
+  "all_need_human_verification": true,
+  "rows": [
+    {
+      "edge_id": "ae-MIS-CONC-001->ATOM-UB-GRAY-001::prop-1",
+      "mis_to_prop": "MIS-CONC-001 -> ATOM-UB-GRAY-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-1->MIS-CONC-001",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-CONC-001->ATOM-UB-GRAY-001::prop-2",
+      "mis_to_prop": "MIS-CONC-001 -> ATOM-UB-GRAY-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-2->MIS-CONC-001",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-CONC-003->ATOM-CONC-RACE-001::prop-1",
+      "mis_to_prop": "MIS-CONC-003 -> ATOM-CONC-RACE-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-CONC-RACE-001::prop-1->MIS-CONC-003",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-CONC-003->ATOM-CONC-RACE-001::prop-2",
+      "mis_to_prop": "MIS-CONC-003 -> ATOM-CONC-RACE-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-CONC-RACE-001::prop-2->MIS-CONC-003",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-CONC-003->ATOM-CONC-RACE-001::prop-3",
+      "mis_to_prop": "MIS-CONC-003 -> ATOM-CONC-RACE-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-CONC-RACE-001::prop-3->MIS-CONC-003",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-HIST-001->ATOM-HIST-AUTOPTR-001::prop-1",
+      "mis_to_prop": "MIS-HIST-001 -> ATOM-HIST-AUTOPTR-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-1->MIS-HIST-001",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-HIST-001->ATOM-HIST-AUTOPTR-001::prop-2",
+      "mis_to_prop": "MIS-HIST-001 -> ATOM-HIST-AUTOPTR-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-2->MIS-HIST-001",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-HIST-001->ATOM-HIST-AUTOPTR-001::prop-3",
+      "mis_to_prop": "MIS-HIST-001 -> ATOM-HIST-AUTOPTR-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-3->MIS-HIST-001",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-HIST-001->ATOM-HIST-AUTOPTR-001::prop-4",
+      "mis_to_prop": "MIS-HIST-001 -> ATOM-HIST-AUTOPTR-001::prop-4",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-4->MIS-HIST-001",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-HIST-002->ATOM-HIST-AUTOPTR-001::prop-1",
+      "mis_to_prop": "MIS-HIST-002 -> ATOM-HIST-AUTOPTR-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-1->MIS-HIST-002",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-HIST-002->ATOM-HIST-AUTOPTR-001::prop-2",
+      "mis_to_prop": "MIS-HIST-002 -> ATOM-HIST-AUTOPTR-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-2->MIS-HIST-002",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-HIST-002->ATOM-HIST-AUTOPTR-001::prop-3",
+      "mis_to_prop": "MIS-HIST-002 -> ATOM-HIST-AUTOPTR-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-3->MIS-HIST-002",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-HIST-002->ATOM-HIST-AUTOPTR-001::prop-4",
+      "mis_to_prop": "MIS-HIST-002 -> ATOM-HIST-AUTOPTR-001::prop-4",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-4->MIS-HIST-002",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-HIST-003->ATOM-HIST-AUTOPTR-001::prop-1",
+      "mis_to_prop": "MIS-HIST-003 -> ATOM-HIST-AUTOPTR-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-1->MIS-HIST-003",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-HIST-003->ATOM-HIST-AUTOPTR-001::prop-2",
+      "mis_to_prop": "MIS-HIST-003 -> ATOM-HIST-AUTOPTR-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-2->MIS-HIST-003",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-HIST-003->ATOM-HIST-AUTOPTR-001::prop-3",
+      "mis_to_prop": "MIS-HIST-003 -> ATOM-HIST-AUTOPTR-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-3->MIS-HIST-003",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-HIST-003->ATOM-HIST-AUTOPTR-001::prop-4",
+      "mis_to_prop": "MIS-HIST-003 -> ATOM-HIST-AUTOPTR-001::prop-4",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-4->MIS-HIST-003",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-1",
+      "mis_to_prop": "MIS-LANG-001 -> ATOM-LANG-INLINE-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-LANG-INLINE-001::prop-1->MIS-LANG-001",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-2",
+      "mis_to_prop": "MIS-LANG-001 -> ATOM-LANG-INLINE-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-LANG-INLINE-001::prop-2->MIS-LANG-001",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-3",
+      "mis_to_prop": "MIS-LANG-001 -> ATOM-LANG-INLINE-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-LANG-INLINE-001::prop-3->MIS-LANG-001",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-1",
+      "mis_to_prop": "MIS-MEM-001 -> ATOM-MEM-MOVE-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-001",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-2",
+      "mis_to_prop": "MIS-MEM-001 -> ATOM-MEM-MOVE-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-001",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-3",
+      "mis_to_prop": "MIS-MEM-001 -> ATOM-MEM-MOVE-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-001",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-002->ATOM-MEM-MOVE-002::prop-1",
+      "mis_to_prop": "MIS-MEM-002 -> ATOM-MEM-MOVE-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-002",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-002->ATOM-MEM-MOVE-002::prop-2",
+      "mis_to_prop": "MIS-MEM-002 -> ATOM-MEM-MOVE-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-002",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-002->ATOM-MEM-MOVE-002::prop-3",
+      "mis_to_prop": "MIS-MEM-002 -> ATOM-MEM-MOVE-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-002",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-1",
+      "mis_to_prop": "MIS-MEM-003 -> ATOM-MEM-MOVE-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-003",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-2",
+      "mis_to_prop": "MIS-MEM-003 -> ATOM-MEM-MOVE-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-003",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-3",
+      "mis_to_prop": "MIS-MEM-003 -> ATOM-MEM-MOVE-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-003",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-004->ATOM-MEM-MOVE-002::prop-1",
+      "mis_to_prop": "MIS-MEM-004 -> ATOM-MEM-MOVE-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-004",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-004->ATOM-MEM-MOVE-002::prop-2",
+      "mis_to_prop": "MIS-MEM-004 -> ATOM-MEM-MOVE-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-004",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-004->ATOM-MEM-MOVE-002::prop-3",
+      "mis_to_prop": "MIS-MEM-004 -> ATOM-MEM-MOVE-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-004",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-005->ATOM-MEM-MOVE-002::prop-1",
+      "mis_to_prop": "MIS-MEM-005 -> ATOM-MEM-MOVE-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-005",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-005->ATOM-MEM-MOVE-002::prop-2",
+      "mis_to_prop": "MIS-MEM-005 -> ATOM-MEM-MOVE-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-005",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-005->ATOM-MEM-MOVE-002::prop-3",
+      "mis_to_prop": "MIS-MEM-005 -> ATOM-MEM-MOVE-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-005",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-005->ATOM-MEM-RVREF-001::prop-1",
+      "mis_to_prop": "MIS-MEM-005 -> ATOM-MEM-RVREF-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RVREF-001::prop-1->MIS-MEM-005",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-005->ATOM-MEM-RVREF-001::prop-2",
+      "mis_to_prop": "MIS-MEM-005 -> ATOM-MEM-RVREF-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RVREF-001::prop-2->MIS-MEM-005",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-005->ATOM-MEM-RVREF-001::prop-3",
+      "mis_to_prop": "MIS-MEM-005 -> ATOM-MEM-RVREF-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RVREF-001::prop-3->MIS-MEM-005",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-011->ATOM-HIST-AUTOPTR-001::prop-1",
+      "mis_to_prop": "MIS-MEM-011 -> ATOM-HIST-AUTOPTR-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-1->MIS-MEM-011",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-011->ATOM-HIST-AUTOPTR-001::prop-2",
+      "mis_to_prop": "MIS-MEM-011 -> ATOM-HIST-AUTOPTR-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-2->MIS-MEM-011",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-011->ATOM-HIST-AUTOPTR-001::prop-3",
+      "mis_to_prop": "MIS-MEM-011 -> ATOM-HIST-AUTOPTR-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-3->MIS-MEM-011",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-011->ATOM-HIST-AUTOPTR-001::prop-4",
+      "mis_to_prop": "MIS-MEM-011 -> ATOM-HIST-AUTOPTR-001::prop-4",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-HIST-AUTOPTR-001::prop-4->MIS-MEM-011",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-012->ATOM-MEM-MOVE-002::prop-1",
+      "mis_to_prop": "MIS-MEM-012 -> ATOM-MEM-MOVE-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-012",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-012->ATOM-MEM-MOVE-002::prop-2",
+      "mis_to_prop": "MIS-MEM-012 -> ATOM-MEM-MOVE-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-012",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-012->ATOM-MEM-MOVE-002::prop-3",
+      "mis_to_prop": "MIS-MEM-012 -> ATOM-MEM-MOVE-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-012",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-013->ATOM-MEM-RAII-001::prop-1",
+      "mis_to_prop": "MIS-MEM-013 -> ATOM-MEM-RAII-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RAII-001::prop-1->MIS-MEM-013",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-013->ATOM-MEM-RAII-001::prop-2",
+      "mis_to_prop": "MIS-MEM-013 -> ATOM-MEM-RAII-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RAII-001::prop-2->MIS-MEM-013",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-013->ATOM-MEM-RAII-001::prop-3",
+      "mis_to_prop": "MIS-MEM-013 -> ATOM-MEM-RAII-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RAII-001::prop-3->MIS-MEM-013",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-014->ATOM-MEM-RAII-001::prop-1",
+      "mis_to_prop": "MIS-MEM-014 -> ATOM-MEM-RAII-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RAII-001::prop-1->MIS-MEM-014",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-014->ATOM-MEM-RAII-001::prop-2",
+      "mis_to_prop": "MIS-MEM-014 -> ATOM-MEM-RAII-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RAII-001::prop-2->MIS-MEM-014",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-014->ATOM-MEM-RAII-001::prop-3",
+      "mis_to_prop": "MIS-MEM-014 -> ATOM-MEM-RAII-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RAII-001::prop-3->MIS-MEM-014",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-015->ATOM-MEM-ALIGN-001::prop-1",
+      "mis_to_prop": "MIS-MEM-015 -> ATOM-MEM-ALIGN-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALIGN-001::prop-1->MIS-MEM-015",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-015->ATOM-MEM-ALIGN-001::prop-2",
+      "mis_to_prop": "MIS-MEM-015 -> ATOM-MEM-ALIGN-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALIGN-001::prop-2->MIS-MEM-015",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-015->ATOM-MEM-ALIGN-001::prop-3",
+      "mis_to_prop": "MIS-MEM-015 -> ATOM-MEM-ALIGN-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALIGN-001::prop-3->MIS-MEM-015",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-016->ATOM-MEM-SHARED-001::prop-1",
+      "mis_to_prop": "MIS-MEM-016 -> ATOM-MEM-SHARED-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-001::prop-1->MIS-MEM-016",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-016->ATOM-MEM-SHARED-001::prop-2",
+      "mis_to_prop": "MIS-MEM-016 -> ATOM-MEM-SHARED-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-001::prop-2->MIS-MEM-016",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-016->ATOM-MEM-SHARED-001::prop-3",
+      "mis_to_prop": "MIS-MEM-016 -> ATOM-MEM-SHARED-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-001::prop-3->MIS-MEM-016",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-016->ATOM-MEM-WEAK-001::prop-1",
+      "mis_to_prop": "MIS-MEM-016 -> ATOM-MEM-WEAK-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-WEAK-001::prop-1->MIS-MEM-016",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-016->ATOM-MEM-WEAK-001::prop-2",
+      "mis_to_prop": "MIS-MEM-016 -> ATOM-MEM-WEAK-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-WEAK-001::prop-2->MIS-MEM-016",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-016->ATOM-MEM-WEAK-001::prop-3",
+      "mis_to_prop": "MIS-MEM-016 -> ATOM-MEM-WEAK-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-WEAK-001::prop-3->MIS-MEM-016",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-017->ATOM-MEM-MOVE-002::prop-1",
+      "mis_to_prop": "MIS-MEM-017 -> ATOM-MEM-MOVE-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-017",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-017->ATOM-MEM-MOVE-002::prop-2",
+      "mis_to_prop": "MIS-MEM-017 -> ATOM-MEM-MOVE-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-017",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-017->ATOM-MEM-MOVE-002::prop-3",
+      "mis_to_prop": "MIS-MEM-017 -> ATOM-MEM-MOVE-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-017",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-017->ATOM-MEM-VALUE-002::prop-1",
+      "mis_to_prop": "MIS-MEM-017 -> ATOM-MEM-VALUE-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-VALUE-002::prop-1->MIS-MEM-017",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-017->ATOM-MEM-VALUE-002::prop-2",
+      "mis_to_prop": "MIS-MEM-017 -> ATOM-MEM-VALUE-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-VALUE-002::prop-2->MIS-MEM-017",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-017->ATOM-MEM-VALUE-002::prop-3",
+      "mis_to_prop": "MIS-MEM-017 -> ATOM-MEM-VALUE-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-VALUE-002::prop-3->MIS-MEM-017",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-018->ATOM-MEM-VALUE-001::prop-1",
+      "mis_to_prop": "MIS-MEM-018 -> ATOM-MEM-VALUE-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-VALUE-001::prop-1->MIS-MEM-018",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-018->ATOM-MEM-VALUE-001::prop-2",
+      "mis_to_prop": "MIS-MEM-018 -> ATOM-MEM-VALUE-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-VALUE-001::prop-2->MIS-MEM-018",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-018->ATOM-MEM-VALUE-001::prop-3",
+      "mis_to_prop": "MIS-MEM-018 -> ATOM-MEM-VALUE-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-VALUE-001::prop-3->MIS-MEM-018",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-018->ATOM-MEM-VALUE-002::prop-1",
+      "mis_to_prop": "MIS-MEM-018 -> ATOM-MEM-VALUE-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-VALUE-002::prop-1->MIS-MEM-018",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-018->ATOM-MEM-VALUE-002::prop-2",
+      "mis_to_prop": "MIS-MEM-018 -> ATOM-MEM-VALUE-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-VALUE-002::prop-2->MIS-MEM-018",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-018->ATOM-MEM-VALUE-002::prop-3",
+      "mis_to_prop": "MIS-MEM-018 -> ATOM-MEM-VALUE-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-VALUE-002::prop-3->MIS-MEM-018",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-019->ATOM-MEM-MOVE-002::prop-1",
+      "mis_to_prop": "MIS-MEM-019 -> ATOM-MEM-MOVE-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-1->MIS-MEM-019",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-019->ATOM-MEM-MOVE-002::prop-2",
+      "mis_to_prop": "MIS-MEM-019 -> ATOM-MEM-MOVE-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-2->MIS-MEM-019",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-019->ATOM-MEM-MOVE-002::prop-3",
+      "mis_to_prop": "MIS-MEM-019 -> ATOM-MEM-MOVE-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-MOVE-002::prop-3->MIS-MEM-019",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-019->ATOM-MEM-RAII-002::prop-1",
+      "mis_to_prop": "MIS-MEM-019 -> ATOM-MEM-RAII-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RAII-002::prop-1->MIS-MEM-019",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-019->ATOM-MEM-RAII-002::prop-2",
+      "mis_to_prop": "MIS-MEM-019 -> ATOM-MEM-RAII-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RAII-002::prop-2->MIS-MEM-019",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-019->ATOM-MEM-RAII-002::prop-3",
+      "mis_to_prop": "MIS-MEM-019 -> ATOM-MEM-RAII-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RAII-002::prop-3->MIS-MEM-019",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-019->ATOM-MEM-RAII-002::prop-4",
+      "mis_to_prop": "MIS-MEM-019 -> ATOM-MEM-RAII-002::prop-4",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RAII-002::prop-4->MIS-MEM-019",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-020->ATOM-MEM-RAII-002::prop-1",
+      "mis_to_prop": "MIS-MEM-020 -> ATOM-MEM-RAII-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RAII-002::prop-1->MIS-MEM-020",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-020->ATOM-MEM-RAII-002::prop-2",
+      "mis_to_prop": "MIS-MEM-020 -> ATOM-MEM-RAII-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RAII-002::prop-2->MIS-MEM-020",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-020->ATOM-MEM-RAII-002::prop-3",
+      "mis_to_prop": "MIS-MEM-020 -> ATOM-MEM-RAII-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RAII-002::prop-3->MIS-MEM-020",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-020->ATOM-MEM-RAII-002::prop-4",
+      "mis_to_prop": "MIS-MEM-020 -> ATOM-MEM-RAII-002::prop-4",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-RAII-002::prop-4->MIS-MEM-020",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-020->ATOM-MEM-UNIQUE-001::prop-1",
+      "mis_to_prop": "MIS-MEM-020 -> ATOM-MEM-UNIQUE-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-UNIQUE-001::prop-1->MIS-MEM-020",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-020->ATOM-MEM-UNIQUE-001::prop-2",
+      "mis_to_prop": "MIS-MEM-020 -> ATOM-MEM-UNIQUE-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-UNIQUE-001::prop-2->MIS-MEM-020",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-020->ATOM-MEM-UNIQUE-001::prop-3",
+      "mis_to_prop": "MIS-MEM-020 -> ATOM-MEM-UNIQUE-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-UNIQUE-001::prop-3->MIS-MEM-020",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-021->ATOM-MEM-ALLOC-001::prop-1",
+      "mis_to_prop": "MIS-MEM-021 -> ATOM-MEM-ALLOC-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-1->MIS-MEM-021",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-021->ATOM-MEM-ALLOC-001::prop-2",
+      "mis_to_prop": "MIS-MEM-021 -> ATOM-MEM-ALLOC-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-2->MIS-MEM-021",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-021->ATOM-MEM-ALLOC-001::prop-3",
+      "mis_to_prop": "MIS-MEM-021 -> ATOM-MEM-ALLOC-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-3->MIS-MEM-021",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-021->ATOM-MEM-ALLOC-001::prop-4",
+      "mis_to_prop": "MIS-MEM-021 -> ATOM-MEM-ALLOC-001::prop-4",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-4->MIS-MEM-021",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-021->ATOM-MEM-NEW-001::prop-1",
+      "mis_to_prop": "MIS-MEM-021 -> ATOM-MEM-NEW-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-NEW-001::prop-1->MIS-MEM-021",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-021->ATOM-MEM-NEW-001::prop-2",
+      "mis_to_prop": "MIS-MEM-021 -> ATOM-MEM-NEW-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-NEW-001::prop-2->MIS-MEM-021",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-021->ATOM-MEM-NEW-001::prop-3",
+      "mis_to_prop": "MIS-MEM-021 -> ATOM-MEM-NEW-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-NEW-001::prop-3->MIS-MEM-021",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-022->ATOM-MEM-NEW-001::prop-1",
+      "mis_to_prop": "MIS-MEM-022 -> ATOM-MEM-NEW-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-NEW-001::prop-1->MIS-MEM-022",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-022->ATOM-MEM-NEW-001::prop-2",
+      "mis_to_prop": "MIS-MEM-022 -> ATOM-MEM-NEW-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-NEW-001::prop-2->MIS-MEM-022",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-022->ATOM-MEM-NEW-001::prop-3",
+      "mis_to_prop": "MIS-MEM-022 -> ATOM-MEM-NEW-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-NEW-001::prop-3->MIS-MEM-022",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-022->ATOM-MEM-PERF-002::prop-1",
+      "mis_to_prop": "MIS-MEM-022 -> ATOM-MEM-PERF-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-002::prop-1->MIS-MEM-022",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-022->ATOM-MEM-PERF-002::prop-2",
+      "mis_to_prop": "MIS-MEM-022 -> ATOM-MEM-PERF-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-002::prop-2->MIS-MEM-022",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-023->ATOM-MEM-ALLOC-001::prop-1",
+      "mis_to_prop": "MIS-MEM-023 -> ATOM-MEM-ALLOC-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-1->MIS-MEM-023",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-023->ATOM-MEM-ALLOC-001::prop-2",
+      "mis_to_prop": "MIS-MEM-023 -> ATOM-MEM-ALLOC-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-2->MIS-MEM-023",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-023->ATOM-MEM-ALLOC-001::prop-3",
+      "mis_to_prop": "MIS-MEM-023 -> ATOM-MEM-ALLOC-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-3->MIS-MEM-023",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-023->ATOM-MEM-ALLOC-001::prop-4",
+      "mis_to_prop": "MIS-MEM-023 -> ATOM-MEM-ALLOC-001::prop-4",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-4->MIS-MEM-023",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-023->ATOM-MEM-PERF-002::prop-1",
+      "mis_to_prop": "MIS-MEM-023 -> ATOM-MEM-PERF-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-002::prop-1->MIS-MEM-023",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-023->ATOM-MEM-PERF-002::prop-2",
+      "mis_to_prop": "MIS-MEM-023 -> ATOM-MEM-PERF-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-002::prop-2->MIS-MEM-023",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-SHARED-001::prop-1",
+      "mis_to_prop": "MIS-MEM-024 -> ATOM-MEM-SHARED-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-001::prop-1->MIS-MEM-024",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-SHARED-001::prop-2",
+      "mis_to_prop": "MIS-MEM-024 -> ATOM-MEM-SHARED-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-001::prop-2->MIS-MEM-024",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-SHARED-001::prop-3",
+      "mis_to_prop": "MIS-MEM-024 -> ATOM-MEM-SHARED-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-001::prop-3->MIS-MEM-024",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-001::prop-1",
+      "mis_to_prop": "MIS-MEM-024 -> ATOM-MEM-UNIQUE-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-UNIQUE-001::prop-1->MIS-MEM-024",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-001::prop-2",
+      "mis_to_prop": "MIS-MEM-024 -> ATOM-MEM-UNIQUE-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-UNIQUE-001::prop-2->MIS-MEM-024",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-001::prop-3",
+      "mis_to_prop": "MIS-MEM-024 -> ATOM-MEM-UNIQUE-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-UNIQUE-001::prop-3->MIS-MEM-024",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-002::prop-1",
+      "mis_to_prop": "MIS-MEM-024 -> ATOM-MEM-UNIQUE-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-UNIQUE-002::prop-1->MIS-MEM-024",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-002::prop-2",
+      "mis_to_prop": "MIS-MEM-024 -> ATOM-MEM-UNIQUE-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-UNIQUE-002::prop-2->MIS-MEM-024",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-024->ATOM-MEM-UNIQUE-002::prop-3",
+      "mis_to_prop": "MIS-MEM-024 -> ATOM-MEM-UNIQUE-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-UNIQUE-002::prop-3->MIS-MEM-024",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-025->ATOM-MEM-NEW-001::prop-1",
+      "mis_to_prop": "MIS-MEM-025 -> ATOM-MEM-NEW-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-NEW-001::prop-1->MIS-MEM-025",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-025->ATOM-MEM-NEW-001::prop-2",
+      "mis_to_prop": "MIS-MEM-025 -> ATOM-MEM-NEW-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-NEW-001::prop-2->MIS-MEM-025",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-025->ATOM-MEM-NEW-001::prop-3",
+      "mis_to_prop": "MIS-MEM-025 -> ATOM-MEM-NEW-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-NEW-001::prop-3->MIS-MEM-025",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-025->ATOM-MEM-UNIQUE-002::prop-1",
+      "mis_to_prop": "MIS-MEM-025 -> ATOM-MEM-UNIQUE-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-UNIQUE-002::prop-1->MIS-MEM-025",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-025->ATOM-MEM-UNIQUE-002::prop-2",
+      "mis_to_prop": "MIS-MEM-025 -> ATOM-MEM-UNIQUE-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-UNIQUE-002::prop-2->MIS-MEM-025",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-025->ATOM-MEM-UNIQUE-002::prop-3",
+      "mis_to_prop": "MIS-MEM-025 -> ATOM-MEM-UNIQUE-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-UNIQUE-002::prop-3->MIS-MEM-025",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-SHARED-001::prop-1",
+      "mis_to_prop": "MIS-MEM-026 -> ATOM-MEM-SHARED-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-001::prop-1->MIS-MEM-026",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-SHARED-001::prop-2",
+      "mis_to_prop": "MIS-MEM-026 -> ATOM-MEM-SHARED-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-001::prop-2->MIS-MEM-026",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-SHARED-001::prop-3",
+      "mis_to_prop": "MIS-MEM-026 -> ATOM-MEM-SHARED-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-001::prop-3->MIS-MEM-026",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-SHARED-002::prop-1",
+      "mis_to_prop": "MIS-MEM-026 -> ATOM-MEM-SHARED-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-002::prop-1->MIS-MEM-026",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-SHARED-002::prop-2",
+      "mis_to_prop": "MIS-MEM-026 -> ATOM-MEM-SHARED-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-002::prop-2->MIS-MEM-026",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-SHARED-002::prop-3",
+      "mis_to_prop": "MIS-MEM-026 -> ATOM-MEM-SHARED-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-002::prop-3->MIS-MEM-026",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-WEAK-001::prop-1",
+      "mis_to_prop": "MIS-MEM-026 -> ATOM-MEM-WEAK-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-WEAK-001::prop-1->MIS-MEM-026",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-WEAK-001::prop-2",
+      "mis_to_prop": "MIS-MEM-026 -> ATOM-MEM-WEAK-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-WEAK-001::prop-2->MIS-MEM-026",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-026->ATOM-MEM-WEAK-001::prop-3",
+      "mis_to_prop": "MIS-MEM-026 -> ATOM-MEM-WEAK-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-WEAK-001::prop-3->MIS-MEM-026",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-LEAK-001::prop-1",
+      "mis_to_prop": "MIS-MEM-027 -> ATOM-MEM-LEAK-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-LEAK-001::prop-1->MIS-MEM-027",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-LEAK-001::prop-2",
+      "mis_to_prop": "MIS-MEM-027 -> ATOM-MEM-LEAK-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-LEAK-001::prop-2->MIS-MEM-027",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-LEAK-001::prop-3",
+      "mis_to_prop": "MIS-MEM-027 -> ATOM-MEM-LEAK-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-LEAK-001::prop-3->MIS-MEM-027",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-SHARED-001::prop-1",
+      "mis_to_prop": "MIS-MEM-027 -> ATOM-MEM-SHARED-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-001::prop-1->MIS-MEM-027",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-SHARED-001::prop-2",
+      "mis_to_prop": "MIS-MEM-027 -> ATOM-MEM-SHARED-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-001::prop-2->MIS-MEM-027",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-SHARED-001::prop-3",
+      "mis_to_prop": "MIS-MEM-027 -> ATOM-MEM-SHARED-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-001::prop-3->MIS-MEM-027",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-WEAK-001::prop-1",
+      "mis_to_prop": "MIS-MEM-027 -> ATOM-MEM-WEAK-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-WEAK-001::prop-1->MIS-MEM-027",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-WEAK-001::prop-2",
+      "mis_to_prop": "MIS-MEM-027 -> ATOM-MEM-WEAK-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-WEAK-001::prop-2->MIS-MEM-027",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-027->ATOM-MEM-WEAK-001::prop-3",
+      "mis_to_prop": "MIS-MEM-027 -> ATOM-MEM-WEAK-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-WEAK-001::prop-3->MIS-MEM-027",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-ALLOC-001::prop-1",
+      "mis_to_prop": "MIS-MEM-028 -> ATOM-MEM-ALLOC-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-1->MIS-MEM-028",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-ALLOC-001::prop-2",
+      "mis_to_prop": "MIS-MEM-028 -> ATOM-MEM-ALLOC-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-2->MIS-MEM-028",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-ALLOC-001::prop-3",
+      "mis_to_prop": "MIS-MEM-028 -> ATOM-MEM-ALLOC-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-3->MIS-MEM-028",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-ALLOC-001::prop-4",
+      "mis_to_prop": "MIS-MEM-028 -> ATOM-MEM-ALLOC-001::prop-4",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-4->MIS-MEM-028",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-PERF-002::prop-1",
+      "mis_to_prop": "MIS-MEM-028 -> ATOM-MEM-PERF-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-002::prop-1->MIS-MEM-028",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-PERF-002::prop-2",
+      "mis_to_prop": "MIS-MEM-028 -> ATOM-MEM-PERF-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-002::prop-2->MIS-MEM-028",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-PERF-003::prop-1",
+      "mis_to_prop": "MIS-MEM-028 -> ATOM-MEM-PERF-003::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-003::prop-1->MIS-MEM-028",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-PERF-003::prop-2",
+      "mis_to_prop": "MIS-MEM-028 -> ATOM-MEM-PERF-003::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-003::prop-2->MIS-MEM-028",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-028->ATOM-MEM-PERF-003::prop-3",
+      "mis_to_prop": "MIS-MEM-028 -> ATOM-MEM-PERF-003::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-003::prop-3->MIS-MEM-028",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-029->ATOM-MEM-PERF-001::prop-1",
+      "mis_to_prop": "MIS-MEM-029 -> ATOM-MEM-PERF-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-001::prop-1->MIS-MEM-029",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-029->ATOM-MEM-PERF-001::prop-2",
+      "mis_to_prop": "MIS-MEM-029 -> ATOM-MEM-PERF-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-001::prop-2->MIS-MEM-029",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-029->ATOM-MEM-PERF-003::prop-1",
+      "mis_to_prop": "MIS-MEM-029 -> ATOM-MEM-PERF-003::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-003::prop-1->MIS-MEM-029",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-029->ATOM-MEM-PERF-003::prop-2",
+      "mis_to_prop": "MIS-MEM-029 -> ATOM-MEM-PERF-003::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-003::prop-2->MIS-MEM-029",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-029->ATOM-MEM-PERF-003::prop-3",
+      "mis_to_prop": "MIS-MEM-029 -> ATOM-MEM-PERF-003::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-003::prop-3->MIS-MEM-029",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-001::prop-1",
+      "mis_to_prop": "MIS-MEM-030 -> ATOM-MEM-ALLOC-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-1->MIS-MEM-030",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-001::prop-2",
+      "mis_to_prop": "MIS-MEM-030 -> ATOM-MEM-ALLOC-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-2->MIS-MEM-030",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-001::prop-3",
+      "mis_to_prop": "MIS-MEM-030 -> ATOM-MEM-ALLOC-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-3->MIS-MEM-030",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-001::prop-4",
+      "mis_to_prop": "MIS-MEM-030 -> ATOM-MEM-ALLOC-001::prop-4",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-001::prop-4->MIS-MEM-030",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-002::prop-1",
+      "mis_to_prop": "MIS-MEM-030 -> ATOM-MEM-ALLOC-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-002::prop-1->MIS-MEM-030",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-002::prop-2",
+      "mis_to_prop": "MIS-MEM-030 -> ATOM-MEM-ALLOC-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-002::prop-2->MIS-MEM-030",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-030->ATOM-MEM-ALLOC-002::prop-3",
+      "mis_to_prop": "MIS-MEM-030 -> ATOM-MEM-ALLOC-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-ALLOC-002::prop-3->MIS-MEM-030",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-LEAK-001::prop-1",
+      "mis_to_prop": "MIS-MEM-031 -> ATOM-MEM-LEAK-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-LEAK-001::prop-1->MIS-MEM-031",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-LEAK-001::prop-2",
+      "mis_to_prop": "MIS-MEM-031 -> ATOM-MEM-LEAK-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-LEAK-001::prop-2->MIS-MEM-031",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-LEAK-001::prop-3",
+      "mis_to_prop": "MIS-MEM-031 -> ATOM-MEM-LEAK-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-LEAK-001::prop-3->MIS-MEM-031",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-LEAK-002::prop-1",
+      "mis_to_prop": "MIS-MEM-031 -> ATOM-MEM-LEAK-002::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-LEAK-002::prop-1->MIS-MEM-031",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-LEAK-002::prop-2",
+      "mis_to_prop": "MIS-MEM-031 -> ATOM-MEM-LEAK-002::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-LEAK-002::prop-2->MIS-MEM-031",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-LEAK-002::prop-3",
+      "mis_to_prop": "MIS-MEM-031 -> ATOM-MEM-LEAK-002::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-LEAK-002::prop-3->MIS-MEM-031",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-SHARED-001::prop-1",
+      "mis_to_prop": "MIS-MEM-031 -> ATOM-MEM-SHARED-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-001::prop-1->MIS-MEM-031",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-SHARED-001::prop-2",
+      "mis_to_prop": "MIS-MEM-031 -> ATOM-MEM-SHARED-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-001::prop-2->MIS-MEM-031",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-SHARED-001::prop-3",
+      "mis_to_prop": "MIS-MEM-031 -> ATOM-MEM-SHARED-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-SHARED-001::prop-3->MIS-MEM-031",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-WEAK-001::prop-1",
+      "mis_to_prop": "MIS-MEM-031 -> ATOM-MEM-WEAK-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-WEAK-001::prop-1->MIS-MEM-031",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-WEAK-001::prop-2",
+      "mis_to_prop": "MIS-MEM-031 -> ATOM-MEM-WEAK-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-WEAK-001::prop-2->MIS-MEM-031",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-031->ATOM-MEM-WEAK-001::prop-3",
+      "mis_to_prop": "MIS-MEM-031 -> ATOM-MEM-WEAK-001::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-WEAK-001::prop-3->MIS-MEM-031",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-032->ATOM-MEM-PERF-003::prop-1",
+      "mis_to_prop": "MIS-MEM-032 -> ATOM-MEM-PERF-003::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-003::prop-1->MIS-MEM-032",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-032->ATOM-MEM-PERF-003::prop-2",
+      "mis_to_prop": "MIS-MEM-032 -> ATOM-MEM-PERF-003::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-003::prop-2->MIS-MEM-032",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-032->ATOM-MEM-PERF-003::prop-3",
+      "mis_to_prop": "MIS-MEM-032 -> ATOM-MEM-PERF-003::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-003::prop-3->MIS-MEM-032",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-032->ATOM-MEM-PERF-004::prop-1",
+      "mis_to_prop": "MIS-MEM-032 -> ATOM-MEM-PERF-004::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-004::prop-1->MIS-MEM-032",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-032->ATOM-MEM-PERF-004::prop-2",
+      "mis_to_prop": "MIS-MEM-032 -> ATOM-MEM-PERF-004::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-004::prop-2->MIS-MEM-032",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-MEM-032->ATOM-MEM-PERF-004::prop-3",
+      "mis_to_prop": "MIS-MEM-032 -> ATOM-MEM-PERF-004::prop-3",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-MEM-PERF-004::prop-3->MIS-MEM-032",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-001->ATOM-UB-GRAY-001::prop-1",
+      "mis_to_prop": "MIS-UB-001 -> ATOM-UB-GRAY-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-001",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-001->ATOM-UB-GRAY-001::prop-2",
+      "mis_to_prop": "MIS-UB-001 -> ATOM-UB-GRAY-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-001",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-002->ATOM-UB-GRAY-001::prop-1",
+      "mis_to_prop": "MIS-UB-002 -> ATOM-UB-GRAY-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-002",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-002->ATOM-UB-GRAY-001::prop-2",
+      "mis_to_prop": "MIS-UB-002 -> ATOM-UB-GRAY-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-002",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-003->ATOM-UB-GRAY-001::prop-1",
+      "mis_to_prop": "MIS-UB-003 -> ATOM-UB-GRAY-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-003",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-003->ATOM-UB-GRAY-001::prop-2",
+      "mis_to_prop": "MIS-UB-003 -> ATOM-UB-GRAY-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-003",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-004->ATOM-UB-GRAY-001::prop-1",
+      "mis_to_prop": "MIS-UB-004 -> ATOM-UB-GRAY-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-004",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-004->ATOM-UB-GRAY-001::prop-2",
+      "mis_to_prop": "MIS-UB-004 -> ATOM-UB-GRAY-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-004",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-008->ATOM-UB-GRAY-001::prop-1",
+      "mis_to_prop": "MIS-UB-008 -> ATOM-UB-GRAY-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-008",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-008->ATOM-UB-GRAY-001::prop-2",
+      "mis_to_prop": "MIS-UB-008 -> ATOM-UB-GRAY-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-008",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-012->ATOM-UB-GRAY-001::prop-1",
+      "mis_to_prop": "MIS-UB-012 -> ATOM-UB-GRAY-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-012",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-012->ATOM-UB-GRAY-001::prop-2",
+      "mis_to_prop": "MIS-UB-012 -> ATOM-UB-GRAY-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-012",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-013->ATOM-UB-GRAY-001::prop-1",
+      "mis_to_prop": "MIS-UB-013 -> ATOM-UB-GRAY-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-013",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-013->ATOM-UB-GRAY-001::prop-2",
+      "mis_to_prop": "MIS-UB-013 -> ATOM-UB-GRAY-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-013",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-014->ATOM-UB-GRAY-001::prop-1",
+      "mis_to_prop": "MIS-UB-014 -> ATOM-UB-GRAY-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-014",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-014->ATOM-UB-GRAY-001::prop-2",
+      "mis_to_prop": "MIS-UB-014 -> ATOM-UB-GRAY-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-014",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-015->ATOM-UB-GRAY-001::prop-1",
+      "mis_to_prop": "MIS-UB-015 -> ATOM-UB-GRAY-001::prop-1",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-1->MIS-UB-015",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    },
+    {
+      "edge_id": "ae-MIS-UB-015->ATOM-UB-GRAY-001::prop-2",
+      "mis_to_prop": "MIS-UB-015 -> ATOM-UB-GRAY-001::prop-2",
+      "reverse_exists": true,
+      "reverse_id": "ae-ATOM-UB-GRAY-001::prop-2->MIS-UB-015",
+      "symmetry_proof_id": null,
+      "needs_human_verification": true
+    }
+  ]
+}
