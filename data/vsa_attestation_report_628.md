@@ -1,6 +1,6 @@
 # 628 B2 · VSA 验证凭证报告（他验三件套 #2）
 
-- 凭证：`data\vsa\attestation_20260923T030008Z.json`
+- 凭证：`data\vsa\attestation_20260923T043440Z.json`（2026-09-23T04:34:40Z）
 - HMAC 验证：True · 输入哈希锚定：True · 结果一致：True
 - verifier_sha256：`a85cad4faa914506…`（凭证可追溯到验证者脚本版本）
 - input_hashes：ledger/grounded/PCK 目录三重锚定（凭证绑定输入版本）

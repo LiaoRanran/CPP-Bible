@@ -128,18 +128,25 @@ def step4_append_log(vsa_path: str) -> dict:
 
 
 def step5_verify_log() -> dict:
-    p = _run(LOG_TOOL)
+    p = _run(LOG_TOOL, "--status")
     if p.returncode != 0:
         raise RuntimeError(f"B3 验证日志失败: {p.stderr[-300:]}")
     return cast(dict, _load_json(p.stdout))
 
 
-def latest_credential() -> Optional[str]:
-    if not os.path.isdir(VSA_DIR):
+def tail_logged_credential() -> Optional[str]:
+    """**日志在册的最后一个凭证**。
+
+    比"文件名最新的凭证"可靠：不受同秒生成、未入册凭证、测试尘埃影响
+    （旧实现用文件名排序，`--check` 一旦产生未入册凭证就会误判）。
+    """
+    if not os.path.exists(LOG):
         return None
-    files = sorted(f for f in os.listdir(VSA_DIR)
-                   if f.startswith("attestation_") and f.endswith(".json"))
-    return os.path.join(VSA_DIR, files[-1]) if files else None
+    entries = [json.loads(line) for line in open(LOG, encoding="utf-8") if line.strip()]
+    if not entries:
+        return None
+    p = os.path.join(ROOT, str(entries[-1].get("vsa_file", "")))
+    return p if os.path.exists(p) else None
 
 
 def step_inclusion(vsa_path: str) -> dict:
@@ -198,27 +205,30 @@ def run_e2e(write_report: bool = False) -> dict:
 
 
 def run_check() -> dict:
-    """幂等自检：不生成新凭证、不追加日志。"""
+    """幂等自检：不生成新凭证、不追加日志、不改任何文件。"""
     iv = step1_independent_verify()
     sys_w2 = system_v2_w2()
     cmp_ = compare(iv, sys_w2)
     log = step5_verify_log()
-    cred_path = latest_credential()
+    cred_path = tail_logged_credential()
     vsa_ok = False
     inc_ok = False
     if cred_path:
-        p = _run(VSA_TOOL, "--verify")
+        p = _run(VSA_TOOL, "--verify-path", cred_path)
         vsa_ok = bool(_load_json(p.stdout)["valid"])
         inc_ok = bool(step_inclusion(cred_path)["included"])
     checks = dict(cmp_)
     checks.update({
         "log_chain_valid": bool(log["chain_valid"]),
         "log_entries_ge_1": log["entries"] >= 1,
-        "latest_vsa_valid": vsa_ok,
-        "latest_vsa_in_log": inc_ok,
+        "log_files_ok": bool(log["files"]["ok"]),
+        "all_credentials_logged": not log["unlogged"],
+        "logged_vsa_valid": vsa_ok,
+        "logged_vsa_in_log": inc_ok,
     })
     return {"checks": checks, "all_ok": all(checks.values()), "log_state": log,
-            "system_v2_w2": sys_w2, "independent_w2": iv["w2"]["summary"]}
+            "system_v2_w2": sys_w2, "independent_w2": iv["w2"]["summary"],
+            "logged_credential": (os.path.relpath(cred_path, ROOT) if cred_path else None)}
 
 
 def _write_report(r: dict) -> None:
@@ -247,6 +257,9 @@ def _write_report(r: dict) -> None:
         f"（{r['log_state']['entries']} 条） |",
         f"| 6 凭证存在性 | B3（inclusion） | "
         f"{'在册 index=' + str(r['inclusion']['log_index']) if r['inclusion']['included'] else '不在册'} |",
+        f"| 7 日志/凭证一致性 | B3（漂移检测） | 引用文件完整 "
+        f"{r['log_state']['files']['ok']}（{r['log_state']['entries']} 条）· "
+        f"未入册凭证 {len(r['log_state']['unlogged'])} 张 |",
         "",
         "## 二、独立验证 vs 系统输出", "",
         "| 项目 | 独立重算 | 系统口径 | 一致 |",
@@ -299,10 +312,14 @@ def selftest() -> int:
     chk("PCK authorized = 27", c["pck_authorized_match"])
     chk("ledger 哈希链 valid", c["ledger_chain_valid"])
     chk("unique = 93", c["unique_match"])
-    chk("最近 VSA 凭证签名/输入/结果有效", c["latest_vsa_valid"])
-    chk("最近 VSA 凭证在日志中（inclusion）", c["latest_vsa_in_log"])
+    chk("日志在册凭证签名/输入/结果有效", c["logged_vsa_valid"],
+        f'({r["logged_credential"]})')
+    chk("日志在册凭证可验证存在于日志（inclusion）", c["logged_vsa_in_log"])
     chk("透明日志链完整且 ≥1 条", c["log_chain_valid"] and c["log_entries_ge_1"],
         f"({r['log_state']['entries']} 条)")
+    chk("日志引用的凭证文件都在且哈希一致", c["log_files_ok"])
+    chk("凭证全部入册（无未登记凭证）", c["all_credentials_logged"],
+        f'({r["log_state"]["unlogged"]})')
     chk("端到端全绿", r["all_ok"])
     print(f"B4 third-party audit demo check: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1

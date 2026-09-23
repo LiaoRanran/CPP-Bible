@@ -2,7 +2,7 @@
   "vsa_version": "1.0",
   "verifier_id": "independent_verifier_628",
   "verifier_sha256": "a85cad4faa914506cce09cc1f8f497137623dd56e038380c583b6a94bceb1883",
-  "verified_at": "2026-09-23T02:57:11Z",
+  "verified_at": "2026-09-23T04:50:23Z",
   "input_hashes": {
     "ledger_sha256": "ec8cbf5cca2def3ded8517264ae163ad64658dfc8d85d96fa7ac9804c194b385",
     "grounded_labels_sha256": "d06e9f7de92a38173b651ce2eb1b8205ea4f0ac1a05f9fbd630064945396d0d1",
@@ -16,5 +16,5 @@
     "ledger_hash_chain": "valid",
     "unique_review_items": 93
   },
-  "attestation": "7766d412255813ebb65d466b92a563dbff2da5c0c36603a03ea9ff8a93f5d0fe"
+  "attestation": "0e4467f6989274d1094c0127665aece3eca8e153b1454006fca4a605a8ba93b5"
 }

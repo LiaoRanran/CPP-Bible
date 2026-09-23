@@ -1,5 +1,5 @@
 {
-  "stamp": "2026-09-23T04:16:48Z",
+  "stamp": "2026-09-23T04:52:01Z",
   "verifier_id": "independent_verifier_628",
   "verifier_sha256": "a85cad4faa914506cce09cc1f8f497137623dd56e038380c583b6a94bceb1883",
   "independent": {
@@ -59,27 +59,37 @@
     "ledger_chain_valid": true,
     "unique_match": true
   },
-  "vsa_path": "data\\vsa\\attestation_20260923T041647Z.json",
-  "vsa_attestation": "62a6374215cd60832a82e31201783f95f626aa73e721169601167da752eb7fe1",
+  "vsa_path": "data\\vsa\\attestation_20260923T045200Z.json",
+  "vsa_attestation": "18e5154da10684afe5898c8ad3438469cde9f6099d433f9660fb36dea87cefe8",
   "log_append": {
     "ok": true,
-    "log_index": 14,
-    "entry_hash": "76a77b246e388020a58bafc40aa10d44f80927fa614950752567b3d6618128c2",
-    "vsa_hash": "36425e2980c87e1c012249142b6470658348fa8fac1f6eb6b993c93c95f1be28"
+    "log_index": 24,
+    "entry_hash": "a83b206864f7b826d2d3d1a17b474128f4d68fde447f74aa21e80b87da3e47e4",
+    "vsa_hash": "fad821dfb9288729b36291b4deff9f635bf48b4c2fd6bee4e59d42b9787866d2"
   },
   "log_state": {
-    "entries": 15,
+    "entries": 25,
     "chain_valid": true,
     "broken_at": [],
     "first_ts": "2026-09-23T03:01:32Z",
-    "last_ts": "2026-09-23T04:16:48Z"
+    "last_ts": "2026-09-23T04:52:01Z",
+    "files": {
+      "entries": 25,
+      "missing": [],
+      "drifted": [],
+      "ok": true
+    },
+    "unlogged": [],
+    "tail_vsa_file": "data\\vsa\\attestation_20260923T045200Z.json",
+    "tail_included": true,
+    "tail_log_index": 24
   },
   "inclusion": {
-    "vsa_path": "data\\vsa\\attestation_20260923T041647Z.json",
-    "vsa_hash": "36425e2980c87e1c012249142b6470658348fa8fac1f6eb6b993c93c95f1be28",
+    "vsa_path": "data\\vsa\\attestation_20260923T045200Z.json",
+    "vsa_hash": "fad821dfb9288729b36291b4deff9f635bf48b4c2fd6bee4e59d42b9787866d2",
     "included": true,
-    "log_index": 14
+    "log_index": 24
   },
-  "audit_statement": "在 2026-09-23T04:16:48Z，独立验证者 independent_verifier_628（脚本 sha256 a85cad4faa914506…）对输入 ledger=452 条 / PCK=83 张 / 节点 grounded_labels 独立重算得 W2 IN/OUT/UNDEC=114/7/0，与系统 V2 投影 IN/OUT/UNDEC=114/7/0 一致；凭证 data\\vsa\\attestation_20260923T041647Z.json 已存入透明日志 index=14（entry_hash=76a77b246e388020…），日志链完整（15 条）。",
+  "audit_statement": "在 2026-09-23T04:52:01Z，独立验证者 independent_verifier_628（脚本 sha256 a85cad4faa914506…）对输入 ledger=452 条 / PCK=83 张 / 节点 grounded_labels 独立重算得 W2 IN/OUT/UNDEC=114/7/0，与系统 V2 投影 IN/OUT/UNDEC=114/7/0 一致；凭证 data\\vsa\\attestation_20260923T045200Z.json 已存入透明日志 index=24（entry_hash=a83b206864f7b826…），日志链完整（25 条）。",
   "all_green": true
 }

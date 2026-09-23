@@ -32,6 +32,13 @@ LOG = os.path.join(ROOT, "data", "transparency_log.jsonl")
 VSA_DIR = os.path.join(ROOT, "data", "vsa")
 OUT_MD = os.path.join(ROOT, "data", "transparency_log_report_628.md")
 
+# 测试隔离：可用环境变量把日志指向临时文件（默认生产日志），保证单测不污染生产状态
+LOG_ENV = "CPPBIBLE_TRANSPARENCY_LOG"
+
+
+def _log_path() -> str:
+    return os.environ.get(LOG_ENV) or LOG
+
 
 def _sha256_file(path: str) -> str:
     h = hashlib.sha256()
@@ -41,9 +48,10 @@ def _sha256_file(path: str) -> str:
 
 
 def _read_log() -> list[dict]:
-    if not os.path.exists(LOG):
+    p = _log_path()
+    if not os.path.exists(p):
         return []
-    return [json.loads(line) for line in open(LOG, encoding="utf-8")
+    return [json.loads(line) for line in open(p, encoding="utf-8")
             if line.strip()]
 
 
@@ -54,10 +62,18 @@ def _entry_hash(entry: dict) -> str:
 
 
 def append_vsa(vsa_path: str) -> dict:
-    """追加 VSA 凭证到日志（append-only：只写文件末尾）。"""
+    """追加 VSA 凭证到日志（append-only：只写文件末尾）。
+
+    **幂等**：同一凭证（相同 sha256）已入册时不重复追加（返回 `already_present`）。
+    """
     if not os.path.exists(vsa_path):
         return {"ok": False, "error": f"not found: {vsa_path}"}
     log = _read_log()
+    vh = _sha256_file(vsa_path)
+    for e in log:
+        if e.get("vsa_hash") == vh:
+            return {"ok": True, "already_present": True, "log_index": e["log_index"],
+                    "entry_hash": e["entry_hash"], "vsa_hash": vh}
     prev_hash = log[-1]["entry_hash"] if log else "GENESIS"
     entry = {
         "log_index": len(log),
@@ -67,7 +83,7 @@ def append_vsa(vsa_path: str) -> dict:
         "prev_log_hash": prev_hash,
     }
     entry["entry_hash"] = _entry_hash(entry)
-    with open(LOG, "a", encoding="utf-8", newline="\n") as fh:
+    with open(_log_path(), "a", encoding="utf-8", newline="\n") as fh:
         fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
     return {"ok": True, "log_index": entry["log_index"],
             "entry_hash": entry["entry_hash"], "vsa_hash": entry["vsa_hash"]}
@@ -97,6 +113,46 @@ def check_inclusion(vsa_path: str) -> dict:
             "log_index": hits[-1]["log_index"] if hits else None}
 
 
+def logged_files_status() -> dict:
+    """每条日志引用的凭证文件是否存在、sha256 是否与登记值一致（漂移检测）。"""
+    log = _read_log()
+    missing, drifted = [], []
+    for e in log:
+        p = os.path.join(ROOT, str(e.get("vsa_file", "")))
+        if not os.path.exists(p):
+            missing.append(e.get("log_index"))
+        elif _sha256_file(p) != e.get("vsa_hash"):
+            drifted.append(e.get("log_index"))
+    return {"entries": len(log), "missing": missing, "drifted": drifted,
+            "ok": not missing and not drifted}
+
+
+def unlogged_credentials() -> list[str]:
+    """生产凭证目录里**未入册**的凭证（正常状态应为空）。"""
+    if not os.path.isdir(VSA_DIR):
+        return []
+    logged = {e.get("vsa_file") for e in _read_log()}
+    out = []
+    for f in sorted(os.listdir(VSA_DIR)):
+        if f.startswith("attestation_") and f.endswith(".json"):
+            rel = os.path.relpath(os.path.join(VSA_DIR, f), ROOT)
+            if rel not in logged:
+                out.append(rel)
+    return out
+
+
+def status() -> dict:
+    """日志状态汇总（供 B4 编排器与他验报告读取）。"""
+    v = verify_log()
+    log = _read_log()
+    tail = log[-1]["vsa_file"] if log else None
+    inc = check_inclusion(os.path.join(ROOT, tail)) if tail else {"included": False,
+                                                                 "log_index": None}
+    return {**v, "files": logged_files_status(), "unlogged": unlogged_credentials(),
+            "tail_vsa_file": tail, "tail_included": bool(inc["included"]),
+            "tail_log_index": inc["log_index"]}
+
+
 def selftest() -> int:
     ok = True
 
@@ -105,16 +161,22 @@ def selftest() -> int:
         print(f"  [{'ok' if cond else 'FAIL'}] {name} {extra}")
         ok = ok and cond
 
-    v = verify_log()
-    chk("日志哈希链完整", v["chain_valid"], f"({v['entries']} 条, broken={v['broken_at']})")
-    chk("至少 1 条日志条目", v["entries"] >= 1, f"({v['entries']})")
-    # inclusion：取最近一张 VSA 凭证验证存在性
-    creds = sorted(f for f in os.listdir(VSA_DIR)
-                   if f.startswith("attestation_")) if os.path.isdir(VSA_DIR) else []
-    if creds:
-        inc = check_inclusion(os.path.join(VSA_DIR, creds[-1]))
-        chk("最近 VSA 凭证可验证存在于日志", inc["included"],
-            f"(index={inc['log_index']})")
+    st = status()
+    chk("日志哈希链完整", st["chain_valid"],
+        f"({st['entries']} 条, broken={st['broken_at']})")
+    chk("至少 1 条日志条目", st["entries"] >= 1, f"({st['entries']})")
+    chk("日志引用的凭证文件都在且哈希一致", st["files"]["ok"],
+        f"(missing={st['files']['missing']}, drifted={st['files']['drifted']})")
+    chk("凭证全部入册（无未登记凭证）", not st["unlogged"], f"({st['unlogged']})")
+    chk("日志尾部凭证可验证存在于日志", st["tail_included"],
+        f"(index={st['tail_log_index']})")
+    # 幂等：重复追加同一凭证不新增条目
+    if st["tail_vsa_file"]:
+        n_before = len(_read_log())
+        r = append_vsa(os.path.join(ROOT, st["tail_vsa_file"]))
+        chk("重复追加幂等（不新增日志条目）",
+            bool(r.get("already_present")) and len(_read_log()) == n_before)
+        chk("追加后链仍完整", verify_log()["chain_valid"])
     print(f"B3 transparency log check: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
 
@@ -124,8 +186,12 @@ def main(argv: Optional[list] = None) -> int:
     ap.add_argument("--check", action="store_true", help="自检（验证完整性）")
     ap.add_argument("--append", metavar="VSA", help="追加 VSA 凭证")
     ap.add_argument("--inclusion", metavar="VSA", help="验证凭证在日志中")
+    ap.add_argument("--status", action="store_true", help="输出日志状态 JSON")
     ap.add_argument("--report", action="store_true", help="写报告")
     args = ap.parse_args(argv)
+    if args.status:
+        print(json.dumps(status(), ensure_ascii=False, indent=2))
+        return 0
     if args.append:
         print(json.dumps(append_vsa(args.append), ensure_ascii=False, indent=2))
         return 0
@@ -133,12 +199,17 @@ def main(argv: Optional[list] = None) -> int:
         print(json.dumps(check_inclusion(args.inclusion), ensure_ascii=False, indent=2))
         return 0
     if args.report:
-        v = verify_log()
+        v = status()
         lines = [
             "# 628 B3 · 透明日志报告（他验三件套 #3）", "",
             "- 日志：`data/transparency_log.jsonl`（append-only）",
             f"- 当前状态：**{v['entries']} 条**，链完整：{v['chain_valid']}",
             f"- 最早条目：{v['first_ts']} · 最新条目：{v['last_ts']}",
+            f"- 日志引用凭证文件完整性：{v['files']['ok']}"
+            f"（missing={v['files']['missing']} / drifted={v['files']['drifted']}）",
+            f"- 未入册凭证：{v['unlogged'] or '无'}",
+            f"- 尾部凭证存在性：{v['tail_included']}（index={v['tail_log_index']}）",
+            "- 追加幂等：同一凭证（相同 sha256）重复追加为 no-op（不新增条目）",
             "",
             "## 设计说明", "",
             "- 结构：线性哈希链——`entry_hash = sha256(除 entry_hash 外全字段)`，",
