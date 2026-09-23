@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 from typing import Any, Optional
@@ -108,7 +109,13 @@ def deliverables_committed() -> dict[str, Any]:
 
 
 def batch_path(ln: str) -> str:
-    return ln[3:].strip().strip('"')
+    """从 `git status --short` 行里取路径（兼容 1-2 位状态前缀与引号路径）。
+
+    踩坑记录：`ln[3:]` 对绝大多数行正确，但对**路径以 `_` 开头**且状态前缀只有 1 位的行
+    会吃掉首字符（实测 `'M _adv_v80/...'` → `'adv_v80/...'`）⇒ 改用正则剥前缀。
+    """
+    m = re.match(r"^[ MADRCU?!]{1,2}\s+(.*)$", ln)
+    return (m.group(1) if m else ln).strip().strip('"')
 
 
 def uncommitted_batch_files() -> list[str]:
@@ -125,6 +132,28 @@ def pending_batch_artifacts() -> list[str]:
             and batch_path(ln).startswith("data/")]
 
 
+# **测试套件每次运行都会再生的产物**（非阻断：push 前按需 `git add` 提交即可）。
+# 为什么必须排除：B1 的测试本身跑在套件里，而套件里的其他测试会重写这些报告
+# ⇒ 若把它们当"意外改动"，B1 在门禁里**必然**自我判红（实测踩到）。
+# 条目 = 观察到的实际集合；带 `/` 结尾者按前缀匹配（如 `data/vsa/` 每次 e2e 新增凭证）。
+REGEN_ARTIFACTS = (
+    "data/629_baseline.md", "data/630_baseline.md", "data/630_baseline.json",
+    "data/authority_v2_mode.json", "data/e2e_attestation_629.md",
+    "data/human_review_dashboard_v2.html", "data/independence_static_check_629.md",
+    "data/learner_behavior_events.jsonl", "data/learner_twin_gate_report_628.md",
+    "data/metrics_612.md", "data/snapshot_integrity_626.json",
+    "data/snapshot_integrity_report_626.md", "data/third_party_audit_demo_628.json",
+    "data/third_party_audit_demo_report_628.md", "data/transparency_log.jsonl",
+    "data/independent_verifier_628.json", "data/independent_verifier_report_628.md",
+    "data/vsa/", "_adv_v80/probes/p57.cpp",     # 末项 = CRLF 假脏（§零.9 同族）
+)
+
+
+def is_regen(path: str) -> bool:
+    return any(path == r or (r.endswith("/") and path.startswith(r))
+               for r in REGEN_ARTIFACTS)
+
+
 def check() -> dict[str, Any]:
     lines = status_lines()
     st = classify_status(lines)
@@ -132,12 +161,14 @@ def check() -> dict[str, Any]:
     ci = ci_syntax()
     bat = uncommitted_batch_files()
     pending = pending_batch_artifacts()
-    # 非阻断项 = 本批待提交的 data/ 报告（`?? data/...630...` 也在 status_other 里）
-    other_blocking = [x for x in st["other"] if x not in pending]
+    # 非阻断项 = ①本批待提交的 data/ 报告（收工一并提交）②测试套件再生的产物
+    regen = [x for x in st["other"] if is_regen(batch_path(x))]
+    other_blocking = [x for x in st["other"]
+                      if x not in pending and x not in regen]
     _rc, ahead = sh(["git", "rev-list", "--count", "origin/master..HEAD"])
     return {"status_expected": st["expected"], "status_other": st["other"],
             "status_other_blocking": other_blocking,
-            "pending_batch_artifacts": pending,
+            "pending_batch_artifacts": pending, "regen_artifacts": regen,
             "controlled_clean": controlled_clean(), "ci": ci,
             "deliverables": deliv, "uncommitted_630": bat,
             "ahead": int(ahead) if ahead.isdigit() else None,
@@ -153,9 +184,11 @@ def write_report() -> str:
         f"> 待推 commit 数：**{c['ahead']}**（`origin/master..HEAD`）", "",
         "## 一、检查项", "",
         "| # | 检查 | 结果 | 细节 |", "|---|---|---|---|",
-        f"| 1 | `git status --short` 只有预期残留 | "
-        f"{'✅' if not c['status_other'] else '❌'} | 预期残留 {len(c['status_expected'])} 项"
-        f"（并行会话产物）；意外改动 **{len(c['status_other'])}** 项 |",
+        f"| 1 | `git status --short` 无**阻断性**意外改动 | "
+        f"{'✅' if not c['status_other_blocking'] else '❌'} | 阻断项 "
+        f"**{len(c['status_other_blocking'])}** · 预期残留 {len(c['status_expected'])}"
+        f"（并行会话产物）· 本批待提交 data 报告 {len(c['pending_batch_artifacts'])} · "
+        f"测试再生产物 {len(c.get('regen_artifacts') or [])} |",
         f"| 2 | 受控目录零污染（§零.6） | {'✅' if c['controlled_clean'] else '❌'} | "
         f"`git diff --quiet -- atoms evidence Examples Book` |",
         f"| 3 | `ci.yml` 语法正确 | {'✅' if c['ci']['ok'] else '❌'} | "
@@ -175,6 +208,10 @@ def write_report() -> str:
     lines += [
         "## 二、预期残留（不提交，§零.13）", "",
         "```", *(c["status_expected"] or ["（无）"]), "```", "",
+        "### 测试套件再生产物（非阻断；push 前按需提交）", "",
+        "```", *(c.get("regen_artifacts") or ["（无）"]), "```", "",
+        "> 这些文件由套件里的其他测试重写（报告时间戳/快照口径/日志追加）。"
+        "若不单列，B1 的测试在套件内运行时会**自我判红**——已实测踩到并在此修正。", "",
         "## 三、push 命令（由 B2 执行）", "", "```bash", PUSH_CMD, "```", "",
         "## 四、诚实登记", "",
         f"- ci.yml 语法检查模式：**{c['ci']['mode']}**；若 PyYAML 不可用则为结构性检查；",

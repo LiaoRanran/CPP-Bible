@@ -1,17 +1,17 @@
 # 630 B1 · push 前检查
 
 > 工具：`tools/pre_push_630.py`（只读；**不执行 push**）
-> 待推 commit 数：**1**（`origin/master..HEAD`）
+> 待推 commit 数：**0**（`origin/master..HEAD`）
 
 ## 一、检查项
 
 | # | 检查 | 结果 | 细节 |
 |---|---|---|---|
-| 1 | `git status --short` 只有预期残留 | ❌ | 预期残留 23 项（并行会话产物）；意外改动 **18** 项 |
+| 1 | `git status --short` 无**阻断性**意外改动 | ❌ | 阻断项 **3** · 预期残留 23（并行会话产物）· 本批待提交 data 报告 2 · 测试再生产物 9 |
 | 2 | 受控目录零污染（§零.6） | ✅ | `git diff --quiet -- atoms evidence Examples Book` |
 | 3 | `ci.yml` 语法正确 | ✅ | 模式：pyyaml（jobs=11） |
 | 4 | A/C/D 线交付物全部已 commit | ✅ | 应提交 25 项，缺 0 项 |
-| 5 | 本批 630 文件无未提交改动 | ❌ | 6 项 |
+| 5 | 本批 630 文件无未提交改动 | ❌ | 2 项 |
 
 **总判定：❌ 存在阻断项**
 
@@ -20,6 +20,7 @@
 ```
 M _adv_v80/probes/p57.cpp
  M data/629_baseline.md
+ M data/630_acceptance_report.md
  M data/630_baseline.json
  M data/630_baseline.md
  M data/authority_v2_mode.json
@@ -29,13 +30,8 @@ M _adv_v80/probes/p57.cpp
  M data/learner_twin_gate_report_628.md
  M data/pre_push_check_630.json
  M data/pre_push_check_630.md
- M tests/test_baseline_630.py
  M tests/test_pre_push_630.py
- M tools/baseline_630.py
  M tools/pre_push_630.py
- M tools/run_630_gate.py
-?? data/630_acceptance_report.md
-?? tests/test_run_630_gate.py
 ```
 
 ## 二、预期残留（不提交，§零.13）
@@ -65,6 +61,22 @@ M _adv_v80/probes/p57.cpp
 ?? tools/queyi_core_interface_design_625.py
 ?? tools/queyi_core_trigger_check_625.py
 ```
+
+### 测试套件再生产物（非阻断；push 前按需提交）
+
+```
+M _adv_v80/probes/p57.cpp
+ M data/629_baseline.md
+ M data/630_baseline.json
+ M data/630_baseline.md
+ M data/authority_v2_mode.json
+ M data/e2e_attestation_629.md
+ M data/human_review_dashboard_v2.html
+ M data/independence_static_check_629.md
+ M data/learner_twin_gate_report_628.md
+```
+
+> 这些文件由套件里的其他测试重写（报告时间戳/快照口径/日志追加）。若不单列，B1 的测试在套件内运行时会**自我判红**——已实测踩到并在此修正。
 
 ## 三、push 命令（由 B2 执行）
 

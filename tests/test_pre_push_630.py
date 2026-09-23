@@ -39,10 +39,20 @@ def test_status_classifier():
 
 def test_check_all_ok_and_ahead(c):
     """B1 是 push 的**闸门**：代码（tools/tests）已提交 + 受控干净 + ci.yml 合法 + 交付物齐
-    ⇒ all_ok。本批 `data/` 报告类交付物允许待提交（收工 E1 一并提交），登记为非阻断项。"""
+    ⇒ all_ok。非阻断项两类：本批 `data/` 报告（收工提交）与**测试套件再生产物**。"""
     assert c["all_ok"], (c["status_other_blocking"], c["uncommitted_630"])
     assert not c["uncommitted_630"]
+    assert c["status_other_blocking"] == [], f"仍有阻断项：{c['status_other_blocking']}"
     assert isinstance(c["ahead"], int) and c["ahead"] >= 0
+
+
+def test_regen_artifacts_are_excluded_from_blocking():
+    """测试再生产物必须被识别为非阻断（否则本测试在套件内必然自我判红）。"""
+    assert P.is_regen("data/629_baseline.md")
+    assert P.is_regen("data/vsa/attestation_x.json")
+    assert P.is_regen("_adv_v80/probes/p57.cpp")
+    assert not P.is_regen("tools/some_new_tool.py")
+    assert not P.is_regen("data/some_new_report.md")
 
 
 def test_report_json_and_selftest(c):
