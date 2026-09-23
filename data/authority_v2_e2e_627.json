@@ -1,0 +1,1346 @@
+{
+  "flag": "QUEYI_AUTHORITY_V2",
+  "all_v2_ok": true,
+  "rows": [
+    {
+      "projection": "w2",
+      "v2_ok": true,
+      "v2_summary": {
+        "IN": 484,
+        "OUT": 35,
+        "UNDEC": 0
+      },
+      "v2_error": null,
+      "v1_mode": "legacy_grounded_labels",
+      "v1_summary": {
+        "IN": 114,
+        "OUT": 7
+      }
+    },
+    {
+      "projection": "pck",
+      "v2_ok": true,
+      "v2_summary": {
+        "count": 83,
+        "strict_authorized": 0,
+        "relaxed_authorized": 0,
+        "delta_relaxed_minus_strict": 0,
+        "cross_granularity_warned": 25,
+        "results": {
+          "ATOM-CONC-FENCE-001": {
+            "pck_id": "ATOM-CONC-FENCE-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-CONC-LOCK-001": {
+            "pck_id": "ATOM-CONC-LOCK-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-CONC-RACE-001": {
+            "pck_id": "ATOM-CONC-RACE-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-HIST-AUTOPTR-001": {
+            "pck_id": "ATOM-HIST-AUTOPTR-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-LANG-INLINE-001": {
+            "pck_id": "ATOM-LANG-INLINE-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-ALIGN-001": {
+            "pck_id": "ATOM-MEM-ALIGN-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-ALLOC-001": {
+            "pck_id": "ATOM-MEM-ALLOC-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-ALLOC-002": {
+            "pck_id": "ATOM-MEM-ALLOC-002",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-LEAK-001": {
+            "pck_id": "ATOM-MEM-LEAK-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-LEAK-002": {
+            "pck_id": "ATOM-MEM-LEAK-002",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-MOVE-002": {
+            "pck_id": "ATOM-MEM-MOVE-002",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-NEW-001": {
+            "pck_id": "ATOM-MEM-NEW-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-PERF-001": {
+            "pck_id": "ATOM-MEM-PERF-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-PERF-002": {
+            "pck_id": "ATOM-MEM-PERF-002",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-PERF-003": {
+            "pck_id": "ATOM-MEM-PERF-003",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-PERF-004": {
+            "pck_id": "ATOM-MEM-PERF-004",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-RAII-001": {
+            "pck_id": "ATOM-MEM-RAII-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-RAII-002": {
+            "pck_id": "ATOM-MEM-RAII-002",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-RVREF-001": {
+            "pck_id": "ATOM-MEM-RVREF-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-SHARED-001": {
+            "pck_id": "ATOM-MEM-SHARED-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-SHARED-002": {
+            "pck_id": "ATOM-MEM-SHARED-002",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-UNIQUE-001": {
+            "pck_id": "ATOM-MEM-UNIQUE-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-UNIQUE-002": {
+            "pck_id": "ATOM-MEM-UNIQUE-002",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-VALUE-001": {
+            "pck_id": "ATOM-MEM-VALUE-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-VALUE-002": {
+            "pck_id": "ATOM-MEM-VALUE-002",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-MEM-WEAK-001": {
+            "pck_id": "ATOM-MEM-WEAK-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "ATOM-UB-GRAY-001": {
+            "pck_id": "ATOM-UB-GRAY-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "cross_granularity：仅有 edge-level authority，不自动升级为 card-level authorized",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-CONC-001": {
+            "pck_id": "EV-CONC-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-CONC-002": {
+            "pck_id": "EV-CONC-002",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-CONC-003": {
+            "pck_id": "EV-CONC-003",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-CONC-004": {
+            "pck_id": "EV-CONC-004",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-CONC-005": {
+            "pck_id": "EV-CONC-005",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-CONC-006": {
+            "pck_id": "EV-CONC-006",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-HIST-001": {
+            "pck_id": "EV-HIST-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-LANG-001": {
+            "pck_id": "EV-LANG-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-LANG-002": {
+            "pck_id": "EV-LANG-002",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-001": {
+            "pck_id": "EV-MEM-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-002": {
+            "pck_id": "EV-MEM-002",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-003": {
+            "pck_id": "EV-MEM-003",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-004": {
+            "pck_id": "EV-MEM-004",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-005": {
+            "pck_id": "EV-MEM-005",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-006": {
+            "pck_id": "EV-MEM-006",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-007": {
+            "pck_id": "EV-MEM-007",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-008": {
+            "pck_id": "EV-MEM-008",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-009": {
+            "pck_id": "EV-MEM-009",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-010": {
+            "pck_id": "EV-MEM-010",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-011": {
+            "pck_id": "EV-MEM-011",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-012": {
+            "pck_id": "EV-MEM-012",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-013": {
+            "pck_id": "EV-MEM-013",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-014": {
+            "pck_id": "EV-MEM-014",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-015": {
+            "pck_id": "EV-MEM-015",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-016": {
+            "pck_id": "EV-MEM-016",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-017": {
+            "pck_id": "EV-MEM-017",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-018": {
+            "pck_id": "EV-MEM-018",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-019": {
+            "pck_id": "EV-MEM-019",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-020": {
+            "pck_id": "EV-MEM-020",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-021": {
+            "pck_id": "EV-MEM-021",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-022": {
+            "pck_id": "EV-MEM-022",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-023": {
+            "pck_id": "EV-MEM-023",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-024": {
+            "pck_id": "EV-MEM-024",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-025": {
+            "pck_id": "EV-MEM-025",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-026": {
+            "pck_id": "EV-MEM-026",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-027": {
+            "pck_id": "EV-MEM-027",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-028": {
+            "pck_id": "EV-MEM-028",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-029": {
+            "pck_id": "EV-MEM-029",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-030": {
+            "pck_id": "EV-MEM-030",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-031": {
+            "pck_id": "EV-MEM-031",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-032": {
+            "pck_id": "EV-MEM-032",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-033": {
+            "pck_id": "EV-MEM-033",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-034": {
+            "pck_id": "EV-MEM-034",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-035": {
+            "pck_id": "EV-MEM-035",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-036": {
+            "pck_id": "EV-MEM-036",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-037": {
+            "pck_id": "EV-MEM-037",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-038": {
+            "pck_id": "EV-MEM-038",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-039": {
+            "pck_id": "EV-MEM-039",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-040": {
+            "pck_id": "EV-MEM-040",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-041": {
+            "pck_id": "EV-MEM-041",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-042": {
+            "pck_id": "EV-MEM-042",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-043": {
+            "pck_id": "EV-MEM-043",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-044": {
+            "pck_id": "EV-MEM-044",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-MEM-045": {
+            "pck_id": "EV-MEM-045",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-UB-001": {
+            "pck_id": "EV-UB-001",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          },
+          "EV-UB-002": {
+            "pck_id": "EV-UB-002",
+            "has_certificate": true,
+            "strict": {
+              "status": "pending",
+              "policy": "v0.1-strict"
+            },
+            "relaxed": {
+              "status": "pending",
+              "policy": "v0.1-relaxed"
+            },
+            "cross_granularity_warning": "",
+            "source_authority_events": [],
+            "aggregation_policy_version": "v0.1"
+          }
+        }
+      },
+      "v2_error": null,
+      "v1_mode": "legacy_pck_certificates",
+      "v1_summary": {
+        "passed": 27,
+        "failed": 56
+      }
+    },
+    {
+      "projection": "golden",
+      "v2_ok": true,
+      "v2_summary": {
+        "warn_disposition_events": 0,
+        "accepted_legacy": 0,
+        "accepted_legacy_events": [],
+        "rule": "任何自动采纳 legacy 的路径必须关闭；只有 Authority event 才能标记 accepted_legacy",
+        "source_authority_events": []
+      },
+      "v2_error": null,
+      "v1_mode": "v2_only",
+      "v1_summary": {}
+    },
+    {
+      "projection": "dashboard",
+      "v2_ok": true,
+      "v2_summary": {
+        "v2_enabled": true,
+        "review_items_unique": 93,
+        "review_items_records": 93,
+        "by_status": {
+          "pending": 93
+        },
+        "review_method_distribution": {
+          "ITEM_OPEN": 30,
+          "MIRROR_DERIVED": 194,
+          "BATCH_AUTH": 228
+        },
+        "decision_origin_distribution": {
+          "user_authorized_execution": 30,
+          "mirror_projection": 194,
+          "human_observed": 228
+        },
+        "ambiguity_distribution": {
+          "high": 30,
+          "medium": 63,
+          "low": 0
+        },
+        "independent_human_review_count": 0,
+        "authority_events": 452,
+        "generated_at": "2026-09-23T00:12:04Z"
+      },
+      "v2_error": null,
+      "v1_mode": "v2_only",
+      "v1_summary": {}
+    },
+    {
+      "projection": "textbook",
+      "v2_ok": true,
+      "v2_summary": {
+        "atom_id": "ATOM-CONC-FENCE-001",
+        "render_state": "ABSTAIN",
+        "pck_status": "pending",
+        "argument_status": {},
+        "source_authority_events": []
+      },
+      "v2_error": null,
+      "v1_mode": "v2_only",
+      "v1_summary": {}
+    }
+  ]
+}
