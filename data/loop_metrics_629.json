@@ -1,0 +1,102 @@
+{
+  "escape": {
+    "hits": 1,
+    "denom": 1406,
+    "cs_upper": 0.9062,
+    "source": "§一（616 修正）",
+    "rate": 0.000711,
+    "pct": 0.0711
+  },
+  "autoimmune": {
+    "clean_cards": 23,
+    "warned_cards": 23,
+    "rate": 1.0,
+    "pct": 100.0,
+    "hard_defect": 1,
+    "caliber_only": 22,
+    "format_allergy": 0.0,
+    "format_probes": 20,
+    "source": "629 A1/A2（本批实测）"
+  },
+  "coverage": {
+    "touched": 36,
+    "rules_total": 67,
+    "blind": 31,
+    "source": "§一（623-624 六轮）",
+    "pct": 53.7,
+    "round8_seeds": 20,
+    "round8_touched": 1,
+    "round8_new_rules": [
+      "EV-FM-REQUIRED"
+    ],
+    "round8_escaped": 0,
+    "round8_distribution": {
+      "blocked": 10,
+      "neutral": 10
+    }
+  },
+  "trend": [
+    {
+      "file": "full_baseline_v1.json",
+      "variants": 1188,
+      "blocked": 729,
+      "escaped": 227,
+      "escape_rate": 0.1911,
+      "superseded_by": null
+    },
+    {
+      "file": "full_baseline_v2.json",
+      "variants": 1181,
+      "blocked": 908,
+      "escaped": 61,
+      "escape_rate": 0.0517,
+      "superseded_by": null
+    },
+    {
+      "file": "full_baseline_v3.json",
+      "variants": 1183,
+      "blocked": 959,
+      "escaped": 38,
+      "escape_rate": 0.0321,
+      "superseded_by": null
+    },
+    {
+      "file": "full_baseline_v4.json",
+      "variants": 1183,
+      "blocked": 960,
+      "escaped": 38,
+      "escape_rate": 0.0321,
+      "superseded_by": null
+    },
+    {
+      "file": "full_baseline_v5.json",
+      "variants": 1568,
+      "blocked": 1374,
+      "escaped": 1,
+      "escape_rate": 0.0006,
+      "superseded_by": null
+    },
+    {
+      "file": "full_baseline_v6.json",
+      "variants": 1593,
+      "blocked": 1378,
+      "escaped": 1,
+      "escape_rate": 0.0006,
+      "superseded_by": "full_baseline_v7.json"
+    },
+    {
+      "file": "full_baseline_v7.json",
+      "variants": 1593,
+      "blocked": 1405,
+      "escaped": 1,
+      "escape_rate": 0.0006,
+      "superseded_by": null
+    }
+  ],
+  "asymmetry": {
+    "escape_pct": 0.0711,
+    "autoimmune_pct": 100.0,
+    "ratio": 1406.5,
+    "symmetric": false
+  }
+}
