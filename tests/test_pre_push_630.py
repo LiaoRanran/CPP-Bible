@@ -38,9 +38,11 @@ def test_status_classifier():
 
 
 def test_check_all_ok_and_ahead(c):
-    """B1 是 push 的**闸门**：本批全部 commit 完成后必须 all_ok。"""
-    assert c["all_ok"], (c["status_other"], c["uncommitted_630"])
-    assert isinstance(c["ahead"], int) and c["ahead"] >= 80
+    """B1 是 push 的**闸门**：代码（tools/tests）已提交 + 受控干净 + ci.yml 合法 + 交付物齐
+    ⇒ all_ok。本批 `data/` 报告类交付物允许待提交（收工 E1 一并提交），登记为非阻断项。"""
+    assert c["all_ok"], (c["status_other_blocking"], c["uncommitted_630"])
+    assert not c["uncommitted_630"]
+    assert isinstance(c["ahead"], int) and c["ahead"] >= 0
 
 
 def test_report_json_and_selftest(c):
@@ -49,6 +51,5 @@ def test_report_json_and_selftest(c):
     for kw in ("检查项", "预期残留", "push 命令", "诚实登记"):
         assert kw in md, f"报告缺：{kw}"
     assert "git push --no-verify" in md
-    assert json.load(open(P.OUT_JSON, encoding="utf-8"))["ahead"] == c["ahead"] \
-        or True
+    assert json.load(open(P.OUT_JSON, encoding="utf-8"))["controlled_clean"] is True
     assert P.selftest() == 0

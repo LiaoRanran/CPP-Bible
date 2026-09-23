@@ -1,26 +1,41 @@
 # 630 B1 · push 前检查
 
 > 工具：`tools/pre_push_630.py`（只读；**不执行 push**）
-> 待推 commit 数：**98**（`origin/master..HEAD`）
+> 待推 commit 数：**1**（`origin/master..HEAD`）
 
 ## 一、检查项
 
 | # | 检查 | 结果 | 细节 |
 |---|---|---|---|
-| 1 | `git status --short` 只有预期残留 | ❌ | 预期残留 23 项（并行会话产物）；意外改动 **3** 项 |
+| 1 | `git status --short` 只有预期残留 | ❌ | 预期残留 23 项（并行会话产物）；意外改动 **18** 项 |
 | 2 | 受控目录零污染（§零.6） | ✅ | `git diff --quiet -- atoms evidence Examples Book` |
 | 3 | `ci.yml` 语法正确 | ✅ | 模式：pyyaml（jobs=11） |
 | 4 | A/C/D 线交付物全部已 commit | ✅ | 应提交 25 项，缺 0 项 |
-| 5 | 本批 630 文件无未提交改动 | ❌ | 3 项 |
+| 5 | 本批 630 文件无未提交改动 | ❌ | 6 项 |
 
 **总判定：❌ 存在阻断项**
 
 ### 意外改动（需处理）
 
 ```
-?? data/pre_push_check_630.json
-?? data/pre_push_check_630.md
-?? tools/pre_push_630.py
+M _adv_v80/probes/p57.cpp
+ M data/629_baseline.md
+ M data/630_baseline.json
+ M data/630_baseline.md
+ M data/authority_v2_mode.json
+ M data/e2e_attestation_629.md
+ M data/human_review_dashboard_v2.html
+ M data/independence_static_check_629.md
+ M data/learner_twin_gate_report_628.md
+ M data/pre_push_check_630.json
+ M data/pre_push_check_630.md
+ M tests/test_baseline_630.py
+ M tests/test_pre_push_630.py
+ M tools/baseline_630.py
+ M tools/pre_push_630.py
+ M tools/run_630_gate.py
+?? data/630_acceptance_report.md
+?? tests/test_run_630_gate.py
 ```
 
 ## 二、预期残留（不提交，§零.13）

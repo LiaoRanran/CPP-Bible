@@ -190,21 +190,28 @@ def selftest() -> int:
     chk("§一 条目齐全（≥15 项）", len(STANDING) >= 15, f"({len(STANDING)})")
     chk("HEAD 可读且与 §一 的 head 字段都是 7-8 位短哈希",
         len(m["head"]) >= 7 and len(str(m["standing"]["head"])) >= 7)
-    chk("ahead 已测（≥80）", isinstance(m["ahead"], int) and m["ahead"] >= 80,
-        f"({m['ahead']})")
+    chk("ahead 已测（非负整数；push 前 >0、push 后 =0）",
+        isinstance(m["ahead"], int) and m["ahead"] >= 0, f"({m['ahead']})")
     chk("tools/ 文件数 ≥ 300", m["counts"]["tools_py"] >= 300,
         f"({m['counts']['tools_py']})")
     chk("tests/ 文件数 ≥ 300", m["counts"]["tests_py"] >= 300,
         f"({m['counts']['tests_py']})")
     chk("630 工具计数 ≥ 1", m["counts"]["tools_630"] >= 1)
     chk("git log 取到 5 条", len(m["log5"]) == 5)
+    chk("HEAD/远端都是短哈希且可读",
+        bool(m["head"] and m["remote"] and len(m["head"]) >= 7))
     chk("四元指标可读（自身免疫率 + coverage + 失败分类）",
         bool(mt.get("autoimmune_rate_pct") is not None and mt.get("coverage")
              and mt.get("test_failures") is not None), f"({sorted(mt)})")
-    # 只读自证：本工具**自己**没改任何基线文件（工作区里其他 dirty 由测试套件再生文件造成）
-    chk("只读：本工具未修改任何基线文件",
-        not [d for d in m["dirty"] if "630_baseline" in d],
-        f"(既有 dirty {len(m['dirty'])} 项=测试套件再生的报告，与本工具无关)")
+    # 只读自证：`measure()` / `metrics()` 不改变工作区（快照前后一致）。
+    # 不比对「工作区里有没有 dirty」——那是测试套件再生报告与本批待提交文件的既有状态。
+    def snap() -> str:
+        return sh(["git", "status", "--porcelain"])
+
+    before = snap()
+    measure()
+    metrics()
+    chk("只读：measure()/metrics() 不改变工作区", snap() == before)
     chk("报告 + JSON 存在", os.path.exists(OUT_MD) and os.path.exists(OUT_JSON))
     print(f"630 baseline check: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1

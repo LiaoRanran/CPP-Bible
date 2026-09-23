@@ -107,10 +107,22 @@ def deliverables_committed() -> dict[str, Any]:
             "ok": not missing}
 
 
+def batch_path(ln: str) -> str:
+    return ln[3:].strip().strip('"')
+
+
 def uncommitted_batch_files() -> list[str]:
-    """本批 630 工具/测试若有未提交改动 ⇒ 阻断 push。"""
+    """**阻断项**：本批 630 的**代码**（`tools/`、`tests/`）若有未提交改动 ⇒ 阻断 push。"""
     return [ln for ln in status_lines()
-            if "_630" in ln and (ln.startswith((" M", " D", "??")))]
+            if "_630" in ln and ln.startswith((" M", " D", "??"))
+            and batch_path(ln).startswith(("tools/", "tests/"))]
+
+
+def pending_batch_artifacts() -> list[str]:
+    """**非阻断**：本批 `data/` 下的报告类交付物（在收工 E1 一并提交）。"""
+    return [ln for ln in status_lines()
+            if "_630" in ln and ln.startswith((" M", " D", "??"))
+            and batch_path(ln).startswith("data/")]
 
 
 def check() -> dict[str, Any]:
@@ -119,12 +131,17 @@ def check() -> dict[str, Any]:
     deliv = deliverables_committed()
     ci = ci_syntax()
     bat = uncommitted_batch_files()
-    ahead_rc, ahead = sh(["git", "rev-list", "--count", "origin/master..HEAD"])
+    pending = pending_batch_artifacts()
+    # 非阻断项 = 本批待提交的 data/ 报告（`?? data/...630...` 也在 status_other 里）
+    other_blocking = [x for x in st["other"] if x not in pending]
+    _rc, ahead = sh(["git", "rev-list", "--count", "origin/master..HEAD"])
     return {"status_expected": st["expected"], "status_other": st["other"],
+            "status_other_blocking": other_blocking,
+            "pending_batch_artifacts": pending,
             "controlled_clean": controlled_clean(), "ci": ci,
             "deliverables": deliv, "uncommitted_630": bat,
             "ahead": int(ahead) if ahead.isdigit() else None,
-            "all_ok": (not st["other"] and controlled_clean() and ci["ok"]
+            "all_ok": (not other_blocking and controlled_clean() and ci["ok"]
                        and deliv["ok"] and not bat)}
 
 
@@ -187,17 +204,21 @@ def selftest() -> int:
     chk("ci.yml 语法检查通过", c["ci"]["ok"], f"({c['ci']['mode']})")
     chk("交付物清单 ≥ 20 项且无缺失", c["deliverables"]["required"] >= 20
         and c["deliverables"]["ok"], f"({c['deliverables']['missing']})")
-    chk("本批 630 文件无未提交改动（除本工具/其报告自身，它们由本任务提交）",
-        all(("pre_push_630" in x or "pre_push_check_630" in x)
-            for x in c["uncommitted_630"]),
-        f"({c['uncommitted_630']})")
+    # 自检只验**分类正确性**（未提交项必须全部落在 tools/tests 或 data/ 两类里）；
+    # 「无未提交代码」是**闸门**语义，由 `test_check_all_ok_and_ahead` 在收工后断言。
+    chk("未提交项分类正确（代码类 / data 类）",
+        all(batch_path(x).startswith(("tools/", "tests/")) for x in c["uncommitted_630"])
+        and all(batch_path(p).startswith("data/") for p in c["pending_batch_artifacts"]))
+    chk("闸门语义字段齐全（all_ok / blocking / pending）",
+        all(k in c for k in ("all_ok", "status_other_blocking",
+                             "pending_batch_artifacts")))
     chk("status 分类器：并行产物归预期",
         bool(classify_status(["?? _arch_v21/00_a.md"])["expected"])
         and not classify_status(["?? _arch_v21/00_a.md"])["other"])
     chk("status 分类器：普通未跟踪文件归意外",
         bool(classify_status(["?? tools/new_thing.py"])["other"])
         and not classify_status(["?? tools/new_thing.py"])["expected"])
-    chk("ahead 已测（≥80）", isinstance(c["ahead"], int) and c["ahead"] >= 80,
+    chk("ahead 已测（非负整数）", isinstance(c["ahead"], int) and c["ahead"] >= 0,
         f"({c['ahead']})")
     chk("报告 + JSON 存在", os.path.exists(OUT_MD) and os.path.exists(OUT_JSON))
     print(f"B1 pre-push check: {'PASS' if ok else 'FAIL'}")

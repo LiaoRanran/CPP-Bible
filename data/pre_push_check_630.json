@@ -25,9 +25,46 @@
     "?? tools/queyi_core_trigger_check_625.py"
   ],
   "status_other": [
-    "?? data/pre_push_check_630.json",
-    "?? data/pre_push_check_630.md",
-    "?? tools/pre_push_630.py"
+    "M _adv_v80/probes/p57.cpp",
+    " M data/629_baseline.md",
+    " M data/630_baseline.json",
+    " M data/630_baseline.md",
+    " M data/authority_v2_mode.json",
+    " M data/e2e_attestation_629.md",
+    " M data/human_review_dashboard_v2.html",
+    " M data/independence_static_check_629.md",
+    " M data/learner_twin_gate_report_628.md",
+    " M data/pre_push_check_630.json",
+    " M data/pre_push_check_630.md",
+    " M tests/test_baseline_630.py",
+    " M tests/test_pre_push_630.py",
+    " M tools/baseline_630.py",
+    " M tools/pre_push_630.py",
+    " M tools/run_630_gate.py",
+    "?? data/630_acceptance_report.md",
+    "?? tests/test_run_630_gate.py"
+  ],
+  "status_other_blocking": [
+    "M _adv_v80/probes/p57.cpp",
+    " M data/629_baseline.md",
+    " M data/630_baseline.json",
+    " M data/630_baseline.md",
+    " M data/authority_v2_mode.json",
+    " M data/e2e_attestation_629.md",
+    " M data/human_review_dashboard_v2.html",
+    " M data/independence_static_check_629.md",
+    " M data/learner_twin_gate_report_628.md",
+    " M tests/test_baseline_630.py",
+    " M tests/test_pre_push_630.py",
+    " M tools/baseline_630.py",
+    " M tools/pre_push_630.py",
+    " M tools/run_630_gate.py",
+    "?? data/630_acceptance_report.md",
+    "?? tests/test_run_630_gate.py"
+  ],
+  "pending_batch_artifacts": [
+    " M data/pre_push_check_630.json",
+    " M data/pre_push_check_630.md"
   ],
   "controlled_clean": true,
   "ci": {
@@ -42,10 +79,13 @@
     "ok": true
   },
   "uncommitted_630": [
-    "?? data/pre_push_check_630.json",
-    "?? data/pre_push_check_630.md",
-    "?? tools/pre_push_630.py"
+    " M tests/test_baseline_630.py",
+    " M tests/test_pre_push_630.py",
+    " M tools/baseline_630.py",
+    " M tools/pre_push_630.py",
+    " M tools/run_630_gate.py",
+    "?? tests/test_run_630_gate.py"
   ],
-  "ahead": 98,
+  "ahead": 1,
   "all_ok": false
 }

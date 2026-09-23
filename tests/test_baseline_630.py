@@ -17,9 +17,10 @@ def test_standing_is_complete():
 
 
 def test_measure_counts_and_git():
+    """ahead 在 push 前 >0、push 后 =0 ⇒ 只要求是合法非负整数（不写死下限）。"""
     m = B.measure()
-    assert isinstance(m["ahead"], int) and m["ahead"] >= 80
-    assert len(m["head"]) >= 7 and m["remote"]
+    assert isinstance(m["ahead"], int) and m["ahead"] >= 0
+    assert len(m["head"]) >= 7 and len(m["remote"]) >= 7
     assert len(m["log5"]) == 5
     assert m["counts"]["tools_py"] >= 300 and m["counts"]["tests_py"] >= 300
 
@@ -38,9 +39,22 @@ def test_metrics_reuse_readonly_tools():
     assert mt["test_failures"] >= 11
 
 
-def test_no_write_to_baseline_files():
-    m = B.measure()
-    assert not [d for d in m["dirty"] if "630_baseline" in d]
+def test_measure_has_no_side_effects():
+    """只读自证：`measure()` 不改变工作区（快照前后一致）。
+
+    不比对「他批基线是否 dirty」——那是**测试套件再生报告**造成的既有状态，与本工具无关。
+    """
+    import subprocess
+
+    def snap() -> str:
+        p = subprocess.run(["git", "status", "--porcelain"], cwd=B.ROOT,
+                           capture_output=True, text=True, check=False)
+        return p.stdout
+
+    before = snap()
+    B.measure()
+    B.metrics()
+    assert snap() == before, "measure()/metrics() 不得写盘"
 
 
 def test_report_json_and_selftest():

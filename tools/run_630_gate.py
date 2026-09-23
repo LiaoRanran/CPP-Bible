@@ -21,7 +21,7 @@ import os
 import re
 import subprocess
 import sys
-from typing import Optional, cast
+from typing import Optional
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
