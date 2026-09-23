@@ -1,0 +1,107 @@
+{
+  "top_n": 10,
+  "source": "review_item_ledger.jsonl (626 B3, 93 unique)",
+  "blindness": "Pass A: 不含任何既有 Authority 结果 / AI 推荐",
+  "items": [
+    {
+      "review_item_id": "RI-edge-ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-1",
+      "target_type": "edge",
+      "target_id": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-1",
+      "review_revision": 1,
+      "question": "对攻击边 ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-1 的独立人类裁定：该攻击是否成立（approve/reject/modify）？请仅依据证据独立判断，不要参考任何既有结论。",
+      "evidence_refs": [],
+      "human_decision": null,
+      "human_rationale": null
+    },
+    {
+      "review_item_id": "RI-edge-ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-2",
+      "target_type": "edge",
+      "target_id": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-2",
+      "review_revision": 1,
+      "question": "对攻击边 ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-2 的独立人类裁定：该攻击是否成立（approve/reject/modify）？请仅依据证据独立判断，不要参考任何既有结论。",
+      "evidence_refs": [],
+      "human_decision": null,
+      "human_rationale": null
+    },
+    {
+      "review_item_id": "RI-edge-ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-3",
+      "target_type": "edge",
+      "target_id": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-3",
+      "review_revision": 1,
+      "question": "对攻击边 ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-3 的独立人类裁定：该攻击是否成立（approve/reject/modify）？请仅依据证据独立判断，不要参考任何既有结论。",
+      "evidence_refs": [],
+      "human_decision": null,
+      "human_rationale": null
+    },
+    {
+      "review_item_id": "RI-edge-ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-1",
+      "target_type": "edge",
+      "target_id": "ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-1",
+      "review_revision": 1,
+      "question": "对攻击边 ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-1 的独立人类裁定：该攻击是否成立（approve/reject/modify）？请仅依据证据独立判断，不要参考任何既有结论。",
+      "evidence_refs": [],
+      "human_decision": null,
+      "human_rationale": null
+    },
+    {
+      "review_item_id": "RI-edge-ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-2",
+      "target_type": "edge",
+      "target_id": "ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-2",
+      "review_revision": 1,
+      "question": "对攻击边 ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-2 的独立人类裁定：该攻击是否成立（approve/reject/modify）？请仅依据证据独立判断，不要参考任何既有结论。",
+      "evidence_refs": [],
+      "human_decision": null,
+      "human_rationale": null
+    },
+    {
+      "review_item_id": "RI-edge-ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-3",
+      "target_type": "edge",
+      "target_id": "ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-3",
+      "review_revision": 1,
+      "question": "对攻击边 ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-3 的独立人类裁定：该攻击是否成立（approve/reject/modify）？请仅依据证据独立判断，不要参考任何既有结论。",
+      "evidence_refs": [],
+      "human_decision": null,
+      "human_rationale": null
+    },
+    {
+      "review_item_id": "RI-edge-ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-1",
+      "target_type": "edge",
+      "target_id": "ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-1",
+      "review_revision": 1,
+      "question": "对攻击边 ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-1 的独立人类裁定：该攻击是否成立（approve/reject/modify）？请仅依据证据独立判断，不要参考任何既有结论。",
+      "evidence_refs": [],
+      "human_decision": null,
+      "human_rationale": null
+    },
+    {
+      "review_item_id": "RI-edge-ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-2",
+      "target_type": "edge",
+      "target_id": "ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-2",
+      "review_revision": 1,
+      "question": "对攻击边 ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-2 的独立人类裁定：该攻击是否成立（approve/reject/modify）？请仅依据证据独立判断，不要参考任何既有结论。",
+      "evidence_refs": [],
+      "human_decision": null,
+      "human_rationale": null
+    },
+    {
+      "review_item_id": "RI-edge-ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-3",
+      "target_type": "edge",
+      "target_id": "ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-3",
+      "review_revision": 1,
+      "question": "对攻击边 ae-MIS-MEM-003->ATOM-MEM-MOVE-002::prop-3 的独立人类裁定：该攻击是否成立（approve/reject/modify）？请仅依据证据独立判断，不要参考任何既有结论。",
+      "evidence_refs": [],
+      "human_decision": null,
+      "human_rationale": null
+    },
+    {
+      "review_item_id": "RI-edge-ae-MIS-UB-001->ATOM-UB-GRAY-001::prop-1",
+      "target_type": "edge",
+      "target_id": "ae-MIS-UB-001->ATOM-UB-GRAY-001::prop-1",
+      "review_revision": 1,
+      "question": "对攻击边 ae-MIS-UB-001->ATOM-UB-GRAY-001::prop-1 的独立人类裁定：该攻击是否成立（approve/reject/modify）？请仅依据证据独立判断，不要参考任何既有结论。",
+      "evidence_refs": [],
+      "human_decision": null,
+      "human_rationale": null
+    }
+  ]
+}
