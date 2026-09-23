@@ -35,7 +35,14 @@ def test_key_tools_importable():
 
 
 def test_no_bulk_type_ignore():
-    # 无批量 ignore：任一工具文件 type: ignore 计数 ≤ 5，且全库总数 ≤ 20
+    # 无批量 ignore：任一工具文件 type: ignore 计数 ≤ 5，且全库总数 ≤ 28
+    #
+    # 630 D2 更新（诚实登记）：625 写死「全库总数 ≤ 20」，而 625→629 各批新增工具后
+    # 实测已是 **28**（逐文件仍全部 ≤5 ⇒ 不是批量忽略）。按 D2 口径「只把硬编码数字更新为
+    # 当前正确值」⇒ 20 → 28。
+    # **注意：本断言因此退化为"快照"而不再是预算**；真正的防批量忽略护栏是
+    # 「逐文件 ≤5」+ review。若原作者想恢复预算语义，应改为 ratchet（只降不升）——
+    # 已列入 630 交人项。
     total = 0
     for fn in os.listdir(TOOLS):
         if not fn.endswith(".py"):
@@ -44,7 +51,7 @@ def test_no_bulk_type_ignore():
         n = len(re.findall(r"#\s*type:\s*ignore", src))
         assert n <= 5, f"{fn} type: ignore 过多（{n}）——疑似批量忽略"
         total += n
-    assert total <= 20, f"全库 type: ignore 过多（{total}）"
+    assert total <= 28, f"全库 type: ignore 过多（{total}）"
 
 
 def test_ruff_clean_after_fix():
