@@ -1,0 +1,65 @@
+{"value":"编译器屏障 compiler barrier","review_basis":"experiment","decision":"accept","card_rel":"atoms/conc/ATOM-CONC-FENCE-001.md","prop_id":"prop-1","field":"object"}
+{"value":"mutex vs atomic 性能","review_basis":"experiment","decision":"accept","card_rel":"atoms/conc/ATOM-CONC-LOCK-001.md","prop_id":"prop-1","field":"object"}
+{"value":"mutex vs atomic 性能","review_basis":"experiment","decision":"accept","card_rel":"atoms/conc/ATOM-CONC-LOCK-001.md","prop_id":"prop-2","field":"object"}
+{"value":"数据竞争 UB","review_basis":"experiment","decision":"accept","card_rel":"atoms/conc/ATOM-CONC-RACE-001.md","prop_id":"prop-1","field":"object"}
+{"value":"数据竞争 UB","review_basis":"experiment","decision":"accept","card_rel":"atoms/conc/ATOM-CONC-RACE-001.md","prop_id":"prop-2","field":"object"}
+{"value":"动态数据竞争检测局限性","review_basis":"experiment","decision":"accept","card_rel":"atoms/conc/ATOM-CONC-RACE-001.md","prop_id":"prop-3","field":"object"}
+{"value":"auto_ptr 历史","review_basis":"experiment","decision":"accept","card_rel":"atoms/hist/ATOM-HIST-AUTOPTR-001.md","prop_id":"prop-1","field":"object"}
+{"value":"auto_ptr 历史","review_basis":"experiment","decision":"accept","card_rel":"atoms/hist/ATOM-HIST-AUTOPTR-001.md","prop_id":"prop-2","field":"object"}
+{"value":"auto_ptr 历史","review_basis":"experiment","decision":"accept","card_rel":"atoms/hist/ATOM-HIST-AUTOPTR-001.md","prop_id":"prop-3","field":"object"}
+{"value":"内存对齐","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-ALIGN-001.md","prop_id":"prop-1","field":"object"}
+{"value":"内存对齐","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-ALIGN-001.md","prop_id":"prop-2","field":"object"}
+{"value":"allocator 内存策略","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-ALLOC-001.md","prop_id":"prop-1","field":"object"}
+{"value":"allocator 内存策略","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-ALLOC-001.md","prop_id":"prop-2","field":"object"}
+{"value":"allocator 内存策略","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-ALLOC-001.md","prop_id":"prop-3","field":"object"}
+{"value":"内存泄漏检测","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-LEAK-001.md","prop_id":"prop-1","field":"object"}
+{"value":"内存泄漏检测","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-LEAK-001.md","prop_id":"prop-2","field":"object"}
+{"value":"内存泄漏检测局限性","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-LEAK-001.md","prop_id":"prop-3","field":"object"}
+{"value":"移动构造","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-MOVE-002.md","prop_id":"prop-1","field":"object"}
+{"value":"移动构造","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-MOVE-002.md","prop_id":"prop-2","field":"object"}
+{"value":"类型转换语义","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-MOVE-002.md","prop_id":"prop-3","field":"object"}
+{"value":"new/delete 配对","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-NEW-001.md","prop_id":"prop-3","field":"object"}
+{"value":"小对象移动性能","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-PERF-001.md","prop_id":"prop-1","field":"object"}
+{"value":"小对象移动性能","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-PERF-001.md","prop_id":"prop-2","field":"object"}
+{"value":"string SSO 小字符串优化","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-PERF-002.md","prop_id":"prop-1","field":"object"}
+{"value":"string SSO 小字符串优化","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-PERF-002.md","prop_id":"prop-2","field":"object"}
+{"value":"string 实现差异 libstdc++ vs libc++","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-PERF-003.md","prop_id":"prop-1","field":"object"}
+{"value":"性能结论的可移植性","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-PERF-003.md","prop_id":"prop-3","field":"object"}
+{"value":"C++ 对象析构顺序","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-RAII-001.md","prop_id":"prop-2","field":"object"}
+{"value":"Rule of 0/3/5","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-RAII-002.md","prop_id":"prop-1","field":"object"}
+{"value":"资源所有权与特殊成员函数","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-RAII-002.md","prop_id":"prop-2","field":"object"}
+{"value":"noexcept move 与容器迁移","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-RAII-002.md","prop_id":"prop-3","field":"object"}
+{"value":"右值引用 + std::move","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-RVREF-001.md","prop_id":"prop-1","field":"object"}
+{"value":"右值引用 + std::move","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-RVREF-001.md","prop_id":"prop-2","field":"object"}
+{"value":"shared_ptr 循环引用","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-SHARED-001.md","prop_id":"prop-1","field":"object"}
+{"value":"shared_ptr 循环引用","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-SHARED-001.md","prop_id":"prop-2","field":"object"}
+{"value":"shared_ptr 对象布局与引用计数","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-SHARED-002.md","prop_id":"prop-1","field":"object"}
+{"value":"shared_ptr 引用计数同步","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-SHARED-002.md","prop_id":"prop-2","field":"object"}
+{"value":"unique_ptr 对象表示与大小","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-UNIQUE-001.md","prop_id":"prop-1","field":"object"}
+{"value":"unique_ptr 移动语义","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-UNIQUE-001.md","prop_id":"prop-2","field":"object"}
+{"value":"unique_ptr 删除器","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-UNIQUE-002.md","prop_id":"prop-1","field":"object"}
+{"value":"unique_ptr 删除器","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-UNIQUE-002.md","prop_id":"prop-2","field":"object"}
+{"value":"unique_ptr 布局的实现依赖","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-UNIQUE-002.md","prop_id":"prop-3","field":"object"}
+{"value":"值类别 lvalue/xvalue/prvalue","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-VALUE-001.md","prop_id":"prop-1","field":"object"}
+{"value":"移动后的对象状态","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-VALUE-001.md","prop_id":"prop-2","field":"object"}
+{"value":"值类别 lvalue/xvalue/prvalue","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-VALUE-001.md","prop_id":"prop-3","field":"object"}
+{"value":"引用折叠 + perfect forwarding","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-VALUE-002.md","prop_id":"prop-1","field":"object"}
+{"value":"引用折叠 + perfect forwarding","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-VALUE-002.md","prop_id":"prop-2","field":"object"}
+{"value":"引用折叠 + perfect forwarding","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-VALUE-002.md","prop_id":"prop-3","field":"object"}
+{"value":"weak_ptr","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-WEAK-001.md","prop_id":"prop-1","field":"object"}
+{"value":"weak_ptr","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-WEAK-001.md","prop_id":"prop-2","field":"object"}
+{"value":"未定义行为与求值顺序","review_basis":"experiment","decision":"accept","card_rel":"atoms/ub/ATOM-UB-GRAY-001.md","prop_id":"prop-2","field":"object"}
+{"value":"fence 与 happens-before 内存序同步","review_basis":"experiment","decision":"accept","card_rel":"atoms/conc/ATOM-CONC-FENCE-001.md","prop_id":"prop-2","field":"object"}
+{"value":"对齐与严格别名规则","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-ALIGN-001.md","prop_id":"prop-3","field":"object"}
+{"value":"allocator 内存策略","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-ALLOC-001.md","prop_id":"prop-4","field":"object"}
+{"value":"new/delete 配对","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-NEW-001.md","prop_id":"prop-1","field":"object"}
+{"value":"new/delete 配对","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-NEW-001.md","prop_id":"prop-2","field":"object"}
+{"value":"string 实现差异 libstdc++ vs libc++","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-PERF-003.md","prop_id":"prop-2","field":"object"}
+{"value":"RAII 资源生命周期","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-RAII-001.md","prop_id":"prop-1","field":"object"}
+{"value":"RAII 资源生命周期","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-RAII-001.md","prop_id":"prop-3","field":"object"}
+{"value":"规则背诵与语义理解","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-RAII-002.md","prop_id":"prop-4","field":"object"}
+{"value":"右值引用 + std::move","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-RVREF-001.md","prop_id":"prop-3","field":"object"}
+{"value":"shared_ptr 循环引用","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-SHARED-001.md","prop_id":"prop-3","field":"object"}
+{"value":"shared_ptr 并发语义","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-SHARED-002.md","prop_id":"prop-3","field":"object"}
+{"value":"unique_ptr 所有权模型与开销","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-UNIQUE-001.md","prop_id":"prop-3","field":"object"}
+{"value":"weak_ptr","review_basis":"experiment","decision":"accept","card_rel":"atoms/mem/ATOM-MEM-WEAK-001.md","prop_id":"prop-3","field":"object"}

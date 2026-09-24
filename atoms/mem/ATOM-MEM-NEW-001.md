@@ -25,30 +25,33 @@ claim_structured:
   - id: prop-1
     subject: new / delete 表达式
     predicate: 实测各分两层、各自发生一次
-    object: after new alloc=1 ctor=1；after delete dealloc=1 dtor=1
+    object: new/delete 配对
     claim_type: observation
     statement: new 表达式先分配再构造、delete 表达式先析构再释放，两层各自独立发生一次：实测 after new 时 alloc=1、ctor=1，after delete 时 dealloc=1、dtor=1。
     evidence: [EV-MEM-017]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _Znwm}
+    signed_by: v0.2:liaoranran
   - id: prop-2
     subject: 数组形式与 nothrow
     predicate: 实测
-    object: new[] calls=1 / delete[] calls=1 配对；nothrow huge returned null=1（失败返空而非抛出）
+    object: new/delete 配对
     claim_type: observation
     statement: 数组与 nothrow 的实测：array new[] calls=1、array delete[] calls=1（必须配对），且 new(std::nothrow) 在超大申请失败时返回值 recorded 为 null（nothrow huge returned null=1），不抛异常。
     evidence: [EV-MEM-018]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _Znay}
+    signed_by: v0.2:liaoranran
   - id: prop-3
     subject: new[] / delete[] 混用
     predicate: 属于
-    object: 未定义行为（数组与非数组形式必须各自配对）
+    object: new/delete 配对
     claim_type: inference
     statement: new[] 与 delete[] 必须配对、new/delete 必须配对，混用（如 new[] 配 delete）属**未定义行为**——这条定性依据标准对 new/delete 表达式两层语义与配对要求的规定，不由本卡读数单独证明；其工程含义是优先用容器与智能指针让配对自动化。
     external_basis: "ISO/IEC 14882:2023 [expr.new]（分配 + 构造，可 nothrow）；[expr.delete]（析构 + 释放，delete[] 配对）；cppreference new/delete expression"
     evidence: [EV-MEM-017, EV-MEM-018]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

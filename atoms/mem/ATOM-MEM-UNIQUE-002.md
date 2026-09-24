@@ -30,30 +30,33 @@ claim_structured:
   - id: prop-1
     subject: unique_ptr 的删除器
     predicate: 进类型系统，因此大小随之变化（实测）
-    object: default=8、stateless=8（EBO 吸收）、stateful=16、array=8、引用型删除器=16、final 的空删除器=16
+    object: unique_ptr 删除器
     claim_type: observation
     statement: 删除器是 unique_ptr 类型的一部分，对象大小随之变化（-O0/-O2 一致）：default=8、stateless=8（空且非 final 被空基类优化吸收）、stateful=16、array=8、引用型删除器=16，而**空但 final 的删除器=16**（EBO 失效）。
     evidence: [EV-MEM-032]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: unique_ptrIi12StatelessDelE}
+    signed_by: v0.2:liaoranran
   - id: prop-2
     subject: shared_ptr 的删除器
     predicate: 被类型擦除，因此大小恒定（实测）
-    object: default=16、带状态删除器仍=16（sizes equal=1）；构造时拷贝一次、共享时不再拷贝、全部 reset 后调用一次
+    object: unique_ptr 删除器
     claim_type: observation
     statement: 删除器经类型擦除由控制块持有，与类型无关：sizeof(shared_ptr) default=16、带状态删除器仍=16（sizes equal=1）；行为上构造时按值拷贝一次（deleter copies on ctor=1）、共享时不再拷贝（copies on share=0）、全部 reset 后调用一次（deleter calls after all reset=1，tag seen=99）。
     evidence: [EV-MEM-033]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: Sp_counted_deleterIPi6TagDel}
+    signed_by: v0.2:liaoranran
   - id: prop-3
     subject: 空删除器的空基类优化
     predicate: 是
-    object: 实现边界而非语言保证（final 反例实测 16）
+    object: unique_ptr 布局的实现依赖
     claim_type: inference
     statement: 「空且非 final 的删除器被空基类优化吸收（sizeof 等于裸指针）」是 libstdc++ 的**实现边界**，标准并不保证——final 反例实测 16 即为证；数组特化 unique_ptr<T[]> 只提供 operator[]、不提供 operator* 与 operator->，默认删除器下走 delete[]。这条依据标准对 unique_ptr 删除器作为类型参数、以及数组特化接口的规定，不由本卡读数单独证明。
     external_basis: "ISO/IEC 14882:2023 [unique.ptr] / [unique.ptr.single] / [unique.ptr.single.ctor]（删除器作为类型参数）；cppreference std::unique_ptr（数组特化接口）"
     evidence: [EV-MEM-032, EV-MEM-033]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

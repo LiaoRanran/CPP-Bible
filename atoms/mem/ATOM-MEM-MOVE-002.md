@@ -24,30 +24,33 @@ claim_structured:
   - id: prop-1
     subject: 真实移动路径的分配数
     predicate: 在六组编译器与优化档下实测
-    object: 构造分配=1、拷贝分配=1、移动分配=0；证伪对照（假移动）分配=1
+    object: 移动构造
     claim_type: observation
     statement: 移动不分配：六组组合（GCC 15.3/13.1/8.1 × -O0/-O2）读数一致——构造分配=1、拷贝分配=1、移动分配=0，证伪对照（假移动）分配=1；汇编层 main 中 call malloc 共 3 次（构造 1 + 拷贝 1 + 假移动对照 1），真实移动路径 0 次。
     evidence: [EV-MEM-001]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _ZL8g_allocs}
+    signed_by: v0.2:liaoranran
   - id: prop-2
     subject: 移动收益的有无
     predicate: 取决于源对象有无可掏空的间接资源
-    object: HeapBuf 移动分配=0 且源被掏空=是；FixedBuf / array 移动分配=0 但源完好=是
+    object: 移动构造
     claim_type: observation
     statement: 收益来自掏空源：持堆的 HeapBuf 拷贝分配=1、移动分配=0、移动后源被掏空=是；无可掏空间接资源的 FixedBuf 与 array 拷贝分配=0、移动分配=0、移动后源完好=是（退化成按字节搬运，汇编层见 pshufd + movaps 搬运 32 字节）。
     evidence: [EV-MEM-002]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _ZL8g_allocs}
+    signed_by: v0.2:liaoranran
   - id: prop-3
     subject: std::move 的作用
     predicate: 只是
-    object: 一次类型转换（与 static_cast 明文等价），自身不分配、不复制、不改变源对象
+    object: 类型转换语义
     claim_type: inference
     statement: std::move(x) 自身不分配、不复制、不改变 x，它只做一次类型转换以让移动构造参与重载；搬运的收益来自移动构造掏空源对象。这条语义依据标准对 std::move 与 static_cast 等价、以及"移动后源有效但未指定"的规定，不由本卡读数单独证明。
     external_basis: "ISO/IEC 14882:2023 [expr.static.cast]（std::move 与 static_cast 明文等价）；[lib.types.movedfrom]（移动后源对象有效但未指定）；cppreference std::move"
     evidence: [EV-MEM-001, EV-MEM-002]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
 claim_boundary:
   standard: [C++11, C++17, C++20, C++23]
   compilers: [GCC 15.3.0, GCC 13.1.0, GCC 8.1.0, GCC 13.3.0]

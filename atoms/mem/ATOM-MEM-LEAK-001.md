@@ -28,30 +28,33 @@ claim_structured:
   - id: prop-1
     subject: 弱上行（weak）的无环树
     predicate: 实测
-    object: constructed=3、destroyed after scope=3（全析构）、parent reachable=1（-O0/-O2 一致）
+    object: 内存泄漏检测
     claim_type: observation
     statement: 父用 weak_ptr 上行的无环树：实测 root children=2、parent reachable=1、constructed=3、destroyed after scope=3（三个对象全部析构），-O0 与 -O2 读数一致。
     evidence: [EV-MEM-036]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: destroyed after scope=}
+    signed_by: v0.2:liaoranran
   - id: prop-2
     subject: 强上行（shared）的成环树
     predicate: 实测
-    object: root use_count=3、constructed=3、destroyed after scope=0（零析构）
+    object: 内存泄漏检测
     claim_type: observation
     statement: 仅把上行改为 shared_ptr（与 EV-MEM-036 构成唯一变量对照）即成环：实测 root children=2、root use_count=3、constructed=3、destroyed after scope=0（一个都没析构）；改回 weak 后 destroyed 回到 3 ⇒ 因果由唯一变量确立。
     evidence: [EV-MEM-037]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: destroyed after scope=}
+    signed_by: v0.2:liaoranran
   - id: prop-3
     subject: ASan/LSan 的判定
     predicate: 依赖退出时的可达性分析，对优化档与存活位置敏感
-    object: 因此"没被报"不能推出"没泄漏"
+    object: 内存泄漏检测局限性
     claim_type: inference
     statement: ASan/LSan 的泄漏判定基于退出时的可达性分析（被存活栈帧或寄存器引用的块不算泄漏），因而对优化档与对象存活位置高度敏感；所以"ASan 没报"不能推出"没泄漏"，须用不依赖 sanitizer 的确定信号（析构计数、use_count）先定性。这条依据判据定义，不由本卡读数单独证明。
     external_basis: "AddressSanitizer/LeakSanitizer 官方文档：泄漏检测基于退出时的可达性分析（reachability）；cppreference std::weak_ptr::expired / use_count（零额外仪器的独立信号）"
     evidence: [EV-MEM-036, EV-MEM-037]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]                  # 运行层留痕（MinGW）；sanitizer 层留痕见下

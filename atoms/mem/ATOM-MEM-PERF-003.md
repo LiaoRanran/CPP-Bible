@@ -43,30 +43,33 @@ claim_structured:
   - id: prop-1
     subject: libstdc++ 侧的 string 布局
     predicate: 实测
-    object: sizeof_string=32、sso_capacity=15、first_heap_len=16；heap_at_len14/15=0、heap_at_len16/17=1
+    object: string 实现差异 libstdc++ vs libc++
     claim_type: observation
     statement: libstdc++ 侧实测（cxx23 -O2 与 cxx17 -O0 一致）：sizeof_string=32、sizeof_size_t=8、capacity_at_len1=15、capacity_at_len8=15、first_heap_len=16、sso_capacity=15，且 heap_at_len14=0、heap_at_len15=0、heap_at_len16=1、heap_at_len17=1。
     evidence: [EV-MEM-038]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: first_heap_len=}
+    signed_by: v0.2:liaoranran
   - id: prop-2
     subject: SSO 阈值
     predicate: 不是语言保证，因此
-    object: 不可移植（同判据同驱动下 libstdc++ 32/15 与 libc++-18 24/22 都符合 [string]）
+    object: string 实现差异 libstdc++ vs libc++
     claim_type: inference
     statement: SSO 阈值不是语言保证——同一判据、同一条 g++-14 驱动下，libstdc++ 实测 sizeof=32/容量 15，libc++-18 实测 sizeof=24/容量 22（唯一变量是标准库实现），两者都完全符合 [string.requirements] ⇒ 阈值不可移植。这条依据标准"不要求 SSO、不约束 sizeof"与各实现的布局文档，不由单一实现的读数推出。
     external_basis: "ISO/IEC 14882:2023 [string.requirements]（basic_string 语义：不要求 SSO、不约束 sizeof）；libc++ 与 libstdc++ 的 string 布局说明（impl_doc，本卡 libc++ 数字另经 libc++-18 实测复算）"
     evidence: [EV-MEM-038]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
   - id: prop-3
     subject: 小对象分配策略的快慢
     predicate: 是平台相关的，因此
-    object: 「池/单调缓冲更快」不是可移植结论（可移植的是因果链与「必须实测」）
+    object: 性能结论的可移植性
     claim_type: inference
     statement: 连"谁更快"都是平台相关的：同一夹具同一工作量，MinGW/libstdc++ 上单调缓冲与池均胜过全局 new，Linux/glibc 上三者全部翻转 ⇒ "池分配器更快"不是可移植结论；可移植的是**因果链**（内存资源是否回收）与"必须实测"这条方法论。这条依据标准对两类内存资源语义差异的规定，不由单次基准推出（基准数字属留痕，不作断言锚）。
     external_basis: "ISO/IEC 14882:2023 [mem.res.monotonic.buffer] / [mem.res.pool]（两类内存资源的语义差异：是否回收）"
     evidence: [EV-MEM-039]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
 claim_boundary:
   standard: [C++17, C++20, C++23]
   compilers: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL), Clang 18.1.3 + libc++-18 (WSL，外部留痕)]

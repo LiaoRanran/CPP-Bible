@@ -25,30 +25,33 @@ claim_structured:
   - id: prop-1
     subject: 竞争与安全对照的留痕读数
     predicate: 在 kIters=100000 下读出
-    object: single_total=100000、race_ops_total=200000、safe_ops_total=200000、safe_final=200000
+    object: 数据竞争 UB
     claim_type: observation
     statement: 三场景（single|race|safe）在 kIters=100000 下的机器读数：single_total=100000、race_ops_total=200000、safe_ops_total=200000，且安全组终值 safe_final=200000（等于两线程操作总数，结果确定）。
     evidence: [EV-CONC-005, EV-CONC-006]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _Z12bench_singlev}
+    signed_by: v0.2:liaoranran
   - id: prop-2
     subject: 数据竞争
     predicate: 是
-    object: C++ 未定义行为（不是"结果偶尔算错"），编译器可据此做激进优化
+    object: 数据竞争 UB
     claim_type: inference
     statement: 数据竞争（无同步的并发冲突访问、且至少一方为写）是 C++ **未定义行为**，不是"结果偶尔算错"——编译器可据此做激进优化、行为完全不可预测。这条定性依据标准对 data race 的定义，不由本卡读数单独证明。
     external_basis: "ISO/IEC 14882:2023 [intro.race]（data race 定义：不同线程对同对象无 happens-before 的并发冲突访问且至少一方为写 ⇒ UB）"
     evidence: [EV-CONC-005, EV-CONC-006]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
   - id: prop-3
     subject: TSan 沉默
     predicate: 不能当作
-    object: 安全证明（插桩盲区 / 必须全量插桩 / 时序偶发 ⇒ 存在漏报边界）
+    object: 动态数据竞争检测局限性
     claim_type: inference
     statement: TSan 能检测数据竞争，但"没被 TSan 报 ≠ 没有数据竞争"——其漏报边界（插桩盲区、必须全量插桩、时序偶发）使工具沉默不能当作安全证明。这条边界依据 ThreadSanitizer 的实现原理说明，不由本卡读数单独证明。
     external_basis: "cppreference ThreadSanitizer：编译期插桩 + 运行期 happens-before 边追踪检测数据竞争，但有漏报边界"
     evidence: [EV-CONC-005, EV-CONC-006]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL), GCC 13.3.0 (WSL)]

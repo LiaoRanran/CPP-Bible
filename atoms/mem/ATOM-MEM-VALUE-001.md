@@ -25,30 +25,33 @@ claim_structured:
   - id: prop-1
     subject: 表达式的值类别
     predicate: 由 decltype 实测判定为三类
-    object: decltype((x))⇒lvalue（glvalue ∧ ¬rvalue）、decltype(std::move(x))⇒xvalue（glvalue ∧ rvalue）、decltype(42)⇒prvalue（¬glvalue ∧ rvalue）；具名右值引用判为 lvalue
+    object: 值类别 lvalue/xvalue/prvalue
     claim_type: observation
     statement: 三类值类别的机器判定：decltype((x)) 得 lvalue（有身份、不可移动）、decltype(std::move(x)) 得 xvalue（有身份、可移动）、decltype(42) 得 prvalue（无身份、可移动），且具名右值引用在表达式体内按 lvalue 判定。
     evidence: [EV-MEM-006]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: xvalue}
+    signed_by: v0.2:liaoranran
   - id: prop-2
     subject: 从 xvalue 移动后的源与目标
     predicate: 实测
-    object: 源 a.v=-1（被掏空的哨兵值）、b.v=7、c.v=7
+    object: 移动后的对象状态
     claim_type: observation
     statement: 从 xvalue 移动（std::move(a)）后：源对象被标记为已掏空（a.v=-1），两个接收方均得到原值（b.v=7、c.v=7）。
     evidence: [EV-MEM-007]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: xvalue}
+    signed_by: v0.2:liaoranran
   - id: prop-3
     subject: 值类别的维度
     predicate: 是两个正交维度的交叉
-    object: glvalue（有身份）× rvalue（可移动）⇒ lvalue / xvalue / prvalue
+    object: 值类别 lvalue/xvalue/prvalue
     claim_type: inference
     statement: C++11 起每个表达式属于两个正交维度（glvalue 有身份、rvalue 可移动）的交叉，故不是"左/右"二分而是三类；值类别是**表达式**的属性、与变量声明类型无关。这条依据标准对值类别与 id-expression 的规定，不由本卡读数单独证明。
     external_basis: "ISO/IEC 14882:2023 [basic.lval]（值类别与 glvalue/rvalue 二分；Note 3 具名右值引用按左值处理）；[expr.prim.id.unqual]/12（具名变量/形参为 lvalue）；cppreference Value categories"
     evidence: [EV-MEM-006, EV-MEM-007]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

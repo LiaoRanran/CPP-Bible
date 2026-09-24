@@ -27,30 +27,33 @@ claim_structured:
   - id: prop-1
     subject: std::auto_ptr 的拷贝
     predicate: 实测为
-    object: 转移而非拷贝（拷贝后源为空、目标值=42；从容器读元素后源为空、偷到值=7；unique_ptr 移动后源为空、目标值=9）
+    object: auto_ptr 历史
     claim_type: observation
     statement: 实测（GCC 15.3.0、-std=c++14 -O2）：auto_ptr 拷贝后源为空=是、目标值=42；从容器读元素后源为空=是、偷到值=7；unique_ptr 移动后源为空=是、目标值=9。
     evidence: [EV-HIST-001, EV-MEM-003]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _ZNSt8auto_ptr}
+    signed_by: v0.2:liaoranran
   - id: prop-2
     subject: auto_ptr 与 unique_ptr 的类型判定
     predicate: 编译期 static_assert 显示
-    object: auto_ptr is_copy_constructible=false 但 is_constructible<T,T&>=true；unique_ptr is_copy_constructible=false / is_move_constructible=true
+    object: auto_ptr 历史
     claim_type: observation
     statement: 编译期判定（四条 static_assert 全部通过）：auto_ptr 不满足 CopyConstructible（is_copy_constructible=false）却可从非 const 左值构造（is_constructible<T,T&>=true）；unique_ptr 不可拷贝但可移动（is_copy_constructible=false、is_move_constructible=true）。
     evidence: [EV-HIST-001, EV-MEM-003]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _ZNSt8auto_ptr}
+    signed_by: v0.2:liaoranran
   - id: prop-3
     subject: auto_ptr 的历史定位
     predicate: 是
-    object: C++98 缺少移动语义时的工程妥协（C++11 deprecated → C++17 从标准移除）
+    object: auto_ptr 历史
     claim_type: inference
     statement: auto_ptr 是 C++98 缺少移动语义时的工程妥协——用拷贝的语法表达转移的语义，因此与容器"拷贝后两对象等价"的隐含约定从根上冲突；C++11 以移动语义（unique_ptr）给出正确表达后弃用。这条历史定性依据标准各版本对 auto_ptr 的规定与移除时间线，不由本卡读数单独证明。
     external_basis: "ISO/IEC 14882:1998 §20.4.5 [lib.auto.ptr]（原始规定与签名）；ISO/IEC 14882:2011（标记 deprecated）；ISO/IEC 14882:2017（从标准移除）；cppreference std::auto_ptr 时间线"
     evidence: [EV-HIST-001, EV-MEM-003]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
   - id: prop-4
     subject: 已从标准移除的 auto_ptr
     predicate: 在 libstdc++ 下
@@ -60,6 +63,7 @@ claim_structured:
     evidence: [EV-HIST-001]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _ZNSt8auto_ptr}
+    signed_by: v0.2:liaoranran
 claim_boundary:
   standard: [C++98, C++11, C++14, C++17, C++23]
   compilers: [GCC 15.3.0, GCC 13.3.0, Clang 18.1.3]

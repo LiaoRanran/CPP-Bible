@@ -25,30 +25,33 @@ claim_structured:
   - id: prop-1
     subject: 异常路径上的资源存活数
     predicate: 实测对照
-    object: RAII 路径后 g_live=0；裸 new/delete 路径后 g_live=1（资源存活即泄漏）
+    object: RAII 资源生命周期
     claim_type: observation
     statement: 同夹具两条路径的对照读数：RAII 路径（safe_path）结束后 g_live=0（无存活资源），裸 new/delete 路径（leak_path）异常跳过 delete 后 g_live=1（资源仍存活）。
     evidence: [EV-MEM-009]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: g_live}
+    signed_by: v0.2:liaoranran
   - id: prop-2
     subject: 作用域内对象的析构顺序
     predicate: 实测为
-    object: 按构造逆序（ctor A|B|C ⇒ dtor C|B|A）
+    object: C++ 对象析构顺序
     claim_type: observation
     statement: 多个 RAII 对象在同一作用域时，析构按构造的逆序自动发生：实测输出为 ctor A、ctor B、ctor C，随后 dtor C、dtor B、dtor A。
     evidence: [EV-MEM-010]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: dtor C}
+    signed_by: v0.2:liaoranran
   - id: prop-3
     subject: RAII 的异常安全性
     predicate: 来自
-    object: 资源生命周期绑定到对象生命周期（栈展开时作用域内对象逆序析构）
+    object: RAII 资源生命周期
     claim_type: inference
     statement: RAII 的核心是"资源生命周期绑定到对象生命周期"——栈展开时（即使因异常提前返回）作用域内已构造完全的对象会被自动析构，故异常路径也不泄漏；裸 new/delete 没有这层绑定，异常会跳过 delete。这条依据标准对栈展开调用析构、以及析构释放资源的规定，不由本卡读数单独证明。
     external_basis: "ISO/IEC 14882:2023 [except.ctor]（栈展开调用已构造完全的子对象/局部对象析构）；[basic.rc]/[class.dtor]（析构释放资源，离开作用域即调用）；cppreference RAII"
     evidence: [EV-MEM-009, EV-MEM-010]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

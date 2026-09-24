@@ -30,39 +30,43 @@ claim_structured:
   - id: prop-1
     subject: Rule of Zero 的隐式特殊成员
     predicate: 按成员形状隐式生成
-    object: unique_ptr 成员拷贝被删除（copy_constructible=0）、移动可用（move_constructible=1），allocs=dtors=frees=1
+    object: Rule of 0/3/5
     claim_type: observation
     statement: 成员全是 RAII 类型（unique_ptr/vector/string）时一个特殊成员都不写也正确：实测 move_constructible=1、copy_constructible=0（类型系统层面），移动转移后 owner_changed=1 且 allocs=dtors=frees=1（恰好一次、无泄漏）——隐式语义按成员形状各得其所，并非一律"删除拷贝"。
     evidence: [EV-MEM-023]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: rule zero}
+    signed_by: v0.2:liaoranran
   - id: prop-2
     subject: 只写析构（Rule of Three 缺拷贝构造）
     predicate: 导致
-    object: 同一缓冲被两次析构（buggy 路径 same_ptr=1 / dtor_runs=2）
+    object: 资源所有权与特殊成员函数
     claim_type: observation
     statement: 管理裸资源时只写析构会得到隐式浅拷贝：实测 buggy 路径 allocs=1、same_ptr=1、dtor_runs=2（一块缓冲两次析构，析构真释放即 double free），三件套齐写的 correct 路径 allocs=2、same_ptr=0、dtor_runs=2（两块缓冲各自析构）。
     evidence: [EV-MEM-024]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: Buggy}
+    signed_by: v0.2:liaoranran
   - id: prop-3
     subject: 移动构造的 noexcept
     predicate: 决定 vector 扩容时的搬迁路径
-    object: 标 noexcept ⇒ copies=0 moves=4；未标 ⇒ copies=4 moves=0（退化逐个拷贝）
+    object: noexcept move 与容器迁移
     claim_type: observation
     statement: vector 扩容搬迁走移动还是退化拷贝取决于移动构造是否标 noexcept：实测 noexcept move 路径 relocation copies=0 / moves=4，throwing move 路径 copies=4 / moves=0。
     evidence: [EV-MEM-025]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: relocation}
+    signed_by: v0.2:liaoranran
   - id: prop-4
     subject: 特殊成员函数的取舍
     predicate: 应据「成员形状」判定
-    object: 而非记忆 Rule of 0/3/5 口诀
+    object: 规则背诵与语义理解
     claim_type: inference
     statement: 该写哪几个特殊成员函数应由"成员形状"（是否管理裸资源、成员可否拷贝）判定，而非背 Rule of 0/3/5 口诀——口诀在成员形状变化时会给出错误结论；这层"判据是形状而非口诀"的表述依赖标准对隐式生成与删除的规定，属解释性结论。
     external_basis: "ISO/IEC 14882:2023 [class.copy.ctor]/[class.copy.assign]/[class.dtor]（隐式拷贝/移动的生成与删除、隐式析构逐成员析构）"
     evidence: [EV-MEM-023, EV-MEM-024, EV-MEM-025]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

@@ -27,30 +27,33 @@ claim_structured:
   - id: prop-1
     subject: 各线程持各自副本时的并发拷贝
     predicate: 在 threads=4 / iterations=2000 下实测
-    object: sizeof(shared_ptr)=16、copy 后 use_count=2、copies observed=8000、join 后 use_count=1、value=42
+    object: shared_ptr 对象布局与引用计数
     claim_type: observation
     statement: 四线程各持副本并发拷贝：-O0/-O2 一致——sizeof(shared_ptr)=16、shared_ptr copyable=1 而 unique_ptr copyable=0、一次拷贝后 use_count=2、并发拷贝共 8000 次、join 后 use_count 回到 1、value=42（结果未被竞争破坏）。
     evidence: [EV-MEM-034]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv}
+    signed_by: v0.2:liaoranran
   - id: prop-2
     subject: 控制块计数的修改方式
     predicate: 汇编层实测为
-    object: 带 lock 前缀的原子 RMW 指令（lock add / lock xadd / lock cmpxchg 等）
+    object: shared_ptr 引用计数同步
     claim_type: observation
     statement: 控制块计数用原子 RMW 修改：工件断言在 `_Sp_counted_base::_M_release` 等符号附近命中带 lock 前缀的指令（lock add / lock sub / lock xadd / lock cmpxchg / lock inc 之一）。
     evidence: [EV-MEM-034]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv}
+    signed_by: v0.2:liaoranran
   - id: prop-3
     subject: shared_ptr 的线程安全边界
     predicate: 只覆盖
-    object: 控制块计数（被指对象与同一 shared_ptr 实例都不受保护，use_count 并发下只是近似值）
+    object: shared_ptr 并发语义
     claim_type: inference
     statement: 各线程持有**各自副本**时的并发拷贝/销毁是安全的，但**被指对象**与**同一个 shared_ptr 实例**都不受这层保护（并发读写同一实例需外部同步，C++20 起可用 std::atomic<std::shared_ptr<T>>；use_count() 在并发下只是近似值）。这条边界依据标准与实现说明，不由本卡读数单独证明；其工程含义是"要不要付原子代价"应由 unique_ptr/shared_ptr 在编译期显式选择。
     external_basis: "ISO/IEC 14882:2023 [util.smartptr.shared]（仅控制块计数保证原子，对象与实例本身不保证）；cppreference std::shared_ptr 线程安全说明与 std::atomic<std::shared_ptr>（C++20）；libstdc++ shared_ptr_base.h 的 _M_add_ref_copy / _M_release 原子 RMW 实现"
     evidence: [EV-MEM-034, EV-MEM-035]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]
