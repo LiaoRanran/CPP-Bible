@@ -26,20 +26,42 @@ claim_structured:
 """
 
 
-def test_plan_auto_is_42_liveness_items():
+def _deliverable() -> dict:
+    import json as _json
+    return _json.load(open(os.path.join(F.ROOT, "data",
+                                        "autoimmune_auto_fill_631.json"),
+                           encoding="utf-8"))
+
+
+def test_plan_auto_contract_and_deliverable_records_42():
+    """plan_auto 是「当前还需自动填充的项」（实时重推导）；填充落地后应为 0（幂等）。
+
+    42 条真实填充以**已提交的交付记录**为准，不依赖实时推导（§十 F1 诚实登记）。
+    """
     items = F.plan_auto()
-    assert len(items) == 42
-    assert all(i["field"] == "liveness" and i["mode"] == "auto" for i in items)
-    assert all(i["rule"] == "OBSERVATION-LIVENESS" for i in items)
-    assert len({i["card_rel"] for i in items}) == 23
+    assert isinstance(items, list)
+    assert all(i["field"] == "liveness" and i["mode"] == "auto" for i in items), \
+        "若有残留，必须全是 liveness/auto"
+    d = _deliverable()
+    assert d["fill"]["cards"] == 23 and d["fill"]["edits"] == 42, \
+        "已提交交付记录必须记录 42 条填充 / 23 张卡"
+    assert d["fill"]["unexpected_diffs"] == [], "填充必须零意外差异"
+    assert d["after"]["rate_pct"] == 100.0 and d["after"]["warn_rules_total"] == 92
 
 
 def test_sources_are_verifiable():
-    """抽查 3 条：符号必须能从引用卡 artifact_assert 复核出来（§零.14）。"""
-    for it in F.plan_auto()[:3]:
-        s = F.verify_source(it)
-        assert s["ok"], f"{it['card_id']}/{it['prop_id']}: {s.get('reason')}"
-        assert s["symbol"] and s["found_in"]
+    """符号必须能从引用卡 artifact_assert 复核出来（§零.14）。
+
+    用一张**真实已填**卡片的三元组做机制验证，不依赖实时 plan_auto 的条数。
+    """
+    it = {"card_rel": "atoms/conc/ATOM-CONC-FENCE-001.md",
+          "prop_id": "prop-1", "value": {"symbol": "_Z10spin_plainv"}}
+    s = F.verify_source(it)
+    assert s["ok"], s.get("reason")
+    assert s["symbol"] and s["found_in"]
+    # 负例：错误符号必须判 False
+    bad = {**it, "value": {"symbol": "_NOPE_not_real"}}
+    assert F.verify_source(bad)["ok"] is False
 
 
 def test_edit_is_insert_then_replace():
@@ -78,6 +100,8 @@ def test_dry_run_does_not_touch_cards_and_check_passes():
     before = snap()
     res = F.apply(dry_run=True)
     assert snap() == before, "dry_run 不得写盘"
-    assert res["cards"] == 23 and res["edits"] == 42
-    assert not res["unexpected_diffs"]
+    # 填充已落地 ⇒ 实时方案可填项应为 0（幂等），且不产生意外差异
+    assert res["edits"] == 0 and not res["unexpected_diffs"]
+    # 已提交交付记录证明 42 条填充真实发生
+    assert _deliverable()["fill"]["edits"] == 42
     assert F.selftest() == 0

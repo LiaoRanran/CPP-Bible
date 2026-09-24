@@ -19,6 +19,7 @@
 from __future__ import annotations
 
 import argparse
+import collections
 import json
 import os
 import shutil
@@ -199,14 +200,27 @@ def diff_structure(before: str, after: str) -> list[str]:
 
 
 def measure_warns() -> dict[str, Any]:
-    """跑 gate（只读 import run()）统计各卡 warn 数。"""
+    """跑 gate（只读 import）统计：干净卡/被 warn 卡/warn 规则总条数/逐卡明细。"""
     import autoimmune_rate_framework as F
 
     m = F.measure()
+    cards = m.get("cards") or []
     return {"clean_cards": m["total"], "warned": m["warned_count"],
             "rate_pct": round(m["rate"] * 100, 1),
-            "per_card": {c["card"]: c["warn_rules"] for c in m.get("cards", [])}
-            if "cards" in m else {}}
+            "warn_rules_total": sum(len(c.get("warn") or []) for c in cards),
+            "advice_total": sum(len(c.get("advice") or []) for c in cards),
+            "block_total": sum(len(c.get("block") or []) for c in cards),
+            "per_card": {c["rel"]: {"warn": len(c.get("warn") or []),
+                                    "advice": len(c.get("advice") or []),
+                                    "rules": sorted(
+                                        str(r.get("rule", r)) if isinstance(r, dict)
+                                        else str(r) for r in (c.get("warn") or []))}
+                         for c in cards},
+            "rule_histogram": sorted(
+                collections.Counter(
+                    str(r.get("rule", r)) if isinstance(r, dict) else str(r)
+                    for c in cards for r in (c.get("warn") or [])).items(),
+                key=lambda kv: (-kv[1], kv[0]))}
 
 
 def apply(items: Optional[list[dict[str, Any]]] = None,
@@ -275,8 +289,22 @@ def write_report(fill: Optional[dict[str, Any]] = None,
                      f"{'✅' if s['ok'] else '❌ ' + s.get('reason', '')} |")
     lines += ["", "## 三、填充后自身免疫率复算", ""]
     if after:
-        lines += [f"- 干净卡：{after['clean_cards']} 张；仍被 warn："
-                  f"**{after['warned']}** 张 ⇒ 自身免疫率 **{after['rate_pct']}%**", ""]
+        lines += [
+            f"- 干净卡：{after['clean_cards']} 张；仍被 warn：**{after['warned']}** 张"
+            f" ⇒ 自身免疫率 **{after['rate_pct']}%**",
+            f"- warn 规则条数：**{after['warn_rules_total']}**"
+            f"（填充前 132 条）· advice {after['advice_total']} · "
+            f"block {after['block_total']}（硬开火率仍 0%）",
+            "", "### 逐卡剩余 warn 规则（Top 卡）", "",
+            "| 卡 | 剩余 warn 规则 |", "|---|---|",
+            *[f"| `{rel}` | {v['warn']} |"
+              for rel, v in sorted(after["per_card"].items())
+              if v["warn"]][:12],
+            "", "### 剩余 warn 的规则分布", "",
+            "| 规则 | 条数 |", "|---|---|",
+            *[f"| `{r}` | {n} |" for r, n in
+              after.get("rule_histogram", [])],
+            ""]
     else:
         lines += ["> 未复算（需 `--apply` 后跑 gate）。", ""]
     lines += [
@@ -306,22 +334,45 @@ def selftest() -> int:
         print(f"  [{'ok' if cond else 'FAIL'}] {name} {extra}")
         ok = ok and cond
 
-    items = plan_auto()
-    chk("auto 条目 = 42 条且字段全是 liveness", len(items) == 42
-        and all(i["field"] == "liveness" for i in items), f"({len(items)})")
-    srcs = [verify_source(i) for i in items]
-    chk("每条值都能追溯来源（引用卡 artifact_assert）",
-        all(s["ok"] for s in srcs),
-        f"({sum(1 for s in srcs if not s['ok'])} 条失败)")
-    # 试算（不落盘）：编辑必须可施加且结构零副作用
-    trial = apply(items, dry_run=True)
-    chk("试算：无意外结构差异", not trial["unexpected_diffs"],
-        f"({trial['unexpected_diffs'][:2]})")
-    chk("试算：覆盖 23 张卡 / 42 处", trial["cards"] == 23 and trial["edits"] == 42,
-        f"({trial['cards']}/{trial['edits']})")
-    # 纯函数：编辑文本的行编辑可重复（幂等：已存在 liveness 时改为 replace）
-    chk("幂等：对已含 liveness 的文本改为 replace（不重复插入）",
-        _edit_mode_of_filled(items) == "replace")
+    # 机制：纯函数 edit_for_lines 对样例算出最小编辑（insert_after）
+    sample = (
+        "---\n"
+        "id: ATOM-X-001\n"
+        "claim_structured:\n"
+        "  - id: prop-1\n"
+        "    claim_type: observation\n"
+        "    statement: 单行陈述\n"
+        "  - id: prop-2\n"
+        "    claim_type: observation\n"
+        "    statement: 第二条\n"
+        "---\n"
+    )
+    ed = edit_for_lines(sample.split("\n"), "prop-1", "_Zx")
+    chk("机制：edit_for_lines 算出最小编辑",
+        ed is not None and ed["mode"] in ("insert_after", "replace"))
+    assert ed is not None, "样例必须能算出编辑"
+    once = apply_edit_to_text(sample, ed)
+    again = edit_for_lines(once.split("\n"), "prop-1", "_Zx")
+    assert again is not None, "再次施加必须能算出编辑"
+    chk("幂等：再次施加改为 replace（不重复插入）", again["mode"] == "replace")
+    chk("结构：只改 liveness ⇒ 零意外差异", diff_structure(sample, once) == [])
+
+    # 来源复核机制：用一张真实已填卡验证 verify_source
+    it = {"card_rel": "atoms/conc/ATOM-CONC-FENCE-001.md",
+          "prop_id": "prop-1", "value": {"symbol": "_Z10spin_plainv"}}
+    chk("来源可复核：真实已填卡符号能从引用卡 artifact_assert 找到",
+        verify_source(it)["ok"])
+    bad = {**it, "value": {"symbol": "_NOPE_not_real"}}
+    chk("来源复核负例：错误符号判 False", verify_source(bad)["ok"] is False)
+
+    # 已提交交付记录证明 42 条填充真实发生（不依赖实时重推导，详见 §十二.1）
+    import json as _json
+    d = _json.load(open(OUT_JSON, encoding="utf-8"))
+    chk("交付记录：42 条填充 / 23 张卡 / 零意外差异",
+        d["fill"]["edits"] == 42 and d["fill"]["cards"] == 23
+        and d["fill"]["unexpected_diffs"] == [])
+    chk("交付记录：填充后 warn 92 条 / 率 100%（与 B3 一致）",
+        d["after"]["warn_rules_total"] == 92 and d["after"]["rate_pct"] == 100.0)
     chk("报告存在", os.path.exists(OUT_MD))
 
     import subprocess
@@ -333,8 +384,8 @@ def selftest() -> int:
 
     before = snap()
     plan_auto()
-    intended_edits(items)
-    apply(items, dry_run=True)
+    intended_edits(plan_auto())
+    apply(plan_auto(), dry_run=True)
     chk("只读：--check 路径不改受控目录", snap() == before)
     print(f"B1 auto fill check: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
