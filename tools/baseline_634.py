@@ -65,8 +65,8 @@ def counts() -> dict[str, int]:
 
 def no_check_tools() -> int:
     try:
-        import debt_inventory_633 as di
-        return len(di.categorize()["no_check_cli"])
+        import tool_debt_audit_633 as tda
+        return len(tda.categorize()["no_check_cli"])
     except Exception:  # noqa: BLE001
         return STANDING["tools_no_check"]
 
