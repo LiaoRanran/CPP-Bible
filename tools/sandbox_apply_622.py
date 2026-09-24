@@ -391,9 +391,18 @@ class Sandbox:
         return {"restored": ok, "sha256": now,
                 "reason": "" if ok else "还原后 sha256 与备份不符（restore_failed）"}
 
+    def _git_checkout(self, card_rel: str) -> None:
+        """L2 兜底还原：字节级还原失败时，用 `git checkout -- <card>` 强制还原该卡。
+
+        仅还原被变异的那一张卡（最小爆炸半径）——避免 `git checkout -- atoms`
+        误伤受控目录里其他合法未提交改动（如 631 B1 的 atoms 字段填充）。
+        """
+        subprocess.run(["git", "checkout", "--", _norm(card_rel)],
+                       cwd=self.root, capture_output=True, text=True, check=False)
+
     def apply_and_run(self, mutation: dict, card_rel: str,
                       baseline_findings: list[dict] | None = None) -> dict:
-        """apply → run_gate → restore（原子；finally 必还原）。"""
+        """apply → run_gate → restore（原子；finally 必还原，L2 git checkout 兜底）。"""
         t0 = time.time()
         backup = self.apply_mutation(mutation, card_rel)
         if not backup.get("applied"):
@@ -403,10 +412,17 @@ class Sandbox:
         try:
             res = self.run_gate(card_rel)
         finally:
-            rst = self.restore(card_rel, backup)
-        if not rst.get("restored"):
+            if not self.restore(card_rel, backup).get("restored"):
+                self._git_checkout(card_rel)  # L2 兜底：字节还原失败才动用 git
+        # 还原校验（L2 兜底后再验一次 sha256）
+        try:
+            now_sha = _sha256_bytes(open(self._abs(card_rel), "rb").read())
+        except OSError:
+            now_sha = None
+        if now_sha != backup.get("backup_sha256"):
             return {"mutation_id": mutation.get("mutation_id"), "card": _norm(card_rel),
-                    "verdict": "infra_error", "reason": rst.get("reason"),
+                    "verdict": "infra_error",
+                    "reason": "restore_failed（字节还原与 git checkout 兜底均未能恢复）",
                     "elapsed_ms": int((time.time() - t0) * 1000)}
 
         after = {(str(f.get("rule")), str(f.get("severity"))) for f in res["findings"]}
