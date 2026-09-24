@@ -28,6 +28,7 @@ claim_structured:
     statement: 两个 TU 给出不同定义的 inline 函数，其可观测行为由链接顺序与优化档共同决定：-O0（未内联）链接顺序 a→b 时 ab_tu_a=1、ab_tu_b=1，顺序 b→a 时 ba_tu_a=2、ba_tu_b=2；-O2（发生内联）时 o2_tu_a=1、o2_tu_b=2，换顺序仍为 1/2（各 TU 内联自己看到的定义）。
     evidence: [EV-LANG-001, EV-LANG-002]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
   - id: prop-2
     subject: token 序列一致的定义
     predicate: 实测始终
@@ -36,6 +37,7 @@ claim_structured:
     statement: 当各 TU 的定义由相同 token 序列构成时行为稳定：stable 组在 ab/ba/o2/o2b 四种链接与优化组合下 stable_a 与 stable_b 恒为 42。
     evidence: [EV-LANG-001, EV-LANG-002]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
   - id: prop-3
     subject: 违反 ODR 的程序
     predicate: 属于
@@ -45,6 +47,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882 [basic.def.odr]/16.4（所有定义须由相同 token 序列构成）；/18（含多定义的实体行为如同 single entity with a single definition）；cppreference ODR（违反为 ill-formed, no diagnostic）"
     evidence: [EV-LANG-001, EV-LANG-002]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++23]
   compilers: [GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (Linux)]

@@ -38,6 +38,7 @@ claim_structured:
     statement: 相邻布局两计数器落在同一缓存行（tight_offset_bytes=8、tight_same_line=1），alignas 隔离后落在不同行（padded_offset_bytes=64、padded_same_line=0），且隔离的结构代价是空间（padded_sizeof=128）——这三项读数由地址计算得出，与计时无关。
     evidence: [EV-MEM-044, EV-MEM-045]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
   - id: prop-2
     subject: 伪共享性能代价
     predicate: 方向为共享更慢（读数锚方向而非倍数）
@@ -46,6 +47,7 @@ claim_structured:
     statement: 4 线程各累加 1e7 次、7 轮下共享缓存行明显更慢：sharing_is_slower=1 且 counters_all_advanced=1（活性对照成立），逐轮中位数 562500600 ns vs 29824800 ns = 18.86×（Linux 同夹具 18.54×，方向一致）；**断言只锚方向与活性对照，不锚倍数**（倍数取 EV-MEM-045 逐轮表）。
     evidence: [EV-MEM-044, EV-MEM-045]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
   - id: prop-3
     subject: padding
     predicate: 不必然值得
@@ -55,6 +57,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2017 起 [hardware.interference]（hardware_destructive_interference_size 为提示值）/ cppreference 同名条目"
     evidence: [EV-MEM-044, EV-MEM-045]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
 status_history:
   - {level: draft, at: 2026-09-12, by: writer:g5_batch5}
   - {level: red-team-verified, at: 2026-09-12, by: redteam:g5_batch5}

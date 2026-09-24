@@ -43,6 +43,7 @@ claim_structured:
     statement: 同一 workload（1000 次 24B 分配、-O2）下三种小对象策略的元数据可用统一口径（struct_bytes + bookkeeping_bytes）读出：arena 32B（32+0）、bitmap 181B（56+125，1 bit/块）、pool 8056B（56+8000，8B/块 free-list 指针）。
     evidence: [EV-MEM-040, EV-MEM-041]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
   - id: prop-2
     subject: bitmap/pool 元数据
     predicate: 随块数线性增长
@@ -51,6 +52,7 @@ claim_structured:
     statement: bitmap 的 bookkeeping 是 1 bit/块、pool 是 8B/块指针，故元数据随块数线性增长：块数由 1000 增到 8000 时 pool 由 8056B 增至 64056B、bitmap 由 181B 增至 1056B（读数为 EV-MEM-040 的 n1/n2 两组键）。
     evidence: [EV-MEM-040, EV-MEM-041]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
   - id: prop-3
     subject: 元数据开销
     predicate: 与「是否支持单块释放」绑定
@@ -60,6 +62,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [mem.res.monotonic.buffer] / [mem.res.pool]（单调缓冲与池资源的回收语义差异）"
     evidence: [EV-MEM-040, EV-MEM-041]
     extracted_by: writer
+    signed_by: v0.2:liaoranran
 status_history:
   - {level: draft, at: 2026-09-12, by: writer:g5_batch5}
   - {level: red-team-verified, at: 2026-09-12, by: redteam:g5_batch5}
