@@ -1,0 +1,120 @@
+{
+  "version": "v0.3",
+  "n_interfaces": 5,
+  "adapted_interfaces": [
+    "Evidence"
+  ],
+  "n_adapted_methods": 5,
+  "rows": [
+    {
+      "interface": "Claim",
+      "since": "v0.1",
+      "new_in_v02": "命题级字段（liveness / signed_by）",
+      "methods": [
+        "evidence_refs",
+        "id",
+        "statement",
+        "structured",
+        "validate"
+      ],
+      "n_methods": 5,
+      "methods_with_doc": 5,
+      "adapted_in_v03": false,
+      "maps": [
+        "tools/gate_engine.py"
+      ]
+    },
+    {
+      "interface": "Evidence",
+      "since": "v0.1",
+      "new_in_v02": "artifact_assert + replay 三态",
+      "methods": [
+        "artifact_assert",
+        "id",
+        "provenance",
+        "replay",
+        "verify_hash"
+      ],
+      "n_methods": 5,
+      "methods_with_doc": 5,
+      "adapted_in_v03": true,
+      "maps": [
+        "tools/atom_evidence_replay.py"
+      ]
+    },
+    {
+      "interface": "Verifier",
+      "since": "v0.1（原名 Verify）",
+      "new_in_v02": "独立验证者钩子 + 凭证产出",
+      "methods": [
+        "attest",
+        "id",
+        "independent_hook",
+        "rules",
+        "verify"
+      ],
+      "n_methods": 5,
+      "methods_with_doc": 5,
+      "adapted_in_v03": false,
+      "maps": [
+        "tools/gate_engine.py",
+        "tools/independent_verifier_628.py",
+        "tools/vsa_attestation_628.py"
+      ]
+    },
+    {
+      "interface": "Authority",
+      "since": "v0.2",
+      "new_in_v02": "整个接口（含 append-only 账本 + 透明日志 + 人审入口）",
+      "methods": [
+        "append",
+        "chain_verify",
+        "human_decision",
+        "ledger_path",
+        "transparency_log"
+      ],
+      "n_methods": 5,
+      "methods_with_doc": 5,
+      "adapted_in_v03": false,
+      "maps": [
+        "tools/decision_event_v2_626.py",
+        "tools/transparency_log_628.py",
+        "data/authority/decision_event_v2_ledger.jsonl"
+      ]
+    },
+    {
+      "interface": "Attacker",
+      "since": "v0.1（原名 Attack）",
+      "new_in_v02": "目标函数 objective() + 沙箱契约 + revert 契约",
+      "methods": [
+        "apply_in_sandbox",
+        "id",
+        "mutate",
+        "objective",
+        "revert"
+      ],
+      "n_methods": 5,
+      "methods_with_doc": 5,
+      "adapted_in_v03": false,
+      "maps": [
+        "tools/adversarial_loop_620.py",
+        "tools/sandbox_apply_622.py",
+        "tools/attack_objective_629.py"
+      ]
+    }
+  ],
+  "demo": {
+    "card": "evidence/conc/EV-CONC-001.md",
+    "id": "EV-CONC-001",
+    "verify_hash": true,
+    "n_artifact_assert": 12,
+    "provenance_keys": [
+      "command",
+      "fixture",
+      "hypothesis",
+      "serves",
+      "source"
+    ]
+  },
+  "note": "Evidence 接口已真实适配（5 方法接到真实工具）；其余 4 接口仍只定义不实现（v0.2 状态）。"
+}
