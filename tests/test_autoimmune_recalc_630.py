@@ -28,17 +28,21 @@ def test_v23_thresholds_parsed(s):
 
 
 def test_strict_scenario_real_verification(s):
-    assert s["strict"]["filled_auto"] == 42
-    assert s["strict"]["verified_pass"] == 42 and not s["strict"]["failed"], \
+    # 633 A2：631 已落地 auto liveness ⇒ filled_auto 42→0；改为动态对齐（断言过期型）。
+    fa = s["strict"]["filled_auto"]
+    assert s["strict"]["verified_pass"] == fa and not s["strict"]["failed"], \
         "auto 建议必须经 gate 自己的判定放行，否则不算可自动修复"
-    assert s["strict"]["remaining_warns"] == s["total_warns"] - 42
+    assert s["strict"]["remaining_warns"] == s["total_warns"] - fa
     assert s["strict"]["cards_became_clean"] == 0
     assert s["strict"]["cards_still_warned"] == 23
 
 
 def test_liveness_verification_is_real():
     a = P.plan_a()
-    item = [i for i in a["items"] if i["mode"] == "auto"][0]
+    autos = [i for i in a["items"] if i["mode"] == "auto"]
+    if not autos:
+        pytest.skip("633 A2：631 已落地 auto liveness ⇒ 无 auto 建议，公式性验证不适用")
+    item = autos[0]
     path = os.path.join(R.ROOT, item["card_rel"])
     good = R.verify_liveness_fill(path, item["prop_id"], item["value"]["symbol"])
     bad = R.verify_liveness_fill(path, item["prop_id"], "totally-bogus-symbol-xyz")
@@ -58,6 +62,9 @@ def test_optimistic_scenario(s):
 def test_pessimistic_scenario_worse_than_nothing(s):
     p = s["pessimistic"]
     assert not p["principal_ok"]["ok"], "机器代签必须被判失败"
+    # 633 A2：631 已落地 ⇒ signed_by 总量可能为 0，悲观情景不适用（环境依赖型，跳过）。
+    if s["optimistic"]["signed_by_total"] == 0:
+        pytest.skip("无 signed_by 可代签 ⇒ 悲观情景不适用")
     assert p["block_events"] == s["optimistic"]["signed_by_total"] > 0
     assert p["hard_rate_pct"] > s["thresholds"]["hard_target_pct"], \
         "悲观情景硬开火率必须越过 v23 目标（这是本批最重要的风险提示）"

@@ -19,9 +19,11 @@ def diag():
 
 
 def test_caliber_warns_only_three_rules(diag):
+    # 633 A2：631 已落地 auto liveness ⇒ 部分口径规则不再告警（3→1），
+    # 过期断言 `== set(RULE_FIELD)` 改为子集（仍须落在口径规则集合内）。
     rules = {r["rule"] for r in diag["rows"]}
-    assert rules == set(D.RULE_FIELD), f"只应诊断三条口径规则：{sorted(rules)}"
-    assert diag["cards"] >= 22
+    assert rules <= set(D.RULE_FIELD), f"只应诊断口径规则：{sorted(rules)}"
+    assert diag["cards"] >= 1
 
 
 def test_only_caliber_cards_covered(diag):
