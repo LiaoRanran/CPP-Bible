@@ -17,6 +17,7 @@ import argparse
 import subprocess
 import sys
 from pathlib import Path
+from typing import Literal
 
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parent
@@ -47,7 +48,7 @@ class PollutionGuard:
         self._pre = self._diff()
         return self
 
-    def __exit__(self, exc_type, exc, tb) -> bool:
+    def __exit__(self, exc_type, exc, tb) -> Literal[False]:
         # 异常透传：守卫只管污染还原，不吞异常
         if exc_type is not None:
             return False

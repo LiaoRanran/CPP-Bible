@@ -70,7 +70,7 @@ def verify_anchor(log_path: Path = LOG_PATH, vsa_dir: Path = VSA_DIR) -> bool:
     if not a:
         return False
     rec = json.loads(Path(a).read_text(encoding="utf-8"))
-    return rec.get("log_sha256") == compute_log_hash(log_path)
+    return bool(rec.get("log_sha256") == compute_log_hash(log_path))
 
 
 def main(argv: list[str] | None = None) -> int:

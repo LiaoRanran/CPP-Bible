@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """人审预标注：读取 388 条候选边，按 MIS 组聚合，给出 approve/reject/modify 建议"""
-import sys
 import json
+import sys
 from collections import defaultdict
 from pathlib import Path
 

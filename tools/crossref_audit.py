@@ -16,9 +16,9 @@
     - 断链清单（引用了不存在的文件）
 """
 
-import sys
 import argparse
 import re
+import sys
 from pathlib import Path
 
 CROSSREF_RE = re.compile(r"(?:⟶\s*|→\s*)(Book/[^\s\)\]>。，；：、》）(（]+)")

@@ -33,7 +33,8 @@ def load(path: Optional[str] = None) -> dict[str, Any]:
     p = path or BASELINE
     try:
         with open(p, encoding="utf-8") as fh:
-            return json.load(fh)
+            data = json.load(fh)
+            return data if isinstance(data, dict) else {}
     except (OSError, json.JSONDecodeError):
         return {}
 

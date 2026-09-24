@@ -187,8 +187,8 @@ def selftest() -> int:
     import tempfile
     d = tempfile.mkdtemp()
     ap = os.path.join(d, "x.asm")
-    with open(ap, "wb") as fh:
-        fh.write(b"hello")
+    with open(ap, "wb") as fhb:
+        fhb.write(b"hello")
     card = os.path.join(d, "EV-X-001.md")
     with open(card, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(f"---\nid: EV-X-001\nartifact: {ap}\nartifact_sha256: abc\n---\nbody\n")

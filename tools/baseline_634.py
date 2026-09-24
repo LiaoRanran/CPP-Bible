@@ -29,7 +29,7 @@ OUT_MD = os.path.join(ROOT, "data", "634_baseline.md")
 OUT_AUDIT = os.path.join(ROOT, "data", "634_pytest_side_effect_audit.md")
 
 # §一 Standing Baseline（开工值；来源见括号）
-STANDING = {
+STANDING: dict[str, Any] = {
     "coverage": "60%（21/35 攻击向量）",           # 632 D2
     "horizon": "复杂度 60 断崖，60-80 桶检出 0%",    # 622 M9
     "na_rate": "11.24%（179/1593）",               # 616
@@ -66,9 +66,10 @@ def counts() -> dict[str, int]:
 def no_check_tools() -> int:
     try:
         import tool_debt_audit_633 as tda
-        return len(tda.categorize()["no_check_cli"])
+        items = tda.categorize().get("no_check_cli", [])
+        return len(items) if isinstance(items, list) else int(STANDING["tools_no_check"])
     except Exception:  # noqa: BLE001
-        return STANDING["tools_no_check"]
+        return int(STANDING["tools_no_check"])
 
 
 def audit_write_sites() -> dict[str, list[tuple[str, int, str]]]:

@@ -77,7 +77,8 @@ def load_failures(path: str = FAILURES) -> dict[str, list[str]]:
     if not os.path.exists(path):
         return {"run1_baseline": [], "run2_after_fixes": []}
     try:
-        return json.loads(open(path, encoding="utf-8").read())
+        data = json.loads(open(path, encoding="utf-8").read())
+        return data if isinstance(data, dict) else {"run1_baseline": [], "run2_after_fixes": []}
     except json.JSONDecodeError:
         return {"run1_baseline": [], "run2_after_fixes": []}
 

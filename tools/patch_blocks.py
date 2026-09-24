@@ -18,11 +18,11 @@ patch.json 形如（block = compile_all.extract_blocks 的 1-based cpp 块序号
     ]
 """
 from __future__ import annotations
-import sys
 
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Any, Sequence
 

@@ -21,13 +21,13 @@ ubuntu gcc-15（CFI/AT&T）无法复现，故再生也在 Windows+MinGW 下进�
   python tools/asm_regen.py --gpp <g++.exe> --examples Examples --dry-run
   python tools/asm_regen.py --gpp <g++.exe> --examples Examples --apply [--batch 30]
 """
-import sys
 import argparse
 import glob
 import json
 import os
 import re
 import subprocess
+import sys
 from collections import Counter
 
 

@@ -14,11 +14,11 @@ L2 真机深耕按章清理「纯注释型 cpp 块」。此前每章状态（剩
     python tools/l2_state.py sync|check|report
 """
 from __future__ import annotations
-import sys
 
 import argparse
 import json
 import subprocess
+import sys
 from datetime import date
 from pathlib import Path
 from typing import Any, Sequence, cast

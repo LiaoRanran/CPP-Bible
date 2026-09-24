@@ -26,7 +26,7 @@ GATE_SCRIPT = HERE / "run_631_gate.py"
 
 
 def load_decisions(path: Path = DECISIONS) -> list[dict]:
-    out = []
+    out: list = []
     if not Path(path).is_file():
         return out
     for line in Path(path).read_text(encoding="utf-8").splitlines():

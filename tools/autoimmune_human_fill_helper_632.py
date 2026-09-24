@@ -86,7 +86,7 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     items = load_queue(args.queue)
     if args.check:
-        pri = {}
+        pri: dict = {}
         for it in items:
             pri[it.get("priority")] = pri.get(it.get("priority"), 0) + 1
         print(f"632 C1 --check OK：human 待填 {len(items)} 条，优先级 {pri}")

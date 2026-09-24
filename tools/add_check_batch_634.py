@@ -89,6 +89,8 @@ def add_check(loc: str) -> str:
             else:
                 new = "import sys\n" + new
     m2 = _MAIN_RE.search(new)
+    if m2 is None:
+        return "no_main"
     guard = _guard(os.path.basename(loc)[:-3])
     new = new[:m2.start()].rstrip("\n") + guard + "\n" + new[m2.start():]
     with open(p, "w", encoding="utf-8", newline="\n") as fh:

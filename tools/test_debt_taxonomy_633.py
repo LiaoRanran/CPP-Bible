@@ -76,7 +76,8 @@ def remaining_failures() -> list[str]:
         d = json.loads(open(FAILURES, encoding="utf-8").read())
     except json.JSONDecodeError:
         return []
-    return d.get("run2_after_fixes", [])
+    v = d.get("run2_after_fixes", [])
+    return v if isinstance(v, list) else []
 
 
 def plan() -> list[str]:

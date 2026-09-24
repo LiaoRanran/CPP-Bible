@@ -116,7 +116,9 @@ def pre_snapshot() -> dict[str, Any]:
     p = os.path.join(ROOT, "data", "633_debt_inventory.json")
     if os.path.exists(p):
         try:
-            return json.loads(open(p, encoding="utf-8").read()).get("snapshot", {})
+            d = json.loads(open(p, encoding="utf-8").read())
+            s = d.get("snapshot", {}) if isinstance(d, dict) else {}
+            return s if isinstance(s, dict) else {}
         except json.JSONDecodeError:
             return {}
     return {}

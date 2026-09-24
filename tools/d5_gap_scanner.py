@@ -14,10 +14,10 @@ CI 用途: --ci 模式下，若 gap_count > 阈值或 top-1 chapter signals >= 1
 退出码 1 (BLOCK)。用于监测作者新增性能声明但忘记补 D5。
 """
 
-import sys
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent

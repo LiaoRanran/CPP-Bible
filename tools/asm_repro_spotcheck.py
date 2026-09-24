@@ -21,7 +21,6 @@ Examples/*.asm 复现性 spot-check（对抗式审计，非零确认）。
 用法:
   python tools/asm_repro_spotcheck.py --gpp <g++.exe> --examples Examples [--out report.json] [--only 15.3.0|13.1.0|unmarked|all] [--name-substr X]
 """
-import sys
 import argparse
 import difflib
 import glob
@@ -30,6 +29,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 from collections import Counter
 
 CALL_RE = (r'\b(call|callq|jmp|jmpq|je|jne|jg|jl|jge|jle|ja|jb|jae|jbe|'
