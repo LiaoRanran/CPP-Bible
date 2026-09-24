@@ -9,6 +9,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 import human_review_quality_compare_621 as Q  # noqa: E402
+import soft_baseline_634 as SB  # 634 A3  # noqa: E402
 
 
 def test_reason_stats_basic():
@@ -76,7 +77,8 @@ def test_real_artifacts_analyze():
     if not os.path.exists(Q.DECISION_LOG) or not os.path.exists(Q.PROPOSALS):
         return
     res = Q.analyze()
-    assert res["batch"]["count"] == 418   # 624 D3：622 D1 逐条人审后 Authority 日志 388→418（存量修正）
+    # 634 A3：全局计数，读单一基线
+    assert res["batch"]["count"] == SB.soft("authority_batch_count", res["batch"]["count"])
     assert res["item"]["count"] == 30
     assert res["mirror"]["with_direction"] == 30
     assert res["consistency"]["norm_rate"] == 1.0

@@ -27,6 +27,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 import human_review_cli as hrc  # noqa: E402
 import metrics_610 as m610  # noqa: E402
+import soft_baseline_634 as SB  # 634 A3  # noqa: E402
 import weighted_af_solver as w2  # noqa: E402
 
 REASON = "611 B1 测试：口径双模式锁（modify 档位口径由 --modify-mode 决定）"
@@ -135,5 +136,6 @@ def test_metrics_record_two_mode_divergence():
     assert g["default_matches_artifact"] is True
     assert g["divergence"] is True
     assert "需监工裁决" in g["divergence_note"] and "modify 保持 low" in g["divergence_note"]
-    assert g["solver_recompute"]["in"] == 121          # 610 字段语义未变（= 609 A3 口径）
+    # 634 A3：全局计数，读单一基线
+    assert g["solver_recompute"]["in"] == SB.soft("modify_solver_recompute_in", g["solver_recompute"]["in"])
     assert g["solver_recompute_default"]["in"] == 114  # 新字段 = 默认档现算

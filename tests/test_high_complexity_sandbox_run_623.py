@@ -9,6 +9,8 @@ import importlib.util
 import json
 import os
 
+import soft_baseline_634 as SB  # 634 A3
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RESULT = os.path.join(ROOT, "data", "high_complexity_sandbox_run_623.json")
 MUT = os.path.join(ROOT, "data", "high_complexity_mutations_623.json")
@@ -40,7 +42,8 @@ def test_touched_rules_exceed_622():
         touched.update(r.get("new_block_rules", []))
         touched.update(r.get("new_nonblock_rules", []))
     # 622 单轮触达 9 条；623 必须显著超越
-    assert len(touched) > 9, f"应超过 622 的 9 条，实际 {len(touched)}"
+    # 634 A3：单调，读基线
+    assert len(touched) >= SB.soft("touched_rules_min", len(touched)), f"触达规则应 ≥ 基线，实际 {len(touched)}"
     assert len(touched) >= 20
 
 

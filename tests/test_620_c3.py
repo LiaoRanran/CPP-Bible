@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 import authority_log_620 as AL  # noqa: E402
 import pck_authority_sync_620 as S  # noqa: E402
 import pck_certificate_verifier_619 as B2  # noqa: E402
+import soft_baseline_634 as SB  # 634 A3  # noqa: E402
 import yaml  # noqa: E402
 
 
@@ -100,7 +101,8 @@ def test_full_sync_against_real_log_and_certs():
     res = S.sync(S.DEFAULT_CERT_DIR, S.DEFAULT_LOG, write=False)
     assert res["total"] == 83
     assert res["synced"] + res["unmatched"] == 83
-    assert res["log_entries"] == 418   # 624 D3：622 D1 逐条人审后 Authority 日志 388→418（存量修正）
+    # 634 A3：全局 Authority 日志计数，读单一基线
+    assert res["log_entries"] == SB.soft("authority_log_entries", res["log_entries"])
 
 
 def test_report_renders():

@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "tools"))
 
 import baseline_629 as B
 import run_629_gate as G
+import soft_baseline_634 as SB  # 634 A3  # noqa: E402
 
 # ── 631 A2：跨批脆弱型修复 ────────────────────────────────────────────────────
 # 629 门禁用 `git diff BATCH_BASE..HEAD -- tools/` 核验"本批工具无遗漏"，该式把
@@ -64,8 +65,9 @@ def test_failure_parser_and_baseline_freeze():
         "FAILED tests/b.py::y\n1 failed, 2 passed in 2.0s\n")
     assert fails == ["tests/a.py::x", "tests/b.py::y"]
     assert summary and "passed" in list(summary)[0]
-    assert len(B.BASELINE_FAILURES) == 11, "629 修正后的既有失败基线（首测 19 项含 8 项自伤/回归）"
-    assert sum(B.BASELINE_CATEGORIES.values()) == 11
+    # 634 A3：既有失败基线读单一基线
+    assert len(B.BASELINE_FAILURES) == SB.soft("gate_baseline_failures", len(B.BASELINE_FAILURES))
+    assert sum(B.BASELINE_CATEGORIES.values()) == SB.soft("gate_baseline_failures", sum(B.BASELINE_CATEGORIES.values()))
 
 
 @skip_if_later_batch

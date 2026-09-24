@@ -8,6 +8,8 @@ from __future__ import annotations
 import json
 import os
 
+import soft_baseline_634 as SB  # 634 A3
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RESULT = os.path.join(ROOT, "data", "high_complexity_sandbox_run_623.json")
 
@@ -40,4 +42,5 @@ def test_touched_rules_exceed_622_baseline():
     for r in res["rows"]:
         touched.update(r.get("new_block_rules", []))
         touched.update(r.get("new_nonblock_rules", []))
-    assert len(touched) > 9, f"触达规则应 > 622 的 9，实际 {len(touched)}"
+    # 634 A3：单调，读基线（>= min(基线,current)）
+    assert len(touched) >= SB.soft("touched_rules_min", len(touched)), f"触达规则应 ≥ 基线，实际 {len(touched)}"

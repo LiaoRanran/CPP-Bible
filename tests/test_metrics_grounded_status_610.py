@@ -16,6 +16,7 @@ from pathlib import Path
 
 import metrics_610 as m610
 import metrics_collector as mc
+import soft_baseline_634 as SB  # 634 A3  # noqa: E402
 
 
 def test_collect_grounded_status():
@@ -58,7 +59,8 @@ def test_backward_compatibility():
                          "escape_rate_note"}
     assert "grounded_status" in d610
     assert not set(d610) & set(d608), "610 不得改写 608 的键（只同级新增）"
-    assert d608["grounded"]["in"] == 114, "608 的 grounded 走产物 ⇒ 也应是 114"
+    # 634 A3：全局计数，读单一基线
+    assert d608["grounded"]["in"] == SB.soft("grounded_in", d608["grounded"]["in"]), "608 的 grounded 走产物"
 
 
 def test_error_handling_when_artifact_missing(tmp_path: Path, monkeypatch):
@@ -81,5 +83,5 @@ def test_collect_snapshot_has_metrics_610(monkeypatch):
     snap = mc.collect(with_heavy=False, with_gate=False)
     assert called["n"] == 1, "collect() 必须调用 610 采集器一次"
     assert "grounded_status" in snap["metrics_610"]
-    assert snap["metrics_610"]["grounded_status"]["in"] == 114
+    assert snap["metrics_610"]["grounded_status"]["in"] == SB.soft("grounded_in", snap["metrics_610"]["grounded_status"]["in"])  # 634 A3
     assert json.dumps(snap, ensure_ascii=False)          # 快照可 JSON 序列化

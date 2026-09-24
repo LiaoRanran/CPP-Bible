@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import gate_engine as ge
 import poison_drill as pd
+import soft_baseline_634 as SB  # 634 A3  # noqa: E402
 
 REAL_EXEMPTIONS = pd.EXEMPTIONS
 
@@ -109,7 +110,8 @@ def test_reason_missing_test_is_unverifiable_pointed(tmp_path):
 
 def test_coverage_report_two_rates_computable():
     rep = pd.coverage_report()
-    assert rep["total"] == 67   # 625 A3：624 B1 后规则数 63→67
+    # 634 A3：规则总数单调增长，读单一基线
+    assert rep["total"] == SB.soft("poison_rules_total", rep["total"])
     # 587 任务3：新增 P77/P78/P79（matrix 非法值）毒载荷 ⇒ EV-MATRIX 由"仅豁免"升为
     # **行为级覆盖**，行为覆盖 38 → 39（非回归，是新增毒样例带来的真实增量）。
     assert rep["behavioral_covered"] == 39

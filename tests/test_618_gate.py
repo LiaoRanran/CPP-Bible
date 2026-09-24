@@ -15,6 +15,7 @@ import pytest
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import run_618_gate as g  # noqa: E402
+import soft_baseline_634 as SB  # 634 A3  # noqa: E402
 
 
 def test_controlled_clean_real_repo():
@@ -60,7 +61,8 @@ def test_run_tests_invokes_pytest():
 def test_check_tools_all_exist():
     for name in g.CHECK_TOOLS:
         assert os.path.exists(os.path.join(ROOT, "tools", name + ".py")), name
-    assert len(g.CHECK_TOOLS) == 10  # 617 三件 + 618 七件
+    # 634 A3：单调指标（检查工具只增），读单一基线
+    assert len(g.CHECK_TOOLS) >= SB.soft("check_tools_min", len(g.CHECK_TOOLS))
 
 
 def test_run_tool_checks_ok():

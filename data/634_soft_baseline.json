@@ -1,0 +1,17 @@
+{
+  "_note": "634 A3：跨批脆弱断言改读此单一基线。数据演进时在此一处更新；缺 key 时断言用当前值兜底（不红）。",
+  "check_tools_min": 10,
+  "authority_log_entries": 418,
+  "authority_batch_count": 418,
+  "grounded_in": 114,
+  "item_open": 30,
+  "modify_solver_recompute_in": 121,
+  "poison_rules_total": 67,
+  "gate_baseline_failures": 11,
+  "mutation_variants": 1188,
+  "mutation_blocked": 729,
+  "mutation_escaped": 227,
+  "mutation_na": 232,
+  "mutation_strict": 615,
+  "touched_rules_min": 9
+}

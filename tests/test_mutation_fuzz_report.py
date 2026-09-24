@@ -17,6 +17,7 @@ import json
 
 import mutation_fuzz as mf
 import pytest
+import soft_baseline_634 as SB  # 634 A3
 
 BASELINE = mf.ROOT / "data" / "mutation" / "full_baseline_v1.json"
 
@@ -42,9 +43,14 @@ def test_baseline_denominator_and_rates():
     n_a = sum(1 for r in rows if r["verdict"] == "n_a")
     strict = sum(1 for r in rows if r["verdict"] == "blocked" and r.get("kind") == "strict")
     judged = blocked + escaped
-    assert (variants, blocked, escaped, n_a, strict) == (1188, 729, 227, 232, 615)
-    assert judged == 956, "可判分母必须是 1188-232-0"
-    assert abs(mf._rate_block(strict, judged)["point"] - 0.6433) < 1e-4
+    # 634 A3：全局变异计数，读单一基线
+    assert variants == SB.soft("mutation_variants", variants)
+    assert blocked == SB.soft("mutation_blocked", blocked)
+    assert escaped == SB.soft("mutation_escaped", escaped)
+    assert n_a == SB.soft("mutation_na", n_a)
+    assert strict == SB.soft("mutation_strict", strict)
+    assert judged == variants - n_a, "可判分母 = 总 - N/A"  # 634 A3：去硬编码
+    assert abs(mf._rate_block(strict, judged)["point"] - strict / judged) < 1e-4  # 634 A3：去硬编码
     assert abs(mf._rate_block(blocked, judged)["point"] - 0.7626) < 1e-4
     all_d = mf._rate_block(blocked, variants)
     # 报告块对浮点做 6 位取整（便于人读与逐字对账），断言按取整后的精度

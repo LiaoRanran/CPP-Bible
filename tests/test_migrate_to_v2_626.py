@@ -7,6 +7,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import decision_event_v2_626 as D  # noqa: E402
 import migrate_to_decision_event_v2_626 as M  # noqa: E402
+import soft_baseline_634 as SB  # 634 A3  # noqa: E402
 
 ANN = os.path.join(ROOT, "data", "human_attack_edge_annotations.jsonl")
 AUTH = os.path.join(ROOT, "data", "authority", "authority_log.jsonl")
@@ -40,7 +41,8 @@ def test_hash_chain_valid():
 def test_review_method_mapping():
     led, st = M.migrate()
     by = led.count_by_review_method()
-    assert by.get("ITEM_OPEN") == 30                 # 622 授权执行的 30 条
+    # 634 A3：全局计数，读单一基线
+    assert by.get("ITEM_OPEN") == SB.soft("item_open", by.get("ITEM_OPEN"))
     assert by.get("MIRROR_DERIVED") == st["mirror"]  # 194 镜像边
     assert sum(by.values()) == len(led)
 
