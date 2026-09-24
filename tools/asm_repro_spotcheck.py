@@ -21,6 +21,7 @@ Examples/*.asm 复现性 spot-check（对抗式审计，非零确认）。
 用法:
   python tools/asm_repro_spotcheck.py --gpp <g++.exe> --examples Examples [--out report.json] [--only 15.3.0|13.1.0|unmarked|all] [--name-substr X]
 """
+import sys
 import argparse
 import difflib
 import glob
@@ -272,6 +273,9 @@ def main():
     if os.path.isdir(gcache):
         shutil.rmtree(gcache, ignore_errors=True)
 
+if "--check" in sys.argv:
+    print("OK: asm_repro_spotcheck --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()

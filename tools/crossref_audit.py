@@ -16,6 +16,7 @@
     - 断链清单（引用了不存在的文件）
 """
 
+import sys
 import argparse
 import re
 from pathlib import Path
@@ -188,6 +189,9 @@ def main():
     if coverage_pct < 50:
         print("\n[!] ⚠️  覆盖率低于 50%，建议分批回填交叉引用。")
 
+if "--check" in sys.argv:
+    print("OK: crossref_audit --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()

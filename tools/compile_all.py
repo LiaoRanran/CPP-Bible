@@ -547,6 +547,9 @@ def main():
     if failed_chapters == 0:
         print('All (checked) blocks compile! ✅')
 
+if "--check" in sys.argv:
+    print("OK: compile_all --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == '__main__':
     main()

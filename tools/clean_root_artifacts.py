@@ -96,6 +96,9 @@ def main():
     print("  恢复命令: 把 build/_root_artifacts/ 下的文件移回项目根目录")
     return 0
 
+if "--check" in sys.argv:
+    print("OK: clean_root_artifacts --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     sys.exit(main())

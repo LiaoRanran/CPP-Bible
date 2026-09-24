@@ -163,6 +163,9 @@ def main():
     print('\n' + '=' * 70)
     print("SUMMARY:", {c: len(buckets.get(c, [])) for c in order})
 
+if "--check" in sys.argv:
+    print("OK: compile_classify --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == '__main__':
     main()
