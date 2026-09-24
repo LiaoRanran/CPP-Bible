@@ -1,0 +1,136 @@
+{
+  "overall": true,
+  "tools_checked": 12,
+  "tools_ok": 12,
+  "tests": {
+    "ok": true,
+    "exit": 0,
+    "summary": "exit=0",
+    "n_files": 13
+  },
+  "deliverables_missing": [],
+  "tool_results": [
+    {
+      "name": "baseline_632",
+      "ok": true,
+      "exit": 0,
+      "detail": "632 任务0 --check OK：CI剩余 5 项，代理 DOWN，vsa_secret.key 不存在"
+    },
+    {
+      "name": "transparency_anchor_632",
+      "ok": true,
+      "exit": 0,
+      "detail": "632 B1 --check: OK 锚与日志一致"
+    },
+    {
+      "name": "transparency_verify_632",
+      "ok": true,
+      "exit": 0,
+      "detail": "632 B2 --check OK：37 条链自洽，锚一致"
+    },
+    {
+      "name": "autoimmune_human_fill_helper_632",
+      "ok": true,
+      "exit": 0,
+      "detail": "  样例 atoms/conc/ATOM-CONC-LOCK-001.md:24 [object] 候选=（无候选：须人裁决 → 改 object / 改 claim_type / 补概 | ATOM-CLAIM-CONCEPT-NORMA"
+    },
+    {
+      "name": "autoimmune_human_fill_apply_632",
+      "ok": true,
+      "exit": 0,
+      "detail": "632 C2 --check OK：待执行决策 0 条"
+    },
+    {
+      "name": "pollution_guard_session_632",
+      "ok": true,
+      "exit": 0,
+      "detail": "632 D1 --check OK：PollutionGuard 可用（受控目录 atoms, evidence, Examples, Book）"
+    },
+    {
+      "name": "sandbox_apply_622",
+      "ok": true,
+      "exit": 0,
+      "detail": "A1 selftest: PASS"
+    },
+    {
+      "name": "coverage_probe_l2_3_632",
+      "ok": true,
+      "exit": 0,
+      "detail": "  [ok] 报告路径在 data 下（--check 不写）"
+    },
+    {
+      "name": "coverage_probe_l4_2_632",
+      "ok": true,
+      "exit": 0,
+      "detail": "  [ok] 报告路径在 data 下（--check 不写）"
+    },
+    {
+      "name": "coverage_probe_l4_4_632",
+      "ok": true,
+      "exit": 0,
+      "detail": "  [ok] 报告路径在 data 下（--check 不写）"
+    },
+    {
+      "name": "queyi_core_interface_v03_632",
+      "ok": true,
+      "exit": 0,
+      "detail": "  [ok] 报告路径在 data 下（--check 不写）"
+    },
+    {
+      "name": "ci_pytest_final_clear_632",
+      "ok": true,
+      "exit": 0,
+      "detail": "本地残留目录存在：True"
+    }
+  ],
+  "deliverable_rows": [
+    {
+      "path": "data/third_party_audit_demo_632.md",
+      "exists": true
+    },
+    {
+      "path": "data/vsa_key_security_audit_632.md",
+      "exists": true
+    },
+    {
+      "path": "data/vsa/anchor_20260924.json",
+      "exists": true
+    },
+    {
+      "path": "data/coverage_probe_l2_3_632.md",
+      "exists": true
+    },
+    {
+      "path": "data/coverage_probe_l2_3_632.json",
+      "exists": true
+    },
+    {
+      "path": "data/coverage_probe_l4_2_632.md",
+      "exists": true
+    },
+    {
+      "path": "data/coverage_probe_l4_2_632.json",
+      "exists": true
+    },
+    {
+      "path": "data/coverage_probe_l4_4_632.md",
+      "exists": true
+    },
+    {
+      "path": "data/coverage_probe_l4_4_632.json",
+      "exists": true
+    },
+    {
+      "path": "data/coverage_e1_632.md",
+      "exists": true
+    },
+    {
+      "path": "data/queyi_core_interface_v03_632.md",
+      "exists": true
+    },
+    {
+      "path": "data/queyi_core_interface_v03_632.json",
+      "exists": true
+    }
+  ]
+}
