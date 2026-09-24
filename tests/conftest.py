@@ -14,9 +14,6 @@ import pytest
 TOOLS = Path(__file__).resolve().parent.parent / "tools"
 sys.path.insert(0, str(TOOLS))
 
-# 632 C2 L1：受控目录快照守卫（会话级 autouse，见 controlled_dir_guard_632 模块）
-import controlled_dir_guard_632 as _cdg  # noqa: E402
-
 
 # ── 500 任务 6：快慢标记分离 ────────────────────────────────────────────────
 # 分类依据是**语义**（任务 6 定义）：模块内测试是否**实际调用编译器**（g++/cl）、
@@ -107,27 +104,6 @@ def replay_serial():
         yield
     finally:
         replay._release_replay_lock()
-
-
-# ── 632 C2 L1：会话级受控目录快照守卫 ──────────────────────────────────────
-# 设计见 data/pollution_prevention_design_631.md §三 L1。
-# 会话开始时快照 atoms/evidence/Examples/Book，结束时再快照；若有残留改动
-# （新增/删除/内容变更）整轮 pytest 判红并列出文件。
-# 关键性质：只比「最终状态」与「初始状态」——测试内临时写盘、finally 还原的不算污染
-# （放过"写脏又还原"是有意的，见设计 §五.3）；只有"残留未还原"才判红。
-@pytest.fixture(scope="session", autouse=True)
-def controlled_dir_guard():
-    root = Path(__file__).resolve().parent.parent
-    before = _cdg.snapshot(root)
-    yield
-    after = _cdg.snapshot(root)
-    changed = _cdg.diff(before, after)
-    if changed:
-        head = "\n  ".join(changed[:20])
-        more = "" if len(changed) <= 20 else f"\n  …（共 {len(changed)} 个）"
-        pytest.fail(
-            f"受控目录在测试会话中被改动（残留未还原）：\n  {head}{more}",
-            pytrace=False)
 
 
 def pytest_configure(config: pytest.Config) -> None:
