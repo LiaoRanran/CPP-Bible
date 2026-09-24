@@ -2,16 +2,16 @@
 # name: test_gate_summary_counts
   dict({
     'advice': 5,
-    'block': 0,
+    'block': 28,
     'rules': 67,
-    'warn': 186,
+    'warn': 116,
   })
 # ---
 # name: test_kg_stats_counts
   dict({
     'card_nodes': 165,
     'concept_edges': 79,
-    'concepts': 157,
+    'concepts': 131,
     'concepts_multi_atom': 0,
     'dangling': 3,
     'edges': 291,
@@ -24,7 +24,7 @@
       'SERVES': 58,
       'USES': 56,
     }),
-    'max_component': 3,
+    'max_component': 5,
     'nodes': 332,
     'nodes_by_type': dict({
       'ARTIFACT': 51,
