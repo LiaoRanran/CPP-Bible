@@ -21,21 +21,21 @@
       "remote": "1438cd5e（同步）"
     },
     "counts": {
-      "tools_py": 347,
-      "tests_py": 360,
+      "tools_py": 357,
+      "tests_py": 369,
       "tools_629": 10,
       "tools_630": 9,
-      "tools_631": 1
+      "tools_631": 10
     },
     "git": {
-      "head": "1438cd5e",
+      "head": "29888f8f",
       "remote": "1438cd5e",
-      "ahead": 0,
+      "ahead": 27,
       "behind": 0,
       "log3": [
-        "1438cd5e 630 [E1]：门禁终跑PASS存档（12项既有失败/新增0/基线消失0/受控零污染/push后ahead=0）+验收报告§五回填真实结果与基线11→12来历",
-        "ec297396 630 [E1/D2] 终跑修正：629 git facts 断言 62→>=0（push后ahead=0，只改数字）+ 门禁基线并入1项（629工具selftest断言push前ahead，修它越界⇒交人）基线11→12 + 门禁自检同步",
-        "c067872d 630 [E1]：status更新（last_completed_batch=630, next_batch=631, awaiting_review）+休工报告"
+        "29888f8f 631 [B1] 修复：selftest/测试改为基于已提交交付记录做稳定断言（填充落地后实时重推导=0，不再依赖42；验证机制用真实已填卡三元组+负例；mypy/ruff/--check/6例全过）",
+        "ed44fe29 631 [F1]：Core接口v0.2（5接口25方法只定义不实现；Verifier增独立验证者钩子+Attacker增目标函数+新增Authority含append-only账本；v0.1→v0.2差异表+雷1触发标准推进至3/5；评分人定+测试6例）",
+        "83de4266 631 [E2]：公钥持久化+第三方验证指南（RSA-2048公钥入data/vsa含fingerprint+样例签名可复验；指南含验签/独立重算/日志链三步与『不能验什么』诚实边界；私钥不落盘）"
       ]
     },
     "ci_failures": [
@@ -56,16 +56,30 @@
     ],
     "raw_present": true,
     "dirty": [
+      " M _auto/status.json",
       " M data/629_baseline.md",
       " M data/630_baseline.json",
       " M data/630_baseline.md",
+      " M data/631_baseline.json",
+      " M data/631_baseline.md",
       " M data/authority_v2_mode.json",
+      " M data/autoimmune_dashboard_629.html",
+      " M data/autoimmune_diagnose_630.json",
+      " M data/autoimmune_diagnose_630.md",
+      " M data/autoimmune_fix_proposal_630.json",
+      " M data/autoimmune_fix_proposal_630.md",
+      " M data/autoimmune_rate_baseline.md",
+      " M data/autoimmune_recalc_630.json",
+      " M data/autoimmune_recalc_630.md",
+      " M data/coverage_probe_l8_4_631.json",
+      " M data/coverage_probe_l8_4_631.md",
       " M data/e2e_attestation_629.md",
       " M data/human_review_dashboard_v2.html",
       " M data/independence_static_check_629.md",
       " M data/learner_behavior_events.jsonl",
       " M data/learner_twin_gate_report_628.md",
       " M data/metrics_612.md",
+      " M data/pollution_bisect_631.md",
       " M data/pre_push_check_630.json",
       " M data/pre_push_check_630.md",
       " M data/third_party_audit_demo_628.json",
