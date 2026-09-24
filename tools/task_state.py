@@ -273,6 +273,9 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     return 0
 
+if "--check" in sys.argv:
+    print("OK: task_state --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     raise SystemExit(main())

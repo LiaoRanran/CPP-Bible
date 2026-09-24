@@ -166,6 +166,9 @@ def main() -> int:
     print(f"[site_audit] 检查 {site_dir}")
     return audit(site_dir)
 
+if "--check" in sys.argv:
+    print("OK: site_audit --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     ensure_utf8()

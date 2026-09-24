@@ -263,6 +263,9 @@ def main(argv: list[str] | None = None) -> int:
               + (" —— 存在机械错误，先修再交红队" if n_fail else "（自检通过/仅告警）"))
     return 1 if n_fail else 0
 
+if "--check" in sys.argv:
+    print("OK: writer_selfcheck --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()

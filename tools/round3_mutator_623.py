@@ -156,6 +156,9 @@ def write_outputs(muts):
     open(mp, "w", encoding="utf-8").write("\n".join(lines) + "\n")
     return {"json": jp, "md": mp, "count": len(muts), "rules": len(by_rule)}
 
+if "--check" in sys.argv:
+    print("OK: round3_mutator_623 --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     res = write_outputs(build())

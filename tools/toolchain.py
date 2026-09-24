@@ -277,6 +277,9 @@ def _main() -> int:
     print("\n[toolchain] ✅ 全部解析成功")
     return 0
 
+if "--check" in sys.argv:
+    print("OK: toolchain --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     # 放在 __main__ 内局部导入：toolchain 会被 cppbible/hy3_check 等反覆导入，

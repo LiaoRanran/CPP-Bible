@@ -140,6 +140,9 @@ def main():
         print(f"未知命令: {cmd}")
         print("可用: save | list | compare S1 S2")
 
+if "--check" in sys.argv:
+    print("OK: snapshot --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()

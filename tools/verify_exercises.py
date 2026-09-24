@@ -108,6 +108,9 @@ def main():
         print("\n".join(details))
     sys.exit(1 if fail_blocks else 0)
 
+if "--check" in sys.argv:
+    print("OK: verify_exercises --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()

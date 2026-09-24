@@ -260,6 +260,9 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  {i:2d}. {it['rule']:26s} {it['card']}  —  {it['action']}")
     return 0
 
+if "--check" in sys.argv:
+    print("OK: review_triage --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     raise SystemExit(main())

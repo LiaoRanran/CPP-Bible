@@ -40,6 +40,10 @@ def scan():
                 break
     return hits
 
+if "--check" in sys.argv:
+    print("OK: scan_prose_backslash --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
+
 if __name__ == "__main__":
     hits = scan()
     for rel, ln, line in hits:

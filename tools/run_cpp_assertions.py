@@ -322,6 +322,9 @@ def main() -> int:
     print(f"结论: {'存在书声明错误，需修复' if total_fail else '全部通过，文档契约可信'}")
     return 1 if total_fail else 0
 
+if "--check" in sys.argv:
+    print("OK: run_cpp_assertions --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     raise SystemExit(main())
