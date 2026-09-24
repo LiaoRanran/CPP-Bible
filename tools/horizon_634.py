@@ -44,7 +44,8 @@ def load_run() -> dict[str, Any]:
 
 def band60_80(v: dict) -> Optional[float]:
     b = v.get("bands", {})
-    return b.get("60-80")
+    r = b.get("60-80")
+    return float(r) if isinstance(r, (int, float)) else None
 
 
 def touched_rules() -> list[str]:
