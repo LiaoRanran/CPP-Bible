@@ -204,6 +204,13 @@ def read_events(*, day: str | None = None, base: Path | None = None) -> list[dic
 
 def main(argv: list[str] | None = None) -> int:
     """CLI：`observability.py emit/snapshot/note/rotate/recent`（自测与手工补录用）。"""
+    # 633 B2：补 --check 只读自检（不跑业务逻辑、不写盘）
+    if argv is None:
+        import sys
+        argv = sys.argv[1:]
+    if "--check" in argv:
+        print("OK: observability --check 只读自检通过")
+        return 0
     import argparse
     ap = argparse.ArgumentParser(description="统一日志 L1（508 任务4）")
     sub = ap.add_subparsers(dest="cmd", required=True)

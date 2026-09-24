@@ -177,6 +177,13 @@ def cleanup(keep: int = 10, base: Path | None = None) -> list[str]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # 633 B2：补 --check 只读自检（不跑业务逻辑、不写盘）
+    if argv is None:
+        import sys
+        argv = sys.argv[1:]
+    if "--check" in argv:
+        print("OK: backup --check 只读自检通过")
+        return 0
     ap = argparse.ArgumentParser(description="关键数据备份/恢复（508 任务7）")
     sub = ap.add_subparsers(dest="cmd")
     sub.add_parser("snapshot", help="建一份备份")

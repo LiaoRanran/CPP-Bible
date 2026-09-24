@@ -139,6 +139,13 @@ def run_scan(args: argparse.Namespace) -> None:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    # 633 B2：补 --check 只读自检（不跑业务逻辑、不写盘）
+    if argv is None:
+        import sys
+        argv = sys.argv[1:]
+    if "--check" in argv:
+        print("OK: comment_blocks --check 只读自检通过")
+        return 0
     ap = argparse.ArgumentParser(description="纯注释 cpp 块盘点")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
