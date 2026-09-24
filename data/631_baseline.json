@@ -28,14 +28,14 @@
       "tools_631": 10
     },
     "git": {
-      "head": "29888f8f",
+      "head": "8ae0599e",
       "remote": "1438cd5e",
-      "ahead": 27,
+      "ahead": 29,
       "behind": 0,
       "log3": [
-        "29888f8f 631 [B1] 修复：selftest/测试改为基于已提交交付记录做稳定断言（填充落地后实时重推导=0，不再依赖42；验证机制用真实已填卡三元组+负例；mypy/ruff/--check/6例全过）",
-        "ed44fe29 631 [F1]：Core接口v0.2（5接口25方法只定义不实现；Verifier增独立验证者钩子+Attacker增目标函数+新增Authority含append-only账本；v0.1→v0.2差异表+雷1触发标准推进至3/5；评分人定+测试6例）",
-        "83de4266 631 [E2]：公钥持久化+第三方验证指南（RSA-2048公钥入data/vsa含fingerprint+样例签名可复验；指南含验签/独立重算/日志链三步与『不能验什么』诚实边界；私钥不落盘）"
+        "8ae0599e 631 [G1] 补：_auto/status.json(awaiting_review,last_completed=631,next=632) + _auto/outbox/631.md（_auto 被 gitignore，按 G1 要求强制纳入）",
+        "af86c00f 631 [G1] 收工：run_631_gate PASS(10工具--check+ruff+本批mypy0+10测试全绿+受控零污染+B3/D2复算) + 验收报告(§十二偏差表:自愈率未改善/污染未定位/coverage提升有限/§零.13与F1冲突已登记) + status.json(awaiting_review,next=632) + outbox/631.md",
+        "29888f8f 631 [B1] 修复：selftest/测试改为基于已提交交付记录做稳定断言（填充落地后实时重推导=0，不再依赖42；验证机制用真实已填卡三元组+负例；mypy/ruff/--check/6例全过）"
       ]
     },
     "ci_failures": [
@@ -56,12 +56,9 @@
     ],
     "raw_present": true,
     "dirty": [
-      " M _auto/status.json",
       " M data/629_baseline.md",
       " M data/630_baseline.json",
       " M data/630_baseline.md",
-      " M data/631_baseline.json",
-      " M data/631_baseline.md",
       " M data/authority_v2_mode.json",
       " M data/autoimmune_dashboard_629.html",
       " M data/autoimmune_diagnose_630.json",

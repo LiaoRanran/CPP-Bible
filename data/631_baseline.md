@@ -29,8 +29,8 @@
 
 | 项 | 任务书 | 实测 | 判定 |
 |---|---|---|---|
-| HEAD | `1438cd5e` | `29888f8f` | **不符**（实测 29888f8f） |
-| 远程 | `1438cd5e（同步）` | `1438cd5e`（ahead=27 / behind=0） | 一致 |
+| HEAD | `1438cd5e` | `8ae0599e` | **不符**（实测 8ae0599e） |
+| 远程 | `1438cd5e（同步）` | `1438cd5e`（ahead=29 / behind=0） | 一致 |
 | 干净卡（自身免疫率分母） | 23 | 23 | 一致 |
 | 自身免疫率 | 100% | 100.0% | 一致 |
 | 其中口径级 | 22 张 | 22 张 | 一致 |
@@ -73,9 +73,9 @@
 ### recent commits
 
 ```
+8ae0599e 631 [G1] 补：_auto/status.json(awaiting_review,last_completed=631,next=632) + _auto/outbox/631.md（_auto 被 gitignore，按 G1 要求强制纳入）
+af86c00f 631 [G1] 收工：run_631_gate PASS(10工具--check+ruff+本批mypy0+10测试全绿+受控零污染+B3/D2复算) + 验收报告(§十二偏差表:自愈率未改善/污染未定位/coverage提升有限/§零.13与F1冲突已登记) + status.json(awaiting_review,next=632) + outbox/631.md
 29888f8f 631 [B1] 修复：selftest/测试改为基于已提交交付记录做稳定断言（填充落地后实时重推导=0，不再依赖42；验证机制用真实已填卡三元组+负例；mypy/ruff/--check/6例全过）
-ed44fe29 631 [F1]：Core接口v0.2（5接口25方法只定义不实现；Verifier增独立验证者钩子+Attacker增目标函数+新增Authority含append-only账本；v0.1→v0.2差异表+雷1触发标准推进至3/5；评分人定+测试6例）
-83de4266 631 [E2]：公钥持久化+第三方验证指南（RSA-2048公钥入data/vsa含fingerprint+样例签名可复验；指南含验签/独立重算/日志链三步与『不能验什么』诚实边界；私钥不落盘）
 ```
 
 ## 五、偏差登记（§零.10）
