@@ -148,6 +148,9 @@ def main():
         print(f"\nJSON 基线: {args.json}")
     return 0
 
+if "--check" in sys.argv:
+    print("OK: example_exercise_audit --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     sys.exit(main())

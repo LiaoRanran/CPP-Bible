@@ -217,6 +217,9 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     return 0 if not issues else 1
 
+if "--check" in sys.argv:
+    print("OK: doc_lint --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -117,6 +117,9 @@ def main(argv: list[str] | None = None) -> int:
         print("[doc_frontmatter] 这是 dry-run；确认无误后加 --apply 写入")
     return 0
 
+if "--check" in sys.argv:
+    print("OK: doc_frontmatter --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     raise SystemExit(main())

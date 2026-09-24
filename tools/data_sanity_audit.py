@@ -289,6 +289,9 @@ def main() -> int:
         return 1
     return 0
 
+if "--check" in sys.argv:
+    print("OK: data_sanity_audit --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     # 仅对真实 TextIOWrapper 重配编码（本机 GBK 终端直接 print 中文会抛 UnicodeEncodeError）

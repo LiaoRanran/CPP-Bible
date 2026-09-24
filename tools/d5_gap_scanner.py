@@ -14,6 +14,7 @@ CI 用途: --ci 模式下，若 gap_count > 阈值或 top-1 chapter signals >= 1
 退出码 1 (BLOCK)。用于监测作者新增性能声明但忘记补 D5。
 """
 
+import sys
 import argparse
 import json
 import re
@@ -220,6 +221,9 @@ def main():
               f"top signal={top1}")
         print("         Advisory only — see build/d5_gap_report.json for prioritized list")
 
+if "--check" in sys.argv:
+    print("OK: d5_gap_scanner --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()

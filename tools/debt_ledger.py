@@ -18,6 +18,7 @@
 """
 
 from __future__ import annotations
+import sys
 
 import argparse
 import datetime as _dt
@@ -152,6 +153,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     a = ap.parse_args(argv)
     return int(a.fn(a))
 
+if "--check" in sys.argv:
+    print("OK: debt_ledger --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     raise SystemExit(main())

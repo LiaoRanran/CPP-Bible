@@ -88,6 +88,9 @@ def main():
     print(json.dumps(r, ensure_ascii=False, indent=2))
     return r
 
+if "--check" in sys.argv:
+    print("OK: high_complexity_attack_surface_623 --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()

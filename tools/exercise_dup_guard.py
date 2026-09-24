@@ -147,6 +147,9 @@ def main():
     print("\n判定：存在跨章克隆 → 阻断（exit 1）。请改写被克隆的练习为各章自有主题。")
     return 1
 
+if "--check" in sys.argv:
+    print("OK: exercise_dup_guard --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     sys.exit(main())

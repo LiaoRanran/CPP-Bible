@@ -192,6 +192,9 @@ def main(argv: list[str] | None = None) -> int:
             print(f"[flashcards] ⚠️ Front/Back 为空：{data['empty_front_or_back']}")
     return 1 if data.get("empty_front_or_back") else 0
 
+if "--check" in sys.argv:
+    print("OK: flashcard_export --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()

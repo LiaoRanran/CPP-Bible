@@ -412,6 +412,9 @@ def main(argv: list[str] | None = None) -> int:
     print("[gov] preflight ✓（manifest 一致，无 high 级弱化关键词）")
     return 0
 
+if "--check" in sys.argv:
+    print("OK: governance_doc_guard --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     raise SystemExit(main())

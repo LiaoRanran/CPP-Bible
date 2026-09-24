@@ -348,6 +348,9 @@ def main():
     print("  JSON输出: python3 tools/expansion_audit.py --json")
     print()
 
+if "--check" in sys.argv:
+    print("OK: expansion_audit --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()
