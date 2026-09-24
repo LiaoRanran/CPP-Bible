@@ -107,6 +107,9 @@ def main() -> int:
         print(f"\nTOP {args.top} 合计密度 {tp / tt:.1%}；深耕后单章目标 ≥50%")
     return 0
 
+if "--check" in sys.argv:
+    print("OK: prose_density --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     if isinstance(sys.stdout, io.TextIOWrapper):

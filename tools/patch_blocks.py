@@ -18,6 +18,7 @@ patch.json 形如（block = compile_all.extract_blocks 的 1-based cpp 块序号
     ]
 """
 from __future__ import annotations
+import sys
 
 import argparse
 import json
@@ -130,6 +131,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     apply_patch(path, load_patch(Path(a.patch)), do_write=a.apply)
     return 0
 
+if "--check" in sys.argv:
+    print("OK: patch_blocks --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     raise SystemExit(main())

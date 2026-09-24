@@ -135,6 +135,10 @@ def format_dot():
             print(f'  "ch{n}" -> "ch{t}";')
     print('}')
 
+if "--check" in sys.argv:
+    print("OK: learning_path --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
+
 if __name__ == '__main__':
     fmt = 'stats'
     if '--format' in sys.argv:

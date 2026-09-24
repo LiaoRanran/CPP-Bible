@@ -287,6 +287,9 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  - {r['rel_type']:<14} {r['atom']}  ({r['path']})")
     return 0
 
+if "--check" in sys.argv:
+    print("OK: impact_analysis --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()

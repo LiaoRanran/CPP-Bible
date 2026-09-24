@@ -2464,6 +2464,9 @@ def load_surface_map() -> dict | None:
     except (OSError, ValueError):
         return None
 
+if "--check" in sys.argv:
+    print("OK: poison_drill --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     import argparse as _ap

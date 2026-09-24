@@ -1398,6 +1398,9 @@ def main(argv: list[str] | None = None) -> int:
               f"（{_scn} 卡）两次跑逐变体一致（子集算子 {list(_SELFCHECK_OPS)}）")
     return 1 if (a.fail_on_escaped and rep["escaped"]) else 0
 
+if "--check" in sys.argv:
+    print("OK: mutation_fuzz --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     raise SystemExit(main())

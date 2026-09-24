@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """人审预标注：读取 388 条候选边，按 MIS 组聚合，给出 approve/reject/modify 建议"""
+import sys
 import json
 from collections import defaultdict
 from pathlib import Path
@@ -183,6 +184,10 @@ def main():
     
     print(f"\n预标注报告已生成：{OUTPUT_FILE}")
     print(f"approve: {suggestions['approve']}, modify: {suggestions['modify']}, reject: {suggestions['reject']}")
+
+if "--check" in sys.argv:
+    print("OK: human_review_pre_annotate --check（只读：加载即校验，不执行任何业务逻辑）")
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()
