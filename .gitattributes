@@ -34,3 +34,11 @@
 # 策略 = **碰到即转**（逐步迁移）：谁修改某个 .cpp，谁顺手把它转成 LF 一并提交；
 # 新文件一律 LF（由上面的 `* text=auto eol=lf` 保证）。漂移清理进度由
 # `tools/debt_ledger.json` 的 DEBT-002 跟踪（票到期即停线，避免无限期挂着）。
+
+# ── 611 A3 UTF-16 捕获产物：字节即身份，禁止行尾转换 ──────────────────────────
+# data/build_reproducibility_report.md 是 PowerShell 重定向捕获的 UTF-16LE 文件，
+# 不是 UTF-8 文本。`* text=auto` 会把它当文本做 CRLF 归一，checkout 时改坏成奇数长度、
+# UTF-16 解码失败 ⇒ test_603_capture_untouched_by_this_batch 在本地与 CI 都红。
+# 按 611「字节即身份、全仓无人引用、只登记不改」的设计，标 -text 让它像 .asm/.out 一样
+# 原样进出仓库（修复 632 A2 #4 的根因，CI 方能绿）。
+data/build_reproducibility_report.md -text

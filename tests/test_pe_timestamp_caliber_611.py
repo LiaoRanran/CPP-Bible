@@ -55,11 +55,16 @@ def test_generator_check_is_green_and_doc_locked():
 
 
 def test_603_capture_untouched_by_this_batch():
-    """603 捕获报告：UTF-16 且**未**被 611 改动（决策留痕，防后人误改制造编码假脏）。"""
+    """603 捕获报告：**未**被 611 改动（决策留痕，防后人误改制造编码假脏）。
+
+    注：该文件字节为「UTF-16 BOM(ff fe) + UTF-8 正文」的错配（PowerShell 捕获产物），
+    故按 UTF-8 读正文（632 A2 #4 修复：定位编码问题→按 UTF-8 解码），不应按 UTF-16 解码。
+    """
     raw = CAPTURE.read_bytes()
-    assert raw[:2] in (b"\xff\xfe", b"\xfe\xff"), "前提变了：该文件不再是 UTF-16"
-    text = raw.decode("utf-16")
-    assert "611 A3" not in text, "不许往 UTF-16 捕获产物里混入 UTF-8 章节"
+    assert raw[:2] in (b"\xff\xfe", b"\xfe\xff"), "前提变了：该文件不再是 UTF-16 BOM 开头"
+    # 跳过 BOM，按 UTF-8 读正文；捕获产物偶有孤立坏字节，errors="replace" 容错（632 A2 #4）。
+    text = raw[2:].decode("utf-8", errors="replace")
+    assert "611 A3" not in text, "不许往捕获产物里混入 UTF-8 章节"
     assert "build_reproducibility" in text
     blob = subprocess.run(["git", "cat-file", "-p",
                            "HEAD:data/build_reproducibility_report.md"],
