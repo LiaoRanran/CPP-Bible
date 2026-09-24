@@ -1,0 +1,53 @@
+{
+  "vector": "L4.4",
+  "name": "规则优先级冲突",
+  "gate_exists": true,
+  "rules": [],
+  "rules_parsed": 67,
+  "conflict_pairs": 726,
+  "conflict_examples": [
+    [
+      "ATOM-FM-REQUIRED",
+      "ATOM-ID-FORMAT"
+    ],
+    [
+      "ATOM-FM-REQUIRED",
+      "ATOM-ID-UNIQUE"
+    ],
+    [
+      "ATOM-FM-REQUIRED",
+      "ATOM-VERIFIED-BOUND"
+    ],
+    [
+      "ATOM-FM-REQUIRED",
+      "ATOM-NO-UNVERIFIED"
+    ],
+    [
+      "ATOM-FM-REQUIRED",
+      "ATOM-STATUS-VALUE"
+    ],
+    [
+      "ATOM-FM-REQUIRED",
+      "ATOM-STATUS-TRANSITION"
+    ],
+    [
+      "ATOM-FM-REQUIRED",
+      "ATOM-DAL-MATCH"
+    ],
+    [
+      "ATOM-FM-REQUIRED",
+      "ATOM-REL-TARGET"
+    ],
+    [
+      "ATOM-FM-REQUIRED",
+      "ATOM-REL-DAG"
+    ],
+    [
+      "ATOM-FM-REQUIRED",
+      "ATOM-REL-CONFLICT"
+    ]
+  ],
+  "global_policy_present": false,
+  "pairs_resolved": 0,
+  "mechanism_present": false
+}

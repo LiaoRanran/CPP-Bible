@@ -1,0 +1,52 @@
+{
+  "vector": "L4.2",
+  "name": "阈值边界歧义",
+  "gate_exists": true,
+  "rules": [],
+  "threshold_rules": 12,
+  "documented_boundaries": 3,
+  "undocumented_boundaries": 9,
+  "undocumented_examples": [
+    [
+      "!=",
+      "<",
+      "==",
+      ">",
+      ">="
+    ],
+    [
+      "<",
+      "==",
+      ">"
+    ],
+    [
+      "<",
+      "=="
+    ],
+    [
+      ">"
+    ],
+    [
+      "<",
+      ">",
+      ">="
+    ],
+    [
+      "<",
+      "==",
+      ">"
+    ],
+    [
+      "==",
+      ">"
+    ],
+    [
+      ">="
+    ],
+    [
+      "==",
+      ">"
+    ]
+  ],
+  "mechanism_present": false
+}

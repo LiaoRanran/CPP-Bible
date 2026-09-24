@@ -1,0 +1,354 @@
+{
+  "vector": "L2.3",
+  "name": "陈旧证据留痕",
+  "mechanism_present": true,
+  "cards": [
+    {
+      "card": "evidence/README.md",
+      "has_staleness_field": false,
+      "artifact_declared": false,
+      "drift_detected": null
+    },
+    {
+      "card": "evidence/conc/EV-CONC-001.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-002.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-003.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-004.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-005.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/conc/EV-CONC-006.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/hist/EV-HIST-001.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/lang/EV-LANG-001.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/lang/EV-LANG-002.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-001.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-002.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-003.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-004.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-005.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-006.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-007.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-008.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-009.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-010.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-011.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-012.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-013.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-014.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-015.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-016.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-017.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-018.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-019.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-020.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-021.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-022.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-023.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-024.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-025.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-026.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-027.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-028.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-029.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-030.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-031.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-032.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-033.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-034.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-035.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-036.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-037.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-038.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-039.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-040.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-041.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-042.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-043.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-044.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/mem/EV-MEM-045.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/ub/EV-UB-001.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    },
+    {
+      "card": "evidence/ub/EV-UB-002.md",
+      "has_staleness_field": false,
+      "artifact_declared": true,
+      "drift_detected": false
+    }
+  ],
+  "cards_scanned": 57,
+  "cards_with_staleness_field": 0,
+  "cards_with_artifact_decl": 56,
+  "drift_detected": 0,
+  "detection_capable": true
+}
