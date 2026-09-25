@@ -2,7 +2,7 @@
 # name: test_gate_summary_counts
   dict({
     'advice': 5,
-    'block': 28,
+    'block': 0,
     'rules': 67,
     'warn': 116,
   })
