@@ -1,0 +1,249 @@
+{
+  "generated": "2026-09-25T10:26:38",
+  "n_cards": 23,
+  "dist": {
+    "derived": 23,
+    "partial": 0,
+    "unverifiable": 0
+  },
+  "rows": [
+    {
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "c1ae0bb1c8b5e0473e5bc9478b66f8875f487a013525f0f3376386e886991175",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "c1ae0bb1c8b5e0473e5bc9478b66f8875f487a013525f0f3376386e886991175",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "ce578a4d5d2ad0d84b64aee4966f169946723eb0945bdb629a0985ba553d1481",
+        "mutation_count": "11",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（11 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "47a858cf4e7063e663887e923f065a5412289bfd9cb8f6abea0aa90dbc63ffb1",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "f8b75ec83befad4683ca1a62726eb3f53f3c3b6130a4680830f8b6e6a43ef571",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "d8379e84b246fa25c3603ba763209038824f53ecb5cf9ae8978f2744c393bb8f",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "b47a6fb89478cd90edec18a62ead2caee88821b0ef1055124805965fe861c085",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "c5a6b393fcc2f62a0acf8065051969cae179185aafd3ef73d9de5c4712ca26ed",
+        "mutation_count": "11",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（11 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "5827a1d70e7d0858cc0ae9803c0e641a254aca57ec320ac26dec20552e49a17c",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "f8b75ec83befad4683ca1a62726eb3f53f3c3b6130a4680830f8b6e6a43ef571",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "f8b75ec83befad4683ca1a62726eb3f53f3c3b6130a4680830f8b6e6a43ef571",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "f8b75ec83befad4683ca1a62726eb3f53f3c3b6130a4680830f8b6e6a43ef571",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    },
+    {
+      "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+      "status": "derived",
+      "triplet": {
+        "mutation_set_hash": "d8379e84b246fa25c3603ba763209038824f53ecb5cf9ae8978f2744c393bb8f",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json"
+      },
+      "reason": "由最新覆盖基线 `full_baseline_v7.json` 重算（10 个变异；哈希为回填时按内容重算，非运行时哈希）"
+    }
+  ],
+  "baseline_by_card_n": 83,
+  "four_state_rerun": {
+    "card_dist": {
+      "unknown": 23
+    },
+    "cards_with_boundary": 0,
+    "n_cards": 23
+  }
+}
