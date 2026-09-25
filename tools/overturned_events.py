@@ -206,9 +206,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"[overturned] 通道合法：{p}（{n} 条事件）")
     return 0
 
-if "--check" in sys.argv:
-    print("OK: overturned_events --check（只读：加载即校验，不执行任何业务逻辑）")
-    sys.exit(0)
-
 if __name__ == "__main__":
+    if "--check" in sys.argv:
+        print("OK: overturned_events --check（只读：加载即校验，不执行任何业务逻辑）")
+        sys.exit(0)
     raise SystemExit(main())

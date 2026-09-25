@@ -288,9 +288,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[stat] ❌ 参数非法：{exc}", file=sys.stderr)
         return 2
 
-if "--check" in sys.argv:
-    print("OK: stat_bounds --check（只读：加载即校验，不执行任何业务逻辑）")
-    sys.exit(0)
-
 if __name__ == "__main__":
+    if "--check" in sys.argv:
+        print("OK: stat_bounds --check（只读：加载即校验，不执行任何业务逻辑）")
+        sys.exit(0)
     main()

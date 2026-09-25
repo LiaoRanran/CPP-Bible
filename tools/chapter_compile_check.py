@@ -479,9 +479,8 @@ def main():
     print(f"\n汇总: {total_blocks} blocks, {total_fail} fail")
     return 1 if total_fail else 0
 
-if "--check" in sys.argv:
-    print("OK: chapter_compile_check --check（只读：加载即校验，不执行任何业务逻辑）")
-    sys.exit(0)
-
 if __name__ == "__main__":
+    if "--check" in sys.argv:
+        print("OK: chapter_compile_check --check（只读：加载即校验，不执行任何业务逻辑）")
+        sys.exit(0)
     sys.exit(main())
