@@ -1,0 +1,232 @@
+{
+  "generated": "2026-09-25T09:40:55",
+  "metrics": {
+    "rules": 67,
+    "tools_total": 429,
+    "tests_total": 428,
+    "commits": 1854,
+    "pytest_failures": null,
+    "pytest_summary": "",
+    "ruff_errors": null,
+    "mypy_errors": null,
+    "grounding_pct": 35.8,
+    "defeater_coverage_pct": 100.0,
+    "taint_cards": 8,
+    "exception_clauses": 227,
+    "observation_rules": 67,
+    "ahead": 15,
+    "recent_commits": [
+      "f1e0ff29 638 [C2]：闭环规则调优——据637质量审计调3项(覆盖层,不改637工具):T1 observation_pct阈值30->停用(100%是635冻结设计属性,637 top1误报)/T2 exception_clauses 100->250(227为7源汇总)/T3 report风险系数0.5->0.75(637 top1恰为report类被压低);实测同一指标4->2异常,消除2误报,保留taint+grounding真异常;指标改实时采集(落盘637_observer.json曾被污染);--check只读+8例单测",
+      "2083d9fc 638 [B2]：RR冲突分类器——双重口径:卡级对齐636(23张逐卡) + 规则对级新增(从权威RULES枚举同scope 927对候选);引入前缀族判置信度=>高置信仅24对(type1 6 P0/type2 14/type3 4 -HC派生)/低置信903;登记927是同scope机械配对退化(度恒=scope内规则数-1,与636 RR全局属性同根因);top3按冲突度去重给3个不同待修规则(ATOM-REL族);--check只读+8例单测",
+      "c2d90894 638 [B1]：known_error_rate 收集器——三层估算(rule/scope/global)绝不编造:实测ledger无规则字段+target_type全edge=>67/67规则全「无数据」(fp_rate=None,不给估算值);真实全库代理:ledger452(APPROVE367/MODIFY85/REJECT0)改判率18.81%,人审34/388=8.76%,逃逸1/1406=0.071%;根源分析+透明样本量;--check只读+7例单测",
+      "916aaa8e 638 [3.2]：Lifecycle FSM 五态落地——draft/verified/stale/disputed/retired+11条合法迁移(§三.3.2.2);retired→draft须给复活条件(new_evidence/boundary_change/defeater_resolved)否则判非法;迁移入append-only哈希链ledger(seq/prev_hash/self_hash,可校验篡改);实测28卡初态(status推导)draft2/verified26,0卡有lifecycle字段;--check不创建ledger+10例单测",
+      "5681ed0f 638 [3.1]：四态结论 schema 真上线(向后兼容)——定义pass/pass_with_exception/fail/unknown+边界三元组(mutation_set_hash/mutation_count/generator_version)强制:缺任一自动降级unknown,pass_with_exception另需explanation;历史判决/report不重分类;提供migrate_plan只算不写不自动跑;实测23张verified卡0边界=>全unknown(边界回填欠债量化);--check只读+9例单测"
+    ],
+    "observation_pct": 100.0
+  },
+  "heavy": false,
+  "anomalies_before": [
+    {
+      "name": "观察态规则多",
+      "key": "observation_pct",
+      "current": 100.0,
+      "threshold": 30,
+      "direction": "gt",
+      "severity": "P1",
+      "why": "规则缺 known_error_rate，无法校准，判决可信度未量化。",
+      "exceedance": 2.3333
+    },
+    {
+      "name": "taint=true 卡多",
+      "key": "taint_cards",
+      "current": 8,
+      "threshold": 5,
+      "direction": "gt",
+      "severity": "P1",
+      "why": "高污染卡一旦判错会连锁影响多条下游卡，需优先复核。",
+      "exceedance": 0.6
+    },
+    {
+      "name": "接地率低",
+      "key": "grounding_pct",
+      "current": 35.8,
+      "threshold": 50,
+      "direction": "lt",
+      "severity": "P1",
+      "why": "未接地规则缺外部实验/标准支撑，验证结论无法回溯到事实。",
+      "exceedance": 0.284
+    },
+    {
+      "name": "例外条款多",
+      "key": "exception_clauses",
+      "current": 227,
+      "threshold": 100,
+      "direction": "gt",
+      "severity": "P2",
+      "why": "例外越多，规则的实际约束越弱，口子可能被漂移利用。",
+      "exceedance": 1.27
+    }
+  ],
+  "anomalies": [
+    {
+      "key": "taint_cards",
+      "name": "taint_cards",
+      "severity": "P1",
+      "current": 8,
+      "threshold": 5.0,
+      "exceedance": 0.6
+    },
+    {
+      "key": "grounding_pct",
+      "name": "grounding_pct",
+      "severity": "P1",
+      "current": 35.8,
+      "threshold": 50.0,
+      "exceedance": 0.284
+    }
+  ],
+  "n_candidates": 6,
+  "top3": [
+    {
+      "anomaly_name": "taint_cards",
+      "anomaly_severity": "P1",
+      "candidate": "优先修高 taint",
+      "action": "优先复核引用数最多的 tainted 卡",
+      "cost": "中",
+      "benefit": "高",
+      "risk_class": "tool",
+      "risk_factor": 1.0,
+      "dependency": "无",
+      "score": 1.5,
+      "reason": "收益高(3)/成本中(2)×风险系数1.0 → score 1.5；对应异常「taint_cards」(P1)。"
+    },
+    {
+      "anomaly_name": "grounding_pct",
+      "anomaly_severity": "P1",
+      "candidate": "未接地降级",
+      "action": "把未接地规则从 block 降为 warn（判决逻辑变更）",
+      "cost": "中",
+      "benefit": "中",
+      "risk_class": "core",
+      "risk_factor": 1.5,
+      "dependency": "需人审",
+      "score": 1.5,
+      "reason": "收益中(2)/成本中(2)×风险系数1.5 → score 1.5；对应异常「grounding_pct」(P1)。"
+    },
+    {
+      "anomaly_name": "grounding_pct",
+      "anomaly_severity": "P1",
+      "candidate": "标记暂不使用",
+      "action": "把未接地规则标为「暂不使用」并登记清单",
+      "cost": "低",
+      "benefit": "中",
+      "risk_class": "report",
+      "risk_factor": 0.75,
+      "dependency": "无",
+      "score": 1.5,
+      "reason": "收益中(2)/成本低(1)×风险系数0.75 → score 1.5；对应异常「grounding_pct」(P1)。"
+    }
+  ],
+  "scored": [
+    {
+      "anomaly_name": "taint_cards",
+      "anomaly_severity": "P1",
+      "candidate": "优先修高 taint",
+      "action": "优先复核引用数最多的 tainted 卡",
+      "cost": "中",
+      "benefit": "高",
+      "risk_class": "tool",
+      "risk_factor": 1.0,
+      "dependency": "无",
+      "score": 1.5,
+      "reason": "收益高(3)/成本中(2)×风险系数1.0 → score 1.5；对应异常「taint_cards」(P1)。"
+    },
+    {
+      "anomaly_name": "grounding_pct",
+      "anomaly_severity": "P1",
+      "candidate": "未接地降级",
+      "action": "把未接地规则从 block 降为 warn（判决逻辑变更）",
+      "cost": "中",
+      "benefit": "中",
+      "risk_class": "core",
+      "risk_factor": 1.5,
+      "dependency": "需人审",
+      "score": 1.5,
+      "reason": "收益中(2)/成本中(2)×风险系数1.5 → score 1.5；对应异常「grounding_pct」(P1)。"
+    },
+    {
+      "anomaly_name": "grounding_pct",
+      "anomaly_severity": "P1",
+      "candidate": "标记暂不使用",
+      "action": "把未接地规则标为「暂不使用」并登记清单",
+      "cost": "低",
+      "benefit": "中",
+      "risk_class": "report",
+      "risk_factor": 0.75,
+      "dependency": "无",
+      "score": 1.5,
+      "reason": "收益中(2)/成本低(1)×风险系数0.75 → score 1.5；对应异常「grounding_pct」(P1)。"
+    },
+    {
+      "anomaly_name": "taint_cards",
+      "anomaly_severity": "P1",
+      "candidate": "自动污染追踪",
+      "action": "加自动污染传播追踪器（影子）",
+      "cost": "中",
+      "benefit": "高",
+      "risk_class": "tool",
+      "risk_factor": 1.0,
+      "dependency": "依赖 636 追踪器",
+      "score": 1.5
+    },
+    {
+      "anomaly_name": "taint_cards",
+      "anomaly_severity": "P1",
+      "candidate": "追踪下游影响",
+      "action": "为每张 taint=true 卡列出下游引用清单",
+      "cost": "低",
+      "benefit": "中",
+      "risk_class": "report",
+      "risk_factor": 0.75,
+      "dependency": "无",
+      "score": 1.5
+    },
+    {
+      "anomaly_name": "grounding_pct",
+      "anomaly_severity": "P1",
+      "candidate": "补实验接地",
+      "action": "为 24 条未接地规则各补 1 个可观测实验/标准条文锚点",
+      "cost": "高",
+      "benefit": "高",
+      "risk_class": "tool",
+      "risk_factor": 1.0,
+      "dependency": "需实验环境",
+      "score": 1.0
+    }
+  ],
+  "comparison": {
+    "generated": "2026-09-25T09:40:55",
+    "first_top3": [
+      "自动修静态错",
+      "修失败测试",
+      "优先修高 taint"
+    ],
+    "second_top3": [
+      "优先修高 taint",
+      "未接地降级",
+      "标记暂不使用"
+    ],
+    "top3_overlap": [
+      "优先修高 taint"
+    ],
+    "top3_changed": true,
+    "n_anomalies_first": 4,
+    "n_anomalies_second": 2,
+    "false_alarm_first": 2,
+    "false_alarm_second": 0,
+    "false_alarm_rate_first": 0.5,
+    "false_alarm_rate_second": 0.0,
+    "first_n_candidates": 14,
+    "second_n_candidates": 6
+  }
+}
