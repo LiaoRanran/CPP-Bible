@@ -35,10 +35,22 @@ CAND_IN = ROOT / "data" / "bridge_edge_candidates_611.jsonl"
 REVIEW_LOG = ROOT / "data" / "bridge_edge_review_612.jsonl"
 REPORT_OUT = ROOT / "data" / "bridge_edge_impact_612.md"
 
-# 611 锁定的基线（0 批准的加桥前）
-KNOWN_BASE = {"keep-low": {"IN": 114, "OUT": 7, "UNDEC": 0},
-              "upgrade-medium": {"IN": 121, "OUT": 0, "UNDEC": 0},
-              "components_before": 11}
+def _known_base() -> dict:
+    """640b A1：基线取**单一权威源**（曾写死 611 的 114/7、121/0 = 签署前快照）。
+
+    两种模式的基线都用权威现算值（640 A1 后双模式已趋同：79/42）。
+    """
+    try:
+        import w2_authority_640b as _auth
+        c = _auth.current()
+        base = {"IN": c["IN"], "OUT": c["OUT"], "UNDEC": c["UNDEC"]}
+    except Exception:  # noqa: BLE001
+        base = {"IN": 114, "OUT": 7, "UNDEC": 0}          # 回退：历史登记口径
+    return {"keep-low": dict(base), "upgrade-medium": dict(base),
+            "components_before": 11}
+
+
+KNOWN_BASE = _known_base()
 MODES = ("keep-low", "upgrade-medium")
 WHATIFS = ("approved-only", "all-medium", "all-high")
 
