@@ -1,0 +1,673 @@
+{
+  "generated": "2026-09-25T09:36:44",
+  "n_rules": 67,
+  "n_pairs": 927,
+  "n_high": 24,
+  "n_low": 903,
+  "high_type_dist": {
+    "type2": 14,
+    "type1": 6,
+    "type3": 4
+  },
+  "high_sev_dist": {
+    "P2": 14,
+    "P0": 6,
+    "P1": 4
+  },
+  "type_dist": {
+    "type4": 903,
+    "type2": 14,
+    "type1": 6,
+    "type3": 4
+  },
+  "severity_dist": {
+    "P2": 917,
+    "P0": 6,
+    "P1": 4
+  },
+  "top3": [
+    {
+      "rule_a": "ATOM-REL-CONFLICT",
+      "rule_b": "ATOM-REL-UNKNOWN",
+      "scope": "atom",
+      "severity_a": "block",
+      "severity_b": "warn",
+      "type": "type1",
+      "severity": "P0",
+      "suggestion": "修规则 ATOM-REL-CONFLICT（把 block 降为 warn）或加优先级",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 下 `ATOM-REL-CONFLICT`(block) 与 `ATOM-REL-UNKNOWN`(warn) 对同一事实处置相反",
+      "degree_a": "5",
+      "degree_b": "5"
+    },
+    {
+      "rule_a": "ATOM-REL-DAG",
+      "rule_b": "ATOM-REL-UNKNOWN",
+      "scope": "atom",
+      "severity_a": "block",
+      "severity_b": "warn",
+      "type": "type1",
+      "severity": "P0",
+      "suggestion": "修规则 ATOM-REL-DAG（把 block 降为 warn）或加优先级",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 下 `ATOM-REL-DAG`(block) 与 `ATOM-REL-UNKNOWN`(warn) 对同一事实处置相反",
+      "degree_a": "5",
+      "degree_b": "5"
+    },
+    {
+      "rule_a": "ATOM-REL-TARGET",
+      "rule_b": "ATOM-REL-CONFLICT",
+      "scope": "atom",
+      "severity_a": "warn",
+      "severity_b": "block",
+      "type": "type1",
+      "severity": "P0",
+      "suggestion": "修规则 ATOM-REL-TARGET（把 block 降为 warn）或加优先级",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 下 `ATOM-REL-TARGET`(warn) 与 `ATOM-REL-CONFLICT`(block) 对同一事实处置相反",
+      "degree_a": "5",
+      "degree_b": "5"
+    }
+  ],
+  "top_degree_rules": [
+    [
+      "ATOM-REL-TARGET",
+      5
+    ],
+    [
+      "ATOM-REL-DAG",
+      5
+    ],
+    [
+      "ATOM-REL-CONFLICT",
+      5
+    ],
+    [
+      "ATOM-REL-UNKNOWN",
+      5
+    ],
+    [
+      "ATOM-REL-TARGET-HC",
+      5
+    ],
+    [
+      "ATOM-REL-UNKNOWN-HC",
+      5
+    ],
+    [
+      "PED-MOTIVATION",
+      2
+    ],
+    [
+      "PED-MISCONCEPTION",
+      2
+    ],
+    [
+      "PED-SOCRATIC",
+      2
+    ],
+    [
+      "ATOM-ID-FORMAT",
+      1
+    ]
+  ],
+  "max_degree": 5,
+  "cards": [
+    {
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+      "types": [
+        "RR",
+        "EE"
+      ],
+      "C": 1.333,
+      "exceeds_theta": true,
+      "type": "type1",
+      "severity": "P0",
+      "suggestion": "人工复核该卡的 RR+cross 证据（C≥0.3）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+      "types": [
+        "RR",
+        "EE"
+      ],
+      "C": 0.5,
+      "exceeds_theta": true,
+      "type": "type1",
+      "severity": "P0",
+      "suggestion": "人工复核该卡的 RR+cross 证据（C≥0.3）"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    },
+    {
+      "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+      "types": [
+        "RR"
+      ],
+      "C": 0.0,
+      "exceeds_theta": false,
+      "type": "type2",
+      "severity": "P1",
+      "suggestion": "记录 RR，待规则优先级策略上线后自动消解"
+    }
+  ],
+  "n_cards": 23,
+  "card_type_dist": {
+    "type2": 21,
+    "type1": 2
+  },
+  "scope_dist": {
+    "atom": 36,
+    "evidence": 24,
+    "repo": 7
+  },
+  "low_pairs_note": "低置信（仅同 scope、前缀族不同）903 对未逐条落盘，如有需要可从 gate_engine.RULES 重算",
+  "high_pairs": [
+    {
+      "rule_a": "ATOM-ID-FORMAT",
+      "rule_b": "ATOM-ID-UNIQUE",
+      "scope": "atom",
+      "severity_a": "block",
+      "severity_b": "block",
+      "type": "type2",
+      "severity": "P2",
+      "suggestion": "加例外（在阈值边界处明确谁优先）",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-ID` 同 severity(block)，适用范围重叠但阈值未声明差异"
+    },
+    {
+      "rule_a": "ATOM-STATUS-VALUE",
+      "rule_b": "ATOM-STATUS-TRANSITION",
+      "scope": "atom",
+      "severity_a": "block",
+      "severity_b": "block",
+      "type": "type2",
+      "severity": "P2",
+      "suggestion": "加例外（在阈值边界处明确谁优先）",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-STATUS` 同 severity(block)，适用范围重叠但阈值未声明差异"
+    },
+    {
+      "rule_a": "ATOM-REL-TARGET",
+      "rule_b": "ATOM-REL-DAG",
+      "scope": "atom",
+      "severity_a": "warn",
+      "severity_b": "block",
+      "type": "type1",
+      "severity": "P0",
+      "suggestion": "修规则 ATOM-REL-TARGET（把 block 降为 warn）或加优先级",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 下 `ATOM-REL-TARGET`(warn) 与 `ATOM-REL-DAG`(block) 对同一事实处置相反"
+    },
+    {
+      "rule_a": "ATOM-REL-TARGET",
+      "rule_b": "ATOM-REL-CONFLICT",
+      "scope": "atom",
+      "severity_a": "warn",
+      "severity_b": "block",
+      "type": "type1",
+      "severity": "P0",
+      "suggestion": "修规则 ATOM-REL-TARGET（把 block 降为 warn）或加优先级",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 下 `ATOM-REL-TARGET`(warn) 与 `ATOM-REL-CONFLICT`(block) 对同一事实处置相反"
+    },
+    {
+      "rule_a": "ATOM-REL-TARGET",
+      "rule_b": "ATOM-REL-UNKNOWN",
+      "scope": "atom",
+      "severity_a": "warn",
+      "severity_b": "warn",
+      "type": "type2",
+      "severity": "P2",
+      "suggestion": "加例外（在阈值边界处明确谁优先）",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 同 severity(warn)，适用范围重叠但阈值未声明差异"
+    },
+    {
+      "rule_a": "ATOM-REL-TARGET",
+      "rule_b": "ATOM-REL-TARGET-HC",
+      "scope": "atom",
+      "severity_a": "warn",
+      "severity_b": "block",
+      "type": "type3",
+      "severity": "P1",
+      "suggestion": "加优先级（基规则先判，派生规则仅在基规则通过时生效）",
+      "confidence": "high",
+      "why": "`ATOM-REL-TARGET` 与 `ATOM-REL-TARGET-HC` 同族（派生/加强），后者的前提是前者的结论"
+    },
+    {
+      "rule_a": "ATOM-REL-TARGET",
+      "rule_b": "ATOM-REL-UNKNOWN-HC",
+      "scope": "atom",
+      "severity_a": "warn",
+      "severity_b": "block",
+      "type": "type1",
+      "severity": "P0",
+      "suggestion": "修规则 ATOM-REL-TARGET（把 block 降为 warn）或加优先级",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 下 `ATOM-REL-TARGET`(warn) 与 `ATOM-REL-UNKNOWN-HC`(block) 对同一事实处置相反"
+    },
+    {
+      "rule_a": "ATOM-REL-DAG",
+      "rule_b": "ATOM-REL-CONFLICT",
+      "scope": "atom",
+      "severity_a": "block",
+      "severity_b": "block",
+      "type": "type2",
+      "severity": "P2",
+      "suggestion": "加例外（在阈值边界处明确谁优先）",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 同 severity(block)，适用范围重叠但阈值未声明差异"
+    },
+    {
+      "rule_a": "ATOM-REL-DAG",
+      "rule_b": "ATOM-REL-UNKNOWN",
+      "scope": "atom",
+      "severity_a": "block",
+      "severity_b": "warn",
+      "type": "type1",
+      "severity": "P0",
+      "suggestion": "修规则 ATOM-REL-DAG（把 block 降为 warn）或加优先级",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 下 `ATOM-REL-DAG`(block) 与 `ATOM-REL-UNKNOWN`(warn) 对同一事实处置相反"
+    },
+    {
+      "rule_a": "ATOM-REL-DAG",
+      "rule_b": "ATOM-REL-TARGET-HC",
+      "scope": "atom",
+      "severity_a": "block",
+      "severity_b": "block",
+      "type": "type2",
+      "severity": "P2",
+      "suggestion": "加例外（在阈值边界处明确谁优先）",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 同 severity(block)，适用范围重叠但阈值未声明差异"
+    },
+    {
+      "rule_a": "ATOM-REL-DAG",
+      "rule_b": "ATOM-REL-UNKNOWN-HC",
+      "scope": "atom",
+      "severity_a": "block",
+      "severity_b": "block",
+      "type": "type2",
+      "severity": "P2",
+      "suggestion": "加例外（在阈值边界处明确谁优先）",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 同 severity(block)，适用范围重叠但阈值未声明差异"
+    },
+    {
+      "rule_a": "ATOM-REL-CONFLICT",
+      "rule_b": "ATOM-REL-UNKNOWN",
+      "scope": "atom",
+      "severity_a": "block",
+      "severity_b": "warn",
+      "type": "type1",
+      "severity": "P0",
+      "suggestion": "修规则 ATOM-REL-CONFLICT（把 block 降为 warn）或加优先级",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 下 `ATOM-REL-CONFLICT`(block) 与 `ATOM-REL-UNKNOWN`(warn) 对同一事实处置相反"
+    },
+    {
+      "rule_a": "ATOM-REL-CONFLICT",
+      "rule_b": "ATOM-REL-TARGET-HC",
+      "scope": "atom",
+      "severity_a": "block",
+      "severity_b": "block",
+      "type": "type2",
+      "severity": "P2",
+      "suggestion": "加例外（在阈值边界处明确谁优先）",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 同 severity(block)，适用范围重叠但阈值未声明差异"
+    },
+    {
+      "rule_a": "ATOM-REL-CONFLICT",
+      "rule_b": "ATOM-REL-UNKNOWN-HC",
+      "scope": "atom",
+      "severity_a": "block",
+      "severity_b": "block",
+      "type": "type2",
+      "severity": "P2",
+      "suggestion": "加例外（在阈值边界处明确谁优先）",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 同 severity(block)，适用范围重叠但阈值未声明差异"
+    },
+    {
+      "rule_a": "ATOM-MISCONCEPTION-LEVELS",
+      "rule_b": "ATOM-MISCONCEPTION-REF",
+      "scope": "atom",
+      "severity_a": "block",
+      "severity_b": "block",
+      "type": "type2",
+      "severity": "P2",
+      "suggestion": "加例外（在阈值边界处明确谁优先）",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-MISCONCEPTION` 同 severity(block)，适用范围重叠但阈值未声明差异"
+    },
+    {
+      "rule_a": "ATOM-REL-UNKNOWN",
+      "rule_b": "ATOM-REL-TARGET-HC",
+      "scope": "atom",
+      "severity_a": "warn",
+      "severity_b": "block",
+      "type": "type1",
+      "severity": "P0",
+      "suggestion": "修规则 ATOM-REL-UNKNOWN（把 block 降为 warn）或加优先级",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 下 `ATOM-REL-UNKNOWN`(warn) 与 `ATOM-REL-TARGET-HC`(block) 对同一事实处置相反"
+    },
+    {
+      "rule_a": "ATOM-REL-UNKNOWN",
+      "rule_b": "ATOM-REL-UNKNOWN-HC",
+      "scope": "atom",
+      "severity_a": "warn",
+      "severity_b": "block",
+      "type": "type3",
+      "severity": "P1",
+      "suggestion": "加优先级（基规则先判，派生规则仅在基规则通过时生效）",
+      "confidence": "high",
+      "why": "`ATOM-REL-UNKNOWN` 与 `ATOM-REL-UNKNOWN-HC` 同族（派生/加强），后者的前提是前者的结论"
+    },
+    {
+      "rule_a": "ATOM-REL-TARGET-HC",
+      "rule_b": "ATOM-REL-UNKNOWN-HC",
+      "scope": "atom",
+      "severity_a": "block",
+      "severity_b": "block",
+      "type": "type2",
+      "severity": "P2",
+      "suggestion": "加例外（在阈值边界处明确谁优先）",
+      "confidence": "high",
+      "why": "同前缀族 `ATOM-REL` 同 severity(block)，适用范围重叠但阈值未声明差异"
+    },
+    {
+      "rule_a": "PED-MOTIVATION",
+      "rule_b": "PED-MISCONCEPTION",
+      "scope": "atom",
+      "severity_a": "advice",
+      "severity_b": "advice",
+      "type": "type2",
+      "severity": "P2",
+      "suggestion": "加例外（在阈值边界处明确谁优先）",
+      "confidence": "high",
+      "why": "同前缀族 `PED` 同 severity(advice)，适用范围重叠但阈值未声明差异"
+    },
+    {
+      "rule_a": "PED-MOTIVATION",
+      "rule_b": "PED-SOCRATIC",
+      "scope": "atom",
+      "severity_a": "advice",
+      "severity_b": "advice",
+      "type": "type2",
+      "severity": "P2",
+      "suggestion": "加例外（在阈值边界处明确谁优先）",
+      "confidence": "high",
+      "why": "同前缀族 `PED` 同 severity(advice)，适用范围重叠但阈值未声明差异"
+    },
+    {
+      "rule_a": "PED-MISCONCEPTION",
+      "rule_b": "PED-SOCRATIC",
+      "scope": "atom",
+      "severity_a": "advice",
+      "severity_b": "advice",
+      "type": "type2",
+      "severity": "P2",
+      "suggestion": "加例外（在阈值边界处明确谁优先）",
+      "confidence": "high",
+      "why": "同前缀族 `PED` 同 severity(advice)，适用范围重叠但阈值未声明差异"
+    },
+    {
+      "rule_a": "EV-FALSIFICATION",
+      "rule_b": "EV-MATRIX",
+      "scope": "evidence",
+      "severity_a": "block",
+      "severity_b": "block",
+      "type": "type2",
+      "severity": "P2",
+      "suggestion": "加例外（在阈值边界处明确谁优先）",
+      "confidence": "high",
+      "why": "同前缀族 `EV` 同 severity(block)，适用范围重叠但阈值未声明差异"
+    },
+    {
+      "rule_a": "EV-SERVES-EXIST",
+      "rule_b": "EV-SERVES-EXIST-HC",
+      "scope": "evidence",
+      "severity_a": "warn",
+      "severity_b": "block",
+      "type": "type3",
+      "severity": "P1",
+      "suggestion": "加优先级（基规则先判，派生规则仅在基规则通过时生效）",
+      "confidence": "high",
+      "why": "`EV-SERVES-EXIST` 与 `EV-SERVES-EXIST-HC` 同族（派生/加强），后者的前提是前者的结论"
+    },
+    {
+      "rule_a": "CARD-PATH-NOT-CANONICAL",
+      "rule_b": "CARD-PATH-NOT-CANONICAL-HC",
+      "scope": "repo",
+      "severity_a": "warn",
+      "severity_b": "block",
+      "type": "type3",
+      "severity": "P1",
+      "suggestion": "加优先级（基规则先判，派生规则仅在基规则通过时生效）",
+      "confidence": "high",
+      "why": "`CARD-PATH-NOT-CANONICAL` 与 `CARD-PATH-NOT-CANONICAL-HC` 同族（派生/加强），后者的前提是前者的结论"
+    }
+  ]
+}
