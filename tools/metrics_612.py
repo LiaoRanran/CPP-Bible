@@ -29,9 +29,10 @@ REPORT_OUT = ROOT / "data" / "metrics_612.md"
 PLAN = ROOT / "data" / "oracle_verification_plan_611.jsonl"
 REPORT_612 = ROOT / "data" / "oracle_verification_report_612.md"
 
-# 已知基线（610/612 锁定）
-KNOWN_KEEP_LOW = (114, 7)        # (IN, OUT) under keep-low
-KNOWN_UPGRADE_MEDIUM = (121, 0)  # (IN, OUT) under upgrade-medium
+# 已知基线（640 A1 更新：632/634 命题级人签 ⇒ 命题可信度 high ⇒ 权威产物重算；
+# 34 条 modify（low→medium）在两档下均不足以翻转判决 ⇒ 双模式趋同）
+KNOWN_KEEP_LOW = (79, 42)        # (IN, OUT) under keep-low
+KNOWN_UPGRADE_MEDIUM = (79, 42)  # (IN, OUT) under upgrade-medium
 KNOWN_ATOMIC = 27
 KNOWN_MIS = 79
 KNOWN_ORACLE = 83

@@ -45,11 +45,15 @@ def two_mode_verdicts() -> dict:
     lo, up = modes["keep-low"], modes["upgrade-medium"]
     diff = {"in": up["in"] - lo["in"], "out": up["out"] - lo["out"],
             "defeating_edges": up["defeating_edges"] - lo["defeating_edges"]}
+    # 640 A1 修复：divergence 曾用**整字典**不等（含恒不同的 `caliber` 标签字段）
+    # ⇒ 永远 True，指标失去意义。改为只比较**判决数值**。
+    verdict_keys = ("in", "out", "undec", "defeating_edges")
+    divergent = any(lo[k] != up[k] for k in verdict_keys)
     return {"modes": modes, "default": w2.DEFAULT_MODIFY_MODE,
-            "divergence": modes["keep-low"] != modes["upgrade-medium"],
+            "divergence": divergent,
             "divergence_detail": {k: v for k, v in diff.items() if v},
             "note": ("两档口径判决不同 ⇒ 口径裁决未定（谁对由人定，工具只呈现）；"
-                     "引用 W2 数字必须标明用的哪一档") if modes["keep-low"] != modes["upgrade-medium"]
+                     "引用 W2 数字必须标明用的哪一档") if divergent
             else "两档口径判决一致 ⇒ 该冲突对本图不产生影响"}
 
 
@@ -111,7 +115,11 @@ def collect_grounded_status(metrics: dict, notes: dict | None = None) -> dict:
             same = (up["in"] == out["in"] and up["out"] == out["out"]
                     and up["defeating_edges"] == out["defeating_edges"])
             # `divergence` = **两口径判决是否不同**（口径冲突信号，与"默认档是否等于权威产物"分开记）
-            out["divergence"] = modes["keep-low"] != modes["upgrade-medium"]
+            # 640 A1 修复：曾整字典比较（含恒不同的 caliber 标签）⇒ 恒 True；改比较判决数值。
+            out["divergence"] = not (modes["keep-low"]["in"] == modes["upgrade-medium"]["in"]
+                                     and modes["keep-low"]["out"] == modes["upgrade-medium"]["out"]
+                                     and modes["keep-low"]["defeating_edges"]
+                                     == modes["upgrade-medium"]["defeating_edges"])
             out["default_matches_artifact"] = (
                 modes[w2.DEFAULT_MODIFY_MODE]["in"] == out["in"]
                 and modes[w2.DEFAULT_MODIFY_MODE]["out"] == out["out"]

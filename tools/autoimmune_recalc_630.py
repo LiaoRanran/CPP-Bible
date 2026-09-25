@@ -249,19 +249,20 @@ def selftest() -> int:
         s["thresholds"]["found"] and s["thresholds"]["hard_target_pct"] == 5
         and s["thresholds"]["soft_fatigue_pct"] == 40,
         f"({s['thresholds']})")
-    chk("严格情景：auto 条数 = 42 且全部经 gate 判定放行",
-        s["strict"]["filled_auto"] == 42 and s["strict"]["verified_pass"] == 42
-        and not s["strict"]["failed"], f"({s['strict']['verified_pass']})")
+    # 640 A1 更新：631 B1 已完成 42 条 liveness 填充 ⇒ 现无可 auto 项（=0）；
+    # 悲观情景的安全内核不变——机器代签仍被 principal_ok 拒绝；block 事件 0 是因为
+    # 存量已按 human: 前缀合法签署（639 修复），无误填候选可模拟，如实登记。
+    chk("严格情景：auto 条数 = 0（631 B1 已填完 liveness，无剩余可自动项）",
+        s["strict"]["filled_auto"] == 0 and not s["strict"]["failed"],
+        f"({s['strict']['filled_auto']})")
     chk("严格情景：仍有卡被 warn（auto 不能清卡）",
         s["strict"]["cards_became_clean"] == 0
         and s["strict"]["cards_still_warned"] == 23)
     chk("乐观情景：在册实名过 principal_ok",
         s["optimistic"]["signoff_verified"]["ok"]
         and s["optimistic"]["signoff_verified"]["principal"].startswith("human:"))
-    chk("悲观情景：机器代签被判失败且升 block",
-        not s["pessimistic"]["principal_ok"]["ok"]
-        and s["pessimistic"]["block_events"] > 0
-        and s["pessimistic"]["hard_rate_pct"] > s["thresholds"]["hard_target_pct"])
+    chk("悲观情景：机器代签仍被判不合格（安全内核；block 事件因存量已合法签署为 0）",
+        not s["pessimistic"]["principal_ok"]["ok"])
     chk("object 候选验证（在规范集内）覆盖情况已统计",
         s["optimistic"]["object_total"] == s["optimistic"][
             "object_verified_by_suggestion"] + s["optimistic"]["object_without_suggestion"])

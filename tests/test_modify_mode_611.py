@@ -47,8 +47,10 @@ def test_default_mode_is_keep_low_and_matches_authoritative():
     eff, changes = w2.reviewed_edges(edges, anns)                    # 不传 ⇒ 默认档
     doc = w2.solve(eff)
     art = json.loads((ROOT / "data" / "grounded_labels_w2.json").read_text(encoding="utf-8"))
-    assert (doc["summary"]["IN"], doc["summary"]["OUT"], doc["summary"]["UNDEC"]) == (114, 7, 0)
-    assert doc["defeating_edges"] == 17 and doc["edges"] == 388 and doc["rounds"] == 3
+    # 640 A1 更新：632/634 命题级人签 ⇒ 命题可信度 high ⇒ 权威产物重算
+    # （IN79/OUT42/击败边 194；旧值 114/7/17 是签署前快照）
+    assert (doc["summary"]["IN"], doc["summary"]["OUT"], doc["summary"]["UNDEC"]) == (79, 42, 0)
+    assert doc["defeating_edges"] == 194 and doc["edges"] == 388 and doc["rounds"] == 3
     assert doc["summary"]["IN"] == art["summary"]["IN"]
     assert doc["summary"]["OUT"] == art["summary"]["OUT"]
     assert doc["defeating_edges"] == art["defeating_edges"]
@@ -69,8 +71,10 @@ def test_upgrade_mode_reproduces_609_caliber():
     anns = hrc.load_annotations()
     eff, changes = w2.reviewed_edges(edges, anns, modify_mode="upgrade-medium")
     doc = w2.solve(eff)
-    assert (doc["summary"]["IN"], doc["summary"]["OUT"], doc["summary"]["UNDEC"]) == (121, 0, 0)
-    assert doc["defeating_edges"] == 0 and doc["rounds"] == 2
+    # 640 A1：609 口径机制保留（34 条 modify 全部 effective=True、档位=medium）；
+    # 但签署后命题可信度 high ⇒ upgrade 亦无法翻转 ⇒ 标签与 keep-low 趋同（79/42/194）
+    assert (doc["summary"]["IN"], doc["summary"]["OUT"], doc["summary"]["UNDEC"]) == (79, 42, 0)
+    assert doc["defeating_edges"] == 194 and doc["rounds"] == 3
     mods = [k for k, v in changes.items() if v["kind"] == "modify"]
     assert all(changes[k]["effective"] is True for k in mods)
     assert all(changes[k]["new_confidence"] == "medium" for k in mods)
@@ -94,7 +98,7 @@ def test_cli_both_modes_and_reports_noop_count(capsys):
     assert w2.main(["stats", "--modify-mode", "upgrade-medium", "--json"]) == 0
     out = capsys.readouterr()
     assert "modify 口径 upgrade-medium" in out.err and "0 条 modify 未生效" in out.err
-    assert json.loads(out.out)["by_label"]["IN"] == 121
+    assert json.loads(out.out)["by_label"]["IN"] == 79  # 640 A1：签署后两档趋同
 
 
 def test_diff_does_not_blame_ignored_modify(tmp_path: Path, capsys):
@@ -105,9 +109,10 @@ def test_diff_does_not_blame_ignored_modify(tmp_path: Path, capsys):
     eff, changes = w2.reviewed_edges(edges, anns)                # 默认 keep-low
     doc = w2.solve(eff)
     d = w2.diff_verdicts(baseline, doc, edges=edges, changes=changes)
-    # 无人审图 = IN79（79 命题 + **0** 误解）/OUT42；keep-low = IN114（79 命题 + **35** 误解）/OUT7
-    # ⇒ 翻转 = 42 - 7 = **35** 个误解（剩下的 7 个仍 OUT）
-    assert d["flipped"] == 35, f"keep-low 相对无审核应翻 35 个误解 ⇒ 实得 {d['flipped']}"
+    # 640 A1 更新：签署后命题可信度 high ⇒ 无人审基线与 keep-low 现算**同构**
+    # （误解本就无法击败已签命题）⇒ 翻转 = 0。原断言 35 是签署前快照的差值。
+    # 「未生效 modify 不被记为翻转触发者」的归因纪律由下方 eff2/基线同构断言继续锁住。
+    assert d["flipped"] == 0, f"keep-low 与无人审基线应一致 ⇒ 实得 {d['flipped']} 次翻转"
     ignored = {k for k, v in changes.items() if not v.get("effective", True)}
     for f in d["flips"]:
         assert not (set(f.get("trigger_edge_ids") or []) & ignored), (
@@ -125,17 +130,15 @@ def test_metrics_record_two_mode_divergence():
     assert out["current_mode"] == "keep-low"
     assert set(out["modes"]) == {"keep-low", "upgrade-medium"}
     lo, up = out["modes"]["keep-low"], out["modes"]["upgrade-medium"]
-    assert (lo["in"], lo["out"], lo["defeating_edges"]) == (114, 7, 17)
-    assert (up["in"], up["out"], up["defeating_edges"]) == (121, 0, 0)
-    assert out["divergence"] is True
-    assert out["divergence_detail"] == {"in": 7, "out": -7, "defeating_edges": -17}
-    assert "两档口径判决不同" in out["note"] and "必须标明" in out["note"]
-    # grounded_status 采集器：默认档与权威产物一致 + 分歧仍显形（不掩盖）
+    # 640 A1：签署后两档判决趋同（机制差异仍在：keep-low 下 34 条 modify 未生效留痕）
+    assert (lo["in"], lo["out"], lo["defeating_edges"]) == (79, 42, 194)
+    assert (up["in"], up["out"], up["defeating_edges"]) == (79, 42, 194)
+    assert out["divergence"] is False
+    assert out["divergence_detail"] == {}  # 全零差值被过滤
+    # grounded_status 采集器：默认档与权威产物一致
     g = m610.collect_grounded_status({})
     assert g["default_modify_mode"] == "keep-low"
     assert g["default_matches_artifact"] is True
-    assert g["divergence"] is True
-    assert "需监工裁决" in g["divergence_note"] and "modify 保持 low" in g["divergence_note"]
     # 634 A3：全局计数，读单一基线
     assert g["solver_recompute"]["in"] == SB.soft("modify_solver_recompute_in", g["solver_recompute"]["in"])
-    assert g["solver_recompute_default"]["in"] == 114  # 新字段 = 默认档现算
+    assert g["solver_recompute_default"]["in"] == 79  # 640 A1：默认档现算（签署后）

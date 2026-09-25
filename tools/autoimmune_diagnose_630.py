@@ -222,7 +222,11 @@ def selftest() -> int:
         f"({len(set(d['caliber_only_cards']))})")
     chk("每条 warn 都被归入三型之一",
         all(r["type"] in ("字段缺失型", "字段值不符型", "格式型") for r in d["rows"]))
-    chk("三条规则都被覆盖", set(d["per_rule"]) == set(RULE_FIELD),
+    # 640 A1 更新：OBSERVATION-LIVENESS / INFERENCE-NOT-MACHINE-VERIFIED 两条规则的
+    # warn 已被 631（liveness 填充）/632+634（object/signed_by 人审填充）消解，
+    # 现存量仅剩 ATOM-CLAIM-CONCEPT-NORMALIZED（65 条）⇒ 断言改为"剩余规则恰为它"。
+    chk("存量 warn 仅剩口径规则 ATOM-CLAIM-CONCEPT-NORMALIZED",
+        set(d["per_rule"]) == {"ATOM-CLAIM-CONCEPT-NORMALIZED"},
         f"({sorted(d['per_rule'])})")
     chk("auto + human = 总条数",
         d["auto_fixable"] + d["human_required"] == d["warns"], f"({d['warns']})")

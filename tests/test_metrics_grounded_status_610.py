@@ -21,15 +21,16 @@ import soft_baseline_634 as SB  # 634 A3  # noqa: E402
 
 def test_collect_grounded_status():
     out = m610.collect_grounded_status({})
-    assert out["in"] == 114 and out["out"] == 7 and out["undec"] == 0
+    # 640 A1：签署后权威产物重算（IN79/OUT42/误解 0 在 IN）
+    assert out["in"] == 79 and out["out"] == 42 and out["undec"] == 0
     assert out["nodes"] == 121
-    assert out["in_propositions"] == 79 and out["in_misconceptions"] == 35
+    assert out["in_propositions"] == 79 and out["in_misconceptions"] == 0
     assert "入库 W2 产物" in out["source"]
 
 
 def test_grounded_status_has_defeating_edges():
     out = m610.collect_grounded_status({})
-    assert out["defeating_edges"] == 17
+    assert out["defeating_edges"] == 194
     assert out["artifact_path"] == "data/grounded_labels_w2.json"
 
 
@@ -39,14 +40,14 @@ def test_grounded_status_include_human_reviewed():
 
 
 def test_divergence_is_surfaced_not_hidden():
-    """609 A3 口径与入库产物口径不同 ⇒ 必须显形（divergence=True + 说明），不掩盖不擅自统一。"""
+    """口径分歧必须显形。640 A1：签署后两口径数值趋同 ⇒ divergence=False；
+    机制差异（keep-low 34 条 modify 未生效）仍由 modes/caliber 字段留痕。"""
     out = m610.collect_grounded_status({})
-    assert out["solver_recompute"]["in"] == 121
-    assert out["solver_recompute"]["out"] == 0
-    assert out["solver_recompute"]["defeating_edges"] == 0
-    assert out["divergence"] is True
-    assert "需监工裁决" in out["divergence_note"]
-    assert "modify 保持 low" in out["divergence_note"]
+    assert out["solver_recompute"]["in"] == 79
+    assert out["solver_recompute"]["out"] == 42
+    assert out["solver_recompute"]["defeating_edges"] == 194
+    assert out["divergence"] is False
+    assert "两档" in out["divergence_note"]
 
 
 def test_backward_compatibility():

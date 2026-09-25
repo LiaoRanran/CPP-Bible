@@ -23,20 +23,22 @@ OUT_MIS_7 = ("MIS-LANG-001", "MIS-MEM-001", "MIS-MEM-003",
 def test_two_mode_verdicts_match_known_facts():
     c = b2.compute()
     kl, up = c["keep_low"], c["upgrade"]
-    assert (kl["in"], kl["out"], kl["defeating_edges"]) == (114, 7, 17)
-    assert (up["in"], up["out"], up["defeating_edges"]) == (121, 0, 0)
-    assert kl["rounds"] == 3 and up["rounds"] == 2
+    # 640 A1：签署后权威产物重算，两档判决趋同（IN79/OUT42/击败194）
+    assert (kl["in"], kl["out"], kl["defeating_edges"]) == (79, 42, 194)
+    assert (up["in"], up["out"], up["defeating_edges"]) == (79, 42, 194)
+    assert kl["rounds"] == 3 and up["rounds"] == 3
 
 
-def test_all_seven_out_mis_are_modify_targets():
+def test_all_out_mis_and_modify_targets():
     c = b2.compute()
     assert c["modify_count"] == 34
-    assert c["all_out_mis_are_modify_targets"] is True
-    assert set(c["out_mis_targets"]) == set(OUT_MIS_7)
-    # 七个 OUT MIS 在 upgrade 档全部消失（变成 IN）
-    assert set(c["out_mis_by_mode"]["keep_low"]) == set(OUT_MIS_7)
-    assert c["out_mis_by_mode"]["upgrade"] == []
-    # 分布：target 落在 15 个节点（7 MIS + 8 命题）
+    # 640 A1：签署后 OUT MIS = 42，其中仅 7 个是 modify 目标 ⇒ 子集关系不再成立
+    assert c["all_out_mis_are_modify_targets"] is False
+    assert len(c["out_mis_by_mode"]["keep_low"]) == 42
+    assert set(c["out_mis_targets"]) <= set(c["out_mis_by_mode"]["keep_low"])
+    assert set(OUT_MIS_7) <= set(c["out_mis_by_mode"]["keep_low"]), "历史 7 个 OUT MIS 仍 OUT"
+    assert c["historical_out_mis_7_still_out"] is True
+    # 分布：modify 目标仍落在 15 个节点（7 MIS + 8 命题），与 611 一致（标注未变）
     d = c["modify_distribution"]
     assert d["distinct_target_nodes"] == 15
     assert d["target_mis_count"] == 7 and d["target_prop_count"] == 8
@@ -49,7 +51,8 @@ def test_report_contains_comparison_and_no_resolution():
                   f"| {c['upgrade']['in']} | {c['upgrade']['out']}",
                   f"| {c['keep_low']['defeating_edges']} |",
                   f"| {c['upgrade']['defeating_edges']} |",
-                  "34", "不替谁裁决", "7 个 OUT MIS 全部是被 `modify` 过的 MIS"):
+                  "34", "不替谁裁决",
+                  f"其中只有 **{len(c['out_mis_targets'])}** 个是 `modify` 目标"):
         assert token in text, token
     assert "## 四、口径裁决建议" in text
     assert "不擅自执行" in text

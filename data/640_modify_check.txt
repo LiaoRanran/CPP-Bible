@@ -1,0 +1,2 @@
+effective conf diff on modify edges: 34/34
+[('ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-1', 'low', 'medium'), ('ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-2', 'low', 'medium'), ('ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-3', 'low', 'medium'), ('ae-MIS-MEM-001->ATOM-MEM-MOVE-002::prop-1', 'low', 'medium')]

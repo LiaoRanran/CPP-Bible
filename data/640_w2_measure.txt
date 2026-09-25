@@ -1,0 +1,2 @@
+keep-low: IN=79 OUT=42 UNDEC=0 defeating=194 rounds=3
+upgrade-medium: IN=79 OUT=42 UNDEC=0 defeating=194 rounds=3

@@ -278,10 +278,13 @@ PROMOTE = {"low": "medium", "medium": "high", "high": "high"}
 # ── 611 B1：modify 口径**双模式**（口径冲突不裁决，两档都能跑，默认对齐入库权威）──────────
 # 背景（610 交人项 ①）：388 条人审里 34 条 modify 的 `new_confidence` **全是 medium**。
 #   * `keep-low`（**默认**）：modify **不改变生效权重**（保持该边原有的 low）——
-#     这是 `data/grounded_labels_w2.json` 的实际生成口径 ⇒ IN114/OUT7/击败边 17；
-#   * `upgrade-medium`：modify 采纳 `confidence`/`new_confidence`（609 A3 的口径）⇒ IN121/OUT0/击败边 0。
-# 为什么默认取 `keep-low`：**默认值应该与入库权威产物一致**（否则"跑一遍默认"就得到与冻结产物
-#   不同的图）。两档都在，谁对谁错**由人裁决**（611 只做工具支持，不统一口径）。
+#     这是 `data/grounded_labels_w2.json` 的实际生成口径；
+#   * `upgrade-medium`：modify 采纳 `confidence`/`new_confidence`（609 A3 的口径）。
+# 640 A1 更新（诚实登记）：632/634 人审授权的命题级签署（639 修为 human: 前缀）使
+#   `proposition_nodes()` 的命题可信度升为 high ⇒ 误解节点（low/medium）无法再击败
+#   命题 ⇒ 权威产物重算为 **IN79/OUT42/击败边 194**，且 34 条 modify（low→medium）
+#   在两档下都不足以翻转任何判决 ⇒ **双模式当前输出一致**（机制差异仍在：keep-low
+#   下 34 条 modify 未生效留痕）。若未来出现足以翻转的 modify 档位，两档将重新分歧。
 MODIFY_MODES = ("keep-low", "upgrade-medium")
 DEFAULT_MODIFY_MODE = "keep-low"
 

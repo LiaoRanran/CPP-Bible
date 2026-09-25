@@ -1,0 +1,26 @@
+{
+  "total_tools": 434,
+  "n_no_check": 4,
+  "tools": [
+    {
+      "tool": "_clean_junk.py",
+      "has_main": false,
+      "lines": 59
+    },
+    {
+      "tool": "env_check.py",
+      "has_main": false,
+      "lines": 155
+    },
+    {
+      "tool": "utf8_console.py",
+      "has_main": false,
+      "lines": 38
+    },
+    {
+      "tool": "viso_diff.py",
+      "has_main": false,
+      "lines": 416
+    }
+  ]
+}

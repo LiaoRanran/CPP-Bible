@@ -29,8 +29,9 @@ def test_e3_oracle_quality_zero_review():
 
 def test_e1_modify_modes_locked():
     m = e.e1_modify_modes()
-    assert (m["keep-low"]["IN"], m["keep-low"]["OUT"]) == (114, 7)
-    assert (m["upgrade-medium"]["IN"], m["upgrade-medium"]["OUT"]) == (121, 0)
+    # 640 A1：签署后命题可信度 high ⇒ 双模式判决趋同（机制差异保留，见 640_b_class_fix.md）
+    assert (m["keep-low"]["IN"], m["keep-low"]["OUT"]) == (79, 42)
+    assert (m["upgrade-medium"]["IN"], m["upgrade-medium"]["OUT"]) == (79, 42)
 
 
 def test_render_has_three_sections():

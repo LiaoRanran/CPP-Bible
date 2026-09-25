@@ -157,7 +157,9 @@ def selftest() -> int:
         ok = ok and cond
 
     rr = rows()
-    chk("human 条目 = 90 条", len(rr) == 90, f"({len(rr)})")
+    # 640 A1 更新：632 C2 人审导入 + 634 C1 补签已消解 signed_by 类，
+    # 清单从 631 的 90 条（object+signed_by）降为 65 条（纯 object）。
+    chk("human 条目 = 65 条（632/634 填充后剩余）", len(rr) == 65, f"({len(rr)})")
     chk("全部字段都是 signed_by 或 object（机器绝不代填的类型）",
         all(r["field"] in ("signed_by", "object") for r in rr),
         f"({sorted({r['field'] for r in rr})})")
@@ -166,7 +168,8 @@ def selftest() -> int:
     chk("无候选的 object 为高、有候选为中",
         all((r["priority"] == "高") if not r["suggest"] else (r["priority"] == "中")
             for r in rr if r["field"] == "object"))
-    chk("优先级计数合计 = 90", sum(counts(rr).values()) == 90, f"({counts(rr)})")
+    chk("优先级计数合计 = 65（640 A1 更新）",
+        sum(counts(rr).values()) == 65, f"({counts(rr)})")
     chk("每行都有『为什么不能 auto』", all(r["why_not_auto"] for r in rr))
 
     import subprocess

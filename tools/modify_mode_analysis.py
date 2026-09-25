@@ -79,7 +79,9 @@ def compute(edges_path: Path | str | None = None,
         target_nodes[tgt] += 1
         if tgt.startswith("MIS-"):
             topic_group[_topic_group(tgt)] += 1
-    out_targets = sorted(t for t in target_nodes if t in OUT_MIS_7)
+    # 640 A1：OUT MIS 集合改为**当前现算**（签署后 OUT MIS = 42，历史 7 个清单
+    # `OUT_MIS_7` 保留为 611 快照常量，不再用于过滤）。
+    out_targets = sorted(t for t in target_nodes if t in set(keep["out_mis"]))
 
     return {
         "keep_low": keep, "upgrade": up, "modify_count": len(mods),
@@ -91,8 +93,11 @@ def compute(edges_path: Path | str | None = None,
             "by_topic_group": dict(topic_group),
         },
         "out_mis_by_mode": {"keep_low": keep["out_mis"], "upgrade": up["out_mis"]},
-        "all_out_mis_are_modify_targets": set(out_targets) == set(OUT_MIS_7),
+        # 640 A1：语义更新 = 当前 OUT MIS 是否全部是 modify 目标（签署后为 False：
+        # OUT MIS 42 个，modify 目标只有 7 个 MIS）。历史口径见 OUT_MIS_7。
+        "all_out_mis_are_modify_targets": set(keep["out_mis"]) <= set(target_nodes),
         "out_mis_targets": out_targets,
+        "historical_out_mis_7_still_out": set(OUT_MIS_7) <= set(keep["out_mis"]),
     }
 
 
@@ -122,38 +127,36 @@ def render_report(c: dict) -> str:
         "- 按 MIS 主题组（仅对 MIS target 计）："
         + " / ".join(f"{k} {v}" for k, v in c["modify_distribution"]["by_topic_group"].items())
         + "；",
-        "- 关键巧合：**7 个 OUT MIS 全部是被 `modify` 过的 MIS**（`all_out_mis_are_modify_targets="
-        f"{c['all_out_mis_are_modify_targets']}`）—— 所以这 7 个 OUT 是不是该改为 IN，"
-        "完全取决于口径怎么定；", "",
+        f"- 关键事实（640 A1 更新）：签署后 OUT MIS 共 **{len(c['out_mis_by_mode']['keep_low'])}** 个，"
+        f"其中只有 **{len(c['out_mis_targets'])}** 个是 `modify` 目标"
+        f"（`all_out_mis_are_modify_targets={c['all_out_mis_are_modify_targets']}`）——"
+        "历史 7 个 OUT MIS（611 快照）至今仍 OUT；", "",
         "top 分布（节点 → 该节点作为 target 的 modify 边数）：", "",
     ]
     for node, n in c["modify_distribution"]["by_target_node_top"]:
         flag = "（OUT MIS）" if node in OUT_MIS_7 else ""
         lines.append(f"- `{node}` → {n} 条 {flag}")
     lines += ["", "## 三、两档优缺点（事实，不是裁决）", "",
-              "**`keep-low`（入库权威）**：",
-              "- ✅ 与已冻结的 `data/grounded_labels_w2.json` **逐字段一致**（IN114/OUT7/击败17），"
+              "**`keep-low`（入库权威，640 重算后 IN79/OUT42/击败194）**：",
+              "- ✅ 与已冻结的 `data/grounded_labels_w2.json` **逐字段一致**（640 A1 按签署后状态重算），"
               "不推翻既有交付；",
               "- ✅ 保守：人审说「保持 low」就保持 low，不替人升档；",
               "- ❌ 与 34 条 modify 人审的**字面意图**（`new_confidence=medium`）**不符** —— "
               "人审想升档，工具没升；",
-              "- ❌ 留下 7 个 OUT MIS（含 4 个 UB、2 个 MEM、1 个 LANG），论证层攻击性「被压住」。",
+              "- ❌ OUT MIS 42 个（签署后命题可信度 high，误解本就无法击败命题）。",
               "",
               "**`upgrade-medium`（609 A3）**：",
               "- ✅ 尊重 34 条 modify 人审的**字面意图**（medium 落档）；",
-              "- ✅ 消除全部 7 个 OUT MIS（IN121/OUT0）⇒ 论证层「更自洽」；",
-              "- ❌ 但 medium 升档让 **42 个 MIS 中 35 个与命题同档** ⇒ **击败边从 17 掉到 0** —— "
-              "等于**抽空了论证层的攻击性**（所有 MIS 都和命题一样可信 ⇒ 没有 MIS 能被击败）；",
-              "- ❌ 与入库权威产物**不一致**，若采用需重新冻结 `grounded_labels_w2.json`。", "",
+              "- ❌ 640 A1 实测：签署后命题可信度 high，34 条 low→medium 的升档**不足以翻转任何判决** "
+              "⇒ 两档判决趋同（IN79/OUT42/击败194）——「upgrade 抽空攻击性」的 611 论据已随签署失效；",
+              "- ⚖️ 两档的**机制差异**仍在（keep-low 下 34 条 modify 未生效留痕），"
+              "若未来出现足以翻转的 modify 档位将重新分歧。", "",
               "## 四、口径裁决建议（不擅自执行）", "",
-              "- **两种口径都不是显然错的**：`keep-low` 保守但违背人审字面意图；"
-              "`upgrade-medium` 尊重人审但抽空攻击性。冲突的症结是"
-              "「modify 到底要不要改权重」这个**语义定义**没在任务书里钉死。",
-              "- 建议把决策权交**人/监工**，并至少二选一落地：",
-              "  1. 若认为「人审的 new_confidence 必须被尊重」 ⇒ 采用 `upgrade-medium`，"
-              "并**重新冻结** `grounded_labels_w2.json`（IN121/OUT0/击败0）；",
-              "  2. 若认为「入库权威产物不可擅动、且 modify 默认只记不生效」 ⇒ 维持 `keep-low`"
-              "（现状），但应**显式登记**「34 条 modify 字面意图未被采纳」这个事实（避免后续误读）。",
+              "- 640 A1 诚实登记：**当前数据下两档判决一致**，611 的口径冲突在现有图上"
+              "不再产生判决差异；冲突的**语义定义**（「modify 到底要不要改权重」）仍未钉死，"
+              "留待未来出现实际分歧时再裁决。",
+              "- 无论哪种，本工具与 `metrics_610.collect_modify_mode` 都已把两档数字"
+              "**量化显形**，每次采集都能看到 divergence，不会悄悄换口径。",
               "- 无论哪种，本工具与 `metrics_610.collect_modify_mode` 都已把两档数字"
               "**量化显形**，每次采集都能看到 divergence，不会悄悄换口径。", "",
               "> 数字来源：全部由 `weighted_af_solver.reviewed_edges(..., modify_mode=...)` + `solve` "
@@ -175,7 +178,7 @@ def check() -> list[str]:
                   f"| {c['keep_low']['defeating_edges']} |",
                   f"| {c['upgrade']['defeating_edges']} |",
                   f"**{c['modify_count']}** 条",
-                  "7 个 OUT MIS 全部是被 `modify` 过的 MIS"):
+                  f"其中只有 **{len(c['out_mis_targets'])}** 个是 `modify` 目标"):
         if token not in text:
             problems.append(f"报告缺/不一致：{token}")
     return problems

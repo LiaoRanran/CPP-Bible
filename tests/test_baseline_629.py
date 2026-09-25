@@ -17,12 +17,14 @@ def test_standing_matches_task_book():
 
 
 def test_gate_counts_measured_equals_standing():
+    # 640 A1 更新：STANDING 是 629 开工时的历史快照（保持不动，作存档）；
+    # 实测值随批次演进（639 放权闸修复后 warn 186→116、命中 191→121、warn 规则 9→8），
+    # 本测试改为锁定**当前实测**，历史一致性由 STANDING 本身存档承载。
     g = B.gate_counts()
-    assert g["total"] == B.STANDING["gate_hits"]
-    assert (g["block"], g["warn"], g["advice"]) == (0, 186, 5)
-    assert g["rules_loaded"] == B.STANDING["gate_rules"] == 67
+    assert (g["total"], g["block"], g["warn"], g["advice"]) == (121, 0, 116, 5)
+    assert g["rules_loaded"] == 67
     assert g["automated_rules"] < g["rules_loaded"]      # 有 3 条非程序化规则
-    assert len(g["warn_top"]) == min(10, g["warn_rule_count"]) == 9
+    assert len(g["warn_top"]) == min(10, g["warn_rule_count"]) == 8
     assert g["warn_top"][0] == ("ATOM-CLAIM-CONCEPT-NORMALIZED", 77)
 
 
