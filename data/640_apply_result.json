@@ -1,0 +1,18 @@
+{
+ "n_plan": 376,
+ "n_applied": 10,
+ "n_rejected": 0,
+ "n_rolled_back": 0,
+ "applied_paths": [
+  "data\\609_baseline.md",
+  "data\\611_acceptance_report.md",
+  "data\\611_baseline.md",
+  "data\\612_acceptance_report.md",
+  "data\\612_batch_progress_20260920.md",
+  "data\\613_baseline_argumentation.md",
+  "data\\613_baseline_ci.md",
+  "data\\613_baseline_d5_debt.md",
+  "data\\613_baseline_learner_twin.md",
+  "data\\614_baseline.md"
+ ]
+}
