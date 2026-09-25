@@ -6,6 +6,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "tools"))
 
 import w2_projection_diff_627 as D
 import w2_projection_normalizer_627 as N
+from w2_authority_640b import current as _w2  # 640b：W2 数字单一权威源
+
+
+def _exp() -> dict:
+    return _w2()
 
 
 def test_normalizer_node_count_121():
@@ -15,9 +20,10 @@ def test_normalizer_node_count_121():
 
 def test_normalizer_in_out_distribution():
     res = N.compile_w2()
-    assert res["summary"]["IN"] == 114
-    assert res["summary"]["OUT"] == 7
-    assert res["summary"]["UNDEC"] == 0
+    exp = _exp()
+    assert res["summary"]["IN"] == exp["IN"]
+    assert res["summary"]["OUT"] == exp["OUT"]
+    assert res["summary"]["UNDEC"] == exp["UNDEC"]
 
 
 def test_normalizer_no_outside_nodes():
@@ -31,14 +37,15 @@ def test_normalizer_no_outside_nodes():
 
 def test_diff_zero_against_grounded():
     d = D.diff()
-    assert d["diff_count"] == 0
-    assert d["projected_summary"]["IN"] == 114
-    assert d["projected_summary"]["OUT"] == 7
+    exp = _exp()
+    assert d["diff_count"] == 0                       # 投影与权威产物零差异
+    assert d["projected_summary"]["IN"] == exp["IN"]
+    assert d["projected_summary"]["OUT"] == exp["OUT"]
     assert d["cause_breakdown"] == {}
 
 
-def test_modify_is_required_for_out7():
-    # 626 缺陷回归：只认 APPROVE 得不到 OUT=7
+def test_modify_is_required_for_full_out():
+    """626 缺陷回归：只认 APPROVE 得到的 OUT 必然少于（计入 MODIFY 的）权威 OUT。"""
     nodes = N.load_grounded_nodes()
     led = N.D.AuthorityLedger.import_jsonl(N.LEDGER)
     only_appr = [(e.target_id, e.result) for e in led.all_events()
@@ -63,4 +70,4 @@ def test_modify_is_required_for_out7():
     defeats = W.defeats_of(es, nodes)
     labels, _ = W.grounded_labels(nodes, defeats)
     out = sum(1 for v in labels.values() if v == "OUT")
-    assert out < 7, "只用 APPROVE 应 <7 OUT（证明 MODIFY 必计入）"
+    assert out < _exp()["OUT"], "只用 APPROVE 应少于权威 OUT（证明 MODIFY 必计入）"

@@ -91,11 +91,14 @@ def selftest() -> int:
         ok = ok and cond
 
     d = diff()
+    # 640b A1：数字取单一权威源（不再写死 114/7）
+    import w2_authority_640b as _A
+    _a = _A.artifact_summary()
     chk("节点数 121", d["nodes"] == 121, f"({d['nodes']})")
-    chk("投影 IN = 114", d["projected_summary"].get("IN") == 114)
-    chk("投影 OUT = 7", d["projected_summary"].get("OUT") == 7)
-    chk("期望 IN = 114", d["expected_summary"].get("IN") == 114)
-    chk("期望 OUT = 7", d["expected_summary"].get("OUT") == 7)
+    chk(f"投影 IN = {_a['IN']}", d["projected_summary"].get("IN") == _a["IN"])
+    chk(f"投影 OUT = {_a['OUT']}", d["projected_summary"].get("OUT") == _a["OUT"])
+    chk(f"期望 IN = {_a['IN']}", d["expected_summary"].get("IN") == _a["IN"])
+    chk(f"期望 OUT = {_a['OUT']}", d["expected_summary"].get("OUT") == _a["OUT"])
     chk("逐节点 diff = 0", d["diff_count"] == 0, f"({d['diff_count']})")
     chk("差异原因可归类", isinstance(d["cause_breakdown"], dict))
     # diff 函数在有差异时能正确归类（用空 ledger 制造差异）

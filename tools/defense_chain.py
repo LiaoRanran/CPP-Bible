@@ -104,9 +104,11 @@ def load_data(edges_path: Path | str | None = None,
 
 
 def credibilities_of(edges: list[AttackEdge]) -> dict[str, str]:
-    """节点可信度：命题 = medium（**全集取 W2 内置命题表**，含 4 个无边的命题）；
+    """节点可信度：命题 = **与 W2 内核同口径**（命题级人签 ⇒ high；卡级人签/机器锚
+    ⇒ medium；否则 low——640b A1：曾一律写死 medium，人签后与产物分歧即误报）；
     MIS = 有 approve 边 ⇒ medium，否则 low（modify/reject/未审 ⇒ low）。"""
-    props = set(w2.proposition_nodes())
+    prop_nodes = w2.proposition_nodes()
+    props = set(prop_nodes)
     mis_approved: set[str] = set()
     mis_all: set[str] = set()
     for e in edges:
@@ -118,7 +120,8 @@ def credibilities_of(edges: list[AttackEdge]) -> dict[str, str]:
         mis_all.add(mis)
         if e.human_verdict == "approve":
             mis_approved.add(mis)
-    out = {p: PROP_CREDIBILITY for p in props}
+    out = {p: str(prop_nodes.get(p, {}).get("confidence") or PROP_CREDIBILITY)
+           for p in props}
     for m in mis_all:
         out[m] = VERDICT_CREDIBILITY["approve"] if m in mis_approved else "low"
     return dict(sorted(out.items()))
@@ -608,9 +611,16 @@ def check(edges_path: Path | str | None = None,
                             f"（数字档 {v.get('credibility')}）")
     if st["defeating_edges"] != auth["defeating_edges"]:
         problems.append(f"击败边 {st['defeating_edges']} ≠ 产物 {auth['defeating_edges']}")
-    if st["total_nodes"] != 121 or st["in"] != 114 or st["out"] != 7 or st["undec"] != 0:
-        problems.append(f"判决汇总 {st['in']}/{st['out']}/{st['undec']} ≠ 114/7/0"
-                        f"（节点 {st['total_nodes']}）")
+    # 640b A1：汇总数字以**入库产物为唯一基准**（曾写死 114/7/0，随人签演进即误报）
+    _cnt: dict[str, int] = {}
+    for v in auth["nodes"].values():
+        _cnt[str(v["label"])] = _cnt.get(str(v["label"]), 0) + 1
+    _want_in, _want_out = _cnt.get("IN", 0), _cnt.get("OUT", 0)
+    _want_undec, _want_nodes = _cnt.get("UNDEC", 0), len(auth["nodes"])
+    if (st["total_nodes"] != _want_nodes or st["in"] != _want_in
+            or st["out"] != _want_out or st["undec"] != _want_undec):
+        problems.append(f"判决汇总 {st['in']}/{st['out']}/{st['undec']} ≠ 产物 "
+                        f"{_want_in}/{_want_out}/{_want_undec}（节点 {st['total_nodes']}）")
     for n in st["out_nodes"]:
         c = get_defense_chain(n, edges, verdicts, cred)
         if not c.defeated_by:
@@ -619,8 +629,14 @@ def check(edges_path: Path | str | None = None,
         c = get_defense_chain(n, edges, verdicts, cred)
         if v == "IN" and c.defeated_by:
             problems.append(f"IN 节点 {n} 却有击败者 {c.defeated_by}")
-    if st["in_propositions"] != 79 or st["in_misconceptions"] != 35:
-        problems.append(f"IN 命题/误解 {st['in_propositions']}/{st['in_misconceptions']} ≠ 79/35")
+    # 640b A1：IN 命题/误解拆分以**入库产物**为准（曾写死 79/35，人签后误解全 OUT ⇒ 79/0）
+    _want_ip = sum(1 for nid, v in auth["nodes"].items()
+                   if v["label"] == "IN" and str(v.get("type")) == "proposition")
+    _want_im = sum(1 for nid, v in auth["nodes"].items()
+                   if v["label"] == "IN" and str(v.get("type")) == "misconception")
+    if st["in_propositions"] != _want_ip or st["in_misconceptions"] != _want_im:
+        problems.append(f"IN 命题/误解 {st['in_propositions']}/{st['in_misconceptions']} "
+                        f"≠ 产物 {_want_ip}/{_want_im}")
     return problems
 
 

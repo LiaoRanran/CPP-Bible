@@ -26,6 +26,24 @@ CORE_TOOLS = ["gate_engine.py", "atom_evidence_replay.py",
               "poison_drill.py", "toolchain.py", "cppbible.py"]
 
 
+def _expect_w2() -> dict:
+    """640b A1：W2 期望值取单一权威源（权威产物数据文件；不再写死 114/7）。"""
+    try:
+        with open(os.path.join(ROOT, "data", "grounded_labels_w2.json"),
+                  encoding="utf-8") as fh:
+            d = json.load(fh)
+        cnt: dict[str, int] = {}
+        for v in d.get("nodes", {}).values():
+            k = str(v.get("label"))
+            cnt[k] = cnt.get(k, 0) + 1
+        if cnt:
+            return {"IN": cnt.get("IN", 0), "OUT": cnt.get("OUT", 0),
+                    "UNDEC": cnt.get("UNDEC", 0)}
+    except (OSError, json.JSONDecodeError, AttributeError):
+        pass
+    return {"IN": 114, "OUT": 7, "UNDEC": 0}          # 回退：历史登记口径
+
+
 def _run_mode(env_val: Optional[str], code: str) -> tuple[int, str]:
     env = dict(os.environ)
     env.pop(ENV_FLAG, None)
@@ -54,7 +72,7 @@ def run_verify() -> dict:
         results[name] = json.loads(out) if rc == 0 and out else {"error": out[-300:]}
     # 一致性判定
     v1, v2 = results.get("v1", {}), results.get("v2", {})
-    consistent = (v1.get("summary") == v2.get("summary") == {"IN": 114, "OUT": 7, "UNDEC": 0}
+    consistent = (v1.get("summary") == v2.get("summary") == _expect_w2()
                   and v1.get("labels") == v2.get("labels")
                   and v1.get("nodes") == v2.get("nodes") == 121)
     default_v1 = (results.get("unset", {}).get("v2") is False

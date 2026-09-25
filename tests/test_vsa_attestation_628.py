@@ -23,7 +23,8 @@ def test_credential_generated_with_schema(tmp_path):
               "input_hashes", "results", "attestation"):
         assert k in cred
     assert cred["vsa_version"] == "1.0"
-    assert cred["results"]["w2_in"] == 114
+    from w2_authority_640b import current as _w2
+    assert cred["results"]["w2_in"] == _w2()["IN"]     # 640b：动态权威值
 
 
 def test_same_second_does_not_overwrite(tmp_path):
@@ -69,7 +70,11 @@ def test_traceability_and_independent_verifier():
     ver_sha = V._sha256_file(os.path.join(V.HERE, "independent_verifier_628.py"))
     assert cred["verifier_sha256"] == ver_sha      # 绑定验证者版本
     assert cred["input_hashes"]["ledger_sha256"] == V._sha256_file(V.LEDGER)
-    # 独立验证端：零 import 本项目工具（含不 import 签发端）+ 全部凭证验证通过
+    # 独立验证端：零 import 本项目工具（含不 import 签发端）
     assert W._project_imports() == []
+    # 640b A1：input/results 有效性是**时点性**的（事实源演进后历史凭证必然
+    # 与今日不符）⇒ 全量断言"签名完整"，时点一致性只锁**最新凭证**。
     allr = W.verify_all()
-    assert allr and all(x["valid"] for x in allr)
+    assert allr and all(x["hmac_valid"] for x in allr), "签名必须全部完整"
+    latest = max(allr, key=lambda x: str(x.get("verified_at") or ""))
+    assert latest["valid"], "最新凭证必须与当前事实源一致"

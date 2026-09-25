@@ -37,7 +37,19 @@ OUT_HTML = os.path.join(ROOT, "data", "human_review_dashboard_v2.html")
 OUT_DESIGN = os.path.join(ROOT, "data", "human_review_dashboard_v2_design_628.md")
 
 EXPECT_UNIQUE = 93
-EXPECT_W2 = {"IN": 114, "OUT": 7, "UNDEC": 0}
+
+
+def _expect_w2() -> dict:
+    """640b A1：W2 期望值取单一权威源（不再写死 114/7）。"""
+    try:
+        import w2_authority_640b as A
+        a = A.artifact_summary()
+        return {"IN": a["IN"], "OUT": a["OUT"], "UNDEC": a["UNDEC"]}
+    except Exception:  # noqa: BLE001
+        return {"IN": 114, "OUT": 7, "UNDEC": 0}        # 回退：历史登记口径
+
+
+EXPECT_W2 = _expect_w2()
 
 
 def _jl(path: str) -> list[dict]:

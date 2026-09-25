@@ -124,8 +124,11 @@ def selftest() -> int:
     res = compile_w2(nodes=nodes)
     chk("归一化后节点数 = 121", res["nodes"] == 121, f"({res['nodes']})")
     s = res["summary"]
-    chk("IN = 114", s.get("IN") == 114, f"({s.get('IN')})")
-    chk("OUT = 7", s.get("OUT") == 7, f"({s.get('OUT')})")
+    # 640b A1：数字取单一权威源（不再写死 114/7）
+    import w2_authority_640b as _A
+    _a = _A.artifact_summary()
+    chk(f"IN = {_a['IN']}", s.get("IN") == _a["IN"], f"({s.get('IN')})")
+    chk(f"OUT = {_a['OUT']}", s.get("OUT") == _a["OUT"], f"({s.get('OUT')})")
     chk("UNDEC = 0", s.get("UNDEC") == 0, f"({s.get('UNDEC')})")
 
     # 与 grounded_labels 逐节点一致

@@ -34,7 +34,9 @@ skip_if_later_batch = pytest.mark.skipif(
 def test_gate_constants_declared():
     assert len(G.NEW_TOOLS) == 12, f"门禁应覆盖 12 个本批工具，实际 {len(G.NEW_TOOLS)}"
     assert len(G.CORE_TOOLS) == 5 and "gate_engine.py" in G.CORE_TOOLS
-    assert G.EXPECT_W2 == {"IN": 114, "OUT": 7, "UNDEC": 0}
+    from w2_authority_640b import artifact_summary as _art
+    a = _art()
+    assert G.EXPECT_W2 == {"IN": a["IN"], "OUT": a["OUT"], "UNDEC": a["UNDEC"]}
     assert G.BATCH_BASE == "b913b0fe"
     assert all(not t.startswith("tools/") for t in G.CORE_TOOLS)
 

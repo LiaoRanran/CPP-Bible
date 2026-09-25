@@ -170,10 +170,12 @@ def test_cli_solve_stats_check_exit_codes(tmp_path):
     assert doc["summary"]["IN"] == 79 and doc["summary"]["OUT"] == 42
     assert doc["defeating_edges"] == 194
 
-    # 权威 W2 产物（人审全量后的入库件）
+    # 权威 W2 产物（人审全量后的入库件）——数字取单一权威源（640b：不再写死）
+    import w2_authority_640b as A
+    _a = A.current()
     auth = json.loads((w2.ROOT / "data" / "grounded_labels_w2.json").read_text(encoding="utf-8"))
-    assert auth["summary"]["IN"] == 114 and auth["summary"]["OUT"] == 7
-    assert auth["defeating_edges"] == 17
+    assert auth["summary"]["IN"] == _a["IN"] and auth["summary"]["OUT"] == _a["OUT"]
+    assert auth["defeating_edges"] == _a["defeating_edges"]
 
     out.write_text("{}\n", encoding="utf-8")
     assert w2.main(["--check", "--no-human-reviewed", "--out", str(out)]) == 2

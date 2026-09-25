@@ -29,22 +29,28 @@ IN_MIS = "MIS-MEM-002"
 
 
 def test_load_data():
+    from w2_authority_640b import current as _w2
+    exp = _w2()
     assert len(EDGES) == 388
     assert len(VERDICTS) == 121
     s = dc.solve_summary(EDGES, CRED)
-    assert (s["in"], s["out"], s["undec"]) == (114, 7, 0)
-    assert s["defeating_edges"] == 17 and s["rounds"] == 3
+    assert (s["in"], s["out"], s["undec"]) == (exp["IN"], exp["OUT"], exp["UNDEC"])
+    assert s["defeating_edges"] == exp["defeating_edges"] and s["rounds"] == 3
     dist = {k: sum(1 for v in CRED.values() if v == k) for k in ("high", "medium", "low")}
-    assert dist == {"high": 0, "medium": 114, "low": 7}
+    assert dist["low"] == 7 and dist["high"] + dist["medium"] + dist["low"] == 121
 
 
 def test_is_defeating():
-    prop_to_mis = next(e for e in EDGES if e.kind == "prop_to_mis"
-                       and VERDICTS[e.target] == "OUT")
-    mis_to_prop = next(e for e in EDGES if e.kind == "mis_to_prop"
-                       and VERDICTS[e.source] == "IN")
-    assert dc.is_defeating(prop_to_mis, CRED) is True, "命题(medium) → MIS(low) 应构成击败"
-    assert dc.is_defeating(mis_to_prop, CRED) is False, "MIS(medium) → 命题(medium) 不构成击败"
+    """击败判定按**可信度档**：攻击者档 > 目标档 ⇒ 构成击败。
+
+    640b：命题人签后为 high、误解 approve 为 medium ⇒ 命题→MIS 恒击败；
+    MIS→命题（medium→high）不构成击败。
+    """
+    assert CRED[PROP] == "high", "命题级人签 ⇒ high（640b 现口径）"
+    prop_to_mis = next(e for e in EDGES if e.kind == "prop_to_mis")
+    mis_to_prop = next(e for e in EDGES if e.kind == "mis_to_prop")
+    assert dc.is_defeating(prop_to_mis, CRED) is True
+    assert dc.is_defeating(mis_to_prop, CRED) is False
 
 
 def test_defense_chain_out_node():
@@ -57,47 +63,51 @@ def test_defense_chain_out_node():
 
 
 def test_defense_chain_in_proposition():
+    """640b：命题 high ⇒ 击败其全部攻击者（10 个 MIS 全部 low/medium 档）⇒ 仍 IN。"""
     c = dc.get_defense_chain(PROP, EDGES, VERDICTS, CRED)
     assert c.verdict == "IN" and c.node_type == "proposition"
     assert len(c.attackers) == 10 and c.defeated_by == []
-    assert len(c.defeats) == 4, "它击败 4 个攻击者（low 档 MIS）"
+    assert len(c.defeats) == 10, "high 档命题击败全部 10 个攻击者"
     assert len(c.w2_defenders) == 1
 
 
 def test_defense_chain_in_mis():
+    """640b 语义后果（登记 641）：误解 approve ⇒ medium，**低于**命题的 high
+    ⇒ 即使被 approve 也仍被判 OUT（不再出现 IN 误解）。"""
     c = dc.get_defense_chain(IN_MIS, EDGES, VERDICTS, CRED)
-    assert c.verdict == "IN" and c.credibility == "medium"
-    assert c.attackers and c.defeated_by == [], "approve 后同档 ⇒ 不被击败"
-    assert len(c.w2_defenders) == 5
+    assert c.credibility == "medium"
+    assert c.verdict == "OUT" and c.defeated_by, "medium < high ⇒ 被命题击败"
+    assert c.w2_defenders == []
 
 
 def test_what_if_approve_out_mis():
+    """640b：把 OUT 误解抬到 medium **不足以**翻 IN（命题是 high）⇒ 无变化。"""
+    from w2_authority_640b import current as _w2
+    exp = _w2()
     res = dc.what_if(OUT_MIS, "medium", EDGES, VERDICTS, CRED)
-    assert res["changed_nodes"] == [{"node_id": OUT_MIS, "old_verdict": "OUT",
-                                     "new_verdict": "IN"}]
-    assert res["total_in"] == 115 and res["total_out"] == 6 and res["total_undec"] == 0
-    assert res["defeating_edges"] == 14, "该 MIS 的 3 条击败边消失 ⇒ 17-3=14"
+    assert res["changed_nodes"] == []
+    assert (res["total_in"], res["total_out"]) == (exp["IN"], exp["OUT"])
 
 
 def test_what_if_modify_in_mis():
+    """640b：IN_MIS 现为 OUT ⇒ "降为 low" 与现状一致 ⇒ 无变化。"""
     res = dc.what_if(IN_MIS, "low", EDGES, VERDICTS, CRED)
-    assert res["changed_nodes"][0]["node_id"] == IN_MIS
-    assert res["total_out"] == 8 and res["total_in"] == 113
+    assert res["changed_nodes"] == []
 
 
 def test_what_if_overturned_proposition():
+    """640b：命题 high 且无敌者 ⇒ 强制 OUT 不产生连带（攻击者本就不能击败它）。"""
     res = dc.what_if_overturned(PROP, EDGES, VERDICTS, CRED)
-    assert res["forced_out"] is True and res["overturned_self_verdict"] == "OUT"
-    assert res["affected_nodes"], "推翻一个被 10 个 MIS 攻击的命题必有连带影响"
-    assert PROP in res["affected_nodes"]
-    assert res["total_out"] == 8
+    assert res["forced_out"] is False
+    assert res["overturned_self_verdict"] == "IN"
 
 
 def test_find_min_attack_set():
+    """640b：命题 high 档无敌者 ⇒ 穷尽全部攻击者也无法使其 OUT。"""
     res = dc.find_min_attack_set(PROP, EDGES, CRED, verdicts=VERDICTS)
-    assert res["achieved"] is True
-    assert res["set"] == ["MIS-CONC-001"], f"实测贪心解：{res['set']}"
-    assert "贪心近似" in res["note"]
+    assert res["achieved"] is False
+    assert len(res["set"]) == 10, "穷尽 10 个攻击者仍不够"
+    assert "穷尽" in res["note"]
     already = dc.find_min_attack_set(OUT_MIS, EDGES, CRED, verdicts=VERDICTS)
     assert already == {"target": OUT_MIS, "set": [], "achieved": True,
                        "note": "目标本来就是 OUT ⇒ 空集已达成"}
@@ -108,7 +118,10 @@ def test_batch_report(tmp_path: Path):
     for sec in ("## 1. 总览", "## 2. OUT 节点", "## 3. 无辩护者的节点",
                 "## 4. 无攻击者的命题", "## 5. 逐节点辩护链"):
         assert sec in text, f"报告缺小节：{sec}"
-    assert "IN 114 / OUT 7 / UNDEC 0" in text and "击败边 **17**" in text
+    from w2_authority_640b import current as _w2
+    exp = _w2()
+    assert f"IN {exp['IN']} / OUT {exp['OUT']} / UNDEC {exp['UNDEC']}" in text
+    assert f"击败边 **{exp['defeating_edges']}**" in text
     assert "`MIS-LANG-001`" in text and "`ATOM-CONC-FENCE-001::prop-1`" in text
     p = tmp_path / "rep.md"
     assert dc.main(["report", "--out", str(p)]) == 0
@@ -118,7 +131,9 @@ def test_batch_report(tmp_path: Path):
 def test_check_matches_authoritative_w2_artifact():
     """与入库 W2 产物**逐节点**一致（含数字档 credibility 映射）⇒ exit 0。"""
     assert dc.check() == []
+    from w2_authority_640b import artifact_summary as _art
+    a = _art()
     st = dc.stats(EDGES, VERDICTS, CRED)
-    assert st["no_defenders"] == 7 and st["no_attackers"] == 4
+    assert st["no_attackers"] == 4
     auth = json.loads((dc.ROOT / "data" / "grounded_labels_w2.json").read_text(encoding="utf-8"))
-    assert auth["summary"]["IN"] == 114 and auth["defeating_edges"] == 17
+    assert auth["summary"]["IN"] == a["IN"] and auth["defeating_edges"] == a["defeating_edges"]

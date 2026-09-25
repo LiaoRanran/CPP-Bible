@@ -27,6 +27,12 @@ def _compiler():
     return C.AuthorityProjectionCompiler()
 
 
+def _expect_w2_or_dynamic() -> dict:
+    """640b A1：期望 W2 取单一权威源（不写死 114/7）。"""
+    from w2_authority_640b import current as _w2
+    return _w2()
+
+
 def setup_function(fn):
     _unset()
 
@@ -74,8 +80,10 @@ def test_v1_v2_numbers_identical():
     _set("1")
     w2 = _compiler().compile_w2()
     assert w1 == w2
-    assert list(_compiler().w2_summary().items()) == [("IN", 114), ("OUT", 7),
-                                                      ("UNDEC", 0)]
+    _exp = _expect_w2_or_dynamic()
+    assert list(_compiler().w2_summary().items()) == [("IN", _exp["IN"]),
+                                                      ("OUT", _exp["OUT"]),
+                                                      ("UNDEC", _exp["UNDEC"])]
 
 
 def test_schema_identical_both_modes():

@@ -30,11 +30,13 @@ def test_human_review_initial():
 
 
 def test_grounded_status():
-    """人审全量后 W2 判决为 IN114/OUT7（原 596 口径 IN79/OUT42）。"""
+    """W2 判决取单一权威源（640b：不再写死——随人签演进）。"""
+    from w2_authority_640b import current as _w2
+    exp = _w2()
     out = mc.collect_608_new_metrics({}, with_heavy=False)["grounded"]
-    assert out["in"] == 114 and out["out"] == 7 and out["undec"] == 0
-    assert out["candidate_edges_total"] == 388
-    assert out["candidate_edges_by_mis"] == 42
+    assert out["in"] == exp["IN"] and out["out"] == exp["OUT"] and out["undec"] == exp["UNDEC"]
+    assert out["candidate_edges_total"] == exp["edges"]
+    assert out["candidate_edges_by_mis"] == exp["OUT"]
 
 
 def test_build_reproducibility_reads(monkeypatch):

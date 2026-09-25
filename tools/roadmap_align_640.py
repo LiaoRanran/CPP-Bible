@@ -59,7 +59,7 @@ def classify_direction(text: str) -> str:
     """把路线图文本归入方向标签（关键词命中最多者；全无 ⇒ maintenance）。"""
     scores = {k: sum(1 for kw in kws if kw in text)
               for k, kws in DIRECTION_KEYWORDS.items()}
-    best = max(scores, key=lambda k: scores[k])  # type: ignore[arg-type]
+    best = max(scores, key=lambda k: scores[k])
     return best if scores[best] > 0 else "maintenance"
 
 

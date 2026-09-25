@@ -20,30 +20,33 @@ def test_snapshot_captures(tmp_path):
     assert snap[str(tmp_path / "a.txt")] == b"hello"
 
 
-# A1-2：还原被改文件
+# A1-2：还原被改文件（640 A5：_restore 返回 (restored, deleted, kept) 三元组）
 def test_restore_modified(tmp_path):
     p = tmp_path / "a.txt"
     p.write_bytes(b"orig")
     snap = m._snapshot(str(tmp_path))
     p.write_bytes(b"changed")
-    restored, deleted = m._restore(snap, str(tmp_path))
+    restored, deleted, _kept = m._restore(snap, str(tmp_path))
     assert p.read_bytes() == b"orig" and restored == 1
 
 
-# A1-3：删除新建文件
-def test_restore_deletes_new(tmp_path):
+# A1-3：新建文件按 640 A5 分类处置——临时产物删除、正式产物保留（均留痕）
+def test_restore_deletes_new(tmp_path, monkeypatch):
+    monkeypatch.setattr(m, "CLEANUP_LOG", str(tmp_path / "cleanup_log.jsonl"))
     snap = m._snapshot(str(tmp_path))
-    (tmp_path / "new.txt").write_bytes(b"x")
-    _restored, deleted = m._restore(snap, str(tmp_path))
-    assert not (tmp_path / "new.txt").exists() and deleted == 1
+    (tmp_path / "new.tmp").write_bytes(b"x")       # 临时产物 ⇒ 删
+    (tmp_path / "640_report.md").write_bytes(b"x")  # 豁免名单 ⇒ 留
+    _restored, deleted, kept = m._restore(snap, str(tmp_path), tracked=set())
+    assert not (tmp_path / "new.tmp").exists() and deleted == 1
+    assert (tmp_path / "640_report.md").exists() and kept == 1
 
 
-# A1-4：未改动文件不动（restored/deleted 均为 0）
+# A1-4：未改动文件不动（restored/deleted/kept 均为 0）
 def test_restore_noop(tmp_path):
     (tmp_path / "a.txt").write_bytes(b"same")
     snap = m._snapshot(str(tmp_path))
-    restored, deleted = m._restore(snap, str(tmp_path))
-    assert restored == 0 and deleted == 0
+    restored, deleted, kept = m._restore(snap, str(tmp_path))
+    assert restored == 0 and deleted == 0 and kept == 0
 
 
 # A1-5：大文件只记存在（None）不整读

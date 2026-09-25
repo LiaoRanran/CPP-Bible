@@ -45,7 +45,29 @@ CONTROLLED = ["atoms", "evidence", "Examples", "Book"]
 CORE_TOOLS = ["gate_engine.py", "atom_evidence_replay.py", "poison_drill.py",
               "toolchain.py", "cppbible.py"]
 ZERO_IMPORT_TOOLS = ["independent_verifier_628.py", "vsa_verify_628.py"]
-EXPECT_W2 = {"IN": 114, "OUT": 7, "UNDEC": 0}
+def _expect_w2() -> dict:
+    """640b A1：W2 期望值取**单一权威源**（不再写死 114/7——随人签演进）。
+
+    本门禁遵守**零项目工具导入**纪律（tests/test_run_628_gate_628.py 锁定）
+    ⇒ 直接读权威**数据文件**，不 import 任何项目模块。
+    """
+    try:
+        with open(os.path.join(ROOT, "data", "grounded_labels_w2.json"),
+                  encoding="utf-8") as fh:
+            d = json.load(fh)
+        cnt: dict[str, int] = {}
+        for v in d.get("nodes", {}).values():
+            k = str(v.get("label"))
+            cnt[k] = cnt.get(k, 0) + 1
+        if cnt:
+            return {"IN": cnt.get("IN", 0), "OUT": cnt.get("OUT", 0),
+                    "UNDEC": cnt.get("UNDEC", 0)}
+    except (OSError, json.JSONDecodeError, AttributeError):
+        pass
+    return {"IN": 114, "OUT": 7, "UNDEC": 0}          # 回退：历史登记口径
+
+
+EXPECT_W2 = _expect_w2()
 ACCEPT_MD = os.path.join(ROOT, "data", "628_acceptance_report.md")
 
 _SNIPPET = (

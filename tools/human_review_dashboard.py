@@ -203,8 +203,10 @@ def check(*, html_path: Path | str | None = None) -> list[str]:
     for expect in (f">{len(anns)}<", f">{v['approve']['count']}</", f">{v['modify']['count']}<"):
         if expect not in text:
             problems.append(f"仪表盘缺事实数字：{expect}")
-    if len(out_mis_list()) != 7 or "OUT 的 MIS（7 个" not in text:
-        problems.append("OUT 的 MIS 清单不是 7 个")
+    # 640b A1：OUT MIS 数取**现算清单**（曾写死 7——随人签演进即误报）
+    omit = out_mis_list()
+    if f"OUT 的 MIS（{len(omit)} 个" not in text or not omit:
+        problems.append(f"OUT 的 MIS 清单与现算不符（现算 {len(omit)} 个）")
     return problems
 
 
@@ -226,7 +228,7 @@ def main(argv: list[str] | None = None) -> int:
                 print("  - " + m, file=sys.stderr)
             return 1
         print("[dash] --check OK：仪表盘与源数据一致（388 条 · approve 354 / modify 34 / "
-              "reject 0 · OUT MIS 7）")
+              f"reject 0 · OUT MIS {len(out_mis_list())}）")
         return 0
 
     if a.cmd is None:

@@ -36,9 +36,12 @@ def test_ledger_items_written():
 
 
 def test_w2_unchanged_after_write():
+    from w2_authority_640b import current as _w2
+    exp = _w2()
     v = M.verify_written()
     assert v["w2_unchanged"]
-    assert v["w2_summary"] == {"IN": 114, "OUT": 7, "UNDEC": 0}
+    assert v["w2_summary"] == {"IN": exp["IN"], "OUT": exp["OUT"],
+                               "UNDEC": exp["UNDEC"]}
 
 
 def test_sidecar_covers_all_proofs():

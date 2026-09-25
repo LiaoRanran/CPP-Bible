@@ -42,8 +42,11 @@ def test_dark_tech_style_present(html):
 
 
 def test_data_matches_current_state(data):
+    from w2_authority_640b import current as _w2
+    exp = _w2()
     assert data["review"]["unique"] == 93
-    assert data["w2"]["labels"] == {"IN": 114, "OUT": 7, "UNDEC": 0}
+    assert data["w2"]["labels"] == {"IN": exp["IN"], "OUT": exp["OUT"],
+                                    "UNDEC": exp["UNDEC"]}
     assert len(data["w2"]["nodes"]) == 121
     assert data["blind_count"] == 0
     assert sum(data["methods"].values()) == data["events"] > 0

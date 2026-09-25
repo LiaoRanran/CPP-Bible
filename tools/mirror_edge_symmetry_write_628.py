@@ -27,6 +27,8 @@ import shutil
 import sys
 from typing import Optional
 
+import w2_authority_640b as _auth  # 640b：W2 数字单一权威源
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 
@@ -170,7 +172,8 @@ def w2_unchanged() -> tuple[bool, dict]:
             os.environ.pop("QUEYI_AUTHORITY_V2", None)
         else:
             os.environ["QUEYI_AUTHORITY_V2"] = env_backup
-    return s == {"IN": 114, "OUT": 7, "UNDEC": 0}, s
+    a = _auth.artifact_summary()
+    return s == {"IN": a["IN"], "OUT": a["OUT"], "UNDEC": a["UNDEC"]}, s
 
 
 def verify_written() -> dict:

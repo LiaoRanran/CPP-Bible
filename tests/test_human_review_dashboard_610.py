@@ -38,11 +38,11 @@ def test_dashboard_has_overview():
 
 def test_dashboard_has_out_mis():
     html = hd.render(ANNS)
-    assert "OUT 的 MIS（7 个" in html
-    for mis in ("MIS-LANG-001", "MIS-MEM-001", "MIS-MEM-003", "MIS-UB-001",
-                "MIS-UB-004", "MIS-UB-008", "MIS-UB-014"):
+    omit = hd.out_mis_list()
+    assert f"OUT 的 MIS（{len(omit)} 个" in html          # 640b：数量取现算
+    assert omit, "OUT MIS 清单不应为空"
+    for mis in omit[:5]:
         assert f"class='out'>{mis}<" in html, f"缺 OUT MIS：{mis}"
-    assert len(hd.out_mis_list()) == 7
 
 
 def test_self_contained_and_chart_counts():

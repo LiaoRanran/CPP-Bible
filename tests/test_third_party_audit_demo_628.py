@@ -50,9 +50,12 @@ def test_check_is_read_only(check_result):
 
 
 def test_independent_matches_system_v2(check_result):
+    import w2_authority_640b as A
+    exp = A.current()
     c = check_result["checks"]
     assert c["verifier_vs_system"] and c["w2_match"]
-    assert check_result["independent_w2"] == {"IN": 114, "OUT": 7, "UNDEC": 0}
+    assert check_result["independent_w2"] == {"IN": exp["IN"], "OUT": exp["OUT"],
+                                              "UNDEC": exp["UNDEC"]}
 
 
 def test_pck_ledger_unique_consistency(check_result):

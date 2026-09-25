@@ -21,7 +21,7 @@ def _executed():
             if e.get("review_method") == P.REVIEW_METHOD]
 
 
-def test_current_labels_are_in114_out7():
+def test_current_labels_match_artifact():
     if not os.path.exists(LABELS):
         return
     lbl = json.load(open(LABELS, encoding="utf-8"))
@@ -29,8 +29,9 @@ def test_current_labels_are_in114_out7():
     cnt: dict[str, int] = {}
     for v in nodes.values():
         cnt[v.get("label")] = cnt.get(v.get("label"), 0) + 1
-    assert cnt.get("IN") == 114
-    assert cnt.get("OUT") == 7
+    # 640 A1：签署后权威产物重算（IN79/OUT42，误解层全部 OUT）
+    assert cnt.get("IN") == 79
+    assert cnt.get("OUT") == 42
     assert cnt.get("UNDEC", 0) == 0
 
 

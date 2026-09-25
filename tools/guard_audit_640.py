@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import os
 import re
+from typing import Any
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 GUARD = re.compile(r'^if "--check" in sys\.argv:', re.MULTILINE)
@@ -22,7 +23,7 @@ IMP = re.compile(r'import\s+(\w+)|from\s+(\w+)\s+import')
 def main() -> dict:
     tools = [f for f in sorted(os.listdir(HERE))
              if f.endswith(".py") and f != "__init__.py"]
-    guarded = []
+    guarded: list[dict[str, Any]] = []
     for f in tools:
         src = open(os.path.join(HERE, f), encoding="utf-8", errors="replace").read()
         m = GUARD.search(src)
@@ -30,8 +31,8 @@ def main() -> dict:
             continue
         main_pos = src.find('__main__')
         guarded.append({"tool": f, "module_level": main_pos == -1 or m.start() < main_pos})
-    names = {g["tool"][:-3] for g in guarded}
-    risk: dict[str, int] = {g["tool"]: 0 for g in guarded if g["module_level"]}
+    names = {str(g["tool"])[:-3] for g in guarded}
+    risk: dict[str, int] = {str(g["tool"]): 0 for g in guarded if g["module_level"]}
     for f in tools:
         src = open(os.path.join(HERE, f), encoding="utf-8", errors="replace").read()
         mods = {a or b for a, b in IMP.findall(src)}

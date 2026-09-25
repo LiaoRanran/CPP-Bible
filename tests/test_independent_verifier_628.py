@@ -21,8 +21,11 @@ def test_zero_import_of_project_tools():
 
 
 def test_w2_independent_recompute_matches():
+    """独立重算（零项目导入的朴素实现）必须与系统权威源一致（640b：动态比对）。"""
+    import w2_authority_640b as A
+    exp = A.current()
     r = I.verify_w2()
-    assert r["summary"] == {"IN": 114, "OUT": 7, "UNDEC": 0}
+    assert r["summary"] == {"IN": exp["IN"], "OUT": exp["OUT"], "UNDEC": exp["UNDEC"]}
     assert r["nodes"] == 121 and r["frozen_labels_match"]
 
 

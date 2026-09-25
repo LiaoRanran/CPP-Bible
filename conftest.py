@@ -80,6 +80,11 @@ def _classify_new(path: str, tracked: set[str]) -> tuple[bool, str]:
         return False, "tracked（git 在册）"
     if name.endswith((".tmp", ".temp")) or "probe" in name or "canary" in name:
         return True, "临时测试产物（.tmp/probe/canary）"
+    # 640b：`data/vsa/` 是**运行时凭证目录**——会话期间新建的凭证若保留，而会话结束
+    # 又把透明日志还原到会话前 ⇒ 产生"无主凭证"（640b 实测复现）。凭证+日志必须
+    # 同进同出 ⇒ 未跟踪的新凭证一律删除（tracked 的凭证在上方已放行）。
+    if rel.startswith("data/vsa/") or rel.startswith("data" + os.sep + "vsa" + os.sep):
+        return True, "运行时凭证（会话期的凭证与日志必须同进同出）"
     if any(name.startswith(p) or p in name for p in SESSION_CLEANUP_KEEP):
         return False, "豁免名单（匹配 SESSION_CLEANUP_KEEP）"
     return False, "非临时产物（保守默认：保留 + 留痕）"

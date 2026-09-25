@@ -49,7 +49,29 @@ GENESIS = "GENESIS"
 ACTIVE_RESULTS = ("APPROVE", "MODIFY")
 
 # 期望数字（登记于 626/627/628 报告的"系统口径"）
-EXPECT = {"w2": {"IN": 114, "OUT": 7, "UNDEC": 0},
+# 640b A1：W2 的 IN/OUT 随人签演进 ⇒ **从权威产物数据文件取值**（本工具铁律：
+# 零项目工具导入，故读 data 文件而非 import w2_authority_640b）。PCK/ledger/unique
+# 三项是稳定量，保持登记值。
+W2_ARTIFACT = os.path.join(ROOT, "data", "grounded_labels_w2.json")
+
+
+def _w2_expect() -> dict[str, int]:
+    """从权威产物读当前 W2 分布（文件缺失 ⇒ 回退登记值并保持可测）。"""
+    try:
+        d = json.loads(open(W2_ARTIFACT, encoding="utf-8").read())
+        cnt: dict[str, int] = {}
+        for v in d.get("nodes", {}).values():
+            k = str(v.get("label"))
+            cnt[k] = cnt.get(k, 0) + 1
+        if cnt:
+            return {"IN": cnt.get("IN", 0), "OUT": cnt.get("OUT", 0),
+                    "UNDEC": cnt.get("UNDEC", 0)}
+    except (OSError, json.JSONDecodeError, AttributeError):
+        pass
+    return {"IN": 114, "OUT": 7, "UNDEC": 0}          # 回退：历史登记口径
+
+
+EXPECT = {"w2": _w2_expect(),
           "pck_authorized": 27, "unique_review_items": 93, "ledger_events": 452}
 
 

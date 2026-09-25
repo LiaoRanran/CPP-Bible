@@ -38,7 +38,25 @@ OUT_JSON = os.path.join(ROOT, "data", "third_party_audit_demo_628.json")
 OUT_MD = os.path.join(ROOT, "data", "third_party_audit_demo_report_628.md")
 
 ENV_FLAG = "QUEYI_AUTHORITY_V2"
-EXPECT_W2 = {"IN": 114, "OUT": 7, "UNDEC": 0}
+def _expect_w2() -> dict:
+    """640b A1：W2 期望值取单一权威源（权威产物数据文件；不再写死 114/7）。"""
+    try:
+        with open(os.path.join(ROOT, "data", "grounded_labels_w2.json"),
+                  encoding="utf-8") as fh:
+            d = json.load(fh)
+        cnt: dict[str, int] = {}
+        for v in d.get("nodes", {}).values():
+            k = str(v.get("label"))
+            cnt[k] = cnt.get(k, 0) + 1
+        if cnt:
+            return {"IN": cnt.get("IN", 0), "OUT": cnt.get("OUT", 0),
+                    "UNDEC": cnt.get("UNDEC", 0)}
+    except (OSError, json.JSONDecodeError, AttributeError):
+        pass
+    return {"IN": 114, "OUT": 7, "UNDEC": 0}          # 回退：历史登记口径
+
+
+EXPECT_W2 = _expect_w2()
 EXPECT_PCK_AUTHORIZED = 27
 EXPECT_UNIQUE = 93
 
@@ -121,7 +139,13 @@ def step3_generate_vsa() -> str:
 
 
 def step4_append_log(vsa_path: str) -> dict:
-    p = _run(LOG_TOOL, "--append", vsa_path)
+    """追加到**生产透明日志**（显式清掉可能在测试进程中泄漏的 `CPPBIBLE_TRANSPARENCY_LOG`
+    ——640b 实测：泄漏的环境变量会把入册写到临时日志，而凭证落在生产目录 ⇒ 产生无主凭证）。"""
+    import transparency_log_628 as _T
+    env = {k: v for k, v in os.environ.items() if k != _T.LOG_ENV}
+    p = subprocess.run([sys.executable, LOG_TOOL, "--append", vsa_path],
+                       capture_output=True, text=True, cwd=ROOT, env=env,
+                       timeout=300, check=False)
     if p.returncode != 0:
         raise RuntimeError(f"B3 追加日志失败: {p.stderr[-300:]}")
     return cast(dict, _load_json(p.stdout))
