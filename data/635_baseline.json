@@ -1,0 +1,30 @@
+{
+  "standing": {
+    "gate_rules": 67,
+    "escape_rate": "1/1406 (0.071%)",
+    "autoimmune_rate_pct": 0.0,
+    "coverage_pct": 100.0,
+    "horizon_60_80_pct": 100.0,
+    "na_rate_pct": 11.24,
+    "tools_total": 396,
+    "tests_total": 395,
+    "commits": 1824,
+    "local_ahead": 29
+  },
+  "measured": {
+    "gate_rules": 67,
+    "coverage_pct": 100.0,
+    "autoimmune_missing_cards": 0,
+    "na_rate_pct": 11.24,
+    "horizon_60_80_pct": 1.0,
+    "tools_total": 397,
+    "tests_total": 396,
+    "commits": 1824,
+    "local_ahead": 29,
+    "dirty_files": 78,
+    "atom_cards": 28,
+    "verified_cards": 23,
+    "baseline_files": 34,
+    "exception_clause_hits": 991
+  }
+}
