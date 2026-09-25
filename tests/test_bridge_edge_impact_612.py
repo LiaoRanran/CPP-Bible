@@ -19,12 +19,13 @@ def test_impact_generates():
 def test_zero_approved_matches_baseline_keep_low():
     r = a3.impact("keep-low", "approved-only")
     assert r["bridges_applied"] == 0
-    assert r["base_summary"]["IN"] == 114 and r["base_summary"]["OUT"] == 7
+    # 640 A1：签署后权威产物重算（IN79/OUT42/击败194），两档基线趋同
+    assert r["base_summary"]["IN"] == 79 and r["base_summary"]["OUT"] == 42
 
 
 def test_zero_approved_matches_baseline_upgrade_medium():
     r = a3.impact("upgrade-medium", "approved-only")
-    assert r["base_summary"]["IN"] == 121 and r["base_summary"]["OUT"] == 0
+    assert r["base_summary"]["IN"] == 79 and r["base_summary"]["OUT"] == 42
 
 
 def test_whatif_all_medium_runs_and_improves_components():

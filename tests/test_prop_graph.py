@@ -43,8 +43,8 @@ def test_build_totals_and_distributions(tmp_path: Path):
     assert st["propositions"] == 79, st
     assert st["cards"] == 27, st
     assert st["by_claim_type"] == {"inference": 29, "observation": 50}, st["by_claim_type"]
-    # 当前实测底座：命题级 signed_by 0 条 ⇒ 签署只能落在 card_signed / unsigned
-    assert st["by_signoff"].get("prop_signed", 0) == 0, st["by_signoff"]
+    # 640 A1 更新：632/634 人审授权填充后命题级 signed_by 79/79 全签（原 0）
+    assert st["by_signoff"].get("prop_signed", 0) == 79, st["by_signoff"]
     assert sum(st["by_signoff"].values()) == 79
     assert st["by_anchor_source"].get("none", 0) == 0, st["by_anchor_source"]
 
@@ -85,15 +85,16 @@ def test_query_by_type_and_sign(tmp_path: Path):
     assert len(obs) == 50 and len(inf) == 29
     assert {r["claim_type"] for r in obs} == {"observation"}
     uns = pg.query(db, sign="unsigned")
-    signed = pg.query(db, sign="card_signed")
-    assert len(uns) + len(signed) == 79 and len(uns) == 3
+    signed = pg.query(db, sign="prop_signed")
+    # 640 A1：签署后全部 79 条为 prop_signed，unsigned=0
+    assert len(uns) == 0 and len(signed) == 79
     assert pg.query(db, machine=False) == []
     assert len(pg.query(db, machine=True)) == 79
     one = pg.query(db, prop_id=inf[0]["prop_key"])
     assert len(one) == 1 and one[0]["prop_key"] == inf[0]["prop_key"]
     some_card = obs[0]["card"]
     assert {r["card"] for r in pg.query(db, card=some_card)} == {some_card}
-    assert len(pg.query(db, ctype="observation", sign="unsigned")) <= 3
+    assert pg.query(db, ctype="observation", sign="unsigned") == []
 
 
 def test_unsigned_props_have_no_card_signoff(tmp_path: Path):
@@ -118,9 +119,10 @@ def test_anchor_source_splits_card_vs_evidence(tmp_path: Path):
     assert {r["anchor_source"] for r in rows} == {"evidence"}, \
         "atom 卡自身无锚（实测 27/27）⇒ 命题只能靠 evidence 卡带锚"
     assert all(r["machine_verified"] == 1 for r in rows)
-    # 机验状态与签署状态**互相独立**：有锚 ≠ 已签（当前 3 条 unsigned 也有锚）
-    assert any(r["anchor_source"] == "evidence" and r["signoff_state"] == "unsigned"
-               for r in rows), "应存在「有机器锚点但未签」的命题（这正是要显形的态）"
+    # 640 A1：签署后不存在 unsigned ⇒ 「有锚未签」态为空集（该显形口径保留在
+    # pending_signoff 视图的 fail-soft 路径里）；机验与签署仍互相独立地分列记录。
+    assert all(r["signoff_state"] == "prop_signed" for r in rows)
+    assert all(r["anchor_source"] == "evidence" for r in rows)
 
 
 # ── 566 任务 0：旧 schema 库必须自愈（监工验收踩到的真 bug）────────────────────
@@ -184,7 +186,7 @@ def test_566_old_schema_build_self_heals(tmp_path: Path, capsys):
     assert st["by_claim_type"] == {"inference": 29, "observation": 50}
     cols = {r[1] for r in sqlite3.connect(str(db)).execute("PRAGMA table_info(props)")}
     assert set(pg.PROPS_COLUMNS) <= cols, sorted(set(pg.PROPS_COLUMNS) - cols)
-    assert len(pg.query(db, sign="unsigned")) == 3
+    assert len(pg.query(db, sign="unsigned")) == 0  # 640 A1：签署后无未签命题
     ver, missing = pg.schema_state(db)
     assert ver == pg.SCHEMA_VERSION and missing == []
 
@@ -203,14 +205,14 @@ def test_566_official_db_is_current():
 # ── 566 任务 1：人审交接视图 ──────────────────────────────────────────────────
 def test_566_pending_signoff_lists_unsigned_only(tmp_path: Path):
     """待签视图 = `unsigned`（命题级 signed_by 与卡级 verified_by 都没有）——
-    卡级人签（card_signed）**不进**本视图（口径不与 stats 混）。"""
+    卡级人签（card_signed）**不进**本视图（口径不与 stats 混）。
+    640 A1：签署后 unsigned=0 ⇒ 待签视图为空（fail-soft 路径由下方视图测试覆盖）。"""
     db = pg.build(tmp_path / "p.db")
     rows = pg.pending_signoff(db)
-    assert len(rows) == 3, [r["prop_key"] for r in rows]
-    assert {r["signoff_state"] for r in rows} == {"unsigned"}
-    assert all(not r["signed_by"] for r in rows)
-    assert len(pg.query(db, sign="card_signed")) == 76
-    assert len(rows) + 76 == 79
+    assert rows == []
+    assert len(pg.query(db, sign="card_signed")) == 0
+    assert len(pg.query(db, sign="prop_signed")) == 79
+    assert len(rows) + len(pg.query(db, sign="prop_signed")) == 79
 
 
 def test_566_backlog_counts_atoms_minus_with_props(tmp_path: Path):
@@ -224,16 +226,16 @@ def test_566_backlog_counts_atoms_minus_with_props(tmp_path: Path):
 
 
 def test_566_views_are_fail_soft_and_json(tmp_path: Path, capsys, monkeypatch):
-    """空结果 fail-soft（打印"无待办"不崩）+ 两个视图都支持 --json。"""
+    """空结果 fail-soft（打印"无待办"不崩）+ 两个视图都支持 --json。
+    640 A1：签署后 pending-signoff 真实结果就是空 ⇒ 本测试同时覆盖真实空与 patch 空。"""
     db = pg.build(tmp_path / "p.db")
     assert pg.main(["query", "--db", str(db), "--pending-signoff"]) == 0
-    assert "未人签命题 3 条" in capsys.readouterr().out
+    assert "无待办" in capsys.readouterr().out  # 640 A1：签署后无待签命题
     assert pg.main(["query", "--db", str(db), "--backlog"]) == 0
     assert "无待办" in capsys.readouterr().out
     assert pg.main(["query", "--db", str(db), "--pending-signoff", "--json"]) == 0
     data = json.loads(capsys.readouterr().out)
-    assert data["view"] == "pending_signoff" and data["count"] == 3
-    assert "howto" in data and "verified_by" in data["howto"]
+    assert data["view"] == "pending_signoff" and data["count"] == 0
     assert pg.main(["query", "--db", str(db), "--backlog", "--json"]) == 0
     data = json.loads(capsys.readouterr().out)
     assert data["view"] == "backlog" and data["atoms_total"] == 27
@@ -247,19 +249,18 @@ def test_566_views_are_fail_soft_and_json(tmp_path: Path, capsys, monkeypatch):
 
 
 def test_566_pending_view_prints_card_frontmatter_howto(tmp_path: Path, capsys):
-    """人签指引必须落在**仓库既有接口**上（卡面 `verified_by: human:<名>` + git 作者校验），
-    不许新造签署字段/协议。"""
+    """人签指引必须落在**仓库既有接口**上（卡面 `verified_by: human:<名>` + git 作者校验）。
+    640 A1：签署后待签视图恒为空 ⇒ howto 文案只在 --json 的 howto 字段/工具 help 里可见；
+    此处锁定空态行为 + howto 文案仍可从 json 空态以外的常量途径获得。"""
     db = pg.build(tmp_path / "p.db")
     pg.main(["query", "--db", str(db), "--pending-signoff"])
     out = capsys.readouterr().out
-    assert "verified_by: human:" in out
-    assert "git 提交" in out, "必须提到 gate 的 git-作者校验规则"
-    assert "prop_graph.py build" in out, "签完要重建视图"
-    # 实测（566 复核）：unsigned 的 3 条**全部来自 `ATOM-LANG-INLINE-001`**（prop-1/2/3）——
-    # 提示词假设的"三张红队卡 ATOM-MEM-ALLOC-002 / LEAK-002 / PERF-004"与本仓 atoms/ 不符
-    # （见 _worklog_566.md 偏差表）；这里按**磁盘实测**锁，不照抄提示词。
-    for key in ("ATOM-LANG-INLINE-001", "atoms/lang/ATOM-LANG-INLINE-001.md"):
-        assert key in out, f"{key} 应在待签清单里"
+    assert "无待办" in out, "签署后待签视图应为空（fail-soft）"
+    # howto 文案（human: + git 校验 + 重建视图）仍是工具的固定指引文本：
+    src = (REPO / "tools" / "prop_graph.py").read_text(encoding="utf-8")
+    assert "verified_by: human:" in src
+    assert "git 提交" in src, "必须提到 gate 的 git-作者校验规则"
+    assert "prop_graph.py build" in src, "签完要重建视图"
 
 
 def test_cli_build_stats_query(tmp_path: Path, capsys):
@@ -272,7 +273,7 @@ def test_cli_build_stats_query(tmp_path: Path, capsys):
     assert st["propositions"] == 79
     assert pg.main(["query", "--db", db, "--sign", "unsigned", "--json"]) == 0
     data = __import__("json").loads(capsys.readouterr().out)
-    assert data["count"] == 3 and all(r["signoff_state"] == "unsigned" for r in data["rows"])
+    assert data["count"] == 0 and data["rows"] == []  # 640 A1：签署后无未签
     # 库不存在 ⇒ fail-loud（不静默给空结果）
     with pytest.raises(SystemExit):
         pg.query(tmp_path / "nope.db")

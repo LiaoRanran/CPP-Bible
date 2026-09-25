@@ -80,12 +80,12 @@ def test_single_approve_promotes_weight_and_flips_verdict():
     assert len(eff) == 388, "approve 不得删边"
     doc = w2.solve(eff)
     d = w2.diff_verdicts(w2.solve(EDGES), doc, edges=EDGES, changes=changes)
-    assert d["flipped"] == 1
-    assert d["flips"][0]["node_id"] == TARGET_MIS
-    assert (d["flips"][0]["old"], d["flips"][0]["new"]) == ("OUT", "IN")
-    assert d["flips"][0]["trigger_kinds"] == {"approve": 1}
-    # 误解被判 IN 属"数据异常"档 ⇒ 596 基线检查不再适用（人审介入后 legitimately 如此）
-    assert any("误解被判 IN" in p for p in w2.check(doc, expect_594=True))
+    # 640 A1 更新：签署后命题可信度 high（human: 签），单条 approve 把误解边抬到
+    # medium 也无法再击败 high 命题 ⇒ 609 时代的 OUT→IN 翻转不再发生（翻转=0）。
+    # approve 的**机制**（promote low→medium、留痕、不删边）仍由上方断言锁住；
+    # 翻转归因路径由 reject 系列（移除全部攻击者 ⇒ OUT→IN）继续覆盖。
+    assert d["flipped"] == 0
+    assert d["flips"] == []
 
 
 # ── 3. reject 移除边 ──────────────────────────────────────────────────────────

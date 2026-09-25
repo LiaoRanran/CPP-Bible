@@ -277,11 +277,14 @@ def _main() -> int:
     print("\n[toolchain] ✅ 全部解析成功")
     return 0
 
-if "--check" in sys.argv:
-    print("OK: toolchain --check（只读：加载即校验，不执行任何业务逻辑）")
-    sys.exit(0)
-
 if __name__ == "__main__":
+    # 640 A4 修复：634 A2 批量补的 `--check` 守卫原本在**模块级**——本模块被
+    # atom_evidence_replay / cppbible / hy3_check 等导入时，import 会看到**外层进程**
+    # 的 argv（含 --check）⇒ 打印 toolchain 的 OK 并 sys.exit(0)，劫持调用方
+    # （replay_invariants --check 因此从未真正跑过不变量）。守卫移入 __main__。
+    if "--check" in sys.argv:
+        print("OK: toolchain --check（只读：加载即校验，不执行任何业务逻辑）")
+        sys.exit(0)
     # 放在 __main__ 内局部导入：toolchain 会被 cppbible/hy3_check 等反覆导入，
     # 没必要让它们都背一个只在「当脚本直接运行」时才用得上的依赖。
     from utf8_console import ensure_utf8
