@@ -162,7 +162,7 @@ def summary() -> dict[str, Any]:
     low = [p for p in pairs if p["confidence"] == "low"]
 
     # 冲突度只在**高置信**（同前缀族）对内计算（同 scope 全配对的度是退化的常数）
-    degree: dict[str, int] = collections.Counter()
+    degree: collections.Counter[str] = collections.Counter()
     for p in high:
         degree[p["rule_a"]] += 1
         degree[p["rule_b"]] += 1

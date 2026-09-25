@@ -130,7 +130,8 @@ def fresh_metrics() -> dict[str, Any]:
     """
     try:
         import self_observer_637 as obs
-        return obs.collect(heavy=False)["metrics"]
+        m = obs.collect(heavy=False).get("metrics")
+        return m if isinstance(m, dict) else load_metrics()
     except Exception:  # noqa: BLE001
         return load_metrics()
 

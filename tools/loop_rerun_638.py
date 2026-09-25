@@ -82,9 +82,10 @@ def run_loop() -> dict[str, Any]:
 # ── 与第一次对比 ────────────────────────────────────────────────────────
 def load_637() -> dict[str, Any]:
     try:
-        return json.loads(open(SCORED_637, encoding="utf-8").read())
+        d: Any = json.loads(open(SCORED_637, encoding="utf-8").read())
     except (OSError, json.JSONDecodeError):
         return {}
+    return d if isinstance(d, dict) else {}
 
 
 def compare(run: Optional[dict[str, Any]] = None) -> dict[str, Any]:

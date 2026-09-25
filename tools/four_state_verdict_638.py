@@ -85,6 +85,8 @@ def has_boundary(rec: dict[str, Any]) -> bool:
     v = rec.get("generator_version")
     if not isinstance(h, str) or not _HASH_RE.match(h.strip()):
         return False
+    if not isinstance(c, (int, float, str)):
+        return False
     try:
         if int(c) <= 0:
             return False
