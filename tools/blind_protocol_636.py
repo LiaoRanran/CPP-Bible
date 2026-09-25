@@ -38,7 +38,7 @@ STEPS = [
 
 
 def _jsonl(p: str) -> list[dict]:
-    out = []
+    out: list[dict] = []
     if not os.path.exists(p):
         return out
     for ln in open(p, encoding="utf-8"):
