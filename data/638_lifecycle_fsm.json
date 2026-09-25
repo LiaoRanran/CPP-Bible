@@ -1,0 +1,179 @@
+{
+  "generated": "2026-09-25T09:31:39",
+  "states": [
+    "draft",
+    "verified",
+    "stale",
+    "disputed",
+    "retired"
+  ],
+  "legal_pairs": 11,
+  "total_pairs": 25,
+  "census": {
+    "dist": {
+      "draft": 2,
+      "verified": 26
+    },
+    "n": 28,
+    "ledger_n": 0,
+    "ledger_errs": [],
+    "with_lifecycle_field": 0
+  },
+  "pairs": [
+    {
+      "from": "draft",
+      "to": "draft",
+      "legal": false,
+      "why": "非法迁移 `draft → draft`（§三.3.2.2 不允许）"
+    },
+    {
+      "from": "draft",
+      "to": "verified",
+      "legal": true,
+      "why": "合法迁移 `draft → verified`"
+    },
+    {
+      "from": "draft",
+      "to": "stale",
+      "legal": false,
+      "why": "非法迁移 `draft → stale`（§三.3.2.2 不允许）"
+    },
+    {
+      "from": "draft",
+      "to": "disputed",
+      "legal": false,
+      "why": "非法迁移 `draft → disputed`（§三.3.2.2 不允许）"
+    },
+    {
+      "from": "draft",
+      "to": "retired",
+      "legal": true,
+      "why": "合法迁移 `draft → retired`"
+    },
+    {
+      "from": "verified",
+      "to": "draft",
+      "legal": false,
+      "why": "非法迁移 `verified → draft`（§三.3.2.2 不允许）"
+    },
+    {
+      "from": "verified",
+      "to": "verified",
+      "legal": false,
+      "why": "非法迁移 `verified → verified`（§三.3.2.2 不允许）"
+    },
+    {
+      "from": "verified",
+      "to": "stale",
+      "legal": true,
+      "why": "合法迁移 `verified → stale`"
+    },
+    {
+      "from": "verified",
+      "to": "disputed",
+      "legal": true,
+      "why": "合法迁移 `verified → disputed`"
+    },
+    {
+      "from": "verified",
+      "to": "retired",
+      "legal": true,
+      "why": "合法迁移 `verified → retired`"
+    },
+    {
+      "from": "stale",
+      "to": "draft",
+      "legal": false,
+      "why": "非法迁移 `stale → draft`（§三.3.2.2 不允许）"
+    },
+    {
+      "from": "stale",
+      "to": "verified",
+      "legal": true,
+      "why": "合法迁移 `stale → verified`"
+    },
+    {
+      "from": "stale",
+      "to": "stale",
+      "legal": false,
+      "why": "非法迁移 `stale → stale`（§三.3.2.2 不允许）"
+    },
+    {
+      "from": "stale",
+      "to": "disputed",
+      "legal": true,
+      "why": "合法迁移 `stale → disputed`"
+    },
+    {
+      "from": "stale",
+      "to": "retired",
+      "legal": true,
+      "why": "合法迁移 `stale → retired`"
+    },
+    {
+      "from": "disputed",
+      "to": "draft",
+      "legal": false,
+      "why": "非法迁移 `disputed → draft`（§三.3.2.2 不允许）"
+    },
+    {
+      "from": "disputed",
+      "to": "verified",
+      "legal": true,
+      "why": "合法迁移 `disputed → verified`"
+    },
+    {
+      "from": "disputed",
+      "to": "stale",
+      "legal": false,
+      "why": "非法迁移 `disputed → stale`（§三.3.2.2 不允许）"
+    },
+    {
+      "from": "disputed",
+      "to": "disputed",
+      "legal": false,
+      "why": "非法迁移 `disputed → disputed`（§三.3.2.2 不允许）"
+    },
+    {
+      "from": "disputed",
+      "to": "retired",
+      "legal": true,
+      "why": "合法迁移 `disputed → retired`"
+    },
+    {
+      "from": "retired",
+      "to": "draft",
+      "legal": true,
+      "why": "合法复活（条件：new_evidence）"
+    },
+    {
+      "from": "retired",
+      "to": "verified",
+      "legal": false,
+      "why": "非法迁移 `retired → verified`（§三.3.2.2 不允许）"
+    },
+    {
+      "from": "retired",
+      "to": "stale",
+      "legal": false,
+      "why": "非法迁移 `retired → stale`（§三.3.2.2 不允许）"
+    },
+    {
+      "from": "retired",
+      "to": "disputed",
+      "legal": false,
+      "why": "非法迁移 `retired → disputed`（§三.3.2.2 不允许）"
+    },
+    {
+      "from": "retired",
+      "to": "retired",
+      "legal": false,
+      "why": "非法迁移 `retired → retired`（§三.3.2.2 不允许）"
+    }
+  ],
+  "revival_conditions": [
+    "new_evidence",
+    "boundary_change",
+    "defeater_resolved"
+  ]
+}
