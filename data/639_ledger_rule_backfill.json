@@ -1,0 +1,2728 @@
+{
+  "generated": "2026-09-25T10:30:05",
+  "n_events": 452,
+  "n_rules": 67,
+  "dist": {
+    "undetermined": 452
+  },
+  "rows": [
+    {
+      "event_id": "AE-000001-bf00447a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000002-1bda190b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000003-8e485ecf",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000004-8b9e4c86",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000005-d7feba0f",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000006-0e346b3e",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000007-b93e0d4c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000008-d8749887",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000009-2de8894d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000010-e58f6f2b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000011-8e27e4cf",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000012-c6b742e6",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000013-3f773204",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000014-2c40d52d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000015-941265da",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000016-59e62e4c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000017-809ddb2c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000018-b86e20dc",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000019-ebc8ad06",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000020-fcb5fc00",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000021-df8536c0",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000022-cedb4dba",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000023-57d19437",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000024-0d04c6d3",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000025-734ebb1a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000026-e78ed9a5",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000027-22557a19",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000028-7a888fd6",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000029-dafb2613",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000030-3c803188",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000031-0cc91a27",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000032-2adf53aa",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000033-e59ccdf7",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000034-0963288c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000035-49008752",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000036-b10316cb",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000037-5bddd69a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000038-bcfe47bb",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000039-de079f23",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000040-e41f71e5",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000041-29a3ff92",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000042-1cf725a2",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000043-e9b88686",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000044-6077ff83",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000045-f262ed06",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000046-3120f88b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000047-304047a6",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000048-d9144c54",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000049-f738887d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000050-dbe9c2a5",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000051-9f69d0b4",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000052-332f1a1b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000053-c99f04ff",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000054-4d907231",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000055-e92414f7",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000056-c3244b31",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000057-7f3e5667",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000058-b5fade3b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000059-47fb3521",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000060-62fe9003",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000061-8d5bf5bc",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000062-496165e1",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000063-5d833073",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000064-fd508079",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000065-256d583d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000066-e24ad7aa",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000067-3f859f77",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000068-1c6850a9",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000069-b64e6d60",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000070-2e6fbeb0",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000071-0e85ac2a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000072-7ab32a4a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000073-4ab5b919",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000074-9164503f",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000075-614209b9",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000076-cca86c96",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000077-f8cef211",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000078-472d1967",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000079-7a83f106",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000080-05bb4a88",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000081-f8cf4de6",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000082-f5e10dca",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000083-438033f7",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000084-55cce312",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000085-2c709609",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000086-14711d56",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000087-59abf8e5",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000088-10b5c441",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000089-540f8fa5",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000090-053c39a2",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000091-cd831b62",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000092-9ebd1d0a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000093-ec65cb80",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000094-fa9ef534",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000095-1b75c22b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000096-ca7f5080",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000097-2d0ec437",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000098-04365ff2",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000099-a97926a2",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000100-3fb096a1",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000101-483e532f",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000102-450e5be4",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000103-8cb3c94d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000104-966baaae",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000105-8bc70c54",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000106-711584d4",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000107-a7b63fdb",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000108-f8bbf103",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000109-5cf81ce3",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000110-6e9d8f28",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000111-f1dd2cdf",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000112-e28e182f",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000113-515195a2",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000114-6ea46333",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000115-a9f0d932",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000116-8af6c309",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000117-95bc8083",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000118-e41c7f99",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000119-6f66c6c0",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000120-e8724175",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000121-1a1a8a81",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000122-69667c66",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000123-53eda8e6",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000124-755bc42c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000125-4b07d06f",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000126-8a9fa6c5",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000127-a3ad5014",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000128-4eb9c154",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000129-a42136ed",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000130-8a52f934",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000131-3edacb15",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000132-05b54483",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000133-7e13a35a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000134-610288c8",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000135-5751b5a5",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000136-842429b7",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000137-a8994c38",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000138-20d6f507",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000139-9676e2c1",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000140-9e2949ae",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000141-bc6d3623",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000142-686e9e2d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000143-ffcb4dbc",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000144-c12dbc99",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000145-9a588910",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000146-7c94d404",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000147-585a6e39",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000148-2af9e33b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000149-c0a52700",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000150-a9948b18",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000151-7f13718d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000152-d0d136b6",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000153-c7bc8940",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000154-cee22cad",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000155-23a2df62",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000156-7829f221",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000157-d372be40",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000158-1eb41da7",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000159-44670c02",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000160-e701d014",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000161-1290c3d7",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000162-de83f97a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000163-1eafec3f",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000164-4d68e0ff",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000165-824daae2",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000166-f190ac9c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000167-8a67c692",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000168-ec37f811",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000169-24b44fce",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000170-815fd699",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000171-38753ace",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000172-c2b3f6cb",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000173-b3205f9a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000174-b9205088",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000175-df3e8c7c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000176-5e74434e",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000177-aea61ec3",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000178-aeed6028",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000179-c0a7e390",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000180-f7fdb5be",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000181-127df7b2",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000182-c55f8c76",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000183-199da7b2",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000184-1378b67f",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000185-67922106",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000186-2d13246b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000187-1999fee5",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000188-899204f6",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000189-0689977c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000190-ee1c3518",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000191-2a70f3a6",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000192-9e50ab31",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000193-8414b686",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000194-2092185a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000195-448bd1af",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000196-bce5fd60",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000197-36b49b54",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000198-81c0a526",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000199-6f2167ad",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000200-a4633cdc",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000201-86e9c9f1",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000202-5fe355d4",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000203-7dbb7cb1",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000204-94c9e3a2",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000205-593e8160",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000206-0246a066",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000207-022ff515",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000208-e246e77d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000209-f8f187a7",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000210-514634f5",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000211-512e7b77",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000212-ea94f1e2",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000213-09094a78",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000214-57512eda",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000215-40f14580",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000216-81d85f86",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000217-281a2b6f",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000218-1c1ab96d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000219-32891396",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000220-bba7e1c3",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000221-baa30e8e",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000222-602362ac",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000223-b734ce2e",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000224-6fb8ad65",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000225-24d4d11f",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000226-67d73421",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000227-bc13dae8",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000228-dc842c1f",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000229-cf4adc80",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000230-a4bb9408",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000231-135420b4",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000232-e77c0bcc",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000233-5aaeaa9d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000234-a2976a19",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000235-6912b590",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000236-a70e57f3",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000237-9a11be4d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000238-148b377a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000239-c91a59c9",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000240-144a8c70",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000241-a937fb00",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000242-9be1f6d1",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000243-2bed0742",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000244-789f56f6",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000245-0a34f9de",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000246-04515fda",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000247-fae6bbfa",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000248-4c6675a7",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000249-835a75b9",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000250-44184857",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000251-7ad68887",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000252-ed3a0f01",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000253-576bb126",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000254-3538fc44",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000255-0b6155d7",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000256-76ebe2b4",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000257-ca55a595",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000258-75f56dcb",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000259-8cf4fc0e",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000260-f715a1c2",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000261-7bd36039",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000262-df331364",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000263-fd3a4b44",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000264-7b3fc490",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000265-9ff325da",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000266-9c58e561",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000267-ae8df9ac",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000268-9f4aba3f",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000269-3fc6668d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000270-b8d626b2",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000271-9ebb1cde",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000272-79113d8d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000273-f4d1e70c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000274-a2e0852d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000275-309b88b4",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000276-0779a022",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000277-d83dead8",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000278-bcd099c4",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000279-8a371e8c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000280-066db20f",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000281-520e27a3",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000282-5308e5bc",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000283-0a2540e5",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000284-84ffd594",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000285-61e45b88",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000286-b3cd26cf",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000287-e0045bbf",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000288-3cd8ff52",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000289-8a69d9c1",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000290-fd6405da",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000291-01a9786e",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000292-a39d9af1",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000293-cb061b19",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000294-ca55836b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000295-5fd966ff",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000296-e7f501eb",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000297-90c06ce7",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000298-05073a5c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000299-d321e012",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000300-c6316e80",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000301-6b6a7374",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000302-0ca509f7",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000303-473b2bd8",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000304-e0b21838",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000305-2cdd235a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000306-37fd3b75",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000307-30136424",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000308-e714166b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000309-c6501b1b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000310-5011448f",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000311-670954ae",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000312-6135a1b2",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000313-82d2a8e8",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000314-6ba9e11e",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000315-4441f6b9",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000316-81c596d0",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000317-f6a0888d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000318-0c60d416",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000319-e01439d3",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000320-8e985ce0",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000321-8347a98c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000322-95c787ab",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000323-a9d1853c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000324-36d31bb5",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000325-7349d433",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000326-b34c9342",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000327-30e3b515",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000328-05ff6ece",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000329-ca406455",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000330-01f71fa1",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000331-78346b7b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000332-8827a6cb",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000333-75432ec9",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000334-72901258",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000335-08895588",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000336-9b6e3c8a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000337-b8fdfd9e",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000338-a19bce06",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000339-6bf9b5b7",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000340-a29238cd",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000341-abf904cc",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000342-84c2c1c4",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000343-0fb0eb73",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000344-d6373301",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000345-2e49805a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000346-f0f5bb24",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000347-9d9b2a5d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000348-68943df5",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000349-4f5c1137",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000350-487fd8e1",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000351-81ea019b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000352-d819cb9a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000353-575c3b3d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000354-fb22500c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000355-25cafcb6",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000356-82eecb22",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000357-d9974667",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000358-a4f2435f",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000359-f49f7737",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000360-cc256533",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000361-e7200fc5",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000362-0922cdc2",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000363-ce21e9c4",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000364-4306e907",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000365-6008b740",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000366-0eb66a2c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000367-10eeb538",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000368-d47a2c9e",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000369-47955ef1",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000370-3413e0d4",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000371-06e76997",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000372-805a22ab",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000373-0d4bfcbf",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000374-528e150c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000375-027d0db3",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000376-c72df185",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000377-2e53e3b4",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000378-c276cbcf",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000379-ae108643",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000380-56287127",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000381-366dbc6c",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000382-b881d26b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000383-613980a3",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000384-ed5b7548",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000385-a40e5def",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000386-51b3c629",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000387-15dc2cd8",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000388-b178eb2d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000389-0fa0f6f7",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000390-d541b32d",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000391-20240146",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000392-a30d7bf7",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000393-4c2946c6",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000394-dc6fa089",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000395-fb312ae3",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000396-2044eefe",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000397-41840802",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000398-ac6a9fc8",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000399-b2acfd07",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000400-2b36a286",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000401-4a037cb3",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000402-78d88689",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000403-e4b88942",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000404-2c418702",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000405-45de04cc",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000406-829cdabd",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000407-38860f4b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000408-c0605ec4",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000409-b1764ab0",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000410-7fd6adb3",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000411-40b47e90",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000412-96c206cc",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000413-bfb20b8e",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000414-963debfb",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000415-ed09a7e1",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000416-76f2f85b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000417-bd327749",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000418-cb57e42b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000419-8eb06e36",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000420-c4fb192e",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000421-1cc4caf3",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000422-a582e886",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000423-57cfd742",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000424-f464715f",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000425-3759e993",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000426-5648fa23",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000427-71c87de5",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000428-f50b604b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000429-8fbae3fa",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000430-3ecf2579",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000431-1fd26f90",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000432-6d1c8b29",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000433-dd2ffab7",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000434-eba706fa",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000435-c38f4c5b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000436-d494c37b",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000437-cd51accc",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000438-469450f1",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000439-70b54c25",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000440-4a78f87e",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000441-2fa09ac4",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000442-42af4142",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000443-696912e6",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000444-4d264bdd",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000445-20b8cdf1",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000446-c4a7f6d9",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000447-24644270",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000448-5e530185",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000449-55132e53",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000450-af3c2b08",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000451-e089aff3",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    },
+    {
+      "event_id": "AE-000452-807f513a",
+      "rule_id": "",
+      "status": "undetermined",
+      "reason": "事件全文无规则 id 精确匹配（ATOM-* 串为原子卡 id，非规则）"
+    }
+  ],
+  "chain": {
+    "n": 452,
+    "hash_ok": 452,
+    "hash_bad": [],
+    "chain_links_ok": true
+  }
+}

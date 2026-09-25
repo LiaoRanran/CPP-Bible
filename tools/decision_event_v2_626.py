@@ -61,6 +61,11 @@ class DecisionEvent:
     elapsed_ms: int = 0
     aggregation_policy_ref: str = ""
     cross_granularity_warning: str = ""
+    # 639 D2：规则归属增量字段（known_error_rate 的 rule 级样本依赖它）。
+    # 历史 452 条事件无此字段（默认 ""）——**空值不参与哈希**，保证
+    # append-only 链重算哈希与历史完全一致（见 _payload 注释）。
+    rule_id: str = ""                   # 命中的 gate 规则 id（如 ATOM-REL-TARGET）
+    rule_version: str = ""              # 规则版本（规则变更时由人填写）
     prev_hash: str = GENESIS
     self_hash: str = ""
 
@@ -68,9 +73,14 @@ class DecisionEvent:
     def _payload(self) -> str:
         # 注意：`event_id` 由 self_hash 派生 ⇒ 必须排除，否则构成循环依赖，
         # 且导出/导入往返后重算哈希会不一致（event_id 在 finalize 后才写入）。
+        # 639 D2：`rule_id`/`rule_version` 为增量字段，空值同样排除——
+        # 旧事件（无规则归属）重算哈希不变，新事件（有归属）纳入防篡改。
         d = asdict(self)
         d.pop("self_hash", None)
         d.pop("event_id", None)
+        for k in ("rule_id", "rule_version"):
+            if not d.get(k):
+                d.pop(k, None)
         return json.dumps(d, ensure_ascii=False, sort_keys=True, default=str)
 
     def compute_self_hash(self) -> str:
