@@ -117,7 +117,9 @@ def horizon_60_80() -> Optional[float]:
     try:
         c = json.loads(open(p, encoding="utf-8").read())
         b = c[-1].get("bands", {}).get("60-80")
-        return float(b) if isinstance(b, (int, float)) else None
+        if isinstance(b, (int, float)):
+            return float(b)
+        return None
     except (OSError, json.JSONDecodeError, IndexError):
         return None
 
@@ -126,7 +128,9 @@ def na_rate_pct() -> Optional[float]:
     p = os.path.join(ROOT, "data", "mutation", "full_baseline_v7.json")
     try:
         d = json.loads(open(p, encoding="utf-8").read())
-        return round(100.0 * d.get("n_a", 0) / max(1, d.get("variants", 1)), 2)
+        n_a = float(d.get("n_a", 0))
+        variants = max(1.0, float(d.get("variants", 1)))
+        return round(100.0 * n_a / variants, 2)
     except (OSError, json.JSONDecodeError):
         return None
 
