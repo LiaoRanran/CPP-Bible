@@ -1,0 +1,22 @@
+.....F.F.FF..FFF.F.F.F......FF...........................FF....F...F.... [ 69%]
+s.s...F.....F.............F....                                          [100%]
+=========================== short test summary info ===========================
+FAILED tests/test_611_tools.py::test_e1_metrics_611 - assert 42 == 7
+FAILED tests/test_611_tools.py::test_e3_defense_chain_deepen - assert 0 == 107
+FAILED tests/test_argument_audit_610.py::test_detect_no_defender_mis - Assert...
+FAILED tests/test_argument_audit_610.py::test_detect_no_defender_nodes_total
+FAILED tests/test_argument_audit_610.py::test_detect_credibility_gaps - Asser...
+FAILED tests/test_argument_audit_610.py::test_cli_basic_detectors - Assertion...
+FAILED tests/test_argument_audit_610.py::test_check_consistency_strict - asse...
+FAILED tests/test_argument_audit_report_610.py::test_generate_full_report_sections
+FAILED tests/test_argument_audit_report_610.py::test_report_has_p1_vulnerabilities
+FAILED tests/test_argument_audit_report_610.py::test_summary_json - Assertion...
+FAILED tests/test_defense_chain_html_610.py::test_edges_are_rendered_with_correct_weights
+FAILED tests/test_defense_chain_html_610.py::test_interaction_and_static_fallback
+FAILED tests/test_merkle_integrity_601.py::test_tool_integrity_check_includes_merkle
+FAILED tests/test_merkle_integrity_601.py::test_tool_integrity_check_red_on_tampered_fake_repo
+FAILED tests/test_ruler_coverage_extension_625.py::test_integrity_check_passes
+FAILED tests/test_run_625_gate.py::test_full_gate_passes - assert 1 == 0
+FAILED tests/test_run_639_gate.py::test_static_checks_green - assert False
+FAILED tests/test_tool_integrity.py::test_567_check_flag_on_real_repo - Asser...
+FAILED tests/test_tool_integrity_supply_chain_601.py::test_cli_check_and_check_supply_chain_green_on_real_repo

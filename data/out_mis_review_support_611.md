@@ -4,7 +4,7 @@
 
 ## 一、总览
 
-- OUT MIS（本工具锁定）**7** 个；全图 OUT 节点共 7 个；
+- OUT MIS（本工具锁定）**7** 个；全图 OUT 节点共 42 个；
 - 这 7 个的全部攻击边都是 `modify`（保持 low）⇒ 被命题辩护链击败；
 
 ## 二、逐 MIS 复核明细
@@ -14,7 +14,7 @@
 - 攻击者 **3** 条：approve 0 / modify **3** / reject 0
 - 被击败者（决定它 OUT）：`ATOM-LANG-INLINE-001::prop-1, ATOM-LANG-INLINE-001::prop-2, ATOM-LANG-INLINE-001::prop-3`
 - W2 辩护者：`—`
-- **若把全部攻击边升 approve（medium）⇒ 判决变为 `IN`**
+- **若把全部攻击边升 approve（medium）⇒ 判决变为 `OUT`**
 
 | 边 id | 攻击者→目标 | 人审 | 构成击败 | 方向 |
 |---|---|---|---|---|
@@ -26,8 +26,8 @@
 
 - 攻击者 **3** 条：approve 0 / modify **3** / reject 0
 - 被击败者（决定它 OUT）：`ATOM-MEM-MOVE-002::prop-1, ATOM-MEM-MOVE-002::prop-2, ATOM-MEM-MOVE-002::prop-3`
-- W2 辩护者：`MIS-MEM-002, MIS-MEM-004, MIS-MEM-005, MIS-MEM-012, MIS-MEM-017, MIS-MEM-019`
-- **若把全部攻击边升 approve（medium）⇒ 判决变为 `IN`**
+- W2 辩护者：`—`
+- **若把全部攻击边升 approve（medium）⇒ 判决变为 `OUT`**
 
 | 边 id | 攻击者→目标 | 人审 | 构成击败 | 方向 |
 |---|---|---|---|---|
@@ -39,8 +39,8 @@
 
 - 攻击者 **3** 条：approve 0 / modify **3** / reject 0
 - 被击败者（决定它 OUT）：`ATOM-MEM-MOVE-002::prop-1, ATOM-MEM-MOVE-002::prop-2, ATOM-MEM-MOVE-002::prop-3`
-- W2 辩护者：`MIS-MEM-002, MIS-MEM-004, MIS-MEM-005, MIS-MEM-012, MIS-MEM-017, MIS-MEM-019`
-- **若把全部攻击边升 approve（medium）⇒ 判决变为 `IN`**
+- W2 辩护者：`—`
+- **若把全部攻击边升 approve（medium）⇒ 判决变为 `OUT`**
 
 | 边 id | 攻击者→目标 | 人审 | 构成击败 | 方向 |
 |---|---|---|---|---|
@@ -52,8 +52,8 @@
 
 - 攻击者 **2** 条：approve 0 / modify **2** / reject 0
 - 被击败者（决定它 OUT）：`ATOM-UB-GRAY-001::prop-1, ATOM-UB-GRAY-001::prop-2`
-- W2 辩护者：`MIS-CONC-001, MIS-UB-002, MIS-UB-003, MIS-UB-012, MIS-UB-013, MIS-UB-015`
-- **若把全部攻击边升 approve（medium）⇒ 判决变为 `IN`**
+- W2 辩护者：`—`
+- **若把全部攻击边升 approve（medium）⇒ 判决变为 `OUT`**
 
 | 边 id | 攻击者→目标 | 人审 | 构成击败 | 方向 |
 |---|---|---|---|---|
@@ -64,8 +64,8 @@
 
 - 攻击者 **2** 条：approve 0 / modify **2** / reject 0
 - 被击败者（决定它 OUT）：`ATOM-UB-GRAY-001::prop-1, ATOM-UB-GRAY-001::prop-2`
-- W2 辩护者：`MIS-CONC-001, MIS-UB-002, MIS-UB-003, MIS-UB-012, MIS-UB-013, MIS-UB-015`
-- **若把全部攻击边升 approve（medium）⇒ 判决变为 `IN`**
+- W2 辩护者：`—`
+- **若把全部攻击边升 approve（medium）⇒ 判决变为 `OUT`**
 
 | 边 id | 攻击者→目标 | 人审 | 构成击败 | 方向 |
 |---|---|---|---|---|
@@ -76,8 +76,8 @@
 
 - 攻击者 **2** 条：approve 0 / modify **2** / reject 0
 - 被击败者（决定它 OUT）：`ATOM-UB-GRAY-001::prop-1, ATOM-UB-GRAY-001::prop-2`
-- W2 辩护者：`MIS-CONC-001, MIS-UB-002, MIS-UB-003, MIS-UB-012, MIS-UB-013, MIS-UB-015`
-- **若把全部攻击边升 approve（medium）⇒ 判决变为 `IN`**
+- W2 辩护者：`—`
+- **若把全部攻击边升 approve（medium）⇒ 判决变为 `OUT`**
 
 | 边 id | 攻击者→目标 | 人审 | 构成击败 | 方向 |
 |---|---|---|---|---|
@@ -88,8 +88,8 @@
 
 - 攻击者 **2** 条：approve 0 / modify **2** / reject 0
 - 被击败者（决定它 OUT）：`ATOM-UB-GRAY-001::prop-1, ATOM-UB-GRAY-001::prop-2`
-- W2 辩护者：`MIS-CONC-001, MIS-UB-002, MIS-UB-003, MIS-UB-012, MIS-UB-013, MIS-UB-015`
-- **若把全部攻击边升 approve（medium）⇒ 判决变为 `IN`**
+- W2 辩护者：`—`
+- **若把全部攻击边升 approve（medium）⇒ 判决变为 `OUT`**
 
 | 边 id | 攻击者→目标 | 人审 | 构成击败 | 方向 |
 |---|---|---|---|---|

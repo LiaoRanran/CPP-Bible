@@ -1,0 +1,16 @@
+============================= test session starts =============================
+collected 20 items
+
+tests\test_611_tools.py ..                                               [ 10%]
+tests\test_argument_audit_610.py .....                                   [ 35%]
+tests\test_argument_audit_report_610.py ...                              [ 50%]
+tests\test_defense_chain_html_610.py ..                                  [ 60%]
+tests\test_merkle_integrity_601.py ..                                    [ 70%]
+tests\test_ruler_coverage_extension_625.py .                             [ 75%]
+tests\test_run_625_gate.py .                                             [ 80%]
+tests\test_run_629_gate.py .                                             [ 85%]
+tests\test_run_639_gate.py .                                             [ 90%]
+tests\test_tool_integrity.py .                                           [ 95%]
+tests\test_tool_integrity_supply_chain_601.py .                          [100%]
+
+============================= 20 passed in 15.70s =============================

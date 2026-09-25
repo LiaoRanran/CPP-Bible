@@ -65,6 +65,24 @@
 
 ## 七、门禁与交人
 
-- 静态：ruff 全绿 / mypy 438 文件 0 错 / merkle / tool_integrity / 受控目录 —— 见 §八；
-- pytest 全量：`data/640b_pytest_final.txt`（见 `640_acceptance_report.md` 门禁节）；
+- 静态：**ruff 全绿** / **mypy 0 错** / **merkle 一致** / **tool_integrity 4/4** /
+  **受控目录零污染** —— 实测见下 §八（640b 收工时本节写"见 §八"但**未写 §八**，
+  属悬空引用；由 641 任务 0.4 补齐）；
+- pytest 全量：`data/640b_pytest_final.txt`；门禁实测已回填到
+  `640_acceptance_report.md` §五；
 - 交人：push 不代执行；641 优先裁决"误解 approve 可信度档"。
+
+## 八、门禁实测（2026-09-26 由 641 任务 0.4 补齐）
+
+| # | 检查 | 结果 |
+|---|---|---|
+| 1 | `ruff check tools/ tests/` | ✅ All checks passed |
+| 2 | `mypy tools/` | ✅ 0 errors（444 文件，含 641 新增 4 个；640b 收工时点 438 文件 0 错） |
+| 3 | 目录级 Merkle 根 | ✅ 一致（警告 0） |
+| 4 | `tool_integrity --check` | ✅ 4/4（core 5 / 信任根 5 / Merkle / 尺子 22） |
+| 5 | 受控目录 | ✅ 零污染 |
+| 6 | 640b 基线 20 项红 | ✅ **20 passed**（`data/640c_b20_recheck.txt`） |
+| 7 | 全量 pytest | ⚠️ 8 红全部源于 641 新工具当时未过 ruff/mypy（非 640b/640c 引入），已在 641 修完 |
+
+640b 的 28 项涟漪（20 个测试函数）**全部转绿**；其中 5 项是 `tool_integrity` 基准未重钉造成的
+（`defense_chain.py` 改动后未 `--update`），已于 640c 重钉清零。

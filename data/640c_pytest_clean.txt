@@ -1,0 +1,211 @@
+........................................................................ [  2%]
+........................................................................ [  4%]
+........................................................................ [  6%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 12%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 19%]
+........................................................................ [ 21%]
+........................................................................ [ 23%]
+..........................................................s.s........... [ 25%]
+........................................................................ [ 27%]
+........................................................................ [ 29%]
+........................................s............................... [ 32%]
+........................................................................ [ 34%]
+........................................................................ [ 36%]
+........................................................................ [ 38%]
+........................................................................ [ 40%]
+........................................................................ [ 42%]
+........................................................................ [ 44%]
+................................................................s......s [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 51%]
+........................................................................ [ 53%]
+........................................................................ [ 55%]
+........................................................................ [ 57%]
+........................................................................ [ 59%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 66%]
+........................................F..F............................ [ 68%]
+........................................................................ [ 70%]
+........................................................................ [ 72%]
+........................................................................ [ 74%]
+........................sF...s.......................................... [ 76%]
+.................F...................................................... [ 78%]
+........................................................................ [ 81%]
+................................F...F....F..........s....s.s....s....... [ 83%]
+.......................................F................................ [ 85%]
+........................................................................ [ 87%]
+.............s...................................s...................... [ 89%]
+.........................................s.............................. [ 91%]
+........................................................................ [ 93%]
+........................................................................ [ 96%]
+...............................................ss....................... [ 98%]
+..............................................................           [100%]
+================================== FAILURES ===================================
+____________________________ test_mypy_tools_clean ____________________________
+tests\test_mypy_fix_625.py:26: in test_mypy_tools_clean
+    assert p.returncode == 0, p.stdout + p.stderr
+E   AssertionError: tools\codeblock_style.py:245: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+E     tools\chapter_lint.py:105: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+E     tools\queyi_core_v10_641.py:450: error: Returning Any from function declared to return "bool"  [no-any-return]
+E     tools\queyi_core_toy_641.py:245: error: "EvidenceResult" has no attribute "to_dict"  [attr-defined]
+E     tools\queyi_core_cpp_641.py:437: error: Value of type "object" is not indexable  [index]
+E     Found 3 errors in 3 files (checked 442 source files)
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', '-m', 'mypy', 'too...: Value of type "object" is not indexable  [index]\nFound 3 errors in 3 files (checked 442 source files)\n', stderr='').returncode
+__________________________ test_ruff_clean_after_fix __________________________
+tests\test_mypy_fix_625.py:60: in test_ruff_clean_after_fix
+    assert p.returncode == 0, p.stdout + p.stderr
+E   AssertionError: FURB167 [*] Use of regular expression alias `re.M`
+E        --> tools\queyi_core_cpp_641.py:353:56
+E         |
+E     351 |         except OSError:
+E     352 |             continue
+E     353 |         if re.search(r"^status:\s*verified\s*$", head, re.M):
+E         |                                                        ^^^^
+E     354 |             verified += 1
+E     355 |     return {"n_cards": len(arts), "n_atoms": n_atom, "n_evidence": n_ev,
+E         |
+E     help: Replace with `re.MULTILINE`
+E         |
+E     352 |             continue
+E         -         if re.search(r"^status:\s*verified\s*$", head, re.M):
+E     353 +         if re.search(r"^status:\s*verified\s*$", head, re.MULTILINE):
+E     354 |             verified += 1
+E         |
+E     
+E     F401 [*] `dataclasses.field` imported but unused
+E       --> tools\queyi_core_v10_641.py:31:36
+E        |
+E     29 | import sys
+E     30 | from abc import ABC, abstractmethod
+E     31 | from dataclasses import dataclass, field
+E        |                                    ^^^^^
+E     32 | from datetime import datetime
+E     33 | from typing import Any, Callable, Iterable, Optional
+E        |
+E     help: Remove unused import: `dataclasses.field`
+E        |
+E     30 | from abc import ABC, abstractmethod
+E        - from dataclasses import dataclass, field
+E     31 + from dataclasses import dataclass
+E     32 | from datetime import datetime
+E        |
+E     
+E     Found 2 errors.
+E     [*] 2 fixable with the `--fix` option.
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', '-m', 'ruff', 'che...ass\n32 | from datetime import datetime\n   |\n\nFound 2 errors.\n[*] 2 fixable with the `--fix` option.\n', stderr='').returncode
+______________________________ test_static_clean ______________________________
+tests\test_pre_push_checklist_627.py:43: in test_static_clean
+    assert r["static"]["ruff_ok"] and r["static"]["mypy_ok"]
+E   assert (False)
+__________________________ test_run_step_reports_rc ___________________________
+tests\test_quality_gate_613.py:31: in test_run_step_reports_rc
+    assert r["name"] == "ruff" and r["rc"] == 0
+E   AssertionError: assert ('ruff' == 'ruff'
+E     
+E       ruff and 1 == 0)
+_____________________ test_real_tools_dir_green_after_b2 ______________________
+tests\test_run_623_gate.py:74: in test_real_tools_dir_green_after_b2
+    assert rc == 0, f"tools/ 整目录应全绿，实际:\n{out}"
+E   AssertionError: tools/ 整目录应全绿，实际:
+E     FURB167 [*] Use of regular expression alias `re.M`
+E        --> tools\queyi_core_cpp_641.py:353:56
+E         |
+E     351 |         except OSError:
+E     352 |             continue
+E     353 |         if re.search(r"^status:\s*verified\s*$", head, re.M):
+E         |                                                        ^^^^
+E     354 |             verified += 1
+E     355 |     return {"n_cards": len(arts), "n_atoms": n_atom, "n_evidence": n_ev,
+E         |
+E     help: Replace with `re.MULTILINE`
+E         |
+E     352 |             continue
+E         -         if re.search(r"^status:\s*verified\s*$", head, re.M):
+E     353 +         if re.search(r"^status:\s*verified\s*$", head, re.MULTILINE):
+E     354 |             verified += 1
+E         |
+E     
+E     F401 [*] `dataclasses.field` imported but unused
+E       --> tools\queyi_core_v10_641.py:31:36
+E        |
+E     29 | import sys
+E     30 | from abc import ABC, abstractmethod
+E     31 | from dataclasses import dataclass, field
+E        |                                    ^^^^^
+E     32 | from datetime import datetime
+E     33 | from typing import Any, Callable, Iterable, Optional
+E        |
+E     help: Remove unused import: `dataclasses.field`
+E        |
+E     30 | from abc import ABC, abstractmethod
+E        - from dataclasses import dataclass, field
+E     31 + from dataclasses import dataclass
+E     32 | from datetime import datetime
+E        |
+E     
+E     Found 2 errors.
+E     [*] 2 fixable with the `--fix` option.
+E     
+E   assert 1 == 0
+______________________________ test_gate_passes _______________________________
+tests\test_run_624_gate.py:26: in test_gate_passes
+    assert g.main([]) == 0
+E   assert 1 == 0
+E    +  where 1 = <function main at 0x00000252706B3060>([])
+E    +    where <function main at 0x00000252706B3060> = g.main
+---------------------------- Captured stdout call -----------------------------
+[run_624_gate] 收工门禁
+  ❌ 整目录 ruff（tools/ tests/）  [*] 2 fixable with the `--fix` option.
+  ✅ 本批(624)文件 ruff  All checks passed!
+  ✅ 624 新工具 --check  5/5
+  ✅ 623/622/621 回归 --check  8/8
+  ✅ ci.yml 语法  YAML OK
+  ✅ 受控目录零污染  clean
+[run_624_gate] FAIL
+____________________________ test_full_gate_passes ____________________________
+tests\test_run_625_gate.py:42: in test_full_gate_passes
+    assert G.check() == 0
+E   assert 1 == 0
+E    +  where 1 = <function check at 0x00000252706B3A60>()
+E    +    where <function check at 0x00000252706B3A60> = G.check
+---------------------------- Captured stdout call -----------------------------
+  [FAIL] 整目录 ruff 全绿 
+  [ok] loop_stability_metrics_625 --check   [ok] 读取 7 轮   [ok] 累计触达 ≤ 67   [ok] VFDR 可计算（0≤vfdr）   [ok] 触发标准①有 5 项   [ok] satisfied 与 checks 一致   [ok] 合成：单调增长检测可算 B2 selftest: PASS 
+  [ok] vfdr_convergence_625 --check   [ok] 规则 67 条   [ok] 7 轮   [ok] 累计触达 0< cum ≤67   [ok] 盲区 = 67 - cum   [ok] 盲区缩减（≤ 623 的 37）   [ok] VFDR 可算 B3 selftest: PASS 
+  [ok] path_config_625 --check   [ok] 默认 root = tools 父目录   [ok] 默认 atoms/evidence/data 派生自 root   [ok] resolve_atom_path 派生正确   [ok] resolve_data_path 派生正确   [ok] 路径自检可调用 C1 selftest: PASS 
+  [ok] queyi_core_interface_design_625 --check   [ok] 5 个接口   [ok] 每接口有 attrs+methods   [ok] 版本 v0.1   [ok] 映射非空   [ok] 关系图非空   [ok] 实现计划含 5 接口 C2 selftest: PASS 
+  [ok] queyi_core_trigger_check_625 --check   [ok] 5 条标准   [ok] 状态取值合法   [ok] satisfied 计数一致   [ok] ① 至少部分满足   [ok] ⑤ 核心 6/6 C3 selftest: PASS 
+  [ok] round7_mutator_625 --check   [ok] 规则总数为 67   [ok] 盲区非空且 < 40   [ok] 生成 ~100 条（≥95 且 ≤110）   [ok] Y1/Y2/Y3 均存在   [ok] 每条含 edits   [ok] Y1 覆盖全部盲区 B1 selftest: PASS 
+  [ok] human_review_dashboard_625 --check   [ok] synced annotations 可读   [ok] 生成 ≥80 条复核项（624 E2 上限）   [ok] HTML 含关键元素   [ok] 含筛选脚本   [ok] 权威日志可读 D2 selftest: PASS 
+  [ok] human_review_executor_625 --check   [ok] build_entry 返回带 hash 的条目   [ok] 哈希链含前驱   [ok] 非法 power 抛错   [ok] 未代签：Authority 日志未被修改   [ok] append_entry 已定义但未调用 D3 selftest: PASS 
+  [ok] pck_upgrade_strategy_625 --check   [ok] 证书总数 83   [ok] authorized 27（624 E1）   [ok] 目标需净增 ≥1   [ok] 待人审证据证 >0   [ok] 未修改任何证书文件 D4 selftest: PASS 
+  [ok] tool_integrity --check（尺子 34/34） 
+  [ok] ots_anchor --check 
+  [FAIL] mypy tools/ = 0 errors (4 errors)
+  [ok] 受控目录零污染 
+F1 gate: FAIL
+__________________________ test_static_checks_green ___________________________
+tests\test_run_639_gate.py:31: in test_static_checks_green
+    assert G.check_ruff()["ok"]
+E   assert False
+--------------------------- snapshot report summary ---------------------------
+5 snapshots passed.
+=========================== short test summary info ===========================
+FAILED tests/test_mypy_fix_625.py::test_mypy_tools_clean - AssertionError: to...
+FAILED tests/test_mypy_fix_625.py::test_ruff_clean_after_fix - AssertionError...
+FAILED tests/test_pre_push_checklist_627.py::test_static_clean - assert (False)
+FAILED tests/test_quality_gate_613.py::test_run_step_reports_rc - AssertionEr...
+FAILED tests/test_run_623_gate.py::test_real_tools_dir_green_after_b2 - Asser...
+FAILED tests/test_run_624_gate.py::test_gate_passes - assert 1 == 0
+FAILED tests/test_run_625_gate.py::test_full_gate_passes - assert 1 == 0
+FAILED tests/test_run_639_gate.py::test_static_checks_green - assert False
+8 failed, 3350 passed, 16 skipped in 2085.33s (0:34:45)

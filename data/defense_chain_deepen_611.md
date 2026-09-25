@@ -4,8 +4,8 @@
 
 ## 一、总览
 
-- 节点 **121** 个；有 107 个节点被推翻时会引起其它判决翻转；最大级联 **1** 个节点。
-- OUT MIS 升 medium 的聚合影响：翻转 **7** 个节点（详见 §三）。
+- 节点 **121** 个；有 0 个节点被推翻时会引起其它判决翻转；最大级联 **0** 个节点。
+- OUT MIS 升 medium 的聚合影响：翻转 **0** 个节点（详见 §三）。
 
 ## 二、承重 Top 10
 
@@ -13,36 +13,36 @@
 
 | 节点 | 翻转数 |
 |---|---|
-| `ATOM-CONC-RACE-001::prop-1` | 1 |
-| `ATOM-CONC-RACE-001::prop-2` | 1 |
-| `ATOM-CONC-RACE-001::prop-3` | 1 |
-| `ATOM-HIST-AUTOPTR-001::prop-1` | 1 |
-| `ATOM-HIST-AUTOPTR-001::prop-2` | 1 |
-| `ATOM-HIST-AUTOPTR-001::prop-3` | 1 |
-| `ATOM-HIST-AUTOPTR-001::prop-4` | 1 |
-| `ATOM-MEM-ALIGN-001::prop-1` | 1 |
-| `ATOM-MEM-ALIGN-001::prop-2` | 1 |
-| `ATOM-MEM-ALIGN-001::prop-3` | 1 |
+| `ATOM-CONC-FENCE-001::prop-1` | 0 |
+| `ATOM-CONC-FENCE-001::prop-2` | 0 |
+| `ATOM-CONC-LOCK-001::prop-1` | 0 |
+| `ATOM-CONC-LOCK-001::prop-2` | 0 |
+| `ATOM-CONC-RACE-001::prop-1` | 0 |
+| `ATOM-CONC-RACE-001::prop-2` | 0 |
+| `ATOM-CONC-RACE-001::prop-3` | 0 |
+| `ATOM-HIST-AUTOPTR-001::prop-1` | 0 |
+| `ATOM-HIST-AUTOPTR-001::prop-2` | 0 |
+| `ATOM-HIST-AUTOPTR-001::prop-3` | 0 |
 
 ### escalate（升到 high 后翻转的节点数）
 
 | 节点 | 翻转数 |
 |---|---|
-| `MIS-MEM-031` | 12 |
-| `MIS-MEM-019` | 9 |
-| `MIS-MEM-024` | 9 |
-| `MIS-MEM-026` | 9 |
-| `MIS-MEM-027` | 9 |
-| `MIS-MEM-028` | 9 |
-| `MIS-MEM-005` | 8 |
-| `MIS-MEM-017` | 8 |
-| `MIS-MEM-020` | 7 |
-| `MIS-MEM-021` | 7 |
+| `MIS-CONC-001` | 1 |
+| `MIS-CONC-003` | 1 |
+| `MIS-HIST-001` | 1 |
+| `MIS-HIST-002` | 1 |
+| `MIS-HIST-003` | 1 |
+| `MIS-LANG-001` | 1 |
+| `MIS-MEM-001` | 1 |
+| `MIS-MEM-002` | 1 |
+| `MIS-MEM-003` | 1 |
+| `MIS-MEM-004` | 1 |
 
 ## 三、OUT MIS 升 medium 的聚合影响（D1 全局版）
 
 - 目标 7 个：`MIS-LANG-001, MIS-MEM-001, MIS-MEM-003, MIS-UB-001, MIS-UB-004, MIS-UB-008, MIS-UB-014`
-- 翻转节点 **7** 个：`MIS-LANG-001, MIS-MEM-001, MIS-MEM-003, MIS-UB-001, MIS-UB-004, MIS-UB-008, MIS-UB-014`
+- 翻转节点 **0** 个：`—`
 - 含义：若人审把这些 MIS 的 modify 全部改 approve（升 medium），论证图会按此规模重排；是否采纳是**人审权力**（工具只呈现后果）。
 
 ## 四、口径与边界
