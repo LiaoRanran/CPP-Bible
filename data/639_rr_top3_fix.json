@@ -1,0 +1,79 @@
+{
+  "generated": "2026-09-25T10:31:53",
+  "domains": {
+    "dag": [
+      "evolved_from",
+      "prerequisite",
+      "realizes",
+      "specializes"
+    ],
+    "conflict": [
+      "conflicts_with",
+      "contradicts"
+    ],
+    "known": [
+      "cancels",
+      "conflicts",
+      "conflicts_with",
+      "contradiction",
+      "contradicts",
+      "contrasts",
+      "denies",
+      "evolved_from",
+      "evolved_to",
+      "misconceived_as",
+      "opposes",
+      "prerequisite",
+      "realizes",
+      "refutes",
+      "see_also",
+      "specializes"
+    ]
+  },
+  "subset_proof": true,
+  "disjoint_conflict_unknown": true,
+  "disjoint_dag_unknown": true,
+  "cofire_example": {
+    "card_a_relations": [
+      {
+        "type": "prerequisite",
+        "target": "ATOM-MISSING-001"
+      },
+      {
+        "type": "contradicts",
+        "target": "ATOM-MISSING-001"
+      }
+    ],
+    "target_fires": "ATOM-MISSING-001 ∉ atoms ⇒ ATOM-REL-TARGET(warn)",
+    "conflict_fires": "a 同时 prerequisite 且 contradicts 同一目标 ⇒ ATOM-REL-CONFLICT(block)"
+  },
+  "rows": [
+    {
+      "pair": "ATOM-REL-CONFLICT ↔ ATOM-REL-UNKNOWN",
+      "type1_638": "P0",
+      "cofire": false,
+      "proof": "CONFLICT 域 ['conflicts_with', 'contradicts'] ⊆ KNOWN；UNKNOWN 只在 ∉ KNOWN 触发 ⇒ 域不相交",
+      "verdict": "误报（撤销 P0）",
+      "action": "无需改规则"
+    },
+    {
+      "pair": "ATOM-REL-DAG ↔ ATOM-REL-UNKNOWN",
+      "type1_638": "P0",
+      "cofire": false,
+      "proof": "DAG 域 ['evolved_from', 'prerequisite', 'realizes', 'specializes'] ⊆ KNOWN；UNKNOWN 只在 ∉ KNOWN 触发 ⇒ 域不相交",
+      "verdict": "误报（撤销 P0）",
+      "action": "无需改规则"
+    },
+    {
+      "pair": "ATOM-REL-TARGET ↔ ATOM-REL-CONFLICT",
+      "type1_638": "P0",
+      "cofire": true,
+      "proof": "同卡同边可同时触发（构造样例见 JSON）",
+      "verdict": "真实 co-fire 但无判决歧义：block 支配 warn，门禁终判=block，warn 为附加定位信息",
+      "action": "维持现状 + 登记支配关系（不改 block，不弱化判决力）"
+    }
+  ],
+  "p0_before": 3,
+  "p0_after": 0,
+  "remaining_registered": "其余 21 对（type2/type3）留 640；type3 的 -HC 派生即优先级机制本身"
+}
