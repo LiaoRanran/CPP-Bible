@@ -1,0 +1,213 @@
+{
+  "generated": "2026-09-25T09:50:27",
+  "overall": true,
+  "tools": [
+    {
+      "tool": "four_state_verdict_638",
+      "exists": true,
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "tool": "lifecycle_fsm_638",
+      "exists": true,
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "tool": "error_rate_collector_638",
+      "exists": true,
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "tool": "rr_conflict_classifier_638",
+      "exists": true,
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "tool": "loop_rerun_638",
+      "exists": true,
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "tool": "loop_tuning_638",
+      "exists": true,
+      "exit": 0,
+      "ok": true
+    },
+    {
+      "tool": "run_638_gate",
+      "exists": true,
+      "exit": 0,
+      "ok": true
+    }
+  ],
+  "ruff": {
+    "ok": true,
+    "exit": 0,
+    "tail": [
+      "All checks passed!"
+    ]
+  },
+  "mypy": {
+    "ok": true,
+    "exit": 0,
+    "tail": [
+      "tools\\chapter_lint.py:105: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]",
+      "Success: no issues found in 430 source files"
+    ]
+  },
+  "controlled": {
+    "ok": true,
+    "exit": 0
+  },
+  "deliverables": {
+    "n": 22,
+    "missing": [],
+    "ok": true,
+    "rows": [
+      {
+        "task": "0",
+        "file": "data/638_baseline.md",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "3.1",
+        "file": "tools/four_state_verdict_638.py",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "3.1",
+        "file": "tests/test_four_state_verdict_638.py",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "3.1",
+        "file": "data/638_four_state_schema.md",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "3.2",
+        "file": "tools/lifecycle_fsm_638.py",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "3.2",
+        "file": "tests/test_lifecycle_fsm_638.py",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "3.2",
+        "file": "data/638_lifecycle_fsm.md",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "B1",
+        "file": "tools/error_rate_collector_638.py",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "B1",
+        "file": "tests/test_error_rate_collector_638.py",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "B1",
+        "file": "data/638_error_rate_estimate.md",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "B2",
+        "file": "tools/rr_conflict_classifier_638.py",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "B2",
+        "file": "tests/test_rr_conflict_classifier_638.py",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "B2",
+        "file": "data/638_rr_conflict_analysis.md",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "C1",
+        "file": "tools/loop_rerun_638.py",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "C1",
+        "file": "tests/test_loop_rerun_638.py",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "C1",
+        "file": "data/638_evolution_memo.md",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "C2",
+        "file": "tools/loop_tuning_638.py",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "C2",
+        "file": "tests/test_loop_tuning_638.py",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "C2",
+        "file": "data/638_loop_tuning.md",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "E1",
+        "file": "tools/run_638_gate.py",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "E1",
+        "file": "tests/test_run_638_gate.py",
+        "ok": true,
+        "pending": false
+      },
+      {
+        "task": "E1",
+        "file": "data/638_acceptance_report.md",
+        "ok": true,
+        "pending": false
+      }
+    ]
+  },
+  "tests": {
+    "ok": true,
+    "exit": 0,
+    "n_files": 7,
+    "n_passed": 57,
+    "tail": ".........................................................                [100%]"
+  }
+}
