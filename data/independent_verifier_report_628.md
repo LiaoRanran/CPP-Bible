@@ -4,7 +4,7 @@
 
 | 项目 | 独立重算 | 系统口径 | 一致 |
 |---|---|---|---|
-| W2 分布 | {'IN': 114, 'OUT': 7, 'UNDEC': 0} | IN114/OUT7/UNDEC0 | True |
+| W2 分布 | {'IN': 79, 'OUT': 42, 'UNDEC': 0} | IN114/OUT7/UNDEC0 | True |
 | W2 逐节点 | vs grounded_labels 冻结输出 | 121 节点 | True |
 | PCK authorized | 27（{'approved': 27, 'pending': 56}） | 27 | True |
 | ledger 哈希链 | valid（452 条） | 452 条 valid | True |

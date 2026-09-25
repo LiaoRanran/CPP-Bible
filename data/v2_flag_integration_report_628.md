@@ -11,8 +11,8 @@
 - **偏差项登记**：626 测试 `test_w2_projection_vs_grounded_labels_deviation_registered` 锁定 `len(w2)!=121`（当时偏差存在）——A1 落地后偏差被解决，该测试同 commit 更新为对齐断言；`test_empty_ledger_handled` 适配双模式。
 
 ## V1 vs V2 对比
-- V1（flag=0）：nodes=121 summary={'IN': 114, 'OUT': 7, 'UNDEC': 0}
-- V2（flag=1）：nodes=121 summary={'IN': 114, 'OUT': 7, 'UNDEC': 0}
+- V1（flag=0）：nodes=121 summary={'IN': 79, 'OUT': 42, 'UNDEC': 0}
+- V2（flag=1）：nodes=121 summary={'IN': 79, 'OUT': 42, 'UNDEC': 0}
 - 逐节点标签一致：True
 
 ## 回归验证
@@ -20,4 +20,4 @@
 - CORE_TOOLS 读 flag 的文件：无
 - tool_integrity --update 已重钉：True
 
-- **总判定**：PASS ✅
+- **总判定**：FAIL ❌

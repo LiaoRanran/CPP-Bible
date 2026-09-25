@@ -1,15 +1,15 @@
 {
-  "stamp": "2026-09-23T13:13:40Z",
+  "stamp": "2026-09-25T12:18:38Z",
   "verifier_id": "independent_verifier_628",
-  "verifier_sha256": "a85cad4faa914506cce09cc1f8f497137623dd56e038380c583b6a94bceb1883",
+  "verifier_sha256": "38e7235e6dee9f8c55b314044894bb41463dda6fdb41d76a1b0e10757979dec4",
   "independent": {
     "w2": {
       "nodes": 121,
       "active_edges": 388,
-      "defeats": 17,
+      "defeats": 194,
       "summary": {
-        "IN": 114,
-        "OUT": 7,
+        "IN": 79,
+        "OUT": 42,
         "UNDEC": 0
       },
       "frozen_labels_match": true,
@@ -47,49 +47,55 @@
     "all_match": true
   },
   "system_v2_w2": {
-    "IN": 114,
-    "OUT": 7,
+    "IN": 79,
+    "OUT": 42,
     "UNDEC": 0
   },
   "compare": {
-    "w2_match": true,
+    "w2_match": false,
     "verifier_vs_system": true,
     "frozen_labels_match": true,
     "pck_authorized_match": true,
     "ledger_chain_valid": true,
     "unique_match": true
   },
-  "vsa_path": "data\\vsa\\attestation_20260923T131340Z.json",
-  "vsa_attestation": "20bcb0686746a577635e36a3f81bc889740973df2f47aceed0e7de7fff604ecd",
+  "vsa_path": "data\\vsa\\attestation_20260925T121837Z.json",
+  "vsa_attestation": "c14b48869321676a37ab6f06e451db789eecb1f94b98ecd0e78115f358496bb4",
   "log_append": {
     "ok": true,
-    "log_index": 34,
-    "entry_hash": "c4bbcd82352529b9b6c7b92f3b280593a5427e8c864c89afb94b4e5026395423",
-    "vsa_hash": "650806866865bac90d2fce0e97bc459aa6980cf1dca65203eeffffb6749a948b"
+    "log_index": 43,
+    "entry_hash": "7cddc7562ebf409bd5c91885b5b216bea6001f3137a0302fb77e3512997402df",
+    "vsa_hash": "c02f15250ff1c7359ce59de7d52f2fd67944c991d6245f4b587d7c13d7c356de"
   },
   "log_state": {
-    "entries": 35,
+    "entries": 44,
     "chain_valid": true,
     "broken_at": [],
     "first_ts": "2026-09-23T03:01:32Z",
-    "last_ts": "2026-09-23T13:13:40Z",
+    "last_ts": "2026-09-25T12:18:38Z",
     "files": {
-      "entries": 35,
+      "entries": 44,
       "missing": [],
       "drifted": [],
       "ok": true
     },
-    "unlogged": [],
-    "tail_vsa_file": "data\\vsa\\attestation_20260923T131340Z.json",
+    "unlogged": [
+      "data\\vsa\\attestation_20260925T104548Z.json",
+      "data\\vsa\\attestation_20260925T112052Z.json",
+      "data\\vsa\\attestation_20260925T115925Z.json",
+      "data\\vsa\\attestation_20260925T121521Z.json",
+      "data\\vsa\\attestation_20260925T121609Z.json"
+    ],
+    "tail_vsa_file": "data\\vsa\\attestation_20260925T121837Z.json",
     "tail_included": true,
-    "tail_log_index": 34
+    "tail_log_index": 43
   },
   "inclusion": {
-    "vsa_path": "data\\vsa\\attestation_20260923T131340Z.json",
-    "vsa_hash": "650806866865bac90d2fce0e97bc459aa6980cf1dca65203eeffffb6749a948b",
+    "vsa_path": "data\\vsa\\attestation_20260925T121837Z.json",
+    "vsa_hash": "c02f15250ff1c7359ce59de7d52f2fd67944c991d6245f4b587d7c13d7c356de",
     "included": true,
-    "log_index": 34
+    "log_index": 43
   },
-  "audit_statement": "在 2026-09-23T13:13:40Z，独立验证者 independent_verifier_628（脚本 sha256 a85cad4faa914506…）对输入 ledger=452 条 / PCK=83 张 / 节点 grounded_labels 独立重算得 W2 IN/OUT/UNDEC=114/7/0，与系统 V2 投影 IN/OUT/UNDEC=114/7/0 一致；凭证 data\\vsa\\attestation_20260923T131340Z.json 已存入透明日志 index=34（entry_hash=c4bbcd82352529b9…），日志链完整（35 条）。",
-  "all_green": true
+  "audit_statement": "在 2026-09-25T12:18:38Z，独立验证者 independent_verifier_628（脚本 sha256 38e7235e6dee9f8c…）对输入 ledger=452 条 / PCK=83 张 / 节点 grounded_labels 独立重算得 W2 IN/OUT/UNDEC=79/42/0，与系统 V2 投影 IN/OUT/UNDEC=79/42/0 一致；凭证 data\\vsa\\attestation_20260925T121837Z.json 已存入透明日志 index=43（entry_hash=7cddc7562ebf409b…），日志链完整（44 条）。",
+  "all_green": false
 }
