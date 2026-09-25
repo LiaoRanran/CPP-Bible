@@ -1,0 +1,316 @@
+{
+  "generated": "2026-09-25T09:30:27",
+  "baselines": [
+    {
+      "file": "609_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "611_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "612_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "613_baseline_argumentation.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "613_baseline_ci.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "613_baseline_d5_debt.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "613_baseline_learner_twin.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "614_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "615_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "616_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "617_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "618_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "619_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "620_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "621_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "622_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "623_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "624_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "625_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "626_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "627_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "628_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "629_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "630_baseline.json",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "630_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "631_baseline.json",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "631_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "632_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "634_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "634_soft_baseline.json",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "635_baseline.json",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "635_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "636_baseline.json",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "636_baseline.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "637_baseline.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "autoimmune_rate_baseline.md",
+      "state": "pass",
+      "boundary_ok": true
+    },
+    {
+      "file": "ev_matrix_dual_impl_baseline_616.json",
+      "state": "pass",
+      "boundary_ok": true
+    }
+  ],
+  "baseline_dist": {
+    "pass": 34,
+    "unknown": 3
+  },
+  "baselines_with_boundary": 34,
+  "cards": [
+    {
+      "file": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-LEAK-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-MOVE-002.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-NEW-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-PERF-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-PERF-002.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-PERF-003.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-RAII-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-RAII-002.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-RVREF-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-SHARED-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-SHARED-002.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-VALUE-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-VALUE-002.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-WEAK-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    },
+    {
+      "file": "atoms/ub/ATOM-UB-GRAY-001.md",
+      "state": "unknown",
+      "boundary_ok": false
+    }
+  ],
+  "card_dist": {
+    "unknown": 23
+  },
+  "cards_with_boundary": 0
+}
