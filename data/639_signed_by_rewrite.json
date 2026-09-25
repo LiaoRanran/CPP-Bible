@@ -1,0 +1,401 @@
+{
+  "note": "639: v0.2 签名壳 -> human: 前缀（632/634 授权填入的在册实名；与 526 放权闸口径冲突的修复，逐条留痕）",
+  "n": 79,
+  "changes": [
+    {
+      "file": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/lang/ATOM-LANG-INLINE-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/lang/ATOM-LANG-INLINE-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/lang/ATOM-LANG-INLINE-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-LEAK-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-LEAK-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-LEAK-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-LEAK-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-LEAK-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-LEAK-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-MOVE-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-MOVE-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-MOVE-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-NEW-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-NEW-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-NEW-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-PERF-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-PERF-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-PERF-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-PERF-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-PERF-003.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-PERF-003.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-PERF-003.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-PERF-004.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-PERF-004.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-PERF-004.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-RAII-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-RAII-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-RAII-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-RAII-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-RAII-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-RAII-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-RAII-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-RVREF-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-RVREF-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-RVREF-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-SHARED-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-SHARED-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-SHARED-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-SHARED-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-SHARED-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-SHARED-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-VALUE-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-VALUE-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-VALUE-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-VALUE-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-VALUE-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-VALUE-002.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-WEAK-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-WEAK-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/mem/ATOM-MEM-WEAK-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/ub/ATOM-UB-GRAY-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    },
+    {
+      "file": "atoms/ub/ATOM-UB-GRAY-001.md",
+      "old": "signed_by: v0.2:liaoranran",
+      "new": "signed_by: human:liaoranran"
+    }
+  ]
+}

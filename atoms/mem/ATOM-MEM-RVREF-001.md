@@ -31,7 +31,7 @@ claim_structured:
     evidence: [EV-MEM-004]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _ZN5Probe6copiesE}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: return 语句的隐式移动
     predicate: 随标准版本变化（实测）
@@ -41,7 +41,7 @@ claim_structured:
     evidence: [EV-MEM-005]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _ZN5Probe6copiesE}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: 值类别
     predicate: 是表达式的属性，因此
@@ -51,7 +51,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [basic.lval] Note 3（named rvalue references are treated as lvalues）；[expr.prim.id.unqual]/12（命名变量/形参的 id-expression 是 lvalue）；cppreference Value categories"
     evidence: [EV-MEM-004, EV-MEM-005]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]   # 全部实测（EV-MEM-004 九档 / EV-MEM-005 五档）
   compilers: [GCC 15.3.0, GCC 13.1.0]              # Clang 列经 ci.yml Cross-check 步 notice 回填（本机无 Clang）

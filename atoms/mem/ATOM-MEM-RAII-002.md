@@ -36,7 +36,7 @@ claim_structured:
     evidence: [EV-MEM-023]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: rule zero}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: 只写析构（Rule of Three 缺拷贝构造）
     predicate: 导致
@@ -46,7 +46,7 @@ claim_structured:
     evidence: [EV-MEM-024]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: Buggy}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: 移动构造的 noexcept
     predicate: 决定 vector 扩容时的搬迁路径
@@ -56,7 +56,7 @@ claim_structured:
     evidence: [EV-MEM-025]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: relocation}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-4
     subject: 特殊成员函数的取舍
     predicate: 应据「成员形状」判定
@@ -66,7 +66,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [class.copy.ctor]/[class.copy.assign]/[class.dtor]（隐式拷贝/移动的生成与删除、隐式析构逐成员析构）"
     evidence: [EV-MEM-023, EV-MEM-024, EV-MEM-025]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

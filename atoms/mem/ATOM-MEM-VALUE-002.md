@@ -33,7 +33,7 @@ claim_structured:
     evidence: [EV-MEM-021]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: sink_lvalue}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: 转发链里有无 std::forward
     predicate: 实测（-O0/-O2 一致）
@@ -43,7 +43,7 @@ claim_structured:
     evidence: [EV-MEM-022]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: wrap_forward}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: 万能引用（转发引用）
     predicate: 仅在推导语境成立，因此
@@ -53,7 +53,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [dcl.ref]（引用折叠规则）；[temp.deduct.call]（P 为 T&& 且实参为左值时推 T 为左值引用的特判）；cppreference Forwarding references / std::forward"
     evidence: [EV-MEM-021, EV-MEM-022]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]   # 机器实测仅 c++23 单档（EV-MEM-021/022 卡内注明）；
                                                   # 夹具仅用 C++11 起即有特性，跨档可编译，折叠/推导

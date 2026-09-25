@@ -36,7 +36,7 @@ claim_structured:
     evidence: [EV-MEM-032]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: unique_ptrIi12StatelessDelE}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: shared_ptr 的删除器
     predicate: 被类型擦除，因此大小恒定（实测）
@@ -46,7 +46,7 @@ claim_structured:
     evidence: [EV-MEM-033]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: Sp_counted_deleterIPi6TagDel}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: 空删除器的空基类优化
     predicate: 是
@@ -56,7 +56,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [unique.ptr] / [unique.ptr.single] / [unique.ptr.single.ctor]（删除器作为类型参数）；cppreference std::unique_ptr（数组特化接口）"
     evidence: [EV-MEM-032, EV-MEM-033]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

@@ -33,7 +33,7 @@ claim_structured:
     evidence: [EV-MEM-026]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: allocation only}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: 自定义 arena 分配器
     predicate: 接入 vector 后
@@ -43,7 +43,7 @@ claim_structured:
     evidence: [EV-MEM-027]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: arena}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: std::pmr::monotonic_buffer_resource
     predicate: 用栈缓冲伺候全部分配时
@@ -53,7 +53,7 @@ claim_structured:
     evidence: [EV-MEM-028]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: monotonic}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-4
     subject: allocator
     predicate: 在 STL 中的定位是
@@ -63,7 +63,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [allocator.requirements]/[allocator.members]（分配器要求与有状态分配器契约）"
     evidence: [EV-MEM-026]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]   # 机器实测仅 c++23 单档（三卡注明）；两层分离/traits
                                                   # 收口与 pmr 自 C++17 起才成立（C++11/14 下

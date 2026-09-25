@@ -30,7 +30,7 @@ claim_structured:
     evidence: [EV-CONC-003, EV-CONC-004]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _Z12bench_singlev}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: 锁与无锁的优劣
     predicate: 依赖核数与竞争度，无绝对最优
@@ -40,7 +40,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [atomics.order] / [thread.mutex]（同步语义定义，未规定相对代价）；cppreference std::atomic（RMW 在 x86-64 编译为带 lock 前缀指令，lock-free 为非保证属性）"
     evidence: [EV-CONC-003, EV-CONC-004]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL), GCC 13.3.0 (WSL)]

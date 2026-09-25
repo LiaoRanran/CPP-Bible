@@ -31,7 +31,7 @@ claim_structured:
     evidence: [EV-MEM-011]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: unique_ptr}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: 移动转移与析构次数
     predicate: 实测
@@ -41,7 +41,7 @@ claim_structured:
     evidence: [EV-MEM-012]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: destroyed}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: unique_ptr 的所有权语义
     predicate: 体现在编译期（拷贝构造被删除、移动转移），因此
@@ -51,7 +51,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [unique.ownership]（唯一所有权；拷贝被删除，移动转移）；[unique.single]（析构调用 deleter 释放资源）；cppreference std::unique_ptr（零开销）"
     evidence: [EV-MEM-011, EV-MEM-012]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

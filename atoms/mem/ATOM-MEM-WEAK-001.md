@@ -31,7 +31,7 @@ claim_structured:
     evidence: [EV-MEM-015]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: destroyed}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: 用 weak 打破环后的析构数
     predicate: 实测
@@ -41,7 +41,7 @@ claim_structured:
     evidence: [EV-MEM-016]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: destroyed}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: weak_ptr 的语义
     predicate: 是
@@ -51,7 +51,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [util.smartptr.weak]（非拥有观察者；lock 提升、expired 查询）；[util.smartptr.weak.const]（不增加强引用计数）；cppreference std::weak_ptr（打破 shared_ptr 循环引用）"
     evidence: [EV-MEM-015, EV-MEM-016]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

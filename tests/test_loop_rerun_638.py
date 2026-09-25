@@ -36,13 +36,32 @@ def test_top3_sorted_and_actionable():
 
 
 # C1-4：与第一次对比（误报率 0.5 → 0.0）
+# 639 修正：改用**注入指标**的确定性断言。原实现用实时指标，库规模每增一批
+# （如 639 新增工具/测试）就会让 637 原始阈值多触发一条"增长类"异常，
+# 0.5 这类具体比率随之漂移——调参语义本身没变（见 C1-4b 的实时版）。
 def test_comparison_with_first_run():
-    c = m.compare()
+    fake = {
+        "generated": "x", "metrics": {},
+        "anomalies_before": [{"key": k} for k in
+                             ("observation_pct", "exception_clauses",
+                              "grounding_pct", "taint_cards")],
+        "anomalies": [{"key": k} for k in ("grounding_pct", "taint_cards")],
+        "n_candidates": 1, "top3": [{"candidate": "x"}],
+    }
+    c = m.compare(fake)
     assert c["false_alarm_first"] == 2 and c["false_alarm_second"] == 0
     assert c["false_alarm_rate_first"] == 0.5
     assert c["false_alarm_rate_second"] == 0.0
     assert c["n_anomalies_second"] < c["n_anomalies_first"]
     assert isinstance(c["top3_changed"], bool)
+    assert isinstance(c["top3_overlap"], list)
+
+
+# C1-4b：实时指标版（结构性断言，不锁具体比率——库增长不破坏）
+def test_comparison_with_live_run_structure():
+    c = m.compare()
+    assert c["n_anomalies_second"] <= c["n_anomalies_first"]
+    assert c["false_alarm_second"] == 0          # 调后不再有 637 已知误报
     assert isinstance(c["top3_overlap"], list)
 
 

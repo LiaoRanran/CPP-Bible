@@ -33,7 +33,7 @@ claim_structured:
     evidence: [EV-MEM-029]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: max_zero_alloc_len}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: SSO
     predicate: 是
@@ -43,7 +43,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [string.requirements]（basic_string 语义不要求 SSO）；cppreference std::basic_string（SSO 为实现惯例、各实现容量差异）"
     evidence: [EV-MEM-029]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

@@ -31,7 +31,7 @@ claim_structured:
     evidence: [EV-MEM-013]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: destroyed}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: 互相持有的循环引用
     predicate: 实测
@@ -41,7 +41,7 @@ claim_structured:
     evidence: [EV-MEM-014]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: destroyed}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: 循环引用的破法
     predicate: 必须用
@@ -51,7 +51,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [util.smartptr.shared]（共享所有权、引用计数、归零释放）；[util.smartptr.shared.const]（拷贝 +1、析构 -1）；cppreference std::shared_ptr / std::weak_ptr"
     evidence: [EV-MEM-013, EV-MEM-014]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

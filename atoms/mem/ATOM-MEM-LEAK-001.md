@@ -34,7 +34,7 @@ claim_structured:
     evidence: [EV-MEM-036]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: destroyed after scope=}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: 强上行（shared）的成环树
     predicate: 实测
@@ -44,7 +44,7 @@ claim_structured:
     evidence: [EV-MEM-037]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: destroyed after scope=}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: ASan/LSan 的判定
     predicate: 依赖退出时的可达性分析，对优化档与存活位置敏感
@@ -54,7 +54,7 @@ claim_structured:
     external_basis: "AddressSanitizer/LeakSanitizer 官方文档：泄漏检测基于退出时的可达性分析（reachability）；cppreference std::weak_ptr::expired / use_count（零额外仪器的独立信号）"
     evidence: [EV-MEM-036, EV-MEM-037]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]                  # 运行层留痕（MinGW）；sanitizer 层留痕见下

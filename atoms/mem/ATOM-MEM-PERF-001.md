@@ -30,7 +30,7 @@ claim_structured:
     evidence: [EV-MEM-008]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _Znay}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: std::move 的性能收益
     predicate: 只来自
@@ -40,7 +40,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [lib.types.movedfrom]（移动后源有效但未指定）；cppreference std::move / MoveConstructible（移动构造语义由类型自定义，非语言强制）"
     evidence: [EV-MEM-008, EV-MEM-001]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

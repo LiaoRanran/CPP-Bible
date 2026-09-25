@@ -33,7 +33,7 @@ claim_structured:
     evidence: [EV-HIST-001, EV-MEM-003]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _ZNSt8auto_ptr}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: auto_ptr 与 unique_ptr 的类型判定
     predicate: 编译期 static_assert 显示
@@ -43,7 +43,7 @@ claim_structured:
     evidence: [EV-HIST-001, EV-MEM-003]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _ZNSt8auto_ptr}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: auto_ptr 的历史定位
     predicate: 是
@@ -53,7 +53,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:1998 §20.4.5 [lib.auto.ptr]（原始规定与签名）；ISO/IEC 14882:2011（标记 deprecated）；ISO/IEC 14882:2017（从标准移除）；cppreference std::auto_ptr 时间线"
     evidence: [EV-HIST-001, EV-MEM-003]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-4
     subject: 已从标准移除的 auto_ptr
     predicate: 在 libstdc++ 下
@@ -63,7 +63,7 @@ claim_structured:
     evidence: [EV-HIST-001]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _ZNSt8auto_ptr}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++98, C++11, C++14, C++17, C++23]
   compilers: [GCC 15.3.0, GCC 13.3.0, Clang 18.1.3]

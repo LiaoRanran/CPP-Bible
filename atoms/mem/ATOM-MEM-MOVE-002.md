@@ -30,7 +30,7 @@ claim_structured:
     evidence: [EV-MEM-001]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _ZL8g_allocs}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: 移动收益的有无
     predicate: 取决于源对象有无可掏空的间接资源
@@ -40,7 +40,7 @@ claim_structured:
     evidence: [EV-MEM-002]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _ZL8g_allocs}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: std::move 的作用
     predicate: 只是
@@ -50,7 +50,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [expr.static.cast]（std::move 与 static_cast 明文等价）；[lib.types.movedfrom]（移动后源对象有效但未指定）；cppreference std::move"
     evidence: [EV-MEM-001, EV-MEM-002]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++17, C++20, C++23]
   compilers: [GCC 15.3.0, GCC 13.1.0, GCC 8.1.0, GCC 13.3.0]

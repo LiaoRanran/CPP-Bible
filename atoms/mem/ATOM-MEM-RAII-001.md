@@ -31,7 +31,7 @@ claim_structured:
     evidence: [EV-MEM-009]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: g_live}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: 作用域内对象的析构顺序
     predicate: 实测为
@@ -41,7 +41,7 @@ claim_structured:
     evidence: [EV-MEM-010]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: dtor C}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: RAII 的异常安全性
     predicate: 来自
@@ -51,7 +51,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [except.ctor]（栈展开调用已构造完全的子对象/局部对象析构）；[basic.rc]/[class.dtor]（析构释放资源，离开作用域即调用）；cppreference RAII"
     evidence: [EV-MEM-009, EV-MEM-010]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

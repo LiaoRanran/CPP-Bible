@@ -35,7 +35,7 @@ claim_structured:
     evidence: [EV-UB-001]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _Z1gv}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: 未测序修改与严格别名
     predicate: 属于
@@ -45,7 +45,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [expr.call]（函数参数初始化是 indeterminately sequenced）；[intro.execution]（未测序的标量修改为 UB）；[basic.lval]（严格别名）；cppreference Undefined behavior / Order of evaluation"
     evidence: [EV-UB-001]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++23]
   compilers: [GCC 15.3.0, GCC 13.1.0, GCC 8.1.0, Clang (CI ubuntu-latest runner 默认)]

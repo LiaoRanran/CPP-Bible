@@ -49,7 +49,7 @@ claim_structured:
     evidence: [EV-MEM-038]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: first_heap_len=}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: SSO 阈值
     predicate: 不是语言保证，因此
@@ -59,7 +59,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [string.requirements]（basic_string 语义：不要求 SSO、不约束 sizeof）；libc++ 与 libstdc++ 的 string 布局说明（impl_doc，本卡 libc++ 数字另经 libc++-18 实测复算）"
     evidence: [EV-MEM-038]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: 小对象分配策略的快慢
     predicate: 是平台相关的，因此
@@ -69,7 +69,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [mem.res.monotonic.buffer] / [mem.res.pool]（两类内存资源的语义差异：是否回收）"
     evidence: [EV-MEM-039]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++17, C++20, C++23]
   compilers: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL), Clang 18.1.3 + libc++-18 (WSL，外部留痕)]

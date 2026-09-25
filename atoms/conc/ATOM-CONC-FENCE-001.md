@@ -32,7 +32,7 @@ claim_structured:
     evidence: [EV-CONC-001, EV-CONC-002]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _Z10spin_plainv}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: 内存屏障(fence)
     predicate: 不提供
@@ -42,7 +42,7 @@ claim_structured:
     evidence: [EV-CONC-002]
     external_basis: "ISO/IEC 14882:2023 [atomics.order] / cppreference atomic_thread_fence（fence 仅为原子访问定义语义）"
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL), GCC 13.3.0 (WSL)]

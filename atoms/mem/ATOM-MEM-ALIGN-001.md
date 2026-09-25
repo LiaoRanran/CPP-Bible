@@ -31,7 +31,7 @@ claim_structured:
     evidence: [EV-MEM-019]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: Padded}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: alignas 与按字节搬运
     predicate: 实测为
@@ -41,7 +41,7 @@ claim_structured:
     evidence: [EV-MEM-020]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: Aligned}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: reinterpret_cast 强转指针做类型双关
     predicate: 是
@@ -51,7 +51,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [basic.align]（对齐要求、alignas/alignof）；cppreference Object layout / Data structure alignment（padding、alignas、strict aliasing）"
     evidence: [EV-MEM-019, EV-MEM-020]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

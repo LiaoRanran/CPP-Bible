@@ -33,7 +33,7 @@ claim_structured:
     evidence: [EV-MEM-034]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: 控制块计数的修改方式
     predicate: 汇编层实测为
@@ -43,7 +43,7 @@ claim_structured:
     evidence: [EV-MEM-034]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: shared_ptr 的线程安全边界
     predicate: 只覆盖
@@ -53,7 +53,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [util.smartptr.shared]（仅控制块计数保证原子，对象与实例本身不保证）；cppreference std::shared_ptr 线程安全说明与 std::atomic<std::shared_ptr>（C++20）；libstdc++ shared_ptr_base.h 的 _M_add_ref_copy / _M_release 原子 RMW 实现"
     evidence: [EV-MEM-034, EV-MEM-035]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

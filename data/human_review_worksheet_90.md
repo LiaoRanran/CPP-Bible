@@ -230,6 +230,6 @@
 
 ## 填完后
 
-把你确认/修改后的结果告诉我，我用 utoimmune_human_fill_apply_632.py --apply 导入系统。
+把你确认/修改后的结果告诉我，我用 utoimmune_human_fill_apply_632.py --apply 导入系统。
 
 > 注意：signed_by 25 条可以直接说'全填 liaoranran'，我批量导入。object 65 条你只需要标出哪些不同意、改成什么。

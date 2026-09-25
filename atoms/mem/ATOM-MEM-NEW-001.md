@@ -31,7 +31,7 @@ claim_structured:
     evidence: [EV-MEM-017]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _Znwm}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: 数组形式与 nothrow
     predicate: 实测
@@ -41,7 +41,7 @@ claim_structured:
     evidence: [EV-MEM-018]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: _Znay}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: new[] / delete[] 混用
     predicate: 属于
@@ -51,7 +51,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [expr.new]（分配 + 构造，可 nothrow）；[expr.delete]（析构 + 释放，delete[] 配对）；cppreference new/delete expression"
     evidence: [EV-MEM-017, EV-MEM-018]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]

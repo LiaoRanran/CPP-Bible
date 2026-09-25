@@ -31,7 +31,7 @@ claim_structured:
     evidence: [EV-MEM-006]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: xvalue}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-2
     subject: 从 xvalue 移动后的源与目标
     predicate: 实测
@@ -41,7 +41,7 @@ claim_structured:
     evidence: [EV-MEM-007]
     extracted_by: writer
     liveness: {kind: fixture_symbol, symbol: xvalue}
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
   - id: prop-3
     subject: 值类别的维度
     predicate: 是两个正交维度的交叉
@@ -51,7 +51,7 @@ claim_structured:
     external_basis: "ISO/IEC 14882:2023 [basic.lval]（值类别与 glvalue/rvalue 二分；Note 3 具名右值引用按左值处理）；[expr.prim.id.unqual]/12（具名变量/形参为 lvalue）；cppreference Value categories"
     evidence: [EV-MEM-006, EV-MEM-007]
     extracted_by: writer
-    signed_by: v0.2:liaoranran
+    signed_by: human:liaoranran
 claim_boundary:
   standard: [C++11, C++14, C++17, C++20, C++23]
   compilers: [GCC 15.3.0]
