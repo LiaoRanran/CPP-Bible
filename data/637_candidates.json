@@ -1,0 +1,160 @@
+{
+  "generated": "2026-09-25T09:25:46",
+  "source": "data/637_errors.json",
+  "n_anomalies": 4,
+  "n_candidates": 12,
+  "items": [
+    {
+      "anomaly": {
+        "name": "观察态规则多",
+        "key": "observation_pct",
+        "current": 100.0,
+        "threshold": 30,
+        "direction": "gt",
+        "severity": "P1",
+        "why": "规则缺 known_error_rate，无法校准，判决可信度未量化。",
+        "exceedance": 2.3333
+      },
+      "candidates": [
+        {
+          "name": "收历史错误率",
+          "action": "为 67 条观察态规则采集 known_error_rate 历史数据",
+          "cost": "中",
+          "benefit": "高",
+          "dependency": "需运行记录",
+          "risk_class": "report"
+        },
+        {
+          "name": "观察态降级",
+          "action": "把观察态规则从 block 降为 warn（判决逻辑变更）",
+          "cost": "中",
+          "benefit": "中",
+          "dependency": "需人审",
+          "risk_class": "core"
+        },
+        {
+          "name": "人工逐条审",
+          "action": "人工逐条复核观察态规则是否成熟可转正",
+          "cost": "高",
+          "benefit": "中",
+          "dependency": "人力",
+          "risk_class": "report"
+        }
+      ]
+    },
+    {
+      "anomaly": {
+        "name": "taint=true 卡多",
+        "key": "taint_cards",
+        "current": 8,
+        "threshold": 5,
+        "direction": "gt",
+        "severity": "P1",
+        "why": "高污染卡一旦判错会连锁影响多条下游卡，需优先复核。",
+        "exceedance": 0.6
+      },
+      "candidates": [
+        {
+          "name": "追踪下游影响",
+          "action": "为每张 taint=true 卡列出下游引用清单",
+          "cost": "低",
+          "benefit": "中",
+          "dependency": "无",
+          "risk_class": "report"
+        },
+        {
+          "name": "优先修高 taint",
+          "action": "优先复核引用数最多的 tainted 卡",
+          "cost": "中",
+          "benefit": "高",
+          "dependency": "无",
+          "risk_class": "tool"
+        },
+        {
+          "name": "自动污染追踪",
+          "action": "加自动污染传播追踪器（影子）",
+          "cost": "中",
+          "benefit": "高",
+          "dependency": "依赖 636 追踪器",
+          "risk_class": "tool"
+        }
+      ]
+    },
+    {
+      "anomaly": {
+        "name": "接地率低",
+        "key": "grounding_pct",
+        "current": 35.8,
+        "threshold": 50,
+        "direction": "lt",
+        "severity": "P1",
+        "why": "未接地规则缺外部实验/标准支撑，验证结论无法回溯到事实。",
+        "exceedance": 0.284
+      },
+      "candidates": [
+        {
+          "name": "补实验接地",
+          "action": "为 24 条未接地规则各补 1 个可观测实验/标准条文锚点",
+          "cost": "高",
+          "benefit": "高",
+          "dependency": "需实验环境",
+          "risk_class": "tool"
+        },
+        {
+          "name": "未接地降级",
+          "action": "把未接地规则从 block 降为 warn（判决逻辑变更）",
+          "cost": "中",
+          "benefit": "中",
+          "dependency": "需人审",
+          "risk_class": "core"
+        },
+        {
+          "name": "标记暂不使用",
+          "action": "把未接地规则标为「暂不使用」并登记清单",
+          "cost": "低",
+          "benefit": "中",
+          "dependency": "无",
+          "risk_class": "report"
+        }
+      ]
+    },
+    {
+      "anomaly": {
+        "name": "例外条款多",
+        "key": "exception_clauses",
+        "current": 227,
+        "threshold": 100,
+        "direction": "gt",
+        "severity": "P2",
+        "why": "例外越多，规则的实际约束越弱，口子可能被漂移利用。",
+        "exceedance": 1.27
+      },
+      "candidates": [
+        {
+          "name": "复审例外有效性",
+          "action": "逐条复审 227 条例外是否仍然成立",
+          "cost": "中",
+          "benefit": "中",
+          "dependency": "人力",
+          "risk_class": "report"
+        },
+        {
+          "name": "合并相似例外",
+          "action": "合并同源相似例外，减少条款总数",
+          "cost": "中",
+          "benefit": "中",
+          "dependency": "需人审",
+          "risk_class": "core"
+        },
+        {
+          "name": "为例外设过期",
+          "action": "为每条例外设过期时间（+180 天复审）",
+          "cost": "低",
+          "benefit": "中",
+          "dependency": "无",
+          "risk_class": "tool"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "generated": "2026-09-25T09:25:46",
+  "source": "data/637_observer.json",
+  "heavy": true,
+  "n_detected": 4,
+  "n_reported": 4,
+  "anomalies": [
+    {
+      "name": "观察态规则多",
+      "key": "observation_pct",
+      "current": 100.0,
+      "threshold": 30,
+      "direction": "gt",
+      "severity": "P1",
+      "why": "规则缺 known_error_rate，无法校准，判决可信度未量化。",
+      "exceedance": 2.3333
+    },
+    {
+      "name": "taint=true 卡多",
+      "key": "taint_cards",
+      "current": 8,
+      "threshold": 5,
+      "direction": "gt",
+      "severity": "P1",
+      "why": "高污染卡一旦判错会连锁影响多条下游卡，需优先复核。",
+      "exceedance": 0.6
+    },
+    {
+      "name": "接地率低",
+      "key": "grounding_pct",
+      "current": 35.8,
+      "threshold": 50,
+      "direction": "lt",
+      "severity": "P1",
+      "why": "未接地规则缺外部实验/标准支撑，验证结论无法回溯到事实。",
+      "exceedance": 0.284
+    },
+    {
+      "name": "例外条款多",
+      "key": "exception_clauses",
+      "current": 227,
+      "threshold": 100,
+      "direction": "gt",
+      "severity": "P2",
+      "why": "例外越多，规则的实际约束越弱，口子可能被漂移利用。",
+      "exceedance": 1.27
+    }
+  ]
+}

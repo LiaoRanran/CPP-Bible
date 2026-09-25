@@ -1,0 +1,32 @@
+{
+  "generated": "2026-09-25T09:25:46",
+  "stages": [
+    {
+      "tool": "self_observer_637",
+      "ok": true,
+      "seconds": 384.8
+    },
+    {
+      "tool": "error_detector_637",
+      "ok": true,
+      "seconds": 0.2
+    },
+    {
+      "tool": "candidate_generator_637",
+      "ok": true,
+      "seconds": 0.2
+    },
+    {
+      "tool": "cost_benefit_637",
+      "ok": true,
+      "seconds": 0.2
+    },
+    {
+      "tool": "evolution_memo_637",
+      "ok": true,
+      "seconds": 0.2
+    }
+  ],
+  "total_seconds": 385.6,
+  "all_ok": true
+}
