@@ -96,3 +96,12 @@
 ?? tools/queyi_core_interface_design_625.py
 ?? tools/queyi_core_trigger_check_625.py
 ```
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `human_review`
+- `materiality_flag`: true

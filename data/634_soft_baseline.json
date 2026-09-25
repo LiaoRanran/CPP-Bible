@@ -13,5 +13,10 @@
   "mutation_escaped": 227,
   "mutation_na": 232,
   "mutation_strict": 615,
-  "touched_rules_min": 9
+  "touched_rules_min": 9,
+  "mutation_set_hash": "d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57",
+  "mutation_count": 1593,
+  "generator_version": "mutation_fuzz@v7",
+  "evidence_channel": "standard_textbook",
+  "materiality_flag": true
 }

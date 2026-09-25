@@ -160,3 +160,12 @@ f49b2d1f 634 [C2]：快照测试更新+.pytest_tmp 处置——syrupy 5快照2�
 1. 工具/测试/commits 的 §一 表值（~450/~500/~1900+）为**估值**，实测见上（397/396/1824）；
 2. 逃逸率取 616 统计，**未重跑** mutation（§零.4）；
 3. 本工具**只读**：不写任何监控对象文件，只写本报告。
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `human_review`
+- `materiality_flag`: true

@@ -132,3 +132,12 @@ git status: M  _auto/status.json
 | 4 | `merkle_integrity.py check_all` | 无此子命令，只有 `stats` 等 | 用 `stats`（只读） |
 | 5 | metrics.jsonl ~11 行 | 实测 10 行 | 按实记录 |
 | 6 | 388 边全部 MIS→命题 | 实际 117 个 MIS/命题混合源 | 按真实分布渲染 |
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `standard_textbook`
+- `materiality_flag`: true

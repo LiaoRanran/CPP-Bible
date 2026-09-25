@@ -148,3 +148,12 @@ depth_layer / drill_note
 11. 做不完的诚实登记，留 620
 
 > 619 §五：**本批不修改 CORE_TOOLS** ⇒ 无需 `tool_integrity --update`（C1 只改 `tools/snapshot_manifest.py`，该文件不在 CORE/钉扎面内，已核对）。
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `standard_textbook`
+- `materiality_flag`: true

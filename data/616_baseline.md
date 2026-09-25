@@ -45,3 +45,12 @@
 - **可验证性**：checksum 保护 **有**（`tool_integrity` 22 项：core5+test_config2+supply_chain5+**ruler10**）；
   **独立验证 无**（无 VSA 凭证、无透明日志、无第三方复核）。
 - 第一原则单用户上限：生成者=判断者=同一主体 ⇒ 独立票结构性缺失（`_arch_v20` 他验三件套正是为此）。
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `standard_textbook`
+- `materiality_flag`: true

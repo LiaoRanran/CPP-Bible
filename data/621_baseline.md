@@ -107,3 +107,12 @@
 | 🟠 | CI gate∥replay 并发竞态 | B 线 B1–B3 |
 | 🟡 | PCK authorized 仅 27/83（56 张证据卡全 draft） | C/D 线（C3 增加 abstain_state，D1 建待审条目） |
 | — | 雷6 未知检测/弃权三态 | C 线 C1–C3 |
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `standard_textbook`
+- `materiality_flag`: true

@@ -125,3 +125,12 @@
 1. 本台账为只读量基，**未运行任何门禁**（`gate --check` / `tool_integrity --check` / `poison` / `replay --check` 均按铁律不跑）。
 2. 远程 CI 实时状态因环境无网络未直连 GitHub API，红因以 622 验收报告本地证据为准。
 3. 63 规则 severity 取自 `gate_engine.py --list`（只读导出），非运行 --check；与冻结基线 block=0 不冲突（block=0 指"当前全仓无违规"，与"有多少条 block 级规则"是两回事）。
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `standard_textbook`
+- `materiality_flag`: true

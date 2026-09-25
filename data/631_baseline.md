@@ -29,8 +29,8 @@
 
 | 项 | 任务书 | 实测 | 判定 |
 |---|---|---|---|
-| HEAD | `1438cd5e` | `8ae0599e` | **不符**（实测 8ae0599e） |
-| 远程 | `1438cd5e（同步）` | `1438cd5e`（ahead=29 / behind=0） | 一致 |
+| HEAD | `1438cd5e` | `48485622` | **不符**（实测 48485622） |
+| 远程 | `1438cd5e（同步）` | `33e02efb`（ahead=10 / behind=0） | **不符**（实测 33e02efb） |
 | 干净卡（自身免疫率分母） | 23 | 23 | 一致 |
 | 自身免疫率 | 100% | 100.0% | 一致 |
 | 其中口径级 | 22 张 | 22 张 | 一致 |
@@ -64,8 +64,8 @@
 
 | 项 | 值 |
 |---|---|
-| `tools/*.py` | 357 |
-| `tests/*.py` | 369 |
+| `tools/*.py` | 375 |
+| `tests/*.py` | 388 |
 | 629 工具 | 10 |
 | 630 工具 | 9 |
 | 631 工具（本批，随任务增长） | 10 |
@@ -73,9 +73,9 @@
 ### recent commits
 
 ```
-8ae0599e 631 [G1] 补：_auto/status.json(awaiting_review,last_completed=631,next=632) + _auto/outbox/631.md（_auto 被 gitignore，按 G1 要求强制纳入）
-af86c00f 631 [G1] 收工：run_631_gate PASS(10工具--check+ruff+本批mypy0+10测试全绿+受控零污染+B3/D2复算) + 验收报告(§十二偏差表:自愈率未改善/污染未定位/coverage提升有限/§零.13与F1冲突已登记) + status.json(awaiting_review,next=632) + outbox/631.md
-29888f8f 631 [B1] 修复：selftest/测试改为基于已提交交付记录做稳定断言（填充落地后实时重推导=0，不再依赖42；验证机制用真实已填卡三元组+负例；mypy/ruff/--check/6例全过）
+48485622 633 [E1]：测试债深化分类与长期方案(不改测试)——slow 6/跨批脆弱30/环境依赖117/快照25(针对A2后剩余54项),给动态基线读/conftest统一skipif/快照触发更新/slow分层四方案设计;--check只读+6例单测
+7e838b10 633 [D2]：文档债清理——修306文档3处裸文件名死链接(改为../../atoms/mem/实际路径,已核实目标存在);368的6处file://为假阳性不改;过期标注0处;登记.pytest_tmp残留652目录(不删)与扫描器file://口径;矛盾描述登记不改
+6694b291 633 [D1]：PCK/镜像边/ref_missing 交人项整理——统一清单+P1-P4优先级+处置建议+依赖;登记627/628 ref_missing口径出入(2 vs 1)待核;不代签不自动填充;镜像边194全自动证明其中118条缺ReviewItem属治理决策;PCK authorized 27/83
 ```
 
 ## 五、偏差登记（§零.10）
@@ -89,3 +89,12 @@ af86c00f 631 [G1] 收工：run_631_gate PASS(10工具--check+ruff+本批mypy0+10
 - 只读测量：数字取自 git 与既有工具，**未跑监工四门禁**（§零.1）；
 - `gate_hits` 等冻结数字不重测（需 `gate_engine --check`，属监工门禁）；
 - 631 工具计数随本批后续任务增长（快照性质）。
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `standard_textbook`
+- `materiality_flag`: true

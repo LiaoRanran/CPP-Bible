@@ -112,3 +112,12 @@
 | 回滚 | — | `QUEYI_AUTHORITY_V2=0` 立即回滚 625 行为；新 ledger 保留供审计不删 |
 
 **迁移输入**：annotations 388 + authority_log 418 = 806（**去重后实际条数在 B2 实测统计，不预设 806**）。
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `standard_textbook`
+- `materiality_flag`: true

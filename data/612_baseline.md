@@ -113,3 +113,12 @@
 
 - 任务书预期 A 20-30 / B 15-20 / C 5-10；实测见 §2（初步，待 B1 细化）。
 - oracle Top20 验证优先级已给出；逃逸率/覆盖率缺口维度待 C 线细化。
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `standard_textbook`
+- `materiality_flag`: false

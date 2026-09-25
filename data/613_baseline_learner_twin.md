@@ -18,3 +18,12 @@
 - 结论：**无真实学习行为数据**（612 原型全为模拟数据）⇒ 线 C 必须先建接入层（C1）。
 
 > 缺口判定：掌握度是 612 `simulate()` 生成的模拟值，非真实行为递推 ⇒ 镜像仍为空壳。
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `direct_experiment`
+- `materiality_flag`: false

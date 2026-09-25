@@ -115,3 +115,12 @@
 - 不删除历史报告（只标 STALE）· 不删除/修改原始 JSONL（append-only）
 - 不执行真实 Blind Review · 不默认启用 V2 关键路径
 - **不修改 626 的工具文件**（A1-A4、B1-B3 全部新建 `*_627.py`）
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `standard_textbook`
+- `materiality_flag`: true

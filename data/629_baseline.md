@@ -1,7 +1,7 @@
 # 629 §一 基线台账（standing baseline + 开工实测）
 
 > 工具：`tools/baseline_629.py`（纯标准库，只读，不跑监工四门禁）
-> HEAD：`2c7db9ae`（ahead origin/master **92** commit）
+> HEAD：`48485622`（ahead origin/master **10** commit）
 > 口径说明：§四.2 要求『解析 gate_engine --check 输出』，但 §零.1 禁止跑监工门禁；
 > 本工具改为只读 `import gate_engine` → `run()`（不写盘，实测见下），与 §一 数字一致。
 
@@ -33,28 +33,28 @@
 | 指标 | 实测 |
 |---|---|
 | gate 规则数 | 67（其中自动化 64） |
-| gate 命中 | 191（block=0 warn=186 advice=5） |
+| gate 命中 | 149（block=25 warn=119 advice=5） |
 | gate warn 命中规则数 | 9（有 warn 的规则） |
-| ahead origin/master | 92 commit |
-| 远端 HEAD | `793b5c45` |
-| HEAD | `2c7db9ae` 630 [C3]：自身免疫率阈值对照（硬开火率0%达标≤5%+软警报率100%超疲劳线2.5倍；v23 5/10/20/40解析成功+外部依据4条+动作映射5条；紧迫度=调软层不动block层+测试6例） |
-| `tools/*.py` | 343 个 |
-| `tests/test_*.py` | 354 个 |
+| ahead origin/master | 10 commit |
+| 远端 HEAD | `33e02efb` |
+| HEAD | `48485622` 633 [E1]：测试债深化分类与长期方案(不改测试)——slow 6/跨批脆弱30/环境依赖117/快照25(针对A2后剩余54项),给动态基线读/conftest统一skipif/快照触发更新/slow分层四方案设计;--check只读+6例单测 |
+| `tools/*.py` | 375 个 |
+| `tests/test_*.py` | 387 个 |
 | `atoms/**/ATOM-*.md` | 27 张 |
 | `data/pck/certificates/*.pck.yaml` | 83 张 |
-| VSA 凭证 | 23 张 |
-| 透明日志条目 | 34 条 |
+| VSA 凭证 | 30 张 |
+| 透明日志条目 | 41 条 |
 
 ## 三、gate warn 按规则名 top10（实测）
 
 | # | 规则 ID | warn 数 |
 |---|---|---|
 | 1 | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 77 |
-| 2 | `OBSERVATION-LIVENESS` | 50 |
-| 3 | `INFERENCE-NOT-MACHINE-VERIFIED` | 28 |
-| 4 | `EV-MATRIX-UNBACKED` | 16 |
-| 5 | `EV-OUT-UNDECLARED-KEY` | 6 |
-| 6 | `EV-FALSIFICATION-QUANT` | 4 |
+| 2 | `EV-MATRIX-UNBACKED` | 16 |
+| 3 | `OBSERVATION-LIVENESS` | 8 |
+| 4 | `EV-OUT-UNDECLARED-KEY` | 6 |
+| 5 | `EV-FALSIFICATION-QUANT` | 4 |
+| 6 | `INFERENCE-NOT-MACHINE-VERIFIED` | 3 |
 | 7 | `ATOM-REL-TARGET` | 2 |
 | 8 | `EV-ASSERT-SYMBOL-MAPPED` | 2 |
 | 9 | `EV-SERVES-EXIST` | 1 |
@@ -63,17 +63,21 @@
 
 | 项 | 任务书 | 实测 | 性质 |
 |---|---|---|---|
-| vsa | 14 张（HMAC） | 23 张（HMAC） | 基线漂移(允许) |
-| transparency_log | 23 条（GENESIS 起） | 34 条（GENESIS 起） | 基线漂移(允许) |
+| gate_hits | 191 | 149 | **不符** |
+| gate_block | 0 | 25 | **不符** |
+| gate_warn | 186 | 119 | **不符** |
+| remote | 793b5c45（624） | 33e02efb | **不符** |
+| vsa | 14 张（HMAC） | 30 张（HMAC） | 基线漂移(允许) |
+| transparency_log | 23 条（GENESIS 起） | 41 条（GENESIS 起） | 基线漂移(允许) |
 
 **基线漂移说明**：`vsa` / `transparency_log` 的漂移根因是 628 B4 端到端演示与其单测**每次运行都会追加 1 张 VSA 凭证 + 1 条日志**（append-only，只增不减，链仍完整），§一 的 14 张 / 23 条是 628 收工时点值。§十一.3 要求标注而不修改基线。
 
 ## 五、recent commits
 
 ```
-2c7db9ae 630 [C3]：自身免疫率阈值对照（硬开火率0%达标≤5%+软警报率100%超疲劳线2.5倍；v23 5/10/20/40解析成功+外部依据4条+动作映射5条；紧迫度=调软层不动block层+测试6例）
-5901ff86 630 [C2]：攻击面横切面（时间轴一次性19/持续演化11/周期性5 × 调度轴自发21/被诱导8/被触发6；三维矩阵72格非空23；规则化标注逐条带依据可复核+测试6例）
-22b673eb 630 [C1]：coverage第四元指标（送审覆盖率16/35=45.7%；三口径并列=有探针29/真实发生15/本批送审2；19个从未跑过含6个无探针；缺口发现M1删字段无对应向量；四元组联合报告+测试6例）
+48485622 633 [E1]：测试债深化分类与长期方案(不改测试)——slow 6/跨批脆弱30/环境依赖117/快照25(针对A2后剩余54项),给动态基线读/conftest统一skipif/快照触发更新/slow分层四方案设计;--check只读+6例单测
+7e838b10 633 [D2]：文档债清理——修306文档3处裸文件名死链接(改为../../atoms/mem/实际路径,已核实目标存在);368的6处file://为假阳性不改;过期标注0处;登记.pytest_tmp残留652目录(不删)与扫描器file://口径;矛盾描述登记不改
+6694b291 633 [D1]：PCK/镜像边/ref_missing 交人项整理——统一清单+P1-P4优先级+处置建议+依赖;登记627/628 ref_missing口径出入(2 vs 1)待核;不代签不自动填充;镜像边194全自动证明其中118条缺ReviewItem属治理决策;PCK authorized 27/83
 ```
 
 ## 六、`pytest -m "not slow"` 既有失败（629 开工冻结，F1 用『无新增失败』口径）
@@ -106,3 +110,12 @@
 | 10 | `tests/test_mypy_fix_625.py::test_no_bulk_type_ignore` |
 | 11 | `tests/test_pe_timestamp_caliber_611.py::test_603_capture_untouched_by_this_batch` |
 
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `standard_textbook`
+- `materiality_flag`: true

@@ -62,3 +62,12 @@ HEAD = 6861a7f
 learner_behavior_logger / learner_twin_dashboard_614 / learner_ood_evaluator /
 learner_argument_link / trust_root_status_check / oracle_priority_614 /
 oracle_verification_614 / run_614_gate（共 8 个）。
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `standard_textbook`
+- `materiality_flag`: true

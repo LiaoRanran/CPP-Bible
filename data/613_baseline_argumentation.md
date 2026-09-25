@@ -21,3 +21,12 @@
 - 顶层键：['credibility_levels', 'defeating_edges', 'edges', 'model', 'nodes', 'rounds', 'summary', 'tool', 'version']
 
 > 口径提醒：W2 判决存在 keep-low(IN114/OUT7) 与 upgrade-medium(IN121/OUT0) 双口径（611 遗留未裁决）。
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `human_review`
+- `materiality_flag`: false

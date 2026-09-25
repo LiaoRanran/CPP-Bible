@@ -114,3 +114,12 @@ $ .venv\Scripts\python.exe tools/gate_engine.py --check      （连跑 3 次）
 - BLOCK 详情已完整记录；稳态 gate = `191 / block=0`，与冻结基线一致。
 - 任务 1 的"修复"目标需据实调整为**根因定位 + 稳定性验证 + 防竞态纪律**（详见 `620_block_fix_report.md`）。
 - 任务 2 的 SNAPSHOT 重钉目标调整为：**刷新 live_counts 与生成时间戳**，FROZEN_VERIFICATION 的 gate 段保持不变（本就正确）。
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `standard_textbook`
+- `materiality_flag`: true

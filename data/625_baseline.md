@@ -107,3 +107,12 @@
 ## 十、本批 P0 结论
 
 CI 未全绿的两个红因**已定位**：quality=mypy 67 处（A1）；pytest=OTS 过期（A2）+ meta 自指（A3 分类）。
+
+
+## 边界三元组 + v26 补充字段（635 1.1 回填）
+
+- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
+- `mutation_count`: 1593
+- `generator_version`: `mutation_fuzz@v7`
+- `evidence_channel`: `standard_textbook`
+- `materiality_flag`: true
