@@ -25,6 +25,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 VERSION = "1.0"
 REPORT_OUT = ROOT / "data" / "defense_chain_deepen_611.md"
+#: 611 当时的 7 个 OUT MIS = **历史锁定复核范围**（不是"当前 OUT 全集"；
+#: 640c 现状 OUT MIS 为 42 个，见 `tools/w2_derived_640c.py`）。保持不动是"冻结里程碑"纪律。
 KNOWN_OUT_MIS = ["MIS-LANG-001", "MIS-MEM-001", "MIS-MEM-003", "MIS-UB-001",
                  "MIS-UB-004", "MIS-UB-008", "MIS-UB-014"]
 
@@ -104,9 +106,28 @@ def render_report(a: dict) -> str:
 
 
 def check(a: dict) -> list[str]:
+    """自检（640c A2：**不变量**，不再锁定"承重 107 / 最大级联 1"这类会随人签演进的值）。
+
+    ① 节点数与逐节点明细一一对应；
+    ② 汇总指标与逐节点明细一致（防"摘要与明细脱钩"这类真实缺陷）；
+    ③ 聚合影响的目标数与翻转清单一致。
+    """
     problems: list[str] = []
-    if a["total_nodes"] != 121:
-        problems.append(f"节点数应为 121（实测 {a['total_nodes']}）")
+    demote, escalate = a["demote_ripple"], a["escalate_ripple"]
+    if a["total_nodes"] != len(demote) or a["total_nodes"] != len(escalate):
+        problems.append(f"节点数与明细不一致：total {a['total_nodes']} / "
+                        f"demote {len(demote)} / escalate {len(escalate)}")
+    _nonzero = sum(1 for c in demote.values() if c > 0)
+    if a["nodes_whose_demote_changes_something"] != _nonzero:
+        problems.append(f"承重节点数 {a['nodes_whose_demote_changes_something']} "
+                        f"≠ 明细统计 {_nonzero}")
+    _max = max(demote.values(), default=0)
+    if a["max_ripple"] != _max:
+        problems.append(f"最大级联 {a['max_ripple']} ≠ 明细最大值 {_max}")
+    _om = a["out_mis_escalate_medium"]
+    if _om["flipped_count"] != len(_om["flipped_nodes"]):
+        problems.append(f"聚合影响 flipped_count {_om['flipped_count']} "
+                        f"≠ 清单长度 {len(_om['flipped_nodes'])}")
     return problems
 
 

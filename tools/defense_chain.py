@@ -180,6 +180,42 @@ def solve_summary(edges: list[AttackEdge], cred: dict[str, str]) -> dict:
             "defeating_edges": len(r["defeats"]), "edges": len(edges), "rounds": r["rounds"]}
 
 
+#: 产物里 credibility 是**数字档**（与产物 `confidence` 字符串并存）
+_NUM2NAME = {0: "low", 1: "low", 2: "medium", 3: "high"}
+
+
+def pinned_summary(labels_path: Path | str | None = None) -> dict:
+    """**读产物**一路：入库 W2 产物（`grounded_labels_w2.json`）的派生汇总。
+
+    640c A1：派生量（判决汇总 / 可信度分布 / OUT MIS 数）也走"一处现算、处处可取"；
+    本函数是**产物侧**的唯一取数入口（`w2_derived_640c.pinned()` 复用同一口径）。
+    缺产物 ⇒ `FileNotFoundError`（调用方决定是红还是警告，不静默给零）。
+    """
+    p = Path(labels_path) if labels_path else DEFAULT_LABELS
+    if not p.is_file():
+        raise FileNotFoundError(f"W2 产物缺失：{p}")
+    d = json.loads(p.read_text(encoding="utf-8"))
+    ns: dict[str, dict] = d.get("nodes", {})
+    dist = {"high": 0, "medium": 0, "low": 0}
+    out_mis = 0
+    for v in ns.values():
+        conf = v.get("confidence") or _NUM2NAME.get(v.get("credibility"))
+        if conf in dist:
+            dist[str(conf)] += 1
+        if v.get("label") == "OUT" and v.get("type") == "misconception":
+            out_mis += 1
+    return {"nodes": len(ns),
+            "in": sum(1 for v in ns.values() if v.get("label") == "IN"),
+            "out": sum(1 for v in ns.values() if v.get("label") == "OUT"),
+            "undec": sum(1 for v in ns.values() if v.get("label") == "UNDEC"),
+            "edges": int(d.get("edges", 0)),
+            "defeating_edges": int(d.get("defeating_edges", 0)),
+            "rounds": int(d.get("rounds", 0)),
+            "credibility_distribution": dist,
+            "out_mis": out_mis,
+            "path": str(p)}
+
+
 def is_defeating(edge: AttackEdge, credibilities: dict[str, str]) -> bool:
     """击败 = 攻击者可信度**严格大于**被攻击者（W2 定义，一行不改）。"""
     a = credibilities.get(edge.source, "low")
@@ -336,8 +372,8 @@ def batch_report(edges: list[AttackEdge], verdicts: dict[str, str],
         c = chains[n]
         lines.append(f"- `{n}`：攻击者 {len(c.attackers)} 条全部不构成击败（同可信度）"
                      f" ⇒ 判 IN；其中 {len(c.defeats)} 个攻击者被它击败")
-    lines += ["", "> 口径：命题 = medium；MIS = 有 approve 边 ⇒ medium，否则 low"
-                  "（modify 保持 low，与入库 W2 产物一致）。", ""]
+    lines += ["", "> 口径：命题可信度按 W2 内核命题级人签（high/medium/low）；MIS = 有 approve 边"
+                  " ⇒ medium，否则 low（modify 保持 low，与入库 W2 产物一致）。", ""]
     return "\n".join(lines)
 
 
@@ -380,7 +416,7 @@ code{background:#f5f5f5;padding:1px 4px}
 #detail{min-height:120px;font-size:13px}
 </style></head><body>
 <h1>辩护链可视化（智能原型 1）</h1>
-<p class="note">口径：命题 = medium；MIS = 有 approve 边 ⇒ medium，否则 low（modify 保持 low）。</p>
+<p class="note">口径：命题可信度按 W2 内核命题级人签（high/medium/low）；MIS = 有 approve 边 ⇒ medium，否则 low（modify 保持 low）。见 tools/defense_chain.py `credibilities_of`。</p>
 <div class="wrap">
   <div class="panel" style="flex:2 1 520px">
     <div id="graph"></div>
@@ -390,7 +426,7 @@ code{background:#f5f5f5;padding:1px 4px}
       <span><i class="dot" style="background:#9E9E9E"></i>UNDEC</span>
       <span style="color:#A14E50"><b>━</b> 击败边（可信度严格大于）</span>
       <span style="color:#9E9E9E">━ 非击败边</span>
-      <span>◯ 命题（外圈 79） · ◻ 误解（内圈 42）</span>
+      <span>◯ 命题（外圈 __N_PROP__） · ◻ 误解（内圈 __N_MIS__）</span>
     </p>
   </div>
   <div class="panel"><h2>节点详情</h2><div id="detail">点击左侧任一节点查看它的辩护链。</div></div>
@@ -419,7 +455,7 @@ function show(id){
 def generate_defense_chain_html(edges: list[AttackEdge], verdicts: dict[str, str],
                                credibilities: dict[str, str],
                                output_path: Path | str | None = None) -> Path:
-    """生成自包含辩护链可视化（内圈 42 MIS / 外圈 79 命题；无任何外部资源）。"""
+    """生成自包含辩护链可视化（内圈 MIS / 外圈命题；数量**现算**；无任何外部资源）。"""
     chains = {n: get_defense_chain(n, edges, verdicts, credibilities)
               for n in sorted(verdicts)}
     props = [n for n in sorted(verdicts) if chains[n].node_type == "proposition"]
@@ -475,6 +511,8 @@ def generate_defense_chain_html(edges: list[AttackEdge], verdicts: dict[str, str
             .replace("__OUT_TABLE__", "<table><tr><th>节点</th><th>可信度</th><th>击败者数</th></tr>"
                                       + "".join(out_rows) + "</table>")
             .replace("__NODES__", json.dumps(nodes_json, ensure_ascii=False))
+            .replace("__N_PROP__", str(len(props)))
+            .replace("__N_MIS__", str(len(mis)))
             .replace("<div id=\"graph\"></div>", "<div id=\"graph\">" + "".join(svg) + "</div>"))
     p = Path(output_path) if output_path else DEFAULT_HTML
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -575,8 +613,9 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if a.cmd == "html":
         p = generate_defense_chain_html(edges, verdicts, cred, a.out)
+        _n_prop = sum(1 for n in verdicts if node_type_of(n, edges) == "proposition")
         print(f"[chain] 已写 {p.relative_to(ROOT).as_posix() if str(p).startswith(str(ROOT)) else p}"
-              f"（自包含 HTML：内圈 42 MIS / 外圈 79 命题）")
+              f"（自包含 HTML：内圈 {len(verdicts) - _n_prop} MIS / 外圈 {_n_prop} 命题）")
         return 0
     st = stats(edges, verdicts, cred)
     key = {"list-out": "out_nodes", "list-no-defenders": "no_defender_nodes",
@@ -590,9 +629,10 @@ def main(argv: list[str] | None = None) -> int:
 def check(edges_path: Path | str | None = None,
           ann_path: Path | str | None = None,
           labels_path: Path | str | None = None) -> list[str]:
-    """五条硬检查（610 B2 口径）：
-    ① 每个节点 verdict 与**入库 W2 产物**一致；② OUT 节点必有击败者；③ IN 节点必无击败者；
-    ④ 击败边 = 入库产物记的 17；⑤ 节点数 = 121（命题 79 + 误解 42）。
+    """五条硬检查（610 B2 口径 · 640c A1 去快照）：
+    ① 每个节点 verdict 与**入库 W2 产物**一致；② 每个节点可信度与产物同口径；
+    ③ 判决汇总/击败边与产物一致；④ OUT 节点必有击败者；⑤ IN 节点必无击败者。
+    所有数字都**现取自产物**（`pinned_summary`），不再写死。
     """
     problems: list[str] = []
     edges, verdicts, cred = load_data(edges_path, ann_path)
@@ -601,7 +641,8 @@ def check(edges_path: Path | str | None = None,
     if not lp.is_file():
         return [f"W2 产物缺失：{lp}"]
     auth = json.loads(lp.read_text(encoding="utf-8"))
-    num2name = {0: "low", 1: "low", 2: "medium", 3: "high"}   # 产物里 credibility 是**数字档**
+    pn = pinned_summary(lp)
+    num2name = _NUM2NAME                                   # 产物里 credibility 是**数字档**
     for nid, v in auth["nodes"].items():
         if verdicts.get(nid) != v["label"]:
             problems.append(f"{nid}：本引擎 {verdicts.get(nid)} ≠ 入库产物 {v['label']}")
@@ -609,18 +650,12 @@ def check(edges_path: Path | str | None = None,
         if cred.get(nid) != want:
             problems.append(f"{nid}：可信度 {cred.get(nid)} ≠ 产物 {want}"
                             f"（数字档 {v.get('credibility')}）")
-    if st["defeating_edges"] != auth["defeating_edges"]:
-        problems.append(f"击败边 {st['defeating_edges']} ≠ 产物 {auth['defeating_edges']}")
-    # 640b A1：汇总数字以**入库产物为唯一基准**（曾写死 114/7/0，随人签演进即误报）
-    _cnt: dict[str, int] = {}
-    for v in auth["nodes"].values():
-        _cnt[str(v["label"])] = _cnt.get(str(v["label"]), 0) + 1
-    _want_in, _want_out = _cnt.get("IN", 0), _cnt.get("OUT", 0)
-    _want_undec, _want_nodes = _cnt.get("UNDEC", 0), len(auth["nodes"])
-    if (st["total_nodes"] != _want_nodes or st["in"] != _want_in
-            or st["out"] != _want_out or st["undec"] != _want_undec):
+    if st["defeating_edges"] != pn["defeating_edges"]:
+        problems.append(f"击败边 {st['defeating_edges']} ≠ 产物 {pn['defeating_edges']}")
+    if (st["total_nodes"] != pn["nodes"] or st["in"] != pn["in"]
+            or st["out"] != pn["out"] or st["undec"] != pn["undec"]):
         problems.append(f"判决汇总 {st['in']}/{st['out']}/{st['undec']} ≠ 产物 "
-                        f"{_want_in}/{_want_out}/{_want_undec}（节点 {st['total_nodes']}）")
+                        f"{pn['in']}/{pn['out']}/{pn['undec']}（节点 {st['total_nodes']}）")
     for n in st["out_nodes"]:
         c = get_defense_chain(n, edges, verdicts, cred)
         if not c.defeated_by:

@@ -1,14 +1,11 @@
 """610 B3 · 辩护链可视化回归锁（自包含 HTML/SVG，无外部依赖）。
 
-锁四件事（任务书 4 例 + 4 例自加）：
-  1. 生成 HTML 非空且含 `<svg>` 与 `<script>`（静态图 + 点击交互）；
-  2. 图里正好 **121** 个节点（79 命题 ◯ 外圈 + 42 误解 ◻ 内圈）；
-  3. 图例齐全（IN/OUT/UNDEC + 击败边/非击败边 + ◯/◻ 含义）；
-  4. **自包含**：不引用任何外部资源（无 `src="http`/`href="http`/CDN；`xmlns` 是命名空间不算拉取）；
-  +. 击败边画红粗线 = **17** 条（与非击败边共 388 条）；
-  +. 点击 handler + OUT 节点静态兜底表（7 行）；
-  +. 判决颜色语义：#35705A(IN) / #A14E50(OUT)；
-  +. 两次生成逐字一致（幂等，便于入库 diff）。
+**640c A1/A2 重写**：原版把渲染结果写死（节点 121 / 命题 79 / 误解 42、
+击败边 17 / 非击败边 371 / OUT 静态表 7 行），人签重算后批量过期（640c 的 2 项）。
+
+现在断言的是**渲染 == 现算**：期望值由 `defense_chain` 的判定现算给出
+（击败边由 `dc.is_defeating` 逐边判定），不出现任何"当前数字"的字面量 ——
+仓库正常演进（加边/人签）时自动跟随，渲染逻辑坏了才红。
 """
 from __future__ import annotations
 
@@ -17,6 +14,11 @@ from pathlib import Path
 import defense_chain as dc
 
 EDGES, VERDICTS, CRED = dc.load_data()
+N_PROP = sum(1 for n in VERDICTS if dc.node_type_of(n, EDGES) == "proposition")
+N_MIS = len(VERDICTS) - N_PROP
+N_DEFEATING = sum(1 for e in EDGES if dc.is_defeating(e, CRED))
+N_PLAIN = len(EDGES) - N_DEFEATING
+N_OUT = sum(1 for v in VERDICTS.values() if v == "OUT")
 
 
 def _html(tmp_path: Path) -> str:
@@ -33,16 +35,15 @@ def test_generate_html(tmp_path: Path):
 
 def test_html_has_all_nodes(tmp_path: Path):
     html = _html(tmp_path)
-    total = html.count('class="node"')
-    assert total == 121, f"节点数应为 121（实测 {total}）"
-    assert html.count("<circle class=\"node\"") == 79, "外圈应为 79 个命题（圆）"
-    assert html.count("<rect class=\"node\"") == 42, "内圈应为 42 个误解（方）"
+    assert html.count('class="node"') == len(VERDICTS)
+    assert html.count("<circle class=\"node\"") == N_PROP, "外圈为命题（圆）"
+    assert html.count("<rect class=\"node\"") == N_MIS, "内圈为误解（方）"
 
 
 def test_html_has_legend(tmp_path: Path):
     html = _html(tmp_path)
     for item in ("IN", "OUT", "UNDEC", "击败边（可信度严格大于）", "非击败边",
-                 "命题（外圈 79）", "误解（内圈 42）"):
+                 f"命题（外圈 {N_PROP}）", f"误解（内圈 {N_MIS}）"):
         assert item in html, f"图例缺 {item}"
 
 
@@ -54,16 +55,19 @@ def test_html_self_contained(tmp_path: Path):
 
 
 def test_edges_are_rendered_with_correct_weights(tmp_path: Path):
+    """渲染出的边权重必须等于现算的击败/非击败划分（真验证：渲染 vs 判定）。"""
     html = _html(tmp_path)
-    assert html.count('stroke="#A14E50" stroke-width="1.8"') == 17, "击败边应 17 条红粗线"
-    assert html.count('stroke="#9E9E9E" stroke-width="0.6"') == 371, "非击败边应 371 条灰细线"
+    assert html.count('stroke="#A14E50" stroke-width="1.8"') == N_DEFEATING, "击败边红粗线数不符"
+    assert html.count('stroke="#9E9E9E" stroke-width="0.6"') == N_PLAIN, "非击败边灰细线数不符"
+    assert html.count("<line ") == len(EDGES), "边总数不符"
 
 
 def test_interaction_and_static_fallback(tmp_path: Path):
     html = _html(tmp_path)
     assert 'onclick="show(' in html and "function show(id)" in html
     assert "节点详情" in html and "静态兜底" in html
-    assert html.count("<tr><td><code>MIS-") == 7, "OUT 节点静态表应 7 行"
+    table = html.split("静态兜底")[1].split("</table>")[0]     # 只看静态兜底表（脚本里的模板行不算）
+    assert table.count("<tr><td><code>") == N_OUT, "OUT 节点静态表行数应等于 OUT 节点数"
     assert "#35705A" in html and "#A14E50" in html
 
 
@@ -75,4 +79,4 @@ def test_cli_html(tmp_path: Path, capsys):
     out = tmp_path / "cli.html"
     assert dc.main(["html", "--out", str(out)]) == 0
     assert "自包含 HTML" in capsys.readouterr().out
-    assert out.read_text(encoding="utf-8").count('class="node"') == 121
+    assert out.read_text(encoding="utf-8").count('class="node"') == len(VERDICTS)

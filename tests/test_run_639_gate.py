@@ -33,5 +33,21 @@ def test_static_checks_green():
     assert G.check_tool_integrity()["ok"]
 
 
+def test_gate_logic_reflects_step_results(monkeypatch):
+    """640c B1：锁**门禁机制**而非"当时仓库状态"（历史门禁的跨批脆弱反面教材）。
+
+    任何一步失败 ⇒ `all_ok` 必须为 False 且 `main()` exit 1；全部成功 ⇒ True。
+    不依赖仓库当前内容 ⇒ 正常演进（加工具/重算/人签）不会让它变红。
+    """
+    monkeypatch.setattr(G, "_run", lambda _cmd: (1, "boom"))
+    assert G.build()["checks"]["all_ok"] is False
+    assert G.main(["--check"]) == 1
+
+    monkeypatch.setattr(G, "_run", lambda _cmd: (0, "ok"))
+    checks = G.build()["checks"]
+    assert checks["ruff"]["ok"] is True and checks["controlled"]["ok"] is True
+    assert checks["merkle"]["ok"] is True and checks["tool_integrity"]["ok"] is True
+
+
 def test_ledger_check_green():
     assert G.check_ledger()["ok"]

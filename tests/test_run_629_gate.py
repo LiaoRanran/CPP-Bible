@@ -24,7 +24,9 @@ import soft_baseline_634 as SB  # 634 A3  # noqa: E402
 # 在该条件成立时显式 skip（条件与理由都写死在代码里，不静默通过）。
 LATER_BATCH_ADDED = sorted(
     f for f in G.added_files("tools")
-    if re.search(r"_6(3\d|4\d|5\d|9\d)", f) and not f.startswith("run_629"))
+    # 640c B1：原正则只认 63x/64x/65x/69x ⇒ 66x 起的新批次会让"旁证"变空而误红
+    #（跨批脆弱）。放宽为**任意 6xx–9xx 批次号**，与具体批次名解耦。
+    if re.search(r"_[6-9]\d\d", f) and not f.startswith("run_629"))
 
 skip_if_later_batch = pytest.mark.skipif(
     bool(LATER_BATCH_ADDED),

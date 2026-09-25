@@ -10,8 +10,12 @@ C1 的五个基础探测器：
   * `detect_credibility_gaps`：可信度档位分布缺口（最大档 `high` 为空 ⇒ OUT 的 MIS 无高可信辩护者可用）。
 
 ⚠️ 口径（610 实测）：**辩护者 = W2 意义的辩护者**（IN 且攻击了"攻击我的攻击者"）。
-任务书写"7 个无辩护者 MIS"，实测是 **1 个**（`MIS-LANG-001`；另 2 个空辩护者是**未 OUT** 的 MIS，
-4 个是命题）⇒ 本工具按实测给数，并在报告里登记该偏差。
+任务书写"7 个无辩护者 MIS"，610 实测是 **1 个**（`MIS-LANG-001`）。
+
+⚠️ 640c 起**所有数字动态取**（`tools/w2_derived_640c.py` 为派生量单一权威源）：
+632/634 命题级人签把 79 条命题抬到 `high` ⇒ MIS（approve 只到 `medium`）**全部**被判 OUT
+⇒ "OUT 且无辩护者的 MIS"由 1 变 42，"无辩护者节点合计"由 7 变 46。**这是口径演进，不是 bug**
+（640b 已登记语义后果，641 裁决）；本工具与 `check()` 不再锁定快照数字。
 
 CLI：no-attackers / no-defenders / isolated / unreviewed / credibility-gaps / --check
 """
@@ -232,63 +236,120 @@ def collect_findings(edges: list[dc.AttackEdge], annotations: list[dict],
     }
 
 
+def priority_counts(f: dict) -> dict:
+    """P0/P1/P2 条数（**现算**；640c A1/A2：曾写死 2/4/3，与内容脱钩）。
+
+    * P0 = 结构性缺口：`high` 档为空 / 存在无攻击者命题；
+    * P1 = 无辩护者 OUT MIS / modify=1.0 的 MIS / 主题失衡 / 图碎片化（>1 分量）；
+    * P2 = 命题过载 / MIS 过载 / 2-环。
+    """
+    p0 = (1 if f["credibility"]["distribution"]["high"] == 0 else 0) \
+        + (1 if f["no_attacker_props"] else 0)
+    p1 = sum([bool(f["no_defender_mis"]), bool(f["high_modify"]),
+              bool(f["topic"]["imbalanced"]), f["components"]["count"] > 1])
+    p2 = sum([bool(f["prop_overload"]), bool(f["mis_overload"]), bool(f["cycles"])])
+    return {"p0": p0, "p1": p1, "p2": p2}
+
+
 def generate_full_report(edges: list[dc.AttackEdge], annotations: list[dict],
                          verdicts: dict[str, str], credibilities: dict[str, str]) -> str:
+    """七节完整报告。**所有数字现算**；P0/P1 段落按实际条件出现（不谎报已消解的缺口）。"""
     f = collect_findings(edges, annotations, verdicts, credibilities)
     s = dc.solve_summary(edges, credibilities)
+    cnt = priority_counts(f)
+    dist = f["credibility"]["distribution"]
+    n_props = s["nodes"] - sum(1 for n in verdicts if dc.node_type_of(n, edges) == "misconception")
+    n_mis = sum(1 for n in verdicts if dc.node_type_of(n, edges) == "misconception")
+    n_approve = sum(1 for a in annotations if a.get("action") == "approve")
+    n_modify = sum(1 for a in annotations if a.get("action") == "modify")
+    n_reject = sum(1 for a in annotations if a.get("action") == "reject")
+    p0_lines: list[str] = []
+    if dist["high"] == 0:
+        p0_lines.append(
+            f"- **无 `high` 可信度节点**（分布 {dist}）："
+            "⇒ OUT 的 MIS 永远拿不到高可信辩护者，'被推翻后翻案'在结构上不可能发生；")
+    else:
+        p0_lines.append(
+            f"- ~~无 `high` 可信度节点~~ **已消解**（分布 {dist}，`high` {dist['high']} 个）："
+            "高可信节点已存在 ⇒ 该结构性缺口不再成立（640c 按实况改判，原为无条件 P0）；")
+    if f["no_attacker_props"]:
+        p0_lines.append(
+            f"- **论证盲区：{len(f['no_attacker_props'])} 个命题无任何攻击者**"
+            f"（{', '.join(f['no_attacker_props'])}）：没有任何误解指向它们 ⇒ "
+            "要么该命题太显然（无需攻击），要么还没人造出对应误解 ⇒ 覆盖缺口；")
+    else:
+        p0_lines.append("- 论证盲区：**已消解**（每个命题都至少有一个误解指向）；")
+    p1_lines: list[str] = []
+    if f["no_defender_mis"]:
+        p1_lines.append(
+            f"- **OUT 且无辩护者**：OUT 的 MIS 中 {len(f['no_defender_mis'])} 个无 W2 辩护者"
+            f"（{', '.join(f['no_defender_mis'])}）；无辩护者节点合计 {len(f['no_defender_nodes'])} 个；")
+    if f["high_modify"]:
+        p1_lines.append(
+            f"- **歧义集中：{len(f['high_modify'])} 个 MIS 的 modify 比例 = 1.0**"
+            f"（{', '.join(r['mis_id'] for r in f['high_modify'])}）⇒ 档位判据需沉淀；")
+    if f["topic"]["imbalanced"]:
+        p1_lines.append(
+            f"- **主题失衡**：{f['topic']['dominant_topic']} 占 {f['topic']['dominant_ratio']:.1%}"
+            f"（阈值 60%）⇒ 结论外推到其它主题需谨慎；")
+    if f["components"]["count"] > 1:
+        p1_lines.append(
+            f"- **论证图碎片化**：{f['components']['count']} 个连通分量、最大分量只覆盖 "
+            f"{f['components']['coverage']:.1%} 节点 ⇒ 大量子论证彼此孤立，跨主题的辩护链无法成立；")
+    p2_lines: list[str] = []
+    if f["prop_overload"]:
+        p2_lines.append(f"- 命题过载：`{f['prop_overload'][0]['proposition']}` 被 "
+                        f"{f['prop_overload'][0]['attackers']} 个 MIS 攻击（表述可能过宽）；")
+    if f["mis_overload"]:
+        p2_lines.append(f"- MIS 过载：`{f['mis_overload'][0]['mis_id']}` 攻击 "
+                        f"{f['mis_overload'][0]['propositions']} 个不同命题（误解可能过宽）；")
+    if f["cycles"]:
+        p2_lines.append(f"- 循环论证：**{len(f['cycles'])} 个 2-环**（对称边设计的必然产物；"
+                        "W2 里同档不构成击败 ⇒ 不产生自证循环，但换档位口径时必须重查）；")
+    fix_rows = []
+    if dist["high"] == 0:
+        fix_rows.append("| 无 high 档节点 | OUT 的 MIS 无法被翻案（无高可信辩护者） | "
+                        "新增/升级可产出 `high` 的判据；或明确「本仓不设 high 档」并把它写进口径 |")
+    fix_rows.append(f"| {len(f['no_attacker_props'])} 个无攻击者命题 | 论证盲区，覆盖度虚高 | "
+                    f"优先为这 {len(f['no_attacker_props'])} 条造误解或标注「无需攻击」的理由 |")
+    fix_rows.append(f"| {len(f['high_modify'])} 个 modify=1.0 的 MIS | 档位判断歧义，人审可信度打折 | "
+                    "把「证据较充分但偏保守」沉淀成可复算的判据，再跑第二轮 |")
+    if f["topic"]["imbalanced"]:
+        fix_rows.append(f"| 主题失衡（{f['topic']['dominant_ratio']:.1%}） | 跨主题结论外推风险 | "
+                        "按主题设定覆盖配额（本批只提示，不改生成器） |")
+    if f["components"]["count"] > 1:
+        fix_rows.append(f"| 论证图 {f['components']['count']} 分量 | 子论证孤立，跨主题辩护链断裂 | "
+                        "优先补「桥接」攻击边（让大分量之间产生真实攻击关系），不硬造 |")
     lines = [
         "# 论证漏洞报告（610 C3 · 智能原型 2）", "",
         "> 只读生成：数据来自候选边 + 用户授权人审 + 610 B1 的辩护链引擎（同一口径）。", "",
         "## 1. 总览", "",
-        f"- 节点 **{s['nodes']}**（命题 79 + 误解 42）· 边 **{s['edges']}**"
+        f"- 节点 **{s['nodes']}**（命题 {n_props} + 误解 {n_mis}）· 边 **{s['edges']}**"
         f"（其中**构成击败** {s['defeating_edges']}）",
         f"- 判决 **IN {s['in']} / OUT {s['out']} / UNDEC {s['undec']}** · {s['rounds']} 轮收敛",
-        f"- 人审 388/388（approve 354 / modify 34 / reject 0）· 未审边 {len(f['unreviewed_edges'])}",
+        f"- 人审 {len(annotations)}/{s['edges']}"
+        f"（approve {n_approve} / modify {n_modify} / reject {n_reject}）"
+        f"· 未审边 {len(f['unreviewed_edges'])}",
         f"- 连通分量 **{f['components']['count']}** 个（孤立 {len(f['components']['isolated'])}，"
         f"最大 {f['components']['largest']} 节点 = {f['components']['coverage']:.1%}）", "",
-        "## 2. P0 漏洞（结构性，需立即处理）", "",
-        f"- **无 `high` 可信度节点**（分布 {f['credibility']['distribution']}）："
-        "⇒ OUT 的 MIS 永远拿不到高可信辩护者，'被推翻后翻案'在结构上不可能发生；",
-        f"- **论证盲区：{len(f['no_attacker_props'])} 个命题无任何攻击者**"
-        f"（{', '.join(f['no_attacker_props'])}）：没有任何误解指向它们 ⇒ "
-        "要么该命题太显然（无需攻击），要么还没人造出对应误解 ⇒ 覆盖缺口；", "",
-        "## 3. P1 漏洞（需短期处理）", "",
-        f"- **OUT 且无辩护者**：OUT 的 MIS 中 {len(f['no_defender_mis'])} 个无 W2 辩护者"
-        f"（{', '.join(f['no_defender_mis'])}）；无辩护者节点合计 {len(f['no_defender_nodes'])} 个；",
-        f"- **歧义集中：{len(f['high_modify'])} 个 MIS 的 modify 比例 = 1.0**"
-        f"（{', '.join(r['mis_id'] for r in f['high_modify'])}）⇒ 档位判据需沉淀；",
-        f"- **主题失衡**：{f['topic']['dominant_topic']} 占 {f['topic']['dominant_ratio']:.1%}"
-        f"（阈值 60%）⇒ 结论外推到其它主题需谨慎；",
-        f"- **论证图碎片化**：{f['components']['count']} 个连通分量、最大分量只覆盖 "
-        f"{f['components']['coverage']:.1%} 节点 ⇒ 大量子论证彼此孤立，跨主题的辩护链无法成立；", "",
-        "## 4. P2 漏洞（需长期处理）", "",
-        f"- 命题过载：`{f['prop_overload'][0]['proposition']}` 被 "
-        f"{f['prop_overload'][0]['attackers']} 个 MIS 攻击（表述可能过宽）；",
-        f"- MIS 过载：`{f['mis_overload'][0]['mis_id']}` 攻击 "
-        f"{f['mis_overload'][0]['propositions']} 个不同命题（误解可能过宽）；",
-        f"- 循环论证：**{len(f['cycles'])} 个 2-环**（对称边设计的必然产物；"
-        "W2 里同档不构成击败 ⇒ 不产生自证循环，但换档位口径时必须重查）；", "",
+        "## 2. P0 漏洞（结构性，需立即处理）", "", *p0_lines, "",
+        "## 3. P1 漏洞（需短期处理）", "", *(p1_lines or ["- 无（各项均在阈值内）"]), "",
+        "## 4. P2 漏洞（需长期处理）", "", *(p2_lines or ["- 无"]), "",
         "## 5. 详细描述 / 影响 / 修复建议", "",
-        "| 漏洞 | 影响 | 建议（**只建议不执行**） |", "|---|---|---|",
-        "| 无 high 档节点 | OUT 的 MIS 无法被翻案（无高可信辩护者） | 新增/升级可产出 `high` 的判据；"
-        "或明确「本仓不设 high 档」并把它写进口径 |",
-        f"| {len(f['no_attacker_props'])} 个无攻击者命题 | 论证盲区，覆盖度虚高 | "
-        "优先为这 4 条造误解或标注「无需攻击」的理由 |",
-        f"| {len(f['high_modify'])} 个 modify=1.0 的 MIS | 档位判断歧义，人审可信度打折 | "
-        "把「证据较充分但偏保守」沉淀成可复算的判据，再跑第二轮 |",
-        f"| 主题失衡（{f['topic']['dominant_ratio']:.1%}） | 跨主题结论外推风险 | "
-        "按主题设定覆盖配额（本批只提示，不改生成器） |",
-        f"| 论证图 {f['components']['count']} 分量 | 子论证孤立，跨主题辩护链断裂 | "
-        "优先补「桥接」攻击边（让大分量之间产生真实攻击关系），不硬造 |", "",
+        "| 漏洞 | 影响 | 建议（**只建议不执行**） |", "|---|---|---|", *fix_rows, "",
         "## 6. 漏洞统计", "",
         "| 优先级 | 条数 | 明细 |", "|---|---:|---|",
-        f"| P0 | 2 | 无 high 档节点 · 无攻击者命题 {len(f['no_attacker_props'])} |",
-        f"| P1 | 4 | 无辩护者 OUT MIS {len(f['no_defender_mis'])} · "
+        f"| P0 | {cnt['p0']} | "
+        f"{'无 high 档节点 · ' if dist['high'] == 0 else ''}"
+        f"无攻击者命题 {len(f['no_attacker_props'])} |",
+        f"| P1 | {cnt['p1']} | 无辩护者 OUT MIS {len(f['no_defender_mis'])} · "
         f"modify=1.0 的 MIS {len(f['high_modify'])} · 主题失衡 · 图碎片化 |",
-        f"| P2 | 3 | 命题过载 · MIS 过载 · 2-环 {len(f['cycles'])} |", "",
+        f"| P2 | {cnt['p2']} | 命题过载 · MIS 过载 · 2-环 {len(f['cycles'])} |", "",
         "## 7. 后续建议（NDW 分类）", "",
-        "- **Need（必须做）**：为 4 个无攻击者命题补误解或补「无需攻击」理由（否则覆盖度无法声明）；",
-        "- **Do（可做）**：把 7 个 modify=1.0 的 MIS 的判据沉淀成规则，作为下一轮人审的前置材料；",
+        f"- **Need（必须做）**：为 {len(f['no_attacker_props'])} 个无攻击者命题补误解或补"
+        "「无需攻击」理由（否则覆盖度无法声明）；",
+        f"- **Do（可做）**：把 {len(f['high_modify'])} 个 modify=1.0 的 MIS 的判据沉淀成规则，"
+        "作为下一轮人审的前置材料；",
         "- **Won't（本批不做）**：不给 OUT 的 MIS 硬造辩护者、不改生成器阈值、不重冻结 W2、"
         "不执行任何人审（人审权力在用户手中）；", "",
         "> 本报告**只呈现事实与建议**；所有修复动作都需人确认后另行开批。", "",
@@ -315,7 +376,8 @@ def summary_json(edges: list[dc.AttackEdge], annotations: list[dict], verdicts: 
             "p2": {"top_prop_overload": f["prop_overload"][0]["attackers"],
                    "top_mis_overload": f["mis_overload"][0]["propositions"],
                    "cycles": len(f["cycles"])},
-            "totals": {"p0": 2, "p1": 4, "p2": 3,
+            # 640c A1：条数**现算**（曾写死 2/4/3；`p0` 与 `no_high_credibility` 脱钩会自相矛盾）
+            "totals": {**priority_counts(f),
                        "defeating_edges": dc.solve_summary(edges, credibilities)["defeating_edges"]},
             "note": "P0/P1/P2 的条数口径见报告 §6；只统计**已判定**的漏洞，不估未知"}
 
@@ -352,9 +414,13 @@ def main(argv: list[str] | None = None) -> int:
             for m in problems[:50]:
                 print("  - " + m, file=sys.stderr)
             return 2
-        print("[audit] --check OK：五个基础探测器与 W2 产物自洽（无攻击者 4 · OUT 无辩护者 1 · "
-              "无辩护者合计 7 · 未审边 0 · 分量 11（孤立 4，最大 80）· "
-              "可信度 high 0/medium 114/low 7）")
+        snap = snapshot(a.edges, a.annotations)
+        d = snap["credibility_distribution"]
+        print(f"[audit] --check OK：探测不变量与 W2 产物自洽"
+              f"（无攻击者 {snap['no_attacker_propositions']} · OUT 无辩护者 {snap['no_defender_mis']}"
+              f" · 无辩护者合计 {snap['no_defender_nodes']} · 未审边 {snap['unreviewed_edges']}"
+              f" · 分量 {snap['components']}（孤立 {snap['isolated']}，最大 {snap['largest']}）"
+              f" · 可信度 high {d['high']}/medium {d['medium']}/low {d['low']}）")
         return 0
 
     if a.cmd is None:
@@ -384,9 +450,11 @@ def main(argv: list[str] | None = None) -> int:
     elif a.cmd == "cycles":
         res = detect_cycle_arguments(edges)
     elif a.cmd == "report":
-        p = write_report(generate_full_report(edges, anns, verdicts, cred), a.out)
+        report = generate_full_report(edges, anns, verdicts, cred)
+        p = write_report(report, a.out)
+        c = priority_counts(collect_findings(edges, anns, verdicts, cred))
         print(f"[audit] 已写 {p.relative_to(ROOT).as_posix() if str(p).startswith(str(ROOT)) else p}"
-              f"（P0 2 · P1 4 · P2 3）")
+              f"（P0 {c['p0']} · P1 {c['p1']} · P2 {c['p2']}）")
         return 0
     elif a.cmd == "summary":
         res = summary_json(edges, anns, verdicts, cred)
@@ -398,37 +466,86 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
-def check(edges_path: Path | str | None = None,
-          ann_path: Path | str | None = None) -> list[str]:
-    problems: list[str] = []
+def snapshot(edges_path: Path | str | None = None,
+             ann_path: Path | str | None = None) -> dict:
+    """五个基础探测器的**当前实况**（--check OK 文案与测试取值共用一处）。"""
     edges, verdicts, cred = load_state(edges_path, ann_path)
     nodes = all_nodes(verdicts, edges)
     props = [n for n in verdicts if dc.node_type_of(n, edges) == "proposition"]
-    na = detect_no_attacker_propositions(edges, props)
-    if len(na) != 4:
-        problems.append(f"无攻击者命题应为 4（实测 {len(na)}）")
+    comps = detect_isolated_subgraphs(edges, nodes)
+    sizes = sorted((len(c) for c in comps), reverse=True)
+    return {"no_attacker_propositions": len(detect_no_attacker_propositions(edges, props)),
+            "no_defender_mis": len(detect_no_defender_mis(edges, verdicts, cred)),
+            "no_defender_nodes": len(detect_no_defender_nodes(edges, verdicts, cred)),
+            "unreviewed_edges": len(detect_unreviewed_edges(edges)),
+            "components": len(comps),
+            "isolated": sum(1 for c in comps if len(c) == 1),
+            "largest": sizes[0] if sizes else 0,
+            "credibility_distribution": detect_credibility_gaps(cred)["distribution"],
+            "nodes": len(nodes)}
+
+
+def check(edges_path: Path | str | None = None,
+          ann_path: Path | str | None = None,
+          labels_path: Path | str | None = None) -> list[str]:
+    """自洽校验（640c A1/A2 重写：**不变量 + 跨源一致性**，不再是快照比对）。
+
+    **A 不变量**（纯内部一致性，与"当前数字是多少"无关 ⇒ 仓库正常演进不红，破坏即真 bug）：
+      ① 可信度分布之和 == 判决表节点数；
+      ② 无辩护者 MIS ⊆ OUT 节点，且每个无辩护者节点确实没有 W2 辩护者；
+      ③ 无辩护者 MIS ⊆ 无辩护者节点（两个探测器同一口径）；
+      ④ 连通分量是节点全集的一个划分（尺寸之和 == 节点数）；
+      ⑤ 未审边 == 0（人审是本工具的前置条件；未审则结论不可用）。
+
+    **B 跨源一致性**（**现算 vs 入库 W2 产物**：两条不同路径 ⇒ 有真实验证力）：
+      ⑥ 判决汇总（IN/OUT/UNDEC/节点数）与产物一致；
+      ⑦ 可信度分布与产物 `confidence` 分布一致；
+      ⑧ OUT MIS 数与产物一致。
+    """
+    problems: list[str] = []
+    edges, verdicts, cred = load_state(edges_path, ann_path)
+    nodes = all_nodes(verdicts, edges)
+
+    # ── A 不变量 ──
+    gaps = detect_credibility_gaps(cred)
+    if sum(gaps["distribution"].values()) != gaps["total"] or gaps["total"] != len(verdicts):
+        problems.append(f"可信度分布之和 {sum(gaps['distribution'].values())} "
+                        f"≠ 判决表节点数 {gaps['total']}/{len(verdicts)}")
     nd_mis = detect_no_defender_mis(edges, verdicts, cred)
-    if nd_mis != ["MIS-LANG-001"]:
-        problems.append(f"OUT 且无辩护者的 MIS 应为 ['MIS-LANG-001']（实测 {nd_mis}）")
     nd_all = detect_no_defender_nodes(edges, verdicts, cred)
-    if len(nd_all) != 7:
-        problems.append(f"无辩护者节点总数应为 7（实测 {len(nd_all)}）")
+    out_nodes = {n for n, v in verdicts.items() if v == "OUT"}
+    if not set(nd_mis) <= out_nodes:
+        problems.append(f"无辩护者 MIS 里有非 OUT 节点：{sorted(set(nd_mis) - out_nodes)}")
+    if not set(nd_mis) <= set(nd_all):
+        problems.append(f"无辩护者 MIS 不在无辩护者节点集合内："
+                        f"{sorted(set(nd_mis) - set(nd_all))}")
+    bad = [n for n in nd_all if dc.get_defense_chain(n, edges, verdicts, cred).w2_defenders]
+    if bad:
+        problems.append(f"无辩护者节点实际有 W2 辩护者：{bad[:5]} ⇒ 探测口径不一致")
     un = detect_unreviewed_edges(edges)
     if un:
         problems.append(f"存在未人审边 {len(un)} 条（人审全量后应为 0）")
-    gaps = detect_credibility_gaps(cred)
-    if gaps["distribution"] != {"high": 0, "medium": 114, "low": 7}:
-        problems.append(f"可信度分布非 {({'high': 0, 'medium': 114, 'low': 7})}："
-                        f"{gaps['distribution']}")
     comps = detect_isolated_subgraphs(edges, nodes)
-    singles = [c for c in comps if len(c) == 1]
-    sizes = sorted((len(c) for c in comps), reverse=True)
-    if len(singles) != 4 or len(comps) != 11:
-        problems.append(f"连通分量应为 11（其中孤立 4）（实测 分量 {len(comps)} / 孤立 {len(singles)}）")
-    if sizes[0] != 80:
-        problems.append(f"最大连通分量应为 80 节点（实测 {sizes[0]}）⇒ 论证图碎片化程度变了")
-    if len(nodes) != 121:
-        problems.append(f"节点全集应为 121（实测 {len(nodes)}）")
+    total_in_comps = sum(len(c) for c in comps)
+    if total_in_comps != len(nodes):
+        problems.append(f"连通分量不是节点全集的划分：分量合计 {total_in_comps} ≠ 节点 {len(nodes)}")
+
+    # ── B 跨源一致性（现算 vs 入库产物）──
+    try:
+        pn = dc.pinned_summary(labels_path)
+    except FileNotFoundError as exc:
+        problems.append(f"W2 产物不可读 ⇒ 无法跨源校验：{exc}")
+        return problems
+    s = dc.solve_summary(edges, cred)
+    if (s["in"], s["out"], s["undec"], s["nodes"]) != (pn["in"], pn["out"], pn["undec"],
+                                                       pn["nodes"]):
+        problems.append(f"判决汇总 {s['in']}/{s['out']}/{s['undec']}（{s['nodes']}）"
+                        f"≠ 产物 {pn['in']}/{pn['out']}/{pn['undec']}（{pn['nodes']}）")
+    if gaps["distribution"] != pn["credibility_distribution"]:
+        problems.append(f"可信度分布 {gaps['distribution']} ≠ 产物 {pn['credibility_distribution']}")
+    out_mis = sum(1 for n in out_nodes if dc.node_type_of(n, edges) == "misconception")
+    if out_mis != pn["out_mis"]:
+        problems.append(f"OUT MIS 数 {out_mis} ≠ 产物 {pn['out_mis']}")
     return problems
 
 

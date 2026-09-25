@@ -53,15 +53,22 @@ def collect_bridge_candidates(notes: dict | None = None) -> dict:
 
 
 def collect_out_mis(notes: dict | None = None) -> dict:
-    """D1：OUT 的 7 个 MIS 复核支撑状态（与 `out_mis_review_support --check` 同源）。"""
+    """D1：OUT 的 MIS 数 + 611 锁定复核目标的状态（与 `out_mis_review_support --check` 同源）。
+
+    640c A1：`out_mis_count` 曾取**全部 OUT 节点数**（名字与语义不符，只是当时恰好全为 MIS）
+    ⇒ 改为按节点类型过滤；611 的 7 个"锁定复核目标"另列 `locked_out_mis`（历史范围，非当前全量）。
+    """
     try:
         import defense_chain as dc
         edges, verdicts, cred = dc.load_data()
         out_nodes = [n for n, v in verdicts.items() if v == "OUT"]
-        return {"out_mis_count": len(out_nodes),
+        out_mis = [n for n in out_nodes if dc.node_type_of(n, edges) == "misconception"]
+        locked = ["MIS-LANG-001", "MIS-MEM-001", "MIS-MEM-003", "MIS-UB-001",
+                  "MIS-UB-004", "MIS-UB-008", "MIS-UB-014"]
+        return {"out_mis_count": len(out_mis),
                 "out_nodes_total": len(out_nodes),
-                "known_out_mis": ["MIS-LANG-001", "MIS-MEM-001", "MIS-MEM-003", "MIS-UB-001",
-                                  "MIS-UB-004", "MIS-UB-008", "MIS-UB-014"],
+                "locked_out_mis": locked,
+                "locked_still_out": [n for n in locked if verdicts.get(n) == "OUT"],
                 "source": "defense_chain.load_data（610 B1 引擎）"}
     except Exception as exc:                         # noqa: BLE001
         if notes is not None:

@@ -67,6 +67,13 @@ def test_injected_ghost_comment_does_not_inflate_coverage(tmp_path: Path):
     # 这里把 ROOT 钉回真实仓库根，隔离"路径错位"干扰，只验证"注入死文本不涨覆盖"。
     mod.ROOT = pd.ROOT
 
+    # 640c/641 偶发红根因（已定位）：`poison_drill` 是**整个 pytest 会话共享的模块单例**，
+    # `_LAST_BEHAVIORAL_COVERED` 一旦被更早的测试填充，`pd.behavioral_covered()` 就返回
+    # **陈旧缓存**（那时 `build/` 状态与现在不同），而 `mod.behavioral_covered()` 是**本次新跑**
+    # 的完整 drill ⇒ 拿"陈旧基线"比"新跑结果"会偶发不等（实测 3 次全量 1 次红）。
+    # 治法：让基线也是**本次现算**（清空缓存再取），比较两侧都新鲜 ⇒ 去掉顺序依赖。
+    # 断言力度不变：仍然要求"注入死文本后两侧覆盖集合必须完全相同"。
+    pd._LAST_BEHAVIORAL_COVERED = None
     real_cov = pd.behavioral_covered()
     ghost_cov = mod.behavioral_covered()
     assert "FAKE-GHOST-581" not in ghost_cov, (

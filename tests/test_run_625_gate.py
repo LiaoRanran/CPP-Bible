@@ -22,7 +22,23 @@ def test_each_new_tool_has_check_flag():
         assert "--check" in extra
 
 
+def test_gate_logic_fails_when_a_step_fails(monkeypatch):
+    """640c B1：门禁**逻辑**本身的回归（与仓库当前是否绿无关）。
+
+    历史门禁容易变成"跨批脆弱"——它断言的是"当时仓库全绿"，仓库一演进就红。
+    真正该锁的是机制：**任一步骤失败 ⇒ exit 1**（否则门禁恒绿 == 没有门禁）。
+    """
+    monkeypatch.setattr(G, "_run", lambda _args: (1, "boom"))
+    assert G.check() == 1
+
+
+def test_gate_logic_passes_when_all_steps_ok(monkeypatch):
+    monkeypatch.setattr(G, "_run", lambda _args: (0, ""))
+    assert G.check() == 0
+
+
 def test_full_gate_passes():
+    """真实仓库全绿（受控不变量；失败时按 `_run` 输出定位是真红还是基准未重钉）。"""
     assert G.check() == 0
 
 
