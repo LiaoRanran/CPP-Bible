@@ -41,6 +41,13 @@ FORBIDDEN_PATTERNS = [
     "supersedes_remapper_627",
 ]
 W2_LEGACY_SOLVER = "weighted_af_solver.py"
+# 627 批次本身的提交（v2_regression_627.py 在此提交引入，已核实 528e9ab2..0f23af0d
+# 对 CORE_TOOLS 零改动 = 纯增量）。**历史不变量必须钉死在 627 区间**：
+# 原实现用 `528e9ab2..HEAD`，HEAD 每前进一批就必然把后续批次的**合法**核心工具改动
+# 误判为回归（637 质量审计登记的红测试根因）。后续 CORE_TOOLS 的演进由 tool_integrity
+# （哈希重钉）与各自批次的门禁管辖，不归本工具。
+BATCH_START_COMMIT = "528e9ab2"
+BATCH_END_COMMIT = "0f23af0d"
 OUT_JSON = os.path.join(ROOT, "data", "v2_regression_627.json")
 OUT_MD = os.path.join(ROOT, "data", "v2_regression_627.md")
 
@@ -60,7 +67,8 @@ def check() -> dict:
                      "isolated": not hits})
     # W2 legacy 求解器未被本批次修改（git diff）
     try:
-        diff = subprocess.run(["git", "diff", "--name-only", "528e9ab2", "HEAD"],
+        diff = subprocess.run(["git", "diff", "--name-only",
+                               BATCH_START_COMMIT, BATCH_END_COMMIT],
                               capture_output=True, text=True, cwd=ROOT).stdout.split()
         w2_solver_changed = any(os.path.basename(d) == W2_LEGACY_SOLVER
                                 for d in diff)
@@ -124,7 +132,9 @@ def main(argv: Optional[list] = None) -> int:
         for x in r["core_tools"]:
             lines.append(f"| {x['tool']} | {'✅' if x['isolated'] else '❌ '+str(x['forbidden_hits'])} |")
         lines += ["", f"- legacy W2 求解器 `weighted_af_solver.py` 未被本批次修改：{r['w2_solver_unchanged']}",
-                  f"- 本批次未修改 CORE_TOOLS：{r['no_core_change']}", "",
+                  f"- 本批次未修改 CORE_TOOLS：{r['no_core_change']}（比对区间 "
+                  f"`{BATCH_START_COMMIT}..{BATCH_END_COMMIT}`，钉死 627 提交；"
+                  "后续批次的核心工具演进由 tool_integrity 重钉与各批次门禁管辖）", "",
                   "> **注**：gate / poison / replay / tool_integrity --check **未执行**"
                   "（627 铁律不跑监工门禁）。本报告以静态分析证明"
                   "「CORE_TOOLS 不读取 flag、不依赖 V2 工具」⇒ 启用 flag 无回归可达路径。"

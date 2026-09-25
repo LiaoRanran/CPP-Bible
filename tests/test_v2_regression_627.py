@@ -28,6 +28,13 @@ def test_regression_passed():
     assert r["passed"]
 
 
+# 639 D7：比对区间必须钉死在 627 提交（528e9ab2..0f23af0d），不得回退到漂移的 HEAD
+def test_batch_range_pinned():
+    assert R.BATCH_START_COMMIT == "528e9ab2"
+    assert R.BATCH_END_COMMIT == "0f23af0d"
+    assert R.BATCH_END_COMMIT != "HEAD"
+
+
 def test_forbidden_patterns_absent():
     # 在 CORE_TOOLS 中不应出现任何被禁模式
     import re
