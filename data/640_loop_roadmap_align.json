@@ -1,0 +1,198 @@
+{
+  "generated": "2026-09-25T17:53:54",
+  "direction": "theory",
+  "direction_source": "_auto/status.json",
+  "direction_error": "",
+  "n_candidates": 23,
+  "ranked": [
+    {
+      "anomaly": "grounding_pct",
+      "name": "补实验接地",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 3.0,
+      "risk_class": "tool"
+    },
+    {
+      "anomaly": "grounding_pct",
+      "name": "未接地降级",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 3.0,
+      "risk_class": "core"
+    },
+    {
+      "anomaly": "observation_pct",
+      "name": "观察态降级",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 3.0,
+      "risk_class": "core"
+    },
+    {
+      "anomaly": "pytest_failures",
+      "name": "修失败测试",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 3.0,
+      "risk_class": "tool"
+    },
+    {
+      "anomaly": "taint_cards",
+      "name": "优先修高 taint",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 3.0,
+      "risk_class": "tool"
+    },
+    {
+      "anomaly": "taint_cards",
+      "name": "自动污染追踪",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 3.0,
+      "risk_class": "tool"
+    },
+    {
+      "anomaly": "exception_clauses",
+      "name": "合并相似例外",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 3.0,
+      "risk_class": "core"
+    },
+    {
+      "anomaly": "tools_per_test",
+      "name": "补测试",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 3.0,
+      "risk_class": "tool"
+    },
+    {
+      "anomaly": "static_errors",
+      "name": "自动修静态错",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 2.0,
+      "risk_class": "tool"
+    },
+    {
+      "anomaly": "exception_clauses",
+      "name": "为例外设过期",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 2.0,
+      "risk_class": "tool"
+    },
+    {
+      "anomaly": "tools_per_test",
+      "name": "删重复工具",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 2.0,
+      "risk_class": "tool"
+    },
+    {
+      "anomaly": "observation_pct",
+      "name": "收历史错误率",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 1.5,
+      "risk_class": "report"
+    },
+    {
+      "anomaly": "grounding_pct",
+      "name": "标记暂不使用",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 1.0,
+      "risk_class": "report"
+    },
+    {
+      "anomaly": "observation_pct",
+      "name": "人工逐条审",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 1.0,
+      "risk_class": "report"
+    },
+    {
+      "anomaly": "pytest_failures",
+      "name": "标已知失败+skip",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 1.0,
+      "risk_class": "tool"
+    },
+    {
+      "anomaly": "pytest_failures",
+      "name": "分析失败根因",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 1.0,
+      "risk_class": "report"
+    },
+    {
+      "anomaly": "static_errors",
+      "name": "人工修静态错",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 1.0,
+      "risk_class": "report"
+    },
+    {
+      "anomaly": "taint_cards",
+      "name": "追踪下游影响",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 1.0,
+      "risk_class": "report"
+    },
+    {
+      "anomaly": "exception_clauses",
+      "name": "复审例外有效性",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 1.0,
+      "risk_class": "report"
+    },
+    {
+      "anomaly": "ahead",
+      "name": "push 未推提交",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 1.0,
+      "risk_class": "report"
+    },
+    {
+      "anomaly": "ahead",
+      "name": "拆分 commit",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 0.5,
+      "risk_class": "report"
+    },
+    {
+      "anomaly": "ahead",
+      "name": "排查不 push 原因",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 0.5,
+      "risk_class": "report"
+    },
+    {
+      "anomaly": "tools_per_test",
+      "name": "放慢工具增长",
+      "category": "maintenance",
+      "roadmap_weight": 1.0,
+      "score": 0.5,
+      "risk_class": "report"
+    }
+  ],
+  "top3": [
+    "补实验接地",
+    "未接地降级",
+    "观察态降级"
+  ]
+}
