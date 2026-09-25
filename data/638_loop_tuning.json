@@ -1,0 +1,98 @@
+{
+  "generated": "2026-09-25T09:38:42",
+  "tuning": [
+    {
+      "id": "T1",
+      "key": "observation_pct",
+      "before": 30,
+      "after": null,
+      "why": "观测态 67/67=100% 是 Daubert 表**设计属性**（635 冻结），不是异常；637 把它列为 top1 P1 异常属**误报**（任务0 §2.5 R1）",
+      "expected": "消除 1 条 P1 误报，top1 不再被设计属性占据"
+    },
+    {
+      "id": "T2",
+      "key": "exception_clauses",
+      "before": 100,
+      "after": 250,
+      "why": "227 条是**7 处来源汇总**（635 冻结），单看总数不构成异常（任务0 §2.5 R1'）",
+      "expected": "消除 1 条 P2 误报"
+    },
+    {
+      "id": "T3",
+      "key": "risk_factor.report",
+      "before": 0.5,
+      "after": 0.75,
+      "why": "637 top1「为例外设过期」正是 report 类（成本最低、可立即交付），却被最低风险系数压制 ⇒ 人工赋值失真（任务0 §2.5 R4）",
+      "expected": "report 类排名上移，低成本可交付建议不再被系统性压低"
+    }
+  ],
+  "metrics_source": "self_observer_637.collect(heavy=False)（实时）",
+  "before": [
+    {
+      "key": "observation_pct",
+      "name": "observation_pct",
+      "severity": "P1",
+      "current": 100.0,
+      "threshold": 30.0,
+      "exceedance": 2.3333
+    },
+    {
+      "key": "taint_cards",
+      "name": "taint_cards",
+      "severity": "P1",
+      "current": 8,
+      "threshold": 5.0,
+      "exceedance": 0.6
+    },
+    {
+      "key": "grounding_pct",
+      "name": "grounding_pct",
+      "severity": "P1",
+      "current": 35.8,
+      "threshold": 50.0,
+      "exceedance": 0.284
+    },
+    {
+      "key": "exception_clauses",
+      "name": "exception_clauses",
+      "severity": "P2",
+      "current": 227,
+      "threshold": 100.0,
+      "exceedance": 1.27
+    }
+  ],
+  "after": [
+    {
+      "key": "taint_cards",
+      "name": "taint_cards",
+      "severity": "P1",
+      "current": 8,
+      "threshold": 5.0,
+      "exceedance": 0.6
+    },
+    {
+      "key": "grounding_pct",
+      "name": "grounding_pct",
+      "severity": "P1",
+      "current": 35.8,
+      "threshold": 50.0,
+      "exceedance": 0.284
+    }
+  ],
+  "n_before": 4,
+  "n_after": 2,
+  "removed": [
+    "exception_clauses",
+    "observation_pct"
+  ],
+  "added": [],
+  "kept": [
+    "grounding_pct",
+    "taint_cards"
+  ],
+  "tuned_risk_factor": {
+    "report": 0.75,
+    "tool": 1.0,
+    "core": 1.5
+  }
+}
