@@ -1,11 +1,11 @@
 {
   "state": "awaiting_review",
-  "active_batch": 636,
-  "next_batch": 637,
-  "last_completed_batch": 636,
-  "last_commit": "d846149b",
+  "active_batch": 638,
+  "next_batch": 639,
+  "last_completed_batch": 638,
+  "last_commit": "583d2dc0",
   "last_review_at": "2026-09-23",
-  "current_task": "636: 8/8 任务全完成（v25阶段2保护器,全影子不改判决）。任务0 开工快照+基线复测(15指标无漂移);2.1 冲突检测器影子(零依赖,23卡:RR23/EE2/超阈2);2.2 anti-windup设计(半饱和,30天223冻结,预算20/周);2.3 blind_protocol影子+注入盲化(违规258,分歧率无基线);2.4 校准追踪器+known_error_rate(67全无数据/观察态67);2.5 MDL试运行(admit30/reject37,通过率44.8%,早期66.7%->近期23.5%);V26-补1 污染追踪(ATOM-MEM-ALLOC-001下游);V26-补2 四态判决(36份:fail25/pass9/unknown1/带例外1,假pass1);E1 run_636_gate PASS+三报告。全影子不拦截不改判。",
+  "current_task": "638: 8/8 任务全完成（v25阶段3启动:四态结论真上线+Lifecycle FSM+闭环迭代,向后兼容不改历史判决）。任务0 开工快照+637闭环复盘:实测(67规则/452判决 APPROVE367+MODIFY85无REJECT/23卡RR/67规则无错误率/脏94/ahead9);637闭环产物在637批次未落盘(本批重跑得第一次产出),采纳率top3 0%/全12 8.3%/对638任务16.7%,不靠谱6类(R1/R1素数阈值误报:观察态100%/例外227实为635冻结设计属性);3.1 四态schema真上线:pass/pass_with_exception/fail/unknown+边界三元组强制(缺任一降级unknown),实测23张verified卡0边界=>全unknown;3.2 Lifecycle FSM五态+11条合法迁移+retired->draft须复活条件,append-only哈希链ledger,28卡初态draft2/verified26,0卡有lifecycle字段;B1 known_error_rate:ledger无规则字段+target_type全edge=>67/67全无数据(不编造),全库代理改判18.81%/人审8.76%/逃逸0.071%;B2 RR冲突:卡级23张+规则对级927候选(退化),高置信仅24对(type1 6/type2 14/type3 4);C2 闭环调参3项(覆盖层,不改637工具):observation_pct停用/例外100->250/report系数0.5->0.75,异常4->2误报2->0;C1 闭环第二次运行:误报率0.5->0.0,top3已变;E1 run_638_gate PASS(7/7工具+ruff+mypy 0/430文件+22/22交付+57例测试/7文件)。诚实偏差:637重跑非原物/637_observer.json曾被污染(改实时采集+已还原)/data638文件两度凭空丢失机制未查明(已排除根conftest,登记工具层不稳定)/表内工具数417与四态fail25过期。硬边界全遵守(未代签·未push·未改637工具与CORE_TOOLS判决逻辑·未删改JSONL·受控目录零污染)。",
   "prev_current_task_621": "621: 17/17 任务全完成（新 mutation 生成 + CI 竞态根治 + 雷6 弃权三态 + 30 条逐条人审落地），awaiting_review",
   "worker_model": "CodeBuddy (free daily quota)",
   "consecutive_errors": 0,
@@ -203,16 +203,25 @@
       "verdict": "awaiting_review",
       "objective": "v25阶段2保护器(冲突检测/anti-windup/blind_protocol/校准追踪/MDL)+v26补充(污染追踪/四态判决),全部影子模式",
       "notes": "8任务全完成。所有保护器为影子:离线运行出报告,不拦截不改判;未动CORE_TOOLS判决逻辑;新工具8个各带--check+6单测;门禁PASS(mypy 0/417)。详见 data/636_acceptance_report.md / 636_protector_shadow_report.md / 636_next_steps.md。"
+    },
+    {
+      "batch": 638,
+      "status": "completed",
+      "completed_at": "2026-09-25T10:00:00",
+      "verdict": "awaiting_review",
+      "objective": "v25阶段3启动:四态结论真上线 + Lifecycle FSM 落地 + known_error_rate/RR冲突 + 闭环第二次运行与调参 + 收工门禁",
+      "notes": "8 任务。3.1 四态schema(边界三元组强制,无边界降级unknown;23卡0边界=>全unknown);3.2 FSM五态+11迁移+复活条件+哈希链ledger(28卡draft2/verified26);B1 67/67无数据(ledger无规则字段,不编造)+全库代理18.81%/8.76%/0.071%;B2 927候选->高置信24对(type1 6/type2 14/type3 4)+卡级23张;C2 调参3项覆盖层(未改637工具)->异常4->2/误报2->0;C1 第二次运行memo+对比;E1 门禁PASS(7/7+ruff+mypy0+22/22+57例)。详见 data/638_acceptance_report.md / 638_baseline.md / 638_four_state_schema.md / 638_lifecycle_fsm.md / 638_error_rate_estimate.md / 638_rr_conflict_analysis.md / 638_loop_tuning.md / 638_evolution_memo.md。"
     }
   ],
   "history_note": "610/611/613/614 已压缩；逐批原始 commit 见 git log。",
-  "notes": "628 收工（12/12 全完成，**修债+他验落地批**）：**4 项技术债清算**——A1 V2 flag 真接入编译函数（V1/V2 数字一致 IN114/OUT7/UNDEC0，默认 V1，尺子重钉）、A2 PCK hash 83 张全量处置（82 重算/补 + 1 ref_missing 需人审，不判失效）、A3 镜像边 76 条自动证明写入 / 118 条 sidecar 留治理、A4 DEBT-001 等效清算 + replay manifest 实测 0 失配。**他验三件套落地原型**——B1 独立验证者零 import 本项目工具、朴素重算全部数字与系统一致；B2 VSA HMAC 凭证（verifier_sha256+输入三重哈希锚定，密钥不入库，验证端零 import 签发端）；B3 透明日志 GENESIS 哈希链 append-only+inclusion+幂等追加+凭证全部入册；B4 端到端编排（--check 只读幂等）。**C1 人审深色科技风仪表盘 v2**（玻璃拟态+霓虹+CSS 3D+6 数据模块）；**D1 学习者镜像门 closed 0/50**。**run_628_gate PASS**（12 工具+整目录 ruff/mypy 0+82 例测试+受控零污染+尺子一致+CORE 未改+零 import 静态分析）。新增 13 工具+82 例单测全绿。批内自纠：B2 --check 状态污染（10 张未入册测试尘埃凭证已删、日志未动）、验证端同源耦合、口径脆弱、追加非幂等——均按根因修复并登记。**交人项**：flag 默认启用裁决 / 真实 Blind Review 执行 / push 裁决 / ref_missing 1 张 PCK 处置 / 118 条镜像边治理 / 三件套正式启用（非对称签名+外部托管）/ 学习者开门计划。**未 push/未 golden accept/未开 delegation/未代签/未执行真实 Blind Review/未判 PCK 失效/未改 CORE_TOOLS**。详见 data/628_acceptance_report.md。",
+  "notes": "638 收工（8/8 全完成，**v25 阶段 3 启动批**）：四态结论与 Lifecycle FSM **真上线**（向后兼容：历史判决/报告一字未改）。3.1 四态 schema + 边界三元组强制（缺任一自动降级 unknown）——实测 23 张 verified 卡 **0 边界 ⇒ 全部 unknown**；3.2 五态 FSM + 11 条合法迁移 + 复活条件 + append-only 哈希链 ledger（28 卡初态 draft 2/verified 26，0 卡有 lifecycle 字段）。B1 known_error_rate 三层估算 **67/67 全「无数据」**（ledger 无规则字段、target_type 全 edge，**绝不编造**）+ 真实全库代理（改判 18.81% / 人审 8.76% / 逃逸 0.071%）。B2 RR 冲突双口径：卡级 23 张全分类 + 规则对级 927 候选（**退化**，高置信仅 24 对：type1 6/type2 14/type3 4）。C2 闭环调参 3 项（覆盖层，**未改 637 工具**）⇒ 异常 4→2、误报 2→0；C1 第二次运行 memo + 对比（误报率 0.5→0.0）。E1 run_638_gate **PASS**（7/7 工具 --check + ruff + mypy 0/430 文件 + 22/22 交付 + 57 例/7 文件测试）。交人项：四态何时全量、FSM 迁移规则、样本不足如何补数据、RR top3 先修哪个、闭环靠谱率、639 做什么。**未代签/未 push/未改 637 工具/受控目录零污染**。详见 data/638_acceptance_report.md。",
   "status": "awaiting_review",
-  "batch": 636,
-  "updated_at": "2026-09-25T19:30:00",
+  "batch": 638,
+  "updated_at": "2026-09-25T10:00:00",
   "prev_current_task_630": "631: 17/17 任务全完成（A CI pytest红根治：跨批脆弱6+工具自检过期3清零，剩5=环境依赖4+UTF-16存疑1，无新增失败；B 自身免疫率执行：auto42条liveness落地(23卡42处,备份+结构校验+来源可复核)但率仍100%未改善(warn134→92)，human90条出清单不代填；C 污染根因：逐组实跑未复现，未定位到函数，根因假设(apply后restore前失败)未证实，防护设计交人；D coverage补全：19向量→P0 2/P1 16/P2 1，建L1.2(扫28卡命中4命题)+L8.4(5场景全检出,生产日志零变化)两P0探针，口径45.7%→51.4%；E 他验信任根：三路径评估推荐C(外部KMS+透明日志)，导出RSA-2048公钥+第三方验证指南(私钥不落盘)；F Core接口v0.2：5接口25方法只定义不实现，雷1触发标准3/5；G1 收工门禁PASS）。诚实偏差：自身免疫率未改善/污染未定位/coverage提升有限/§零.13与F1提交冲突(已按F1提交v02_631、未提交625残留)/630 coverage工具未改仍45.7%/未push。",
   "prev_current_task_632": "631: 17/17 任务全完成（A CI pytest红根治：跨批脆弱6+工具自检过期3清零，剩5=环境依赖4+UTF-16存疑1，无新增失败；B 自身免疫率执行：auto42条liveness落地(23卡42处,备份+结构校验+来源可复核)但率仍100%未改善(warn134→92)，human90条出清单不代填；C 污染根因：逐组实跑未复现，未定位到函数，根因假设(apply后restore前失败)未证实，防护设计交人；D coverage补全：19向量→P0 2/P1 16/P2 1，建L1.2(扫28卡命中4命题)+L8.4(5场景全检出,生产日志零变化)两P0探针，口径45.7%→51.4%；E 他验信任根：三路径评估推荐C(外部KMS+透明日志)，导出RSA-2048公钥+第三方验证指南(私钥不落盘)；F Core接口v0.2：5接口25方法只定义不实现，雷1触发标准3/5；G1 收工门禁PASS）。诚实偏差：自身免疫率未改善/污染未定位/coverage提升有限/§零.13与F1提交冲突(已按F1提交v02_631、未提交625残留)/630 coverage工具未改仍45.7%/未push。",
   "prev_current_task_633": "633: 11/11 任务全完成（化债批，先盘点后清理）。任务0 全量债务盘点(7维度静态扫描,总436项:P0 0/P1 114/P2 67/P3 255;化债前快照:脏61/工具370/无--check 82/TODO35(实为占位XXX误报,真债12)/密钥1/死链0/待push47)；A1 push 47+1 commit(1438cd5e..33e02efb,ahead归零)；A2 CI债清理:实测套件有数据副作用(跑测试重写data/,脏60->74,失败32->54非稳定),建ci_debt_clear分类工具,修630三份断言过期测试(仅改断言);B1 工作区保守清理:还原7个时间戳/计数假脏,28实质内容登记;B2 工具债:更正TODO误报,给3个被import老工具补--check(comment_blocks/backup/observability);C1 密钥备份+影响评估(默认不轮换,轮换致历史凭证不可验=>交人;gitignore加宽);C2 他验债:重建锚恢复一致(40条链自洽),7孤儿凭证移档,2 dangling登记;D1 PCK/镜像边交人清单(ref_missing口径2vs1待核);D2 文档债:修3死链,登记.pytest_tmp 652目录残留;E1 测试债分类(slow6/跨批30/环境117/快照25+四长期方案);F1 run_633_gate PASS+三报告+ROI。诚实偏差:套件副作用致失败计数非稳定/A2仅修断言过期型/B2仅补3工具/C1未轮换/C2重建锚钉住测试追加日志/D2矛盾未核/pytest 51(≈A2 54)/未再push(ahead>0)。硬边界全遵守(未跑监工门禁全量·未代签·未改625-632工具核心逻辑·未删改JSONL·未动CRLF假脏两文件·受控零污染)。",
   "prev_current_task_634": "634: 11/11 任务全完成（修债 + 大建设）。任务0 开工快照+pytest副作用根因(静态扫47处测试直调写方法);A1 根级conftest会话级写保护根治副作用(pytest后data/净0改动);A2 79老工具批补只读--check(4组提交);A3 跨批脆弱断言逐条复核(真脆弱16处转单一基线,余16登记);B1 coverage 14向量结构性探针+35向量矩阵(60%->100%);B2 Horizon复算(dagger 60-80桶100%+17新规则,目标已由622-624达成);B3 N/A根因分类(616源仅聚合,130样本分类,主因载体天花板);C1 4卡12prop补signed_by(自身免疫率14.3%->0%);C2 快照更新+.pytest_tmp处置(已gitignore,删除受环境限);D1 mypy注解修复(tools/ 0 errors);E1 run_634_gate PASS+三报告。偏差:见634_acceptance_report.md §三。",
-  "prev_current_task_635": "635: 11/11 任务全完成（v25阶段1可见性+v26新增，只加数据不改判决）。任务0 开工快照+全量基线;1.1 边界三元组+v26字段(34 baseline回填5字段);1.2 τ_d(50对,中位0天)+渠道分布(A17/B4/C1/D28);1.3 四问审计(非盲评/AI先行/无校准数据/单一评审人);1.4 术语接地(已接地24/67=35.8%);1.5 击败器台账(23卡100%覆盖,taint 8);V26-1 错误代价比声明(漏报0.0711%:误报0%,可接受);V26-2 系统误差二分(可收敛4/不可收敛5,34份加两栏);V26-3 证据通道+污染演练(下游2卡tainted);V26-4 例外复审表(7来源227条,无期豁免0);V26-5 Daubert(67规则全观察态);E1 run_635_gate PASS+三报告。"
+  "prev_current_task_635": "635: 11/11 任务全完成（v25阶段1可见性+v26新增，只加数据不改判决）。任务0 开工快照+全量基线;1.1 边界三元组+v26字段(34 baseline回填5字段);1.2 τ_d(50对,中位0天)+渠道分布(A17/B4/C1/D28);1.3 四问审计(非盲评/AI先行/无校准数据/单一评审人);1.4 术语接地(已接地24/67=35.8%);1.5 击败器台账(23卡100%覆盖,taint 8);V26-1 错误代价比声明(漏报0.0711%:误报0%,可接受);V26-2 系统误差二分(可收敛4/不可收敛5,34份加两栏);V26-3 证据通道+污染演练(下游2卡tainted);V26-4 例外复审表(7来源227条,无期豁免0);V26-5 Daubert(67规则全观察态);E1 run_635_gate PASS+三报告。",
+  "prev_current_task_636": "636: 8/8 任务全完成（v25阶段2保护器,全影子不改判决）。任务0 开工快照+基线复测(15指标无漂移);2.1 冲突检测器影子(零依赖,23卡:RR23/EE2/超阈2);2.2 anti-windup设计(半饱和,30天223冻结,预算20/周);2.3 blind_protocol影子+注入盲化(违规258,分歧率无基线);2.4 校准追踪器+known_error_rate(67全无数据/观察态67);2.5 MDL试运行(admit30/reject37,通过率44.8%,早期66.7%->近期23.5%);V26-补1 污染追踪(ATOM-MEM-ALLOC-001下游);V26-补2 四态判决(36份:fail25/pass9/unknown1/带例外1,假pass1);E1 run_636_gate PASS+三报告。全影子不拦截不改判。"
 }
