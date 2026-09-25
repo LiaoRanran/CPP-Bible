@@ -1,0 +1,34 @@
+{
+  "standing": {
+    "gate_rules": 67,
+    "escape_rate": "1/1406 (0.071%)",
+    "autoimmune_rate_pct": 0.0,
+    "coverage_pct": 100.0,
+    "na_rate_pct": 11.24,
+    "grounding_pct": 35.8,
+    "defeater_coverage_pct": 100.0,
+    "taint_cards": 8,
+    "tau_d_median": 0,
+    "four_questions": "Q1非盲/Q2AI先行/Q3无数据/Q4单人",
+    "daubert_observation": 67,
+    "error_cost_ratio": "漏报0.071%:误报0%",
+    "tools_total": 408,
+    "tests_total": 407,
+    "local_ahead": 43
+  },
+  "measured": {
+    "gate_rules": 67,
+    "coverage_pct": 100.0,
+    "na_rate_pct": 11.24,
+    "grounding_pct": 35.8,
+    "defeater_coverage_pct": 100.0,
+    "taint_cards": 8,
+    "tau_d_median": 0,
+    "daubert_observation": 67,
+    "tools_total": 409,
+    "tests_total": 408,
+    "commits": 1838,
+    "local_ahead": 43,
+    "dirty_files": 72
+  }
+}
