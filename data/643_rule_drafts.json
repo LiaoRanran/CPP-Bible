@@ -1,0 +1,291 @@
+{
+  "drafts": [
+    {
+      "draft_id": "feccc0bd885e",
+      "kind": "NEW",
+      "proposed_rule_id": "ATOM-DRAFT-001",
+      "title": "补：evidence/conc/EV-CONC-001.md 上的逃逸面（M1）",
+      "trigger": "卡 `evidence/conc/EV-CONC-001.md`；缺失面 = M1",
+      "decision": "命中即报（建议先 advice）",
+      "severity": "advice",
+      "expected_block_rate": null,
+      "mdl_bits": 464,
+      "blast_radius": {
+        "cards": 1,
+        "rules": 0
+      },
+      "provenance": {
+        "kind": "NEW",
+        "case_id": "v7#0",
+        "source": "B4",
+        "card": "evidence/conc/EV-CONC-001.md",
+        "op": "M1"
+      },
+      "evidence": "反例",
+      "priority": 0.414,
+      "generated_by": "rule_drafter_643",
+      "version": "643.1"
+    },
+    {
+      "draft_id": "58bde5cd6dbe",
+      "kind": "MODIFY",
+      "proposed_rule_id": "MOD-ATOM-DAL-MATCH",
+      "title": "为 `ATOM-DAL-MATCH` 补「必备字段缺失即报」分支",
+      "trigger": "scope=atom；引用字段 dal, status",
+      "decision": "字段缺失时**显式报告**（当前可能静默跳过）",
+      "severity": "advice",
+      "expected_block_rate": null,
+      "mdl_bits": 432,
+      "blast_radius": {
+        "cards": 1,
+        "rules": 1
+      },
+      "provenance": {
+        "kind": "MODIFY",
+        "target_rule": "ATOM-DAL-MATCH",
+        "check_fn": "check_dal_match",
+        "fields": [
+          "dal",
+          "status"
+        ]
+      },
+      "evidence": "静态盲点",
+      "priority": 0.296,
+      "generated_by": "rule_drafter_643",
+      "version": "643.1"
+    },
+    {
+      "draft_id": "2b12c8d7fd97",
+      "kind": "MODIFY",
+      "proposed_rule_id": "MOD-ATOM-GRAY-ZONE",
+      "title": "为 `ATOM-GRAY-ZONE` 补「必备字段缺失即报」分支",
+      "trigger": "scope=atom；引用字段 domain",
+      "decision": "字段缺失时**显式报告**（当前可能静默跳过）",
+      "severity": "advice",
+      "expected_block_rate": null,
+      "mdl_bits": 432,
+      "blast_radius": {
+        "cards": 1,
+        "rules": 1
+      },
+      "provenance": {
+        "kind": "MODIFY",
+        "target_rule": "ATOM-GRAY-ZONE",
+        "check_fn": "check_atom_gray_zone",
+        "fields": [
+          "domain"
+        ]
+      },
+      "evidence": "静态盲点",
+      "priority": 0.296,
+      "generated_by": "rule_drafter_643",
+      "version": "643.1"
+    },
+    {
+      "draft_id": "733144de59c8",
+      "kind": "MODIFY",
+      "proposed_rule_id": "MOD-ATOM-ID-FORMAT",
+      "title": "为 `ATOM-ID-FORMAT` 补「必备字段缺失即报」分支",
+      "trigger": "scope=atom；引用字段 id, type",
+      "decision": "字段缺失时**显式报告**（当前可能静默跳过）",
+      "severity": "advice",
+      "expected_block_rate": null,
+      "mdl_bits": 432,
+      "blast_radius": {
+        "cards": 1,
+        "rules": 1
+      },
+      "provenance": {
+        "kind": "MODIFY",
+        "target_rule": "ATOM-ID-FORMAT",
+        "check_fn": "check_atom_id_format",
+        "fields": [
+          "id",
+          "type"
+        ]
+      },
+      "evidence": "静态盲点",
+      "priority": 0.296,
+      "generated_by": "rule_drafter_643",
+      "version": "643.1"
+    },
+    {
+      "draft_id": "73431a3c9727",
+      "kind": "MODIFY",
+      "proposed_rule_id": "MOD-ATOM-ID-UNIQUE",
+      "title": "为 `ATOM-ID-UNIQUE` 补「必备字段缺失即报」分支",
+      "trigger": "scope=atom；引用字段 id, status",
+      "decision": "字段缺失时**显式报告**（当前可能静默跳过）",
+      "severity": "advice",
+      "expected_block_rate": null,
+      "mdl_bits": 432,
+      "blast_radius": {
+        "cards": 1,
+        "rules": 1
+      },
+      "provenance": {
+        "kind": "MODIFY",
+        "target_rule": "ATOM-ID-UNIQUE",
+        "check_fn": "check_atom_id_unique",
+        "fields": [
+          "id",
+          "status"
+        ]
+      },
+      "evidence": "静态盲点",
+      "priority": 0.296,
+      "generated_by": "rule_drafter_643",
+      "version": "643.1"
+    },
+    {
+      "draft_id": "0e0a12193354",
+      "kind": "MODIFY",
+      "proposed_rule_id": "MOD-ATOM-FM-REQUIRED",
+      "title": "为 `ATOM-FM-REQUIRED` 补「必备字段缺失即报」分支",
+      "trigger": "scope=atom；引用字段 sources",
+      "decision": "字段缺失时**显式报告**（当前可能静默跳过）",
+      "severity": "advice",
+      "expected_block_rate": null,
+      "mdl_bits": 464,
+      "blast_radius": {
+        "cards": 1,
+        "rules": 1
+      },
+      "provenance": {
+        "kind": "MODIFY",
+        "target_rule": "ATOM-FM-REQUIRED",
+        "check_fn": "check_atom_frontmatter",
+        "fields": [
+          "sources"
+        ]
+      },
+      "evidence": "静态盲点",
+      "priority": 0.276,
+      "generated_by": "rule_drafter_643",
+      "version": "643.1"
+    },
+    {
+      "draft_id": "b4871afeacfc",
+      "kind": "MODIFY",
+      "proposed_rule_id": "MOD-ATOM-NO-UNVERIFIED",
+      "title": "为 `ATOM-NO-UNVERIFIED` 补「必备字段缺失即报」分支",
+      "trigger": "scope=atom；引用字段 status",
+      "decision": "字段缺失时**显式报告**（当前可能静默跳过）",
+      "severity": "advice",
+      "expected_block_rate": null,
+      "mdl_bits": 496,
+      "blast_radius": {
+        "cards": 1,
+        "rules": 1
+      },
+      "provenance": {
+        "kind": "MODIFY",
+        "target_rule": "ATOM-NO-UNVERIFIED",
+        "check_fn": "check_no_unverified_status",
+        "fields": [
+          "status"
+        ]
+      },
+      "evidence": "静态盲点",
+      "priority": 0.258,
+      "generated_by": "rule_drafter_643",
+      "version": "643.1"
+    },
+    {
+      "draft_id": "bc05d8f7a3f7",
+      "kind": "MODIFY",
+      "proposed_rule_id": "MOD-ATOM-CLAIM-STRUCTURED",
+      "title": "为 `ATOM-CLAIM-STRUCTURED` 补「必备字段缺失即报」分支",
+      "trigger": "scope=atom；引用字段 claim, id",
+      "decision": "字段缺失时**显式报告**（当前可能静默跳过）",
+      "severity": "advice",
+      "expected_block_rate": null,
+      "mdl_bits": 544,
+      "blast_radius": {
+        "cards": 1,
+        "rules": 1
+      },
+      "provenance": {
+        "kind": "MODIFY",
+        "target_rule": "ATOM-CLAIM-STRUCTURED",
+        "check_fn": "check_atom_claim_structured",
+        "fields": [
+          "claim",
+          "id"
+        ]
+      },
+      "evidence": "静态盲点",
+      "priority": 0.235,
+      "generated_by": "rule_drafter_643",
+      "version": "643.1"
+    },
+    {
+      "draft_id": "701195317873",
+      "kind": "MODIFY",
+      "proposed_rule_id": "MOD-ATOM-MISCONCEPTION-REF",
+      "title": "为 `ATOM-MISCONCEPTION-REF` 补「必备字段缺失即报」分支",
+      "trigger": "scope=atom；引用字段 pedagogy",
+      "decision": "字段缺失时**显式报告**（当前可能静默跳过）",
+      "severity": "advice",
+      "expected_block_rate": null,
+      "mdl_bits": 560,
+      "blast_radius": {
+        "cards": 1,
+        "rules": 1
+      },
+      "provenance": {
+        "kind": "MODIFY",
+        "target_rule": "ATOM-MISCONCEPTION-REF",
+        "check_fn": "check_misconception_ref",
+        "fields": [
+          "pedagogy"
+        ]
+      },
+      "evidence": "静态盲点",
+      "priority": 0.229,
+      "generated_by": "rule_drafter_643",
+      "version": "643.1"
+    },
+    {
+      "draft_id": "893d06b0016c",
+      "kind": "MODIFY",
+      "proposed_rule_id": "MOD-ATOM-MISCONCEPTION-LEVELS",
+      "title": "为 `ATOM-MISCONCEPTION-LEVELS` 补「必备字段缺失即报」分支",
+      "trigger": "scope=atom；引用字段 pedagogy",
+      "decision": "字段缺失时**显式报告**（当前可能静默跳过）",
+      "severity": "advice",
+      "expected_block_rate": null,
+      "mdl_bits": 608,
+      "blast_radius": {
+        "cards": 1,
+        "rules": 1
+      },
+      "provenance": {
+        "kind": "MODIFY",
+        "target_rule": "ATOM-MISCONCEPTION-LEVELS",
+        "check_fn": "check_misconception_levels",
+        "fields": [
+          "pedagogy"
+        ]
+      },
+      "evidence": "静态盲点",
+      "priority": 0.211,
+      "generated_by": "rule_drafter_643",
+      "version": "643.1"
+    }
+  ],
+  "n": 10,
+  "by_kind": {
+    "NEW": 1,
+    "MODIFY": 9
+  },
+  "by_evidence": {
+    "反例": 1,
+    "静态盲点": 9
+  },
+  "max_drafts": 10,
+  "n_actionable_cases": 1,
+  "n_soft_blind_spots": 44,
+  "severity_default": "advice",
+  "written_to_rule_db": false
+}
