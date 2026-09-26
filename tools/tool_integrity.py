@@ -31,6 +31,21 @@
 执行（498 的顺序依赖：任务 2 改 gate_engine.py ⇒ 任务 3 才生成基准）。
 由 567 起，改这五个文件后**必须** `--update` 重钉，否则下次任何判定入口自红——这是设计目标
 （改判定核心必须显式留痕），不是 bug。
+
+647 A1（**fail-open 修复 1**，硬骨头）
+=====================================
+病（642 B3 审计 FO-A，实测）：`verify_supply_chain()` 对**缺失**的信任根文件只 warning、exit 0 ——
+删掉一个信任根文件，verifier 仍 exit 0（fail-open）。修法**不是**推翻 601 的容错设计（副本/部分
+检出下"缺文件无判别力"这一理由仍然成立），而是**把口径拆成两档**：
+
+* `strict=False`（**函数默认**，601 历史口径）：只有**内容变更**算红；缺文件/未钉只警告。
+  保留它是为了：函数级调用方（含 601 测试与副本场景）不被静默改语义。
+* `strict=True`（**CLI `--check` / `--check-supply-chain` 默认**，647 新口径）：信任根文件
+  **缺失或未钉** ⇒ **exit 1**（fail-closed）。显式 `--warn-only` 可回到旧口径（迁移期/副本）。
+
+**为什么这样拆**：601 的理由（副本里缺文件无判别力）依然正确 ⇒ 不能无脑把 warning 全改红；
+但"完整仓库下删掉信任根文件不该绿"同样是硬需求 ⇒ 用**显式开关**区分两种场景，而不是二选一。
+诚实登记：`--warn-only` 仍在 = 失败路径**可被一个 flag 关掉**（这是兼容性代价，见 647 验收报告）。
 """
 from __future__ import annotations
 
@@ -83,6 +98,9 @@ SUPPLY_CHAIN_FILES: tuple[str, ...] = (
     "data/supply_chain/layout.json",          # 601 任务2：in-toto layout
 )
 _SUPPLY_CHAIN_MARK = "# supply_chain"        # .tool_checksums 里的节标记
+#: 647 A1：CLI 侧默认口径。True = 信任根文件缺失/未钉即 FAIL（fail-closed）；
+#: 函数级 `verify_supply_chain()` 的**形参默认仍是 False**（601 历史兼容，见模块 docstring）。
+SUPPLY_CHAIN_STRICT_DEFAULT = True
 
 # 615 B3：**判决尺子**（决定 pass/fail 的逻辑；_arch_v19 探针实测 11 关键尺子中 8 个裸露）。
 #   与 CORE_TOOLS 并列：这些尺子改一行即可改"什么算通过"，但此前不在哈希面。
@@ -251,37 +269,55 @@ def write_supply_chain_baseline(path: Path | None = None, root: Path | None = No
 
 
 def verify_supply_chain(path: Path | None = None, root: Path | None = None,
-                        names: tuple[str, ...] = SUPPLY_CHAIN_FILES
+                        names: tuple[str, ...] = SUPPLY_CHAIN_FILES,
+                        strict: bool = False
                         ) -> tuple[list[tuple[str, str, str]], list[str], int]:
     """校验信任根数据文件；返回 (changed[(name, want, got)], warnings, exit_code)。
 
-    判定口径（**只有内容变更算红**，理由写在下面每条）：
+    `strict=False`（**形参默认**，601 历史口径，**只有内容变更算红**，理由写在下面每条）：
       * 磁盘有 + 已钉 + hash 不符 ⇒ **changed**（exit 1）—— 这是要抓的攻击面（篡改台账/manifest）；
       * 磁盘有但**未钉**（新出现的覆盖文件 / 旧格式基准）⇒ **warning**，不算红：
         否则"任务1 刚产出 merkle_roots.json"这类**正常新增**会把中间 commit 判红；
       * 已钉但磁盘上没有 ⇒ **warning**：在仓库副本/部分检出里无判别力，
         而"工具文件缺失"已由 core 节单独管（那里 missing = 红）；
       * 列了但磁盘上没有且未钉 ⇒ **warning**（正常状态：任务1/2 的产出还没生成）。
+
+    `strict=True`（**647 A1 新口径**，CLI `--check` 默认开）：**闭世界以基准声明为准** ——
+      * 基准**已钉**该文件、磁盘上没有 ⇒ **exit 1**（fail-closed：删信任根文件必须红）；
+      * 已钉且内容变更 ⇒ exit 1（同 lenient）；
+      * 基准**未钉**且磁盘也没有 ⇒ 仍只 warning（该产出尚未生成，与 601 理由一致）；
+      * 已存在但基准里没有 ⇒ 仍只 warning（跑 `--update` 即钉上；这不该让中间 commit 红）。
+    即「**基准说它应该在 ⇒ 它就必须在且未变**」，而不是「`SUPPLY_CHAIN_FILES` 列出的都必须存在」——
+    后者会把"尚未产出的任务1/2 产物"和"仓库副本"一并判红，与 601 的设计理由冲突。
+    返回结构**不变**（3 元组）；strict 下的新失败项也写进 `warnings`（附 `strict` 字样），
+    调用方按 `exit_code` 判定即可（本函数不吞异常，601 有护栏锁这一点）。
     """
     base = load_supply_chain_baseline(path) or {}
     d = root or ROOT
     changed: list[tuple[str, str, str]] = []
     warnings: list[str] = []
+    strict_fail = False
     for name in names:
         f = d / name
         want = base.get(name)
         if not f.is_file():
-            if want is not None:
-                warnings.append(f"{name}：基准里有、磁盘上没有 ⇒ 跳过（副本/部分检出下无判别力）")
+            reason = ("基准里有、磁盘上没有" if want is not None
+                      else "不存在（该产出尚未生成，如任务1/2 的 Merkle 根/layout）")
+            if strict and want is not None:
+                warnings.append(f"{name}：{reason} ⇒ **strict：基准声明的信任根文件缺失即 FAIL**")
+                strict_fail = True
             else:
-                warnings.append(f"{name}：不存在 ⇒ 跳过（该产出尚未生成，如任务1/2 的 Merkle 根/layout）")
+                warnings.append(f"{name}：{reason} ⇒ 跳过（副本/部分检出下无判别力）")
             continue
         got = sha256_of(f)
         if want is None:
             warnings.append(f"{name}：已存在但**未钉**（旧格式基准或新覆盖文件）⇒ 跑 --update")
         elif got != want:
             changed.append((name, want, got))
-    return changed, warnings, (1 if changed else 0)
+    code = 1 if changed else 0
+    if strict_fail:
+        code = 1
+    return changed, warnings, code
 
 
 def compute_ruler(tools_dir: Path | None = None,
@@ -429,8 +465,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--check-test-config", action="store_true",
                     help="591：只校验**测试器配置**（conftest/pyproject）的 test_config 节；exit 0/1/2")
     ap.add_argument("--check-supply-chain", action="store_true",
-                    help="601：只校验**信任根数据文件**（豁免台账/覆盖率台账/manifest/Merkle 根/layout）；"
-                         "内容变更 exit 1（未钉/缺文件只警告，理由见 verify_supply_chain）")
+                    help="601+647：只校验**信任根数据文件**（豁免台账/覆盖率台账/manifest/Merkle 根/layout）；"
+                         "647 A1 起**默认 strict**：缺失/未钉/内容变更均 exit 1（fail-closed）")
+    ap.add_argument("--warn-only", action="store_true",
+                    help="647 A1：把 supply_chain 退回 601 的**宽容口径**（缺失/未钉只警告、exit 不受影响）；"
+                         "迁移期或仓库副本/部分检出时用。**它是本次 fail-open 修复唯一的后门开关**（见验收报告）")
+    ap.add_argument("--strict-supply-chain", action="store_true",
+                    help="647 A1：显式要求严格口径（当前 = CLI 默认；保留该 flag 便于脚本自述意图）")
     ap.add_argument("--check-merkle", dest="check_merkle", action="store_true", default=True,
                     help="601：`--check` 时同时校验目录级 Merkle 根（默认开）")
     ap.add_argument("--no-check-merkle", dest="check_merkle", action="store_false",
@@ -440,6 +481,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--no-update-merkle", dest="update_merkle", action="store_false",
                     help="不重建 Merkle 根（如只想重钉文件 hash）")
     a = ap.parse_args(argv)
+    # 647 A1：supply_chain 的口径（CLI 默认 strict；`--warn-only` 显式退回 601 宽容口径）
+    sc_strict = SUPPLY_CHAIN_STRICT_DEFAULT and not a.warn_only
+    if a.strict_supply_chain:
+        sc_strict = True
 
     if a.update:
         # 顺序有意义：Merkle 台账变了 ⇒ 它的 hash 变了 ⇒ 必须**先**重建再钉 supply_chain 基准
@@ -470,15 +515,18 @@ def main(argv: list[str] | None = None) -> int:
         return code
 
     if a.check_supply_chain:
-        changed, warnings, code = verify_supply_chain()
+        changed, warnings, code = verify_supply_chain(strict=sc_strict)
         for name, want, got in changed:
             print(f"[tool_integrity] ❌ [supply_chain] {name} 被改动"
                   f"（期望 {want[:12]}… 实际 {got[:12]}…）")
         for w in warnings:
-            print(f"[tool_integrity] ⚠ [supply_chain] {w}")
+            print(f"[tool_integrity] {'❌' if sc_strict and 'strict' in w else '⚠'} [supply_chain] {w}")
         if code == 0:
             print(f"[tool_integrity] OK：信任根数据文件与基准一致"
                   f"（{len(compute_supply_chain())} 个已存在，警告 {len(warnings)} 条）")
+        else:
+            print(f"[tool_integrity] ❌ 信任根数据文件**不完整**（strict={sc_strict}）——"
+                  f" 缺失即 FAIL（647 A1 fail-closed）；`--warn-only` 可退回宽容口径")
         return code
 
     changed, missing, code = verify()
@@ -493,16 +541,20 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[tool_integrity] ❌ {name} 缺失（基准里有、磁盘上没有）")
     if code == 0:
         print(f"[tool_integrity] OK：{len(compute())} 个核心工具与基准一致")
-    # 601 任务 0.3：`--check` 同时校验信任根数据文件（core 绿 + supply_chain 绿 ⇒ 才是真绿）
-    sc_changed, sc_warnings, sc_code = verify_supply_chain()
+    # 601 任务 0.3 + 647 A1：`--check` 同时校验信任根数据文件（core 绿 + supply_chain 绿 ⇒ 才是真绿）；
+    # 647 起默认 **strict**（缺文件/未钉即 FAIL），`--warn-only` 退回 601 宽容口径。
+    sc_changed, sc_warnings, sc_code = verify_supply_chain(strict=sc_strict)
     for name, want, got in sc_changed:
         print(f"[tool_integrity] ❌ [supply_chain] {name} 被改动"
               f"（期望 {want[:12]}… 实际 {got[:12]}…）")
     for w in sc_warnings:
-        print(f"[tool_integrity] ⚠ [supply_chain] {w}")
+        print(f"[tool_integrity] {'❌' if sc_strict and 'strict' in w else '⚠'} [supply_chain] {w}")
     if sc_code == 0 and code == 0:
         print(f"[tool_integrity] OK：信任根数据文件与基准一致"
               f"（{len(compute_supply_chain())} 个已存在，警告 {len(sc_warnings)} 条）")
+    elif sc_code != 0:
+        print(f"[tool_integrity] ❌ 信任根数据文件**不完整**（strict={sc_strict}）"
+              f"—— 缺失即 FAIL（647 A1 fail-closed）")
     m_code = 0
     if a.check_merkle:
         m_problems, m_skipped, m_code = verify_merkle()
