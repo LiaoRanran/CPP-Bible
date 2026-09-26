@@ -10,6 +10,25 @@
 - `supersedes` 链：`REPLACE` 事件指向被取代的 event_id
 
 纯标准库；`--check` 验证 schema 完整性与 Ledger 基本功能。
+
+647 A2（**fail-open 修复 2**，硬骨头）
+====================================
+病（642 B3 审计 FO-B，实测）：`DecisionEvent.from_dict({})` 把空/残 JSON **静默补成**
+`result=APPROVE` + `review_method=BATCH_AUTH` + `decision_origin=human_observed` ——
+恰好是最"信任假设"的组合（不完整事件被自动解释成"人观察过"）；且**未知字段被静默丢弃**
+（字段名拼错 = 没写）。
+
+修法（**两个显式入口**，不动历史数据）：
+
+* `from_dict()` / `from_dict_lenient()`：**宽容**（历史语义，缺字段补默认、未知字段丢弃）——
+  **历史 452 条专用**，保证既有账本能原样导入（哈希链重算不变）；
+* `from_dict_strict()`：**严格**（**新事件专用**）—— 未知字段 ⇒ `StrictEventError`；
+  `REQUIRED_FIELDS` 缺任一 ⇒ `StrictEventError`；`validate()` 不过 ⇒ `StrictEventError`。
+  即**不再存在"缺字段自动变成 human_observed"这条路径**。
+
+**诚实边界**：dataclass 的字段默认值**仍然保留**（`decision_origin="human_observed"`）——
+因为 642 B3 的 FO-B 复现与 `from_dict({})` 的宽容语义依赖它，历史账本也必须能 lenient 导入。
+"不再默认成 human_observed"落在**新事件的入口**上（strict），而不是把默认值删掉把历史一起判死。
 """
 from __future__ import annotations
 
@@ -34,6 +53,10 @@ OPERATIONS = SCH.OPERATIONS
 RESULTS = SCH.RESULTS
 REVIEW_METHODS = SCH.REVIEW_METHODS
 DECISION_ORIGINS = SCH.DECISION_ORIGINS
+
+
+class StrictEventError(ValueError):
+    """647 A2：strict 入口的失败（未知字段 / 缺必填字段 / 校验不过）。**不静默降级**。"""
 
 
 @dataclass
@@ -114,8 +137,54 @@ class DecisionEvent:
 
     @staticmethod
     def from_dict(d: dict) -> "DecisionEvent":
+        """宽容导入（= `from_dict_lenient()`，**历史语义保留**）。新事件请用 `from_dict_strict()`。"""
         known = {f for f in DecisionEvent.__dataclass_fields__}  # type: ignore[attr-defined]
         return DecisionEvent(**{k: v for k, v in d.items() if k in known})
+
+    @staticmethod
+    def from_dict_lenient(d: dict) -> "DecisionEvent":
+        """**宽容**入口（647 A2）：缺字段用默认、未知字段丢弃 —— **历史 452 条专用**。
+
+        保留它的理由：既有账本是按宽容口径钉进哈希链的，必须原样能导入（重算哈希不变）。
+        """
+        return DecisionEvent.from_dict(d)
+
+    @staticmethod
+    def from_dict_strict(d: dict) -> "DecisionEvent":
+        """**严格**入口（647 A2，**新事件专用**）：未知字段 / 缺必填字段 / 校验不过 ⇒ 抛错。
+
+        与宽容路径的三个差别（逐条对应 642 B3 FO-B 的修复建议）：
+        ① 未知字段 ⇒ 抛错（**不再静默丢弃**：字段名拼错 = 必须报错）；
+        ② `REQUIRED_FIELDS` 缺任一 ⇒ 抛错（**不再用默认值补全**，
+           尤其 `decision_origin` 不会再被默认成 `human_observed`）；
+        ③ `validate()` 不过（枚举非法 / MODIFY 缺 modification / REPLACE 缺 supersedes…）⇒ 抛错。
+        """
+        if not isinstance(d, dict):
+            raise StrictEventError(f"strict 导入要求 dict，得到 {type(d).__name__}")
+        unknown = sorted(set(d) - KNOWN_FIELDS)
+        if unknown:
+            raise StrictEventError(f"未知字段 ⇒ 拒绝（拼错字段名等于没写）：{unknown}")
+        missing = [f for f in REQUIRED_FIELDS if not d.get(f)]
+        if missing:
+            raise StrictEventError(
+                f"缺必填字段 ⇒ 拒绝（不允许用默认值补全）：{missing}；"
+                f"必填集合 = {list(REQUIRED_FIELDS)}")
+        event = DecisionEvent(**d)
+        errs = event.validate()
+        if errs:
+            raise StrictEventError("事件校验不过：" + "; ".join(errs))
+        return event
+
+
+#: 647 A2：DecisionEvent 的**全部**合法字段（strict 用它判"未知字段"）。
+KNOWN_FIELDS: frozenset[str] = frozenset(DecisionEvent.__dataclass_fields__)  # type: ignore[attr-defined]
+#: 647 A2：strict 导入**必须显式出现且非空**的字段。
+#: 口径 = "一条可追溯到人的判决至少要说清：做了什么/结论/对象/怎么审/来自谁/谁签/何时"。
+#: `decision_origin` 在列 ⇒ **新事件不再可能被默认成 `human_observed`**。
+REQUIRED_FIELDS: tuple[str, ...] = (
+    "operation", "result", "target_type", "target_id",
+    "review_method", "decision_origin", "reviewer", "decided_at",
+)
 
 
 class AuthorityLedger:
@@ -205,16 +274,41 @@ class AuthorityLedger:
         return path
 
     @classmethod
-    def import_jsonl(cls, path: str) -> "AuthorityLedger":
+    def import_jsonl(cls, path: str, strict: bool = False) -> "AuthorityLedger":
+        """导入 JSONL。`strict=False`（默认）= 宽容（**历史 452 条专用**）。
+
+        `strict=True` ⇒ 逐条走 `from_dict_strict()`，任一不完整/未知字段即抛
+        `StrictEventError`（**新批次导入用**）。
+        """
         led = cls()
         if not os.path.exists(path):
             return led
         with open(path, encoding="utf-8") as fh:
-            for line in fh:
+            for lineno, line in enumerate(fh, 1):
                 line = line.strip()
-                if line:
-                    led._events.append(DecisionEvent.from_dict(json.loads(line)))
+                if not line:
+                    continue
+                d = json.loads(line)
+                if strict:
+                    try:
+                        led._events.append(DecisionEvent.from_dict_strict(d))
+                    except StrictEventError as exc:
+                        raise StrictEventError(f"{path}:{lineno} ⇒ {exc}") from None
+                else:
+                    led._events.append(DecisionEvent.from_dict_lenient(d))
         return led
+
+    def append_strict(self, d: dict) -> str:
+        """**新事件**入口（647 A2）：先 `from_dict_strict()` 校验，再走正常 append（哈希链）。"""
+        return self.append(DecisionEvent.from_dict_strict(d))
+
+
+def load_ledger(path: str = LEDGER_PATH, strict: bool = False) -> AuthorityLedger:
+    """读取账本：**历史用 `strict=False`（宽容，保证 452 条原样可导入）**；
+
+    新批次/新文件用 `strict=True`（缺字段/未知字段即抛）。
+    """
+    return AuthorityLedger.import_jsonl(path, strict=strict)
 
 
 # ── 便利构造 ──
@@ -237,6 +331,15 @@ def make_event(target_type: str, target_id: str, result: str,
         if hasattr(e, k):
             setattr(e, k, v)
     return e
+
+
+def _raises(fn) -> bool:
+    """`fn()` 抛 `StrictEventError` ⇒ True（自检辅助，不改任何状态）。"""
+    try:
+        fn()
+        return False
+    except StrictEventError:
+        return True
 
 
 def selftest() -> int:
@@ -303,6 +406,43 @@ def selftest() -> int:
     # append-only：无 update/delete
     chk("无 update 方法", not hasattr(led, "update"))
     chk("无 delete 方法", not hasattr(led, "delete"))
+
+    # ── 647 A2：strict / lenient 两个显式入口 ──
+    full = {"operation": "CREATE", "result": "APPROVE", "target_type": "edge",
+            "target_id": "ae-9", "review_method": "ITEM_BLIND",
+            "decision_origin": "human_observed", "reviewer": "A", "decided_at": "2026-09-26"}
+    chk("strict：完整事件通过", DecisionEvent.from_dict_strict(full).target_id == "ae-9")
+    for miss in REQUIRED_FIELDS:
+        d = {k: v for k, v in full.items() if k != miss}
+        try:
+            DecisionEvent.from_dict_strict(d)
+            chk(f"strict：缺 {miss} 必抛", False)
+        except StrictEventError:
+            chk(f"strict：缺 {miss} 必抛", True)
+    try:
+        DecisionEvent.from_dict_strict({**full, "bogus": 1})
+        chk("strict：未知字段必抛", False)
+    except StrictEventError:
+        chk("strict：未知字段必抛", True)
+    try:
+        DecisionEvent.from_dict_strict({})
+        chk("strict：空 dict 必抛（FO-B 修复）", False)
+    except StrictEventError:
+        chk("strict：空 dict 必抛（FO-B 修复）", True)
+    chk("strict：非 dict 必抛",
+        _raises(lambda: DecisionEvent.from_dict_strict([])))  # type: ignore[arg-type]
+    chk("strict：枚举非法必抛",
+        _raises(lambda: DecisionEvent.from_dict_strict({**full, "result": "BOGUS"})))
+    # 宽容路径**保持历史语义**（642 B3 FO-B 复现路径仍成立，历史账本必须能读）
+    e_legacy = DecisionEvent.from_dict({})
+    chk("lenient：空 dict 仍补默认（历史语义保留）",
+        e_legacy.result == "APPROVE" and e_legacy.decision_origin == "human_observed")
+    chk("from_dict == from_dict_lenient（别名）",
+        DecisionEvent.from_dict({"target_id": "x"}).target_id
+        == DecisionEvent.from_dict_lenient({"target_id": "x"}).target_id)
+    hist = load_ledger()
+    chk("历史账本 lenient 可导入且链有效（452 条）",
+        len(hist) == 452 and hist.verify_chain(), str(len(hist)))
     print(f"B1 check: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
 
