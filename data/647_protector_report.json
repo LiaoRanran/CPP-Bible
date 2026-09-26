@@ -1,0 +1,207 @@
+{
+  "enforce": {
+    "mode": "enforce",
+    "before": {
+      "gate_engine.py": "03cd20dcdbeee51296243ac593ea63a35e7f9f40ce10145e46bc03a5646036ec",
+      "atom_evidence_replay.py": "4b142e68a97a3c2b99a409255b65b12cb58cd77d7079c9d120b15df4a2bcc6ff",
+      "poison_drill.py": "37f638004c4dbdcb6e14777bc3fc16fddeb0ad04e398f6d27efe5ff392a6a9ee",
+      "toolchain.py": "5920bff6af16cb809b61407a13f39c005c0edc02c7917cab5221e0c38a95e650",
+      "cppbible.py": "4454db9b499238dc762a20a199bf44f841c2f6bfa99bd8b2c34b809efd7826b5",
+      "decision_ledger": "ec8cbf5cca2def3ded8517264ae163ad64658dfc8d85d96fa7ac9804c194b385",
+      "authority_log": "01b17c520cde75f869d2620dd88d64c873c038783894caeaf326fd34d499b90c",
+      "human_queue": "79c88f6ff7f57576c230f17a2dcc3c8e8c0e361f46f6031c624834b343ab33e2",
+      "transparency_log": "03d82821636364143b449e01241f7c5dfe1703e8869813cd447f85a4d39176f8",
+      "verified_cards": "078616367855aa0e15fbb82d1283ded7322c0c4948faa8e6e2142e879e6ae021"
+    },
+    "after": {
+      "gate_engine.py": "03cd20dcdbeee51296243ac593ea63a35e7f9f40ce10145e46bc03a5646036ec",
+      "atom_evidence_replay.py": "4b142e68a97a3c2b99a409255b65b12cb58cd77d7079c9d120b15df4a2bcc6ff",
+      "poison_drill.py": "37f638004c4dbdcb6e14777bc3fc16fddeb0ad04e398f6d27efe5ff392a6a9ee",
+      "toolchain.py": "5920bff6af16cb809b61407a13f39c005c0edc02c7917cab5221e0c38a95e650",
+      "cppbible.py": "4454db9b499238dc762a20a199bf44f841c2f6bfa99bd8b2c34b809efd7826b5",
+      "decision_ledger": "ec8cbf5cca2def3ded8517264ae163ad64658dfc8d85d96fa7ac9804c194b385",
+      "authority_log": "01b17c520cde75f869d2620dd88d64c873c038783894caeaf326fd34d499b90c",
+      "human_queue": "79c88f6ff7f57576c230f17a2dcc3c8e8c0e361f46f6031c624834b343ab33e2",
+      "transparency_log": "03d82821636364143b449e01241f7c5dfe1703e8869813cd447f85a4d39176f8",
+      "verified_cards": "078616367855aa0e15fbb82d1283ded7322c0c4948faa8e6e2142e879e6ae021"
+    },
+    "drift": [],
+    "zero_drift": true,
+    "effects": {
+      "B1": {
+        "卡片": 23,
+        "高置信动作数": 1,
+        "判决态被改变（enforce 强制量）": 1,
+        "动作分布": {
+          "pass": 21,
+          "block": 1,
+          "warn": 1
+        }
+      },
+      "B2": {
+        "队列": 65,
+        "冻结不入队（enforce 强制量）": 0,
+        "积压警报": false,
+        "占用%": 65.0
+      },
+      "B3": {
+        "新判决": 3,
+        "强制盲化（enforce 强制量）": 3,
+        "被盲化总数": 3,
+        "生效方法分布": {
+          "ITEM_BLIND": 3
+        }
+      },
+      "B4": {
+        "规则": 67,
+        "降级（enforce 强制量）": 3,
+        "暂停（enforce 强制量）": 2,
+        "有样本": 67
+      },
+      "B5": {
+        "候选": 6,
+        "不放行（enforce 强制量）": 5,
+        "结论分布": {
+          "ADMIT": 1,
+          "REJECT_编码长度": 1,
+          "PENDING_HUMAN": 1,
+          "REJECT_豁免率": 1,
+          "REFUSE_已有规则": 1,
+          "REJECT_热力图缺失": 1
+        }
+      }
+    },
+    "marks": {
+      "conflict_flag": false,
+      "conflict_types": [
+        "RR"
+      ],
+      "conflict_strength": 0.0,
+      "conflict_action": "pass",
+      "queued_pending": true,
+      "frozen": false,
+      "frozen_enforced": false,
+      "enqueued": true,
+      "priority_out": "高",
+      "blind_state": "BLIND",
+      "masked": 25.85,
+      "residual": -9.95,
+      "known_error_rate": 0.1881,
+      "effective_severity": "ok",
+      "rule_active": true,
+      "mdl_decision": "ADMIT",
+      "mdl_published": true
+    },
+    "layer_check": {
+      "keys_disjoint": true,
+      "n_keys": 17,
+      "layers_distinct": true,
+      "layers": {
+        "B1": "单卡判决",
+        "B2": "人审队列项",
+        "B3": "人审条目",
+        "B4": "规则",
+        "B5": "规则候选"
+      }
+    },
+    "n_marks": 17
+  },
+  "shadow": {
+    "B1": {
+      "卡片": 23,
+      "高置信动作数": 1,
+      "判决态被改变（enforce 强制量）": 0,
+      "动作分布": {
+        "pass": 21,
+        "block": 1,
+        "warn": 1
+      }
+    },
+    "B2": {
+      "队列": 65,
+      "冻结不入队（enforce 强制量）": 0,
+      "积压警报": false,
+      "占用%": 65.0
+    },
+    "B3": {
+      "新判决": 3,
+      "强制盲化（enforce 强制量）": 0,
+      "被盲化总数": 1,
+      "生效方法分布": {
+        "BATCH_AUTH": 1,
+        "ITEM_OPEN": 1,
+        "ITEM_BLIND": 1
+      }
+    },
+    "B4": {
+      "规则": 67,
+      "降级（enforce 强制量）": 0,
+      "暂停（enforce 强制量）": 0,
+      "有样本": 67
+    },
+    "B5": {
+      "候选": 6,
+      "不放行（enforce 强制量）": 0,
+      "结论分布": {
+        "ADMIT": 1,
+        "REJECT_编码长度": 1,
+        "PENDING_HUMAN": 1,
+        "REJECT_豁免率": 1,
+        "REFUSE_已有规则": 1,
+        "REJECT_热力图缺失": 1
+      }
+    }
+  },
+  "rollback": {
+    "prev_mode": "enforce",
+    "new_mode": "shadow",
+    "zero_enforcement": true,
+    "restored": true,
+    "effects_after_rollback": {
+      "B1": {
+        "卡片": 23,
+        "高置信动作数": 1,
+        "判决态被改变（enforce 强制量）": 0,
+        "动作分布": {
+          "pass": 21,
+          "block": 1,
+          "warn": 1
+        }
+      },
+      "B2": {
+        "队列": 65,
+        "冻结不入队（enforce 强制量）": 0,
+        "积压警报": false,
+        "占用%": 65.0
+      },
+      "B3": {
+        "新判决": 3,
+        "强制盲化（enforce 强制量）": 0,
+        "被盲化总数": 1,
+        "生效方法分布": {
+          "BATCH_AUTH": 1,
+          "ITEM_OPEN": 1,
+          "ITEM_BLIND": 1
+        }
+      },
+      "B4": {
+        "规则": 67,
+        "降级（enforce 强制量）": 0,
+        "暂停（enforce 强制量）": 0,
+        "有样本": 67
+      },
+      "B5": {
+        "候选": 6,
+        "不放行（enforce 强制量）": 0,
+        "结论分布": {
+          "ADMIT": 1,
+          "REJECT_编码长度": 1,
+          "PENDING_HUMAN": 1,
+          "REJECT_豁免率": 1,
+          "REFUSE_已有规则": 1,
+          "REJECT_热力图缺失": 1
+        }
+      }
+    }
+  }
+}

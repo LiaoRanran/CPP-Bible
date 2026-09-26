@@ -1,0 +1,52 @@
+{
+  "mode": "enforce",
+  "n": 6,
+  "by_decision": {
+    "ADMIT": 1,
+    "REJECT_编码长度": 1,
+    "PENDING_HUMAN": 1,
+    "REJECT_豁免率": 1,
+    "REFUSE_已有规则": 1,
+    "REJECT_热力图缺失": 1
+  },
+  "n_published": 1,
+  "n_blocked": 5,
+  "candidates_are_synthetic": true,
+  "synthetic": [
+    {
+      "rule_id": "CAND-SHORT-001",
+      "decision": "ADMIT",
+      "expect_published": true,
+      "published": true,
+      "ok": true
+    },
+    {
+      "rule_id": "CAND-LONG-001",
+      "decision": "REJECT_编码长度",
+      "expect_published": false,
+      "published": false,
+      "ok": true
+    },
+    {
+      "rule_id": "CAND-NODATA-001",
+      "decision": "PENDING_HUMAN",
+      "expect_published": false,
+      "published": false,
+      "ok": true
+    },
+    {
+      "rule_id": "CAND-HIGH-EXEMPT-001",
+      "decision": "REJECT_豁免率",
+      "expect_published": false,
+      "published": false,
+      "ok": true
+    },
+    {
+      "rule_id": "ATOM-REL-TARGET-HC",
+      "decision": "REFUSE_已有规则",
+      "expect_published": false,
+      "published": false,
+      "ok": true
+    }
+  ]
+}
