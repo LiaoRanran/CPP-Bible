@@ -1,0 +1,115 @@
+{
+  "trA1": {
+    "before_delete": {
+      "strict": 0,
+      "lenient": 0
+    },
+    "after_delete": {
+      "victim": "tools/poison_exemptions.yaml",
+      "strict": 1,
+      "lenient": 0,
+      "named": true
+    },
+    "real_repo_file_still_there": true,
+    "fail_open_fixed": true
+  },
+  "trA2": {
+    "rejected": {
+      "空 dict": true,
+      "缺 decision_origin": true,
+      "未知字段": true
+    },
+    "all_rejected": true,
+    "lenient_legacy": {
+      "result": "APPROVE",
+      "decision_origin": "human_observed"
+    },
+    "note": "宽容入口**有意保留**（历史 452 条必须能导入）⇒ 它是显式的历史通道，不是默认路径"
+  },
+  "trA3": {
+    "status": "OK",
+    "n_files": 33,
+    "n_rules": 67,
+    "consistent_with_tool_integrity": true,
+    "attack_status": "FAIL",
+    "attack_named": [
+      "tools/gate_engine.py",
+      "tools/poison_exemptions.yaml"
+    ],
+    "digest": "d954d10a0bdfdbe4ccf35676d3a61f8b4b5eb17e3b4d1847c0d89065ea35dd38"
+  },
+  "trA4": {
+    "contract": {
+      "publish": "publish(hash: str) -> receipt: dict",
+      "verify": "verify(hash: str, receipt: dict) -> bool"
+    },
+    "implemented": [
+      "mock-local"
+    ],
+    "reserved": [
+      "github-gist",
+      "rfc3161-timestamp",
+      "opentimestamps"
+    ],
+    "real_external_service_connected": false,
+    "mock_roundtrip": {
+      "published": true,
+      "verified": true,
+      "tamper_detected": true
+    },
+    "anchor": "2da866b6a16288a095c8b0a32c8fa28410a2b7c5c6dd33f26a4fffcc80913b0f"
+  },
+  "co_located": [
+    {
+      "point": "透明日志 anchor",
+      "where": "data/transparency_log.jsonl",
+      "risk": "改仓库即可同时改日志与其 anchor ⇒ 自证",
+      "resolved_by": "外部锚 / 外部 KMS（交人裁决，647 未做）",
+      "present_on_disk": true
+    },
+    {
+      "point": "完整性基线",
+      "where": "tools/.tool_checksums",
+      "risk": "「什么算被改过」的定义与被校验的文件在同一仓库 ⇒ 一起改就自洽",
+      "resolved_by": "外部锚 / 外部 KMS（交人裁决，647 未做）",
+      "present_on_disk": true
+    },
+    {
+      "point": "目录 Merkle 根",
+      "where": "data/supply_chain/merkle_roots.json",
+      "risk": "同上，且根与被覆盖文件同源",
+      "resolved_by": "外部锚 / 外部 KMS（交人裁决，647 未做）",
+      "present_on_disk": true
+    },
+    {
+      "point": "in-toto layout",
+      "where": "data/supply_chain/layout.json",
+      "risk": "同上",
+      "resolved_by": "外部锚 / 外部 KMS（交人裁决，647 未做）",
+      "present_on_disk": true
+    },
+    {
+      "point": "VSA 公钥",
+      "where": "data/vsa/public_key_631.json",
+      "risk": "公钥在仓库内；验签方若读仓库里的公钥，则「换钥+换公钥」同样自洽",
+      "resolved_by": "外部锚 / 外部 KMS（交人裁决，647 未做）",
+      "present_on_disk": true
+    },
+    {
+      "point": "外部锚",
+      "where": "tools/external_anchor_647.py（mock-local）",
+      "risk": "A4 的 mock 与被锚对象**同机同仓库** ⇒ 不构成独立锚（L3 未达）",
+      "resolved_by": "外部锚 / 外部 KMS（交人裁决，647 未做）",
+      "present_on_disk": false
+    }
+  ],
+  "independence": {
+    "level": "L2",
+    "why": "同机独立实现/独立进程可复核（628/629 他验三件套已建），但 anchor 与基线仍在**同一仓库**里 ⇒ 未达 L3（仓库外第三方可验）",
+    "l1": false,
+    "l2": true,
+    "l3": false,
+    "l4": false,
+    "to_l3": "把 anchor 发布到仓库外的第三方（A4 的 3 个接入点任选其一）"
+  }
+}
