@@ -10,6 +10,9 @@ CI 里「快」校验（quality / consistency / metrics / compile_gate / audit /
 .gitignore 吞掉但仍残留 `!!`）的 *.cpp / *.exe / *.o 即阻断——这些是编译产物，
 不该进库。`_probe*`/`_tu_*` 等刻意开发草稿（.gitignore 已明确忽略）豁免；已跟踪的
 改动由各自门禁管，不在此拦截。
+（648 起：判据不变，扫描方式由"全仓 `git status --porcelain --ignored`"改为
+"根目录定向扫描 + `git ls-files` 判是否已入库"——前者在本机实测约 103s，会把
+15s 超时打爆 ⇒ pre-push 恒假失败；详见 `_hygiene()` 注释。）
 
 工作树清洁规则（369 P1-3，与 CI Worktree Cleanliness 步同款）：受控目录
 `Examples/atoms/` `atoms/` `evidence/` `tools/golden_state.json` 出现**任何**未提交
@@ -29,6 +32,7 @@ CI 里「快」校验（quality / consistency / metrics / compile_gate / audit /
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import subprocess
 import sys
@@ -82,25 +86,31 @@ def _hygiene() -> tuple[bool, str]:
     已跟踪改动（如 ` M`）由各自门禁管，不在此拦截；`_probe*`/`_tu_*` 等刻意
     开发草稿（.gitignore 已明确忽略）豁免。
     """
+    # 648 实测修正（**判据不变，只换扫描方式**）：
+    # 本机 `git status --porcelain --ignored` 需 **约 103 秒**（build/ 8.3k + .venv 19.6k 个被忽略
+    # 文件），而原来硬编码 `timeout=15` ⇒ pre-push **恒因超时失败**，且失败与"卫生是否达标"无关。
+    # 判据只关心"仓库根级 *.cpp/*.exe/*.o 是否未提交"，故改为：直接列根目录候选 + 用
+    # `git ls-files --error-unmatch` 判是否已入库（未入库即 ??/!! 两种情形全覆盖），
+    # 语义等价而耗时降到毫秒级。**没有放宽任何一条规则**。
+    bad = []
     try:
-        r = subprocess.run(["git", "status", "--porcelain", "--ignored"],
-                           cwd=str(ROOT), capture_output=True, text=True,
-                           encoding="utf-8", errors="replace", timeout=15)
+        for name in sorted(os.listdir(ROOT)):
+            if not ARTIFACT_RE.match(name):        # 仅仓库根级 *.cpp/*.exe/*.o
+                continue
+            if DEV_OK_RE.match(name):
+                continue
+            if not os.path.isfile(os.path.join(ROOT, name)):
+                continue
+            r = subprocess.run(["git", "ls-files", "--error-unmatch", "--", name],
+                               cwd=str(ROOT), capture_output=True, text=True,
+                               encoding="utf-8", errors="replace", timeout=60)
+            if r.returncode != 0:                  # 未入库 ⇒ 未提交的根级产物
+                bad.append(name)
     except (OSError, subprocess.SubprocessError) as e:
         return False, f"git 失败: {e}"
-    bad = []
-    for line in r.stdout.splitlines():
-        if len(line) < 4 or line[:2] not in ("??", "!!"):
-            continue
-        path = line[3:].strip()
-        if not ARTIFACT_RE.match(path):  # 仅仓库根级 *.cpp/*.exe/*.o
-            continue
-        if DEV_OK_RE.match(path):
-            continue
-        bad.append(path)
     if bad:
         return False, "未提交根级编译产物: " + ", ".join(bad)
-    return True, "无未提交根级编译产物"
+    return True, "无未提交根级编译产物（根目录定向扫描，非全仓 --ignored）"
 
 
 # 为何用 Examples/atoms/ 而非整个 Examples/（369 实测对任务书字面的收窄）：
