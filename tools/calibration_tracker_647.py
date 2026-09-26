@@ -251,11 +251,11 @@ def write_report() -> str:
         f"- 当前模式：**{pmode.mode()}**"
         f"（enforce = 真降级/真暂停；shadow = 642 观察态，只记账）",
         f"- 阈值：降级 **> {THETA_WARN}** · 暂停 **> {THETA_SUSPEND}**（均**设计值**）",
-        f"- 数据来路：`data/646_authority_rule_annotation.jsonl`（452 条）**×** 账本 `result` 连表", "",
+        "- 数据来路：`data/646_authority_rule_annotation.jsonl`（452 条）**×** 账本 `result` 连表", "",
         "## 一、实测（逐规则样本，**647 首次做到**）", "",
         f"- 在册规则：**{g['n']}**；**有实测样本：{g['n_with_samples']}**；",
         f"- 动作分布：`{g['by_action']}`",
-        f"- 与 642 的差别：642 的 67/67 是**全库代理**（同值）；647 是**逐规则实测**（来自注释×账本）。", "",
+        "- 与 642 的差别：642 的 67/67 是**全库代理**（同值）；647 是**逐规则实测**（来自注释×账本）。", "",
         "### 1.1 error_rate 最高的 5 条规则", "",
         "| 规则 | total | error | rate | 动作 |", "|---|---|---|---|---|"]
     for x in worst:

@@ -15,9 +15,8 @@ from __future__ import annotations
 import hashlib
 import json
 
-import pytest
-
 import decision_event_v2_626 as D
+import pytest
 
 FULL = {"operation": "CREATE", "result": "APPROVE", "target_type": "edge",
         "target_id": "ae-647", "review_method": "ITEM_BLIND",

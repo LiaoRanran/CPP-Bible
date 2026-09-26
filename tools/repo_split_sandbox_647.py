@@ -268,7 +268,7 @@ def write_report(res: Optional[dict[str, Any]] = None) -> str:
         hist = res.get("history", {})
         tests = res.get("tests", {})
         lines += [
-            f"| ① `git clone` 到临时目录 | 成功（原仓库**零改动**） |",
+            "| ① `git clone` 到临时目录 | 成功（原仓库**零改动**） |",
             f"| ② fast-export/import 造 queyi-core | 提交 **{s.get('n_commits')}**，"
             f"HEAD `{s.get('head')}` |",
             f"| ③ 独立可跑（内核 import + selftest） | import={st.get('import_ok')}，"

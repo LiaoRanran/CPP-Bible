@@ -8,7 +8,6 @@ from __future__ import annotations
 import os
 
 import pytest
-
 import repo_split_sandbox_647 as S
 
 

@@ -1,7 +1,6 @@
 """644 B3 证据冲突检测器单测（C3-1..C3-5）。"""
 from __future__ import annotations
 
-import evidence_base_644 as base
 import evidence_conflict_644 as b3
 
 

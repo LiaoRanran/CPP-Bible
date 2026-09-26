@@ -1,8 +1,8 @@
 """644 D5 证据获取编排器单测（O5-1..O5-4）。"""
 from __future__ import annotations
 
-import evidence_base_644 as base
 import evidence_acquisition_orchestrator_644 as d5
+import evidence_base_644 as base
 
 
 def _stub_acquire(topic, section=None):

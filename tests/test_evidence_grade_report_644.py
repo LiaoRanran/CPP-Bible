@@ -1,7 +1,6 @@
 """644 B4 证据质量联调报告单测（R4-1..R4-4）。"""
 from __future__ import annotations
 
-import evidence_base_644 as base
 import evidence_grade_report_644 as b4
 
 

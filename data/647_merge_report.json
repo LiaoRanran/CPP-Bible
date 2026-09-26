@@ -1,0 +1,201 @@
+{
+  "n_tools": 10,
+  "n_planned": 10,
+  "tools": [
+    {
+      "tool": "smart_issue_finder_645",
+      "exists": true,
+      "has_doc": true,
+      "has_main": true,
+      "has_selftest": true,
+      "has_check_flag": true,
+      "report_globals": [
+        "REPORT_MD"
+      ],
+      "check_rc": 0,
+      "ok": true
+    },
+    {
+      "tool": "targeted_attacker_645",
+      "exists": true,
+      "has_doc": true,
+      "has_main": true,
+      "has_selftest": true,
+      "has_check_flag": true,
+      "report_globals": [
+        "REPORT_MD"
+      ],
+      "check_rc": 0,
+      "ok": true
+    },
+    {
+      "tool": "rule_drafter_645",
+      "exists": true,
+      "has_doc": true,
+      "has_main": true,
+      "has_selftest": true,
+      "has_check_flag": true,
+      "report_globals": [
+        "REPORT_MD"
+      ],
+      "check_rc": 0,
+      "ok": true
+    },
+    {
+      "tool": "loop_r5_runner_645",
+      "exists": true,
+      "has_doc": true,
+      "has_main": true,
+      "has_selftest": true,
+      "has_check_flag": true,
+      "report_globals": [
+        "AGING_REPORT_MD",
+        "ERROR_REPORT_MD",
+        "REPORT_MD"
+      ],
+      "check_rc": 0,
+      "ok": true
+    },
+    {
+      "tool": "rule_card_mapper_646",
+      "exists": true,
+      "has_doc": true,
+      "has_main": true,
+      "has_selftest": true,
+      "has_check_flag": true,
+      "report_globals": [
+        "REPORT_MD"
+      ],
+      "check_rc": 0,
+      "ok": true
+    },
+    {
+      "tool": "standard_fetcher_645",
+      "exists": true,
+      "has_doc": true,
+      "has_main": true,
+      "has_selftest": true,
+      "has_check_flag": true,
+      "report_globals": [
+        "REPORT_MD"
+      ],
+      "check_rc": 0,
+      "ok": true
+    },
+    {
+      "tool": "compiler_probe_645",
+      "exists": true,
+      "has_doc": true,
+      "has_main": true,
+      "has_selftest": true,
+      "has_check_flag": true,
+      "report_globals": [
+        "REPORT_MD"
+      ],
+      "check_rc": 0,
+      "ok": true
+    },
+    {
+      "tool": "counterexample_searcher_645",
+      "exists": true,
+      "has_doc": true,
+      "has_main": true,
+      "has_selftest": true,
+      "has_check_flag": true,
+      "report_globals": [
+        "REPORT_MD"
+      ],
+      "check_rc": 0,
+      "ok": true
+    },
+    {
+      "tool": "evidence_grading_645",
+      "exists": true,
+      "has_doc": true,
+      "has_main": true,
+      "has_selftest": true,
+      "has_check_flag": true,
+      "report_globals": [
+        "REPORT_MD",
+        "SUFF_REPORT_MD"
+      ],
+      "check_rc": 0,
+      "ok": true
+    },
+    {
+      "tool": "three_layer_orchestrator_645",
+      "exists": true,
+      "has_doc": true,
+      "has_main": true,
+      "has_selftest": true,
+      "has_check_flag": true,
+      "report_globals": [
+        "EFFECT_REPORT_MD",
+        "FEEDBACK_REPORT_MD",
+        "REPORT_MD"
+      ],
+      "check_rc": 0,
+      "ok": true
+    }
+  ],
+  "loss_check": [
+    {
+      "target": "three_layer_orchestrator_645",
+      "entries": [
+        "generate_feedback",
+        "evaluate",
+        "write_effect_report"
+      ],
+      "missing_entries": [],
+      "members_removed": [
+        {
+          "member": "coupling_feedback_645",
+          "file_removed": true
+        },
+        {
+          "member": "coupling_effect_645",
+          "file_removed": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "target": "evidence_grading_645",
+      "entries": [
+        "judge",
+        "write_sufficiency_report"
+      ],
+      "missing_entries": [],
+      "members_removed": [
+        {
+          "member": "evidence_sufficiency_645",
+          "file_removed": true
+        }
+      ],
+      "ok": true
+    },
+    {
+      "target": "loop_r5_runner_645",
+      "entries": [
+        "track",
+        "detect",
+        "load_ledger",
+        "write_error_report",
+        "write_aging_report"
+      ],
+      "missing_entries": [],
+      "members_removed": [
+        {
+          "member": "rule_error_tracker_645",
+          "file_removed": true
+        },
+        {
+          "member": "rule_aging_detector_645",
+          "file_removed": true
+        }
+      ],
+      "ok": true
+    }
+  ],
+  "all_ok": true
+}

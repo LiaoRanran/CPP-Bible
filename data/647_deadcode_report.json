@@ -1,0 +1,31 @@
+{
+  "cleaned_in_d1": 15,
+  "targets": [
+    "three_layer_orchestrator_645",
+    "evidence_grading_645",
+    "loop_r5_runner_645",
+    "smart_issue_finder_645",
+    "targeted_attacker_645",
+    "rule_drafter_645",
+    "standard_fetcher_645",
+    "compiler_probe_645",
+    "counterexample_searcher_645",
+    "rule_card_mapper_646"
+  ],
+  "ruff": {
+    "available": true,
+    "rc": 0,
+    "n_remaining": 0,
+    "violations": []
+  },
+  "dead_functions": {
+    "n_candidates": 1,
+    "candidates": [
+      {
+        "module": "three_layer_orchestrator_645",
+        "function": "effect_main",
+        "lineno": "390"
+      }
+    ]
+  }
+}

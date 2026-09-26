@@ -8,9 +8,8 @@ from __future__ import annotations
 import json
 import os
 
-import pytest
-
 import external_anchor_647 as A
+import pytest
 
 H = "f" * 64
 

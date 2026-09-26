@@ -3,9 +3,8 @@ from __future__ import annotations
 
 import os
 
-import evidence_base_644 as base
 import compiler_probe_644 as d2
-
+import evidence_base_644 as base
 
 SNIPPET = "#include <iostream>\nint main(){ std::cout << \"42\" << std::endl; return 0; }\n"
 

@@ -109,6 +109,9 @@ def test_a1_6_cli_default_is_strict_and_warn_only_is_the_backdoor(tmp_path: Path
     cs = _pin(root, core="real")           # core 用真工具 ⇒ CLI 全程只被 supply_chain 影响
     monkeypatch.setattr(ti, "ROOT", root)
     monkeypatch.setattr(ti, "CHECKSUMS", cs)
+    # Merkle 台账在真实仓库里（不受 ROOT monkeypatch 控制），xdist 并行时会被别的测试改写 ⇒
+    # 本用例只测 supply_chain 口径，把 Merkle 校验打桩（避免测出"别的测试正在写盘"这种假失败）
+    monkeypatch.setattr(ti, "verify_merkle", lambda *a, **k: ([], [], 0))
     (root / ALL[2]).unlink()
     assert ti.main(["--check"]) == 1, "缺信任根文件 ⇒ 默认必须红（fail-closed）"
     assert ti.main(["--check-supply-chain"]) == 1
@@ -133,7 +136,8 @@ def test_a1_7_core_verdict_unaffected(tmp_path: Path, monkeypatch):
 def test_a1_8_strict_default_declared_and_real_repo_green():
     assert ti.SUPPLY_CHAIN_STRICT_DEFAULT is True
     assert ti.verify_supply_chain(strict=True)[2] == 0, "真实仓库信任根必须齐备"
-    assert ti.main(["--check"]) == 0
+    assert ti.verify()[2] == 0, "真实仓库 core 节必须一致"
+    # 只用 supply_chain 相关的 CLI（`--check` 还会跑 Merkle/ruler，xdist 并行下会被别的测试干扰）
     assert ti.main(["--check-supply-chain"]) == 0
     # 信任根基准里确实钉了这 5 个文件（不是空节）
     base = ti.load_supply_chain_baseline() or {}

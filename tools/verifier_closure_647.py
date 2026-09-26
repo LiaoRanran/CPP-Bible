@@ -124,8 +124,10 @@ def build_closure(missing: Iterable[str] = ()) -> dict[str, Any]:
     if RULESET_ID in miss:
         missing_list.append(RULESET_ID)
     else:
-        entries.append({"path": RULESET_ID, "sha256": ruleset_fingerprint(),
-                        "n_rules": str(len(rule_ids()))})  # type: ignore[dict-item]
+        # 规则集指纹条目（多带一个 n_rules 便于人眼复核；用两步赋值避免类型收窄告警）
+        rule_entry: dict[str, str] = {"path": RULESET_ID, "sha256": ruleset_fingerprint()}
+        rule_entry["n_rules"] = str(len(rule_ids()))
+        entries.append(rule_entry)
     entries.sort(key=lambda e: e["path"])
     missing_list.sort()
     return {"schema": "verifier_closure/1.1-647",

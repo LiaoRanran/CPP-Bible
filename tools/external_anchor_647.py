@@ -118,8 +118,8 @@ class MockAnchor(AnchorProvider):
         if not isinstance(h, str) or len(h) < 16:
             raise ValueError(f"hash 形态可疑（要求 ≥16 位字符串）：{h!r}")
         ts = published_at or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        core = {"provider": self.name, "hash": h, "published_at": ts}
-        receipt = dict(core)
+        core: dict[str, Any] = {"provider": self.name, "hash": h, "published_at": ts}
+        receipt: dict[str, Any] = dict(core)
         receipt["receipt_id"] = _sha256_text(_canonical(core))    # 全 64 位（不截断，避免自比不对称）
         receipt["receipt_digest"] = _sha256_text(_canonical(receipt))
         return receipt
@@ -129,12 +129,13 @@ class MockAnchor(AnchorProvider):
             return False
         if receipt.get("provider") != self.name or receipt.get("hash") != h:
             return False
-        body = dict(receipt)
+        body: dict[str, Any] = dict(receipt)
         digest = body.pop("receipt_digest", None)
         rid = body.get("receipt_id")
-        if not digest or not rid:
+        if not isinstance(digest, str) or not isinstance(rid, str) or not digest or not rid:
             return False
-        core = {k: body[k] for k in ("provider", "hash", "published_at") if k in body}
+        core: dict[str, Any] = {k: body[k] for k in ("provider", "hash", "published_at")
+                                if k in body}
         if _sha256_text(_canonical(core)) != rid:
             return False
         # `receipt_digest` 覆盖**除它自己之外**的全部字段（含 receipt_id）⇒ 改任一字段即失配
@@ -283,7 +284,8 @@ def selftest() -> int:
         t = dict(r)
         t[field] = bad
         chk(f"篡改 {field} ⇒ 检出", verify(h, t) is False)
-    chk("空 dict / 非 dict ⇒ False", verify(h, {}) is False and verify(h, None) is False)  # type: ignore[arg-type]
+    not_a_dict: Any = None
+    chk("空 dict / 非 dict ⇒ False", verify(h, {}) is False and verify(h, not_a_dict) is False)
 
     # 预留接入点：调用即抛（不静默降级）
     for s in RESERVED_PROVIDERS:

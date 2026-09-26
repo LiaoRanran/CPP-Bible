@@ -131,7 +131,7 @@ def audit_external_anchor() -> dict[str, Any]:
             "anchor": cur.get("anchor", {}).get("anchor", "")}
 
 
-def co_located_points() -> list[dict[str, str]]:
+def co_located_points() -> list[dict[str, Any]]:
     """**仍存在的共置点**（修复不覆盖这些）：每条给"在哪 / 为什么是风险 / 谁能解"。"""
     return [{"point": name, "where": path, "risk": why,
              "resolved_by": "外部锚 / 外部 KMS（交人裁决，647 未做）",

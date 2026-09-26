@@ -177,7 +177,8 @@ class DecisionEvent:
 
 
 #: 647 A2：DecisionEvent 的**全部**合法字段（strict 用它判"未知字段"）。
-KNOWN_FIELDS: frozenset[str] = frozenset(DecisionEvent.__dataclass_fields__)  # type: ignore[attr-defined]
+#: 用 `getattr` 取 `__dataclass_fields__`，避免 `type: ignore`（625 的"防批量忽略"预算只有 28）。
+KNOWN_FIELDS: frozenset[str] = frozenset(getattr(DecisionEvent, "__dataclass_fields__"))
 #: 647 A2：strict 导入**必须显式出现且非空**的字段。
 #: 口径 = "一条可追溯到人的判决至少要说清：做了什么/结论/对象/怎么审/来自谁/谁签/何时"。
 #: `decision_origin` 在列 ⇒ **新事件不再可能被默认成 `human_observed`**。
@@ -333,6 +334,10 @@ def make_event(target_type: str, target_id: str, result: str,
     return e
 
 
+#: 647 A2：故意传错类型的**非 dict** 输入（用 `Any` 承载 ⇒ 不需要 `type: ignore`）
+_NOT_A_DICT: Any = []
+
+
 def _raises(fn) -> bool:
     """`fn()` 抛 `StrictEventError` ⇒ True（自检辅助，不改任何状态）。"""
     try:
@@ -430,7 +435,7 @@ def selftest() -> int:
     except StrictEventError:
         chk("strict：空 dict 必抛（FO-B 修复）", True)
     chk("strict：非 dict 必抛",
-        _raises(lambda: DecisionEvent.from_dict_strict([])))  # type: ignore[arg-type]
+        _raises(lambda: DecisionEvent.from_dict_strict(_NOT_A_DICT)))
     chk("strict：枚举非法必抛",
         _raises(lambda: DecisionEvent.from_dict_strict({**full, "result": "BOGUS"})))
     # 宽容路径**保持历史语义**（642 B3 FO-B 复现路径仍成立，历史账本必须能读）

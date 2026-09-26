@@ -157,6 +157,8 @@
     "new_mode": "shadow",
     "zero_enforcement": true,
     "restored": true,
+    "wrote_mode_file": false,
+    "mechanism": "环境变量（不写盘，验证后还原）",
     "effects_after_rollback": {
       "B1": {
         "卡片": 23,

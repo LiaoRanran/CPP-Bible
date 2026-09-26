@@ -1,7 +1,6 @@
 """644 C2 证据-卡片关联层单测（L2-1..L2-5）。"""
 from __future__ import annotations
 
-import evidence_base_644 as base
 import evidence_card_link_644 as c2
 
 

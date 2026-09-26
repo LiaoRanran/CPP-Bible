@@ -197,13 +197,17 @@ def shadow_baseline() -> dict[str, Any]:
 def rollback_and_verify(commit: bool = False) -> dict[str, Any]:
     """一键回滚 ⇒ 实测五个保护器的强制量是否归零。
 
-    `commit=False`（默认）：实测后**恢复原模式文件状态**（`--check`/`--report` 不留副作用）；
-    `commit=True`（CLI `--rollback`）：**保留** shadow 状态（真的回滚）。
+    两档机制（**默认那档绝不写盘**，避免"验证"污染运行期状态）：
+
+    * `commit=False`（默认，`--check`/`--report` 用）：**只设环境变量** `QUEYI_PROTECTOR_MODE=shadow`
+      跑一遍，跑完还原 —— **不写模式文件**（历史版本会写盘再删，属于自找麻烦）；
+    * `commit=True`（CLI `--rollback`）：**真的**写模式文件（`protector_mode_647.rollback()`），保留回滚。
     """
     prev = pmode.mode()
-    prev_file = pmode._from_file()
-    pmode.rollback()                          # 写 shadow（文件级）
-    env_saved = os.environ.pop(pmode.ENV, None)   # 让"模式文件"真正生效
+    prev_env = os.environ.get(pmode.ENV)
+    if commit:
+        pmode.rollback()                       # 真回滚：落盘
+    os.environ[pmode.ENV] = pmode.MODE_SHADOW  # 运行期生效
     try:
         e = enforce_effects()
         zero = (e["B1"]["判决态被改变（enforce 强制量）"] == 0
@@ -212,20 +216,15 @@ def rollback_and_verify(commit: bool = False) -> dict[str, Any]:
                 and e["B4"]["降级（enforce 强制量）"] == 0
                 and e["B4"]["暂停（enforce 强制量）"] == 0
                 and e["B5"]["不放行（enforce 强制量）"] == 0)
-        mode_after = pmode.mode()
     finally:
-        if env_saved is not None:
-            os.environ[pmode.ENV] = env_saved
-        if not commit:                        # 恢复现场（不留副作用）
-            if prev_file is None:
-                try:
-                    os.remove(pmode.MODE_FILE)
-                except OSError:
-                    pass
-            else:
-                pmode.set_mode(prev_file)
-    return {"prev_mode": prev, "new_mode": mode_after, "zero_enforcement": zero,
-            "restored": (not commit),
+        if prev_env is None:
+            os.environ.pop(pmode.ENV, None)
+        else:
+            os.environ[pmode.ENV] = prev_env
+    return {"prev_mode": prev, "new_mode": pmode.MODE_SHADOW, "zero_enforcement": zero,
+            "restored": (not commit), "wrote_mode_file": bool(commit),
+            "mechanism": ("模式文件（真回滚）" if commit
+                          else "环境变量（不写盘，验证后还原）"),
             "effects_after_rollback": e}
 
 

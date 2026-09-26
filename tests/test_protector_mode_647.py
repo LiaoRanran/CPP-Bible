@@ -4,9 +4,8 @@ from __future__ import annotations
 import json
 import os
 
-import pytest
-
 import protector_mode_647 as M
+import pytest
 
 
 def test_pm1_default_is_enforce():
