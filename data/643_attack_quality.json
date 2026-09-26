@@ -1,0 +1,70 @@
+{
+  "targeted": {
+    "total": 20,
+    "noop": 0,
+    "infra_error": 0,
+    "effective": 20,
+    "effective_rate": 1.0,
+    "impact_rate": 0.65,
+    "oracle_hit_rate": 0.1,
+    "escape_find_rate": null,
+    "unreachable_rate": 0.35,
+    "oracle_mismatch": 11,
+    "n_dir_a": 0,
+    "n_dir_b": 20,
+    "by_verdict": {
+      "triggered": 2,
+      "oracle_mismatch": 11,
+      "not_triggered": 7
+    },
+    "production_unchanged": true,
+    "ci_effective": [
+      0.8388698745050667,
+      1.0
+    ],
+    "ci_oracle_hit": [
+      0.027865893984153206,
+      0.30103820641179335
+    ]
+  },
+  "random_baseline": {
+    "total": 20,
+    "noop": 5,
+    "infra_error": 0,
+    "effective": 15,
+    "effective_rate": 0.75,
+    "impact_rate": 0.6,
+    "oracle_hit_rate": 0.0667,
+    "escape_find_rate": 0.9333,
+    "unreachable_rate": null,
+    "oracle_mismatch": 0,
+    "n_dir_a": 15,
+    "n_dir_b": 0,
+    "by_verdict": {
+      "evaded": 14,
+      "noop": 5,
+      "blocked": 1
+    },
+    "production_unchanged": true,
+    "ci_effective": [
+      0.5312949900419365,
+      0.888139947210597
+    ],
+    "ci_oracle_hit": [
+      0.011866588606194856,
+      0.2981707755242399
+    ]
+  },
+  "n_per_arm": 20,
+  "diff_oracle_hit_rate": 0.0333,
+  "diff_impact_rate": 0.05,
+  "ci_overlap_oracle": true,
+  "statistically_significant": false,
+  "verdict": "样本量 20 < 30 或区间重叠 ⇒ **不能声称差异有统计意义**（只作方向性观察）",
+  "limit": 20,
+  "improvements": [
+    "oracle 命中率 0.1 偏低 ⇒ C1 的静态 precondition 与真实触发条件偏差大：应先用**实测**（C3 结果）回调 C2 的目标选择，而不是只信静态信号",
+    "`oracle_mismatch` 11 条 ⇒ 预期规则与真实责任规则不一致：应按实测的 `added_rules/removed_rules` 重标 oracle（留 644）",
+    "样本量 20 太小 ⇒ 任何\"更好\"都只是方向性观察，要下结论需 ≥30 条/组（且 644 可复用本评估器）"
+  ]
+}
