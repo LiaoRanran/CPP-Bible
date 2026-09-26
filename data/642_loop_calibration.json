@@ -1,0 +1,18 @@
+{
+  "schema": "loop_calibration/1",
+  "append_only": true,
+  "expansion_threshold": 0.6,
+  "entries": [
+    {
+      "recorded_at": "2026-09-26T08:58:45",
+      "round": "R3",
+      "batch": 642,
+      "candidates": 157,
+      "decided": 0,
+      "adopted": 0,
+      "reliable": null,
+      "calibration": null,
+      "source": "data/642_fail_open_audit.md + data/642_mdl_admission.md + data/642_kernel_minimality_audit.md + data/642_protector_rollout.md"
+    }
+  ]
+}
