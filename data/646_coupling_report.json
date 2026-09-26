@@ -1,0 +1,183 @@
+{
+  "attribution_rate": 1.0,
+  "before_attribution_rate_645": 0.0,
+  "chain_count": 10,
+  "chains": [
+    {
+      "counterexamples": 27,
+      "evidence_count": 85,
+      "issue": "ISSUE-ATOM-CLAIM-CONCEPT-NORMALIZED",
+      "matched_cards": 27,
+      "rule": "ATOM-CLAIM-CONCEPT-NORMALIZED",
+      "severity": "low",
+      "verification": {
+        "confidence": 0.85,
+        "detail": "27 张关联卡证据充分（A1 映射）；27 条反例候选待人审判定（只搜不判）",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-ATOM-CLAIM-CONCEPT-NORMALIZED",
+        "target_id": "ISSUE-ATOM-CLAIM-CONCEPT-NORMALIZED",
+        "verdict": "pass"
+      }
+    },
+    {
+      "counterexamples": 27,
+      "evidence_count": 85,
+      "issue": "ISSUE-EV-MATRIX-UNBACKED",
+      "matched_cards": 27,
+      "rule": "EV-MATRIX-UNBACKED",
+      "severity": "low",
+      "verification": {
+        "confidence": 0.85,
+        "detail": "27 张关联卡证据充分（A1 映射）；27 条反例候选待人审判定（只搜不判）",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-EV-MATRIX-UNBACKED",
+        "target_id": "ISSUE-EV-MATRIX-UNBACKED",
+        "verdict": "pass"
+      }
+    },
+    {
+      "counterexamples": 27,
+      "evidence_count": 85,
+      "issue": "ISSUE-OBSERVATION-LIVENESS",
+      "matched_cards": 27,
+      "rule": "OBSERVATION-LIVENESS",
+      "severity": "low",
+      "verification": {
+        "confidence": 0.85,
+        "detail": "27 张关联卡证据充分（A1 映射）；27 条反例候选待人审判定（只搜不判）",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-OBSERVATION-LIVENESS",
+        "target_id": "ISSUE-OBSERVATION-LIVENESS",
+        "verdict": "pass"
+      }
+    },
+    {
+      "counterexamples": 27,
+      "evidence_count": 85,
+      "issue": "ISSUE-EV-OUT-UNDECLARED-KEY",
+      "matched_cards": 27,
+      "rule": "EV-OUT-UNDECLARED-KEY",
+      "severity": "low",
+      "verification": {
+        "confidence": 0.85,
+        "detail": "27 张关联卡证据充分（A1 映射）；27 条反例候选待人审判定（只搜不判）",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-EV-OUT-UNDECLARED-KEY",
+        "target_id": "ISSUE-EV-OUT-UNDECLARED-KEY",
+        "verdict": "pass"
+      }
+    },
+    {
+      "counterexamples": 27,
+      "evidence_count": 85,
+      "issue": "ISSUE-EV-FALSIFICATION-QUANT",
+      "matched_cards": 27,
+      "rule": "EV-FALSIFICATION-QUANT",
+      "severity": "low",
+      "verification": {
+        "confidence": 0.85,
+        "detail": "27 张关联卡证据充分（A1 映射）；27 条反例候选待人审判定（只搜不判）",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-EV-FALSIFICATION-QUANT",
+        "target_id": "ISSUE-EV-FALSIFICATION-QUANT",
+        "verdict": "pass"
+      }
+    },
+    {
+      "counterexamples": 27,
+      "evidence_count": 85,
+      "issue": "ISSUE-EV-ASSERT-SYMBOL-MAPPED",
+      "matched_cards": 27,
+      "rule": "EV-ASSERT-SYMBOL-MAPPED",
+      "severity": "high",
+      "verification": {
+        "confidence": 0.85,
+        "detail": "27 张关联卡证据充分（A1 映射）；27 条反例候选待人审判定（只搜不判）",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-EV-ASSERT-SYMBOL-MAPPED",
+        "target_id": "ISSUE-EV-ASSERT-SYMBOL-MAPPED",
+        "verdict": "pass"
+      }
+    },
+    {
+      "counterexamples": 24,
+      "evidence_count": 76,
+      "issue": "ISSUE-ATOM-REL-TARGET",
+      "matched_cards": 24,
+      "rule": "ATOM-REL-TARGET",
+      "severity": "low",
+      "verification": {
+        "confidence": 0.85,
+        "detail": "24 张关联卡证据充分（A1 映射）；24 条反例候选待人审判定（只搜不判）",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-ATOM-REL-TARGET",
+        "target_id": "ISSUE-ATOM-REL-TARGET",
+        "verdict": "pass"
+      }
+    },
+    {
+      "counterexamples": 27,
+      "evidence_count": 85,
+      "issue": "ISSUE-EV-ENV-DEPENDENT-KEY",
+      "matched_cards": 27,
+      "rule": "EV-ENV-DEPENDENT-KEY",
+      "severity": "high",
+      "verification": {
+        "confidence": 0.85,
+        "detail": "27 张关联卡证据充分（A1 映射）；27 条反例候选待人审判定（只搜不判）",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-EV-ENV-DEPENDENT-KEY",
+        "target_id": "ISSUE-EV-ENV-DEPENDENT-KEY",
+        "verdict": "pass"
+      }
+    },
+    {
+      "counterexamples": 27,
+      "evidence_count": 85,
+      "issue": "ISSUE-EV-OUT-STALE-MTIME",
+      "matched_cards": 27,
+      "rule": "EV-OUT-STALE-MTIME",
+      "severity": "low",
+      "verification": {
+        "confidence": 0.85,
+        "detail": "27 张关联卡证据充分（A1 映射）；27 条反例候选待人审判定（只搜不判）",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-EV-OUT-STALE-MTIME",
+        "target_id": "ISSUE-EV-OUT-STALE-MTIME",
+        "verdict": "pass"
+      }
+    },
+    {
+      "counterexamples": 27,
+      "evidence_count": 85,
+      "issue": "ISSUE-EV-ARTIFACT-PRODUCER",
+      "matched_cards": 27,
+      "rule": "EV-ARTIFACT-PRODUCER",
+      "severity": "critical",
+      "verification": {
+        "confidence": 0.85,
+        "detail": "27 张关联卡证据充分（A1 映射）；27 条反例候选待人审判定（只搜不判）",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-EV-ARTIFACT-PRODUCER",
+        "target_id": "ISSUE-EV-ARTIFACT-PRODUCER",
+        "verdict": "pass"
+      }
+    }
+  ],
+  "chains_with_evidence": 10,
+  "met": true,
+  "min_chains": 5,
+  "verdicts": {
+    "pass": 10
+  }
+}

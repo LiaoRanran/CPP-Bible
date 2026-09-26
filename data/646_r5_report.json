@@ -1,0 +1,18 @@
+{
+  "R5_645_narrow": 1.0,
+  "R5_expanded_independent": 1.0,
+  "R5_expanded_modify": 0.9851,
+  "adopted_independent": 67,
+  "adopted_modify": 66,
+  "history": {
+    "R1": 0.375,
+    "R2": 0.5,
+    "R3": null,
+    "R4": 0.1,
+    "R5_645_narrow": 1.0
+  },
+  "rules": 67,
+  "sample_after": 452,
+  "sample_before": 3,
+  "suggestions": 67
+}

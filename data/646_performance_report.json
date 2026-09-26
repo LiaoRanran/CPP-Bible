@@ -1,0 +1,40 @@
+{
+  "all_met": true,
+  "met_count": 4,
+  "threshold_pct": 30.0,
+  "total": 4,
+  "workloads": [
+    {
+      "after_ms": 27.2,
+      "before_ms": 5757.8,
+      "met": true,
+      "note": "lru_cache 命中：gate/充分性/反例",
+      "speedup_pct": 99.5,
+      "workload": "orchestrate（首次 → 重复调用）"
+    },
+    {
+      "after_ms": 4.1,
+      "before_ms": 931.1,
+      "met": true,
+      "note": "atoms/ev_map/stored 缓存",
+      "speedup_pct": 99.6,
+      "workload": "rule_card_mapper.build_mapping（冷 → 热读缓存）"
+    },
+    {
+      "after_ms": 0.0,
+      "before_ms": 755.3,
+      "met": true,
+      "note": "消除第二次全库扫描",
+      "speedup_pct": 100.0,
+      "workload": "discover_blind_spots（重复 gate → 复用计数）"
+    },
+    {
+      "after_ms": 0.0,
+      "before_ms": 949.3,
+      "met": true,
+      "note": "perf_646 记忆化",
+      "speedup_pct": 100.0,
+      "workload": "证据读盘（裸读 → 缓存读）"
+    }
+  ]
+}

@@ -1,0 +1,197 @@
+{
+  "cards_total": 27,
+  "insufficient": 0,
+  "per_card": {
+    "ATOM-CONC-FENCE-001": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-CONC-LOCK-001": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-CONC-RACE-001": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-HIST-AUTOPTR-001": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-LANG-INLINE-001": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-ALIGN-001": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-ALLOC-001": {
+      "evidence_count": 4,
+      "has_l12": true,
+      "independent": 4,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-ALLOC-002": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-LEAK-001": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-LEAK-002": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-MOVE-002": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-NEW-001": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-PERF-001": {
+      "evidence_count": 4,
+      "has_l12": true,
+      "independent": 4,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-PERF-002": {
+      "evidence_count": 4,
+      "has_l12": true,
+      "independent": 4,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-PERF-003": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-PERF-004": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-RAII-001": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-RAII-002": {
+      "evidence_count": 4,
+      "has_l12": true,
+      "independent": 4,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-RVREF-001": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-SHARED-001": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-SHARED-002": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-UNIQUE-001": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-UNIQUE-002": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-VALUE-001": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-VALUE-002": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-MEM-WEAK-001": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    },
+    "ATOM-UB-GRAY-001": {
+      "evidence_count": 3,
+      "has_l12": true,
+      "independent": 3,
+      "missing": [],
+      "status": "sufficient"
+    }
+  },
+  "phantom_excluded": "ATOM-MEM-MOVE-001",
+  "sufficient": 27
+}

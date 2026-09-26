@@ -1,0 +1,1223 @@
+{
+  "cards_total": 27,
+  "cards_with_candidate": 27,
+  "per_card": {
+    "ATOM-CONC-FENCE-001": [
+      {
+        "boundary": "impl-defined",
+        "note": "线程/互斥量行为部分是实现定义（内存模型保证需原子/互斥）",
+        "standard_section": "[thread.condition]/[thread.mutex]",
+        "topic": "thread",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存序是同步契约，误用导致 UB 或未定义顺序",
+        "standard_section": "[atomics.fences]/[atomics.order]",
+        "topic": "fence",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "宽松序下的可见性不保证",
+        "standard_section": "[atomics.order]",
+        "topic": "atomic",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "锁行为部分实现定义",
+        "standard_section": "[thread.mutex]",
+        "topic": "lock",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "并发域通用语义边界（兜底）",
+        "standard_section": "[intro.multithread]",
+        "topic": "CONC",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-CONC-LOCK-001": [
+      {
+        "boundary": "impl-defined",
+        "note": "线程/互斥量行为部分是实现定义（内存模型保证需原子/互斥）",
+        "standard_section": "[thread.condition]/[thread.mutex]",
+        "topic": "thread",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存序是同步契约，误用导致 UB 或未定义顺序",
+        "standard_section": "[atomics.fences]/[atomics.order]",
+        "topic": "fence",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "宽松序下的可见性不保证",
+        "standard_section": "[atomics.order]",
+        "topic": "atomic",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "锁行为部分实现定义",
+        "standard_section": "[thread.mutex]",
+        "topic": "lock",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "并发域通用语义边界（兜底）",
+        "standard_section": "[intro.multithread]",
+        "topic": "CONC",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-CONC-RACE-001": [
+      {
+        "boundary": "UB",
+        "note": "数据竞争（无同步的并发读写）是 UB",
+        "standard_section": "[intro.races]/[atomics.order]",
+        "topic": "race",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "线程/互斥量行为部分是实现定义（内存模型保证需原子/互斥）",
+        "standard_section": "[thread.condition]/[thread.mutex]",
+        "topic": "thread",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "宽松序下的可见性不保证",
+        "standard_section": "[atomics.order]",
+        "topic": "atomic",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "并发域通用语义边界（兜底）",
+        "standard_section": "[intro.multithread]",
+        "topic": "CONC",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-HIST-AUTOPTR-001": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "自定义删除器进类型系统；删除器有状态时行为差异",
+        "standard_section": "[util.smartptr.unique_ptr]/[memory]",
+        "topic": "unique_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "控制块原子、被管理对象非原子；循环引用泄漏",
+        "standard_section": "[util.smartptr.shared]/[util.smartptr.shared.atomic]",
+        "topic": "shared_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "伪共享是性能现象，无标准保证",
+        "standard_section": "[basic.align]/[expr.ass]",
+        "topic": "false",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "已弃用，拷贝即转移所有权的反直觉语义",
+        "standard_section": "[depr]",
+        "topic": "auto_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 两层语义、混用是 UB",
+        "standard_section": "[expr.new]/[basic.stc.dynamic]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "历史/弃用域通用语义边界（兜底）",
+        "standard_section": "[depr]",
+        "topic": "HIST",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "语言规则域通用语义边界（兜底）",
+        "standard_section": "[basic.def.odr]",
+        "topic": "LANG",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-LANG-INLINE-001": [
+      {
+        "boundary": "UB",
+        "note": "跨 TU 定义不一致违反 ODR 是 UB",
+        "standard_section": "[basic.def.odr]/[dcl.inline]",
+        "topic": "inline",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "ODR 违反是 UB",
+        "standard_section": "[basic.def.odr]",
+        "topic": "odr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "值类别决定重载解析，误用致非预期拷贝",
+        "standard_section": "[basic.lval]",
+        "topic": "value",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "并发域通用语义边界（兜底）",
+        "standard_section": "[intro.multithread]",
+        "topic": "CONC",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "语言规则域通用语义边界（兜底）",
+        "standard_section": "[basic.def.odr]",
+        "topic": "LANG",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-ALIGN-001": [
+      {
+        "boundary": "UB",
+        "note": "严格别名规则：通过不兼容类型访问对象是 UB",
+        "standard_section": "[basic.lval]/[class.mem]",
+        "topic": "aliasing",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "padding 布局是实现定义",
+        "standard_section": "[basic.align]",
+        "topic": "pad",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "未对齐访问是 UB",
+        "standard_section": "[basic.align]",
+        "topic": "align",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-ALLOC-001": [
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "分配器策略影响时空，需可移植性验证",
+        "standard_section": "[allocator.requirements]/[default.allocator]",
+        "topic": "allocator",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 两层语义、混用是 UB",
+        "standard_section": "[expr.new]/[basic.stc.dynamic]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "语言规则域通用语义边界（兜底）",
+        "standard_section": "[basic.def.odr]",
+        "topic": "LANG",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-ALLOC-002": [
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-LEAK-001": [
+      {
+        "boundary": "impl-defined",
+        "note": "控制块原子、被管理对象非原子；循环引用泄漏",
+        "standard_section": "[util.smartptr.shared]/[util.smartptr.shared.atomic]",
+        "topic": "shared_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "lock() 可能失败；观察者语义",
+        "standard_section": "[util.smartptr.weak]",
+        "topic": "weak_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "跨 TU 定义不一致违反 ODR 是 UB",
+        "standard_section": "[basic.def.odr]/[dcl.inline]",
+        "topic": "inline",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "泄漏检测工具覆盖不全",
+        "standard_section": "[basic.stc.dynamic]",
+        "topic": "leak",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "锁行为部分实现定义",
+        "standard_section": "[thread.mutex]",
+        "topic": "lock",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "并发域通用语义边界（兜底）",
+        "standard_section": "[intro.multithread]",
+        "topic": "CONC",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "语言规则域通用语义边界（兜底）",
+        "standard_section": "[basic.def.odr]",
+        "topic": "LANG",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-LEAK-002": [
+      {
+        "boundary": "UB",
+        "note": "跨 TU 定义不一致违反 ODR 是 UB",
+        "standard_section": "[basic.def.odr]/[dcl.inline]",
+        "topic": "inline",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "泄漏检测工具覆盖不全",
+        "standard_section": "[basic.stc.dynamic]",
+        "topic": "leak",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-MOVE-002": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "值类别决定重载解析，误用致非预期拷贝",
+        "standard_section": "[basic.lval]",
+        "topic": "value",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 两层语义、混用是 UB",
+        "standard_section": "[expr.new]/[basic.stc.dynamic]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-NEW-001": [
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "异常路径若析构抛异常则 terminate",
+        "standard_section": "[except.ctor]/[basic.life]",
+        "topic": "raii",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 两层语义、混用是 UB",
+        "standard_section": "[expr.new]/[basic.stc.dynamic]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-PERF-001": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "值类别决定重载解析，误用致非预期拷贝",
+        "standard_section": "[basic.lval]",
+        "topic": "value",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 两层语义、混用是 UB",
+        "standard_section": "[expr.new]/[basic.stc.dynamic]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-PERF-002": [
+      {
+        "boundary": "impl-defined",
+        "note": "SSO 阈值不可移植，依赖实现",
+        "standard_section": "[string.require]/[basic.string]",
+        "topic": "sso",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "语言规则域通用语义边界（兜底）",
+        "standard_section": "[basic.def.odr]",
+        "topic": "LANG",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-PERF-003": [
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "SSO 阈值不可移植，依赖实现",
+        "standard_section": "[string.require]/[basic.string]",
+        "topic": "sso",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "分配器策略影响时空，需可移植性验证",
+        "standard_section": "[allocator.requirements]/[default.allocator]",
+        "topic": "allocator",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "泄漏检测工具覆盖不全",
+        "standard_section": "[basic.stc.dynamic]",
+        "topic": "leak",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 两层语义、混用是 UB",
+        "standard_section": "[expr.new]/[basic.stc.dynamic]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "语言规则域通用语义边界（兜底）",
+        "standard_section": "[basic.def.odr]",
+        "topic": "LANG",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-PERF-004": [
+      {
+        "boundary": "impl-defined",
+        "note": "SSO 阈值不可移植，依赖实现",
+        "standard_section": "[string.require]/[basic.string]",
+        "topic": "sso",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "宽松序下的可见性不保证",
+        "standard_section": "[atomics.order]",
+        "topic": "atomic",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "伪共享是性能现象，无标准保证",
+        "standard_section": "[basic.align]/[expr.ass]",
+        "topic": "false",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "padding 布局是实现定义",
+        "standard_section": "[basic.align]",
+        "topic": "pad",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "泄漏检测工具覆盖不全",
+        "standard_section": "[basic.stc.dynamic]",
+        "topic": "leak",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "未对齐访问是 UB",
+        "standard_section": "[basic.align]",
+        "topic": "align",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-RAII-001": [
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "自定义删除器进类型系统；删除器有状态时行为差异",
+        "standard_section": "[util.smartptr.unique_ptr]/[memory]",
+        "topic": "unique_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "控制块原子、被管理对象非原子；循环引用泄漏",
+        "standard_section": "[util.smartptr.shared]/[util.smartptr.shared.atomic]",
+        "topic": "shared_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "异常路径若析构抛异常则 terminate",
+        "standard_section": "[except.ctor]/[basic.life]",
+        "topic": "raii",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "锁行为部分实现定义",
+        "standard_section": "[thread.mutex]",
+        "topic": "lock",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 两层语义、混用是 UB",
+        "standard_section": "[expr.new]/[basic.stc.dynamic]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-RAII-002": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "自定义删除器进类型系统；删除器有状态时行为差异",
+        "standard_section": "[util.smartptr.unique_ptr]/[memory]",
+        "topic": "unique_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "异常路径若析构抛异常则 terminate",
+        "standard_section": "[except.ctor]/[basic.life]",
+        "topic": "raii",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "语言规则域通用语义边界（兜底）",
+        "standard_section": "[basic.def.odr]",
+        "topic": "LANG",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-RVREF-001": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "已弃用，拷贝即转移所有权的反直觉语义",
+        "standard_section": "[depr]",
+        "topic": "auto_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "值类别决定重载解析，误用致非预期拷贝",
+        "standard_section": "[basic.lval]",
+        "topic": "value",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "完美转发依赖引用折叠，遗漏 forward 致左值化",
+        "standard_section": "[temp.deduct]/[forward]",
+        "topic": "forward",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "并发域通用语义边界（兜底）",
+        "standard_section": "[intro.multithread]",
+        "topic": "CONC",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "语言规则域通用语义边界（兜底）",
+        "standard_section": "[basic.def.odr]",
+        "topic": "LANG",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-SHARED-001": [
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "自定义删除器进类型系统；删除器有状态时行为差异",
+        "standard_section": "[util.smartptr.unique_ptr]/[memory]",
+        "topic": "unique_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "控制块原子、被管理对象非原子；循环引用泄漏",
+        "standard_section": "[util.smartptr.shared]/[util.smartptr.shared.atomic]",
+        "topic": "shared_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "lock() 可能失败；观察者语义",
+        "standard_section": "[util.smartptr.weak]",
+        "topic": "weak_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "异常路径若析构抛异常则 terminate",
+        "standard_section": "[except.ctor]/[basic.life]",
+        "topic": "raii",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 两层语义、混用是 UB",
+        "standard_section": "[expr.new]/[basic.stc.dynamic]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-SHARED-002": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "线程/互斥量行为部分是实现定义（内存模型保证需原子/互斥）",
+        "standard_section": "[thread.condition]/[thread.mutex]",
+        "topic": "thread",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "自定义删除器进类型系统；删除器有状态时行为差异",
+        "standard_section": "[util.smartptr.unique_ptr]/[memory]",
+        "topic": "unique_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "控制块原子、被管理对象非原子；循环引用泄漏",
+        "standard_section": "[util.smartptr.shared]/[util.smartptr.shared.atomic]",
+        "topic": "shared_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "lock() 可能失败；观察者语义",
+        "standard_section": "[util.smartptr.weak]",
+        "topic": "weak_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "宽松序下的可见性不保证",
+        "standard_section": "[atomics.order]",
+        "topic": "atomic",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "锁行为部分实现定义",
+        "standard_section": "[thread.mutex]",
+        "topic": "lock",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "并发域通用语义边界（兜底）",
+        "standard_section": "[intro.multithread]",
+        "topic": "CONC",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "语言规则域通用语义边界（兜底）",
+        "standard_section": "[basic.def.odr]",
+        "topic": "LANG",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-UNIQUE-001": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "自定义删除器进类型系统；删除器有状态时行为差异",
+        "standard_section": "[util.smartptr.unique_ptr]/[memory]",
+        "topic": "unique_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "控制块原子、被管理对象非原子；循环引用泄漏",
+        "standard_section": "[util.smartptr.shared]/[util.smartptr.shared.atomic]",
+        "topic": "shared_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 两层语义、混用是 UB",
+        "standard_section": "[expr.new]/[basic.stc.dynamic]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-UNIQUE-002": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "自定义删除器进类型系统；删除器有状态时行为差异",
+        "standard_section": "[util.smartptr.unique_ptr]/[memory]",
+        "topic": "unique_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "控制块原子、被管理对象非原子；循环引用泄漏",
+        "standard_section": "[util.smartptr.shared]/[util.smartptr.shared.atomic]",
+        "topic": "shared_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "分配器策略影响时空，需可移植性验证",
+        "standard_section": "[allocator.requirements]/[default.allocator]",
+        "topic": "allocator",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 两层语义、混用是 UB",
+        "standard_section": "[expr.new]/[basic.stc.dynamic]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "语言规则域通用语义边界（兜底）",
+        "standard_section": "[basic.def.odr]",
+        "topic": "LANG",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-VALUE-001": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "值类别决定重载解析，误用致非预期拷贝",
+        "standard_section": "[basic.lval]",
+        "topic": "value",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-VALUE-002": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "完美转发依赖引用折叠，遗漏 forward 致左值化",
+        "standard_section": "[temp.deduct]/[forward]",
+        "topic": "forward",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "语言规则域通用语义边界（兜底）",
+        "standard_section": "[basic.def.odr]",
+        "topic": "LANG",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-WEAK-001": [
+      {
+        "boundary": "impl-defined",
+        "note": "控制块原子、被管理对象非原子；循环引用泄漏",
+        "standard_section": "[util.smartptr.shared]/[util.smartptr.shared.atomic]",
+        "topic": "shared_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "lock() 可能失败；观察者语义",
+        "standard_section": "[util.smartptr.weak]",
+        "topic": "weak_ptr",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "锁行为部分实现定义",
+        "standard_section": "[thread.mutex]",
+        "topic": "lock",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-UB-GRAY-001": [
+      {
+        "boundary": "UB",
+        "note": "严格别名规则：通过不兼容类型访问对象是 UB",
+        "standard_section": "[basic.lval]/[class.mem]",
+        "topic": "aliasing",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "内存/生命周期域通用语义边界（兜底）",
+        "standard_section": "[basic.stc]/[basic.life]",
+        "topic": "MEM",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "语言规则域通用语义边界（兜底）",
+        "standard_section": "[basic.def.odr]",
+        "topic": "LANG",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "未定义行为域通用语义边界（兜底）",
+        "standard_section": "[intro.abstract]",
+        "topic": "UB",
+        "verdict": "需人审（只搜不判）"
+      }
+    ]
+  },
+  "total_candidates": 166
+}

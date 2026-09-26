@@ -1,0 +1,287 @@
+{
+  "avg_score": 4.5,
+  "max_score": 5,
+  "rows": {
+    "authority_rule_annotator_646": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": false,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 124,
+      "comment_lines": 0,
+      "issues": [
+        "has_comments"
+      ],
+      "score": 4
+    },
+    "compiler_probe_645": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": true,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 312,
+      "comment_lines": 12,
+      "issues": [],
+      "score": 5
+    },
+    "counterexample_searcher_645": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": true,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 122,
+      "comment_lines": 4,
+      "issues": [],
+      "score": 5
+    },
+    "coupling_effect_645": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": true,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": false
+      },
+      "code_lines": 141,
+      "comment_lines": 5,
+      "issues": [
+        "has_source"
+      ],
+      "score": 4
+    },
+    "coupling_feedback_645": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": false,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 84,
+      "comment_lines": 2,
+      "issues": [
+        "has_comments"
+      ],
+      "score": 4
+    },
+    "evidence_grading_645": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": true,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 77,
+      "comment_lines": 4,
+      "issues": [],
+      "score": 5
+    },
+    "evidence_index_646": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": false,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 144,
+      "comment_lines": 4,
+      "issues": [
+        "has_comments"
+      ],
+      "score": 4
+    },
+    "evidence_sufficiency_645": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": true,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 98,
+      "comment_lines": 5,
+      "issues": [],
+      "score": 5
+    },
+    "loop_r5_runner_645": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": true,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 103,
+      "comment_lines": 4,
+      "issues": [],
+      "score": 5
+    },
+    "performance_optimizer_646": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": true,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": false
+      },
+      "code_lines": 112,
+      "comment_lines": 5,
+      "issues": [
+        "has_source"
+      ],
+      "score": 4
+    },
+    "queyi_data_models_645": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": false,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 146,
+      "comment_lines": 4,
+      "issues": [
+        "has_comments"
+      ],
+      "score": 4
+    },
+    "rule_aging_detector_645": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": true,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 127,
+      "comment_lines": 5,
+      "issues": [],
+      "score": 5
+    },
+    "rule_card_mapper_646": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": true,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": false
+      },
+      "code_lines": 198,
+      "comment_lines": 10,
+      "issues": [
+        "has_source"
+      ],
+      "score": 4
+    },
+    "rule_drafter_645": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": false,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 189,
+      "comment_lines": 1,
+      "issues": [
+        "has_comments"
+      ],
+      "score": 4
+    },
+    "rule_error_tracker_645": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": true,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 163,
+      "comment_lines": 8,
+      "issues": [],
+      "score": 5
+    },
+    "smart_issue_finder_645": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": true,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 166,
+      "comment_lines": 7,
+      "issues": [],
+      "score": 5
+    },
+    "standard_fetcher_645": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": true,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 159,
+      "comment_lines": 5,
+      "issues": [],
+      "score": 5
+    },
+    "targeted_attacker_645": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": true,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 206,
+      "comment_lines": 5,
+      "issues": [],
+      "score": 5
+    },
+    "three_layer_orchestrator_645": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": true,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": false
+      },
+      "code_lines": 121,
+      "comment_lines": 6,
+      "issues": [
+        "has_source"
+      ],
+      "score": 4
+    },
+    "three_layer_orchestrator_646": {
+      "checks": {
+        "has_boundary": true,
+        "has_comments": false,
+        "has_goal": true,
+        "has_module_doc": true,
+        "has_source": true
+      },
+      "code_lines": 170,
+      "comment_lines": 3,
+      "issues": [
+        "has_comments"
+      ],
+      "score": 4
+    }
+  },
+  "sample": 20
+}

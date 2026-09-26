@@ -1,0 +1,128 @@
+{
+  "after_merge": 10,
+  "core_645_count": 15,
+  "executed": false,
+  "info": {
+    "compiler_probe_645": {
+      "exists": true,
+      "goal": "- B2：对原子卡的关键代码断言（EV 卡的 `fixture`）批量跑**真实**编译实测，",
+      "has_docstring": true,
+      "lines": 366
+    },
+    "counterexample_searcher_645": {
+      "exists": true,
+      "goal": "语义级搜索——标准章节交叉引用 + UB 边界检测（未定义/未指定/实现定义）；",
+      "has_docstring": true,
+      "lines": 147
+    },
+    "coupling_effect_645": {
+      "exists": true,
+      "goal": "量化「三层耦合」相对「各跑各的」的真实增益，四个指标：",
+      "has_docstring": true,
+      "lines": 171
+    },
+    "coupling_feedback_645": {
+      "exists": true,
+      "goal": "基于三层耦合结果，真实驱动反馈：哪类问题需补充头部层证据、哪类结论",
+      "has_docstring": true,
+      "lines": 99
+    },
+    "evidence_grading_645": {
+      "exists": true,
+      "goal": "基于真实证据库，对每条证据真实判定等级（L1 多编译器实测 / L2 标准 /",
+      "has_docstring": true,
+      "lines": 96
+    },
+    "evidence_sufficiency_645": {
+      "exists": true,
+      "goal": "基于 B5 的真实证据库，对 28 张卡片全量判定：",
+      "has_docstring": true,
+      "lines": 118
+    },
+    "loop_r5_runner_645": {
+      "exists": true,
+      "goal": "用 A1–A3 重建后的智能层跑闭环 R5（observer→detector→generator→",
+      "has_docstring": true,
+      "lines": 125
+    },
+    "queyi_data_models_645": {
+      "exists": true,
+      "goal": "",
+      "has_docstring": true,
+      "lines": 182
+    },
+    "rule_aging_detector_645": {
+      "exists": true,
+      "goal": "基于真实数据检测老化规则——最近 30 天命中趋势、误报率趋势、逃逸关联；",
+      "has_docstring": true,
+      "lines": 150
+    },
+    "rule_drafter_645": {
+      "exists": true,
+      "goal": "基于 A2 发现的真逃逸归因，生成 ≤10 条规则草案，每条带逃逸案例引用，",
+      "has_docstring": true,
+      "lines": 221
+    },
+    "rule_error_tracker_645": {
+      "exists": true,
+      "goal": "从真实判决历史（452 条 Authority 账本）中，为**每条规则**提取：",
+      "has_docstring": true,
+      "lines": 196
+    },
+    "smart_issue_finder_645": {
+      "exists": true,
+      "goal": "重建问题发现器，输出 Top 10 问题，每条带：",
+      "has_docstring": true,
+      "lines": 193
+    },
+    "standard_fetcher_645": {
+      "exists": true,
+      "goal": "从 ISO 标准草案真获取 ≥10 个 C++ 主题的标准内容，每条带",
+      "has_docstring": true,
+      "lines": 191
+    },
+    "targeted_attacker_645": {
+      "exists": true,
+      "goal": "基于规则 precondition 分析，生成针对性 mutation（5 类算子），",
+      "has_docstring": true,
+      "lines": 251
+    },
+    "three_layer_orchestrator_645": {
+      "exists": true,
+      "goal": "把三层串成 ≥5 条真实耦合链：智能层 `Issue` → 头部层 `EvidencePackage`",
+      "has_docstring": true,
+      "lines": 144
+    }
+  },
+  "merge_plan": [
+    {
+      "group": "耦合编排 + 反馈 + 效果评估",
+      "members": [
+        "three_layer_orchestrator_645",
+        "coupling_feedback_645",
+        "coupling_effect_645"
+      ],
+      "rationale": "三者都消费同一份 chain 数据，feedback/effect 都是 chain 上的纯函数",
+      "target": "three_layer_orchestrator_645（子模块 feedback/effect）"
+    },
+    {
+      "group": "证据等级 + 充分性",
+      "members": [
+        "evidence_grading_645",
+        "evidence_sufficiency_645"
+      ],
+      "rationale": "充分性判定直接消费等级结果，同属头部层证据判定",
+      "target": "evidence_grading_645（充分性作 judge 子模块）"
+    },
+    {
+      "group": "R5 闭环 + 规则 error/老化",
+      "members": [
+        "loop_r5_runner_645",
+        "rule_error_tracker_645",
+        "rule_aging_detector_645"
+      ],
+      "rationale": "三者都读同一份账本历史，闭环以 error/aging 为输入",
+      "target": "loop_r5_runner_645（error/aging 作子模块）"
+    }
+  ]
+}
