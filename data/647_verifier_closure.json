@@ -1,0 +1,166 @@
+{
+  "closure": {
+    "schema": "verifier_closure/1.1-647",
+    "status": "OK",
+    "n_files": 33,
+    "n_missing": 0,
+    "missing": [],
+    "files": [
+      {
+        "path": "RULESET#gate_engine",
+        "sha256": "12e91476efb4a6ea40a13d908b35c5f8dd3b92c58aa96b56e55272443fdcbceb",
+        "n_rules": "67"
+      },
+      {
+        "path": "data/evidence_index.json",
+        "sha256": "e98fda57a29c868f5632ab83e0a523c63cb14a1f52a6fe4e9647525dbb6c0b62"
+      },
+      {
+        "path": "data/gate_rules_high_complexity_block_623.yaml",
+        "sha256": "568d771c65faaf166fdc1fa911ec3bee5ab1c8813d793ac2550b22414e32b2fc"
+      },
+      {
+        "path": "data/governance_docs_manifest.json",
+        "sha256": "ff213a117bb9578e114c2874db78c55a287754501c1e68fe0dc88340d5bc6fb8"
+      },
+      {
+        "path": "data/supply_chain/layout.json",
+        "sha256": "fba147aa6e05e4bfbb24042436fc2cb7636238b1462ee694641a480950eed9c0"
+      },
+      {
+        "path": "data/supply_chain/link_613_verify.json",
+        "sha256": "a2b4b0d3bc01ee4f034bcede78e1b127d2939a0bb18c4054e51e81a8e1b72740"
+      },
+      {
+        "path": "data/supply_chain/merkle_roots.json",
+        "sha256": "d155486902d44a07d3d1f88c4b19fd1ff5f16deedb51d2ee928138783930c1f6"
+      },
+      {
+        "path": "data/supply_chain/merkle_roots.json.ots",
+        "sha256": "1d42d22c216916c551ec997779f15175544113f4beb24acbc610add8404f0607"
+      },
+      {
+        "path": "data/transparency_log.jsonl",
+        "sha256": "03d82821636364143b449e01241f7c5dfe1703e8869813cd447f85a4d39176f8"
+      },
+      {
+        "path": "pyproject.toml",
+        "sha256": "0da4cc8200450a9efaa9291b950625452aca5af9dbfef8e71d6e544507a0a2b5"
+      },
+      {
+        "path": "tools/.tool_checksums",
+        "sha256": "f464a6a44fd77729995822c55de20e53eabbdbd597ded150c76366474025c564"
+      },
+      {
+        "path": "tools/atom_coverage_map.py",
+        "sha256": "4eeec0fd3723820ceadbaa83ef5a5ba69225efb9ef892ee4b3ce6d63a6b91801"
+      },
+      {
+        "path": "tools/atom_evidence_replay.py",
+        "sha256": "4b142e68a97a3c2b99a409255b65b12cb58cd77d7079c9d120b15df4a2bcc6ff"
+      },
+      {
+        "path": "tools/authority_schema_v2_626.py",
+        "sha256": "2bf6677ef02c61da2180631812509b88959af02383593c553b86c712868750db"
+      },
+      {
+        "path": "tools/backup.py",
+        "sha256": "99a7331406c153ccab5124009db9d743e9547939f1e1edae6d4431e15301f2b9"
+      },
+      {
+        "path": "tools/comment_blocks.py",
+        "sha256": "06b4a53abb7c17b34baee48ba288fb03e81a074176385806c8419d2a70adf502"
+      },
+      {
+        "path": "tools/cppbible.py",
+        "sha256": "4454db9b499238dc762a20a199bf44f841c2f6bfa99bd8b2c34b809efd7826b5"
+      },
+      {
+        "path": "tools/decision_event_v2_626.py",
+        "sha256": "539940d6e4bd03973aa0c7c6934041836034b1a82f6d7f12b44cb65670bdb71f"
+      },
+      {
+        "path": "tools/gate_engine.py",
+        "sha256": "03cd20dcdbeee51296243ac593ea63a35e7f9f40ce10145e46bc03a5646036ec"
+      },
+      {
+        "path": "tools/merkle_integrity.py",
+        "sha256": "6cd166591c36a12fd6a892d4d2ba68e911a569d115c966645fc414bff748e4a6"
+      },
+      {
+        "path": "tools/observability.py",
+        "sha256": "85f802a0fd4ce34d19e40a1d88c699d9881b20943ad677a17c29d03b19a586c9"
+      },
+      {
+        "path": "tools/path_config_625.py",
+        "sha256": "08260a3553fdad4a09d1237c2d500f97f8066b5e1f906a477d2dd39fe7773a78"
+      },
+      {
+        "path": "tools/poison_drill.py",
+        "sha256": "37f638004c4dbdcb6e14777bc3fc16fddeb0ad04e398f6d27efe5ff392a6a9ee"
+      },
+      {
+        "path": "tools/poison_exemptions.yaml",
+        "sha256": "dd2ff437da53c73d9ea800cefe8386499001b796ffac8d1a8020009578008ae1"
+      },
+      {
+        "path": "tools/poison_surface_map.json",
+        "sha256": "de4a8e771edd059265a7eea75bf0f9298de9494a26a36841b5223ff6479dc0e1"
+      },
+      {
+        "path": "tools/queyi_core_cpp_641.py",
+        "sha256": "9c61fa63a1a4431b2a6dde3130e65efb72876037e750f4db677eb1d30d29238d"
+      },
+      {
+        "path": "tools/queyi_core_toy_641.py",
+        "sha256": "9f4f85a82dcc71afffa770c5b0c90c9c1ce1aa3429211141f5c693aa09fb9b7f"
+      },
+      {
+        "path": "tools/queyi_core_v10_641.py",
+        "sha256": "6a01a1f38425ebd92080d0d3058969f7975640d3f1652750074aadecdfeb4a8c"
+      },
+      {
+        "path": "tools/tool_integrity.py",
+        "sha256": "00a4dda865b228abfb1e0ad829fdcc37086de6b93bb8fb3908470d2d55f193f9"
+      },
+      {
+        "path": "tools/toolchain.py",
+        "sha256": "5920bff6af16cb809b61407a13f39c005c0edc02c7917cab5221e0c38a95e650"
+      },
+      {
+        "path": "tools/utf8_console.py",
+        "sha256": "80ad23a16cbc89e8186733a2d1cc18176ac9578e606f56c38c189d90caecf2f8"
+      },
+      {
+        "path": "tools/verifier_closure_641.py",
+        "sha256": "b4277a466214bfd7e4aa5b70ed05cc27d4425b3d1f4917673e34a030d7001dc9"
+      },
+      {
+        "path": "tools/viso_diff.py",
+        "sha256": "b08fb3e43302cad1c2b559e68509e73c97c1eda7f8c122b83663ae6c1658e2dd"
+      }
+    ],
+    "digest": "d954d10a0bdfdbe4ccf35676d3a61f8b4b5eb17e3b4d1847c0d89065ea35dd38",
+    "n_rules": 67
+  },
+  "consistency": {
+    "consistent": true,
+    "mismatches": [],
+    "core_tools_in_closure": 5,
+    "core_tools_total": 5,
+    "supply_chain_pinned": 5
+  },
+  "attack": {
+    "targets": [
+      "tools/gate_engine.py",
+      "tools/poison_exemptions.yaml"
+    ],
+    "status": "FAIL",
+    "missing": [
+      "tools/gate_engine.py",
+      "tools/poison_exemptions.yaml"
+    ],
+    "digest_changed": true
+  },
+  "ruleset_fingerprint": "12e91476efb4a6ea40a13d908b35c5f8dd3b92c58aa96b56e55272443fdcbceb"
+}
