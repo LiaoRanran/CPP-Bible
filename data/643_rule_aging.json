@@ -1,0 +1,687 @@
+{
+  "rows": [
+    {
+      "rule_id": "ATOM-FM-REQUIRED",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 4,
+      "trend": 0,
+      "escape_links": 2,
+      "verdict": "拆分候选",
+      "why": "被 2 条逃逸案例关联 ⇒ 可能一条规则管了两件事"
+    },
+    {
+      "rule_id": "ATOM-ID-FORMAT",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 2,
+      "trend": 0,
+      "escape_links": 4,
+      "verdict": "拆分候选",
+      "why": "被 4 条逃逸案例关联 ⇒ 可能一条规则管了两件事"
+    },
+    {
+      "rule_id": "ATOM-ID-UNIQUE",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 2,
+      "trend": 0,
+      "escape_links": 3,
+      "verdict": "拆分候选",
+      "why": "被 3 条逃逸案例关联 ⇒ 可能一条规则管了两件事"
+    },
+    {
+      "rule_id": "ATOM-VERIFIED-BOUND",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": 1,
+      "escape_links": 2,
+      "verdict": "拆分候选",
+      "why": "被 2 条逃逸案例关联 ⇒ 可能一条规则管了两件事"
+    },
+    {
+      "rule_id": "ATOM-NO-UNVERIFIED",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": -1,
+      "escape_links": 3,
+      "verdict": "拆分候选",
+      "why": "被 3 条逃逸案例关联 ⇒ 可能一条规则管了两件事"
+    },
+    {
+      "rule_id": "ATOM-STATUS-VALUE",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 2,
+      "trend": -2,
+      "escape_links": 3,
+      "verdict": "拆分候选",
+      "why": "被 3 条逃逸案例关联 ⇒ 可能一条规则管了两件事"
+    },
+    {
+      "rule_id": "ATOM-STATUS-TRANSITION",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": -1,
+      "escape_links": 1,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "ATOM-DAL-MATCH",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": -1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "ATOM-REL-TARGET",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 2,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "ATOM-REL-DAG",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 2,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "ATOM-REL-CONFLICT",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": 1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "ATOM-SUPERIORITY-WORDS",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "EV-FM-REQUIRED",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 2,
+      "trend": -2,
+      "escape_links": 0,
+      "verdict": "收紧候选",
+      "why": "轮次趋势 -2 ≤ -2 ⇒ 后半程明显少触达（老化/条件漂移）"
+    },
+    {
+      "rule_id": "EV-ID-UNIQUE",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": -1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "EV-FALSIFICATION",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": -1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "EV-MATRIX",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 2,
+      "trend": -2,
+      "escape_links": 0,
+      "verdict": "收紧候选",
+      "why": "轮次趋势 -2 ≤ -2 ⇒ 后半程明显少触达（老化/条件漂移）"
+    },
+    {
+      "rule_id": "ATOM-GRAY-ZONE",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": -1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "ATOM-MISCONCEPTION-LEVELS",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "MIS-LIBRARY",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "ATOM-MISCONCEPTION-REF",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": 1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "ATOM-AUDIENCE",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": -1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "ATOM-PREREQ-READABLE",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 2,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "EV-SERVES-EXIST",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 3,
+      "trend": -1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "DOC-ZERO-PLACEHOLDER",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "META-MANIFEST",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "S1-AUTHOR-SELF-VERIFY",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "S1-GIT-AUTHOR-BINDING",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "ATOM-VERIFY-REASON",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 2,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "EV-ARTIFACT-VERSION-MATCH",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 4,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "S2-EVIDENCE-VERDICT",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": 1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "S3-EXPECTED-HARDCODED",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "EV-SELF-SATISFIED-ASSERT",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "EV-FALSIFICATION-QUANT",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "EV-TRIVIAL-OBSERVATION",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "EV-MATRIX-UNBACKED",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "EV-ZERO-DIAG-WERROR",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "EV-WERROR-DECL-BIND",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "EV-ASSERT-COUNT-BELOW-BASELINE",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 2,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "EV-OUT-UNDECLARED-KEY",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "EV-RUN-KEY-DECLARED-EXISTS",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "EV-ASSERT-SYMBOL-MAPPED",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 2,
+      "trend": 2,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "EV-ARTIFACT-PRODUCER",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": -1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "EV-ARTIFACT-FILE-EXISTS",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": 1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "EV-MSCV-NO-VERIFY",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": -1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "EV-FM-DUP-KEY",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": -1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "EV-FM-YAML-HARDENING",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 3,
+      "trend": 1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "EV-ENV-DEPENDENT-KEY",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "ATOM-REL-UNKNOWN",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 2,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "ATOM-CLAIM-STRUCTURED",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": -1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "OBSERVATION-NEEDS-ARTIFACT",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 1,
+      "trend": 1,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "INFERENCE-NOT-MACHINE-VERIFIED",
+      "severity": "block",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "ATOM-CLAIM-CONCEPT-NORMALIZED",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "OBSERVATION-LIVENESS",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "EV-FIXTURE-NO-ECHO-DATA",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "EV-OUT-STALE-MTIME",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "CARD-PATH-NOT-CANONICAL",
+      "severity": "warn",
+      "rounds_total": 6,
+      "touched": 2,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "保留",
+      "why": "有触达且无老化证据"
+    },
+    {
+      "rule_id": "EV-SERVES-EXIST-HC",
+      "severity": "block",
+      "rounds_total": 0,
+      "touched": 0,
+      "trend": null,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "ATOM-REL-TARGET-HC",
+      "severity": "block",
+      "rounds_total": 0,
+      "touched": 0,
+      "trend": null,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "ATOM-REL-UNKNOWN-HC",
+      "severity": "block",
+      "rounds_total": 0,
+      "touched": 0,
+      "trend": null,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "CARD-PATH-NOT-CANONICAL-HC",
+      "severity": "block",
+      "rounds_total": 0,
+      "touched": 0,
+      "trend": null,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "PED-MOTIVATION",
+      "severity": "advice",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "PED-MISCONCEPTION",
+      "severity": "advice",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "PED-SOCRATIC",
+      "severity": "advice",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "PED-PREDICT-FIRST",
+      "severity": "advice",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "LLM-SUPERIORITY-QUALITY",
+      "severity": "advice",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "HYBRID-TEACHING-DEPTH",
+      "severity": "advice",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    },
+    {
+      "rule_id": "HUMAN-GOLDEN-REVIEW",
+      "severity": "advice",
+      "rounds_total": 6,
+      "touched": 0,
+      "trend": 0,
+      "escape_links": 0,
+      "verdict": "insufficient_data",
+      "why": "六轮无触达且无逃逸关联 ⇒ **没有证据 ⇒ 不判**"
+    }
+  ],
+  "n_rules": 67,
+  "by_verdict": {
+    "拆分候选": 6,
+    "保留": 26,
+    "insufficient_data": 33,
+    "收紧候选": 2
+  },
+  "trend_threshold": -2,
+  "unavailable": [
+    "**最近 30 天的命中趋势**：本仓**没有带日期的逐规则命中明细** ⇒ 只能用**轮次轴**（6 轮变异跑批）替代，**不等于日历时间**",
+    "**误报率趋势**：642 追踪器 67/67 为**代理值** ⇒ 不据此下结论（A3 教训 3）",
+    "**每条逃逸的时间归属**：逃逸案例无时间字段 ⇒ 只能算\"关联数\"，不能算\"最近\""
+  ]
+}
