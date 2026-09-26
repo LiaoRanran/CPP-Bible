@@ -1,0 +1,152 @@
+{
+  "clauses": {
+    "bitfield": {
+      "anchor": "6.7.2.1p11",
+      "doc": "N1570",
+      "found": true,
+      "iso": "ISO/IEC 9899:2011",
+      "offset": 359259,
+      "quote": "An implementation may allocate any addressable storage unit large enough to hold a bit- field. If enough space remains, a bit-field that immediately follows another bit-field in a structure shall be packed into adjacent bits of the same unit. If insufficient space remains, whether a bit-field that does not fit is put into the next unit or overlaps adjacent units is implementation-defined. The order of allocation of bit-fields within a unit (high-order to low-order or low-order to high-order) is implementation-defined. The alignment of the addressable storage unit is unspecified.",
+      "topic": "位域分配顺序/对齐是实现定义",
+      "url": "https://port70.net/~nsz/c/c11/n1570.html#6.7.2.1p11",
+      "via": "anchor"
+    },
+    "decay": {
+      "anchor": "6.7.6.3p7",
+      "doc": "N1570",
+      "found": true,
+      "iso": "ISO/IEC 9899:2011",
+      "offset": 415081,
+      "quote": "A declaration of a parameter as ''array of type'' shall be adjusted to ''qualified pointer to type'', where the type qualifiers (if any) are those specified within the [ and ] of the array type derivation. If the keyword static also appears within the [ and ] of the array type derivation, then for each call to the function, the value of the corresponding actual argument shall provide access to the first element of an array with at least as many elements as specified by the size expression.",
+      "topic": "数组形参退化为指针",
+      "url": "https://port70.net/~nsz/c/c11/n1570.html#6.7.6.3p7",
+      "via": "anchor"
+    },
+    "fnptr": {
+      "anchor": "6.5.2.2p9",
+      "doc": "N1570",
+      "found": true,
+      "iso": "ISO/IEC 9899:2011",
+      "offset": 274411,
+      "quote": "If the function is defined with a type that is not compatible with the type (of the expression) pointed to by the expression that denotes the called function, the behavior is undefined.",
+      "topic": "经不兼容函数指针调用 ⇒ UB",
+      "url": "https://port70.net/~nsz/c/c11/n1570.html#6.5.2.2p9",
+      "via": "anchor"
+    },
+    "intpromo": {
+      "anchor": "6.3.1.8p1",
+      "doc": "N1570",
+      "found": true,
+      "iso": "ISO/IEC 9899:2011",
+      "offset": 196616,
+      "quote": "Many operators that expect operands of arithmetic type cause conversions and yield result types in a similar way. The purpose is to determine a common real type for the operands and result. For the specified operands, each operand is converted, without change of type domain, to a type whose corresponding real type is the common real type. Unless explicitly stated otherwise, the common real type is also the corresponding real type of the result, whose type domain is the type domain of the operands if they are the same, and complex otherwise. This pattern is called the usual arithmetic conversions: First, if the corresponding real type of either operand is long double, the other operand is con",
+      "topic": "常用算术转换：有符号/无符号比较",
+      "url": "https://port70.net/~nsz/c/c11/n1570.html#6.3.1.8p1",
+      "via": "anchor"
+    },
+    "macro": {
+      "anchor": "6.10.3.1p1",
+      "doc": "N1570",
+      "found": true,
+      "iso": "ISO/IEC 9899:2011",
+      "offset": 505977,
+      "quote": "After the arguments for the invocation of a function-like macro have been identified, argument substitution takes place. A parameter in the replacement list, unless preceded by a # or ## preprocessing token or followed by a ## preprocessing token (see below), is replaced by the corresponding argument after all macros contained therein have been expanded. Before being substituted, each argument's preprocessing tokens are completely macro replaced as if they formed the rest of the preprocessing file; no other preprocessing tokens are available.",
+      "topic": "宏实参先展开再替换（故括号与副作用由使用者负责）",
+      "url": "https://port70.net/~nsz/c/c11/n1570.html#6.10.3.1p1",
+      "via": "anchor"
+    },
+    "malloc": {
+      "anchor": "7.22.3.3p2",
+      "doc": "N1570",
+      "found": true,
+      "iso": "ISO/IEC 9899:2011",
+      "offset": 958873,
+      "quote": "The free function causes the space pointed to by ptr to be deallocated, that is, made available for further allocation. If ptr is a null pointer, no action occurs. Otherwise, if the argument does not match a pointer earlier returned by a memory management function, or if the space has been deallocated by a call to free or realloc, the behavior is undefined.",
+      "topic": "free(NULL) 是空操作；free 不清空指针",
+      "url": "https://port70.net/~nsz/c/c11/n1570.html#7.22.3.3p2",
+      "via": "anchor"
+    },
+    "setjmp": {
+      "anchor": "7.13.2.1p3",
+      "doc": "N1570",
+      "found": true,
+      "iso": "ISO/IEC 9899:2011",
+      "offset": 733616,
+      "quote": "All accessible objects have values, and all other components of the abstract machine 249) have state, as of the time the longjmp function was called, except that the values of objects of automatic storage duration that are local to the function containing the invocation of the corresponding setjmp macro that do not have volatile-qualified type and have been changed between the setjmp invocation and longjmp call are indeterminate.",
+      "topic": "longjmp 后非 volatile 局部变量值不确定",
+      "url": "https://port70.net/~nsz/c/c11/n1570.html#7.13.2.1p3",
+      "via": "anchor"
+    },
+    "signedovf": {
+      "anchor": "6.5p5",
+      "doc": "N1570",
+      "found": true,
+      "iso": "ISO/IEC 9899:2011",
+      "offset": 257122,
+      "quote": "If an exceptional condition occurs during the evaluation of an expression (that is, if the result is not mathematically defined or not in the range of representable values for its type), the behavior is undefined.",
+      "topic": "表达式结果超出可表示范围 ⇒ UB",
+      "url": "https://port70.net/~nsz/c/c11/n1570.html#6.5p5",
+      "via": "anchor"
+    },
+    "strbound": {
+      "anchor": "7.21.6.5p3",
+      "doc": "N1570",
+      "found": true,
+      "iso": "ISO/IEC 9899:2011",
+      "offset": 898708,
+      "quote": "The snprintf function returns the number of characters that would have been written had n been sufficiently large, not counting the terminating null character, or a negative value if an encoding error occurred. Thus, the null-terminated output has been completely written if and only if the returned value is nonnegative and less than n.",
+      "topic": "snprintf 返回值是'本该写入的长度'",
+      "url": "https://port70.net/~nsz/c/c11/n1570.html#7.21.6.5p3",
+      "via": "anchor"
+    },
+    "volatile": {
+      "anchor": "6.7.3p7",
+      "doc": "N1570",
+      "found": true,
+      "iso": "ISO/IEC 9899:2011",
+      "offset": 380807,
+      "quote": "An object that has volatile-qualified type may be modified in ways unknown to the implementation or have other unknown side effects. Therefore any expression referring to such an object shall be evaluated strictly according to the rules of the abstract machine, as described in 5.1.2.3 . Furthermore, at every sequence point the value last stored in the object shall agree with that prescribed by the abstract machine, except as modified by the unknown factors mentioned previously. 134) What constitutes an access to an object that has volatile-qualified type is implementation-defined.",
+      "topic": "volatile：什么算一次访问是实现定义",
+      "url": "https://port70.net/~nsz/c/c11/n1570.html#6.7.3p7",
+      "via": "anchor"
+    }
+  },
+  "docs": {
+    "C11": {
+      "bytes": 1972999,
+      "cache": "build/c_std_648/N1570.html",
+      "doc": "N1570",
+      "iso": "ISO/IEC 9899:2011",
+      "kind": "html",
+      "ok": true,
+      "sha256": "356d916a27ef5d52f33851442940e1cb57c3d35659788146dbb0ed236e9b152c",
+      "url": "https://port70.net/~nsz/c/c11/n1570.html"
+    },
+    "C17": {
+      "bytes": 2531740,
+      "cache": "build/c_std_648/N2310.pdf",
+      "doc": "N2310",
+      "iso": "ISO/IEC 9899:2018",
+      "kind": "pdf",
+      "ok": true,
+      "sha256": "6a01dfbfd271a2b6682e48a13a68cf4b599beb3b7e39512bc74989d0b5991029",
+      "url": "https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2310.pdf"
+    },
+    "C23": {
+      "bytes": 3459096,
+      "cache": "build/c_std_648/N3096.pdf",
+      "doc": "N3096",
+      "iso": "ISO/IEC 9899:2024",
+      "kind": "pdf",
+      "ok": true,
+      "sha256": "a1262b7d5d2ab0e496e94cb0fe6fab7ec511f29e6aeee669b2d1b16020f30fe4",
+      "url": "https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf"
+    }
+  },
+  "limitations": [
+    "C17（N2310）是 PDF，本环境无 PDF 解析库 ⇒ 只留下载留痕（bytes=2531740、sha256=6a01dfbfd271a2b6…），**未抽取原文、未核对条款号**。人核命令：用任意 PDF 阅读器打开 https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2310.pdf 并检索 C11 对应条款号。",
+    "C23（N3096）是 PDF，本环境无 PDF 解析库 ⇒ 只留下载留痕（bytes=3459096、sha256=a1262b7d5d2ab0e4…），**未抽取原文、未核对条款号**。人核命令：用任意 PDF 阅读器打开 https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf 并检索 C11 对应条款号。"
+  ],
+  "n_clauses": 10,
+  "n_found": 10
+}
