@@ -1,0 +1,1095 @@
+{
+  "known_points": [
+    {
+      "id": "FO-A",
+      "file": "tools/tool_integrity.py",
+      "symbol": "verify_supply_chain",
+      "evidence": {
+        "changed": [],
+        "warnings": [
+          "data/__nope_xyz__.json：不存在 ⇒ 跳过（该产出尚未生成，如任务1/2 的 Merkle 根/layout）"
+        ],
+        "exit_code": 0
+      },
+      "fail_open": true,
+      "severity": "中",
+      "impact": "信任根数据文件（毒样例豁免台账 / 覆盖率台账 / 治理 manifest / Merkle 根 / in-toto layout）缺失时**不失败**；在完整检出里等于放弃判别力",
+      "why_not_high": "设计理由是'仓库副本/部分检出下无判别力'，属**有理由的取舍**，但缺少'完整仓库下必须钉住'的分支 ⇒ 仍是 fail-open",
+      "fix_suggestion": "增加 `--require-supply-chain`（或按 `.tool_checksums` 是否已含 supply_chain 节判定）：**节存在但文件缺失 ⇒ exit 1**；仅当节整体缺失（旧格式基准）才降级为 warning"
+    },
+    {
+      "id": "FO-B",
+      "file": "tools/decision_event_v2_626.py",
+      "symbol": "DecisionEvent.from_dict",
+      "evidence": {
+        "empty_dict_accepted": true,
+        "result": "APPROVE",
+        "review_method": "BATCH_AUTH",
+        "decision_origin": "human_observed",
+        "validate_errors": [
+          "target_id 必填"
+        ],
+        "unknown_keys_silently_dropped": true
+      },
+      "fail_open": true,
+      "severity": "高",
+      "impact": "空/残 JSON 被补成 **result=APPROVE + review_method=BATCH_AUTH + decision_origin=human_observed** —— 恰好是最'信任假设'的组合；`validate()` 能抓 `target_id` 必填，但**不抓 result 使用了默认值**；另外**未知键被静默丢弃**（拼错字段名等于没写）",
+      "why_not_high": "",
+      "fix_suggestion": "① `from_dict` 增加 `strict=True`：**缺失必填字段 ⇒ 抛错**（而不是补默认）；② 记录哪些字段来自默认值（`_defaulted` 集）并在 `validate()` 里报错；③ 未知键 ⇒ 抛错（fail-loud）"
+    }
+  ],
+  "scan": {
+    "scanned_files": 452,
+    "n_hits": 145,
+    "by_rule": {
+      "FO-3": 38,
+      "FO-1": 100,
+      "FO-2": 4,
+      "FO-4": 3
+    },
+    "hits": [
+      {
+        "rule": "FO-3",
+        "file": "tools/612_baseline.py",
+        "line": 134,
+        "code": "m.get('evidence', [])",
+        "meaning": "关键字段 'evidence' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/abstain_classifier_621.py",
+        "line": 168,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/anti_windup_636.py",
+        "line": 36,
+        "code": "return 0",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/anti_windup_642.py",
+        "line": 60,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/artifact_version_stamp.py",
+        "line": 61,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/atom_evidence_replay.py",
+        "line": 588,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/atom_evidence_replay.py",
+        "line": 1010,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/atom_evidence_replay.py",
+        "line": 1051,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/atom_evidence_replay.py",
+        "line": 1053,
+        "code": "return True",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/atom_evidence_replay.py",
+        "line": 1094,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/atom_evidence_replay.py",
+        "line": 2321,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/atom_evidence_replay.py",
+        "line": 571,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/atom_evidence_replay.py",
+        "line": 1046,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-2",
+        "file": "tools/authority_log_620.py",
+        "line": 139,
+        "code": "if os.path.exists(src): return 0",
+        "meaning": "文件缺失 ⇒ 返回成功（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/authority_log_620.py",
+        "line": 129,
+        "code": "e.get('self_hash', GENESIS)",
+        "meaning": "关键字段 'self_hash' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/authority_log_620.py",
+        "line": 126,
+        "code": "e.get('prev_hash', GENESIS)",
+        "meaning": "关键字段 'prev_hash' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-2",
+        "file": "tools/authority_pending_621.py",
+        "line": 202,
+        "code": "if os.path.exists(path): return 0",
+        "meaning": "文件缺失 ⇒ 返回成功（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/autoimmune_probe_629.py",
+        "line": 146,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/autoimmune_rate_framework.py",
+        "line": 58,
+        "code": "meta.get('status', '')",
+        "meaning": "关键字段 'status' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/baseline_632.py",
+        "line": 70,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/baseline_635.py",
+        "line": 45,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/baseline_635.py",
+        "line": 111,
+        "code": "return 0.0",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/baseline_636.py",
+        "line": 41,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/baseline_636.py",
+        "line": 81,
+        "code": "return 0.0",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/baseline_636.py",
+        "line": 89,
+        "code": "return 0.0",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/baseline_636.py",
+        "line": 115,
+        "code": "return 0",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/blind_protocol_642.py",
+        "line": 134,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/blind_protocol_642.py",
+        "line": 143,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/blind_protocol_642.py",
+        "line": 151,
+        "code": "r.get('review_method', '')",
+        "meaning": "关键字段 'review_method' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/blind_protocol_642.py",
+        "line": 152,
+        "code": "r.get('decision_origin', '')",
+        "meaning": "关键字段 'decision_origin' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/blind_review_v1_626.py",
+        "line": 75,
+        "code": "d.get('status', 'pass_a_pending')",
+        "meaning": "关键字段 'status' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/book_atom_sync.py",
+        "line": 59,
+        "code": "fm.get('status', 'unknown')",
+        "meaning": "关键字段 'status' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/boundary_fields_635.py",
+        "line": 45,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/calibration_tracker_636.py",
+        "line": 33,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/calibration_tracker_636.py",
+        "line": 72,
+        "code": "return 0",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/calibration_tracker_642.py",
+        "line": 59,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/calibration_tracker_642.py",
+        "line": 68,
+        "code": "r.get('result', '')",
+        "meaning": "关键字段 'result' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/candidate_generator_637.py",
+        "line": 100,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/contamination_drill_635.py",
+        "line": 39,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/contamination_tracker_636.py",
+        "line": 29,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/cost_benefit_637.py",
+        "line": 83,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/cost_benefit_637.py",
+        "line": 49,
+        "code": "a.get('severity', '')",
+        "meaning": "关键字段 'severity' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/coverage_probe_batch_634.py",
+        "line": 73,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/coverage_probe_l1_2_631.py",
+        "line": 65,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/coverage_probe_l2_3_632.py",
+        "line": 54,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/debt_inventory_633.py",
+        "line": 83,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/debt_inventory_633.py",
+        "line": 91,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/error_detector_637.py",
+        "line": 103,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/error_rate_collector_638.py",
+        "line": 95,
+        "code": "e.get('result', '')",
+        "meaning": "关键字段 'result' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/error_rate_collector_638.py",
+        "line": 99,
+        "code": "e.get('verdict', '')",
+        "meaning": "关键字段 'verdict' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/escape_rate_trend.py",
+        "line": 80,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/escape_root_cause_622.py",
+        "line": 43,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/evolution_memo_637.py",
+        "line": 50,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/exception_review_635.py",
+        "line": 52,
+        "code": "return 0",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/fail_closed_audit_642.py",
+        "line": 126,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/fail_closed_audit_642.py",
+        "line": 231,
+        "code": "kp.get('evidence', {})",
+        "meaning": "关键字段 'evidence' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/fail_closed_audit_642.py",
+        "line": 215,
+        "code": "kp.get('severity', '低')",
+        "meaning": "关键字段 'severity' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/fail_closed_audit_642.py",
+        "line": 235,
+        "code": "kp.get('severity', '?')",
+        "meaning": "关键字段 'severity' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-4",
+        "file": "tools/fail_closed_audit_642.py",
+        "line": 181,
+        "code": "if \"if changed else\" in line and \"1\" in line:",
+        "meaning": "仅内容变更算失败；缺失/未钉只警告（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/four_questions_635.py",
+        "line": 36,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/four_questions_635.py",
+        "line": 62,
+        "code": "r.get('decision_origin', '?')",
+        "meaning": "关键字段 'decision_origin' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/four_state_verdict_638.py",
+        "line": 93,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/gate_engine.py",
+        "line": 2778,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/gate_engine.py",
+        "line": 3162,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/gate_engine.py",
+        "line": 1658,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/gen_metrics.py",
+        "line": 74,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/golden_lock.py",
+        "line": 199,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/golden_lock.py",
+        "line": 206,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/grounding_inventory_635.py",
+        "line": 38,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/horizon_634.py",
+        "line": 33,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/horizon_634.py",
+        "line": 41,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/horizon_634.py",
+        "line": 62,
+        "code": "r.get('verdict', '?')",
+        "meaning": "关键字段 'verdict' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/human_review_confirm.py",
+        "line": 138,
+        "code": "edge.get('evidence', a['evidence_preview'])",
+        "meaning": "关键字段 'evidence' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/independent_verifier_628.py",
+        "line": 105,
+        "code": "e.get('target_id', '')",
+        "meaning": "关键字段 'target_id' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/kernel_minimality_audit_642.py",
+        "line": 80,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/knowledge_graph.py",
+        "line": 131,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/knowledge_graph.py",
+        "line": 162,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/learner_behavior_ingest.py",
+        "line": 61,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/ledger_rule_backfill_639.py",
+        "line": 88,
+        "code": "d.get('self_hash', '')",
+        "meaning": "关键字段 'self_hash' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/liveness_completion_plan.py",
+        "line": 60,
+        "code": "e.get('evidence', [])",
+        "meaning": "关键字段 'evidence' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/loop_rerun_638.py",
+        "line": 86,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/loop_tuning_638.py",
+        "line": 120,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/mdl_trial_636.py",
+        "line": 38,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/mdl_trial_636.py",
+        "line": 47,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/metrics_snapshot.py",
+        "line": 131,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/metrics_snapshot.py",
+        "line": 287,
+        "code": "r.get('status', '?')",
+        "meaning": "关键字段 'status' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/mutation_fuzz.py",
+        "line": 672,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/mutation_fuzz.py",
+        "line": 815,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/mutation_fuzz.py",
+        "line": 1098,
+        "code": "return 1",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/mutation_generator_621.py",
+        "line": 207,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/mutation_generator_621.py",
+        "line": 398,
+        "code": "return True",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/na_rate_634.py",
+        "line": 47,
+        "code": "r.get('verdict', '')",
+        "meaning": "关键字段 'verdict' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/oracle_priority.py",
+        "line": 37,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/oracle_priority.py",
+        "line": 79,
+        "code": "m.get('evidence', [])",
+        "meaning": "关键字段 'evidence' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/oracle_verification_plan.py",
+        "line": 108,
+        "code": "p['by_kind'].get('evidence', 0)",
+        "meaning": "关键字段 'evidence' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/oracle_verification_plan.py",
+        "line": 77,
+        "code": "p['by_kind'].get('evidence', 0)",
+        "meaning": "关键字段 'evidence' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/oracle_verification_plan.py",
+        "line": 109,
+        "code": "p['by_kind'].get('evidence', 0)",
+        "meaning": "关键字段 'evidence' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/oracle_verification_plan.py",
+        "line": 136,
+        "code": "plan['by_kind'].get('evidence', 0)",
+        "meaning": "关键字段 'evidence' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/path_config_625.py",
+        "line": 38,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/pck_certificate_verifier_619.py",
+        "line": 99,
+        "code": "ha.get('review_method', '')",
+        "meaning": "关键字段 'review_method' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/pck_hash_renewal_628.py",
+        "line": 87,
+        "code": "data.get('evidence', [])",
+        "meaning": "关键字段 'evidence' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/pck_hash_renewal_628.py",
+        "line": 135,
+        "code": "data.get('evidence', [])",
+        "meaning": "关键字段 'evidence' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/pck_renderer_619.py",
+        "line": 36,
+        "code": "cert.get('evidence', [])",
+        "meaning": "关键字段 'evidence' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/pck_upgrade_strategy_625.py",
+        "line": 61,
+        "code": "(c.get('claim') or {}).get('verdict', '')",
+        "meaning": "关键字段 'verdict' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-2",
+        "file": "tools/pollution_bisect_631.py",
+        "line": 45,
+        "code": "if os.path.exists(p): return True",
+        "meaning": "文件缺失 ⇒ 返回成功（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/protector_rollout_642.py",
+        "line": 88,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/queyi_core_cpp_641.py",
+        "line": 48,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/queyi_core_cpp_641.py",
+        "line": 62,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/queyi_core_cpp_641.py",
+        "line": 282,
+        "code": "return 0",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/queyi_core_cpp_641.py",
+        "line": 316,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/queyi_core_interface_v02_631.py",
+        "line": 340,
+        "code": "return True",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/queyi_core_interface_v02_631.py",
+        "line": 342,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/queyi_core_interface_v03_632.py",
+        "line": 48,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/queyi_core_interface_v03_632.py",
+        "line": 344,
+        "code": "return True",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/queyi_core_interface_v03_632.py",
+        "line": 346,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/queyi_core_toy_641.py",
+        "line": 59,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/queyi_core_v10_641.py",
+        "line": 79,
+        "code": "return ''",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/queyi_core_v10_641.py",
+        "line": 619,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/queyi_core_v10_641.py",
+        "line": 753,
+        "code": "return True",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/queyi_core_v10_641.py",
+        "line": 267,
+        "code": "d.get('target_id', '')",
+        "meaning": "关键字段 'target_id' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/queyi_core_v10_641.py",
+        "line": 265,
+        "code": "d.get('result', '')",
+        "meaning": "关键字段 'result' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/replay_invariants.py",
+        "line": 63,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/replay_invariants.py",
+        "line": 256,
+        "code": "return True",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/replay_invariants.py",
+        "line": 411,
+        "code": "entry.get('verdict', '')",
+        "meaning": "关键字段 'verdict' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/roadmap_align_640.py",
+        "line": 54,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/rr_conflict_classifier_638.py",
+        "line": 53,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/rr_conflict_classifier_638.py",
+        "line": 126,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/run_621_gate.py",
+        "line": 77,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/run_622_gate.py",
+        "line": 72,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/run_624_gate.py",
+        "line": 65,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/run_633_gate.py",
+        "line": 122,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/self_observer_637.py",
+        "line": 99,
+        "code": "return 0.0",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/self_observer_637.py",
+        "line": 116,
+        "code": "return 0",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/self_observer_637.py",
+        "line": 124,
+        "code": "return 0",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/soft_baseline_634.py",
+        "line": 38,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/stale_test_triage_630.py",
+        "line": 144,
+        "code": "f.get('evidence', '')",
+        "meaning": "关键字段 'evidence' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/test_debt_taxonomy_633.py",
+        "line": 77,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-4",
+        "file": "tools/tool_integrity.py",
+        "line": 284,
+        "code": "return changed, warnings, (1 if changed else 0)",
+        "meaning": "仅内容变更算失败；缺失/未钉只警告（fail-open）"
+      },
+      {
+        "rule": "FO-3",
+        "file": "tools/trust_root_status_check.py",
+        "line": 146,
+        "code": "sec['merkle_root'].get('sha256', '-')",
+        "meaning": "关键字段 'sha256' 缺省即补默认（可能让坏东西通过）"
+      },
+      {
+        "rule": "FO-2",
+        "file": "tools/v2_regression_627.py",
+        "line": 56,
+        "code": "if os.path.exists(path): return False",
+        "meaning": "文件缺失 ⇒ 返回成功（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/verification_horizon_622.py",
+        "line": 47,
+        "code": "return {}",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/verifier_admissibility_635.py",
+        "line": 35,
+        "code": "return []",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/vsa_asymmetric_signer_629.py",
+        "line": 125,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-1",
+        "file": "tools/vsa_asymmetric_signer_629.py",
+        "line": 132,
+        "code": "return False",
+        "meaning": "异常 ⇒ 返回成功/空集（fail-open）"
+      },
+      {
+        "rule": "FO-4",
+        "file": "tools/whitespace_fix.py",
+        "line": 121,
+        "code": "sys.exit(1 if changed else 0)",
+        "meaning": "仅内容变更算失败；缺失/未钉只警告（fail-open）"
+      }
+    ]
+  },
+  "severity": {
+    "高": 1,
+    "中": 1,
+    "低": 0
+  },
+  "rule_meta": {
+    "FO-1": {
+      "severity": "高",
+      "name": "异常 ⇒ 通过",
+      "fix": "区分'可容忍异常'与'无法判定'：后者必须抛错或返回 UNKNOWN（四态），不得返回成功"
+    },
+    "FO-2": {
+      "severity": "中",
+      "name": "缺失 ⇒ 通过",
+      "fix": "缺失应映射为 UNKNOWN/FAIL；若确为可选产物，需在文档与常量里显式声明白名单"
+    },
+    "FO-3": {
+      "severity": "中",
+      "name": "关键字段默认值 ⇒ 通过",
+      "fix": "关键字段缺失应抛错；确需默认时必须显式标注来源（`_defaulted`）并在校验时报错"
+    },
+    "FO-4": {
+      "severity": "中",
+      "name": "警告不影响退出码",
+      "fix": "为'警告'提供严格模式开关（如 --strict-supply-chain）：严格模式下警告即失败"
+    }
+  }
+}
