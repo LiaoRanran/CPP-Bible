@@ -1,0 +1,51 @@
+{
+  "mode": "enforce",
+  "theta_block": 0.8,
+  "theta_warn": 0.5,
+  "n": 23,
+  "by_action": {
+    "pass": 21,
+    "block": 1,
+    "warn": 1
+  },
+  "n_blocked": 1,
+  "n_verdict_changed": 1,
+  "n_refused": 1,
+  "synthetic": [
+    {
+      "name": "高置信（C=1.0：欠定 + 悬挂引用 + 反证）",
+      "expect": "block",
+      "got": "block",
+      "C": 3.0,
+      "both_sides": true,
+      "types": [
+        "RR",
+        "ER",
+        "EE"
+      ],
+      "ok": true
+    },
+    {
+      "name": "中置信（C≈0.5：唯一悬挂引用 + 有证据）",
+      "expect": "warn",
+      "got": "warn",
+      "C": 1.0,
+      "both_sides": false,
+      "types": [
+        "RR"
+      ],
+      "ok": true
+    },
+    {
+      "name": "低置信（C=0：证据全在 + 无反证）",
+      "expect": "pass",
+      "got": "pass",
+      "C": 0.0,
+      "both_sides": false,
+      "types": [
+        "RR"
+      ],
+      "ok": true
+    }
+  ]
+}
