@@ -1,0 +1,102 @@
+{
+  "schema": "verifier_closure/1.0",
+  "status": "OK",
+  "n_files": 23,
+  "n_missing": 0,
+  "missing": [],
+  "files": [
+    {
+      "path": "data/supply_chain/layout.json",
+      "sha256": "fba147aa6e05e4bfbb24042436fc2cb7636238b1462ee694641a480950eed9c0"
+    },
+    {
+      "path": "data/supply_chain/link_613_verify.json",
+      "sha256": "a2b4b0d3bc01ee4f034bcede78e1b127d2939a0bb18c4054e51e81a8e1b72740"
+    },
+    {
+      "path": "data/supply_chain/merkle_roots.json",
+      "sha256": "d155486902d44a07d3d1f88c4b19fd1ff5f16deedb51d2ee928138783930c1f6"
+    },
+    {
+      "path": "data/supply_chain/merkle_roots.json.ots",
+      "sha256": "1d42d22c216916c551ec997779f15175544113f4beb24acbc610add8404f0607"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "0da4cc8200450a9efaa9291b950625452aca5af9dbfef8e71d6e544507a0a2b5"
+    },
+    {
+      "path": "tools/.tool_checksums",
+      "sha256": "9c0ad76e85df41c8e1018b21929081b0975b9823e6366d31155ddd7f59b9eb89"
+    },
+    {
+      "path": "tools/atom_coverage_map.py",
+      "sha256": "4eeec0fd3723820ceadbaa83ef5a5ba69225efb9ef892ee4b3ce6d63a6b91801"
+    },
+    {
+      "path": "tools/atom_evidence_replay.py",
+      "sha256": "4b142e68a97a3c2b99a409255b65b12cb58cd77d7079c9d120b15df4a2bcc6ff"
+    },
+    {
+      "path": "tools/backup.py",
+      "sha256": "99a7331406c153ccab5124009db9d743e9547939f1e1edae6d4431e15301f2b9"
+    },
+    {
+      "path": "tools/comment_blocks.py",
+      "sha256": "06b4a53abb7c17b34baee48ba288fb03e81a074176385806c8419d2a70adf502"
+    },
+    {
+      "path": "tools/cppbible.py",
+      "sha256": "4454db9b499238dc762a20a199bf44f841c2f6bfa99bd8b2c34b809efd7826b5"
+    },
+    {
+      "path": "tools/gate_engine.py",
+      "sha256": "03cd20dcdbeee51296243ac593ea63a35e7f9f40ce10145e46bc03a5646036ec"
+    },
+    {
+      "path": "tools/merkle_integrity.py",
+      "sha256": "6cd166591c36a12fd6a892d4d2ba68e911a569d115c966645fc414bff748e4a6"
+    },
+    {
+      "path": "tools/observability.py",
+      "sha256": "85f802a0fd4ce34d19e40a1d88c699d9881b20943ad677a17c29d03b19a586c9"
+    },
+    {
+      "path": "tools/path_config_625.py",
+      "sha256": "08260a3553fdad4a09d1237c2d500f97f8066b5e1f906a477d2dd39fe7773a78"
+    },
+    {
+      "path": "tools/poison_drill.py",
+      "sha256": "37f638004c4dbdcb6e14777bc3fc16fddeb0ad04e398f6d27efe5ff392a6a9ee"
+    },
+    {
+      "path": "tools/queyi_core_cpp_641.py",
+      "sha256": "9c61fa63a1a4431b2a6dde3130e65efb72876037e750f4db677eb1d30d29238d"
+    },
+    {
+      "path": "tools/queyi_core_toy_641.py",
+      "sha256": "9f4f85a82dcc71afffa770c5b0c90c9c1ce1aa3429211141f5c693aa09fb9b7f"
+    },
+    {
+      "path": "tools/queyi_core_v10_641.py",
+      "sha256": "9e926c78569e96219b1212aebb337a9dca7475e3b42642f88775edd443a82a11"
+    },
+    {
+      "path": "tools/tool_integrity.py",
+      "sha256": "79edeb0b9a3492c1b126a5373f7942047311662b83cc20a90f32a5d3512c4d1d"
+    },
+    {
+      "path": "tools/toolchain.py",
+      "sha256": "5920bff6af16cb809b61407a13f39c005c0edc02c7917cab5221e0c38a95e650"
+    },
+    {
+      "path": "tools/utf8_console.py",
+      "sha256": "80ad23a16cbc89e8186733a2d1cc18176ac9578e606f56c38c189d90caecf2f8"
+    },
+    {
+      "path": "tools/viso_diff.py",
+      "sha256": "b08fb3e43302cad1c2b559e68509e73c97c1eda7f8c122b83663ae6c1658e2dd"
+    }
+  ],
+  "digest": "50205bb4ada90a4e715bedc9afd8613fa0e73ac368fe8be5ceafd3de297e5dce"
+}

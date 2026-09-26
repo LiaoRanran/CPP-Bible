@@ -1,0 +1,275 @@
+{
+  "schema_version": "1.0",
+  "run_id": "eb5a4ddb79173021d305f4139aa5e04bee9df3b23111207017cb8d02fa6df0f7",
+  "domain": "toy_math",
+  "source_revision": "",
+  "execution_mode": "normal",
+  "random_seed": null,
+  "digests": {
+    "policy_digest": "86468dcbd3f9880c2e8acbebc245c951ac6863024e625d17b80cd90a1f0786d7",
+    "kernel_digest": "9e926c78569e96219b1212aebb337a9dca7475e3b42642f88775edd443a82a11",
+    "environment_digest": "72d3f6aa6b738a468829541c300b6b464c1e96683d0e3236cdcd093f4c248a87",
+    "input_manifest_digest": "ce8909379e515d7b9397b44239abed982d5c76fb270fcfe4e7af4406c2efa99e"
+  },
+  "inputs": {
+    "artifacts": [
+      {
+        "artifact_id": "b906151f45523ac7c2a6da42ae1db2dc2b91217e4c8299d64d1843b504a83c96",
+        "kind": "toy_statement",
+        "uri": ":stmt:0",
+        "content_digest": "54e091ad3e2c54f4cdf5dc39fc66f530962d3d5ec1bbd49a83e2e8b3ab4f77a0"
+      },
+      {
+        "artifact_id": "ea0b94e9a23f2e8215770e7793767509281122e57036dcfa45dd1c2c61cd2620",
+        "kind": "toy_statement",
+        "uri": ":stmt:1",
+        "content_digest": "7e660203706ca70c84734b35cf0781d946852632651e4e1bf74a1ad7fe1281c8"
+      },
+      {
+        "artifact_id": "0806a970789ebd29052d95aefd23aa5585031d67257ec936a6a2285ceb60b751",
+        "kind": "toy_statement",
+        "uri": ":stmt:2",
+        "content_digest": "dd8f6ea7724c26003855a5e6a44fc968996ebd853aabb57430d0d24bf14c8605"
+      },
+      {
+        "artifact_id": "fc9caec75e49e1c7c2943e1383e10810924f76953af9eff1296d6bc2491e4d76",
+        "kind": "toy_statement",
+        "uri": ":stmt:3",
+        "content_digest": "f7016a445eb32a1225f2907c422e024f96b13db17b124c4cb3f473ac0861197d"
+      },
+      {
+        "artifact_id": "c4ebc496291788f3fa47286c4be4e2c471e73a1b2044226e15e4a0f26b679ab6",
+        "kind": "toy_statement",
+        "uri": ":stmt:4",
+        "content_digest": "37bc143b02bb47edd887ffbd2fc47a7b454a01e65a89d2a61b65f2e92ed75767"
+      },
+      {
+        "artifact_id": "bcf829649b9400de4e318550490630597c1755e3f825a685586dd4d9b83b3bf6",
+        "kind": "toy_statement",
+        "uri": ":stmt:5",
+        "content_digest": "6469d8c97032eb689649abf9c1725169b0cb17f13549f9ee66536756c9045daa"
+      },
+      {
+        "artifact_id": "329bd7e0ba2c103a3d31df6b8a5df2db8a016467d81d6d8a32807a37d72a79a4",
+        "kind": "toy_statement",
+        "uri": ":stmt:6",
+        "content_digest": "bb08c82dc4c56c768c49da2fac9377c94fb3cd5c27d285d0bf0948ae4bfe80d9"
+      },
+      {
+        "artifact_id": "b299eba666d329c4bd0d5cb9b7f13d0d3200781b50b991ebddde687ae0005bcc",
+        "kind": "toy_statement",
+        "uri": ":stmt:7",
+        "content_digest": "5891b5b522d5df086d0ff0b110fbd9d21bb4fc7163af34d08286a2e846f6be03"
+      }
+    ],
+    "mutation_population": {}
+  },
+  "results": {
+    "toy": {
+      "n_statements": 8,
+      "decision_states": {
+        "pass": 5,
+        "pass_with_exception": 0,
+        "fail": 3,
+        "unknown": 0
+      },
+      "evidence_states": {
+        "confirm": 5,
+        "refute": 2,
+        "infra": 0,
+        "unknown": 1
+      }
+    },
+    "evidence": [
+      {
+        "evidence_id": "c9fcd5d6e38affd3b0d31813bd172b6c2774bda17cc39400286e5a34e460d1f5",
+        "status": "confirm",
+        "detail": "逆运算验算 2+3=5"
+      },
+      {
+        "evidence_id": "945cdf2bd431c7605ca495e7edb6088d781bd8aa79d79f316d88718abf7aae7c",
+        "status": "confirm",
+        "detail": "逆运算验算 10-4=6"
+      },
+      {
+        "evidence_id": "cd522cacb896813abe53c77b00d9d4ae8f37b67886ef58961fd3ff3989683d04",
+        "status": "confirm",
+        "detail": "逆运算验算 6*7=42"
+      },
+      {
+        "evidence_id": "3f557bb8a620bdb9fd065e99353536bbdd8eded78cd0c79d415bc35cd6dddbf0",
+        "status": "confirm",
+        "detail": "逆运算验算 8/2=4"
+      },
+      {
+        "evidence_id": "09792e9de7491456635c73cedaec0489cb3ec3c45a4369a2e4a30172a0012cd7",
+        "status": "refute",
+        "detail": "逆运算验算 2+2=5"
+      },
+      {
+        "evidence_id": "74c661cfacc515532c9b4e1f4d4215991d7eb085060306d9dd185e6c29943f67",
+        "status": "refute",
+        "detail": "逆运算验算 9/0=0"
+      },
+      {
+        "evidence_id": "33571f299c2e40ee6a7a701ba4cffa1e8e11f6a938f3ba5d17e63c060d877b95",
+        "status": "confirm",
+        "detail": "逆运算验算 1000000+1=1000001"
+      },
+      {
+        "evidence_id": "d1a0cc23bb29415e0fb07a0ac48e52a9607165f27ddbc94a1f851fe8b46afe5e",
+        "status": "unknown",
+        "detail": "逆运算验算 hello"
+      }
+    ],
+    "rules": [
+      {
+        "rule_id": "TOY-ARITH",
+        "severity": "block",
+        "kind": "arith",
+        "description": "左式求值必须等于右式",
+        "params": {}
+      },
+      {
+        "rule_id": "TOY-DIV0",
+        "severity": "block",
+        "kind": "arith",
+        "description": "除数不得为 0",
+        "params": {}
+      },
+      {
+        "rule_id": "TOY-RANGE",
+        "severity": "warn",
+        "kind": "arith",
+        "description": "操作数应在 ±1000000000 内",
+        "params": {}
+      },
+      {
+        "rule_id": "TOY-SYNTAX",
+        "severity": "block",
+        "kind": "syntax",
+        "description": "必须是 `a op b = c` 形式",
+        "params": {}
+      }
+    ]
+  },
+  "decisions": [
+    {
+      "decision_id": "8bcebcdcb0c5e12a4c5d6bb03191086e0aeba0a58f79dc01df3aa40933807c8e",
+      "artifact_id": "b906151f45523ac7c2a6da42ae1db2dc2b91217e4c8299d64d1843b504a83c96",
+      "state": "pass",
+      "reasons": [],
+      "evidence_ids": [],
+      "rule_ids": [],
+      "policy_ref": "86468dcbd3f9880c2e8acbebc245c951ac6863024e625d17b80cd90a1f0786d7",
+      "exceptions": [],
+      "abstained": false,
+      "decided_at": "2026-09-26T01:19:16"
+    },
+    {
+      "decision_id": "702bf7866d45c915f271b5599830e9314e4503e01a9cec32b3713b23d92024d1",
+      "artifact_id": "ea0b94e9a23f2e8215770e7793767509281122e57036dcfa45dd1c2c61cd2620",
+      "state": "pass",
+      "reasons": [],
+      "evidence_ids": [],
+      "rule_ids": [],
+      "policy_ref": "86468dcbd3f9880c2e8acbebc245c951ac6863024e625d17b80cd90a1f0786d7",
+      "exceptions": [],
+      "abstained": false,
+      "decided_at": "2026-09-26T01:19:16"
+    },
+    {
+      "decision_id": "4af79fca5a89c3796f275e52681b9355835cc6e3a2b3259f3f0c6b80b2fa71fa",
+      "artifact_id": "0806a970789ebd29052d95aefd23aa5585031d67257ec936a6a2285ceb60b751",
+      "state": "pass",
+      "reasons": [],
+      "evidence_ids": [],
+      "rule_ids": [],
+      "policy_ref": "86468dcbd3f9880c2e8acbebc245c951ac6863024e625d17b80cd90a1f0786d7",
+      "exceptions": [],
+      "abstained": false,
+      "decided_at": "2026-09-26T01:19:16"
+    },
+    {
+      "decision_id": "89f33ec1bde4af69334f6e246eba16860fc6546e80c2d10283857a19556a754c",
+      "artifact_id": "fc9caec75e49e1c7c2943e1383e10810924f76953af9eff1296d6bc2491e4d76",
+      "state": "pass",
+      "reasons": [],
+      "evidence_ids": [],
+      "rule_ids": [],
+      "policy_ref": "86468dcbd3f9880c2e8acbebc245c951ac6863024e625d17b80cd90a1f0786d7",
+      "exceptions": [],
+      "abstained": false,
+      "decided_at": "2026-09-26T01:19:16"
+    },
+    {
+      "decision_id": "a79834d1a8de48c5793e4b0b9b4219184c6ae18eb53c9b501d6e81bd35576c87",
+      "artifact_id": "c4ebc496291788f3fa47286c4be4e2c471e73a1b2044226e15e4a0f26b679ab6",
+      "state": "fail",
+      "reasons": [
+        "TOY-ARITH: LHS=4 RHS=5"
+      ],
+      "evidence_ids": [],
+      "rule_ids": [
+        "TOY-ARITH"
+      ],
+      "policy_ref": "86468dcbd3f9880c2e8acbebc245c951ac6863024e625d17b80cd90a1f0786d7",
+      "exceptions": [],
+      "abstained": false,
+      "decided_at": "2026-09-26T01:19:16"
+    },
+    {
+      "decision_id": "93c1d744e2061b9d04baca374e830de045ab09f177964b97ad5bb72bc35af254",
+      "artifact_id": "bcf829649b9400de4e318550490630597c1755e3f825a685586dd4d9b83b3bf6",
+      "state": "fail",
+      "reasons": [
+        "TOY-ARITH: 除数为 0",
+        "TOY-DIV0: 除数为 0"
+      ],
+      "evidence_ids": [],
+      "rule_ids": [
+        "TOY-ARITH",
+        "TOY-DIV0"
+      ],
+      "policy_ref": "86468dcbd3f9880c2e8acbebc245c951ac6863024e625d17b80cd90a1f0786d7",
+      "exceptions": [],
+      "abstained": false,
+      "decided_at": "2026-09-26T01:19:16"
+    },
+    {
+      "decision_id": "4fa7499e7702a466500db5669c94ae724761b431ee8eacd3aa3c7f2330eb9315",
+      "artifact_id": "329bd7e0ba2c103a3d31df6b8a5df2db8a016467d81d6d8a32807a37d72a79a4",
+      "state": "pass",
+      "reasons": [],
+      "evidence_ids": [],
+      "rule_ids": [],
+      "policy_ref": "86468dcbd3f9880c2e8acbebc245c951ac6863024e625d17b80cd90a1f0786d7",
+      "exceptions": [],
+      "abstained": false,
+      "decided_at": "2026-09-26T01:19:16"
+    },
+    {
+      "decision_id": "55b4ee1618d131eeeb6faa556f8afed99bf3b2ab963fc4c7acb18d5e51685134",
+      "artifact_id": "b299eba666d329c4bd0d5cb9b7f13d0d3200781b50b991ebddde687ae0005bcc",
+      "state": "fail",
+      "reasons": [
+        "TOY-SYNTAX: 不符合 `a op b = c` 形式"
+      ],
+      "evidence_ids": [],
+      "rule_ids": [
+        "TOY-SYNTAX"
+      ],
+      "policy_ref": "86468dcbd3f9880c2e8acbebc245c951ac6863024e625d17b80cd90a1f0786d7",
+      "exceptions": [],
+      "abstained": false,
+      "decided_at": "2026-09-26T01:19:16"
+    }
+  ],
+  "external_attestations": [],
+  "exceptions": [],
+  "abstentions": [],
+  "created_at": "2026-09-26T01:19:16",
+  "started_at": "2026-09-26T01:19:16",
+  "ended_at": "2026-09-26T01:19:16",
+  "integrity": "91a627d9a9c5d17d46394a81873de9195fb15ce38a920bf1b240bff35061d9a9"
+}

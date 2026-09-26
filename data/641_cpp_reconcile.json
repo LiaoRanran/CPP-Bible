@@ -1,0 +1,1819 @@
+{
+  "run": {
+    "schema_version": "1.0",
+    "run_id": "73cdcf41490e6a726079963865e2632df95bd29520d73c2a7ad963a742dccca6",
+    "domain": "cpp",
+    "source_revision": "d6a7856bbd511672faa491b5dbbc2570ad6a2499",
+    "execution_mode": "normal",
+    "random_seed": null,
+    "digests": {
+      "policy_digest": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+      "environment_digest": "0461d11c0e6e432480c144b4388d033683e4471347780e2cbf6fc77206fdbacf",
+      "kernel_digest": "9e926c78569e96219b1212aebb337a9dca7475e3b42642f88775edd443a82a11",
+      "verifier_closure_digest": "50205bb4ada90a4e715bedc9afd8613fa0e73ac368fe8be5ceafd3de297e5dce",
+      "closure_status": "OK",
+      "closure_n_files": "23",
+      "source_revision": "d6a7856bbd511672faa491b5dbbc2570ad6a2499",
+      "input_manifest_digest": "9949c39464e4f314355d2fe8149d07d4a74c2f650a30c1dc06b0228234c25a05"
+    },
+    "inputs": {
+      "artifacts": [
+        {
+          "artifact_id": "12bd72f6f9e59756feb9ad535335791c87b4622c36d43e1e93324aa9fd34ecfe",
+          "kind": "cpp_corpus",
+          "uri": ":corpus:",
+          "content_digest": "da63df21d32040c6ce5011d9fc620d8a18efa7c21434a839d3ba732ffa54158b"
+        },
+        {
+          "artifact_id": "35774511b14ece0dc883793cc76ba8914bff6f923793bba6b95aadd2cc6acaa9",
+          "kind": "card",
+          "uri": "atoms/README.md",
+          "content_digest": "c224640ca003e0a3d4b8327abeea75482d8217eacbdf6a42139183882551bb51"
+        },
+        {
+          "artifact_id": "6bbf63107175a6f14b82d0e9ca5f38444a7d635fd90b35244fe934a6da386c78",
+          "kind": "card",
+          "uri": "atoms/conc/ATOM-CONC-FENCE-001.md",
+          "content_digest": "6b33e62ebea0e75dd3923d3e9ca9bcd719a53c8a4727c02a68eeae250ae9f113"
+        },
+        {
+          "artifact_id": "f0f0ff9803aee0b93fb620aee4a9b36fb2e0803bc9637ffd95f0b309e4e72542",
+          "kind": "card",
+          "uri": "atoms/conc/ATOM-CONC-LOCK-001.md",
+          "content_digest": "8b4ee1553ad1701936a63d87139ebc22db952b269f91495e4bc5b752e17b363a"
+        },
+        {
+          "artifact_id": "fe8b8cbe3cad0d591349206cb75d93ee0884185ab464c692b2834695b34ed21a",
+          "kind": "card",
+          "uri": "atoms/conc/ATOM-CONC-RACE-001.md",
+          "content_digest": "b0b855fa5daf0cb627f04a05d4712884f54ff3fe52f3477bb3049d1deccf7327"
+        },
+        {
+          "artifact_id": "3996361ed6b7104fd31e826c21c1b54c279fdbd6f1f640fd937c3459694ad3f0",
+          "kind": "card",
+          "uri": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+          "content_digest": "190d50bbc5fe8e4442c725caa0f58739edfdfb8c6c5f7b2846b8721c45efd7cd"
+        },
+        {
+          "artifact_id": "da11b94e30dd825e99370478e3588242acfe0905d7ad832670044b94b3c9557d",
+          "kind": "card",
+          "uri": "atoms/lang/ATOM-LANG-INLINE-001.md",
+          "content_digest": "357f2da0a76f1dac847b51c02a4d4ae81df6106639723f5fa8ab340dd160d8ba"
+        },
+        {
+          "artifact_id": "02752b3a02091ea6b8c2bfbf9126d2b3d75cc8e475453ba974848235a0857b00",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+          "content_digest": "4875e5d7295d23793a95720e9050a61ac9361ec2b45169afcee0695c3e7135ef"
+        },
+        {
+          "artifact_id": "350fbce11a4091f0ee056bfe7306a32c6aeab5bebffd54a08bc0774f331f860d",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+          "content_digest": "5a83299725b65cd3c0b95b8985e77ea5f975fcea86a743456691f90a2ccd2a38"
+        },
+        {
+          "artifact_id": "ded9fb26bc06904d4c318063c3a090db8b1c3669a43a50f45255e66dc53aabc8",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+          "content_digest": "e86be5465e49778a97537c0c0e0c31d1a9da6b40078d259a76fbbf6049bef597"
+        },
+        {
+          "artifact_id": "367c4476545c78d61d7db31bc35a90daa27d4ecc79722f3d68783a0f58ba8f96",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-LEAK-001.md",
+          "content_digest": "cbf95e831405533da4b3046dce564b86aee6956b1d66a45e3f68ebc46026c475"
+        },
+        {
+          "artifact_id": "529f75fe9cadf02923952f74e18ad827e7c1f8c43ba74e49f82bcf43592d82e3",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-LEAK-002.md",
+          "content_digest": "94dc62f918a6f8441386163f3e577f8e26ad44250fd0ecf5cd64598f3e3f7a4e"
+        },
+        {
+          "artifact_id": "e6dcc53e9f08373839659c585f0bb56943ed2f90a412dbb2049f0c2d990deba1",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-MOVE-002.md",
+          "content_digest": "92f19bd9549c337514c5cf0bf3a550f258f6e9bfc08956255b99da8600c387dc"
+        },
+        {
+          "artifact_id": "92e5e9bfe621deff772c34b33888f3a2234a62842865dfa5f8bd3296edfdfccd",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-NEW-001.md",
+          "content_digest": "cb8cf243ba99b0e8bfe5c2a75998e0931047d106b89b5a8f712e923da9f9cd6e"
+        },
+        {
+          "artifact_id": "4c902bfd373f3d6ebe658f3c05565f9889d4a78b31e0ad3e31b6a9946c8be27c",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-PERF-001.md",
+          "content_digest": "2fae5eb9bfd5fab022f238459f2d97bb824435badd62dac1fdf357c82b2c0a76"
+        },
+        {
+          "artifact_id": "089a737221c9a452cddfa8249804df681f4b8fddae1891a3ae7f2e5b0eec5ccc",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-PERF-002.md",
+          "content_digest": "3139c0fd8ab9b72ebe4d21bced67204e26a3faff962acba53677497b65b4c921"
+        },
+        {
+          "artifact_id": "9bf3b6cc16ff7476a418b1cf2abf67530ce853868d8a30bdf1121cc7e40db0ab",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-PERF-003.md",
+          "content_digest": "22750e33294c00e8ecb2089cd9af93ef31cb5ebd16441bcdda7ade696b9de4cb"
+        },
+        {
+          "artifact_id": "a5a07a5e92a2215aa7da98058e328ef7c6eceaab9a000f7555060e0e7d2cf1e2",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-PERF-004.md",
+          "content_digest": "cd1fa3cb6949732b0b210ebad2dd67b1d1aa69c8fc1f07746f2e503baf823e9e"
+        },
+        {
+          "artifact_id": "beeca0a64e0d1ab35681186bf80f75cb4496a23b3a2d6c52ca109a4c5ebcfcb5",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-RAII-001.md",
+          "content_digest": "83c8e3ecbad8407a349c000ebf8545adfe0ded78176e3dabd93952a028f09a7e"
+        },
+        {
+          "artifact_id": "befc3e8aca3e925ede559e8be53632b22883942cc48f33ea4312f488c5879e5c",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-RAII-002.md",
+          "content_digest": "2b1c0f3b171741aa8bbbd814286c06db3f8e2dbfab05f6f5ac04769167454786"
+        },
+        {
+          "artifact_id": "d8e38bbfbcf2b3f6e4c976bc01c4bdd403eafe2acda1bbabb73b681dc28fd65d",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-RVREF-001.md",
+          "content_digest": "f841228bae1c9a32f55327fb98885679b2b355d5f78cae8e98e495ee2be9d7df"
+        },
+        {
+          "artifact_id": "8c0a22535c6eeffbec01d95e68bdb7cc0e045a050821f09db7c02488df7949db",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-SHARED-001.md",
+          "content_digest": "5723b11d5a700291f7d58c2b21c9761a13312cb705935006458e62b80ac6805c"
+        },
+        {
+          "artifact_id": "6d95bf1c93b60038f012ca2deeaf9dd98f5334032ae5b7a612721db6338775a7",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-SHARED-002.md",
+          "content_digest": "beb2e6cf2c0bf8ec63593b00e89353c6656b7e4535d3cb06a7665f06f4aeba2d"
+        },
+        {
+          "artifact_id": "572bdd37415b9330b52a29fff934319e0c7906a454c0c6f40647d818ed0bc538",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+          "content_digest": "778f144d94679f3196ea83d5f944efc5eedf6bb1deff938dd87d86d153363b1e"
+        },
+        {
+          "artifact_id": "cef4ac1e4d23da73dccabe2b2d08725ed58d1a233736558f9e7ab296a791aab5",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+          "content_digest": "0b3c7d509899cb4a2f1b0d251466f5d8077a5952194454d2ee14c198bc142d61"
+        },
+        {
+          "artifact_id": "a23378ea84051e2e3971ea0b0a57b17e733b636cdba7e3913596aa1ec905e024",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-VALUE-001.md",
+          "content_digest": "76b7788ba5f76e421e6809cc207dd9ee521531dfa9b88af14641ab4116ddef68"
+        },
+        {
+          "artifact_id": "090da0155bc4be4b2b9f788326cbf15261813f12079c8c923689e24143b59351",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-VALUE-002.md",
+          "content_digest": "00f49278e44ba7224ddda5bb54ef50cd39f300b40a0b0b7ed528b4b2390d8b9b"
+        },
+        {
+          "artifact_id": "9ce7582f27bbe12a3a041b1b7ea9b482e672d913472b3323e1bda8a5e31874b4",
+          "kind": "card",
+          "uri": "atoms/mem/ATOM-MEM-WEAK-001.md",
+          "content_digest": "415226e53ae21f6c6270b68902f9a15b29f8d0a7924c5ad4cd001d6eb2616d89"
+        },
+        {
+          "artifact_id": "c0915b7a95a33958947fb08c096fba02c42d4255a8e7a5a9014dc92fc6628389",
+          "kind": "card",
+          "uri": "atoms/ub/ATOM-UB-GRAY-001.md",
+          "content_digest": "c3876db0fc6248efad51e20fb4714ab4647b922cb8c1a33deaa4864776021062"
+        },
+        {
+          "artifact_id": "4c9c899185cc172b4741c713e5cb0e2ffff0b585af6b94df10ef7217d73c1853",
+          "kind": "card",
+          "uri": "evidence/README.md",
+          "content_digest": "35c56e8b6e8aacdbbe5fb6f8ffa9ba8c088c034764e7483dc9ef283fa7e6cea2"
+        },
+        {
+          "artifact_id": "ddf4aa316f71673569e2d7f7a7ba3fac11754b3acd370792796e12f709be00e3",
+          "kind": "card",
+          "uri": "evidence/conc/EV-CONC-001.md",
+          "content_digest": "ff50c45b9baa0cc8c5e93a96c7cab4407ed387c66859dbbf519314dbe3c22530"
+        },
+        {
+          "artifact_id": "69f03bfbef60d7f459af7b5ced440608b9f89b5bfe74ec5cb89854eabdb62e49",
+          "kind": "card",
+          "uri": "evidence/conc/EV-CONC-002.md",
+          "content_digest": "7705463752ba33b3f1fb7c9d162a58f3fb959f3ed2fd9e32e8f5e6f40a68a929"
+        },
+        {
+          "artifact_id": "53bf4a20cb9b16ea6ab9a8efce256d3e31f3c0ea2c2a6e615d87f453d8a520f3",
+          "kind": "card",
+          "uri": "evidence/conc/EV-CONC-003.md",
+          "content_digest": "cf06065e18050daf25c13165823843dba7e61a0bdffb3e00572fb744691cdb8a"
+        },
+        {
+          "artifact_id": "b9e54d53c2bd7f901b96c3ba565611abe2269a328336e494ebe35c6b9628244f",
+          "kind": "card",
+          "uri": "evidence/conc/EV-CONC-004.md",
+          "content_digest": "c65f2eada6d7dbddd58670f84183a38075934c6e01eed12a309b3338e4cae57b"
+        },
+        {
+          "artifact_id": "5720294dc5e2541e0c3caea6cf0d0b679c7f3107ee666c4537dd1944c8b3c7db",
+          "kind": "card",
+          "uri": "evidence/conc/EV-CONC-005.md",
+          "content_digest": "f01eb6f084557535fc219f00a80a76e3e713c52b2df3aeeb45c809bde6f8b1fc"
+        },
+        {
+          "artifact_id": "62c8d60bb94a43ee00ce2299683be8d64465a8da028eb79e6c987dcb36cb4eee",
+          "kind": "card",
+          "uri": "evidence/conc/EV-CONC-006.md",
+          "content_digest": "06136b65a80b258b0e7fc573aeffec510c0eb9b4ea6ebd55a616bebde12b2f6e"
+        },
+        {
+          "artifact_id": "9a5ff22159bd90d5edeb34b9579779c2003493916887a36f8a36635f25444984",
+          "kind": "card",
+          "uri": "evidence/hist/EV-HIST-001.md",
+          "content_digest": "de015bf111e319f904272b2b5268d8f8df8535d6a0982ea3bb6906bfdabdd9c3"
+        },
+        {
+          "artifact_id": "b03486640a2f03b1b3afc3e15ef1598a0a5c4e3ad0a3b2b03f1c0105a7869651",
+          "kind": "card",
+          "uri": "evidence/lang/EV-LANG-001.md",
+          "content_digest": "b9336987f20b76392cd78a938d08bf826c3575e6b80191b48d12bfe6d482bdcf"
+        },
+        {
+          "artifact_id": "8435d9a88f4f382a42c8853b99d66d575d3887cd00b5faedd3cf1122e452d770",
+          "kind": "card",
+          "uri": "evidence/lang/EV-LANG-002.md",
+          "content_digest": "d7787c7e950834cdfaf99ccd1f8a4dd32e4baf05a17526e4dfa267ee068d9e26"
+        },
+        {
+          "artifact_id": "4edf60deb3d71c10f606bd88dc24b7d9cb18d37530b08cd8ce3714b650a9ff14",
+          "kind": "card",
+          "uri": "evidence/mem/EV-MEM-001.md",
+          "content_digest": "a59bd9385d7c91fece3866733b6c5ff3b03ce797d6ac3adbd0f21d243c107ec3"
+        },
+        {
+          "artifact_id": "df0d2539ef4c15a80c7964ea35206bce0beb95fa8f3bb3e43bf8643cb1641dd3",
+          "kind": "card",
+          "uri": "evidence/mem/EV-MEM-002.md",
+          "content_digest": "c9ad314a271f704af57b495d0beb04158a8bd0bafc7f4d7364531173a10edb72"
+        },
+        {
+          "artifact_id": "bca071dd0a6ceddf716572cfea9a100f989ed606dfcbe77b8f8008491ffac6f6",
+          "kind": "card",
+          "uri": "evidence/mem/EV-MEM-003.md",
+          "content_digest": "4597156facff5cea8182206a415b3d602157638eaa8c7a4ac8b166c9435c0016"
+        },
+        {
+          "artifact_id": "b62715358505f846d99c672a192f8142c461fab7b4cf43aa228871217eb1632c",
+          "kind": "card",
+          "uri": "evidence/mem/EV-MEM-004.md",
+          "content_digest": "18822c77b03ea7839a2618abfa844584b40193fd4a380c86f95413f807432e95"
+        },
+        {
+          "artifact_id": "71f73a3b6040cc3def4c347565be866df53abe72563de461e8b4297bf1c7ad4e",
+          "kind": "card",
+          "uri": "evidence/mem/EV-MEM-005.md",
+          "content_digest": "a9a8027ee6e43cace3433ec27664062314a551d1ba41ae75bb979d0b00b38dd7"
+        },
+        {
+          "artifact_id": "3c5f7d25e00bf5f6700849c5ecac1bd50ab380544e254358d1a1e14a78628d31",
+          "kind": "card",
+          "uri": "evidence/mem/EV-MEM-006.md",
+          "content_digest": "504ccce5b370687749af7c8f74a50c391b0764321637c19659352e071a3fc3a2"
+        },
+        {
+          "artifact_id": "51347bf45112d076c83ef2d8979721568e7d6a680b5d7086fd78dfd2db253bad",
+          "kind": "card",
+          "uri": "evidence/mem/EV-MEM-007.md",
+          "content_digest": "23032d8d4dda33d6bf707ac9eb9b3741030aa4d605031597bae076f6a3da362f"
+        },
+        {
+          "artifact_id": "f9a0771298968225fb968678b16f87430e9429447cb5833f075e5559d0de0324",
+          "kind": "card",
+          "uri": "evidence/mem/EV-MEM-008.md",
+          "content_digest": "864f65d542679918470cbc50aa50a28cfea2b51f87090757ba4e3ab600674276"
+        },
+        {
+          "artifact_id": "5a5d9d0af77c711ed6de43c692f857fd641e76c06d101000f8ab5a585a26bab8",
+          "kind": "card",
+          "uri": "evidence/mem/EV-MEM-009.md",
+          "content_digest": "9eefc52983b0b8f629dbb8f24b3b00df5348d9e84325f218c03181ffa1b177f5"
+        },
+        {
+          "artifact_id": "e9bb52ed58a14abef82feb7ab30500898c3053fb1460c7ccb75862e08039e6b0",
+          "kind": "card",
+          "uri": "evidence/mem/EV-MEM-010.md",
+          "content_digest": "a3eed4927e1be13f7e2fee745ae406347ca8a51c0d0b19e41fedaf6a508b9a9e"
+        },
+        {
+          "artifact_id": "323182441129427f3dacbcbf2e0babe637599cac31b8741373aedae0394e0d37",
+          "kind": "card",
+          "uri": "evidence/mem/EV-MEM-011.md",
+          "content_digest": "39d4e2742328556612eb6fbab2f64e636df3a10ed2dfa0ade1c903a40c01666d"
+        },
+        {
+          "artifact_id": "b6f99b72df216d982e9e4f0d0a81c2cdbbba8198d7742282c5d9a08dd82e5012",
+          "kind": "card",
+          "uri": "evidence/mem/EV-MEM-012.md",
+          "content_digest": "18009d9b6a5cca576b9a5c0f410447057272e5df6afa39e9231b47b7082a06f2"
+        }
+      ],
+      "mutation_population": {
+        "planned": 0,
+        "applied": 0
+      }
+    },
+    "results": {
+      "closure": {
+        "n_files": 23,
+        "status": "OK",
+        "missing": [],
+        "digest": "50205bb4ada90a4e715bedc9afd8613fa0e73ac368fe8be5ceafd3de297e5dce"
+      },
+      "rule_outcomes_summary": {
+        "triggered": 10,
+        "observed": 57,
+        "na": 0,
+        "error": 0
+      },
+      "gate_summary": {
+        "n_rules": 67,
+        "triggered": 10,
+        "observed": 57,
+        "na": 0,
+        "error": 0,
+        "n_findings": 121
+      },
+      "inventory": {
+        "n_cards": 85,
+        "n_atoms": 28,
+        "n_evidence": 57,
+        "verified_atoms": 23
+      },
+      "w2": {
+        "status": "ok",
+        "nodes": 121,
+        "in": 79,
+        "out": 42,
+        "undec": 0,
+        "edges": 388,
+        "defeating_edges": 194,
+        "credibility_distribution": {
+          "high": 79,
+          "medium": 35,
+          "low": 7
+        },
+        "out_mis": 42
+      },
+      "pck": {
+        "status": "ok",
+        "n_certs": 83
+      },
+      "environment": {
+        "python": "3.13.13",
+        "platform": "win32",
+        "revision": "d6a7856bbd511672faa491b5dbbc2570ad6a2499",
+        "compiler": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.EXE",
+        "domain": "cpp"
+      },
+      "authority_chain_ok": true,
+      "controlled_clean": true
+    },
+    "decisions": [
+      {
+        "decision_id": "cc8c74b6afa3592caf800354dcf1600e484dc24e2d0119639e69f6c37af73e8a",
+        "artifact_id": "35774511b14ece0dc883793cc76ba8914bff6f923793bba6b95aadd2cc6acaa9",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "4a5e9905466ce24f7ff1909c69872915ed35ddd1609c965090212ee0d1d877bd",
+        "artifact_id": "6bbf63107175a6f14b82d0e9ca5f38444a7d635fd90b35244fe934a6da386c78",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='编译器屏障 compiler barrier' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='fence 与 happens-before 内存序同步' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "5979e1b4d31f3dbb176a9a50f072780b561427006dd5328254dfe44415438435",
+        "artifact_id": "f0f0ff9803aee0b93fb620aee4a9b36fb2e0803bc9637ffd95f0b309e4e72542",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='mutex vs atomic 性能' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='mutex vs atomic 性能' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "fcbcf64a734c0f38700d5a41a497a7e9fcaf0dc0dd0c6872140b244507689e27",
+        "artifact_id": "fe8b8cbe3cad0d591349206cb75d93ee0884185ab464c692b2834695b34ed21a",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='数据竞争 UB' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='数据竞争 UB' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='动态数据竞争检测局限性' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "36f762ad3bb8fde8c0fe885c63837cabeeb31190e8d05c81779e8edc5606de61",
+        "artifact_id": "3996361ed6b7104fd31e826c21c1b54c279fdbd6f1f640fd937c3459694ad3f0",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='auto_ptr 历史' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='auto_ptr 历史' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='auto_ptr 历史' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "f5cb00fc00f0d5e9f05b00073ddfb70ed8cdd3270340542039bb546e4cdf8289",
+        "artifact_id": "da11b94e30dd825e99370478e3588242acfe0905d7ad832670044b94b3c9557d",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='-O0 下 ab_tu_a=ab_tu_b=1、ba_tu_a=ba_tu_b=2（随顺序）；-O2 下 o2_tu_a=1 / o2_tu_b=2（与顺序无关）' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='行为稳定（stable 组四种组合下恒为 42，不随顺序与优化档变化）' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='ill-formed, no diagnostic required（实测 GCC 家族零诊断）' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-1（observation）未在**命题级**指认证伪锚：缺 `liveness` 字段——只挂了证据卡 id，可能蹭同卡为别的命题服务的活性条件",
+          "命题 prop-2（observation）未在**命题级**指认证伪锚：缺 `liveness` 字段——只挂了证据卡 id，可能蹭同卡为别的命题服务的活性条件"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED",
+          "OBSERVATION-LIVENESS"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "6443f81049543ec98f8a170a9ac8679da99b99b87f4e5b839c8591d50f9fbea6",
+        "artifact_id": "02752b3a02091ea6b8c2bfbf9126d2b3d75cc8e475453ba974848235a0857b00",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='内存对齐' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='内存对齐' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='对齐与严格别名规则' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "aeec57d6932cada73443fac05ec4e133ff25181effc3aae27c24fa093534404e",
+        "artifact_id": "350fbce11a4091f0ee056bfe7306a32c6aeab5bebffd54a08bc0774f331f860d",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='allocator 内存策略' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='allocator 内存策略' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='allocator 内存策略' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-4 的 object='allocator 内存策略' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "78384f9b7bb473a1fe5203baaf2f19cd13800db4029301ccfe0f519d6825328f",
+        "artifact_id": "ded9fb26bc06904d4c318063c3a090db8b1c3669a43a50f45255e66dc53aabc8",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='arena 32B / bitmap 181B / pool 8056B（struct+bookkeeping 分项）' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='块数 1000→8000 时 pool 8056B→64056B、bitmap 181B→1056B' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='arena 的 bookkeeping=0 以整体释放为代价' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-1（observation）未在**命题级**指认证伪锚：缺 `liveness` 字段——只挂了证据卡 id，可能蹭同卡为别的命题服务的活性条件",
+          "命题 prop-2（observation）未在**命题级**指认证伪锚：缺 `liveness` 字段——只挂了证据卡 id，可能蹭同卡为别的命题服务的活性条件"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED",
+          "OBSERVATION-LIVENESS"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "d03cc2c65eab1447ca4e4ed5c8c27dce1951730c2f83b9a813ee3cc50b33e0fa",
+        "artifact_id": "367c4476545c78d61d7db31bc35a90daa27d4ecc79722f3d68783a0f58ba8f96",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='内存泄漏检测' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='内存泄漏检测' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='内存泄漏检测局限性' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "c9e918fb19e54ddf86d6dc74542da92100ee8fbb1885e073d2f6d36ca968a5a8",
+        "artifact_id": "529f75fe9cadf02923952f74e18ad827e7c1f8c43ba74e49f82bcf43592d82e3",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='cycle_allocated=2 / cycle_destroyed=0 / cycle_live_objects=2' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='stderr 0 字节（零报告）→ 1258 字节（64 byte(s) leaked in 2 allocation(s)）' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='零依赖观测（定性与定量），工具报告仅作补充证据' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-1（observation）未在**命题级**指认证伪锚：缺 `liveness` 字段——只挂了证据卡 id，可能蹭同卡为别的命题服务的活性条件",
+          "命题 prop-2（observation）未在**命题级**指认证伪锚：缺 `liveness` 字段——只挂了证据卡 id，可能蹭同卡为别的命题服务的活性条件"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED",
+          "OBSERVATION-LIVENESS"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "312183ff8de61fc510aad8044c98e8c869a940b08cdeeb8775151b2189f29d6c",
+        "artifact_id": "e6dcc53e9f08373839659c585f0bb56943ed2f90a412dbb2049f0c2d990deba1",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='移动构造' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='移动构造' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='类型转换语义' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "9de896268a5fc75c56c2e7e1112d5ad1d9db905fb97c3dd307c92f93c745a69d",
+        "artifact_id": "92e5e9bfe621deff772c34b33888f3a2234a62842865dfa5f8bd3296edfdfccd",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='new/delete 配对' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='new/delete 配对' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='new/delete 配对' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "45ca823cae6ca2449199f3c36f34deb52ef4e940975716f7e111e5b298743cd1",
+        "artifact_id": "4c902bfd373f3d6ebe658f3c05565f9889d4a78b31e0ad3e31b6a9946c8be27c",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='小对象移动性能' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='小对象移动性能' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "eb25f932a2a78a6a9e7d18a039d0e94210c31a0941c161e574fdbb5761721fb2",
+        "artifact_id": "089a737221c9a452cddfa8249804df681f4b8fddae1891a3ae7f2e5b0eec5ccc",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='string SSO 小字符串优化' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='string SSO 小字符串优化' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "5ed04abe7e95adb9b4f311df8fca3c1e2c04ac783fbb7644caf0084d325e32fc",
+        "artifact_id": "9bf3b6cc16ff7476a418b1cf2abf67530ce853868d8a30bdf1121cc7e40db0ab",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='string 实现差异 libstdc++ vs libc++' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='string 实现差异 libstdc++ vs libc++' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='性能结论的可移植性' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "1d0d91f91bfe42a62b3655b1b31d98611de2994852d3a60e04c72589674934c0",
+        "artifact_id": "a5a07a5e92a2215aa7da98058e328ef7c6eceaab9a000f7555060e0e7d2cf1e2",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='tight_same_line=1 / padded_same_line=0；padded_sizeof=128' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='sharing_is_slower=1 / counters_all_advanced=1（4 线程各 1e7 次、7 轮）' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='存在最优对齐粒度（\"padding 一定值得\"是过度概括）' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-1（observation）未在**命题级**指认证伪锚：缺 `liveness` 字段——只挂了证据卡 id，可能蹭同卡为别的命题服务的活性条件",
+          "命题 prop-2（observation）未在**命题级**指认证伪锚：缺 `liveness` 字段——只挂了证据卡 id，可能蹭同卡为别的命题服务的活性条件"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED",
+          "OBSERVATION-LIVENESS"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "ef1f2a1f5a51b8e75359b25fd9c5f6a76c8474956aced6015dba5c2da976327b",
+        "artifact_id": "beeca0a64e0d1ab35681186bf80f75cb4496a23b3a2d6c52ca109a4c5ebcfcb5",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='RAII 资源生命周期' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='C++ 对象析构顺序' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='RAII 资源生命周期' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "cd2cd9207c830af96eb08176db78ef8b47c7ec872d0146ae91b872f8bb1de85a",
+        "artifact_id": "befc3e8aca3e925ede559e8be53632b22883942cc48f33ea4312f488c5879e5c",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='Rule of 0/3/5' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='资源所有权与特殊成员函数' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='noexcept move 与容器迁移' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-4 的 object='规则背诵与语义理解' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "79fcf83c32dd50f242a688d9c3ddc4cca15a2bb04c76209bf7f7368fdd1fad60",
+        "artifact_id": "d8e38bbfbcf2b3f6e4c976bc01c4bdd403eafe2acda1bbabb73b681dc28fd65d",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='右值引用 + std::move' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='右值引用 + std::move' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='右值引用 + std::move' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "2c7c04c5de3f0fc74a305fc18ffe640a101c0bb738ca5e9d1b06cce7e67fcc7e",
+        "artifact_id": "8c0a22535c6eeffbec01d95e68bdb7cc0e045a050821f09db7c02488df7949db",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='shared_ptr 循环引用' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='shared_ptr 循环引用' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='shared_ptr 循环引用' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "bc5b040fbf5e8861db95b16d685c8f55c0669f9821a3edeedbc80edaeb5a2572",
+        "artifact_id": "6d95bf1c93b60038f012ca2deeaf9dd98f5334032ae5b7a612721db6338775a7",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='shared_ptr 对象布局与引用计数' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='shared_ptr 引用计数同步' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='shared_ptr 并发语义' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "381d688d71bdc5f7455ca5241e2f0532fb1790c633d46766469bb96a91934935",
+        "artifact_id": "572bdd37415b9330b52a29fff934319e0c7906a454c0c6f40647d818ed0bc538",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='unique_ptr 对象表示与大小' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='unique_ptr 移动语义' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='unique_ptr 所有权模型与开销' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "0d67f12aaac9b5ffc9d2dc9321d0462b1676aaaab8fed18f7109d93d6541f36b",
+        "artifact_id": "cef4ac1e4d23da73dccabe2b2d08725ed58d1a233736558f9e7ab296a791aab5",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='unique_ptr 删除器' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='unique_ptr 删除器' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='unique_ptr 布局的实现依赖' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "99f5b14e44884a11015e30c16794b8af230054e2adc5bdb4a3258c70de0a7bba",
+        "artifact_id": "a23378ea84051e2e3971ea0b0a57b17e733b636cdba7e3913596aa1ec905e024",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='值类别 lvalue/xvalue/prvalue' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='移动后的对象状态' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='值类别 lvalue/xvalue/prvalue' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "c9d1d62edf96f3cf250558f8815767963e548d1e71a5b10cba9e9dd026904dcb",
+        "artifact_id": "090da0155bc4be4b2b9f788326cbf15261813f12079c8c923689e24143b59351",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='引用折叠 + perfect forwarding' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='引用折叠 + perfect forwarding' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='引用折叠 + perfect forwarding' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "532316b112a69300ff7c6a9cb0b0bd52d495a03215607e842ab85132ac470fd5",
+        "artifact_id": "9ce7582f27bbe12a3a041b1b7ea9b482e672d913472b3323e1bda8a5e31874b4",
+        "state": "pass_with_exception",
+        "reasons": [
+          "命题 prop-1 的 object='weak_ptr' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-2 的 object='weak_ptr' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）",
+          "命题 prop-3 的 object='weak_ptr' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "383f5248b2e62d2bc9115c634272f10be6cff758dc16415fa8ee2f14a3384fbe",
+        "artifact_id": "c0915b7a95a33958947fb08c096fba02c42d4255a8e7a5a9014dc92fc6628389",
+        "state": "pass_with_exception",
+        "reasons": [
+          "关系目标不存在：ATOM-UB-ALIAS-001",
+          "关系目标不存在：ATOM-UB-DEF-001",
+          "命题 prop-2 的 object='未定义行为与求值顺序' 不在规范概念集（无法与图谱连通，建议改概念短语而非句子）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "ATOM-CLAIM-CONCEPT-NORMALIZED",
+          "ATOM-REL-TARGET"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "fad7b31b5818d6205d3816500cb9a9ea056c041ca431b52ce51b0f7c55b8e97d",
+        "artifact_id": "4c9c899185cc172b4741c713e5cb0e2ffff0b585af6b94df10ef7217d73c1853",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "8204b84847062d0342e0dcdc883249f7c9e08356ce29929f927fb02cfa8c7cc2",
+        "artifact_id": "ddf4aa316f71673569e2d7f7a7ba3fac11754b3acd370792796e12f709be00e3",
+        "state": "pass_with_exception",
+        "reasons": [
+          "matrix 声明 3 个编译器，但可核对留痕只有 1 处（GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL), GCC 13.3.0 (WSL)）——单一留痕撑不起多平台声明",
+          "contains_in 的 text='je' 是通用助记符/伪指令（符号区间内近乎恒有 ⇒ 弱断言，判别力存疑）",
+          ".out（Examples/atoms/_atom_fence_vs_atomic.out）比夹具（Examples/atoms/_atom_fence_vs_atomic.cpp）旧——疑似不是当前源码的真实产出（手写/陈旧留痕）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-ASSERT-SYMBOL-MAPPED",
+          "EV-MATRIX-UNBACKED",
+          "EV-OUT-STALE-MTIME"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "1d9295a3859e399f8391fd8708bb907991dd5f69bfb2739942441c34ee74257e",
+        "artifact_id": "69f03bfbef60d7f459af7b5ced440608b9f89b5bfe74ec5cb89854eabdb62e49",
+        "state": "pass_with_exception",
+        "reasons": [
+          "matrix 声明 3 个编译器，但可核对留痕只有 1 处（GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL), GCC 13.3.0 (WSL)）——单一留痕撑不起多平台声明",
+          ".out 含未声明读数键 ['spin_plain_ret']（不在 run_match_keys 中 ⇒ 门禁视野外、不受 expected 约束）",
+          ".out（Examples/atoms/_atom_fence_vs_atomic.out）比夹具（Examples/atoms/_atom_fence_vs_atomic.cpp）旧——疑似不是当前源码的真实产出（手写/陈旧留痕）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-MATRIX-UNBACKED",
+          "EV-OUT-STALE-MTIME",
+          "EV-OUT-UNDECLARED-KEY"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "94afff3f0e966b7bdd98bb013b494fcd86bd45d6fb79ef4027f0e19d4da6f21f",
+        "artifact_id": "53bf4a20cb9b16ea6ab9a8efce256d3e31f3c0ea2c2a6e615d87f453d8a520f3",
+        "state": "pass_with_exception",
+        "reasons": [
+          "matrix 声明 2 个编译器，但可核对留痕只有 0 处（GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)）——单一留痕撑不起多平台声明",
+          ".out 含未声明读数键 ['atomic_fetch_ns', 'cas_high_contention_tested', 'nproc']（不在 run_match_keys 中 ⇒ 门禁视野外、不受 expected 约束）",
+          ".out 含环境量读数键 ['nproc']（未声明为断言）——留痕即隐患，换机器后该行失去可比性"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-ENV-DEPENDENT-KEY",
+          "EV-MATRIX-UNBACKED",
+          "EV-OUT-UNDECLARED-KEY"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "67892f43055a988847d847ead0d439c991c17dd524feca6b8d2e5bdb52a24588",
+        "artifact_id": "b9e54d53c2bd7f901b96c3ba565611abe2269a328336e494ebe35c6b9628244f",
+        "state": "pass_with_exception",
+        "reasons": [
+          "matrix 声明 2 个编译器，但可核对留痕只有 0 处（GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)）——单一留痕撑不起多平台声明",
+          ".out 含未声明读数键 ['atomic_fetch_ns', 'cas_high_contention_tested', 'nproc', 'single_thread_baseline']（不在 run_match_keys 中 ⇒ 门禁视野外、不受 expected 约束）",
+          ".out 含环境量读数键 ['nproc']（未声明为断言）——留痕即隐患，换机器后该行失去可比性"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-ENV-DEPENDENT-KEY",
+          "EV-MATRIX-UNBACKED",
+          "EV-OUT-UNDECLARED-KEY"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "805938d5c60295905dc09026aecf7d681058248ff36bf2d5b113ec6259a2e516",
+        "artifact_id": "5720294dc5e2541e0c3caea6cf0d0b679c7f3107ee666c4537dd1944c8b3c7db",
+        "state": "pass_with_exception",
+        "reasons": [
+          "matrix 声明 2 个编译器，但可核对留痕只有 0 处（GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)）——单一留痕撑不起多平台声明",
+          ".out 含未声明读数键 ['kIters', 'scenario']（不在 run_match_keys 中 ⇒ 门禁视野外、不受 expected 约束）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-MATRIX-UNBACKED",
+          "EV-OUT-UNDECLARED-KEY"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "ab62f681110535bc5736367be61a96e587bb171a828299b240b6913785cf0ac1",
+        "artifact_id": "62c8d60bb94a43ee00ce2299683be8d64465a8da028eb79e6c987dcb36cb4eee",
+        "state": "pass_with_exception",
+        "reasons": [
+          "matrix 声明 2 个编译器，但可核对留痕只有 1 处（GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)）——单一留痕撑不起多平台声明",
+          ".out 含未声明读数键 ['kIters', 'scenario']（不在 run_match_keys 中 ⇒ 门禁视野外、不受 expected 约束）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-MATRIX-UNBACKED",
+          "EV-OUT-UNDECLARED-KEY"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "6c1aa814710d30996d39c8c45f7b9e9883a9e9ca409e91ad15a243c53343cd29",
+        "artifact_id": "9a5ff22159bd90d5edeb34b9579779c2003493916887a36f8a36635f25444984",
+        "state": "pass_with_exception",
+        "reasons": [
+          "falsification 无任何量化对照值（纯假设句，不可复核）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-FALSIFICATION-QUANT"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "6ff1e86162c09de1ecbcaf23c376b56ef5bf80cc9c887e5360a991e143b7ab14",
+        "artifact_id": "b03486640a2f03b1b3afc3e15ef1598a0a5c4e3ad0a3b2b03f1c0105a7869651",
+        "state": "pass_with_exception",
+        "reasons": [
+          "matrix 声明 2 个编译器，但可核对留痕只有 1 处（GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)）——单一留痕撑不起多平台声明"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-MATRIX-UNBACKED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "7e1ad6cca057a9fddb0db92365e4a93c4787d486356a64ef13bbef3f78b7fe63",
+        "artifact_id": "8435d9a88f4f382a42c8853b99d66d575d3887cd00b5faedd3cf1122e452d770",
+        "state": "pass_with_exception",
+        "reasons": [
+          "matrix 声明 2 个编译器，但可核对留痕只有 1 处（GCC 15.3.0 (MinGW-w64), GCC 13.3.0 (WSL)）——单一留痕撑不起多平台声明",
+          ".out 含未声明读数键 ['ab_stable_a', 'ab_stable_b', 'ba_stable_a', 'ba_stable_b', 'o2_stable_a', 'o2_stable_b', 'o2b_stable_a', 'o2b_stable_b', 'stO0_sa', 'stO0_sb', 'stO0b_sa', 'stO0b_sb']（不在 run_match_keys 中 ⇒ 门禁视野外、不受 expected 约束）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-MATRIX-UNBACKED",
+          "EV-OUT-UNDECLARED-KEY"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "ff78dcdfaacdb247956bf379d9b72438f64fd77d7b912f2448799298224b19ba",
+        "artifact_id": "4edf60deb3d71c10f606bd88dc24b7d9cb18d37530b08cd8ce3714b650a9ff14",
+        "state": "pass_with_exception",
+        "reasons": [
+          "服务的原子尚未锻造：ATOM-MEM-MOVE-001",
+          "matrix 声明 3 个编译器，但可核对留痕只有 0 处（GCC 15.3.0, GCC 13.1.0, GCC 8.1.0）——单一留痕撑不起多平台声明"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-MATRIX-UNBACKED",
+          "EV-SERVES-EXIST"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "0a222d90ca0fab0084768596a6763f79faabb884093d9b870f12aa087aef8e0f",
+        "artifact_id": "df0d2539ef4c15a80c7964ea35206bce0beb95fa8f3bb3e43bf8643cb1641dd3",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "34b4a87f9c2bc68dffe90c6dce9d3ff309411d3e9c00e3389583a7bf347f0f41",
+        "artifact_id": "bca071dd0a6ceddf716572cfea9a100f989ed606dfcbe77b8f8008491ffac6f6",
+        "state": "pass_with_exception",
+        "reasons": [
+          "falsification 无任何量化对照值（纯假设句，不可复核）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-FALSIFICATION-QUANT"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "a8c4b1205578f025e52d91db8172fce73629a4b81dc51f013e04cec95904bbab",
+        "artifact_id": "b62715358505f846d99c672a192f8142c461fab7b4cf43aa228871217eb1632c",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "e4876f07bc87eb20bc093a85d7e80bae9dc0630583fc2f0cfdb8c8f8940632d2",
+        "artifact_id": "71f73a3b6040cc3def4c347565be866df53abe72563de461e8b4297bf1c7ad4e",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "60a25549252c2c500d20ed86742647651e52ee024b8934b2ae0f17b9eb624698",
+        "artifact_id": "3c5f7d25e00bf5f6700849c5ecac1bd50ab380544e254358d1a1e14a78628d31",
+        "state": "pass_with_exception",
+        "reasons": [
+          "falsification 无任何量化对照值（纯假设句，不可复核）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-FALSIFICATION-QUANT"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "451dfacd0b0c7ac7f4a1db6415db0ff919bc2454e8e7b64f926d5ccf97d92005",
+        "artifact_id": "51347bf45112d076c83ef2d8979721568e7d6a680b5d7086fd78dfd2db253bad",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "2740f820631be147e2cbb457a721633a50eb5e4278ae0b8788ff632a9d1e0074",
+        "artifact_id": "f9a0771298968225fb968678b16f87430e9429447cb5833f075e5559d0de0324",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "e42131c0e791192afe7a23077703ea691b09098539bbeb7b69f8f7f3964a0c29",
+        "artifact_id": "5a5d9d0af77c711ed6de43c692f857fd641e76c06d101000f8ab5a585a26bab8",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "eaf8873b8b1b0b7114fd0ad9345fae94ac2b9901d165dadc2e05cfd8d2ee72bc",
+        "artifact_id": "e9bb52ed58a14abef82feb7ab30500898c3053fb1460c7ccb75862e08039e6b0",
+        "state": "pass_with_exception",
+        "reasons": [
+          "falsification 无任何量化对照值（纯假设句，不可复核）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-FALSIFICATION-QUANT"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "3b864ccb1593affe08efdd7a82af755d935cd9a34b61936b0b4b61511c528436",
+        "artifact_id": "323182441129427f3dacbcbf2e0babe637599cac31b8741373aedae0394e0d37",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "7cbdb790e9d9cdbe08242636509af87ab70871612f4baf133b39a472e5f4348c",
+        "artifact_id": "b6f99b72df216d982e9e4f0d0a81c2cdbbba8198d7742282c5d9a08dd82e5012",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "46e65e94d6cda38751df7fbf252e4aa71f559cfc620964ce1bd66e5f455a2654",
+        "artifact_id": "41a686cf5ebf4e273fe7522621b5194929ac39637c62b086673f91cb7dcadfbd",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "38e75dc94560c4cdb1315d78058c2634c71448a4a7c07462d7c7ec29b742beb8",
+        "artifact_id": "5e542cc90e1f683310a73697329a15cbce9af15f56a8b8c98978ff39d4325e7b",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "5cefe3ee8827646afa8562759dcd75353c091a79067746712c293fe0c276de25",
+        "artifact_id": "2a3a26777ac1dc338d9c5e81919fb4d8e300ee582110f7d6504c05478fccf78d",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "6eb86218d7339515ff426c06b814d5c4593f3c0d6fcfb9c45519fde0f815a53c",
+        "artifact_id": "68204eb2bf2a54cb9fd6eb3ced8e8b563b368cf927679cc4da4b1e59e4a80ea7",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "ac6419e30e647ea666d4a12fcafa6e109a93e9eee4dd93c5ee655fa5dccc4d63",
+        "artifact_id": "dd889a45d7835b22da16a119032d3ba9b95a0a2fdfbe606fb6678fe0b8f94744",
+        "state": "pass_with_exception",
+        "reasons": [
+          "断言文本在夹具/工件中均无出处：['_Znwm']（疑似拼错或平台专属拼写，读者会以为有校验）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-ASSERT-SYMBOL-MAPPED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "b85d86b5701decc99df35736c27143124cb05781dfe1481d01abb91ef72bf389",
+        "artifact_id": "170eb109350e520b7271468ac2cfe4d28b4d1bbfdd1cb118fb41d930822e562e",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "adb40c212c1f78ae540138508a35ad9d6b48b3bb0fecfa6662842ca41f9985ac",
+        "artifact_id": "503b1c0f7fc8ac6e401a598d35244c1066be96fc436a817d62848076a8fc4999",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "812f5b6c762dfa9bdebcf3e22d53b05a348109d4b9243740145eab8fb7937ebb",
+        "artifact_id": "f100b5026383a96008893d84e8f285f19d5cdbe3401cae567af23ee877a3d5ee",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "b0b97d0616bbb179887fe3460a56c1ede18ddba2d2689042d2cc9be8dcccc8b3",
+        "artifact_id": "710621ce45624f9b8925818a1b9413a36c57eee10c94ab8c80e6417d6d4123fa",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "6a5d0ed7d0755ae4cf510cf2dbfca12dd4911c53afb0b04fcfe061f6a68deed1",
+        "artifact_id": "361edd689f8fe6719c25ea2cc4b63e7d6603d1b319bf06f307ab2f21a17fdc1d",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "dd3c4a4e0910eb0788b3e442e7dc6eec523a588a2cd71de64ee2e2063be277ee",
+        "artifact_id": "fcdae1eb27274b87d24e1a17b78ace929f103dedf87980c7c26698d179793608",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "a80e01376629b9d6cd8372f202e8aca2dde5cd5db2bf1169ce48605a1a727612",
+        "artifact_id": "ab2f2f4cf4b3b7ee63c7c0ff01864cf7e5633501c99672ca1a986ae3dbbc9008",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "70f29336ba34da11956b3b04e05a16eb924189a599b5e941cce583354a258f03",
+        "artifact_id": "5b660a1e9d7753a211e2bea20c4e4b63859e2a3a4288a2306acaac8e72155e7b",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "1a45a31153ae5893ed1e63f67ba23447a286e55fb39076e0f19950440ac3ee51",
+        "artifact_id": "88730b60ba5cc3c790b237b5eb58168e86277257fb638d835ceeb0ee330cd6e8",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "b6c2803c70a69de2d0d2af3a8f239dbf2477346f86637fc0aadeead6b716b059",
+        "artifact_id": "b2d8e2c74595d03c4b70b73143085a7028c419ea8e463a10981bbaa4c01c392b",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "6801c27a27c9b3cfb552e74b8a30bcab282bde974ed31a9ae52c37f025fc5f2e",
+        "artifact_id": "52b00426d4eec7d57713379acca378d143f9edb25fd4ef4708262d3741c1a86d",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "bd645f479825749d8e95303706c3a5f210a8cbb97fc7972354f6b4fd6b0d9cae",
+        "artifact_id": "7771142dcdbb7f27b81016554dabfe022a61c5c440355793da1ec4674a8d7585",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "d16dc05f718e85c76b379c36b4dc73b0daedb3f52431de5790c5bea4cfd6eb40",
+        "artifact_id": "49761547513e6e57733ea57d8bdc17e18826a2edc654e1c776875408dfb0b9a6",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "e62c207dff78259442320f1eb7372854d159fa25f0b16a29ea504e40743dba04",
+        "artifact_id": "8d5dea49584ee79cbe09e5c7a8a469d1b5331599143fa5899d6ea8349fe36359",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "38a46cd99c4db9d0b80541124c25f15543b3a63fb30b50d2813cc551ba3aa92e",
+        "artifact_id": "032118922420a409e397527aff612d14660e7fd10cff2a717c8b23d03248f7a7",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "bcc3b61e505950433fe4ff869dffa71a509ec1ffb7839622def990fa88bf4cc3",
+        "artifact_id": "5331255172e98fe2878b0a0e7c2a35a53c2f3b760c51c32e42667c2483837419",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "f99473d16e75a00c0a833fc218bec167c50bf945cf013d6091448b86434feebb",
+        "artifact_id": "e8a56db46a785a916fb5f496f603428a67ca9ebcc29d75163ed9bbfa97a0070c",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "eb0bd6edabf8098cd2283fcc85769d291c6e9c1688edaac935452ca7cb74c504",
+        "artifact_id": "f8787f79891bc5ea8722bd52041a81b4d4ab7f98e7ae3819aff580e303c0cdb6",
+        "state": "pass_with_exception",
+        "reasons": [
+          "断言文本在夹具/工件中均无出处：['lock']（疑似拼错或平台专属拼写，读者会以为有校验）"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-ASSERT-SYMBOL-MAPPED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "e63623f677b85c0955518dda3d478456b5fb369e5cf82eb4c4f77160b13200e4",
+        "artifact_id": "86f5f1e02ed22eaf7b3e5b7f2f7db85746bad05a05668d4d48a6892c164ccc9b",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "dbabc29f4befc18d14acc9613edca6fe8588550e17d107e61e1ca6de2e10eaf2",
+        "artifact_id": "0a954a52b304c3ad403cb4dffe87bbe54bfe3e7c91c4e66d57278bb691b5642e",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "8f4608dd7b71ea463e35ae58dbad87063b8a6920834ae4e77f45df42a5c48c4b",
+        "artifact_id": "4e95e9fe0522c6eeef247d863f76119afd0d825b091ef4ba18f5776bf0560450",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "6ad40c4a08f52a3b78250281b2fa134f12d0a90f553f89fafcfbd59d73915cea",
+        "artifact_id": "16683c307da8d5127c51394fcbfea25dbae7058787036e9c5ce721529998a3ad",
+        "state": "pass_with_exception",
+        "reasons": [
+          "matrix 声明 2 个编译器，但可核对留痕只有 1 处（GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL)）——单一留痕撑不起多平台声明"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-MATRIX-UNBACKED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "230f65b855a88e45fb00e4d6b52887398eb2420f876f138fea46b33541d9919c",
+        "artifact_id": "a2240988de8ea34c934bc2d676d2ff0a21bfef127bdfef77c92c58484f195d33",
+        "state": "pass_with_exception",
+        "reasons": [
+          "matrix 声明 2 个编译器，但可核对留痕只有 0 处（GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL)）——单一留痕撑不起多平台声明"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-MATRIX-UNBACKED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "39cd8e49203303ff6577cf78f322f9fc6c7a3e5e01a7e5114ce6524c6153e645",
+        "artifact_id": "9acdf3ac99be1f520796d68d7b20a88d2e173ab7b5736b4e9e5dab8d609fedde",
+        "state": "pass_with_exception",
+        "reasons": [
+          "matrix 声明 2 个编译器，但可核对留痕只有 0 处（GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL)）——单一留痕撑不起多平台声明"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-MATRIX-UNBACKED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "e704278f7c24681c3aaf0695ef6ca1a70648f2b7eb8493b37d118d9e60764c74",
+        "artifact_id": "16ace11e14943e128911b367ca2dbbb3c6b56f83277f53157679f192b3a3559e",
+        "state": "pass_with_exception",
+        "reasons": [
+          "matrix 声明 2 个编译器，但可核对留痕只有 1 处（GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL)）——单一留痕撑不起多平台声明"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-MATRIX-UNBACKED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "56e90a745708718dd69820b14c3a5594261ba118a523c2940b569d7bf746f32d",
+        "artifact_id": "dc4ecec62e15bce2ee5c101050bacd189d6e214240dd32a227a33e07f314767e",
+        "state": "pass_with_exception",
+        "reasons": [
+          "matrix 声明 2 个编译器，但可核对留痕只有 1 处（GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL)）——单一留痕撑不起多平台声明"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-MATRIX-UNBACKED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "2f68ea0abecb6f8a5bf7fb681422e336f5487c1074b6d913ab0a3adba052554e",
+        "artifact_id": "fdb0d8cc6e82b05add1f8082ba4e487e26f5774d08741923a847b5d792e7b379",
+        "state": "pass_with_exception",
+        "reasons": [
+          "matrix 声明 2 个编译器，但可核对留痕只有 0 处（GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL)）——单一留痕撑不起多平台声明"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-MATRIX-UNBACKED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "8af534b1f5e5955080affa90f58d6f438805c18175c78388772700bcc4a397f2",
+        "artifact_id": "2d12777537f0633662b59ca3b40217d78176793269610520625eef13ba80859e",
+        "state": "pass_with_exception",
+        "reasons": [
+          "matrix 声明 2 个编译器，但可核对留痕只有 1 处（GCC 15.3.0 (MinGW-w64), GCC 14.2.0 (WSL)）——单一留痕撑不起多平台声明"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [
+          "EV-MATRIX-UNBACKED"
+        ],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "dc84a9607144aa1d751238a1569b3524ce7345810cfdcdaab1fbebc301520398",
+        "artifact_id": "dc2716cb597c066a7e48f953f4f258adb43bf565dc74fe1b65b956fe5c578bf0",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      },
+      {
+        "decision_id": "40b8893942c9f9ee8a28bdd5649df0d2ee6be1cd1b385e9dc8286402e92f6763",
+        "artifact_id": "8b741948dec4556e63b2a689a358d934308207082f598eebf249b4fe4d11bcfe",
+        "state": "pass",
+        "reasons": [
+          "无命中 finding"
+        ],
+        "evidence_ids": [],
+        "rule_ids": [],
+        "policy_ref": "6eab6652713a229b726d4e7b008bd52819c4e1d614307fdda00da4eb885ba90d",
+        "exceptions": [],
+        "abstained": false,
+        "decided_at": "2026-09-26T01:18:51"
+      }
+    ],
+    "external_attestations": [],
+    "exceptions": [],
+    "abstentions": [],
+    "created_at": "2026-09-26T01:18:51",
+    "started_at": "2026-09-26T01:18:50",
+    "ended_at": "2026-09-26T01:18:51",
+    "integrity": "e35a73d02d9b6016cf5a21e486b6859732952ac8a23211c825e900d2811d4b2d"
+  },
+  "reconcile": {
+    "rows": [
+      {
+        "metric": "规则条数",
+        "kernel": 67,
+        "legacy": 67
+      },
+      {
+        "metric": "规则 ID 集合",
+        "kernel": "same",
+        "legacy": "—"
+      },
+      {
+        "metric": "finding 条数",
+        "kernel": 121,
+        "legacy": 121
+      },
+      {
+        "metric": "W2 节点数",
+        "kernel": 121,
+        "legacy": 121
+      },
+      {
+        "metric": "W2 IN/OUT",
+        "kernel": "79/42",
+        "legacy": "79/42"
+      },
+      {
+        "metric": "权威链完整",
+        "kernel": true,
+        "legacy": true
+      },
+      {
+        "metric": "受控零污染",
+        "kernel": true,
+        "legacy": true
+      }
+    ],
+    "n_diff": 0,
+    "diffs": [],
+    "run_id": "73cdcf41490e6a726079963865e2632df95bd29520d73c2a7ad963a742dccca6",
+    "integrity_ok": true
+  }
+}
