@@ -1,0 +1,730 @@
+{
+  "grader": {
+    "rows": [
+      {
+        "rule_id": "ATOM-FM-REQUIRED",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-ID-FORMAT",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-ID-UNIQUE",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-VERIFIED-BOUND",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-NO-UNVERIFIED",
+        "known_error_rate": 1.0,
+        "total": 15,
+        "error": 15,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "suspended",
+        "why": "error_rate 1.0 > 0.5 ⇒ 暂停（恢复需人审）"
+      },
+      {
+        "rule_id": "ATOM-STATUS-VALUE",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-STATUS-TRANSITION",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-DAL-MATCH",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-REL-TARGET",
+        "known_error_rate": 0.1959,
+        "total": 434,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1959 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-REL-DAG",
+        "known_error_rate": 0.1959,
+        "total": 434,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1959 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-REL-CONFLICT",
+        "known_error_rate": 0.1959,
+        "total": 434,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1959 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-SUPERIORITY-WORDS",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-FM-REQUIRED",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-ID-UNIQUE",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-FALSIFICATION",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-MATRIX",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-GRAY-ZONE",
+        "known_error_rate": 0.625,
+        "total": 64,
+        "error": 40,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "suspended",
+        "why": "error_rate 0.625 > 0.5 ⇒ 暂停（恢复需人审）"
+      },
+      {
+        "rule_id": "ATOM-MISCONCEPTION-LEVELS",
+        "known_error_rate": 0.2632,
+        "total": 57,
+        "error": 15,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "degraded_warn",
+        "why": "error_rate 0.2632 > 0.2 ⇒ 降级为 warn"
+      },
+      {
+        "rule_id": "MIS-LIBRARY",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-MISCONCEPTION-REF",
+        "known_error_rate": 0.2632,
+        "total": 57,
+        "error": 15,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "degraded_warn",
+        "why": "error_rate 0.2632 > 0.2 ⇒ 降级为 warn"
+      },
+      {
+        "rule_id": "ATOM-AUDIENCE",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-PREREQ-READABLE",
+        "known_error_rate": 0.116,
+        "total": 388,
+        "error": 45,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.116 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-SERVES-EXIST",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "DOC-ZERO-PLACEHOLDER",
+        "known_error_rate": 0.0,
+        "total": 16,
+        "error": 0,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.0 ≤ 0.2"
+      },
+      {
+        "rule_id": "META-MANIFEST",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "S1-AUTHOR-SELF-VERIFY",
+        "known_error_rate": 0.1671,
+        "total": 419,
+        "error": 70,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1671 ≤ 0.2"
+      },
+      {
+        "rule_id": "S1-GIT-AUTHOR-BINDING",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-VERIFY-REASON",
+        "known_error_rate": 0.1671,
+        "total": 419,
+        "error": 70,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1671 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-ARTIFACT-VERSION-MATCH",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "S2-EVIDENCE-VERDICT",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "S3-EXPECTED-HARDCODED",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-SELF-SATISFIED-ASSERT",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-FALSIFICATION-QUANT",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-TRIVIAL-OBSERVATION",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-MATRIX-UNBACKED",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-ZERO-DIAG-WERROR",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-WERROR-DECL-BIND",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-ASSERT-COUNT-BELOW-BASELINE",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-OUT-UNDECLARED-KEY",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-RUN-KEY-DECLARED-EXISTS",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-ASSERT-SYMBOL-MAPPED",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-ARTIFACT-PRODUCER",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-ARTIFACT-FILE-EXISTS",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-MSCV-NO-VERIFY",
+        "known_error_rate": 0.1959,
+        "total": 434,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1959 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-FM-DUP-KEY",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-FM-YAML-HARDENING",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-ENV-DEPENDENT-KEY",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-REL-UNKNOWN",
+        "known_error_rate": 0.1959,
+        "total": 434,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1959 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-CLAIM-STRUCTURED",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "OBSERVATION-NEEDS-ARTIFACT",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "INFERENCE-NOT-MACHINE-VERIFIED",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-CLAIM-CONCEPT-NORMALIZED",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "OBSERVATION-LIVENESS",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-FIXTURE-NO-ECHO-DATA",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-OUT-STALE-MTIME",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "CARD-PATH-NOT-CANONICAL",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "EV-SERVES-EXIST-HC",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-REL-TARGET-HC",
+        "known_error_rate": 0.1959,
+        "total": 434,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1959 ≤ 0.2"
+      },
+      {
+        "rule_id": "ATOM-REL-UNKNOWN-HC",
+        "known_error_rate": 0.1959,
+        "total": 434,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1959 ≤ 0.2"
+      },
+      {
+        "rule_id": "CARD-PATH-NOT-CANONICAL-HC",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "PED-MOTIVATION",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "PED-MISCONCEPTION",
+        "known_error_rate": 0.2632,
+        "total": 57,
+        "error": 15,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "degraded_warn",
+        "why": "error_rate 0.2632 > 0.2 ⇒ 降级为 warn"
+      },
+      {
+        "rule_id": "PED-SOCRATIC",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "PED-PREDICT-FIRST",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "LLM-SUPERIORITY-QUALITY",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "HYBRID-TEACHING-DEPTH",
+        "known_error_rate": 0.1881,
+        "total": 452,
+        "error": 85,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1881 ≤ 0.2"
+      },
+      {
+        "rule_id": "HUMAN-GOLDEN-REVIEW",
+        "known_error_rate": 0.1671,
+        "total": 419,
+        "error": 70,
+        "has_samples": true,
+        "in_registry": true,
+        "action": "ok",
+        "why": "error_rate 0.1671 ≤ 0.2"
+      }
+    ],
+    "by_action": {
+      "ok": 62,
+      "suspended": 2,
+      "degraded_warn": 3
+    },
+    "n": 67,
+    "n_registry": 67,
+    "theta_warn": 0.2,
+    "theta_suspend": 0.5,
+    "n_with_samples": 67
+  },
+  "synthetic": [
+    {
+      "rule_id": "R-OK",
+      "rate": 0.2,
+      "expect": "ok",
+      "got": "ok",
+      "active": true,
+      "severity": "block",
+      "ok": true
+    },
+    {
+      "rule_id": "R-DEG",
+      "rate": 0.21,
+      "expect": "degraded_warn",
+      "got": "degraded_warn",
+      "active": true,
+      "severity": "warn",
+      "ok": true
+    },
+    {
+      "rule_id": "R-SUS",
+      "rate": 0.51,
+      "expect": "suspended",
+      "got": "suspended",
+      "active": false,
+      "severity": "off",
+      "ok": true
+    },
+    {
+      "rule_id": "R-SUS",
+      "rate": 0.51,
+      "expect": "suspended(不改动作)",
+      "got": "suspended",
+      "active": true,
+      "severity": "block",
+      "ok": true
+    }
+  ],
+  "state": {
+    "suspended": [],
+    "history": []
+  },
+  "n_rules_with_samples": 67,
+  "mode": "enforce"
+}
