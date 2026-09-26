@@ -138,7 +138,7 @@ ruff 全绿 / mypy **0 errors** / 受控目录零污染 / 保护器灰度验证 
 | 类型 | 文件 |
 |---|---|
 | 工具（11） | `conflict_detector_642`、`anti_windup_642`、`blind_protocol_642`、`calibration_tracker_642`、`mdl_gate_642`、`protector_rollout_642`、`kernel_minimality_audit_642`、`fail_closed_audit_642`、`auto_executor_whitelist_eval_642`、`loop_calibration_642`、`run_642_gate`（`tools/` 下，均带 `--check`） |
-| 测试（12） | `tests/test_*_642.py`（合计 **86 例**：A 48 + B 14 + C 15 + D 9） |
+| 测试（11） | `tests/test_*_642.py`（**11 个文件 / 合计 86 例**：A 48 + B 14 + C 15 + D 9） |
 | 文档（1） | `docs/uvk_manifesto.md`（UVK 设计纲领） |
 | 报告 | `data/642_conflict_flag_run.md`、`642_anti_windup_rollout.md`、`642_blind_rollout.md`、`642_calibration_rollout.md`、`642_mdl_admission.md`、`642_protector_rollout.md`、`642_kernel_minimality_audit.md`、`642_fail_open_audit.md` + `.json`、`642_whitelist_expansion_eval.md`、`642_loop_calibration.md` + `.json`、`642_rule_admission.json`、`642_gate_result.md`、`642_pytest_final.txt`、`642_acceptance_report.md` |
 
@@ -181,6 +181,15 @@ ruff 全绿 / mypy **0 errors** / 受控目录零污染 / 保护器灰度验证 
     **未定位根因**（两处均在 `sessionfinish` 前后输出）⇒ 登记为观测 + 交人项，**不猜测**。
 14. **`data/642_pytest_run1_state_red.txt` 是失败现场**（1 failed），与权威终验
     `data/642_pytest_final.txt`（0 failed）**并存**，不做替换 —— 保留"红→取证→绿"的完整链。
+15. **本批自纠：`status.json` 一度被写成非法 JSON（真实失误，已修复）**。D2+D3 提交时，
+    在 642 history 备注里追加 D2 文字时误用了**直双引号**（CJK 文本内），破坏了 JSON 字符串。
+    取证（无重定向方式读 blob）：**`HEAD`（02cec5f7）版非法**（`Expecting ',' delimiter`，
+    line 232）而 **`HEAD~1`（f3148a3e）版合法** ⇒ 全量终验（run 2）读到的 `status.json`
+    **是合法的**，**§二.1 的验证结论不受影响**；628 门禁测试复跑仍绿、`run_642_gate` 复跑仍 PASS。
+    但**监工端会直接读 `status.json`** ⇒ 非法 JSON 会卡住后续验收，故该类失误**零容忍**：
+    修复方式为定向替换（直双引号 → `「」`）+ `json.loads` 校验，并已登记为自纠项。
+16. **本批未 push**：`origin/master..HEAD` = **56** 个 commit（641 收尾 3 + 642 全部 + 本自纠），
+    push 时机与 CI 观察交人（§六.1）。
 
 ## 六、交人裁决项（机器不代决）
 
