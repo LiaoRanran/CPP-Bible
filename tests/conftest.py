@@ -145,6 +145,35 @@ SERIAL_EXTRA = frozenset({
     "test_run_638_gate.py",
     "test_run_641_gate.py",
     "test_run_642_gate.py",
+    # ── 643 任务0：第三轮 fast 复跑**增量**登记（同取证法：fast 红 → 逐模块 `-n0` 复跑）──
+    # 取证（643 F2 两阶段终验，fast `-m "not slow" -n auto` 3010 例 12 红）：
+    #   12 红落 9 模块；逐模块串行复跑后 **5 模块全绿**（并行假红）→ 登记如下；
+    #   另 6 例（test_mypy_fix_625::test_ruff_clean_after_fix、test_622_a1×2、
+    #   test_622_a4、test_attack_round8_629×2）**串行仍红**，根因是**并发批次 644**
+    #   （其提交的 `tests/test_*_644.py` 带 I001 ⇒ 整树 ruff 红；其未提交的 `data/*`
+    #   改动 ⇒ "真实仓干净" 类断言红）——**非并行竞争**，故**不**入串行组，
+    #   改在 643 收工门禁 `run_643_gate.POLLUTED_644` 按 node id 登记豁免（待 644 自清）。
+    # 共同特征：跑 gate/自检子进程 或 读真实仓可变状态（`data/` 产物 / 受控目录 git 状态），
+    #   与别的 worker 的合法写盘竞争 ⇒ 读到自己写过的中间态（与 508/583/592/607 同因）。
+    "test_620_gate.py",
+    "test_attack_simulator_643.py",     # 643 自身：端到端跑一轮真实 mutate + 自检子进程
+    "test_autoimmune_diagnose_630.py",
+    "test_ci_pytest_fix_625.py",
+    "test_supersedes_remapper_627.py",
+    # ── 643 任务0：第四轮 fast 复跑增量登记（同法：fast 红 → 串行复跑全绿）────────
+    # 第二轮 fast 13 红：6 例 644 归因（见上，不入组）+ 7 例串行复跑**全绿**（并行假红）
+    #   ⇒ 登记下列 5 模块。共同特征：读 `.tool_checksums`/受控目录指纹/真实仓产物，
+    #   与别的 worker 合法写盘竞争（test_tool_integrity 读基准文件、test_pre_push_checklist_627
+    #   读受控目录 git 状态、mutation_fuzz_report/flashcard_export 跑工具子进程读真实产物）。
+    "test_pre_push_checklist_627.py",
+    "test_tool_integrity.py",
+    "test_tool_integrity_supply_chain_601.py",
+    "test_mutation_fuzz_report.py",
+    "test_flashcard_export.py",
+    # ── 643 任务0：第五轮 fast 复跑增量登记（同法）──────────────────────────────
+    # 第三轮 fast 7 红：6 例 644 归因（见上）+ 1 例 test_autoimmune_fix_proposal_630
+    #   串行复跑 6/6 全绿 ⇒ 并行假红，登记（读 fix-proposal 真产物 + 跑工具子进程）。
+    "test_autoimmune_fix_proposal_630.py",
 })
 
 

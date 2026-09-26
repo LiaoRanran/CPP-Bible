@@ -1,0 +1,278 @@
+# pytest -m ['-m', 'slow', '-n0'] @ 2026-09-26T16:21:47
+# 注：本文件已经 sanitize() 净化（去 ANSI/控制字符）——data/ 有'无控制字符'门禁
+...................F...F...F............................................ [  8%]
+..................................................s.s................... [ 17%]
+........................................s............................... [ 26%]
+........................................................................ [ 34%]
+........................................................................ [ 43%]
+........................................................................ [ 52%]
+........................................................................ [ 60%]
+......................s....s............................................ [ 69%]
+.........................................................F...F....F..... [ 78%]
+.....s....s.s....s..............................................F....... [ 86%]
+........................................................................ [ 95%]
+....................................                                     [100%]
+================================== FAILURES ===================================
+____________________________ test_selftest_passes _____________________________
+
+    def test_selftest_passes():
+>       assert SA.selftest() == 0
+E       assert 1 == 0
+E        +  where 1 = <function selftest at 0x0000022F826E3BA0>()
+E        +    where <function selftest at 0x0000022F826E3BA0> = SA.selftest
+
+tests\test_622_a2.py:144: AssertionError
+---------------------------- Captured stdout call -----------------------------
+  [ok] 路径白名单：atoms 允许
+  [ok] 路径白名单：evidence 允许
+  [ok] 路径白名单：tools 拒绝
+  [ok] 路径白名单：Book 拒绝
+  [ok] M1 删字段可行
+  [ok] M6 键名变形可行
+  [ok] M7 篡改哈希可行
+  [ok] M2 路径变形可行
+  [ok] M3 弱化断言可行
+  [ok] M4 恒真注入可行
+  [ok] M5 status→draft 可行
+  [ok] 未知 op 返回 None
+  [ok] 缺字段时返回 None
+  [FAIL] 并发锁可获取/释放
+  [FAIL] 锁释放后可再获取
+A1 selftest: FAIL
+_____________________________ test_new_tools_pass _____________________________
+
+    def test_new_tools_pass():
+        ok, msg = G.check_new_tools()
+>       assert ok, msg
+E       AssertionError: 失败：sandbox_apply_622(exit 1)
+E       assert False
+
+tests\test_622_gate.py:38: AssertionError
+_____________________________ test_pytest_passes ______________________________
+
+    def test_pytest_passes():
+        ok, msg = G.check_pytest()
+>       assert ok, msg
+E       AssertionError: pytest 失败：
+E           [FAIL] 并发锁可获取/释放
+E           [FAIL] 锁释放后可再获取
+E         A1 selftest: FAIL
+E         =========================== short test summary info ===========================
+E         FAILED tests/test_622_a1.py::test_real_gate_end_to_end_and_clean - RuntimeErr...
+E         FAILED tests/test_622_a1.py::test_selftest_passes - assert 1 == 0
+E         FAILED tests/test_622_a2.py::test_selftest_passes - assert 1 == 0
+E         FAILED tests/test_622_a4.py::test_selftest_passes - assert 1 == 0
+E       assert False
+
+tests\test_622_gate.py:59: AssertionError
+_____________________ test_real_tools_dir_green_after_b2 ______________________
+
+    def test_real_tools_dir_green_after_b2():
+        """验证 623 B2 修复后，真实 tools/ 整目录 ruff 全绿（门禁真实口径）。"""
+        mod = _load()
+        whole = mod.collect_py_files([os.path.join(ROOT, "tools")])
+        assert whole, "tools/ 应含 .py 文件"
+>       rc, out = mod.run_ruff(whole)
+                  ^^^^^^^^^^^^^^^^^^^
+
+tests\test_run_623_gate.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tools\run_623_gate.py:48: in run_ruff
+    proc = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ASUS\AppData\Roaming\uv\python\cpython-3.13.13-windows-x86_64-none\Lib\subprocess.py:554: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ASUS\AppData\Roaming\uv\python\cpython-3.13.13-windows-x86_64-none\Lib\subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Popen: returncode: None args: ['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bib...>
+args = 'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe -m ruff check C:\\CodeLearnling\\note\\note...\\note\\C++\\CPP-Bible\\tools\\writer_selfcheck.py C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\tools\\xref_check.py'
+executable = None, preexec_fn = None, close_fds = False, pass_fds = ()
+cwd = 'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible', env = None
+startupinfo = <subprocess.STARTUPINFO object at 0x0000022F8A7C0450>
+creationflags = 0, shell = False, p2cread = Handle(1484), p2cwrite = -1
+c2pread = 11, c2pwrite = Handle(1892), errread = 12, errwrite = Handle(1332)
+unused_restore_signals = True, unused_gid = None, unused_gids = None
+unused_uid = None, unused_umask = -1, unused_start_new_session = False
+unused_process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session, unused_process_group):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            if not executable:
+                # gh-101283: without a fully-qualified path, before Windows
+                # checks the system directories, it first looks in the
+                # application directory, and also the current directory if
+                # NeedCurrentDirectoryForExePathW(ExeName) is true, so try
+                # to avoid executing unqualified "cmd.exe".
+                comspec = os.environ.get('ComSpec')
+                if not comspec:
+                    system_root = os.environ.get('SystemRoot', '')
+                    comspec = os.path.join(system_root, 'System32', 'cmd.exe')
+                    if not os.path.isabs(comspec):
+                        raise FileNotFoundError('shell not found: neither %ComSpec% nor %SystemRoot% is set')
+                if os.path.isabs(comspec):
+                    executable = comspec
+            else:
+                comspec = executable
+    
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+>           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 206] 文件名或扩展名太长。
+
+C:\Users\ASUS\AppData\Roaming\uv\python\cpython-3.13.13-windows-x86_64-none\Lib\subprocess.py:1554: FileNotFoundError
+______________________________ test_gate_passes _______________________________
+
+    def test_gate_passes():
+        # 完整收工门禁（整目录 ruff + 本批 ruff + 工具 --check + ci.yml + 零污染）
+>       assert g.main([]) == 0
+E       assert 1 == 0
+E        +  where 1 = <function main at 0x0000022F85929260>([])
+E        +    where <function main at 0x0000022F85929260> = g.main
+
+tests\test_run_624_gate.py:26: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[run_624_gate] 收工门禁
+  ❌ 整目录 ruff（tools/ tests/）  [*] 5 fixable with the `--fix` option.
+  ✅ 本批(624)文件 ruff  All checks passed!
+  ✅ 624 新工具 --check  5/5
+  ❌ 623/622/621 回归 --check  sandbox_apply_622
+  ✅ ci.yml 语法  YAML OK
+  ✅ 受控目录零污染  clean
+[run_624_gate] FAIL
+____________________________ test_full_gate_passes ____________________________
+
+    def test_full_gate_passes():
+        """真实仓库全绿（受控不变量；失败时按 `_run` 输出定位是真红还是基准未重钉）。"""
+>       assert G.check() == 0
+E       assert 1 == 0
+E        +  where 1 = <function check at 0x0000022F8592BBA0>()
+E        +    where <function check at 0x0000022F8592BBA0> = G.check
+
+tests\test_run_625_gate.py:42: AssertionError
+---------------------------- Captured stdout call -----------------------------
+  [FAIL] 整目录 ruff 全绿 
+  [ok] loop_stability_metrics_625 --check   [ok] 读取 7 轮   [ok] 累计触达 ≤ 67   [ok] VFDR 可计算（0≤vfdr）   [ok] 触发标准①有 5 项   [ok] satisfied 与 checks 一致   [ok] 合成：单调增长检测可算 B2 selftest: PASS 
+  [ok] vfdr_convergence_625 --check   [ok] 规则 67 条   [ok] 7 轮   [ok] 累计触达 0< cum ≤67   [ok] 盲区 = 67 - cum   [ok] 盲区缩减（≤ 623 的 37）   [ok] VFDR 可算 B3 selftest: PASS 
+  [ok] path_config_625 --check   [ok] 默认 root = tools 父目录   [ok] 默认 atoms/evidence/data 派生自 root   [ok] resolve_atom_path 派生正确   [ok] resolve_data_path 派生正确   [ok] 路径自检可调用 C1 selftest: PASS 
+  [ok] queyi_core_interface_design_625 --check   [ok] 5 个接口   [ok] 每接口有 attrs+methods   [ok] 版本 v0.1   [ok] 映射非空   [ok] 关系图非空   [ok] 实现计划含 5 接口 C2 selftest: PASS 
+  [ok] queyi_core_trigger_check_625 --check   [ok] 5 条标准   [ok] 状态取值合法   [ok] satisfied 计数一致   [ok] ① 至少部分满足   [ok] ⑤ 核心 6/6 C3 selftest: PASS 
+  [ok] round7_mutator_625 --check   [ok] 规则总数为 67   [ok] 盲区非空且 < 40   [ok] 生成 ~100 条（≥95 且 ≤110）   [ok] Y1/Y2/Y3 均存在   [ok] 每条含 edits   [ok] Y1 覆盖全部盲区 B1 selftest: PASS 
+  [ok] human_review_dashboard_625 --check   [ok] synced annotations 可读   [ok] 生成 ≥80 条复核项（624 E2 上限）   [ok] HTML 含关键元素   [ok] 含筛选脚本   [ok] 权威日志可读 D2 selftest: PASS 
+  [ok] human_review_executor_625 --check   [ok] build_entry 返回带 hash 的条目   [ok] 哈希链含前驱   [ok] 非法 power 抛错   [ok] 未代签：Authority 日志未被修改   [ok] append_entry 已定义但未调用 D3 selftest: PASS 
+  [ok] pck_upgrade_strategy_625 --check   [ok] 证书总数 83   [ok] authorized 27（624 E1）   [ok] 目标需净增 ≥1   [ok] 待人审证据证 >0   [ok] 未修改任何证书文件 D4 selftest: PASS 
+  [ok] tool_integrity --check（尺子 34/34） 
+  [ok] ots_anchor --check 
+  [ok] mypy tools/ = 0 errors (0 errors)
+  [ok] 受控目录零污染 
+F1 gate: FAIL
+__________________________ test_static_checks_green ___________________________
+
+    def test_static_checks_green():
+        """受控目录 / ruff / merkle / tool_integrity（不跑 pytest/mypy 全量）。"""
+        assert G.check_controlled()["ok"]
+>       assert G.check_ruff()["ok"]
+E       assert False
+
+tests\test_run_639_gate.py:31: AssertionError
+--------------------------- snapshot report summary ---------------------------
+5 snapshots passed.
+=========================== short test summary info ===========================
+FAILED tests/test_622_a2.py::test_selftest_passes - assert 1 == 0
+FAILED tests/test_622_gate.py::test_new_tools_pass - AssertionError: 失败：sa...
+FAILED tests/test_622_gate.py::test_pytest_passes - AssertionError: pytest 失...
+FAILED tests/test_run_623_gate.py::test_real_tools_dir_green_after_b2 - FileN...
+FAILED tests/test_run_624_gate.py::test_gate_passes - assert 1 == 0
+FAILED tests/test_run_625_gate.py::test_full_gate_passes - assert 1 == 0
+FAILED tests/test_run_639_gate.py::test_static_checks_green - assert False
+

@@ -1,101 +1,82 @@
-# pytest -m ['-m', 'not slow', '-n', 'auto'] @ 2026-09-26T11:36:49
+# pytest -m ['-m', 'not slow', '-n', 'auto'] @ 2026-09-26T16:04:44
 # 注：本文件已经 sanitize() 净化（去 ANSI/控制字符）——data/ 有'无控制字符'门禁
 bringing up nodes...
 bringing up nodes...
 
 ........................................................................ [  2%]
-........................................................................ [  5%]
+........................................................................ [  4%]
 ........................................................................ [  7%]
-........................................................................ [ 10%]
+........................................................................ [  9%]
 ........................................................................ [ 12%]
-........................................................................ [ 15%]
-........................................................................ [ 18%]
-........................................................................ [ 20%]
-........................................................................ [ 23%]
-.F...................................................................... [ 25%]
-.................................................................F...... [ 28%]
-..................................................F..............s..F... [ 30%]
-........................................................................ [ 33%]
+........................................................................ [ 14%]
+.........F.............................................................. [ 17%]
+........................................................................ [ 19%]
+........................................................................ [ 22%]
+....................F.........................F......................... [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 29%]
+........................................................................ [ 31%]
+..................................................s..................... [ 34%]
 ........................................................................ [ 36%]
-........................................................................ [ 38%]
-......................................................................s. [ 41%]
-........................................................................ [ 43%]
+....................................F................................... [ 39%]
+........................................s............................... [ 41%]
+........................................................................ [ 44%]
 ........................................................................ [ 46%]
-........................................................................ [ 48%]
+........................................................................ [ 49%]
 ........................................................................ [ 51%]
 ........................................................................ [ 54%]
-.......................................................s................ [ 56%]
-........................................................................ [ 59%]
-F....................................................................... [ 61%]
-.................................s.........................F............ [ 64%]
-.........................s.............................................. [ 67%]
-..................................................F................F.... [ 69%]
-........................................................................ [ 72%]
-........................................................................ [ 74%]
-..............s..................................................s...... [ 77%]
-........................................................................ [ 79%]
-..........s.......................................F..................... [ 82%]
-.........................................F.............................. [ 85%]
-.................................F...................................... [ 87%]
-...............................s.s.........................FF........... [ 90%]
-............F........................................................... [ 92%]
-.........................................F.............................. [ 95%]
-........................................................................ [ 97%]
-.........................................................                [100%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 61%]
+......................................................................F. [ 63%]
+........................................................................ [ 66%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................................ [ 73%]
+.......................F................................................ [ 76%]
+...............................................FF....................... [ 78%]
+...s..................................s................................. [ 81%]
+........................................................................ [ 83%]
+....s................................................................... [ 86%]
+........................................................................ [ 88%]
+.....................................................ss..............F.. [ 90%]
+........................................................................ [ 93%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+.................................................                        [100%]
 ================================== FAILURES ===================================
-____________________________ test_selftest_passes _____________________________
-[gw17] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+__________________________ test_report_and_selftest ___________________________
+[gw31] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
 
-    def test_selftest_passes():
->       assert SA.selftest() == 0
+    def test_report_and_selftest():
+        p = R.write_report()
+        md = open(p, encoding="utf-8").read()
+        for kw in ("判决分布", "触达规则", "零污染", "诚实登记", "局限"):
+            assert kw in md, f"报告缺：{kw}"
+>       assert R.selftest() == 0
 E       assert 1 == 0
-E        +  where 1 = <function selftest at 0x000002524F194EA0>()
-E        +    where <function selftest at 0x000002524F194EA0> = SA.selftest
+E        +  where 1 = <function selftest at 0x000001E72A326FC0>()
+E        +    where <function selftest at 0x000001E72A326FC0> = R.selftest
 
-tests\test_622_a1.py:181: AssertionError
+tests\test_attack_round8_629.py:64: AssertionError
 ---------------------------- Captured stdout call -----------------------------
-  [ok] 路径白名单：atoms 允许
-  [ok] 路径白名单：evidence 允许
-  [ok] 路径白名单：tools 拒绝
-  [ok] 路径白名单：Book 拒绝
-  [ok] M1 删字段可行
-  [ok] M6 键名变形可行
-  [ok] M7 篡改哈希可行
-  [ok] M2 路径变形可行
-  [ok] M3 弱化断言可行
-  [ok] M4 恒真注入可行
-  [ok] M5 status→draft 可行
-  [ok] 未知 op 返回 None
-  [ok] 缺字段时返回 None
-  [FAIL] 并发锁可获取/释放
-  [FAIL] 锁释放后可再获取
-A1 selftest: FAIL
-_______________________ test_zero_escape_and_repo_clean _______________________
-[gw11] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
-
-    def test_zero_escape_and_repo_clean():
-        d = R.load_saved()
-        assert d["escaped"] == [], "第八轮目标：零逃逸"
-        assert not R.repo_dirty_controlled(), f"受控目录必须零污染：{R.repo_dirty_controlled()}"
->       assert not os.path.exists(os.path.join(R.ROOT, "data", ".622_apply.lock"))
-E       AssertionError: assert not True
-E        +  where True = <built-in function _path_exists>('C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\.622_apply.lock')
-E        +    where <built-in function _path_exists> = <module 'ntpath' (frozen)>.exists
-E        +      where <module 'ntpath' (frozen)> = os.path
-E        +    and   'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\.622_apply.lock' = <function join at 0x000002219D8FF920>('C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible', 'data', '.622_apply.lock')
-E        +      where <function join at 0x000002219D8FF920> = <module 'ntpath' (frozen)>.join
-E        +        where <module 'ntpath' (frozen)> = os.path
-E        +      and   'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible' = R.ROOT
-
-tests\test_attack_round8_629.py:46: AssertionError
+  [ok] 结果 JSON 已保存（--run 已跑过） 
+  [ok] 20 条 mutation 全部有判决 (20)
+  [ok] 判决分布合计 = 20 
+  [ok] 零逃逸（目标 0） ([])
+  [ok] 先 build_mutations 覆盖 20 条且契约完整 
+  [ok] 受控目录跑批后零污染 ()
+  [FAIL] 无残留并发锁 
+  [ok] 报告存在且含判决分布与诚实登记 
+D2 attack round8 check: FAIL
 ____________________________ test_selftest_passes _____________________________
-[gw17] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+[gw16] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
 
     def test_selftest_passes():
 >       assert SA.selftest() == 0
 E       assert 1 == 0
-E        +  where 1 = <function selftest at 0x000002524F194EA0>()
-E        +    where <function selftest at 0x000002524F194EA0> = SA.selftest
+E        +  where 1 = <function selftest at 0x000001F9AC8EDC60>()
+E        +    where <function selftest at 0x000001F9AC8EDC60> = SA.selftest
 
 tests\test_622_a4.py:98: AssertionError
 ---------------------------- Captured stdout call -----------------------------
@@ -115,38 +96,108 @@ tests\test_622_a4.py:98: AssertionError
   [FAIL] 并发锁可获取/释放
   [FAIL] 锁释放后可再获取
 A1 selftest: FAIL
-__________________________ test_report_and_selftest ___________________________
-[gw11] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+_______________________ test_zero_escape_and_repo_clean _______________________
+[gw30] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
 
-    def test_report_and_selftest():
-        p = R.write_report()
-        md = open(p, encoding="utf-8").read()
-        for kw in ("判决分布", "触达规则", "零污染", "诚实登记", "局限"):
-            assert kw in md, f"报告缺：{kw}"
->       assert R.selftest() == 0
-E       assert 1 == 0
-E        +  where 1 = <function selftest at 0x00000221A18CA700>()
-E        +    where <function selftest at 0x00000221A18CA700> = R.selftest
+    def test_zero_escape_and_repo_clean():
+        d = R.load_saved()
+        assert d["escaped"] == [], "第八轮目标：零逃逸"
+        assert not R.repo_dirty_controlled(), f"受控目录必须零污染：{R.repo_dirty_controlled()}"
+>       assert not os.path.exists(os.path.join(R.ROOT, "data", ".622_apply.lock"))
+E       AssertionError: assert not True
+E        +  where True = <built-in function _path_exists>('C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\.622_apply.lock')
+E        +    where <built-in function _path_exists> = <module 'ntpath' (frozen)>.exists
+E        +      where <module 'ntpath' (frozen)> = os.path
+E        +    and   'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\.622_apply.lock' = <function join at 0x000001C96D1BF920>('C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible', 'data', '.622_apply.lock')
+E        +      where <function join at 0x000001C96D1BF920> = <module 'ntpath' (frozen)>.join
+E        +        where <module 'ntpath' (frozen)> = os.path
+E        +      and   'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible' = R.ROOT
 
-tests\test_attack_round8_629.py:64: AssertionError
----------------------------- Captured stdout call -----------------------------
-  [ok] 结果 JSON 已保存（--run 已跑过） 
-  [ok] 20 条 mutation 全部有判决 (20)
-  [ok] 判决分布合计 = 20 
-  [ok] 零逃逸（目标 0） ([])
-  [ok] 先 build_mutations 覆盖 20 条且契约完整 
-  [ok] 受控目录跑批后零污染 ()
-  [FAIL] 无残留并发锁 
-  [ok] 报告存在且含判决分布与诚实登记 
-D2 attack round8 check: FAIL
+tests\test_attack_round8_629.py:46: AssertionError
+____________________________ test_dry_run_no_write ____________________________
+[gw27] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_dry_run_no_write():
+        before = len(base.iter_stored())
+        r = c4.migrate_all(dry_run=True)
+        after = len(base.iter_stored())
+>       assert before == after
+E       assert 1 == 2
+
+tests\test_evidence_migration_644.py:20: AssertionError
 __________________________ test_ruff_clean_after_fix __________________________
-[gw24] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+[gw19] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
 
     def test_ruff_clean_after_fix():
         p = subprocess.run([PY, "-m", "ruff", "check", "tools/", "tests/"],
                            cwd=ROOT, capture_output=True, text=True)
 >       assert p.returncode == 0, p.stdout + p.stderr
-E       AssertionError: F401 [*] `evidence_base_644` imported but unused
+E       AssertionError: I001 [*] Import block is un-sorted or un-formatted
+E          --> tests\test_compiler_probe_644.py:2:1
+E           |
+E         1 |   """644 D2 编译器实测获取器单测（P2-1..P2-4）。"""
+E         2 | / from __future__ import annotations
+E         3 | |
+E         4 | | import os
+E         5 | |
+E         6 | | import evidence_base_644 as base
+E         7 | | import compiler_probe_644 as d2
+E           | |_______________________________^
+E         help: Organize imports
+E           |
+E         5 |
+E           - import evidence_base_644 as base
+E         6 | import compiler_probe_644 as d2
+E           -
+E         7 + import evidence_base_644 as base
+E         8 |
+E           |
+E         
+E         I001 [*] Import block is un-sorted or un-formatted
+E          --> tests\test_evidence_acquisition_orchestrator_644.py:2:1
+E           |
+E         1 |   """644 D5 证据获取编排器单测（O5-1..O5-4）。"""
+E         2 | / from __future__ import annotations
+E         3 | |
+E         4 | | import evidence_base_644 as base
+E         5 | | import evidence_acquisition_orchestrator_644 as d5
+E           | |__________________________________________________^
+E         help: Organize imports
+E           |
+E         3 |
+E         4 + import evidence_acquisition_orchestrator_644 as d5
+E         5 | import evidence_base_644 as base
+E           - import evidence_acquisition_orchestrator_644 as d5
+E         6 |
+E           |
+E         
+E         F401 [*] `evidence_base_644` imported but unused
+E          --> tests\test_evidence_card_link_644.py:4:29
+E           |
+E         2 | from __future__ import annotations
+E         3 |
+E         4 | import evidence_base_644 as base
+E           |                             ^^^^
+E         5 | import evidence_card_link_644 as c2
+E           |
+E         help: Remove unused import: `evidence_base_644`
+E           |
+E         3 |
+E           - import evidence_base_644 as base
+E         4 | import evidence_card_link_644 as c2
+E           |
+E         
+E         E741 Ambiguous variable name: `l`
+E           --> tests\test_evidence_card_link_644.py:22:18
+E            |
+E         20 |     idx = c2.new_index()
+E         21 |     c2.link(idx, "E1", "C2", "refute", "t", "tester")
+E         22 |     rel = [l for l in idx["links"] if l["evidence_id"] == "E1" and l["card_id"] == "C2"]
+E            |                  ^
+E         23 |     assert rel and rel[0]["relation"] == "refute"
+E            |
+E         
+E         F401 [*] `evidence_base_644` imported but unused
 E          --> tests\test_evidence_conflict_644.py:4:29
 E           |
 E         2 | from __future__ import annotations
@@ -162,102 +213,39 @@ E           - import evidence_base_644 as base
 E         4 | import evidence_conflict_644 as b3
 E           |
 E         
-E         I001 [*] Import block is un-sorted or un-formatted
-E           --> tools\evidence_grade_report_644.py:19:1
-E            |
-E         18 |   sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-E         19 | / import evidence_base_644 as base
-E         20 | | import evidence_grading_644 as b1
-E         21 | | import evidence_sufficiency_644 as b2
-E         22 | | import evidence_conflict_644 as b3
-E            | |__________________________________^
-E         23 |
-E         24 |   OUT_MD = os.path.join(base.ROOT, "data", "644_evidence_quality_report.md")
-E            |
-E         help: Organize imports
-E            |
-E         19 | import evidence_base_644 as base
-E         20 + import evidence_conflict_644 as b3
-E         21 | import evidence_grading_644 as b1
-E         22 | import evidence_sufficiency_644 as b2
-E            - import evidence_conflict_644 as b3
-E         23 |
-E            |
+E         F401 [*] `evidence_base_644` imported but unused
+E          --> tests\test_evidence_grade_report_644.py:4:29
+E           |
+E         2 | from __future__ import annotations
+E         3 |
+E         4 | import evidence_base_644 as base
+E           |                             ^^^^
+E         5 | import evidence_grade_report_644 as b4
+E           |
+E         help: Remove unused import: `evidence_base_644`
+E           |
+E         3 |
+E           - import evidence_base_644 as base
+E         4 | import evidence_grade_report_644 as b4
+E           |
 E         
-E         Found 2 errors.
-E         [*] 2 fixable with the `--fix` option.
+E         E741 Ambiguous variable name: `l`
+E           --> tests\test_standard_fetcher_644.py:13:31
+E            |
+E         11 |     links = d1.parse_search_results(html)
+E         12 |     assert len(links) == 3
+E         13 |     assert all("/w/" in l for l in links)
+E            |                               ^
+E         
+E         Found 7 errors.
+E         [*] 5 fixable with the `--fix` option.
 E         
 E       assert 1 == 0
-E        +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', '-m', 'ruff', 'che...mport evidence_conflict_644 as b3\n23 |\n   |\n\nFound 2 errors.\n[*] 2 fixable with the `--fix` option.\n', stderr='').returncode
+E        +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', '-m', 'ruff', 'che... links)\n   |                               ^\n\nFound 7 errors.\n[*] 5 fixable with the `--fix` option.\n', stderr='').returncode
 
 tests\test_mypy_fix_625.py:60: AssertionError
-____________________________ test_mypy_tools_clean ____________________________
-[gw23] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
-
-    def test_mypy_tools_clean():
-        p = subprocess.run([PY, "-m", "mypy", "tools/"], cwd=ROOT, capture_output=True, text=True)
->       assert p.returncode == 0, p.stdout + p.stderr
-E       AssertionError: tools\codeblock_style.py:245: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
-E         tools\chapter_lint.py:105: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
-E         tools\evidence_conflict_644.py:35: error: Argument 1 to "_contradictory" has incompatible type "str | None"; expected "str"  [arg-type]
-E         tools\evidence_conflict_644.py:35: error: Argument 2 to "_contradictory" has incompatible type "str | None"; expected "str"  [arg-type]
-E         tools\evidence_conflict_644.py:43: error: Argument 1 to "_contradictory" has incompatible type "str | None"; expected "str"  [arg-type]
-E         tools\evidence_conflict_644.py:43: error: Argument 2 to "_contradictory" has incompatible type "str | None"; expected "str"  [arg-type]
-E         tools\evidence_conflict_644.py:52: error: Argument 1 to "_contradictory" has incompatible type "str | None"; expected "str"  [arg-type]
-E         tools\evidence_conflict_644.py:52: error: Argument 2 to "_contradictory" has incompatible type "str | None"; expected "str"  [arg-type]
-E         tools\evidence_conflict_644.py:53: error: Argument 1 to "_contradictory" has incompatible type "str | None"; expected "str"  [arg-type]
-E         tools\evidence_conflict_644.py:53: error: Argument 2 to "_contradictory" has incompatible type "str | None"; expected "str"  [arg-type]
-E         Found 8 errors in 1 file (checked 462 source files)
-E         
-E       assert 1 == 0
-E        +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', '-m', 'mypy', 'too...tible type "str | None"; expected "str"  [arg-type]\nFound 8 errors in 1 file (checked 462 source files)\n', stderr='').returncode
-
-tests\test_mypy_fix_625.py:26: AssertionError
-________________________ test_report_json_and_selftest ________________________
-[gw21] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
-
-diag = {'rows': [{'card_id': 'ATOM-CONC-FENCE-001', 'card_rel': 'atoms/conc/ATOM-CONC-FENCE-001.md', 'path': 'C:\\CodeLearnli...LAIM-CONCEPT-NORMALIZED', ...}, ...], 'warns': 65, 'cards': 23, 'per_rule': {'ATOM-CLAIM-CONCEPT-NORMALIZED': 65}, ...}
-
-    def test_report_json_and_selftest(diag):
-        p = D.write_report()
-        md = open(p, encoding="utf-8").read()
-        for kw in ("分类统计", "逐卡逐条诊断", "修复建议", "关键诚实"):
-            assert kw in md, f"报告缺：{kw}"
-        saved = json.load(open(D.OUT_JSON, encoding="utf-8"))
-        assert saved["warns"] == diag["warns"] and saved["cards"] == diag["cards"]
-        assert sum(saved["per_type"].values()) == saved["warns"]
-        assert os.path.exists(D.OUT_JSON)
->       assert D.selftest() == 0
-E       assert 1 == 0
-E        +  where 1 = <function selftest at 0x000001618D393100>()
-E        +    where <function selftest at 0x000001618D393100> = D.selftest
-
-tests\test_autoimmune_diagnose_630.py:76: AssertionError
----------------------------- Captured stdout call -----------------------------
-  [ok] 629 基线：仅口径卡 = 22 张 (22)
-  [ok] 诊断覆盖全部仅口径卡 (22)
-  [ok] 每条 warn 都被归入三型之一 
-  [ok] 存量 warn 仅剩口径规则 ATOM-CLAIM-CONCEPT-NORMALIZED (['ATOM-CLAIM-CONCEPT-NORMALIZED'])
-  [ok] auto + human = 总条数 (65)
-  [ok] signed_by 类一律 human（机器不代签） 
-  [ok] 词表：object 句子判为格式型 
-  [ok] 词表：object 缺失判为缺失型 
-  [FAIL] 只读：atoms 目录零改动 
-  [ok] 报告 + JSON 存在 
-A1 autoimmune diagnose check: FAIL
-__________________________ test_run_step_reports_rc ___________________________
-[gw18] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
-
-    def test_run_step_reports_rc():
-        r = q.run_step("ruff", ["-m", "ruff", "check", "tools/"], timeout=120)
->       assert r["name"] == "ruff" and r["rc"] == 0
-E       AssertionError: assert ('ruff' == 'ruff'
-E         
-E           ruff and 1 == 0)
-
-tests\test_quality_gate_613.py:31: AssertionError
 _________________________ test_integrity_check_passes _________________________
-[gw18] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+[gw6] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
 
     def test_integrity_check_passes():
         rc = ti.main(["--check"])
@@ -268,104 +256,13 @@ tests\test_ruler_coverage_extension_625.py:53: AssertionError
 ---------------------------- Captured stdout call -----------------------------
 [tool_integrity] OK：5 个核心工具与基准一致
 [tool_integrity] OK：信任根数据文件与基准一致（5 个已存在，警告 0 条）
+[tool_integrity] ❌ [merkle] Examples（Examples）：根不匹配（台账 2e8063fe0d1a… 实际 0b6010edf950…，文件数 1541 → 1540）
 [tool_integrity] ❌ [merkle] atoms（atoms）：根不匹配（台账 90a7c2977448… 实际 f54325ff8151…，文件数 29 → 29）
 [tool_integrity] OK：判决尺子与基准一致（22 个）
-____________________ test_needs_human_approval_and_report _____________________
-[gw21] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
-
-prop = {'items': [{'card_id': 'ATOM-CONC-FENCE-001', 'card_rel': 'atoms/conc/ATOM-CONC-FENCE-001.md', 'prop_id': 'prop-1', 'r...d', 'prop_id': 'prop-2', 'rule': 'ATOM-CLAIM-CONCEPT-NORMALIZED', ...}, ...], 'total': 65, 'auto': 0, 'human': 65, ...}
-
-    def test_needs_human_approval_and_report(prop):
-        assert prop["needs_human_approval"] is True and prop["human"] > 5
-        b, cmp_ = P.plan_b(), P.compare()
-        assert b["rules"] == 3 and "tool_integrity" in b["coredir"]
-        assert set(cmp_["A"]) == set(cmp_["B"]) and len(cmp_["A"]) >= 6
-        p = P.write_report()
-        md = open(p, encoding="utf-8").read()
-        for kw in ("方案甲", "方案乙", "两案对比", "推荐", "诚实登记"):
-            assert kw in md, f"报告缺：{kw}"
-        saved = json.load(open(P.OUT_JSON, encoding="utf-8"))
-        assert saved["plan_a"]["total"] == prop["total"]
->       assert D.git_atoms_clean() and P.selftest() == 0
-E       assert (False)
-E        +  where False = <function git_atoms_clean at 0x000001618D392FC0>()
-E        +    where <function git_atoms_clean at 0x000001618D392FC0> = D.git_atoms_clean
-
-tests\test_autoimmune_fix_proposal_630.py:87: AssertionError
-__________ test_cli_check_and_check_supply_chain_green_on_real_repo ___________
-[gw18] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
-
-    def test_cli_check_and_check_supply_chain_green_on_real_repo():
->       assert ti.main(["--check"]) == 0
-E       AssertionError: assert 1 == 0
-E        +  where 1 = <function main at 0x000001EBDC88B740>(['--check'])
-E        +    where <function main at 0x000001EBDC88B740> = ti.main
-
-tests\test_tool_integrity_supply_chain_601.py:105: AssertionError
----------------------------- Captured stdout call -----------------------------
-[tool_integrity] OK：5 个核心工具与基准一致
-[tool_integrity] OK：信任根数据文件与基准一致（5 个已存在，警告 0 条）
-[tool_integrity] ❌ [merkle] atoms（atoms）：根不匹配（台账 90a7c2977448… 实际 f54325ff8151…，文件数 29 → 29）
-[tool_integrity] OK：判决尺子与基准一致（22 个）
-______________ test_567_check_lists_tampered_file_with_prefixes _______________
-[gw28] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
-
-tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-37548-1790393441/popen-gw28/test_567_check_lists_tampered_0')
-monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000019825ACCAD0>
-capsys = <_pytest.capture.CaptureFixture object at 0x0000019825C7B020>
-
-    def test_567_check_lists_tampered_file_with_prefixes(tmp_path: Path, monkeypatch, capsys):
-        """篡改一个无关字节 ⇒ --check 必红（exit 1）并列出该文件；只打 12 位前缀（不刷全量哈希）。"""
-        tools = _mk(tmp_path)
-        cs = tmp_path / ".tool_checksums"
-        ti.write_baseline(path=cs, tools_dir=tools, names=NAMES)
-        monkeypatch.setattr(ti, "TOOLS", tools)
-        monkeypatch.setattr(ti, "CHECKSUMS", cs)
->       assert ti.main(["--check"]) == 0
-E       AssertionError: assert 1 == 0
-E        +  where 1 = <function main at 0x0000019822347740>(['--check'])
-E        +    where <function main at 0x0000019822347740> = ti.main
-
-tests\test_tool_integrity.py:91: AssertionError
----------------------------- Captured stdout call -----------------------------
-[tool_integrity] OK：0 个核心工具与基准一致
-[tool_integrity] ⚠ [supply_chain] tools/poison_exemptions.yaml：已存在但**未钉**（旧格式基准或新覆盖文件）⇒ 跑 --update
-[tool_integrity] ⚠ [supply_chain] tools/poison_surface_map.json：已存在但**未钉**（旧格式基准或新覆盖文件）⇒ 跑 --update
-[tool_integrity] ⚠ [supply_chain] data/governance_docs_manifest.json：已存在但**未钉**（旧格式基准或新覆盖文件）⇒ 跑 --update
-[tool_integrity] ⚠ [supply_chain] data/supply_chain/merkle_roots.json：已存在但**未钉**（旧格式基准或新覆盖文件）⇒ 跑 --update
-[tool_integrity] ⚠ [supply_chain] data/supply_chain/layout.json：已存在但**未钉**（旧格式基准或新覆盖文件）⇒ 跑 --update
-[tool_integrity] OK：信任根数据文件与基准一致（5 个已存在，警告 5 条）
-[tool_integrity] ❌ [merkle] atoms（atoms）：根不匹配（台账 90a7c2977448… 实际 f54325ff8151…，文件数 29 → 29）
-[tool_integrity] ⚠ [ruler] 缺 ruler 节（旧格式基准）—— 跑 --update 补齐
-______________________ test_567_check_flag_on_real_repo _______________________
-[gw13] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
-
-    def test_567_check_flag_on_real_repo():
-        """显式 `--check` 入口存在，且真实仓库基线必绿（独立复核路径，不依赖 pytest monkeypatch）。"""
-        r = _run([str(TOOLS / "tool_integrity.py"), "--check"])
->       assert r.returncode == 0, r.stdout + r.stderr
-E       AssertionError: [tool_integrity] OK：5 个核心工具与基准一致
-E         [tool_integrity] OK：信任根数据文件与基准一致（5 个已存在，警告 0 条）
-E         [tool_integrity] ❌ [merkle] atoms（atoms）：根不匹配（台账 90a7c2977448… 实际 f54325ff8151…，文件数 29 → 29）
-E         [tool_integrity] OK：判决尺子与基准一致（22 个）
-E         
-E       assert 1 == 0
-E        +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling...e] atoms（atoms）：根不匹配（台账 90a7c2977448… 实际 f54325ff8151…，文件数 29 → 29）\n[tool_integrity] OK：判决尺子与基准一致（22 个）\n', stderr='').returncode
-
-tests\test_tool_integrity.py:80: AssertionError
-______________________________ test_static_clean ______________________________
-[gw0] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
-
-    def test_static_clean():
-        r = P.run_all()
->       assert r["static"]["ruff_ok"] and r["static"]["mypy_ok"]
-E       assert (False)
-
-tests\test_pre_push_checklist_627.py:43: AssertionError
 _____________________ test_real_gate_end_to_end_and_clean _____________________
-[gw16] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+[gw15] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
 
-self = <sandbox_apply_622.Sandbox object at 0x0000029EDAB5A360>
+self = <sandbox_apply_622.Sandbox object at 0x000001E0381A07C0>
 
     def acquire(self) -> None:
         os.makedirs(os.path.dirname(self.lock_path), exist_ok=True)
@@ -399,7 +296,7 @@ tools\sandbox_apply_622.py:301: in __enter__
     self.acquire()
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-self = <sandbox_apply_622.Sandbox object at 0x0000029EDAB5A360>
+self = <sandbox_apply_622.Sandbox object at 0x000001E0381A07C0>
 
     def acquire(self) -> None:
         os.makedirs(os.path.dirname(self.lock_path), exist_ok=True)
@@ -415,23 +312,58 @@ self = <sandbox_apply_622.Sandbox object at 0x0000029EDAB5A360>
 E           RuntimeError: 并发保护：锁 C:\CodeLearnling\note\note\C++\CPP-Bible\data\.622_apply.lock 已被占用（同时只允许一个 apply_and_run）
 
 tools\sandbox_apply_622.py:291: RuntimeError
--------------------------- Captured stdout teardown ---------------------------
+____________________________ test_selftest_passes _____________________________
+[gw15] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
 
-[634 A1/640 A5] 生产 data/ 写隔离：还原被改 1 个、删除新建 0 个、按豁免/保守策略保留 0 个（明细：_auto/cleanup_log.jsonl）
+    def test_selftest_passes():
+>       assert SA.selftest() == 0
+E       assert 1 == 0
+E        +  where 1 = <function selftest at 0x000001E034A3DC60>()
+E        +    where <function selftest at 0x000001E034A3DC60> = SA.selftest
+
+tests\test_622_a1.py:181: AssertionError
+---------------------------- Captured stdout call -----------------------------
+  [ok] 路径白名单：atoms 允许
+  [ok] 路径白名单：evidence 允许
+  [ok] 路径白名单：tools 拒绝
+  [ok] 路径白名单：Book 拒绝
+  [ok] M1 删字段可行
+  [ok] M6 键名变形可行
+  [ok] M7 篡改哈希可行
+  [ok] M2 路径变形可行
+  [ok] M3 弱化断言可行
+  [ok] M4 恒真注入可行
+  [ok] M5 status→draft 可行
+  [ok] 未知 op 返回 None
+  [ok] 缺字段时返回 None
+  [FAIL] 并发锁可获取/释放
+  [FAIL] 锁释放后可再获取
+A1 selftest: FAIL
+_______________ test_gate_baseline_block_zero_no_false_positive _______________
+[gw2] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000268A742D220>
+
+    def test_gate_baseline_block_zero_no_false_positive(monkeypatch):
+        monkeypatch.setenv("CPPBIBLE_OBS", "0")
+        findings = ge.run(include_advice=True)
+        blocks = [f for f in findings if f.severity == "block"]
+>       assert blocks == []                       # 新规则对存量 0 误报
+        ^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert [Finding(rule...d §3 字段标准补齐')] == []
+E         
+E         Left contains one more item: Finding(rule_id='ATOM-FM-REQUIRED', severity='block', target='atoms/conc/ATOM-CONC-FENCE-001.md', message='原子卡缺必填字段：id', fix_hint='按 docs/kernel/G1_layout.md §3 字段标准补齐')
+E         Use -v to get more diff
+
+tests\test_high_complexity_rules_regression_624.py:23: AssertionError
 =========================== short test summary info ===========================
-FAILED tests/test_622_a1.py::test_selftest_passes - assert 1 == 0
-FAILED tests/test_attack_round8_629.py::test_zero_escape_and_repo_clean - Ass...
-FAILED tests/test_622_a4.py::test_selftest_passes - assert 1 == 0
 FAILED tests/test_attack_round8_629.py::test_report_and_selftest - assert 1 == 0
+FAILED tests/test_622_a4.py::test_selftest_passes - assert 1 == 0
+FAILED tests/test_attack_round8_629.py::test_zero_escape_and_repo_clean - Ass...
+FAILED tests/test_evidence_migration_644.py::test_dry_run_no_write - assert 1...
 FAILED tests/test_mypy_fix_625.py::test_ruff_clean_after_fix - AssertionError...
-FAILED tests/test_mypy_fix_625.py::test_mypy_tools_clean - AssertionError: to...
-FAILED tests/test_autoimmune_diagnose_630.py::test_report_json_and_selftest
-FAILED tests/test_quality_gate_613.py::test_run_step_reports_rc - AssertionEr...
 FAILED tests/test_ruler_coverage_extension_625.py::test_integrity_check_passes
-FAILED tests/test_autoimmune_fix_proposal_630.py::test_needs_human_approval_and_report
-FAILED tests/test_tool_integrity_supply_chain_601.py::test_cli_check_and_check_supply_chain_green_on_real_repo
-FAILED tests/test_tool_integrity.py::test_567_check_lists_tampered_file_with_prefixes
-FAILED tests/test_tool_integrity.py::test_567_check_flag_on_real_repo - Asser...
-FAILED tests/test_pre_push_checklist_627.py::test_static_clean - assert (False)
 FAILED tests/test_622_a1.py::test_real_gate_end_to_end_and_clean - RuntimeErr...
+FAILED tests/test_622_a1.py::test_selftest_passes - assert 1 == 0
+FAILED tests/test_high_complexity_rules_regression_624.py::test_gate_baseline_block_zero_no_false_positive
 
