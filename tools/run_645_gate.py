@@ -94,7 +94,7 @@ def gate(check_only: bool = False) -> dict:
 
     # 3) 受控目录净变更 0
     rc, out = _run(["git", "status", "--porcelain", "--", *CONTROLLED], timeout=60)
-    dirty = [l for l in out.splitlines() if l.strip()]
+    dirty = [ln for ln in out.splitlines() if ln.strip()]
     results["controlled_clean"] = {"rc": rc, "dirty": dirty}
 
     # 4) 两阶段 pytest（-k 645）
@@ -138,7 +138,8 @@ def selftest() -> int:
               and not fake["products"]["missing"])
     assert passed is True
     # 不一致项应使 passed=False
-    fake_bad = dict(fake); fake_bad["controlled_clean"] = {"dirty": ["M x.md"]}
+    fake_bad = dict(fake)
+    fake_bad["controlled_clean"] = {"dirty": ["M x.md"]}
     passed_bad = (not fake_bad["controlled_clean"]["dirty"])
     assert passed_bad is False
     return 0

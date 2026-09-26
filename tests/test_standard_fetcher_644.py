@@ -10,7 +10,7 @@ def test_parse_search_results():
     html = '<a href="/w/cpp/a" title="x">a</a><a href="/w/cpp/b">b</a><a href="/other">c</a><a href="/w/cpp/d">d</a>'
     links = d1.parse_search_results(html)
     assert len(links) == 3
-    assert all("/w/" in l for l in links)
+    assert all("/w/" in ln for ln in links)
 
 
 # F1-2：网络降级（无效 host → (None, error) 不崩溃）

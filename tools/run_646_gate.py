@@ -19,6 +19,7 @@ import json
 import os
 import subprocess
 import sys
+from typing import Any
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -122,7 +123,8 @@ def gate() -> dict:
     results["products"] = {"missing": missing}
 
     # 6) 清债核验：A2 三层打通 + A5 账本未改
-    debt = {"coupling_met": None, "ledger_sha256": None}
+    # 647 F：显式标注 `Any`（原先推断为 `dict[str, None]`，赋值 bool/str 时 mypy 报 4 处错误）
+    debt: dict[str, Any] = {"coupling_met": None, "ledger_sha256": None}
     try:
         import three_layer_orchestrator_646 as c2
         debt["coupling_met"] = bool(c2.orchestrate()["met"])

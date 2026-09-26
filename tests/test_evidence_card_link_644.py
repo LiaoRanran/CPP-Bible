@@ -18,7 +18,7 @@ def test_link_many_to_many():
 def test_relation_classification():
     idx = c2.new_index()
     c2.link(idx, "E1", "C2", "refute", "t", "tester")
-    rel = [l for l in idx["links"] if l["evidence_id"] == "E1" and l["card_id"] == "C2"]
+    rel = [ln for ln in idx["links"] if ln["evidence_id"] == "E1" and ln["card_id"] == "C2"]
     assert rel and rel[0]["relation"] == "refute"
 
 
