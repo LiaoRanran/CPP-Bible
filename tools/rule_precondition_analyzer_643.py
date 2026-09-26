@@ -146,7 +146,7 @@ def analyze() -> dict[str, Any]:
     src = open(GE_SRC, encoding="utf-8", errors="replace").read()
     cmap = rule_check_map(src)
     fmap = function_index(src)
-    rows = []
+    rows: list[dict[str, Any]] = []
     for r in ge.RULES:
         fn_name = cmap.get(r.id)
         sig = signals(fmap.get(fn_name) if fn_name else None)

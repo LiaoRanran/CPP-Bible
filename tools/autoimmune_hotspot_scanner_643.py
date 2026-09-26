@@ -57,7 +57,9 @@ ACTIVE_ROUNDS = 4            # 变异场活跃阈值
 
 def heatmap() -> dict[str, dict[str, bool]]:
     try:
-        return json.loads(open(VFDR, encoding="utf-8").read()).get("heatmap", {})
+        data: dict[str, Any] = json.loads(open(VFDR, encoding="utf-8").read())
+        hm: dict[str, dict[str, bool]] = data.get("heatmap", {})
+        return hm
     except (OSError, json.JSONDecodeError):
         return {}
 
@@ -89,7 +91,7 @@ def assess() -> dict[str, Any]:
     tracker = ct.build_tracker().snapshot()
     stats = {r["rule_id"]: r for r in tracker["rows"]}
 
-    rows = []
+    rows: list[dict[str, Any]] = []
     for r in ge.RULES:
         rid = r.id
         hit_sev = live.get(rid, {})
@@ -106,8 +108,8 @@ def assess() -> dict[str, Any]:
                      "is_proxy": st.get("is_proxy"),
                      "verdict": verdict, "why": why})
     by_verdict: dict[str, int] = {}
-    for row in rows:
-        by_verdict[row["verdict"]] = by_verdict.get(row["verdict"], 0) + 1
+    for rw in rows:
+        by_verdict[rw["verdict"]] = by_verdict.get(rw["verdict"], 0) + 1
     return {"rows": rows, "n_rules": len(rows), "by_verdict": by_verdict,
             "rounds_total": rounds_total,
             "thresholds": {"exempt_rate": EXEMPT_THRESHOLD, "live_hot": LIVE_HOT,

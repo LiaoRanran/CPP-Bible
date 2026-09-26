@@ -50,7 +50,8 @@ FIXED_STATUS = "已修"
 
 def coverage_630() -> dict[str, Any]:
     try:
-        return json.loads(open(COV630, encoding="utf-8").read())
+        data: dict[str, Any] = json.loads(open(COV630, encoding="utf-8").read())
+        return data
     except (OSError, json.JSONDecodeError):
         return {}
 

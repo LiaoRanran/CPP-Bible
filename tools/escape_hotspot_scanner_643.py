@@ -101,7 +101,7 @@ def card_group_stats() -> dict[str, Any]:
         g["escaped"] += d.get("escaped", 0)
         g["n_a"] += d.get("n_a", 0)
         g["cards"] += 1
-    out = []
+    out: list[dict[str, Any]] = []
     for seg, g in sorted(groups.items()):
         judged = g["blocked"] + g["escaped"]
         out.append({"group": seg, "cards": g["cards"], "blocked": g["blocked"],
