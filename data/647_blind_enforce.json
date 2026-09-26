@@ -1,0 +1,71 @@
+{
+  "demo": {
+    "n": 3,
+    "by_effective_method": {
+      "ITEM_BLIND": 3
+    },
+    "n_blinded": 3,
+    "rows": [
+      {
+        "item_id": "NEW-001",
+        "requested": "BATCH_AUTH",
+        "effective": "ITEM_BLIND",
+        "blind_state": "REVEALED",
+        "visible_keys": [
+          "ai_recommendation",
+          "blind_state",
+          "item_id",
+          "masked",
+          "residual",
+          "review_method"
+        ],
+        "enforced": true
+      },
+      {
+        "item_id": "NEW-002",
+        "requested": "ITEM_OPEN",
+        "effective": "ITEM_BLIND",
+        "blind_state": "BLIND",
+        "visible_keys": [
+          "blind_state",
+          "item_id",
+          "masked",
+          "residual",
+          "review_method"
+        ],
+        "enforced": true
+      },
+      {
+        "item_id": "NEW-003",
+        "requested": "ITEM_BLIND",
+        "effective": "ITEM_BLIND",
+        "blind_state": "BLIND",
+        "visible_keys": [
+          "blind_state",
+          "item_id",
+          "masked",
+          "residual",
+          "review_method"
+        ],
+        "enforced": true
+      }
+    ],
+    "disagreement_rate": 1.0,
+    "n_revealed": 1
+  },
+  "history": {
+    "n_decisions": 452,
+    "n_violations": 258,
+    "ledger_unchanged": true,
+    "ledger_digest": "ec8cbf5cca2def3d",
+    "policy": "不回溯、只标记（append-only）"
+  },
+  "shadow_control": {
+    "by_effective": {
+      "BATCH_AUTH": 1,
+      "ITEM_BLIND": 1
+    },
+    "n_blinded": 1
+  },
+  "mode": "enforce"
+}
