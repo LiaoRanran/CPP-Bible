@@ -1,0 +1,74 @@
+{
+  "mode": "enforce",
+  "state": {
+    "queue_len": 65,
+    "weekly_new": 104,
+    "occupancy_pct": 65.0,
+    "avg_wait_days": 22.8,
+    "A": false,
+    "B": true,
+    "C": true,
+    "level": "半饱和",
+    "budget_exceeded": true
+  },
+  "n": 65,
+  "n_frozen_enforced": 0,
+  "priority_dist": {
+    "高": 4,
+    "中": 61
+  },
+  "backlog": {
+    "alert": false,
+    "occupancy_pct": 65.0,
+    "threshold_pct": 80.0,
+    "needs_human_cleanup": false,
+    "action": "无需清理"
+  },
+  "queue_file_sha_unchanged": "79c88f6ff7f57576c230f17a2dcc3c8e8c0e361f46f6031c624834b343ab33e2",
+  "synthetic": [
+    {
+      "state": "正常",
+      "occupancy_pct": 1.0,
+      "backlog_alert": false,
+      "低_enqueued": true,
+      "低_frozen_enforced": false,
+      "中_enqueued": true,
+      "中_frozen_enforced": false,
+      "高_enqueued": true,
+      "高_frozen_enforced": false
+    },
+    {
+      "state": "半饱和",
+      "occupancy_pct": 51.0,
+      "backlog_alert": false,
+      "低_enqueued": true,
+      "低_frozen_enforced": false,
+      "中_enqueued": true,
+      "中_frozen_enforced": false,
+      "高_enqueued": true,
+      "高_frozen_enforced": false
+    },
+    {
+      "state": "半饱和+超预算",
+      "occupancy_pct": 51.0,
+      "backlog_alert": false,
+      "低_enqueued": false,
+      "低_frozen_enforced": true,
+      "中_enqueued": true,
+      "中_frozen_enforced": false,
+      "高_enqueued": true,
+      "高_frozen_enforced": false
+    },
+    {
+      "state": "饱和",
+      "occupancy_pct": 101.0,
+      "backlog_alert": true,
+      "低_enqueued": false,
+      "低_frozen_enforced": true,
+      "中_enqueued": false,
+      "中_frozen_enforced": true,
+      "高_enqueued": true,
+      "高_frozen_enforced": false
+    }
+  ]
+}
