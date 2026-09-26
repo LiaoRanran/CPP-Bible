@@ -1,0 +1,664 @@
+{
+  "cases": [
+    {
+      "source": "B4",
+      "case_id": "v7#0",
+      "target": "—",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "op": "M1",
+      "cause": "规则缺失",
+      "why": "逃逸且 new_block / new_warn 均为空 ⇒ 没有任何规则对该变异有反应",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "B4",
+      "case_id": "v7#1",
+      "target": "—",
+      "card": "evidence/hist/EV-HIST-001.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "B4",
+      "case_id": "v7#2",
+      "target": "—",
+      "card": "evidence/mem/EV-MEM-032.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "B4",
+      "case_id": "v7#3",
+      "target": "—",
+      "card": "evidence/mem/EV-MEM-033.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "B4",
+      "case_id": "v7#4",
+      "target": "—",
+      "card": "evidence/mem/EV-MEM-034.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "B4",
+      "case_id": "v7#5",
+      "target": "—",
+      "card": "evidence/mem/EV-MEM-035.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "B4",
+      "case_id": "v7#6",
+      "target": "—",
+      "card": "evidence/mem/EV-MEM-036.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "B4",
+      "case_id": "v7#7",
+      "target": "—",
+      "card": "evidence/mem/EV-MEM-037.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "B4",
+      "case_id": "v7#8",
+      "target": "—",
+      "card": "evidence/ub/EV-UB-002.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-FM-REQUIRED#break_ref#1",
+      "target": "ATOM-FM-REQUIRED",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "break_ref",
+      "cause": "责任错配",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（关系目标 EV-CONC-003 → EV-CONC-003-XX（不存在））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-FM-REQUIRED#equiv_rewrite#2",
+      "target": "ATOM-FM-REQUIRED",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "equiv_rewrite",
+      "cause": "不可达",
+      "added_rules": [],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=not_triggered（同义改写 必须 → 应当（语义等价））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-ID-FORMAT#field_delete#0",
+      "target": "ATOM-ID-FORMAT",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "cause": "责任错配",
+      "added_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（删除 frontmatter 字段 id）"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-ID-FORMAT#format_perturb#1",
+      "target": "ATOM-ID-FORMAT",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "format_perturb",
+      "cause": "不可达",
+      "added_rules": [],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=not_triggered（注入尾随空格（格式微扰））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-ID-FORMAT#break_ref#2",
+      "target": "ATOM-ID-FORMAT",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "break_ref",
+      "cause": "责任错配",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（关系目标 EV-CONC-005 → EV-CONC-005-XX（不存在））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-ID-FORMAT#equiv_rewrite#3",
+      "target": "ATOM-ID-FORMAT",
+      "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "op": "equiv_rewrite",
+      "cause": "不可达",
+      "added_rules": [],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=not_triggered（同义改写 必须 → 应当（语义等价））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-ID-UNIQUE#field_delete#0",
+      "target": "ATOM-ID-UNIQUE",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "cause": "责任错配",
+      "added_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（删除 frontmatter 字段 id）"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-ID-UNIQUE#break_ref#1",
+      "target": "ATOM-ID-UNIQUE",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "break_ref",
+      "cause": "责任错配",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（关系目标 EV-CONC-003 → EV-CONC-003-XX（不存在））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-ID-UNIQUE#equiv_rewrite#2",
+      "target": "ATOM-ID-UNIQUE",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "equiv_rewrite",
+      "cause": "不可达",
+      "added_rules": [],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=not_triggered（同义改写 必须 → 应当（语义等价））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-VERIFIED-BOUND#break_ref#1",
+      "target": "ATOM-VERIFIED-BOUND",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "break_ref",
+      "cause": "责任错配",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（关系目标 EV-CONC-003 → EV-CONC-003-XX（不存在））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-VERIFIED-BOUND#equiv_rewrite#2",
+      "target": "ATOM-VERIFIED-BOUND",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "equiv_rewrite",
+      "cause": "不可达",
+      "added_rules": [],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=not_triggered（同义改写 必须 → 应当（语义等价））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-NO-UNVERIFIED#field_delete#0",
+      "target": "ATOM-NO-UNVERIFIED",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "cause": "责任错配",
+      "added_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（删除 frontmatter 字段 status）"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-NO-UNVERIFIED#break_ref#1",
+      "target": "ATOM-NO-UNVERIFIED",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "break_ref",
+      "cause": "责任错配",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（关系目标 EV-CONC-003 → EV-CONC-003-XX（不存在））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-NO-UNVERIFIED#equiv_rewrite#2",
+      "target": "ATOM-NO-UNVERIFIED",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "equiv_rewrite",
+      "cause": "不可达",
+      "added_rules": [],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=not_triggered（同义改写 必须 → 应当（语义等价））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-STATUS-VALUE#field_delete#0",
+      "target": "ATOM-STATUS-VALUE",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "cause": "责任错配",
+      "added_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（删除 frontmatter 字段 status）"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-STATUS-VALUE#break_ref#1",
+      "target": "ATOM-STATUS-VALUE",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "break_ref",
+      "cause": "责任错配",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（关系目标 EV-CONC-003 → EV-CONC-003-XX（不存在））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-STATUS-VALUE#equiv_rewrite#2",
+      "target": "ATOM-STATUS-VALUE",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "equiv_rewrite",
+      "cause": "不可达",
+      "added_rules": [],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=not_triggered（同义改写 必须 → 应当（语义等价））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-STATUS-TRANSITION#field_delete#0",
+      "target": "ATOM-STATUS-TRANSITION",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "cause": "责任错配",
+      "added_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（删除 frontmatter 字段 status）"
+    }
+  ],
+  "n": 27,
+  "by_cause": {
+    "规则缺失": 1,
+    "验证器能力天花板": 8,
+    "责任错配": 11,
+    "不可达": 7
+  },
+  "n_from_b4": 9,
+  "n_from_c3": 18,
+  "sim_note": "已并入 C3 沙箱结果（20 条计划，局限样本：20）",
+  "directions": {
+    "规则缺失": "提新规则草案（D2）",
+    "规则太弱": "收紧条件 / 升 block（D2 出修改草案）",
+    "规则冲突": "调整优先级（人审）",
+    "验证器能力天花板": "人审（能力天花板 ⇒ 不该自动化）",
+    "责任错配": "重标 expected_oracle（不改判据）",
+    "不可达": "接 B3 退役候选（人审）"
+  },
+  "actionable": [
+    {
+      "source": "B4",
+      "case_id": "v7#0",
+      "target": "—",
+      "card": "evidence/conc/EV-CONC-001.md",
+      "op": "M1",
+      "cause": "规则缺失",
+      "why": "逃逸且 new_block / new_warn 均为空 ⇒ 没有任何规则对该变异有反应",
+      "added_rules": [],
+      "removed_rules": []
+    }
+  ],
+  "non_actionable": [
+    {
+      "source": "B4",
+      "case_id": "v7#1",
+      "target": "—",
+      "card": "evidence/hist/EV-HIST-001.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "B4",
+      "case_id": "v7#2",
+      "target": "—",
+      "card": "evidence/mem/EV-MEM-032.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "B4",
+      "case_id": "v7#3",
+      "target": "—",
+      "card": "evidence/mem/EV-MEM-033.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "B4",
+      "case_id": "v7#4",
+      "target": "—",
+      "card": "evidence/mem/EV-MEM-034.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "B4",
+      "case_id": "v7#5",
+      "target": "—",
+      "card": "evidence/mem/EV-MEM-035.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "B4",
+      "case_id": "v7#6",
+      "target": "—",
+      "card": "evidence/mem/EV-MEM-036.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "B4",
+      "case_id": "v7#7",
+      "target": "—",
+      "card": "evidence/mem/EV-MEM-037.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "B4",
+      "case_id": "v7#8",
+      "target": "—",
+      "card": "evidence/ub/EV-UB-002.md",
+      "op": "M6",
+      "cause": "验证器能力天花板",
+      "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+      "added_rules": [],
+      "removed_rules": []
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-FM-REQUIRED#break_ref#1",
+      "target": "ATOM-FM-REQUIRED",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "break_ref",
+      "cause": "责任错配",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（关系目标 EV-CONC-003 → EV-CONC-003-XX（不存在））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-FM-REQUIRED#equiv_rewrite#2",
+      "target": "ATOM-FM-REQUIRED",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "equiv_rewrite",
+      "cause": "不可达",
+      "added_rules": [],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=not_triggered（同义改写 必须 → 应当（语义等价））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-ID-FORMAT#field_delete#0",
+      "target": "ATOM-ID-FORMAT",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "cause": "责任错配",
+      "added_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（删除 frontmatter 字段 id）"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-ID-FORMAT#format_perturb#1",
+      "target": "ATOM-ID-FORMAT",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "format_perturb",
+      "cause": "不可达",
+      "added_rules": [],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=not_triggered（注入尾随空格（格式微扰））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-ID-FORMAT#break_ref#2",
+      "target": "ATOM-ID-FORMAT",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "break_ref",
+      "cause": "责任错配",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（关系目标 EV-CONC-005 → EV-CONC-005-XX（不存在））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-ID-FORMAT#equiv_rewrite#3",
+      "target": "ATOM-ID-FORMAT",
+      "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "op": "equiv_rewrite",
+      "cause": "不可达",
+      "added_rules": [],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=not_triggered（同义改写 必须 → 应当（语义等价））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-ID-UNIQUE#field_delete#0",
+      "target": "ATOM-ID-UNIQUE",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "cause": "责任错配",
+      "added_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（删除 frontmatter 字段 id）"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-ID-UNIQUE#break_ref#1",
+      "target": "ATOM-ID-UNIQUE",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "break_ref",
+      "cause": "责任错配",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（关系目标 EV-CONC-003 → EV-CONC-003-XX（不存在））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-ID-UNIQUE#equiv_rewrite#2",
+      "target": "ATOM-ID-UNIQUE",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "equiv_rewrite",
+      "cause": "不可达",
+      "added_rules": [],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=not_triggered（同义改写 必须 → 应当（语义等价））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-VERIFIED-BOUND#break_ref#1",
+      "target": "ATOM-VERIFIED-BOUND",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "break_ref",
+      "cause": "责任错配",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（关系目标 EV-CONC-003 → EV-CONC-003-XX（不存在））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-VERIFIED-BOUND#equiv_rewrite#2",
+      "target": "ATOM-VERIFIED-BOUND",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "equiv_rewrite",
+      "cause": "不可达",
+      "added_rules": [],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=not_triggered（同义改写 必须 → 应当（语义等价））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-NO-UNVERIFIED#field_delete#0",
+      "target": "ATOM-NO-UNVERIFIED",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "cause": "责任错配",
+      "added_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（删除 frontmatter 字段 status）"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-NO-UNVERIFIED#break_ref#1",
+      "target": "ATOM-NO-UNVERIFIED",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "break_ref",
+      "cause": "责任错配",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（关系目标 EV-CONC-003 → EV-CONC-003-XX（不存在））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-NO-UNVERIFIED#equiv_rewrite#2",
+      "target": "ATOM-NO-UNVERIFIED",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "equiv_rewrite",
+      "cause": "不可达",
+      "added_rules": [],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=not_triggered（同义改写 必须 → 应当（语义等价））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-STATUS-VALUE#field_delete#0",
+      "target": "ATOM-STATUS-VALUE",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "cause": "责任错配",
+      "added_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（删除 frontmatter 字段 status）"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-STATUS-VALUE#break_ref#1",
+      "target": "ATOM-STATUS-VALUE",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "break_ref",
+      "cause": "责任错配",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（关系目标 EV-CONC-003 → EV-CONC-003-XX（不存在））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-STATUS-VALUE#equiv_rewrite#2",
+      "target": "ATOM-STATUS-VALUE",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "equiv_rewrite",
+      "cause": "不可达",
+      "added_rules": [],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=not_triggered（同义改写 必须 → 应当（语义等价））"
+    },
+    {
+      "source": "C3",
+      "case_id": "ATOM-STATUS-TRANSITION#field_delete#0",
+      "target": "ATOM-STATUS-TRANSITION",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "cause": "责任错配",
+      "added_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "removed_rules": [],
+      "why": "C3 沙箱 verdict=oracle_mismatch（删除 frontmatter 字段 status）"
+    }
+  ]
+}
