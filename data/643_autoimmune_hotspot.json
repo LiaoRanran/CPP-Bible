@@ -1,0 +1,555 @@
+{
+  "by_verdict": {
+    "不适用候选": 41,
+    "退役候选": 26
+  },
+  "thresholds": {
+    "exempt_rate": 0.3,
+    "live_hot": 10,
+    "active_rounds": 4
+  },
+  "proxied_rules": 67,
+  "unavailable": [
+    "每规则的 **warn 率**（需逐次判决级别统计 ⇒ 现有落盘数据无此维）",
+    "每规则的 **block 率**（同上 ⇒ 无法判'block 率=0 但 warn 率高'）",
+    "每规则的**误报率趋势**（需时序标签 ⇒ 只有 1/1406 的逃逸样本）"
+  ],
+  "rows": [
+    {
+      "rule_id": "ATOM-FM-REQUIRED",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 4,
+      "exempt_rate": 0.3333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-ID-FORMAT",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 2,
+      "exempt_rate": 0.6667,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-ID-UNIQUE",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 2,
+      "exempt_rate": 0.6667,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-VERIFIED-BOUND",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-NO-UNVERIFIED",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-STATUS-VALUE",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 2,
+      "exempt_rate": 0.6667,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-STATUS-TRANSITION",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-DAL-MATCH",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-REL-TARGET",
+      "severity": "warn",
+      "live_hits": 2,
+      "touched_rounds": 2,
+      "exempt_rate": 0.6667,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-REL-DAG",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 2,
+      "exempt_rate": 0.6667,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-REL-CONFLICT",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-SUPERIORITY-WORDS",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "EV-FM-REQUIRED",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 2,
+      "exempt_rate": 0.6667,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-ID-UNIQUE",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-FALSIFICATION",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-MATRIX",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 2,
+      "exempt_rate": 0.6667,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-GRAY-ZONE",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-MISCONCEPTION-LEVELS",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "MIS-LIBRARY",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "ATOM-MISCONCEPTION-REF",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-AUDIENCE",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-PREREQ-READABLE",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 2,
+      "exempt_rate": 0.6667,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-SERVES-EXIST",
+      "severity": "warn",
+      "live_hits": 1,
+      "touched_rounds": 3,
+      "exempt_rate": 0.5,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "DOC-ZERO-PLACEHOLDER",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "META-MANIFEST",
+      "severity": "warn",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "S1-AUTHOR-SELF-VERIFY",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "S1-GIT-AUTHOR-BINDING",
+      "severity": "warn",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "ATOM-VERIFY-REASON",
+      "severity": "warn",
+      "live_hits": 0,
+      "touched_rounds": 2,
+      "exempt_rate": 0.6667,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-ARTIFACT-VERSION-MATCH",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 4,
+      "exempt_rate": 0.3333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "S2-EVIDENCE-VERDICT",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "S3-EXPECTED-HARDCODED",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "EV-SELF-SATISFIED-ASSERT",
+      "severity": "warn",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "EV-FALSIFICATION-QUANT",
+      "severity": "warn",
+      "live_hits": 4,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-TRIVIAL-OBSERVATION",
+      "severity": "warn",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "EV-MATRIX-UNBACKED",
+      "severity": "warn",
+      "live_hits": 16,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-ZERO-DIAG-WERROR",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "EV-WERROR-DECL-BIND",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "EV-ASSERT-COUNT-BELOW-BASELINE",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 2,
+      "exempt_rate": 0.6667,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-OUT-UNDECLARED-KEY",
+      "severity": "warn",
+      "live_hits": 6,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-RUN-KEY-DECLARED-EXISTS",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "EV-ASSERT-SYMBOL-MAPPED",
+      "severity": "block",
+      "live_hits": 3,
+      "touched_rounds": 2,
+      "exempt_rate": 0.6667,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-ARTIFACT-PRODUCER",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-ARTIFACT-FILE-EXISTS",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-MSCV-NO-VERIFY",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-FM-DUP-KEY",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-FM-YAML-HARDENING",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 3,
+      "exempt_rate": 0.5,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-ENV-DEPENDENT-KEY",
+      "severity": "block",
+      "live_hits": 2,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-REL-UNKNOWN",
+      "severity": "warn",
+      "live_hits": 0,
+      "touched_rounds": 2,
+      "exempt_rate": 0.6667,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "ATOM-CLAIM-STRUCTURED",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "OBSERVATION-NEEDS-ARTIFACT",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 1,
+      "exempt_rate": 0.8333,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "INFERENCE-NOT-MACHINE-VERIFIED",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "ATOM-CLAIM-CONCEPT-NORMALIZED",
+      "severity": "warn",
+      "live_hits": 77,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "OBSERVATION-LIVENESS",
+      "severity": "warn",
+      "live_hits": 8,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-FIXTURE-NO-ECHO-DATA",
+      "severity": "warn",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "EV-OUT-STALE-MTIME",
+      "severity": "warn",
+      "live_hits": 2,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "CARD-PATH-NOT-CANONICAL",
+      "severity": "warn",
+      "live_hits": 0,
+      "touched_rounds": 2,
+      "exempt_rate": 0.6667,
+      "verdict": "不适用候选"
+    },
+    {
+      "rule_id": "EV-SERVES-EXIST-HC",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": null,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "ATOM-REL-TARGET-HC",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": null,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "ATOM-REL-UNKNOWN-HC",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": null,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "CARD-PATH-NOT-CANONICAL-HC",
+      "severity": "block",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": null,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "PED-MOTIVATION",
+      "severity": "advice",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "PED-MISCONCEPTION",
+      "severity": "advice",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "PED-SOCRATIC",
+      "severity": "advice",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "PED-PREDICT-FIRST",
+      "severity": "advice",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "LLM-SUPERIORITY-QUALITY",
+      "severity": "advice",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "HYBRID-TEACHING-DEPTH",
+      "severity": "advice",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    },
+    {
+      "rule_id": "HUMAN-GOLDEN-REVIEW",
+      "severity": "advice",
+      "live_hits": 0,
+      "touched_rounds": 0,
+      "exempt_rate": 1.0,
+      "verdict": "退役候选"
+    }
+  ]
+}

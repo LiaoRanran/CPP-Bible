@@ -1,0 +1,950 @@
+{
+  "rows": [
+    {
+      "id": "L1.1",
+      "layer": "L1",
+      "name": "命题等价改写",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 1,
+      "depth_name": "结构性",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_probe_L1_1_634.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/uncovered_attack_surfaces.py",
+        "tests/test_attack_gap_scanner_643.py",
+        "tests/test_coverage_probe_batch_634.py"
+      ],
+      "why": [
+        "有结构性探针",
+        "（仅结构性：没有动态复现记录）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "语义等价改写让原判据失效（或让新缺陷看起来等价）"
+    },
+    {
+      "id": "L1.2",
+      "layer": "L1",
+      "name": "命题多义指代",
+      "risk": "high",
+      "has_probe": false,
+      "depth": 0,
+      "depth_name": "未触达",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_gap_631.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/coverage_probe_l1_2_631.py",
+        "tools/uncovered_attack_surfaces.py",
+        "tests/test_coverage_probe_l1_2_631.py"
+      ],
+      "why": [
+        "无探针且无真实事件",
+        "无引用"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "命题含模糊指代（「它」「该值」）⇒ 复核者各自解读不同"
+    },
+    {
+      "id": "L1.3",
+      "layer": "L1",
+      "name": "命题范围偷换",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 1,
+      "depth_name": "结构性",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_probe_L1_3_634.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/uncovered_attack_surfaces.py"
+      ],
+      "why": [
+        "有结构性探针",
+        "（仅结构性：没有动态复现记录）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "悄悄扩大/缩小 claim 边界（∀→∃、单核→多核）"
+    },
+    {
+      "id": "L1.4",
+      "layer": "L1",
+      "name": "命题-证据错配",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 1,
+      "depth_name": "结构性",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_probe_L1_4_634.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/uncovered_attack_surfaces.py"
+      ],
+      "why": [
+        "有结构性探针",
+        "（仅结构性：没有动态复现记录）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "换了 claim 但 evidence 未换（或反之）⇒ 证据为别的命题服务"
+    },
+    {
+      "id": "L2.1",
+      "layer": "L2",
+      "name": "证据内容漂移",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 3,
+      "depth_name": "拦截验证",
+      "real_event": true,
+      "ran_in_630": true,
+      "fixed_events": [
+        "626 E1 只验证不修改 → 628 A2 处置",
+        "628 A2（82 张重算/补 hash + 1 张需人审）"
+      ],
+      "refs": [],
+      "why": [
+        "有结构性探针",
+        "有真实攻击事件",
+        "事件有修复记录（**推断**为已拦）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": true,
+      "no_error_data": true,
+      "desc": "evidence 文件内容变了但 PCK/引用 hash 未更新"
+    },
+    {
+      "id": "L2.2",
+      "layer": "L2",
+      "name": "悬空引用",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 2,
+      "depth_name": "动态复现",
+      "real_event": true,
+      "ran_in_630": true,
+      "fixed_events": [],
+      "refs": [],
+      "why": [
+        "有结构性探针",
+        "有真实攻击事件",
+        "（有动态复现，但无修复记录 ⇒ 未验证「真的拦住」）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "引用的证据卡/原子卡不存在（删了或改 ID）"
+    },
+    {
+      "id": "L2.3",
+      "layer": "L2",
+      "name": "陈旧证据留痕",
+      "risk": "medium",
+      "has_probe": false,
+      "depth": 0,
+      "depth_name": "未触达",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_gap_631.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/coverage_probe_l2_3_632.py",
+        "tools/uncovered_attack_surfaces.py",
+        "tests/test_coverage_gap_631.py",
+        "tests/test_coverage_probe_l2_3_632.py"
+      ],
+      "why": [
+        "无探针且无真实事件",
+        "无引用"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "证据过时（上游结论已变）仍被当作有效引用"
+    },
+    {
+      "id": "L2.4",
+      "layer": "L2",
+      "name": "证据凭空伪造",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 1,
+      "depth_name": "结构性",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_probe_L2_4_634.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/uncovered_attack_surfaces.py"
+      ],
+      "why": [
+        "有结构性探针",
+        "（仅结构性：没有动态复现记录）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "直接造一个「看起来合规」的证据文件（内容为编造）"
+    },
+    {
+      "id": "L3.1",
+      "layer": "L3",
+      "name": "解析歧义",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 1,
+      "depth_name": "结构性",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_probe_L3_1_634.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/uncovered_attack_surfaces.py"
+      ],
+      "why": [
+        "有结构性探针",
+        "（仅结构性：没有动态复现记录）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "同一文本有合法 YAML 两种解读 ⇒ 写者与验证者读到不同值"
+    },
+    {
+      "id": "L3.2",
+      "layer": "L3",
+      "name": "正则误伤",
+      "risk": "medium",
+      "has_probe": true,
+      "depth": 2,
+      "depth_name": "动态复现",
+      "real_event": false,
+      "ran_in_630": true,
+      "fixed_events": [],
+      "refs": [
+        "tools/uncovered_attack_surfaces.py"
+      ],
+      "why": [
+        "有结构性探针",
+        "被 630 实跑过",
+        "（有动态复现，但无修复记录 ⇒ 未验证「真的拦住」）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "合规文本被正则判为违规（假阳性）"
+    },
+    {
+      "id": "L3.3",
+      "layer": "L3",
+      "name": "字段注入",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 1,
+      "depth_name": "结构性",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_probe_L3_3_634.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/uncovered_attack_surfaces.py"
+      ],
+      "why": [
+        "有结构性探针",
+        "（仅结构性：没有动态复现记录）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "字段里塞控制符/超长值/嵌套结构绕过解析"
+    },
+    {
+      "id": "L3.4",
+      "layer": "L3",
+      "name": "解析器特性绕过",
+      "risk": "medium",
+      "has_probe": true,
+      "depth": 1,
+      "depth_name": "结构性",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_probe_L3_4_634.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/uncovered_attack_surfaces.py"
+      ],
+      "why": [
+        "有结构性探针",
+        "（仅结构性：没有动态复现记录）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "利用 YAML 特性（锚点/别名/多文档）绕过解析器子集"
+    },
+    {
+      "id": "L4.1",
+      "layer": "L4",
+      "name": "规则隐性预处理",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 3,
+      "depth_name": "拦截验证",
+      "real_event": true,
+      "ran_in_630": true,
+      "fixed_events": [
+        "619 A 线 / 620 A 线（EV-MATRIX 显式化）"
+      ],
+      "refs": [],
+      "why": [
+        "有结构性探针",
+        "有真实攻击事件",
+        "事件有修复记录（**推断**为已拦）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": true,
+      "no_error_data": true,
+      "desc": "规则内部先做归一化 ⇒ 绕过条件藏在预处理里（EV-MATRIX 案）"
+    },
+    {
+      "id": "L4.2",
+      "layer": "L4",
+      "name": "阈值边界歧义",
+      "risk": "medium",
+      "has_probe": false,
+      "depth": 0,
+      "depth_name": "未触达",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_gap_631.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/coverage_probe_l4_2_632.py",
+        "tools/uncovered_attack_surfaces.py",
+        "tests/test_attack_gap_scanner_643.py"
+      ],
+      "why": [
+        "无探针且无真实事件",
+        "无引用"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "规则用 > 还是 >=、四舍五入方向未定义 ⇒ 边界样本判决不稳定"
+    },
+    {
+      "id": "L4.3",
+      "layer": "L4",
+      "name": "regex heuristic 绕过",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 1,
+      "depth_name": "结构性",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_probe_L4_3_634.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/uncovered_attack_surfaces.py"
+      ],
+      "why": [
+        "有结构性探针",
+        "（仅结构性：没有动态复现记录）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "同义异形表达绕过关键词 heuristic 检测"
+    },
+    {
+      "id": "L4.4",
+      "layer": "L4",
+      "name": "规则优先级冲突",
+      "risk": "medium",
+      "has_probe": false,
+      "depth": 0,
+      "depth_name": "未触达",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_gap_631.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/coverage_probe_l4_4_632.py",
+        "tools/uncovered_attack_surfaces.py",
+        "tests/test_coverage_probe_l4_4_632.py"
+      ],
+      "why": [
+        "无探针且无真实事件",
+        "无引用"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "两条规则对同一事实给出相反结论（谁优先未定义）"
+    },
+    {
+      "id": "L4.5",
+      "layer": "L4",
+      "name": "执行时序依赖",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 3,
+      "depth_name": "拦截验证",
+      "real_event": true,
+      "ran_in_630": true,
+      "fixed_events": [
+        "ci.yml needs:[replay] 强制序 + 622 B2 实测"
+      ],
+      "refs": [],
+      "why": [
+        "有结构性探针",
+        "有真实攻击事件",
+        "事件有修复记录（**推断**为已拦）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": true,
+      "no_error_data": true,
+      "desc": "读方先于写方（验证器读到尚在写入的工件）⇒ 假红/假绿"
+    },
+    {
+      "id": "L5.1",
+      "layer": "L5",
+      "name": "双实现 common-mode failure",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 3,
+      "depth_name": "拦截验证",
+      "real_event": true,
+      "ran_in_630": true,
+      "fixed_events": [
+        "627 A1（W2 归一化 519→121，diff=0）"
+      ],
+      "refs": [],
+      "why": [
+        "有结构性探针",
+        "有真实攻击事件",
+        "事件有修复记录（**推断**为已拦）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": true,
+      "no_error_data": true,
+      "desc": "两个实现共享同一错误假设 ⇒ 互相验证都过（W2 求解器案）"
+    },
+    {
+      "id": "L5.2",
+      "layer": "L5",
+      "name": "验证者同源耦合",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 3,
+      "depth_name": "拦截验证",
+      "real_event": true,
+      "ran_in_630": true,
+      "fixed_events": [
+        "628 E1 前置修复 + 629 C3 静态证明"
+      ],
+      "refs": [],
+      "why": [
+        "有结构性探针",
+        "有真实攻击事件",
+        "事件有修复记录（**推断**为已拦）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": true,
+      "no_error_data": true,
+      "desc": "验证端 import 被验证代码 ⇒「签发写错=验证也错」（VSA 案）"
+    },
+    {
+      "id": "L5.3",
+      "layer": "L5",
+      "name": "验证者自身被投毒",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 1,
+      "depth_name": "结构性",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_probe_L5_3_634.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/uncovered_attack_surfaces.py"
+      ],
+      "why": [
+        "有结构性探针",
+        "（仅结构性：没有动态复现记录）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "验证工具本体被改（或工具完整性尺子未覆盖该工具）"
+    },
+    {
+      "id": "L5.4",
+      "layer": "L5",
+      "name": "验证范围缺口",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 3,
+      "depth_name": "拦截验证",
+      "real_event": true,
+      "ran_in_630": true,
+      "fixed_events": [
+        "622 A4（生成器 v2 schema-aware，可施加率 54%→83%）",
+        "626 D2 投影双策略 + E1 四层验证"
+      ],
+      "refs": [],
+      "why": [
+        "有结构性探针",
+        "有真实攻击事件",
+        "事件有修复记录（**推断**为已拦）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": true,
+      "no_error_data": true,
+      "desc": "验证器不查某类断言（规则触达盲区 31/67）⇒ 盲区内任意造假"
+    },
+    {
+      "id": "L6.1",
+      "layer": "L6",
+      "name": "Goodhart 漂移",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 2,
+      "depth_name": "动态复现",
+      "real_event": true,
+      "ran_in_630": true,
+      "fixed_events": [],
+      "refs": [],
+      "why": [
+        "有结构性探针",
+        "有真实攻击事件",
+        "（有动态复现，但无修复记录 ⇒ 未验证「真的拦住」）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "指标被当成目标优化 ⇒ 数字好看但目标未达（warn 治理案）"
+    },
+    {
+      "id": "L6.2",
+      "layer": "L6",
+      "name": "连续偷看（CP）",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 3,
+      "depth_name": "拦截验证",
+      "real_event": true,
+      "ran_in_630": true,
+      "fixed_events": [
+        "616 A 线（e-process 修正）"
+      ],
+      "refs": [],
+      "why": [
+        "有结构性探针",
+        "有真实攻击事件",
+        "事件有修复记录（**推断**为已拦）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": true,
+      "no_error_data": true,
+      "desc": "序贯决策里反复看置信序列 ⇒ 置信度失效"
+    },
+    {
+      "id": "L6.3",
+      "layer": "L6",
+      "name": "统计口径误用",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 2,
+      "depth_name": "动态复现",
+      "real_event": true,
+      "ran_in_630": true,
+      "fixed_events": [],
+      "refs": [],
+      "why": [
+        "有结构性探针",
+        "有真实攻击事件",
+        "（有动态复现，但无修复记录 ⇒ 未验证「真的拦住」）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "分母/口径偷换（如把已授权当独立人审、把 warn 当质量评级）"
+    },
+    {
+      "id": "L6.4",
+      "layer": "L6",
+      "name": "数字漂移",
+      "risk": "medium",
+      "has_probe": true,
+      "depth": 3,
+      "depth_name": "拦截验证",
+      "real_event": true,
+      "ran_in_630": true,
+      "fixed_events": [
+        "623 B1（manifest 重签 + tool_integrity 重钉）",
+        "626 A1（数值按实测更正）"
+      ],
+      "refs": [],
+      "why": [
+        "有结构性探针",
+        "有真实攻击事件",
+        "事件有修复记录（**推断**为已拦）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": true,
+      "no_error_data": true,
+      "desc": "报告数字与实测不符（快照过期/手工录入）"
+    },
+    {
+      "id": "L7.1",
+      "layer": "L7",
+      "name": "批量授权",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 3,
+      "depth_name": "拦截验证",
+      "real_event": true,
+      "ran_in_630": true,
+      "fixed_events": [
+        "626 A3（review_method 五级 + decision_origin 四级）"
+      ],
+      "refs": [],
+      "why": [
+        "有结构性探针",
+        "有真实攻击事件",
+        "事件有修复记录（**推断**为已拦）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": true,
+      "no_error_data": true,
+      "desc": "一次性授权大量条目（388 条批量授权案）⇒ 人审名存实亡"
+    },
+    {
+      "id": "L7.2",
+      "layer": "L7",
+      "name": "模板化人审",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 1,
+      "depth_name": "结构性",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_probe_L7_2_634.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/uncovered_attack_surfaces.py"
+      ],
+      "why": [
+        "有结构性探针",
+        "（仅结构性：没有动态复现记录）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "理由复制粘贴 ⇒ 逐条审查退化为形式"
+    },
+    {
+      "id": "L7.3",
+      "layer": "L7",
+      "name": "mirror shortcut",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 2,
+      "depth_name": "动态复现",
+      "real_event": true,
+      "ran_in_630": true,
+      "fixed_events": [],
+      "refs": [],
+      "why": [
+        "有结构性探针",
+        "有真实攻击事件",
+        "（有动态复现，但无修复记录 ⇒ 未验证「真的拦住」）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "把镜像/派生结论当独立证据（194 镜像边案）"
+    },
+    {
+      "id": "L7.4",
+      "layer": "L7",
+      "name": "rubber-stamp",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 1,
+      "depth_name": "结构性",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_probe_L7_4_634.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/uncovered_attack_surfaces.py"
+      ],
+      "why": [
+        "有结构性探针",
+        "（仅结构性：没有动态复现记录）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "人审者不读即签（Pass A 展示 AI 推荐会引发自动化偏差）"
+    },
+    {
+      "id": "L7.5",
+      "layer": "L7",
+      "name": "人审覆盖不足",
+      "risk": "medium",
+      "has_probe": false,
+      "depth": 0,
+      "depth_name": "未触达",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_gap_631.py",
+        "tools/coverage_probe_L7_5_634.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/uncovered_attack_surfaces.py"
+      ],
+      "why": [
+        "无探针且无真实事件",
+        "无引用"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "低歧义样本被跳过抽查 ⇒ 漏审集中在「看起来没问题」的卡"
+    },
+    {
+      "id": "L8.1",
+      "layer": "L8",
+      "name": "时间戳操纵",
+      "risk": "medium",
+      "has_probe": true,
+      "depth": 2,
+      "depth_name": "动态复现",
+      "real_event": true,
+      "ran_in_630": true,
+      "fixed_events": [],
+      "refs": [],
+      "why": [
+        "有结构性探针",
+        "有真实攻击事件",
+        "（有动态复现，但无修复记录 ⇒ 未验证「真的拦住」）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "decided_at/verified_at 可被改写或不可复现（PE 案）"
+    },
+    {
+      "id": "L8.2",
+      "layer": "L8",
+      "name": "签名投毒",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 1,
+      "depth_name": "结构性",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_probe_L8_2_634.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/uncovered_attack_surfaces.py"
+      ],
+      "why": [
+        "有结构性探针",
+        "（仅结构性：没有动态复现记录）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "HMAC 密钥泄露/丢失 ⇒ 可伪造凭证或让历史凭证假失败"
+    },
+    {
+      "id": "L8.3",
+      "layer": "L8",
+      "name": "append-only 链断裂",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 1,
+      "depth_name": "结构性",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_probe_L8_3_634.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/uncovered_attack_surfaces.py"
+      ],
+      "why": [
+        "有结构性探针",
+        "（仅结构性：没有动态复现记录）",
+        "无代码/测试引用 ⇒ 未锁定回归"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "删改历史日志条目（或重放旧条目）"
+    },
+    {
+      "id": "L8.4",
+      "layer": "L8",
+      "name": "透明日志伪造",
+      "risk": "high",
+      "has_probe": false,
+      "depth": 0,
+      "depth_name": "未触达",
+      "real_event": false,
+      "ran_in_630": false,
+      "fixed_events": [],
+      "refs": [
+        "tools/coverage_gap_631.py",
+        "tools/coverage_probe_batch_634.py",
+        "tools/coverage_probe_l8_4_631.py",
+        "tools/uncovered_attack_surfaces.py",
+        "tests/test_coverage_probe_l8_4_631.py"
+      ],
+      "why": [
+        "无探针且无真实事件",
+        "无引用"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "自建替身日志充当「已入册」证据（无外部见证者）"
+    },
+    {
+      "id": "L8.5",
+      "layer": "L8",
+      "name": "溯源缺口",
+      "risk": "high",
+      "has_probe": true,
+      "depth": 4,
+      "depth_name": "回归锁定",
+      "real_event": true,
+      "ran_in_630": true,
+      "fixed_events": [
+        "627 A2（supersedes ID 重映射 legacy34+dec17）"
+      ],
+      "refs": [
+        "tests/test_attack_gap_scanner_643.py"
+      ],
+      "why": [
+        "有结构性探针",
+        "有真实攻击事件",
+        "事件有修复记录（**推断**为已拦）",
+        "有代码/测试引用（1 处）⇒ 回归锁定"
+      ],
+      "inferred": false,
+      "no_error_data": true,
+      "desc": "无法从结论定位到输入哈希/commit/人签（51 旧式 ID 引用案）"
+    }
+  ],
+  "n_vectors": 35,
+  "by_depth": {
+    "0": 6,
+    "1": 13,
+    "2": 6,
+    "3": 9,
+    "4": 1
+  },
+  "depth_names": {
+    "0": "未触达",
+    "1": "结构性",
+    "2": "动态复现",
+    "3": "拦截验证",
+    "4": "回归锁定"
+  },
+  "only_structural": [
+    "L1.1",
+    "L1.3",
+    "L1.4",
+    "L2.4",
+    "L3.1",
+    "L3.3",
+    "L3.4",
+    "L4.3",
+    "L5.3",
+    "L7.2",
+    "L7.4",
+    "L8.2",
+    "L8.3"
+  ],
+  "untouched": [
+    "L1.2",
+    "L2.3",
+    "L4.2",
+    "L4.4",
+    "L7.5",
+    "L8.4"
+  ],
+  "never_run_in_630": [
+    "L1.1",
+    "L1.2",
+    "L1.3",
+    "L1.4",
+    "L2.3",
+    "L2.4",
+    "L3.1",
+    "L3.3",
+    "L3.4",
+    "L4.2",
+    "L4.3",
+    "L4.4",
+    "L5.3",
+    "L7.2",
+    "L7.4",
+    "L7.5",
+    "L8.2",
+    "L8.3",
+    "L8.4"
+  ],
+  "no_error_data_all": true,
+  "tracker_snapshot": {
+    "n_rules": 67,
+    "n_with_samples": 0,
+    "n_proxy": 67,
+    "n_log_entries": 0
+  },
+  "risky_low_depth": [
+    "L1.1",
+    "L1.2",
+    "L1.3",
+    "L1.4",
+    "L2.4",
+    "L3.1",
+    "L3.3",
+    "L4.3",
+    "L5.3",
+    "L7.2",
+    "L7.4",
+    "L8.2",
+    "L8.3",
+    "L8.4"
+  ],
+  "coverage_630_pct": 45.7,
+  "n_fixed_vectors": 10
+}

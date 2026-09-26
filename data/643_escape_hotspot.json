@@ -1,0 +1,346 @@
+{
+  "operators": {
+    "rows": [
+      {
+        "op": "M1",
+        "judged": 65,
+        "n_a": 27,
+        "escape_point": 0.015385,
+        "cp_low": 0.000389,
+        "cp_high": 0.082763,
+        "numerator": 1
+      },
+      {
+        "op": "M2",
+        "judged": 168,
+        "n_a": 27,
+        "escape_point": 0.0,
+        "cp_low": 0.0,
+        "cp_high": 0.021718,
+        "numerator": 0
+      },
+      {
+        "op": "M3",
+        "judged": 65,
+        "n_a": 42,
+        "escape_point": 0.0,
+        "cp_low": 0.0,
+        "cp_high": 0.055172,
+        "numerator": 0
+      },
+      {
+        "op": "M4",
+        "judged": 224,
+        "n_a": 27,
+        "escape_point": 0.0,
+        "cp_low": 0.0,
+        "cp_high": 0.016333,
+        "numerator": 0
+      },
+      {
+        "op": "M5",
+        "judged": 29,
+        "n_a": 56,
+        "escape_point": 0.0,
+        "cp_low": 0.0,
+        "cp_high": 0.119445,
+        "numerator": 0
+      },
+      {
+        "op": "M6",
+        "judged": 716,
+        "n_a": 0,
+        "escape_point": 0.0,
+        "cp_low": 0.0,
+        "cp_high": 0.005139,
+        "numerator": 0
+      },
+      {
+        "op": "M7",
+        "judged": 139,
+        "n_a": 0,
+        "escape_point": 0.0,
+        "cp_low": 0.0,
+        "cp_high": 0.02619,
+        "numerator": 0
+      }
+    ]
+  },
+  "card_groups": {
+    "rows": [
+      {
+        "group": "evidence/conc",
+        "cards": 6,
+        "blocked": 150,
+        "escaped": 1,
+        "n_a": 6,
+        "judged": 151,
+        "escape_rate": 0.006623,
+        "na_rate": 0.038217
+      },
+      {
+        "group": "atoms/conc",
+        "cards": 3,
+        "blocked": 19,
+        "escaped": 0,
+        "n_a": 12,
+        "judged": 19,
+        "escape_rate": 0.0,
+        "na_rate": 0.387097
+      },
+      {
+        "group": "atoms/hist",
+        "cards": 1,
+        "blocked": 6,
+        "escaped": 0,
+        "n_a": 4,
+        "judged": 6,
+        "escape_rate": 0.0,
+        "na_rate": 0.4
+      },
+      {
+        "group": "atoms/lang",
+        "cards": 1,
+        "blocked": 6,
+        "escaped": 0,
+        "n_a": 4,
+        "judged": 6,
+        "escape_rate": 0.0,
+        "na_rate": 0.4
+      },
+      {
+        "group": "atoms/mem",
+        "cards": 21,
+        "blocked": 127,
+        "escaped": 0,
+        "n_a": 84,
+        "judged": 127,
+        "escape_rate": 0.0,
+        "na_rate": 0.398104
+      },
+      {
+        "group": "atoms/ub",
+        "cards": 1,
+        "blocked": 6,
+        "escaped": 0,
+        "n_a": 4,
+        "judged": 6,
+        "escape_rate": 0.0,
+        "na_rate": 0.4
+      },
+      {
+        "group": "evidence/hist",
+        "cards": 1,
+        "blocked": 22,
+        "escaped": 0,
+        "n_a": 1,
+        "judged": 22,
+        "escape_rate": 0.0,
+        "na_rate": 0.043478
+      },
+      {
+        "group": "evidence/lang",
+        "cards": 2,
+        "blocked": 52,
+        "escaped": 0,
+        "n_a": 2,
+        "judged": 52,
+        "escape_rate": 0.0,
+        "na_rate": 0.037037
+      },
+      {
+        "group": "evidence/mem",
+        "cards": 45,
+        "blocked": 974,
+        "escaped": 0,
+        "n_a": 60,
+        "judged": 974,
+        "escape_rate": 0.0,
+        "na_rate": 0.058027
+      },
+      {
+        "group": "evidence/ub",
+        "cards": 2,
+        "blocked": 43,
+        "escaped": 0,
+        "n_a": 2,
+        "judged": 43,
+        "escape_rate": 0.0,
+        "na_rate": 0.044444
+      }
+    ]
+  },
+  "na": {
+    "total_n_a": 179,
+    "semantic_ops": [
+      "M5",
+      "M6"
+    ],
+    "semantic_na": 56,
+    "capability_na_hint": 123,
+    "variants": 1593,
+    "na_rate": 0.11237,
+    "reason_available": false,
+    "hints": {
+      "semantic": "样本可能不可判（语义等价/格式微扰）",
+      "capability": "验证器能力不足候选（非语义类算子仍判 N/A）"
+    },
+    "inferred": true
+  },
+  "escaped": {
+    "raw_escaped": 9,
+    "counted_escaped": 1,
+    "equivalent_invalid": 8,
+    "by_attribution": {
+      "规则缺失": 1,
+      "验证器能力天花板": 8
+    },
+    "cases": [
+      {
+        "card": "evidence/conc/EV-CONC-001.md",
+        "op": "M1",
+        "point": "删 negative_controls",
+        "equivalent": false,
+        "attribution": "规则缺失",
+        "why": "逃逸且 new_block / new_warn 均为空 ⇒ 没有任何规则对该变异有反应",
+        "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/conc/EV-CONC-001.md --operators M1 --limit 1"
+      },
+      {
+        "card": "evidence/hist/EV-HIST-001.md",
+        "op": "M6",
+        "point": "块式 → flow 写法（matrix）",
+        "equivalent": true,
+        "attribution": "验证器能力天花板",
+        "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+        "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/hist/EV-HIST-001.md --operators M6 --limit 1"
+      },
+      {
+        "card": "evidence/mem/EV-MEM-032.md",
+        "op": "M6",
+        "point": "块式 → flow 写法（matrix）",
+        "equivalent": true,
+        "attribution": "验证器能力天花板",
+        "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+        "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-032.md --operators M6 --limit 1"
+      },
+      {
+        "card": "evidence/mem/EV-MEM-033.md",
+        "op": "M6",
+        "point": "块式 → flow 写法（matrix）",
+        "equivalent": true,
+        "attribution": "验证器能力天花板",
+        "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+        "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-033.md --operators M6 --limit 1"
+      },
+      {
+        "card": "evidence/mem/EV-MEM-034.md",
+        "op": "M6",
+        "point": "块式 → flow 写法（matrix）",
+        "equivalent": true,
+        "attribution": "验证器能力天花板",
+        "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+        "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-034.md --operators M6 --limit 1"
+      },
+      {
+        "card": "evidence/mem/EV-MEM-035.md",
+        "op": "M6",
+        "point": "块式 → flow 写法（matrix）",
+        "equivalent": true,
+        "attribution": "验证器能力天花板",
+        "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+        "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-035.md --operators M6 --limit 1"
+      },
+      {
+        "card": "evidence/mem/EV-MEM-036.md",
+        "op": "M6",
+        "point": "块式 → flow 写法（matrix）",
+        "equivalent": true,
+        "attribution": "验证器能力天花板",
+        "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+        "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-036.md --operators M6 --limit 1"
+      },
+      {
+        "card": "evidence/mem/EV-MEM-037.md",
+        "op": "M6",
+        "point": "块式 → flow 写法（matrix）",
+        "equivalent": true,
+        "attribution": "验证器能力天花板",
+        "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+        "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/mem/EV-MEM-037.md --operators M6 --limit 1"
+      },
+      {
+        "card": "evidence/ub/EV-UB-002.md",
+        "op": "M6",
+        "point": "块式 → flow 写法（matrix）",
+        "equivalent": true,
+        "attribution": "验证器能力天花板",
+        "why": "该变异被标 equivalent（语义等价 ⇒ 本就不该报）",
+        "reproduce": ".venv\\Scripts\\python.exe tools/mutation_fuzz.py --cards evidence/ub/EV-UB-002.md --operators M6 --limit 1"
+      }
+    ]
+  },
+  "directed": {
+    "runs": [
+      {
+        "run": "data/mutation_sandbox_run_622_results.json",
+        "available": true,
+        "n": 50,
+        "verdicts": {
+          "blocked": 13,
+          "infra_error": 23,
+          "neutral": 14
+        },
+        "rows_with_lost_rules": 3,
+        "conflict_rows": 3
+      },
+      {
+        "run": "data/high_complexity_sandbox_run_623.json",
+        "available": true,
+        "n": 80,
+        "verdicts": {
+          "blocked": 46,
+          "escaped": 4,
+          "detected_nonblock": 16,
+          "neutral": 12,
+          "infra_error": 2
+        },
+        "rows_with_lost_rules": 16,
+        "conflict_rows": 12
+      },
+      {
+        "run": "data/adversarial_loop_round3_sandbox_run_623.json",
+        "available": true,
+        "n": 40,
+        "verdicts": {
+          "blocked": 12,
+          "neutral": 14,
+          "detected_nonblock": 14
+        },
+        "rows_with_lost_rules": 8,
+        "conflict_rows": 8
+      },
+      {
+        "run": "data/cross_card_sandbox_run_624.json",
+        "available": true,
+        "n": 60,
+        "verdicts": {
+          "blocked": 47,
+          "detected_nonblock": 13
+        },
+        "rows_with_lost_rules": 0,
+        "conflict_rows": 0
+      },
+      {
+        "run": "data/adversarial_loop_round5_624.json",
+        "available": true,
+        "n": 40,
+        "verdicts": {
+          "blocked": 38,
+          "neutral": 2
+        },
+        "rows_with_lost_rules": 0,
+        "conflict_rows": 0
+      }
+    ]
+  }
+}
