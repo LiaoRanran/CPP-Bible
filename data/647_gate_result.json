@@ -1,0 +1,61 @@
+{
+  "closure": {
+    "attack_fail": true,
+    "consistent": true,
+    "n_files": 33,
+    "n_rules": 67,
+    "status": "OK"
+  },
+  "controlled_clean": {
+    "dirty": [],
+    "rc": 0
+  },
+  "merge": {
+    "lossless": true,
+    "members_removed": true,
+    "n_core": 10
+  },
+  "mypy": {
+    "available": true,
+    "rc": 0,
+    "tail": "pyproject.toml: note: unused section(s): module = ['yaml.*']\nSuccess: no issues found in 14 source files\n"
+  },
+  "passed": true,
+  "products": {
+    "missing": []
+  },
+  "protectors": {
+    "marks": 17,
+    "mode_default": "enforce",
+    "rollback_no_disk_write": true,
+    "rollback_zero_enforcement": true,
+    "zero_drift": true
+  },
+  "pytest_fast": {
+    "rc": 0,
+    "tail": "........................................................................ [ 56%]\n........................................................                 [100%]\n"
+  },
+  "pytest_slow": {
+    "rc": 0,
+    "tail": ".....                                                                    [100%]\n"
+  },
+  "ruff": {
+    "available": true,
+    "rc": 0,
+    "tail": "All checks passed!\n"
+  },
+  "targeting": {
+    "all_ok": true,
+    "n_docs": 3
+  },
+  "tool_check": {
+    "failed": [],
+    "total": 14
+  },
+  "trust_root": {
+    "a1_lenient_rc": 0,
+    "a1_supply_chain_strict_rc": 0,
+    "a2_lenient_history_ok": true,
+    "a2_rejects_incomplete": true
+  }
+}
