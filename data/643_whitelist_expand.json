@@ -1,0 +1,16 @@
+{
+  "calibration": 0.1,
+  "threshold": 0.6,
+  "expanded": false,
+  "reason": "校准度 0.1 < 60% ⇒ **不扩展**；按 inbox 条件触发，不达标即登记原因、留 644",
+  "candidates_available": [
+    "report_regen",
+    "add_check_flag",
+    "protector_mark_write",
+    "rule_metadata_update",
+    "test_assertion_number_update"
+  ],
+  "plan": [],
+  "executed": false,
+  "what_would_be_needed": "校准度需 ≥ 60%；当前口径为「预期兑现率」的可验证子集（20 条），**样本量远不足** ⇒ 要么补实测样本，要么由人裁决改用别的口径（不得偷偷换口径）"
+}
