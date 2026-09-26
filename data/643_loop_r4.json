@@ -1,0 +1,245 @@
+{
+  "round": "R4",
+  "batch": 643,
+  "at": "2026-09-26",
+  "candidates": 20,
+  "adopted": 0,
+  "verified_subset": 20,
+  "realized": 2,
+  "calibration": 0.1,
+  "calibration_why": "C4 的定向组 20 条有效候选里，**预期兑现 2 条**（`oracle_hit_rate=0.1`）",
+  "caliber": "**可验证子集口径**（预期兑现率）≠ R1/R2/R3 的口径",
+  "by_source": {
+    "B5": 10,
+    "D2": 10
+  },
+  "candidate_rows": [
+    {
+      "candidate_id": "B4:na_capability:N/A 能力不足候选",
+      "source": "B5",
+      "kind": "na_capability",
+      "target": "N/A 能力不足候选",
+      "cost": 2,
+      "benefit": 123,
+      "risk_class": "report",
+      "score_643": 123.0,
+      "score_637": 0.5
+    },
+    {
+      "candidate_id": "B1:block_rule_zero_hit:共44项",
+      "source": "B5",
+      "kind": "block_rule_zero_hit",
+      "target": "共44项",
+      "cost": 1,
+      "benefit": 44,
+      "risk_class": "tool",
+      "score_643": 88.0,
+      "score_637": 1.0
+    },
+    {
+      "candidate_id": "B3:rule_inapplicable:共41规则",
+      "source": "B5",
+      "kind": "rule_inapplicable",
+      "target": "共41规则",
+      "cost": 1,
+      "benefit": 41,
+      "risk_class": "tool",
+      "score_643": 82.0,
+      "score_637": 1.0
+    },
+    {
+      "candidate_id": "B3:rule_dead:共26规则",
+      "source": "B5",
+      "kind": "rule_dead",
+      "target": "共26规则",
+      "cost": 1,
+      "benefit": 26,
+      "risk_class": "tool",
+      "score_643": 52.0,
+      "score_637": 1.0
+    },
+    {
+      "candidate_id": "B2:attack_structural_only:高风险低深度共14向量",
+      "source": "B5",
+      "kind": "attack_structural_only",
+      "target": "高风险低深度共14向量",
+      "cost": 1,
+      "benefit": 14,
+      "risk_class": "report",
+      "score_643": 28.0,
+      "score_637": 0.5
+    },
+    {
+      "candidate_id": "B2:attack_structural_only:共13向量",
+      "source": "B5",
+      "kind": "attack_structural_only",
+      "target": "共13向量",
+      "cost": 2,
+      "benefit": 13,
+      "risk_class": "report",
+      "score_643": 13.0,
+      "score_637": 0.5
+    },
+    {
+      "candidate_id": "B2:attack_underrun:共6向量",
+      "source": "B5",
+      "kind": "attack_underrun",
+      "target": "共6向量",
+      "cost": 2,
+      "benefit": 6,
+      "risk_class": "report",
+      "score_643": 9.0,
+      "score_637": 0.5
+    },
+    {
+      "candidate_id": "B4:escape_capability:共8案例",
+      "source": "B5",
+      "kind": "escape_capability",
+      "target": "共8案例",
+      "cost": 1,
+      "benefit": 8,
+      "risk_class": "report",
+      "score_643": 8.0,
+      "score_637": 0.5
+    },
+    {
+      "candidate_id": "B3:missing_dimension:每规则判决级别统计",
+      "source": "B5",
+      "kind": "missing_dimension",
+      "target": "每规则判决级别统计",
+      "cost": 2,
+      "benefit": 3,
+      "risk_class": "report",
+      "score_643": 3.0,
+      "score_637": 0.5
+    },
+    {
+      "candidate_id": "B4:escape_rule_missing:共1案例",
+      "source": "B5",
+      "kind": "escape_rule_missing",
+      "target": "共1案例",
+      "cost": 2,
+      "benefit": 1,
+      "risk_class": "tool",
+      "score_643": 1.5,
+      "score_637": 1.0
+    },
+    {
+      "candidate_id": "feccc0bd885e",
+      "source": "D2",
+      "kind": "NEW",
+      "target": "ATOM-DRAFT-001",
+      "cost": 2,
+      "benefit": 1,
+      "risk_class": "tool",
+      "score_643": 0.414,
+      "score_637": 1.0
+    },
+    {
+      "candidate_id": "58bde5cd6dbe",
+      "source": "D2",
+      "kind": "MODIFY",
+      "target": "MOD-ATOM-DAL-MATCH",
+      "cost": 2,
+      "benefit": 1,
+      "risk_class": "core",
+      "score_643": 0.296,
+      "score_637": 1.5
+    },
+    {
+      "candidate_id": "2b12c8d7fd97",
+      "source": "D2",
+      "kind": "MODIFY",
+      "target": "MOD-ATOM-GRAY-ZONE",
+      "cost": 2,
+      "benefit": 1,
+      "risk_class": "core",
+      "score_643": 0.296,
+      "score_637": 1.5
+    },
+    {
+      "candidate_id": "733144de59c8",
+      "source": "D2",
+      "kind": "MODIFY",
+      "target": "MOD-ATOM-ID-FORMAT",
+      "cost": 2,
+      "benefit": 1,
+      "risk_class": "core",
+      "score_643": 0.296,
+      "score_637": 1.5
+    },
+    {
+      "candidate_id": "73431a3c9727",
+      "source": "D2",
+      "kind": "MODIFY",
+      "target": "MOD-ATOM-ID-UNIQUE",
+      "cost": 2,
+      "benefit": 1,
+      "risk_class": "core",
+      "score_643": 0.296,
+      "score_637": 1.5
+    },
+    {
+      "candidate_id": "0e0a12193354",
+      "source": "D2",
+      "kind": "MODIFY",
+      "target": "MOD-ATOM-FM-REQUIRED",
+      "cost": 2,
+      "benefit": 1,
+      "risk_class": "core",
+      "score_643": 0.276,
+      "score_637": 1.5
+    },
+    {
+      "candidate_id": "b4871afeacfc",
+      "source": "D2",
+      "kind": "MODIFY",
+      "target": "MOD-ATOM-NO-UNVERIFIED",
+      "cost": 2,
+      "benefit": 1,
+      "risk_class": "core",
+      "score_643": 0.258,
+      "score_637": 1.5
+    },
+    {
+      "candidate_id": "bc05d8f7a3f7",
+      "source": "D2",
+      "kind": "MODIFY",
+      "target": "MOD-ATOM-CLAIM-STRUCTURED",
+      "cost": 2,
+      "benefit": 1,
+      "risk_class": "core",
+      "score_643": 0.235,
+      "score_637": 1.5
+    },
+    {
+      "candidate_id": "701195317873",
+      "source": "D2",
+      "kind": "MODIFY",
+      "target": "MOD-ATOM-MISCONCEPTION-REF",
+      "cost": 2,
+      "benefit": 1,
+      "risk_class": "core",
+      "score_643": 0.229,
+      "score_637": 1.5
+    },
+    {
+      "candidate_id": "893d06b0016c",
+      "source": "D2",
+      "kind": "MODIFY",
+      "target": "MOD-ATOM-MISCONCEPTION-LEVELS",
+      "cost": 2,
+      "benefit": 1,
+      "risk_class": "core",
+      "score_643": 0.211,
+      "score_637": 1.5
+    }
+  ],
+  "replaces": {
+    "observer": "B5 issue_dispatcher_643（问题发现器替代静态指标）",
+    "generator": "C2 targeted_mutator_643（攻击生成器替代方案库）"
+  },
+  "merged_into_642_ledger": false,
+  "threshold": 0.6,
+  "meets_threshold": false
+}
