@@ -1,0 +1,12 @@
+{
+  "schema": "pytest_two_phase/1",
+  "phases": {
+    "fast": {
+      "exit_code": 1,
+      "seconds": 368.6,
+      "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe -m pytest tests/ -m not slow -n auto -q --color=no --junitxml=C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\643_pytest_fast.xml",
+      "budget_s": 120.0
+    }
+  },
+  "updated": "2026-09-26T11:36:49"
+}

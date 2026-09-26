@@ -75,6 +75,76 @@ SERIAL_EXTRA = frozenset({
     "test_replay_invariants_606.py",     # 607：断言真实锁不存在 + 真实 metrics 的 run_checks 全真
     "test_replay_invariants_608.py",     # 608：I1/I4 真跑 replay_card + T7 改 Examples/ 工件（读真实仓）
     "test_build_reproducibility_608.py", # 608 B2：I2 真编译（符号表/段/跨时间窗口，读真实仓）
+    # ── 643 任务0：**实测**并行假红（fast = `-m "not slow" -n auto`）增量移入串行组 ──────
+    # 取证：643 首次 fast 跑出 3111 例中 **35 红**；把 35 例逐个**串行复跑**：
+    #   32 例串行绿（并行假红）+ 3 例串行仍红（真红，根因 = 643 新工具自身的 mypy
+    #   `no-any-return`，已修）。⇒ 32 例是**并行竞争**造成的假红，落在这 24 个模块上。
+    #   证据文件：`_auto/_643_parallel_reds.json`（含 valid 闸门：必须真跑到用例才算证据）。
+    # 共同特征（与 508/559/583/592/607 同因）：**跑 gate/自检子进程** 或
+    #   **读真实仓可变状态**（`data/` 产物、`Examples/` 工件、`build/.replay_lock`），
+    #   与别的 worker 的**合法写盘**竞争 ⇒ 读到自己写过的中间态。
+    # 为什么整模块移入而不是逐例：本仓机制就是模块级打标（见上），且不增加 slow 组墙钟量级。
+    # ⚠️ 该清单是**经验累积（实测到的）**，不声称完备；fast 复跑若再现新红，继续增量登记。
+    "test_622_a2.py",
+    "test_622_gate.py",
+    "test_autoimmune_auto_fill_631.py",
+    "test_autoimmune_human_queue_631.py",
+    "test_autoimmune_recalc_630.py",
+    "test_autoimmune_threshold_630.py",
+    "test_baseline_629.py",
+    "test_baseline_630.py",
+    "test_baseline_631.py",
+    "test_coverage_probe_l1_2_631.py",
+    "test_guard_hijack_640.py",
+    "test_merkle_integrity_601.py",
+    "test_merkle_proof_613.py",
+    "test_metrics_613.py",
+    "test_oracle_gate.py",
+    "test_output_snapshots.py",
+    "test_pollution_bisect_631.py",
+    "test_pre_push_630.py",
+    "test_queyi_core_interface_v02_631.py",
+    "test_run_624_gate.py",
+    "test_run_635_gate.py",
+    "test_run_639_gate.py",
+    "test_third_party_audit_demo_628.py",
+    "test_vsa_attestation_628.py",
+    # ── 643 任务0：第二轮 fast 复跑**增量**登记（同一取证方法）───────────────────
+    # 第二轮 11 红中：4 例是 643 **自身引入的真缺陷**（已修：① `failed_node_ids`
+    # 漏 `.py` ⇒ 选例静默 0 例；② 落盘日志带 ANSI ESC ⇒ 污染 `data/` 的两条
+    # "无控制字符"测试），另 6 例是并行假红（串行复跑全绿）。
+    "test_autoimmune_dashboard_629.py",
+    "test_autoimmune_probe_629.py",
+    "test_ci_pytest_triage_631.py",
+    "test_learner_twin_gate_628.py",
+    "test_prop_graph.py",
+    "test_queyi_core_cpp_641.py",
+    # ── 643 任务0：**原则性规则**（不再逐例围堵）──────────────────────────────
+    # 规则：**门禁脚本测试（`test_run_*_gate*.py`）一律串行**。理由（实测 + 结构）：
+    #   它们的断言对象是**真实仓库的当场状态**（受控目录 git 状态、`data/` 产物、
+    #   工具 `--check` 返回值），且**自己会起子进程再读同一批状态** ⇒
+    #   与别的 worker 的合法写盘/子进程**结构性竞争**，跑多少次都会随机红几例
+    #   （643 实测：第一轮 35 红 → 第二轮 11 红 → 逐例围堵无收敛迹象）。
+    #   串行运行零成本争议：这些模块本身跑子进程，`-n auto` 的加速被 IO/进程争抢抵消。
+    # ⚠️ 仍**不声称完备**：该规则覆盖"门禁类"，其他读真实仓状态的模块继续按实测增量登记。
+    "test_run_612_gate.py",
+    "test_run_613_gate.py",
+    "test_run_614_gate.py",
+    "test_run_615_gate.py",
+    "test_run_623_gate.py",
+    "test_run_625_gate.py",
+    "test_run_627_gate.py",
+    "test_run_628_gate_628.py",
+    "test_run_629_gate.py",
+    "test_run_630_gate.py",
+    "test_run_632_gate.py",
+    "test_run_633_gate.py",
+    "test_run_634_gate.py",
+    "test_run_636_gate.py",
+    "test_run_637_gate.py",
+    "test_run_638_gate.py",
+    "test_run_641_gate.py",
+    "test_run_642_gate.py",
 })
 
 
