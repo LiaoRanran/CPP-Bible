@@ -1,0 +1,177 @@
+{
+  "consistent": 17,
+  "inconsistent": [],
+  "per_tool": {
+    "compiler_probe_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "counterexample_searcher_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "coupling_effect_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "coupling_feedback_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "evidence_grading_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "evidence_sufficiency_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "interface_audit_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "loop_r5_runner_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "quality_audit_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "queyi_data_models_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "rule_aging_detector_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "rule_drafter_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "rule_error_tracker_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "smart_issue_finder_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "standard_fetcher_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "targeted_attacker_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    },
+    "three_layer_orchestrator_645.py": {
+      "checks": {
+        "has_check_flag": true,
+        "has_docstring": true,
+        "has_main": true,
+        "has_selftest": true
+      },
+      "consistent": true,
+      "missing": []
+    }
+  },
+  "tools_total": 17
+}

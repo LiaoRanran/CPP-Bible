@@ -1,0 +1,2112 @@
+{
+  "cards_total": 28,
+  "cards_with_l1": 28,
+  "clang_available": true,
+  "clang_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+  "compile_runs": 147,
+  "dual_confirmed": 28,
+  "fixtures_probed": 49,
+  "gpp_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+  "per_card": {
+    "ATOM-CONC-FENCE-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_fence_vs_atomic.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-CONC-LOCK-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_lock_cost.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-CONC-RACE-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_data_race.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-HIST-AUTOPTR-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_auto_ptr.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-LANG-INLINE-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_inline_odr_main.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-ALIGN-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_align_ctrl.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_align_pad.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-ALLOC-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_alloc_arena.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_alloc_basic.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_alloc_pmr.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-ALLOC-002": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_alloc_strategies.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-LEAK-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_leak_tree_bug.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_leak_tree_ok.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-LEAK-002": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_leak_detection.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-MOVE-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_move_alloc.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-MOVE-002": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_move_no_gain.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-NEW-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_new_array.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_new_layer.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-PERF-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_move_alloc.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_move_no_gain.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_perf_move.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-PERF-002": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_sso_cost.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_sso_size.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_sso_threshold.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-PERF-003": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_allocator_bench.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_sso_portable.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-PERF-004": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": false,
+          "fixture": "Examples\\atoms\\_atom_false_sharing.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_false_sharing_perf.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-RAII-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_raii.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_raii_order.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-RAII-002": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_rule_five_noexcept.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_rule_three_bug.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_rule_zero.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-RVREF-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_named_rvalue.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_rvref_return.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-SHARED-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_shared_count.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_shared_cycle.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-SHARED-002": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_shared_atomic.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_unique_noatomic.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-UNIQUE-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_unique_move.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_unique_size.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-UNIQUE-002": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": false,
+          "fixture": "Examples\\atoms\\_atom_shared_deleter_erase.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_unique_deleter.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-VALUE-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_value_cat.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_value_xvalue.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-VALUE-002": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_fwd_count.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_fwd_fold.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-MEM-WEAK-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_weak_cycle.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_weak_obs.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    },
+    "ATOM-UB-GRAY-001": {
+      "clang_ok": true,
+      "credibility": 0.95,
+      "fixtures": [
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_eval_order.cpp",
+          "gpp_ok": true
+        },
+        {
+          "clang_ok": true,
+          "fixture": "Examples\\atoms\\_atom_strict_alias.cpp",
+          "gpp_ok": true
+        }
+      ],
+      "gpp_ok": true,
+      "grade": "L1"
+    }
+  },
+  "portability_suspect": 0,
+  "records": [
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_5v1h8lnp\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fence_vs_atomic.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fence_vs_atomic.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_5v1h8lnp\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fence_vs_atomic.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fence_vs_atomic.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_5v1h8lnp\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fence_vs_atomic.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fence_vs_atomic.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_zbbdclko\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_lock_cost.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_lock_cost.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_zbbdclko\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_lock_cost.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_lock_cost.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_zbbdclko\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_lock_cost.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_lock_cost.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_qehwvsqx\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_data_race.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_data_race.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_qehwvsqx\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_data_race.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_data_race.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_qehwvsqx\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_data_race.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_data_race.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_cfmo3lu2\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp: In function 'int main()':\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp:32:52: warning: 'template<class> class std::auto_ptr' is deprecated: use 'std::unique_ptr' instead [-Wdeprecated-declarations]\n   32 |     static_assert(!std::is_copy_constructible<std::auto_ptr<int>>::value,\n      |                                                    ^~~~~~~~\nIn file included from C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/memory:78,\n                 from C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp:20:\nC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h:65:28: note: declared here\n   65 |   template<typename> class auto_ptr;\n      |                            ^~~~~~~~\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp:34:46: warning: 'template<class> class std::auto_ptr' is deprecated: use 'std::unique_ptr' instead [-Wdeprecated-declarations]\n   34 |     static_assert(std::is_constructible<std::auto_ptr<int>, std::auto_ptr<int>&>::value,\n      |                                              ^~~~~~~~\nC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h:65:28: note: declared here\n   65 |   template<typename> class auto_ptr;\n      |                            ^~~~~~~~\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp:34:66: warning: 'template<class> class std::auto_ptr' is deprecated: use 'std::unique_ptr' instead [-Wdeprecated-declarations]\n   34 |     static_assert(std::is_constructible<std::auto_ptr<int>, std::auto_ptr<int>&>::value,\n      |                                                                  ^~~~~~~~\nC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h:65:28: note: declared here\n   65 |   template<typename> class auto_ptr;\n      |                     ",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_cfmo3lu2\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp: In function 'int main()':\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp:32:52: warning: 'template<class> class std::auto_ptr' is deprecated: use 'std::unique_ptr' instead [-Wdeprecated-declarations]\n   32 |     static_assert(!std::is_copy_constructible<std::auto_ptr<int>>::value,\n      |                                                    ^~~~~~~~\nIn file included from C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/memory:78,\n                 from C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp:20:\nC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h:65:28: note: declared here\n   65 |   template<typename> class auto_ptr;\n      |                            ^~~~~~~~\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp:34:46: warning: 'template<class> class std::auto_ptr' is deprecated: use 'std::unique_ptr' instead [-Wdeprecated-declarations]\n   34 |     static_assert(std::is_constructible<std::auto_ptr<int>, std::auto_ptr<int>&>::value,\n      |                                              ^~~~~~~~\nC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h:65:28: note: declared here\n   65 |   template<typename> class auto_ptr;\n      |                            ^~~~~~~~\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp:34:66: warning: 'template<class> class std::auto_ptr' is deprecated: use 'std::unique_ptr' instead [-Wdeprecated-declarations]\n   34 |     static_assert(std::is_constructible<std::auto_ptr<int>, std::auto_ptr<int>&>::value,\n      |                                                                  ^~~~~~~~\nC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h:65:28: note: declared here\n   65 |   template<typename> class auto_ptr;\n      |                     ",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_cfmo3lu2\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp:32:52: warning: 'auto_ptr<int>' is deprecated: use 'std::unique_ptr' instead [-Wdeprecated-declarations]\n   32 |     static_assert(!std::is_copy_constructible<std::auto_ptr<int>>::value,\n      |                                                    ^\nC:/msys64/mingw64/include/c++/16.2.0/backward/auto_ptr.h:291:7: note: 'auto_ptr<int>' has been explicitly marked deprecated here\n  291 |     } _GLIBCXX11_DEPRECATED_SUGGEST(\"std::unique_ptr\");\n      |       ^\nC:/msys64/mingw64/include/c++/16.2.0/x86_64-w64-mingw32/bits/c++config.h:120:45: note: expanded from macro '_GLIBCXX11_DEPRECATED_SUGGEST'\n  120 | # define _GLIBCXX11_DEPRECATED_SUGGEST(ALT) _GLIBCXX_DEPRECATED_SUGGEST(ALT)\n      |                                             ^\nC:/msys64/mingw64/include/c++/16.2.0/x86_64-w64-mingw32/bits/c++config.h:112:19: note: expanded from macro '_GLIBCXX_DEPRECATED_SUGGEST'\n  112 |   __attribute__ ((__deprecated__ (\"use '\" ALT \"' instead\")))\n      |                   ^\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_auto_ptr.cpp:34:46: warning: 'auto_ptr<int>' is deprecated: use 'std::unique_ptr' instead [-Wdeprecated-declarations]\n   34 |     static_assert(std::is_constructible<std::auto_ptr<int>, std::auto_ptr<int>&>::value,\n      |                                              ^\nC:/msys64/mingw64/include/c++/16.2.0/backward/auto_ptr.h:291:7: note: 'auto_ptr<int>' has been explicitly marked deprecated here\n  291 |     } _GLIBCXX11_DEPRECATED_SUGGEST(\"std::unique_ptr\");\n      |       ^\nC:/msys64/mingw64/include/c++/16.2.0/x86_64-w64-mingw32/bits/c++config.h:120:45: note: expanded from macro '_GLIBCXX11_DEPRECATED_SUGGEST'\n  120 | # define _GLIBCXX11_DEPRECATED_SUGGEST(ALT) _GLIBCXX_DEPRECATED_SUGGEST(ALT)\n      |                                             ^\nC:/msys64/mingw64/include/c++/16.2.0/x86_64-w64-mingw32/bits/c++config.h:112:19: note: expanded from macro '_GLIBCXX_DEPRECATED_SUGGEST'\n",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_o38ytoh5\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_inline_odr_main.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_inline_odr_main.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_o38ytoh5\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_inline_odr_main.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_inline_odr_main.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_o38ytoh5\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_inline_odr_main.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_inline_odr_main.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_vtttur3o\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_move_alloc.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_move_alloc.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_vtttur3o\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_move_alloc.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_move_alloc.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_vtttur3o\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_move_alloc.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_move_alloc.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_fofcrp81\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_move_no_gain.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_move_no_gain.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_fofcrp81\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_move_no_gain.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_move_no_gain.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_fofcrp81\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_move_no_gain.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_move_no_gain.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_twt6zhkq\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_named_rvalue.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_named_rvalue.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_twt6zhkq\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_named_rvalue.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_named_rvalue.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_twt6zhkq\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_named_rvalue.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_named_rvalue.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_u0gmtltf\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rvref_return.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rvref_return.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_u0gmtltf\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rvref_return.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rvref_return.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_u0gmtltf\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rvref_return.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rvref_return.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_ejhs4h3_\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_value_cat.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_value_cat.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_ejhs4h3_\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_value_cat.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_value_cat.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_ejhs4h3_\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_value_cat.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_value_cat.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_t26gz1oq\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_value_xvalue.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_value_xvalue.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_t26gz1oq\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_value_xvalue.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_value_xvalue.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_t26gz1oq\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_value_xvalue.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_value_xvalue.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_4es0x8tl\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_perf_move.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_perf_move.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_4es0x8tl\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_perf_move.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_perf_move.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_4es0x8tl\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_perf_move.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_perf_move.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_32kwwa9t\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_raii.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_raii.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_32kwwa9t\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_raii.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_raii.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_32kwwa9t\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_raii.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_raii.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_6iyotve6\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_raii_order.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_raii_order.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_6iyotve6\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_raii_order.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_raii_order.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_6iyotve6\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_raii_order.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_raii_order.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_tr_82p74\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_size.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_size.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_tr_82p74\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_size.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_size.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_tr_82p74\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_size.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_size.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_bn39531y\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_move.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_move.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_bn39531y\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_move.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_move.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_bn39531y\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_move.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_move.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_1lzpvzw7\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_count.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_count.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_1lzpvzw7\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_count.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_count.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_1lzpvzw7\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_count.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_count.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_bnducs6m\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_cycle.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_cycle.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_bnducs6m\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_cycle.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_cycle.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_bnducs6m\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_cycle.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_cycle.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_n6gfvnvl\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_weak_obs.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_weak_obs.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_n6gfvnvl\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_weak_obs.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_weak_obs.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_n6gfvnvl\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_weak_obs.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_weak_obs.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_oc_krz8p\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_weak_cycle.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_weak_cycle.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_oc_krz8p\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_weak_cycle.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_weak_cycle.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_oc_krz8p\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_weak_cycle.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_weak_cycle.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_n0i_cyh0\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_new_layer.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_new_layer.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_n0i_cyh0\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_new_layer.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_new_layer.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_n0i_cyh0\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_new_layer.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_new_layer.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_f4kksry6\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_new_array.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_new_array.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_f4kksry6\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_new_array.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_new_array.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_f4kksry6\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_new_array.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_new_array.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_w7az1ez8\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_align_pad.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_align_pad.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_w7az1ez8\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_align_pad.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_align_pad.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_w7az1ez8\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_align_pad.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_align_pad.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_jm862wwm\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_align_ctrl.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_align_ctrl.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_jm862wwm\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_align_ctrl.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_align_ctrl.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_jm862wwm\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_align_ctrl.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_align_ctrl.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_o9wuzp7r\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fwd_fold.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fwd_fold.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_o9wuzp7r\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fwd_fold.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fwd_fold.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_o9wuzp7r\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fwd_fold.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fwd_fold.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_ldunf0eh\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fwd_count.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fwd_count.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_ldunf0eh\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fwd_count.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fwd_count.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_ldunf0eh\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fwd_count.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fwd_count.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fwd_count.cpp:49:28: warning: comparison of address of 'r1' not equal to a null pointer is always true [-Wtautological-pointer-compare]\n   49 |     volatile long sink = (&r1 != nullptr) + (&r2 != nullptr) + (&r3 != nullptr) + (long)seed;   // 强制观测，防整组消除\n      |                            ^~    ~~~~~~~\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fwd_count.cpp:49:47: warning: comparison of address of 'r2' not equal to a null pointer is always true [-Wtautological-pointer-compare]\n   49 |     volatile long sink = (&r1 != nullptr) + (&r2 != nullptr) + (&r3 != nullptr) + (long)seed;   // 强制观测，防整组消除\n      |                                               ^~    ~~~~~~~\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_fwd_count.cpp:49:66: warning: comparison of address of 'r3' not equal to a null pointer is always true [-Wtautological-pointer-compare]\n   49 |     volatile long sink = (&r1 != nullptr) + (&r2 != nullptr) + (&r3 != nullptr) + (long)seed;   // 强制观测，防整组消除\n      |                                                                  ^~    ~~~~~~~\n3 warnings generated.\n",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_x067wv89\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_zero.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_zero.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_x067wv89\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_zero.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_zero.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_x067wv89\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_zero.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_zero.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_inlsexdv\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_three_bug.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_three_bug.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_inlsexdv\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_three_bug.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_three_bug.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_inlsexdv\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_three_bug.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_three_bug.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_09xv24cp\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_five_noexcept.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_five_noexcept.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_09xv24cp\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_five_noexcept.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_five_noexcept.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_09xv24cp\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_five_noexcept.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_rule_five_noexcept.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_k3mtyqu_\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_basic.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_basic.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_k3mtyqu_\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_basic.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_basic.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_k3mtyqu_\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_basic.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_basic.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_67uns4z_\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_arena.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_arena.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_67uns4z_\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_arena.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_arena.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_67uns4z_\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_arena.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_arena.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_li8z6py6\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_pmr.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_pmr.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_li8z6py6\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_pmr.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_pmr.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_li8z6py6\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_pmr.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_pmr.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_1w8c0klm\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_threshold.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_threshold.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_1w8c0klm\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_threshold.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_threshold.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_1w8c0klm\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_threshold.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_threshold.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_p6a2agvz\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_cost.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_cost.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_p6a2agvz\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_cost.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_cost.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_p6a2agvz\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_cost.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_cost.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_aqu1gjno\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_size.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_size.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_aqu1gjno\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_size.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_size.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_aqu1gjno\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_size.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_size.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_8q79squu\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_deleter.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_deleter.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_8q79squu\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_deleter.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_deleter.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_8q79squu\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_deleter.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_deleter.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_qzaj9wx0\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_deleter_erase.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 1,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_deleter_erase.cpp",
+      "ok": false,
+      "opt": "-O2",
+      "output": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_deleter_erase.cpp: In function 'void* operator new(std::size_t)':\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_deleter_erase.cpp:17:76: error: 'malloc' is not a member of 'std'\n   17 | void* operator new(std::size_t n) { g_obj_new = g_obj_new + 1; return std::malloc(n); }\n      |                                                                            ^~~~~~\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_deleter_erase.cpp: In function 'void operator delete(void*)':\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_deleter_erase.cpp:18:48: error: 'free' is not a member of 'std'\n   18 | void  operator delete(void* p) noexcept { std::free(p); }\n      |                                                ^~~~\n",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_qzaj9wx0\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_deleter_erase.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_deleter_erase.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_qzaj9wx0\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_deleter_erase.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 1,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_deleter_erase.cpp",
+      "ok": false,
+      "opt": "-O2",
+      "output": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_deleter_erase.cpp:17:76: error: no member named 'malloc' in namespace 'std'\n   17 | void* operator new(std::size_t n) { g_obj_new = g_obj_new + 1; return std::malloc(n); }\n      |                                                                            ^~~~~~\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_deleter_erase.cpp:18:48: error: no type named 'free' in namespace 'std'\n   18 | void  operator delete(void* p) noexcept { std::free(p); }\n      |                                           ~~~~~^\n2 errors generated.\n",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_92p4vvls\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_atomic.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_atomic.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_92p4vvls\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_atomic.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_atomic.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_92p4vvls\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_atomic.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_shared_atomic.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_jc40zr03\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_noatomic.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_noatomic.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_jc40zr03\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_noatomic.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_noatomic.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_jc40zr03\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_noatomic.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_unique_noatomic.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_tra29fdx\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_tree_ok.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_tree_ok.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_tra29fdx\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_tree_ok.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_tree_ok.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_tra29fdx\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_tree_ok.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_tree_ok.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_y00um64x\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_tree_bug.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_tree_bug.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_y00um64x\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_tree_bug.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_tree_bug.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_y00um64x\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_tree_bug.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_tree_bug.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_34_dj9n6\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_portable.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_portable.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_34_dj9n6\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_portable.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_portable.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_34_dj9n6\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_portable.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_sso_portable.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_61s89yn6\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_allocator_bench.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_allocator_bench.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_61s89yn6\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_allocator_bench.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_allocator_bench.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_61s89yn6\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_allocator_bench.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_allocator_bench.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_c6tlhccf\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_strategies.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_strategies.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_c6tlhccf\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_strategies.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_strategies.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_c6tlhccf\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_strategies.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_alloc_strategies.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_ez_zqz4m\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_detection.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_detection.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_ez_zqz4m\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_detection.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_detection.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_ez_zqz4m\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_detection.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_leak_detection.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_z_2mq6i4\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_false_sharing.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_false_sharing.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_z_2mq6i4\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_false_sharing.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_false_sharing.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_z_2mq6i4\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_false_sharing.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 1,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_false_sharing.cpp",
+      "ok": false,
+      "opt": "-O2",
+      "output": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_false_sharing.cpp:41:16: error: constexpr function never produces a constant expression [-Winvalid-constexpr]\n   41 | constexpr bool same_line(const void* p, const void* q) {\n      |                ^~~~~~~~~\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_false_sharing.cpp:42:20: note: reinterpret_cast is not allowed in a constant expression\n   42 |     const auto a = reinterpret_cast<std::uintptr_t>(p) / kLine;\n      |                    ^\n1 error generated.\n",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_axi4rfd3\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_false_sharing_perf.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_false_sharing_perf.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_axi4rfd3\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_false_sharing_perf.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_false_sharing_perf.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_axi4rfd3\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_false_sharing_perf.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_false_sharing_perf.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_v0b3pp7z\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_eval_order.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_eval_order.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_v0b3pp7z\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_eval_order.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_eval_order.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_v0b3pp7z\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_eval_order.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_eval_order.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_3aza7nnf\\_p_g++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_strict_alias.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_strict_alias.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    },
+    {
+      "command": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -std=c++20 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_3aza7nnf\\_p_g++_c++20_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_strict_alias.cpp",
+      "compiler": "g++",
+      "compiler_version": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_strict_alias.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++20"
+    },
+    {
+      "command": "C:\\msys64\\mingw64\\bin\\clang++.exe -std=c++17 -O2 -c -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\645probe_3aza7nnf\\_p_clang++_c++17_-O2.o C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_strict_alias.cpp",
+      "compiler": "clang++",
+      "compiler_version": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+      "exit_code": 0,
+      "fixture": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\Examples/atoms/_atom_strict_alias.cpp",
+      "ok": true,
+      "opt": "-O2",
+      "output": "",
+      "std": "c++17"
+    }
+  ],
+  "stored_evidence": 28
+}

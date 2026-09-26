@@ -1,0 +1,678 @@
+{
+  "aging_count": 0,
+  "aging_rules": [],
+  "per_rule": {
+    "ATOM-AUDIENCE": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-CLAIM-CONCEPT-NORMALIZED": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-CLAIM-STRUCTURED": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-DAL-MATCH": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-FM-REQUIRED": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-GRAY-ZONE": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-ID-FORMAT": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-ID-UNIQUE": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-MISCONCEPTION-LEVELS": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-MISCONCEPTION-REF": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-NO-UNVERIFIED": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-PREREQ-READABLE": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-REL-CONFLICT": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-REL-DAG": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-REL-TARGET": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-REL-TARGET-HC": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-REL-UNKNOWN": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-REL-UNKNOWN-HC": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-STATUS-TRANSITION": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-STATUS-VALUE": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-SUPERIORITY-WORDS": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-VERIFIED-BOUND": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "ATOM-VERIFY-REASON": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "CARD-PATH-NOT-CANONICAL": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "CARD-PATH-NOT-CANONICAL-HC": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "DOC-ZERO-PLACEHOLDER": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-ARTIFACT-FILE-EXISTS": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-ARTIFACT-PRODUCER": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-ARTIFACT-VERSION-MATCH": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-ASSERT-COUNT-BELOW-BASELINE": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-ASSERT-SYMBOL-MAPPED": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-ENV-DEPENDENT-KEY": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-FALSIFICATION": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-FALSIFICATION-QUANT": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-FIXTURE-NO-ECHO-DATA": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-FM-DUP-KEY": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-FM-REQUIRED": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-FM-YAML-HARDENING": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-ID-UNIQUE": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-MATRIX": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-MATRIX-UNBACKED": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-MSCV-NO-VERIFY": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-OUT-STALE-MTIME": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-OUT-UNDECLARED-KEY": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-RUN-KEY-DECLARED-EXISTS": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-SELF-SATISFIED-ASSERT": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-SERVES-EXIST": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-SERVES-EXIST-HC": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-TRIVIAL-OBSERVATION": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-WERROR-DECL-BIND": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "EV-ZERO-DIAG-WERROR": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "HUMAN-GOLDEN-REVIEW": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "HYBRID-TEACHING-DEPTH": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "INFERENCE-NOT-MACHINE-VERIFIED": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "LLM-SUPERIORITY-QUALITY": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "META-MANIFEST": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "MIS-LIBRARY": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "OBSERVATION-LIVENESS": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "OBSERVATION-NEEDS-ARTIFACT": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "PED-MISCONCEPTION": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "PED-MOTIVATION": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "PED-PREDICT-FIRST": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "PED-SOCRATIC": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "S1-AUTHOR-SELF-VERIFY": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "S1-GIT-AUTHOR-BINDING": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "S2-EVIDENCE-VERDICT": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    },
+    "S3-EXPECTED-HARDCODED": {
+      "aging_signal": 0.0,
+      "escape_assoc": 0,
+      "misreport_trend": 0.0,
+      "older_error_rate": 0.0,
+      "older_trigger": 0,
+      "recent_error_rate": 0.0,
+      "recent_trigger": 0,
+      "trend": 0.0
+    }
+  },
+  "rules_total": 67,
+  "window_days": 30
+}

@@ -1,0 +1,19 @@
+{
+  "chains": 10,
+  "head_layer_priority": "high",
+  "needs_evidence": [],
+  "needs_human": [
+    "ISSUE-ATOM-CLAIM-CONCEPT-NORMALIZED",
+    "ISSUE-EV-MATRIX-UNBACKED",
+    "ISSUE-OBSERVATION-LIVENESS",
+    "ISSUE-EV-OUT-UNDECLARED-KEY",
+    "ISSUE-EV-FALSIFICATION-QUANT",
+    "ISSUE-EV-ASSERT-SYMBOL-MAPPED",
+    "ISSUE-EV-ENV-DEPENDENT-KEY",
+    "ISSUE-EV-OUT-STALE-MTIME",
+    "ISSUE-ATOM-REL-TARGET",
+    "ISSUE-ATOM-VERIFIED-BOUND"
+  ],
+  "verified_ok": [],
+  "vulnerability_density": 1.0
+}

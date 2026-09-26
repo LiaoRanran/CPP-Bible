@@ -1,0 +1,206 @@
+{
+  "failed": 2,
+  "ok": 16,
+  "results": [
+    {
+      "acquired_at": "2026-09-26T18:36:54",
+      "content_hash": "f38876979d85b9ef4138adf439f305f5b51b55e55e20175bbf480ab213671bb4",
+      "content_len": 49104,
+      "error": "",
+      "ok": true,
+      "section": "intro",
+      "status": 200,
+      "topic": "范围与术语",
+      "url": "https://eel.is/c++draft/intro"
+    },
+    {
+      "acquired_at": "2026-09-26T18:36:56",
+      "content_hash": "ad562266dc05bf70b48d03134846cab70c7108cbf1bd65c30ba6ee555a55e749",
+      "content_len": 448837,
+      "error": "",
+      "ok": true,
+      "section": "lex",
+      "status": 200,
+      "topic": "词法约定",
+      "url": "https://eel.is/c++draft/lex"
+    },
+    {
+      "acquired_at": "2026-09-26T18:36:59",
+      "content_hash": "b86cb46002be3cba66f0549a8d0882c15e376ffbcbff301484a00dfb6e66ff38",
+      "content_len": 1182916,
+      "error": "",
+      "ok": true,
+      "section": "basic",
+      "status": 200,
+      "topic": "基本概念（对象/生命周期/存储）",
+      "url": "https://eel.is/c++draft/basic"
+    },
+    {
+      "acquired_at": "2026-09-26T18:37:06",
+      "content_hash": "f56e9ce7000445228164ed4e718a0318878807c48584576279ce10fce7efc784",
+      "content_len": 991,
+      "error": "",
+      "ok": true,
+      "section": "dcl.dcl",
+      "status": 200,
+      "topic": "声明",
+      "url": "https://eel.is/c++draft/dcl.dcl"
+    },
+    {
+      "acquired_at": "2026-09-26T18:37:08",
+      "content_hash": "5fe77203965534b8f9779c4e4b7055e3b2846b8f3d3085f5845b696f32e1cc04",
+      "content_len": 278604,
+      "error": "",
+      "ok": true,
+      "section": "dcl.init",
+      "status": 200,
+      "topic": "初始化",
+      "url": "https://eel.is/c++draft/dcl.init"
+    },
+    {
+      "acquired_at": "2026-09-26T18:37:12",
+      "content_hash": "1369fad0b0e35eb31bdd23f0d00ceb588beed66136517a61b998eacea3553cf6",
+      "content_len": 932275,
+      "error": "",
+      "ok": true,
+      "section": "class",
+      "status": 200,
+      "topic": "类",
+      "url": "https://eel.is/c++draft/class"
+    },
+    {
+      "acquired_at": "2026-09-26T18:37:15",
+      "content_hash": "bc34b554f43c69ff987328f5e67c23b9bdf49aa55663b0d262e1726fb7725fea",
+      "content_len": 1028,
+      "error": "",
+      "ok": true,
+      "section": "class.copy",
+      "status": 200,
+      "topic": "拷贝/移动",
+      "url": "https://eel.is/c++draft/class.copy"
+    },
+    {
+      "acquired_at": "2026-09-26T18:37:18",
+      "content_hash": "6efe9577dc9fe2362bca7ad69a115d500a11f24df59a70f85235c5d5c9f320d3",
+      "content_len": 120358,
+      "error": "",
+      "ok": true,
+      "section": "class.derived",
+      "status": 200,
+      "topic": "派生类",
+      "url": "https://eel.is/c++draft/class.derived"
+    },
+    {
+      "acquired_at": "2026-09-26T18:37:20",
+      "content_hash": "f5b766865dc3c67b3eac9967f01340c1cb27cf0c0eefdad8a1acc8cdca3a8ce7",
+      "content_len": 1611346,
+      "error": "",
+      "ok": true,
+      "section": "temp",
+      "status": 200,
+      "topic": "模板",
+      "url": "https://eel.is/c++draft/temp"
+    },
+    {
+      "acquired_at": "2026-09-26T18:37:23",
+      "content_hash": "9ab5e5c68bb67cc2e376f73b41f3ce0b9baf9f1ce17ee57148883f8630d064ac",
+      "content_len": 292314,
+      "error": "",
+      "ok": true,
+      "section": "temp.deduct",
+      "status": 200,
+      "topic": "模板实参推导",
+      "url": "https://eel.is/c++draft/temp.deduct"
+    },
+    {
+      "acquired_at": "2026-09-26T18:37:26",
+      "content_hash": "f9447062136c34b24f41659d1659b88464119938fb6e0b803524ed45f2901d86",
+      "content_len": 1632132,
+      "error": "",
+      "ok": true,
+      "section": "expr",
+      "status": 200,
+      "topic": "表达式",
+      "url": "https://eel.is/c++draft/expr"
+    },
+    {
+      "acquired_at": "2026-09-26T18:37:29",
+      "content_hash": "41fd3ceaded0a3ed652eb77d835058264c08eb416019310a18f2dff52223216e",
+      "content_len": 48564,
+      "error": "",
+      "ok": true,
+      "section": "expr.call",
+      "status": 200,
+      "topic": "函数调用",
+      "url": "https://eel.is/c++draft/expr.call"
+    },
+    {
+      "acquired_at": "2026-09-26T18:37:31",
+      "content_hash": "8935dbd3cfe123093ed12462a46fbb6e022c7b8715d57a8858cad66e544f68b3",
+      "content_len": 305500,
+      "error": "",
+      "ok": true,
+      "section": "stmt",
+      "status": 200,
+      "topic": "语句",
+      "url": "https://eel.is/c++draft/stmt"
+    },
+    {
+      "acquired_at": "2026-09-26T18:37:33",
+      "content_hash": "9a5c5a0fc241f761e6731fa80084acb681cbc3ee19deee38f68eac67d539582c",
+      "content_len": 12028,
+      "error": "",
+      "ok": true,
+      "section": "special",
+      "status": 200,
+      "topic": "特殊成员函数",
+      "url": "https://eel.is/c++draft/special"
+    },
+    {
+      "acquired_at": "2026-09-26T18:37:35",
+      "content_hash": "7558a885fa84f17f7ee154ad8bd2aaa75289843933c4e0c72d4873318a952279",
+      "content_len": 263796,
+      "error": "",
+      "ok": true,
+      "section": "concepts",
+      "status": 200,
+      "topic": "概念（C++20）",
+      "url": "https://eel.is/c++draft/concepts"
+    },
+    {
+      "acquired_at": "2026-09-26T18:37:37",
+      "content_hash": "b2989e4f3fc5e4c0418ab96a30bda1c3fe6764a1864e18cdb220e960fe40124e",
+      "content_len": 748473,
+      "error": "",
+      "ok": true,
+      "section": "atomics",
+      "status": 200,
+      "topic": "原子操作（memory_order）",
+      "url": "https://eel.is/c++draft/atomics"
+    },
+    {
+      "acquired_at": "2026-09-26T18:37:40",
+      "content_hash": "",
+      "content_len": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "ok": false,
+      "section": "memory",
+      "status": null,
+      "topic": "内存模型",
+      "url": "https://eel.is/c++draft/memory"
+    },
+    {
+      "acquired_at": "2026-09-26T18:37:54",
+      "content_hash": "",
+      "content_len": 0,
+      "error": "URLError: <urlopen error _ssl.c:1015: The handshake operation timed out>",
+      "ok": false,
+      "section": "cpp",
+      "status": null,
+      "topic": "预处理",
+      "url": "https://eel.is/c++draft/cpp"
+    }
+  ],
+  "stored": 16,
+  "total": 18
+}

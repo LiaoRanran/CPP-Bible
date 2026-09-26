@@ -1,0 +1,160 @@
+{
+  "chain_count": 10,
+  "chains": [
+    {
+      "counterexamples": 0,
+      "evidence_count": 0,
+      "issue": "ISSUE-ATOM-CLAIM-CONCEPT-NORMALIZED",
+      "severity": "low",
+      "verification": {
+        "confidence": 0.2,
+        "detail": "缺少头部层证据（规则-卡片模糊匹配未命中），需人审补",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-ATOM-CLAIM-CONCEPT-NORMALIZED",
+        "target_id": "ISSUE-ATOM-CLAIM-CONCEPT-NORMALIZED",
+        "verdict": "needs_human"
+      }
+    },
+    {
+      "counterexamples": 0,
+      "evidence_count": 0,
+      "issue": "ISSUE-EV-MATRIX-UNBACKED",
+      "severity": "low",
+      "verification": {
+        "confidence": 0.2,
+        "detail": "缺少头部层证据（规则-卡片模糊匹配未命中），需人审补",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-EV-MATRIX-UNBACKED",
+        "target_id": "ISSUE-EV-MATRIX-UNBACKED",
+        "verdict": "needs_human"
+      }
+    },
+    {
+      "counterexamples": 0,
+      "evidence_count": 0,
+      "issue": "ISSUE-OBSERVATION-LIVENESS",
+      "severity": "low",
+      "verification": {
+        "confidence": 0.2,
+        "detail": "缺少头部层证据（规则-卡片模糊匹配未命中），需人审补",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-OBSERVATION-LIVENESS",
+        "target_id": "ISSUE-OBSERVATION-LIVENESS",
+        "verdict": "needs_human"
+      }
+    },
+    {
+      "counterexamples": 0,
+      "evidence_count": 0,
+      "issue": "ISSUE-EV-OUT-UNDECLARED-KEY",
+      "severity": "low",
+      "verification": {
+        "confidence": 0.2,
+        "detail": "缺少头部层证据（规则-卡片模糊匹配未命中），需人审补",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-EV-OUT-UNDECLARED-KEY",
+        "target_id": "ISSUE-EV-OUT-UNDECLARED-KEY",
+        "verdict": "needs_human"
+      }
+    },
+    {
+      "counterexamples": 0,
+      "evidence_count": 0,
+      "issue": "ISSUE-EV-FALSIFICATION-QUANT",
+      "severity": "low",
+      "verification": {
+        "confidence": 0.2,
+        "detail": "缺少头部层证据（规则-卡片模糊匹配未命中），需人审补",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-EV-FALSIFICATION-QUANT",
+        "target_id": "ISSUE-EV-FALSIFICATION-QUANT",
+        "verdict": "needs_human"
+      }
+    },
+    {
+      "counterexamples": 0,
+      "evidence_count": 0,
+      "issue": "ISSUE-EV-ASSERT-SYMBOL-MAPPED",
+      "severity": "high",
+      "verification": {
+        "confidence": 0.2,
+        "detail": "缺少头部层证据（规则-卡片模糊匹配未命中），需人审补",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-EV-ASSERT-SYMBOL-MAPPED",
+        "target_id": "ISSUE-EV-ASSERT-SYMBOL-MAPPED",
+        "verdict": "needs_human"
+      }
+    },
+    {
+      "counterexamples": 0,
+      "evidence_count": 0,
+      "issue": "ISSUE-EV-ENV-DEPENDENT-KEY",
+      "severity": "high",
+      "verification": {
+        "confidence": 0.2,
+        "detail": "缺少头部层证据（规则-卡片模糊匹配未命中），需人审补",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-EV-ENV-DEPENDENT-KEY",
+        "target_id": "ISSUE-EV-ENV-DEPENDENT-KEY",
+        "verdict": "needs_human"
+      }
+    },
+    {
+      "counterexamples": 0,
+      "evidence_count": 0,
+      "issue": "ISSUE-EV-OUT-STALE-MTIME",
+      "severity": "low",
+      "verification": {
+        "confidence": 0.2,
+        "detail": "缺少头部层证据（规则-卡片模糊匹配未命中），需人审补",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-EV-OUT-STALE-MTIME",
+        "target_id": "ISSUE-EV-OUT-STALE-MTIME",
+        "verdict": "needs_human"
+      }
+    },
+    {
+      "counterexamples": 0,
+      "evidence_count": 0,
+      "issue": "ISSUE-ATOM-REL-TARGET",
+      "severity": "low",
+      "verification": {
+        "confidence": 0.2,
+        "detail": "缺少头部层证据（规则-卡片模糊匹配未命中），需人审补",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-ATOM-REL-TARGET",
+        "target_id": "ISSUE-ATOM-REL-TARGET",
+        "verdict": "needs_human"
+      }
+    },
+    {
+      "counterexamples": 0,
+      "evidence_count": 0,
+      "issue": "ISSUE-S1-AUTHOR-SELF-VERIFY",
+      "severity": "critical",
+      "verification": {
+        "confidence": 0.2,
+        "detail": "缺少头部层证据（规则-卡片模糊匹配未命中），需人审补",
+        "escape_assoc": null,
+        "meta": {},
+        "result_id": "VR-ISSUE-S1-AUTHOR-SELF-VERIFY",
+        "target_id": "ISSUE-S1-AUTHOR-SELF-VERIFY",
+        "verdict": "needs_human"
+      }
+    }
+  ],
+  "met": true,
+  "min_chains": 5,
+  "verdicts": {
+    "needs_human": 10
+  }
+}

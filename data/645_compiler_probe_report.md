@@ -1,0 +1,41 @@
+# 645 编译器实测报告（B2/B3，真实编译）
+
+- g++ 版本：g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0
+- clang++ 版本：clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)（可用）
+- 探测 fixture 数：49
+- 编译运行次数：147
+- 原子卡总数：28
+- **有 L1/L2 实测证据的卡：28**（B2 目标 ≥15）
+- 双编译器确认（L1）：28
+- 可移植性存疑（g++ 过 clang 不过）：0
+- 已落库证据条数：28
+
+## 逐卡结果
+- `ATOM-CONC-FENCE-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-CONC-LOCK-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-CONC-RACE-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-HIST-AUTOPTR-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-LANG-INLINE-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-ALIGN-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-ALLOC-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-ALLOC-002`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-LEAK-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-LEAK-002`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-MOVE-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-MOVE-002`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-NEW-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-PERF-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-PERF-002`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-PERF-003`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-PERF-004`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-RAII-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-RAII-002`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-RVREF-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-SHARED-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-SHARED-002`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-UNIQUE-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-UNIQUE-002`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-VALUE-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-VALUE-002`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-MEM-WEAK-001`：g++=✅ clang++=✅ 等级=L1
+- `ATOM-UB-GRAY-001`：g++=✅ clang++=✅ 等级=L1

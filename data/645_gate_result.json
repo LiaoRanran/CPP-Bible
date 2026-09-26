@@ -1,0 +1,32 @@
+{
+  "controlled_clean": {
+    "dirty": [],
+    "rc": 0
+  },
+  "mypy": {
+    "available": true,
+    "rc": 0,
+    "tail": ""
+  },
+  "passed": true,
+  "products": {
+    "missing": []
+  },
+  "pytest_fast": {
+    "rc": 0,
+    "tail": "..........................................................               [100%]\n"
+  },
+  "pytest_slow": {
+    "rc": 0,
+    "tail": "........                                                                 [100%]\n"
+  },
+  "ruff": {
+    "available": true,
+    "rc": 0,
+    "tail": "All checks passed!\n"
+  },
+  "tool_check": {
+    "failed": [],
+    "total": 17
+  }
+}

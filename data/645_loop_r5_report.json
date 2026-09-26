@@ -1,0 +1,59 @@
+{
+  "R5": 1.0,
+  "actionable": 3,
+  "drafts": [
+    {
+      "admission": "admit",
+      "blast_radius": 0,
+      "check_src": "pedagogy",
+      "draft_id": "DRAFT-PEDAGOGY-001",
+      "escape_ref": "A1-blind-spot",
+      "mdl_bits": 72,
+      "priority": "P1",
+      "ripple": 0,
+      "ripple_class": "safe",
+      "severity": "advice",
+      "target": "ATOM-REQUIRED",
+      "title": "概念类原子须含 pedagogy 字段"
+    },
+    {
+      "admission": "admit",
+      "blast_radius": 0,
+      "check_src": "claim_boundary",
+      "draft_id": "DRAFT-CLAIM-BOUND-001",
+      "escape_ref": "A2-equiv-rewrite",
+      "mdl_bits": 78,
+      "priority": "P1",
+      "ripple": 0,
+      "ripple_class": "safe",
+      "severity": "warn",
+      "target": "ATOM-CLAIM-BOUND",
+      "title": "claim_boundary 须含 standard/compilers 键"
+    },
+    {
+      "admission": "admit",
+      "blast_radius": 0,
+      "check_src": "relations",
+      "draft_id": "DRAFT-REL-KNOWN-001",
+      "escape_ref": "A1-blind-spot",
+      "mdl_bits": 73,
+      "priority": "P2",
+      "ripple": 0,
+      "ripple_class": "safe",
+      "severity": "warn",
+      "target": "ATOM-REL-UNKNOWN",
+      "title": "关系类型须在白名单"
+    }
+  ],
+  "generator_drafts": 3,
+  "met": true,
+  "observer_issues": 10,
+  "series": {
+    "R1": 0.375,
+    "R2": 0.5,
+    "R3": null,
+    "R4": 0.1,
+    "R5": 1.0
+  },
+  "target": 0.3
+}

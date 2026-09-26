@@ -1,0 +1,410 @@
+{
+  "ledger_events": 452,
+  "per_rule": {
+    "ATOM-AUDIENCE": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-CLAIM-CONCEPT-NORMALIZED": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-CLAIM-STRUCTURED": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-DAL-MATCH": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-FM-REQUIRED": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-GRAY-ZONE": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-ID-FORMAT": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-ID-UNIQUE": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-MISCONCEPTION-LEVELS": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-MISCONCEPTION-REF": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-NO-UNVERIFIED": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-PREREQ-READABLE": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-REL-CONFLICT": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-REL-DAG": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-REL-TARGET": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-REL-TARGET-HC": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-REL-UNKNOWN": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-REL-UNKNOWN-HC": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-STATUS-TRANSITION": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-STATUS-VALUE": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-SUPERIORITY-WORDS": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-VERIFIED-BOUND": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "ATOM-VERIFY-REASON": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "CARD-PATH-NOT-CANONICAL": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "CARD-PATH-NOT-CANONICAL-HC": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "DOC-ZERO-PLACEHOLDER": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-ARTIFACT-FILE-EXISTS": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-ARTIFACT-PRODUCER": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-ARTIFACT-VERSION-MATCH": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-ASSERT-COUNT-BELOW-BASELINE": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-ASSERT-SYMBOL-MAPPED": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-ENV-DEPENDENT-KEY": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-FALSIFICATION": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-FALSIFICATION-QUANT": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-FIXTURE-NO-ECHO-DATA": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-FM-DUP-KEY": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-FM-REQUIRED": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-FM-YAML-HARDENING": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-ID-UNIQUE": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-MATRIX": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-MATRIX-UNBACKED": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-MSCV-NO-VERIFY": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-OUT-STALE-MTIME": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-OUT-UNDECLARED-KEY": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-RUN-KEY-DECLARED-EXISTS": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-SELF-SATISFIED-ASSERT": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-SERVES-EXIST": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-SERVES-EXIST-HC": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-TRIVIAL-OBSERVATION": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-WERROR-DECL-BIND": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "EV-ZERO-DIAG-WERROR": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "HUMAN-GOLDEN-REVIEW": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "HYBRID-TEACHING-DEPTH": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "INFERENCE-NOT-MACHINE-VERIFIED": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "LLM-SUPERIORITY-QUALITY": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "META-MANIFEST": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "MIS-LIBRARY": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "OBSERVATION-LIVENESS": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "OBSERVATION-NEEDS-ARTIFACT": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "PED-MISCONCEPTION": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "PED-MOTIVATION": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "PED-PREDICT-FIRST": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "PED-SOCRATIC": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "S1-AUTHOR-SELF-VERIFY": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "S1-GIT-AUTHOR-BINDING": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "S2-EVIDENCE-VERDICT": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    },
+    "S3-EXPECTED-HARDCODED": {
+      "escape": 0,
+      "known_error_rate": 0.0,
+      "overturn": 0,
+      "trigger": 0
+    }
+  },
+  "rule_count": 67,
+  "rules_with_trigger": 0,
+  "total_trigger": 0
+}

@@ -1,0 +1,275 @@
+{
+  "random_escape_rate": 0.0,
+  "random_escapes": 0,
+  "random_total": 8,
+  "real_escape_found": false,
+  "results": [
+    {
+      "card": "ATOM-CONC-FENCE-001",
+      "caught": true,
+      "detail": "缺失必填字段：['id']",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "field_delete"
+    },
+    {
+      "card": "ATOM-CONC-FENCE-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-CONC-FENCE-001",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "value_tamper"
+    },
+    {
+      "card": "ATOM-CONC-FENCE-001",
+      "caught": true,
+      "detail": "ID 格式非法：bad id with spaces",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "break_ref"
+    },
+    {
+      "card": "ATOM-CONC-FENCE-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-CONC-FENCE-001",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "format_perturb"
+    },
+    {
+      "card": "ATOM-CONC-FENCE-001",
+      "caught": true,
+      "detail": "缺失必填字段：['id', 'title', 'domain', 'type', 'status', 'claim']",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "equiv_rewrite"
+    },
+    {
+      "card": "ATOM-CONC-LOCK-001",
+      "caught": true,
+      "detail": "缺失必填字段：['id']",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "field_delete"
+    },
+    {
+      "card": "ATOM-CONC-LOCK-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-CONC-LOCK-001",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "value_tamper"
+    },
+    {
+      "card": "ATOM-CONC-LOCK-001",
+      "caught": true,
+      "detail": "ID 格式非法：bad id with spaces",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "break_ref"
+    },
+    {
+      "card": "ATOM-CONC-LOCK-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-CONC-LOCK-001",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "format_perturb"
+    },
+    {
+      "card": "ATOM-CONC-LOCK-001",
+      "caught": true,
+      "detail": "缺失必填字段：['id', 'title', 'domain', 'type', 'status', 'claim']",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "equiv_rewrite"
+    },
+    {
+      "card": "ATOM-CONC-RACE-001",
+      "caught": true,
+      "detail": "缺失必填字段：['id']",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "field_delete"
+    },
+    {
+      "card": "ATOM-CONC-RACE-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-CONC-RACE-001",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "value_tamper"
+    },
+    {
+      "card": "ATOM-CONC-RACE-001",
+      "caught": true,
+      "detail": "ID 格式非法：bad id with spaces",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "break_ref"
+    },
+    {
+      "card": "ATOM-CONC-RACE-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-CONC-RACE-001",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "format_perturb"
+    },
+    {
+      "card": "ATOM-CONC-RACE-001",
+      "caught": true,
+      "detail": "缺失必填字段：['id', 'title', 'domain', 'type', 'status', 'claim']",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "equiv_rewrite"
+    },
+    {
+      "card": "ATOM-HIST-AUTOPTR-001",
+      "caught": true,
+      "detail": "缺失必填字段：['id']",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "field_delete"
+    },
+    {
+      "card": "ATOM-HIST-AUTOPTR-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-HIST-AUTOPTR-001",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "value_tamper"
+    },
+    {
+      "card": "ATOM-HIST-AUTOPTR-001",
+      "caught": true,
+      "detail": "ID 格式非法：bad id with spaces",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "break_ref"
+    },
+    {
+      "card": "ATOM-HIST-AUTOPTR-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-HIST-AUTOPTR-001",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "format_perturb"
+    },
+    {
+      "card": "ATOM-HIST-AUTOPTR-001",
+      "caught": true,
+      "detail": "缺失必填字段：['id', 'title', 'domain', 'type', 'status', 'claim']",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "equiv_rewrite"
+    },
+    {
+      "card": "ATOM-LANG-INLINE-001",
+      "caught": true,
+      "detail": "缺失必填字段：['id']",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "field_delete"
+    },
+    {
+      "card": "ATOM-LANG-INLINE-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-LANG-INLINE-001",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "value_tamper"
+    },
+    {
+      "card": "ATOM-LANG-INLINE-001",
+      "caught": true,
+      "detail": "ID 格式非法：bad id with spaces",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "break_ref"
+    },
+    {
+      "card": "ATOM-LANG-INLINE-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-LANG-INLINE-001",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "format_perturb"
+    },
+    {
+      "card": "ATOM-LANG-INLINE-001",
+      "caught": true,
+      "detail": "缺失必填字段：['id', 'title', 'domain', 'type', 'status', 'claim']",
+      "escaped": false,
+      "mutation_kind": "targeted",
+      "operator": "equiv_rewrite"
+    },
+    {
+      "card": "ATOM-CONC-FENCE-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-CONC-FENCE-001",
+      "escaped": false,
+      "mutation_kind": "random",
+      "operator": "random_noise"
+    },
+    {
+      "card": "ATOM-CONC-LOCK-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-CONC-LOCK-001",
+      "escaped": false,
+      "mutation_kind": "random",
+      "operator": "random_noise"
+    },
+    {
+      "card": "ATOM-CONC-RACE-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-CONC-RACE-001",
+      "escaped": false,
+      "mutation_kind": "random",
+      "operator": "random_noise"
+    },
+    {
+      "card": "ATOM-HIST-AUTOPTR-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-HIST-AUTOPTR-001",
+      "escaped": false,
+      "mutation_kind": "random",
+      "operator": "random_noise"
+    },
+    {
+      "card": "ATOM-LANG-INLINE-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-LANG-INLINE-001",
+      "escaped": false,
+      "mutation_kind": "random",
+      "operator": "random_noise"
+    },
+    {
+      "card": "ATOM-MEM-ALIGN-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-MEM-ALIGN-001",
+      "escaped": false,
+      "mutation_kind": "random",
+      "operator": "random_noise"
+    },
+    {
+      "card": "ATOM-MEM-ALLOC-001",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-MEM-ALLOC-001",
+      "escaped": false,
+      "mutation_kind": "random",
+      "operator": "random_noise"
+    },
+    {
+      "card": "ATOM-MEM-ALLOC-002",
+      "caught": true,
+      "detail": "ID 格式非法：ATOM-MEM-ALLOC-002",
+      "escaped": false,
+      "mutation_kind": "random",
+      "operator": "random_noise"
+    }
+  ],
+  "targeted_escape_rate": 0.0,
+  "targeted_escapes": 0,
+  "targeted_total": 25
+}

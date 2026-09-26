@@ -1,0 +1,14 @@
+{
+  "acquired_at": "2026-09-26T18:00:05",
+  "acquisition_method": "standard_fetcher_645",
+  "content": "{\"content_hash\": \"f56e9ce7000445228164ed4e718a0318878807c48584576279ce10fce7efc784\", \"content_len\": 991, \"section\": \"dcl.dcl\", \"title\": \"声明\", \"url\": \"https://eel.is/c++draft/dcl.dcl\"}",
+  "credibility": 0.9,
+  "evidence_id": "7334f2bc65ae71158a941ae96656e67e5a7ffad329ef89cdcb33229cd0e1a69f",
+  "grade": "L2",
+  "meta": {
+    "section": "dcl.dcl",
+    "title": "声明"
+  },
+  "source_type": "iso_standard",
+  "source_url": "https://eel.is/c++draft/dcl.dcl"
+}

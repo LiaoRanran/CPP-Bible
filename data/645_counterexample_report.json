@@ -1,0 +1,236 @@
+{
+  "cards_total": 27,
+  "cards_with_candidate": 20,
+  "per_card": {
+    "ATOM-CONC-FENCE-001": [
+      {
+        "boundary": "impl-defined",
+        "note": "线程/互斥量行为部分是实现定义（内存模型保证需原子/互斥）",
+        "standard_section": "[thread.condition]/[thread.mutex]",
+        "topic": "thread",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-CONC-LOCK-001": [
+      {
+        "boundary": "impl-defined",
+        "note": "线程/互斥量行为部分是实现定义（内存模型保证需原子/互斥）",
+        "standard_section": "[thread.condition]/[thread.mutex]",
+        "topic": "thread",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-CONC-RACE-001": [
+      {
+        "boundary": "UB",
+        "note": "数据竞争（无同步的并发读写）是 UB",
+        "standard_section": "[intro.races]/[atomics.order]",
+        "topic": "race",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "线程/互斥量行为部分是实现定义（内存模型保证需原子/互斥）",
+        "standard_section": "[thread.condition]/[thread.mutex]",
+        "topic": "thread",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-HIST-AUTOPTR-001": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-ALIGN-001": [
+      {
+        "boundary": "UB",
+        "note": "严格别名规则：通过不兼容类型访问对象是 UB",
+        "standard_section": "[basic.lval]/[class.mem]",
+        "topic": "aliasing",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-ALLOC-001": [
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-MOVE-002": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-NEW-001": [
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-PERF-001": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-PERF-003": [
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-RAII-001": [
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-RAII-002": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-RVREF-001": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-SHARED-001": [
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-SHARED-002": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "impl-defined",
+        "note": "线程/互斥量行为部分是实现定义（内存模型保证需原子/互斥）",
+        "standard_section": "[thread.condition]/[thread.mutex]",
+        "topic": "thread",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-UNIQUE-001": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-UNIQUE-002": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      },
+      {
+        "boundary": "UB",
+        "note": "new/delete 与 new[]/delete[] 混用是 UB；malloc/free 与 new/delete 混用是 UB",
+        "standard_section": "[basic.stc.dynamic]/[expr.new]",
+        "topic": "new",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-VALUE-001": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-MEM-VALUE-002": [
+      {
+        "boundary": "UB",
+        "note": "move 后源对象处于有效但未指定状态，再次使用其值是 UB/未指定",
+        "standard_section": "[class.copy.elision]/[lib.move]",
+        "topic": "move",
+        "verdict": "需人审（只搜不判）"
+      }
+    ],
+    "ATOM-UB-GRAY-001": [
+      {
+        "boundary": "UB",
+        "note": "严格别名规则：通过不兼容类型访问对象是 UB",
+        "standard_section": "[basic.lval]/[class.mem]",
+        "topic": "aliasing",
+        "verdict": "需人审（只搜不判）"
+      }
+    ]
+  },
+  "total_candidates": 27
+}

@@ -1,0 +1,14 @@
+{
+  "acquired_at": "2026-09-26T17:57:03",
+  "acquisition_method": "compiler_probe_645",
+  "content": "{\"card\": \"ATOM-MEM-UNIQUE-001\", \"clang_version\": \"clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)\", \"fixtures\": [{\"clang_ok\": true, \"fixture\": \"Examples\\\\atoms\\\\_atom_unique_move.cpp\", \"gpp_ok\": true}, {\"clang_ok\": true, \"fixture\": \"Examples\\\\atoms\\\\_atom_unique_size.cpp\", \"gpp_ok\": true}], \"gpp_version\": \"g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0\", \"grade\": \"L1\"}",
+  "credibility": 0.95,
+  "evidence_id": "5b6f8ffd43f5b90f78dcd868c3b2b118adc3200587d989ed3c029bd73751a1e5",
+  "grade": "L1",
+  "meta": {
+    "card": "ATOM-MEM-UNIQUE-001",
+    "compilers": 2
+  },
+  "source_type": "compiler_run",
+  "source_url": null
+}

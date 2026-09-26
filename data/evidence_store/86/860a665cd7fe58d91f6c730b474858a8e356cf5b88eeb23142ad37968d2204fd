@@ -1,0 +1,14 @@
+{
+  "acquired_at": "2026-09-26T17:57:02",
+  "acquisition_method": "compiler_probe_645",
+  "content": "{\"card\": \"ATOM-MEM-ALIGN-001\", \"clang_version\": \"clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)\", \"fixtures\": [{\"clang_ok\": true, \"fixture\": \"Examples\\\\atoms\\\\_atom_align_ctrl.cpp\", \"gpp_ok\": true}, {\"clang_ok\": true, \"fixture\": \"Examples\\\\atoms\\\\_atom_align_pad.cpp\", \"gpp_ok\": true}], \"gpp_version\": \"g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0\", \"grade\": \"L1\"}",
+  "credibility": 0.95,
+  "evidence_id": "860a665cd7fe58d91f6c730b474858a8e356cf5b88eeb23142ad37968d2204fd",
+  "grade": "L1",
+  "meta": {
+    "card": "ATOM-MEM-ALIGN-001",
+    "compilers": 2
+  },
+  "source_type": "compiler_run",
+  "source_url": null
+}

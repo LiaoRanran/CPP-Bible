@@ -1,0 +1,14 @@
+{
+  "acquired_at": "2026-09-26T18:00:29",
+  "acquisition_method": "standard_fetcher_645",
+  "content": "{\"content_hash\": \"8935dbd3cfe123093ed12462a46fbb6e022c7b8715d57a8858cad66e544f68b3\", \"content_len\": 305500, \"section\": \"stmt\", \"title\": \"语句\", \"url\": \"https://eel.is/c++draft/stmt\"}",
+  "credibility": 0.9,
+  "evidence_id": "f866750497728371d16aed9dc724601e9cbe3f139a4a3cb9d653ffd5f0b49d47",
+  "grade": "L2",
+  "meta": {
+    "section": "stmt",
+    "title": "语句"
+  },
+  "source_type": "iso_standard",
+  "source_url": "https://eel.is/c++draft/stmt"
+}

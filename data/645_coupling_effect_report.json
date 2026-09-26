@@ -1,0 +1,31 @@
+{
+  "chain_count": 10,
+  "issues_total": 10,
+  "metrics": {
+    "attribution_accuracy": {
+      "note": "可复核率：有真实证据引用的占比",
+      "with_coupling": 0.1,
+      "without_coupling": 0.0
+    },
+    "evidence_fetch_success": {
+      "note": "真获取 16/18（eel.is）；644 原型 403 ⇒ 0",
+      "with_coupling": 0.8889,
+      "without_coupling": 0.0
+    },
+    "feedback_effectiveness": {
+      "head_layer_priority": "high",
+      "needs_evidence": 0,
+      "needs_human": 9,
+      "verified_ok": 1
+    },
+    "verdict_pass_rate": {
+      "note": "有证据判决 vs 仅按严重度启发式判决",
+      "with_coupling": 0.1,
+      "without_coupling": 0.0
+    }
+  },
+  "verdicts": {
+    "needs_human": 9,
+    "pass": 1
+  }
+}

@@ -1,0 +1,202 @@
+{
+  "blind_spots": [
+    "ATOM-AUDIENCE",
+    "ATOM-CLAIM-STRUCTURED",
+    "ATOM-DAL-MATCH",
+    "ATOM-FM-REQUIRED",
+    "ATOM-GRAY-ZONE",
+    "ATOM-ID-FORMAT",
+    "ATOM-ID-UNIQUE",
+    "ATOM-MISCONCEPTION-LEVELS",
+    "ATOM-MISCONCEPTION-REF",
+    "ATOM-NO-UNVERIFIED",
+    "ATOM-PREREQ-READABLE",
+    "ATOM-REL-CONFLICT",
+    "ATOM-REL-DAG",
+    "ATOM-REL-TARGET-HC",
+    "ATOM-REL-UNKNOWN",
+    "ATOM-REL-UNKNOWN-HC",
+    "ATOM-STATUS-TRANSITION",
+    "ATOM-STATUS-VALUE",
+    "ATOM-SUPERIORITY-WORDS",
+    "ATOM-VERIFIED-BOUND",
+    "ATOM-VERIFY-REASON",
+    "CARD-PATH-NOT-CANONICAL",
+    "CARD-PATH-NOT-CANONICAL-HC",
+    "DOC-ZERO-PLACEHOLDER",
+    "EV-ARTIFACT-FILE-EXISTS",
+    "EV-ARTIFACT-PRODUCER",
+    "EV-ARTIFACT-VERSION-MATCH",
+    "EV-ASSERT-COUNT-BELOW-BASELINE",
+    "EV-FALSIFICATION",
+    "EV-FIXTURE-NO-ECHO-DATA",
+    "EV-FM-DUP-KEY",
+    "EV-FM-REQUIRED",
+    "EV-FM-YAML-HARDENING",
+    "EV-ID-UNIQUE",
+    "EV-MATRIX",
+    "EV-MSCV-NO-VERIFY",
+    "EV-RUN-KEY-DECLARED-EXISTS",
+    "EV-SELF-SATISFIED-ASSERT",
+    "EV-SERVES-EXIST-HC",
+    "EV-TRIVIAL-OBSERVATION",
+    "EV-WERROR-DECL-BIND",
+    "EV-ZERO-DIAG-WERROR",
+    "INFERENCE-NOT-MACHINE-VERIFIED",
+    "META-MANIFEST",
+    "MIS-LIBRARY",
+    "OBSERVATION-NEEDS-ARTIFACT",
+    "PED-MISCONCEPTION",
+    "PED-MOTIVATION",
+    "PED-PREDICT-FIRST",
+    "PED-SOCRATIC",
+    "S1-AUTHOR-SELF-VERIFY",
+    "S1-GIT-AUTHOR-BINDING",
+    "S2-EVIDENCE-VERDICT",
+    "S3-EXPECTED-HARDCODED"
+  ],
+  "finding_counts": {
+    "ATOM-CLAIM-CONCEPT-NORMALIZED": 77,
+    "ATOM-REL-TARGET": 2,
+    "EV-ASSERT-SYMBOL-MAPPED": 3,
+    "EV-ENV-DEPENDENT-KEY": 2,
+    "EV-FALSIFICATION-QUANT": 4,
+    "EV-MATRIX-UNBACKED": 16,
+    "EV-OUT-STALE-MTIME": 2,
+    "EV-OUT-UNDECLARED-KEY": 6,
+    "EV-SERVES-EXIST": 1,
+    "OBSERVATION-LIVENESS": 8
+  },
+  "issues": [
+    {
+      "evidence_refs": [
+        "rule:ATOM-CLAIM-CONCEPT-NORMALIZED",
+        "hits:77"
+      ],
+      "issue_id": "ISSUE-ATOM-CLAIM-CONCEPT-NORMALIZED",
+      "root_cause": "规则 ATOM-CLAIM-CONCEPT-NORMALIZED 当前真实命中 77 次（gate_engine.run 真实产出）",
+      "score": 231.0,
+      "severity": "low",
+      "source": "smart_issue_finder_645",
+      "suggested_next": "复核命中是否真问题；高严重度优先人审",
+      "title": "ATOM-CLAIM-CONCEPT-NORMALIZED：claim 命题 object 须归一化规范概念（图谱可连通，530 任务3）"
+    },
+    {
+      "evidence_refs": [
+        "rule:EV-MATRIX-UNBACKED",
+        "hits:16"
+      ],
+      "issue_id": "ISSUE-EV-MATRIX-UNBACKED",
+      "root_cause": "规则 EV-MATRIX-UNBACKED 当前真实命中 16 次（gate_engine.run 真实产出）",
+      "score": 48.0,
+      "severity": "low",
+      "source": "smart_issue_finder_645",
+      "suggested_next": "复核命中是否真问题；高严重度优先人审",
+      "title": "EV-MATRIX-UNBACKED：多编译器矩阵须有留痕说明（P7）"
+    },
+    {
+      "evidence_refs": [
+        "rule:OBSERVATION-LIVENESS",
+        "hits:8"
+      ],
+      "issue_id": "ISSUE-OBSERVATION-LIVENESS",
+      "root_cause": "规则 OBSERVATION-LIVENESS 当前真实命中 8 次（gate_engine.run 真实产出）",
+      "score": 24.0,
+      "severity": "low",
+      "source": "smart_issue_finder_645",
+      "suggested_next": "复核命中是否真问题；高严重度优先人审",
+      "title": "OBSERVATION-LIVENESS：observation 命题须有活性对照（530 任务4：堵「自标观测即全自动」，warn 观察期）"
+    },
+    {
+      "evidence_refs": [
+        "rule:EV-OUT-UNDECLARED-KEY",
+        "hits:6"
+      ],
+      "issue_id": "ISSUE-EV-OUT-UNDECLARED-KEY",
+      "root_cause": "规则 EV-OUT-UNDECLARED-KEY 当前真实命中 6 次（gate_engine.run 真实产出）",
+      "score": 18.0,
+      "severity": "low",
+      "source": "smart_issue_finder_645",
+      "suggested_next": "复核命中是否真问题；高严重度优先人审",
+      "title": "EV-OUT-UNDECLARED-KEY：.out 读数键须在 run_match_keys 声明（B3 窄化）"
+    },
+    {
+      "evidence_refs": [
+        "rule:EV-FALSIFICATION-QUANT",
+        "hits:4"
+      ],
+      "issue_id": "ISSUE-EV-FALSIFICATION-QUANT",
+      "root_cause": "规则 EV-FALSIFICATION-QUANT 当前真实命中 4 次（gate_engine.run 真实产出）",
+      "score": 12.0,
+      "severity": "low",
+      "source": "smart_issue_finder_645",
+      "suggested_next": "复核命中是否真问题；高严重度优先人审",
+      "title": "EV-FALSIFICATION-QUANT：证伪对照须含量化取值（P5 伪证伪）"
+    },
+    {
+      "evidence_refs": [
+        "rule:EV-ASSERT-SYMBOL-MAPPED",
+        "hits:3"
+      ],
+      "issue_id": "ISSUE-EV-ASSERT-SYMBOL-MAPPED",
+      "root_cause": "规则 EV-ASSERT-SYMBOL-MAPPED 当前真实命中 3 次（gate_engine.run 真实产出）",
+      "score": 9.0,
+      "severity": "high",
+      "source": "smart_issue_finder_645",
+      "suggested_next": "复核命中是否真问题；高严重度优先人审",
+      "title": "EV-ASSERT-SYMBOL-MAPPED：断言文本须可定位（夹具/工件/symbol_map，B2 窄化）"
+    },
+    {
+      "evidence_refs": [
+        "rule:EV-OUT-STALE-MTIME",
+        "hits:2"
+      ],
+      "issue_id": "ISSUE-EV-OUT-STALE-MTIME",
+      "root_cause": "规则 EV-OUT-STALE-MTIME 当前真实命中 2 次（gate_engine.run 真实产出）",
+      "score": 6.0,
+      "severity": "low",
+      "source": "smart_issue_finder_645",
+      "suggested_next": "复核命中是否真问题；高严重度优先人审",
+      "title": "EV-OUT-STALE-MTIME：.out 须比夹具新（414 F06 陈旧留痕）"
+    },
+    {
+      "evidence_refs": [
+        "rule:ATOM-REL-TARGET",
+        "hits:2"
+      ],
+      "issue_id": "ISSUE-ATOM-REL-TARGET",
+      "root_cause": "规则 ATOM-REL-TARGET 当前真实命中 2 次（gate_engine.run 真实产出）",
+      "score": 6.0,
+      "severity": "low",
+      "source": "smart_issue_finder_645",
+      "suggested_next": "复核命中是否真问题；高严重度优先人审",
+      "title": "ATOM-REL-TARGET：关系目标存在"
+    },
+    {
+      "evidence_refs": [
+        "rule:EV-ENV-DEPENDENT-KEY",
+        "hits:2"
+      ],
+      "issue_id": "ISSUE-EV-ENV-DEPENDENT-KEY",
+      "root_cause": "规则 EV-ENV-DEPENDENT-KEY 当前真实命中 2 次（gate_engine.run 真实产出）",
+      "score": 6.0,
+      "severity": "high",
+      "source": "smart_issue_finder_645",
+      "suggested_next": "复核命中是否真问题；高严重度优先人审",
+      "title": "EV-ENV-DEPENDENT-KEY：环境量读数键（470 P0-E：声明为断言=block/仅留痕=advice）"
+    },
+    {
+      "evidence_refs": [
+        "rule:ATOM-STATUS-VALUE",
+        "blind_spot"
+      ],
+      "issue_id": "ISSUE-ATOM-STATUS-VALUE",
+      "root_cause": "规则 ATOM-STATUS-VALUE（block）在全库 0 命中 → 覆盖盲区（真实盲区）",
+      "score": 5.0,
+      "severity": "critical",
+      "source": "smart_issue_finder_645",
+      "suggested_next": "补充该规则能命中的卡片/证据，或评估是否退役",
+      "title": "ATOM-STATUS-VALUE：status 取值限于四级枚举"
+    }
+  ]
+}

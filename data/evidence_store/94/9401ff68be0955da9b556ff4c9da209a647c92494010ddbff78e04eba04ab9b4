@@ -1,0 +1,14 @@
+{
+  "acquired_at": "2026-09-26T18:00:32",
+  "acquisition_method": "standard_fetcher_645",
+  "content": "{\"content_hash\": \"9a5c5a0fc241f761e6731fa80084acb681cbc3ee19deee38f68eac67d539582c\", \"content_len\": 12028, \"section\": \"special\", \"title\": \"特殊成员函数\", \"url\": \"https://eel.is/c++draft/special\"}",
+  "credibility": 0.9,
+  "evidence_id": "9401ff68be0955da9b556ff4c9da209a647c92494010ddbff78e04eba04ab9b4",
+  "grade": "L2",
+  "meta": {
+    "section": "special",
+    "title": "特殊成员函数"
+  },
+  "source_type": "iso_standard",
+  "source_url": "https://eel.is/c++draft/special"
+}

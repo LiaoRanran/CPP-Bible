@@ -1,0 +1,74 @@
+# 645 规则 error 追踪报告（A5，真实账本统计）
+
+- 账本事件数：452
+- 规则总数：67
+- 有触发记录的规则：0
+
+## 逐规则（真实 error_rate）
+- `ATOM-AUDIENCE`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-CLAIM-CONCEPT-NORMALIZED`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-CLAIM-STRUCTURED`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-DAL-MATCH`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-FM-REQUIRED`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-GRAY-ZONE`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-ID-FORMAT`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-ID-UNIQUE`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-MISCONCEPTION-LEVELS`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-MISCONCEPTION-REF`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-NO-UNVERIFIED`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-PREREQ-READABLE`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-REL-CONFLICT`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-REL-DAG`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-REL-TARGET`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-REL-TARGET-HC`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-REL-UNKNOWN`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-REL-UNKNOWN-HC`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-STATUS-TRANSITION`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-STATUS-VALUE`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-SUPERIORITY-WORDS`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-VERIFIED-BOUND`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `ATOM-VERIFY-REASON`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `CARD-PATH-NOT-CANONICAL`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `CARD-PATH-NOT-CANONICAL-HC`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `DOC-ZERO-PLACEHOLDER`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-ARTIFACT-FILE-EXISTS`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-ARTIFACT-PRODUCER`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-ARTIFACT-VERSION-MATCH`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-ASSERT-COUNT-BELOW-BASELINE`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-ASSERT-SYMBOL-MAPPED`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-ENV-DEPENDENT-KEY`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-FALSIFICATION`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-FALSIFICATION-QUANT`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-FIXTURE-NO-ECHO-DATA`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-FM-DUP-KEY`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-FM-REQUIRED`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-FM-YAML-HARDENING`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-ID-UNIQUE`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-MATRIX`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-MATRIX-UNBACKED`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-MSCV-NO-VERIFY`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-OUT-STALE-MTIME`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-OUT-UNDECLARED-KEY`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-RUN-KEY-DECLARED-EXISTS`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-SELF-SATISFIED-ASSERT`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-SERVES-EXIST`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-SERVES-EXIST-HC`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-TRIVIAL-OBSERVATION`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-WERROR-DECL-BIND`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `EV-ZERO-DIAG-WERROR`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `HUMAN-GOLDEN-REVIEW`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `HYBRID-TEACHING-DEPTH`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `INFERENCE-NOT-MACHINE-VERIFIED`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `LLM-SUPERIORITY-QUALITY`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `META-MANIFEST`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `MIS-LIBRARY`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `OBSERVATION-LIVENESS`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `OBSERVATION-NEEDS-ARTIFACT`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `PED-MISCONCEPTION`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `PED-MOTIVATION`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `PED-PREDICT-FIRST`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `PED-SOCRATIC`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `S1-AUTHOR-SELF-VERIFY`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `S1-GIT-AUTHOR-BINDING`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `S2-EVIDENCE-VERDICT`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0
+- `S3-EXPECTED-HARDCODED`：触发=0 推翻=0 逃逸关联=0 error_rate=0.0

@@ -1,0 +1,14 @@
+{
+  "acquired_at": "2026-09-26T18:00:09",
+  "acquisition_method": "standard_fetcher_645",
+  "content": "{\"content_hash\": \"1369fad0b0e35eb31bdd23f0d00ceb588beed66136517a61b998eacea3553cf6\", \"content_len\": 932275, \"section\": \"class\", \"title\": \"类\", \"url\": \"https://eel.is/c++draft/class\"}",
+  "credibility": 0.9,
+  "evidence_id": "37e8f18b847c3ddc46f2e7877928a74af56dff5eaa2eccd6e82cbb978ce95ff7",
+  "grade": "L2",
+  "meta": {
+    "section": "class",
+    "title": "类"
+  },
+  "source_type": "iso_standard",
+  "source_url": "https://eel.is/c++draft/class"
+}
