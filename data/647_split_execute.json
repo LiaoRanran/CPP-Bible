@@ -1,0 +1,36 @@
+{
+  "task": "647 C3 · 仓库拆分执行（CPP-Bible 端零改动）",
+  "executed_at": "2026-09-26",
+  "target_repo": "C:/CodeLearnling/note/note/queyi-core",
+  "target_outside_cppbible": true,
+  "cppbible_working_tree_touched": false,
+  "cppbible_head_at_split": "81da7d07",
+  "split": {
+    "mechanism": "git fast-export --all -- <paths> | git fast-import",
+    "flags": ["--tag-of-filtered-object=drop", "--reencode=yes"],
+    "n_core_files": 118,
+    "n_commits": 165,
+    "head_after_split": "016dd042749e"
+  },
+  "local_commit": {
+    "message": "queyi-core：首版（从 CPP-Bible 647 C3 拆出，含 README / 最小 conftest / .gitignore）",
+    "n_commits_total": 166,
+    "tracked_files": 121,
+    "remotes": [],
+    "pushed": false
+  },
+  "verification": {
+    "kernel_selftest": "PASS (python tools/queyi_core_v10_641.py --check)",
+    "pytest_collect_only": "222 collected / 0 errors",
+    "pytest_k_647": "82 passed / 30 failed / 110 deselected (20.16s)",
+    "fail_root_cause": "全部为数据缺失（atoms/ 原子卡、data/authority/ 账本、data/transparency_log.jsonl、tools/.tool_checksums）—— 均为**有意不拆**的东西，非拆分缺陷"
+  },
+  "not_done": [
+    "未 push（queyi-core 连远端都没建）",
+    "未用 git subtree 把 queyi-core 合并回 CPP-Bible 子目录（会与现有 tools/* 重复 ⇒ 冲击 645/646 测试）",
+    "未在 CPP-Bible 清理重复的 core 工具（两份并列，留人裁决）",
+    "未重排 queyi-core 目录（当前扁平 tools/）",
+    "未为数据依赖的 30 个测试造夹具/标 skip"
+  ],
+  "rollback": "删除 C:/CodeLearnling/note/note/queyi-core 目录即可；CPP-Bible 端无需任何操作"
+}
