@@ -1,0 +1,53 @@
+{
+  "version": "642.1",
+  "existing_rules_untouched": true,
+  "note": "本文件只记**新规则**准入结论；被拒规则保留（不删除、不改现有 67 条）",
+  "exempt_rate_threshold": 0.3,
+  "exempt_rate_reference_636": 0.235,
+  "decisions": [
+    {
+      "rule_id": "CAND-SHORT-001",
+      "decision": "ADMIT",
+      "detail": "长度 OK（savings 531.9 > cost 184）· 豁免率 0.1 < 0.3",
+      "exempt_rate": 0.1,
+      "savings_bits": 531.9,
+      "cost_bits": 184
+    },
+    {
+      "rule_id": "CAND-LONG-001",
+      "decision": "REJECT_编码长度",
+      "detail": "savings(531.9) ≤ cost(2056)",
+      "exempt_rate": 0.1,
+      "savings_bits": 531.9,
+      "cost_bits": 2056
+    },
+    {
+      "rule_id": "CAND-NODATA-001",
+      "decision": "PENDING_HUMAN",
+      "detail": "无豁免率数据（提案人未声明且热力图无记录）⇒ 需人补，不代决",
+      "savings_bits": 0.0,
+      "cost_bits": 200
+    },
+    {
+      "rule_id": "CAND-HIGH-EXEMPT-001",
+      "decision": "REJECT_豁免率",
+      "detail": "豁免率 0.85 ≥ 阈值 0.3",
+      "exempt_rate": 0.85,
+      "savings_bits": 0.0,
+      "cost_bits": 224
+    },
+    {
+      "rule_id": "ATOM-REL-TARGET-HC",
+      "decision": "REFUSE_已有规则",
+      "detail": "只对新规则准入；现有规则**不改不删**"
+    },
+    {
+      "rule_id": "CAND-NEWDIR-X",
+      "decision": "REJECT_热力图缺失",
+      "detail": "不在 VFDR 热力图（65 条在册）或零触达 ⇒ samples_explained=0 ⇒ 必 reject",
+      "exempt_rate": 0.0,
+      "savings_bits": 0.0,
+      "cost_bits": 200
+    }
+  ]
+}
