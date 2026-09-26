@@ -75,18 +75,26 @@ def analyze() -> dict:
         info[name] = {"exists": True, "has_docstring": bool(doc),
                       "goal": goal, "lines": len(open(p, encoding="utf-8").readlines())}
     n_before = len([k for k, v in info.items() if v.get("exists")])
-    n_after = n_before - sum(len(g["members"]) - 1 for g in MERGE_PLAN)
+    merged_away = [k for k, v in info.items() if not v.get("exists")]
+    if merged_away:
+        # 647 D1：合并**已执行** ⇒ 成员文件已被删除，现存数即"合并后"数（不再重复扣减）
+        n_after = n_before
+        executed: object = "647 D1（已执行）"
+    else:
+        n_after = n_before - sum(len(g["members"]) - 1 for g in MERGE_PLAN)
+        executed = False
     return {"core_645_count": n_before, "after_merge": n_after,
             "merge_plan": MERGE_PLAN, "info": info,
-            "executed": False}
+            "merged_away": merged_away, "executed": executed}
 
 
 def write_report(result: dict) -> None:
     """写报告。"""
     lines = ["# 646 工具合并分析报告（B4）", "",
-             f"- 645 核心工具数：{result['core_645_count']}",
+             f"- 645 核心工具数（现存）：{result['core_645_count']}",
              f"- 合并后可达：**{result['after_merge']}**（目标 ≤12）",
-             f"- 是否已执行合并：**{result['executed']}**（本工具只分析，执行留 647）", "",
+             f"- 是否已执行合并：**{result['executed']}**（646 只分析；**647 D1 已执行**）",
+             f"- 已被合并删除的成员：`{result.get('merged_away', [])}`", "",
              "## 合并方案", ""]
     for g in result["merge_plan"]:
         lines.append(f"### {g['group']}")

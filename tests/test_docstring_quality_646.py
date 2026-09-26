@@ -14,10 +14,11 @@ def test_selftest_passes():
 
 
 def test_audit_avg_high():
-    """真实抽查：平均分 ≥4（改进后）。"""
+    """真实抽查：平均分 ≥4（改进后）。647 D1 合并删除的成员**自动跳过并登记**。"""
     res = b5.audit()
     assert res["sample"] >= 15
     assert res["avg_score"] >= 4.0
+    assert len(res["skipped_missing"]) == 5, res["skipped_missing"]
 
 
 def test_no_low_scores():

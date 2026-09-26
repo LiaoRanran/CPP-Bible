@@ -5,11 +5,11 @@ import pytest
 
 sys.path.insert(0, "tools")
 
-import coupling_feedback_645 as c4
+import three_layer_orchestrator_645 as c4  # 647 D1：C4 已并入三层耦合套件
 
 
 def test_selftest_passes():
-    assert c4.selftest() == 0
+    assert c4.feedback_selftest() == 0
 
 
 def test_feedback_classifies_correctly():

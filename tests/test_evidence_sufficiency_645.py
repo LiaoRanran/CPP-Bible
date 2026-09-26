@@ -3,11 +3,11 @@ import sys
 
 sys.path.insert(0, "tools")
 
-import evidence_sufficiency_645 as b6
+import evidence_grading_645 as b6  # 647 D1：B6 已并入证据判定套件
 
 
 def test_selftest_passes():
-    assert b6.selftest() == 0
+    assert b6.sufficiency_selftest() == 0
 
 
 def test_judge_covers_real_cards():

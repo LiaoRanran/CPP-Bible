@@ -12,11 +12,11 @@ import pytest
 
 sys.path.insert(0, "tools")
 
-import rule_error_tracker_645 as a5
+import loop_r5_runner_645 as a5  # 647 D1：A5 已并入规则生命周期套件
 
 
 def test_selftest_passes():
-    assert a5.selftest() == 0
+    assert a5.error_selftest() == 0
 
 
 def _write_ledger(records: list[dict]) -> str:
@@ -35,7 +35,7 @@ def test_track_counts_real_events(monkeypatch):
         {"target_id": "ATOM-Y", "result": "ABSTAIN", "operation": "REVOKE", "basis_refs": ["逃逸-z"]},
         {"target_id": "ATOM-Z", "result": "APPROVE", "operation": "CREATE", "basis_refs": ["ATOM-X"]},
     ])
-    monkeypatch.setattr(a5, "LEDGER", ledger)
+    monkeypatch.setattr(a5, "ERROR_LEDGER", ledger)
     monkeypatch.setattr(a5, "RULE_IDS", ["ATOM-X", "ATOM-Y", "ATOM-Z"])
     res = a5.track()
     assert res["rule_count"] == 3
@@ -53,7 +53,7 @@ def test_track_counts_real_events(monkeypatch):
 def test_real_ledger_readable(monkeypatch):
     """真实账本存在且能被解析（不要求具体计数）。"""
     real = os.path.join(a5.ROOT, "data", "authority", "decision_event_v2_ledger.jsonl")
-    monkeypatch.setattr(a5, "LEDGER", real)
+    monkeypatch.setattr(a5, "ERROR_LEDGER", real)
     events = a5.load_ledger()
     assert isinstance(events, list)
     # 真实仓库账本应有大量事件（452）

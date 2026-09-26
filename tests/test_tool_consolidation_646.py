@@ -14,8 +14,9 @@ def test_selftest_passes():
 
 
 def test_analysis_reaches_target():
-    """合并后工具数 ≤12。"""
+    """**647 D1 已执行合并**：15 → 10，现存数即合并后数。"""
     res = b4.analyze()
-    assert res["core_645_count"] == 15
+    assert res["core_645_count"] == 10, "647 D1 合并 15→10 后，现存工具数应为 10"
     assert res["after_merge"] <= 12
-    assert res["executed"] is False  # 诚实：只分析不执行
+    assert res["executed"] == "647 D1（已执行）"
+    assert len(res["merged_away"]) == 5, res["merged_away"]

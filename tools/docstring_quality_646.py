@@ -30,7 +30,8 @@ DATA = os.path.join(ROOT, "data")
 REPORT_MD = os.path.join(DATA, "646_docstring_quality_report.md")
 REPORT_JSON = os.path.join(DATA, "646_docstring_quality_report.json")
 
-# 抽查对象：645 核心 15 + 646 新增若干（关键路径）
+# 抽查对象：**647 D1 合并前**的 645 核心 15 + 646 新增若干（关键路径）。
+# 647 D1 执行合并后，被并入的 5 个成员文件已删除 ⇒ `audit()` 自动跳过并登记 `skipped_missing`。
 SAMPLE = [
     "smart_issue_finder_645", "targeted_attacker_645", "rule_drafter_645",
     "rule_error_tracker_645", "rule_aging_detector_645", "loop_r5_runner_645",
@@ -68,13 +69,23 @@ def score_file(path: str) -> dict:
 
 
 def audit() -> dict:
-    """真实抽查全部样本。"""
+    """真实抽查全部样本。
+
+    **647 D1 起**：样本里有些工具**已被合并删除**（15 → 10 的一部分）——
+    它们从样本中**剔除并单独登记**（`skipped_missing`），不再按"0 分"计入平均
+    （否则平均分会被"文件不存在"这种与注释质量无关的原因拉低，是错误的度量）。
+    """
     rows: dict[str, dict] = {}
+    skipped: list[str] = []
     for name in SAMPLE:
         p = os.path.join(TOOLS, name + ".py")
-        rows[name] = score_file(p) if os.path.exists(p) else {"score": 0, "issues": ["missing"]}
+        if not os.path.exists(p):
+            skipped.append(name)
+            continue
+        rows[name] = score_file(p)
     avg = round(sum(int(r["score"]) for r in rows.values()) / (len(rows) or 1), 3)
-    return {"sample": len(rows), "avg_score": avg, "max_score": 5, "rows": rows}
+    return {"sample": len(rows), "avg_score": avg, "max_score": 5, "rows": rows,
+            "skipped_missing": skipped}
 
 
 def write_report(result: dict) -> None:

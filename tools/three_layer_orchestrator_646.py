@@ -42,12 +42,12 @@ def _smart_issues() -> list[dict]:
     error_rates: dict = {}
     aging: dict = {}
     try:
-        import rule_error_tracker_645 as a5
+        import loop_r5_runner_645 as a5  # 647 D1：error 追踪已并入
         error_rates = a5.track()["per_rule"]
     except Exception:
         pass
     try:
-        import rule_aging_detector_645 as a6
+        import loop_r5_runner_645 as a6  # 647 D1：老化检测已并入
         aging = a6.detect()["per_rule"]
     except Exception:
         pass
@@ -60,7 +60,7 @@ _CACHE_MAX = 1
 @lru_cache(maxsize=_CACHE_MAX)
 def _suff_per_card() -> dict:
     """头部层充分性（卡→证据），A3 进程内缓存（只读）。"""
-    import evidence_sufficiency_645 as b6
+    import evidence_grading_645 as b6  # 647 D1：充分性已并入
     return dict(b6.judge()["per_card"])
 
 

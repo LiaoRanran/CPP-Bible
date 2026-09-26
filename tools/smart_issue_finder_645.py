@@ -160,12 +160,12 @@ def main(argv: Optional[list[str]] = None) -> int:
     error_rates: dict = {}
     aging: dict = {}
     try:
-        import rule_error_tracker_645 as a5  # noqa: E402
+        import loop_r5_runner_645 as a5  # noqa: E402  (647 D1：error 追踪已并入)
         error_rates = a5.track()["per_rule"]
     except Exception:  # noqa: BLE001
         pass
     try:
-        import rule_aging_detector_645 as a6  # noqa: E402
+        import loop_r5_runner_645 as a6  # noqa: E402  (647 D1：老化检测已并入)
         aging = a6.detect()["per_rule"]
     except Exception:  # noqa: BLE001
         pass

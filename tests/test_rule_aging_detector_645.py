@@ -6,12 +6,12 @@ import tempfile
 
 sys.path.insert(0, "tools")
 
-import rule_aging_detector_645 as a6
-import rule_error_tracker_645 as a5
+import loop_r5_runner_645 as a5  # 647 D1：A5 同模块（老化检测复用其账本口径）
+import loop_r5_runner_645 as a6  # 647 D1：A6 已并入规则生命周期套件
 
 
 def test_selftest_passes():
-    assert a6.selftest() == 0
+    assert a6.aging_selftest() == 0
 
 
 def test_detect_trend_declining(monkeypatch):
@@ -28,7 +28,7 @@ def test_detect_trend_declining(monkeypatch):
     with open(path, "w", encoding="utf-8") as fh:
         for r in ledger:
             fh.write(json.dumps(r) + "\n")
-    monkeypatch.setattr(a5, "LEDGER", path)
+    monkeypatch.setattr(a5, "ERROR_LEDGER", path)
     res = a6.detect(rules=["R1"])
     assert "R1" in res["aging_rules"], "下滑规则应被判为老化"
     assert res["per_rule"]["R1"]["aging_signal"] > 0.1
