@@ -1,0 +1,476 @@
+{
+  "n_planned": 20,
+  "by_verdict": {
+    "triggered": 2,
+    "oracle_mismatch": 11,
+    "not_triggered": 7
+  },
+  "n_effective": 20,
+  "n_changed_findings": 13,
+  "production_atoms_unchanged": true,
+  "atoms_digest": "479190c6c583687b",
+  "seed": null,
+  "limit": 20,
+  "rows": [
+    {
+      "mutation_id": "ATOM-FM-REQUIRED#field_delete#0",
+      "target_rule": "ATOM-FM-REQUIRED",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "field": "sources",
+      "expected_oracle": "ATOM-FM-REQUIRED",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "triggered",
+      "why": "删除 frontmatter 字段 sources",
+      "added_rules": [
+        "ATOM-FM-REQUIRED",
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": true,
+      "change": [
+        "ATOM-FM-REQUIRED",
+        "S2-EVIDENCE-VERDICT"
+      ]
+    },
+    {
+      "mutation_id": "ATOM-FM-REQUIRED#break_ref#1",
+      "target_rule": "ATOM-FM-REQUIRED",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "break_ref",
+      "field": "sources",
+      "expected_oracle": "ATOM-FM-REQUIRED",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "oracle_mismatch",
+      "why": "关系目标 EV-CONC-003 → EV-CONC-003-XX（不存在）",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": [
+        "S2-EVIDENCE-VERDICT"
+      ]
+    },
+    {
+      "mutation_id": "ATOM-FM-REQUIRED#equiv_rewrite#2",
+      "target_rule": "ATOM-FM-REQUIRED",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "equiv_rewrite",
+      "field": "sources",
+      "expected_oracle": "ATOM-FM-REQUIRED",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "not_triggered",
+      "why": "同义改写 必须 → 应当（语义等价）",
+      "added_rules": [],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": []
+    },
+    {
+      "mutation_id": "ATOM-ID-FORMAT#field_delete#0",
+      "target_rule": "ATOM-ID-FORMAT",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "field": "id",
+      "expected_oracle": "ATOM-ID-FORMAT",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "oracle_mismatch",
+      "why": "删除 frontmatter 字段 id",
+      "added_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": [
+        "ATOM-FM-REQUIRED"
+      ]
+    },
+    {
+      "mutation_id": "ATOM-ID-FORMAT#format_perturb#1",
+      "target_rule": "ATOM-ID-FORMAT",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "format_perturb",
+      "field": "type",
+      "expected_oracle": "ATOM-ID-FORMAT",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "not_triggered",
+      "why": "注入尾随空格（格式微扰）",
+      "added_rules": [],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": []
+    },
+    {
+      "mutation_id": "ATOM-ID-FORMAT#break_ref#2",
+      "target_rule": "ATOM-ID-FORMAT",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "break_ref",
+      "field": "id",
+      "expected_oracle": "ATOM-ID-FORMAT",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "oracle_mismatch",
+      "why": "关系目标 EV-CONC-005 → EV-CONC-005-XX（不存在）",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": [
+        "S2-EVIDENCE-VERDICT"
+      ]
+    },
+    {
+      "mutation_id": "ATOM-ID-FORMAT#equiv_rewrite#3",
+      "target_rule": "ATOM-ID-FORMAT",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "op": "equiv_rewrite",
+      "field": "type",
+      "expected_oracle": "ATOM-ID-FORMAT",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "not_triggered",
+      "why": "同义改写 必须 → 应当（语义等价）",
+      "added_rules": [],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": []
+    },
+    {
+      "mutation_id": "ATOM-ID-UNIQUE#field_delete#0",
+      "target_rule": "ATOM-ID-UNIQUE",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "field": "id",
+      "expected_oracle": "ATOM-ID-UNIQUE",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "oracle_mismatch",
+      "why": "删除 frontmatter 字段 id",
+      "added_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": [
+        "ATOM-FM-REQUIRED"
+      ]
+    },
+    {
+      "mutation_id": "ATOM-ID-UNIQUE#break_ref#1",
+      "target_rule": "ATOM-ID-UNIQUE",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "break_ref",
+      "field": "status",
+      "expected_oracle": "ATOM-ID-UNIQUE",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "oracle_mismatch",
+      "why": "关系目标 EV-CONC-003 → EV-CONC-003-XX（不存在）",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": [
+        "S2-EVIDENCE-VERDICT"
+      ]
+    },
+    {
+      "mutation_id": "ATOM-ID-UNIQUE#equiv_rewrite#2",
+      "target_rule": "ATOM-ID-UNIQUE",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "equiv_rewrite",
+      "field": "id",
+      "expected_oracle": "ATOM-ID-UNIQUE",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "not_triggered",
+      "why": "同义改写 必须 → 应当（语义等价）",
+      "added_rules": [],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": []
+    },
+    {
+      "mutation_id": "ATOM-VERIFIED-BOUND#field_delete#0",
+      "target_rule": "ATOM-VERIFIED-BOUND",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "field": "evidence",
+      "expected_oracle": "ATOM-VERIFIED-BOUND",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "triggered",
+      "why": "删除 frontmatter 字段 evidence",
+      "added_rules": [
+        "ATOM-FM-REQUIRED",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFIED-BOUND",
+        "EV-FM-YAML-HARDENING"
+      ],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": true,
+      "change": [
+        "ATOM-FM-REQUIRED",
+        "ATOM-REL-TARGET",
+        "ATOM-VERIFIED-BOUND",
+        "EV-FM-YAML-HARDENING"
+      ]
+    },
+    {
+      "mutation_id": "ATOM-VERIFIED-BOUND#break_ref#1",
+      "target_rule": "ATOM-VERIFIED-BOUND",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "break_ref",
+      "field": "first_hand",
+      "expected_oracle": "ATOM-VERIFIED-BOUND",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "oracle_mismatch",
+      "why": "关系目标 EV-CONC-003 → EV-CONC-003-XX（不存在）",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": [
+        "S2-EVIDENCE-VERDICT"
+      ]
+    },
+    {
+      "mutation_id": "ATOM-VERIFIED-BOUND#equiv_rewrite#2",
+      "target_rule": "ATOM-VERIFIED-BOUND",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "equiv_rewrite",
+      "field": "status",
+      "expected_oracle": "ATOM-VERIFIED-BOUND",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "not_triggered",
+      "why": "同义改写 必须 → 应当（语义等价）",
+      "added_rules": [],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": []
+    },
+    {
+      "mutation_id": "ATOM-NO-UNVERIFIED#field_delete#0",
+      "target_rule": "ATOM-NO-UNVERIFIED",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "field": "status",
+      "expected_oracle": "ATOM-NO-UNVERIFIED",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "oracle_mismatch",
+      "why": "删除 frontmatter 字段 status",
+      "added_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": [
+        "ATOM-FM-REQUIRED"
+      ]
+    },
+    {
+      "mutation_id": "ATOM-NO-UNVERIFIED#break_ref#1",
+      "target_rule": "ATOM-NO-UNVERIFIED",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "break_ref",
+      "field": "status",
+      "expected_oracle": "ATOM-NO-UNVERIFIED",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "oracle_mismatch",
+      "why": "关系目标 EV-CONC-003 → EV-CONC-003-XX（不存在）",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": [
+        "S2-EVIDENCE-VERDICT"
+      ]
+    },
+    {
+      "mutation_id": "ATOM-NO-UNVERIFIED#equiv_rewrite#2",
+      "target_rule": "ATOM-NO-UNVERIFIED",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "equiv_rewrite",
+      "field": "status",
+      "expected_oracle": "ATOM-NO-UNVERIFIED",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "not_triggered",
+      "why": "同义改写 必须 → 应当（语义等价）",
+      "added_rules": [],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": []
+    },
+    {
+      "mutation_id": "ATOM-STATUS-VALUE#field_delete#0",
+      "target_rule": "ATOM-STATUS-VALUE",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "field": "status",
+      "expected_oracle": "ATOM-STATUS-VALUE",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "oracle_mismatch",
+      "why": "删除 frontmatter 字段 status",
+      "added_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": [
+        "ATOM-FM-REQUIRED"
+      ]
+    },
+    {
+      "mutation_id": "ATOM-STATUS-VALUE#break_ref#1",
+      "target_rule": "ATOM-STATUS-VALUE",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "op": "break_ref",
+      "field": "status",
+      "expected_oracle": "ATOM-STATUS-VALUE",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "oracle_mismatch",
+      "why": "关系目标 EV-CONC-003 → EV-CONC-003-XX（不存在）",
+      "added_rules": [
+        "S2-EVIDENCE-VERDICT"
+      ],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": [
+        "S2-EVIDENCE-VERDICT"
+      ]
+    },
+    {
+      "mutation_id": "ATOM-STATUS-VALUE#equiv_rewrite#2",
+      "target_rule": "ATOM-STATUS-VALUE",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "op": "equiv_rewrite",
+      "field": "status",
+      "expected_oracle": "ATOM-STATUS-VALUE",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "not_triggered",
+      "why": "同义改写 必须 → 应当（语义等价）",
+      "added_rules": [],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": []
+    },
+    {
+      "mutation_id": "ATOM-STATUS-TRANSITION#field_delete#0",
+      "target_rule": "ATOM-STATUS-TRANSITION",
+      "rule_severity": "block",
+      "direction": "B",
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "op": "field_delete",
+      "field": "status",
+      "expected_oracle": "ATOM-STATUS-TRANSITION",
+      "oracle_expectation": "变异后该规则**应命中**",
+      "generated_by": "targeted_mutator_643",
+      "version": "643.1",
+      "verdict": "oracle_mismatch",
+      "why": "删除 frontmatter 字段 status",
+      "added_rules": [
+        "ATOM-FM-REQUIRED"
+      ],
+      "removed_rules": [],
+      "target_fired_before": false,
+      "target_fired_after": false,
+      "change": [
+        "ATOM-FM-REQUIRED"
+      ]
+    }
+  ]
+}
