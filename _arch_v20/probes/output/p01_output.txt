@@ -1,0 +1,104 @@
+﻿==============================================================================
+## attack_edges_609.json（冻结/权威边集）  边数=388
+节点=117  有向边=388  平均度(无向)=6.63
+边类型分布: {'misconception_refutation': 194, 'related_atom': 194}
+无向度: min=1 max=12 度Shannon熵=2.858 bit (理论最大 3.459)
+节点类别: MIS=42  命题节点=75  其他=0 []
+
+-- 被最多命题指向的节点（入度 top8，论证依赖集中度）--
+   12  MIS-MEM-031
+   10  ATOM-UB-GRAY-001::prop-1
+   10  ATOM-UB-GRAY-001::prop-2
+    9  MIS-MEM-028
+    9  MIS-MEM-027
+    9  MIS-MEM-024
+    9  MIS-MEM-026
+    8  ATOM-MEM-MOVE-002::prop-1
+-- 扇出最大的命题节点（out度 top8）--
+   12  MIS-MEM-031
+   10  ATOM-UB-GRAY-001::prop-1
+   10  ATOM-UB-GRAY-001::prop-2
+    9  MIS-MEM-024
+    9  MIS-MEM-026
+    9  MIS-MEM-027
+    9  MIS-MEM-028
+    8  ATOM-MEM-MOVE-002::prop-1
+-- 介数中心性 top8（信息流咽喉）--
+      4085  MIS-MEM-024
+      2813  MIS-MEM-025
+      2709  MIS-MEM-020
+      2367  MIS-MEM-019
+      1804  MIS-MEM-021
+      1408  MIS-MEM-028
+      1012  MIS-MEM-017
+       915  ATOM-MEM-UNIQUE-002::prop-1
+
+-- 镜像边（同 ATOM 多 prop → 同 MIS）--
+  存在多打一的(atom,MIS)组=66  冗余镜像边(组规模-1之和)=128 占总边 33.0%
+   x4  ATOM-HIST-AUTOPTR-001 -> MIS-HIST-001
+   x4  ATOM-HIST-AUTOPTR-001 -> MIS-HIST-002
+   x4  ATOM-HIST-AUTOPTR-001 -> MIS-HIST-003
+   x4  ATOM-HIST-AUTOPTR-001 -> MIS-MEM-011
+   x4  ATOM-MEM-ALLOC-001 -> MIS-MEM-021
+   x4  ATOM-MEM-ALLOC-001 -> MIS-MEM-023
+
+-- 级联失效模拟（初始 LCC=80）--
+  移除数  定点(按度)LCC   随机LCC(100次均值)   定点/初始
+     3         76           74.6          0.950
+     5         31           71.2          0.388
+     8         28           68.9          0.350
+    12         20           56.8          0.250
+
+候选文件总边=388  与609边id重合=388
+人审标注记录=388  动作分布={'approve': 354, 'modify': 34}
+approve+modify=388  reject=0
+==============================================================================
+## 人审 approve/modify 边子图（候选文件∩人审通过）  边数=388
+节点=117  有向边=388  平均度(无向)=6.63
+边类型分布: {'misconception_refutation': 194, 'related_atom': 194}
+无向度: min=1 max=12 度Shannon熵=2.858 bit (理论最大 3.459)
+节点类别: MIS=42  命题节点=75  其他=0 []
+
+-- 被最多命题指向的节点（入度 top8，论证依赖集中度）--
+   12  MIS-MEM-031
+   10  ATOM-UB-GRAY-001::prop-1
+   10  ATOM-UB-GRAY-001::prop-2
+    9  MIS-MEM-028
+    9  MIS-MEM-027
+    9  MIS-MEM-024
+    9  MIS-MEM-026
+    8  ATOM-MEM-MOVE-002::prop-1
+-- 扇出最大的命题节点（out度 top8）--
+   12  MIS-MEM-031
+   10  ATOM-UB-GRAY-001::prop-1
+   10  ATOM-UB-GRAY-001::prop-2
+    9  MIS-MEM-024
+    9  MIS-MEM-026
+    9  MIS-MEM-027
+    9  MIS-MEM-028
+    8  ATOM-MEM-MOVE-002::prop-1
+-- 介数中心性 top8（信息流咽喉）--
+      4085  MIS-MEM-024
+      2813  MIS-MEM-025
+      2709  MIS-MEM-020
+      2367  MIS-MEM-019
+      1804  MIS-MEM-021
+      1408  MIS-MEM-028
+      1012  MIS-MEM-017
+       915  ATOM-MEM-UNIQUE-002::prop-1
+
+-- 镜像边（同 ATOM 多 prop → 同 MIS）--
+  存在多打一的(atom,MIS)组=66  冗余镜像边(组规模-1之和)=128 占总边 33.0%
+   x4  ATOM-HIST-AUTOPTR-001 -> MIS-HIST-001
+   x4  ATOM-HIST-AUTOPTR-001 -> MIS-HIST-002
+   x4  ATOM-HIST-AUTOPTR-001 -> MIS-HIST-003
+   x4  ATOM-HIST-AUTOPTR-001 -> MIS-MEM-011
+   x4  ATOM-MEM-ALLOC-001 -> MIS-MEM-021
+   x4  ATOM-MEM-ALLOC-001 -> MIS-MEM-023
+
+-- 级联失效模拟（初始 LCC=80）--
+  移除数  定点(按度)LCC   随机LCC(100次均值)   定点/初始
+     3         76           74.6          0.950
+     5         31           71.2          0.388
+     8         28           68.9          0.350
+    12         20           56.8          0.250

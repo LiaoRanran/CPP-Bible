@@ -5,10 +5,10 @@
 
 | # | 卡 | 命题 | 命中的模糊词 | object 片段 |
 |---|---|---|---|---|
-| 1 | `atoms/mem/ATOM-MEM-MOVE-002.md` | prop-3 | 它 | 一次类型转换（与 static_cast 明文等价），自身不分配、不复制、不改变 |
-| 2 | `atoms/mem/ATOM-MEM-PERF-002.md` | prop-2 | 它 | 实现内建（标准不要求），阈值不可移植 |
-| 3 | `atoms/mem/ATOM-MEM-SHARED-001.md` | prop-3 | 它 | weak_ptr 打破（shared_ptr 自身不处理环） |
-| 4 | `atoms/mem/ATOM-MEM-WEAK-001.md` | prop-3 | 它 | 非拥有观察者（不增加强引用计数），lock() 提升为 shared_ptr、对 |
+| 1 | `atoms/mem/ATOM-MEM-MOVE-002.md` | prop-3 | 它 | 类型转换语义 |
+| 2 | `atoms/mem/ATOM-MEM-PERF-002.md` | prop-2 | 它 | string SSO 小字符串优化 |
+| 3 | `atoms/mem/ATOM-MEM-SHARED-001.md` | prop-3 | 它 | shared_ptr 循环引用 |
+| 4 | `atoms/mem/ATOM-MEM-WEAK-001.md` | prop-3 | 它 | weak_ptr |
 
 ## 诚实登记
 

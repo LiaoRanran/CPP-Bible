@@ -1,0 +1,38 @@
+﻿========================================================================
+P02 VERIFICATION-DRIVEN GENERATION: rules as generation constraints
+========================================================================
+总规则=63  judge分布=Counter({'programmatic': 60, 'llm': 1, 'hybrid': 1, 'human': 1})
+kind分布=Counter({'fact': 57, 'pedagogy': 5, 'meta': 1})  scope=Counter({'atom': 34, 'evidence': 23, 'repo': 6})
+A 静态可前置约束(文本/frontmatter)=47
+B 必须真实执行/工件才能判        =16
+   B: EV-MATRIX | evidence | block
+   B: EV-ARTIFACT-VERSION-MATCH | evidence | block
+   B: S3-EXPECTED-HARDCODED | evidence | block
+   B: EV-SELF-SATISFIED-ASSERT | evidence | warn
+   B: EV-TRIVIAL-OBSERVATION | evidence | warn
+   B: EV-MATRIX-UNBACKED | evidence | warn
+   B: EV-ZERO-DIAG-WERROR | evidence | block
+   B: EV-WERROR-DECL-BIND | evidence | block
+   B: EV-OUT-UNDECLARED-KEY | evidence | warn
+   B: EV-RUN-KEY-DECLARED-EXISTS | evidence | block
+   B: EV-ASSERT-SYMBOL-MAPPED | evidence | block
+   B: EV-ARTIFACT-PRODUCER | evidence | block
+   B: EV-ENV-DEPENDENT-KEY | evidence | block
+   B: OBSERVATION-NEEDS-ARTIFACT | atom | block
+   B: EV-FIXTURE-NO-ECHO-DATA | evidence | warn
+   B: EV-OUT-STALE-MTIME | evidence | warn
+
+VDD 生成时可强制覆盖率 = A/总 = 47/63 = 74.6%
+B 类 severity: Counter({'block': 10, 'warn': 6})
+B 类中非 block(warn/advice)=绕过成本为0的事后规则数: 6
+judge=human 的规则(约束再强也需人): ['HUMAN-GOLDEN-REVIEW']
+
+27 原子卡关键字段填充率(生成模板可得约束):
+   id                 27/27
+   title              27/27
+   status             27/27
+   verified_by        26/27
+   dal                27/27
+   claim              27/27
+   claim_structured   27/27
+   relations          27/27

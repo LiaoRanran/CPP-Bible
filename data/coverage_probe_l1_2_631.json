@@ -14,7 +14,7 @@
           "hits": [
             "它"
           ],
-          "object": "一次类型转换（与 static_cast 明文等价），自身不分配、不复制、不改变"
+          "object": "类型转换语义"
         }
       ]
     },
@@ -26,7 +26,7 @@
           "hits": [
             "它"
           ],
-          "object": "实现内建（标准不要求），阈值不可移植"
+          "object": "string SSO 小字符串优化"
         }
       ]
     },
@@ -38,7 +38,7 @@
           "hits": [
             "它"
           ],
-          "object": "weak_ptr 打破（shared_ptr 自身不处理环）"
+          "object": "shared_ptr 循环引用"
         }
       ]
     },
@@ -50,7 +50,7 @@
           "hits": [
             "它"
           ],
-          "object": "非拥有观察者（不增加强引用计数），lock() 提升为 shared_ptr、对"
+          "object": "weak_ptr"
         }
       ]
     }

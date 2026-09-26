@@ -23,19 +23,19 @@
       "pck_authorized": 27,
       "autoimmune_cards": 23
     },
-    "head": "48485622",
-    "ahead": 10,
-    "remote": "33e02efb",
+    "head": "83f72122",
+    "ahead": 38,
+    "remote": "262dc863",
     "log5": [
-      "48485622 633 [E1]：测试债深化分类与长期方案(不改测试)——slow 6/跨批脆弱30/环境依赖117/快照25(针对A2后剩余54项),给动态基线读/conftest统一skipif/快照触发更新/slow分层四方案设计;--check只读+6例单测",
-      "7e838b10 633 [D2]：文档债清理——修306文档3处裸文件名死链接(改为../../atoms/mem/实际路径,已核实目标存在);368的6处file://为假阳性不改;过期标注0处;登记.pytest_tmp残留652目录(不删)与扫描器file://口径;矛盾描述登记不改",
-      "6694b291 633 [D1]：PCK/镜像边/ref_missing 交人项整理——统一清单+P1-P4优先级+处置建议+依赖;登记627/628 ref_missing口径出入(2 vs 1)待核;不代签不自动填充;镜像边194全自动证明其中118条缺ReviewItem属治理决策;PCK authorized 27/83",
-      "b2ed511d 633 [C2]：他验遗留债清理——锚与日志不一致(测试追加致日志35->40)已重建锚恢复一致(40条链自洽),旧锚移入_archive_633;7张孤儿凭证(untracked)移至data/_archive_633/vsa_orphans;2处dangling日志引用登记不修;未改透明日志(append-only);受控零污染",
-      "98bbfb84 633 [C1]：vsa_secret.key 备份+影响评估(默认不轮换)——备份至data/vsa/*.backup_20260924(sha256一致);影响评估:轮换会致历史VSA凭证默认不可验=>判较高,交人裁决;gitignore加宽覆盖key*与data/vsa/*.key*;--rotate默认关闭;密钥内容全程不打印;--check只读+6例单测"
+      "83f72122 640b [E1]：总收尾报告——任务表/A1权威源设计(两路+交叉校验)/A2改造统计(10工具+18测试+7报告)/4处真因(conftest无主凭证·env泄漏·可信度口径·type:ignore真修)/§四.3模拟验证(仅改产物⇒12漂移告警,写死数字型批量红=0;还原后133项全绿)/诚实登记/交人★误解approve可信度档",
+      "5061eaa8 640b：bridge_edge_impact KNOWN_BASE 接单一权威源（曾写死 611 快照 114/7、121/0；现按 w2_authority 现算，双模式 79/42）",
+      "b35206b0 640b [文档+产物]：开工快照(28项逐项清单+根因分层)/权威源设计文档/5份重生成报告(grounded_audit/dashboard×2/independent_verifier/third_party/v2_flag/defense_chain)/透明账本补录(50-57条:补登6个历史孤儿+新e2e凭证)",
+      "2c50a563 640b [A1/A2/A3]：W2涟漪根治+28项清算——(1)单一权威源tools/w2_authority_640b(两路:现算solve_reviewed vs 读产物grounded_labels_w2.json,交叉校验consistent;零导入铁律工具改为直读同一数据文件);(2)27处写死数字改造为动态取值:defense_chain(汇总+可信度口径对齐内核high)/human_review_dashboard(OUT MIS数)/dashboard_v2/run_628_gate/independent_verifier/mirror/third_party/v2_flag/w2_projection×2+gated 18文件测试断言;(3)A3:640A2引入的roadmap_align type:ignore可避免⇒删除(mypy仍0错,阈值维持28不抬);(4)真因修复:conftest会话清理制造无主凭证(vsa运行时产物同进同出)+third_party显式清泄漏env;(5)W2_SIM_OFFSET模拟开关(默认0)支撑§四.3验证:仅改产物⇒12处漂移告警(设计使然),写死数字型批量红=0",
+      "c2b0845b 640 [B1/B2/B3]：闭环自动执行层——auto_executor_640(白名单5类+六重护栏:白名单/备份/验证/回滚/批量上限10/日志留痕)+git防线(tracked-and-modified跳过,防卷入无关漂移);B2试运行:夹具3项真实修复全过(状态逐一验证)+2项攻击被拒,真实仓库检出378项行尾空白但实测为CRLF归一(git内容零diff已还原)⇒A1清算后无可带内容量自动修项=健康态,≥3达成(夹具);B3安全审计:9例攻击/护栏测试全过(伪装类别拒/保护路径拒/超限截断/强制失败回滚字节一致/dry-run零改动/日志完备),弱点2处诚实登记"
     ],
     "counts": {
-      "tools_py": 375,
-      "tests_py": 388,
+      "tools_py": 439,
+      "tests_py": 440,
       "tools_629": 10,
       "tools_630": 9
     },
@@ -45,6 +45,9 @@
       " M data/630_baseline.md",
       " M data/631_baseline.json",
       " M data/631_baseline.md",
+      " M data/argument_audit_report.md",
+      " M data/authority/blind_review_backfill_staging_627.jsonl",
+      " M data/authority/decision_event_v2_ledger_remapped.jsonl",
       " M data/authority_v2_mode.json",
       " M data/autoimmune_dashboard_629.html",
       " M data/autoimmune_diagnose_630.json",
@@ -56,22 +59,35 @@
       " M data/autoimmune_rate_baseline.md",
       " M data/autoimmune_recalc_630.json",
       " M data/autoimmune_recalc_630.md",
-      " M data/autoimmune_threshold_630.json",
-      " M data/autoimmune_threshold_630.md",
       " M data/coverage_probe_l1_2_631.json",
       " M data/coverage_probe_l1_2_631.md",
+      " M data/coverage_probe_l8_4_631.json",
+      " M data/coverage_probe_l8_4_631.md",
+      " M data/defense_chain.html",
+      " M data/defense_chain_deepen_611.md",
+      " M data/defense_chain_report.md",
       " M data/e2e_attestation_629.md",
       " M data/human_review_dashboard_v2.html",
       " M data/independence_static_check_629.md",
       " M data/learner_behavior_events.jsonl",
       " M data/learner_twin_gate_report_628.md",
+      " M data/metrics_612.md",
+      " M data/out_mis_review_support_611.md",
+      " M data/pollution_bisect_631.md",
       " M data/pre_push_check_630.json",
       " M data/pre_push_check_630.md",
-      " M data/snapshot_integrity_626.json",
-      " M data/snapshot_integrity_report_626.md",
-      " M data/third_party_audit_demo_628.json",
-      " M data/third_party_audit_demo_report_628.md",
-      " M data/transparency_log.jsonl"
+      " M tests/test_611_tools.py",
+      " M tests/test_argument_audit_610.py",
+      " M tests/test_argument_audit_report_610.py",
+      " M tests/test_defense_chain_html_610.py",
+      " M tests/test_run_625_gate.py",
+      " M tests/test_run_629_gate.py",
+      " M tests/test_run_639_gate.py",
+      " M tools/.tool_checksums",
+      " M tools/argument_audit.py",
+      " M tools/defense_chain.py",
+      " M tools/defense_chain_deepen.py",
+      " M tools/metrics_611.py"
     ]
   },
   "metrics": {
@@ -83,25 +99,5 @@
     "test_fixable": 4,
     "baseline_629_failures": 11,
     "baseline_629_head": "889a3bc8"
-  },
-  "mutation_set_hash": "d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57",
-  "mutation_count": 1593,
-  "generator_version": "mutation_fuzz@v7",
-  "evidence_channel": "standard_textbook",
-  "materiality_flag": true
+  }
 }
-
-## 635 V26-2 系统误差二分（不可合并为单一健康分）
-
-**可收敛指标**（加样本可改善）：
-- 逃逸率：多测 mutation 可更准确估计漏报率（统计量）
-- τ_d（逃逸→修补间隔）：样本量增加可收紧分位数
-- 接地覆盖率：可补实验把「部分/未接地」转「已接地」
-- 工具数/测试数：持续增加
-
-**不可收敛指标**（加样本无效，须换方法）：
-- coverage 缺口：剩下的是**没测过的攻击面**，不是测不准
-- 自身免疫率：是**规则设计问题**，不是样本问题
-- Horizon 断崖（60-80 桶）：是**载体天花板**，不是样本量
-- N/A 率：主因是载体无法施加（634 B3），加样本无效
-- gate 规则数：是**设计选择**，非估计量

@@ -1,0 +1,65 @@
+﻿HEAD now: 05b161b9162f
+
+[A] _arch_v19/ 之外的工作区条目（必须全部能归因于并发会话/开工前既有）:
+    M  _adv_v80/probes/p57.cpp
+    M  data/metrics_612.md
+   ??  _arch_v19_brief.md
+   ??  tests/test_learner_ood_evaluator_614.py
+   ??  tools/learner_ood_evaluator.py
+
+[B] 本调研产出（全部应在 _arch_v19/ 内）:
+    _arch_v19/00_总览_阙疑后续突破质变方向.md
+    _arch_v19/01_自进化系统.md
+    _arch_v19/02_验证驱动生成VDD.md
+    _arch_v19/03_元验证层.md
+    _arch_v19/04_分布式验证协议.md
+    _arch_v19/05_人审即内容.md
+    _arch_v19/06_跨领域验证框架.md
+    _arch_v19/07_超大规模靶场自进化.md
+    _arch_v19/08_大模型发展与涌现.md
+    _arch_v19/09_自由探索新维度.md
+    _arch_v19/10_跨领域组合与协同.md
+    _arch_v19/11_缺口分析与优先级.md
+    _arch_v19/12_NDW路线图.md
+    _arch_v19/13_旧调研纠偏.md
+    _arch_v19/probes/p00_baseline_factcheck.py
+    _arch_v19/probes/p01_self_evolution.py
+    _arch_v19/probes/p02_vdd.py
+    _arch_v19/probes/p03_meta_verification.py
+    _arch_v19/probes/p04_distributed.py
+    _arch_v19/probes/p05_human_review_asset.py
+    _arch_v19/probes/p06_cross_domain.py
+    _arch_v19/probes/p07_range_evolution.py
+    _arch_v19/probes/p08_llm_emergence.py
+    _arch_v19/probes/p09_free_incentive.py
+    _arch_v19/probes/p10_zero_pollution_check.py
+    _arch_v19/probes/output/git_status_after.txt
+    _arch_v19/probes/output/git_status_before.txt
+    _arch_v19/probes/output/p00_baseline_factcheck.out
+    _arch_v19/probes/output/p01_self_evolution.out
+    _arch_v19/probes/output/p02_vdd.out
+    _arch_v19/probes/output/p03_meta_verification.out
+    _arch_v19/probes/output/p04_distributed.out
+    _arch_v19/probes/output/p05_human_review_asset.out
+    _arch_v19/probes/output/p06_cross_domain.out
+    _arch_v19/probes/output/p07_range_evolution.out
+    _arch_v19/probes/output/p08_llm_emergence.out
+    _arch_v19/probes/output/p09_free_incentive.out
+
+产出文件数=37  集合指纹(sha256 of relpath+bytes)=2a70a2777187f941
+
+[C] 本调研期间 HEAD 移动时间线（git reflog，证明外部提交存在且非本调研所为）:
+    05b161b HEAD@{0}: commit: 614 B2：学习者镜像仪表盘升级（真实数据版）
+    191fd35 HEAD@{1}: commit: 614 B1：真实学习行为采集机制设计 + BKT 递推验证
+    4c9bbae HEAD@{2}: commit: 614 A3：CI 全绿里程碑记录（本地证据 + 待 CI 确认）
+    9fc6a33 HEAD@{3}: commit: 614 A2：governance 台账更新（613 后文档变更）+ tool_integrity 重钉
+    512d991 HEAD@{4}: commit: 614 A1：CI gate 失败根因排查与彻底修复
+    a4d76f1 HEAD@{5}: commit: 614 任务0：先量基线台账
+归因 _adv_v80/probes/p57.cpp: 开工首次 git status 即存在（M）
+归因 data/metrics_612.md: 开工首次 git status 即存在（M）
+归因 _arch_v19_brief.md: 开工前已存在的投喂词文件（??），非本调研创建
+归因 tests/test_learner_ood_evaluator_614.py: 并发 614 批次新增（文件名含 614），调研期间出现
+归因 tools/learner_ood_evaluator.py: 并发 614 批次新增（文件名含 614），调研期间出现
+
+[D] 结论: PASS — 本调研零写操作落在 _arch_v19/ 之外；外部变化全部可归因
+本调研全程仅调用 git 的只读子命令(status/log/rev-parse/reflog/show)；未运行 add/commit/checkout/reset/push。

@@ -1,14 +1,14 @@
 {
   "vector": "L8.4",
   "name": "透明日志伪造",
-  "prod_entries": 40,
+  "prod_entries": 58,
   "scenarios": [
     {
       "id": 0,
       "name": "原样拷贝（基线）",
       "expect_valid": true,
       "chain_valid": true,
-      "entries": 40,
+      "entries": 58,
       "as_expected": true
     },
     {
@@ -16,7 +16,7 @@
       "name": "删中间条目",
       "expect_valid": false,
       "chain_valid": false,
-      "removed_index": 20,
+      "removed_index": 29,
       "as_expected": true
     },
     {
@@ -25,7 +25,7 @@
       "expect_valid": false,
       "chain_valid": false,
       "broken_at": [
-        20
+        29
       ],
       "as_expected": true
     },
@@ -35,8 +35,8 @@
       "expect_valid": false,
       "chain_valid": false,
       "broken_at": [
-        20,
-        21
+        29,
+        30
       ],
       "as_expected": true
     },

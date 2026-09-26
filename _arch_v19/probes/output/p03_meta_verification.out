@@ -1,0 +1,29 @@
+﻿========================================================================
+P03 META-VERIFICATION
+========================================================================
+实验1 静态枚举止=59  活注册表=63  静态漏掉=['S1-AUTHOR-SELF-VERIFY', 'S1-GIT-AUTHOR-BINDING', 'S2-EVIDENCE-VERDICT', 'S3-EXPECTED-HARDCODED']
+实验2a 自然第二实现(只剥actual)：适用卡=19 一致=13 不一致=6 一致率=68.4%
+    分歧(被误放行): evidence/conc/EV-CONC-001.md ('BACKED', 2)
+    分歧(被误放行): evidence/conc/EV-CONC-002.md ('BACKED', 2)
+    分歧(被误放行): evidence/mem/EV-MEM-001.md ('BACKED', 2)
+    分歧(被误放行): evidence/mem/EV-MEM-039.md ('BACKED', 2)
+    分歧(被误放行): evidence/mem/EV-MEM-042.md ('BACKED', 2)
+    分歧(被误放行): evidence/mem/EV-MEM-043.md ('BACKED', 2)
+实验2b 对齐官方预处理(再剥sha256行)：一致=19 不一致=0 一致率=100.0%
+   解读：2a 重现了官方 P12 毒样例(2026-09-12)暴露前的漏洞形态——
+   64位sha的纯数字片段被当成CI run号锚，多编译器毒卡被结构性放行。
+实验3 .tool_checksums 保护 12 项；tools 下 196 个 .py
+   关键尺子文件受保护状态:
+     [保护] atom_evidence_replay.py
+     [裸露] attack_edge_generator.py
+     [裸露] bkt_solver.py
+     [裸露] d5_compile_gate.py
+     [裸露] d5_runtime_gate.py
+     [裸露] d5_source_integrity.py
+     [保护] gate_engine.py
+     [裸露] learner_mastery_update_613.py
+     [裸露] mutation_fuzz.py
+     [保护] poison_drill.py
+     [裸露] tool_integrity.py
+   裸露尺子占比 = 8/11 = 73%
+   63 条规则 100% 定义于 gate_engine.py 单文件（单实现/单语言/单作者语义假设）

@@ -1,0 +1,8 @@
+caliber_only_cards: 22
+per_rule: {'ATOM-CLAIM-CONCEPT-NORMALIZED': 65}
+total rows: 65
+auto+human: auto=0
+recalc strict: {'filled_auto': 0, 'verified_pass': 0, 'cards_became_clean': 0, 'cards_still_warned': 23}
+recalc pessimistic: ok=False block_events=0 hard_pct=0.0
+recalc optimistic: ok=True principal=human:liaoranran
+caliber_only(recalc diag): 0

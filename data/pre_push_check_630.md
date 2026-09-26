@@ -1,17 +1,17 @@
 # 630 B1 · push 前检查
 
 > 工具：`tools/pre_push_630.py`（只读；**不执行 push**）
-> 待推 commit 数：**0**（`origin/master..HEAD`）
+> 待推 commit 数：**38**（`origin/master..HEAD`）
 
 ## 一、检查项
 
 | # | 检查 | 结果 | 细节 |
 |---|---|---|---|
-| 1 | `git status --short` 无**阻断性**意外改动 | ❌ | 阻断项 **3** · 预期残留 23（并行会话产物）· 本批待提交 data 报告 2 · 测试再生产物 15 |
+| 1 | `git status --short` 无**阻断性**意外改动 | ❌ | 阻断项 **74** · 预期残留 23（并行会话产物）· 本批待提交 data 报告 8 · 测试再生产物 34 |
 | 2 | 受控目录零污染（§零.6） | ✅ | `git diff --quiet -- atoms evidence Examples Book` |
 | 3 | `ci.yml` 语法正确 | ✅ | 模式：pyyaml（jobs=11） |
 | 4 | A/C/D 线交付物全部已 commit | ✅ | 应提交 25 项，缺 0 项 |
-| 5 | 本批 630 文件无未提交改动 | ❌ | 2 项 |
+| 5 | 本批 630 文件无未提交改动 | ✅ | 0 项 |
 
 **总判定：❌ 存在阻断项**
 
@@ -19,25 +19,121 @@
 
 ```
 M _adv_v80/probes/p57.cpp
+M  _auto/status.json
  M data/629_baseline.md
  M data/630_baseline.json
  M data/630_baseline.md
+ M data/631_baseline.json
+ M data/631_baseline.md
+ M data/argument_audit_report.md
+ M data/authority/blind_review_backfill_staging_627.jsonl
+ M data/authority/decision_event_v2_ledger_remapped.jsonl
  M data/authority_v2_mode.json
+ M data/autoimmune_dashboard_629.html
+ M data/autoimmune_diagnose_630.json
+ M data/autoimmune_diagnose_630.md
+ M data/autoimmune_fix_proposal_630.json
+ M data/autoimmune_fix_proposal_630.md
+ M data/autoimmune_human_queue_631.jsonl
+ M data/autoimmune_human_queue_631.md
+ M data/autoimmune_rate_baseline.md
+ M data/autoimmune_recalc_630.json
+ M data/autoimmune_recalc_630.md
+ M data/coverage_probe_l1_2_631.json
+ M data/coverage_probe_l1_2_631.md
+ M data/coverage_probe_l8_4_631.json
+ M data/coverage_probe_l8_4_631.md
+ M data/defense_chain.html
+ M data/defense_chain_deepen_611.md
+ M data/defense_chain_report.md
  M data/e2e_attestation_629.md
  M data/human_review_dashboard_v2.html
  M data/independence_static_check_629.md
  M data/learner_behavior_events.jsonl
  M data/learner_twin_gate_report_628.md
  M data/metrics_612.md
+ M data/out_mis_review_support_611.md
+ M data/pollution_bisect_631.md
  M data/pre_push_check_630.json
  M data/pre_push_check_630.md
- M data/third_party_audit_demo_628.json
- M data/third_party_audit_demo_report_628.md
- M data/transparency_log.jsonl
- M tests/test_baseline_629.py
- M tests/test_run_630_gate.py
- M tools/run_630_gate.py
-?? data/vsa/attestation_20260923T144453Z.json
+ M tests/test_611_tools.py
+ M tests/test_argument_audit_610.py
+ M tests/test_argument_audit_report_610.py
+ M tests/test_defense_chain_html_610.py
+ M tests/test_run_625_gate.py
+ M tests/test_run_629_gate.py
+ M tests/test_run_639_gate.py
+ M tools/.tool_checksums
+ M tools/argument_audit.py
+ M tools/defense_chain.py
+ M tools/defense_chain_deepen.py
+ M tools/metrics_611.py
+?? _arch_v24/
+?? _arch_v24_brief.md
+?? _arch_v25/
+?? _arch_v25_brief.md
+?? _arch_v26/
+?? _arch_v26_brief.md
+?? _arch_v26_handoff.md
+?? _arch_v27/
+?? _arch_v27_brief.md
+?? _arch_v28/
+?? _arch_v28_brief.md
+?? data/637_acceptance_report.md
+?? data/637_baseline.md
+?? data/637_loop_quality_audit.md
+?? data/640_a1_measure.txt
+?? data/640_acceptance_report.md
+?? data/640_auto_executor_log.jsonl
+?? data/640_b_class_fix.md
+?? data/640_debt_clearance.md
+?? data/640_gate_adopt.txt
+?? data/640_pytest_final.txt
+?? data/640_pytest_final2.txt
+?? data/640_pytest_task0.txt
+?? data/640b_pytest_final.txt
+?? data/640c_baseline.md
+?? data/640c_pytest_err.txt
+?? data/640c_pytest_final.txt
+?? data/640c_task0_subset.txt
+?? data/_archive_633/
+?? data/vsa/attestation_20260924T055322Z.json
+?? data/vsa/attestation_20260924T105250Z.json
+?? data/vsa/attestation_20260924T122947Z.json
+?? data/vsa/attestation_20260924T125525Z.json
+?? data/vsa/attestation_20260924T133120Z.json
+?? data/vsa/attestation_20260924T142211Z.json
+?? data/vsa/attestation_20260924T144706Z.json
+?? data/vsa/attestation_20260924T152721Z.json
+?? data/vsa/attestation_20260925T104548Z.json
+?? data/vsa/attestation_20260925T112052Z.json
+?? data/vsa/attestation_20260925T115925Z.json
+?? data/vsa/attestation_20260925T121521Z.json
+?? data/vsa/attestation_20260925T121609Z.json
+?? data/vsa/attestation_20260925T121837Z.json
+?? data/vsa/attestation_20260925T121902Z.json
+?? data/vsa/attestation_20260925T122601Z.json
+?? data/vsa/attestation_20260925T122734Z.json
+?? data/vsa/attestation_20260925T122838Z.json
+?? data/vsa/attestation_20260925T122940Z.json
+?? data/vsa/attestation_20260925T123041Z.json
+?? data/vsa/attestation_20260925T123111Z.json
+?? data/vsa/attestation_20260925T123201Z.json
+?? data/vsa/attestation_20260925T123222Z.json
+?? tests/test_candidate_generator_637.py
+?? tests/test_cost_benefit_637.py
+?? tests/test_error_detector_637.py
+?? tests/test_evolution_memo_637.py
+?? tests/test_run_637_gate.py
+?? tests/test_self_observer_637.py
+?? tests/test_w2_derived_640c.py
+?? tools/candidate_generator_637.py
+?? tools/cost_benefit_637.py
+?? tools/error_detector_637.py
+?? tools/evolution_memo_637.py
+?? tools/run_637_gate.py
+?? tools/self_observer_637.py
+?? tools/w2_derived_640c.py
 ```
 
 ## 二、预期残留（不提交，§零.13）
@@ -82,10 +178,29 @@ M _adv_v80/probes/p57.cpp
  M data/learner_behavior_events.jsonl
  M data/learner_twin_gate_report_628.md
  M data/metrics_612.md
- M data/third_party_audit_demo_628.json
- M data/third_party_audit_demo_report_628.md
- M data/transparency_log.jsonl
-?? data/vsa/attestation_20260923T144453Z.json
+?? data/vsa/attestation_20260924T055322Z.json
+?? data/vsa/attestation_20260924T105250Z.json
+?? data/vsa/attestation_20260924T122947Z.json
+?? data/vsa/attestation_20260924T125525Z.json
+?? data/vsa/attestation_20260924T133120Z.json
+?? data/vsa/attestation_20260924T142211Z.json
+?? data/vsa/attestation_20260924T144706Z.json
+?? data/vsa/attestation_20260924T152721Z.json
+?? data/vsa/attestation_20260925T104548Z.json
+?? data/vsa/attestation_20260925T112052Z.json
+?? data/vsa/attestation_20260925T115925Z.json
+?? data/vsa/attestation_20260925T121521Z.json
+?? data/vsa/attestation_20260925T121609Z.json
+?? data/vsa/attestation_20260925T121837Z.json
+?? data/vsa/attestation_20260925T121902Z.json
+?? data/vsa/attestation_20260925T122601Z.json
+?? data/vsa/attestation_20260925T122734Z.json
+?? data/vsa/attestation_20260925T122838Z.json
+?? data/vsa/attestation_20260925T122940Z.json
+?? data/vsa/attestation_20260925T123041Z.json
+?? data/vsa/attestation_20260925T123111Z.json
+?? data/vsa/attestation_20260925T123201Z.json
+?? data/vsa/attestation_20260925T123222Z.json
 ```
 
 > 这些文件由套件里的其他测试重写（报告时间戳/快照口径/日志追加）。若不单列，B1 的测试在套件内运行时会**自我判红**——已实测踩到并在此修正。

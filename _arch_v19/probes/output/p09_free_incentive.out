@@ -1,0 +1,44 @@
+﻿========================================================================
+P09 FREE DIMENSION: incentive-compatibility of verification
+========================================================================
+gate --check 实测: {'WARN': 186, 'ADVICE': 5}  (exit=0, warn 非零退出但不阻断=设计)
+warn 规则分布 top10:
+   ATOM-CLAIM-CONCEPT-NORMALIZED      77
+   OBSERVATION-LIVENESS               50
+   INFERENCE-NOT-MACHINE-VERIFIED     28
+   EV-MATRIX-UNBACKED                 16
+   EV-OUT-UNDECLARED-KEY              6
+   EV-FALSIFICATION-QUANT             4
+   EV-ASSERT-SYMBOL-MAPPED            3
+   ATOM-REL-TARGET                    2
+   EV-ENV-DEPENDENT-KEY               2
+   EV-OUT-STALE-MTIME                 2
+
+63 规则注册 severity 设计分布: {'block': 40, 'warn': 16, 'advice': 7}
+
+poison 毒样例豁免规则: 27 条 (redteam_seen=legacy 标记 27 条)
+tools/compile_exempt.json: 225 行有效条目
+tools/artifact_producer_exempt.txt: 57 行有效条目
+
+提交总数=1455  含宽松化语义提交≈49 (3.4%)  含收紧语义≈60
+宽松化提交样例:
+    fix(A3): 适配 golden 锁已采纳 OBSERVATION-LIVENESS=legacy（基线 136→186）
+    fix: golden_lock 接受 OBSERVATION-LIVENESS 50 条 warn 为 legacy + run_613_gate 拆分全量/
+    化债：test_replay_invariants_606 适配 manifest_consistency（4→5 不变量）
+    化债：旧调研纠偏汇总（_arch_v10-v17共15条：改写3/收缩降级4/新增2/确认强化4/勘误未启动2，含待裁决4事项）
+    608 化债31：poison攻击面详情台账（124毒样例/424载荷/A1-A11共11类全覆盖/规则39-63+27豁免/表观100%vs诚实95.2%/V
+    608 化债28：归档索引更新（添加tools_legacy/49文件+observability_logs/176MB被gitignore/old_tools
+    608 化债27：tools/legacy/ 49个旧工具归档到_archive/old_tools/tools_legacy/（早期脚本已被新工具链替代，to
+    608 化债6：根目录23个历史探针归档至_archive/legacy_probes/（10个已跟踪文件git rm --cached + 13个未跟踪文件移
+
+git log 显式提及 legacy 的提交: 21
+    fix(A3): 适配 golden 锁已采纳 OBSERVATION-LIVENESS=legacy（基线 136→186）
+    fix: golden_lock 接受 OBSERVATION-LIVENESS 50 条 warn 为 legacy + run_613_gate 拆分全量/自身回归 + 仓库盘
+    613 任务A3：golden_lock 处理提案（**提案，未 accept**）
+    608 修复：恢复被化债27(db8995d)误删的人审通道空文件 data/human_attack_edge_annotations.jsonl
+    608 化债28：归档索引更新（添加tools_legacy/49文件+observability_logs/176MB被gitignore/old_tools 513→562/归
+    608 化债27：tools/legacy/ 49个旧工具归档到_archive/old_tools/tools_legacy/（早期脚本已被新工具链替代，tools/顶层保持12
+
+判定材料：block=0 意味着当前没有任何规则真正拦住任何东西；
+186 warn 中 ATOM-CLAIM-CONCEPT-NORMALIZED 等长期挂账，近期被 golden 锁'采纳为 legacy 基线'。
+=> 当拦截有成本(返工)而宽松无成本(无外部用户受损)时，系统演化方向=持续宽松化。

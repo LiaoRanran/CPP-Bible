@@ -1,0 +1,17 @@
+﻿========================================================================
+P06 CROSS-DOMAIN: coupling of verification methodology to C++
+========================================================================
+63 规则：C++/编译强绑定=16 (25%)  通用验证模式=47 (75%)
+绑定规则: ['ATOM-GRAY-ZONE', 'EV-ARTIFACT-PRODUCER', 'EV-ARTIFACT-VERSION-MATCH', 'EV-ASSERT-SYMBOL-MAPPED', 'EV-FIXTURE-NO-ECHO-DATA', 'EV-MATRIX', 'EV-MATRIX-UNBACKED', 'EV-MSCV-NO-VERIFY', 'EV-OUT-STALE-MTIME', 'EV-OUT-UNDECLARED-KEY', 'EV-RUN-KEY-DECLARED-EXISTS', 'EV-SELF-SATISFIED-ASSERT', 'EV-WERROR-DECL-BIND', 'EV-ZERO-DIAG-WERROR', 'OBSERVATION-NEEDS-ARTIFACT', 'S3-EXPECTED-HARDCODED']
+
+56 证据卡 kind 分布: {'asm': 15, 'run': 41}
+需真实工具链产出的硬绑定 kind: 56；可纯文本论证 traceable_argument: 0
+
+7 变异算子攻击目标（读 docstring 首行）：
+  M1 字段删除(artifact_sha/negative_controls/signed_by) -> YAML 卡面，领域无关
+  M2 路径变形 / M3 断言弱化 / M4 恒真注入 / M5 claim自标 / M6 YAML变形 / M7 数值哈希篡改
+  => 7/7 算子攻击的是'证据卡元数据'，不是 C++ 源码：变异框架本身领域无关，
+     但判据执行器(replay 真编译)是 C++ 专属——通用的是'尺子结构'，专属的是'被测物'。
+
+[领域无关内核] 三档判决/生成者≠判断者/C-P统计上界/毒样例反例/claim_structured(SVO)/refutation/MIS误解库/DAL分级/人审留痕/append-only/检查和信任根
+[C++专属外壳] g++真编译replay/asm结构断言/sanitizer/版本矩阵/工件sha/夹具

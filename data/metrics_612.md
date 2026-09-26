@@ -1,6 +1,6 @@
 # 612 线 E · metrics_612（E1-E3 · 只读）
 
-> 生成时间：2026-09-23T21:00:45 ｜ 命令：`python tools/metrics_612.py`
+> 生成时间：2026-09-25T23:24:52 ｜ 命令：`python tools/metrics_612.py`
 >
 > 复用既有工具口径（weighted_af_solver / atoms / oracle plan），不新增行为；人审相关指标如实标注当前状态。
 
@@ -8,10 +8,10 @@
 
 | 口径 | IN | OUT | UNDEC | 击败边 | 总边 | 节点 |
 |---|---|---|---|---|---|---|
-| `keep-low` | 114 | 7 | 0 | 17 | 388 | 121 |
-| `upgrade-medium` | 121 | 0 | 0 | 0 | 388 | 121 |
+| `keep-low` | 79 | 42 | 0 | 194 | 388 | 121 |
+| `upgrade-medium` | 79 | 42 | 0 | 194 | 388 | 121 |
 
-- 锁定：keep-low = IN114/OUT7；upgrade-medium = IN121/OUT0。
+- 锁定：keep-low = IN79/OUT42；upgrade-medium = IN79/OUT42。
 - 结论：两种口径直接复用 `weighted_af_solver`，结果与 610/612 基线一致，**无新行为**；差异仅来自入审 modify 边是否升 medium（口径分歧，非本批次引入）。
 
 ## E2 · artifact 碎片化统计

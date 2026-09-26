@@ -1,7 +1,7 @@
 # 629 §一 基线台账（standing baseline + 开工实测）
 
 > 工具：`tools/baseline_629.py`（纯标准库，只读，不跑监工四门禁）
-> HEAD：`48485622`（ahead origin/master **10** commit）
+> HEAD：`83f72122`（ahead origin/master **38** commit）
 > 口径说明：§四.2 要求『解析 gate_engine --check 输出』，但 §零.1 禁止跑监工门禁；
 > 本工具改为只读 `import gate_engine` → `run()`（不写盘，实测见下），与 §一 数字一致。
 
@@ -33,17 +33,17 @@
 | 指标 | 实测 |
 |---|---|
 | gate 规则数 | 67（其中自动化 64） |
-| gate 命中 | 149（block=25 warn=119 advice=5） |
-| gate warn 命中规则数 | 9（有 warn 的规则） |
-| ahead origin/master | 10 commit |
-| 远端 HEAD | `33e02efb` |
-| HEAD | `48485622` 633 [E1]：测试债深化分类与长期方案(不改测试)——slow 6/跨批脆弱30/环境依赖117/快照25(针对A2后剩余54项),给动态基线读/conftest统一skipif/快照触发更新/slow分层四方案设计;--check只读+6例单测 |
-| `tools/*.py` | 375 个 |
-| `tests/test_*.py` | 387 个 |
+| gate 命中 | 121（block=0 warn=116 advice=5） |
+| gate warn 命中规则数 | 8（有 warn 的规则） |
+| ahead origin/master | 38 commit |
+| 远端 HEAD | `262dc863` |
+| HEAD | `83f72122` 640b [E1]：总收尾报告——任务表/A1权威源设计(两路+交叉校验)/A2改造统计(10工具+18测试+7报告)/4处真因(conftest无主凭证·env泄漏·可信度口径·type:ignore真修)/§四.3模拟验证(仅改产物⇒12漂移告警,写死数字型批量红=0;还原后133项全绿)/诚实登记/交人★误解approve可信度档 |
+| `tools/*.py` | 439 个 |
+| `tests/test_*.py` | 439 个 |
 | `atoms/**/ATOM-*.md` | 27 张 |
 | `data/pck/certificates/*.pck.yaml` | 83 张 |
-| VSA 凭证 | 30 张 |
-| 透明日志条目 | 41 条 |
+| VSA 凭证 | 47 张 |
+| 透明日志条目 | 58 条 |
 
 ## 三、gate warn 按规则名 top10（实测）
 
@@ -54,30 +54,28 @@
 | 3 | `OBSERVATION-LIVENESS` | 8 |
 | 4 | `EV-OUT-UNDECLARED-KEY` | 6 |
 | 5 | `EV-FALSIFICATION-QUANT` | 4 |
-| 6 | `INFERENCE-NOT-MACHINE-VERIFIED` | 3 |
-| 7 | `ATOM-REL-TARGET` | 2 |
-| 8 | `EV-ASSERT-SYMBOL-MAPPED` | 2 |
-| 9 | `EV-SERVES-EXIST` | 1 |
+| 6 | `ATOM-REL-TARGET` | 2 |
+| 7 | `EV-ASSERT-SYMBOL-MAPPED` | 2 |
+| 8 | `EV-SERVES-EXIST` | 1 |
 
 ## 四、实测 vs 任务书（差异标注，不修改基线）
 
 | 项 | 任务书 | 实测 | 性质 |
 |---|---|---|---|
-| gate_hits | 191 | 149 | **不符** |
-| gate_block | 0 | 25 | **不符** |
-| gate_warn | 186 | 119 | **不符** |
-| remote | 793b5c45（624） | 33e02efb | **不符** |
-| vsa | 14 张（HMAC） | 30 张（HMAC） | 基线漂移(允许) |
-| transparency_log | 23 条（GENESIS 起） | 41 条（GENESIS 起） | 基线漂移(允许) |
+| gate_hits | 191 | 121 | **不符** |
+| gate_warn | 186 | 116 | **不符** |
+| remote | 793b5c45（624） | 262dc863 | **不符** |
+| vsa | 14 张（HMAC） | 47 张（HMAC） | 基线漂移(允许) |
+| transparency_log | 23 条（GENESIS 起） | 58 条（GENESIS 起） | 基线漂移(允许) |
 
 **基线漂移说明**：`vsa` / `transparency_log` 的漂移根因是 628 B4 端到端演示与其单测**每次运行都会追加 1 张 VSA 凭证 + 1 条日志**（append-only，只增不减，链仍完整），§一 的 14 张 / 23 条是 628 收工时点值。§十一.3 要求标注而不修改基线。
 
 ## 五、recent commits
 
 ```
-48485622 633 [E1]：测试债深化分类与长期方案(不改测试)——slow 6/跨批脆弱30/环境依赖117/快照25(针对A2后剩余54项),给动态基线读/conftest统一skipif/快照触发更新/slow分层四方案设计;--check只读+6例单测
-7e838b10 633 [D2]：文档债清理——修306文档3处裸文件名死链接(改为../../atoms/mem/实际路径,已核实目标存在);368的6处file://为假阳性不改;过期标注0处;登记.pytest_tmp残留652目录(不删)与扫描器file://口径;矛盾描述登记不改
-6694b291 633 [D1]：PCK/镜像边/ref_missing 交人项整理——统一清单+P1-P4优先级+处置建议+依赖;登记627/628 ref_missing口径出入(2 vs 1)待核;不代签不自动填充;镜像边194全自动证明其中118条缺ReviewItem属治理决策;PCK authorized 27/83
+83f72122 640b [E1]：总收尾报告——任务表/A1权威源设计(两路+交叉校验)/A2改造统计(10工具+18测试+7报告)/4处真因(conftest无主凭证·env泄漏·可信度口径·type:ignore真修)/§四.3模拟验证(仅改产物⇒12漂移告警,写死数字型批量红=0;还原后133项全绿)/诚实登记/交人★误解approve可信度档
+5061eaa8 640b：bridge_edge_impact KNOWN_BASE 接单一权威源（曾写死 611 快照 114/7、121/0；现按 w2_authority 现算，双模式 79/42）
+b35206b0 640b [文档+产物]：开工快照(28项逐项清单+根因分层)/权威源设计文档/5份重生成报告(grounded_audit/dashboard×2/independent_verifier/third_party/v2_flag/defense_chain)/透明账本补录(50-57条:补登6个历史孤儿+新e2e凭证)
 ```
 
 ## 六、`pytest -m "not slow"` 既有失败（629 开工冻结，F1 用『无新增失败』口径）
@@ -110,28 +108,3 @@
 | 10 | `tests/test_mypy_fix_625.py::test_no_bulk_type_ignore` |
 | 11 | `tests/test_pe_timestamp_caliber_611.py::test_603_capture_untouched_by_this_batch` |
 
-
-
-## 边界三元组 + v26 补充字段（635 1.1 回填）
-
-- `mutation_set_hash`: `d7556d622e92fbf918cf9b49c39d97da0733c88fb686be7e734df7fca294ac57`
-- `mutation_count`: 1593
-- `generator_version`: `mutation_fuzz@v7`
-- `evidence_channel`: `standard_textbook`
-- `materiality_flag`: true
-
-
-## 635 V26-2 系统误差二分（不可合并为单一健康分）
-
-**可收敛指标**（加样本可改善）：
-- 逃逸率：多测 mutation 可更准确估计漏报率（统计量）
-- τ_d（逃逸→修补间隔）：样本量增加可收紧分位数
-- 接地覆盖率：可补实验把「部分/未接地」转「已接地」
-- 工具数/测试数：持续增加
-
-**不可收敛指标**（加样本无效，须换方法）：
-- coverage 缺口：剩下的是**没测过的攻击面**，不是测不准
-- 自身免疫率：是**规则设计问题**，不是样本问题
-- Horizon 断崖（60-80 桶）：是**载体天花板**，不是样本量
-- N/A 率：主因是载体无法施加（634 B3），加样本无效
-- gate 规则数：是**设计选择**，非估计量

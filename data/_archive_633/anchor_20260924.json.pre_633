@@ -1,0 +1,13 @@
+{
+  "tool": "transparency_anchor_632.py",
+  "log_path": "data\\transparency_log.jsonl",
+  "log_sha256": "e323a4b9938c18d5cad855be55a4c28c3d3c3f4bdb73b6a02353edcb5e8db12f",
+  "entry_count": 37,
+  "anchored_at": "2026-09-24T10:55:55.039125+00:00",
+  "external": {
+    "status": "LOCAL_ONLY",
+    "note": "外部锚定（公开 gist / 链上 txid）待人工执行；本文件提供可验证哈希。",
+    "suggested": "将 log_sha256 发布到公开可验证位置（GitHub gist / OpenTimestamps / 以太坊 tx calldata），把返回的 URL/txid 填入 external.location。"
+  },
+  "verify": "python tools/transparency_anchor_632.py --check"
+}

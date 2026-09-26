@@ -2,7 +2,7 @@
 
 - 污染目标：`atoms\conc\ATOM-CONC-FENCE-001.md`（M1「删字段」变异残留：`id:` 行缺失）
 - 当前是否已污染：**False**
-- 静态疑似候选：**23** 个测试文件
+- 静态疑似候选：**21** 个测试文件
 
 ## 一、静态候选（import 沙箱/变异工具 或 字面量提到该卡）
 
@@ -22,15 +22,13 @@
 | 12 | `tests\test_622_a3.py` |
 | 13 | `tests\test_622_a4.py` |
 | 14 | `tests\test_622_c1.py` |
-| 15 | `tests\test_argument_audit_610.py` |
-| 16 | `tests\test_argument_audit_report_610.py` |
-| 17 | `tests\test_autoimmune_auto_fill_631.py` |
-| 18 | `tests\test_cross_card_attack_624.py` |
-| 19 | `tests\test_defense_chain_610.py` |
-| 20 | `tests\test_defense_chain_cli_610.py` |
-| 21 | `tests\test_learner_behavior_logger_614.py` |
-| 22 | `tests\test_learner_twin_validation_615.py` |
-| 23 | `tests\test_weighted_af_solver_596.py` |
+| 15 | `tests\test_autoimmune_auto_fill_631.py` |
+| 16 | `tests\test_cross_card_attack_624.py` |
+| 17 | `tests\test_defense_chain_610.py` |
+| 18 | `tests\test_defense_chain_cli_610.py` |
+| 19 | `tests\test_learner_behavior_logger_614.py` |
+| 20 | `tests\test_learner_twin_validation_615.py` |
+| 21 | `tests\test_weighted_af_solver_596.py` |
 
 ## 二、二分过程
 
@@ -54,7 +52,7 @@
    - 630 那次全量里**有 11-14 项测试失败**（其中既有失败会打断用例流程）；
    - 631 A2/A3 修掉 8 项失败后，**两次全量都不再出现污染**。
    若该假设成立，则修法不是「找某个文件」，而是**结构上保证 restore 不被跳过**（见 C2 防护设计）；
-4. 最小范围交付：静态候选 **23** 个文件（§一），其中「真正 import 沙箱/变异工具或 subprocess 驱动它们」的窄集为 `test_622_a1/a2`、`test_622_a4`、`test_cross_card_attack_624`、`test_high_complexity_mutator_623`、`test_high_complexity_sandbox_run_623`、`test_bridge_edge_proposal_613`、`test_mutation_shape_588` —— 逐组实跑**均未复现**。
+4. 最小范围交付：静态候选 **21** 个文件（§一），其中「真正 import 沙箱/变异工具或 subprocess 驱动它们」的窄集为 `test_622_a1/a2`、`test_622_a4`、`test_cross_card_attack_624`、`test_high_complexity_mutator_623`、`test_high_complexity_sandbox_run_623`、`test_bridge_edge_proposal_613`、`test_mutation_shape_588` —— 逐组实跑**均未复现**。
 
 ## 四、诚实登记
 

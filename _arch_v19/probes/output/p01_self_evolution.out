@@ -1,0 +1,18 @@
+﻿========================================================================
+P01 SELF-EVOLUTION LOOP AUDIT (real repo data, read-only)
+========================================================================
+atoms=27 evidence=56 propositions=79
+[discover 原料] 命题无 evidence 引用: 0/79 = 0.0%
+[discover 原料] inference 无 external_basis: 0/29
+[discover 原料] prerequisite 断链: 1/25  [('ATOM-UB-GRAY-001', 'ATOM-UB-DEF-001')]
+[discover 原料] 无任何证据卡 serves 的原子: 0/27 -> []
+前置依赖总数=25 被证据覆盖的原子=27/27
+[工具支撑 discover ] 59 个工具文件语义命中
+[工具支撑 propose  ] 63 个工具文件语义命中
+[工具支撑 verify   ] 171 个工具文件语义命中
+[工具支撑 merge    ] 7 个工具文件语义命中
+[工具支撑 report   ] 108 个工具文件语义命中
+[闭环反馈] learner init=27 真实掌握度更新=0 behavior事件=0
+[闭环反馈] 自进化最关键的 reward 信号(学习者结果)样本量 = 0
+L0纯人工:是  L1机器发现(只读gap扫描):探针即可达  L2机器提案:无独立proposer
+L3自动闭环: 缺反馈信号(0真实学习事件)+merge无自动通道  => 定级 L0+（L1 半成品）
