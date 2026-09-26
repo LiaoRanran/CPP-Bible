@@ -1,0 +1,2601 @@
+{
+  "rows": [
+    {
+      "rule_id": "ATOM-FM-REQUIRED",
+      "title": "原子卡必填字段完整",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_atom_frontmatter",
+      "signals": {
+        "fields": [
+          "sources"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 12
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 sources；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "sources"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-ID-FORMAT",
+      "title": "原子 ID 格式/域/目录一致",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_atom_id_format",
+      "signals": {
+        "fields": [
+          "id",
+          "type"
+        ],
+        "regex_calls": 2,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 24
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 id, type；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "regex_fragile",
+          "why": "函数体有 2 处正则调用 ⇒ 格式微扰可能绕过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "id",
+          "type"
+        ],
+        "needs_cross_card": true,
+        "has_regex": true,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-ID-UNIQUE",
+      "title": "原子身份唯一（stem==id 且 id 全库唯一）",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_atom_id_unique",
+      "signals": {
+        "fields": [
+          "id",
+          "status"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 23
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 id, status；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "id",
+          "status"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-VERIFIED-BOUND",
+      "title": "verified ⟹ 证据+一手+superiority",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_verified_bound",
+      "signals": {
+        "fields": [
+          "evidence",
+          "first_hand",
+          "status",
+          "superiority"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 18
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 evidence, first_hand, status, superiority；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "evidence",
+          "first_hand",
+          "status",
+          "superiority"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-NO-UNVERIFIED",
+      "title": "新原子禁未验证状态",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_no_unverified_status",
+      "signals": {
+        "fields": [
+          "status"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 9
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 status；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "status"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-STATUS-VALUE",
+      "title": "status 取值限于四级枚举",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_status_value",
+      "signals": {
+        "fields": [
+          "status"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 10
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 status；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "status"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-STATUS-TRANSITION",
+      "title": "状态跃迁可证（status_history 链）",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_status_transition",
+      "signals": {
+        "fields": [
+          "status",
+          "status_history"
+        ],
+        "regex_calls": 1,
+        "numeric_consts": [
+          2.0
+        ],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 70
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 status, status_history；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "regex_fragile",
+          "why": "函数体有 1 处正则调用 ⇒ 格式微扰可能绕过"
+        },
+        {
+          "kind": "numeric_threshold",
+          "why": "数值常量 [2.0] ⇒ 值篡改可能刚好压线"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "status",
+          "status_history"
+        ],
+        "needs_cross_card": true,
+        "has_regex": true,
+        "has_numeric_threshold": true
+      }
+    },
+    {
+      "rule_id": "ATOM-DAL-MATCH",
+      "title": "DAL 分级与人审要求一致",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_dal_match",
+      "signals": {
+        "fields": [
+          "dal",
+          "status"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 38
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 dal, status；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "dal",
+          "status"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-REL-TARGET",
+      "title": "关系目标存在",
+      "severity": "warn",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_relations_target_exists",
+      "signals": {
+        "fields": [
+          "id",
+          "relations",
+          "target"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 3,
+        "iterdir_calls": 0,
+        "lines": 19
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 id, relations, target；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 3 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "id",
+          "relations",
+          "target"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-REL-DAG",
+      "title": "学习路径 DAG 无环",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_relations_dag",
+      "signals": {
+        "fields": [
+          "id",
+          "target",
+          "type"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [
+          2.0
+        ],
+        "loops": 4,
+        "iterdir_calls": 0,
+        "lines": 31
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 id, target, type；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "numeric_threshold",
+          "why": "数值常量 [2.0] ⇒ 值篡改可能刚好压线"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 4 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "id",
+          "target",
+          "type"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": true
+      }
+    },
+    {
+      "rule_id": "ATOM-REL-CONFLICT",
+      "title": "relations 矛盾检测：A 支持/依赖 B 且 B 声明 contradicts A（415 D1）",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_atom_rel_conflict",
+      "signals": {
+        "fields": [
+          "claim",
+          "id",
+          "relations",
+          "target",
+          "type"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 5,
+        "iterdir_calls": 0,
+        "lines": 46
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 claim, id, relations, target …；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 5 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "claim",
+          "id",
+          "relations",
+          "target",
+          "type"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-SUPERIORITY-WORDS",
+      "title": "superiority 禁词表",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_superiority_banned_words",
+      "signals": {
+        "fields": [
+          "superiority"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 10
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 superiority；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "superiority"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-FM-REQUIRED",
+      "title": "证据卡必填字段完整",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_frontmatter",
+      "signals": {
+        "fields": [
+          "kind"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 16
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 kind；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [
+          "kind"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-ID-UNIQUE",
+      "title": "证据身份唯一（stem==id 且 id 全库唯一，N2）",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_id_unique",
+      "signals": {
+        "fields": [
+          "id"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 26
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 id；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [
+          "id"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-FALSIFICATION",
+      "title": "证伪对照存在（非恒真测试）",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_falsification",
+      "signals": {
+        "fields": [
+          "falsification"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 8
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 falsification；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [
+          "falsification"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-MATRIX",
+      "title": "版本矩阵字段完整",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_matrix",
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [
+          3.0
+        ],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 39
+      },
+      "blind_spots": [
+        {
+          "kind": "numeric_threshold",
+          "why": "数值常量 [3.0] ⇒ 值篡改可能刚好压线"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": true
+      }
+    },
+    {
+      "rule_id": "ATOM-GRAY-ZONE",
+      "title": "UB 域原子标注灰色地带类别",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_atom_gray_zone",
+      "signals": {
+        "fields": [
+          "domain"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 13
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 domain；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "domain"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-MISCONCEPTION-LEVELS",
+      "title": "误解分层 surface/deep（deep 须 ≥2 反例）",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_misconception_levels",
+      "signals": {
+        "fields": [
+          "pedagogy"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [
+          2.0,
+          40.0
+        ],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 27
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 pedagogy；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "numeric_threshold",
+          "why": "数值常量 [2.0, 40.0] ⇒ 值篡改可能刚好压线"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "pedagogy"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": true
+      }
+    },
+    {
+      "rule_id": "MIS-LIBRARY",
+      "title": "误解库自身合规（level 合法 / deep≥2 反例 / 有出处）",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_mis_library",
+      "signals": {
+        "fields": [
+          "id"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [
+          2.0
+        ],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 27
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 id；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "numeric_threshold",
+          "why": "数值常量 [2.0] ⇒ 值篡改可能刚好压线"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "id"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": true
+      }
+    },
+    {
+      "rule_id": "ATOM-MISCONCEPTION-REF",
+      "title": "原子引用的误解 ID 必须存在",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_misconception_ref",
+      "signals": {
+        "fields": [
+          "pedagogy"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 17
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 pedagogy；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "pedagogy"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-AUDIENCE",
+      "title": "认知适切：audience/cognitive_load 合法 + beginner 须有类比段",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_audience",
+      "signals": {
+        "fields": [],
+        "regex_calls": 1,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 34
+      },
+      "blind_spots": [
+        {
+          "kind": "regex_fragile",
+          "why": "函数体有 1 处正则调用 ⇒ 格式微扰可能绕过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": true,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-PREREQ-READABLE",
+      "title": "前置可读声明与实算一致",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_prereq_readable",
+      "signals": {
+        "fields": [
+          "id",
+          "target",
+          "type"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 22
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 id, target, type；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "id",
+          "target",
+          "type"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-SERVES-EXIST",
+      "title": "证据服务的原子存在",
+      "severity": "warn",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_serves_exist",
+      "signals": {
+        "fields": [
+          "id",
+          "serves"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 10
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 id, serves；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [
+          "id",
+          "serves"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "DOC-ZERO-PLACEHOLDER",
+      "title": "新体系零占位符",
+      "severity": "block",
+      "scope": "repo",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_zero_placeholder",
+      "signals": {
+        "fields": [],
+        "regex_calls": 1,
+        "numeric_consts": [],
+        "loops": 3,
+        "iterdir_calls": 1,
+        "lines": 13
+      },
+      "blind_spots": [
+        {
+          "kind": "regex_fragile",
+          "why": "函数体有 1 处正则调用 ⇒ 格式微扰可能绕过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 3 处 / 目录遍历 1 处 ⇒ 单卡损伤可能不触发"
+        },
+        {
+          "kind": "path_scope_only",
+          "why": "scope=repo ⇒ 与单卡变异不同量纲，C2 生成时应降权"
+        }
+      ],
+      "precondition": {
+        "scope": "repo",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": true,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "META-MANIFEST",
+      "title": "双清单一致（ADR-0004）",
+      "severity": "warn",
+      "scope": "repo",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_manifest_consistency",
+      "signals": {
+        "fields": [],
+        "regex_calls": 1,
+        "numeric_consts": [],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 21
+      },
+      "blind_spots": [
+        {
+          "kind": "regex_fragile",
+          "why": "函数体有 1 处正则调用 ⇒ 格式微扰可能绕过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        },
+        {
+          "kind": "path_scope_only",
+          "why": "scope=repo ⇒ 与单卡变异不同量纲，C2 生成时应降权"
+        }
+      ],
+      "precondition": {
+        "scope": "repo",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": true,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "S1-AUTHOR-SELF-VERIFY",
+      "title": "verified 须人工签收（Agent 无权定 golden）",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_s1_human_signoff",
+      "signals": {
+        "fields": [
+          "status"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 20
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 status；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "status"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "S1-GIT-AUTHOR-BINDING",
+      "title": "人级签收须与 git 作者一致（479 任务 4，观察期 warn）",
+      "severity": "warn",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_git_author_binding",
+      "signals": {
+        "fields": [
+          "status_history"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 3,
+        "iterdir_calls": 0,
+        "lines": 58
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 status_history；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 3 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "status_history"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-VERIFY-REASON",
+      "title": "人级签署须写理由（494 任务 5 / 491 决策日志）",
+      "severity": "warn",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_verify_reason",
+      "signals": {
+        "fields": [
+          "id",
+          "status"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 32
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 id, status；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "id",
+          "status"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-ARTIFACT-VERSION-MATCH",
+      "title": "工件-卡版本绑定（498 任务 2 / 490 版本管理）",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_artifact_version_match",
+      "signals": {
+        "fields": [
+          "artifact"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 36
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 artifact；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [
+          "artifact"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "S2-EVIDENCE-VERDICT",
+      "title": "verified 只绑 verdict=confirm 的证据",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_s2_evidence_verdict",
+      "signals": {
+        "fields": [
+          "evidence",
+          "id"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 19
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 evidence, id；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "evidence",
+          "id"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "S3-EXPECTED-HARDCODED",
+      "title": "期望硬编码进夹具=伪证据",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_s3_hardcoded_expected",
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [
+          6.0,
+          40.0
+        ],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 27
+      },
+      "blind_spots": [
+        {
+          "kind": "numeric_threshold",
+          "why": "数值常量 [6.0, 40.0] ⇒ 值篡改可能刚好压线"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": true
+      }
+    },
+    {
+      "rule_id": "EV-SELF-SATISFIED-ASSERT",
+      "title": "断言不得被夹具自身定义满足（P4 自证断言）",
+      "severity": "warn",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_self_satisfied_assert",
+      "signals": {
+        "fields": [],
+        "regex_calls": 1,
+        "numeric_consts": [
+          3.0
+        ],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 31
+      },
+      "blind_spots": [
+        {
+          "kind": "regex_fragile",
+          "why": "函数体有 1 处正则调用 ⇒ 格式微扰可能绕过"
+        },
+        {
+          "kind": "numeric_threshold",
+          "why": "数值常量 [3.0] ⇒ 值篡改可能刚好压线"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": true,
+        "has_numeric_threshold": true
+      }
+    },
+    {
+      "rule_id": "EV-FALSIFICATION-QUANT",
+      "title": "证伪对照须含量化取值（P5 伪证伪）",
+      "severity": "warn",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_falsification_quantified",
+      "signals": {
+        "fields": [
+          "falsification"
+        ],
+        "regex_calls": 1,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 14
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 falsification；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "regex_fragile",
+          "why": "函数体有 1 处正则调用 ⇒ 格式微扰可能绕过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [
+          "falsification"
+        ],
+        "needs_cross_card": true,
+        "has_regex": true,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-TRIVIAL-OBSERVATION",
+      "title": "actual 禁恒真观测承担主证（P6）",
+      "severity": "warn",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_trivial_observation",
+      "signals": {
+        "fields": [
+          "claim"
+        ],
+        "regex_calls": 1,
+        "numeric_consts": [
+          3.0
+        ],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 32
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 claim；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "regex_fragile",
+          "why": "函数体有 1 处正则调用 ⇒ 格式微扰可能绕过"
+        },
+        {
+          "kind": "numeric_threshold",
+          "why": "数值常量 [3.0] ⇒ 值篡改可能刚好压线"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [
+          "claim"
+        ],
+        "needs_cross_card": true,
+        "has_regex": true,
+        "has_numeric_threshold": true
+      }
+    },
+    {
+      "rule_id": "EV-MATRIX-UNBACKED",
+      "title": "多编译器矩阵须有留痕说明（P7）",
+      "severity": "warn",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_matrix_backed",
+      "signals": {
+        "fields": [],
+        "regex_calls": 8,
+        "numeric_consts": [
+          2.0
+        ],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 44
+      },
+      "blind_spots": [
+        {
+          "kind": "regex_fragile",
+          "why": "函数体有 8 处正则调用 ⇒ 格式微扰可能绕过"
+        },
+        {
+          "kind": "numeric_threshold",
+          "why": "数值常量 [2.0] ⇒ 值篡改可能刚好压线"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": true,
+        "has_numeric_threshold": true
+      }
+    },
+    {
+      "rule_id": "EV-ZERO-DIAG-WERROR",
+      "title": "零诊断类判据须 -Werror（W3）",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_zero_diag_werror",
+      "signals": {
+        "fields": [
+          "claim_boundary",
+          "falsification"
+        ],
+        "regex_calls": 1,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 39
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 claim_boundary, falsification；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "regex_fragile",
+          "why": "函数体有 1 处正则调用 ⇒ 格式微扰可能绕过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [
+          "claim_boundary",
+          "falsification"
+        ],
+        "needs_cross_card": true,
+        "has_regex": true,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-WERROR-DECL-BIND",
+      "title": "判据性 -Werror 须落到每条诊断编译行（570，warn）",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_werror_decl_binding",
+      "signals": {
+        "fields": [
+          "claim_boundary",
+          "falsification"
+        ],
+        "regex_calls": 4,
+        "numeric_consts": [
+          72.0
+        ],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 34
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 claim_boundary, falsification；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "regex_fragile",
+          "why": "函数体有 4 处正则调用 ⇒ 格式微扰可能绕过"
+        },
+        {
+          "kind": "numeric_threshold",
+          "why": "数值常量 [72.0] ⇒ 值篡改可能刚好压线"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [
+          "claim_boundary",
+          "falsification"
+        ],
+        "needs_cross_card": true,
+        "has_regex": true,
+        "has_numeric_threshold": true
+      }
+    },
+    {
+      "rule_id": "EV-ASSERT-COUNT-BELOW-BASELINE",
+      "title": "断言/键数少于人审基线（572，warn）",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_assert_count_baseline",
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 41
+      },
+      "blind_spots": [
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-OUT-UNDECLARED-KEY",
+      "title": ".out 读数键须在 run_match_keys 声明（B3 窄化）",
+      "severity": "warn",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_out_undeclared_key",
+      "signals": {
+        "fields": [
+          "key"
+        ],
+        "regex_calls": 1,
+        "numeric_consts": [],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 38
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 key；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "regex_fragile",
+          "why": "函数体有 1 处正则调用 ⇒ 格式微扰可能绕过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [
+          "key"
+        ],
+        "needs_cross_card": true,
+        "has_regex": true,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-RUN-KEY-DECLARED-EXISTS",
+      "title": "run_match_keys 声明的键必须真在 .out 中存在（500 任务2：M5 反向校验闭合）",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_run_key_declared_exists",
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 47
+      },
+      "blind_spots": [
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-ASSERT-SYMBOL-MAPPED",
+      "title": "断言文本须可定位（夹具/工件/symbol_map，B2 窄化）",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_assert_symbol_mapped",
+      "signals": {
+        "fields": [
+          "kind"
+        ],
+        "regex_calls": 4,
+        "numeric_consts": [
+          2.0
+        ],
+        "loops": 5,
+        "iterdir_calls": 0,
+        "lines": 126
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 kind；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "regex_fragile",
+          "why": "函数体有 4 处正则调用 ⇒ 格式微扰可能绕过"
+        },
+        {
+          "kind": "numeric_threshold",
+          "why": "数值常量 [2.0] ⇒ 值篡改可能刚好压线"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 5 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [
+          "kind"
+        ],
+        "needs_cross_card": true,
+        "has_regex": true,
+        "has_numeric_threshold": true
+      }
+    },
+    {
+      "rule_id": "EV-ARTIFACT-PRODUCER",
+      "title": "工件产出命令须显式声明、为编译器、且与 command 逐字一致（N4 窄化+373绕过3d）",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_artifact_producer",
+      "signals": {
+        "fields": [
+          "artifact",
+          "id"
+        ],
+        "regex_calls": 1,
+        "numeric_consts": [
+          88.0
+        ],
+        "loops": 3,
+        "iterdir_calls": 0,
+        "lines": 82
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 artifact, id；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "regex_fragile",
+          "why": "函数体有 1 处正则调用 ⇒ 格式微扰可能绕过"
+        },
+        {
+          "kind": "numeric_threshold",
+          "why": "数值常量 [88.0] ⇒ 值篡改可能刚好压线"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 3 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [
+          "artifact",
+          "id"
+        ],
+        "needs_cross_card": true,
+        "has_regex": true,
+        "has_numeric_threshold": true
+      }
+    },
+    {
+      "rule_id": "EV-ARTIFACT-FILE-EXISTS",
+      "title": "卡声明的 artifact / artifacts[] 文件必须存在（500 任务3：M8 闭合）",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_artifact_file_exists",
+      "signals": {
+        "fields": [
+          "artifact",
+          "run_match"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 36
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 artifact, run_match；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [
+          "artifact",
+          "run_match"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-MSCV-NO-VERIFY",
+      "title": "含 MSVC(cl) 的卡禁止标 confirm（414 F01 免检链）",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_msvc_no_verify",
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 21
+      },
+      "blind_spots": [
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-FM-DUP-KEY",
+      "title": "frontmatter 重复键（after-wins 遮蔽，414 F09）",
+      "severity": "block",
+      "scope": "repo",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_frontmatter_duplicate_key",
+      "signals": {
+        "fields": [],
+        "regex_calls": 1,
+        "numeric_consts": [],
+        "loops": 3,
+        "iterdir_calls": 0,
+        "lines": 26
+      },
+      "blind_spots": [
+        {
+          "kind": "regex_fragile",
+          "why": "函数体有 1 处正则调用 ⇒ 格式微扰可能绕过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 3 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        },
+        {
+          "kind": "path_scope_only",
+          "why": "scope=repo ⇒ 与单卡变异不同量纲，C2 生成时应降权"
+        }
+      ],
+      "precondition": {
+        "scope": "repo",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": true,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-FM-YAML-HARDENING",
+      "title": "frontmatter 解析硬化（470 P0-D：走私/重复键/语法/一致性）",
+      "severity": "block",
+      "scope": "repo",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_frontmatter_hardening",
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 3,
+        "iterdir_calls": 0,
+        "lines": 53
+      },
+      "blind_spots": [
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 3 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        },
+        {
+          "kind": "path_scope_only",
+          "why": "scope=repo ⇒ 与单卡变异不同量纲，C2 生成时应降权"
+        }
+      ],
+      "precondition": {
+        "scope": "repo",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-ENV-DEPENDENT-KEY",
+      "title": "环境量读数键（470 P0-E：声明为断言=block/仅留痕=advice）",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_env_dependent_key",
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 44
+      },
+      "blind_spots": [
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-REL-UNKNOWN",
+      "title": "未知 relations 类型（472 P1-4：结束同义词枚举，表外即债务）",
+      "severity": "warn",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_relations_unknown_type",
+      "signals": {
+        "fields": [
+          "relations",
+          "target",
+          "type"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 3,
+        "iterdir_calls": 0,
+        "lines": 33
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 relations, target, type；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 3 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "relations",
+          "target",
+          "type"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-CLAIM-STRUCTURED",
+      "title": "新卡必须有命题化 claim_structured（526 规则1；存量 STAGING 只 warn）",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_atom_claim_structured",
+      "signals": {
+        "fields": [
+          "claim",
+          "id"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 60
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 claim, id；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "claim",
+          "id"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "OBSERVATION-NEEDS-ARTIFACT",
+      "title": "observation 命题须有工件断言支撑（526 规则2：零容忍）",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_observation_needs_artifact",
+      "signals": {
+        "fields": [
+          "evidence",
+          "id"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 36
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 evidence, id；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "evidence",
+          "id"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "INFERENCE-NOT-MACHINE-VERIFIED",
+      "title": "inference 命题不得由机器独自晋升（526 规则3：核心放权闸）",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_inference_not_machine_verified",
+      "signals": {
+        "fields": [
+          "id",
+          "status",
+          "status_history"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [
+          60.0
+        ],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 66
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 id, status, status_history；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "numeric_threshold",
+          "why": "数值常量 [60.0] ⇒ 值篡改可能刚好压线"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "id",
+          "status",
+          "status_history"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": true
+      }
+    },
+    {
+      "rule_id": "ATOM-CLAIM-CONCEPT-NORMALIZED",
+      "title": "claim 命题 object 须归一化规范概念（图谱可连通，530 任务3）",
+      "severity": "warn",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_claim_concept_normalized",
+      "signals": {
+        "fields": [
+          "id"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 19
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 id；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "id"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "OBSERVATION-LIVENESS",
+      "title": "observation 命题须有活性对照（530 任务4：堵「自标观测即全自动」，warn 观察期）",
+      "severity": "warn",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_observation_liveness",
+      "signals": {
+        "fields": [
+          "evidence",
+          "falsification",
+          "id",
+          "run_match"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 2,
+        "iterdir_calls": 0,
+        "lines": 72
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 evidence, falsification, id, run_match；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 2 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "evidence",
+          "falsification",
+          "id",
+          "run_match"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-FIXTURE-NO-ECHO-DATA",
+      "title": "cat 式证据（472 P1-2：experimental→warn，读文件原样打印）",
+      "severity": "warn",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_fixture_no_echo_findings",
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 13
+      },
+      "blind_spots": [
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-OUT-STALE-MTIME",
+      "title": ".out 须比夹具新（414 F06 陈旧留痕）",
+      "severity": "warn",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_out_stale_mtime",
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [
+          5.0
+        ],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 26
+      },
+      "blind_spots": [
+        {
+          "kind": "numeric_threshold",
+          "why": "数值常量 [5.0] ⇒ 值篡改可能刚好压线"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": true
+      }
+    },
+    {
+      "rule_id": "CARD-PATH-NOT-CANONICAL",
+      "title": "卡内路径须 posix 规范且大小写与磁盘一致（548 Part 2：M2 跨平台路径异体，warn）",
+      "severity": "warn",
+      "scope": "repo",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_card_path_canonical",
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 4,
+        "iterdir_calls": 0,
+        "lines": 24
+      },
+      "blind_spots": [
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 4 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        },
+        {
+          "kind": "path_scope_only",
+          "why": "scope=repo ⇒ 与单卡变异不同量纲，C2 生成时应降权"
+        }
+      ],
+      "precondition": {
+        "scope": "repo",
+        "fields": [],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "EV-SERVES-EXIST-HC",
+      "title": "高复杂度证据 serves 目标必须存在（block 兜底）",
+      "severity": "block",
+      "scope": "evidence",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_evidence_serves_exist_hc",
+      "signals": {
+        "fields": [
+          "serves"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 0,
+        "iterdir_calls": 0,
+        "lines": 2
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 serves；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        }
+      ],
+      "precondition": {
+        "scope": "evidence",
+        "fields": [
+          "serves"
+        ],
+        "needs_cross_card": false,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-REL-TARGET-HC",
+      "title": "高复杂度原子 relations 目标必须存在（block 兜底）",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_relations_target_exists_hc",
+      "signals": {
+        "fields": [
+          "relations"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 0,
+        "iterdir_calls": 0,
+        "lines": 2
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 relations；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "relations"
+        ],
+        "needs_cross_card": false,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "ATOM-REL-UNKNOWN-HC",
+      "title": "高复杂度原子 relations 类型必须已知（block 兜底）",
+      "severity": "block",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_relations_unknown_type_hc",
+      "signals": {
+        "fields": [
+          "relations"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 0,
+        "iterdir_calls": 0,
+        "lines": 2
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 relations；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "relations"
+        ],
+        "needs_cross_card": false,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "CARD-PATH-NOT-CANONICAL-HC",
+      "title": "高复杂度卡路径必须规范（block 兜底）",
+      "severity": "block",
+      "scope": "repo",
+      "kind": "fact",
+      "quadrant": "programmatic",
+      "check_fn": "check_card_path_canonical_hc",
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 0,
+        "iterdir_calls": 0,
+        "lines": 3
+      },
+      "blind_spots": [
+        {
+          "kind": "path_scope_only",
+          "why": "scope=repo ⇒ 与单卡变异不同量纲，C2 生成时应降权"
+        }
+      ],
+      "precondition": {
+        "scope": "repo",
+        "fields": [],
+        "needs_cross_card": false,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "PED-MOTIVATION",
+      "title": "动机先行：先说清为什么需要",
+      "severity": "advice",
+      "scope": "atom",
+      "kind": "pedagogy",
+      "quadrant": "programmatic",
+      "check_fn": null,
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 0,
+        "iterdir_calls": 0,
+        "lines": 0
+      },
+      "blind_spots": [],
+      "precondition": {
+        "scope": "atom",
+        "fields": [],
+        "needs_cross_card": false,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "PED-MISCONCEPTION",
+      "title": "学习者常见误解清单",
+      "severity": "advice",
+      "scope": "atom",
+      "kind": "pedagogy",
+      "quadrant": "programmatic",
+      "check_fn": "_misconception_gap",
+      "signals": {
+        "fields": [
+          "pedagogy"
+        ],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 1,
+        "iterdir_calls": 0,
+        "lines": 27
+      },
+      "blind_spots": [
+        {
+          "kind": "field_missing_silent",
+          "why": "规则引用字段 pedagogy；若这些字段缺失而规则没有「缺失即报」分支 ⇒ 静默跳过"
+        },
+        {
+          "kind": "cross_card_dependency",
+          "why": "循环 1 处 / 目录遍历 0 处 ⇒ 单卡损伤可能不触发"
+        }
+      ],
+      "precondition": {
+        "scope": "atom",
+        "fields": [
+          "pedagogy"
+        ],
+        "needs_cross_card": true,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "PED-SOCRATIC",
+      "title": "苏格拉底提问链",
+      "severity": "advice",
+      "scope": "atom",
+      "kind": "pedagogy",
+      "quadrant": "programmatic",
+      "check_fn": null,
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 0,
+        "iterdir_calls": 0,
+        "lines": 0
+      },
+      "blind_spots": [],
+      "precondition": {
+        "scope": "atom",
+        "fields": [],
+        "needs_cross_card": false,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "PED-PREDICT-FIRST",
+      "title": "先预测后揭示（生成性学习）",
+      "severity": "advice",
+      "scope": "atom",
+      "kind": "pedagogy",
+      "quadrant": "programmatic",
+      "check_fn": null,
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 0,
+        "iterdir_calls": 0,
+        "lines": 0
+      },
+      "blind_spots": [],
+      "precondition": {
+        "scope": "atom",
+        "fields": [],
+        "needs_cross_card": false,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "LLM-SUPERIORITY-QUALITY",
+      "title": "superiority 是否真有洞见",
+      "severity": "advice",
+      "scope": "atom",
+      "kind": "fact",
+      "quadrant": "llm",
+      "check_fn": null,
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 0,
+        "iterdir_calls": 0,
+        "lines": 0
+      },
+      "blind_spots": [],
+      "precondition": {
+        "scope": "atom",
+        "fields": [],
+        "needs_cross_card": false,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "HYBRID-TEACHING-DEPTH",
+      "title": "教学深度初筛 + 人工裁定",
+      "severity": "advice",
+      "scope": "atom",
+      "kind": "pedagogy",
+      "quadrant": "hybrid",
+      "check_fn": null,
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 0,
+        "iterdir_calls": 0,
+        "lines": 0
+      },
+      "blind_spots": [],
+      "precondition": {
+        "scope": "atom",
+        "fields": [],
+        "needs_cross_card": false,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    },
+    {
+      "rule_id": "HUMAN-GOLDEN-REVIEW",
+      "title": "Golden 样板人审",
+      "severity": "advice",
+      "scope": "repo",
+      "kind": "meta",
+      "quadrant": "human",
+      "check_fn": null,
+      "signals": {
+        "fields": [],
+        "regex_calls": 0,
+        "numeric_consts": [],
+        "loops": 0,
+        "iterdir_calls": 0,
+        "lines": 0
+      },
+      "blind_spots": [
+        {
+          "kind": "path_scope_only",
+          "why": "scope=repo ⇒ 与单卡变异不同量纲，C2 生成时应降权"
+        }
+      ],
+      "precondition": {
+        "scope": "repo",
+        "fields": [],
+        "needs_cross_card": false,
+        "has_regex": false,
+        "has_numeric_threshold": false
+      }
+    }
+  ],
+  "n_rules": 67,
+  "n_mapped": 61,
+  "n_unmapped": 6,
+  "blind_by_kind": {
+    "field_missing_silent": 44,
+    "cross_card_dependency": 57,
+    "regex_fragile": 15,
+    "numeric_threshold": 14,
+    "path_scope_only": 7
+  },
+  "no_blind_spot": [
+    "PED-MOTIVATION",
+    "PED-SOCRATIC",
+    "PED-PREDICT-FIRST",
+    "LLM-SUPERIORITY-QUALITY",
+    "HYBRID-TEACHING-DEPTH"
+  ],
+  "fields_histogram": {
+    "id": 17,
+    "status": 9,
+    "falsification": 5,
+    "relations": 5,
+    "target": 5,
+    "type": 5,
+    "evidence": 4,
+    "artifact": 3,
+    "claim": 3,
+    "pedagogy": 3,
+    "status_history": 3,
+    "claim_boundary": 2,
+    "kind": 2,
+    "run_match": 2,
+    "serves": 2,
+    "superiority": 2,
+    "dal": 1,
+    "domain": 1,
+    "first_hand": 1,
+    "key": 1,
+    "sources": 1
+  }
+}
