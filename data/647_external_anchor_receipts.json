@@ -1,0 +1,60 @@
+{
+  "spec": {
+    "contract": {
+      "publish": "publish(hash: str) -> receipt: dict",
+      "verify": "verify(hash: str, receipt: dict) -> bool"
+    },
+    "implemented": [
+      "mock-local"
+    ],
+    "reserved": [
+      {
+        "name": "github-gist",
+        "implemented": false,
+        "requires": [
+          "token",
+          "gist_id"
+        ],
+        "public_verifiable": true,
+        "note": "免费/可公开查；凭据是 gist revision，git 化后天然有时间线"
+      },
+      {
+        "name": "rfc3161-timestamp",
+        "implemented": false,
+        "requires": [
+          "tsa_url",
+          "预算确认"
+        ],
+        "public_verifiable": true,
+        "note": "标准第三方时间戳（TSA 签名）；需要人选 TSA 并确认是否付费"
+      },
+      {
+        "name": "opentimestamps",
+        "implemented": false,
+        "requires": [
+          "是否接受链上成本/延迟"
+        ],
+        "public_verifiable": true,
+        "note": "去中心化、可自证；确认成本与延迟后接入"
+      }
+    ],
+    "real_external_service_connected": false
+  },
+  "current": {
+    "anchor": {
+      "anchor": "2da866b6a16288a095c8b0a32c8fa28410a2b7c5c6dd33f26a4fffcc80913b0f",
+      "n_entries": 58,
+      "log_index": 57
+    },
+    "receipt": {
+      "provider": "mock-local",
+      "hash": "2da866b6a16288a095c8b0a32c8fa28410a2b7c5c6dd33f26a4fffcc80913b0f",
+      "published_at": "2026-09-26T13:46:15Z",
+      "receipt_id": "ea4b736204f5f1c9c1397843731b9cf3f4b1a98a10816e0c3f32eaac2f2568d8",
+      "receipt_digest": "ea2cde5d6f11984a4674b6df7ab6ef852e0130f10a7847360be23ed4fbeb63f1"
+    },
+    "published": true,
+    "verified": true,
+    "tamper_detected": true
+  }
+}
