@@ -1,8 +1,8 @@
 {
   "state": "awaiting_review",
-  "active_batch": 642,
-  "next_batch": 643,
-  "last_completed_batch": 642,
+  "active_batch": 644,
+  "next_batch": 645,
+  "last_completed_batch": 644,
   "last_commit": "a7bfad34",
   "last_review_at": "2026-09-25",
   "prev_current_task_642_start": "641 收尾（阶段0）已完成：0.1 修复内核 selftest 投影名（run.project(\"w2\") ⇒ _never_registered_projection_641；w2 会被 C++ 适配器注册进进程级 _PROJECTORS，同进程先跑 cpp 测试致 selftest 假失败，非生产 bug）+ 复跑 641 五测试文件 58 passed/0 failed；0.2 回填 data/641_acceptance_report.md §二.2 终验节（1 failed/3415 passed/16 skipped 真实数字 + 根因/修复/验证）+ 新增 §二.2b E1 门禁节（8/8）；0.3 写 _auto/outbox/641.md（收尾版）+ 本 status；0.4 三组 commit（5a4685c5 641 工具/测试、eb48b8a0 641 报告、db61d0ba 遗留现场 116 项入册）⇒ 工作区 CLEAN、ahead=43。641 全量复核留 642 D2 一并跑。",
@@ -230,6 +230,14 @@
       "verdict": "awaiting_review",
       "objective": "保护器上岗 + UVK 纲领落地（阶段0 先收尾 641；A 五保护器灰度上岗 A1-A6 + B UVK 纲领 B1-B3 + C 闭环扩大准备 C1-C2 + D 收工 D1-D3）",
       "notes": "阶段0：641 唯一失败**真因定位并修复**——内核 selftest 用 `run.project(\"w2\")` 断言「未注册投影抛 KeyError」，但 w2 会被 C++ 领域适配器注册，而 `_PROJECTORS` 是**进程级全局** ⇒ pytest 同进程先跑 cpp 测试再跑 selftest 即假失败（**非生产 bug**，测试断言写反）；改用 `_never_registered_projection_641`（**只改断言用的投影名**，fail-loud 语义不变）⇒ 复跑 641 五测试文件 **58 passed / 0 failed**；641 验收报告 §二.2 终验节 + §二.2b 门禁节回填；三组 commit（641 工具/测试 5a4685c5、641 报告 eb48b8a0、遗留 116 项 db61d0ba）⇒ **工作区 CLEAN**、ahead=43。A 线（**全部灰度，零拦截**）：A1 冲突检测 `--mode shadow|flag`（**block 显式未实现，留 643**），flag 契约=除 `conflict_*` 三字段外**逐字段相等**（含 decision_id/state），23 verified 卡 ⇒ 标记 2、**判决被改变 0**；A2 anti-windup 三阈值 + 策略优先级（老化>预算冻结>半饱和延迟），队列 65/占用 65.0% ⇒ 半饱和、`queued_pending` 65/65、冻结 0（**无「低」优先级项**）、升级 0（最长等待代理 22.8 天 < 30 天），**队列文件 sha256 前后一致**，机制由**合成策略矩阵**验证；A3 blind_protocol 对 ITEM_BLIND 强制注入式盲化（**盲态视图不含 AI 推荐**、揭盲校验可逆、失真即抛错），历史 **452 条只标记不修改**（违规 258，**账本 sha256 前后一致**），分歧率无已揭盲条 ⇒ **None（不编造）**；A4 校准追踪 `record/overturn`（**append-only**，推翻回标不删条目）+ 代理重建（ledger 改判 **85/452=0.1881 可复算**、人审 **34/388=0.0876 可复算**、逃逸 **1/1406 标为不可复算的 616 冻结契约**），上线初值态 **67/67 全用代理**（`is_proxy=True`）；A5 MDL 准入**六种结论**（REFUSE/PENDING_HUMAN/REJECT_豁免率/REJECT_热力图缺失/REJECT_编码长度/ADMIT），实测热力图 63（**不在热力图 4 条**、零触达 33）、复现 admit30/reject37 与 66.7%→23.5%，**照出 636 把「通过率」误题为「豁免率趋势」**并区分两量，侧车元数据**只记新规则、被拒规则保留不删除**；A6 五保护器联调 ⇒ **零漂移**（5 CORE_TOOLS 字节+452 账本+权威日志+人审队列+verified 卡清单指纹前后一致）、**生产判决被改变 0**、标记 15 键**可叠加**（键空间互不重叠、同名冲突抛 MarkConflictError）、`rollback_marks()` 逐个回滚到底 ⇒ `{}`。B 线：B1 `docs/uvk_manifesto.md`——引 v29 的 **Rice/哥德尔/NFL 三重钉死**论证「通用验证器不可达」，确立五条纲领（永不自证/永不全信/永不 fail-open/最小可信内核/持续进化），并新增**独立性四级刻度 L1-L4**（本仓库 **L2 已达、L3 部分、L1/L4 未达**；盲评工具化 ≠ 真实盲评 ⇒ **工具存在 ≠ 独立性存在**）；B2 内核最小性审计（AST）：内核 **813 行/47 符号**、**领域 import 0 / 非标准库 import 0 / 高攻击面 0**、写盘面仅 2 常量、依赖方向双向核验通过、**建议移出 4 项**（报告层 3 + 规则引擎归属复核 1），**未移代码**；B3 fail-closed 全量审计：扫描 **452** 文件 ⇒ **145** 命中（FO-1 异常⇒通过 100 / FO-3 关键字段默认值 38 / FO-2 缺失⇒通过 4 / FO-4 警告不影响退出码 3），**两处已知点可复现实测**——FO-A `tool_integrity.verify_supply_chain()` 缺文件 **exit_code=0**（中）、FO-B `DecisionEvent.from_dict({})` ⇒ **result=APPROVE + review_method=BATCH_AUTH + decision_origin=human_observed**（高，且未知键静默丢弃），**只审计不修复**。C 线：C1 白名单扩展评估（只读 640 常量、**未执行任何修复**）——8 候选按可复算 score 分级 ⇒ **拒绝 3**（账本写入=代签 / 改 gate 规则 / 改知识卡）、**技术可入选但本批不扩大 5**（report_regen 最低风险优先，protector_mark_write 次之，rule_metadata_update 需先立「侧车只读」，test_assertion_number_update **建议拒绝**），并**照出 inbox 白名单口径 ≠ 代码事实**（inbox 把「测试断言数字更新/补 --check」算作现有白名单，`WHITELIST` 实测不含）；C2 闭环校准度台账（**append-only + 幂等**）：R1(637) **37.5%**(3/8) → R2(638) **50.0%**(2/4，派生) → R3(642) **None**（候选 157/采纳 0，**未代决**），显式登记 R1/R2 口径不同且样本极小**不足以判趋势**、审计人为**自审**；门槛 **60%** 最高观测 50.0% ⇒ **未达 ⇒ 本批不扩大白名单**。D1 `run_642_gate` **PASS 8/8**（10 新工具 --check / 641 收尾确认 / ruff / mypy **0/452** / 受控目录零污染 / 保护器灰度验证 / 内核零领域 import / tool_integrity 四项 OK）。**新增 11 工具 + 11 个测试文件（86 例）+ 1 纲领 + 17 份 data/642_* 产物**。D2 全量 pytest：第 1 次 **1 failed/3501 passed/16 skipped**（唯一红=test_run_628_gate_628 断言 status.state==awaiting_review，而阶段0 按苦力协议置 state=running ⇒ **批内状态口径冲突，非代码缺陷、非偶发**）⇒ 修正 status 为收工态后**单跑该测试绿** ⇒ 复跑 **0 failed/3502 passed/16 skipped（exit=0，36:25）**；两次现场并存保留（642_pytest_run1_state_red.txt + 642_pytest_final.txt）；**计数由进度行机械推导**（终端末尾汇总行未被后台捕获，已登记为观测/交人项），总数 3518 = 641 的 3432 + 本批 86 自洽；**未改任何测试断言去「改到绿」**。D3 验收报告/status/outbox 齐备。未 push / 未代签 / 未 golden accept / 未开 delegation / **CORE_TOOLS 判决逻辑零改动** / 受控目录零污染。详见 data/642_acceptance_report.md。"
+    },
+    {
+      "batch": 644,
+      "status": "completed",
+      "completed_at": "2026-09-26",
+      "verdict": "awaiting_review",
+      "objective": "头部层点火 + 调研 + 原型：证据获取/保存系统（644.md）",
+      "notes": "Phase 0（证据盘点 + evidence_store 建库）+ A（5 份调研 _arch_v30/）+ B（B1-B4）+ C（C1-C4）+ D（D1-D5 原型级,网络降级）+ E（E1-E3）+ F（run_644_gate PASS）。base + 18 工具 + 闸门共 20 个 Python 文件；18 测试文件 88 例全绿；ruff tools/ 0 errors、mypy 644 新文件 0 errors（baseline 持平）、受控目录零污染、头部层产物齐全（evidence_store/ 含 1 条真实 g++ L1 证据、evidence_index.json 58 关联）。诚实 WARN：643 未正式收工（status 无 643 记录、工作区有 643 遗留未提交产物，其 mypy 类型错误 6 处按 acceptable baseline 不计入 644）；D 系列原型级非生产爬虫；全量 pytest 未在本工具 idle-timeout 内跑完，已验证收集无错误 + 643 子集 142 测试全绿 + 644 新测试 88 全绿 + 未改共享模块。详见 status/644_acceptance_report.md。"
     }
   ],
   "history_note": "610/611/613/614 已压缩；逐批原始 commit 见 git log。",

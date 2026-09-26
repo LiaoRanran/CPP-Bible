@@ -1,0 +1,696 @@
+{
+  "by_card": {
+    "ATOM-CONC-FENCE-001": [
+      "EV-CONC-001",
+      "EV-CONC-002"
+    ],
+    "ATOM-CONC-LOCK-001": [
+      "EV-CONC-003",
+      "EV-CONC-004"
+    ],
+    "ATOM-CONC-RACE-001": [
+      "EV-CONC-005",
+      "EV-CONC-006"
+    ],
+    "ATOM-HIST-AUTOPTR-001": [
+      "EV-HIST-001",
+      "EV-MEM-003"
+    ],
+    "ATOM-LANG-INLINE-001": [
+      "EV-LANG-001",
+      "EV-LANG-002"
+    ],
+    "ATOM-MEM-ALIGN-001": [
+      "EV-MEM-019",
+      "EV-MEM-020"
+    ],
+    "ATOM-MEM-ALLOC-001": [
+      "EV-MEM-026",
+      "EV-MEM-027",
+      "EV-MEM-028"
+    ],
+    "ATOM-MEM-ALLOC-002": [
+      "EV-MEM-040",
+      "EV-MEM-041"
+    ],
+    "ATOM-MEM-LEAK-001": [
+      "EV-MEM-036",
+      "EV-MEM-037"
+    ],
+    "ATOM-MEM-LEAK-002": [
+      "EV-MEM-042",
+      "EV-MEM-043"
+    ],
+    "ATOM-MEM-MOVE-002": [
+      "EV-MEM-002",
+      "EV-MEM-001"
+    ],
+    "ATOM-MEM-NEW-001": [
+      "EV-MEM-017",
+      "EV-MEM-018"
+    ],
+    "ATOM-MEM-PERF-001": [
+      "EV-MEM-001",
+      "EV-MEM-002",
+      "EV-MEM-008"
+    ],
+    "ATOM-MEM-PERF-002": [
+      "EV-MEM-029",
+      "EV-MEM-030",
+      "EV-MEM-031"
+    ],
+    "ATOM-MEM-PERF-003": [
+      "EV-MEM-038",
+      "EV-MEM-039"
+    ],
+    "ATOM-MEM-PERF-004": [
+      "EV-MEM-044",
+      "EV-MEM-045"
+    ],
+    "ATOM-MEM-RAII-001": [
+      "EV-MEM-009",
+      "EV-MEM-010"
+    ],
+    "ATOM-MEM-RAII-002": [
+      "EV-MEM-023",
+      "EV-MEM-024",
+      "EV-MEM-025"
+    ],
+    "ATOM-MEM-RVREF-001": [
+      "EV-MEM-004",
+      "EV-MEM-005"
+    ],
+    "ATOM-MEM-SHARED-001": [
+      "EV-MEM-013",
+      "EV-MEM-014"
+    ],
+    "ATOM-MEM-SHARED-002": [
+      "EV-MEM-034",
+      "EV-MEM-035"
+    ],
+    "ATOM-MEM-UNIQUE-001": [
+      "EV-MEM-011",
+      "EV-MEM-012"
+    ],
+    "ATOM-MEM-UNIQUE-002": [
+      "EV-MEM-032",
+      "EV-MEM-033"
+    ],
+    "ATOM-MEM-VALUE-001": [
+      "EV-MEM-006",
+      "EV-MEM-007"
+    ],
+    "ATOM-MEM-VALUE-002": [
+      "EV-MEM-021",
+      "EV-MEM-022"
+    ],
+    "ATOM-MEM-WEAK-001": [
+      "EV-MEM-015",
+      "EV-MEM-016"
+    ],
+    "ATOM-UB-GRAY-001": [
+      "EV-UB-001",
+      "EV-UB-002"
+    ]
+  },
+  "by_evidence": {
+    "EV-CONC-001": [
+      "ATOM-CONC-FENCE-001"
+    ],
+    "EV-CONC-002": [
+      "ATOM-CONC-FENCE-001"
+    ],
+    "EV-CONC-003": [
+      "ATOM-CONC-LOCK-001"
+    ],
+    "EV-CONC-004": [
+      "ATOM-CONC-LOCK-001"
+    ],
+    "EV-CONC-005": [
+      "ATOM-CONC-RACE-001"
+    ],
+    "EV-CONC-006": [
+      "ATOM-CONC-RACE-001"
+    ],
+    "EV-HIST-001": [
+      "ATOM-HIST-AUTOPTR-001"
+    ],
+    "EV-LANG-001": [
+      "ATOM-LANG-INLINE-001"
+    ],
+    "EV-LANG-002": [
+      "ATOM-LANG-INLINE-001"
+    ],
+    "EV-MEM-001": [
+      "ATOM-MEM-MOVE-002",
+      "ATOM-MEM-PERF-001"
+    ],
+    "EV-MEM-002": [
+      "ATOM-MEM-MOVE-002",
+      "ATOM-MEM-PERF-001"
+    ],
+    "EV-MEM-003": [
+      "ATOM-HIST-AUTOPTR-001"
+    ],
+    "EV-MEM-004": [
+      "ATOM-MEM-RVREF-001"
+    ],
+    "EV-MEM-005": [
+      "ATOM-MEM-RVREF-001"
+    ],
+    "EV-MEM-006": [
+      "ATOM-MEM-VALUE-001"
+    ],
+    "EV-MEM-007": [
+      "ATOM-MEM-VALUE-001"
+    ],
+    "EV-MEM-008": [
+      "ATOM-MEM-PERF-001"
+    ],
+    "EV-MEM-009": [
+      "ATOM-MEM-RAII-001"
+    ],
+    "EV-MEM-010": [
+      "ATOM-MEM-RAII-001"
+    ],
+    "EV-MEM-011": [
+      "ATOM-MEM-UNIQUE-001"
+    ],
+    "EV-MEM-012": [
+      "ATOM-MEM-UNIQUE-001"
+    ],
+    "EV-MEM-013": [
+      "ATOM-MEM-SHARED-001"
+    ],
+    "EV-MEM-014": [
+      "ATOM-MEM-SHARED-001"
+    ],
+    "EV-MEM-015": [
+      "ATOM-MEM-WEAK-001"
+    ],
+    "EV-MEM-016": [
+      "ATOM-MEM-WEAK-001"
+    ],
+    "EV-MEM-017": [
+      "ATOM-MEM-NEW-001"
+    ],
+    "EV-MEM-018": [
+      "ATOM-MEM-NEW-001"
+    ],
+    "EV-MEM-019": [
+      "ATOM-MEM-ALIGN-001"
+    ],
+    "EV-MEM-020": [
+      "ATOM-MEM-ALIGN-001"
+    ],
+    "EV-MEM-021": [
+      "ATOM-MEM-VALUE-002"
+    ],
+    "EV-MEM-022": [
+      "ATOM-MEM-VALUE-002"
+    ],
+    "EV-MEM-023": [
+      "ATOM-MEM-RAII-002"
+    ],
+    "EV-MEM-024": [
+      "ATOM-MEM-RAII-002"
+    ],
+    "EV-MEM-025": [
+      "ATOM-MEM-RAII-002"
+    ],
+    "EV-MEM-026": [
+      "ATOM-MEM-ALLOC-001"
+    ],
+    "EV-MEM-027": [
+      "ATOM-MEM-ALLOC-001"
+    ],
+    "EV-MEM-028": [
+      "ATOM-MEM-ALLOC-001"
+    ],
+    "EV-MEM-029": [
+      "ATOM-MEM-PERF-002"
+    ],
+    "EV-MEM-030": [
+      "ATOM-MEM-PERF-002"
+    ],
+    "EV-MEM-031": [
+      "ATOM-MEM-PERF-002"
+    ],
+    "EV-MEM-032": [
+      "ATOM-MEM-UNIQUE-002"
+    ],
+    "EV-MEM-033": [
+      "ATOM-MEM-UNIQUE-002"
+    ],
+    "EV-MEM-034": [
+      "ATOM-MEM-SHARED-002"
+    ],
+    "EV-MEM-035": [
+      "ATOM-MEM-SHARED-002"
+    ],
+    "EV-MEM-036": [
+      "ATOM-MEM-LEAK-001"
+    ],
+    "EV-MEM-037": [
+      "ATOM-MEM-LEAK-001"
+    ],
+    "EV-MEM-038": [
+      "ATOM-MEM-PERF-003"
+    ],
+    "EV-MEM-039": [
+      "ATOM-MEM-PERF-003"
+    ],
+    "EV-MEM-040": [
+      "ATOM-MEM-ALLOC-002"
+    ],
+    "EV-MEM-041": [
+      "ATOM-MEM-ALLOC-002"
+    ],
+    "EV-MEM-042": [
+      "ATOM-MEM-LEAK-002"
+    ],
+    "EV-MEM-043": [
+      "ATOM-MEM-LEAK-002"
+    ],
+    "EV-MEM-044": [
+      "ATOM-MEM-PERF-004"
+    ],
+    "EV-MEM-045": [
+      "ATOM-MEM-PERF-004"
+    ],
+    "EV-UB-001": [
+      "ATOM-UB-GRAY-001"
+    ],
+    "EV-UB-002": [
+      "ATOM-UB-GRAY-001"
+    ]
+  },
+  "links": [
+    {
+      "card_id": "ATOM-CONC-FENCE-001",
+      "evidence_id": "EV-CONC-001",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-CONC-FENCE-001",
+      "evidence_id": "EV-CONC-002",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-CONC-LOCK-001",
+      "evidence_id": "EV-CONC-003",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-CONC-LOCK-001",
+      "evidence_id": "EV-CONC-004",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-CONC-RACE-001",
+      "evidence_id": "EV-CONC-005",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-CONC-RACE-001",
+      "evidence_id": "EV-CONC-006",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-HIST-AUTOPTR-001",
+      "evidence_id": "EV-HIST-001",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-HIST-AUTOPTR-001",
+      "evidence_id": "EV-MEM-003",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-LANG-INLINE-001",
+      "evidence_id": "EV-LANG-001",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-LANG-INLINE-001",
+      "evidence_id": "EV-LANG-002",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-ALIGN-001",
+      "evidence_id": "EV-MEM-019",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-ALIGN-001",
+      "evidence_id": "EV-MEM-020",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-ALLOC-001",
+      "evidence_id": "EV-MEM-026",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-ALLOC-001",
+      "evidence_id": "EV-MEM-027",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-ALLOC-001",
+      "evidence_id": "EV-MEM-028",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-ALLOC-002",
+      "evidence_id": "EV-MEM-040",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-ALLOC-002",
+      "evidence_id": "EV-MEM-041",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-LEAK-001",
+      "evidence_id": "EV-MEM-036",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-LEAK-001",
+      "evidence_id": "EV-MEM-037",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-LEAK-002",
+      "evidence_id": "EV-MEM-042",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-LEAK-002",
+      "evidence_id": "EV-MEM-043",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-MOVE-002",
+      "evidence_id": "EV-MEM-002",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-MOVE-002",
+      "evidence_id": "EV-MEM-001",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-NEW-001",
+      "evidence_id": "EV-MEM-017",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-NEW-001",
+      "evidence_id": "EV-MEM-018",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-PERF-001",
+      "evidence_id": "EV-MEM-001",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-PERF-001",
+      "evidence_id": "EV-MEM-002",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-PERF-001",
+      "evidence_id": "EV-MEM-008",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-PERF-002",
+      "evidence_id": "EV-MEM-029",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-PERF-002",
+      "evidence_id": "EV-MEM-030",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-PERF-002",
+      "evidence_id": "EV-MEM-031",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-PERF-003",
+      "evidence_id": "EV-MEM-038",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-PERF-003",
+      "evidence_id": "EV-MEM-039",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-PERF-004",
+      "evidence_id": "EV-MEM-044",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-PERF-004",
+      "evidence_id": "EV-MEM-045",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-RAII-001",
+      "evidence_id": "EV-MEM-009",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-RAII-001",
+      "evidence_id": "EV-MEM-010",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-RAII-002",
+      "evidence_id": "EV-MEM-023",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-RAII-002",
+      "evidence_id": "EV-MEM-024",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-RAII-002",
+      "evidence_id": "EV-MEM-025",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-RVREF-001",
+      "evidence_id": "EV-MEM-004",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-RVREF-001",
+      "evidence_id": "EV-MEM-005",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-SHARED-001",
+      "evidence_id": "EV-MEM-013",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-SHARED-001",
+      "evidence_id": "EV-MEM-014",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-SHARED-002",
+      "evidence_id": "EV-MEM-034",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-SHARED-002",
+      "evidence_id": "EV-MEM-035",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-UNIQUE-001",
+      "evidence_id": "EV-MEM-011",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-UNIQUE-001",
+      "evidence_id": "EV-MEM-012",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-UNIQUE-002",
+      "evidence_id": "EV-MEM-032",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-UNIQUE-002",
+      "evidence_id": "EV-MEM-033",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-VALUE-001",
+      "evidence_id": "EV-MEM-006",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-VALUE-001",
+      "evidence_id": "EV-MEM-007",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-VALUE-002",
+      "evidence_id": "EV-MEM-021",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-VALUE-002",
+      "evidence_id": "EV-MEM-022",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-WEAK-001",
+      "evidence_id": "EV-MEM-015",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-MEM-WEAK-001",
+      "evidence_id": "EV-MEM-016",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-UB-GRAY-001",
+      "evidence_id": "EV-UB-001",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    },
+    {
+      "card_id": "ATOM-UB-GRAY-001",
+      "evidence_id": "EV-UB-002",
+      "linked_at": "legacy",
+      "linked_by": "evidence_card_link_644.build_index_from_existing",
+      "relation": "support"
+    }
+  ]
+}
