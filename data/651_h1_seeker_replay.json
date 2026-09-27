@@ -1,0 +1,198 @@
+{
+  "evidence_index_size": 67,
+  "cards": [
+    {
+      "card": "ATOM-LANG-DECAY-001",
+      "path": "atoms/lang/ATOM-LANG-DECAY-001.md",
+      "evidence_rows": [
+        {
+          "ref": "EV-LANG-003",
+          "resolved": true,
+          "path": "evidence\\lang\\EV-LANG-003.md",
+          "sha256": "44b44e6d6b6a428055b74fccddfd55677b1fb38a9a7d290ee23d18808e4cd962"
+        }
+      ],
+      "unresolved": [],
+      "source_count": 1,
+      "human_eval": {
+        "recall_missed": "",
+        "false_citation": "",
+        "verdict": ""
+      }
+    },
+    {
+      "card": "ATOM-MEM-MALLOC-001",
+      "path": "atoms/mem/ATOM-MEM-MALLOC-001.md",
+      "evidence_rows": [
+        {
+          "ref": "EV-MEM-046",
+          "resolved": true,
+          "path": "evidence\\mem\\EV-MEM-046.md",
+          "sha256": "ba21999056d859d9d41d477588807d22eea04d97083a53f2b07545f1f6cab4e6"
+        }
+      ],
+      "unresolved": [],
+      "source_count": 1,
+      "human_eval": {
+        "recall_missed": "",
+        "false_citation": "",
+        "verdict": ""
+      }
+    },
+    {
+      "card": "ATOM-MEM-STRBOUND-001",
+      "path": "atoms/mem/ATOM-MEM-STRBOUND-001.md",
+      "evidence_rows": [
+        {
+          "ref": "EV-MEM-047",
+          "resolved": true,
+          "path": "evidence\\mem\\EV-MEM-047.md",
+          "sha256": "3e3ef217023d913b8eabb95aff581fd8537e652b520a9da8d4c08499ea3d7f54"
+        }
+      ],
+      "unresolved": [],
+      "source_count": 1,
+      "human_eval": {
+        "recall_missed": "",
+        "false_citation": "",
+        "verdict": ""
+      }
+    },
+    {
+      "card": "ATOM-LANG-FNPTR-001",
+      "path": "atoms/lang/ATOM-LANG-FNPTR-001.md",
+      "evidence_rows": [
+        {
+          "ref": "EV-LANG-004",
+          "resolved": true,
+          "path": "evidence\\lang\\EV-LANG-004.md",
+          "sha256": "7f5a857b0ec3d21c454ffdd2f9d076f5a3d5b9ca8ab68d3900c017f13bdb0277"
+        }
+      ],
+      "unresolved": [],
+      "source_count": 1,
+      "human_eval": {
+        "recall_missed": "",
+        "false_citation": "",
+        "verdict": ""
+      }
+    },
+    {
+      "card": "ATOM-LANG-VOLATILE-001",
+      "path": "atoms/lang/ATOM-LANG-VOLATILE-001.md",
+      "evidence_rows": [
+        {
+          "ref": "EV-LANG-005",
+          "resolved": true,
+          "path": "evidence\\lang\\EV-LANG-005.md",
+          "sha256": "10f442192da719f01ac75efb3489639a3ef7a02e809a9d7640dd49511eea72c2"
+        }
+      ],
+      "unresolved": [],
+      "source_count": 1,
+      "human_eval": {
+        "recall_missed": "",
+        "false_citation": "",
+        "verdict": ""
+      }
+    },
+    {
+      "card": "ATOM-LANG-SETJMP-001",
+      "path": "atoms/lang/ATOM-LANG-SETJMP-001.md",
+      "evidence_rows": [
+        {
+          "ref": "EV-LANG-006",
+          "resolved": true,
+          "path": "evidence\\lang\\EV-LANG-006.md",
+          "sha256": "5c1ca9dda6c7fccd5577aa22727baf555150dd51c3fa093e0051840a7106a919"
+        }
+      ],
+      "unresolved": [],
+      "source_count": 1,
+      "human_eval": {
+        "recall_missed": "",
+        "false_citation": "",
+        "verdict": ""
+      }
+    },
+    {
+      "card": "ATOM-LANG-INTPROMO-001",
+      "path": "atoms/lang/ATOM-LANG-INTPROMO-001.md",
+      "evidence_rows": [
+        {
+          "ref": "EV-LANG-007",
+          "resolved": true,
+          "path": "evidence\\lang\\EV-LANG-007.md",
+          "sha256": "2129f9071cd8ff3608954b2b76d5c0860bec07e92804e40295e91e2a96819a52"
+        }
+      ],
+      "unresolved": [],
+      "source_count": 1,
+      "human_eval": {
+        "recall_missed": "",
+        "false_citation": "",
+        "verdict": ""
+      }
+    },
+    {
+      "card": "ATOM-LANG-BITFIELD-001",
+      "path": "atoms/lang/ATOM-LANG-BITFIELD-001.md",
+      "evidence_rows": [
+        {
+          "ref": "EV-LANG-008",
+          "resolved": true,
+          "path": "evidence\\lang\\EV-LANG-008.md",
+          "sha256": "a6e1b7ada42e78474ab48b8aebf2080318931c63ef9717d5dc3047fd1be72ee9"
+        }
+      ],
+      "unresolved": [],
+      "source_count": 1,
+      "human_eval": {
+        "recall_missed": "",
+        "false_citation": "",
+        "verdict": ""
+      }
+    },
+    {
+      "card": "ATOM-LANG-MACRO-001",
+      "path": "atoms/lang/ATOM-LANG-MACRO-001.md",
+      "evidence_rows": [
+        {
+          "ref": "EV-LANG-009",
+          "resolved": true,
+          "path": "evidence\\lang\\EV-LANG-009.md",
+          "sha256": "5e11083b481a677e2dbf1558ea05d727d664888a414be6e033826e314e2d93da"
+        }
+      ],
+      "unresolved": [],
+      "source_count": 1,
+      "human_eval": {
+        "recall_missed": "",
+        "false_citation": "",
+        "verdict": ""
+      }
+    },
+    {
+      "card": "ATOM-UB-SIGNEDOVF-001",
+      "path": "atoms/ub/ATOM-UB-SIGNEDOVF-001.md",
+      "evidence_rows": [
+        {
+          "ref": "EV-UB-003",
+          "resolved": true,
+          "path": "evidence\\ub\\EV-UB-003.md",
+          "sha256": "eb523183a2d3f7d7e1ad72477a10fbc976435ace3265fbd0715c0b119f8cc2fb"
+        }
+      ],
+      "unresolved": [],
+      "source_count": 1,
+      "human_eval": {
+        "recall_missed": "",
+        "false_citation": "",
+        "verdict": ""
+      }
+    }
+  ],
+  "total_evidence_refs": 10,
+  "unresolved_refs": 0,
+  "note": "只跑检索+留痕；召回/误引率需人工看留痕填（human_eval 列留空）。"
+}
