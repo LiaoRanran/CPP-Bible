@@ -1,0 +1,244 @@
+{
+  "counts": {
+    "reference_values": 7,
+    "endorsements": 4,
+    "verifier_code": 27
+  },
+  "stores": {
+    "reference_values": [
+      {
+        "store": "reference_values",
+        "path": "data/supply_chain/merkle_roots.json",
+        "exists": true,
+        "sha256_16": "7ab71c2f711725a6"
+      },
+      {
+        "store": "reference_values",
+        "path": "tools/.tool_checksums",
+        "exists": true,
+        "sha256_16": "d0769d334f44c1b5"
+      },
+      {
+        "store": "reference_values",
+        "path": "tools/poison_exemptions.yaml",
+        "exists": true,
+        "sha256_16": "dd2ff437da53c73d"
+      },
+      {
+        "store": "reference_values",
+        "path": "tools/poison_surface_map.json",
+        "exists": true,
+        "sha256_16": "de4a8e771edd0592"
+      },
+      {
+        "store": "reference_values",
+        "path": "data/governance_docs_manifest.json",
+        "exists": true,
+        "sha256_16": "ff213a117bb9578e"
+      },
+      {
+        "store": "reference_values",
+        "path": "data/supply_chain/merkle_roots.json",
+        "exists": true,
+        "sha256_16": "7ab71c2f711725a6"
+      },
+      {
+        "store": "reference_values",
+        "path": "data/supply_chain/layout.json",
+        "exists": true,
+        "sha256_16": "fba147aa6e05e4bf"
+      }
+    ],
+    "endorsements": [
+      {
+        "store": "endorsements",
+        "path": "data/supply_chain/merkle_roots.json.ots",
+        "exists": true,
+        "sha256_16": "6ee2b887d6c89b16"
+      },
+      {
+        "store": "endorsements",
+        "path": "data/authority/authority_chain_anchor_credential_629.json",
+        "exists": true,
+        "sha256_16": "a30e66da8412a9af"
+      },
+      {
+        "store": "endorsements",
+        "path": "data/authority/authority_event_chain_629_anchor.json",
+        "exists": true,
+        "sha256_16": "a497898a257af8df"
+      },
+      {
+        "store": "endorsements",
+        "path": "data/ots_anchor_613.md",
+        "exists": true,
+        "sha256_16": "c60a44296f389842"
+      }
+    ],
+    "verifier_code": [
+      {
+        "store": "verifier_code",
+        "path": "tools/gate_engine.py",
+        "exists": true,
+        "sha256_16": "03cd20dcdbeee512"
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/atom_evidence_replay.py",
+        "exists": true,
+        "sha256_16": "4b142e68a97a3c2b"
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/poison_drill.py",
+        "exists": true,
+        "sha256_16": "37f638004c4dbdcb"
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/toolchain.py",
+        "exists": true,
+        "sha256_16": "5920bff6af16cb80"
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/cppbible.py",
+        "exists": true,
+        "sha256_16": "4454db9b499238dc"
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/84aaa6314bf186cb722617b5b6031a60b0ef5e2a939c1daab113e86a1e6e6911",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/7167d010b0d487a357345bf551b80f5ec890dc9d816823a553f08e62536baadc",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/3e68a76ed95cf440d0a0cf2f864d4c7671454863c5d14cd6f6367cb35c495b98",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/2527bc0afd492c854fadd8a0704779d2de4319ff7c2d9d49ac9106e758612fed",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/57258445043fb0398b97060f8f15df7a119fda445f9b05c599cf081ea94f62df",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/9aee3eb9d1393d475a3afb6e63aee22232a660b43f29e4525bebff7739a2cb51",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/16eb17f009d817ae865d877830086aad8a0d70bad3c7d893519e263cef891fd3",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/47986d4ae1ab3aaa54b39accce1abce1d4b76209a6b7969e1ee00c3b165ad542",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/c3d0f490fedc2dde9b552264169c791264aae1289420e6a855e34dc1d15d12cd",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/bdc8b73a1055ee39b358a48f031a41ad0cfd44d3534796579290a32ae03a3d77",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/fcacefdb702866cd449b2278e58cc1f145f69e625a5644908df09cb8c4276d72",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/9cc9211e41114035e48d2a0695ab1ba77b1f0e63d20e6bf07dcc3cac868c1d11",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/b11a7d851337ab420b960b1b6e1b182091d3d7e75d5004d7ef1f173a4a8673d1",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/5ea773fa49b8c8109c32b8330b4580eb8fbdfea5603ed920fbcbef431392eecc",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/6cd166591c36a12fd6a892d4d2ba68e911a569d115c966645fc414bff748e4a6",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/92842cf34955a16d33ebb1a8316f2c4387bd6a8ae7f497b2e2983687306eb1e9",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/8c29dd10b64b03a70733d4dae8ad9a175a9389b8eb568a33864d0626127ab643",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/6ce6c91cc2933f4398b09b7eca90d2ab7893ce08c3be946af6695068fd55d2b8",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/6d566095556c8b8c382778361145c6d728c53ff34b449a15044aba4e1b458937",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/d22b265df2f0715feaf71e9bcbcbb9137c0377bec933dcdfb857d7ce819faf67",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/00a4dda865b228abfb1e0ad829fdcc37086de6b93bb8fb3908470d2d55f193f9",
+        "exists": false,
+        "sha256_16": null
+      },
+      {
+        "store": "verifier_code",
+        "path": "tools/dd690edc86b009038e584d0d5216563fdd196931283f087eac69f1e53d380363",
+        "exists": false,
+        "sha256_16": null
+      }
+    ]
+  },
+  "note": "RATS 三库映射：reference_values=预期值(merkle/checksums/豁免台账)；endorsements=时间戳与凭证；verifier_code=核心工具+尺子。只读，不改信任根。"
+}
