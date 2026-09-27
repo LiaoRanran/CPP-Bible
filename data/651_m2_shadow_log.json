@@ -1,0 +1,68 @@
+{
+  "round": 3,
+  "candidates": [
+    {
+      "name": "mutator_M8v2",
+      "kind": "mutator",
+      "entered_round": 0,
+      "remaining": 0,
+      "state": "eligible"
+    },
+    {
+      "name": "rule_EV_NEW",
+      "kind": "rule",
+      "entered_round": 0,
+      "remaining": 0,
+      "state": "eligible"
+    },
+    {
+      "name": "model_scope_bpe_v2",
+      "kind": "model",
+      "entered_round": 0,
+      "remaining": 2,
+      "state": "shadow"
+    }
+  ],
+  "log": [
+    {
+      "round": 0,
+      "event": "register",
+      "name": "mutator_M8v2",
+      "kind": "mutator"
+    },
+    {
+      "round": 0,
+      "event": "register",
+      "name": "rule_EV_NEW",
+      "kind": "rule"
+    },
+    {
+      "round": 0,
+      "event": "register",
+      "name": "model_scope_bpe_v2",
+      "kind": "model"
+    },
+    {
+      "round": 1,
+      "event": "advance"
+    },
+    {
+      "round": 2,
+      "event": "advance"
+    },
+    {
+      "round": 3,
+      "event": "eligible",
+      "name": "mutator_M8v2"
+    },
+    {
+      "round": 3,
+      "event": "eligible",
+      "name": "rule_EV_NEW"
+    },
+    {
+      "round": 3,
+      "event": "advance"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "ledger": "data\\authority\\decision_event_v2_ledger.jsonl",
+  "alpha": 0.2,
+  "strata": 1,
+  "events": 452,
+  "forced_recalibration": [],
+  "rows": [
+    {
+      "stratum": "UNKNOWN",
+      "n": 452,
+      "rejudge_count": 85,
+      "rate_count": 0.1881,
+      "rate_weighted": 0.1828,
+      "alpha": 0.2,
+      "over_budget": false,
+      "unstable": false,
+      "forced_recalibration": false
+    }
+  ]
+}

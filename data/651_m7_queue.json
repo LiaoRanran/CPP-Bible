@@ -1,0 +1,52 @@
+{
+  "source": "data\\authority\\pending_review_621.jsonl",
+  "raw": {
+    "total": 30,
+    "accepted": 0,
+    "rejected": 30
+  },
+  "adapted": {
+    "total": 30,
+    "accepted": 30,
+    "rejected": 0,
+    "sample_accept": [
+      {
+        "item_id": "prop-621-001",
+        "target": {
+          "id": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-1",
+          "type": "attack_edge"
+        },
+        "reason": "needs_human",
+        "priority": 1.0,
+        "adapt_log": [
+          "item_id <= proposal_id",
+          "reason <= suggested_reason",
+          "reason: 需独立判断（原为镜像/短理由，rubber-st… → needs_human"
+        ]
+      },
+      {
+        "item_id": "prop-621-002",
+        "target": {
+          "id": "ae-MIS-LANG-001->ATOM-LANG-INLINE-001::prop-2",
+          "type": "attack_edge"
+        },
+        "reason": "needs_human",
+        "priority": 1.0,
+        "adapt_log": [
+          "item_id <= proposal_id",
+          "reason <= suggested_reason",
+          "reason: 需独立判断（原为镜像/短理由，rubber-st… → needs_human"
+        ]
+      }
+    ]
+  },
+  "raw_reject_reasons": {
+    "missing_field": 30
+  },
+  "dashboard": {
+    "blind_violation_rate": null,
+    "calibration_over_rate": 0.0,
+    "fail_closed_reject_rate": 1.0,
+    "note": "缺数据处为 None（未编造）。"
+  }
+}
