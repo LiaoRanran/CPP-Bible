@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="44" skipped="0" tests="47" time="148.720" timestamp="2026-09-27T23:17:33.835001+08:00" hostname="DESKTOP-E96SKGK"><testcase classname="tests.test_621_gate" name="test_620_tools_regression_pass" time="31.704"><failure message="AssertionError: 失败：pck_batch_migrator_620(exit 1)&#10;assert False">def test_620_tools_regression_pass():
+        ok, msg = G.check_tools_620()
+&gt;       assert ok, msg
+E       AssertionError: 失败：pck_batch_migrator_620(exit 1)
+E       assert False
+
+tests\test_621_gate.py:43: AssertionError</failure></testcase><testcase classname="tests.test_620_b1" name="test_discover_83_cards" time="0.663"><failure message="AssertionError: assert 113 == 103&#10; +  where 113 = len(['atoms/conc/ATOM-CONC-FENCE-001.md', 'atoms/conc/ATOM-CONC-LOCK-001.md', 'atoms/conc/ATOM-CONC-RACE-001.md', 'atoms/draft650/ATOM-DRAFT650-001.md', 'atoms/draft650/ATOM-DRAFT650-002.md', 'atoms/draft650/ATOM-DRAFT650-003.md', ...])">def test_discover_83_cards():
+&gt;       assert len(CARDS) == 103
+E       AssertionError: assert 113 == 103
+E        +  where 113 = len(['atoms/conc/ATOM-CONC-FENCE-001.md', 'atoms/conc/ATOM-CONC-LOCK-001.md', 'atoms/conc/ATOM-CONC-RACE-001.md', 'atoms/draft650/ATOM-DRAFT650-001.md', 'atoms/draft650/ATOM-DRAFT650-002.md', 'atoms/draft650/ATOM-DRAFT650-003.md', ...])
+
+tests\test_620_b1.py:19: AssertionError</failure></testcase><testcase classname="tests.test_622_c3" name="test_classify_all_v2_uses_pck_map" time="2.511"><failure message="AssertionError: assert 113 == 103&#10; +  where 113 = len([{'card': 'atoms/conc/ATOM-CONC-FENCE-001.md', 'card_id': 'ATOM-CONC-FENCE-001', 'kind': 'atom', 'domain': 'conc', ......'atoms/draft650/ATOM-DRAFT650-003.md', 'card_id': 'ATOM-DRAFT650-003', 'kind': 'atom', 'domain': 'draft650', ...}, ...])">def test_classify_all_v2_uses_pck_map():
+        cards = M.discover_cards()
+        rows = A.classify_all_v2(cards, extracted=E.verdict_index(E.extract_all()))
+&gt;       assert len(rows) == 103
+E       AssertionError: assert 113 == 103
+E        +  where 113 = len([{'card': 'atoms/conc/ATOM-CONC-FENCE-001.md', 'card_id': 'ATOM-CONC-FENCE-001', 'kind': 'atom', 'domain': 'conc', ......'atoms/draft650/ATOM-DRAFT650-003.md', 'card_id': 'ATOM-DRAFT650-003', 'kind': 'atom', 'domain': 'draft650', ...}, ...])
+
+tests\test_622_c3.py:76: AssertionError</failure></testcase><testcase classname="tests.test_620_b1" name="test_batch_migration_all_pass" time="9.802"><failure message="assert 113 == 103">def test_batch_migration_all_pass():
+        prev = M.migrate_preview(CARDS)
+&gt;       assert prev["total"] == 103
+E       assert 113 == 103
+
+tests\test_620_b1.py:33: AssertionError</failure></testcase><testcase classname="tests.test_622_a4" name="test_generate_v2_deterministic" time="1.153"><failure message="AssertionError: assert ['MUT-621-d35...1ea18b9', ...] == ['MUT-621-d35...7f21e1f', ...]&#10;  &#10;  At index 3 diff: 'MUT-621-fc6adf7f67c8' != 'MUT-621-81ce61a2e531'&#10;  Use -v to get more diff">def test_generate_v2_deterministic():
+        """确定性：同一卡清单 + 同一 v7 ⇒ 同一批 mutation_id。
+    
+        注意：生成结果依赖**卡清单的顺序**（round-robin 分配），
+        故必须用与生产同样的 discover_cards() 全量清单重放。
+        """
+        if not os.path.exists(MUTS2):
+            return
+        import pck_batch_migrator_620 as M
+        muts = [json.loads(ln) for ln in open(MUTS2, encoding="utf-8") if ln.strip()]
+        again = MG.generate_v2(M.discover_cards(), MG.load_v7(), count=len(muts), include_classic=False)
+&gt;       assert [m["mutation_id"] for m in again] == [m["mutation_id"] for m in muts]
+E       AssertionError: assert ['MUT-621-d35...1ea18b9', ...] == ['MUT-621-d35...7f21e1f', ...]
+E         
+E         At index 3 diff: 'MUT-621-fc6adf7f67c8' != 'MUT-621-81ce61a2e531'
+E         Use -v to get more diff
+
+tests\test_622_a4.py:49: AssertionError</failure></testcase><testcase classname="tests.test_611_tools" name="test_d3_oracle_plan" time="0.765"><failure message="assert 113 == 103">def test_d3_oracle_plan():
+        p = d3.build_plan()
+&gt;       assert p["cards_total"] == 103
+E       assert 113 == 103
+
+tests\test_611_tools.py:67: AssertionError</failure></testcase><testcase classname="tests.test_622_c2" name="test_discover_27_atoms" time="0.649"><failure message="AssertionError: assert 47 == 37&#10; +  where 47 = len(['atoms/conc/ATOM-CONC-FENCE-001.md', 'atoms/conc/ATOM-CONC-LOCK-001.md', 'atoms/conc/ATOM-CONC-RACE-001.md', 'atoms/draft650/ATOM-DRAFT650-001.md', 'atoms/draft650/ATOM-DRAFT650-002.md', 'atoms/draft650/ATOM-DRAFT650-003.md', ...])&#10; +    where ['atoms/conc/ATOM-CONC-FENCE-001.md', 'atoms/conc/ATOM-CONC-LOCK-001.md', 'atoms/conc/ATOM-CONC-RACE-001.md', 'atoms/draft650/ATOM-DRAFT650-001.md', 'atoms/draft650/ATOM-DRAFT650-002.md', 'atoms/draft650/ATOM-DRAFT650-003.md', ...] = &lt;function discover_atoms at 0x0000011F8DD1A200&gt;()&#10; +      where &lt;function discover_atoms at 0x0000011F8DD1A200&gt; = E.discover_atoms">def test_discover_27_atoms():
+&gt;       assert len(E.discover_atoms()) == 37
+E       AssertionError: assert 47 == 37
+E        +  where 47 = len(['atoms/conc/ATOM-CONC-FENCE-001.md', 'atoms/conc/ATOM-CONC-LOCK-001.md', 'atoms/conc/ATOM-CONC-RACE-001.md', 'atoms/draft650/ATOM-DRAFT650-001.md', 'atoms/draft650/ATOM-DRAFT650-002.md', 'atoms/draft650/ATOM-DRAFT650-003.md', ...])
+E        +    where ['atoms/conc/ATOM-CONC-FENCE-001.md', 'atoms/conc/ATOM-CONC-LOCK-001.md', 'atoms/conc/ATOM-CONC-RACE-001.md', 'atoms/draft650/ATOM-DRAFT650-001.md', 'atoms/draft650/ATOM-DRAFT650-002.md', 'atoms/draft650/ATOM-DRAFT650-003.md', ...] = &lt;function discover_atoms at 0x0000011F8DD1A200&gt;()
+E        +      where &lt;function discover_atoms at 0x0000011F8DD1A200&gt; = E.discover_atoms
+
+tests\test_622_c2.py:55: AssertionError</failure></testcase><testcase classname="tests.test_611_tools" name="test_e1_metrics_611" time="1.041"><failure message="assert 113 == 103">def test_e1_metrics_611():
+        notes: dict = {}
+        m = e1.collect_611_new_metrics(notes)
+        assert notes == {}  # 全部采集器成功，无错误记账
+        assert m["argument_graph_fragmentation"]["components"] == wd.components()["count"]
+        assert m["bridge_candidates"]["total"] == 98       # C2 产物件数（数据产物，非 W2 派生量）
+        assert m["out_mis_review"]["out_mis_count"] == PIN["out_mis"], "OUT MIS 数取权威产物"
+        assert m["out_mis_review"]["out_nodes_total"] == PIN["out"]
+        assert m["liveness_missing"]["missing_observation"] == 60
+&gt;       assert m["oracle_verification"]["cards_total"] == 103
+E       assert 113 == 103
+
+tests\test_611_tools.py:83: AssertionError</failure></testcase><testcase classname="tests.test_622_c2" name="test_extract_all_and_index" time="1.017"><failure message="AssertionError: assert 47 == 37&#10; +  where 47 = len([{'card': 'atoms/conc/ATOM-CONC-FENCE-001.md', 'card_id': 'ATOM-CONC-FENCE-001', 'verdict': 'SUPPORTED', 'confidence':...raft650/ATOM-DRAFT650-003.md', 'card_id': 'ATOM-DRAFT650-003', 'verdict': 'UNDECIDED', 'confidence': 'high', ...}, ...])">def test_extract_all_and_index():
+        rows = E.extract_all()
+&gt;       assert len(rows) == 37
+E       AssertionError: assert 47 == 37
+E        +  where 47 = len([{'card': 'atoms/conc/ATOM-CONC-FENCE-001.md', 'card_id': 'ATOM-CONC-FENCE-001', 'verdict': 'SUPPORTED', 'confidence':...raft650/ATOM-DRAFT650-003.md', 'card_id': 'ATOM-DRAFT650-003', 'verdict': 'UNDECIDED', 'confidence': 'high', ...}, ...])
+
+tests\test_622_c2.py:60: AssertionError</failure></testcase><testcase classname="tests.test_622_c2" name="test_selftest_passes" time="1.402"><failure message="assert 1 == 0&#10; +  where 1 = &lt;function selftest at 0x0000011F8DD1A700&gt;()&#10; +    where &lt;function selftest at 0x0000011F8DD1A700&gt; = E.selftest">def test_selftest_passes():
+&gt;       assert E.selftest() == 0
+E       assert 1 == 0
+E        +  where 1 = &lt;function selftest at 0x0000011F8DD1A700&gt;()
+E        +    where &lt;function selftest at 0x0000011F8DD1A700&gt; = E.selftest
+
+tests\test_622_c2.py:82: AssertionError</failure></testcase><testcase classname="tests.test_coverage_gap_scanner_643" name="test_matrix_dimensions" time="4.625"><failure message="assert (67, 47) == (67, 37)&#10;  &#10;  At index 1 diff: 47 != 37&#10;  Use -v to get more diff">def test_matrix_dimensions():
+        m, rl, cl = _synth()
+        a = B1.analyze(m, rl, cl)
+        assert (a["n_rules"], a["n_cards"]) == (15, 3)
+        real = B1.report()["analysis"]
+&gt;       assert (real["n_rules"], real["n_cards"]) == (67, 37)
+E       assert (67, 47) == (67, 37)
+E         
+E         At index 1 diff: 47 != 37
+E         Use -v to get more diff
+
+tests\test_coverage_gap_scanner_643.py:47: AssertionError</failure></testcase><testcase classname="tests.test_620_b1" name="test_selftest_passes" time="1.556"><failure message="assert 1 == 0&#10; +  where 1 = &lt;function selftest at 0x0000011F8DD18680&gt;()&#10; +    where &lt;function selftest at 0x0000011F8DD18680&gt; = M.selftest">def test_selftest_passes():
+&gt;       assert M.selftest() == 0
+E       assert 1 == 0
+E        +  where 1 = &lt;function selftest at 0x0000011F8DD18680&gt;()
+E        +    where &lt;function selftest at 0x0000011F8DD18680&gt; = M.selftest
+
+tests\test_620_b1.py:75: AssertionError</failure></testcase><testcase classname="tests.test_control_char_cleaner_626" name="test_repo_data_has_no_control_chars_now" time="1.691"><failure message="AssertionError: 仍有控制字符文件: [('data\\652_collect2.txt', ['0x0'])]&#10;assert [('data\\652_...xt', ['0x0'])] == []&#10;  &#10;  Left contains one more item: ('data\\652_collect2.txt', ['0x0'])&#10;  Use -v to get more diff">def test_repo_data_has_no_control_chars_now():
+        # 626 A2 已清洗：data/ 应无残留
+        found = C.scan(os.path.join(ROOT, "data"))
+&gt;       assert found == [], f"仍有控制字符文件: {found}"
+E       AssertionError: 仍有控制字符文件: [('data\\652_collect2.txt', ['0x0'])]
+E       assert [('data\\652_...xt', ['0x0'])] == []
+E         
+E         Left contains one more item: ('data\\652_collect2.txt', ['0x0'])
+E         Use -v to get more diff
+
+tests\test_control_char_cleaner_626.py:54: AssertionError</failure></testcase><testcase classname="tests.test_620_b2" name="test_全量83张全部通过验证" time="9.681"><failure message="assert 113 == 103">def test_全量83张全部通过验证():
+        prev = M.migrate_preview(CARDS)
+&gt;       assert prev["total"] == 103
+E       assert 113 == 103
+
+tests\test_620_b2.py:21: AssertionError</failure></testcase><testcase classname="tests.test_coverage_gap_scanner_643" name="test_selftest" time="1.486"><failure message="assert 1 == 0&#10; +  where 1 = &lt;function selftest at 0x0000011F8EF3A2A0&gt;()&#10; +    where &lt;function selftest at 0x0000011F8EF3A2A0&gt; = B1.selftest">def test_selftest():
+&gt;       assert B1.selftest() == 0
+E       assert 1 == 0
+E        +  where 1 = &lt;function selftest at 0x0000011F8EF3A2A0&gt;()
+E        +    where &lt;function selftest at 0x0000011F8EF3A2A0&gt; = B1.selftest
+
+tests\test_coverage_gap_scanner_643.py:87: AssertionError</failure></testcase><testcase classname="tests.test_620_b2" name="test_迁移可复现_两次输出内容一致" time="20.297"><failure message="assert 113 == 103&#10; +  where 113 = len({'ATOM-CONC-FENCE-001.pck.yaml': &quot;# PCK 证书（620 B1 批量迁移，只读派生）\nschema_version: 619-pck-v1\nclaim:\n  id: ATOM-CONC-FENC...mand: L1\nprovenance:\n  commit: 95f73d45bc0ba9921faee328ab48962c6e71f9b1\n  first_authorized_at: '2026-09-27'\n&quot;, ...})">def test_迁移可复现_两次输出内容一致():
+        with tempfile.TemporaryDirectory() as d1, tempfile.TemporaryDirectory() as d2:
+            M.migrate(CARDS, d1)
+            M.migrate(CARDS, d2)
+            f1 = {f: open(os.path.join(d1, f), encoding="utf-8").read() for f in os.listdir(d1)}
+            f2 = {f: open(os.path.join(d2, f), encoding="utf-8").read() for f in os.listdir(d2)}
+            assert f1 == f2
+&gt;           assert len(f1) == 103
+E           assert 113 == 103
+E            +  where 113 = len({'ATOM-CONC-FENCE-001.pck.yaml': "# PCK 证书（620 B1 批量迁移，只读派生）\nschema_version: 619-pck-v1\nclaim:\n  id: ATOM-CONC-FENC...mand: L1\nprovenance:\n  commit: 95f73d45bc0ba9921faee328ab48962c6e71f9b1\n  first_authorized_at: '2026-09-27'\n", ...})
+
+tests\test_620_b2.py:33: AssertionError</failure></testcase><testcase classname="tests.test_high_complexity_rules_regression_624" name="test_gate_baseline_block_zero_no_false_positive" time="1.420"><failure message="AssertionError: assert [Finding(rule...字段标准补齐'), ...] == []&#10;  &#10;  Left contains 30 more items, first extra item: Finding(rule_id='ATOM-FM-REQUIRED', severity='block', target='atoms/draft650/ATOM-DRAFT650-001.md', message='原子卡缺必填字段：..., first_hand, superiority, depth, pedagogy, sources[]（多源精炼要求 ≥1 个来源）', fix_hint='按 docs/kernel/G1_layout.md §3 字段标准补齐')&#10;  Use -v to get more diff">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000011F902A6650&gt;
+
+    def test_gate_baseline_block_zero_no_false_positive(monkeypatch):
+        monkeypatch.setenv("CPPBIBLE_OBS", "0")
+        findings = ge.run(include_advice=True)
+        blocks = [f for f in findings if f.severity == "block"]
+&gt;       assert blocks == []                       # 新规则对存量 0 误报
+        ^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert [Finding(rule...字段标准补齐'), ...] == []
+E         
+E         Left contains 30 more items, first extra item: Finding(rule_id='ATOM-FM-REQUIRED', severity='block', target='atoms/draft650/ATOM-DRAFT650-001.md', message='原子卡缺必填字段：..., first_hand, superiority, depth, pedagogy, sources[]（多源精炼要求 ≥1 个来源）', fix_hint='按 docs/kernel/G1_layout.md §3 字段标准补齐')
+E         Use -v to get more diff
+
+tests\test_high_complexity_rules_regression_624.py:23: AssertionError</failure></testcase><testcase classname="tests.test_learner_state_612" name="test_init_all_kc_01" time="0.692"><failure message="AssertionError: assert 47 == 37&#10; +  where 47 = len([{'user_id': 'default', 'kc_id': 'ATOM-CONC-FENCE-001', 'mastery_prob': 0.1, 'correct': None, ...}, {'user_id': 'defau...ect': None, ...}, {'user_id': 'default', 'kc_id': 'ATOM-DRAFT650-003', 'mastery_prob': 0.1, 'correct': None, ...}, ...])">tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/_wt655_base/.pytest_tmp/run-38256-1790522253/test_init_all_kc_010')
+
+    def test_init_all_kc_01(tmp_path):
+        store = _init(tmp_path)
+        recs = d3.load_all(store)
+&gt;       assert len(recs) == 37
+E       AssertionError: assert 47 == 37
+E        +  where 47 = len([{'user_id': 'default', 'kc_id': 'ATOM-CONC-FENCE-001', 'mastery_prob': 0.1, 'correct': None, ...}, {'user_id': 'defau...ect': None, ...}, {'user_id': 'default', 'kc_id': 'ATOM-DRAFT650-003', 'mastery_prob': 0.1, 'correct': None, ...}, ...])
+
+tests\test_learner_state_612.py:20: AssertionError</failure></testcase><testcase classname="tests.test_learner_state_612" name="test_init_idempotent" time="0.666"><failure message="AssertionError: assert 47 == 37&#10; +  where 47 = len([{'user_id': 'default', 'kc_id': 'ATOM-CONC-FENCE-001', 'mastery_prob': 0.1, 'correct': None, ...}, {'user_id': 'defau...ect': None, ...}, {'user_id': 'default', 'kc_id': 'ATOM-DRAFT650-003', 'mastery_prob': 0.1, 'correct': None, ...}, ...])&#10; +    where [{'user_id': 'default', 'kc_id': 'ATOM-CONC-FENCE-001', 'mastery_prob': 0.1, 'correct': None, ...}, {'user_id': 'defau...ect': None, ...}, {'user_id': 'default', 'kc_id': 'ATOM-DRAFT650-003', 'mastery_prob': 0.1, 'correct': None, ...}, ...] = &lt;function load_all at 0x0000011F8EF54180&gt;(WindowsPath('C:/CodeLearnling/note/note/C++/_wt655_base/.pytest_tmp/run-38256-1790522253/test_init_idempotent0/learner.jsonl'))&#10; +      where &lt;function load_all at 0x0000011F8EF54180&gt; = d3.load_all">tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/_wt655_base/.pytest_tmp/run-38256-1790522253/test_init_idempotent0')
+
+    def test_init_idempotent(tmp_path):
+        store = _init(tmp_path)
+        added = d3.init(store)  # 已存在 ⇒ 不再添加
+        assert added == 0
+&gt;       assert len(d3.load_all(store)) == 37
+E       AssertionError: assert 47 == 37
+E        +  where 47 = len([{'user_id': 'default', 'kc_id': 'ATOM-CONC-FENCE-001', 'mastery_prob': 0.1, 'correct': None, ...}, {'user_id': 'defau...ect': None, ...}, {'user_id': 'default', 'kc_id': 'ATOM-DRAFT650-003', 'mastery_prob': 0.1, 'correct': None, ...}, ...])
+E        +    where [{'user_id': 'default', 'kc_id': 'ATOM-CONC-FENCE-001', 'mastery_prob': 0.1, 'correct': None, ...}, {'user_id': 'defau...ect': None, ...}, {'user_id': 'default', 'kc_id': 'ATOM-DRAFT650-003', 'mastery_prob': 0.1, 'correct': None, ...}, ...] = &lt;function load_all at 0x0000011F8EF54180&gt;(WindowsPath('C:/CodeLearnling/note/note/C++/_wt655_base/.pytest_tmp/run-38256-1790522253/test_init_idempotent0/learner.jsonl'))
+E        +      where &lt;function load_all at 0x0000011F8EF54180&gt; = d3.load_all
+
+tests\test_learner_state_612.py:29: AssertionError</failure></testcase><testcase classname="tests.test_learner_twin_dashboard_614" name="test_data_reading" time="0.767"><failure message="AssertionError: assert 47 == 37&#10; +  where 47 = len([{'id': 'ATOM-CONC-FENCE-001', 'title': '内存屏障（fence）只约束顺序，不提供原子性；屏障在循环体内才阻止消除，但屏障≠原子类型', 'domain': 'conc', 'path': 'at...'ARM 上 volatile 不足以保证跨核/外设观测顺序，还需 DMB/DSB', 'domain': 'conc', 'path': 'atoms/draft650/ATOM-DRAFT650-003.md', ...}, ...])">tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/_wt655_base/.pytest_tmp/run-38256-1790522253/test_data_reading0')
+
+    def test_data_reading(tmp_path: Path) -&gt; None:
+        store = _seed(tmp_path)
+        d = b2.build(store)
+&gt;       assert len(d["kcs"]) == 37
+E       AssertionError: assert 47 == 37
+E        +  where 47 = len([{'id': 'ATOM-CONC-FENCE-001', 'title': '内存屏障（fence）只约束顺序，不提供原子性；屏障在循环体内才阻止消除，但屏障≠原子类型', 'domain': 'conc', 'path': 'at...'ARM 上 volatile 不足以保证跨核/外设观测顺序，还需 DMB/DSB', 'domain': 'conc', 'path': 'atoms/draft650/ATOM-DRAFT650-003.md', ...}, ...])
+
+tests\test_learner_twin_dashboard_614.py:22: AssertionError</failure></testcase><testcase classname="tests.test_learner_twin_dashboard_614" name="test_html_generation" time="0.730"><failure message="assert 47 == 37&#10; +  where 47 = &lt;built-in method count of str object at 0x0000011F90A816F0&gt;('class=&quot;cell&quot;')&#10; +    where &lt;built-in method count of str object at 0x0000011F90A816F0&gt; = '&lt;!DOCTYPE html&gt;\n&lt;html lang=&quot;zh&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;\n&lt;title&gt;学习者镜像仪表盘（真实数据版 · default）&lt;/title&gt;\n&lt;style&gt;\n bo...b&gt;&lt;span&gt;mastered_05&lt;/span&gt;&lt;/div&gt;&lt;div class=\'stat\'&gt;&lt;b&gt;4&lt;/b&gt;&lt;span&gt;mastered_09&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;\n&lt;/body&gt;&lt;/html&gt;'.count">tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/_wt655_base/.pytest_tmp/run-38256-1790522253/test_html_generation0')
+
+    def test_html_generation(tmp_path: Path) -&gt; None:
+        store = _seed(tmp_path)
+        d = b2.build(store)
+        html = b2.render_html(d)
+        assert "学习者镜像仪表盘" in html
+&gt;       assert html.count('class="cell"') == 37
+E       assert 47 == 37
+E        +  where 47 = &lt;built-in method count of str object at 0x0000011F90A816F0&gt;('class="cell"')
+E        +    where &lt;built-in method count of str object at 0x0000011F90A816F0&gt; = '&lt;!DOCTYPE html&gt;\n&lt;html lang="zh"&gt;&lt;head&gt;&lt;meta charset="utf-8"&gt;\n&lt;title&gt;学习者镜像仪表盘（真实数据版 · default）&lt;/title&gt;\n&lt;style&gt;\n bo...b&gt;&lt;span&gt;mastered_05&lt;/span&gt;&lt;/div&gt;&lt;div class=\'stat\'&gt;&lt;b&gt;4&lt;/b&gt;&lt;span&gt;mastered_09&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;\n&lt;/body&gt;&lt;/html&gt;'.count
+
+tests\test_learner_twin_dashboard_614.py:35: AssertionError</failure></testcase><testcase classname="tests.test_learner_transition_detector_615" name="test_check_consistency" time="0.652"><failure message="AssertionError: assert ['KC 应 37（实测 ... '状态计数不等于 27'] == []&#10;  &#10;  Left contains 2 more items, first extra item: 'KC 应 37（实测 47）'&#10;  Use -v to get more diff">def test_check_consistency() -&gt; None:
+&gt;       assert d3.check() == []
+E       AssertionError: assert ['KC 应 37（实测 ... '状态计数不等于 27'] == []
+E         
+E         Left contains 2 more items, first extra item: 'KC 应 37（实测 47）'
+E         Use -v to get more diff
+
+tests\test_learner_transition_detector_615.py:32: AssertionError</failure></testcase><testcase classname="tests.test_metrics_612" name="test_e2_fragmentation_counts" time="0.647"><failure message="assert 47 == 37">def test_e2_fragmentation_counts():
+        d = e.e2_fragmentation()
+&gt;       assert d["atomic"] == 37
+E       assert 47 == 37
+
+tests\test_metrics_612.py:13: AssertionError</failure></testcase><testcase classname="tests.test_mypy_fix_625" name="test_no_bulk_type_ignore" time="3.318"><failure message="AssertionError: ledger_checkpoint_651.py type: ignore 过多（6）——疑似批量忽略&#10;assert 6 &lt;= 5">def test_no_bulk_type_ignore():
+        # 无批量 ignore：任一工具文件 type: ignore 计数 ≤ 5，且全库总数 ≤ 28
+        #
+        # 630 D2 更新（诚实登记）：625 写死「全库总数 ≤ 20」，而 625→629 各批新增工具后
+        # 实测已是 **28**（逐文件仍全部 ≤5 ⇒ 不是批量忽略）。按 D2 口径「只把硬编码数字更新为
+        # 当前正确值」⇒ 20 → 28。
+        # **注意：本断言因此退化为"快照"而不再是预算**；真正的防批量忽略护栏是
+        # 「逐文件 ≤5」+ review。若原作者想恢复预算语义，应改为 ratchet（只降不升）——
+        # 已列入 630 交人项。
+        total = 0
+        for fn in os.listdir(TOOLS):
+            if not fn.endswith(".py"):
+                continue
+            src = open(os.path.join(TOOLS, fn), encoding="utf-8", errors="replace").read()
+            n = len(re.findall(r"#\s*type:\s*ignore", src))
+&gt;           assert n &lt;= 5, f"{fn} type: ignore 过多（{n}）——疑似批量忽略"
+E           AssertionError: ledger_checkpoint_651.py type: ignore 过多（6）——疑似批量忽略
+E           assert 6 &lt;= 5
+
+tests\test_mypy_fix_625.py:52: AssertionError</failure></testcase><testcase classname="tests.test_metrics_612" name="test_main_check_passes" time="0.702"><failure message="AssertionError: assert 1 == 0&#10; +  where 1 = &lt;function main at 0x0000011F8EF57100&gt;(['--check'])&#10; +    where &lt;function main at 0x0000011F8EF57100&gt; = e.main">def test_main_check_passes():
+&gt;       assert e.main(["--check"]) == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = &lt;function main at 0x0000011F8EF57100&gt;(['--check'])
+E        +    where &lt;function main at 0x0000011F8EF57100&gt; = e.main
+
+tests\test_metrics_612.py:49: AssertionError</failure></testcase><testcase classname="tests.test_metrics_612" name="test_main_writes_report" time="0.705"><failure message="assert 1 == 0">def test_main_writes_report():
+        rc = e.main([])
+&gt;       assert rc == 0
+E       assert 1 == 0
+
+tests\test_metrics_612.py:54: AssertionError</failure></testcase><testcase classname="tests.test_oracle_priority_612" name="test_all_cards_scored" time="0.834"><failure message="AssertionError: assert 113 == 103&#10; +  where 113 = len([{'id': 'ATOM-UB-GRAY-001', 'path': 'atoms/ub/ATOM-UB-GRAY-001.md', 'type': 'atom', 'props': 2, ...}, {'id': 'ATOM-MEM... ...}, {'id': 'ATOM-MEM-SHARED-001', 'path': 'atoms/mem/ATOM-MEM-SHARED-001.md', 'type': 'atom', 'props': 3, ...}, ...])">def test_all_cards_scored():
+        rows = c2.score_cards()
+&gt;       assert len(rows) == 103
+E       AssertionError: assert 113 == 103
+E        +  where 113 = len([{'id': 'ATOM-UB-GRAY-001', 'path': 'atoms/ub/ATOM-UB-GRAY-001.md', 'type': 'atom', 'props': 2, ...}, {'id': 'ATOM-MEM... ...}, {'id': 'ATOM-MEM-SHARED-001', 'path': 'atoms/mem/ATOM-MEM-SHARED-001.md', 'type': 'atom', 'props': 3, ...}, ...])
+
+tests\test_oracle_priority_612.py:15: AssertionError</failure></testcase><testcase classname="tests.test_kc_inventory_612" name="test_total_kc" time="0.663"><failure message="AssertionError: 47&#10;assert 47 == 37">def test_total_kc():
+        d = d1.build()
+&gt;       assert d["total_kc"] == 37, d["total_kc"]
+E       AssertionError: 47
+E       assert 47 == 37
+
+tests\test_kc_inventory_612.py:18: AssertionError</failure></testcase><testcase classname="tests.test_oracle_priority_612" name="test_check_passes" time="0.873"><failure message="AssertionError: assert 2 == 0&#10; +  where 2 = &lt;function main at 0x0000011F8EF589A0&gt;(['--check'])&#10; +    where &lt;function main at 0x0000011F8EF589A0&gt; = c2.main">def test_check_passes():
+&gt;       assert c2.main(["--check"]) == 0
+E       AssertionError: assert 2 == 0
+E        +  where 2 = &lt;function main at 0x0000011F8EF589A0&gt;(['--check'])
+E        +    where &lt;function main at 0x0000011F8EF589A0&gt; = c2.main
+
+tests\test_oracle_priority_612.py:26: AssertionError</failure></testcase><testcase classname="tests.test_oracle_priority_614" name="test_card_count_83" time="0.869"><failure message="AssertionError: assert 113 == 103&#10; +  where 113 = len([{'id': 'EV-CONC-001', 'path': 'evidence/conc/EV-CONC-001.md', 'type': 'evidence', 'props': 0, ...}, {'id': 'ATOM-UB-G... ...}, {'id': 'ATOM-MEM-SHARED-001', 'path': 'atoms/mem/ATOM-MEM-SHARED-001.md', 'type': 'atom', 'props': 3, ...}, ...])">def test_card_count_83() -&gt; None:
+        rows = e1.score_cards()
+&gt;       assert len(rows) == 103
+E       AssertionError: assert 113 == 103
+E        +  where 113 = len([{'id': 'EV-CONC-001', 'path': 'evidence/conc/EV-CONC-001.md', 'type': 'evidence', 'props': 0, ...}, {'id': 'ATOM-UB-G... ...}, {'id': 'ATOM-MEM-SHARED-001', 'path': 'atoms/mem/ATOM-MEM-SHARED-001.md', 'type': 'atom', 'props': 3, ...}, ...])
+
+tests\test_oracle_priority_614.py:14: AssertionError</failure></testcase><testcase classname="tests.test_ots_anchor_613" name="test_check_passes" time="0.681"><failure message="AssertionError: assert 1 == 0&#10; +  where 1 = &lt;function main at 0x0000011F8EF59440&gt;(['--check'])&#10; +    where &lt;function main at 0x0000011F8EF59440&gt; = e1.main">def test_check_passes():
+&gt;       assert e1.main(["--check"]) == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = &lt;function main at 0x0000011F8EF59440&gt;(['--check'])
+E        +    where &lt;function main at 0x0000011F8EF59440&gt; = e1.main
+
+tests\test_ots_anchor_613.py:63: AssertionError</failure></testcase><testcase classname="tests.test_kc_inventory_612" name="test_propositions_extracted" time="0.677"><failure message="assert False&#10; +  where False = all(&lt;generator object test_propositions_extracted.&lt;locals&gt;.&lt;genexpr&gt; at 0x0000011F902E0C70&gt;)">def test_propositions_extracted():
+        d = d1.build()
+&gt;       assert all(k["n_propositions"] &gt;= 1 for k in d["kcs"])
+E       assert False
+E        +  where False = all(&lt;generator object test_propositions_extracted.&lt;locals&gt;.&lt;genexpr&gt; at 0x0000011F902E0C70&gt;)
+
+tests\test_kc_inventory_612.py:33: AssertionError</failure></testcase><testcase classname="tests.test_kc_inventory_612" name="test_main_check_passes" time="0.665"><failure message="AssertionError: assert 1 == 0&#10; +  where 1 = &lt;function main at 0x0000011F8EF58C20&gt;(['--check'])&#10; +    where &lt;function main at 0x0000011F8EF58C20&gt; = d1.main">def test_main_check_passes():
+&gt;       assert d1.main(["--check"]) == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = &lt;function main at 0x0000011F8EF58C20&gt;(['--check'])
+E        +    where &lt;function main at 0x0000011F8EF58C20&gt; = d1.main
+
+tests\test_kc_inventory_612.py:54: AssertionError</failure></testcase><testcase classname="tests.test_kc_inventory_612" name="test_json_roundtrip" time="0.679"><failure message="assert 47 == 37">def test_json_roundtrip():
+        d = d1.build()
+        txt = json.dumps(d, ensure_ascii=False)
+        back = json.loads(txt)
+&gt;       assert back["total_kc"] == 37
+E       assert 47 == 37
+
+tests\test_kc_inventory_612.py:61: AssertionError</failure></testcase><testcase classname="tests.test_pck_hash_drift_analyzer_627" name="test_gaps_resolved_except_ref_missing" time="1.504"><failure message="AssertionError: assert 0 == 102&#10; +  where 0 = &lt;built-in method get of dict object at 0x0000011F8DBC7B40&gt;('ok', 0)&#10; +    where &lt;built-in method get of dict object at 0x0000011F8DBC7B40&gt; = {'content_drift': 103}.get">def test_gaps_resolved_except_ref_missing():
+        """630 D2 更新：627 当时实测「无健康证书」（ok=0）；628 A2 修复后 ok=82、仅剩
+        `ref_missing` 1 张（该张按 A2 约定不自动修）。"""
+        r = A.analyze()
+&gt;       assert r["by_worst_category"].get("ok", 0) == 102
+E       AssertionError: assert 0 == 102
+E        +  where 0 = &lt;built-in method get of dict object at 0x0000011F8DBC7B40&gt;('ok', 0)
+E        +    where &lt;built-in method get of dict object at 0x0000011F8DBC7B40&gt; = {'content_drift': 103}.get
+
+tests\test_pck_hash_drift_analyzer_627.py:29: AssertionError</failure></testcase><testcase classname="tests.test_oracle_rotation_583" name="test_583_rotation_source_is_read_only_and_runs_nothing" time="0.644" /><testcase classname="tests.test_mypy_fix_625" name="test_mypy_tools_clean" time="22.673" /><testcase classname="tests.test_pck_hash_renewal_628" name="test_hash_matches_current_file" time="1.415"><failure message="assert (0 &gt;= 82)">def test_hash_matches_current_file():
+        v = P.verify()
+&gt;       assert v["hash_ok"] &gt;= 82 and v["bad_count"] == 0
+E       assert (0 &gt;= 82)
+
+tests\test_pck_hash_renewal_628.py:22: AssertionError</failure></testcase><testcase classname="tests.test_debt_replay_fix_628" name="test_manifest_consistency_zero_mismatch" time="0.645"><failure message="FileNotFoundError: [Errno 2] No such file or directory: 'C:\\CodeLearnling\\note\\note\\C++\\_wt655_base\\build\\replay_manifest.json'">def test_manifest_consistency_zero_mismatch():
+&gt;       c = R.check()
+            ^^^^^^^^^
+
+tests\test_debt_replay_fix_628.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def check() -&gt; dict:
+&gt;       m: dict = json.load(open(MANIFEST, encoding="utf-8"))
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'C:\\CodeLearnling\\note\\note\\C++\\_wt655_base\\build\\replay_manifest.json'
+
+tools\replay_manifest_fix_628.py:38: FileNotFoundError</failure></testcase><testcase classname="tests.test_prop_inventory_592" name="test_integrity_checks_are_clean" time="0.676"><failure message="SystemExit: [closure] 库不存在：C:\CodeLearnling\note\note\C++\_wt655_base\data\propositions.db（先跑 `.venv\Scripts\python.exe tools/prop_graph.py build`（纯派生视图，重建无损））">def test_integrity_checks_are_clean():
+        """三条完整性校验：引用卡不存在 = 0、无命题原子卡 = 0、闭包异常（&gt;50 或 =1）= 0。"""
+&gt;       d = inv.collect()
+            ^^^^^^^^^^^^^
+
+tests\test_prop_inventory_592.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tools\prop_network_inventory.py:96: in collect
+    sizes = pc.stats()["closure_sizes"]
+            ^^^^^^^^^^
+tools\prop_closure.py:185: in stats
+    conn = _connect(db)
+           ^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+db = WindowsPath('C:/CodeLearnling/note/note/C++/_wt655_base/data/propositions.db')
+
+    def _connect(db: Path | str = DEFAULT_DB) -&gt; sqlite3.Connection:
+        """打开库并**先体检**（缺库/缺表/缺列 ⇒ fail-loud + 给出重建命令，不抛裸 OperationalError）。"""
+        p = Path(db)
+        if not p.is_file():
+&gt;           raise SystemExit(f"[closure] 库不存在：{p}（先跑 {REBUILD_HINT}）")
+E           SystemExit: [closure] 库不存在：C:\CodeLearnling\note\note\C++\_wt655_base\data\propositions.db（先跑 `.venv\Scripts\python.exe tools/prop_graph.py build`（纯派生视图，重建无损））
+
+tools\prop_closure.py:60: SystemExit</failure></testcase><testcase classname="tests.test_prop_inventory_592" name="test_ledger_matches_fresh_render_byte_for_byte" time="0.621"><failure message="SystemExit: [closure] 库不存在：C:\CodeLearnling\note\note\C++\_wt655_base\data\propositions.db（先跑 `.venv\Scripts\python.exe tools/prop_graph.py build`（纯派生视图，重建无损））">def test_ledger_matches_fresh_render_byte_for_byte():
+        """台账必须与**现读事实源重新渲染**的结果逐字节一致（既锁幂等，也锁"不过期"）。"""
+&gt;       fresh = inv.render(inv.collect())
+                           ^^^^^^^^^^^^^
+
+tests\test_prop_inventory_592.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tools\prop_network_inventory.py:96: in collect
+    sizes = pc.stats()["closure_sizes"]
+            ^^^^^^^^^^
+tools\prop_closure.py:185: in stats
+    conn = _connect(db)
+           ^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+db = WindowsPath('C:/CodeLearnling/note/note/C++/_wt655_base/data/propositions.db')
+
+    def _connect(db: Path | str = DEFAULT_DB) -&gt; sqlite3.Connection:
+        """打开库并**先体检**（缺库/缺表/缺列 ⇒ fail-loud + 给出重建命令，不抛裸 OperationalError）。"""
+        p = Path(db)
+        if not p.is_file():
+&gt;           raise SystemExit(f"[closure] 库不存在：{p}（先跑 {REBUILD_HINT}）")
+E           SystemExit: [closure] 库不存在：C:\CodeLearnling\note\note\C++\_wt655_base\data\propositions.db（先跑 `.venv\Scripts\python.exe tools/prop_graph.py build`（纯派生视图，重建无损））
+
+tools\prop_closure.py:60: SystemExit</failure></testcase><testcase classname="tests.test_prop_asof_583" name="test_583_asof_source_is_read_only" time="0.594" /><testcase classname="tests.test_pck_hash_drift_analyzer_627" name="test_content_drift_resolved_by_628" time="1.410"><failure message="assert 103 == 0">def test_content_drift_resolved_by_628():
+        """630 D2 更新：627 当时实测 content_drift = 56；628 A2 重算 hash 后已 **0**。
+        名字从 `test_content_drift_56` 改为现名，避免名字与新断言自相矛盾。"""
+        r = A.analyze()
+&gt;       assert r["n_content_drift_certs"] == 0
+E       assert 103 == 0
+
+tests\test_pck_hash_drift_analyzer_627.py:22: AssertionError</failure></testcase><testcase classname="tests.test_pck_hash_renewal_628" name="test_renewal_idempotent" time="4.480"><failure message="AssertionError: assert {'total_evide...d', ...], ...} == {'total_evide...bad': [], ...}&#10;  &#10;  Omitting 2 identical items, use -vv to show&#10;  Differing items:&#10;  {'bad': ['ATOM-CONC-FENCE-001.pck:evidence/conc/EV-CONC-001.md', 'ATOM-CONC-FENCE-001.pck:evidence/conc/EV-CONC-002.md...d', 'ATOM-CONC-LOCK-001.pck:evidence/conc/EV-CONC-004.md', 'ATOM-CONC-LOCK-001.pck:evidence/conc/EV-CONC-003.md', ...]} != {'bad': []}&#10;  {'bad_count': 182} != {'bad_count': 0}&#10;  {'hash_ok': 0} != {'hash_ok': 182}&#10;  {'consistent': False} != {'consistent': True}&#10;  Use -v to get more diff">def test_renewal_idempotent():
+        # 再跑一次 apply：全部 already_ok，不新增改动
+        before = P.verify()
+        r = P.renew(apply_changes=True)
+        after = P.verify()
+&gt;       assert before == after
+E       AssertionError: assert {'total_evide...d', ...], ...} == {'total_evide...bad': [], ...}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'bad': ['ATOM-CONC-FENCE-001.pck:evidence/conc/EV-CONC-001.md', 'ATOM-CONC-FENCE-001.pck:evidence/conc/EV-CONC-002.md...d', 'ATOM-CONC-LOCK-001.pck:evidence/conc/EV-CONC-004.md', 'ATOM-CONC-LOCK-001.pck:evidence/conc/EV-CONC-003.md', ...]} != {'bad': []}
+E         {'bad_count': 182} != {'bad_count': 0}
+E         {'hash_ok': 0} != {'hash_ok': 182}
+E         {'consistent': False} != {'consistent': True}
+E         Use -v to get more diff
+
+tests\test_pck_hash_renewal_628.py:61: AssertionError</failure></testcase><testcase classname="tests.test_run_643_gate" name="test_new_tools_check_green" time="0.608"><failure message="AssertionError: pytest_two_phase_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; coverage_gap_scanner_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; attack_gap_scanner_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; autoimmune_hotspot_scanner_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; escape_hotspot_scanner_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; issue_dispatcher_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; rule_precondition_analyzer_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; targeted_mutator_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; attack_simulator_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; attack_quality_evaluator_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; escape_root_cause_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; rule_drafter_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; rule_draft_mdl_check_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; rule_draft_anti_ripple_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; new_rule_error_tracker_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; rule_aging_detector_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; loop_runner_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; whitelist_expand_decision_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。&#10;assert False">def test_new_tools_check_green():
+        r = G.check_new_tools()
+&gt;       assert r["ok"], r["detail"]
+E       AssertionError: pytest_two_phase_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; coverage_gap_scanner_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; attack_gap_scanner_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; autoimmune_hotspot_scanner_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; escape_hotspot_scanner_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; issue_dispatcher_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; rule_precondition_analyzer_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; targeted_mutator_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; attack_simulator_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; attack_quality_evaluator_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; escape_root_cause_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; rule_drafter_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; rule_draft_mdl_check_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; rule_draft_anti_ripple_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; new_rule_error_tracker_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; rule_aging_detector_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; loop_runner_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。; whitelist_expand_decision_643: FileNotFoundError: [WinError 2] 系统找不到指定的文件。
+E       assert False
+
+tests\test_run_643_gate.py:39: AssertionError</failure></testcase><testcase classname="tests.test_snapshot_integrity_ci_626" name="test_control_chars_clean" time="1.693"><failure message="AssertionError: assert 'fail' == 'pass'&#10;  &#10;  - pass&#10;  + fail">def test_control_chars_clean():
+&gt;       assert _c().run_check("control_chars")["status"] == "pass"
+E       AssertionError: assert 'fail' == 'pass'
+E         
+E         - pass
+E         + fail
+
+tests\test_snapshot_integrity_ci_626.py:50: AssertionError</failure></testcase><testcase classname="tests.test_snapshot_integrity_ci_626" name="test_selftest_passes" time="2.180"><failure message="assert 1 == 0&#10; +  where 1 = &lt;function selftest at 0x0000011F8F1A3100&gt;()&#10; +    where &lt;function selftest at 0x0000011F8F1A3100&gt; = SI.selftest">def test_selftest_passes():
+&gt;       assert SI.selftest() == 0
+E       assert 1 == 0
+E        +  where 1 = &lt;function selftest at 0x0000011F8F1A3100&gt;()
+E        +    where &lt;function selftest at 0x0000011F8F1A3100&gt; = SI.selftest
+
+tests\test_snapshot_integrity_ci_626.py:18: AssertionError</failure></testcase></testsuite></testsuites>

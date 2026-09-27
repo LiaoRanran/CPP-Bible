@@ -39,8 +39,16 @@ def test_583_asof_source_is_read_only():
     "无 `open(...,'w')`/`write_text`"）会把断言自己打红（第一次就是这么红的）。
     """
     raw = pathlib.Path(pa.__file__).read_text(encoding="utf-8")
-    body = raw.split('"""', 2)[-1] if raw.startswith(('#!/usr/bin/env python3\n"""',
-                                                     '"""')) else raw
+    # 655 A：源文件头部现在是 shebang + coding + **许可证头（SPDX/版权两行注释）**，
+    #   故先摘掉"前导注释行"再判 docstring（同 test_oracle_rotation_583 的修法）。
+    lines = raw.splitlines(keepends=True)
+    i = 0
+    if i < len(lines) and lines[i].startswith("#!"):
+        i += 1
+    while i < len(lines) and lines[i].lstrip().startswith("#"):
+        i += 1
+    head = "".join(lines[i:])
+    body = head.split('"""', 2)[-1] if head.startswith('"""') else head
     code = "\n".join(ln for ln in body.splitlines() if not ln.lstrip().startswith("#"))
     for bad in ("write_text(", "open(", "mkdir(", "unlink(", "rename(", "shutil."):
         assert bad not in code, f"只读工具里不许出现 {bad!r}"

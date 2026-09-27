@@ -37,7 +37,17 @@ def test_583_rotation_matches_oracle_report():
 def test_583_rotation_source_is_read_only_and_runs_nothing():
     """② 只读 + 不跑任何检查：源码无写操作、无 subprocess、无判决入口调用。"""
     raw = pathlib.Path(orot.__file__).read_text(encoding="utf-8")
-    body = raw.split('"""', 2)[-1] if raw.startswith(('#!/usr/bin/env python3\n"""', '"""')) else raw
+    # 655 A：源文件头部现在是 shebang + coding + **许可证头（SPDX/版权两行注释）**，
+    #   故先摘掉"前导注释行"再判 docstring —— 否则 docstring 里描述禁令的词（如
+    #   `gate_engine.run`）会被当成代码扫到，把断言自己打红（583 首次就是这么红的）。
+    lines = raw.splitlines(keepends=True)
+    i = 0
+    if i < len(lines) and lines[i].startswith("#!"):
+        i += 1
+    while i < len(lines) and lines[i].lstrip().startswith("#"):
+        i += 1
+    head = "".join(lines[i:])
+    body = head.split('"""', 2)[-1] if head.startswith('"""') else head
     code = "\n".join(ln for ln in body.splitlines() if not ln.lstrip().startswith("#"))
     for bad in ("write_text(", "open(", "mkdir(", "unlink(", "subprocess", "os.system",
                 "gate_engine.run", "replay_card", "import gate_engine"):

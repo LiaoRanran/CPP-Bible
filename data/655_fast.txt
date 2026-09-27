@@ -1,0 +1,799 @@
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [  2%]
+........................................................................ [  4%]
+....F............................................................F...... [  6%]
+...........F............................................................ [  8%]
+......................................................................F. [ 11%]
+........................................................................ [ 13%]
+........................................................................ [ 15%]
+...............F.........................................F.............F [ 17%]
+......................F...............F................................. [ 20%]
+........................................................................ [ 22%]
+.............F.......................................................... [ 24%]
+........................................................................ [ 26%]
+........................................................................ [ 29%]
+.s...................................................................... [ 31%]
+...............F...............................................F........ [ 33%]
+........................................................................ [ 35%]
+......s....F............................................................ [ 38%]
+........................................................................ [ 40%]
+............................................................F........... [ 42%]
+........................................................................ [ 44%]
+.......................................................................F [ 47%]
+........................................................................ [ 49%]
+...............F...................F.................................... [ 51%]
+..............................................................F......... [ 53%]
+...........F............................................................ [ 56%]
+...................F........F........................................... [ 58%]
+.....F..............F.................F..................F.............. [ 60%]
+.......................F.....................................F.F........ [ 62%]
+............F............F...............F.............................. [ 65%]
+..................F.................F..F..........................F..... [ 67%]
+........................................................................ [ 69%]
+....................FF...............F...............F.................. [ 71%]
+.............................F.....................................F.... [ 74%]
+........................................................................ [ 76%]
+......F................................................................. [ 78%]
+...............F........................................................ [ 80%]
+........................................................................ [ 82%]
+..............s...........................................s............. [ 85%]
+........................................................s............... [ 87%]
+........................................................................ [ 89%]
+........................................................................ [ 91%]
+...................................................................ss... [ 94%]
+........................................................................ [ 96%]
+.........................................F.............................. [ 98%]
+......F...F...F...........................                               [100%]
+================================== FAILURES ===================================
+___________________________ test_discover_83_cards ____________________________
+[gw6] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_discover_83_cards():
+>       assert len(CARDS) == 103
+E       AssertionError: assert 113 == 103
+E        +  where 113 = len(['atoms/conc/ATOM-CONC-FENCE-001.md', 'atoms/conc/ATOM-CONC-LOCK-001.md', 'atoms/conc/ATOM-CONC-RACE-001.md', 'atoms/draft650/ATOM-DRAFT650-001.md', 'atoms/draft650/ATOM-DRAFT650-002.md', 'atoms/draft650/ATOM-DRAFT650-003.md', ...])
+
+tests\test_620_b1.py:21: AssertionError
+_______________________ test_620_tools_regression_pass ________________________
+[gw13] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_620_tools_regression_pass():
+        ok, msg = G.check_tools_620()
+>       assert ok, msg
+E       AssertionError: 失败：pck_batch_migrator_620(exit 1)
+E       assert False
+
+tests\test_621_gate.py:45: AssertionError
+______________________ test_classify_all_v2_uses_pck_map ______________________
+[gw16] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_classify_all_v2_uses_pck_map():
+        cards = M.discover_cards()
+        rows = A.classify_all_v2(cards, extracted=E.verdict_index(E.extract_all()))
+>       assert len(rows) == 103
+E       AssertionError: assert 113 == 103
+E        +  where 113 = len([{'card': 'atoms/conc/ATOM-CONC-FENCE-001.md', 'card_id': 'ATOM-CONC-FENCE-001', 'kind': 'atom', 'domain': 'conc', ......'atoms/draft650/ATOM-DRAFT650-003.md', 'card_id': 'ATOM-DRAFT650-003', 'kind': 'atom', 'domain': 'draft650', ...}, ...])
+
+tests\test_622_c3.py:78: AssertionError
+_______________________ test_generate_v2_deterministic ________________________
+[gw14] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_generate_v2_deterministic():
+        """确定性：同一卡清单 + 同一 v7 ⇒ 同一批 mutation_id。
+    
+        注意：生成结果依赖**卡清单的顺序**（round-robin 分配），
+        故必须用与生产同样的 discover_cards() 全量清单重放。
+        """
+        if not os.path.exists(MUTS2):
+            return
+        import pck_batch_migrator_620 as M
+        muts = [json.loads(ln) for ln in open(MUTS2, encoding="utf-8") if ln.strip()]
+        again = MG.generate_v2(M.discover_cards(), MG.load_v7(), count=len(muts), include_classic=False)
+>       assert [m["mutation_id"] for m in again] == [m["mutation_id"] for m in muts]
+E       AssertionError: assert ['MUT-621-d35...1ea18b9', ...] == ['MUT-621-d35...7f21e1f', ...]
+E         
+E         At index 3 diff: 'MUT-621-fc6adf7f67c8' != 'MUT-621-81ce61a2e531'
+E         Use -v to get more diff
+
+tests\test_622_a4.py:51: AssertionError
+________________________ test_batch_migration_all_pass ________________________
+[gw6] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_batch_migration_all_pass():
+        prev = M.migrate_preview(CARDS)
+>       assert prev["total"] == 103
+E       assert 113 == 103
+
+tests\test_620_b1.py:35: AssertionError
+_____________________________ test_d3_oracle_plan _____________________________
+[gw0] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_d3_oracle_plan():
+        p = d3.build_plan()
+>       assert p["cards_total"] == 103
+E       assert 113 == 103
+
+tests\test_611_tools.py:69: AssertionError
+___________________________ test_discover_27_atoms ____________________________
+[gw15] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_discover_27_atoms():
+>       assert len(E.discover_atoms()) == 37
+E       AssertionError: assert 47 == 37
+E        +  where 47 = len(['atoms/conc/ATOM-CONC-FENCE-001.md', 'atoms/conc/ATOM-CONC-LOCK-001.md', 'atoms/conc/ATOM-CONC-RACE-001.md', 'atoms/draft650/ATOM-DRAFT650-001.md', 'atoms/draft650/ATOM-DRAFT650-002.md', 'atoms/draft650/ATOM-DRAFT650-003.md', ...])
+E        +    where ['atoms/conc/ATOM-CONC-FENCE-001.md', 'atoms/conc/ATOM-CONC-LOCK-001.md', 'atoms/conc/ATOM-CONC-RACE-001.md', 'atoms/draft650/ATOM-DRAFT650-001.md', 'atoms/draft650/ATOM-DRAFT650-002.md', 'atoms/draft650/ATOM-DRAFT650-003.md', ...] = <function discover_atoms at 0x000001CB9C90A200>()
+E        +      where <function discover_atoms at 0x000001CB9C90A200> = E.discover_atoms
+
+tests\test_622_c2.py:57: AssertionError
+_____________________________ test_e1_metrics_611 _____________________________
+[gw0] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_e1_metrics_611():
+        notes: dict = {}
+        m = e1.collect_611_new_metrics(notes)
+        assert notes == {}  # 全部采集器成功，无错误记账
+        assert m["argument_graph_fragmentation"]["components"] == wd.components()["count"]
+        assert m["bridge_candidates"]["total"] == 98       # C2 产物件数（数据产物，非 W2 派生量）
+        assert m["out_mis_review"]["out_mis_count"] == PIN["out_mis"], "OUT MIS 数取权威产物"
+        assert m["out_mis_review"]["out_nodes_total"] == PIN["out"]
+        assert m["liveness_missing"]["missing_observation"] == 60
+>       assert m["oracle_verification"]["cards_total"] == 103
+E       assert 113 == 103
+
+tests\test_611_tools.py:85: AssertionError
+_________________________ test_extract_all_and_index __________________________
+[gw15] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_extract_all_and_index():
+        rows = E.extract_all()
+>       assert len(rows) == 37
+E       AssertionError: assert 47 == 37
+E        +  where 47 = len([{'card': 'atoms/conc/ATOM-CONC-FENCE-001.md', 'card_id': 'ATOM-CONC-FENCE-001', 'verdict': 'SUPPORTED', 'confidence':...raft650/ATOM-DRAFT650-003.md', 'card_id': 'ATOM-DRAFT650-003', 'verdict': 'UNDECIDED', 'confidence': 'high', ...}, ...])
+
+tests\test_622_c2.py:62: AssertionError
+____________________________ test_selftest_passes _____________________________
+[gw15] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_selftest_passes():
+>       assert E.selftest() == 0
+E       assert 1 == 0
+E        +  where 1 = <function selftest at 0x000001CB9C90A700>()
+E        +    where <function selftest at 0x000001CB9C90A700> = E.selftest
+
+tests\test_622_c2.py:84: AssertionError
+---------------------------- Captured stdout call -----------------------------
+  [ok] verified → SUPPORTED(high)
+  [ok] red-team-verified → SUPPORTED
+  [ok] refuted → REFUTED
+  [ok] draft+observation+evidence → SUPPORTED(medium)
+  [ok] draft+inference → 落到 evidence_only(low)
+  [ok] 无证据无状态 → UNDECIDED
+  [ok] 卡面已有 verdict 字段时优先
+  [FAIL] 发现 37 张原子卡
+  [ok] 提取全部 37 张且带 basis
+  [FAIL] verdict_index 可用
+C2 selftest: FAIL
+___________________________ test_matrix_dimensions ____________________________
+[gw25] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_matrix_dimensions():
+        m, rl, cl = _synth()
+        a = B1.analyze(m, rl, cl)
+        assert (a["n_rules"], a["n_cards"]) == (15, 3)
+        real = B1.report()["analysis"]
+>       assert (real["n_rules"], real["n_cards"]) == (67, 37)
+E       assert (67, 47) == (67, 37)
+E         
+E         At index 1 diff: 47 != 37
+E         Use -v to get more diff
+
+tests\test_coverage_gap_scanner_643.py:49: AssertionError
+____________________________ test_selftest_passes _____________________________
+[gw6] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_selftest_passes():
+>       assert M.selftest() == 0
+E       assert 1 == 0
+E        +  where 1 = <function selftest at 0x000001C1BF486520>()
+E        +    where <function selftest at 0x000001C1BF486520> = M.selftest
+
+tests\test_620_b1.py:77: AssertionError
+---------------------------- Captured stdout call -----------------------------
+  [FAIL] 自动发现全量卡 = 103 张（37 原子 + 66 证据）
+  [FAIL] 原子卡 37 张
+  [ok] 证据卡 66 张
+  [ok] 单张迁移通过 B2
+  [ok] cert 含 7 个必需字段
+  [ok] 缺失字段标 unknown 而非编造
+  [ok] 幂等：同输入两次构建一致
+  [ok] negative_tests 结果均在 B2 允许域
+  [ok] 报告可汇总
+B1 selftest: FAIL
+________________________________ test_selftest ________________________________
+[gw25] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_selftest():
+>       assert B1.selftest() == 0
+E       assert 1 == 0
+E        +  where 1 = <function selftest at 0x0000025F18CB4CC0>()
+E        +    where <function selftest at 0x0000025F18CB4CC0> = B1.selftest
+
+tests\test_coverage_gap_scanner_643.py:89: AssertionError
+---------------------------- Captured stdout call -----------------------------
+  [ok] 已知盲区必检出（card_a） ['card_a']
+  [ok] block 规则零命中必检出（R1） ['R1']
+  [ok] 单卡命中规则必检出（R2） ['R2']
+  [ok] 超阈值卡必检出（card_b/card_d） ['card_b', 'card_d']
+  [ok] 矩阵维度正确（规则数 × 卡数） 15x3
+  [ok] 全覆盖不报错（无零命中卡、无零命中规则） [] / []
+  [ok] 优先级分级正确（P0=2 / P1=1 / P2=2） {'P0': 2, 'P1': 1, 'P2': 2}
+  [FAIL] 真实矩阵 67 × 27 67x47
+  [ok] findings 非空 231
+  [ok] 热力图含全部规则 
+______________________________ test_全量83张全部通过验证 _______________________________
+[gw6] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_全量83张全部通过验证():
+        prev = M.migrate_preview(CARDS)
+>       assert prev["total"] == 103
+E       assert 113 == 103
+
+tests\test_620_b2.py:23: AssertionError
+_______________ test_gate_baseline_block_zero_no_false_positive _______________
+[gw7] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000021149776780>
+
+    def test_gate_baseline_block_zero_no_false_positive(monkeypatch):
+        monkeypatch.setenv("CPPBIBLE_OBS", "0")
+        findings = ge.run(include_advice=True)
+        blocks = [f for f in findings if f.severity == "block"]
+>       assert blocks == []                       # 新规则对存量 0 误报
+        ^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert [Finding(rule...字段标准补齐'), ...] == []
+E         
+E         Left contains 30 more items, first extra item: Finding(rule_id='ATOM-FM-REQUIRED', severity='block', target='atoms/draft650/ATOM-DRAFT650-001.md', message='原子卡缺必填字段：..., first_hand, superiority, depth, pedagogy, sources[]（多源精炼要求 ≥1 个来源）', fix_hint='按 docs/kernel/G1_layout.md §3 字段标准补齐')
+E         Use -v to get more diff
+
+tests\test_high_complexity_rules_regression_624.py:25: AssertionError
+_____________________________ test_init_all_kc_01 _____________________________
+[gw30] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-33140-1790521556/popen-gw30/test_init_all_kc_010')
+
+    def test_init_all_kc_01(tmp_path):
+        store = _init(tmp_path)
+        recs = d3.load_all(store)
+>       assert len(recs) == 37
+E       AssertionError: assert 47 == 37
+E        +  where 47 = len([{'user_id': 'default', 'kc_id': 'ATOM-CONC-FENCE-001', 'mastery_prob': 0.1, 'correct': None, ...}, {'user_id': 'defau...ect': None, ...}, {'user_id': 'default', 'kc_id': 'ATOM-DRAFT650-003', 'mastery_prob': 0.1, 'correct': None, ...}, ...])
+
+tests\test_learner_state_612.py:22: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[D3] init：新增 47 条 init 记录（P(L0)=0.1）；已存在则跳过（append-only）。
+____________________________ test_init_idempotent _____________________________
+[gw30] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-33140-1790521556/popen-gw30/test_init_idempotent0')
+
+    def test_init_idempotent(tmp_path):
+        store = _init(tmp_path)
+        added = d3.init(store)  # 已存在 ⇒ 不再添加
+        assert added == 0
+>       assert len(d3.load_all(store)) == 37
+E       AssertionError: assert 47 == 37
+E        +  where 47 = len([{'user_id': 'default', 'kc_id': 'ATOM-CONC-FENCE-001', 'mastery_prob': 0.1, 'correct': None, ...}, {'user_id': 'defau...ect': None, ...}, {'user_id': 'default', 'kc_id': 'ATOM-DRAFT650-003', 'mastery_prob': 0.1, 'correct': None, ...}, ...])
+E        +    where [{'user_id': 'default', 'kc_id': 'ATOM-CONC-FENCE-001', 'mastery_prob': 0.1, 'correct': None, ...}, {'user_id': 'defau...ect': None, ...}, {'user_id': 'default', 'kc_id': 'ATOM-DRAFT650-003', 'mastery_prob': 0.1, 'correct': None, ...}, ...] = <function load_all at 0x000001B74BE06D40>(WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-33140-1790521556/popen-gw30/test_init_idempotent0/learner.jsonl'))
+E        +      where <function load_all at 0x000001B74BE06D40> = d3.load_all
+
+tests\test_learner_state_612.py:31: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[D3] init：新增 47 条 init 记录（P(L0)=0.1）；已存在则跳过（append-only）。
+[D3] init：新增 0 条 init 记录（P(L0)=0.1）；已存在则跳过（append-only）。
+______________________________ test_data_reading ______________________________
+[gw17] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-33140-1790521556/popen-gw17/test_data_reading0')
+
+    def test_data_reading(tmp_path: Path) -> None:
+        store = _seed(tmp_path)
+        d = b2.build(store)
+>       assert len(d["kcs"]) == 37
+E       AssertionError: assert 47 == 37
+E        +  where 47 = len([{'id': 'ATOM-CONC-FENCE-001', 'title': '内存屏障（fence）只约束顺序，不提供原子性；屏障在循环体内才阻止消除，但屏障≠原子类型', 'domain': 'conc', 'path': 'at...'ARM 上 volatile 不足以保证跨核/外设观测顺序，还需 DMB/DSB', 'domain': 'conc', 'path': 'atoms/draft650/ATOM-DRAFT650-003.md', ...}, ...])
+
+tests\test_learner_twin_dashboard_614.py:24: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[logger] simulate：追加 50 条**模拟**作答（10 KC × 5 轮，准确率 0.3→0.8，seed=7）。非真实用户数据。
+____________________________ test_html_generation _____________________________
+[gw17] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-33140-1790521556/popen-gw17/test_html_generation0')
+
+    def test_html_generation(tmp_path: Path) -> None:
+        store = _seed(tmp_path)
+        d = b2.build(store)
+        html = b2.render_html(d)
+        assert "学习者镜像仪表盘" in html
+>       assert html.count('class="cell"') == 37
+E       assert 47 == 37
+E        +  where 47 = <built-in method count of str object at 0x000001EE132E6410>('class="cell"')
+E        +    where <built-in method count of str object at 0x000001EE132E6410> = '<!DOCTYPE html>\n<html lang="zh"><head><meta charset="utf-8">\n<title>学习者镜像仪表盘（真实数据版 · default）</title>\n<style>\n bo...b><span>mastered_05</span></div><div class=\'stat\'><b>4</b><span>mastered_09</span></div></div></div>\n</body></html>'.count
+
+tests\test_learner_twin_dashboard_614.py:37: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[logger] simulate：追加 50 条**模拟**作答（10 KC × 5 轮，准确率 0.3→0.8，seed=7）。非真实用户数据。
+___________________________ test_check_consistency ____________________________
+[gw30] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_check_consistency() -> None:
+>       assert d3.check() == []
+E       AssertionError: assert ['KC 应 37（实测 ... '状态计数不等于 27'] == []
+E         
+E         Left contains 2 more items, first extra item: 'KC 应 37（实测 47）'
+E         Use -v to get more diff
+
+tests\test_learner_transition_detector_615.py:34: AssertionError
+________________________ test_e2_fragmentation_counts _________________________
+[gw10] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_e2_fragmentation_counts():
+        d = e.e2_fragmentation()
+>       assert d["atomic"] == 37
+E       assert 47 == 37
+
+tests\test_metrics_612.py:15: AssertionError
+_____________________________ test_迁移可复现_两次输出内容一致 _____________________________
+[gw6] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_迁移可复现_两次输出内容一致():
+        with tempfile.TemporaryDirectory() as d1, tempfile.TemporaryDirectory() as d2:
+            M.migrate(CARDS, d1)
+            M.migrate(CARDS, d2)
+            f1 = {f: open(os.path.join(d1, f), encoding="utf-8").read() for f in os.listdir(d1)}
+            f2 = {f: open(os.path.join(d2, f), encoding="utf-8").read() for f in os.listdir(d2)}
+            assert f1 == f2
+>           assert len(f1) == 103
+E           assert 113 == 103
+E            +  where 113 = len({'ATOM-CONC-FENCE-001.pck.yaml': "# PCK 证书（620 B1 批量迁移，只读派生）\nschema_version: 619-pck-v1\nclaim:\n  id: ATOM-CONC-FENC...mand: L1\nprovenance:\n  commit: 95f73d45bc0ba9921faee328ab48962c6e71f9b1\n  first_authorized_at: '2026-09-27'\n", ...})
+
+tests\test_620_b2.py:35: AssertionError
+__________________________ test_no_bulk_type_ignore ___________________________
+[gw15] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_no_bulk_type_ignore():
+        # 无批量 ignore：任一工具文件 type: ignore 计数 ≤ 5，且全库总数 ≤ 28
+        #
+        # 630 D2 更新（诚实登记）：625 写死「全库总数 ≤ 20」，而 625→629 各批新增工具后
+        # 实测已是 **28**（逐文件仍全部 ≤5 ⇒ 不是批量忽略）。按 D2 口径「只把硬编码数字更新为
+        # 当前正确值」⇒ 20 → 28。
+        # **注意：本断言因此退化为"快照"而不再是预算**；真正的防批量忽略护栏是
+        # 「逐文件 ≤5」+ review。若原作者想恢复预算语义，应改为 ratchet（只降不升）——
+        # 已列入 630 交人项。
+        total = 0
+        for fn in os.listdir(TOOLS):
+            if not fn.endswith(".py"):
+                continue
+            src = open(os.path.join(TOOLS, fn), encoding="utf-8", errors="replace").read()
+            n = len(re.findall(r"#\s*type:\s*ignore", src))
+>           assert n <= 5, f"{fn} type: ignore 过多（{n}）——疑似批量忽略"
+E           AssertionError: ledger_checkpoint_651.py type: ignore 过多（6）——疑似批量忽略
+E           assert 6 <= 5
+
+tests\test_mypy_fix_625.py:54: AssertionError
+___________________________ test_main_check_passes ____________________________
+[gw10] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_main_check_passes():
+>       assert e.main(["--check"]) == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = <function main at 0x0000026392548B80>(['--check'])
+E        +    where <function main at 0x0000026392548B80> = e.main
+
+tests\test_metrics_612.py:51: AssertionError
+---------------------------- Captured stderr call -----------------------------
+[E] ❌ 自检失败：
+    - 原子卡应为 37（实测 47）
+___________________________ test_main_writes_report ___________________________
+[gw10] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_main_writes_report():
+        rc = e.main([])
+>       assert rc == 0
+E       assert 1 == 0
+
+tests\test_metrics_612.py:56: AssertionError
+---------------------------- Captured stderr call -----------------------------
+[E] ❌ 自检失败：
+    - 原子卡应为 37（实测 47）
+____________________________ test_all_cards_scored ____________________________
+[gw30] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_all_cards_scored():
+        rows = c2.score_cards()
+>       assert len(rows) == 103
+E       AssertionError: assert 113 == 103
+E        +  where 113 = len([{'id': 'ATOM-UB-GRAY-001', 'path': 'atoms/ub/ATOM-UB-GRAY-001.md', 'type': 'atom', 'props': 2, ...}, {'id': 'ATOM-MEM... ...}, {'id': 'ATOM-MEM-SHARED-001', 'path': 'atoms/mem/ATOM-MEM-SHARED-001.md', 'type': 'atom', 'props': 3, ...}, ...])
+
+tests\test_oracle_priority_612.py:17: AssertionError
+________________________________ test_total_kc ________________________________
+[gw24] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_total_kc():
+        d = d1.build()
+>       assert d["total_kc"] == 37, d["total_kc"]
+E       AssertionError: 47
+E       assert 47 == 37
+
+tests\test_kc_inventory_612.py:20: AssertionError
+______________________________ test_check_passes ______________________________
+[gw30] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_check_passes():
+>       assert c2.main(["--check"]) == 0
+E       AssertionError: assert 2 == 0
+E        +  where 2 = <function main at 0x000001B74BA5B240>(['--check'])
+E        +    where <function main at 0x000001B74BA5B240> = c2.main
+
+tests\test_oracle_priority_612.py:28: AssertionError
+---------------------------- Captured stderr call -----------------------------
+[C2] ❌ 卡数应为 103（实测 113）
+_____________________________ test_card_count_83 ______________________________
+[gw30] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_card_count_83() -> None:
+        rows = e1.score_cards()
+>       assert len(rows) == 103
+E       AssertionError: assert 113 == 103
+E        +  where 113 = len([{'id': 'EV-CONC-001', 'path': 'evidence/conc/EV-CONC-001.md', 'type': 'evidence', 'props': 0, ...}, {'id': 'ATOM-UB-G... ...}, {'id': 'ATOM-MEM-SHARED-001', 'path': 'atoms/mem/ATOM-MEM-SHARED-001.md', 'type': 'atom', 'props': 3, ...}, ...])
+
+tests\test_oracle_priority_614.py:16: AssertionError
+______________________________ test_check_passes ______________________________
+[gw8] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_check_passes():
+>       assert e1.main(["--check"]) == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = <function main at 0x0000017C4B370400>(['--check'])
+E        +    where <function main at 0x0000017C4B370400> = e1.main
+
+tests\test_ots_anchor_613.py:65: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[E1] ✗ 已存在的 .ots 摘要与当前信任根不一致（信任根已变更）
+[E1] ❌ 1 项失败
+_________________________ test_propositions_extracted _________________________
+[gw24] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_propositions_extracted():
+        d = d1.build()
+>       assert all(k["n_propositions"] >= 1 for k in d["kcs"])
+E       assert False
+E        +  where False = all(<generator object test_propositions_extracted.<locals>.<genexpr> at 0x000002BD06506740>)
+
+tests\test_kc_inventory_612.py:35: AssertionError
+___________________________ test_main_check_passes ____________________________
+[gw24] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_main_check_passes():
+>       assert d1.main(["--check"]) == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = <function main at 0x000002BD05D23420>(['--check'])
+E        +    where <function main at 0x000002BD05D23420> = d1.main
+
+tests\test_kc_inventory_612.py:56: AssertionError
+---------------------------- Captured stderr call -----------------------------
+[D1] ❌ 自检失败：
+    - KC 数应为 37（实测 47）
+    - KC ATOM-DRAFT650-001 无命题（台账应有命题）
+    - KC ATOM-DRAFT650-002 无命题（台账应有命题）
+    - KC ATOM-DRAFT650-003 无命题（台账应有命题）
+    - KC ATOM-DRAFT650-004 无命题（台账应有命题）
+    - KC ATOM-DRAFT650-005 无命题（台账应有命题）
+    - KC ATOM-DRAFT650-006 无命题（台账应有命题）
+    - KC ATOM-DRAFT650-007 无命题（台账应有命题）
+    - KC ATOM-DRAFT650-008 无命题（台账应有命题）
+    - KC ATOM-DRAFT650-009 无命题（台账应有命题）
+    - KC ATOM-DRAFT650-010 无命题（台账应有命题）
+_____________________________ test_json_roundtrip _____________________________
+[gw24] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_json_roundtrip():
+        d = d1.build()
+        txt = json.dumps(d, ensure_ascii=False)
+        back = json.loads(txt)
+>       assert back["total_kc"] == 37
+E       assert 47 == 37
+
+tests\test_kc_inventory_612.py:63: AssertionError
+___________ test_583_rotation_source_is_read_only_and_runs_nothing ____________
+[gw30] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_583_rotation_source_is_read_only_and_runs_nothing():
+        """② 只读 + 不跑任何检查：源码无写操作、无 subprocess、无判决入口调用。"""
+        raw = pathlib.Path(orot.__file__).read_text(encoding="utf-8")
+        body = raw.split('"""', 2)[-1] if raw.startswith(('#!/usr/bin/env python3\n"""', '"""')) else raw
+        code = "\n".join(ln for ln in body.splitlines() if not ln.lstrip().startswith("#"))
+        for bad in ("write_text(", "open(", "mkdir(", "unlink(", "subprocess", "os.system",
+                    "gate_engine.run", "replay_card", "import gate_engine"):
+>           assert bad not in code, f"只读工具里不许出现 {bad!r}"
+E           AssertionError: 只读工具里不许出现 'gate_engine.run'
+E           assert 'gate_engine.run' not in '"""oracle_r...Exit(main())'
+E             
+E             'gate_engine.run' is contained here:
+E               源码不含判决入口（`gate_engine.run` / `replay.replay_card`）调用；
+E             ?           +++++++++++++++
+E                 * 与 `metrics_collector.oracle_report()` 的 stale 判定**双实现对账**（不一致 ⇒ 以参考实现为准并报错）；
+E                 * **继承必须 fail-closed 的立场只写进报告文案**：本批**不实现**继承逻辑、不实现签名（冻结项）。
+E               ...
+E             
+E             ...Full output truncated (159 lines hidden), use '-vv' to show
+
+tests\test_oracle_rotation_583.py:44: AssertionError
+____________________ test_gaps_resolved_except_ref_missing ____________________
+[gw22] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_gaps_resolved_except_ref_missing():
+        """630 D2 更新：627 当时实测「无健康证书」（ok=0）；628 A2 修复后 ok=82、仅剩
+        `ref_missing` 1 张（该张按 A2 约定不自动修）。"""
+        r = A.analyze()
+>       assert r["by_worst_category"].get("ok", 0) == 102
+E       AssertionError: assert 0 == 102
+E        +  where 0 = <built-in method get of dict object at 0x000002974070AF80>('ok', 0)
+E        +    where <built-in method get of dict object at 0x000002974070AF80> = {'content_drift': 103}.get
+
+tests\test_pck_hash_drift_analyzer_627.py:31: AssertionError
+_______________________ test_hash_matches_current_file ________________________
+[gw22] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_hash_matches_current_file():
+        v = P.verify()
+>       assert v["hash_ok"] >= 82 and v["bad_count"] == 0
+E       assert (0 >= 82)
+
+tests\test_pck_hash_renewal_628.py:24: AssertionError
+___________________ test_manifest_consistency_zero_mismatch ___________________
+[gw5] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_manifest_consistency_zero_mismatch():
+        c = R.check()
+>       assert c["consistent"]
+E       assert False
+
+tests\test_debt_replay_fix_628.py:34: AssertionError
+_______________________ test_integrity_checks_are_clean _______________________
+[gw21] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_integrity_checks_are_clean():
+        """三条完整性校验：引用卡不存在 = 0、无命题原子卡 = 0、闭包异常（>50 或 =1）= 0。"""
+        d = inv.collect()
+        assert d["bad_refs"] == []
+>       assert d["no_prop_cards"] == []
+E       AssertionError: assert ['ATOM-DRAFT6...650-006', ...] == []
+E         
+E         Left contains 10 more items, first extra item: 'ATOM-DRAFT650-001'
+E         Use -v to get more diff
+
+tests\test_prop_inventory_592.py:41: AssertionError
+_______________ test_ledger_matches_fresh_render_byte_for_byte ________________
+[gw21] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_ledger_matches_fresh_render_byte_for_byte():
+        """台账必须与**现读事实源重新渲染**的结果逐字节一致（既锁幂等，也锁"不过期"）。"""
+        fresh = inv.render(inv.collect())
+>       assert fresh == _text(), (
+            "台账与事实源漂移 ⇒ 重跑 `.venv\\Scripts\\python.exe tools/prop_network_inventory.py`")
+E       AssertionError: 台账与事实源漂移 ⇒ 重跑 `.venv\Scripts\python.exe tools/prop_network_inventory.py`
+E       assert '# 命题网络台账（592...": false}\n\n' == '# 命题网络台账（592...": false}\n\n'
+E         
+E         Skipping 615 identical leading characters in diff, use -v to show
+E         - 原子卡 | 0 | 0 | ✓ |
+E         ?               ^
+E         + 原子卡 | 0 | 10 | ✗ 需人审 |
+E         ?           +    ^^^^^
+E           | 闭包大小异常（>50 或 =1） | 0 | 0 | ✓ |...
+E         
+E         ...Full output truncated (158 lines hidden), use '-vv' to show
+
+tests\test_prop_inventory_592.py:50: AssertionError
+______________________ test_583_asof_source_is_read_only ______________________
+[gw15] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_583_asof_source_is_read_only():
+        """② 静态断言：源码无写操作；唯一的 subprocess 调用是**只读 git log**。
+    
+        注意：先剥掉模块 docstring 与行注释再扫——否则**文档里描述禁令的词**（本文开头就写着
+        "无 `open(...,'w')`/`write_text`"）会把断言自己打红（第一次就是这么红的）。
+        """
+        raw = pathlib.Path(pa.__file__).read_text(encoding="utf-8")
+        body = raw.split('"""', 2)[-1] if raw.startswith(('#!/usr/bin/env python3\n"""',
+                                                         '"""')) else raw
+        code = "\n".join(ln for ln in body.splitlines() if not ln.lstrip().startswith("#"))
+        for bad in ("write_text(", "open(", "mkdir(", "unlink(", "rename(", "shutil."):
+>           assert bad not in code, f"只读工具里不许出现 {bad!r}"
+E           AssertionError: 只读工具里不许出现 'open('
+E           assert 'open(' not in '"""prop_aso...Exit(main())'
+E             
+E             'open(' is contained here:
+E               含任何写调用（无 `open(...,'w')`/`write_text`/`mkdir`/`subprocess`）；
+E             ?           +++++
+E                 * 与 `prop_graph.query()` 同源（sqlite `mode=ro`，派生库不存在时 **fail-loud**，不返回空表）；
+E                 * `--json` 输出**逐字确定**（键排序、无时间戳），可两次跑比对；
+E                 * git 不可用 ⇒ exit 2（不静默降级）；overturned 缺失 ⇒ 按 0 事件且**不报错**。...
+E             
+E             ...Full output truncated (236 lines hidden), use '-vv' to show
+
+tests\test_prop_asof_583.py:46: AssertionError
+_____________________ test_content_drift_resolved_by_628 ______________________
+[gw20] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_content_drift_resolved_by_628():
+        """630 D2 更新：627 当时实测 content_drift = 56；628 A2 重算 hash 后已 **0**。
+        名字从 `test_content_drift_56` 改为现名，避免名字与新断言自相矛盾。"""
+        r = A.analyze()
+>       assert r["n_content_drift_certs"] == 0
+E       assert 103 == 0
+
+tests\test_pck_hash_drift_analyzer_627.py:24: AssertionError
+___________________________ test_renewal_idempotent ___________________________
+[gw22] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_renewal_idempotent():
+        # 再跑一次 apply：全部 already_ok，不新增改动
+        before = P.verify()
+        r = P.renew(apply_changes=True)
+        after = P.verify()
+>       assert before == after
+E       AssertionError: assert {'total_evide...d', ...], ...} == {'total_evide...bad': [], ...}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'bad': ['ATOM-CONC-FENCE-001.pck:evidence/conc/EV-CONC-001.md', 'ATOM-CONC-FENCE-001.pck:evidence/conc/EV-CONC-002.md...d', 'ATOM-CONC-LOCK-001.pck:evidence/conc/EV-CONC-004.md', 'ATOM-CONC-LOCK-001.pck:evidence/conc/EV-CONC-003.md', ...]} != {'[...
+E         
+E         ...Full output truncated (5 lines hidden), use '-vv' to show
+
+tests\test_pck_hash_renewal_628.py:63: AssertionError
+____________________________ test_mypy_tools_clean ____________________________
+[gw1] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_mypy_tools_clean():
+        p = subprocess.run([PY, "-m", "mypy", "tools/"], cwd=ROOT, capture_output=True, text=True)
+>       assert p.returncode == 0, p.stdout + p.stderr
+E       AssertionError: tools\codeblock_style.py:247: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+E         tools\result_cache_655.py:126: error: Returning Any from function declared to return "dict[str, Any]"  [no-any-return]
+E         tools\result_cache_655.py:143: error: Unsupported operand types for + ("object" and "int")  [operator]
+E         tools\result_cache_655.py:144: error: Unsupported operand types for + ("object" and "int")  [operator]
+E         tools\result_cache_655.py:145: error: Unsupported operand types for + ("object" and "int")  [operator]
+E         tools\result_cache_655.py:146: error: Unsupported operand types for + ("object" and "int")  [operator]
+E         tools\result_cache_655.py:147: error: Unsupported operand types for + ("object" and "float")  [operator]
+E         tools\result_cache_655.py:150: error: "object" has no attribute "append"  [attr-defined]
+E         tools\result_cache_655.py:151: error: No overload variant of "round" matches argument types "object", "int"  [call-overload]
+E         tools\result_cache_655.py:151: note: Possible overload variants:
+E         tools\result_cache_655.py:151: note:     def [_T] round(number: _SupportsRound1[_T], ndigits: None = ...) -> _T
+E         tools\result_cache_655.py:151: note:     def [_T] round(number: _SupportsRound2[_T], ndigits: SupportsIndex) -> _T
+E         tools\result_cache_655.py:162: error: Returning Any from function declared to return "str"  [no-any-return]
+E         tools\chapter_lint.py:107: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+E         Found 9 errors in 1 file (checked 560 source files)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', '-m', 'mypy', 'too... using --check-untyped-defs  [annotation-unchecked]\nFound 9 errors in 1 file (checked 560 source files)\n', stderr='').returncode
+
+tests\test_mypy_fix_625.py:28: AssertionError
+___________________ test_repo_data_has_no_control_chars_now ___________________
+[gw2] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_repo_data_has_no_control_chars_now():
+        # 626 A2 已清洗：data/ 应无残留
+        found = C.scan(os.path.join(ROOT, "data"))
+>       assert found == [], f"仍有控制字符文件: {found}"
+E       AssertionError: 仍有控制字符文件: [('data\\652_collect2.txt', ['0x0']), ('data\\655_fast.txt', ['0x0'])]
+E       assert [('data\\652_...xt', ['0x0'])] == []
+E         
+E         Left contains 2 more items, first extra item: ('data\\652_collect2.txt', ['0x0'])
+E         Use -v to get more diff
+
+tests\test_control_char_cleaner_626.py:56: AssertionError
+_________________________ test_new_tools_check_green __________________________
+[gw6] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_new_tools_check_green():
+        r = G.check_new_tools()
+>       assert r["ok"], r["detail"]
+E       AssertionError: coverage_gap_scanner_643: d_d']
+E           [ok] 矩阵维度正确（规则数 × 卡数） 15x3
+E           [ok] 全覆盖不报错（无零命中卡、无零命中规则） [] / []
+E           [ok] 优先级分级正确（P0=2 / P1=1 / P2=2） {'P0': 2, 'P1': 1, 'P2': 2}
+E           [FAIL] 真实矩阵 67 × 27 67x47
+E           [ok] findings 非空 231
+E           [ok] 热力图含全部规则
+E       assert False
+
+tests\test_run_643_gate.py:41: AssertionError
+__________________________ test_control_chars_clean ___________________________
+[gw28] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_control_chars_clean():
+>       assert _c().run_check("control_chars")["status"] == "pass"
+E       AssertionError: assert 'fail' == 'pass'
+E         
+E         - pass
+E         + fail
+
+tests\test_snapshot_integrity_ci_626.py:52: AssertionError
+____________________________ test_selftest_passes _____________________________
+[gw15] win32 -- Python 3.13.13 C:\CodeLearnling\note\note\C++\CPP-Bible\.venv\Scripts\python.exe
+
+    def test_selftest_passes():
+>       assert SI.selftest() == 0
+E       assert 1 == 0
+E        +  where 1 = <function selftest at 0x000001CB9FF63C40>()
+E        +    where <function selftest at 0x000001CB9FF63C40> = SI.selftest
+
+tests\test_snapshot_integrity_ci_626.py:20: AssertionError
+---------------------------- Captured stdout call -----------------------------
+  [ok] 10 项检查全部实现 (10)
+  [ok] count_consistency 可运行 (pass)
+  [ok] id_uniqueness 可运行 (pass)
+  [ok] hash_chain 可运行 (pass)
+  [ok] stale_report_detection 可运行 (pass)
+  [ok] path_validity 可运行 (pass)
+  [ok] control_chars 可运行 (fail)
+  [ok] source_refs 可运行 (pass)
+  [ok] cross_report_numerical_consistency 可运行 (pass)
+  [ok] authority_projection_consistency 可运行 (pass)
+  [ok] review_pack_integrity 可运行 (warn)
+  [ok] 哈希链检查通过 
+  [ok] ID 唯一性通过 
+  [FAIL] 控制字符已清零 
+  [ok] 跨报告数字一致 
+  [ok] 断链可被检出 
+D3 check: FAIL
+=========================== short test summary info ===========================
+FAILED tests/test_620_b1.py::test_discover_83_cards - AssertionError: assert ...
+FAILED tests/test_621_gate.py::test_620_tools_regression_pass - AssertionErro...
+FAILED tests/test_622_c3.py::test_classify_all_v2_uses_pck_map - AssertionErr...
+FAILED tests/test_622_a4.py::test_generate_v2_deterministic - AssertionError:...
+FAILED tests/test_620_b1.py::test_batch_migration_all_pass - assert 113 == 103
+FAILED tests/test_611_tools.py::test_d3_oracle_plan - assert 113 == 103
+FAILED tests/test_622_c2.py::test_discover_27_atoms - AssertionError: assert ...
+FAILED tests/test_611_tools.py::test_e1_metrics_611 - assert 113 == 103
+FAILED tests/test_622_c2.py::test_extract_all_and_index - AssertionError: ass...
+FAILED tests/test_622_c2.py::test_selftest_passes - assert 1 == 0
+FAILED tests/test_coverage_gap_scanner_643.py::test_matrix_dimensions - asser...
+FAILED tests/test_620_b1.py::test_selftest_passes - assert 1 == 0
+FAILED tests/test_coverage_gap_scanner_643.py::test_selftest - assert 1 == 0
+FAILED tests/test_620_b2.py::test_全量83张全部通过验证 - assert 113 == 103
+FAILED tests/test_high_complexity_rules_regression_624.py::test_gate_baseline_block_zero_no_false_positive
+FAILED tests/test_learner_state_612.py::test_init_all_kc_01 - AssertionError:...
+FAILED tests/test_learner_state_612.py::test_init_idempotent - AssertionError...
+FAILED tests/test_learner_twin_dashboard_614.py::test_data_reading - Assertio...
+FAILED tests/test_learner_twin_dashboard_614.py::test_html_generation - asser...
+FAILED tests/test_learner_transition_detector_615.py::test_check_consistency
+FAILED tests/test_metrics_612.py::test_e2_fragmentation_counts - assert 47 == 37
+FAILED tests/test_620_b2.py::test_迁移可复现_两次输出内容一致 - assert 113 ==...
+FAILED tests/test_mypy_fix_625.py::test_no_bulk_type_ignore - AssertionError:...
+FAILED tests/test_metrics_612.py::test_main_check_passes - AssertionError: as...
+FAILED tests/test_metrics_612.py::test_main_writes_report - assert 1 == 0
+FAILED tests/test_oracle_priority_612.py::test_all_cards_scored - AssertionEr...
+FAILED tests/test_kc_inventory_612.py::test_total_kc - AssertionError: 47
+FAILED tests/test_oracle_priority_612.py::test_check_passes - AssertionError:...
+FAILED tests/test_oracle_priority_614.py::test_card_count_83 - AssertionError...
+FAILED tests/test_ots_anchor_613.py::test_check_passes - AssertionError: asse...
+FAILED tests/test_kc_inventory_612.py::test_propositions_extracted - assert F...
+FAILED tests/test_kc_inventory_612.py::test_main_check_passes - AssertionErro...
+FAILED tests/test_kc_inventory_612.py::test_json_roundtrip - assert 47 == 37
+FAILED tests/test_oracle_rotation_583.py::test_583_rotation_source_is_read_only_and_runs_nothing
+FAILED tests/test_pck_hash_drift_analyzer_627.py::test_gaps_resolved_except_ref_missing
+FAILED tests/test_pck_hash_renewal_628.py::test_hash_matches_current_file - a...
+FAILED tests/test_debt_replay_fix_628.py::test_manifest_consistency_zero_mismatch
+FAILED tests/test_prop_inventory_592.py::test_integrity_checks_are_clean - As...
+FAILED tests/test_prop_inventory_592.py::test_ledger_matches_fresh_render_byte_for_byte
+FAILED tests/test_prop_asof_583.py::test_583_asof_source_is_read_only - Asser...
+FAILED tests/test_pck_hash_drift_analyzer_627.py::test_content_drift_resolved_by_628
+FAILED tests/test_pck_hash_renewal_628.py::test_renewal_idempotent - Assertio...
+FAILED tests/test_mypy_fix_625.py::test_mypy_tools_clean - AssertionError: to...
+FAILED tests/test_control_char_cleaner_626.py::test_repo_data_has_no_control_chars_now
+FAILED tests/test_run_643_gate.py::test_new_tools_check_green - AssertionErro...
+FAILED tests/test_snapshot_integrity_ci_626.py::test_control_chars_clean - As...
+FAILED tests/test_snapshot_integrity_ci_626.py::test_selftest_passes - assert...

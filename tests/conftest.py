@@ -5,6 +5,8 @@
 本仓库 80+ 个工具脚本此前**零单元测试**（工具正确性仅靠 CI 跑通间接验证）。
 本目录的测试专门锁定**真实发生过的回归**，详见各文件的 docstring。
 """
+import hashlib
+import json
 import os
 import subprocess
 import sys
@@ -207,6 +209,40 @@ def replay_serial():
         replay._release_replay_lock()
 
 
+# ── 655 C 杠杆 3：**可选**分片（默认关闭 ⇒ 不改变默认两阶段口径）─────────────────
+# 为什么要 conftest：xdist 的分组（`--dist loadgroup`）在本版实测不生效，且本仓隔离机制
+#   是**模块级**的（SLOW_MODULES / SERIAL_EXTRA）⇒ 分片必须**整模块**切，才能保证"同一
+#   模块的用例永远落在同一进程"。故把"选片"下沉到收集阶段：按模块决定片号，其余 deselect。
+# 默认 0/1 ⇒ 老路径一字不变（`pytest -m "not slow" -n auto` 行为与 655 之前完全一致）。
+_SHARD_PLAN = Path(__file__).resolve().parent.parent / "data" / "655_shard_plan.json"
+
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    g = parser.getgroup("655-shard", "655 C 分片（按测试时长均衡，默认关闭）")
+    g.addoption("--shard-id", type=int, default=0,
+                help="第 i 片（0-based）；需与 --shard-count 同用；默认 0 = 不分片")
+    g.addoption("--shard-count", type=int, default=0,
+                help="总分片数；0/1 = 不分片（默认，行为与 655 之前一致）")
+
+
+def _load_shard_plan() -> dict:
+    """读 `data/655_shard_plan.json`（`tools/pytest_shard_655.py --plan` 产出）；缺失/损坏 ⇒ {}。"""
+    try:
+        data = json.loads(_SHARD_PLAN.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def _shard_of_module(module: str, count: int, plan: dict) -> int:
+    """模块 → 片号：有计划表且片数一致 ⇒ 用计划；否则退化为**确定性**哈希取模。"""
+    if isinstance(plan, dict) and plan.get("shards") == count:
+        m = (plan.get("shard_of") or {}).get(module)
+        if isinstance(m, int) and 0 <= m < count:
+            return m
+    return int(hashlib.sha256(module.encode("utf-8")).hexdigest()[:8], 16) % count
+
+
 def pytest_configure(config: pytest.Config) -> None:
     # ── 591 任务 3：测试器配置完整性自检（conftest/pyproject 被篡改 ⇒ 拒绝开跑）──────────
     # 病（590 A2）：conftest.py 在收集前执行，可通过 `pytest_runtest_makereport` 把 failed 改判
@@ -270,3 +306,22 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list) -> None:
         mod = Path(str(item.fspath)).name
         slow = mod in SLOW_MODULES or mod in SERIAL_EXTRA
         item.add_marker(pytest.mark.slow if slow else pytest.mark.fast)
+
+    # ── 655 C 杠杆 3：可选分片（--shard-count > 1 时生效，整模块切）───────────────
+    # 契约：`--shard-count N` 时本进程只保留 `_shard_of_module(mod, N, plan) == --shard-id`
+    #   的用例，其余 deselect（**不删**：deselected 计入 pytest 报告，可核对总数）。
+    #   N ≤ 1 ⇒ 直接返回，默认口径不变。
+    count = int(config.getoption("--shard-count") or 0)
+    if count > 1:
+        sid = int(config.getoption("--shard-id") or 0)
+        if not 0 <= sid < count:
+            raise pytest.UsageError(f"--shard-id={sid} 必须落在 [0, {count})")
+        plan = _load_shard_plan()
+        keep: list = []
+        drop: list = []
+        for item in items:
+            mod = Path(str(item.fspath)).name
+            (keep if _shard_of_module(mod, count, plan) == sid else drop).append(item)
+        if drop:
+            config.hook.pytest_deselected(items=drop)
+            items[:] = keep
