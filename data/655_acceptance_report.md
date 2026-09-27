@@ -120,7 +120,27 @@ fast / full / ruff / mypy（本批 6 工具）/ 许可证头（active 0 缺）/ 
 | 3 | `web/data/manifest.json` 台账哈希陈旧 | A/C 两次 `tool_integrity --update` 改了 `tools/.tool_checksums` ⇒ 台账失配 | 重生成 `web/data/{graph,manifest}.json`（真数据），653 单测 5/5 复绿 |
 | 4 | **HEAD 里的 `tools/.tool_checksums` 是旧值**（conftest 已改但基准未随之提交） | C 提交时只 `git add` 了指定路径，漏了 `.tool_checksums` ⇒ **干净克隆会被 `--check` 判红 / 测试拒跑** | 收工前审查 `git status` 发现 ⇒ 本批 E 提交补齐（这正是该机制要防的事） |
 
-### 5.4 红线守护（自我声明，均有器械证据）
+### 5.4 全新检出复核（本批新增的一道"外部视角"检查）
+
+在 `git worktree` 里对**收工 HEAD（`a4308def`）做全新检出**，再跑门禁核心：
+
+| 检查 | 结果 |
+|---|---|
+| 本批测试（`test_655_tools.py` + `test_verdict_spec_v1_655.py`，34 例） | ✅ 全绿（`pytest_configure` 的 `--check-test-config` 也通过） |
+| `tool_integrity --check` | ⚠️ **红**：merkle 段（atoms / evidence / data/mutation 根不匹配）+ ruler 段（个别被钉工具"被改动"） |
+
+**归因（预存在，非 655 引入）**：
+- 根因是**工作区 CRLF ↔ 索引 LF 的历史漂移**（`.gitattributes` 的 `* text=auto eol=lf` + 2026-09-13 监工裁决"暂不 renormalize、碰到即转"）。
+  本机工作区当前有 **1872 个文件是 CRLF**（`git ls-files --eol`：Examples 565 / data 682 / evidence 67 / atoms 23 / tools 27 / web 50 …），
+  而 Merkle 根与被钉工具的 sha256 **都是对工作树字节算的** ⇒ 换成 LF 的全新检出必然对不上。
+- **证据 1**：655 全程**未改** `data/supply_chain/merkle_roots.json`（git diff 为空）与 ruler 段；`--update` 两次重建后与 HEAD 逐字节一致。
+- **证据 2**：把 655 **开工前**的提交 `09edc1d4` 也做全新检出并跑同一命令 ⇒ **同样红**（ruler 段 5 处 + merkle 段）⇒ 预存在。
+- **证据 3**：本仓工作区（CRLF）跑同一命令 ⇒ **PASS**（这是 5.1 里 PASS 的原因，也是"本地绿、克隆红"的由来）。
+- 影响面：CI 不跑 `tool_integrity --check` 全量（只跑 `--check-test-config`），故 CI 不受影响；**本地 clone 的维护者会看到红**。
+- 本批新增文件（`DCO.md`、`docs/*`、`web/*.js` 等）也落在 CRLF 侧，但**不在被钉/被 Merkle 覆盖的范围**，无门禁影响。
+- 处置：**不改**（一次性 renormalize 会淹没真实改动，且属 2026-09-13 已裁决事项）⇒ 登记为交人项 §六.9。
+
+### 5.5 红线守护（自我声明，均有器械证据）
 
 - **未改** `CORE_TOOLS` 判决逻辑、**未改** 67 条规则、**未改**历史账本（`data/authority/*.jsonl`）、**未改**受控内容目录
   （`atoms/ evidence/ Examples/ Book/` 在 655 全程零 diff，含 5.2 的取证命令）；
@@ -138,6 +158,9 @@ fast / full / ruff / mypy（本批 6 工具）/ 许可证头（active 0 缺）/ 
 6. **门禁三杠杆接入 CI**：是否在 CI 用 `--shard-id/--shard-count` 矩阵、是否用 `result_cache` 短路未变更重跑。
 7. **jsdom 环境**：本机 Node 18 + 受管 jsdom 的 `@exodus/bytes` ESM 不兼容 ⇒ `web_smoke_655.mjs` 只能 SKIP；CI 若用 Node ≥20 可开启真 DOM 冒烟（同因也使 `tools/mermaid_parse_check.mjs` 在本机不可跑——预存在问题）。
 8. 是否 push（现状 ahead = 34）。
+9. **CRLF 漂移的收口**（§5.4）：本机工作区 1872 个 CRLF 文件使"全新检出"下 `tool_integrity --check` 必红
+   （merkle + ruler）；根治需一次性 `git add --renormalize` + 在 LF 工作副本上重钉 `.tool_checksums` + 重建 Merkle 根 + OTS 重锚 ——
+   属 2026-09-13 已裁决"暂不 renormalize"的跨批事项，本批只登记不改。
 
 ## 七、产物清单
 

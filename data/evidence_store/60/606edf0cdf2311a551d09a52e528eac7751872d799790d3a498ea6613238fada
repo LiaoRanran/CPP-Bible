@@ -1,0 +1,14 @@
+{
+  "acquired_at": "2026-09-28T00:02:37",
+  "acquisition_method": "compiler_probe_645",
+  "content": "{\"card\": \"ATOM-LANG-SETJMP-001\", \"clang_version\": \"clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)\", \"fixtures\": [{\"clang_ok\": true, \"fixture\": \"Examples\\\\atoms\\\\_c_setjmp.c\", \"gpp_ok\": true}], \"gpp_version\": \"g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0\", \"grade\": \"L1\"}",
+  "credibility": 0.95,
+  "evidence_id": "606edf0cdf2311a551d09a52e528eac7751872d799790d3a498ea6613238fada",
+  "grade": "L1",
+  "meta": {
+    "card": "ATOM-LANG-SETJMP-001",
+    "compilers": 2
+  },
+  "source_type": "compiler_run",
+  "source_url": null
+}

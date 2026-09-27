@@ -1,0 +1,14 @@
+{
+  "acquired_at": "2026-09-28T00:02:37",
+  "acquisition_method": "compiler_probe_645",
+  "content": "{\"card\": \"ATOM-LANG-INTPROMO-001\", \"clang_version\": \"clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)\", \"fixtures\": [{\"clang_ok\": true, \"fixture\": \"Examples\\\\atoms\\\\_c_intpromo.c\", \"gpp_ok\": true}], \"gpp_version\": \"g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0\", \"grade\": \"L1\"}",
+  "credibility": 0.95,
+  "evidence_id": "beaa36378ef283683192e359284f585fb785f84da786319fbcb9246de02e61e7",
+  "grade": "L1",
+  "meta": {
+    "card": "ATOM-LANG-INTPROMO-001",
+    "compilers": 2
+  },
+  "source_type": "compiler_run",
+  "source_url": null
+}

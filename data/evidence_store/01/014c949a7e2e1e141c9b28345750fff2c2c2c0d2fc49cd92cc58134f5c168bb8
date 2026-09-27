@@ -1,0 +1,14 @@
+{
+  "acquired_at": "2026-09-28T00:02:38",
+  "acquisition_method": "compiler_probe_645",
+  "content": "{\"card\": \"ATOM-MEM-STRBOUND-001\", \"clang_version\": \"clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)\", \"fixtures\": [{\"clang_ok\": true, \"fixture\": \"Examples\\\\atoms\\\\_c_strbound.c\", \"gpp_ok\": true}], \"gpp_version\": \"g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0\", \"grade\": \"L1\"}",
+  "credibility": 0.95,
+  "evidence_id": "014c949a7e2e1e141c9b28345750fff2c2c2c0d2fc49cd92cc58134f5c168bb8",
+  "grade": "L1",
+  "meta": {
+    "card": "ATOM-MEM-STRBOUND-001",
+    "compilers": 2
+  },
+  "source_type": "compiler_run",
+  "source_url": null
+}

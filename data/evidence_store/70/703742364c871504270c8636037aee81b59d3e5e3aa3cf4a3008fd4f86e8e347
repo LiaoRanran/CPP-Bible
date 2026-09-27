@@ -1,0 +1,14 @@
+{
+  "acquired_at": "2026-09-28T00:02:37",
+  "acquisition_method": "compiler_probe_645",
+  "content": "{\"card\": \"ATOM-LANG-MACRO-001\", \"clang_version\": \"clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)\", \"fixtures\": [{\"clang_ok\": true, \"fixture\": \"Examples\\\\atoms\\\\_c_macro.c\", \"gpp_ok\": true}], \"gpp_version\": \"g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0\", \"grade\": \"L1\"}",
+  "credibility": 0.95,
+  "evidence_id": "703742364c871504270c8636037aee81b59d3e5e3aa3cf4a3008fd4f86e8e347",
+  "grade": "L1",
+  "meta": {
+    "card": "ATOM-LANG-MACRO-001",
+    "compilers": 2
+  },
+  "source_type": "compiler_run",
+  "source_url": null
+}
