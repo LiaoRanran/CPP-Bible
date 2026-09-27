@@ -1,0 +1,6 @@
+{
+  "name": "cpp-bible-web-vendor",
+  "private": true,
+  "type": "module",
+  "description": "654 本地化前端依赖（cosmos.gl 3.4.1 + luma.gl 9.3.6 全族统一）。浏览器忽略本文件；它让 Node 把本目录的 .js 当 ESM，便于 CI 静态复核。生成脚本：_fetch_vendor.py"
+}

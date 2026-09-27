@@ -204,10 +204,14 @@ function wireFilters() {
   });
 }
 
-// ── cosmos.gl v3（可选增强）──────────────────────────────────────────────
+// ── cosmos.gl v3（本地 vendor，654 修复）────────────────────────────────
+// 653 用 CDN `+esm` 时，jsDelivr 把依赖写死为绝对 URL，且同时拉入
+// `@luma.gl/core@9.3.5`（经 shadertools@9.3.5）与 `@9.3.6` ⇒ **luma.gl 双份**
+// ⇒ 运行时报错、自动降级 2D。654 改为**本地 vendor**（web/vendor/，版本已统一 9.3.6、
+// 导入已重写为相对路径，可离线）。CDN 不再使用；失败时仍降级 2D（要求 5）。
 async function tryCosmos() {
   try {
-    const mod = await import('https://cdn.jsdelivr.net/npm/@cosmograph/cosmos@3/+esm');
+    const mod = await import('./vendor/cosmos.js');
     const Graph = mod.Graph || mod.default?.Graph;
     if (!Graph) throw new Error('no Graph export');
     const cfg = {
@@ -237,11 +241,13 @@ async function tryCosmos() {
     graph.setPointPositions(P); graph.setPointSizes(S); graph.setPointColors(C); graph.setLinks(L);
     graph.render();
     stage.classList.remove('fallback-note');
-    document.getElementById('mode').textContent = 'GPU · cosmos.gl v3';
+    document.getElementById('mode').textContent = 'GPU · cosmos.gl v3（本地 vendor 3.4.1 / luma.gl 9.3.6）';
+    window.__cosmos_ok = true;   // 供自动化验证探测
     return true;
   } catch (e) {
     stage.classList.add('fallback-note');
     document.getElementById('mode').textContent = '2D canvas（降级）';
+    window.__cosmos_err = String(e && e.message || e);
     return false;
   }
 }

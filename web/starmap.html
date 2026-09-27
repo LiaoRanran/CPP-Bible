@@ -46,8 +46,9 @@
       <canvas id="graph"></canvas>
       <div class="tooltip" id="tip"></div>
     </div>
-    <p class="muted" style="margin-top:12px">优先使用 <b>cosmos.gl v3</b>（CDN, GPU 渲染）；若 CDN 不可达/离线，
-      站点**自动降级**为 2D canvas（同一套三通道编码与交互），并在左下角显式标注——不假装是 GPU 渲染。</p>
+    <p class="muted" style="margin-top:12px">GPU 渲染用 <b>cosmos.gl v3</b>，依赖已<b>本地化到 <span class="kbd">web/vendor/</span></b>
+      （<span class="kbd">cosmos 3.4.1</span> + <span class="kbd">luma.gl 9.3.6</span> 全族统一；离线可用、不依赖 CDN）。
+      若本地依赖仍不可用，站点**自动降级**为 2D canvas（同一套三通道编码与交互），并在左下角显式标注——不假装是 GPU 渲染。</p>
   </section>
 </main>
 <footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="verify.html">现场验哈希</a></footer>
