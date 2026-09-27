@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """知识图谱 L1 回归锁（508 任务5）。
 
 纪律：测试**不得**写真实 `data/knowledge_graph.db`，一律用 `tmp_path` 的库 + 沙箱

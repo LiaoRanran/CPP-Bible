@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """test_core_pbt_651.py — T6 核心 stateful PBT 骨架（651 W2）。
 
 为什么（651 W2-T6）：核心（判决合成 / 账本追加 / 保护器改判条件）目前只靠**样例**测试，

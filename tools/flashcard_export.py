@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """405 闪卡导出（423）：原子 claim + 误解反例 → Anki CSV / Markdown。
 
 让生产出来的知识第一次被学习者消费：闪卡背面不是"教材式讲解"，而是

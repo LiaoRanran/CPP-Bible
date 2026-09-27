@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """安全批量替换某章 cpp 块正文（L2 真机深耕管线的通用引擎）。
 
 把每波手写的临时 `_chNNN_deep.py` 固化为一条命令。工程要点（吸取历史教训）：

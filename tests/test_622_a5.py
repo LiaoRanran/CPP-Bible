@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """622 A5 · VFDR 计算 + 趋势 单测"""
 from __future__ import annotations
 

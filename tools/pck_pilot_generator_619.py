@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """619 B3 · PCK 试点证书生成器（只读派生，不写受控目录）
 
 从现有 atoms/evidence 卡**只读**派生 10 张试点 PCK 证书，逐张用 B2 验证器校验，

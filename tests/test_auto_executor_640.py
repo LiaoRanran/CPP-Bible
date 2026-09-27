@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """640 B3 · auto_executor 安全审计（攻击用例 + 六重护栏触发验证，≥8 例）。"""
 from __future__ import annotations
 

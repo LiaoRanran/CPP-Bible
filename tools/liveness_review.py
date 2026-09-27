@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 B2 · 活性锚人审确认工具（**只追加不修改** · 不直接改卡面）。
 # mypy: ignore_errors
 

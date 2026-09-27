@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """621 C2 · 全量 83 张卡 ABSTAIN 分类 单测"""
 from __future__ import annotations
 

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """633 E1 · 测试债深化分类与长期方案（**只分类，不改测试**）
 
 针对 A2 清理后的**剩余失败**做深度分类（不重复 A2 的断言修复工作），并给出长期方案：

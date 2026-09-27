@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """646 · 阶段 A4 · 证据检索提速（倒排索引，清债 2 续）。
 
 目标（646 §三 A4）：把证据检索从「全量线性扫描」改为「索引查询」，提速 ≥50%。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 C1 · oracle 验证执行工具（**只读** · 不填 `verified_by_oracle`）。
 
 逐卡跑三门禁（`gate_engine.py --check` + `poison_drill.py` + `atom_evidence_replay.py --check`），

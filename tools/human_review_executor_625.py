@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 D3 · 人审执行工具（**只准备框架，不代签**）
 
 设计目标：把「人审判决如何写入 Authority 日志」做成**可复用、可审计**的函数，但**本批不调用、不代签**——

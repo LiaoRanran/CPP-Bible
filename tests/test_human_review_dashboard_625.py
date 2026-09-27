@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 D2 · 人审深色科技风可视化回归测试（≥4 例）。"""
 import os
 import sys

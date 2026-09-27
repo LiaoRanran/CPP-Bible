@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """565 Part 3 · 命题状态图（**只读派生视图**）：把卡里的 `claim_structured` 落成可查询库。
 
 为什么不塞进 knowledge_graph.db：**命题 ≠ 概念**（525"标签袋不是概念图"的教训）。命题是"卡声明的

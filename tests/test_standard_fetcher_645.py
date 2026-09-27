@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 B1 标准获取器单测（fast 组：不依赖真实联网）。
 
 锁定：请求构造/哈希/解析逻辑、失败诚实降级（不崩溃、不编造）、空主题集安全。

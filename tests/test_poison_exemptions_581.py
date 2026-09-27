@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """581 hole B 回归锁：豁免二人锁 + legacy 单列 + reason 背书机器核验。
 
 背景（_worklog_581.md 任务 2）：

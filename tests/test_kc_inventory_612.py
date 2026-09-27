@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """D1 回归测试：KC 知识组件台账（只读）。"""
 import json
 import sys

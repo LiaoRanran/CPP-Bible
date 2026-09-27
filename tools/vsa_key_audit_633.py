@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """633 C1 · vsa_secret.key 备份 + 影响评估（**默认不轮换**）
 
 任务书 §六.C1 / §零.14：**先评估影响，再决定是否轮换**；无论是否轮换都**先备份**；

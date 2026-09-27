@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 A3 · blind_protocol **上岗**（新入队判决强制盲化；历史只标记不修改）。
 
 **与 636 的关系**：636 是**影子设计**（`blind_protocol_636` 只出报告），本模块把它落成

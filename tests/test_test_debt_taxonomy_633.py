@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """633 E1 · test_debt_taxonomy 单测（纯标准库，≥5 例）。编号 E1-1..E1-6。"""
 from __future__ import annotations
 

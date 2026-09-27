@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """638 B2 · RR 冲突分类器（规则间冲突逐条分类）
 
 **636 发现**：23 张 verified 卡**全部**有 RR（规则间冲突），但 636 的记录里

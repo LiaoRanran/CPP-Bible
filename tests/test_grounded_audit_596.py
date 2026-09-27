@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """596 任务3 · grounded 对照报告回归锁。
 
 锁四件事：

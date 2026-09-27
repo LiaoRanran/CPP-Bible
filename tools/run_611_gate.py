@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 收工门禁（Z1）。
 
 逐条跑 611 各新工具的 `--check`（锁死冻结数据与图结构的已知数字）+ 全图 `--check` +

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """616 A3 回归测试：metrics_collector 集成置信序列（cs_* 字段）。"""
 import sys
 from pathlib import Path

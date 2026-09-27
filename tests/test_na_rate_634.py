@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """634 B3 · na_rate_634 单测（纯标准库，≥5 例）。编号 B3-1..B3-6。"""
 from __future__ import annotations
 

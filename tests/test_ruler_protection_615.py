@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 B3 回归测试：判决尺子纳入 tool_integrity 保护（ruler 节）。"""
 import hashlib
 import sys

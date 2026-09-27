@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """638 3.2 · Lifecycle FSM 单测（>=6 例，纯标准库；不碰真实 ledger）。"""
 from __future__ import annotations
 

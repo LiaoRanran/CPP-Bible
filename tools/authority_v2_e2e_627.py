@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 B1 · feature flag `QUEYI_AUTHORITY_V2=1` 端到端验证（5 种投影 V1 vs V2）
 
 **背景**：626 D1 定义了 feature flag `QUEYI_AUTHORITY_V2`，但**从未端到端跑通过**。

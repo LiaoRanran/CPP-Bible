@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 B1 · auto 42 条 `liveness` 字段填充执行（纯标准库）
 
 630 A2 方案甲把 132 条 warn 分成 **auto 42 / human 90**；本工具执行 **auto 42**：

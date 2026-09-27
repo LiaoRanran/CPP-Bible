@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 · 阶段 B2/B3 · 编译器实测 + 双编译器支持（真跑，非降级）。
 
 目标（645 §四 B2/B3）：

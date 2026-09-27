@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """619 B3 单测：PCK 试点证书生成器（tools/pck_pilot_generator_619.py）
 
 验证：10 张源卡存在、样本证书过 B2、已生成的 10 张证书全部过 B2、`--check` 自检。不写盘。

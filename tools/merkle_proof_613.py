@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务E3 · Merkle **包含证明**（per-file）生成与验证。
 
 `merkle_integrity.py` 已给出目录级 Merkle 根（信任根台账）；本工具补上**单文件级**证明：

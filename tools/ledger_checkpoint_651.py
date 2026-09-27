@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """ledger_checkpoint_651.py — T4 账本 checkpoint / 双证明（651 W2，**信任资产**）。
 
 为什么（651 W2-T4）：append-only 账本（452 条 DecisionEvent）若只靠"文件没被改"来保证，

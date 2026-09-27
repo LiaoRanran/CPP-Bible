@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """583 任务 2（N1）回归锁：`tools/prop_asof.py` 只读四轴快照。
 
 任务书 §任务 2 的五条验收，逐条落成用例：

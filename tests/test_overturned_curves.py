@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """573 任务 A 回归锁：三曲线升 v2 + overturned 事件通道（fail-closed）+ survival 只数 M3。
 
 硬不变量：**系统绝不自动产生推翻** —— 事件只能来自人/异族的显式动作，且 `human:<名>`

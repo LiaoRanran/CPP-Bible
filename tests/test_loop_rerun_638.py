@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """638 C1 · 闭环第二次运行单测（>=5 例，纯标准库）。"""
 from __future__ import annotations
 

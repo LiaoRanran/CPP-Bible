@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 C2 · QueYi Core 核心接口抽象设计（**只设计不实现**，v0.1）
 
 设计 5 个核心接口：Claim / Evidence / Attack / Verify / Authority，并给出与现有工具的映射关系。

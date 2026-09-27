@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """630 A1 · 口径差异诊断 单测（6 例）。
 
 含实跑 gate 全量只读求值（`ge.run()`）⇒ module fixture 缓存诊断结果。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 B2 · VSA 凭证**独立验证端**——他验三件套 #2 的验证侧
 
 设计要点：**零 import 本项目工具**（含**不 import 签发端** `vsa_attestation_628`）。

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """attack_edge_generator.py — 候选攻击边自动生成（596 任务1；594 W2 模型的**数据地基**）。
 
 为什么：593 异族调研在本仓 79 命题图上手搓 grounded 求解器，三种自然攻击构造**全部退化**

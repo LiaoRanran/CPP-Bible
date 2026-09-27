@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """608 B2 · I2 编译可复现深化回归锁（7+ 用例）。
 
 覆盖：

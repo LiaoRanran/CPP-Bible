@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """622 A3 · 新逃逸根因分析（有逃逸则根因+修复建议；0 逃逸则深度分析+策略改进）
 
 两条分支：

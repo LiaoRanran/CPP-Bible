@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """637 C · 候选生成器（CandidateGenerator）——为 top 5 问题各想 2-3 个方案
 
 输入：ErrorDetector 的 JSON（默认 `data/637_errors.json`）。

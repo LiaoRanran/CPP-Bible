@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 F1 · QueYi Core 接口抽象 **v0.2**（纯标准库，只读；**只定义不实现**）
 
 在 625 C2 的 v0.1（Claim / Evidence / Attack / Verify 四个接口）基础上扩展为五个：

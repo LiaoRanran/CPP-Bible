@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """prepush_check.py — 本地 / pre-push 快速卫生门禁（复用 CI 的「快」校验）。
 
 CI 里「快」校验（quality / consistency / metrics / compile_gate / audit / expected）

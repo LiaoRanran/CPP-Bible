@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """编译并运行第150章全部自包含示例，真实输出写入 _run/ch150_mine.log。"""
 import os, subprocess, glob
 

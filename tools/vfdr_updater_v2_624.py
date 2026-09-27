@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 A5 · VFDR 更新 v2 + 规则触达热力图 v2 + 盲区缩减报告
 
 **输入（6 轮闭环真跑）**：

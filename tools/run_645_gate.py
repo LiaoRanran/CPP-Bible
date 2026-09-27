@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 · 阶段 G1 · 收工门禁（真实全量，不编造、不「改到绿」）。
 
 门禁逐项（对应 645 §十一 G1 验收）：

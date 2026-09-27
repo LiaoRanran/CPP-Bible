@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 A3 · 自身免疫率仪表盘（纯标准库，自包含 HTML，无外部依赖）
 
 左侧：逃逸率（漏报）· 中间：混淆矩阵 · 右侧：自身免疫率（误报）· 底部：v22 调研引述。

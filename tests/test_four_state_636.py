@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """636 V26-补2 · four_state_636 单测（纯标准库，≥5 例）。编号 VC2-1..VC2-6。"""
 from __future__ import annotations
 

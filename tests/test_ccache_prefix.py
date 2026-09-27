@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """ccache 前缀回归锁（479 任务 3）：只包编译器、可回退、失败分流不受影响。
 
 设计约束（勿弱化）：

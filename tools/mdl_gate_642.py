@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 A5 · MDL 规则准入**上岗**（新规则准入门槛；**只对新规则**，不动现有 67 条）。
 
 **与 636 的关系**：636（`mdl_trial_636`）是**试运行**（离线算 admit/reject），本模块把它落成

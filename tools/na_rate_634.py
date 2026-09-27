@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """634 B3 · N/A 率根因分类（**能算的算，算不了的诚实登记**）
 
 **口径**：§一 记 N/A = 179/1593 = 11.24%（源 `data/mutation/full_baseline_v7.json`）。

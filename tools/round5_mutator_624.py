@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 A4 · 闭环第五轮（针对性跨卡 mutation，策略 X5–X8）
 
 **依据**：A3 的四问分析指出——X1–X4 只触达引用类规则（新增仅 2 条），因为未针对

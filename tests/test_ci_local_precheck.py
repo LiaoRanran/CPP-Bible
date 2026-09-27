@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """锁定 `ci_local_precheck` 的解析器契约。
 
 该工具的价值是"push 前本地复跑 CI 步骤、一次暴露全部失败"，前提是**能把 ci.yml 的步骤

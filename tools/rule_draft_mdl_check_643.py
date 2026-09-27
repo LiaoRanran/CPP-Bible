@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 D3 · **规则草案 MDL 准入检查**（智能层：自动提案规则 #3）。
 
 **定位**：对 D2 的草案跑 642 的 MDL 准入器，并**新增第五档「抗冗余」**

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务C1 · 真实学习行为接入层（append-only，fail-closed）。
 
 612 的学习者镜像只有 `simulate()` 造的模拟掌握度；本工具补上「真实行为 → 事件流」的第一公里。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """EV-ARTIFACT-VERSION-MATCH 回归锁（498 任务 2.3，**台账方案**）。
 
 语义（三级）：卡版本 ≠ 台账登记 ⇒ **block**（真漂移）；卡缺 `artifact_version` 或

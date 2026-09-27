@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 C1 · auto_executor_whitelist_eval_642 单测（评估只读 / 风险分 / 判决面拒绝 / 门槛）。
 编号 C1-1..C1-7。
 """

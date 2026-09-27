@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 A4 · 194 条镜像边对称性验证（**只生成报告，不写入 ledger**）
 
 **背景**：626 C2 审计发现 194 条 `direction == "mis_to_prop"` 的「镜像边」，

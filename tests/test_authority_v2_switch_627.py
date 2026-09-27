@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 B3 · V2 启用/回滚 单测（≥4 例）。"""
 import os
 import sys

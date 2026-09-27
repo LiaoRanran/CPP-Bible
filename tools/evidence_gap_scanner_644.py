@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 E · E1 全库证据不足扫描。
 
 对 28(27) 张卡片全量跑 B2（证据充分性）：

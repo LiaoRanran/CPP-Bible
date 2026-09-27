@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """618 C4 · 测试分类映射表（机器可读，供 C2 计数脚本与 CI 读取）
 
 - 复用 618 C2 test_classifier_618.scan 分类，输出 tests/test_category_map.json：

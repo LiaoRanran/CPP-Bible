@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """620 E1 · 收工门禁（5 项串行检查）
 
 按 620 §六 收工门禁要求，串起 5 项检查：

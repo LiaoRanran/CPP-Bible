@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 C1 · **仓库拆分沙箱验证**（在原仓库之外做，**原仓库零改动**）。
 
 方案（645 D 阶段调研结论 + 647 落地）：**保留历史的按路径拆分**。

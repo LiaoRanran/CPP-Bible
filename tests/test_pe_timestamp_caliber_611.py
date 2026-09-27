@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 A3 · PE 时间戳口径正式化（610 交人项 ③）。
 
 把 610 E3 的实测结论**写进正式报告并锁住**，同时把"改哪份报告、为什么不改另一份"钉成测试。

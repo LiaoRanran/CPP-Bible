@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 A4 · replay manifest_consistency 只读核验 + 机械修复器
 
 **背景**：625 登记的 `manifest_consistency` 5 失配（EV-CONC-002..006）。628 任务0

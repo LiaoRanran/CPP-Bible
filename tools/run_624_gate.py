@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 F1 · 收工门禁（继承 623 的整目录 ruff 口径）
 
 检查项：

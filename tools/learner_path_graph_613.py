@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务C3 · 推荐路径图（拓扑排序 + 掌握度过滤）。
 
 输入：`data/kc_inventory_612.json`（KC / 前置 / 后继 / 难度）+ `data/learner_state_612.jsonl`（掌握度）。

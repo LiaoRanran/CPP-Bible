@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """prop_network_inventory.py — 命题网络台账（592 任务4；**只读生成器**）。
 
 为什么：R4 grounded 论证层要在"命题 + 卡 + 证据"的网络上算可接受集，动手前先把**事实基线**

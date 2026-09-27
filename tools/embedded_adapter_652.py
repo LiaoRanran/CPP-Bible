@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """embedded_adapter_652.py — M5 嵌入式 C 适配包（652 C，**裸金属约束层**）。
 
 为什么（652 C-M5）：C++ 域的 Domain Pack 假设有完整运行时；嵌入式（裸金属）没有堆/异常/RTTI/

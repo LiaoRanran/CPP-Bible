@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 D3 · Snapshot Integrity CI（一次 CI 扫 10 项）
 
 | # | 检查 | 说明 |

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 D1 · 学习者镜像（Learner Twin）门状态监控
 
 v18 调研的开门阈值：**50 条真实学习事件**。本工具只统计与展示门状态，

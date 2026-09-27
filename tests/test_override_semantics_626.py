@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 C2 · OVERRIDE 语义验证回归测试（≥6 例）。"""
 import sys
 import tempfile

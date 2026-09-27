@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 1.4 · 术语接地盘点 + 担保类型映射（只加数据，不改判决）
 
 对 67 条 gate 规则逐条盘「术语接地状态」+「证据担保类型」：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """554 T1：Hypothesis stateful 自动攻击 task_queue（本批最高价值回归）。
 
 纯测试侧：只调 `tools/task_queue` 的**库函数**，DB 重定向到临时 sqlite

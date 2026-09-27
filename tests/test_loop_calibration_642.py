@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 C2 · loop_calibration_642 单测（校准度计算 / 趋势 / 门槛 / 台账 append-only）。
 编号 C2-1..C2-7。
 """

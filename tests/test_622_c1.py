@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """622 C1 · ABSTAIN 分类器升级（v2：verdict 识别 + Authority 交叉验证）单测"""
 from __future__ import annotations
 

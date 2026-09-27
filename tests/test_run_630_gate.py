@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """630 E1 · 收工门禁 单测（6 例）。
 
 **不能在 pytest 里跑完整门禁**（会再跑 pytest 与全量套件）⇒ 行为类断言用

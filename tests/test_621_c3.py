@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """621 C3 · ABSTAIN 与 PCK 集成 单测"""
 from __future__ import annotations
 

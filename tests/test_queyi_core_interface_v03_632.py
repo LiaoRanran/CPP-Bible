@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 F1 · Core 接口 v0.3 单测（纯标准库，≥5 例）。
 
 聚焦 `queyi_core_interface_v03_632`：Evidence 接口的真实适配（EvidenceAdapter）。

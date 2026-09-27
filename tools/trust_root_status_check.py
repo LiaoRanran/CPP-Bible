@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """614 线C C3：信任根状态统一检查（诚实标注）。
 
 检查六项信任根证据，逐项给出**诚实状态**（绝不把占位/替代证据说成"已锚定"）：

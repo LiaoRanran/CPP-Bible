@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 E1 · 收工门禁 单测（≥4 例）。"""
 import os
 import re

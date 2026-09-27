@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 C1 · auto_executor **白名单扩展评估**（只评估，**不实际扩展**）。
 
 **定位**：640 B1 的 `auto_executor_640` 已落地「白名单 5 类 + 六重护栏」。本模块回答：

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """原子知识地图：域归属统计 + 覆盖率门禁（G1.1 的可复算产物）。
 
 把 147 章按知识域（domain）归类并统计真实指标，供「最薄弱优先」排序使用：

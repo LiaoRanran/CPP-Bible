@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 A2 · 30 条真逐条复核决策清单（**只生成清单，不执行复核，不改 annotations**）。
 
 背景：388 条为 5 模板批量授权，逐条独立判断 0（`data/human_review_honesty_615.md`）。

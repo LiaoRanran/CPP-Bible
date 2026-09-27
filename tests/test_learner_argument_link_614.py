@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """614 B4 回归测试：learner_argument_link（学习者-论证层联动）。"""
 import sqlite3
 import sys

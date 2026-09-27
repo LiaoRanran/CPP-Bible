@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 D1/D2 · Authority → Projection Compiler（**唯一方向，禁止反向写回**）
 
 **Authority 是唯一裁定真源**：W2 / PCK / golden / dashboard / textbook 都是**派生视图**。

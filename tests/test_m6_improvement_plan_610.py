@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 E4 · M6 方案落地准备回归锁（**只写文档，不改算子**）。
 
 锁两件事（任务书 E4 的 2 例 + 3 例自加）：

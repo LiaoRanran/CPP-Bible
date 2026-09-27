@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 D1 回归测试：CI 配置确认（非实跑）。"""
 from pathlib import Path
 

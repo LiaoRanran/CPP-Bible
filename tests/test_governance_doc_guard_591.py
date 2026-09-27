@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """591 任务 2 · 治理文档防护回归锁（manifest verify + 弱化指令 scan + preflight）。
 
 全部用临时目录（`tmp_path`）注入，不碰真实 References/。

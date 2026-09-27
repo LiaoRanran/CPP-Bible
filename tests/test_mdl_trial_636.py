@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """636 2.5 · mdl_trial_636 单测（纯标准库，≥5 例）。编号 2.5-1..2.5-6。"""
 from __future__ import annotations
 

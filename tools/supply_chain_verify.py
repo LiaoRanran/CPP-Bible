@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 D3 · 供应链验证：**Merkle 包含证明 + 一致性证明 + append-only 验证**。
 
 三条都是"**不重算全树也能证**"的密码学证明（这是它区别于"把树再建一遍"的地方）：

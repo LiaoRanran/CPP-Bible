@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """618 C2 · 测试分类计数脚本（replay/poison/gate category + 真实验证 vs 脚本自测）
 
 - 扫描 tests/ 下所有 .py，按文件名 + import 内容特征自动分类（617 C1 taxonomy 落地）。

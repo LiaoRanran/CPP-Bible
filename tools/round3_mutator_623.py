@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """623 A4 · 闭环第三轮生成器（针对 A3 逃逸根因 + 策略改进）
 
 **输入**：623 A2 实跑（25 条触达）+ A3 根因（status 过滤缺失、占位居留假象、warn 类未触发）。

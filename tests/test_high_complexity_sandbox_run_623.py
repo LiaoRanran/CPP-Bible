@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """623 A2 · 80 条高复杂度带 mutation 沙箱实跑 单元测试（≥4 例）
 
 覆盖：结果格式 / 沙箱运行可复现性 / 与 622 对比（触达规则数提升）/ 异常处理（缺失 target_card）。

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """human_review_queue.py — 候选攻击边的 **MIS 群组级人审队列**（608 线A 任务1）。
 
 为什么：596 生成了 388 条候选攻击边（388 条边级人审 ≈ 1.89h，见 595），但人审是**群组级**更划算

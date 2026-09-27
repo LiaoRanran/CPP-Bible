@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 A4 · **外部锚接口**（只建接口 + 本地 mock；**不真连任何外部服务**）。
 
 为什么（647 §一 / 642 B1「独立性四级 L1–L4」）：本仓库锚定仍是 **L2** —— RSA 密钥在本地、

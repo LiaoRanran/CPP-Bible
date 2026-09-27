@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """634 任务0 · 开工快照 + pytest 数据副作用根因定位
 
 产出：

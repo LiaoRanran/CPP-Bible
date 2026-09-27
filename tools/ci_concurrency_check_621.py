@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """621 B3 · CI 并发安全检查（静态解析 ci.yml）
 
 规则（「写者先、读者后」）：

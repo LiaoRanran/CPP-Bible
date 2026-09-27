@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 E1 · L2.3 探针单测（纯标准库，≥5 例）。
 
 聚焦 `coverage_probe_l2_3_632`：陈旧证据留痕的结构性覆盖探针。

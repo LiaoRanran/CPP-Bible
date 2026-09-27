@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """470 P0-B → 472 P1-2 回归锁（452 E05 cat 式证据）。
 
 状态迁移：470 落地为 **experimental**（零 Finding、门禁零影响）→ 472 P1-2 **升 warn**

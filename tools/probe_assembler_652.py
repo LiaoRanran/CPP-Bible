@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """probe_assembler_652.py — H5 探针积木化（652 B，**离线造块 + 在线零 LLM 组装 + 差分矩阵**）。
 
 为什么（652 B-H5）：每张新卡都要人写探针，成本高。H5 的思路：**特性积木**（小 C 片段）离线造好，

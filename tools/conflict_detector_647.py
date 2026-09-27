@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 B1 · 冲突检测器**真上岗**（636 影子 → 642 灰度 flag → **647 拦截**）。
 
 三档判决（§四 B1）：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """591 任务 1 · v7 基线冻结回归锁（认账 589 T2 的 M2 un-mask）。
 
 v7 = 1593 变体 / blocked 1405 / escaped 1 / n_a 179 / equivalent 8 / 可判 1406。

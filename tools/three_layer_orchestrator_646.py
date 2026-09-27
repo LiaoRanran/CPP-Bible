@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """646 · 阶段 A2 · 三层耦合真正打通（清债 1 续，替代 645 C2 的 token 猜测匹配）。
 
 目标（646 §三 A2）：用 A1 的**规则→卡显式映射**重跑三层联动，让智能层发现的规则问题

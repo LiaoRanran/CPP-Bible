@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 D1 · OpenTimestamps 锚定回归锁（**只生成待上链、只离线校验**）。
 
 锁四件事（任务书 4 例 + 2 例自加）：

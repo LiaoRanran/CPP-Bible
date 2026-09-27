@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 D1 · 学习者镜像门监控 单测（9 例）。
 
 覆盖任务书 4 项必测：采集器运行且不改源文件 / 门状态计算 / append-only / 阈值可配置。

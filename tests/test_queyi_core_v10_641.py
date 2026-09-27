@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """641 A1–A6 · QueYi Core 协议内核 v1.0 回归测试。
 
 锁的是**内核机制本身**（与领域数据无关）：

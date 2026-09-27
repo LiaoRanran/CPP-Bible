@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """530 T7 · task_queue 回归锁：幂等入队 / 原子认领 / deps 门 / 认领者绑定 / stale 接管。
 
 为什么这些用例值得单独锁（都是**真实会吃亏**的形态）：

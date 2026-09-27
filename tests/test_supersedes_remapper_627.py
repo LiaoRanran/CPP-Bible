@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 A2 · supersedes 重映射 单测（≥4 例）。"""
 import os
 import sys

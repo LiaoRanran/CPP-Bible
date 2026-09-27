@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 C · C2 证据-卡片关联层（多对多）。
 
 建立证据和卡片的多对多关联，独立索引文件 `data/evidence_index.json`，**不修改卡片 YAML**：

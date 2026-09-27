@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 B4 反例语义搜索单测（fast 组：真实语义匹配，只搜不判）。"""
 import sys
 

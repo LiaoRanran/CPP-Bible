@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """S4/S5/S6 机器判定回归（S1/S2/S3 规则由 test_gate_engine.py 覆盖）。
 
 覆盖（红绿成对，正例触发 + 反例不触发）：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 A1 · 冲突检测器**灰度上岗**（`--mode shadow|flag`；`block` 明确未实现，留 643）。
 
 **与 636 的关系**：检测逻辑**不复制**——直接复用 636 影子实现（`conflict_detector_636`），

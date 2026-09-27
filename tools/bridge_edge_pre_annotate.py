@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 A1 · 桥接候选人审预标注工具（**只读** · 不执行人审、不实际加边）。
 
 读取 611 C2 的 98 条桥接候选（`data/bridge_edge_candidates_611.jsonl`），对每条基于三维度自动生成

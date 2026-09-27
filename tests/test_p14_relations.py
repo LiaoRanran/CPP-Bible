@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """472 P1-4（N3）回归锁：refutes/denies 归一 + 未知关系类型 warn。"""
 from __future__ import annotations
 

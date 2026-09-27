@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """646 · 阶段 A1 · 规则→卡显式映射（清债 1，最核心）。
 
 目标（646 §三 A1）：建 67 规则 × 37 卡的多对多映射表，让智能层发现的**规则问题**能自动找到

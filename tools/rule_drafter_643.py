@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 D2 · **规则草案生成器**（智能层：自动提案规则 #2）。
 
 **定位**：基于 D1 的归因（**反例驱动**，A4-D-1），生成 **≤10 条规则草案**，

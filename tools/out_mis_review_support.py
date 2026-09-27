@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 D1 · OUT 的 7 个 MIS 复核工具支持（**只读** · 不执行人审）。
 
 问题：W2 把 7 个 MIS 判为 OUT（IN114/OUT7），且这 7 个的全部攻击边都是 `modify`（保持 low）

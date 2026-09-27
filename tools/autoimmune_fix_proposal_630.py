@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """630 A2 · 自身免疫率口径修复**方案生成**（纯标准库，只读，**不执行修复**）
 
 基于 A1 的 132 条诊断，产出两个方案的**可审清单**：

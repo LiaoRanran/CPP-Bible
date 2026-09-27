@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 D2 · 探针 #2：向量 **L8.4 透明日志伪造**（P0，此前无探针）
 
 向量定义（629 B1）：攻击**他验链的最后一层**——伪造/篡改透明日志本身，

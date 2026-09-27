@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """handoff_auto_652.py — A2/A3 交人项自动化（652 A，真回填但**原文件 sha256 不变**）。
 
 为什么（652 A）：651 留下两条"只 dry-run 未落地"的交人项：

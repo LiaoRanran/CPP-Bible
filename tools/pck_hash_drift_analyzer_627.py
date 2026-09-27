@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 A3 · 56 张 PCK evidence.hash 漂移根因分析（**只分析，不执行**）
 
 **背景**：626 E1 的 PCK 四层验证发现：83 张 PCK 中 **56 张** `evidence.hash`

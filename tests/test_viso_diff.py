@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """535 批次2 · V-iso 阴面形态判据回归锁（`tools/viso_diff.py`）。
 
 为什么这些用例值得单独锁：V-iso 的全部赌注压在"阴面真的是单变量删除、真的删在机制函数里、

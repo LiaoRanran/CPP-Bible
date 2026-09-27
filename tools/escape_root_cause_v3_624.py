@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 A3 · 新逃逸根因分析 v3（跨卡攻击维度）
 
 **背景**：A2 用 60 条跨卡攻击真跑 gate，结果 **escaped 0**（无基线 finding 消失）。

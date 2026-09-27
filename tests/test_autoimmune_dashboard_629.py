@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 A3 · 自身免疫率仪表盘 单测（7 例）。"""
 import os
 import re

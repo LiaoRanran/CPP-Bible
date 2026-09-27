@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """557 Part A · 人审分桶器回归（fast）：四桶正确 / 桶②刻意排除识别 / 排序确定 / 空集不崩。
 
 只测**分桶逻辑**：用 Finding 替身与 tmp 卡，不跑真编译、不写受控目录。

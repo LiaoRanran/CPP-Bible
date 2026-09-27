@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 A2 · ci_pytest_final_clear_632 单测（≥5 例，全只读）。"""
 import sys
 from pathlib import Path

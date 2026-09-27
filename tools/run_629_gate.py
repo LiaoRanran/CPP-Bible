@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 F1 · 收工门禁（纯标准库）
 
 校验项（对应 629.md §十 F1）：

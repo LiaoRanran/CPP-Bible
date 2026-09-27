@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 A3 · W2 重算集成回归锁（--include-human-reviewed + 判决翻转列表）。
 
 **向后兼容是硬要求**：不加人审标注时，结果与 596/594 实证**逐字段一致**

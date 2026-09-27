@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 d5_compile_gate.py — D5 性能附录「基准源码真能编译」门禁
 （确定性、幂等、可接入 CI；深化 E9 的引用完整性门禁）

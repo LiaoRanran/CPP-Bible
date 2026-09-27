@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 阶段 F1/F2 · 优雅代码审计单测（fast）。"""
 import os
 import sys

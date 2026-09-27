@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 E1 · 收工门禁 + 三份报告 + 前后对比
 
 门禁校验（§六 E1）：

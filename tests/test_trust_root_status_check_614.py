@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """614 C3 回归测试：trust_root_status_check（信任根状态诚实标注）。"""
 import sys
 from pathlib import Path

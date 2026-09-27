@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """617 D2 · snapshot_manifest 单测（纯标准库；实时计数仅校验结构与类型）"""
 import os
 import sys

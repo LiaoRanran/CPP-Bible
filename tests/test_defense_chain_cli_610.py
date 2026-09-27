@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 B2 · 辩护链 CLI + 批量报告回归锁（show/what-if/report/stats/list-*/--check）。
 
 锁八件事（任务书 B2 的 8 例）：

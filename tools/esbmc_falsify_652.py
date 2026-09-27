@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """esbmc_falsify_652.py — H6 ESBMC falsification 试点（652 B，**可界算小探针 → witness**）。
 
 为什么（652 B-H6）：真机实测只能给"这个编译器这个档位"的行为；对**有界**小探针，可用

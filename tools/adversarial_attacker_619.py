@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """619 A2 · 攻击者原型（只读 replay over v7 baseline）
 
 不生成新 mutation，不对受控目录写盘（619 §五/§六）。仅把 A1 的攻击目标函数作用在

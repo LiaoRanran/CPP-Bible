@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """630 A3 · 修复后干跑复算 单测（6 例）。
 
 含真求值（gate `_prop_liveness_ok` / `principal_ok`）⇒ module fixture 缓存。

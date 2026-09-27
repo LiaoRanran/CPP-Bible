@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 [D2] L2 沙箱强制还原的单测。
 
 聚焦新增的 `_git_checkout` 兜底逻辑：字节级还原失败时，仅对**被变异的那一张卡**

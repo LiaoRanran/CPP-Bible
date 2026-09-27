@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 C1 · VSA 非对称签名升级（**纯标准库** RSA-2048 / PKCS#1 v1.5）
 
 628 的 VSA 用 HMAC-SHA256——对称密钥 ⇒ 只能证明「持有密钥的主体生成了凭证」，

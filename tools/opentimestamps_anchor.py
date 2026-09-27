@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 D1 · OpenTimestamps 锚定：**生成 .ots 待上链文件 + 离线校验**（**不上日历、不上链**）。
 
 铁律承接 609 任务书第 9 条：**不实际上链**。本工具只做两件事：

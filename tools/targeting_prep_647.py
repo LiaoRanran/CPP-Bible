@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 E1–E3 · **打靶准备交付物校验**（调研文档完整性 + 可执行性，只读）。
 
 647 §七 E 线的交付物是**三份文档**（不建卡、不写规则）：

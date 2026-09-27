@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 E2 · 编译可复现性深化回归锁（12 宏 + 4 nm + 4 objdump + diff 替代品）。
 
 锁四件事（任务书 4 例 + 3 例自加）：

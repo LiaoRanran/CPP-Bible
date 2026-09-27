@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 C2 · 镜像边审计（`symmetry_proof_id`）
 
 国外大模型要求：「镜像边」应从**自动事实**变成**有条件事实**——

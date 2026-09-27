@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 B1 · DecisionEvent v2 + AuthorityLedger（Authority 单一真源的核心数据结构）
 
 **只有 Authority Ledger 有「人决定了什么」的权力**；W2/PCK/golden 都是派生视图（626 D 线 Projection Compiler）。

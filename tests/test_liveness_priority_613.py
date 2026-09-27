@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """A1 回归测试：liveness_priority_613（活性锚优先级排序，只读）。"""
 import sys
 from pathlib import Path

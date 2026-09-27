@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """618 B2 · independence_level 接入 gate 报告（独立报告工具，不改 gate_engine.py）
 
 - 读取 gate 基线数字（data/SNAPSHOT_MANIFEST_617.json 的 gate 段，只读）

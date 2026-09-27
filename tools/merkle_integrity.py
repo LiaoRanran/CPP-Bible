@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """merkle_integrity.py — 目录级 Merkle 完整性层（601 任务1；600 调研阶段1，性价比最高的一层）。
 
 为什么：`tool_integrity` 钉的是**几个文件**的 hash；600 调研指出 585 攻击1 的真盲点是

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 D3 · oracle 验证计划（**只读** · 不跑任何 --check）。
 
 问题：583/610 实测 `verified_by_oracle` **103 张卡 0 张填**（66 证据卡 + 37 原子卡）。

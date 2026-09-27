@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 线 D · D3：用户掌握度数据结构 + 存储（**append-only** + BKT 递推 + 模拟数据）。
 
 掌握度状态（每个 (user_id, kc_id) 一条最新记录）：

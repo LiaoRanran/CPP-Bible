@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 B3 · 透明日志 单测（9 例）。
 
 幂等性说明：**追加类用例一律把日志指向临时文件**（`T.LOG_ENV` 覆盖），

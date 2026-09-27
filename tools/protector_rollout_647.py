@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 B5(联调) · 五个保护器**真上岗联调**（证：真上岗了、不互相打架、可一键回滚）。
 
 联调对象（全部 647 版，**enforce 模式**）：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """633 任务0 · 全量债务盘点（静态扫描，不跑 pytest）
 
 本批最重要的任务：**先全量盘点，再一波端一大批**。7 个维度静态扫描，产出

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """621 C1 · ABSTAIN 六态分类器（雷6：未知检测 / 弃权三态）
 
 六态：SUPPORTED / REFUTED / UNDECIDED / INSUFFICIENT_EVIDENCE / CONFLICTED / STALE

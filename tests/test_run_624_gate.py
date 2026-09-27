@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 F1 收工门禁 · 单元测试（≥3 例）。"""
 import os
 import sys

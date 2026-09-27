@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """623 C1 · 收工门禁（整目录 ruff 口径统一）
 
 **问题**：622 的收工门禁对 623 这批"只跑本批新文件 ruff"——这会让 **tools/ 的存量债**

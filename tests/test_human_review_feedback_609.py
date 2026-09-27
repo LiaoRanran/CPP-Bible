@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 A4 · 人审反馈闭环回归锁（拒绝原因 4 分类 + 反馈规则）。
 
 锁的是 4 类发动机our == 4 类 action 的**逐类正确性**，以及"闭环止于建议"这条边界：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 1.5 · 种子击败器台账 + taint 标记（只加数据，不改判决）
 
 为**全部 verified 卡**生成 ≥1 条**击败器（defeater）**：

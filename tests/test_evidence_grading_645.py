@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 B5 证据等级单测（fast 组：真实证据库分级）。"""
 import sys
 

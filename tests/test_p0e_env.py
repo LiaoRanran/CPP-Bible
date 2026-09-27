@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """470 P0-E 回归锁（452 E06）：环境量进断言键 = block；仅留痕 = advice；弱词不误伤。"""
 from __future__ import annotations
 

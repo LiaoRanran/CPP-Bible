@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 B5 · MDL 准入真上岗回归锁（编号 B5-1..B5-7）。"""
 from __future__ import annotations
 

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """638 C1 · 闭环第二次运行（用**调过的规则**再跑一遍 637 闭环）
 
 按序跑 637 闭环的五个阶段（**在进程内调用**，不写 637 的产物文件）：

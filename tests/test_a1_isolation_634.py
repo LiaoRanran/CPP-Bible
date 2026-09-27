@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """634 A1 · 生产 data/ 写隔离单测（纯标准库，≥5 例）。编号 A1-1..A1-6。
 
 直接加载根级 `conftest.py` 的助手函数，在 tmp 目录上验证（不碰真实 data/）。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """638 C2 · 闭环规则调优（据 637 质量审计调阈值与规则）
 
 **依据**：638 任务0 对 637 闭环第一次产出的复盘（`data/638_baseline.md` §2.5），

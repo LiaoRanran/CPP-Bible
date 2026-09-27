@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """620 A3 · 攻击目标函数权重校准实验（6 种权重对比，供人拍板）
 
 对 619 A1 定义的 4 个可计算子目标，系统比较 6 种权重取向：

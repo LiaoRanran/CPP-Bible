@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 A1 · V2 flag 接入验证（V1/V2 双路径数字一致 + 向后兼容）
 
 验证内容：

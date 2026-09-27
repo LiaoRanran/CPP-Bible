@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 C · C4 证据库迁移工具（只读迁移，不修改原文件）。
 
 把现有 evidence/ 文件的关键事实迁移到头部层证据库 `data/evidence_store/`：

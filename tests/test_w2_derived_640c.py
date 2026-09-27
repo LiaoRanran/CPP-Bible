@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """640c A1 · 派生量单一权威源（`tools/w2_derived_640c.py`）回归测试。
 
 锁三件事：

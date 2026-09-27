@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 1.2 · τ_d 测量 + 逃逸发现渠道分布（只加测量，不改判决）
 
 τ_d = 「逃逸被暴露」→「对应规则被修补」的间隔（天）。

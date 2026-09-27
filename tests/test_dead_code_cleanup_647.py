@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 D3 · 死代码清理回归锁（编号 D3-1..D3-5）。"""
 from __future__ import annotations
 

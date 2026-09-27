@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 E4 · **闭环扩大（条件触发）**（抗 Goodhart #4）。
 
 **定位**：按 inbox 的**条件**决定是否扩大 `auto_executor` 白名单：

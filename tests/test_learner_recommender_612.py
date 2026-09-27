@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """D4 回归测试：基于掌握度的内容推荐原型（只读）。"""
 import sys
 from pathlib import Path

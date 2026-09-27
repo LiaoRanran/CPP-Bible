@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 D4 多源交叉验证器单测（V4-1..V4-4）。"""
 from __future__ import annotations
 

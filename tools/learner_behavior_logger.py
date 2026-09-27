@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """614 线B B1：真实学习行为采集 + BKT 递推集成（append-only 行为日志）。
 
 行为事件（每条 = 一次学习交互）：

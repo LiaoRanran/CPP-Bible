@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """交互式人审确认工具：基于 AI 预标注报告，让人逐条确认后保存决策。
 不直接写入 annotations（等 609 human_review_cli.py 完成后再批量执行），
 只做确认和记录，确保人审权力在人手里。

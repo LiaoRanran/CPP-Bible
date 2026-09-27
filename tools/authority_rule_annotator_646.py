@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """646 · 阶段 A5 · 账本规则字段补全（清债 3）。
 
 目标（646 §三 A5）：用 A1 的规则→卡映射，**反推** 452 条 Authority 判决事件各自涉及的规则，

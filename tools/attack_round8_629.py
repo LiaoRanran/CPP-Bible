@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 D2 · 第八轮攻击（沙箱实跑，复用 622 的 apply API 与 6 重护栏）
 
 对 D1 选出的 Top20 种子，用 `tools/sandbox_apply_622.py` 的沙箱逐条实跑 gate 判决：

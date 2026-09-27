@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """616 D1 回归测试：他验三件套架构设计。"""
 from pathlib import Path
 

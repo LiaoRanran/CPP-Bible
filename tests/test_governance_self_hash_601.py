@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """601 任务 0.4 · 治理 manifest 自校验（`self_hash`）回归锁。
 
 病（591 自承的信任边界）：manifest 是信任根的一部分，却**自身不在校验范围内** —— 谁改基准谁自签。

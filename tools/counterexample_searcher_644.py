@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 D · D3 反例搜索器（原型级，§十二.3 只搜不判）。
 
 功能：对给定结论，搜索反例候选：

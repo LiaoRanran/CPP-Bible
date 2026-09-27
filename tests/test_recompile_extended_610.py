@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 E3 · 编译可复现性加严检查回归锁（跨时间窗口 + 符号表 + 段 + 字符串表）。
 
 **CORE 改动纪律**：本批只**追加** `_recompile_invariant_extended` 与两个辅助函数，

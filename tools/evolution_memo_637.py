@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """637 E · 进化建议书（EvolutionMemo）——"我觉得下一步该做什么"
 
 输入：CostBenefit 的排序结果（默认 `data/637_scored.json`），

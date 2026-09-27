@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """seeker_replay_651.py — H1 evidence_seeker_v2 回放（651 W1，**只读/旁路**）。
 
 为什么（651 W1-H1）：在把证据检索接进证书流之前，必须先在**历史卡**上回放，看它

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """一键推送尝试 + 网络诊断。
 
 本环境已知问题：SSH 认证通（ssh -T）但 git-receive-pack 数据通道在 22/443

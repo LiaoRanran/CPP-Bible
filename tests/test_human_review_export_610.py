@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 A3 · 人审数据导出回归锁（JSON/CSV/Markdown/单 MIS + --check）。
 
 锁五件事（任务书 5 例 + 2 例自加）：

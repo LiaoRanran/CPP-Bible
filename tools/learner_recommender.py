@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 线 D · D4：基于掌握度的内容推荐原型（**只读**）。
 
 综合「用户掌握度（learner_state）+ KC 台账（kc_inventory）」推荐下一张学习卡。

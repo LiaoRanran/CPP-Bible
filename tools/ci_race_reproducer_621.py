@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """621 B2 · CI 并发竞态本地复现工具
 
 用途：在本地复现「gate 与 replay 并发 ⇒ gate 报假 BLOCK」的竞态（619 BLOCK 误报根因），

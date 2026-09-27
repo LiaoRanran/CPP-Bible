@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """weighted_af_solver.py — W2 可信度加权 AF 求解器（596 任务2；594 唯一解除退化的模型）。
 
 背景（593/594 实证，先核实再用）：本仓 79 命题 + 误区库的自然攻击关系有三种构造，全部退化：

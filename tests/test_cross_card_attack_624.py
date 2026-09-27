@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 A1 跨卡一致性攻击 · 单元测试（≥8 例）。"""
 import os
 import sys

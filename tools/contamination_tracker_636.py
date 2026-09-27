@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """636 V26-补1 · 污染传播自动追踪器（**影子**）
 
 从 635 击败器台账的 `taint=true` 卡里选 1 张，**自动追踪**：它被引用在哪些其他卡的正文/证据里；

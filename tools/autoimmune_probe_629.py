@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 A2 · 误报注入探针（Negative Control，纯标准库，只读）
 
 **目的**：A1 只能度量「已验证卡被 warn 多少」（含大量口径错配）。A2 要回答更难的问题：

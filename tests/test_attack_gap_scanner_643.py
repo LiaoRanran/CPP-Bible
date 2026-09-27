@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 B2 · attack_gap_scanner_643 单测（深度判据/35 向量/低深度清单/引用扫描/只读）。
 编号 B2-1..B2-8。
 """

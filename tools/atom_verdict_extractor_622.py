@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """622 C2 · 原子卡 verdict 提取（37 张，**不修改原始卡**）
 
 **为什么需要**：621 C2 发现 37 张原子卡**全部** UNDECIDED，根因是原子卡

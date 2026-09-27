@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 D2 回归测试：学习者镜像闭环验证（**模拟数据**，不写 learner_state.json）。"""
 import sys
 from pathlib import Path

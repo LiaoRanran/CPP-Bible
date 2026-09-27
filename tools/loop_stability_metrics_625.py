@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 B2 · 雷2 闭环稳定指标 + 触发标准①验证
 
 **输入**：620-625 各轮沙箱实跑 JSON（见 ROUNDS）。

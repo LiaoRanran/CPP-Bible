@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """ci_local_precheck.py — 本地复跑 CI `quality` job 的步骤，push 前预检，避免"修一步推一次"。
 
 为什么要它（2026-09-10 三次盲查的教训）

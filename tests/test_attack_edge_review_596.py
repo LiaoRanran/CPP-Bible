@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """596 任务4 · 候选攻击边人审接口回归锁。
 
 锁四件事：

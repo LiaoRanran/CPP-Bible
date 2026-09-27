@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """B2 回归测试：D5 基准源路径解析（库根优先 + `_archive/benchmarks/` 兜底）。
 
 守护：基准源 2026 迁至 `_archive/benchmarks/` 后，两个 D5 门禁曾全红（appendix ERROR=119 /

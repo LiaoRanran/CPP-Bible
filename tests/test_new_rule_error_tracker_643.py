@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 E1 · new_rule_error_tracker_643 单测（无数据/记账/推翻/幂等/独立台账）。
 编号 E1-1..E1-8。台账走 `_P["path"]` 重定向到 tmp（**不污染 data/**）。
 """

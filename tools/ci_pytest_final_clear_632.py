@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 A2 · CI pytest 剩余项清零（纯标准库，只读）。
 
 631 A4（data/ci_pytest_final_631.md）报告 pytest 剩 5 项红。本工具：

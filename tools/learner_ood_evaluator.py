@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """614 线B B3：学习效果验证（OOD 题测试 + 跃迁触发条件）。
 
 OOD（Out-of-Distribution）题：不在 Examples/ 中的新题，测试**迁移能力**（脱离例题后能否独立运用）。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """405 闪卡导出回归锁：卡型生成/Anki CSV 格式/全量覆盖/空字段零容忍。"""
 from __future__ import annotations
 

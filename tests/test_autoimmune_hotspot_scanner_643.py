@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 B3 · autoimmune_hotspot_scanner_643 单测（分类/阈值边界/数据缺口/只读）。
 编号 B3-1..B3-8。
 """

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 A2 · PCK hash 漂移处置执行（83 张全量重算，**不判失效**）
 
 627 A3 只做了根因分类（content_drift 56 + hash_absent 26 + ref_missing 1 = 83），

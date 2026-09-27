@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 C1 · rule_precondition_analyzer_643 单测（AST 解析/信号/盲点/规模/只读）。
 编号 C1-1..C1-8。
 """

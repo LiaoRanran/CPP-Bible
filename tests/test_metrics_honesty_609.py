@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 E1 · 度量诚实性回归锁（C-P 精确区间 + 曲线口径修正 + 方差声明）。
 
 锁四件事（任务书 4 例 + 4 例自加）：

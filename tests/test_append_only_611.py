@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 A1 · `verify_append_only` 字节前缀快路径回归锁（610 交人项 ④）。
 
 **问题**：旧实现是 `splitlines(keepends=True)` 的**行级**逐字节比对 ⇒

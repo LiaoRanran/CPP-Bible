@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 线 D · D2：BKT（贝叶斯知识追踪）最小实现（**纯标准库**，零依赖）。
 
 BKT 四参数：

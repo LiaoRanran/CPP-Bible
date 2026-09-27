@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 C1 · human 90 交互式填充助手（纯标准库，只读，绝不代决策）。
 
 读取 631 留下的 `data/autoimmune_human_queue_631.jsonl`（90 条 human 字段），

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """639 E1 单测：门禁工具（轻量，不触发全量 pytest）。"""
 import os
 import sys

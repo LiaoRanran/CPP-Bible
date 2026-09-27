@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """640 A2 单测：闭环路线图对齐（≥5 例）。"""
 from __future__ import annotations
 

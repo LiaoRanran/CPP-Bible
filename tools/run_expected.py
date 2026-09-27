@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """run_expected.py — 运行含 //@ 期望标记的 main 块并逐条断言 stdout。
 
 L2 真机深耕会在会产生输出的语句行尾写 `//@ <期望>`。此前该标记纯装饰、无人校验；

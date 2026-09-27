@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """630 C3 · 自身免疫率阈值对照 单测（6 例）。"""
 import json
 import os

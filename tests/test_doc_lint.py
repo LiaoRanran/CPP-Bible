@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """doc_lint 回归锁（479 任务 2）：规则名/数字/工具名三类检查 + 误报抑制 + 退出码。"""
 from __future__ import annotations
 

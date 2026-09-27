@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """633 B2 · tool_debt_audit 单测（纯标准库，≥5 例）。编号 B2-1..B2-6。"""
 from __future__ import annotations
 

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 B1 · 活性锚自动候选生成工具（**只读** · 不填卡、不改任何命题文件）。
 
 读取 79 命题中 **50 条缺 `liveness` 的 observation**（同 `proposition_liveness_audit` 判据），

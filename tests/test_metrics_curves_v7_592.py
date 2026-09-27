@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """592 任务1 · metrics curves 度量诚实化回归锁（v1 → v7）。
 
 病：报告层看的 `curves.mutation_escape_rate` 曾是 v1 的 0.2374（23.7%），而真实基线是

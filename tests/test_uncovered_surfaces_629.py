@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 B3 · 未覆盖攻击面清单与优先级 单测（7 例）。"""
 import os
 import sys

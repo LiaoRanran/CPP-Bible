@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 新工具回归测试（**图结构/口径不变量** + 派生量走权威源）。
 
 **640c A1/A2**：原版把 W2 派生量写死（`out_mis_count == 7`、承重 107、最大级联 1），

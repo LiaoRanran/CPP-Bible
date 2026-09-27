@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 D1 · 尺子入根 22→>30 回归测试（≥4 例）。"""
 import os
 import re

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务B3 · CI quality job 全步骤验收（本地复跑 + 记录，不改任何文件）。
 
 逐个复跑 `.github/workflows/ci.yml` 中 **quality job** 的硬门禁步骤

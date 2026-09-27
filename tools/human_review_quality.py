@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 A2 · 人审质量控制（automation bias 检测 + 陷阱题）。
 
 **只检测、只标记**——复核标记是人要处理的东西，本工具绝不自动改判、绝不自动执行人审。

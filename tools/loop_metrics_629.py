@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 D3 · 闭环三维联测（逃逸率 × 自身免疫率 × 触达率，纯标准库，只读）
 
 回答一个此前没人回答过的问题：**gate 的三向指标是否互相冲突？**

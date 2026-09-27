@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """ATOM-VERIFY-REASON 回归锁（494 任务 5 / 491 决策日志）。
 
 语义：status ∈ {verified, human-verified} 的原子必须有非空 `verified_reason`——

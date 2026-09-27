@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 D4 · rule_draft_anti_ripple_643 单测（等级/阈值/代理标记/边界登记）。
 编号 D4-1..D4-7。
 """

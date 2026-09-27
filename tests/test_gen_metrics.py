@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """锁定 gen_metrics._fix_prose 的真实回归：整文件行尾伪 diff。"""
 import gen_metrics as gm
 

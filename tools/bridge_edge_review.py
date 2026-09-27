@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 A2 · 桥接边人审执行工具（**只追加不修改** · 不直接改攻击边数据）。
 
 人审对 611 C2 的 98 条桥接候选做决策，把决策**只追加**到 `data/bridge_edge_review_612.jsonl`

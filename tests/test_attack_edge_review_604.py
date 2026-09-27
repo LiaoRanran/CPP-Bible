@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """604 任务4 · 群组级人审 + automation bias + 反馈闭环 回归锁。
 
 锁六件事：

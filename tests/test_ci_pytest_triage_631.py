@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 A1 · CI pytest 失败分类 单测（6 例）。
 
 只读解析已落盘的原始输出，不重跑全量。

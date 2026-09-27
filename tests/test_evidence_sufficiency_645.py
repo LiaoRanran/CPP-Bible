@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 B6 证据充分性单测（fast 组：真实 28 卡判定）。"""
 import sys
 

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 A2 攻击生成器单测（fast 组：文本变异 + 结构检查，不调用编译器）。
 
 锁定：5 类算子真实、变异不碰受控目录、结构不变量检查正确、逃逸归因正确、≥20 变异、对比有差异。

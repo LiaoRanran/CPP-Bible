@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """623 E1 · 高复杂度带攻击面分析
 
 **问题**（622 E2 Horizon 曲线）：高复杂度带（complexity 60-80+/80-100）只触发 **warn 级**规则

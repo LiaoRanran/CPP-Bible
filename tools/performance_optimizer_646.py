@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """646 · 阶段 A3 · 性能优化（工具速度，清债 2）。
 
 目标（646 §三 A3）：对耦合管线里最慢的若干工作负载做**可测量的提速 ≥30%**，前后对比留档。

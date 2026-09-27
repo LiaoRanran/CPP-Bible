@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """618 F2 · run_618_gate 单测（≥3 例）
 
 测试卫生：打桩一律走 `pytest.MonkeyPatch.context()`（**必自恢复**）。

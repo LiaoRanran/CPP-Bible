@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """tools/data_sanity_audit.py — 数据健全性审计（报告型，离线跑）。
 
 把 L2 深耕三轮沉淀的三类真实错误模式固化为可复用的全书扫描能力，

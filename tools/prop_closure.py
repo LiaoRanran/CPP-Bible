@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """prop_closure.py — 命题闭包（582 N2 落地的**只读**基础设施；592 任务3）。
 
 为什么需要：R4 grounded 论证层要算"全局可接受集"，前置是**依赖闭包**——一条命题成立与否，

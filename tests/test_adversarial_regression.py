@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """adversarial_regression 回归锁（494 任务 6）。
 
 纪律：测试**不真跑探针**（那是 `--dir` 实跑路径的职责，耗时且依赖沙箱目录），

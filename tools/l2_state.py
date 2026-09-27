@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """l2_state.py — L2 深耕覆盖状态机（摆脱 MEMORY 文本记账）。
 
 L2 真机深耕按章清理「纯注释型 cpp 块」。此前每章状态（剩几个、哪个 commit 清的）

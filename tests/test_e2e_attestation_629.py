@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 C4 · 端到端他验编排 单测（6 例）。
 
 module 级 fixture 跑一次真实端到端（约 5-10s：含 RSA-2048 生成 + 独立验证者子进程）。

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """E2 回归测试：in_toto_link（link 元数据 · HMAC 对称签名，非标准非对称）。"""
 import sys
 from pathlib import Path

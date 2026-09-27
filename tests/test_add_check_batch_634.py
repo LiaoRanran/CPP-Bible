@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """634 A2 · 79 个老工具 --check 批补 单测（纯标准库，≥5 例）。编号 A2-1..A2-4。
 
 对冻结清单 `data/add_check_targets_634.json` 逐工具参数化验证 `--check` exit 0。

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """618 A3 · escaped/equivalent 的 L2b 精确工具（e-process mixture + L3 shrinkage）
 
 - L2b：e-process mixture 的 anytime 上界。混合先验取 Beta(1,1)（均匀），e-值

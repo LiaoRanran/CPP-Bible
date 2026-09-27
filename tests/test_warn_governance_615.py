@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 C1 回归测试：warn_governance（不增锁机制）。"""
 import sys
 from pathlib import Path

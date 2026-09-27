@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 B2 · anti-windup **真上岗**（636 影子 → 642 灰度标记 → **647 冻结超预算队列**）。
 
 647 与 642 的**唯一差别**（§四 B2）：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 B3 · fail-closed 全量审计（**只审计，不修复**）。
 
 对照 641 D 线的「信任根缺失 ⇒ FAIL」口径，扫描全仓 **fail-open** 反模式：

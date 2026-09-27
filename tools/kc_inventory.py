@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 线 D · D1：KC（知识组件）台账工具（**只读**）。
 
 从 37 张原子卡（ATOM-*.md）抽取 KC 台账，作为「学习者镜像」原型的知识图谱底座：

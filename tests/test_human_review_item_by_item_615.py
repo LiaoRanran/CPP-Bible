@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 A2 回归测试：human_review_item_by_item_615（逐条复核决策清单）。"""
 import sys
 from pathlib import Path

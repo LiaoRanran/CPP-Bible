@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """task_state.py — 任务状态文件工具（494 任务 7，规格 492 §四）：断点续跑的最小闭环。
 
 为什么需要（492 §4.1）

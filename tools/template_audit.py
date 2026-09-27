@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """template_audit.py — 章节作者性审计：模板化/套话节扫描（终极打磨的自查工具）
 
 背景

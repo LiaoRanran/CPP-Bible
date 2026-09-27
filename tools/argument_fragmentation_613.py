@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务D2 · 论证图碎片化报告（**区分"真实现状"与"加桥投影"**）。
 
 核心诚实口径：611/612 的"加桥 11→7、覆盖 66%→80%"是**假设 98 条候选边全部成立**的投影；

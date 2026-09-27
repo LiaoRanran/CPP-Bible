@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 A1 · CI pytest 失败用例逐条对齐（纯标准库，只读）
 
 输入：已落盘的原始全量输出 `data/ci_pytest_raw_631.txt`

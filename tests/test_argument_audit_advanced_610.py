@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 C2 · 高级漏洞检测回归锁（modify 比例 / rubber-stamp / 主题不平衡 / 命题过载 / MIS 过载 / 循环论证）。
 
 锁七件事（任务书 C2 的 7 例 + 2 例自加）：

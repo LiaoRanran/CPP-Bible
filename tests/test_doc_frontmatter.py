@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """doc_frontmatter 回归锁（498 任务 1）。
 
 锁三件易错事：①字段推导（编号/archive/无编号 slug）②幂等（第二次 apply 改动 0）

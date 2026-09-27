@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 · 阶段 A1 · 问题发现器重建（基于真实数据，非启发式凑数）。
 
 目标（645 §三 A1）：重建问题发现器，输出 Top 10 问题，每条带：

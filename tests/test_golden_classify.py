@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """530 任务5：golden_lock 的 warn 会计制度（强制 `--classify` + 四桶复算）。
 
 为什么值得单独一个模块：本任务的两条硬约束都是**"人能核对的账"**，而不是顺手加的开关——

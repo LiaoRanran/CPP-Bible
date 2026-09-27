@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 B5 · MDL 规则准入**真上岗**（636 试运行 → 642 出结论 → **647 不过不给上线**）。
 
 三档语义（§四 B5）：

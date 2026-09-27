@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """640 A5 · conftest 会话清理器安全化单测（≥6 例）。
 
 直接测根级 conftest 的分类/日志逻辑（不整会话跑）：

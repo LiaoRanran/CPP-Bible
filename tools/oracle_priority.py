@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 C2 · oracle 验证优先级排序工具（**只读** · 不修改任何文件）。
 
 对 103 张卡（66 证据 + 37 原子）按**五维度加权**给出 oracle 验证优先级（建议，最终由人审决定）：

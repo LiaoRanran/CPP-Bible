@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """565 Part 1 · 把形容词算成数字的**统计原语库**（纯标准库；无 scipy/numpy）。
 
 来历：563 调研（`_arch_v6/probe_bounds.py`）已把 C-P 精确区间 / rule-of-three / 样本量亲算复现；

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 C1 · 论证图连通分量分析（碎片化定量化）。
 
 锁五件事：

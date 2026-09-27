@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """641 B1–B5 · C++ 领域插件与适配器回归测试。
 
 锁的是"**内核 + C++ 适配器 == legacy**"这一对账关系，以及适配器的**安全边界**：

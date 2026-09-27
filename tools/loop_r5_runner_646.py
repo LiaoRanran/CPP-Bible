@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """646 · 阶段 A6 · R5 扩样本验证（清债 6）。
 
 目标（646 §三 A6）：645 的 R5=1.0 来自**极小样本**（3 条草案全「可行动」），可能过拟合。

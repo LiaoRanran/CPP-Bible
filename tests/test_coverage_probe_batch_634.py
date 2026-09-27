@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """634 B1 · coverage 批探针单测（纯标准库，≥5 例 + 14 参数化）。编号 B1-1..B1-5。"""
 from __future__ import annotations
 

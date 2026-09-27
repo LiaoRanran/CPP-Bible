@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """640 B1 · 闭环自动执行层（auto_executor）——白名单 + 六重护栏
 
 **定位**：闭环（637/638）一直是影子模式——只提建议不执行。本工具给闭环加

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 阶段0 · pytest_two_phase_643 单测（命令定义 / junit 计数 / 标记机制 / 预算）。
 编号 P0-1..P0-7。**本模块不真跑 pytest**（真跑由 `run_643_gate` 与命令行负责）。
 """

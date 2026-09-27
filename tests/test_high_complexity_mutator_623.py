@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """623 A1 · 高复杂度带 mutation 生成器单元测试（≥8 例）
 
 覆盖：4 策略各 1 例 + 复杂度评分 + 规则触达预测 + 去重 + 异常处理。

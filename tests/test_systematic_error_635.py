@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 V26-2 · systematic_error_635 单测（纯标准库，≥5 例）。编号 V2-1..V2-6。"""
 from __future__ import annotations
 

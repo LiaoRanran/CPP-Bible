@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 C2 · OVERRIDE 语义验证（operation + result 拆开）
 
 **P0-D**：旧 `power: OVERRIDE` 把「操作」和「结果」混在一个字段里，无法回答"替换成了什么"。

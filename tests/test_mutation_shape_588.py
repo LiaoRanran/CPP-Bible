@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """588 任务 0 · mutation_shape_audit 的回归测试（只读、幂等）。
 
 不跑 replay / 不碰受控目录工件；只在内存里跑审计函数并比对。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 C1 · 论证可视化回归锁（自包含 HTML + SVG 圆形布局 + 仪表盘 + Top10）。
 
 锁五件事（任务书 5 例 + 2 例自加）：

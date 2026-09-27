@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 E · E3 头部层-尾端验证器联动。
 
 功能（只读联动，§九.7）：头部层获取的新证据，喂给尾端验证器；

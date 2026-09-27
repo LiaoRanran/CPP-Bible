@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 E2 · Review Pack v2 回归测试（≥8 例）。"""
 import json
 import os

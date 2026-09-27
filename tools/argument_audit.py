@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 C1 · 论证漏洞检测（智能原型 2：**结构级**自检，纯标准库 · 只读 · 零 Oracle 风险）。
 
 从"验证单条内容"升到"验证整个论证结构"：从辩护链（610 B1）出发找**结构性漏洞**。

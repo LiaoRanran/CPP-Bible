@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """472 P0-4（452 E13/N4）回归锁：工件快照落盘 + 幂等还原 + 无残留。"""
 from __future__ import annotations
 

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 1.1 · 边界三元组回填 + v26 补充字段（**只加字段，不改判决**）
 
 给全部 `data/*baseline*` 报告回填 5 个字段：

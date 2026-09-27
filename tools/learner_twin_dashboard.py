@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 线 D · D5：学习者镜像可视化仪表盘（**自包含 HTML**，无外部依赖）。
 
 纯标准库生成 `data/learner_twin_dashboard_612.html`（内联 CSS + 原生 SVG + 极简 JS，不引 CDN）。

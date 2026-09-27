@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 E1 全库证据不足扫描单测（G1-1..G1-4）。"""
 from __future__ import annotations
 

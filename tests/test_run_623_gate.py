@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """623 C1 · 收工门禁（整目录 ruff）单元测试（≥3 例）
 
 覆盖：整目录 ruff 绿 / 只跑本批 ruff 红（存量债漏检陷阱）/ 跳过非 .py 文件。

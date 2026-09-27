@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """D5 回归测试：学习者镜像仪表盘（自包含 HTML）。"""
 import sys
 from pathlib import Path

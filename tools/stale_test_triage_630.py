@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """630 D1 · 既有测试失败**分类**（纯标准库；`--collect` 会跑一次 pytest，`--check` 只读）
 
 629 收工门禁发现非 slow 全量有 11 项既有失败（625/627/624 批资产），629 按铁律不修。

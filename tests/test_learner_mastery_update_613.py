@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """C2 回归测试：learner_mastery_update_613（BKT 真实递推）。"""
 import json
 import sys

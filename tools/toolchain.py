@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """toolchain.py — 工具链路径解析（唯一事实源 = 仓库根 ``toolchain.toml``）
 
 背景

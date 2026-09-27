@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """630 C3 · 自身免疫率**阈值对照**（纯标准库，只读）
 
 把 v23 `_arch_v23/02_自身免疫率度量框架.md` §B5 的**分级阈值建议**与本批实测摆在一张表上，

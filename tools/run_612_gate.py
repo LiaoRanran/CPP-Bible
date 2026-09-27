@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 线 Z · 收工门禁：14+ 工具 --check 全绿 + metrics + integrity + pytest + ruff + 零污染 + 报告。
 
 门禁项（spec Z）：

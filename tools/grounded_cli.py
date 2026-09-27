@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 C3 · 论证 CLI：`status` / `proposition` / `mis` / `card` / `defense` / `--check`。
 
 前四个是"看"，`defense` 是"**为什么**"——把一条命题为什么 IN、谁攻击了它、为什么那些

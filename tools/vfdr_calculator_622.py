@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """622 A5 · VFDR 真正计算 + 趋势
 
 **VFDR（Verification Failure Discovery Rate）定义**：

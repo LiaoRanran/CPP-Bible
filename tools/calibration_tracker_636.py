@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """636 2.4 · 校准追踪器报告模式 + known_error_rate 回填（**报告模式，不判 block**）
 
 1. 为 **67 条规则**逐条填 `known_error_rate`：有历史误报/漏报数据则算；**无则标注「无数据」**（不编造）；

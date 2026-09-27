@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 B · B2 证据充分性判定器。
 
 对每张卡片，依 A1 调研结论（B1 等级 + GRADE「多源/升级」）判定证据是否充分：

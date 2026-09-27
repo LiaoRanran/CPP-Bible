@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 D5 证据获取编排器单测（O5-1..O5-4）。"""
 from __future__ import annotations
 

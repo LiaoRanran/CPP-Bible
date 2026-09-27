@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 B · B1 证据等级与可信度体系。
 
 定义 5 级证据等级（L1 实测 / L2 权威 / L3 共识 / L4 单点 / L5 未验证）与可信度评分，

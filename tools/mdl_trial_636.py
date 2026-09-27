@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """636 2.5 · MDL 边际判据试运行（**影子，不拦截新规则**）
 
 **判据**（启发式近似，非严格 MDL，§七.4）：

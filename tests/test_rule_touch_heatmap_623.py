@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """623 A5 · 规则触达热力图 + VFDR 验证（可复现）"""
 from __future__ import annotations
 

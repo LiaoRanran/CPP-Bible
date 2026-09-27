@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """C2：四工具 --json 输出必须可解析且结构统一（v6.1 schema）。
 
 schema = {tool, version, timestamp, status, summary, findings, infra_errors}

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 A6 · protector_rollout_642 单测（联调不互相干扰 / 标记可叠加 / 回滚有效 / 零漂移）。
 编号 A6-1..A6-7。
 """

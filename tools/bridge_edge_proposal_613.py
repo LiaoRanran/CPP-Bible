@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务D1 · 桥接边画像 + 提案 + apply（默认 dry-run，人审前不落权威边）。
 
 画像维度（对 98 条候选逐条计算）：

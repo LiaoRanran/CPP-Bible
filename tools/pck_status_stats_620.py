@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """620 B3 · PCK 证书状态统计 + 批量渲染
 
 读取全量 83 张 certificate，做三类分布统计，并用 619 B4 渲染器批量渲染成可读 markdown。

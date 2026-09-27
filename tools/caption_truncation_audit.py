@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """示例标题截断审计与修复：检测并重建 `> **示例 N** ... · TAG` 行的生成期截断污染。
 
 污染特征（生成器按字节预算在标题中部硬切）：

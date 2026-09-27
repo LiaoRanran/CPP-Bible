@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 D4 · PCK authorized 提升策略设计（**只设计，不代签**）
 
 基于 624 E1 实测（37 原子证全已授权 / 66 证据证无人审来源 ⇒ 37/103=35.9%，未达 >48%），

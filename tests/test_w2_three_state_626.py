@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 C2 · W2 三态解耦回归测试（≥6 例）。"""
 import os
 import sys

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """636 2.1 · 冲突检测器（**影子模式**，零依赖独立模块）
 
 **铁律**（§零.1/§零.7）：本模块是**影子**——**不 import gate_engine 等任何判决代码**、

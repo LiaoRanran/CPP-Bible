@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 A3 · Authority Schema v2（review_method 五级 + decision_origin 四级）
 
 **根治 P0-A**：把「人类判断」和「人类授权执行」彻底拆成两个概念。

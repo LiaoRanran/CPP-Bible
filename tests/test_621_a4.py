@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """621 A4 · 闭环第二轮（新 mutation）单测"""
 from __future__ import annotations
 

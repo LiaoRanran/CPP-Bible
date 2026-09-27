@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """task_state 回归锁（494 任务 7 / 492 §4）：断点续跑的四个子命令与状态机。
 
 隔离纪律：所有测试走 `base=tmp_path`（或 monkeypatch `ts.TASKS_DIR`），

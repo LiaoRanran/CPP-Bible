@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """619 D1 · 收工门禁（受控目录零污染 + 逐工具 --check + pytest）
 
 619 批次的本地收工门禁。**不跑监工门禁**（gate/poison/replay/tool_integrity 的 --check），

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """639 D2 · ledger 规则归属回填（schema 上线 + 历史诚实标注）
 
 **债务（638 B1）**：67 条规则 `known_error_rate` 全空——`DecisionEvent` 缺

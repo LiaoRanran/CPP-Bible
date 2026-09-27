@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """641 A1–A6 · QueYi Core **协议内核 v1.0**（领域无关 · 纯标准库 · 只读自检）
 
 从 625/631/632 的"5 接口 OO 框架"收敛为**层次清晰的协议内核**：

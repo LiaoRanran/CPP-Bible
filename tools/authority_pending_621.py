@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """621 D1 · 30 条逐条复核清单 → Authority「待审条目」
 
 把 615 的 30 条逐条复核候选（17 modify + 13 approve）转成 **待审条目**。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """554 T3：parser 差分 —— Hypothesis 生成多态/畸形 frontmatter，三解析器一致性。
 
 三解析器（同一段 frontmatter 文本）：

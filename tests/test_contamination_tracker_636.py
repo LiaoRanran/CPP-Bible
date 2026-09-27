@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """636 V26-补1 · contamination_tracker_636 单测（纯标准库，≥5 例）。编号 VC1-1..VC1-6。"""
 from __future__ import annotations
 

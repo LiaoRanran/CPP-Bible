@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 A1 · W2 投影节点归一化（519 → 121，与 grounded_labels 对齐）
 
 **背景**：626 D1 的 `compile_w2()` 以 **`edge_id`** 为节点 ⇒ 519 节点，

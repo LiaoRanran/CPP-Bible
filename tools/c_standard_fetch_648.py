@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """648 A · **C 标准原文抓取与条款抽取**（只做"引用可核对"，不解释标准）。
 
 647 E1 把"标准源（WG14 N 文档）可用性与授权"列为**最大未决点**（需人裁决）。

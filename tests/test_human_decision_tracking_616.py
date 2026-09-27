@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """616 E1 回归测试：交人项跟踪台账。"""
 import re
 from pathlib import Path

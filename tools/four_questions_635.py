@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 1.3 · 四问现状审计（**每问必须有数据支撑，不凭印象**）
 
 四问（v25 三问 + v26 第四问）：

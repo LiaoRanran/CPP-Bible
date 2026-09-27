@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 C3 证据完整性与漂移检测单测（I3-1..I3-5）。"""
 from __future__ import annotations
 

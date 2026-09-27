@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """638 3.1 · 四态结论 schema 单测（>=6 例，纯标准库）。"""
 from __future__ import annotations
 

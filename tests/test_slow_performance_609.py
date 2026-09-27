@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 B1 · task_queue 连接池改造的性能回归锁 + 判决一致性锁。
 
 **判决一致性优先**：所有优化只许碰"连接怎么开/什么时候关"，不许碰查询、断言、状态机。

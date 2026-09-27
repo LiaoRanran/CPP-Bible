@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 D · D1 标准文档获取器。
 
 功能（原型级，§十二.1）：

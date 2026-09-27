@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """614 B3 回归测试：learner_ood_evaluator（OOD 题 + 跃迁判定 + 记录）。"""
 import sys
 from pathlib import Path

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 C2 · V2 Authority 账本接入透明日志（纯标准库，只读账本 + 追加日志）
 
 把 626 建立的 DecisionEvent v2 账本（452 条）逐条**上哈希链**，并把它**锚定**到 628 的

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 线 E · metrics_612（E1-E3 度量，拆分自 metrics_610/611 口径，**只读**）。
 
 E1 · modify 双模式一致性：复用 `weighted_af_solver` 在两种 modify 口径下重算 W2 判决，

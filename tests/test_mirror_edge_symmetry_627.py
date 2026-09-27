@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 A4 · 镜像边对称性验证 单测（≥4 例）。"""
 import hashlib
 import os

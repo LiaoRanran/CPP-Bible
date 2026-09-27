@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """utf8_console.py — Windows 中文控制台（GBK）下的 UTF-8 输出兜底。
 
 为什么收敛到一处

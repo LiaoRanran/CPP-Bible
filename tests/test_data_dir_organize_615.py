@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 E2 回归测试：data/ 整理方案（仅方案，不移动）。"""
 from pathlib import Path
 

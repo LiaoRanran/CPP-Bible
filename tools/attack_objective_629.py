@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 D1 · 攻击目标函数精化（纯标准库，只读）
 
 对现有 mutation v7 的 **1593 条候选**按目标函数排序，选 Top20 作为第八轮攻击种子。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """565 Part 1 · `tools/stat_bounds.py` 的四重锚点 + 边界 fail-loud 回归锁。
 
 为什么是"四重锚点"而不是"跟 scipy 对拍"：本仓核心依赖只有 pyyaml，`.venv` 里 scipy/numpy

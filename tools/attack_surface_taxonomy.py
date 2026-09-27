@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 B1 · 验证器攻击面分类学（v21 Top1，纯标准库，只读）
 
 **背景**：v21 宽泛调研 Top1 =「验证器攻击面/评测作弊分类学」（AISI 2026-07：所有受测模型

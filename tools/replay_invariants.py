@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """replay_invariants.py — replay 状态机不变量独立检查工具（605 任务1）。
 
 为什么：602 TLA+ 调研发现 replay 的 5 个关键不变量全部是**隐式的**（散落在代码中，

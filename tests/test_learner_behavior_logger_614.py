@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """614 B1 回归测试：learner_behavior_logger（行为采集 + BKT 递推 + 推荐门槛）。"""
 import json
 import sys

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 E2 · Review Pack v2（**两层包** + 自动生成 + 跨平台）
 
 外部大模型指出现有包是"治理决策摘要包"，不是完整证据包。626 拆成两层：

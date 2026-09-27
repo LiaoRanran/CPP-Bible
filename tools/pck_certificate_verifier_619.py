@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """619 B2 · PCK 证书验证器 v1（结构诚实性校验）
 
 只读校验 `data/pck_certificate_schema_619.md` 定义的证书结构。**不代替真实门禁**判 pass/fail

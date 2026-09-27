@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 B3 · 透明日志（append-only Transparency Log）—— 他验三件套 #3
 
 维护 append-only 日志 `data/transparency_log.jsonl`，每条：

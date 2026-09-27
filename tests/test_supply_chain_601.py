@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """601 任务2 · in-toto 风格溯源链最小子集回归锁。
 
 锁五件事：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 B2 · 内核**最小性审计**（AST；只出报告，**不实际移代码**）。
 
 审计对象：`tools/queyi_core_v10_641.py`（641 建成的协议内核 v1.0）。

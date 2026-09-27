@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 D1 · push 前检查清单 单测（≥4 例）。
 
 631 A3：其中 2 例依赖 627 工具 `pck_hash_drift_analyzer_627 --check`，而该自检断言的是

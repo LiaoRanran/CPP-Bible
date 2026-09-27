@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """634 任务0 · baseline_634 单测（纯标准库，≥5 例）。编号 T0-1..T0-6。"""
 from __future__ import annotations
 

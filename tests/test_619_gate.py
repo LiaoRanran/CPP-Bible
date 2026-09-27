@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """619 D1 单测：收工门禁（tools/run_619_gate.py）
 
 遵循 618 教训：pytest **不注入带默认值参数**；stub 必须用 `pytest.MonkeyPatch.context()` 保证恢复，

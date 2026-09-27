@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """608 A3 · human_review_queue.py 回归锁 + 首次队列报告。
 
 锁十件事：

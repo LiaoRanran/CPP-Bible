@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 B3 · 活性锚补全 what-if 分析（**只读** · 不跑 gate、不改任何文件）。
 
 **what-if**：假设 60 条活性锚全部补全，模拟 gate `OBSERVATION-LIVENESS`（warn）会消掉多少。

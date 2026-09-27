@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """470 P0-F → 472 P1-1 回归锁（452 E10）：零诊断字段位移 + 夹具 pragma 消音。
 
 472 P1-1：本规则由 warn **升 block**（"零诊断"措辞缺 -Werror ⇒ 判据不可机器判定 ⇒

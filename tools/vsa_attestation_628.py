@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 B2 · VSA 验证凭证（Verification Statement Attestation）—— 他验三件套 #2
 
 为 B1 独立验证结果生成可验证凭证：

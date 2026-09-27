@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 E1 · L4.4 探针单测（纯标准库，≥5 例）。
 
 聚焦 `coverage_probe_l4_4_632`：规则优先级冲突的结构性覆盖探针。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 A2 · 人审决策包打包器（**跨平台正斜杠**，纯标准库）
 
 外部大模型发现：原决策包 ZIP 的 36 个 entry 全部使用反斜杠 `\\` 作为路径字符，

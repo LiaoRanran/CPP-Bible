@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """616 A1 · 置信序列 / e-process（**修复统计偷看**）。纯标准库，无 scipy/numpy。
 
 背景（`_arch_v20/05` + 探针 `p02`）：逃逸率口径历史上用**固定样本 Clopper-Pearson 上界**，

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """run_644_gate.py — 644 头部层点火 + 调研 + 原型 验收闸门。
 
 按 §F 验收清单逐项检查（每项错误不阻断其他项，但会累计判定）：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 E3 · M1 TCE 定性分析（**6 步，只分析不攻坚**）。
 
 M1 = 591/593 起的 mutation 算子之一；v7 基线里唯一逃逸：

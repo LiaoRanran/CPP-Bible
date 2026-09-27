@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 C2 · 论证 Web 回归锁（6 页面 + 5 JSON API + 只读 + 只绑回环）。
 
 测试用 `make_server(port=0)` 挑空口 + 线程常驻 + `urllib` 取数 ⇒ 不占固定端口、不对外暴露。

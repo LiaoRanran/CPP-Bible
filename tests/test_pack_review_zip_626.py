@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 A2 · 决策包打包器回归测试（≥5 例）。"""
 import json
 import os

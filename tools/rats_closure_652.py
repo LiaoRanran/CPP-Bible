@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """rats_closure_652.py — T3 闭包 RATS 化（652 D，**三类信任根**）。
 
 为什么（652 D-T3）：IETF **RATS** 架构把信任拆成三类可独立核对的证据：

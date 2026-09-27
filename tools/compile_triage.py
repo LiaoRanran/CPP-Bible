@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """Compile-failure regression triage.
 
 把「局部扫描报告」与「全量基线」对照，按 block 号（不依赖错误文本）把每章的失败分成三类：

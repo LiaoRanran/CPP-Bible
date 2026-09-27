@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """413 Writer 自检层回归锁：7 项检查 + 存量 0 fail 基线 + 第五批 E1/E2 回放拦截。"""
 from __future__ import annotations
 

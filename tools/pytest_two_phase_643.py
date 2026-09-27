@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 阶段0 · **两阶段 pytest 跑法**固化（fast 并行 ~90s + slow 串行 ~11min）。
 
 **为什么**（铁律 §零.10）：全量串行 ≈ 35–40 分钟，是批循环墙钟的主要成本；

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """增量 replay 回归锁（498 任务 5 / P0-1）。
 
 选卡规则（逐条对应 498 §任务5 step3）：新卡 ⇒ 跑；指纹变 ⇒ 跑；指纹同 + confirm ⇒ skip；

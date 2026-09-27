@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 r"""622 F2 · 收工门禁（6 项串行检查）
 
 1. **受控目录零污染**：`atoms/ evidence/ Examples/ Book/` 无未提交改动

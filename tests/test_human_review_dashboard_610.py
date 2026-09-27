@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 E2 · 人审进度仪表盘回归锁（自包含 HTML：总览 + 分组 + 主题 + 方向 + OUT 列表）。
 
 锁三件事（任务书 E2 的 3 例 + 4 例自加）：

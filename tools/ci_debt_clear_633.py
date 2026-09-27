@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """633 A2 · CI 技术债清理（分类 + 处置建议 + 报告）
 
 读取实测失败清单（`data/633_ci_failures.json`，来自本批两次全量 `pytest -m "not slow"`），

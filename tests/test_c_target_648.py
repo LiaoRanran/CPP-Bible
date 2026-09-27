@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """648 A · C 语言打靶回归锁（编号 A-1..A-8）。
 
 分两档：

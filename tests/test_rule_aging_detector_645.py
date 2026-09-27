@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 A6 规则老化检测单测（fast 组：用合成带时间戳账本）。"""
 import json
 import os

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务D3 · 辩护链**深化**：多跳防御深度 + 单点依赖 + 共同依赖（相关失效）风险。
 
 611 的 `defense_chain_deepen.py` 只看了「降级涟漪（demote_ripple）」一步；

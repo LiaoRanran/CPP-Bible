@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 B1 · modify 口径**双模式**（610 交人项 ①：口径冲突只做工具支持，不擅自统一）。
 
 背景（610 实测，非估计）：388 条人审里 34 条 `modify` 的 `new_confidence` **全是 medium**。

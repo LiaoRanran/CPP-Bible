@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """583 任务 3（N3）回归锁：`tools/oracle_rotation.py` 换代影响面（只读）。
 
 任务书 §任务 3 的四条验收：

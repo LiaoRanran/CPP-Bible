@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 D3 · 辩护链统计集成（tools/metrics_610.py::collect_defense_chain_stats）。
 
 锁五件事（任务书 D3 的 5 例 + 2 例自加）：

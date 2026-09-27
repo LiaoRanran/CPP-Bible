@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """607 任务 2 · 命题活性锚审计（**只读**）。
 
 问题：gate 的 `OBSERVATION-LIVENESS` 规则要求 observation 命题在**命题级**指认证伪锚

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 C1 · QueYi Core 路径配置（路径解耦第一步）
 
 **目的**：让核心/辅助工具**不再写死** CPP-Bible 特定路径（`atoms/`、`evidence/`、`data/` …），

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """616 C2 回归测试：27 条 legacy 豁免到期处置清单。"""
 import sys
 from collections import Counter

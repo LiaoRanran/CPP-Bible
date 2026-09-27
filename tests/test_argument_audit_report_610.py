@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 C3 · 论证漏洞报告回归锁（完整报告 + 优先级 + 修复建议 + summary JSON）。
 
 **640c A1/A2 重写**：原版把报告里的派生量写死（`IN 114 / OUT 7`、`构成击败 17`、

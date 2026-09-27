@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 D2 · 探针 L8.4（透明日志伪造）单测（4 例）。
 
 探针只攻击**临时副本**，生产日志必须零改动（用 sha256 前后比对断言）。

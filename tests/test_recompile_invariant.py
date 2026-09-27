@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """470 P0-A 重编译不变量回归锁（452 E01 根因修复）。
 
 正例=编译后覆写被 refute:artifact_tampered；反例=正常卡 confirm 不退化；

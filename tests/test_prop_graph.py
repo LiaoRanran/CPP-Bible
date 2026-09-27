@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """565 Part 3 · 命题状态图（`tools/prop_graph.py`）回归锁。
 
 锁四件事：

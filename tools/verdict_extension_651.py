@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """verdict_extension_651.py — T1 判决扩展 schema（651 W2，**只加字段不改语义**）。
 
 为什么（651 W2-T1）：现有判决表达不了四类边界事实（条件/部分命题/显式冲突/unknown 原因）。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 B1 · auto 42 条 liveness 填充 单测（6 例）。
 
 **绝不落盘真实卡**：填充行为用 `apply(dry_run=True)` 与纯函数 `apply_edit_to_text` 验证。

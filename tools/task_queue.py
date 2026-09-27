@@ -1,4 +1,6 @@
 ﻿#!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """530 T7 · L2 调度最小骨架（task_queue）——"谁该干什么 / 干完没"。
 
 与 `tools/task_state.py` 的**分工（勿混）**：

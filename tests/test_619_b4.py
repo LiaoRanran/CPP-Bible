@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """619 B4 单测：PCK 证书渲染器（tools/pck_renderer_619.py）
 
 验证：渲染徽标、诚实注释、负向测试表、含错证书 FAIL、--check 自检。不写盘。

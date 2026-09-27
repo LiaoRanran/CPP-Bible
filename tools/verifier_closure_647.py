@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 A3 · **信任根闭包扩展**（641 的 23 文件闭包 → 覆盖全部"能改判决"的面）。
 
 现状（647 §一）：641 D 线的闭包（`verifier_closure_641`）只跟 `tools/*.py` 的 import 图 +

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """expansion_audit.py — 扩写空间审计
 
 扫描全书，按四维度（广度/深度/样例/经验）定位扩写靶点，输出优先队列。

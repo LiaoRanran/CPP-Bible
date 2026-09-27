@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """human_review_queue_651.py — M7 人审接口修复（651 W3）。
 
 为什么（651 W3-M7）：647 A2 的实测洞是"**缺字段被默认放行**"。本工具按 **fail-closed** 重做接口：

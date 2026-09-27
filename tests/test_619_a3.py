@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """619 A3 单测：VFDR 状态机（tools/vfdr_619.py）
 
 纯函数验证：状态转移、闭环、历史教训可达 CLOSED、异常抛错、`--check` 自检。

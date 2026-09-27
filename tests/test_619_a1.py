@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """619 A1 单测：攻击目标函数 v1（tools/adversarial_objective_619.py）
 
 纯函数验证：确定性、口径一致性、子目标代理、n_a/等效处理、`--check` 自检。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 C2 三层编排单测（fast 组：只读耦合，≥5 链）。"""
 import sys
 

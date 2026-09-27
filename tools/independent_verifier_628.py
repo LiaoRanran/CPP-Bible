@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 B1 · 独立验证者（IndependentVerifier）—— **零 import 本项目工具**
 
 他验三件套的第一件。核心原则（硬边界 9）：

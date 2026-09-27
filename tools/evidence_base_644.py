@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 头部层 · 共享数据模型与基础设施（纯标准库 + PyYAML）。
 
 定义：

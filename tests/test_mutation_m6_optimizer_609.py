@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 E4 · M6 优化方案回归锁（**只方案不落地**）。
 
 锁三件事（任务书 3 例 + 3 例自加）：

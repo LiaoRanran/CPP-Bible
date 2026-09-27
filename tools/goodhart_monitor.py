@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 C3 · Goodhart 漂移监控（P2 · 新建独立工具）。
 
 背景（_arch_v19/08）：`0 block / 186 warn`，warn 被 golden 锁周期性采纳为 legacy（136→186），

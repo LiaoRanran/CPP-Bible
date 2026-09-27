@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 C1 · Blind Review v1（Pass A 盲审 + Pass B 解盲）
 
 **根治 P0-C**：禁止 AI 推荐结果出现在「独立人审」的第一视图。

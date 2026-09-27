@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """620 A2 · 第一轮闭环实际运行 可复现性单测（依赖真实 v7 基线）"""
 from __future__ import annotations
 

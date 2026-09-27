@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 E2 · rule_aging_detector_643 单测（趋势/建议/不判档/数据缺口）。
 编号 E2-1..E2-8。
 """

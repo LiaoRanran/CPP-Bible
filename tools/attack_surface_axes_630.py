@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """630 C2 · 攻击面横切面：**时间轴 × 调度轴**（纯标准库，只读）
 
 629 B1 建立了**部件轴**（L1–L8，攻击打在哪里）。v23 指出还需要两个**横切面**：

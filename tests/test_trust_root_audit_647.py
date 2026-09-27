@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 A5 · 信任根独立审计回归锁（编号 A5-1..A5-8）。
 
 锁定：审计项完整（A1–A4 四项 + 共置点 + 独立性刻度）；**风险如实登记**（不夸大独立性）；

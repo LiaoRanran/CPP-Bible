@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """591 任务 3 · 测试器配置入哈希面回归锁（A2 防御）。
 
 conftest.py / pyproject.toml 进 `.tool_checksums` 的 `# test_config` 节；

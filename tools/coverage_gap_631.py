@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 D1 · coverage 未跑向量清单 + 探针优先级（纯标准库，只读）
 
 输入（只读调用既有工具）：

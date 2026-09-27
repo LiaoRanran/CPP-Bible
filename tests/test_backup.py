@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """备份/恢复回归锁（508 任务7）。
 
 提示词要求 2 个测试（snapshot 不崩溃 / restore 不崩溃）；本文件再加 2 个把两条安全纪律钉住：

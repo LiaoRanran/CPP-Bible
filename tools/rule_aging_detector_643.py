@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 E2 · **规则老化检测器**（抗 Goodhart #2）。
 
 **定位**：检测规则**老化/过严/被绕过**，输出 `保留/收紧/拆分/退役` 建议，

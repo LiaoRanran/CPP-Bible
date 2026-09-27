@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 B1 · 验证器攻击面分类学 单测（6 例）。"""
 import os
 import re

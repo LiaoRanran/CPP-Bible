@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """648 A · **C 语言打靶**：真编译器实测 → 证据卡 → 原子卡（一条链，数字全部来自实跑）。
 
 E1 调研的结论是「67 条规则没有一条是 C++ 语法专用的 ⇒ 主战场在 Domain Pack + 卡片 + 证据源」。

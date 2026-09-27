@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """623 A4 · 闭环第三轮 单元测试（可复现性 / 关键结论）"""
 from __future__ import annotations
 

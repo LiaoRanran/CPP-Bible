@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """614 任务F1 · 收工门禁（跑全部 614 工具 --check + 卫生 + 回归 + 零污染 + 报告）。
 
 门禁项（**结论项**）：

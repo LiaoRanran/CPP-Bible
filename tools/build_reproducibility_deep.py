@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 E2 · 编译可复现性深化：**跨时间窗口 12 宏 + 符号表 4 参数 + 段一致性 4 参数 + diff 替代品**。
 
 603 已经做了"同机同日两次编译产物一致"；本工具把口径**加深一层**（仍**不改** replay 本体）：

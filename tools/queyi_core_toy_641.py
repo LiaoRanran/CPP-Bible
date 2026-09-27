@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """641 C1–C3 · **第二领域插件：toy_math**（通用性实证）
 
 刻意选一个**零外部依赖、几分钟可验**的最小非 C++ 领域：整数四则运算断言

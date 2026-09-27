@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """614 E2 回归测试：oracle_verification_614（验证流程机制）。"""
 import sys
 from pathlib import Path

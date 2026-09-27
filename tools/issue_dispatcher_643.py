@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 B5 · **问题分发器**（智能层联调：把 B1–B4 合成统一问题清单 + Top 10）。
 
 **定位**：B1–B4 各自出"线索"，本工具把它们**归一化**成同一张问题清单，按可复算的优先级排序，

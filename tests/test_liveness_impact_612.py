@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 B3 回归测试：活性锚补全 what-if（只读，锁 warn 消除预测）。"""
 from __future__ import annotations
 

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 A1 · V2 flag 真接入 单测（8 例）。"""
 import importlib
 import json

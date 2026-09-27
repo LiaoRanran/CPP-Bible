@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 A1 回归测试：human_review_honesty_615（人审诚实化标签）。"""
 import hashlib
 import sys

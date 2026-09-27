@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """overturned_events.py — 推翻事件通道（573 任务 A-2 设计的**独立落地**；592 任务2）。
 
 为什么要有这个文件（592 侦察结论）：573 把 `--log-overturned` CLI 与 schema 设计在了

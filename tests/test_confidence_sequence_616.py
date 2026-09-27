@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """616 A1 回归测试：confidence_sequence（置信序列/e-process，修复统计偷看）。"""
 import math
 import sys

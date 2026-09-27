@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 D3 · rule_draft_mdl_check_643 单测（overlap 两类/阈值/判定顺序/六档）。
 编号 D3-1..D3-8。
 """

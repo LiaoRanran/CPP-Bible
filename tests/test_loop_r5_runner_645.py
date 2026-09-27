@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 A4 闭环 R5 校准度单测（slow 组：真实跑 A1→A3 闭环）。
 
 锁定：R5 真实可量化、未达标诚实登记、系列口径并列不偷换。

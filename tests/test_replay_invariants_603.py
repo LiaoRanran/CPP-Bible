@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """603 任务3.1：replay 不变量回归锁（把 replay 的**隐含契约**显性化为可证属性）。
 
 不变量清单（引自 603 任务书 §任务3）与本文件的对应：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 D1 · L1 会话快照守卫（纯标准库，context manager，以 git 为真相源）。
 
 `with PollutionGuard():` 包裹「可能写受控目录的操作」；退出时自动校验并在有残留时还原。

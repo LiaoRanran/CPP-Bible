@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 C2 · targeted_mutator_643 单测（5 类算子/空变异/算子选择/计划/dry-run）。
 编号 C2-1..C2-9。
 """

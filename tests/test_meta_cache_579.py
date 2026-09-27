@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """579 任务 4 回归锁：`_META_CACHE`/`_FM_CACHE` 的失效契约（注释收紧 + 显式 `invalidate_meta`）。
 
 背景：原注释称"改盘即失效，不存在'改了内容还命中旧值'的窗口"——**实测过强**：

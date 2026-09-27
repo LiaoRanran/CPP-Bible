@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """554 T2：syrupy 快照锁「结构化输出」漂移（gate / poison / kg / mutation）。
 
 历史病：规则数/warn 数/卡数多次"文档与磁盘失真"（warn 32→54→59→136 缺显形）。

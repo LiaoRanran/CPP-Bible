@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 A2 · 人审质量报告（基于 388 条授权人审，**只读**、纯标准库）。
 
 人审全量完成后，质量分析散在产品经理文档里 ⇒ 工具化：按 verdict / MIS / 主题 / 方向四个维度

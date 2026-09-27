@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """623 C2 · 尺子入根扩展审计（验证 _arch_v19 探针的 8/11 裸露是否已修复）
 
 **背景**：_arch_v19 维度3 探针（p03_meta_verification.py 实验3）定义了 **11 个关键判决尺子**

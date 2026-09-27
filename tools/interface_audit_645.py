@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 · 阶段 D1 · 接口一致性审计（真实扫描 645 工具，非抽查）。
 
 目标（645 §六 D1）：审计所有 645 工具接口是否一致——统一 CLI（`--check` 只读自检 +

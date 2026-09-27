@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """web_data_653.py — 653 B · 前端数据生成（**真实台账 → web/data/*.json，不造数据**）。
 
 数据来源（全部真实、可复核）：

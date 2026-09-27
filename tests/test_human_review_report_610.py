@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 A2 · 人审质量报告回归锁（只读 · 纯标准库）。
 
 锁七件事（任务书 7 例）：

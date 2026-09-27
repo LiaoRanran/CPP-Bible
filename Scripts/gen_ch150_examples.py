@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 生成《现代 C++ 终极圣经》第150章「测试策略」的全部可编译取证示例。
 所有示例均为自包含（assert + main 自测），可由本机 g++ 13.1.0 离线复现。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 B1 · 辩护链核心引擎回归锁（只读 · 确定性推理）。
 
 锁十件事（任务书 B1 的 10 例）：

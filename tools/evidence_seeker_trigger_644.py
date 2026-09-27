@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 E · E2 自动求索触发器。
 
 对 E1 检出的不足卡片，自动调用 D5 获取证据；获取后重新判定充分性；

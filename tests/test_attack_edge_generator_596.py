@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """596 任务1 · 候选攻击边生成器回归锁。
 
 锁四件事：

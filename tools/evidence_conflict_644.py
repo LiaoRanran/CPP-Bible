@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 B · B3 证据冲突检测器。
 
 检测同一张卡的多条证据之间是否冲突（设计输入 3）：

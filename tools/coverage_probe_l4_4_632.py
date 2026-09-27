@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 E1 · 探针 #3：向量 **L4.4 规则优先级冲突**（P1，此前无探针）
 
 向量定义（`data/attack_surface_taxonomy.md` L4.4）：两条规则对同一事实给出相反

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 E2 · 人审逐条复核清单生成器（30 → >100，**只生成不执行**）
 
 **背景**：622 D1 执行了 30 条逐条人审（Authority 388→418）。本任务生成**新的**逐条复核清单

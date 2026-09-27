@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 D1 · 3 个 CLI 工具 `--check` 测试（每个工具 1 例）。"""
 import os
 import subprocess

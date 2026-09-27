@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 B1 · 辩护链核心引擎（智能原型 1：**确定性推理**，零 Oracle 风险）。
 
 回答的问题：**某个节点为什么是 IN/OUT？如果动一下可信度会怎样？**

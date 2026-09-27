@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """589 任务 4a · 测试依赖图（只读、幂等、纯标准库）。
 
 静态扫描 `tests/test_*.py`：

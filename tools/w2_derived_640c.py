@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """w2_derived_640c.py — **派生量的单一权威源**（640b 的 `w2_authority_640b` 的并列扩展）。
 
 **为什么（640c §三）**：640b 把 W2 的 IN/OUT/defeating_edges 收进了权威源，但

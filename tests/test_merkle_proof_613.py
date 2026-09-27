@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """E3 回归测试：merkle_proof_613（单文件 Merkle 包含证明）。"""
 import sys
 from pathlib import Path

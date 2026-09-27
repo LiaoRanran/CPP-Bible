@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 E1 · 度量诚实性：**Clopper-Pearson 精确上界 + 收敛曲线 + 方差声明 + 口径修正标注**。
 
 四条都是"把话说严谨"，不是"把话说好听"：

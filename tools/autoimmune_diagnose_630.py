@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """630 A1 · 自身免疫率口径差异诊断（纯标准库，**只读，不改任何卡**）
 
 629 A1 实测：23 张 verified 干净卡全部被 warn（自身免疫率 100%），其中 **22 张**仅命中

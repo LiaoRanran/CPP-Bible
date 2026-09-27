@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 B3 · 多瓶颈缓存（**编译缓存 / 还原缓存 / 规则缓存 / 数据缓存**）。
 
 B2 剖析给出的三类可下手形态：**重复读盘/重复哈希**（Top1 `TextIOWrapper.read` 72.3s）、

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 A1 · mypy 存量债修复回归测试（≥5 例）。
 
 验证：mypy 配置覆盖 / mypy tools 清零 / 关键工具可导入 / 无批量 ignore / ruff 干净。

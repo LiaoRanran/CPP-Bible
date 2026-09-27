@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """638 B1 · known_error_rate 收集器（从历史判决估算每条规则的错误率）
 
 **背景（636 发现的最大缺口）**：`data/636_calibration_tracker_report.md` 实测

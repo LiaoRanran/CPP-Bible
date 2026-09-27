@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """646 阶段 A3 · 性能优化基准单测（fast）。"""
 import os
 import sys

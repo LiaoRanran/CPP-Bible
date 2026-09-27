@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 A2 回归测试：桥接边人审执行（append-only 决策日志）。"""
 from __future__ import annotations
 

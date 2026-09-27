@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 D · D4 多源交叉验证器。
 
 功能：对给定结论，从多个来源获取证据并对比一致性：

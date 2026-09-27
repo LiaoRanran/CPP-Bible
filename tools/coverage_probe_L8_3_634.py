@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """634 B1 · 探针 L8.3 append-only 链断裂（结构性覆盖探针；委托 coverage_probe_batch_634）。
 
 **向量**：append-only 链断裂（risk=high）—— 防御载体 `tools/transparency_verify_632.py`。

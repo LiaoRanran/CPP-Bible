@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 · 阶段 B1 · 标准获取器（真获取，非 403 降级就算完）。
 
 目标（645 §四 B1）：从 ISO 标准草案真获取 ≥10 个 C++ 主题的标准内容，每条带

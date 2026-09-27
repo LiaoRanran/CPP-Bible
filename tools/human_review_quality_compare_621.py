@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """621 D2 · 人审质量评估（30 条逐条建议 vs 388 条批量授权）
 
 四个对比维度：

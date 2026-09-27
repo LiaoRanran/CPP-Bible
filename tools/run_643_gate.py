@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 F1 · 收工门禁。
 
 九项检查（**本批全部以 643 自有范围为口径**，避免并发批次 644 的半成品文件污染判定）：

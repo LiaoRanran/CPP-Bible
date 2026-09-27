@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """603 任务1.3：编译可复现性引擎 `check_build_reproducibility` 回归测试。
 
 纪律：正反毒样例 + 存釂零误伤 + 可证伪（不裸 except）+ 隔离（不污染仓库）。

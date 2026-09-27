@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 B1 · 透明日志外部锚定（纯标准库，默认只读安全的 --check）。
 
 把 `data/transparency_log.jsonl` 整份算 SHA256，写锚到 `data/vsa/anchor_<YYYYMMDD>.json`

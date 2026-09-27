@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 A2 · PCK hash 重算 单测（7 例）。"""
 import glob
 import os

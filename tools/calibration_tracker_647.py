@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 B4 · 校准追踪器**真上岗**（636 无数据 → 642 记账 → **647 超阈降级/暂停**）。
 
 阈（§四 B4，**设计值**）：

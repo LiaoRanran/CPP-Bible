@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """replay_probe_651.py — T5 reproduce manifest（651 W2，**信任资产**）。
 
 为什么（651 W2-T5）：648 十张 C 卡的 L1 结论若不记"怎么复现"，一年后没人能重跑。

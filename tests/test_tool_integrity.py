@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """tool_integrity 回归锁（498 任务 3）。
 
 四态：全匹配 exit 0 / 被改 exit 1 / 缺基准 exit 2 / 工具缺失 exit 1。

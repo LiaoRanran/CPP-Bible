@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """618 A3 · escape_rate_l2b_618 单测（纯标准库；确定性，固定公式）"""
 import os
 import sys

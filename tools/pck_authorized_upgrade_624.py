@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 E1 · PCK authorized 提升（基于 W2 重算的**机器可判定**授权）
 
 **背景**：620 全量 83 张 PCK（27 原子 + 56 证据），authorized 仅 27/83；623 D2 打通 Authority/W2

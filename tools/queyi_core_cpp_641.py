@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """641 B1–B5 · **C++ 领域插件（Domain Pack）+ 适配器 + 端到端对账**
 
 依赖方向（§四.2）：**本模块 import 内核与 C++ 工具；内核不 import 本模块**。

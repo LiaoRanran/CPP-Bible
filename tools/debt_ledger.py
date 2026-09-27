@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """S5 豁免 = 带息债务：豁免必须开票（原因/风险/补偿/负责人/到期），到期未清即停线。
 
 规则（全部机器判定）：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 C3 · QueYi Core 剥离触发标准检查（5 条）
 
 ① 雷2 闭环稳定运行≥3 轮

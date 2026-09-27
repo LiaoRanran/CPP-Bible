@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 任务0 · 基线台账（纯标准库，只读）
 
 记录 629.md §一 standing baseline，并额外实测：

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 d5_source_integrity.py — D5 性能附录「基准源码见库根」引用完整性收口工具
 （确定性、围栏感知、保原生换行；可接入 CI 作为首个语义层门禁）。

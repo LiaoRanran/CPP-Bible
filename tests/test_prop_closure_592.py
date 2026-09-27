@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """592 任务3 · 命题闭包（`tools/prop_closure.py`）回归锁。
 
 闭包是 R4 grounded 论证层的前置：**图算法的错法很多**（漏方向、环死循环、读写混用），

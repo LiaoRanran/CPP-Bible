@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 B2 · 历史攻击映射（纯标准库，只读）
 
 把 603–629 各批次报告中**已经真实发生**的攻击/漏洞事件，逐条映射到 B1 的攻击面向量编号，

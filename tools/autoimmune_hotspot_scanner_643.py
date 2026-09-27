@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 B3 · **自身免疫热点扫描器**（智能层：自动发现问题 #3）。
 
 **定位**：找出"**规则自己在制造噪声**"的热点（自身免疫病）：太严的、该升 block 的、

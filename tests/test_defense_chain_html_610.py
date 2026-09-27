@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 B3 · 辩护链可视化回归锁（自包含 HTML/SVG，无外部依赖）。
 
 **640c A1/A2 重写**：原版把渲染结果写死（节点 121 / 命题 79 / 误解 42、

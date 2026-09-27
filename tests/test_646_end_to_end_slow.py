@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """646 阶段 C2 · 端到端慢测（真实全链路，标 slow，串行跑）。
 
 覆盖：规则→卡映射 → 三层编排（真实 gate 扫描 + 充分性 + 反例）→ 清债达标断言。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 V26-5 · 验证器准入表（Daubert 五问，只加数据，不改判决）
 
 对 **67 条规则 + mutation 生成器**逐条填 Daubert 五问：

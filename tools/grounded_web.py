@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 C2 · 论证 Web 界面（纯标准库 `http.server`，**只读 + 只绑 127.0.0.1**）。
 
 为什么必须自己写 HTTP 层：引 Flask/FastAPI = 引依赖 = 给供应链多一条要审计的路。

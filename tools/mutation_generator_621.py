@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """621 A1 · 对抗性 mutation 生成器（雷2 第三阶段）
 
 **为什么需要它**：620 的闭环候选空间**钉死**在 v7 既有 1593 条，

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """621 C3 · ABSTAIN 状态与 PCK certificate 集成
 
 把 C2 的六态分类结果写入 certificate 的 `uncertainty` 字段：

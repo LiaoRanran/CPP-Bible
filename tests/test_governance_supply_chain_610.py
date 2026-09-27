@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 D4 · governance × supply chain 联动测试（**只加测试，不改生产代码**）。
 
 验证"治理台账一变 ⇒ 必须重钉 supply chain"这条链真的存在，且**不污染真实仓库**：

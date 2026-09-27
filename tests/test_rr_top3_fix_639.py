@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """639 D3 单测：RR top3 代码级 co-fire 复核（≥5 例）。"""
 import os
 import sys

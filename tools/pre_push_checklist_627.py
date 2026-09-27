@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 D1 · push 前最终检查清单（**只检查，绝不 push**）
 
 **背景**：627 收工前，需确认本批次所有交付物在「本地」达到可 push 状态。

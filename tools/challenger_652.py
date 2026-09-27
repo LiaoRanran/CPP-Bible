@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """challenger_652.py — M4 挑战者角色（652 C，**从已通过卡反向生成更难攻击**）。
 
 为什么（652 C-M4）：攻击器只会"从零造"；真正难的是**针对已通过的东西**造更隐蔽的变体。

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """shadow_rotator_651.py — M2 变异器/规则/模型 shadow 轮转（651 W3，**只记账，不上岗**）。
 
 为什么（651 W3-M2）：647 的实测教训是"保护器触发≈0"——因为新东西一上来就被当成品/或压根没进

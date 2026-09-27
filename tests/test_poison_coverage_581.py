@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """581 hole A 回归锁：覆盖率不可伪造（行为级 covered，非源码文本 grep）。
 
 背景（见 _worklog_581.md）：旧 rule_coverage 从源码文本 grep `"X" in who` 计数，

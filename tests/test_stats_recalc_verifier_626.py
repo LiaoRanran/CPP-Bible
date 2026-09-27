@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 A1 · 统计重算校验器回归测试（≥5 例）。"""
 import os
 import sys

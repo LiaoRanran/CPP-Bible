@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 E2 自动求索触发器单测（S2-1..S2-4）。"""
 from __future__ import annotations
 

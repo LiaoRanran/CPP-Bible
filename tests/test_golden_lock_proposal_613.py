@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """A3 回归测试：golden_lock_proposal_613（只读提案，绝不 accept）。"""
 import sys
 from pathlib import Path

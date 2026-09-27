@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """校验手册正文中的引用键是否在 SOURCING 登记的白名单内。
 
 扫描 ``Book/**/ch*.md`` 中形如 ``[key]`` 的行内引用键（排除 Markdown 链接

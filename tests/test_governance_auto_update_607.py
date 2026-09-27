@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """607 任务 3 · `governance_doc_guard.auto_update()` 回归锁（增量机械登记）。
 
 锁的是**四条行为契约**（不是"跑通就行"）：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 · 阶段 A4/A5/A6 · **规则生命周期套件**（闭环 R5 + error 追踪 + 老化检测）—— 647 D1 合并版。
 
 目标（645 §三 A4/A5/A6）：

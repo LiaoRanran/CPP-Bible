@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 A2 · 人审质量控制回归锁（automation bias 检测）。
 
 锁六件事（任务书 6 例 + 2 例自加）：

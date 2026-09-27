@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 B5 公共件 · 保护器全局模式开关回归锁（编号 PM-1..PM-6）。"""
 from __future__ import annotations
 

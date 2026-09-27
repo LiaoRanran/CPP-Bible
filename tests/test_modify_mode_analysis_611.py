@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 B2 · modify 口径影响分析报告（keep-low vs upgrade-medium）。
 
 锁四件事：

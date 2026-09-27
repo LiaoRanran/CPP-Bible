@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """634 A1 · pytest 生产 `data/` 写隔离（根级 conftest，**非**被完整性钉住的 `tests/conftest.py`）
 
 **病（633 发现）**：全量 pytest 会重写 `data/` 多个文件、向生产透明日志

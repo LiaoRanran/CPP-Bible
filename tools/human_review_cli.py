@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 A1 · 人审 CLI（append-only + fail-closed），操作 596 人审通道。
 
 这是一支**给人用的笔**，不是自动判决器：

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """616 B2 · EV-MATRIX-UNBACKED 独立第二实现（**补全语义**：含 v2 规则定义的隐性预处理 P2）。
 
 615 B1 建的独立实现（**不 import/copy gate_engine**）在「只按 v1 语义（P1 剥 `actual`）」下与官方一致率 **68.4%**。

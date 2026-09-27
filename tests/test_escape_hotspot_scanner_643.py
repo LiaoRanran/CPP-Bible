@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 B4 · escape_hotspot_scanner_643 单测（归因/两口径/N-A 拆分/只读）。
 编号 B4-1..B4-8。
 """

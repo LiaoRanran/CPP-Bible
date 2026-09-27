@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """630 A3 · 修复后自身免疫率**干跑复算**（纯标准库，只读，**纯模拟**）
 
 对 A2 方案甲做三情景模拟，**不修改任何卡**：

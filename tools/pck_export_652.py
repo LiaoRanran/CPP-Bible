@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """pck_export_652.py — T7 知识 manifest 导出（652 D，PCK → C2PA/in-toto 兼容）。
 
 为什么（652 D-T7）：PCK 证书是自研格式，外部审查者要学新词。T7 把每张 PCK 证书导出成

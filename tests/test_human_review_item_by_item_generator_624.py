@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 E2 人审逐条清单生成器 · 单元测试（≥4 例）。"""
 import os
 import sys

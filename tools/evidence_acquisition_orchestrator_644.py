@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 D · D5 证据获取编排器。
 
 功能（原型级）：输入一张卡片或一个知识点，自动调用 D1–D4 获取证据；

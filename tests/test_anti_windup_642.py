@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 A2 · anti_windup_642 单测（半饱和边界 / 预算边界 / 老化升级 / 灰度零损失）。编号 A2-1..A2-9。"""
 from __future__ import annotations
 

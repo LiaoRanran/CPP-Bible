@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """646 · 阶段 B5 · 注释质量提升（不只是覆盖率）。
 
 目标（646 §四 B5）：645 做到了 100% docstring **覆盖**，但**质量**参差。本批抽查关键工具，按

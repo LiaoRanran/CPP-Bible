@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """607 任务 3 · `proposition_liveness_audit.py` 回归锁（只读审计）。
 
 锁的是审计口径与**只读边界**：

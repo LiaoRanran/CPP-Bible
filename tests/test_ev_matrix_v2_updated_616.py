@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """616 B2 回归测试：ev_matrix_unbacked_v2 补全语义。"""
 import re
 import sys

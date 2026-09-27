@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """616 C3 回归测试：Goodhart 监控接入 metrics。"""
 import sys
 from pathlib import Path

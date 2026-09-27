@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """617 D2 · SNAPSHOT_MANIFEST 自动生成（治理数字漂移，纯标准库 + git 只读）
 
 生成 data/SNAPSHOT_MANIFEST.json（**权威**）：含【实时 git/filesystem 计数】+【冻结验证基线数字】。

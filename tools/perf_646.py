@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """646 · 阶段 A3/A4 · 进程内记忆化（性能优化，只读）。
 
 目标（646 §三 A3/A4）：消除耦合管线里的**重复重计算**——多个工具反复调用同一批重读函数

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 B1 高复杂度带 block 规则接线 · 单元测试（≥5 例）。"""
 import os
 import sys

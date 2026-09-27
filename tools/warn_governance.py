@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 C1 · warn 不增锁机制（**新建独立工具，不改 golden_lock.py / 不改现有基线**）。
 
 背景（_arch_v19/03/08）：warn 被 golden 锁**周期性采纳为 legacy**（136→186），27 条毒样例豁免全 legacy

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """424 攻击面分类回归锁：A1-A11 全映射、A4/A8/A10 盲区补齐、新毒样例直验、台账防过期。"""
 from __future__ import annotations
 

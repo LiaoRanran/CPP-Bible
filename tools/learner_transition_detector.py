@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 D3 · 跃迁触发条件**机器判定**（新建工具；**只判定，不自动触发任何跃迁**）。
 
 目标：让系统能自动检测「**门是否在开启**」（不是替人开门）。

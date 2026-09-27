@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """654 · 前端依赖本地化（web/vendor/）：把 cosmos.gl v3 的 ESM 依赖树抓到本地，
 **版本统一**并**重写为相对导入**，使星图可离线 GPU 渲染；不需要网络、不依赖 CDN。
 

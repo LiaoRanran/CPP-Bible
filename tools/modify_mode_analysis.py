@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 B2 · modify 口径影响分析报告生成器（**纯读** · 可独立复算）。
 
 610 交人项 ① 的口径冲突：34 条 `modify` 的 `new_confidence` 全是 `medium`。

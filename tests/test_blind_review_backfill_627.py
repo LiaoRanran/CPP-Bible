@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 C2 · Blind Review 回填 单测（≥4 例）。"""
 import hashlib
 import os

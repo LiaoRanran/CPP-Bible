@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 A4 · calibration_tracker_642 单测（推翻计数 / 未推翻计数 / error_rate / ECE / 代理标注）。
 编号 A4-1..A4-8。
 """

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 E4 · whitelist_expand_decision_643 单测（条件触发/边界/护栏/不代执行）。
 编号 E4-1..E4-8。
 """

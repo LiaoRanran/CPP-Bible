@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 C2 回归测试：exemption_expiry（legacy 豁免到期制）。"""
 import sys
 from pathlib import Path

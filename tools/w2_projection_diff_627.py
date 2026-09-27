@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 A1 · W2 投影逐节点差异对比（V2 归一化投影 vs grounded_labels）
 
 对比 `w2_projection_normalizer_627.compile_w2()` 的输出与 `grounded_labels_w2.json`

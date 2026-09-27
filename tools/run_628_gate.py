@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 E1 · 收工门禁（纯标准库）
 
 校验项（对应 628.md 第三节验收门禁 15 条）：

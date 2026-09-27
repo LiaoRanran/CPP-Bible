@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 A1 · 跨卡一致性攻击（H4 策略升级：多卡修改）
 
 **为什么需要它**：623 撞上「载体天花板」——`sandbox_apply_622.py` 的 apply API 只改**单卡字段**

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """doc_frontmatter.py — 批量给架构文档补 YAML frontmatter（498 任务 1 / P0-7）。
 
 为什么：`References/architecture_架构演进/` 下 230 份 .md 此前 **0 份有 frontmatter**——

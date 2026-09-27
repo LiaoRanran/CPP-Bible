@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 C1 · PathConfig 路径解耦回归测试（≥8 例）。"""
 import importlib
 import json

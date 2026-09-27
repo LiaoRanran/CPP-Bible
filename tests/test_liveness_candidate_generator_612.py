@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 B1 回归测试：活性锚自动候选生成（只读）。"""
 from __future__ import annotations
 

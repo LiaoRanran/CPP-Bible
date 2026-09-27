@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 E1 · 他验信任根升级方案评估（纯标准库，只读）
 
 629 C1 实现了 **RSA-2048 真非对称签名**（算法层独立），但公私钥**同主体**

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """codeblock_style.py — 代码块版式统一工具（围栏标签 + 行尾注释对齐）。
 
 对应 TEACHING.md §8「代码块与注释风格」的**可脚本化**两条规则：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """质量度量 L1 回归锁（508 任务6）。
 
 提示词要求 2 个测试（采集不崩溃 / jsonl 可解析）；本文件再加 2 个把阈值告警与

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 A1 问题发现器单测（fast 组：用合成真实计数，不跑全库 gate）。
 
 锁定：严重度计算可复现、Top10 排序、盲区→critical/high、每条问题有真实证据引用、不凑数。

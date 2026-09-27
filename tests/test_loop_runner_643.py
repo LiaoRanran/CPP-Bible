@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 E3 · loop_runner_643 单测（R4 口径/复算/门槛/不并入 642 台账/637 复用）。
 编号 E3-1..E3-8。
 """

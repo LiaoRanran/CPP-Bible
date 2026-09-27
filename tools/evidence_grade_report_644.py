@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 B · B4 证据等级体系联调报告。
 
 对全量卡片跑 B1（等级）/ B2（充分性）/ B3（冲突），输出证据质量报告：

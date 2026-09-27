@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 D2 · Projection 扩展（golden/dashboard/textbook）回归测试（≥10 例）。"""
 import os
 import sys

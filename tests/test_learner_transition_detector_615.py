@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 D3 回归测试：learner_transition_detector（跃迁触发条件机器判定）。"""
 import sys
 from pathlib import Path

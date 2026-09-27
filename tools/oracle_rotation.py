@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """oracle_rotation.py — 验证者换代**影响面**只读报告（583 任务 3 / 调研包 `_arch_v9/03` 的 N3）。
 
 回答的问题：**"g++ 升到 16 / 规则引擎重写之后，哪些结论必须重验？"**

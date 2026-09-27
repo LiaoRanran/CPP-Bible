@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 V26-2 · 系统误差清单（可收敛/不可收敛二分，永不合并）
 
 把全部指标分两类：

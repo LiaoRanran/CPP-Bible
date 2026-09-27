@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """633 B2 · 工具债清理审计
 
 读取任务0 的「工具债」盘点（复用 `debt_inventory_633.scan_tools`），细分并给出处置；

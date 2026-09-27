@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """470 P0-C 判别力证明回归锁（452 E03）。
 
 contains_in 的 text 若在所有函数区间（N≥2）出现 ⇒ 背景噪音、恒真断言 → 失败；

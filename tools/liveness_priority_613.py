@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务A1 · 活性锚候选生成与优先级排序（只读，不改受控目录）。
 
 复用 612 B1 的候选（data/liveness_candidates_612.jsonl，60 命题 / 96 候选 / A9·B26·C15），

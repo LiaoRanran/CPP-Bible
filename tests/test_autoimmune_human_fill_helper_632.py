@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 C1 · autoimmune_human_fill_helper_632 单测（≥5 例，全只读/纯标准库）。"""
 import json
 import sys

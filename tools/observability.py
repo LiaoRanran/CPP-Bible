@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """observability.py — 统一日志 L1（508 任务4 / 497 可观测性与失败恢复）。
 
 为什么（497）：工具各自 print，日志分散在 stdout/stderr/step summary 里，

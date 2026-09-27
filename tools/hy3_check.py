@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """hy3_check.py — 一键项目健康检查（秒级）
 
 Hy3 接手后第一条命令。6 项检查，纯读取，不改任何文件。

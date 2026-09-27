@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 C1 · **规则 precondition 分析器**（智能层：自动生成攻击 #1）。
 
 **定位**：对 67 条规则，自动分析"**它需要什么才能触发**"，产出

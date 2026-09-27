@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 E3 · **闭环第 4 次运行（R4）**（抗 Goodhart #3）。
 
 **定位**：跑闭环第 4 轮（637 R1 / 638 R2 / 642 R3 / **643 R4**），

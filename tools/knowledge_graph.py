@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """knowledge_graph.py — 知识图谱 L1（508 任务5）。
 
 为什么（497/508）：原子/证据/误解/工件之间的关系此前只能靠"逐个 Read 卡"或

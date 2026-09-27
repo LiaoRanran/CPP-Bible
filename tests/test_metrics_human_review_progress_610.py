@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 D2 · 人审进度集成（tools/metrics_610.py::collect_human_review_progress）。
 
 锁五件事（任务书 D2 的 5 例 + 2 例自加）：

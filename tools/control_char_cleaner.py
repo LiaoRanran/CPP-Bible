@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 A2 · 控制字符检测器与清洗器（纯标准库）
 
 外部大模型发现：`data/` 下多个报告（尤其 PCK 报告）含 `0x08` / `0x0B` 等控制字符，

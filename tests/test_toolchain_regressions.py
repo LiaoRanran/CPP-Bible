@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """锁定工具链层的真实回归（每一条都对应一次线上/本地事故）。"""
 from pathlib import Path
 

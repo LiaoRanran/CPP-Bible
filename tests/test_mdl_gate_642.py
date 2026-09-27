@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 A5 · mdl_gate_642 单测（admit/reject 边界 / 豁免率 / 热力图缺失 / 不删规则）。
 编号 A5-1..A5-8。
 """

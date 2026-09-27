@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 C2 · Blind Review 结果回填工具（**只实现，不自动执行**）
 
 **背景**：627 C1 生成了 Top10 盲审执行包（空白决策位）。人审者填好后，需要把结果

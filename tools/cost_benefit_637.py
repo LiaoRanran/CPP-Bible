@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """637 D · 代价评估器（CostBenefit）——给每个候选方案打分排序
 
 输入：CandidateGenerator 的 JSON（默认 `data/637_candidates.json`）。

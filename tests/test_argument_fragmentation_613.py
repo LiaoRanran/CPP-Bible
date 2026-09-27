@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """D2 回归测试：argument_fragmentation_613（碎片化：现状/投影/已生效 三态）。"""
 import sys
 from pathlib import Path

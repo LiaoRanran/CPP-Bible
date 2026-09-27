@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """616 B3 · EV-MATRIX 双实现一致性**回归锁**。
 
 目的：未来改 `gate_engine.py`（官方实现）后，**自动**验证它与独立第二实现

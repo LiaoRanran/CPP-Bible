@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 · 阶段 A2 · 攻击生成器真复现（真变异 + 真实检查，非 dry-run）。
 
 目标（645 §三 A2）：基于规则 precondition 分析，生成针对性 mutation（5 类算子），

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 E2 · 人审质量报告深化（**只读** · 不裁决、不自动改判）。
 
 在 609 A2 `human_review_quality` 的基础上**深化**质量信号（那些 A2 没覆盖、但 611 关心的维度）：

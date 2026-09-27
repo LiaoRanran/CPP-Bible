@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """601 任务2.2 · 溯源链「入库 layout + 整链验证」回归锁。
 
 与 `test_supply_chain_601.py` 的分工：那边是 link/layout 的单元语义，这边锁**仓库级事实**：

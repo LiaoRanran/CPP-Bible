@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """601 任务1 · Merkle 完整性层回归锁。
 
 锁六件事：

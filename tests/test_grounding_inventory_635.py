@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 1.4 · grounding_inventory_635 单测（纯标准库，≥5 例）。编号 1.4-1..1.4-6。"""
 from __future__ import annotations
 

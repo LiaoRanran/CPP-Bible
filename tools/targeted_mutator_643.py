@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 C2 · **针对性 mutation 生成器**（智能层：自动生成攻击 #2）。
 
 **定位**：基于 C1 的 precondition/盲点 + B1 的覆盖矩阵，对每条规则生成 3–5 个

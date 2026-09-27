@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """backup.py — 关键数据自动备份 + 一键恢复（508 任务7）。
 
 为什么（497/508）：本仓的"运行时状态"散在几处非书档案里——质量基线

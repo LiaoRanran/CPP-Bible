@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 C · C3 证据完整性与漂移检测。
 
 检测证据漂移（设计输入参照 A4）：

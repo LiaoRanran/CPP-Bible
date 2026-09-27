@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """621 A2 · 第一轮新 mutation 生成 + 判决预测 单测"""
 from __future__ import annotations
 

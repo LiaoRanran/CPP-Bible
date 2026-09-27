@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # mypy: ignore-errors
 # 存量工具：类型注解债务，CI 先转绿，后续逐步修
 #!/usr/bin/env python3

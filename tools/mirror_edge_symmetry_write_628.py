@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 A3 · 镜像边对称性自动证明 + 写入 ReviewItemLedger
 
 对 194 条镜像边（mis_to_prop）执行三条件自动验证：

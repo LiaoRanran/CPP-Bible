@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 B2 · human 90 条清单 单测（6 例）。"""
 import json
 import os

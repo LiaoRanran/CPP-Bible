@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 B2 · 数据迁移回归测试（≥8 例）。"""
 import hashlib
 import os

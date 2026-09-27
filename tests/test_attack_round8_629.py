@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 D2 · 第八轮攻击 单测（6 例）。
 
 **不跑沙箱**（跑一轮 ≈70s 且临时改动受控目录）；只校验契约构造 + 已保存结果的内部一致性

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """559 Part B：读真实仓库工件状态的测试，与 replay **同一把锁**串行——回归锁。
 
 背景（558 验收暴露）：`replay_card` 校验一卡是「删旧工件 → 重生成 → 比 sha → 还原」，

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """596 任务2 · W2 可信度加权 AF 求解器回归锁。
 
 锁四件事：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """601 任务3 · 585 三攻击封堵回归（含**残余风险**的显式证伪）。
 
 585 的三个 meta 攻击（600 调研复核）与本批防护的对应关系：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 D1 · 真实学习行为采集器（只读，不修改任何源文件）
 
 为 Learner Twin（学习者镜像）开门做前置准备。门未开（真实学习事件 0/50），

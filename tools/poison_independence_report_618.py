@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """618 B3 · independence_level 接入 poison 报告（独立报告工具，不改 poison_drill.py）
 
 - 读取 poison 基线数字（data/SNAPSHOT_MANIFEST_617.json 的 poison 段，只读）

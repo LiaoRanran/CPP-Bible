@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """583 任务 1（N5）回归锁：规范化等价变异体字段（**只加字段，判决零改**）。
 
 规格 `_arch_v9/05_攻击生成系统化.md` §四：

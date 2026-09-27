@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 C1 · Blind Review v1 回归测试（≥10 例）。"""
 import os
 import sys

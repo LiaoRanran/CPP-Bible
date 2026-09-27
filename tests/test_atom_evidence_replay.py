@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """锁定证据卡复算契约（G3 首项）与各类 refute / infra_error —— 把"毒样例"固化为回归。
 
 覆盖：

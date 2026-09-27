@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 F1 · QueYi Core 接口抽象 **v0.3**（纯标准库；**一个接口真实适配**）
 
 631 F1 的 v0.2 只**定义不实现**（5 个接口全部 `raise NotImplementedError`）。

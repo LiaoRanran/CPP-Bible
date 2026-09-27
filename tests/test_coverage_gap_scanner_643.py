@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 B1 · coverage_gap_scanner_643 单测（矩阵/四类盲区/优先级/热力图/只读）。
 编号 B1-1..B1-8。
 """

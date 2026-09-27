@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 B2 · 数据迁移：annotations(388) + authority_log(418) → DecisionEvent v2
 
 **向后兼容**：旧文件**只读、不删、不改**；新 ledger 并行运行。

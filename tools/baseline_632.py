@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 任务0 · 基线台账（纯标准库，只读）
 
 记录 632 批次 §一 standing baseline 到 data/632_baseline.md，并在 --check 模式下

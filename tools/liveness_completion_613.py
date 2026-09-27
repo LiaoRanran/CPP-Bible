@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务A2 · 活性锚批量补全（低成本部分）—— **只产出补丁集，不落卡**。
 
 铁律：atoms/ 是受控目录，本批**不写入**。本工具计算「低成本 + 高置信」命题的**精确补全补丁**

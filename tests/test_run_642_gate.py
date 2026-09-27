@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 D1 · 收工门禁回归测试（沿用 640c/641 经验：机制测试与重型真实检查分离）。
 
 重型子项（ruff / mypy / 641 收尾 / tool_integrity）留给 `run_642_gate` 收工时跑一次；

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """646 · 阶段 B3 · 证据充分性补强（卡片域收口到真实 27 卡）。
 
 目标（646 §四 B3）：645 判定「27/28，1 张不足」，但那 1 张不足是**幻影卡** `ATOM-MEM-MOVE-001`

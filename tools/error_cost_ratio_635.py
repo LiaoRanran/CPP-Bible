@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 V26-1 · 错误代价比声明（带日期，只加数据不改判决）
 
 计算当前错误代价比（**逃逸率 : 自身免疫率**）并给出**明确立场**，

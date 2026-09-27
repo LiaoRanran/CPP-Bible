@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """565 Part 2 · mutation 报告口径层（分子/分母 + C-P 双侧区间 + 活雷/样本不足标注）。
 
 为什么不打门禁也能验：报告层是**纯函数**（吃 `per` 行的列表，吐口径块）。这里直接从**已提交的

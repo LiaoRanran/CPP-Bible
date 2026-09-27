@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 C1 · 人审仪表盘 v2 单测（8 例）。
 
 断言 HTML 里**真实存在**的模块与样式（不测"应该好看"），并校验数据与当前状态一致。

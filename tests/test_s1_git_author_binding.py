@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """S1-GIT-AUTHOR-BINDING 回归锁（479 任务 4 / v5-E12 观察期）。
 
 背景：v5 报告 E12 —— `human:liaoranran` 自签在修复前**零 block 零 warn**：签收机制只验

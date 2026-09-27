@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 A2 · OTS re-anchor 回归测试（≥4 例）。
 
 验证：新 anchor digest 与当前信任根一致 / pending 诚实标注 / --check 通过 / 报告口径。

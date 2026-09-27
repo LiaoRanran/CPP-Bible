@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 F · 端到端（slow）：**四块硬骨头 + 打靶准备**一次性串起来验（-m slow 跑）。
 
 这是 647 的"收工级"慢用例：把每条硬骨头的**最小可证断言**串成一条链，

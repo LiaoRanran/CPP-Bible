@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """supply_chain.py — in-toto 风格溯源链最小子集（601 任务2；600 调研阶段2）。
 
 为什么：Merkle 层回答"**文件有没有被换过**"，但不回答"**谁在什么时候、用什么输入、跑出什么**"。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 V26-4 · exception_review_635 单测（纯标准库，≥5 例）。编号 V4-1..V4-6。"""
 from __future__ import annotations
 

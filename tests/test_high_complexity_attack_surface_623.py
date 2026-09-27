@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """623 E1 · 高复杂度带攻击面分析 单元测试（≥4 例）"""
 from __future__ import annotations
 

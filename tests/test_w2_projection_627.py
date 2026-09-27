@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 A1 · W2 投影归一化 / 差异对比 单测（≥4 例）。"""
 import os
 import sys

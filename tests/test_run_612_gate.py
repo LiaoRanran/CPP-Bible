@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """Z 线回归测试：run_612_gate（收工门禁脚本）。
 
 注意：不在 pytest 内重跑全部门禁（会触发 250s+ 全量回归）；仅校验门禁模块自身的可用性与

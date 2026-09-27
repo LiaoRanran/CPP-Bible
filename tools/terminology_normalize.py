@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 terminology_normalize.py — 全书术语/格式归一化收口工具
 （确定性、约定背书、散文感知、幂等；可接入 CI 作为格式层门禁）。

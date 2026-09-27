@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 C1 · 污染二分定位 单测（6 例，用模拟污染验证二分逻辑）。"""
 import os
 import subprocess

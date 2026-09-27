@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """639 D1 · 23 张 verified 卡边界三元组回填（**不污染受控目录**）
 
 **债务（638 3.1）**：`four_state_verdict_638.audit()` 实测 23 张 atoms verified 卡

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """646 · 阶段 B1 · 标准获取补全（16/18 → 18/18）。
 
 目标（646 §四 B1）：645 的 `eel.is/c++draft` 获取有 2 条失败（`memory` 读超时、`cpp` SSL 握手超时）。

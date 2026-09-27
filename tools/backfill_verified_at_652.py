@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """backfill_verified_at_652.py — A1 批量补 `verified_at`（652 A，来自 git log 首次提交时间）。
 
 为什么（652 A）：651 H7 实测 **87/113 卡无 `verified_at`** ⇒ 时效治理无从谈起。本工具从

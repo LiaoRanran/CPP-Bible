@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务F2 · metrics_613：本批六线**关键数字**单页汇总（只读）。
 
 汇总口径（全部现场复算，不抄写）：

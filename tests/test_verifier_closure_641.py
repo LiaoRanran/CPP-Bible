@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """641 D1–D3 · Verifier Closure（信任根闭包）回归测试。
 
 锁的是**闭包完整 + 缺失即 FAIL + run 可自述版本**：

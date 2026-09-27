@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 B3 · 唯一审查账本（93 unique，**禁止重复计数**）
 
 **根治 P0-B**：624 的「80 新增 + 30 = 110」只是**记录条数**相加，不是唯一复核对象数量。

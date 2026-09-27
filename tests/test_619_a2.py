@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """619 A2 单测：攻击者原型（tools/adversarial_attacker_619.py）
 
 不写盘、不 import mutation_fuzz / gate_engine。验证排序、契约校验、去重帕累托、等价/na 剔除。

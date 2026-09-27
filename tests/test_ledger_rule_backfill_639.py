@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """639 D2 单测：ledger 规则归属回填（≥5 例）。"""
 import os
 import sys

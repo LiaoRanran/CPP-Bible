@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """641 D1–D3 · **Verifier Closure**（信任根闭包）+ 缺失即 FAIL + run 绑定 digest
 
 §D1：从最终 verifier 出发，传递闭包**所有影响 verdict 的代码/规则/配置/schema/环境**，

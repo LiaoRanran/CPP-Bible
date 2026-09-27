@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 A3 回归测试：加桥后 W2 重算 + 判决变化（锁基线不变量）。"""
 from __future__ import annotations
 

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 B2 · 透明日志完整性校验（纯标准库，默认只读 --check）。
 
 校验 `data/transparency_log.jsonl`：

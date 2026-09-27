@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 D2 · rule_drafter_643 单测（MDL 式/草案字段/排序/上限/不写库）。
 编号 D2-1..D2-8。
 """

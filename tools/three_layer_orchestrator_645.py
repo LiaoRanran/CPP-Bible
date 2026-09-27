@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 · 阶段 C2/C3/C4 · **三层耦合套件**（编排 + 效果评估 + 反馈）—— 647 D1 合并版。
 
 目标（645 §五 C2/C3/C4）：把三层串成 ≥5 条真实耦合链（智能层 `Issue` → 头部层 `EvidencePackage`

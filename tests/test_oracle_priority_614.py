@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """614 E1 回归测试：oracle_priority_614（离线优先级排序）。"""
 import sys
 from pathlib import Path

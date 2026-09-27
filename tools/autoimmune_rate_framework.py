@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 A1 · 自身免疫率框架（纯标准库，只读）
 
 **问题**：阙疑只度量过**逃逸率**（漏报：错误知识通过 gate），从未度量**自身免疫率**

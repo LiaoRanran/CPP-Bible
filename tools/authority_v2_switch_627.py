@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 B3 · `QUEYI_AUTHORITY_V2` 一键启用 / 回滚脚本 + 指南
 
 **背景**：627 B1 已验证 5 种投影在 V2 模式下全部成功、B2 确认对 CORE_TOOLS 无回归。

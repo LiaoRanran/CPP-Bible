@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """calibration_upgrade_651.py — M3 校准升级（651 W3，**SCOPE-BPE + swap 双跑 + 分层 α 预算**）。
 
 为什么（651 W3-M3）：单一全局校准率会把"某类来源特别不可靠"平均掉。M3 要求：

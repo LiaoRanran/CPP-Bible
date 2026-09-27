@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 A3 · CI pytest 红因修复回归测试（≥3 例）。"""
 import os
 import subprocess

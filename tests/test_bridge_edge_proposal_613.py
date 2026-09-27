@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """D1 回归测试：bridge_edge_proposal_613（桥接边画像/提案/apply）。"""
 import json
 import sys

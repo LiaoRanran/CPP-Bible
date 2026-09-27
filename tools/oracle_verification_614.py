@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """614 线E E2 · oracle 验证流程（机制设计 · **不跑监工门禁**）。
 
 背景：本仓**没有真 oracle**（无自动裁决者）。E2 设计的是「**人/外部独立源如何执行验证**」的

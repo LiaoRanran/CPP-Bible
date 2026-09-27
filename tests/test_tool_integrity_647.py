@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 A1 · tool_integrity supply_chain **严格模式**回归锁（fail-open 修复 1）。
 
 病（642 B3 审计 FO-A，实测）：缺信任根文件只 warning、exit 0 ⇒ 删掉一个信任根文件，verifier 仍绿。

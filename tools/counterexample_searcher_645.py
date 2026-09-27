@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 · 阶段 B4 · 反例搜索语义级升级（替代 644 D3 关键词级）。
 
 目标（645 §四 B4）：语义级搜索——标准章节交叉引用 + UB 边界检测（未定义/未指定/实现定义）；

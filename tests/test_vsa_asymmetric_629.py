@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 C1 · VSA 非对称签名 单测（8 例）。
 
 用 module 级 fixture 生成一次 RSA-1024 密钥（自检速度；报告用 2048）。

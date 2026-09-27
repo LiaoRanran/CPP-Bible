@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 C1 内容寻址存储单测（S1-1..S1-5）。"""
 from __future__ import annotations
 

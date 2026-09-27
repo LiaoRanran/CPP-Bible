@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 B2 回归测试：EV-MATRIX 分歧修复（一致率不降 + 提案文件存在）。"""
 import sys
 from pathlib import Path

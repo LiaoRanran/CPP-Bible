@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """646 · 阶段 B2 · 反例语义级补全（覆盖全部真实卡）。
 
 目标（646 §四 B2）：645 的反例搜索只覆盖 20 张卡（8 张未覆盖，且其中含幻影卡）；本批补齐到

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """一键门禁汇总：跑 gate / poison / replay / pytest，输出一行可读报告。
 
 用法：

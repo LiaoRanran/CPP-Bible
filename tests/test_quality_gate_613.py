@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """B3 回归测试：quality_gate_613（CI quality job 步骤复跑器）。
 
 注意：不在 pytest 内跑全量 28 步（约 40s+ 且与 CI 同步骤重复）；

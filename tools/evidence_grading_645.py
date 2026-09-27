@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 · 阶段 B5+B6 · **证据判定套件**（等级 + 充分性）—— 647 D1 合并版。
 
 目标（645 §四 B5/B6）：

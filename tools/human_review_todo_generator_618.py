@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """618 E2 · 人审待办清单生成工具（从 evidence 卡生成 30 条逐条复核清单）
 
 - 扫描 evidence/ 下 EV-*.md（只读），取前 30（按路径排序）生成逐条复核 TODO。

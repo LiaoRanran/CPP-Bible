@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 B2 · kernel_minimality_audit_642 单测（最小性四判据 + 依赖方向 + 只审计不改）。
 编号 B2-1..B2-7。
 """

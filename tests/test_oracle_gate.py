@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """574 任务 D 回归锁：信任放权门 —— **只写不读**、默认不放权。
 
 最关键的锁：给卡/命题填上 `verified_by_oracle`（哪怕填成"最强 oracle 已验证"），

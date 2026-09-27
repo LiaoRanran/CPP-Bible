@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 E1 · 探针 #2：向量 **L4.2 阈值边界歧义**（P1，此前无探针）
 
 向量定义（`data/attack_surface_taxonomy.md` L4.2）：规则用 `>` 还是 `>=`、

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """641 E1 · 收工门禁回归测试。
 
 遵循 640c B1 的经验：历史门禁容易退化成"断言当时仓库全绿"的跨批脆弱测试。

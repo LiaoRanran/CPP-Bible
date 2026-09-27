@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 B2/B3 编译器实测单测（slow 组：真实调用 g++/clang++）。
 
 锁定：编译器可检测、真实编译可读退出码、双编译器对比、等级判定、聚合覆盖 ≥15 卡。

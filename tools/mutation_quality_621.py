@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """621 A3 · 新 mutation 质量评估 + 去重
 
 四个质量维度（各自 0..1）：

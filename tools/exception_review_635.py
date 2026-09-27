@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 V26-4 · 例外与豁免条款复审表（只加数据，不改判决）
 
 全量扫描系统的「例外条款」：规则豁免 / 白名单 / 放宽条件 / 已知问题；

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务E2 · in-toto link 元数据（供应链步骤证据）。
 
 in-toto 的 link 元数据记录一个步骤的 **materials（输入）/ products（输出）/ command /

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 A4 闭环第五轮 · 单元测试（≥3 例）。"""
 import json
 import os

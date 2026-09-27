@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """C3 回归测试：learner_path_graph_613（推荐路径图 · 拓扑排序）。"""
 import sys
 from pathlib import Path

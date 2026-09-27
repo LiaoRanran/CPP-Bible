@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """588 任务 0 · 变异「发现器」完备性审计（只读、幂等、纯标准库 + 现有工具导入）。
 
 产出：`data/mutation_shape_coverage.md`（机器生成、只读台账）。

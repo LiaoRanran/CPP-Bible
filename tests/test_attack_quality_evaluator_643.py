@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 C4 · attack_quality_evaluator_643 单测（Wilson/指标/等预算对比/改进建议）。
 编号 C4-1..C4-8。**不真跑沙箱**（真跑由 `--report` 负责）。
 """

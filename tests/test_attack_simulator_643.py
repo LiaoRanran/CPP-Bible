@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 C3 · attack_simulator_643 单测（判定表/随机基线/树指纹/端到端 1 条沙箱跑）。
 编号 C3-1..C3-8。**只真跑 1 条**（沙箱复制整树，成本受控）。
 """

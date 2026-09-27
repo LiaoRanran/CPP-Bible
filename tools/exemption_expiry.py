@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 C2 · 27 条 legacy 豁免**到期制**（新建独立工具，**不改 poison_drill.py / 不删任何豁免**）。
 
 背景（_arch_v19/03）：毒样例 27 条豁免全 `redteam_seen: legacy`，无到期日 ⇒ 永久免检（Goodhart 漂移）。

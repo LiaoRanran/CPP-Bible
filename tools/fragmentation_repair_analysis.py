@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 C3 · 论证图碎片化修复影响分析（**只读 what-if** · 不真实落库）。
 
 问题：C1 实测论证图碎片化（11 分量 / 最大覆盖 66.1%）；C2 生成了 98 条跨分量桥接候选。

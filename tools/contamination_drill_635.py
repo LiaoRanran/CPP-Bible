@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 V26-3 · 证据通道字段 + 污染传播演练（只加数据，不改判决）
 
 1. **证据通道字段**：给证据元数据定义 6 类通道 + 控制方

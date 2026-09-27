@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 1.2 · tau_d_635 单测（纯标准库，≥5 例）。编号 1.2-1..1.2-6。"""
 from __future__ import annotations
 

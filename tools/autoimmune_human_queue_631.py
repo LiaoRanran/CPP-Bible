@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 B2 · human 90 条字段清单（纯标准库，只读）
 
 630 A2 方案甲把 132 条 warn 分成 auto 42 / human 90；B1 已执行 auto 42，

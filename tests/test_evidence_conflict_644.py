@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 B3 证据冲突检测器单测（C3-1..C3-5）。"""
 from __future__ import annotations
 

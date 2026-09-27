@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 A1 · 关键统计数字重算与校验器（只读）
 
 外部大模型审阅发现 4 个数值/统计错误（median 75→67.5、110→93 唯一、27→31 总豁免、README 大小口径）。

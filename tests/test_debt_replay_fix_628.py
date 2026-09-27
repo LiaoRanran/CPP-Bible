@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 A4 · DEBT-001 + replay manifest 修复 单测（5 例）。"""
 import os
 import sys

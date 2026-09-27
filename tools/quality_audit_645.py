@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 · 阶段 F1/F2 · 优雅代码审计（docstring 覆盖 + 冗余清理，只读）。
 
 目标（645 §八 F1/F2）：

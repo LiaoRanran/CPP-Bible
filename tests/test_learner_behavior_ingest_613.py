@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """C1 回归测试：learner_behavior_ingest（真实学习行为接入 · append-only / fail-closed）。"""
 import csv
 import json

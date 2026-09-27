@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """623 D2 · W2 重算（通道打通后，重算 W2 solver 看变化）
 
 **背景**：622 D2 重算 W2 得到"变化 0"，但那是因为 **通道断**（Authority 决策未进入 annotations，

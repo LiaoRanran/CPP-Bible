@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """620 B1 · PCK 批量迁移工具（markdown 卡 → PCK certificate）
 
 从 `atoms/`（37 张原子卡）与 `evidence/`（66 张证据卡）**只读**派生 PCK certificate，

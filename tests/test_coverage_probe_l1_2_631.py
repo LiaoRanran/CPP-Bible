@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 D2 · 探针 L1.2（命题多义指代）单测（4 例）。"""
 import json
 import os

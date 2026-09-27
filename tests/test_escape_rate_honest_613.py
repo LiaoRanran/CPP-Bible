@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """F1 回归测试：escape_rate_honest_613（逃逸率多口径 + 双侧 Wilson CI）。"""
 import sys
 from pathlib import Path

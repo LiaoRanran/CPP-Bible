@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """C4 回归测试：learner_twin_dashboard_613（仪表盘升级版 · 自包含 HTML）。"""
 import sys
 from pathlib import Path

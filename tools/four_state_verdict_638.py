@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """638 3.1 · 四态结论 schema（**真上线**，向后兼容）
 
 v25 要求：判决支持 **四态** —— `pass` / `pass_with_exception` / `fail` / `unknown`。

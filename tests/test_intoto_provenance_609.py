@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 D2 · in-toto 溯源回归锁（link/layout schema + 4 关键步骤 + **缺签名即 fail-closed**）。
 
 锁五件事（任务书 5 例）：

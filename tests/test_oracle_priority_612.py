@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 C2 回归测试：oracle 验证优先级排序（只读）。"""
 from __future__ import annotations
 

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """639 E1 · 收工门禁（§六 八项检查）
 
 1. 受控目录零污染；2. pytest 全量绿；3. ruff 全绿；4. mypy 0 errors；

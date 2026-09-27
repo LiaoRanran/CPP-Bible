@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 F1 回归测试：run_615_gate（收工门禁脚本）。"""
 import json
 import sys

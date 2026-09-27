@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """metrics_snapshot.py — 项目度量「单一真相源」
 
 背景（2026-08-29 全量审计实测）

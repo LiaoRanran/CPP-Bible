@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """640b A1 · W2 数字的**单一权威源**（根治涟漪）
 
 **问题**：W2 的 IN/OUT/defeating_edges 会随人签/重算演进，但几十个测试各自把当前

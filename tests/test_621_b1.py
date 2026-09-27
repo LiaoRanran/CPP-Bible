@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """621 B1 · ci.yml 竞态修复（gate needs replay）单测"""
 from __future__ import annotations
 

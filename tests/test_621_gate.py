@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """621 E2 · 收工门禁 run_621_gate 单测"""
 from __future__ import annotations
 

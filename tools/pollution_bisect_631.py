@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 C1 · ATOM-CONC-FENCE-001 污染根因二分定位（纯标准库）
 
 背景（630 发现）：跑完一次非 slow 全量后，受控文件 `atoms/conc/ATOM-CONC-FENCE-001.md`

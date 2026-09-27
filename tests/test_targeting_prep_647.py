@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 E1–E3 · 打靶准备交付物回归锁（编号 E-1..E-5）。"""
 from __future__ import annotations
 

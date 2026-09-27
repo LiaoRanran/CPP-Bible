@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 B3 · blind_protocol 真上岗回归锁（编号 B3-1..B3-8）。"""
 from __future__ import annotations
 

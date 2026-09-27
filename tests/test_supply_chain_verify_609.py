@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 D3 · 供应链验证回归锁（包含证明 + 一致性 + append-only）。
 
 锁五件事（任务书 5 例 + 2 例自加）：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """637 B · 误差检测器（ErrorDetector）——从体检报告里挑 top 5 异常
 
 输入：SelfObserver 的 JSON（默认 `data/637_observer.json`）。

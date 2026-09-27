@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """run_653_gate.py — 653 收工门禁（两阶段 pytest + ruff/mypy + 保护器联调 + 前端产物 + 信任根 + 零污染）。
 
 阶段：

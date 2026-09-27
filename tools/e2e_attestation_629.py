@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 C4 · 端到端他验编排（**全程临时目录，不动仓库**）
 
 链路（每步计时）：

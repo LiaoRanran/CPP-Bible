@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """425 上游依赖遍历回归锁：依赖（prerequisite/specializes/realizes）与引用
 （contrasts/see_also 等）必须区分；对存量原子全部可运行（零风险只读）。
 """

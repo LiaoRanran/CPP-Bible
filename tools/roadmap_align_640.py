@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """640 A2 · 闭环路线图对齐（D9：闭环建议与路线图长期错配的修复）
 
 **病（638 交人项）**：637/638 闭环提的建议（修测试/修静态错）与路线图

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """623 D1 · Authority 日志 → annotations 同步工具（打通 622 D1 断掉的通道）
 
 **背景**：622 D1 把人审决策写进 `data/authority/authority_log.jsonl`，但 W2 solver 读的是

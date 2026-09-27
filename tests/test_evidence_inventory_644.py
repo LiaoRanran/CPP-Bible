@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 0 · 现有证据盘点单测（I0-1..I0-6）。"""
 from __future__ import annotations
 

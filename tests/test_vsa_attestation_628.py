@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 B2 · VSA 凭证 单测（8 例）。
 
 幂等性说明：**生成类用例写临时目录**（`save_credential(out_dir=)`），

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 F1 · Core 接口 v0.2 单测（6 例）。"""
 import json
 import os

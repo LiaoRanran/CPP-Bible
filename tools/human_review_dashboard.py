@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 E2 · 人审进度仪表盘（自包含 HTML：SVG 柱状/饼图 + 卡片 + OUT 清单 + 时间线）。
 
 口径全部复用 610 A2/A3 的统计函数（**单一真源**：仪表盘不许自己再算一套）。

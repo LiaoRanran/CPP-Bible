@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """619 B2 单测：PCK 证书验证器（tools/pck_certificate_verifier_619.py）
 
 纯函数验证：合法/非法证书、诚实注释、顶层非 mapping、--check 自检。不写盘。

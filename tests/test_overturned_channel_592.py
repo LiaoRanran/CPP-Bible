@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """592 任务2 · 推翻事件通道初始化（空文件 + schema 校验 + fail-closed）。
 
 573 设计了 CLI 与 schema，但 `data/overturned_events.jsonl` **从未被创建** ⇒ 通道不存在，

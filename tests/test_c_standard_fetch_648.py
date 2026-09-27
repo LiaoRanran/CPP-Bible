@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """648 A0 · C 标准原文抓取回归锁（编号 S-1..S-4）。
 
 **不联网**：只锁"已落盘的事实"（`data/648_c_standard.json` 与它给的引用可复核性）。

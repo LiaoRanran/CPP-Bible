@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 E3 · 辩护链推理深化（**只读** · 不裁决、不改仓）。
 
 在 610 B1 `defense_chain` 的"单点 what-if"之上**深化**为"全图敏感性"：对每个节点分别做两种压力测试，

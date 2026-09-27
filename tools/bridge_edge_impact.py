@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 A3 · 加桥后 W2 重算 + 判决变化分析（**只读** · 复用 weighted_af_solver，不重实现求解）。
 
 读取 A2 人审**已批准**的桥接边（`data/bridge_edge_review_612.jsonl` 中 approve/modify），

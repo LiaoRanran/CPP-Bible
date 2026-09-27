@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 B3 · blind_protocol **真上岗**（636 影子 → 642 标记违规 + 盲化新开单 → **647 新判决强制盲化**）。
 
 647 与 642 的差别（§四 B3）：

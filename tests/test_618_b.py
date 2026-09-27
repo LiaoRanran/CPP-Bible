@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """618 B 线 · gate/poison/replay 独立性报告 单测（≥3 例/工具）"""
 import os
 import sys

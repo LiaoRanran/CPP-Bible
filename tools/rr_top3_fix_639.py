@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """639 D3 · RR 冲突 top 3 修复（代码级 co-fire 复核）
 
 **债务（638 B2）**：24 对高置信 RR 候选中 top3 为 ATOM-REL 族 type1 P0

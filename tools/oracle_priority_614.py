@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """614 线E E1 · oracle 验证优先级（离线排序 · 只读 · 建议）。
 
 在 612 C2 `oracle_priority.py` 的五维加权基线上，叠加 **614 维度**，使「危险卡」更优先：

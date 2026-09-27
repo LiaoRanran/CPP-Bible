@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 B1 · 闭环第 7 轮（稳定验证轮，~100 条）
 
 **目的**：验证雷2 闭环是否进入**稳定期**（第 3 连续轮，623-625）。策略：

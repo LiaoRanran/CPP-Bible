@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """F3 回归测试：run_613_gate（收工门禁脚本）。
 
 注意：不在 pytest 内跑全量门禁（含 ~245s 回归 + 监工记录，且与收工门禁重复）；

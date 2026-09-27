@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 C1 · 人审深色科技风仪表盘 v2（自包含 HTML，离线可开，无外部 CDN）
 
 在 625 D2（v1 纯静态条形图 + 表格）基础上深化视觉：深色底 + 玻璃拟态卡片 +

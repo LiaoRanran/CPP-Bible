@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 B5 · 五保护器真上岗联调回归锁（编号 BR-1..BR-8）。"""
 from __future__ import annotations
 

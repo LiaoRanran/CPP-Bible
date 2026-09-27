@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 C1 回归测试：oracle 验证执行工具（stub 三门禁，避免真跑 300s 的 replay）。"""
 from __future__ import annotations
 

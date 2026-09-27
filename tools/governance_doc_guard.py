@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """591 任务 2 · 治理文档完整性防护（A1 / D13）。
 
 问题：投喂词（`References/architecture_架构演进/*.md`）事实上是 agent 的可执行政策，却零完整性校验。

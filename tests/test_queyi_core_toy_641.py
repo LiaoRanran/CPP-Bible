@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """641 C1–C3 · 第二领域（toy_math）与通用性证明回归测试。
 
 锁的是"**同一个内核、换领域插件就能跑**"：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 H1 · 收工门禁（finish gate）
 
 汇总校验本批 632 所有子任务的交付物是否"绿"：

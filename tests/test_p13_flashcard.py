@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """472 P1-3（452 E16）回归锁：闪卡默认不含 draft 原子。"""
 from __future__ import annotations
 

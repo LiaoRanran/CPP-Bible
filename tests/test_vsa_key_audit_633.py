@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """633 C1 · vsa_key_audit 单测（纯标准库，≥5 例）。编号 C1-1..C1-6。"""
 from __future__ import annotations
 

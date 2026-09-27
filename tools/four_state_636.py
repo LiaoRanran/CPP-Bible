@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """636 V26-补2 · 四态判决模拟（**影子**）
 
 把 34 份 baseline 报告的「历史判决」按**四态**重新归类：

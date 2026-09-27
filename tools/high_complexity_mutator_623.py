@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """623 A1 · 高复杂度带 mutation 生成器（4 策略 H1–H4）
 
 **为什么需要它**：622 A2 真跑 50 条只触达 9/63 条规则（14.3%），新逃逸 0。

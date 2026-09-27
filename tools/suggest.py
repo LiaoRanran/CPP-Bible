@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """suggest.py — Content Suggestion Engine
 Given a chapter, scans its weak dimensions and suggests specific content to add.
 

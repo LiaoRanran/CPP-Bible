@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 D3 · 闭环三维联测 单测（6 例）。
 
 注意：`autoimmune_dim()` 会实跑 A1（gate 全量只读）与 A2（镜像探针，约 20s）⇒ module fixture 缓存。

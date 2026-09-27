@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 D1 · pollution_guard_session_632 单测（≥5 例，纯标准库，不碰真实仓库）。"""
 import sys
 import types

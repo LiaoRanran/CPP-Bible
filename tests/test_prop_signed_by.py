@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """571 任务 4 回归锁：命题级 `signed_by` 最小骨架（schema + 与卡级同一套 git 作者绑定核查）。
 
 只锁四件事：

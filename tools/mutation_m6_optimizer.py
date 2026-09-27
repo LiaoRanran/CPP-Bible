@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 E4 · M6 算子优化 **方案**（**只给方案 + 测算，绝不落地**）。
 
 609 铁律第 10 条：改 `mutation_fuzz.py` = 改判决口径 ⇒ **需监工单独授权**。

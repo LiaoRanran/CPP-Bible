@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """E1 回归测试：ots_anchor_613（信任根 OTS 凭据 · 不 submit，pending 必须诚实）。"""
 import sys
 from pathlib import Path

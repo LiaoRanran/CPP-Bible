@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """646 阶段 B1 · 标准获取补全单测（fast，不联网）。"""
 import os
 import sys

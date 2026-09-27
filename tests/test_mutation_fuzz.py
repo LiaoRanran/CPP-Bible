@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """539 Part B4 · mutation_fuzz 回归锁：小而确定，不跑全量。
 
 为什么这几条值得锁（都是"工具会骗人"的形态）：

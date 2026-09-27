@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 B3 · 未覆盖攻击面清单与优先级（纯标准库，只读）
 
 基于 B1（分类学，35 向量）+ B2（历史命中，23 事件），挑出**零历史事件的向量**，

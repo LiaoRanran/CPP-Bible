@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """637 A · 自我观测器（SelfObserver）——系统自己看自己
 
 扫一遍系统现状，自动采集 **14 项指标**（规模/健康/知识/治理/进度），

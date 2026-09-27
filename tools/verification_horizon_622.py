@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """622 E1 · Verification Horizon 测量工具（雷7）
 
 定义见 `data/verification_horizon_definition_622.md`：

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务C2 · BKT **真实**递推（替换/覆盖 612 的 simulate 模拟值）。
 
 输入：C1 的真实行为事件 `data/learner_behavior.jsonl`。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """470 P0-D 解析硬化回归锁：E07 走私 / E08 重复键 / 语法 invalid / 同义词归一。"""
 from __future__ import annotations
 

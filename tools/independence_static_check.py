@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 C3 · 独立验证者静态证明（纯标准库 ast，只读）
 
 对 628 的两个「验证端」做**静态独立性审计**（不运行、不修改它们）：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """640 A4 · 守卫劫持修复验证（≥6 例）。
 
 病（634 A2 引入）：79 个工具的模块级 `if "--check" in sys.argv: sys.exit(0)` 守卫，

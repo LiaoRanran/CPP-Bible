@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """580 任务 1 回归锁：replay 并发锁**跟随跑批根分片**。
 
 病：`_REPLAY_LOCK` 写死真实 `ROOT/build/.replay_lock` ⇒ 进程池并行时所有 worker 抢同一把全局锁

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 B3 · VFDR 收敛 + 热力图 v3 回归测试（≥4 例）。"""
 import os
 import sys

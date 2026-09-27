@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 D2 · 命题活性锚补全计划（**只读** · 不补字段）。
 
 问题：607 审计发现 60 条 observation 命题**全缺** `liveness`（gate `OBSERVATION-LIVENESS` 必报 warn）。

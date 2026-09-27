@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 C3 · 独立验证者静态证明 单测（6 例）。"""
 import os
 import sys

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 A6 · 五个保护器**联调 + 灰度报告**（证「零生产判决被改变」）。
 
 联调对象：A1 冲突检测（flag）/ A2 anti-windup（标记）/ A3 blind_protocol（只标记历史 + 盲化新项）/

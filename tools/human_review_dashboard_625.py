@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 D2 · 人审可视化（深色科技风，纯静态 HTML/CSS/JS，无外部依赖）
 
 复用 624 E2 的逐条复核清单模型（`human_review_item_by_item_generator_624.generate`），

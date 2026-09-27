@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 A2 跨卡沙箱实跑结果 · 单元测试（验证已落盘的真实 gate 判决，不重复跑 gate）。"""
 import json
 import os

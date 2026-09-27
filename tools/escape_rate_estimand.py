@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """617 A1 · 逃逸率 estimand 三层拆分枚举器（纯标准库，只读 frozen baseline）
 
 按逃逸类型（blocked / escaped / equivalent）枚举三层 estimand：

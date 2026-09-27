@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """d5_gap_scanner.py — D5 覆盖差距扫描器
 
 扫描 Book/ 中缺少 D5 性能附录，但正文包含性能/基准信号的章节，

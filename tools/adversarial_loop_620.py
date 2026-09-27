@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """620 A1 · 攻击-验证迭代闭环沙箱框架（attack → verify → record）
 
 把 619 A4 设计的协议（`data/attack_verification_protocol_619.md`）落地为**可运行**的闭环。

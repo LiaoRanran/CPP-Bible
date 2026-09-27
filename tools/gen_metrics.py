@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """gen_metrics.py — 指标单一事实源的「落地校验器」
 
 `metrics_snapshot.py` 负责**产出**事实（build/metrics.json），本工具负责

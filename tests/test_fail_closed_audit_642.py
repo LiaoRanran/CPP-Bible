@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 B3 · fail_closed_audit_642 单测（两处已知点实测 + 全量扫描 + 只审计不改）。
 编号 B3-1..B3-7。
 """

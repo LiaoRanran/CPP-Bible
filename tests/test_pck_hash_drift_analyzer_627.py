@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 A3 · PCK hash 漂移分析 单测（≥4 例）。"""
 import glob
 import hashlib

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """630 C1 · coverage（送审覆盖率）**第四元指标**（纯标准库，只读）
 
 前三元（629 D3）盯的是 gate 的**判决质量**（逃逸率 = 漏报、自身免疫率 = 误报、触达率 = 沙箱

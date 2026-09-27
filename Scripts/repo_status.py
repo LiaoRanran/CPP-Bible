@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """一键仓库状态：git 状态分类 + ahead 数 + 未跟踪资产盘点 + 门禁快览。
 
 用法：

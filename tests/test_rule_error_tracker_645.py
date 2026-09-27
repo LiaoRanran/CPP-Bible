@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 A5 规则 error 追踪单测（fast 组：用临时账本，不读真实账本）。
 
 锁定：真实计数（触发/推翻/逃逸）、error_rate 推导、67 规则覆盖。

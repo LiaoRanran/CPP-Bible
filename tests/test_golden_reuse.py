@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """568 任务 2 回归锁：golden 复用 replay 增量结论必须是 **fail-closed**。
 
 背景：`golden_lock.measure()` 过去逐卡直调 `replay.replay_card()`，把 replay 刚做过的真编译

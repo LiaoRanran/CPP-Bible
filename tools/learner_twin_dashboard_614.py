@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """614 线B B2：学习者镜像仪表盘 · 真实数据版（自包含 HTML，无外部依赖）。
 
 数据来源：data/learner_behaviors.jsonl（B1 采集的真实/模拟行为日志）。

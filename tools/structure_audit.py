@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 structure_audit.py — 围栏感知的 Markdown 结构缺陷扫描器（只读，默认不修）
 

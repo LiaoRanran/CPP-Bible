@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 C4 证据库迁移工具单测（M4-1..M4-4）。"""
 from __future__ import annotations
 

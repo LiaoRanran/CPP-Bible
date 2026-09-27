@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """638 E1 · 收工门禁单测（>=5 例，轻量；**不触发** build()/pytest 以免递归）。"""
 from __future__ import annotations
 

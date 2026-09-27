@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """615 A1 · 人审诚实化标签（**只读** annotations，新建独立标签文件，绝不修改原记录）。
 
 背景（_arch_v19 调研 `05_人审即内容.md`）：388 条"全量人审"实为 **1 名审阅者、5 个理由模板**的

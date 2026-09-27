@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 A3 · 人审数据导出（JSON / CSV / Markdown / 单 MIS，**只读**、纯标准库）。
 
 导出的每条记录都**用候选边补全了结构信息**（source/target/direction），否则外部拿到一堆

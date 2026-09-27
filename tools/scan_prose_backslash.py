@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # 扫描 Book/ 散文中（代码块外、行内代码外）的反斜杠转义序列。
 # 这类序列进入 pandoc→xelatex 管线会变成 Undefined control sequence。
 # 用法: python tools/scan_prose_backslash.py [--fix]

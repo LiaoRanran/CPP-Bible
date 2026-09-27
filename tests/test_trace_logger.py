@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """trace_logger 回归锁（498 任务 4）。
 
 锁：①JSONL 行格式与字段齐全 ②seq 当日递增 ③read 过滤（action / fail-only）

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 · metrics_collector 的新增采集器（**独立模块** ⇒ 逐任务可独立提交，主采集器只挂一行）。
 
 把 611 各线（C 线论证图碎片化 / C2 桥接候选 / D1 OUT MIS / D2 活性锚 / D3 oracle）的**只读**事实

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """619 A3 · VFDR（Vulnerability-Feedback-Driven Repair）状态机 v1
 
 漏洞 → 修复 → 验证闭环。纯标准库、只读（`--check` 不写盘）。

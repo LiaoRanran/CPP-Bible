@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """锁定 atom_coverage_map 的三次真实事故（2026-09-10 G1 监工验收）。
 
 1. 文档域表手抄漂移：合计行「纯注释 148」vs 实算 139，而 `--check` 只查覆盖率所以放行

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """617 B1 · 验证独立性 4 级判定（纯标准库，只读事实）
 
 按事实（默认取自 616 D 他验基线，可 --facts 覆盖）计算：

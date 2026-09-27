@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """621 B2 · CI 并发竞态复现工具 单测"""
 from __future__ import annotations
 

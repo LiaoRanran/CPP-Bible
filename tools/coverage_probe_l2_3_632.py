@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 E1 · 探针 #1：向量 **L2.3 陈旧证据留痕**（P1，此前无探针）
 
 向量定义（`data/attack_surface_taxonomy.md` L2.3）：证据过时（上游结论已变）

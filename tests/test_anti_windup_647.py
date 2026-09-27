@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 B2 · anti-windup 真上岗回归锁（编号 B2-1..B2-7）。"""
 from __future__ import annotations
 

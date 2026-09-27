@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """612 A1 回归测试：桥接候选人审预标注（锁死已知数字）。"""
 from __future__ import annotations
 

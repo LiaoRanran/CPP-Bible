@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 V26-3 · contamination_drill_635 单测（纯标准库，≥5 例）。编号 V3-1..V3-6。"""
 from __future__ import annotations
 

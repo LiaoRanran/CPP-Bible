@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """630 B1 · push 前检查（纯标准库为主，只读）
 
 检查项（§六 B1）：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 A1 · 人审 CLI 回归锁（append-only + fail-closed）。
 
 只通过**命令行入口** `main()` 驱动，锁的是人实际会看到的退出码与副作用：

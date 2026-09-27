@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """D3 回归测试：用户掌握度存储（append-only + BKT 递推 + 模拟）。"""
 import sys
 from pathlib import Path

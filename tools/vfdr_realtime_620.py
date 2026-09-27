@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """620 A4 · VFDR 实时计算 + 第一轮闭环总结
 
 VFDR = **Vulnerability Feedback Discovery Rate（漏洞反馈发现率）**，逐轮实时计算：

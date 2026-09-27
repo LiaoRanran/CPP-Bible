@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 A3 · blind_protocol_642 单测（盲化可逆 / 盲态不可读 / 揭盲分歧 / 历史只读）。编号 A3-1..A3-8。"""
 from __future__ import annotations
 

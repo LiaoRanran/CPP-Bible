@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 C1 数据模型单测（纯逻辑，fast 组，不调用编译器）。
 
 锁定：三个数据类的字段、序列化/反序列化往返、等级计数、层间传递无歧义。

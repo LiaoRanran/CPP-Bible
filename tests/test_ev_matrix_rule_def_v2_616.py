@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """616 B1 回归测试：EV-MATRIX 规则定义补全文档 v2。"""
 from pathlib import Path
 

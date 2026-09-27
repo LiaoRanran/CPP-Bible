@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 A2 · anti-windup **上岗**（人审队列保护：半饱和标记 / 预算冻结 / 老化升级）。
 
 **与 636 的关系**：636 只做**设计 + 影子模拟**（`anti_windup_636`），本模块把它落成

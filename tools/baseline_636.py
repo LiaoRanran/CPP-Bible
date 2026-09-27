@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """636 任务0 · 开工快照 + 全量基线复测（只加数据，不改判决）
 
 **实测** §一 全部 15 项指标（不抄表），并与 635 值对比确认**无漂移**；

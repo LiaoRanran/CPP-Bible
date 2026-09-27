@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 G1 · 收工门禁（只读聚合；不修改受控目录、不改被测工具）。
 
 按 §十一 G1 聚合六线结果：

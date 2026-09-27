@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 C1 · 仓库拆分沙箱验证回归锁（编号 C1-1..C1-7）。
 
 沙箱整体**很重**（clone + fast-export/import + 收集），故用 **module 级 fixture 跑一次**复用。

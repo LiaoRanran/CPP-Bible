@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """623 A3 · 新逃逸根因分析 v2 验证（可复现性）
 
 验证 A3 的核心结论：4 条 escaped 全部为 M1 删 claim_structured（内容删除假象），

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """589 任务 2 · M2 注释净化回归锁（_is_within_yaml_comment + 正反例）。
 
 只测 `mut_m2` 的**纯函数**产出（不跑门禁）⇒ 快测。

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务E1 · 信任根 OTS 上链**凭据**生成与校验（不实际 submit）。
 
 锚定对象：`data/supply_chain/merkle_roots.json`（E3 的 Merkle 根 = 本仓信任根）。

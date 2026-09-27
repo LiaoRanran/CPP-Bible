@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """630 D1 · 既有测试失败分类 单测（6 例）。
 
 只读解析已落盘的原始 pytest 输出（`data/stale_test_raw_630.txt`），不重跑全量。

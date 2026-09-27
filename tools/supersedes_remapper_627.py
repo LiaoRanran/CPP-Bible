@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 A2 · 51 条 supersedes 旧式 ID 重映射（**不修改原 ledger**）
 
 **背景**：626 的 `decision_event_v2_ledger.jsonl` 中 51 条 `REPLACE` 事件的 `supersedes`

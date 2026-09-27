@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 C · C1 证据内容寻址存储。
 
 实现内容寻址存储（设计输入 4，参照 A2 Git/IPFS）：

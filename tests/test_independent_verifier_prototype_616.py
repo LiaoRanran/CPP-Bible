@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """616 D2 回归测试：独立复核原型（HMAC VSA 凭证）。"""
 import json
 import sys

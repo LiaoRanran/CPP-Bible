@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """prop_asof.py — 只读「四轴快照」视图（583 任务 2 / 调研包 `_arch_v9/01` 的 N1）。
 
 回答的问题：**每条命题——何时被断言、在哪个验证者版本下被判过、何时被谁推翻、引用锚在哪。**

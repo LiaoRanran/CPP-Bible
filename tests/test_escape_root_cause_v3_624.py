@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 A3 逃逸根因分析 v3 · 单元测试（≥6 例）。"""
 import json
 import os

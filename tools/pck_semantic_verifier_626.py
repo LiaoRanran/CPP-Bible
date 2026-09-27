@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 E1 · PCK semantic verifier（4 层验证）
 
 | 层 | 名称 | 内容 |

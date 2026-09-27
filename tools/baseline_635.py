@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """635 任务0 · 开工快照 + 全量基线测量（只加数据，不改判决）
 
 实测 §一 全部指标（**实际跑命令，不抄表**）并落盘 `data/635_baseline.md`，

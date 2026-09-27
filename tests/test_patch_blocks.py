@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """锁定 patch_blocks 的真实回归：多块 stale-span 错isplaced + 行尾伪 diff。"""
 from pathlib import Path
 

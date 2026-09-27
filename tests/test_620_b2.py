@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """620 B2 · 全量 83 张 PCK 证书迁移 可复现性单测"""
 from __future__ import annotations
 

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 D3 反例搜索器单测（X3-1..X3-4）。"""
 from __future__ import annotations
 

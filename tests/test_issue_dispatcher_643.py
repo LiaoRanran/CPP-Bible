@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 B5 · issue_dispatcher_643 单测（合并去重/优先级公式/Top10/下一步映射/只读）。
 编号 B5-1..B5-8。
 """

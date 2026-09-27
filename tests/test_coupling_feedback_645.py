@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 C4 耦合反馈单测（fast 组：真实反馈分类）。"""
 import sys
 

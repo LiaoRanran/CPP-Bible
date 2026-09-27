@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """640 A4 · 模块级 --check 守卫劫持审计（只读）
 
 634 A2 给 79 个老工具在**模块级**插入了 `if "--check" in sys.argv: sys.exit(0)`

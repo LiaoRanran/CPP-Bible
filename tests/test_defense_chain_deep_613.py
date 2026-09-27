@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """D3 回归测试：defense_chain_deep_613（防御深度 / 单点依赖 / 共同依赖）。"""
 import sys
 from pathlib import Path

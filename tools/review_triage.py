@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """557 Part A · 人审经济学分桶器（**纯读**；不 accept、不改 severity、不改卡、不跑编译）。
 
 目的（555 L4 自我校准引擎第一块实体）：把 gate 的 136 条 warn（+5 advice）从"逐条读"

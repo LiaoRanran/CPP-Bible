@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """619 B4 · PCK 证书渲染器 v1（machine → human 可读）
 
 把 B2 验证过的 PCK 证书（yaml/json）渲染成便携、带诚实徽标的 markdown。

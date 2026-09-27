@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """637 C · candidate_generator_637 单测（纯标准库，≥5 例）。编号 TC-1..TC-6。"""
 from __future__ import annotations
 

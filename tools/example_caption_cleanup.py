@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 example_caption_cleanup.py — 修正 M2 注入产生的"主题"缺陷（一次性收口工具）。
 

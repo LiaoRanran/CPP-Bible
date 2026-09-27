@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """attack_edge_review.py — 候选攻击边的**人审确认接口**（596 任务4；最小版本）。
 
 为什么：候选攻击边是**机器推导**的（误区库 `related_atoms` → 命题），机器只保证"这两个对象被

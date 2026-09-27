@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """535 批次2 · V3 回归锁：replay 侧阴面判决（`check_negative_controls`）。
 
 为什么单独锁：V-iso 的判决语义是**"阴面上断言依然成立 ⇒ 该卡无判别力"**（refute），而不是

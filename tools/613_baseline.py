@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务0 · 先量基线（只读，不写受控目录）。
 
 四个子任务（spec 0.1-0.4）：

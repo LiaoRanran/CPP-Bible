@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 A4 · 外部锚接口回归锁（编号 A4-1..A4-9）。
 
 锁定：`publish(hash)->receipt` / `verify(hash,receipt)->bool` 契约；本地 mock 可发布可验证、

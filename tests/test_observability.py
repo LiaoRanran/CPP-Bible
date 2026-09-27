@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """可观测性 L1 回归锁（508 任务4）。
 
 覆盖：

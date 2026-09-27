@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 B2 · V2 回归验证（**静态分析**，不运行监工门禁）
 
 **背景**：627 的核心目标是让 `QUEYI_AUTHORITY_V2=1` 可安全启用。启用后必须确认

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 E3 头部层-尾端联动单测（H3-1..H3-4）。"""
 from __future__ import annotations
 

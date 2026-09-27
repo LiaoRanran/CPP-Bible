@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 B3 · VFDR 收敛曲线 + 规则触达热力图 v3（67 规则 × 7 轮）+ 盲区缩减报告
 
 **输入**：`loop_stability_metrics_625.ROUNDS`（620-625 各轮沙箱 JSON）+ `gate_engine.RULES`（67 条）。

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """619 A1 · 攻击目标函数 v1（可计算代理，纯标准库、只读、确定性）
 
 定义与权重理由见 `data/adversarial_objective_619.md`；本文件只做**计算**。

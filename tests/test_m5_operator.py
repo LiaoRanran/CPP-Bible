@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """574 任务 E 回归锁：M5 算子（claim 自标）的尺子修复。
 
 旧 bug：`re.search(r"^(\\s*)claim_type:...")` 只取**全文第一个** claim_type，而原子卡的命题写在

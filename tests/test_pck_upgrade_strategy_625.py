@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 D4 · PCK 提升策略设计（只设计不代签）回归测试（≥4 例）。"""
 import glob
 import os

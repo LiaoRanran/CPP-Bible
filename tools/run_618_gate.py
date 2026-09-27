@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """618 F2 · 轻量验收门（不跑监工门禁）
 
 - 受控目录污染自检：git status --porcelain 不应含 atoms/evidence/Examples/Book/CORE_TOOLS/golden_lock/poison_drill 前缀。

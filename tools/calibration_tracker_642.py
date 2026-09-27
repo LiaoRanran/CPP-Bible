@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 A4 · 校准追踪器**上岗**（新判决自动累积规则错误率；初值为全库代理，非精确）。
 
 **与 636 的关系**：636（`calibration_tracker_636`）只出**清单**（67/67「无数据」），本模块

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务F1 · 逃逸率**诚实化**：同一份基线，把分母摊开算。
 
 背景：本仓对外一直报「逃逸率契约 **1/1406**」。这个数字**依赖一组排除**——

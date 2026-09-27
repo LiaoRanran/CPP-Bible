@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """637 H · 收工门禁 + 闭环试运行 + 验收报告
 
 门禁校验（§三 H）：

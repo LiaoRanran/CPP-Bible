@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 C1 · 论证图连通分量分析（**纯读** · 复用 610 `argument_audit` 的算法与同一真源口径）。
 
 610 C 线已发现：论证图**碎片化**——21 个连通分量、最大只覆盖 66.1%。本工具把这件事做成

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """580 任务 2/3 回归锁：卡间进程并行（`--jobs`）不得改判决、不得丢计数、不得静默丢卡。
 
 纪律：`--jobs 1` 是今天的串行路径（默认 OFF）；`--jobs N` 走进程池（每 worker 一个 sandbox 根 +

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """625 B1 · 闭环第 7 轮回归测试（≥5 例）。"""
 import json
 import os

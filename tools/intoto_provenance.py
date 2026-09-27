@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 D2 · in-toto 溯源：**link/layout 生成（待签名） + 字段级 schema + 4 关键步骤验证流**。
 
 **不实际签名、不实际执行命令**（609 铁律第 9 条）：本工具只产出 link metadata 的

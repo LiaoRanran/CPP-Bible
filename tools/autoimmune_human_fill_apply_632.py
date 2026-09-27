@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 C2 · human 90 填充执行工具（纯标准库，默认 --dry-run）。
 
 把「人」的裁决（data/autoimmune_human_decisions_632.jsonl）写入对应 atom 卡 frontmatter：

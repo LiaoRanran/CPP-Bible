@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """611 A2 · 人审 schema 补 `review_seconds`（610 交人项 ⑤）。
 
 锁六件事：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 E3 · M1 TCE 定性分析回归锁（**只分析不攻坚**）。
 
 锁三件事（任务书 3 例 + 2 例自加）：

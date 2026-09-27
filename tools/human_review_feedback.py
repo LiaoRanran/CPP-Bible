@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 A4 · 人审反馈闭环：拒绝原因分类 ⇒ 反馈规则 ⇒（**人确认后**）提升下一轮候选边质量。
 
 闭环的第四段也是最后一段，但这一段**到"建议"为止**：

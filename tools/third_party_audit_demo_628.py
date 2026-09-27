@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 B4 · 他验端到端演示（独立验证 → VSA 凭证 → 透明日志）
 
 把 B1/B2/B3 串成一条可复核的链路（他验三件套的端到端闭环）：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 A3 · 信任根闭包扩展回归锁（编号 A3-1..A3-9）。
 
 锁定：闭包覆盖 5 CORE_TOOLS + 67 规则指纹 + Authority schema + 透明日志 anchor +

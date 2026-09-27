@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """636 2.3 · blind_protocol 影子设计 + 注入式盲化原型（**影子，不执行**）
 
 **五步流程**（影子）：预登记 → 隐藏 AI 推荐 → 人判决 → 提交后揭盲 → 分歧分析。

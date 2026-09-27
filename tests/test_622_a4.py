@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """622 A4 · 闭环第二轮（生成器 v2 + 沙箱实跑）单测"""
 from __future__ import annotations
 

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 A2 · DecisionEvent 严格模式回归锁（fail-open 修复 2）。
 
 病（642 B3 审计 FO-B，实测）：`from_dict({})` ⇒ `result=APPROVE` + `decision_origin=human_observed`

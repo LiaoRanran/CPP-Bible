@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """634 B1 · coverage 补全：14 个未跑向量建探针（结构性覆盖探针）+ 35 向量矩阵
 
 **背景**：`data/coverage_metric_630.json` 记 ran=16/35（45.7%）；631 加 L1.2/L8.4、632 加

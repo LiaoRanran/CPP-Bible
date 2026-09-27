@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """631 任务0 · 开工基线台账（纯标准库，只读）
 
 1. 把 §一 standing baseline 全部录入 `data/631_baseline.md`；

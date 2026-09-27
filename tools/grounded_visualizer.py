@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 C1 · 论证落地可视化：单文件自包含 HTML（**零外部依赖、离线可双击打开**）。
 
 为什么必须自包含：论证图是给**人**看的；一张要联网取 CDN 的图，在 evidence 评审现场

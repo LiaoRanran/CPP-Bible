@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """565 Part 4a/4b · metrics 采集"确实落盘"回归锁 + 三曲线机制字段契约。
 
 4a 的病不是代码 bug，而是**没有任何自动化跑它**：`metrics_collector.py` 一直是手动工具，

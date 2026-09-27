@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 B2 · 全量 slow 性能剖析（cProfile，**不改任何被测代码**）。
 
 从 `tests/conftest.py` 的 `SLOW_MODULES` 读出 slow 测试清单，逐个：

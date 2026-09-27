@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 D1 · Authority→Projection Compiler 回归测试（≥12 例）。"""
 import os
 import sys

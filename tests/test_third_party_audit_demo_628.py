@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """628 B4 · 他验端到端演示 单测（7 例）。
 
 子进程调用 B1/B2/B3 较慢 ⇒ 用 module 级 fixture 缓存链路结果。

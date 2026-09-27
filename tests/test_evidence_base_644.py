@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 共享基础模块单测（B0-1..B0-8）。"""
 from __future__ import annotations
 

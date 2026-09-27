@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 0 · 任务 0.2 现有证据盘点。
 
 扫描所有原子卡（28 张）的 `evidence` 引用与现有 `evidence/` 下证据文件，

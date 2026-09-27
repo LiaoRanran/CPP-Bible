@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """579 任务 1/2 回归锁：跑批**工件层根隔离** + 确定性自检。
 
 病（578b 实测、579 监工读码钉死）：`mutation_fuzz.sandbox()` 只重定向卡文本目录，工件层

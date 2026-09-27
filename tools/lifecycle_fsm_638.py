@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """638 3.2 · Lifecycle FSM（五态状态机 · 真落地）
 
 v25 要求：**五态**状态机 + 复活条件。

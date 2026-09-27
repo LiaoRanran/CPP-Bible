@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 · 阶段 A3 · 规则提案器真注入（替代 643 D4 代理实现）。
 
 目标（645 §三 A3）：基于 A2 发现的真逃逸归因，生成 ≤10 条规则草案，每条带逃逸案例引用，

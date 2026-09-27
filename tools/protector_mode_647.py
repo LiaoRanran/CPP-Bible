@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 B5（公共件）· **保护器全局模式开关**（一键回滚到 642 灰度）。
 
 647 把五个保护器从「灰度（只标记）」推到「真上岗（会拦/会冻/会降级）」，

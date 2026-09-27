@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """624 B2 规则回归 + 误报分析 · 单元测试（≥3 例，只读取证）。"""
 import os
 import sys

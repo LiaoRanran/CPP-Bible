@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """634 B2 · Horizon 推高（复杂度-检出率曲线，**测量 + 诚实登记**）
 
 **关键事实（实测）**：634 §一 记「60-80 桶检出率 0%（622 M9）」——但

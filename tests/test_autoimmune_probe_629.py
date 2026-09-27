@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """629 A2 · 误报注入探针 单测（7 例）。
 
 注意：`measure()` 会计时（镜像 + 约 20 次全库求值 ≈ 20s），故用 module 级 fixture 缓存。

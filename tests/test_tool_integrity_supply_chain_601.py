@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """601 任务 0.3 · 信任根数据文件入哈希面（`SUPPLY_CHAIN_FILES`）回归锁。
 
 病（600 调研 · 585 攻击1 的真盲点）：哈希面只盖"5 个工具 + 2 个测试配置"，而"什么算通过"

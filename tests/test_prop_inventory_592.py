@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """592 任务4 · 命题网络台账（`data/prop_network_inventory.md`）回归锁。
 
 台账是 R4 grounded 层的**输入基线**，只有在"与事实源逐字节一致"时才有意义：

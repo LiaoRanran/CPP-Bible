@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 B2 证据充分性判定器单测（S2-1..S2-6）。"""
 from __future__ import annotations
 

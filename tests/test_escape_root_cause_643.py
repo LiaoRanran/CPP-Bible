@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 D1 · escape_root_cause_643 单测（归因映射/C3 并入/可行动划分/只读）。
 编号 D1-1..D1-7。
 """

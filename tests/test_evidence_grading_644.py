@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 B1 证据等级体系单测（G1-1..G1-6）。"""
 from __future__ import annotations
 

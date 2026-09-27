@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """622 A1 · 沙箱 apply API（apply / run_gate / restore / apply_and_run）
 
 **为什么需要它**：620/621 连续两批登记 —— `mutation_fuzz.py` 是**只读基线生成器**，

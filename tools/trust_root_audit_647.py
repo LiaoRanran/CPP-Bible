@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 A5 · **信任根独立审计**（A1–A4 修复后：信任根到底独立了多少？**不夸大**）。
 
 审计五件事（§三 A5）：

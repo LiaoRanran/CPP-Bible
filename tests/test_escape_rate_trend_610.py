@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 E1 · 逃逸率收敛曲线回归锁（v1→v7 + C-P95 + 尺子变更史 + 自包含 HTML）。
 
 锁四件事（任务书 E1 的 4 例 + 3 例自加）：

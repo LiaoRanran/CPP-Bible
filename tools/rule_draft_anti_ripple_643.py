@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 D4 · **规则草案反涟漪测试**（智能层：自动提案规则 #4）。
 
 **定位**：对 D3 未冗余的草案做**涟漪范围评估**（640c 方法论：改一处看会不会批量红），

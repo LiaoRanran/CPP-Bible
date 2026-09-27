@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """647 D2 · 合并后接口统一验证回归锁（编号 D2-1..D2-6）。"""
 from __future__ import annotations
 

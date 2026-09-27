@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 E1 · **新规则 known_error_rate 初始化与追踪**（抗 Goodhart #1）。
 
 **定位**：D 阶段产出的草案**一旦人审批准上线**，必须从 **"无数据"** 起步（A3-G1）——

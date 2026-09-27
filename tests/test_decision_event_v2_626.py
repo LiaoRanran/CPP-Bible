@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 B1 · DecisionEvent v2 / AuthorityLedger 回归测试（≥10 例）。"""
 import os
 import sys

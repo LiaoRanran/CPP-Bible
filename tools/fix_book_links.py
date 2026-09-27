@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """fix_book_links.py — 正文跨章 markdown 链接前缀修复器（Book/ → 源相对）
 
 背景

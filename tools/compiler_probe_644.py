@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """644 阶段 D · D2 编译器实测获取器。
 
 功能（原型级，§十二.4 仅 g++）：对给定代码片段用本地 g++ 编译运行，记录输出；

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 A3 规则提案器单测（fast 组：草案生成 + MDL + 沙箱真注入涟漪）。
 
 锁定：草案必带逃逸引用、真注入不碰生产、危险草案必标、涟漪范围可复现、injection=True。

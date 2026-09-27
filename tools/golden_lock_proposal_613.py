@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务A3 · golden_lock 处理**提案**（不执行 accept，只读快照 + 静态归因）。
 
 铁律：golden accept 是**人审权力**，本工具**绝不**调用 `golden_lock.py check --accept`，

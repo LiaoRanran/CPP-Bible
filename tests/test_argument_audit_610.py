@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 C1 · 论证漏洞检测（基础）回归锁。
 
 **640c A1/A2 重写**：原版把 W2 的派生量（可信度分布 {high:0,medium:114,low:7}、

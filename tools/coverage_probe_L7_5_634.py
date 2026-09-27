@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """634 B1 · 探针 L7.5 人审覆盖不足（结构性覆盖探针；委托 coverage_probe_batch_634）。
 
 **向量**：人审覆盖不足（risk=medium）—— 防御载体 `tools/autoimmune_human_queue_631.py`。

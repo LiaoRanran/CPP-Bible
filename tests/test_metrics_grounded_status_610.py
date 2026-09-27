@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 D1 · W2 重算集成（tools/metrics_610.py::collect_grounded_status，含口径分歧显形）。
 
 锁五件事（任务书 D1 的 5 例 + 2 例自加）：

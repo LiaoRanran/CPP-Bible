@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """门禁引擎 M4 的毒样例回归：每条规则**正例触发 + 反例不触发**（元门禁：误报/漏报回归）。
 
 覆盖：

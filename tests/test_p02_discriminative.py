@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """472 P0-2（N2）回归锁：contains/contains_any 的判别力（结构判据，非频次）。
 
 判据：命中的候选若**全是工件样板**（以 `.` 开头的汇编伪指令）→ 断言零信息 → 失败。

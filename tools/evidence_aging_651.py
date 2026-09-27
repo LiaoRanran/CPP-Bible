@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """evidence_aging_651.py — H7 证据时效（651 W1，**只读/旁路**）。
 
 为什么（651 W1-H7）：证据会过期——标准改版、编译器升级、卡被新证据取代。没有时效治理，

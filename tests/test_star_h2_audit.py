@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """锁定 star_h2_audit（星级格 / H2 分层）的行为，防回潮。"""
 import star_h2_audit as sa
 

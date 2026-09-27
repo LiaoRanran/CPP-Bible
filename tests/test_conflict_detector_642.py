@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """642 A1 · conflict_detector_642 单测（灰度上岗：flag 只加标记不改判决）。编号 A1-1..A1-8。"""
 from __future__ import annotations
 

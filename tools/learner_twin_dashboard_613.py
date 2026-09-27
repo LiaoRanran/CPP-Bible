@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """613 任务C4 · 学习者镜像仪表盘**升级版**（自包含 HTML，零外部依赖）。
 
 612 的 `learner_twin_dashboard.py` 只有模拟数据四模块；本工具新增 C 线真实数据模块：

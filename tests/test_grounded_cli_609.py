@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """609 C3 · 论证 CLI 回归锁（status/proposition/mis/card/defense/--check）。
 
 锁六件事（任务书 6 例）：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """632 H1 · run_632_gate 单测（纯标准库，≥5 例）。
 
 聚焦门禁的构件：工具清单 / 产物清单 / check_tool / gather_deliverables。

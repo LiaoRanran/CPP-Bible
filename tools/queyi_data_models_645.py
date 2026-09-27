@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """645 · 阶段 C1 · 三层统一数据模型（智能层 / 头部层 / 尾端验证）。
 
 **目标（645 §五 C1）**：定义 645「三层耦合」的**唯一数据契约**——智能层输出 `Issue`、

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """626 C2 · W2 三态解耦（`argument_status` / `truth_support` / `publication_status`）
 
 国外大模型要求 W2 必须把「图论状态」和「知识真假」分开。三套状态**独立存储、独立计算、互不替代**：

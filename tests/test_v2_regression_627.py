@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """627 B2 · V2 回归验证（静态）单测（≥4 例）。"""
 import os
 import sys

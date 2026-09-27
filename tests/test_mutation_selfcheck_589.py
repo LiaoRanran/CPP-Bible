@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """589 任务 1 · 确定性自检「全算子 + 固定小卡集」回归锁。
 
 快测用合成报告（monkeypatch `_run_jobs`/`selfcheck_determinism`），不跑真沙箱；

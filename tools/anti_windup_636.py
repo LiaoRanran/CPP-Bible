@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """636 2.2 · anti-windup + 告警预算设计（**影子，不拦截**）
 
 定义「人审队列饱和」（三阈值 A/B/C）+ 三档 anti-windup 策略（影子模拟），

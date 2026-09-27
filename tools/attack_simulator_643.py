@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 C3 · **攻击效果模拟器**（智能层：自动生成攻击 #3）。
 
 **定位**：把 C2 的 mutation 计划在**沙箱**里真跑一遍，看目标规则**是否被触发/拦住**，

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """643 F1 · 收工门禁 单测（验证门禁自身的判定逻辑；不重跑整库 mypy/ruff）。
 
 编号 F1-1..F1-7。本测试刻意**不**调用 `build()` 的 ruff/mypy/643-tests 分支

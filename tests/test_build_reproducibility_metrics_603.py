@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """603 任务2.3：编译可复现性度量 collect_build_reproducibility 测试。
 
 快路径：monkeypatch `check_build_reproducibility` 注入受控结果，验证聚合口径与字段齐全；

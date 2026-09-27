@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """634 A2 · 给 79 个无 --check 的老工具批量补只读 `--check`
 
 范式（承 633 B2）：在工具**主逻辑之前**插入一个拦截守卫——

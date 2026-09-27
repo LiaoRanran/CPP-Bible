@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """610 E1 · 逃逸率收敛曲线（v1→v7 + C-P95 误差带 + **尺子变更史**标注）。
 
 三条纪律（否则这张图会被读成"进步曲线"）：

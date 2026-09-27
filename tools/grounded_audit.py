@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """grounded_audit.py — grounded 标注实测与对照报告（596 任务3；**只读生成器**）。
 
 为什么：W2 求解器给出 121 个节点的 IN/OUT/UNDEC 之后，必须回答三个"怎么办"的问题：

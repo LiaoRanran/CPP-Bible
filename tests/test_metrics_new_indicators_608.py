@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """608 C2 · metrics 新增 5 类指标回归锁（只读 / monkeypatch，无真编译）。
 
 覆盖：
