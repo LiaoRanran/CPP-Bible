@@ -1,0 +1,314 @@
+{
+  "fixtures": 10,
+  "total_violations": 41,
+  "llm_embedded_pass_at_1": 0.556,
+  "honest_note": "能编译≠对；交叉编译/真机(HIL)本环境不可得（gap）；LLM 嵌入式 pass@1≈55.6% 必须机器验证。",
+  "rows": [
+    {
+      "file": "Examples\\atoms\\_c_bitfield.c",
+      "violations": [
+        {
+          "rule": "no_heavy_printf",
+          "line": 12,
+          "text": "printf(\"bf_sizeof=%zu\\n\", sizeof s);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 13,
+          "text": "printf(\"bf_a=%u\\n\", s.a);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 14,
+          "text": "printf(\"bf_b=%u\\n\", s.b);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 15,
+          "text": "printf(\"bf_c_signed_readback=%d\\n\", s.c);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 18,
+          "text": "printf(\"bf_byte0=%u\\n\", (unsigned)raw[0]);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 19,
+          "text": "printf(\"bf_byte1=%u\\n\", (unsigned)raw[1]);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        }
+      ],
+      "count": 6
+    },
+    {
+      "file": "Examples\\atoms\\_c_decay.c",
+      "violations": [
+        {
+          "rule": "no_heavy_printf",
+          "line": 4,
+          "text": "printf(\"decay_sizeof_param=%zu\\n\", sizeof p);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 5,
+          "text": "printf(\"decay_len_wrong_inside=%zu\\n\", sizeof p / sizeof p[0]);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 10,
+          "text": "printf(\"decay_sizeof_array=%zu\\n\", sizeof a);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 11,
+          "text": "printf(\"decay_len_true=%zu\\n\", sizeof a / sizeof a[0]);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        }
+      ],
+      "count": 4
+    },
+    {
+      "file": "Examples\\atoms\\_c_fnptr.c",
+      "violations": [
+        {
+          "rule": "no_heavy_printf",
+          "line": 10,
+          "text": "printf(\"fnptr_sizeof=%zu\\n\", sizeof good);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 11,
+          "text": "printf(\"good_call=%d\\n\", good(2, 3));",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 12,
+          "text": "printf(\"bad_addr_nonzero=%d\\n\", bad != NULL);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        }
+      ],
+      "count": 3
+    },
+    {
+      "file": "Examples\\atoms\\_c_intpromo.c",
+      "violations": [
+        {
+          "rule": "no_heavy_printf",
+          "line": 6,
+          "text": "printf(\"cmp_signed_unsigned=%d\\n\", i < u);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 7,
+          "text": "printf(\"minus1_as_unsigned=%u\\n\", (unsigned)-1);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 11,
+          "text": "printf(\"char_promoted_sum=%d\\n\", c + d);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 12,
+          "text": "printf(\"char_sum_type_size=%zu\\n\", sizeof(c + d));",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        }
+      ],
+      "count": 4
+    },
+    {
+      "file": "Examples\\atoms\\_c_macro.c",
+      "violations": [
+        {
+          "rule": "no_heavy_printf",
+          "line": 9,
+          "text": "printf(\"sq_bad=%d\\n\", SQ_BAD(v + 1));",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 10,
+          "text": "printf(\"sq_good=%d\\n\", SQ_GOOD(v + 1));",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 14,
+          "text": "printf(\"max_bad_result=%d\\n\", m);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 15,
+          "text": "printf(\"i_after=%d\\n\", i);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        }
+      ],
+      "count": 4
+    },
+    {
+      "file": "Examples\\atoms\\_c_malloc.c",
+      "violations": [
+        {
+          "rule": "no_heap",
+          "line": 7,
+          "text": "void *p = malloc(0);",
+          "message": "裸金属禁用动态堆分配（用静态/池）"
+        },
+        {
+          "rule": "no_heap",
+          "line": 9,
+          "text": "free(p);",
+          "message": "裸金属禁用动态堆分配（用静态/池）"
+        },
+        {
+          "rule": "no_heap",
+          "line": 11,
+          "text": "int *q = malloc(sizeof(int) * 4);",
+          "message": "裸金属禁用动态堆分配（用静态/池）"
+        },
+        {
+          "rule": "no_heap",
+          "line": 14,
+          "text": "free(q);                       /* 只释放；变量 q 本身不会被清零 */",
+          "message": "裸金属禁用动态堆分配（用静态/池）"
+        },
+        {
+          "rule": "no_heap",
+          "line": 16,
+          "text": "free(NULL);                    /* 标准：空操作 */",
+          "message": "裸金属禁用动态堆分配（用静态/池）"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 17,
+          "text": "printf(\"malloc0_null=%d\\n\", zero_is_null);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 18,
+          "text": "printf(\"alloc_aligned=%d\\n\", aligned);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 19,
+          "text": "printf(\"dangling_value_nonzero=%d\\n\", before != 0);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 20,
+          "text": "printf(\"reached_after_free_null=1\\n\");",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        }
+      ],
+      "count": 9
+    },
+    {
+      "file": "Examples\\atoms\\_c_setjmp.c",
+      "violations": [
+        {
+          "rule": "no_heavy_printf",
+          "line": 16,
+          "text": "printf(\"after_longjmp_plain=%d\\n\", plain_local);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 17,
+          "text": "printf(\"after_longjmp_volatile=%d\\n\", vol_local);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        }
+      ],
+      "count": 2
+    },
+    {
+      "file": "Examples\\atoms\\_c_signedovf.c",
+      "violations": [
+        {
+          "rule": "no_heavy_printf",
+          "line": 6,
+          "text": "printf(\"signed_plus1_gt=%d\\n\", (i + 1) > i);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 9,
+          "text": "printf(\"unsigned_plus1_gt=%d\\n\", (u + 1) > u);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 10,
+          "text": "printf(\"unsigned_wrapped=%u\\n\", u + 1);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        }
+      ],
+      "count": 3
+    },
+    {
+      "file": "Examples\\atoms\\_c_strbound.c",
+      "violations": [
+        {
+          "rule": "no_heavy_printf",
+          "line": 7,
+          "text": "printf(\"snprintf_ret=%d\\n\", n);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 8,
+          "text": "printf(\"snprintf_written=%d\\n\", (int)strlen(buf));",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 9,
+          "text": "printf(\"snprintf_truncated=%d\\n\", n >= (int)sizeof buf);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 18,
+          "text": "printf(\"strncpy_nul_terminated=%d\\n\", terminated);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        },
+        {
+          "rule": "no_heavy_printf",
+          "line": 19,
+          "text": "printf(\"strncpy_last_byte=%d\\n\", (int)(unsigned char)dst[7]);",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        }
+      ],
+      "count": 5
+    },
+    {
+      "file": "Examples\\atoms\\_c_volatile.c",
+      "violations": [
+        {
+          "rule": "no_heavy_printf",
+          "line": 14,
+          "text": "printf(\"sink=%d\\n\", volatile_probe());",
+          "message": "printf 体积大且非可重入，建议裸金属禁用或改写"
+        }
+      ],
+      "count": 1
+    }
+  ]
+}

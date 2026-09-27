@@ -1,0 +1,505 @@
+{
+  "cards": 10,
+  "variants": 50,
+  "caught": 50,
+  "missed": 0,
+  "escape_rate": 0.0,
+  "base_read_surface_ok": true,
+  "calibration_critic": {
+    "strata": 1,
+    "forced": []
+  },
+  "note": "V2 为门禁读取面代表性子集（非全量 67 规则，见 652_gaps）；变体不写 atoms/。",
+  "rows": [
+    {
+      "card": "ATOM-LANG-DECAY-001",
+      "op": "M1_delete_boundary",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "claim_boundary"
+      ],
+      "mdl_proxy": 2454,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-DECAY-001",
+      "op": "M2_weaken_claim",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2557,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-DECAY-001",
+      "op": "M3_drop_liveness",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "liveness"
+      ],
+      "mdl_proxy": 2514,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-DECAY-001",
+      "op": "M4_drop_evidence",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2565,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-DECAY-001",
+      "op": "M5_status_flip",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2581,
+      "detected": true
+    },
+    {
+      "card": "ATOM-MEM-MALLOC-001",
+      "op": "M1_delete_boundary",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "claim_boundary"
+      ],
+      "mdl_proxy": 2483,
+      "detected": true
+    },
+    {
+      "card": "ATOM-MEM-MALLOC-001",
+      "op": "M2_weaken_claim",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2566,
+      "detected": true
+    },
+    {
+      "card": "ATOM-MEM-MALLOC-001",
+      "op": "M3_drop_liveness",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "liveness"
+      ],
+      "mdl_proxy": 2539,
+      "detected": true
+    },
+    {
+      "card": "ATOM-MEM-MALLOC-001",
+      "op": "M4_drop_evidence",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2595,
+      "detected": true
+    },
+    {
+      "card": "ATOM-MEM-MALLOC-001",
+      "op": "M5_status_flip",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2610,
+      "detected": true
+    },
+    {
+      "card": "ATOM-MEM-STRBOUND-001",
+      "op": "M1_delete_boundary",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "claim_boundary"
+      ],
+      "mdl_proxy": 2465,
+      "detected": true
+    },
+    {
+      "card": "ATOM-MEM-STRBOUND-001",
+      "op": "M2_weaken_claim",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2515,
+      "detected": true
+    },
+    {
+      "card": "ATOM-MEM-STRBOUND-001",
+      "op": "M3_drop_liveness",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "liveness"
+      ],
+      "mdl_proxy": 2529,
+      "detected": true
+    },
+    {
+      "card": "ATOM-MEM-STRBOUND-001",
+      "op": "M4_drop_evidence",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2577,
+      "detected": true
+    },
+    {
+      "card": "ATOM-MEM-STRBOUND-001",
+      "op": "M5_status_flip",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2592,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-FNPTR-001",
+      "op": "M1_delete_boundary",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "claim_boundary"
+      ],
+      "mdl_proxy": 2146,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-FNPTR-001",
+      "op": "M2_weaken_claim",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2245,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-FNPTR-001",
+      "op": "M3_drop_liveness",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "liveness"
+      ],
+      "mdl_proxy": 2213,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-FNPTR-001",
+      "op": "M4_drop_evidence",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2257,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-FNPTR-001",
+      "op": "M5_status_flip",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2273,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-VOLATILE-001",
+      "op": "M1_delete_boundary",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "claim_boundary"
+      ],
+      "mdl_proxy": 2247,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-VOLATILE-001",
+      "op": "M2_weaken_claim",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2320,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-VOLATILE-001",
+      "op": "M3_drop_liveness",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "liveness"
+      ],
+      "mdl_proxy": 2311,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-VOLATILE-001",
+      "op": "M4_drop_evidence",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2358,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-VOLATILE-001",
+      "op": "M5_status_flip",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2374,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-SETJMP-001",
+      "op": "M1_delete_boundary",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "claim_boundary"
+      ],
+      "mdl_proxy": 2374,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-SETJMP-001",
+      "op": "M2_weaken_claim",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2462,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-SETJMP-001",
+      "op": "M3_drop_liveness",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "liveness"
+      ],
+      "mdl_proxy": 2440,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-SETJMP-001",
+      "op": "M4_drop_evidence",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2485,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-SETJMP-001",
+      "op": "M5_status_flip",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2501,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-INTPROMO-001",
+      "op": "M1_delete_boundary",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "claim_boundary"
+      ],
+      "mdl_proxy": 2510,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-INTPROMO-001",
+      "op": "M2_weaken_claim",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2577,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-INTPROMO-001",
+      "op": "M3_drop_liveness",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "liveness"
+      ],
+      "mdl_proxy": 2574,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-INTPROMO-001",
+      "op": "M4_drop_evidence",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2621,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-INTPROMO-001",
+      "op": "M5_status_flip",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2637,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-BITFIELD-001",
+      "op": "M1_delete_boundary",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "claim_boundary"
+      ],
+      "mdl_proxy": 2370,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-BITFIELD-001",
+      "op": "M2_weaken_claim",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2429,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-BITFIELD-001",
+      "op": "M3_drop_liveness",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "liveness"
+      ],
+      "mdl_proxy": 2434,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-BITFIELD-001",
+      "op": "M4_drop_evidence",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2481,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-BITFIELD-001",
+      "op": "M5_status_flip",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2497,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-MACRO-001",
+      "op": "M1_delete_boundary",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "claim_boundary"
+      ],
+      "mdl_proxy": 2329,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-MACRO-001",
+      "op": "M2_weaken_claim",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2418,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-MACRO-001",
+      "op": "M3_drop_liveness",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "liveness"
+      ],
+      "mdl_proxy": 2396,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-MACRO-001",
+      "op": "M4_drop_evidence",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2440,
+      "detected": true
+    },
+    {
+      "card": "ATOM-LANG-MACRO-001",
+      "op": "M5_status_flip",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2456,
+      "detected": true
+    },
+    {
+      "card": "ATOM-UB-SIGNEDOVF-001",
+      "op": "M1_delete_boundary",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "claim_boundary"
+      ],
+      "mdl_proxy": 2257,
+      "detected": true
+    },
+    {
+      "card": "ATOM-UB-SIGNEDOVF-001",
+      "op": "M2_weaken_claim",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2354,
+      "detected": true
+    },
+    {
+      "card": "ATOM-UB-SIGNEDOVF-001",
+      "op": "M3_drop_liveness",
+      "changed": true,
+      "read_surface_ok": false,
+      "missing": [
+        "liveness"
+      ],
+      "mdl_proxy": 2320,
+      "detected": true
+    },
+    {
+      "card": "ATOM-UB-SIGNEDOVF-001",
+      "op": "M4_drop_evidence",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2370,
+      "detected": true
+    },
+    {
+      "card": "ATOM-UB-SIGNEDOVF-001",
+      "op": "M5_status_flip",
+      "changed": true,
+      "read_surface_ok": true,
+      "missing": [],
+      "mdl_proxy": 2384,
+      "detected": true
+    }
+  ]
+}
