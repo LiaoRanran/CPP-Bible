@@ -1,0 +1,5 @@
+snprintf_ret=10
+snprintf_written=7
+snprintf_truncated=1
+strncpy_nul_terminated=0
+strncpy_last_byte=56

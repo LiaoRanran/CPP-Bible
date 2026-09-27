@@ -1,0 +1,4 @@
+cmp_signed_unsigned=0
+minus1_as_unsigned=4294967295
+char_promoted_sum=200
+char_sum_type_size=4

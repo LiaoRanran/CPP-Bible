@@ -1,0 +1,2 @@
+after_longjmp_plain=0
+after_longjmp_volatile=5

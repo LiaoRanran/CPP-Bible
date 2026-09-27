@@ -1,0 +1,4 @@
+malloc0_null=0
+alloc_aligned=1
+dangling_value_nonzero=1
+reached_after_free_null=1

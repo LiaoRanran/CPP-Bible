@@ -1,0 +1,3 @@
+fnptr_sizeof=8
+good_call=5
+bad_addr_nonzero=1

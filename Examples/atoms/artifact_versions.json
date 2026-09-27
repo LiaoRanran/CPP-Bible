@@ -49,5 +49,15 @@
  "Examples/atoms/_atom_value_cat.asm": 1,
  "Examples/atoms/_atom_value_xvalue.asm": 1,
  "Examples/atoms/_atom_weak_cycle.asm": 1,
- "Examples/atoms/_atom_weak_obs.asm": 1
+ "Examples/atoms/_atom_weak_obs.asm": 1,
+ "Examples/atoms/_c_bitfield.asm": 1,
+ "Examples/atoms/_c_decay.asm": 1,
+ "Examples/atoms/_c_fnptr.asm": 1,
+ "Examples/atoms/_c_intpromo.asm": 1,
+ "Examples/atoms/_c_macro.asm": 1,
+ "Examples/atoms/_c_malloc.asm": 1,
+ "Examples/atoms/_c_setjmp.asm": 1,
+ "Examples/atoms/_c_signedovf.asm": 1,
+ "Examples/atoms/_c_strbound.asm": 1,
+ "Examples/atoms/_c_volatile.asm": 1
 }

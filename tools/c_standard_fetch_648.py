@@ -75,7 +75,8 @@ def _download(url: str, timeout: int = 90) -> bytes:
     """真实下载（本批唯一的联网动作；失败即抛，不静默降级）。"""
     req = urllib.request.Request(url, headers={"User-Agent": "queyi-cppbible/648"})
     with urllib.request.urlopen(req, timeout=timeout) as r:  # noqa: S310 - 固定白名单 URL
-        return r.read()
+        body: bytes = r.read()
+        return body
 
 
 def _strip_tags(s: str, drop_leading_para_no: bool = False) -> str:

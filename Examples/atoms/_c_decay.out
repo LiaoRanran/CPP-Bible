@@ -1,0 +1,4 @@
+decay_sizeof_array=40
+decay_len_true=10
+decay_sizeof_param=8
+decay_len_wrong_inside=2
