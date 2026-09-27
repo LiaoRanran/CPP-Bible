@@ -7,6 +7,7 @@
 """
 from __future__ import annotations
 
+import re
 import shutil
 import subprocess
 import sys
@@ -96,7 +97,10 @@ def test_567_check_lists_tampered_file_with_prefixes(tmp_path: Path, monkeypatch
     out = capsys.readouterr().out
     assert "a_tool.py" in out and "被改动" in out, out
     assert "…" in out, "按提示词只打前缀"
-    assert not [w for w in out.split() if len(w) == 64], "不该刷全量哈希"
+    # 656 A：原先用「任意长度为 64 的 token」当"不该刷全量哈希"的代理。
+    # 缺点：含中文提示的长路径会被误伤（新增 `data/supply_chain/merkle_roots.json.ots：已存在但未钉…`
+    # 这一坨刚好 64 字符 ⇒ 假红）。改成**只认 64 位十六进制**，意图不变、判据更准。
+    assert not re.findall(r"\b[0-9a-f]{64}\b", out), f"不该刷全量哈希：{re.findall(r'[0-9a-f]{64}', out)[:1]}"
 
 
 def test_567_entries_refuse_when_core_tampered(tmp_path: Path, monkeypatch, capsys):

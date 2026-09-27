@@ -1,0 +1,53 @@
+{
+  "generated_at": "2026-09-28T01:22:28",
+  "engine": "opentimestamps-lib",
+  "calendars": [
+    "https://a.pool.eternitywall.com",
+    "https://a.pool.opentimestamps.org",
+    "https://b.pool.opentimestamps.org",
+    "https://ots.btc.catallaxy.com"
+  ],
+  "target": "data/supply_chain/merkle_roots.json",
+  "analyze": {
+    "target": "data/supply_chain/merkle_roots.json",
+    "target_exists": true,
+    "target_bytes": 1081,
+    "target_sha256": "c09ee380e15ba46e20d4e1d44c4f808f15d8c32ffe484c0f1c82860824aa83cd",
+    "ots_path": "merkle_roots.json.ots",
+    "pending_path": "merkle_roots.json.ots.pending.json",
+    "engine": "opentimestamps-lib",
+    "magic_expected": "004f70656e54696d657374616d7073000050726f6f6600bf89e2e884e89294",
+    "ots_bytes": 786,
+    "magic_found": "004f70656e54696d657374616d7073000050726f6f6600bf89e2e884e89294",
+    "magic_ok": true,
+    "hex_head": "004f70656e54696d657374616d7073000050726f6f6600bf89e2e884e892940108c09ee380e15ba4",
+    "parses_with_official_lib": true,
+    "covered_digest": "c09ee380e15ba46e20d4e1d44c4f808f15d8c32ffe484c0f1c82860824aa83cd",
+    "covers_target": true,
+    "attestations": [
+      {
+        "kind": "pending",
+        "type": "PendingAttestation",
+        "uri": "https://bob.btc.calendar.opentimestamps.org"
+      },
+      {
+        "kind": "pending",
+        "type": "PendingAttestation",
+        "uri": "https://btc.calendar.catallaxy.com"
+      },
+      {
+        "kind": "pending",
+        "type": "PendingAttestation",
+        "uri": "https://alice.btc.calendar.opentimestamps.org"
+      },
+      {
+        "kind": "pending",
+        "type": "PendingAttestation",
+        "uri": "https://finney.calendar.eternitywall.com"
+      }
+    ],
+    "verdict": "pending",
+    "note": "已提交到日历，尚未拿到比特币区块头证明（需 --upgrade）"
+  },
+  "note": "OTS 是**最外层锚**：内层 = tool_integrity（代码面）+ merkle_roots（内容面）；OTS 只证明「某个 digest 在某一时刻之前已存在」，pending ≠ 已入块。"
+}

@@ -19,8 +19,8 @@
     },
     {
       "path": "tools/.tool_checksums",
-      "bytes": 3064,
-      "sha256": "cedcce573798b42f21c46dfe786ba19e73e5e296c3e7d09c8937d72b678f95a9"
+      "bytes": 3171,
+      "sha256": "f6246c555c2a7694c9af188c495da32616db857adc2385dad33e2b2628cb965a"
     },
     {
       "path": "data/pck/certificates/ATOM-CONC-FENCE-001.pck.yaml",

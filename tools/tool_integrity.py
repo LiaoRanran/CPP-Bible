@@ -98,6 +98,10 @@ SUPPLY_CHAIN_FILES: tuple[str, ...] = (
     "data/governance_docs_manifest.json",     # 治理文档清单（591；自校验见 task 0.4）
     "data/supply_chain/merkle_roots.json",    # 601 任务1：目录 Merkle 根
     "data/supply_chain/layout.json",          # 601 任务2：in-toto layout
+    # 656 A（G9 总闸门）：OTS 外部锚。OTS 文件本身不会"过期"，
+    # 但它一旦被换掉，Merkle 根"在某一时刻之前已存在"这条最外层证据就静默消失了
+    # ⇒ 与其它信任根数据同口径纳入哈希面（改它必须 `--update` 重钉）。
+    "data/supply_chain/merkle_roots.json.ots",
 )
 _SUPPLY_CHAIN_MARK = "# supply_chain"        # .tool_checksums 里的节标记
 #: 647 A1：CLI 侧默认口径。True = 信任根文件缺失/未钉即 FAIL（fail-closed）；
