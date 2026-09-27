@@ -1,0 +1,86 @@
+{
+  "note": "sha256 为本机现算；浏览器用 Web Crypto 对同一文件重算即可离线复核（不联网、无后端）。",
+  "count": 16,
+  "items": [
+    {
+      "path": "data/grounded_labels_w2.json",
+      "bytes": 74606,
+      "sha256": "b7140e768974738e44ad6c76222b3faf4eb499bd928fc5a52a8cc8aad82d71d7"
+    },
+    {
+      "path": "data/648_c_probe.json",
+      "bytes": 85521,
+      "sha256": "ea9d33468fe3b89febc27bb3eb5e2676747920de5cf45a8cdd246258c80b43c9"
+    },
+    {
+      "path": "data/supply_chain/merkle_roots.json",
+      "bytes": 1081,
+      "sha256": "c09ee380e15ba46e20d4e1d44c4f808f15d8c32ffe484c0f1c82860824aa83cd"
+    },
+    {
+      "path": "tools/.tool_checksums",
+      "bytes": 3064,
+      "sha256": "0e1090a17cb2f62bb8dcb3cb7eb9388ba9059f37a3aa3ef9c26bed451ae2e915"
+    },
+    {
+      "path": "data/pck/certificates/ATOM-CONC-FENCE-001.pck.yaml",
+      "bytes": 2410,
+      "sha256": "eb2d7308684fd917070361ffe7dc2cd3caf2653cdd3f45024684933b7e4d9f14"
+    },
+    {
+      "path": "data/pck/certificates/ATOM-CONC-LOCK-001.pck.yaml",
+      "bytes": 2516,
+      "sha256": "660bce77b8425276d01cee017f9cfbd2fcebc75860d88fef8fd46372c2c68ffe"
+    },
+    {
+      "path": "data/pck/certificates/ATOM-CONC-RACE-001.pck.yaml",
+      "bytes": 3067,
+      "sha256": "a7082ced2580b513dde83c0e6d88ef2b2ebed6f631bcbf5cdcc6862d3d76902c"
+    },
+    {
+      "path": "data/pck/certificates/ATOM-HIST-AUTOPTR-001.pck.yaml",
+      "bytes": 3014,
+      "sha256": "c49708442ddeea27b35bbc731ecb0eedb3e34e3b91b46d6940a97e0dd4716a93"
+    },
+    {
+      "path": "data/pck/certificates/ATOM-LANG-BITFIELD-001.pck.yaml",
+      "bytes": 838,
+      "sha256": "d8885b743298c41cbf81e4c9f872321dddb30f51d6799ea935682a1dd1bd6e8d"
+    },
+    {
+      "path": "data/pck/certificates/ATOM-LANG-DECAY-001.pck.yaml",
+      "bytes": 763,
+      "sha256": "4eb7db943601c0a300221f5d449c162e26ed355c2c90ebc4391888cf2c0195b5"
+    },
+    {
+      "path": "data/pck/certificates/ATOM-LANG-FNPTR-001.pck.yaml",
+      "bytes": 978,
+      "sha256": "de502d8f89e632848cd319df72e7dc6b2fc2b79b496dba21f47d21e23932ab88"
+    },
+    {
+      "path": "data/pck/certificates/ATOM-LANG-INLINE-001.pck.yaml",
+      "bytes": 3177,
+      "sha256": "2320db510e5bb71ee278f0968fbddebce22d45aede9d6751ed4f8f5852c08b37"
+    },
+    {
+      "path": "data/pck/certificates/ATOM-LANG-INTPROMO-001.pck.yaml",
+      "bytes": 777,
+      "sha256": "09aec4c801c0c3acf344eebba385fbeab497c3f64f6591faee5e5ed8ba3f06e7"
+    },
+    {
+      "path": "data/pck/certificates/ATOM-LANG-MACRO-001.pck.yaml",
+      "bytes": 761,
+      "sha256": "0943b6783a5401c245d5e00c4c4f8f9ee094018ccd8ed228c092881c80835f3a"
+    },
+    {
+      "path": "data/pck/certificates/ATOM-LANG-SETJMP-001.pck.yaml",
+      "bytes": 827,
+      "sha256": "16f1d7c23ac149e73b093afd0056e0594372df157813d7f77a60eafecca38e26"
+    },
+    {
+      "path": "data/pck/certificates/ATOM-LANG-VOLATILE-001.pck.yaml",
+      "bytes": 839,
+      "sha256": "d09739f33f121f4797358a471e3456f4e1d8224d696806056acf6b7ded2d2f59"
+    }
+  ]
+}

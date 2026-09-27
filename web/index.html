@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QueYi · 可复核的知识信任根</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <!-- 首屏：**会动的产品**（真数据渲染，不是截图） -->
+  <section class="hero" style="padding:64px 0 40px">
+    <div class="wrap">
+      <h1>每一条知识，都带着<br>可复核的证据与攻击记录。</h1>
+      <p class="lead">CPP-Bible 把知识卡、证据、争论与判决放进同一个信任根：真实台账渲染的接地图、
+        浏览器内可离线重算的哈希、以及随时能跑回来的复现清单。</p>
+      <div class="toolbar" style="margin-top:18px">
+        <a class="btn" href="starmap.html">打开星图（178 节点）</a>
+        <a class="btn" href="verify.html">现场验哈希</a>
+        <span class="muted" id="mode-chip">—</span>
+      </div>
+    </div>
+    <div class="wrap wrap-wide" style="margin-top:26px">
+      <div class="stage" id="stage"><canvas id="mini"></canvas></div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="grid c3" id="stats"></div>
+    <p class="muted" style="margin-top:14px" id="src-note"></p>
+  </section>
+
+  <section class="wrap">
+    <h3>三通道编码</h3>
+    <div class="legend">
+      <div class="chan"><b>色 · 四态</b>
+        <div><span class="dot st-pass"></span>pass</div>
+        <div><span class="dot st-pass_with_exception"></span>pass_with_exception</div>
+        <div><span class="dot st-fail"></span>fail</div>
+        <div><span class="dot st-unknown"></span>unknown</div>
+      </div>
+      <div class="chan"><b>形 · 类型</b>
+        <div><span class="dot st-unknown" style="width:11px;height:11px"></span>卡（大圆 · 描边）</div>
+        <div><span class="dot st-unknown" style="width:6px;height:6px"></span>命题（小圆）</div>
+        <div><span class="sq st-fail"></span>误解（方 · 攻击者）</div>
+      </div>
+      <div class="chan"><b>光 · credibility</b>
+        <div>高 = 不透明（1.0）</div>
+        <div>中 = 0.72</div>
+        <div>低 = 0.5</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="grid c3">
+      <div class="card"><h2>星图</h2><p>W2 加权接地模型的真实接地图：388 条攻击边、其中 <b>194 条被击败</b>。可筛选四态、只看击败边、点选看点。</p></div>
+      <div class="card"><h2>现场验哈希</h2><p>用浏览器 Web Crypto 对任意工件重算 sha256，与台账逐字节比对。<b>离线可用</b>，文件不出本机。</p></div>
+      <div class="card"><h2>复现清单</h2><p>648 十张 C 卡带版本串 + 命令 + 输入哈希 + 期望输出：一条命令即可重跑验收（见 <span class="kbd">replay_probe_651</span>）。</p></div>
+    </div>
+  </section>
+</main>
+<footer class="wrap">静态站 · 无后端 · 无追踪 · 数据由 <span class="mono">tools/web_data_653.py</span> 从真实台账生成（不造演示数据）。</footer>
+
+<script type="module">
+import { STATE_COLORS, fetchJSON, fmtInt } from './app.js';
+// 首屏 hero：真数据、会动（缓慢漂移 + 悬停高亮），不引入粒子/光斑
+const canvas = document.getElementById('mini');
+const ctx = canvas.getContext('2d');
+const stage = document.getElementById('stage');
+let G, pos = [], t = 0, hover = -1;
+
+const RAD = { card: 6.4, prop: 3.4, misconception: 2.6 };
+const ALPHA = (c) => (c >= 3 ? 1 : c === 2 ? .72 : .5);
+
+function resize() {
+  const dpr = Math.min(2, devicePixelRatio || 1), r = canvas.getBoundingClientRect();
+  canvas.width = Math.floor(r.width * dpr); canvas.height = Math.floor(r.height * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+function initLayout() {
+  const n = G.nodes.length;
+  pos = G.nodes.map((d, i) => {
+    const a = (i / n) * Math.PI * 2 * 3.2;
+    const r = 120 + (i % 7) * 26;
+    return { x: Math.cos(a) * r, y: Math.sin(a) * r * .62 };
+  });
+}
+function draw() {
+  const r = canvas.getBoundingClientRect();
+  ctx.clearRect(0, 0, r.width, r.height);
+  const idx = new Map(G.nodes.map((d, i) => [d.id, i]));
+  ctx.save();
+  ctx.translate(r.width / 2, r.height / 2);
+  const k = Math.min(1.5, r.width / 900) * 1.15;
+  ctx.scale(k, k);
+  ctx.rotate(t * 0.00035);
+  for (const l of G.links) {
+    if (l.kind === 'defend') continue;                 // hero 只画攻击/断言边，避免糊
+    const a = idx.get(l.source), b = idx.get(l.target);
+    if (a == null || b == null) continue;
+    ctx.beginPath(); ctx.moveTo(pos[a].x, pos[a].y); ctx.lineTo(pos[b].x, pos[b].y);
+    ctx.strokeStyle = l.defeated ? 'rgba(217,107,107,.42)' : 'rgba(140,150,160,.12)';
+    ctx.lineWidth = l.defeated ? 1.1 : .5; ctx.stroke();
+  }
+  for (let i = 0; i < G.nodes.length; i++) {
+    const d = G.nodes[i], p = pos[i];
+    ctx.globalAlpha = hover >= 0 && hover !== i ? .28 : ALPHA(d.credibility);
+    const rad = RAD[d.kind] || 3;
+    ctx.beginPath();
+    if (d.kind === 'misconception') ctx.rect(p.x - rad, p.y - rad, rad * 2, rad * 2);
+    else ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
+    ctx.fillStyle = STATE_COLORS[d.state] || STATE_COLORS.unknown; ctx.fill();
+    if (d.kind === 'card') { ctx.lineWidth = .9; ctx.strokeStyle = 'rgba(230,232,234,.5)'; ctx.stroke(); }
+    ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+}
+function tick() {
+  t += 1;
+  // 缓慢漂移（真数据，非装饰）
+  for (let i = 0; i < pos.length; i++) {
+    pos[i].x += Math.sin((t + i * 37) * 0.004) * 0.10;
+    pos[i].y += Math.cos((t + i * 53) * 0.004) * 0.10;
+  }
+  draw(); requestAnimationFrame(tick);
+}
+canvas.addEventListener('mousemove', (e) => {
+  const r = canvas.getBoundingClientRect();
+  ctx.save(); ctx.translate(r.width / 2, r.height / 2);
+  const k = Math.min(1.5, r.width / 900) * 1.15;
+  const x = (e.clientX - r.left - r.width / 2) / k, y = (e.clientY - r.top - r.height / 2) / k;
+  let best = -1, bd = 14;
+  for (let i = 0; i < pos.length; i++) { const d = Math.hypot(pos[i].x - x, pos[i].y - y); if (d < bd) { bd = d; best = i; } }
+  ctx.restore(); hover = best;
+  canvas.style.cursor = best >= 0 ? 'pointer' : 'default';
+});
+canvas.addEventListener('mouseleave', () => { hover = -1; });
+
+(async function main() {
+  try {
+    G = await fetchJSON('data/graph.json');
+  } catch (e) {
+    stage.classList.add('fallback-note');
+    document.getElementById('mode-chip').textContent = '需经本地静态服务器打开（file:// 下 fetch 受限）';
+    return;
+  }
+  const c = G.meta.counts, w2 = G.meta.w2_summary || {};
+  document.getElementById('stats').innerHTML = [
+    [fmtInt(c.nodes), '节点'], [fmtInt(c.by_kind?.attack), '攻击边'], [fmtInt(c.defeated_links), '击败边'],
+    [fmtInt(c.cards), '知识卡'], [fmtInt(c.props), '命题'], [`${w2.IN ?? '—'}/${w2.OUT ?? '—'}`, 'IN / OUT'],
+  ].map(([v, l]) => `<div class="card"><div class="stat">${v}</div><div class="stat-label">${l}</div></div>`).join('');
+  document.getElementById('src-note').textContent = '数据来源：' + (G.meta.generated_from || []).join('　·　');
+  document.getElementById('mode-chip').textContent = `${fmtInt(c.links)} 条边真实渲染`;
+  initLayout(); resize(); window.addEventListener('resize', () => { resize(); draw(); });
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

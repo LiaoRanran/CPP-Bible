@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>现场验哈希 · QueYi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+  <section style="padding:34px 0 16px">
+    <h1 style="font-size:26px">现场验哈希</h1>
+    <p class="lead" style="font-size:15px">用浏览器 <b>Web Crypto</b> 在这里现算 sha256，与台账里的哈希逐字节比对。
+      <b>文件不出本机、不联网、无后端</b>；台账（manifest）由 <span class="kbd">tools/web_data_653.py</span> 从真实文件现算生成。</p>
+    <p class="muted"><span id="crypto">检测中…</span>　·　<span id="note"></span></p>
+  </section>
+
+  <section style="padding:0 0 20px; border-bottom:0">
+    <div class="grid c2">
+      <div class="card">
+        <h3>① 选一个台账条目（可选）</h3>
+        <p class="muted">点「用这个比对」会把该台账哈希填入下方比对框；也可留空，站点会按**文件名**自动匹配。</p>
+        <input type="text" id="expected" placeholder="（可选）粘贴/选择期望的 sha256" style="width:100%;margin:8px 0 6px">
+        <div class="muted">当前比对对象：<span id="expect-name">（未指定）</span></div>
+      </div>
+      <div class="card">
+        <h3>② 把文件拖进来 / 选择文件</h3>
+        <div id="drop" style="border:1px dashed var(--line-2); border-radius:10px; padding:22px; text-align:center; color:var(--fg-dim); margin:8px 0 10px">
+          拖拽文件到此处
+        </div>
+        <input type="file" id="file">
+      </div>
+    </div>
+
+    <div class="result" id="result"></div>
+  </section>
+
+  <section style="padding:8px 0 40px">
+    <h3>台账（真实工件 · sha256 本机现算）</h3>
+    <table>
+      <thead><tr><th>路径</th><th>字节</th><th>sha256（前 16）</th><th></th></tr></thead>
+      <tbody id="tbody"><tr><td colspan="4" class="muted">加载中…</td></tr></tbody>
+    </table>
+    <p class="muted" style="margin-top:12px">提示：<span class="kbd">file://</span> 打开时浏览器会拦截 <span class="kbd">fetch</span>，
+      台账可能加载不到；但**拖文件重算**仍可用（Web Crypto 在 file:// 下可用）。要完整体验请用本地静态服务器，
+      例如 <span class="kbd">python -m http.server -d web 8080</span>。</p>
+  </section>
+</main>
+<footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="starmap.html">星图</a></footer>
+<script type="module" src="verify.js"></script>
+</body>
+</html>

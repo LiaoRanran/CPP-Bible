@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>星图 · QueYi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap wrap-wide">
+  <section style="padding:34px 0 10px">
+    <h1 style="font-size:26px">星图 · W2 接地图</h1>
+    <p class="lead" style="font-size:15px">真实台账渲染：<b>178</b> 节点（47 卡 + 131 命题）·
+      <b>388</b> 条攻击边（其中 <b>194</b> 条被击败）· 616 条防御边。数据由
+      <span class="kbd">tools/web_data_653.py</span> 从 <span class="kbd">data/grounded_labels_w2.json</span> 与
+      <span class="kbd">atoms/**</span> 生成，<b>不造数据</b>。</p>
+    <div class="grid c3" id="stats" style="margin-top:18px"></div>
+  </section>
+
+  <section style="padding:10px 0 30px; border-bottom:0">
+    <h3>三通道编码 · 色=四态 / 形=类型 / 光=credibility</h3>
+    <div class="legend" style="margin-bottom:10px">
+      <div class="chan"><b>色</b>
+        <span class="dot st-pass"></span>pass　
+        <span class="dot st-pass_with_exception"></span>pass_with_exception　
+        <span class="dot st-fail"></span>fail　
+        <span class="dot st-unknown"></span>unknown
+      </div>
+      <div class="chan"><b>形</b> 大圆描边=卡　小圆=命题　方块=误解(攻击者)</div>
+      <div class="chan"><b>光</b> 不透明=cred3　0.72=cred2　0.5=cred1</div>
+    </div>
+
+    <div class="toolbar">
+      <label class="toggle"><input type="checkbox" id="f-pass" checked>pass</label>
+      <label class="toggle"><input type="checkbox" id="f-pass_with_exception" checked>pass_with_exception</label>
+      <label class="toggle"><input type="checkbox" id="f-fail" checked>fail</label>
+      <label class="toggle"><input type="checkbox" id="f-unknown" checked>unknown</label>
+      <span style="width:10px"></span>
+      <label class="toggle"><input type="checkbox" id="f-defeated">只看被击败的边</label>
+      <button id="reset">复位视图</button>
+      <span class="spacer" style="flex:1"></span>
+      <span class="muted">渲染：<span id="mode">—</span>　拖拽平移 · 滚轮缩放 · 点击固定看点</span>
+    </div>
+
+    <div class="stage" id="stage">
+      <canvas id="graph"></canvas>
+      <div class="tooltip" id="tip"></div>
+    </div>
+    <p class="muted" style="margin-top:12px">优先使用 <b>cosmos.gl v3</b>（CDN, GPU 渲染）；若 CDN 不可达/离线，
+      站点**自动降级**为 2D canvas（同一套三通道编码与交互），并在左下角显式标注——不假装是 GPU 渲染。</p>
+  </section>
+</main>
+<footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="verify.html">现场验哈希</a></footer>
+<script type="module" src="starmap.js"></script>
+</body>
+</html>
