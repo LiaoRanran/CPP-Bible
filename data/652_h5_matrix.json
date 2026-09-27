@@ -1,0 +1,151 @@
+{
+  "source": "data\\652_h5_probe.c",
+  "blocks": [
+    "shift",
+    "bitfield",
+    "alignof_",
+    "volatile_",
+    "intpromo",
+    "macro"
+  ],
+  "cases": 8,
+  "ok": 4,
+  "matrix": [
+    {
+      "cc": "gcc",
+      "std": "c11",
+      "opt": "-O0",
+      "sanitizer": "none",
+      "compile_rc": 0,
+      "run_rc": 0,
+      "kv": {
+        "shift.u31": -2147483648,
+        "shift.neg_shift": 1,
+        "bitfield.size": 4,
+        "bitfield.a": 5,
+        "bitfield.c": -1,
+        "alignof_.size": 16,
+        "alignof_.ptr": 8,
+        "volatile_.sink": 2,
+        "intpromo.char_sum": 200,
+        "intpromo.cmp": 0,
+        "macro.sq_good": 16,
+        "macro.max_bad": 1,
+        "macro.i_after": 2
+      },
+      "sanitizer_tripped": null,
+      "status": "ok"
+    },
+    {
+      "cc": "gcc",
+      "std": "c11",
+      "opt": "-O0",
+      "sanitizer": "undefined",
+      "compile_rc": 1,
+      "status": "sanitizer_runtime_missing",
+      "err": "Qt/Tools/mingw1310_64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find -lubsan: No such file or directory\ncollect2.exe: error: ld returned 1 exit status\n"
+    },
+    {
+      "cc": "gcc",
+      "std": "c11",
+      "opt": "-O2",
+      "sanitizer": "none",
+      "compile_rc": 0,
+      "run_rc": 0,
+      "kv": {
+        "shift.u31": -2147483648,
+        "shift.neg_shift": 1,
+        "bitfield.size": 4,
+        "bitfield.a": 5,
+        "bitfield.c": -1,
+        "alignof_.size": 16,
+        "alignof_.ptr": 8,
+        "volatile_.sink": 2,
+        "intpromo.char_sum": 200,
+        "intpromo.cmp": 0,
+        "macro.sq_good": 16,
+        "macro.max_bad": 1,
+        "macro.i_after": 2
+      },
+      "sanitizer_tripped": null,
+      "status": "ok"
+    },
+    {
+      "cc": "gcc",
+      "std": "c11",
+      "opt": "-O2",
+      "sanitizer": "undefined",
+      "compile_rc": 1,
+      "status": "sanitizer_runtime_missing",
+      "err": "Qt/Tools/mingw1310_64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find -lubsan: No such file or directory\ncollect2.exe: error: ld returned 1 exit status\n"
+    },
+    {
+      "cc": "clang",
+      "std": "c11",
+      "opt": "-O0",
+      "sanitizer": "none",
+      "compile_rc": 0,
+      "run_rc": 0,
+      "kv": {
+        "shift.u31": -2147483648,
+        "shift.neg_shift": 1,
+        "bitfield.size": 4,
+        "bitfield.a": 5,
+        "bitfield.c": -1,
+        "alignof_.size": 16,
+        "alignof_.ptr": 8,
+        "volatile_.sink": 2,
+        "intpromo.char_sum": 200,
+        "intpromo.cmp": 0,
+        "macro.sq_good": 16,
+        "macro.max_bad": 1,
+        "macro.i_after": 2
+      },
+      "sanitizer_tripped": null,
+      "status": "ok"
+    },
+    {
+      "cc": "clang",
+      "std": "c11",
+      "opt": "-O0",
+      "sanitizer": "undefined",
+      "compile_rc": 1,
+      "status": "sanitizer_runtime_missing",
+      "err": "Data/Local/Temp/652_h5_probe-ace0c1.o:652_h5_probe.c:(.text+0x4ff): undefined reference to `__ubsan_handle_nonnull_arg'\nclang: error: linker command failed with exit code 1 (use -v to see invocation)\n"
+    },
+    {
+      "cc": "clang",
+      "std": "c11",
+      "opt": "-O2",
+      "sanitizer": "none",
+      "compile_rc": 0,
+      "run_rc": 0,
+      "kv": {
+        "shift.u31": -2147483648,
+        "shift.neg_shift": 1,
+        "bitfield.size": 4,
+        "bitfield.a": 5,
+        "bitfield.c": -1,
+        "alignof_.size": 16,
+        "alignof_.ptr": 8,
+        "volatile_.sink": 2,
+        "intpromo.char_sum": 200,
+        "intpromo.cmp": 0,
+        "macro.sq_good": 16,
+        "macro.max_bad": 1,
+        "macro.i_after": 2
+      },
+      "sanitizer_tripped": null,
+      "status": "ok"
+    },
+    {
+      "cc": "clang",
+      "std": "c11",
+      "opt": "-O2",
+      "sanitizer": "undefined",
+      "compile_rc": 1,
+      "status": "sanitizer_runtime_missing",
+      "err": "cal/Temp/652_h5_probe-82dacb.o:652_h5_probe.c:(.text+0x3b): undefined reference to `__ubsan_handle_shift_out_of_bounds'\nclang: error: linker command failed with exit code 1 (use -v to see invocation)\n"
+    }
+  ]
+}
