@@ -169,7 +169,7 @@ def selftest() -> int:
                    "gcc": {"c11": {"-O2": {"supported": True, "compile_rc": 0, "cmd": "gcc ...", "kv": {"a": 2}}}}}}
     cmd, kv = choose_primary(fx)
     chk("优先 gcc", cmd == "gcc ..." and kv == {"a": 2}, str(cmd))
-    fx2 = {"runs": {}}
+    fx2: dict = {"runs": {}}
     chk("无可用 run ⇒ (None, {})", choose_primary(fx2) == (None, {}))
     print(f"replay_probe_651 selftest: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1

@@ -1,5 +1,5 @@
 {
-  "round": 3,
+  "round": 5,
   "candidates": [
     {
       "name": "mutator_M8v2",
@@ -19,8 +19,8 @@
       "name": "model_scope_bpe_v2",
       "kind": "model",
       "entered_round": 0,
-      "remaining": 2,
-      "state": "shadow"
+      "remaining": 0,
+      "state": "eligible"
     }
   ],
   "log": [
@@ -62,6 +62,19 @@
     },
     {
       "round": 3,
+      "event": "advance"
+    },
+    {
+      "round": 4,
+      "event": "advance"
+    },
+    {
+      "round": 5,
+      "event": "eligible",
+      "name": "model_scope_bpe_v2"
+    },
+    {
+      "round": 5,
       "event": "advance"
     }
   ]

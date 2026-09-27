@@ -180,15 +180,17 @@ def build_checkpoint(ledger: Path = LEDGER, key: str = DEFAULT_WITNESS_KEY,
     if n == 0:
         return {"status": "empty", "ledger": str(ledger.relative_to(ROOT)), "tree_size": 0}
     root = mth(leaves)
-    root_hex = root.hex() if root else None
+    assert root is not None  # n > 0 保证
+    root_hex = root.hex()
     cp = sign_checkpoint(n, root_hex, ts, None, key)
     # 双证明样例：inclusion(第 0 条) + consistency(m=min(sample,n-1) → n)
     inc = inclusion_path(0, leaves)
-    inc_ok = verify_inclusion(0, n, leaves[0], inc, root)  # type: ignore[arg-type]
+    inc_ok = verify_inclusion(0, n, leaves[0], inc, root)
     m = min(include_sample_size, n - 1) if n > 1 else 1
     old_root = mth(leaves[:m])
+    assert old_root is not None
     cons = consistency_proof(m, leaves)
-    cons_ok = verify_consistency(m, n, cons, old_root, root)  # type: ignore[arg-type]
+    cons_ok = verify_consistency(m, n, cons, old_root, root)
     return {
         "status": "ok",
         "ledger": str(ledger.relative_to(ROOT)),
@@ -211,7 +213,8 @@ def verify_checkpoint_file(path: Path = OUT, key: str = DEFAULT_WITNESS_KEY) -> 
     sig_ok = hmac.compare_digest(cp["signature"], _sig(key, core))
     # 用真账本重算根，独立复核 checkpoint
     leaves = _leaves_from_ledger(LEDGER)
-    root_ok = (mth(leaves).hex() if leaves else None) == cp["root_hash"] and len(leaves) == cp["tree_size"]
+    root_now = mth(leaves)
+    root_ok = (root_now.hex() if root_now else None) == cp["root_hash"] and len(leaves) == cp["tree_size"]
     return {"ok": sig_ok and root_ok, "sig_ok": sig_ok, "root_ok": root_ok,
             "inclusion_verify": rep["inclusion_sample"]["verify"],
             "consistency_verify": rep["consistency_sample"]["verify"]}
@@ -231,11 +234,14 @@ def selftest() -> int:
     for n in range(1, 33):
         leaves = [f"ev{i}".encode() for i in range(n)]
         root = mth(leaves)
+        assert root is not None
         for i in range(n):
             if not verify_inclusion(i, n, leaves[i], inclusion_path(i, leaves), root):
                 all_inc = False
         for m in range(1, n + 1):
-            if not verify_consistency(m, n, consistency_proof(m, leaves), mth(leaves[:m]), root):
+            old_root_m = mth(leaves[:m])
+            assert old_root_m is not None
+            if not verify_consistency(m, n, consistency_proof(m, leaves), old_root_m, root):
                 all_cons = False
         # 篡改：改一条证明元素应被拒
         if n >= 2:
