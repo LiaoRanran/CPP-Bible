@@ -1,8 +1,8 @@
 """611 D3 · oracle 验证计划（**只读** · 不跑任何 --check）。
 
-问题：583/610 实测 `verified_by_oracle` **83 张卡 0 张填**（56 证据卡 + 27 原子卡）。
+问题：583/610 实测 `verified_by_oracle` **103 张卡 0 张填**（66 证据卡 + 37 原子卡）。
 机器无从细分归属 ⇒ 保守按"全体强制重验"（fail-closed）。本工具**不跑** gate/replay/poison/mutation，
-只把 83 张卡逐张映射到一个**建议验证 oracle**（按卡类型/主题启发式）并标出"已验/未验"，
+只把 103 张卡逐张映射到一个**建议验证 oracle**（按卡类型/主题启发式）并标出"已验/未验"，
 产出一份"验证计划清单"，供人/编排层逐张执行。
 
 口径：
@@ -27,8 +27,8 @@ VERSION = "1.0"
 PLAN_OUT = ROOT / "data" / "oracle_verification_plan_611.jsonl"
 REPORT_OUT = ROOT / "data" / "oracle_verification_plan_611.md"
 
-# 611 D3 锁定分母（与 611 基线 §7 一致：83 = 56 证据卡 + 27 原子卡；已验 0 张）
-KNOWN = {"cards_total": 83, "evidence": 56, "atoms": 27, "verified": 0}
+# 611 D3 锁定分母（与 611 基线 §7 一致：103 = 66 证据卡 + 37 原子卡；已验 0 张）
+KNOWN = {"cards_total": 103, "evidence": 66, "atoms": 37, "verified": 0}
 
 # 主题 → 建议主 oracle（启发式；仅提示）。EV 卡主用 replay，ATOM 卡主用 gate。
 _TOPIC_ORACLE = {
@@ -71,7 +71,7 @@ def build_plan() -> dict:
 def render_report(p: dict) -> str:
     lines = [
         "# 611 D3 · oracle 验证计划（只读 · 不跑验证）", "",
-        "> 83 张卡（56 证据卡 + 27 原子卡）逐张映射到**建议**验证 oracle 并标「已验/未验」。"
+        "> 103 张卡（66 证据卡 + 37 原子卡）逐张映射到**建议**验证 oracle 并标「已验/未验」。"
         "本工具**不跑** gate/replay/poison/mutation，只列计划。", "",
         "## 一、总览", "",
         f"- 卡 **{p['cards_total']}** 张：证据卡 {p['by_kind'].get('evidence', 0)} · "

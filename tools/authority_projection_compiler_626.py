@@ -60,8 +60,8 @@ class AuthorityProjectionCompiler:
         self.ledger = D.AuthorityLedger.import_jsonl(ledger_path)
         self._events = self.ledger.all_events()
         # 628 A1：flag **真接入**——编译时读取一次，V1/V2 双路径由此分叉。
-        # V1（=0/未设置）：W2 读 legacy grounded_labels（625 行为，121 节点）；
-        # V2（=1）：W2 走 Authority ledger + 627 A1 归一化（121 节点）。
+        # V1（=0/未设置）：W2 读 legacy grounded_labels（625 行为，131 节点）；
+        # V2（=1）：W2 走 Authority ledger + 627 A1 归一化（131 节点）。
         # 默认 V1（向后兼容）；输出 schema 两种模式完全一致。
         self.v2_mode = v2_enabled()
 
@@ -99,9 +99,9 @@ class AuthorityProjectionCompiler:
         """Dung grounded 语义：IN（未被击败）/ OUT（被 IN 的攻击者击败）/ UNDEC。
 
         628 A1 起按 `QUEYI_AUTHORITY_V2` **真分叉**：
-        - V1（=0/未设置，默认）：读 legacy `grounded_labels_w2.json`（121 节点，625 行为）；
+        - V1（=0/未设置，默认）：读 legacy `grounded_labels_w2.json`（131 节点，625 行为）；
         - V2（=1）：Authority ledger → 生效攻击（APPROVE∪MODIFY）→
-          627 A1 归一化（weighted_af_solver 严格大于击败）→ 121 节点。
+          627 A1 归一化（weighted_af_solver 严格大于击败）→ 131 节点。
         两种模式输出 schema 一致（node→label），数字一致（IN114/OUT7/UNDEC0），
         因为 V2 ledger 即从 V1 数据迁移而来（626 B2）。
         """
@@ -110,13 +110,13 @@ class AuthorityProjectionCompiler:
         return self._compile_w2_v1()
 
     def _compile_w2_v1(self) -> dict[str, str]:
-        """V1：legacy grounded_labels 作为数据源（保持 625 行为，121 节点）。"""
+        """V1：legacy grounded_labels 作为数据源（保持 625 行为，131 节点）。"""
         g = json.load(open(GROUNDED, encoding="utf-8"))
         nodes: dict = g.get("nodes", {})
         return {k: str(v.get("label", "UNDEC")) for k, v in nodes.items()}
 
     def _compile_w2_v2(self) -> dict[str, str]:
-        """V2：Authority ledger 单一真源 + 627 A1 归一化（121 节点，非 519）。"""
+        """V2：Authority ledger 单一真源 + 627 A1 归一化（131 节点，非 519）。"""
         import w2_projection_normalizer_627 as N  # noqa: E402
         res = N.compile_w2(self.ledger_path)
         labels: dict = res["labels"]
@@ -313,7 +313,7 @@ def selftest() -> int:
     chk("W2 计数自洽", s["IN"] + s["OUT"] + s["UNDEC"] == len(w2))
 
     pck = c.compile_pck_all()
-    chk("PCK 投影覆盖 83 张", pck["count"] == 83, f"({pck['count']})")
+    chk("PCK 投影覆盖 103 张", pck["count"] == 103, f"({pck['count']})")
     chk("PCK 同时给出严格/宽松", "strict_authorized" in pck and "relaxed_authorized" in pck)
     chk("PCK 可追溯", all("source_authority_events" in r for r in pck["results"].values()))
     chk("跨粒度警告字段存在", "cross_granularity_warned" in pck)

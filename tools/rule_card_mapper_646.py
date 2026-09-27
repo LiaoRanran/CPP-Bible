@@ -1,6 +1,6 @@
 """646 · 阶段 A1 · 规则→卡显式映射（清债 1，最核心）。
 
-目标（646 §三 A1）：建 67 规则 × 27 卡的多对多映射表，让智能层发现的**规则问题**能自动找到
+目标（646 §三 A1）：建 67 规则 × 37 卡的多对多映射表，让智能层发现的**规则问题**能自动找到
 对应**卡片**的证据，从而打通三层耦合（645 债 1 的根因=规则↔卡非 1:1、无显式映射）。
 
 匹配信号（三路，可解释）：
@@ -12,7 +12,7 @@
 
 强度：`high`（专属属性命中 或 关键词重叠 ≥2 或 域+任一）> `medium`（宽属性/单关键词/域）> `low`（全局结构规则的兜底）。
 
-**只读**：不改规则、不改卡片、不改账本。卡片域 = 真实 `evidence_base_644.list_atoms()`（27 张，见 646 §三.1
+**只读**：不改规则、不改卡片、不改账本。卡片域 = 真实 `evidence_base_644.list_atoms()`（37 张，见 646 §三.1
 幻影卡修正）。`--check` 只读自检；`--map` 真实映射，写 `data/646_rule_card_mapping.json` + `.md`。
 """
 from __future__ import annotations
@@ -108,7 +108,7 @@ def _applicability(rid: str) -> tuple[Optional[str], Optional[str], Optional[str
 
 
 def build_mapping() -> dict:
-    """真实构建 67 规则 × 27 卡映射。"""
+    """真实构建 67 规则 × 37 卡映射。"""
     import gate_engine as ge
     import perf_646 as perf  # A3：进程内记忆化（只读），消除重复读盘
     atoms = list(perf.atoms())
@@ -204,7 +204,7 @@ def write_report(result: dict) -> None:
 def selftest() -> int:
     """只读自检：已知关联必命中（GRAY→UB 卡 high；MISCONCEPTION→有误解的卡）。"""
     m = build_mapping()
-    assert m["card_count"] == 27, m["card_count"]
+    assert m["card_count"] == 37, m["card_count"]
     # GRAY 规则 → UB 卡 high
     gray = m["rules"].get("ATOM-GRAY-ZONE")
     assert gray and any(c["card"] == "ATOM-UB-GRAY-001" and c["strength"] == "high"

@@ -74,7 +74,7 @@ def run_verify() -> dict:
     v1, v2 = results.get("v1", {}), results.get("v2", {})
     consistent = (v1.get("summary") == v2.get("summary") == _expect_w2()
                   and v1.get("labels") == v2.get("labels")
-                  and v1.get("nodes") == v2.get("nodes") == 121)
+                  and v1.get("nodes") == v2.get("nodes") == 131)
     default_v1 = (results.get("unset", {}).get("v2") is False
                   and results.get("unset", {}).get("labels") == v1.get("labels"))
     # CORE_TOOLS 不读 flag
@@ -109,10 +109,10 @@ def selftest() -> int:
     r = run_verify()
     v1, v2 = r["modes"].get("v1", {}), r["modes"].get("v2", {})
     chk("flag 未设置 ⇒ 默认 V1（向后兼容）", r["default_is_v1"])
-    chk("V1 模式 121 节点", v1.get("nodes") == 121, f"({v1.get('nodes')})")
-    chk("V2 模式 121 节点（归一化，非 519）", v2.get("nodes") == 121,
+    chk("V1 模式 131 节点", v1.get("nodes") == 131, f"({v1.get('nodes')})")
+    chk("V2 模式 131 节点（归一化，非 519）", v2.get("nodes") == 131,
         f"({v2.get('nodes')})")
-    chk("V1/V2 数字一致 IN114/OUT7/UNDEC0", r["v1_v2_consistent"],
+    chk("V1/V2 数字一致 IN89/OUT42/UNDEC0", r["v1_v2_consistent"],
         f"(V1={v1.get('summary')} V2={v2.get('summary')})")
     chk("CORE_TOOLS 不读 flag", not r["core_tools_reading_flag"],
         f"({r['core_tools_reading_flag']})")

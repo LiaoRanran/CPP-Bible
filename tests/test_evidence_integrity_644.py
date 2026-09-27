@@ -8,14 +8,16 @@ import evidence_integrity_644 as c3
 
 
 # I3-1：已知漂移必检出（错误 id → is_valid False）
-def test_hash_mismatch():
+def test_hash_mismatch(monkeypatch, tmp_path):
+    # 648：把落库目录重定向到临时目录，避免污染共享的 data/evidence_store
+    # （否则并行下 integrity / standard_fetcher 等依赖 store 计数的测试会偶发红）。
+    monkeypatch.setattr(base, "STORE_DIR", str(tmp_path / "store"))
     rec = base.store_evidence("c3 content", source_type="single_blog", grade="L4",
                              credibility=0.5, acquired_at="2026-09-26",
                              acquisition_method="test")
     bad = replace(rec, evidence_id="0" * 64)
     assert not bad.is_valid()
-    os_removed = c3  # 占位避免未使用告警
-    assert os_removed is not None
+    assert c3 is not None  # 占位避免未使用告警
     import os as _os
     _os.remove(base.store_path(rec.evidence_id))
 

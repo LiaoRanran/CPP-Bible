@@ -32,12 +32,12 @@ def test_load_data():
     from w2_authority_640b import current as _w2
     exp = _w2()
     assert len(EDGES) == 388
-    assert len(VERDICTS) == 121
+    assert len(VERDICTS) == 131
     s = dc.solve_summary(EDGES, CRED)
     assert (s["in"], s["out"], s["undec"]) == (exp["IN"], exp["OUT"], exp["UNDEC"])
     assert s["defeating_edges"] == exp["defeating_edges"] and s["rounds"] == 3
     dist = {k: sum(1 for v in CRED.values() if v == k) for k in ("high", "medium", "low")}
-    assert dist["low"] == 7 and dist["high"] + dist["medium"] + dist["low"] == 121
+    assert dist["low"] == 7 and dist["high"] + dist["medium"] + dist["low"] == 131
 
 
 def test_is_defeating():
@@ -134,6 +134,6 @@ def test_check_matches_authoritative_w2_artifact():
     from w2_authority_640b import artifact_summary as _art
     a = _art()
     st = dc.stats(EDGES, VERDICTS, CRED)
-    assert st["no_attackers"] == 4
+    assert st["no_attackers"] == 14
     auth = json.loads((dc.ROOT / "data" / "grounded_labels_w2.json").read_text(encoding="utf-8"))
     assert auth["summary"]["IN"] == a["IN"] and auth["defeating_edges"] == a["defeating_edges"]

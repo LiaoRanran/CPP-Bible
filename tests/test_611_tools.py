@@ -40,10 +40,10 @@ def test_c2_bridge_candidates():
 
 def test_c3_fragmentation_repair():
     r = c3.analyze(cands=c3.load_candidates())
-    assert r["components_before"] == 11
-    assert r["components_after"] == 7
+    assert r["components_before"] == 21
+    assert r["components_after"] == 17
     assert r["largest_after"] == 97
-    assert r["coverage_after"] == 0.8017
+    assert r["coverage_after"] == 0.7405
     assert r["verdict_changed"] == 0  # 候选皆 low，不应翻转胜负
     assert c3.check(r) == []
 
@@ -58,15 +58,15 @@ def test_d1_out_mis_review():
 
 def test_d2_liveness_plan():
     p = d2.build_plan()
-    assert p["total_missing"] == 50
+    assert p["total_missing"] == 60
     assert d2.check(p) == []
 
 
 def test_d3_oracle_plan():
     p = d3.build_plan()
-    assert p["cards_total"] == 83
-    assert p["by_kind"].get("evidence") == 56
-    assert p["by_kind"].get("atom") == 27
+    assert p["cards_total"] == 103
+    assert p["by_kind"].get("evidence") == 66
+    assert p["by_kind"].get("atom") == 37
     assert p["verified"] == 0
     assert d3.check(p) == []
 
@@ -79,8 +79,8 @@ def test_e1_metrics_611():
     assert m["bridge_candidates"]["total"] == 98       # C2 产物件数（数据产物，非 W2 派生量）
     assert m["out_mis_review"]["out_mis_count"] == PIN["out_mis"], "OUT MIS 数取权威产物"
     assert m["out_mis_review"]["out_nodes_total"] == PIN["out"]
-    assert m["liveness_missing"]["missing_observation"] == 50
-    assert m["oracle_verification"]["cards_total"] == 83
+    assert m["liveness_missing"]["missing_observation"] == 60
+    assert m["oracle_verification"]["cards_total"] == 103
     assert m["oracle_verification"]["verified"] == 0
 
 

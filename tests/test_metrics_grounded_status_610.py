@@ -22,9 +22,9 @@ import soft_baseline_634 as SB  # 634 A3  # noqa: E402
 def test_collect_grounded_status():
     out = m610.collect_grounded_status({})
     # 640 A1：签署后权威产物重算（IN79/OUT42/误解 0 在 IN）
-    assert out["in"] == 79 and out["out"] == 42 and out["undec"] == 0
-    assert out["nodes"] == 121
-    assert out["in_propositions"] == 79 and out["in_misconceptions"] == 0
+    assert out["in"] == 89 and out["out"] == 42 and out["undec"] == 0
+    assert out["nodes"] == 131
+    assert out["in_propositions"] == 89 and out["in_misconceptions"] == 0
     assert "入库 W2 产物" in out["source"]
 
 
@@ -43,7 +43,7 @@ def test_divergence_is_surfaced_not_hidden():
     """口径分歧必须显形。640 A1：签署后两口径数值趋同 ⇒ divergence=False；
     机制差异（keep-low 34 条 modify 未生效）仍由 modes/caliber 字段留痕。"""
     out = m610.collect_grounded_status({})
-    assert out["solver_recompute"]["in"] == 79
+    assert out["solver_recompute"]["in"] == 89
     assert out["solver_recompute"]["out"] == 42
     assert out["solver_recompute"]["defeating_edges"] == 194
     assert out["divergence"] is False

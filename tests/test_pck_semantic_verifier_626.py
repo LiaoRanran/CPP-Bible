@@ -84,7 +84,7 @@ def test_global_vs_local_uncertainty():
 def test_verify_single_and_all():
     v = _v()
     allr = v.verify_all()
-    assert allr["count"] == 83
+    assert allr["count"] == 103
     assert len(allr["by_layer_pass"]) == 4
 
 

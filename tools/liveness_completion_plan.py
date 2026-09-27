@@ -1,6 +1,6 @@
 """611 D2 · 命题活性锚补全计划（**只读** · 不补字段）。
 
-问题：607 审计发现 50 条 observation 命题**全缺** `liveness`（gate `OBSERVATION-LIVENESS` 必报 warn）。
+问题：607 审计发现 60 条 observation 命题**全缺** `liveness`（gate `OBSERVATION-LIVENESS` 必报 warn）。
 补什么 `fixture_symbol` 是**人审权力**（要判"哪个夹具符号真能证伪这条命题"）。
 本工具**不补字段**，只产出一份"补全计划"：把每条缺锚的 observation 命题、它的证据（evidence）
 和它**可能**对应的夹具符号建议列出来，供人逐条裁定。
@@ -29,8 +29,8 @@ REPORT_OUT = ROOT / "data" / "liveness_completion_plan_611.md"
 
 _KW_RX = re.compile(r"(?:ATOM|EV|example|EXAMPLE)-[A-Za-z0-9][A-Za-z0-9_-]*")
 
-# 611 D2 锁定：缺锚 observation 命题总数（607 实测 50，论证图/卡冻结前不变）
-KNOWN_MISSING = 50
+# 611 D2 锁定：缺锚 observation 命题总数（607 实测 60，论证图/卡冻结前不变）
+KNOWN_MISSING = 60
 
 
 def _suggest_symbol(evidence: list) -> str:
@@ -70,7 +70,7 @@ def render_report(p: dict) -> str:
         "> 仅生成「补全计划」：把每条缺锚 observation 命题、它的 evidence、以及**建议**的 `fixture_symbol` 列出。"
         "是否采用、补哪个符号是**人审权力**。", "",
         "## 一、总览", "",
-        f"- 缺锚 observation 命题 **{p['total_missing']}** 条（607 实测 50，已锁定）；",
+        f"- 缺锚 observation 命题 **{p['total_missing']}** 条（607 实测 60，已锁定）；",
         "- 建议符号取自该命题 `evidence` 里第一个工件引用（ATOM-/EV-/example-）；evidence 空 ⇒ 待人裁定；", "",
         "## 二、补全计划明细", "",
         "| 卡 | 命题 id | 状态 | 建议 fixture_symbol | 证据 | 内容（截断） |",

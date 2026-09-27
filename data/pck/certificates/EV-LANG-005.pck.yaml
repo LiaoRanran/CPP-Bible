@@ -1,0 +1,23 @@
+schema_version: 619-pck-v1
+claim:
+  id: EV-LANG-005
+  statement: -O2 下普通变量的多次读取可被折叠，volatile 变量必须逐次访问（汇编引用次数不同）。
+  domain: lang
+  type: observation
+evidence:
+- type: artifact
+  ref: evidence/lang/EV-LANG-005.md
+  hash: sha256:10f442192da719f01ac75efb3489639a3ef7a02e809a9d7640dd49511eea72c2
+negative_tests: []
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: 9fc692bf07eaf89c32ebaa7fe9333c6f402bd663
+  first_authorized_at: unknown

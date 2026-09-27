@@ -20,7 +20,7 @@ def test_collect_defense_chain_stats():
     for k in ("total_nodes", "in", "out", "undec", "total_edges", "defeating_edges",
               "no_defenders", "no_attackers", "source"):
         assert k in out, f"缺字段 {k}"
-    assert out["total_nodes"] == 121
+    assert out["total_nodes"] == 131
     assert out["source"].startswith("defense_chain.py")
 
 
@@ -44,7 +44,7 @@ def test_no_defenders_no_attackers():
     from w2_authority_640b import current as _w2
     exp = _w2()
     out = m610.collect_defense_chain_stats({})
-    assert out["no_attackers"] == 4
+    assert out["no_attackers"] == 14
     assert out["no_defenders"] >= exp["OUT"]        # 含无攻击者的保守计法
     dist = out["credibility_distribution"]
     assert set(dist) == {"high", "medium", "low"}

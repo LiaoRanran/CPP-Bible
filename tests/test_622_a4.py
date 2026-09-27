@@ -45,7 +45,7 @@ def test_generate_v2_deterministic():
         return
     import pck_batch_migrator_620 as M
     muts = [json.loads(ln) for ln in open(MUTS2, encoding="utf-8") if ln.strip()]
-    again = MG.generate_v2(M.discover_cards(), MG.load_v7(), count=len(muts))
+    again = MG.generate_v2(M.discover_cards(), MG.load_v7(), count=len(muts), include_classic=False)
     assert [m["mutation_id"] for m in again] == [m["mutation_id"] for m in muts]
 
 

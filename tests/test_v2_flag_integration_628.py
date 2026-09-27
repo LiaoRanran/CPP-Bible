@@ -65,13 +65,13 @@ def test_v1_uses_legacy_grounded_labels():
     g = json.load(open(GROUNDED, encoding="utf-8"))
     expected = {k: v["label"] for k, v in g["nodes"].items()}
     assert w2 == expected
-    assert len(w2) == 121
+    assert len(w2) == 131
 
 
 def test_v2_uses_normalized_121_nodes():
     _set("1")
     w2 = _compiler().compile_w2()
-    assert len(w2) == 121          # 归一化后 121，非 ledger edge 粒度 519
+    assert len(w2) == 131          # 归一化后 131，非 ledger edge 粒度 519
 
 
 def test_v1_v2_numbers_identical():

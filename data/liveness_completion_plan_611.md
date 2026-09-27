@@ -4,7 +4,7 @@
 
 ## 一、总览
 
-- 缺锚 observation 命题 **50** 条（607 实测 50，已锁定）；
+- 缺锚 observation 命题 **60** 条（607 实测 50，已锁定）；
 - 建议符号取自该命题 `evidence` 里第一个工件引用（ATOM-/EV-/example-）；evidence 空 ⇒ 待人裁定；
 
 ## 二、补全计划明细
@@ -17,8 +17,15 @@
 | `ATOM-HIST-AUTOPTR-001` | `prop-1` | 缺 `liveness` | `EV-HIST-001` | EV-HIST-001 EV-MEM-003 | 实测（GCC 15.3.0、-std=c++14 -O2）：auto_ptr 拷… |
 | `ATOM-HIST-AUTOPTR-001` | `prop-2` | 缺 `liveness` | `EV-HIST-001` | EV-HIST-001 EV-MEM-003 | 编译期判定（四条 static_assert 全部通过）：auto_ptr 不满… |
 | `ATOM-HIST-AUTOPTR-001` | `prop-4` | 缺 `liveness` | `EV-HIST-001` | EV-HIST-001 | 实现层事实（EV-HIST-001 的 impl_ 读数）：同一夹具在 -std… |
+| `ATOM-LANG-BITFIELD-001` | `prop-1` | 缺 `liveness` | `EV-LANG-008` | EV-LANG-008 | bf_a=5 bf_b=21 bf_byte0=173 bf_byte1=15 … |
+| `ATOM-LANG-DECAY-001` | `prop-1` | 缺 `liveness` | `EV-LANG-003` | EV-LANG-003 | decay_len_true=10 decay_len_wrong_inside… |
+| `ATOM-LANG-FNPTR-001` | `prop-1` | 缺 `liveness` | `EV-LANG-004` | EV-LANG-004 | bad_addr_nonzero=1 fnptr_sizeof=8 good_c… |
 | `ATOM-LANG-INLINE-001` | `prop-1` | 缺 `liveness` | `EV-LANG-001` | EV-LANG-001 EV-LANG-002 | 两个 TU 给出不同定义的 inline 函数，其可观测行为由链接顺序与优化档共… |
 | `ATOM-LANG-INLINE-001` | `prop-2` | 缺 `liveness` | `EV-LANG-001` | EV-LANG-001 EV-LANG-002 | 当各 TU 的定义由相同 token 序列构成时行为稳定：stable 组在 a… |
+| `ATOM-LANG-INTPROMO-001` | `prop-1` | 缺 `liveness` | `EV-LANG-007` | EV-LANG-007 | char_promoted_sum=200 char_sum_type_size… |
+| `ATOM-LANG-MACRO-001` | `prop-1` | 缺 `liveness` | `EV-LANG-009` | EV-LANG-009 | i_after=2 max_bad_result=1 sq_bad=7 sq_g… |
+| `ATOM-LANG-SETJMP-001` | `prop-1` | 缺 `liveness` | `EV-LANG-006` | EV-LANG-006 | after_longjmp_plain=0 after_longjmp_vola… |
+| `ATOM-LANG-VOLATILE-001` | `prop-1` | 缺 `liveness` | `EV-LANG-005` | EV-LANG-005 | sink=0（gcc -std=c11 -O2 实测）。 |
 | `ATOM-MEM-ALIGN-001` | `prop-1` | 缺 `liveness` | `EV-MEM-019` | EV-MEM-019 | 编译器在成员间与末尾插入 padding 使每个成员与整体满足对齐：实测 siz… |
 | `ATOM-MEM-ALIGN-001` | `prop-2` | 缺 `liveness` | `EV-MEM-020` | EV-MEM-020 | 对齐可控且按字节搬运保真：实测 alignof(Aligned)=16、size… |
 | `ATOM-MEM-ALLOC-001` | `prop-1` | 缺 `liveness` | `EV-MEM-026` | EV-MEM-026 | 分配与对象构造是两个独立动作：实测 allocate 路径 allocs=1 而… |
@@ -30,6 +37,7 @@
 | `ATOM-MEM-LEAK-001` | `prop-2` | 缺 `liveness` | `EV-MEM-037` | EV-MEM-037 | 仅把上行改为 shared_ptr（与 EV-MEM-036 构成唯一变量对照）… |
 | `ATOM-MEM-LEAK-002` | `prop-1` | 缺 `liveness` | `EV-MEM-042` | EV-MEM-042 EV-MEM-043 | 循环引用夹具上的零依赖观测（构造/析构计数、存活对象数）读出：cycle_all… |
 | `ATOM-MEM-LEAK-002` | `prop-2` | 缺 `liveness` | `EV-MEM-042` | EV-MEM-042 EV-MEM-043 | 同一循环引用夹具、同一编译器与档位（-O1 -g -fsanitize=addr… |
+| `ATOM-MEM-MALLOC-001` | `prop-1` | 缺 `liveness` | `EV-MEM-046` | EV-MEM-046 | alloc_aligned=1 dangling_value_nonzero=1… |
 | `ATOM-MEM-MOVE-002` | `prop-1` | 缺 `liveness` | `EV-MEM-001` | EV-MEM-001 | 移动不分配：六组组合（GCC 15.3/13.1/8.1 × -O0/-O2）读… |
 | `ATOM-MEM-MOVE-002` | `prop-2` | 缺 `liveness` | `EV-MEM-002` | EV-MEM-002 | 收益来自掏空源：持堆的 HeapBuf 拷贝分配=1、移动分配=0、移动后源被掏… |
 | `ATOM-MEM-NEW-001` | `prop-1` | 缺 `liveness` | `EV-MEM-017` | EV-MEM-017 | new 表达式先分配再构造、delete 表达式先析构再释放，两层各自独立发生一… |
@@ -50,6 +58,7 @@
 | `ATOM-MEM-SHARED-001` | `prop-2` | 缺 `liveness` | `EV-MEM-014` | EV-MEM-014 | 两个对象互相用 shared_ptr 持有时：a 与 b 的 use_count… |
 | `ATOM-MEM-SHARED-002` | `prop-1` | 缺 `liveness` | `EV-MEM-034` | EV-MEM-034 | 四线程各持副本并发拷贝：-O0/-O2 一致——sizeof(shared_pt… |
 | `ATOM-MEM-SHARED-002` | `prop-2` | 缺 `liveness` | `EV-MEM-034` | EV-MEM-034 | 控制块计数用原子 RMW 修改：工件断言在 `_Sp_counted_base:… |
+| `ATOM-MEM-STRBOUND-001` | `prop-1` | 缺 `liveness` | `EV-MEM-047` | EV-MEM-047 | snprintf_ret=10 snprintf_truncated=1 snp… |
 | `ATOM-MEM-UNIQUE-001` | `prop-1` | 缺 `liveness` | `EV-MEM-011` | EV-MEM-011 | 零开销的第一个证据：实测 sizeof(unique_ptr<Big>)=8、s… |
 | `ATOM-MEM-UNIQUE-001` | `prop-2` | 缺 `liveness` | `EV-MEM-012` | EV-MEM-012 | 所有权转移与释放：移动后源被置空（a empty=1）、目标持有对象（b->v=… |
 | `ATOM-MEM-UNIQUE-002` | `prop-1` | 缺 `liveness` | `EV-MEM-032` | EV-MEM-032 | 删除器是 unique_ptr 类型的一部分，对象大小随之变化（-O0/-O2 … |
@@ -61,6 +70,7 @@
 | `ATOM-MEM-WEAK-001` | `prop-1` | 缺 `liveness` | `EV-MEM-015` | EV-MEM-015 | 非拥有观察者的实测：持有 weak 时 use_count 仍为 1（不增加强引… |
 | `ATOM-MEM-WEAK-001` | `prop-2` | 缺 `liveness` | `EV-MEM-016` | EV-MEM-016 | 把反向引用改为 weak 后：a use_count=1、b use_count… |
 | `ATOM-UB-GRAY-001` | `prop-1` | 缺 `liveness` | `EV-UB-001` | EV-UB-001 | f(g(), h()) 的实参求值顺序实测：四组组合（GCC 15.3.0 与 … |
+| `ATOM-UB-SIGNEDOVF-001` | `prop-1` | 缺 `liveness` | `EV-UB-003` | EV-UB-003 | signed_plus1_gt=1 unsigned_plus1_gt=0 un… |
 
 ## 三、口径与边界
 

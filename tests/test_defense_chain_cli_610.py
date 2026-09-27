@@ -59,9 +59,9 @@ def test_cli_stats(capsys):
     assert dc.main(["stats", "--json"]) == 0
     st = json.loads(capsys.readouterr().out)
     assert (st["total_nodes"], st["in"], st["out"], st["undec"]) == (
-        121, exp["IN"], exp["OUT"], exp["UNDEC"])
+        131, exp["IN"], exp["OUT"], exp["UNDEC"])
     assert st["total_edges"] == exp["edges"] and st["defeating_edges"] == exp["defeating_edges"]
-    assert st["no_attackers"] == 4
+    assert st["no_attackers"] == 14
     assert set(st["credibility_distribution"]) == {"high", "medium", "low"}
     assert len(st["out_nodes"]) == exp["OUT"]
 
@@ -81,8 +81,10 @@ def test_cli_list_no_defenders_and_no_attackers(capsys):
     assert nd, "no-defenders 不应为空"
     assert dc.main(["list-no-attackers"]) == 0
     na = [x for x in capsys.readouterr().out.splitlines() if x.strip()]
-    assert na == ["ATOM-CONC-FENCE-001::prop-1", "ATOM-CONC-FENCE-001::prop-2",
-                  "ATOM-CONC-LOCK-001::prop-1", "ATOM-CONC-LOCK-001::prop-2"]
+    assert len(na) == 14, f"无攻击者命题应为 14（新增 10 张孤立卡各 1 条），实得 {len(na)}\n{na}"
+    for p in ("ATOM-CONC-FENCE-001::prop-1", "ATOM-CONC-FENCE-001::prop-2",
+              "ATOM-CONC-LOCK-001::prop-1", "ATOM-CONC-LOCK-001::prop-2"):
+        assert p in na, f"已知无攻击者命题缺失：{p}"
 
 
 def test_cli_report_is_idempotent(capsys):

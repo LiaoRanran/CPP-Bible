@@ -185,8 +185,8 @@ def render(d: dict) -> str:
 
 def check(d: dict) -> list[str]:
     problems: list[str] = []
-    if d["total_props"] != 50:
-        problems.append(f"缺锚命题应为 50（实测 {d['total_props']}）")
+    if d["total_props"] != 60:
+        problems.append(f"缺锚命题应为 60（实测 {d['total_props']}）")
     ids = [p["proposition_id"] for p in d["per_prop"]]
     if len(set(ids)) != len(ids):
         problems.append(f"proposition_id 不唯一（{len(ids)} 条中仅 {len(set(ids))} 个）")

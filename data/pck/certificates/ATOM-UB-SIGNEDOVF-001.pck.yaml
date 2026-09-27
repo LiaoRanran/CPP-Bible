@@ -1,0 +1,25 @@
+schema_version: 619-pck-v1
+claim:
+  id: ATOM-UB-SIGNEDOVF-001
+  statement: 有符号溢出是 UB（C11 6.5p5），因此「加完再比较」不是可靠的溢出检查：实测 `INT_MAX + 1 > INT_MAX` 在
+    gcc 13.1.0 上**恒为 1**（-O0 与 -O2 都折叠成常量真），在 clang 22.1.8 上**恒为 0**（两个档位都按回绕算）——同一表达式在两个编译器上**答案相反且都不崩**，这正是
+    UB 的含义（结果由实现决定，不是「会回绕」）；无符号回绕则是定义良好的（实测 0）。
+  domain: ub
+  type: observation
+evidence:
+- type: replay
+  ref: evidence/ub/EV-UB-003.md
+  hash: sha256:eb523183a2d3f7d7e1ad72477a10fbc976435ace3265fbd0715c0b119f8cc2fb
+negative_tests: []
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: 9fc692bf07eaf89c32ebaa7fe9333c6f402bd663
+  first_authorized_at: unknown

@@ -1,0 +1,24 @@
+schema_version: 619-pck-v1
+claim:
+  id: ATOM-LANG-DECAY-001
+  statement: C 的数组形参在函数内已退化为指针，因此函数内用 sizeof(p)/sizeof(p[0]) 算出的「元素个数」恒为 sizeof(指针)/sizeof(元素)（x86-64
+    上 int 数组恒得 2），与实参数组长度无关。
+  domain: lang
+  type: observation
+evidence:
+- type: replay
+  ref: evidence/lang/EV-LANG-003.md
+  hash: sha256:44b44e6d6b6a428055b74fccddfd55677b1fb38a9a7d290ee23d18808e4cd962
+negative_tests: []
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: 9fc692bf07eaf89c32ebaa7fe9333c6f402bd663
+  first_authorized_at: unknown

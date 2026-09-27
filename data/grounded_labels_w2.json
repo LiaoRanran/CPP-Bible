@@ -228,6 +228,45 @@
    "signoff_state": "prop_signed",
    "type": "proposition"
   },
+  "ATOM-LANG-BITFIELD-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-LANG-BITFIELD-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-LANG-BITFIELD-001::prop-1",
+   "label": "IN",
+   "signoff_state": "unsigned",
+   "type": "proposition"
+  },
+  "ATOM-LANG-DECAY-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-LANG-DECAY-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-LANG-DECAY-001::prop-1",
+   "label": "IN",
+   "signoff_state": "unsigned",
+   "type": "proposition"
+  },
+  "ATOM-LANG-FNPTR-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-LANG-FNPTR-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-LANG-FNPTR-001::prop-1",
+   "label": "IN",
+   "signoff_state": "unsigned",
+   "type": "proposition"
+  },
   "ATOM-LANG-INLINE-001::prop-1": {
    "attackers": [
     "MIS-LANG-001"
@@ -286,6 +325,58 @@
    "id": "ATOM-LANG-INLINE-001::prop-3",
    "label": "IN",
    "signoff_state": "prop_signed",
+   "type": "proposition"
+  },
+  "ATOM-LANG-INTPROMO-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-LANG-INTPROMO-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-LANG-INTPROMO-001::prop-1",
+   "label": "IN",
+   "signoff_state": "unsigned",
+   "type": "proposition"
+  },
+  "ATOM-LANG-MACRO-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-LANG-MACRO-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-LANG-MACRO-001::prop-1",
+   "label": "IN",
+   "signoff_state": "unsigned",
+   "type": "proposition"
+  },
+  "ATOM-LANG-SETJMP-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-LANG-SETJMP-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-LANG-SETJMP-001::prop-1",
+   "label": "IN",
+   "signoff_state": "unsigned",
+   "type": "proposition"
+  },
+  "ATOM-LANG-VOLATILE-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-LANG-VOLATILE-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-LANG-VOLATILE-001::prop-1",
+   "label": "IN",
+   "signoff_state": "unsigned",
    "type": "proposition"
   },
   "ATOM-MEM-ALIGN-001::prop-1": {
@@ -750,6 +841,19 @@
    "id": "ATOM-MEM-LEAK-002::prop-3",
    "label": "IN",
    "signoff_state": "prop_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-MALLOC-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-MEM-MALLOC-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-MEM-MALLOC-001::prop-1",
+   "label": "IN",
+   "signoff_state": "unsigned",
    "type": "proposition"
   },
   "ATOM-MEM-MOVE-002::prop-1": {
@@ -1734,6 +1838,19 @@
    "signoff_state": "prop_signed",
    "type": "proposition"
   },
+  "ATOM-MEM-STRBOUND-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-MEM-STRBOUND-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-MEM-STRBOUND-001::prop-1",
+   "label": "IN",
+   "signoff_state": "unsigned",
+   "type": "proposition"
+  },
   "ATOM-MEM-UNIQUE-001::prop-1": {
    "attackers": [
     "MIS-MEM-020",
@@ -2262,6 +2379,19 @@
    "id": "ATOM-UB-GRAY-001::prop-2",
    "label": "IN",
    "signoff_state": "prop_signed",
+   "type": "proposition"
+  },
+  "ATOM-UB-SIGNEDOVF-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-UB-SIGNEDOVF-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-UB-SIGNEDOVF-001::prop-1",
+   "label": "IN",
+   "signoff_state": "unsigned",
    "type": "proposition"
   },
   "MIS-CONC-001": {
@@ -2923,12 +3053,12 @@
  },
  "rounds": 3,
  "summary": {
-  "IN": 79,
+  "IN": 89,
   "IN_misconceptions": 0,
-  "IN_propositions": 79,
+  "IN_propositions": 89,
   "OUT": 42,
   "UNDEC": 0,
-  "nodes": 121
+  "nodes": 131
  },
  "tool": "weighted_af_solver",
  "version": "1.1"

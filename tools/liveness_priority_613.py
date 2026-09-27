@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """613 任务A1 · 活性锚候选生成与优先级排序（只读，不改受控目录）。
 
-复用 612 B1 的候选（data/liveness_candidates_612.jsonl，50 命题 / 96 候选 / A9·B26·C15），
+复用 612 B1 的候选（data/liveness_candidates_612.jsonl，60 命题 / 96 候选 / A9·B26·C15），
 叠加 KC 台账（data/kc_inventory_612.json）的命题重要性，按
 「命题重要性 × 证据卡可用性 × 补全成本」排序，输出优先级清单。
 
@@ -163,8 +163,8 @@ def render(rows: list[dict]) -> str:
 
 def check(rows: list[dict]) -> list[str]:
     errs = []
-    if len(rows) != 50:
-        errs.append(f"命题数应为 50，实测 {len(rows)}")
+    if len(rows) != 60:
+        errs.append(f"命题数应为 60，实测 {len(rows)}")
     for r in rows:
         if r["class"] not in CLASS_W:
             errs.append(f"{r['proposition_id']} class 非法: {r['class']}")

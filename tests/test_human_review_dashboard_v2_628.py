@@ -47,7 +47,7 @@ def test_data_matches_current_state(data):
     assert data["review"]["unique"] == 93
     assert data["w2"]["labels"] == {"IN": exp["IN"], "OUT": exp["OUT"],
                                     "UNDEC": exp["UNDEC"]}
-    assert len(data["w2"]["nodes"]) == 121
+    assert len(data["w2"]["nodes"]) == 131
     assert data["blind_count"] == 0
     assert sum(data["methods"].values()) == data["events"] > 0
 
@@ -67,7 +67,7 @@ def test_heatmap_has_one_cell_per_item(html, data):
 
 
 def test_3d_scene_uses_all_nodes(html):
-    assert html.count('class="node ') == 121
+    assert html.count('class="node ') == 131
     assert "translate3d(var(--x),var(--y),var(--z))" in html
 
 

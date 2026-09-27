@@ -16,8 +16,8 @@ def test_selftest_passes():
 def test_full_coverage():
     """真实搜索：覆盖全部 27 卡。"""
     res = b2.run_search()
-    assert res["cards_total"] == 27
-    assert res["cards_with_candidate"] == 27
+    assert res["cards_total"] == 37
+    assert res["cards_with_candidate"] == 37
 
 
 def test_candidates_have_source():

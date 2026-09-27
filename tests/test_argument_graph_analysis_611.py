@@ -16,8 +16,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 import argument_graph_analysis as c1  # noqa: E402
 
-KNOWN = {"components": 11, "isolated": 4, "largest": 80, "nodes": 121,
-         "edges": 388, "coverage": 0.6612}
+KNOWN = {"components": 21, "isolated": 14, "largest": 80, "nodes": 131,
+         "edges": 388, "coverage": 0.6107}
 
 
 def test_components_match_known_facts():
@@ -50,5 +50,5 @@ def test_check_locks_structure_and_report_is_reproducible():
     for token in (f"连通分量 **{KNOWN['components']}**",
                   f"孤立节点（仅 1 节点分量）**{KNOWN['isolated']}**",
                   f"最大分量 {KNOWN['largest']} 节点 = 覆盖 {KNOWN['coverage']:.1%}",
-                  "论证图碎片化", "11 块"):
+                  "论证图碎片化", "21 块"):
         assert token in text, token

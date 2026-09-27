@@ -15,7 +15,7 @@ ROOT = _P(__file__).resolve().parents[1]
 
 def test_total_kc():
     d = d1.build()
-    assert d["total_kc"] == 27, d["total_kc"]
+    assert d["total_kc"] == 37, d["total_kc"]
 
 
 def test_difficulty_range():
@@ -58,4 +58,4 @@ def test_json_roundtrip():
     d = d1.build()
     txt = json.dumps(d, ensure_ascii=False)
     back = json.loads(txt)
-    assert back["total_kc"] == 27
+    assert back["total_kc"] == 37

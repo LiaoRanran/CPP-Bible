@@ -49,7 +49,10 @@ if not os.path.exists(PY):
     PY = sys.executable
 
 GATE = os.path.join("tools", "gate_engine.py")
-LOCK = os.path.join(ROOT, "data", ".622_apply.lock")
+# 并发锁按 xdist worker（退回 pid）隔离：每个 worker 只串行化自身的 apply_and_run，
+# 避免并行测试间因共享同一把全局锁而把“锁残留”误判为逃逸/污染。
+_LOCK_WORKER = os.environ.get("PYTEST_XDIST_WORKER", str(os.getpid()))
+LOCK = os.path.join(ROOT, "data", f".622_apply.lock.{_LOCK_WORKER}")
 ALLOWED_PREFIXES = ("atoms/", "evidence/")
 GATE_TIMEOUT = 30
 

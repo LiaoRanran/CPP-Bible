@@ -4,17 +4,17 @@
 
 ## 一、总览
 
-- 卡 **83** 张：证据卡 56 · 原子卡 27 · 其它 0
-- **已填 `verified_by_oracle`：0 张** ⇒ 未验 **83** 张（保守 fail-closed：全体强制重验）
+- 卡 **103** 张：证据卡 66 · 原子卡 37 · 其它 0
+- **已填 `verified_by_oracle`：0 张** ⇒ 未验 **103** 张（保守 fail-closed：全体强制重验）
 
 ## 二、按主题的建议 oracle 分布
 
 | 建议主 oracle | 卡数 |
 |---|---|
-| `valgrind_memcheck` | 66 |
+| `valgrind_memcheck` | 70 |
+| `gcc_compile` | 17 |
 | `tsan` | 9 |
-| `gcc_compile` | 3 |
-| `ubsan` | 3 |
+| `ubsan` | 5 |
 | `gate` | 1 |
 | `replay` | 1 |
 
@@ -26,12 +26,20 @@
 | `ATOM-CONC-LOCK-001` | atom | — | `tsan` |
 | `ATOM-CONC-RACE-001` | atom | — | `tsan` |
 | `ATOM-HIST-AUTOPTR-001` | atom | — | `gate` |
+| `ATOM-LANG-BITFIELD-001` | atom | — | `gcc_compile` |
+| `ATOM-LANG-DECAY-001` | atom | — | `gcc_compile` |
+| `ATOM-LANG-FNPTR-001` | atom | — | `gcc_compile` |
 | `ATOM-LANG-INLINE-001` | atom | — | `gcc_compile` |
+| `ATOM-LANG-INTPROMO-001` | atom | — | `gcc_compile` |
+| `ATOM-LANG-MACRO-001` | atom | — | `gcc_compile` |
+| `ATOM-LANG-SETJMP-001` | atom | — | `gcc_compile` |
+| `ATOM-LANG-VOLATILE-001` | atom | — | `gcc_compile` |
 | `ATOM-MEM-ALIGN-001` | atom | — | `valgrind_memcheck` |
 | `ATOM-MEM-ALLOC-001` | atom | — | `valgrind_memcheck` |
 | `ATOM-MEM-ALLOC-002` | atom | — | `valgrind_memcheck` |
 | `ATOM-MEM-LEAK-001` | atom | — | `valgrind_memcheck` |
 | `ATOM-MEM-LEAK-002` | atom | — | `valgrind_memcheck` |
+| `ATOM-MEM-MALLOC-001` | atom | — | `valgrind_memcheck` |
 | `ATOM-MEM-MOVE-002` | atom | — | `valgrind_memcheck` |
 | `ATOM-MEM-NEW-001` | atom | — | `valgrind_memcheck` |
 | `ATOM-MEM-PERF-001` | atom | — | `valgrind_memcheck` |
@@ -43,26 +51,18 @@
 | `ATOM-MEM-RVREF-001` | atom | — | `valgrind_memcheck` |
 | `ATOM-MEM-SHARED-001` | atom | — | `valgrind_memcheck` |
 | `ATOM-MEM-SHARED-002` | atom | — | `valgrind_memcheck` |
+| `ATOM-MEM-STRBOUND-001` | atom | — | `valgrind_memcheck` |
 | `ATOM-MEM-UNIQUE-001` | atom | — | `valgrind_memcheck` |
 | `ATOM-MEM-UNIQUE-002` | atom | — | `valgrind_memcheck` |
 | `ATOM-MEM-VALUE-001` | atom | — | `valgrind_memcheck` |
 | `ATOM-MEM-VALUE-002` | atom | — | `valgrind_memcheck` |
 | `ATOM-MEM-WEAK-001` | atom | — | `valgrind_memcheck` |
 | `ATOM-UB-GRAY-001` | atom | — | `ubsan` |
+| `ATOM-UB-SIGNEDOVF-001` | atom | — | `ubsan` |
 | `EV-CONC-001` | evidence | — | `tsan` |
 | `EV-CONC-002` | evidence | — | `tsan` |
 | `EV-CONC-003` | evidence | — | `tsan` |
-| `EV-CONC-004` | evidence | — | `tsan` |
-| `EV-CONC-005` | evidence | — | `tsan` |
-| `EV-CONC-006` | evidence | — | `tsan` |
-| `EV-HIST-001` | evidence | — | `replay` |
-| `EV-LANG-001` | evidence | — | `gcc_compile` |
-| `EV-LANG-002` | evidence | — | `gcc_compile` |
-| `EV-MEM-001` | evidence | — | `valgrind_memcheck` |
-| `EV-MEM-002` | evidence | — | `valgrind_memcheck` |
-| `EV-MEM-003` | evidence | — | `valgrind_memcheck` |
-| `EV-MEM-004` | evidence | — | `valgrind_memcheck` |
-| … | | | 其余 43 张见 jsonl |
+| … | | | 其余 63 张见 jsonl |
 
 ## 四、口径与边界
 

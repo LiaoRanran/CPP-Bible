@@ -105,8 +105,8 @@ def render(rows: list[dict], top: int | None) -> str:
 
 def check(rows: list[dict]) -> list[str]:
     problems: list[str] = []
-    if len(rows) != 83:
-        problems.append(f"卡数应为 83（实测 {len(rows)}）")
+    if len(rows) != 103:
+        problems.append(f"卡数应为 103（实测 {len(rows)}）")
     if rows:
         if rows[0]["score"] != max(r["score"] for r in rows):
             problems.append("Top 1 不是最高分")

@@ -30,7 +30,7 @@ def test_current_labels_match_artifact():
     for v in nodes.values():
         cnt[v.get("label")] = cnt.get(v.get("label"), 0) + 1
     # 640 A1：签署后权威产物重算（IN79/OUT42，误解层全部 OUT）
-    assert cnt.get("IN") == 79
+    assert cnt.get("IN") == 89
     assert cnt.get("OUT") == 42
     assert cnt.get("UNDEC", 0) == 0
 
@@ -42,7 +42,7 @@ def test_labels_node_composition():
     kinds: dict[str, int] = {}
     for v in lbl["nodes"].values():
         kinds[v.get("kind")] = kinds.get(v.get("kind"), 0) + 1
-    assert sum(kinds.values()) == 121
+    assert sum(kinds.values()) == 131
 
 
 def test_30_decisions_are_same_direction_as_annotations():

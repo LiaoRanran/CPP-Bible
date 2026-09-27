@@ -26,10 +26,10 @@ def test_ledger_exists_and_has_all_sections():
 def test_ledger_lists_79_props_and_27_cards():
     t = _text()
     prop_rows = [ln for ln in t.splitlines() if ln.startswith("| ") and "/prop-" in ln]
-    assert len(prop_rows) == 79, f"命题行应 79 条，实得 {len(prop_rows)}"
+    assert len(prop_rows) == 89, f"命题行应 89 条，实得 {len(prop_rows)}"
     card_rows = [ln for ln in t.splitlines()
                  if ln.startswith("| `ATOM-") and "/prop-" not in ln]
-    assert len(card_rows) == 27, f"卡行应 27 条，实得 {len(card_rows)}"
+    assert len(card_rows) == 37, f"卡行应 37 条，实得 {len(card_rows)}"
 
 
 def test_integrity_checks_are_clean():
@@ -38,8 +38,8 @@ def test_integrity_checks_are_clean():
     assert d["bad_refs"] == []
     assert d["no_prop_cards"] == []
     assert d["bad_closure"] == []
-    assert len(d["rows"]) == 79
-    assert d["stats"]["propositions"] == 79 and d["stats"]["cards"] == 27
+    assert len(d["rows"]) == 89
+    assert d["stats"]["propositions"] == 89 and d["stats"]["cards"] == 37
 
 
 def test_ledger_matches_fresh_render_byte_for_byte():

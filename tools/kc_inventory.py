@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """612 线 D · D1：KC（知识组件）台账工具（**只读**）。
 
-从 27 张原子卡（ATOM-*.md）抽取 KC 台账，作为「学习者镜像」原型的知识图谱底座：
+从 37 张原子卡（ATOM-*.md）抽取 KC 台账，作为「学习者镜像」原型的知识图谱底座：
   * 卡 ID / 标题 / 路径 / 领域
   * 命题列表（observation / inference，含 id 与 statement）
   * 关联 MIS（反向索引 `data/flashcards/markdown/misconception_*.md` 的「关联原子：ATOM-XXX」）
@@ -37,7 +37,7 @@ FLASH_DIR = ROOT / "data" / "flashcards" / "markdown"
 JSON_OUT = ROOT / "data" / "kc_inventory_612.json"
 REPORT_OUT = ROOT / "data" / "kc_inventory_612.md"
 
-KNOWN_KC_COUNT = 27  # 611/612 锁定的原子卡数
+KNOWN_KC_COUNT = 37  # 611/612 锁定的原子卡数
 
 
 def _gate():
@@ -158,7 +158,7 @@ def render(d: dict) -> str:
     L.append("")
     L.append(f"> 生成时间：{d['generated_at']} ｜ 命令：`python tools/kc_inventory.py`")
     L.append(">")
-    L.append("> 27 张原子卡 = 27 个 KC。难度为**自动估算建议**（套用任务书分档），"
+    L.append("> 37 张原子卡 = 37 个 KC。难度为**自动估算建议**（套用任务书分档），"
              "前置依赖来自卡面 `relations.prerequisite`（自动推导，待人工复核）。")
     L.append("")
     L.append("## 1 · 总览")

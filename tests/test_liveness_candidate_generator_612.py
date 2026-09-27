@@ -12,8 +12,8 @@ import liveness_candidate_generator as b1  # noqa: E402
 
 def test_generation_covers_all_missing_props():
     d = b1.build()
-    assert d["total_props"] == 50
-    assert len(d["per_prop"]) == 50
+    assert d["total_props"] == 60
+    assert len(d["per_prop"]) == 60
 
 
 def test_classes_all_present():

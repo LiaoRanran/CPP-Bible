@@ -18,7 +18,7 @@ def test_two_paths_agree():
 
 def test_totals_self_consistent():
     c = A.current()
-    assert c["IN"] + c["OUT"] + c["UNDEC"] == c["nodes"] == 121
+    assert c["IN"] + c["OUT"] + c["UNDEC"] == c["nodes"] == 131
     assert c["edges"] > 0 and c["defeating_edges"] > 0
 
 
@@ -30,7 +30,7 @@ def test_triple_matches_current():
 def test_artifact_summary_reads_file():
     a = A.artifact_summary()
     assert a["source"].endswith("grounded_labels_w2.json")
-    assert a["nodes"] == 121
+    assert a["nodes"] == 131
 
 
 def test_recompute_is_independent_path():

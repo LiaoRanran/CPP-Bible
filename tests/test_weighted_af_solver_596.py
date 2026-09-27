@@ -40,22 +40,22 @@ def test_real_data_reproduces_594_grounded_result():
     """真实 79 命题 + 42 MIS ⇒ IN=79 / OUT=42 / UNDEC=0（594 实证，独立复算）。"""
     doc = w2.solve(w2.load_edges())
     s = doc["summary"]
-    assert (s["IN"], s["OUT"], s["UNDEC"]) == (79, 42, 0), s
-    assert s["nodes"] == 121 and s["IN_propositions"] == 79 and s["IN_misconceptions"] == 0
+    assert (s["IN"], s["OUT"], s["UNDEC"]) == (89, 42, 0), s
+    assert s["nodes"] == 131 and s["IN_propositions"] == 89 and s["IN_misconceptions"] == 0
     assert doc["rounds"] < w2.MAX_ROUNDS, "不动点必须真收敛（不是撞上限）"
     props = [v for v in doc["nodes"].values() if v["type"] == "proposition"]
     mis = [v for v in doc["nodes"].values() if v["type"] == "misconception"]
-    assert len(props) == 79 and len(mis) == 42
+    assert len(props) == 89 and len(mis) == 42
     assert all(v["label"] == "IN" for v in props) and all(v["label"] == "OUT" for v in mis)
     # 逐字段完整（任务书 596 任务2 的输出契约）
     for v in doc["nodes"].values():
         assert set(v) >= {"id", "type", "label", "defenders", "attackers", "defeated_attackers"}
         assert v["label"] in ("IN", "OUT", "UNDEC")
-    # 实测：**4 条命题没有任何误解攻击**（ATOM-CONC-FENCE-001 / ATOM-CONC-LOCK-001 的命题）——
+    # 实测：**14 条命题没有任何误解攻击**（原 4 条来自 ATOM-CONC-FENCE/LOCK，另 10 条来自 648 新增的孤立卡命题）——
     # 这两张卡的关联记在**原子卡侧**的 `misconceptions` 字段（反向种子），本批按任务书只读
     # MIS 侧 `related_atoms` ⇒ 不产边（偏差 D5）。它们仍应 IN（无攻击者 ⇒ 立即 IN）。
     no_atk = sorted(v["id"] for v in props if not v["attackers"])
-    assert len(no_atk) == 4, f"无攻击者命题数漂移：{no_atk}"
+    assert len(no_atk) == 14, f"无攻击者命题数漂移：{no_atk}"
     assert all(v["label"] == "IN" for v in props if not v["attackers"])
 
 
@@ -167,7 +167,7 @@ def test_cli_solve_stats_check_exit_codes(tmp_path):
                     "--out", str(out), "--json"]) == 0
     assert w2.main(["--check", "--no-human-reviewed", "--out", str(out)]) == 0
     doc = json.loads(out.read_text(encoding="utf-8"))
-    assert doc["summary"]["IN"] == 79 and doc["summary"]["OUT"] == 42
+    assert doc["summary"]["IN"] == 89 and doc["summary"]["OUT"] == 42
     assert doc["defeating_edges"] == 194
 
     # 权威 W2 产物（人审全量后的入库件）——数字取单一权威源（640b：不再写死）

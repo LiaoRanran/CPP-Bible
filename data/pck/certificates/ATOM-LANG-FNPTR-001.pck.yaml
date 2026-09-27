@@ -1,0 +1,25 @@
+schema_version: 619-pck-v1
+claim:
+  id: ATOM-LANG-FNPTR-001
+  statement: C 允许把函数指针强转成别的函数指针类型，但**经不兼容类型调用即未定义行为**（C11 6.5.2.2p9）；本批不去触发它（触发即 UB），而是以两条真实证据固定这一点：①
+    标准原文的措辞；② 直接强转时 gcc 13.1.0 与 clang 22.1.8 **各给出 1 条诊断**（实测），而转换本身仍能编译通过、地址也非空
+    ⇒ 「能编过」不等于「调用安全」。
+  domain: lang
+  type: observation
+evidence:
+- type: replay
+  ref: evidence/lang/EV-LANG-004.md
+  hash: sha256:7f5a857b0ec3d21c454ffdd2f9d076f5a3d5b9ca8ab68d3900c017f13bdb0277
+negative_tests: []
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: 9fc692bf07eaf89c32ebaa7fe9333c6f402bd663
+  first_authorized_at: unknown

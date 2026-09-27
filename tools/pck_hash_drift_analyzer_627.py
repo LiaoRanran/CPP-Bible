@@ -150,15 +150,15 @@ def selftest() -> int:
         ok = ok and cond
 
     r = analyze()
-    chk("83 张 PCK 全部扫描", r["total_certs"] == 83, f"({r['total_certs']})")
-    chk("content_drift 证书 = 56", r["n_content_drift_certs"] == 56,
+    chk("103 张 PCK 全部扫描", r["total_certs"] == 103, f"({r['total_certs']})")
+    chk("content_drift 证书 = 0", r["n_content_drift_certs"] == 0,
         f"({r['n_content_drift_certs']})")
     # 注：最坏档分布之和为 83（56 content_drift + 26 hash_absent + 1 ref_missing）
-    chk("hash_absent 证书 = 26", r["n_hash_absent_certs"] == 26,
+    chk("hash_absent 证书 = 0", r["n_hash_absent_certs"] == 0,
         f"({r['n_hash_absent_certs']})")
-    chk("最坏档之和 = 83", sum(r["by_worst_category"].values()) == 83,
+    chk("最坏档之和 = 103", sum(r["by_worst_category"].values()) == 103,
         f"({r['by_worst_category']})")
-    chk("无健康证书（全部有缺口）", r["by_worst_category"].get("ok", 0) == 0)
+    chk("健康证书 = 102（648 重跑 migrate→renew 后）", r["by_worst_category"].get("ok", 0) == 102)
     chk("根因子分析产出", isinstance(r["root_cause_breakdown"], dict))
     # 只读：不修改任何 PCK
     import hashlib

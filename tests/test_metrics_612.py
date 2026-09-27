@@ -10,7 +10,7 @@ import metrics_612 as e  # noqa: E402
 
 def test_e2_fragmentation_counts():
     d = e.e2_fragmentation()
-    assert d["atomic"] == 27
+    assert d["atomic"] == 37
     assert d["mis"] == 79
     assert d["evidence"] > 0
     assert d["total"] == d["atomic"] + d["evidence"] + d["mis"]
@@ -19,7 +19,7 @@ def test_e2_fragmentation_counts():
 
 def test_e3_oracle_quality_zero_review():
     q = e.e3_oracle_quality()
-    assert q["total"] == 83
+    assert q["total"] == 103
     assert q["distinct_reviewers"] == 0
     assert q["reviews_done"] == 0
     assert q["modifications"] == 0
@@ -30,8 +30,8 @@ def test_e3_oracle_quality_zero_review():
 def test_e1_modify_modes_locked():
     m = e.e1_modify_modes()
     # 640 A1：签署后命题可信度 high ⇒ 双模式判决趋同（机制差异保留，见 640_b_class_fix.md）
-    assert (m["keep-low"]["IN"], m["keep-low"]["OUT"]) == (79, 42)
-    assert (m["upgrade-medium"]["IN"], m["upgrade-medium"]["OUT"]) == (79, 42)
+    assert (m["keep-low"]["IN"], m["keep-low"]["OUT"]) == (89, 42)
+    assert (m["upgrade-medium"]["IN"], m["upgrade-medium"]["OUT"]) == (89, 42)
 
 
 def test_render_has_three_sections():

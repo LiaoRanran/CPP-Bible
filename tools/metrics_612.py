@@ -2,7 +2,7 @@
 """612 线 E · metrics_612（E1-E3 度量，拆分自 metrics_610/611 口径，**只读**）。
 
 E1 · modify 双模式一致性：复用 `weighted_af_solver` 在两种 modify 口径下重算 W2 判决，
-    锁定量级（keep-low: IN114/OUT7；upgrade-medium: IN121/OUT0），证明「同一套 modify 比例口径，
+    锁定量级（keep-low: IN114/OUT7；upgrade-medium: IN131/OUT0），证明「同一套 modify 比例口径，
     610/611/612 一致，无新行为」。
 E2 · artifact 碎片化统计：原子卡(ATOM) vs MIS 卡 vs 证据卡(EV) 的数量与碎片化指数，
     并给出消除建议（原子卡已是最小单元，不拆；MIS 卡按主题聚类可能过碎）。
@@ -31,11 +31,11 @@ REPORT_612 = ROOT / "data" / "oracle_verification_report_612.md"
 
 # 已知基线（640 A1 更新：632/634 命题级人签 ⇒ 命题可信度 high ⇒ 权威产物重算；
 # 34 条 modify（low→medium）在两档下均不足以翻转判决 ⇒ 双模式趋同）
-KNOWN_KEEP_LOW = (79, 42)        # (IN, OUT) under keep-low
-KNOWN_UPGRADE_MEDIUM = (79, 42)  # (IN, OUT) under upgrade-medium
-KNOWN_ATOMIC = 27
+KNOWN_KEEP_LOW = (89, 42)        # (IN, OUT) under keep-low
+KNOWN_UPGRADE_MEDIUM = (89, 42)  # (IN, OUT) under upgrade-medium
+KNOWN_ATOMIC = 37
 KNOWN_MIS = 79
-KNOWN_ORACLE = 83
+KNOWN_ORACLE = 103
 
 
 # ── E1：modify 双模式 ─────────────────────────────────────────────────────

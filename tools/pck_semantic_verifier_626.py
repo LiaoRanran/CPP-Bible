@@ -221,7 +221,7 @@ def selftest() -> int:
             {"uncertainty": {"cs_upper_bound": GLOBAL_CS_UPPER}})))
     # 全量
     allr = v.verify_all()
-    chk("全量 PCK 83 张", allr["count"] == 83, f"({allr['count']})")
+    chk("全量 PCK 103 张", allr["count"] == 103, f"({allr['count']})")
     chk("四层均有统计", len(allr["by_layer_pass"]) == 4, str(allr["by_layer_pass"]))
     print(f"E1 check: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1

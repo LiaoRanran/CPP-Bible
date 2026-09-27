@@ -11,10 +11,10 @@ import argument_fragmentation_613 as d2  # noqa: E402
 
 def test_projection_numbers():
     p = d2.projection()
-    assert p["components_before"] == 11 and p["components_after"] == 7
+    assert p["components_before"] == 21 and p["components_after"] == 17
     assert p["candidates_added"] == 98
-    assert 0.66 < p["coverage_before"] < 0.67
-    assert 0.80 < p["coverage_after"] < 0.81
+    assert 0.61 < p["coverage_before"] < 0.62
+    assert 0.74 < p["coverage_after"] < 0.75
 
 
 def test_effective_is_zero_because_no_human_review():

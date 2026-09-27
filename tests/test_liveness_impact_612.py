@@ -18,12 +18,12 @@ def test_whatif_generates():
 def test_zero_completion_keeps_baseline():
     r = b3.analyze(0)
     assert r["addressed"] == 0
-    assert r["warn_after"] == r["warn_before"] == 50
+    assert r["warn_after"] == r["warn_before"] == 60
 
 
 def test_full_completion_clears_all():
     r = b3.analyze(None)
-    assert r["addressed"] == 50
+    assert r["addressed"] == 60
     assert r["warn_after"] == 0
 
 

@@ -6,8 +6,8 @@
 
 ## §1 grounded 标注总览
 
-- 节点 **121** = 命题 79 + 误解 42
-- **IN 79 / OUT 42 / UNDEC 0**（in_propositions 79 · in_misconceptions 0）
+- 节点 **131** = 命题 89 + 误解 42
+- **IN 89 / OUT 42 / UNDEC 0**（in_propositions 89 · in_misconceptions 0）
 - 击败边 194/388 · 不动点 **3 轮**收敛（上限 100）
 - 模型 `W2_credibility_weighted_grounded` · 可信度档 {'high': 3, 'low': 1, 'medium': 2}
 
@@ -16,7 +16,7 @@
 | claim_type | 节点数 | IN | OUT | UNDEC |
 |---|---|---|---|---|
 | inference | 29 | 29 | 0 | 0 |
-| observation | 50 | 50 | 0 | 0 |
+| observation | 60 | 60 | 0 | 0 |
 
 ## §3 与 replay verdict 对照
 
@@ -25,6 +25,7 @@
 | 引用卡 replay 归类 | 节点数 | IN | OUT | UNDEC |
 |---|---|---|---|---|
 | confirm | 79 | 79 | 0 | 0 |
+| 无引用卡 | 10 | 10 | 0 | 0 |
 
 MIS 侧对照（误解的 `refutations` 条数 vs 其 grounded 判决——误解全部 OUT，与其被多少条命题反驳无关，判决由可信度决定）：
 
@@ -74,10 +75,10 @@ MIS 侧对照（误解的 `refutations` 条数 vs 其 grounded 判决——误�
 
 | 指标 | 594 实证 | 本批实测 | 一致？ |
 |---|---|---|---|
-| IN | 79 | 79 | ✓ |
+| IN | 89 | 89 | ✓ |
 | OUT | 42 | 42 | ✓ |
 | UNDEC | 0 | 0 | ✓ |
-| 节点数 | 121（79 命题 + 42 误解） | 121 | ✓ |
+| 节点数 | 131（89 命题 + 42 误解） | 131 | ✓ |
 
-另注：**4 条命题没有任何误解攻击**（其所属卡的 MIS 关联记在**原子卡侧** `misconceptions` 字段，本批按任务书只读 MIS 侧 `related_atoms` ⇒ 不产边，偏差 D5）——它们无攻击者 ⇒ 立即 IN，不影响 IN/OUT 总数。
+另注：**14 条命题没有任何误解攻击**（其所属卡的 MIS 关联记在**原子卡侧** `misconceptions` 字段，本批按任务书只读 MIS 侧 `related_atoms` ⇒ 不产边，偏差 D5）——它们无攻击者 ⇒ 立即 IN，不影响 IN/OUT 总数。
 

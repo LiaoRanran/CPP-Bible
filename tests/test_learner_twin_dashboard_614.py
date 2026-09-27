@@ -19,7 +19,7 @@ def _seed(tmp_path: Path) -> Path:
 def test_data_reading(tmp_path: Path) -> None:
     store = _seed(tmp_path)
     d = b2.build(store)
-    assert len(d["kcs"]) == 27
+    assert len(d["kcs"]) == 37
     # 至少被学习的 10 个 KC 掌握度应 > 初始 0.1
     learned = [k for k in d["kcs"] if d["mastery"].get(k["id"], 0.1) > 0.1]
     assert len(learned) >= 5
@@ -32,7 +32,7 @@ def test_html_generation(tmp_path: Path) -> None:
     d = b2.build(store)
     html = b2.render_html(d)
     assert "学习者镜像仪表盘" in html
-    assert html.count('class="cell"') == 27
+    assert html.count('class="cell"') == 37
     assert "掌握度热力图" in html and "推荐学习路径" in html and "统计" in html
 
 
@@ -44,6 +44,6 @@ def test_key_elements_present(tmp_path: Path) -> None:
     assert "<polyline" in html
     # 推荐路径随掌握度变化：被学习的 10 个 KC 不应出现在推荐列表
     recommended = set(d["recommended"])
-    learned_ids = set(b1._kc_ids()[:10])
+    learned_ids = {k for k, v in d["mastery"].items() if v >= 0.5}  # 真·已掌握（阈值 0.5）
     assert learned_ids.isdisjoint(recommended)
-    assert len(recommended) < 27  # 推荐集合随掌握度变化（非全量）
+    assert len(recommended) < 37  # 推荐集合随掌握度变化（非全量）

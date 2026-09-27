@@ -18,8 +18,8 @@ CERT_DIR = M.DEFAULT_OUT_DIR
 
 def test_全量83张全部通过验证():
     prev = M.migrate_preview(CARDS)
-    assert prev["total"] == 83
-    assert prev["ok"] == 83
+    assert prev["total"] == 103
+    assert prev["ok"] == 103
     assert prev["fail"] == 0
 
 
@@ -30,7 +30,7 @@ def test_迁移可复现_两次输出内容一致():
         f1 = {f: open(os.path.join(d1, f), encoding="utf-8").read() for f in os.listdir(d1)}
         f2 = {f: open(os.path.join(d2, f), encoding="utf-8").read() for f in os.listdir(d2)}
         assert f1 == f2
-        assert len(f1) == 83
+        assert len(f1) == 103
 
 
 def test_迁移产物落在非受控目录():
@@ -43,7 +43,7 @@ def test_已生成证书文件存在且可通过验证():
     if not os.path.isdir(CERT_DIR):
         return
     files = [f for f in os.listdir(CERT_DIR) if f.endswith(".pck.yaml")]
-    assert len(files) == 83
+    assert len(files) == 103
     bad = []
     for f in files:
         cert = B2.load_cert(os.path.join(CERT_DIR, f))
@@ -54,7 +54,7 @@ def test_已生成证书文件存在且可通过验证():
 
 def test_证据卡human_authority全为pending_如实反映():
     ev_cards = [c for c in CARDS if c.startswith("evidence/")]
-    assert len(ev_cards) == 56
+    assert len(ev_cards) == 66
     for c in ev_cards:
         assert M.build_cert(c)["human_authority"]["status"] == "pending"
 

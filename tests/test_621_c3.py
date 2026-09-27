@@ -98,8 +98,8 @@ def test_real_83_certs_sync():
     if not os.path.isdir(S.DEFAULT_CERT_DIR) or not os.path.exists(S.DEFAULT_CLASSIFICATION):
         return
     res = S.sync(S.DEFAULT_CERT_DIR, S.DEFAULT_CLASSIFICATION, write=False)
-    assert res["total"] == 83
-    assert res["synced"] + res["unmatched"] == 83
+    assert res["total"] == 103
+    assert res["synced"] + res["unmatched"] == 103
     assert res["ha_before"] == res["ha_after"]  # 不代签
 
 

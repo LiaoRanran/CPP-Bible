@@ -60,7 +60,8 @@ DEFAULT_OUT = ROOT / "data" / "grounded_labels_w2.json"
 PROP_SEP = aeg.PROP_SEP
 MAX_ROUNDS = 100                      # 不动点保护（任务书 596 任务2 硬要求）
 #: 594 实证对账基线（`--check` 用；若实跑不符 ⇒ exit 2，不许改测试凑数）。
-W2_EXPECTED = {"IN": 79, "OUT": 42, "UNDEC": 0}
+#: 648 重基线：加 10 张卡 ⇒ 命题 79→89（全部孤立 ⇒ IN），误解仍 42 ⇒ IN 89 / OUT 42
+W2_EXPECTED = {"IN": 89, "OUT": 42, "UNDEC": 0}
 WEIGHT = aeg.CONFIDENCE_WEIGHT
 
 

@@ -15,9 +15,9 @@
 | 1 | 人审进度环形图 | `review_item_ledger.jsonl` | 唯一 93 · 待审 93 · 独立盲审 0 |
 | 2 | 歧义度热力图 | `review_item_ledger.jsonl` | 高 30 · 中 63 · 低 0 |
 | 3 | review_method 饼图 | `decision_event_v2_ledger.jsonl` | {"ITEM_OPEN": 30, "MIRROR_DERIVED": 194, "BATCH_AUTH": 228} |
-| 4 | W2 论证图 3D | `grounded_labels_w2.json` | 121 节点 · IN114/OUT7/UNDEC0 |
+| 4 | W2 论证图 3D | `grounded_labels_w2.json` | 131 节点 · IN89/OUT42/UNDEC0 |
 | 5 | 独立人类确认强度 | DecisionEvent `blind_review_id` | 0 / 93 |
-| 6 | 他验三件套状态 | `data/vsa/` + `transparency_log.jsonl` | 凭证 10 张 · 日志 15 条 |
+| 6 | 他验三件套状态 | `data/vsa/` + `transparency_log.jsonl` | 凭证 47 张 · 日志 58 条 |
 
 ## 与 v1（625 D2）对比
 

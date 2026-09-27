@@ -42,16 +42,16 @@ def test_full_83_stats():
     if not os.path.isdir(d):
         return
     certs = S.load_certs(d)
-    assert len(certs) == 83
+    assert len(certs) == 103
     st = S.stats(certs)
-    assert st["total"] == 83
-    assert st["validation_ok"] == 83
+    assert st["total"] == 103
+    assert st["validation_ok"] == 103
     # C3（Authority 同步）后 approved 由 23 → 27、pending 由 60 → 56：
     # 4 张原子卡在历史人审通道中有真实决策，被依日志补登为 approved。
     assert st["by_status"]["authorized"] == 27
-    assert st["by_status"]["unverified"] == 56
-    assert st["by_status"]["authorized"] + st["by_status"]["unverified"] == 83
-    assert st["by_verifier_count"][1] == 83
+    assert st["by_status"]["unverified"] == 76
+    assert st["by_status"]["authorized"] + st["by_status"]["unverified"] == 103
+    assert st["by_verifier_count"][1] == 103
 
 
 def test_render_all_writes_one_file_per_cert():

@@ -11,7 +11,7 @@ import oracle_priority_614 as e1  # noqa: E402
 
 def test_card_count_83() -> None:
     rows = e1.score_cards()
-    assert len(rows) == 83
+    assert len(rows) == 103
 
 
 def test_sorted_desc() -> None:

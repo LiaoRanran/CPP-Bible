@@ -27,8 +27,8 @@ CAND_IN = ROOT / "data" / "bridge_edge_candidates_611.jsonl"
 REPORT_OUT = ROOT / "data" / "fragmentation_repair_analysis_611.md"
 
 # 611 C3 锁定：把全部 98 候选加入后，连通性的改善幅度（结构冻结前不变）
-KNOWN = {"components_after": 7, "largest_after": 97, "coverage_after": 0.8017,
-         "components_before": 11, "largest_before": 80, "isolated_before": 4}
+KNOWN = {"components_after": 17, "largest_after": 97, "coverage_after": 0.7405,
+         "components_before": 21, "largest_before": 80, "isolated_before": 14}
 
 
 def load_candidates(path: Path | None = None) -> list[dict]:

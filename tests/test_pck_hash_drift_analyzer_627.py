@@ -11,8 +11,8 @@ import pck_hash_drift_analyzer_627 as A
 
 def test_scan_count():
     r = A.analyze()
-    assert r["total_certs"] == 83
-    assert sum(r["by_worst_category"].values()) == 83
+    assert r["total_certs"] == 103
+    assert sum(r["by_worst_category"].values()) == 103
 
 
 def test_content_drift_resolved_by_628():
@@ -26,9 +26,9 @@ def test_gaps_resolved_except_ref_missing():
     """630 D2 更新：627 当时实测「无健康证书」（ok=0）；628 A2 修复后 ok=82、仅剩
     `ref_missing` 1 张（该张按 A2 约定不自动修）。"""
     r = A.analyze()
-    assert r["by_worst_category"].get("ok", 0) == 82
+    assert r["by_worst_category"].get("ok", 0) == 102
     assert r["by_worst_category"].get("ref_missing", 0) == 1
-    assert sum(r["by_worst_category"].values()) == 83
+    assert sum(r["by_worst_category"].values()) == 103
 
 
 def test_root_cause_classifies():

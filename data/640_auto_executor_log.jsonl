@@ -82,3 +82,99 @@
 {"ts": "2026-09-25T23:10:51", "mode": "apply", "status": "applied", "action": {"category": "trailing_ws", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_3_drd6rv\\c.md", "reject": null}, "detail": "去除 3 行中的行尾空白"}
 {"ts": "2026-09-25T23:10:51", "status": "rejected", "action": {"category": "gate_rule_edit", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_3_drd6rv\\a.md", "reject": "类别 'gate_rule_edit' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
 {"ts": "2026-09-25T23:10:51", "status": "rejected", "action": {"category": "control_chars", "path": "tools/gate_engine.py", "reject": "路径 tools/gate_engine.py 受保护（前缀 tools/gate_engine.py）"}}
+{"ts": "2026-09-26T12:18:28", "status": "rejected", "action": {"category": "gate_rule_edit", "path": "data/x.md", "reject": "类别 'gate_rule_edit' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-26T12:18:28", "status": "rejected", "action": {"category": "ledger_edit", "path": "data/authority/y.jsonl", "reject": "类别 'ledger_edit' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-26T12:18:28", "status": "rejected", "action": {"category": "human_signoff", "path": "atoms/a.md", "reject": "类别 'human_signoff' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-26T12:18:28", "status": "rejected", "action": {"category": "trailing_ws", "path": "tools/gate_engine.py", "reject": "路径 tools/gate_engine.py 受保护（前缀 tools/gate_engine.py）"}}
+{"ts": "2026-09-26T12:18:28", "status": "rejected", "action": {"category": "trailing_ws", "path": "tools/weighted_af_solver.py", "reject": "路径 tools/weighted_af_solver.py 受保护（前缀 tools/weighted_af_solver.py）"}}
+{"ts": "2026-09-26T12:18:28", "status": "rejected", "action": {"category": "trailing_ws", "path": "data/authority/decision_event_v2_ledger.jsonl", "reject": "路径 data/authority/decision_event_v2_ledger.jsonl 受保护（前缀 data/authority/）"}}
+{"ts": "2026-09-26T12:18:28", "status": "rejected", "action": {"category": "trailing_ws", "path": "data/transparency_log.jsonl", "reject": "路径 data/transparency_log.jsonl 受保护（前缀 data/transparency_log.jsonl）"}}
+{"ts": "2026-09-26T12:18:28", "status": "rejected", "action": {"category": "trailing_ws", "path": "atoms/mem/ATOM-MEM-LEAK-001.md", "reject": "路径 atoms/mem/ATOM-MEM-LEAK-001.md 受保护（前缀 atoms/）"}}
+{"ts": "2026-09-26T12:18:28", "status": "rejected", "action": {"category": "trailing_ws", "path": "evidence/conc/EV-CONC-001.md", "reject": "路径 evidence/conc/EV-CONC-001.md 受保护（前缀 evidence/）"}}
+{"ts": "2026-09-26T12:18:28", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_0.md", "reject": null}}
+{"ts": "2026-09-26T12:18:28", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_1.md", "reject": null}}
+{"ts": "2026-09-26T12:18:28", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_2.md", "reject": null}}
+{"ts": "2026-09-26T12:18:28", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_3.md", "reject": null}}
+{"ts": "2026-09-26T12:18:28", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_4.md", "reject": null}}
+{"ts": "2026-09-26T12:18:28", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_5.md", "reject": null}}
+{"ts": "2026-09-26T12:18:28", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_6.md", "reject": null}}
+{"ts": "2026-09-26T12:18:28", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_7.md", "reject": null}}
+{"ts": "2026-09-26T12:18:28", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_8.md", "reject": null}}
+{"ts": "2026-09-26T12:18:28", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_9.md", "reject": null}}
+{"ts": "2026-09-26T12:18:28", "mode": "apply", "status": "applied", "action": {"category": "control_chars", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_zi771c7r\\a.md", "reject": null}, "detail": "清除控制字符 2 字节"}
+{"ts": "2026-09-26T12:18:28", "mode": "apply", "status": "applied", "action": {"category": "final_newline", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_zi771c7r\\b.md", "reject": null}, "detail": "补末尾换行"}
+{"ts": "2026-09-26T12:18:28", "mode": "apply", "status": "applied", "action": {"category": "trailing_ws", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_zi771c7r\\c.md", "reject": null}, "detail": "去除 3 行中的行尾空白"}
+{"ts": "2026-09-26T12:18:28", "status": "rejected", "action": {"category": "gate_rule_edit", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_zi771c7r\\a.md", "reject": "类别 'gate_rule_edit' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-26T12:18:28", "status": "rejected", "action": {"category": "control_chars", "path": "tools/gate_engine.py", "reject": "路径 tools/gate_engine.py 受保护（前缀 tools/gate_engine.py）"}}
+{"ts": "2026-09-26T16:27:41", "status": "rejected", "action": {"category": "gate_rule_edit", "path": "data/x.md", "reject": "类别 'gate_rule_edit' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-26T16:27:41", "status": "rejected", "action": {"category": "ledger_edit", "path": "data/authority/y.jsonl", "reject": "类别 'ledger_edit' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-26T16:27:41", "status": "rejected", "action": {"category": "human_signoff", "path": "atoms/a.md", "reject": "类别 'human_signoff' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-26T16:27:41", "status": "rejected", "action": {"category": "trailing_ws", "path": "tools/gate_engine.py", "reject": "路径 tools/gate_engine.py 受保护（前缀 tools/gate_engine.py）"}}
+{"ts": "2026-09-26T16:27:41", "status": "rejected", "action": {"category": "trailing_ws", "path": "tools/weighted_af_solver.py", "reject": "路径 tools/weighted_af_solver.py 受保护（前缀 tools/weighted_af_solver.py）"}}
+{"ts": "2026-09-26T16:27:41", "status": "rejected", "action": {"category": "trailing_ws", "path": "data/authority/decision_event_v2_ledger.jsonl", "reject": "路径 data/authority/decision_event_v2_ledger.jsonl 受保护（前缀 data/authority/）"}}
+{"ts": "2026-09-26T16:27:41", "status": "rejected", "action": {"category": "trailing_ws", "path": "data/transparency_log.jsonl", "reject": "路径 data/transparency_log.jsonl 受保护（前缀 data/transparency_log.jsonl）"}}
+{"ts": "2026-09-26T16:27:41", "status": "rejected", "action": {"category": "trailing_ws", "path": "atoms/mem/ATOM-MEM-LEAK-001.md", "reject": "路径 atoms/mem/ATOM-MEM-LEAK-001.md 受保护（前缀 atoms/）"}}
+{"ts": "2026-09-26T16:27:41", "status": "rejected", "action": {"category": "trailing_ws", "path": "evidence/conc/EV-CONC-001.md", "reject": "路径 evidence/conc/EV-CONC-001.md 受保护（前缀 evidence/）"}}
+{"ts": "2026-09-26T16:27:41", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_0.md", "reject": null}}
+{"ts": "2026-09-26T16:27:41", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_1.md", "reject": null}}
+{"ts": "2026-09-26T16:27:41", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_2.md", "reject": null}}
+{"ts": "2026-09-26T16:27:41", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_3.md", "reject": null}}
+{"ts": "2026-09-26T16:27:41", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_4.md", "reject": null}}
+{"ts": "2026-09-26T16:27:41", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_5.md", "reject": null}}
+{"ts": "2026-09-26T16:27:41", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_6.md", "reject": null}}
+{"ts": "2026-09-26T16:27:41", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_7.md", "reject": null}}
+{"ts": "2026-09-26T16:27:41", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_8.md", "reject": null}}
+{"ts": "2026-09-26T16:27:41", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_9.md", "reject": null}}
+{"ts": "2026-09-26T16:27:41", "mode": "apply", "status": "applied", "action": {"category": "control_chars", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_lkmsi8mh\\a.md", "reject": null}, "detail": "清除控制字符 2 字节"}
+{"ts": "2026-09-26T16:27:41", "mode": "apply", "status": "applied", "action": {"category": "final_newline", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_lkmsi8mh\\b.md", "reject": null}, "detail": "补末尾换行"}
+{"ts": "2026-09-26T16:27:41", "mode": "apply", "status": "applied", "action": {"category": "trailing_ws", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_lkmsi8mh\\c.md", "reject": null}, "detail": "去除 3 行中的行尾空白"}
+{"ts": "2026-09-26T16:27:41", "status": "rejected", "action": {"category": "gate_rule_edit", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_lkmsi8mh\\a.md", "reject": "类别 'gate_rule_edit' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-26T16:27:41", "status": "rejected", "action": {"category": "control_chars", "path": "tools/gate_engine.py", "reject": "路径 tools/gate_engine.py 受保护（前缀 tools/gate_engine.py）"}}
+{"ts": "2026-09-27T13:50:21", "status": "rejected", "action": {"category": "gate_rule_edit", "path": "data/x.md", "reject": "类别 'gate_rule_edit' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-27T13:50:21", "status": "rejected", "action": {"category": "ledger_edit", "path": "data/authority/y.jsonl", "reject": "类别 'ledger_edit' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-27T13:50:21", "status": "rejected", "action": {"category": "human_signoff", "path": "atoms/a.md", "reject": "类别 'human_signoff' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-27T13:50:21", "status": "rejected", "action": {"category": "trailing_ws", "path": "tools/gate_engine.py", "reject": "路径 tools/gate_engine.py 受保护（前缀 tools/gate_engine.py）"}}
+{"ts": "2026-09-27T13:50:21", "status": "rejected", "action": {"category": "trailing_ws", "path": "tools/weighted_af_solver.py", "reject": "路径 tools/weighted_af_solver.py 受保护（前缀 tools/weighted_af_solver.py）"}}
+{"ts": "2026-09-27T13:50:21", "status": "rejected", "action": {"category": "trailing_ws", "path": "data/authority/decision_event_v2_ledger.jsonl", "reject": "路径 data/authority/decision_event_v2_ledger.jsonl 受保护（前缀 data/authority/）"}}
+{"ts": "2026-09-27T13:50:21", "status": "rejected", "action": {"category": "trailing_ws", "path": "data/transparency_log.jsonl", "reject": "路径 data/transparency_log.jsonl 受保护（前缀 data/transparency_log.jsonl）"}}
+{"ts": "2026-09-27T13:50:21", "status": "rejected", "action": {"category": "trailing_ws", "path": "atoms/mem/ATOM-MEM-LEAK-001.md", "reject": "路径 atoms/mem/ATOM-MEM-LEAK-001.md 受保护（前缀 atoms/）"}}
+{"ts": "2026-09-27T13:50:21", "status": "rejected", "action": {"category": "trailing_ws", "path": "evidence/conc/EV-CONC-001.md", "reject": "路径 evidence/conc/EV-CONC-001.md 受保护（前缀 evidence/）"}}
+{"ts": "2026-09-27T13:50:21", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_0.md", "reject": null}}
+{"ts": "2026-09-27T13:50:21", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_1.md", "reject": null}}
+{"ts": "2026-09-27T13:50:21", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_2.md", "reject": null}}
+{"ts": "2026-09-27T13:50:21", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_3.md", "reject": null}}
+{"ts": "2026-09-27T13:50:21", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_4.md", "reject": null}}
+{"ts": "2026-09-27T13:50:21", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_5.md", "reject": null}}
+{"ts": "2026-09-27T13:50:21", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_6.md", "reject": null}}
+{"ts": "2026-09-27T13:50:21", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_7.md", "reject": null}}
+{"ts": "2026-09-27T13:50:21", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_8.md", "reject": null}}
+{"ts": "2026-09-27T13:50:21", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_9.md", "reject": null}}
+{"ts": "2026-09-27T13:50:21", "mode": "apply", "status": "applied", "action": {"category": "control_chars", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_4ogwi_up\\a.md", "reject": null}, "detail": "清除控制字符 2 字节"}
+{"ts": "2026-09-27T13:50:21", "mode": "apply", "status": "applied", "action": {"category": "final_newline", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_4ogwi_up\\b.md", "reject": null}, "detail": "补末尾换行"}
+{"ts": "2026-09-27T13:50:21", "mode": "apply", "status": "applied", "action": {"category": "trailing_ws", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_4ogwi_up\\c.md", "reject": null}, "detail": "去除 3 行中的行尾空白"}
+{"ts": "2026-09-27T13:50:21", "status": "rejected", "action": {"category": "gate_rule_edit", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_4ogwi_up\\a.md", "reject": "类别 'gate_rule_edit' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-27T13:50:21", "status": "rejected", "action": {"category": "control_chars", "path": "tools/gate_engine.py", "reject": "路径 tools/gate_engine.py 受保护（前缀 tools/gate_engine.py）"}}
+{"ts": "2026-09-27T17:33:31", "status": "rejected", "action": {"category": "gate_rule_edit", "path": "data/x.md", "reject": "类别 'gate_rule_edit' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-27T17:33:31", "status": "rejected", "action": {"category": "ledger_edit", "path": "data/authority/y.jsonl", "reject": "类别 'ledger_edit' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-27T17:33:31", "status": "rejected", "action": {"category": "human_signoff", "path": "atoms/a.md", "reject": "类别 'human_signoff' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-27T17:33:31", "status": "rejected", "action": {"category": "trailing_ws", "path": "tools/gate_engine.py", "reject": "路径 tools/gate_engine.py 受保护（前缀 tools/gate_engine.py）"}}
+{"ts": "2026-09-27T17:33:31", "status": "rejected", "action": {"category": "trailing_ws", "path": "tools/weighted_af_solver.py", "reject": "路径 tools/weighted_af_solver.py 受保护（前缀 tools/weighted_af_solver.py）"}}
+{"ts": "2026-09-27T17:33:31", "status": "rejected", "action": {"category": "trailing_ws", "path": "data/authority/decision_event_v2_ledger.jsonl", "reject": "路径 data/authority/decision_event_v2_ledger.jsonl 受保护（前缀 data/authority/）"}}
+{"ts": "2026-09-27T17:33:31", "status": "rejected", "action": {"category": "trailing_ws", "path": "data/transparency_log.jsonl", "reject": "路径 data/transparency_log.jsonl 受保护（前缀 data/transparency_log.jsonl）"}}
+{"ts": "2026-09-27T17:33:31", "status": "rejected", "action": {"category": "trailing_ws", "path": "atoms/mem/ATOM-MEM-LEAK-001.md", "reject": "路径 atoms/mem/ATOM-MEM-LEAK-001.md 受保护（前缀 atoms/）"}}
+{"ts": "2026-09-27T17:33:31", "status": "rejected", "action": {"category": "trailing_ws", "path": "evidence/conc/EV-CONC-001.md", "reject": "路径 evidence/conc/EV-CONC-001.md 受保护（前缀 evidence/）"}}
+{"ts": "2026-09-27T17:33:31", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_0.md", "reject": null}}
+{"ts": "2026-09-27T17:33:31", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_1.md", "reject": null}}
+{"ts": "2026-09-27T17:33:31", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_2.md", "reject": null}}
+{"ts": "2026-09-27T17:33:31", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_3.md", "reject": null}}
+{"ts": "2026-09-27T17:33:31", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_4.md", "reject": null}}
+{"ts": "2026-09-27T17:33:31", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_5.md", "reject": null}}
+{"ts": "2026-09-27T17:33:31", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_6.md", "reject": null}}
+{"ts": "2026-09-27T17:33:31", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_7.md", "reject": null}}
+{"ts": "2026-09-27T17:33:31", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_8.md", "reject": null}}
+{"ts": "2026-09-27T17:33:31", "mode": "dry-run", "status": "would-apply", "action": {"category": "trailing_ws", "path": "data/fake_9.md", "reject": null}}
+{"ts": "2026-09-27T17:33:31", "mode": "apply", "status": "applied", "action": {"category": "control_chars", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_am1o9_wg\\a.md", "reject": null}, "detail": "清除控制字符 2 字节"}
+{"ts": "2026-09-27T17:33:31", "mode": "apply", "status": "applied", "action": {"category": "final_newline", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_am1o9_wg\\b.md", "reject": null}, "detail": "补末尾换行"}
+{"ts": "2026-09-27T17:33:31", "mode": "apply", "status": "applied", "action": {"category": "trailing_ws", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_am1o9_wg\\c.md", "reject": null}, "detail": "去除 3 行中的行尾空白"}
+{"ts": "2026-09-27T17:33:31", "status": "rejected", "action": {"category": "gate_rule_edit", "path": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\auto_exec_fixture_am1o9_wg\\a.md", "reject": "类别 'gate_rule_edit' 不在白名单 ('control_chars', 'final_newline', 'trailing_ws', 'ruff_fix', 'snapshot_update')"}}
+{"ts": "2026-09-27T17:33:31", "status": "rejected", "action": {"category": "control_chars", "path": "tools/gate_engine.py", "reject": "路径 tools/gate_engine.py 受保护（前缀 tools/gate_engine.py）"}}

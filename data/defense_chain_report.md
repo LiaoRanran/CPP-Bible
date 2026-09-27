@@ -2,10 +2,10 @@
 
 ## 1. 总览
 
-- 节点 **121**（命题 79 + 误解 42)
-- 判决 **IN 79 / OUT 42 / UNDEC 0**
+- 节点 **131**（命题 89 + 误解 42)
+- 判决 **IN 89 / OUT 42 / UNDEC 0**
 - 边 388 条 · 击败边 **194** · 3 轮收敛
-- 可信度分布 {'high': 79, 'medium': 35, 'low': 7}
+- 可信度分布 {'high': 79, 'medium': 45, 'low': 7}
 
 ## 2. OUT 节点（42 个）
 
@@ -52,12 +52,22 @@
 - `MIS-UB-014`（cred low）：被 2 个攻击者击败（ATOM-UB-GRAY-001::prop-1, ATOM-UB-GRAY-001::prop-2）· 辩护者 2 条
 - `MIS-UB-015`（cred medium）：被 2 个攻击者击败（ATOM-UB-GRAY-001::prop-1, ATOM-UB-GRAY-001::prop-2）· 辩护者 2 条
 
-## 3. 无辩护者的节点（46 个）
+## 3. 无辩护者的节点（56 个）
 
 - `ATOM-CONC-FENCE-001::prop-1`（IN）
 - `ATOM-CONC-FENCE-001::prop-2`（IN）
 - `ATOM-CONC-LOCK-001::prop-1`（IN）
 - `ATOM-CONC-LOCK-001::prop-2`（IN）
+- `ATOM-LANG-BITFIELD-001::prop-1`（IN）
+- `ATOM-LANG-DECAY-001::prop-1`（IN）
+- `ATOM-LANG-FNPTR-001::prop-1`（IN）
+- `ATOM-LANG-INTPROMO-001::prop-1`（IN）
+- `ATOM-LANG-MACRO-001::prop-1`（IN）
+- `ATOM-LANG-SETJMP-001::prop-1`（IN）
+- `ATOM-LANG-VOLATILE-001::prop-1`（IN）
+- `ATOM-MEM-MALLOC-001::prop-1`（IN）
+- `ATOM-MEM-STRBOUND-001::prop-1`（IN）
+- `ATOM-UB-SIGNEDOVF-001::prop-1`（IN）
 - `MIS-CONC-001`（OUT）
 - `MIS-CONC-003`（OUT）
 - `MIS-HIST-001`（OUT）
@@ -101,12 +111,22 @@
 - `MIS-UB-014`（OUT）
 - `MIS-UB-015`（OUT）
 
-## 4. 无攻击者的命题（4 个）
+## 4. 无攻击者的命题（14 个）
 
 - `ATOM-CONC-FENCE-001::prop-1`（cred high ⇒ 无攻击者即 IN）
 - `ATOM-CONC-FENCE-001::prop-2`（cred high ⇒ 无攻击者即 IN）
 - `ATOM-CONC-LOCK-001::prop-1`（cred high ⇒ 无攻击者即 IN）
 - `ATOM-CONC-LOCK-001::prop-2`（cred high ⇒ 无攻击者即 IN）
+- `ATOM-LANG-BITFIELD-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-LANG-DECAY-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-LANG-FNPTR-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-LANG-INTPROMO-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-LANG-MACRO-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-LANG-SETJMP-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-LANG-VOLATILE-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-MEM-MALLOC-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-MEM-STRBOUND-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-UB-SIGNEDOVF-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
 
 ## 5. 逐节点辩护链（IN 命题抽样 5 个）
 

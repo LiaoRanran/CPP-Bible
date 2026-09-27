@@ -1,13 +1,13 @@
 """625 D4 · PCK authorized 提升策略设计（**只设计，不代签**）
 
-基于 624 E1 实测（27 原子证全已授权 / 56 证据证无人审来源 ⇒ 27/83=32.5%，未达 >48%），
+基于 624 E1 实测（37 原子证全已授权 / 66 证据证无人审来源 ⇒ 37/103=35.9%，未达 >48%），
 **设计**把 authorized 从 32.5% 提升到 >48% 的策略，并产出「待人审」证据证清单。
 **绝不修改任何证书**（铁律：不代签）。
 
 策略（设计层，不执行）：
 - S1 证据证人审队列：56 张证据证 → 人审清单（复用 625 D2/D3 框架）。
 - S2 机器可确认候选：证据证若其底层原子已 authorized 且 claim 与原子一致，列为「建议 approve」待人确认。
-- S3 目标推算：需把至少 ceil(0.48*83 - 27) = 13 张证据证升 approved（或更优），才达 >48%。
+- S3 目标推算：需把至少 ceil(0.48*103 - 37) = 13 张证据证升 approved（或更优），才达 >48%。
 
 铁律：只读 certs/annotations；必有 `--check`；**不写任何 .pck.yaml**。
 """
@@ -89,7 +89,7 @@ def render(a: dict) -> str:
          f"> 当前：**{a['authorized']}/{a['total']} = {a['rate']:.1%}**（624 E1 实测 27.7%→32.5%）｜目标：**>48%**",
          "",
          "## 一、现状快照", "",
-         f"- 总证书：**{a['total']}**（27 原子证 + 56 证据证）",
+         f"- 总证书：**{a['total']}**（37 原子证 + 66 证据证）",
          f"- authorized（approved）：**{a['authorized']}**，其中原子证 **{a['atom_authorized']}**",
          f"- 各状态：{a['by_status']}",
          f"- 待人审证据证：**{len(a['evidence_pending'])}** 张", "",
@@ -118,8 +118,8 @@ def selftest() -> int:
         ok = ok and cond
 
     a = analyze()
-    chk("证书总数 83", a["total"] == 83)
-    chk("authorized 27（624 E1）", a["authorized"] == 27)
+    chk("证书总数 103", a["total"] == 103)
+    chk("authorized 27", a["authorized"] == 27)
     chk("目标需净增 ≥1", a["need_approve_more"] >= 1)
     chk("待人审证据证 >0", len(a["evidence_pending"]) > 0)
     # 不代签：analyze 只读，不写任何 pck 文件

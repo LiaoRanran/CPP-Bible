@@ -103,9 +103,9 @@ def selftest() -> int:
         ok = ok and cond
 
     certs = load_certs()
-    chk("枚举 83 张证书", len(certs) == 83)
+    chk("枚举 103 张证书", len(certs) == 103)
     st = stats(certs)
-    chk("基线 authorized = 27/83", st["authorized"] == 27)
+    chk("基线 authorized = 27/103", st["authorized"] == 27)
     ina = w2_in_atoms()
     chk("W2 IN 原子非空", len(ina) > 0)
     cands = candidates(certs, ina)

@@ -10,12 +10,12 @@ import defense_chain_deep_613 as d3  # noqa: E402
 
 
 def test_node_count():
-    assert len(d3.load_nodes()) == 121
+    assert len(d3.load_nodes()) == 131
 
 
 def test_depth_covers_all_nodes_and_is_deterministic():
     c = d3.compute(d3.load_nodes())
-    assert len(c["depth"]) == c["n_nodes"] == 121
+    assert len(c["depth"]) == c["n_nodes"] == 131
     assert c["depth"] == d3.compute(d3.load_nodes())["depth"]
     assert all(v >= 0 for v in c["depth"].values())
 

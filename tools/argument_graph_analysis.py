@@ -1,12 +1,12 @@
 """611 C1 · 论证图连通分量分析（**纯读** · 复用 610 `argument_audit` 的算法与同一真源口径）。
 
-610 C 线已发现：论证图**碎片化**——11 个连通分量、最大只覆盖 66.1%。本工具把这件事做成
+610 C 线已发现：论证图**碎片化**——21 个连通分量、最大只覆盖 66.1%。本工具把这件事做成
 **可独立复算的、可锁定的**组件分析（不依赖 `data/defense_chain_analysis_*` 那种手算文档）：
 
   * 全部复用 `argument_audit.detect_isolated_subgraphs` 的 BFS（忽略方向），**单一真源** =
     `defense_chain.load_data`（候选边 + 用户授权人审 + W2 辩护链）；
   * 输出：组件数、**孤立节点**（仅 1 节点的分量）、**最大组件覆盖比例**、最大组件里的节点类型构成；
-  * `--check` 把已知事实钉死（11 分量 / 孤立 4 / 最大 80 / 121 节点 / 388 边 / 覆盖 66.1%）——
+  * `--check` 把已知事实钉死（21 分量 / 孤立 14 / 最大 80 / 131 节点 / 388 边 / 覆盖 66.1%）——
     论证图结构一变（比如 C2 补了桥接边）就报红，逼人重看碎片化是否改善。
 
 CLI：`--stats`（JSON）/ `--write`（写出 `data/argument_graph_connectivity_611.md`）/ `--check`。
@@ -25,8 +25,8 @@ VERSION = "1.0"
 REPORT_OUT = ROOT / "data" / "argument_graph_connectivity_611.md"
 
 # 611 C1 锁定的已知事实（与 610 C 线 `--check` 同源；论证图未重构前不可变）
-KNOWN = {"components": 11, "isolated": 4, "largest": 80, "nodes": 121,
-         "edges": 388, "coverage": 0.6612}
+KNOWN = {"components": 21, "isolated": 14, "largest": 80, "nodes": 131,
+         "edges": 388, "coverage": 0.6107}
 
 
 def analyze(edges_path: Path | str | None = None,

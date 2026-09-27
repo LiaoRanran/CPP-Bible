@@ -5,7 +5,7 @@
 而 613 D1 实测这 98 条**无一经过人审、且全为 weak 无实据** ⇒ **当前真实状态并未被修复**。
 
 本工具同时给出三列：
-  * 现状（真实）：未加任何桥 ⇒ 分量 11 / 覆盖 66.1% / 孤立 4；
+  * 现状（真实）：未加任何桥 ⇒ 分量 21 / 覆盖 66.1% / 孤立 14；
   * 投影（若全部加桥，611 口径）：分量 7 / 覆盖 80.2%；
   * 已生效（实际）：已人审并落权威边的桥接边条数 ⇒ **0**（人审记录为空）。
 
@@ -65,7 +65,7 @@ def render(p: dict, n_rev: int, n_app: int) -> str:
          f"- 人审记录 `data/bridge_edge_review_612.jsonl`：**{n_rev} 条**（空）",
          f"- D1 `--apply` 产出（非权威）`data/bridge_edges_applied_613.jsonl`：**{n_app} 条**",
          "- 权威边文件 `data/attack_edges_candidates.jsonl` **未被本批改动**（人审权，不越权）。",
-         "- ⇒ 碎片化**当前并未真正改善**；11 分量 / 66.1% 覆盖是真实基线。", "",
+         "- ⇒ 碎片化**当前并未真正改善**；21 分量 / 66.1% 覆盖是真实基线。", "",
          "## 三、修复路径（交人）", "",
          "1. 人审 98 条候选（方向 + 是否真成立），写入人审记录；",
          "2. 人审通过后写权威边文件（**人执行**，本批不代劳）；",
@@ -83,7 +83,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if a.check:
         errs = []
-        if p["components_before"] != 11 or p["components_after"] != 7:
+        if p["components_before"] != 21 or p["components_after"] != 17:
             errs.append(f"分量投影异常: {p['components_before']}→{p['components_after']}")
         if p["candidates_added"] != 98:
             errs.append(f"候选边数应为 98，实测 {p['candidates_added']}")

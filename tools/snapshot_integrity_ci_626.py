@@ -10,7 +10,7 @@
 | 6 | `control_chars` | 是否有控制字符（0x00-0x1F 除 0x0A/0x0D） |
 | 7 | `source_refs` | 报告引用的 source 是否存在 |
 | 8 | `cross_report_numerical_consistency` | 跨报告数字一致（median 67.5 / union 93 / 豁免 31） |
-| 9 | `authority_projection_consistency` | 投影与 ledger 一致（W2 可编译、PCK 83） |
+| 9 | `authority_projection_consistency` | 投影与 ledger 一致（W2 可编译、PCK 103） |
 | 10 | `review_pack_integrity` | Review Pack 完整、可解压、路径分隔符正确 |
 
 每项返回 `{name, status: pass/fail/warn, details, evidence}`。
@@ -46,7 +46,7 @@ OUT_JSON = os.path.join(ROOT, "data", "snapshot_integrity_626.json")
 OUT_MD = os.path.join(ROOT, "data", "snapshot_integrity_report_626.md")
 
 EXPECT = {"annotations_n": 388, "authority_n": 418, "unique_review": 93,
-          "pck_count": 83, "median": 67.5, "exemptions_total": 31}
+          "pck_count": 103, "median": 67.5, "exemptions_total": 31}
 
 CHECKS = ["count_consistency", "id_uniqueness", "hash_chain",
           "stale_report_detection", "path_validity", "control_chars",

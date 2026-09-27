@@ -9,7 +9,7 @@ import pck_authorized_upgrade_624 as m  # noqa: E402
 
 def test_certs_and_baseline():
     certs = m.load_certs()
-    assert len(certs) == 83
+    assert len(certs) == 103
     st = m.stats(certs)
     assert st["authorized"] == 27
 

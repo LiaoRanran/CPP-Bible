@@ -1,6 +1,6 @@
 """620 B1 · PCK 批量迁移工具（markdown 卡 → PCK certificate）
 
-从 `atoms/`（27 张原子卡）与 `evidence/`（56 张证据卡）**只读**派生 PCK certificate，
+从 `atoms/`（37 张原子卡）与 `evidence/`（66 张证据卡）**只读**派生 PCK certificate，
 逐张用 619 B2 验证器校验，输出到 `data/pck/certificates/{CARD_ID}.pck.yaml`。
 
 与 619 B3（10 张试点）的关系：B3 的 `PILOT_CARDS` 是硬编码 10 张；本工具**自动发现**全量卡，
@@ -184,9 +184,9 @@ def selftest() -> int:
         ok = ok and cond
 
     cards = discover_cards()
-    chk("自动发现全量卡 = 83 张（27 原子 + 56 证据）", len(cards) == 83)
-    chk("原子卡 27 张", sum(1 for c in cards if c.startswith("atoms/")) == 27)
-    chk("证据卡 56 张", sum(1 for c in cards if c.startswith("evidence/")) == 56)
+    chk("自动发现全量卡 = 103 张（37 原子 + 66 证据）", len(cards) == 103)
+    chk("原子卡 37 张", sum(1 for c in cards if c.startswith("atoms/")) == 37)
+    chk("证据卡 66 张", sum(1 for c in cards if c.startswith("evidence/")) == 66)
 
     # 单张迁移
     sample = build_cert(cards[0])

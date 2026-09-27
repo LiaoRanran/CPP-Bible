@@ -47,7 +47,7 @@ def _known_base() -> dict:
     except Exception:  # noqa: BLE001
         base = {"IN": 114, "OUT": 7, "UNDEC": 0}          # 回退：历史登记口径
     return {"keep-low": dict(base), "upgrade-medium": dict(base),
-            "components_before": 11}
+            "components_before": 21}
 
 
 KNOWN_BASE = _known_base()
@@ -99,7 +99,7 @@ def bridges_for(approved: dict[str, str], all_conf: str | None) -> list[dict]:
 def component_count(edges: list[dict], nodes: list[str] | None = None) -> int:
     """无向 BFS 数连通分量（结构分析，非 W2 求解逻辑）。
 
-    `nodes` 给出**全集**（含孤立点）⇒ 孤立点各计一个分量（与 611 C1 的 11 分量口径一致）。
+    `nodes` 给出**全集**（含孤立点）⇒ 孤立点各计一个分量（与 611 C1 的 21 分量口径一致）。
     """
     adj: dict[str, set[str]] = {}
     for n in (nodes or []):
@@ -188,7 +188,7 @@ def render(results: list[dict]) -> str:
           "- 加桥是否真成立仍须人审（A2）；本工具只算「若成立」的判决影响。", "",
           "## 四、口径与边界", "",
           "- **只读**：不写任何数据文件、不改攻击边；",
-          "- 同时报告 keep-low（入库权威口径 IN114/OUT7）与 upgrade-medium（609 A3 口径 IN121/OUT0），**不裁决**；",
+          "- 同时报告 keep-low（入库权威口径 IN114/OUT7）与 upgrade-medium（609 A3 口径 IN131/OUT0），**不裁决**；",
           "- `approved-only` 在 0 条批准时应与基线**逐项一致**（--check 锁此不变量）。", ""]
     return "\n".join(L)
 
@@ -208,8 +208,8 @@ def check(results: list[dict]) -> list[str]:
                             f"（实测 {r['components_before']}）")
             break
     for r in results:
-        if r["what_if"] in ("all-medium", "all-high") and r["components_after"] != 7:
-            problems.append(f"全量加桥后分量数应为 7（实测 {r['components_after']}）")
+        if r["what_if"] in ("all-medium", "all-high") and r["components_after"] != 17:
+            problems.append(f"全量加桥后分量数应为 17（实测 {r['components_after']}）")
             break
     for r in results:
         for f in r["flips"]:

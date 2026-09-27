@@ -1,0 +1,23 @@
+schema_version: 619-pck-v1
+claim:
+  id: EV-LANG-008
+  statement: 位域的单元分配与 plain int 位域的符号性都由实现决定（本批两个编译器都按有符号）。
+  domain: lang
+  type: observation
+evidence:
+- type: artifact
+  ref: evidence/lang/EV-LANG-008.md
+  hash: sha256:a6e1b7ada42e78474ab48b8aebf2080318931c63ef9717d5dc3047fd1be72ee9
+negative_tests: []
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: 9fc692bf07eaf89c32ebaa7fe9333c6f402bd663
+  first_authorized_at: unknown

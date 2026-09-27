@@ -86,4 +86,4 @@ def test_check_rejects_broken_doc(tmp_path: Path):
 
 def test_real_labels_document_checks_green():
     assert gv.check() == []
-    assert len(NODES) == 121
+    assert len(NODES) == 131

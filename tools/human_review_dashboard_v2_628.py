@@ -7,7 +7,7 @@
 1. 人审进度环形图（唯一审查项 已审/待审/独立盲审）
 2. 歧义度热力图（93 unique 按歧义度降序）
 3. review_method 分布饼图（DecisionEvent 口径）
-4. W2 论证图 3D（121 节点，IN/OUT/UNDEC 三色）
+4. W2 论证图 3D（131 节点，IN/OUT/UNDEC 三色）
 5. 独立人类确认强度仪表盘（0 / 93 目标）
 6. 他验三件套状态卡片（独立验证者 / VSA 凭证 / 透明日志，自算哈希链）
 
@@ -478,11 +478,11 @@ def selftest() -> int:
     chk("唯一审查项 = 93", d["review"]["unique"] == EXPECT_UNIQUE, f'({d["review"]["unique"]})')
     chk("W2 = IN114/OUT7", d["w2"]["labels"]["IN"] == EXPECT_W2["IN"]
         and d["w2"]["labels"]["OUT"] == EXPECT_W2["OUT"], f'({d["w2"]["labels"]})')
-    chk("W2 节点 121", len(d["w2"]["nodes"]) == 121, f'({len(d["w2"]["nodes"])})')
+    chk("W2 节点 131", len(d["w2"]["nodes"]) == 131, f'({len(d["w2"]["nodes"])})')
     chk("独立人类确认强度 = 0", d["blind_count"] == 0, f'({d["blind_count"]})')
     chk("透明日志链自算完整", d["attest"]["log"]["chain_valid"],
         f'({d["attest"]["log"]["entries"]} 条)')
-    chk("3D 节点数 = 121", len(_sphere(121)) == 121)
+    chk("3D 节点数 = 131", len(_sphere(131)) == 131)
     print(f"C1 dashboard v2 check: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
 

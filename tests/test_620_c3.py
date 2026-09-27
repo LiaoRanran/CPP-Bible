@@ -99,8 +99,8 @@ def test_full_sync_against_real_log_and_certs():
     if not os.path.isdir(S.DEFAULT_CERT_DIR) or not os.path.exists(S.DEFAULT_LOG):
         return
     res = S.sync(S.DEFAULT_CERT_DIR, S.DEFAULT_LOG, write=False)
-    assert res["total"] == 83
-    assert res["synced"] + res["unmatched"] == 83
+    assert res["total"] == 103
+    assert res["synced"] + res["unmatched"] == 103
     # 634 A3：全局 Authority 日志计数，读单一基线
     assert res["log_entries"] == SB.soft("authority_log_entries", res["log_entries"])
 

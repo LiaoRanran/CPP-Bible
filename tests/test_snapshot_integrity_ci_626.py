@@ -65,7 +65,7 @@ def test_stale_report_detected():
 def test_projection_consistency():
     r = _c().run_check("authority_projection_consistency")
     assert r["status"] == "pass"
-    assert "83" in r["details"]
+    assert "103" in r["details"]
 
 
 def test_review_pack_integrity():

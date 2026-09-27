@@ -39,7 +39,7 @@ def test_w2_projection_vs_grounded_labels_deviation_registered():
     g = json.load(open(os.path.join(ROOT, "data", "grounded_labels_w2.json"),
                        encoding="utf-8"))
     gs = g.get("summary", {})
-    assert gs.get("nodes") == 121
+    assert gs.get("nodes") == 131
     assert len(w2) == gs.get("nodes")          # 归一化后节点数一致
     expected = {k: v["label"] for k, v in g["nodes"].items()}
     assert w2 == expected                      # 逐节点标签一致（V1 模式）
@@ -48,7 +48,7 @@ def test_w2_projection_vs_grounded_labels_deviation_registered():
 def test_pck_projection_all_83():
     c = _compiler()
     p = c.compile_pck_all()
-    assert p["count"] == 83
+    assert p["count"] == 103
 
 
 def test_pck_projection_has_both_policies():

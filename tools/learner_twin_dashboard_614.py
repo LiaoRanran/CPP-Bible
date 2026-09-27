@@ -2,7 +2,7 @@
 """614 线B B2：学习者镜像仪表盘 · 真实数据版（自包含 HTML，无外部依赖）。
 
 数据来源：data/learner_behaviors.jsonl（B1 采集的真实/模拟行为日志）。
-处理：复用 learner_behavior_logger 的 replay()（BKT 递推）得 27 KC 掌握度 +
+处理：复用 learner_behavior_logger 的 replay()（BKT 递推）得 37 KC 掌握度 +
       时间线（全局事件序下的平均掌握度演化）+ recommend_next()（下一可学 KC）。
 输出：data/learner_twin_dashboard_614.html（四模块：热力图 / 进度曲线 / 推荐路径 / 统计）。
 
@@ -39,7 +39,7 @@ def build(store: Path, user: str = USER, threshold: float = DEFAULT_THRESHOLD) -
     kcs = _kc_ids()
     mastery = b1.replay(store, user)
     recs = [r for r in b1.load_all(store) if r.get("user_id") == user]
-    # 时间线：全局事件序下，每步后 27 KC 的平均掌握度（未学 KC 视为 0.1）
+    # 时间线：全局事件序下，每步后 37 KC 的平均掌握度（未学 KC 视为 0.1）
     import bkt_solver as d2  # noqa: E402
     model = d2.BKTModel()
     per_kc: dict[str, float] = {k["id"]: 0.1 for k in kcs}
@@ -126,7 +126,7 @@ def render_html(d: dict) -> str:
 </style></head><body>
 <h1>学习者镜像仪表盘 · 真实数据版</h1>
 <p class="muted">数据源：{d['store']}（B1 行为日志，复用 BKT 递推，不硬编码）；用户 {d['user']}；掌握度阈值 {d['threshold']}</p>
-<div class="sec"><h2>① 掌握度热力图（27 KC）</h2><div class="grid">{heat}</div></div>
+<div class="sec"><h2>① 掌握度热力图（37 KC）</h2><div class="grid">{heat}</div></div>
 <div class="sec"><h2>② 进度曲线（全局平均掌握度演化）</h2>{curve}</div>
 <div class="sec"><h2>③ 推荐学习路径（掌握度&lt;{d['threshold']} 且前置已满足）</h2><ul>{rec_items}</ul></div>
 <div class="sec"><h2>④ 统计</h2><div class="stats">{stat_rows}</div></div>
@@ -151,10 +151,10 @@ def main(argv: list[str] | None = None) -> int:
             b1.simulate(tmp, kcs_n=10, rounds=5, seed=7)
             d = build(tmp, USER, a.threshold)
             html = render_html(d)
-            # 关键元素：27 个热力图 cell、统计块、推荐列表
-            if html.count('class="cell"') != 27:
+            # 关键元素：37 个热力图 cell、统计块、推荐列表
+            if html.count('class="cell"') != 37:
                 n_cells = html.count('class="cell"')
-                problems.append(f"热力图 cell 数应为 27（实得 {n_cells}）")
+                problems.append(f"热力图 cell 数应为 37（实得 {n_cells}）")
             if "平均掌握度" not in html:
                 problems.append("统计模块缺平均掌握度")
             if d["stats"]["total_events"] == 0:
@@ -177,7 +177,7 @@ def main(argv: list[str] | None = None) -> int:
     out.write_text(html, encoding="utf-8")
     s = d["stats"]
     print(f"[dash] 已生成：{out}（事件 {s['total_events']} · 平均掌握度 {s['avg_mastery']} · "
-          f"≥0.5 {s['mastered_05']}/27 · 推荐 {len(d['recommended'])} KC）")
+          f"≥0.5 {s['mastered_05']}/37 · 推荐 {len(d['recommended'])} KC）")
     return 0
 
 

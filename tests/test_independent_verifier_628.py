@@ -26,14 +26,14 @@ def test_w2_independent_recompute_matches():
     exp = A.current()
     r = I.verify_w2()
     assert r["summary"] == {"IN": exp["IN"], "OUT": exp["OUT"], "UNDEC": exp["UNDEC"]}
-    assert r["nodes"] == 121 and r["frozen_labels_match"]
+    assert r["nodes"] == 131 and r["frozen_labels_match"]
 
 
 def test_pck_independent_count_matches():
     p = I.verify_pck()
-    assert p["total"] == 83
+    assert p["total"] == 103
     assert p["authorized"] == 27
-    assert p["pending"] == 56
+    assert p["pending"] == 76
 
 
 def test_ledger_chain_valid():

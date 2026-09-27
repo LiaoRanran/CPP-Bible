@@ -126,8 +126,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if a.check:
         errs = []
-        if c["n_nodes"] != 121:
-            errs.append(f"节点数应为 121，实测 {c['n_nodes']}")
+        if c["n_nodes"] != 131:
+            errs.append(f"节点数应为 131，实测 {c['n_nodes']}")
         if len(c["depth"]) != c["n_nodes"]:
             errs.append("深度未覆盖全部节点")
         if c["depth"] != compute(load_nodes())["depth"]:

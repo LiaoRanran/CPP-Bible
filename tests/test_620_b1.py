@@ -16,9 +16,9 @@ CARDS = M.discover_cards()
 
 
 def test_discover_83_cards():
-    assert len(CARDS) == 83
-    assert sum(1 for c in CARDS if c.startswith("atoms/")) == 27
-    assert sum(1 for c in CARDS if c.startswith("evidence/")) == 56
+    assert len(CARDS) == 103
+    assert sum(1 for c in CARDS if c.startswith("atoms/")) == 37
+    assert sum(1 for c in CARDS if c.startswith("evidence/")) == 66
 
 
 def test_single_migration_passes_validator():
@@ -30,9 +30,9 @@ def test_single_migration_passes_validator():
 
 def test_batch_migration_all_pass():
     prev = M.migrate_preview(CARDS)
-    assert prev["total"] == 83
+    assert prev["total"] == 103
     assert prev["fail"] == 0
-    assert prev["ok"] == 83
+    assert prev["ok"] == 103
 
 
 def test_missing_fields_marked_unknown():

@@ -303,7 +303,7 @@ def main(argv: Optional[list] = None) -> int:
             "|---|---|---|---|",
             f"| W2 分布 | {r['w2']['summary']} | IN114/OUT7/UNDEC0 | "
             f"{r['checks']['w2_summary_match']} |",
-            f"| W2 逐节点 | vs grounded_labels 冻结输出 | 121 节点 | "
+            f"| W2 逐节点 | vs grounded_labels 冻结输出 | 131 节点 | "
             f"{r['checks']['w2_frozen_labels_match']} |",
             f"| PCK authorized | {r['pck']['authorized']}（{r['pck']['by_status']}） | 27 | "
             f"{r['checks']['pck_authorized_match']} |",

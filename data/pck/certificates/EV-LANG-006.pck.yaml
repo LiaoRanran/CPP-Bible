@@ -1,0 +1,23 @@
+schema_version: 619-pck-v1
+claim:
+  id: EV-LANG-006
+  statement: longjmp 后非 volatile 局部量的值不确定（档位不同读数可不同），volatile 量被保证。
+  domain: lang
+  type: observation
+evidence:
+- type: artifact
+  ref: evidence/lang/EV-LANG-006.md
+  hash: sha256:5c1ca9dda6c7fccd5577aa22727baf555150dd51c3fa093e0051840a7106a919
+negative_tests: []
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: 9fc692bf07eaf89c32ebaa7fe9333c6f402bd663
+  first_authorized_at: unknown

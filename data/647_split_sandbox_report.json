@@ -1,13 +1,13 @@
 {
   "result": {
     "ok": true,
-    "n_core_files": 116,
+    "n_core_files": 119,
     "split": {
       "ok": true,
-      "dest": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_74eelczy\\queyi-core",
-      "n_commits": 164,
-      "head": "90f768dd909d",
-      "n_files_declared": 116
+      "dest": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_tu1v43jj\\queyi-core",
+      "n_commits": 168,
+      "head": "e9b3b6b64c46",
+      "n_files_declared": 119
     },
     "standalone": {
       "import_ok": true,
@@ -20,7 +20,7 @@
       "n_error_files": 0,
       "error_files": [],
       "conftest_used": "最小 conftest（沙箱临时写入）",
-      "tail": "estmark = pytest.mark.slow\n\ntests\\test_loop_r5_runner_645.py:14\n  C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_74eelczy\\queyi-core\\tests\\test_loop_r5_runner_645.py:14: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    pytestmark = pytest.mark.slow\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n215 tests collected in 1.85s\n"
+      "tail": "estmark = pytest.mark.slow\n\ntests\\test_loop_r5_runner_645.py:14\n  C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_tu1v43jj\\queyi-core\\tests\\test_loop_r5_runner_645.py:14: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    pytestmark = pytest.mark.slow\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n238 tests collected in 2.35s\n"
     },
     "history": {
       "probe": "tests/test_anti_windup_647.py",
@@ -28,7 +28,7 @@
       "in_origin": "1",
       "same": true
     },
-    "tmp": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_74eelczy"
+    "tmp": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_tu1v43jj"
   },
   "core_files": [
     "tests/test_anti_windup_647.py",
@@ -41,6 +41,7 @@
     "tests/test_counterexample_searcher_646.py",
     "tests/test_coupling_effect_645.py",
     "tests/test_coupling_feedback_645.py",
+    "tests/test_dead_code_cleanup_647.py",
     "tests/test_decision_event_647.py",
     "tests/test_docstring_quality_646.py",
     "tests/test_evidence_grading_645.py",
@@ -48,6 +49,7 @@
     "tests/test_evidence_sufficiency_645.py",
     "tests/test_evidence_sufficiency_646.py",
     "tests/test_external_anchor_647.py",
+    "tests/test_interface_verify_647.py",
     "tests/test_loop_r5_runner_645.py",
     "tests/test_loop_r5_runner_646.py",
     "tests/test_mdl_gate_647.py",
@@ -66,6 +68,7 @@
     "tests/test_standard_fetcher_645.py",
     "tests/test_standard_fetcher_646.py",
     "tests/test_targeted_attacker_645.py",
+    "tests/test_targeting_prep_647.py",
     "tests/test_three_layer_orchestrator_645.py",
     "tests/test_three_layer_orchestrator_646.py",
     "tests/test_tool_consolidation_646.py",
@@ -92,18 +95,17 @@
     "tools/conflict_detector_647.py",
     "tools/counterexample_searcher_645.py",
     "tools/counterexample_searcher_646.py",
-    "tools/coupling_effect_645.py",
-    "tools/coupling_feedback_645.py",
+    "tools/dead_code_cleanup_647.py",
     "tools/decision_event_v2_626.py",
     "tools/docstring_quality_646.py",
     "tools/evidence_base_644.py",
     "tools/evidence_grading_645.py",
     "tools/evidence_index_646.py",
-    "tools/evidence_sufficiency_645.py",
     "tools/evidence_sufficiency_646.py",
     "tools/external_anchor_647.py",
     "tools/gate_engine.py",
     "tools/interface_audit_645.py",
+    "tools/interface_verify_647.py",
     "tools/loop_r5_runner_645.py",
     "tools/loop_r5_runner_646.py",
     "tools/loop_stability_metrics_625.py",
@@ -130,14 +132,13 @@
     "tools/queyi_core_v10_641.py",
     "tools/queyi_data_models_645.py",
     "tools/repo_split_sandbox_647.py",
-    "tools/rule_aging_detector_645.py",
     "tools/rule_card_mapper_646.py",
     "tools/rule_drafter_645.py",
-    "tools/rule_error_tracker_645.py",
     "tools/smart_issue_finder_645.py",
     "tools/standard_fetcher_645.py",
     "tools/standard_fetcher_646.py",
     "tools/targeted_attacker_645.py",
+    "tools/targeting_prep_647.py",
     "tools/three_layer_orchestrator_645.py",
     "tools/three_layer_orchestrator_646.py",
     "tools/tool_consolidation_646.py",

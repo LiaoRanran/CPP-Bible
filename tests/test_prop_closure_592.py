@@ -115,7 +115,7 @@ def test_cross_check_is_falsifiable(tmp_path: Path, monkeypatch: pytest.MonkeyPa
         bad.append({"prop_key": key, "only_python": [], "only_sql": []})
     monkeypatch.setattr(pc, "closure_sql", lambda _conn, start, _edges=None: {start})
     mism = pc.cross_check(REAL_DB)
-    assert len(mism) == len(bad) == 79, f"错实现应被逐条抓出，实得 {len(mism)}"
+    assert len(mism) == len(bad) == 89, f"错实现应被逐条抓出，实得 {len(mism)}"
     assert all(m["only_python"] for m in mism), "差异方向应指向 Python 多出来的节点"
 
 
@@ -124,9 +124,9 @@ def test_cross_check_and_stats_on_real_db():
     mismatches = pc.cross_check(REAL_DB)
     assert mismatches == [], f"双实现不一致：{mismatches[:5]}"
     st = pc.stats(REAL_DB)
-    assert st["propositions"] == pg.stats(REAL_DB)["propositions"] == 79
-    assert st["cards"] == 27
-    assert st["edges"] == 274
+    assert st["propositions"] == pg.stats(REAL_DB)["propositions"] == 89
+    assert st["cards"] == 37
+    assert st["edges"] == 304
     assert st["isolated"] == []
     assert st["max_closure_size"] <= 50, "闭包异常（>50）应在台账里单列"
 

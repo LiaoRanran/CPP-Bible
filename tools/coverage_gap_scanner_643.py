@@ -16,7 +16,7 @@
 | 卡被 **>10** 条规则命中 | 冗余候选（同一张卡被反复报，噪声放大） | P2 |
 
 **诚实边界**：
-- 卡口径 = `atoms/**/ATOM-*.md` = **27 张**；而 638 census 的"28 张"是 `atoms/**/*.md`
+- 卡口径 = `atoms/**/ATOM-*.md` = **37 张**；而 638 census 的"28 张"是 `atoms/**/*.md`
   （多一个 `atoms/README.md`）⇒ **口径差异已登记**，本工具以"可被规则检查的 ATOM 卡"为准。
 - 矩阵只反映**当前仓库状态**：干净仓库里"少命中"是正常的，**不等于**规则没用
   （规则的判别力要靠 622/623 的变异跑批体现）⇒ 本清单是**线索**，需人复核（§十二.1）。
@@ -243,7 +243,7 @@ def selftest() -> int:
     # 真实仓库：维度与只读性
     real = report()
     chk("真实矩阵 67 × 27", real["analysis"]["n_rules"] == 67
-        and real["analysis"]["n_cards"] == 27,
+        and real["analysis"]["n_cards"] == 37,
         f"{real['analysis']['n_rules']}x{real['analysis']['n_cards']}")
     chk("findings 非空", real["n_findings"] > 0, str(real["n_findings"]))
     chk("热力图含全部规则", heatmap_text(real["matrix"], real["cards"]).count("| `") >= 67)

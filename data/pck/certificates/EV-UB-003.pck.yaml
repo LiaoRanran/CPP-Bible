@@ -1,0 +1,23 @@
+schema_version: 619-pck-v1
+claim:
+  id: EV-UB-003
+  statement: 有符号溢出是 UB ⇒ 同一表达式在不同编译器上可给出相反答案（gcc=1 / clang=0）；无符号回绕是定义好的。
+  domain: ub
+  type: observation
+evidence:
+- type: artifact
+  ref: evidence/ub/EV-UB-003.md
+  hash: sha256:eb523183a2d3f7d7e1ad72477a10fbc976435ace3265fbd0715c0b119f8cc2fb
+negative_tests: []
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: 9fc692bf07eaf89c32ebaa7fe9333c6f402bd663
+  first_authorized_at: unknown

@@ -24,8 +24,8 @@ def test_two_mode_verdicts_match_known_facts():
     c = b2.compute()
     kl, up = c["keep_low"], c["upgrade"]
     # 640 A1：签署后权威产物重算，两档判决趋同（IN79/OUT42/击败194）
-    assert (kl["in"], kl["out"], kl["defeating_edges"]) == (79, 42, 194)
-    assert (up["in"], up["out"], up["defeating_edges"]) == (79, 42, 194)
+    assert (kl["in"], kl["out"], kl["defeating_edges"]) == (89, 42, 194)
+    assert (up["in"], up["out"], up["defeating_edges"]) == (89, 42, 194)
     assert kl["rounds"] == 3 and up["rounds"] == 3
 
 

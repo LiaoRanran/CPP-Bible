@@ -65,15 +65,15 @@ def test_alignment_crosstab_math():
 
 def test_pck_authority_map_covers_83():
     amap = A.pck_authority_map()
-    assert len(amap) == 83
+    assert len(amap) == 103
     assert sum(1 for v in amap.values() if v == "approved") == 27
-    assert sum(1 for v in amap.values() if v == "pending") == 56
+    assert sum(1 for v in amap.values() if v == "pending") == 76
 
 
 def test_classify_all_v2_uses_pck_map():
     cards = M.discover_cards()
     rows = A.classify_all_v2(cards, extracted=E.verdict_index(E.extract_all()))
-    assert len(rows) == 83
+    assert len(rows) == 103
     assert all(r["authority_source"] == "pck_human_authority" for r in rows)
 
 

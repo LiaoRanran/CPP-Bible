@@ -35,8 +35,8 @@ DEFAULT_LABELS = ROOT / "data" / "grounded_labels_w2.json"
 DEFAULT_MANIFEST = ROOT / "build" / "replay_manifest.json"
 DEFAULT_MIS = ROOT / "misconceptions"
 OUT_DEFAULT = ROOT / "data" / "grounded_audit_report.md"
-#: 594 实证对账基线（任务 2 已复现）
-W2_EXPECTED = {"IN": 79, "OUT": 42, "UNDEC": 0}
+#: 594 实证对账基线（任务 2 已复现；648 重基线：加 10 张卡 ⇒ 命题 79→89、节点 121→131）
+W2_EXPECTED = {"IN": 89, "OUT": 42, "UNDEC": 0}
 
 
 # ── 读盘面（只读）──────────────────────────────────────────────────────────────
@@ -229,8 +229,8 @@ def render(data: dict) -> str:
     for k, want in W2_EXPECTED.items():
         got = s.get(k)
         add(f"| {k} | {want} | {got} | {'✓' if got == want else '❌'} |")
-    add(f"| 节点数 | 121（79 命题 + 42 误解） | {s['nodes']} | "
-        f"{'✓' if s['nodes'] == 121 else '❌'} |")
+    add(f"| 节点数 | 131（89 命题 + 42 误解） | {s['nodes']} | "
+        f"{'✓' if s['nodes'] == 131 else '❌'} |")
     add("")
     add(f"另注：**{len([k for k in props if not props[k]['attackers']])} 条命题没有任何误解攻击**"
         "（其所属卡的 MIS 关联记在**原子卡侧** `misconceptions` 字段，本批按任务书只读 MIS 侧 "

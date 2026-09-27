@@ -38,8 +38,8 @@ def test_validate_rejects_universal_and_empty():
 
 def test_projection_is_before_minus_addressed():
     proj = a2.projection(9)
-    assert proj["warn_before"] == 50
-    assert proj["warn_after"] == 41
+    assert proj["warn_before"] == 60
+    assert proj["warn_after"] == 51
     assert proj["addressed"] == 9
 
 

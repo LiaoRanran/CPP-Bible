@@ -20,7 +20,7 @@
 
 | 模块 | 函数 | 行 |
 |---|---|---|
-| `three_layer_orchestrator_645` | `effect_main` | 390 |
+| `three_layer_orchestrator_645` | `effect_main` | 384 |
 
 ## 诚实登记
 

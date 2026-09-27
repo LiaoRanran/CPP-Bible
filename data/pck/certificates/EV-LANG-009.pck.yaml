@@ -1,0 +1,23 @@
+schema_version: 619-pck-v1
+claim:
+  id: EV-LANG-009
+  statement: 宏是文本替换：缺括号会错优先级（3+1 平方得 7），带副作用实参会被求值多次（i 从 0 变 2）。
+  domain: lang
+  type: observation
+evidence:
+- type: artifact
+  ref: evidence/lang/EV-LANG-009.md
+  hash: sha256:5e11083b481a677e2dbf1558ea05d727d664888a414be6e033826e314e2d93da
+negative_tests: []
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: 9fc692bf07eaf89c32ebaa7fe9333c6f402bd663
+  first_authorized_at: unknown

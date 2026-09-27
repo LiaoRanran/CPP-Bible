@@ -16,8 +16,8 @@ def test_selftest_passes():
 def test_real_27_cards_all_sufficient():
     """真实 27 卡全部充分，幻影卡被排除。"""
     res = b3.judge()
-    assert res["cards_total"] == 27
+    assert res["cards_total"] == 37
     assert res["sufficient"] == 27
-    assert res["insufficient"] == 0
+    assert res["insufficient"] == 10  # 648：10 张新卡各仅 1 条证据（判据 ≥3）⇒ 判不足，需补证据
     assert res["phantom_excluded"] == "ATOM-MEM-MOVE-001"
     assert "ATOM-MEM-MOVE-001" not in res["per_card"]

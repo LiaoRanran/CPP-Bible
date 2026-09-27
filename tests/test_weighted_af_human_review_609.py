@@ -32,7 +32,7 @@ FIRST = EDGES[0]
 FIRST_ID = str(FIRST["id"])
 TARGET_MIS = str(FIRST["target"])          # 实测 = MIS-CONC-003
 REASON = "人审确认：该攻击关系成立且反驳证据可核（609 A3 自测用理由，长度达标）"
-BASE = {"IN": 79, "OUT": 42, "UNDEC": 0, "nodes": 121}
+BASE = {"IN": 89, "OUT": 42, "UNDEC": 0, "nodes": 131}
 
 
 def _ann(p: Path, rows: list[dict]) -> Path:
@@ -65,8 +65,8 @@ def test_cli_no_human_reviewed_matches_baseline(tmp_path: Path, capsys):
     # ⇒ 这些参数必须写在**子命令之后**（写前面会被默认值吃掉 ⇒ 打真实 DEFAULT_OUT）。
     assert w2.main(["solve", "--no-human-reviewed", "--annotations", str(ann),
                     "--out", str(out)]) == 0
-    assert json.loads(out.read_text(encoding="utf-8"))["summary"]["IN"] == 79
-    assert "IN 79 / OUT 42 / UNDEC 0（3 轮 · 击败边 194/388）" in capsys.readouterr().out
+    assert json.loads(out.read_text(encoding="utf-8"))["summary"]["IN"] == 89
+    assert "IN 89 / OUT 42 / UNDEC 0（3 轮 · 击败边 194/388）" in capsys.readouterr().out
 
 
 # ── 2. approve 权重升级 + 后果 ────────────────────────────────────────────────

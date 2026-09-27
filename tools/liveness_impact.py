@@ -1,6 +1,6 @@
 """612 B3 · 活性锚补全 what-if 分析（**只读** · 不跑 gate、不改任何文件）。
 
-**what-if**：假设 50 条活性锚全部补全，模拟 gate `OBSERVATION-LIVENESS`（warn）会消掉多少。
+**what-if**：假设 60 条活性锚全部补全，模拟 gate `OBSERVATION-LIVENESS`（warn）会消掉多少。
 **不跑 gate**（那是监工的事），而是基于规则逻辑**静态分析**：
   * A/B 类（补 `liveness.kind=fixture_symbol` + 合格符号）⇒ warn 消除；
   * C 类（改标 inference）⇒ 不再是 observation ⇒ warn 消除；
@@ -62,7 +62,7 @@ def analyze(partial: int | None = None) -> dict:
 
 def render(all_r: dict, partial_r: dict) -> str:
     L = ["# 612 B3 · 活性锚补全 what-if（只读 · 假设，不跑 gate）", "",
-         "> **假设**：50 条缺锚 observation 全部补全（A/B 补合格符号 / C 改标 inference）。"
+         "> **假设**：60 条缺锚 observation 全部补全（A/B 补合格符号 / C 改标 inference）。"
          "本工具按规则逻辑静态分析，**不跑 gate**、不改任何文件。", "",
          "## 一、OBSERVATION-LIVENESS warn 消除预测", "",
          "| 场景 | 处理条数 | warn 前 | warn 后 | 按类 |",
@@ -83,8 +83,8 @@ def render(all_r: dict, partial_r: dict) -> str:
 
 def check(all_r: dict, partial_r: dict) -> list[str]:
     problems: list[str] = []
-    if all_r["warn_before"] != 50:
-        problems.append(f"当前 OBSERVATION-LIVENESS warn 应为 50（实测 {all_r['warn_before']}）")
+    if all_r["warn_before"] != 60:
+        problems.append(f"当前 OBSERVATION-LIVENESS warn 应为 60（实测 {all_r['warn_before']}）")
     if all_r["warn_after"] != 0:
         problems.append(f"全量补全后 warn 应为 0（实测 {all_r['warn_after']}）")
     if partial_r["addressed"] != 0 and partial_r["warn_after"] != partial_r["warn_before"]:

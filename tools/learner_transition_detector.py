@@ -131,7 +131,7 @@ def render(d: dict) -> str:
          f"not_ready {d['not_ready']}）",
          f"- 开门数字：真实学习事件 **{d['events_progress']}**"
          f"（{'✅ 达标' if d['events_ready'] else '未达标'}，模拟数据不计入）", "",
-         "## 二、27 KC 跃迁状态", "",
+         "## 二、37 KC 跃迁状态", "",
          "| KC | 掌握度 | OOD | 状态 |", "|---|---|---|---|",
          *[f"| `{k}` | {v['mastery']} | {v['ood']} | {v['status']} |" for k, v in d["kcs"].items()],
          "", "## 三、诚实声明", "",
@@ -152,9 +152,9 @@ def check() -> list[str]:
     if gate_status(0) != "closed" or gate_status(1) != "opening" or gate_status(5) != "open":
         problems.append("门状态阈值错误（0=closed/1=opening/5=open）")
     d = detect()
-    if len(d["kcs"]) != 27:
-        problems.append(f"KC 应 27（实测 {len(d['kcs'])}）")
-    if d["triggered"] + d["ready"] + d["not_ready"] != 27:
+    if len(d["kcs"]) != 37:
+        problems.append(f"KC 应 37（实测 {len(d['kcs'])}）")
+    if d["triggered"] + d["ready"] + d["not_ready"] != 37:
         problems.append("状态计数不等于 27")
     return problems
 
@@ -172,7 +172,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"[D3] ❌ {p}", file=sys.stderr)
             return 1
         d = detect()
-        print(f"[D3] ✅ 自验证通过：门状态 {d['gate']} / 27 KC / 真实事件 {d['real_events']}")
+        print(f"[D3] ✅ 自验证通过：门状态 {d['gate']} / 37 KC / 真实事件 {d['real_events']}")
         return 0
     d = detect()
     if a.report:

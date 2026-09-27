@@ -1,0 +1,24 @@
+schema_version: 619-pck-v1
+claim:
+  id: ATOM-LANG-BITFIELD-001
+  statement: 位域在同一「可寻址存储单元」内的分配顺序、跨单元的对齐都是**实现定义**；plain `int` 位域被解释为有符号还是无符号也**由实现决定**（实测两个编译器都按有符号处理
+    ⇒ 4 位位域存 -1 读回 -1，但这不是可移植结论）。
+  domain: lang
+  type: observation
+evidence:
+- type: replay
+  ref: evidence/lang/EV-LANG-008.md
+  hash: sha256:a6e1b7ada42e78474ab48b8aebf2080318931c63ef9717d5dc3047fd1be72ee9
+negative_tests: []
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: 9fc692bf07eaf89c32ebaa7fe9333c6f402bd663
+  first_authorized_at: unknown

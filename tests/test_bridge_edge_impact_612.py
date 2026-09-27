@@ -20,18 +20,18 @@ def test_zero_approved_matches_baseline_keep_low():
     r = a3.impact("keep-low", "approved-only")
     assert r["bridges_applied"] == 0
     # 640 A1：签署后权威产物重算（IN79/OUT42/击败194），两档基线趋同
-    assert r["base_summary"]["IN"] == 79 and r["base_summary"]["OUT"] == 42
+    assert r["base_summary"]["IN"] == 89 and r["base_summary"]["OUT"] == 42
 
 
 def test_zero_approved_matches_baseline_upgrade_medium():
     r = a3.impact("upgrade-medium", "approved-only")
-    assert r["base_summary"]["IN"] == 79 and r["base_summary"]["OUT"] == 42
+    assert r["base_summary"]["IN"] == 89 and r["base_summary"]["OUT"] == 42
 
 
 def test_whatif_all_medium_runs_and_improves_components():
     r = a3.impact("keep-low", "all-medium")
     assert r["bridges_applied"] == 98
-    assert r["components_before"] == 11 and r["components_after"] == 7
+    assert r["components_before"] == 21 and r["components_after"] == 17
     assert r["flipped"] == 0            # 与 C3 一致：加桥判决变化 0
 
 

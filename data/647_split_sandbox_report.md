@@ -1,7 +1,7 @@
 # 647 C1 · 仓库拆分**沙箱验证**（原仓库零改动）
 
 - 结论：**通过**
-- core 文件数（声明的路径清单）：**116**
+- core 文件数（声明的路径清单）：**119**
 
 ## 一、方案：为什么不是 `git subtree split`
 
@@ -17,7 +17,7 @@
 | 步骤 | 结果 |
 |---|---|
 | ① `git clone` 到临时目录 | 成功（原仓库**零改动**） |
-| ② fast-export/import 造 queyi-core | 提交 **164**，HEAD `90f768dd909d` |
+| ② fast-export/import 造 queyi-core | 提交 **168**，HEAD `e9b3b6b64c46` |
 | ③ 独立可跑（内核 import + selftest） | import=True，kernel `--check` rc=0 |
 | ④ 测试可跑（collect-only） | rc=0 |
 | ⑤ 历史保留（探针文件提交数） | 拆分仓库 **1** vs 原仓库 **1** ⇒ 相同=True |
@@ -25,13 +25,13 @@
 ```json
 {
   "ok": true,
-  "n_core_files": 116,
+  "n_core_files": 119,
   "split": {
     "ok": true,
-    "dest": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_74eelczy\\queyi-core",
-    "n_commits": 164,
-    "head": "90f768dd909d",
-    "n_files_declared": 116
+    "dest": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_tu1v43jj\\queyi-core",
+    "n_commits": 168,
+    "head": "e9b3b6b64c46",
+    "n_files_declared": 119
   },
   "standalone": {
     "import_ok": true,
@@ -44,7 +44,7 @@
     "n_error_files": 0,
     "error_files": [],
     "conftest_used": "最小 conftest（沙箱临时写入）",
-    "tail": "estmark = pytest.mark.slow\n\ntests\\test_loop_r5_runner_645.py:14\n  C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_74eelczy\\queyi-core\\tests\\test_loop_r5_runner_645.py:14: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    pytestmark = pytest.mark.slow\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n215 tests collected in 1.85s\n"
+    "tail": "estmark = pytest.mark.slow\n\ntests\\test_loop_r5_runner_645.py:14\n  C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_tu1v43jj\\queyi-core\\tests\\test_loop_r5_runner_645.py:14: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    pytestmark = pytest.mark.slow\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n238 tests collected in 2.35s\n"
   },
   "history": {
     "probe": "tests/test_anti_windup_647.py",
@@ -52,7 +52,7 @@
     "in_origin": "1",
     "same": true
   },
-  "tmp": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_74eelczy"
+  "tmp": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_tu1v43jj"
 }
 ```
 

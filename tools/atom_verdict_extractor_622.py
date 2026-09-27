@@ -1,6 +1,6 @@
-"""622 C2 · 原子卡 verdict 提取（27 张，**不修改原始卡**）
+"""622 C2 · 原子卡 verdict 提取（37 张，**不修改原始卡**）
 
-**为什么需要**：621 C2 发现 27 张原子卡**全部** UNDECIDED，根因是原子卡
+**为什么需要**：621 C2 发现 37 张原子卡**全部** UNDECIDED，根因是原子卡
 **没有 `verdict` 字段**（原子卡用 `status` + `evidence` + `claim_structured`）。
 ⇒ 不是"真弃权"，而是"缺字段导致机器无法判定"。
 
@@ -120,7 +120,7 @@ def render_report(rows: list[dict]) -> str:
         v[r["verdict"]] = v.get(r["verdict"], 0) + 1
         c[r["confidence"]] = c.get(r["confidence"], 0) + 1
         b[r["basis"]] = b.get(r["basis"], 0) + 1
-    o = ["# 622 C2 · 原子卡 verdict 提取（27 张）\n"]
+    o = ["# 622 C2 · 原子卡 verdict 提取（37 张）\n"]
     o.append(f"> 提取总数：**{len(rows)}**（**未修改任何原始卡**）\n")
     o.append("## 一、提取结果分布\n")
     o.append("| verdict | 张数 |")
@@ -140,7 +140,7 @@ def render_report(rows: list[dict]) -> str:
     o.append("## 四、与 621 C2 的对比\n")
     o.append("| 项 | 621 C2（分类器 v1） | 622 C2（提取后） |")
     o.append("|---|---|---|")
-    o.append(f"| 原子卡 UNDECIDED | **27 / 27** | **{v.get('UNDECIDED', 0)} / {len(rows)}** |")
+    o.append(f"| 原子卡 UNDECIDED | **37 / 37** | **{v.get('UNDECIDED', 0)} / {len(rows)}** |")
     o.append(f"| 原子卡 SUPPORTED | 0 | **{v.get('SUPPORTED', 0)}** |")
     o.append(f"| 原子卡 REFUTED | 0 | **{v.get('REFUTED', 0)}** |")
     o.append("")
@@ -179,11 +179,11 @@ def selftest() -> int:
         extract({})["verdict"] == "UNDECIDED")
     chk("卡面已有 verdict 字段时优先",
         extract({"verdict": "confirm"})["basis"] == "card_verdict")
-    chk("发现 27 张原子卡", len(discover_atoms()) == 27)
-    chk("提取全部 27 张且带 basis",
+    chk("发现 37 张原子卡", len(discover_atoms()) == 37)
+    chk("提取全部 37 张且带 basis",
         all(r.get("basis") and r.get("verdict") in
             ("SUPPORTED", "REFUTED", "UNDECIDED") for r in extract_all()))
-    chk("verdict_index 可用", len(verdict_index(extract_all())) == 27)
+    chk("verdict_index 可用", len(verdict_index(extract_all())) == 37)
     print(f"C2 selftest: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
 

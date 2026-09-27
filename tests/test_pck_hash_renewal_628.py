@@ -14,7 +14,7 @@ CERT_DIR = os.path.join(HERE, "data", "pck", "certificates")
 
 
 def test_all_83_certs_present():
-    assert len(glob.glob(os.path.join(CERT_DIR, "*.yaml"))) == 83
+    assert len(glob.glob(os.path.join(CERT_DIR, "*.yaml"))) == 103
 
 
 def test_hash_matches_current_file():

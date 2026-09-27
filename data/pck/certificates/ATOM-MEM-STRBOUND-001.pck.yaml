@@ -1,0 +1,24 @@
+schema_version: 619-pck-v1
+claim:
+  id: ATOM-MEM-STRBOUND-001
+  statement: snprintf 返回的是「若缓冲够大本会写入的字符数」（可能大于缓冲，实测 10 > 8 ⇒ 已截断），把它当成「实际写入长度」会越界；strncpy
+    在源串长度 ≥ n 时**不会**写 NUL 终止符（实测 strncpy_nul_terminated=0）。
+  domain: mem
+  type: observation
+evidence:
+- type: replay
+  ref: evidence/mem/EV-MEM-047.md
+  hash: sha256:3e3ef217023d913b8eabb95aff581fd8537e652b520a9da8d4c08499ea3d7f54
+negative_tests: []
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: 9fc692bf07eaf89c32ebaa7fe9333c6f402bd663
+  first_authorized_at: unknown

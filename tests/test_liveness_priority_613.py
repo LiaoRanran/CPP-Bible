@@ -11,13 +11,13 @@ import liveness_priority_613 as a1  # noqa: E402
 def test_all_50_props_enumerated():
     # 612 已知坑③：C 类命题在候选 jsonl 无行，必须从审计真源枚举
     rows = a1.build()
-    assert len(rows) == 50, f"应枚举 50 条缺锚命题，实测 {len(rows)}"
+    assert len(rows) == 60, f"应枚举 60 条缺锚命题，实测 {len(rows)}"
 
 
 def test_cost_distribution_matches_612_b1():
     rows = a1.build()
     n = {c: len([r for r in rows if r["cost"] == c]) for c in ("low", "medium", "high")}
-    assert n["low"] == 9 and n["medium"] == 26 and n["high"] == 15
+    assert n["low"] == 9 and n["medium"] == 26 and n["high"] == 25
 
 
 def test_c_class_props_have_no_anchor():

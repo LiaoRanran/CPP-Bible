@@ -52,23 +52,23 @@ def test_status_history_refuted_detected():
 
 
 def test_discover_27_atoms():
-    assert len(E.discover_atoms()) == 27
+    assert len(E.discover_atoms()) == 37
 
 
 def test_extract_all_and_index():
     rows = E.extract_all()
-    assert len(rows) == 27
+    assert len(rows) == 37
     assert all(r["verdict"] in ("SUPPORTED", "REFUTED", "UNDECIDED") for r in rows)
     idx = E.verdict_index(rows)
-    assert len(idx) == 27
+    assert len(idx) == 37
 
 
 def test_artifact_matches_tool():
     if not os.path.exists(OUT):
         return
     rows = [json.loads(ln) for ln in open(OUT, encoding="utf-8") if ln.strip()]
-    assert len(rows) == 27
-    assert sum(1 for r in rows if r["verdict"] == "SUPPORTED") == 27
+    assert len(rows) == 37
+    assert sum(1 for r in rows if r["verdict"] == "SUPPORTED") == 37
     assert all(r["basis"] for r in rows)
 
 

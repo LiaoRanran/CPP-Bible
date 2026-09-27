@@ -17,7 +17,7 @@ def _init(tmp_path):
 def test_init_all_kc_01(tmp_path):
     store = _init(tmp_path)
     recs = d3.load_all(store)
-    assert len(recs) == 27
+    assert len(recs) == 37
     assert all(abs(r["mastery_prob"] - 0.1) < 1e-9 for r in recs)
     assert all(r["kind"] == "init" for r in recs)
 
@@ -26,7 +26,7 @@ def test_init_idempotent(tmp_path):
     store = _init(tmp_path)
     added = d3.init(store)  # 已存在 ⇒ 不再添加
     assert added == 0
-    assert len(d3.load_all(store)) == 27
+    assert len(d3.load_all(store)) == 37
 
 
 def test_update_changes_mastery(tmp_path):

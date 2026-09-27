@@ -1,0 +1,24 @@
+schema_version: 619-pck-v1
+claim:
+  id: ATOM-LANG-VOLATILE-001
+  statement: volatile 约束的是**抽象的访存次数**：-O2 下普通变量的三次读取被**完全折叠**（实测生成的汇编里对它的引用次数为 0），而
+    volatile 变量必须逐次访问（实测引用 4 次）；它**不**提供原子性，也**不**提供线程间的同步顺序。
+  domain: lang
+  type: observation
+evidence:
+- type: replay
+  ref: evidence/lang/EV-LANG-005.md
+  hash: sha256:10f442192da719f01ac75efb3489639a3ef7a02e809a9d7640dd49511eea72c2
+negative_tests: []
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: 9fc692bf07eaf89c32ebaa7fe9333c6f402bd663
+  first_authorized_at: unknown

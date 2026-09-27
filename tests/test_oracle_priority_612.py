@@ -12,7 +12,7 @@ import oracle_priority as c2  # noqa: E402
 
 def test_all_cards_scored():
     rows = c2.score_cards()
-    assert len(rows) == 83
+    assert len(rows) == 103
     for r in rows:
         assert {"id", "type", "props", "escaped", "coverage_gap", "related_mis", "score"} <= set(r)
 

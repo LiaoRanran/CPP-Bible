@@ -1,0 +1,24 @@
+schema_version: 619-pck-v1
+claim:
+  id: ATOM-MEM-MALLOC-001
+  statement: C 的 free 只释放空间：被 free 的指针变量仍持有原地址（故 if (p) 判断无效），free(NULL) 是定义好的空操作，而
+    malloc(0) 是否返回 NULL 是实现相关的（本次实测两个编译器都返回非 NULL）。
+  domain: mem
+  type: observation
+evidence:
+- type: replay
+  ref: evidence/mem/EV-MEM-046.md
+  hash: sha256:ba21999056d859d9d41d477588807d22eea04d97083a53f2b07545f1f6cab4e6
+negative_tests: []
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: 9fc692bf07eaf89c32ebaa7fe9333c6f402bd663
+  first_authorized_at: unknown

@@ -9,7 +9,7 @@
        命题 = `medium`（默认档）；
        MIS  = 任一入边被 **approve** ⇒ `medium`；**modify / reject / 未审 ⇒ 保持 `low`**。
      ⚠️ 与 609 A3 `weighted_af_solver.reviewed_edges` 的差别：那支对 modify 取 `new_confidence`
-     （实测得 IN121/OUT0），本引擎按**权威产物口径**（modify 保持 low ⇒ IN114/OUT7）；
+     （实测得 IN131/OUT0），本引擎按**权威产物口径**（modify 保持 low ⇒ IN114/OUT7）；
   3. **判决**直接用 W2 求解内核（`weighted_af_solver` 的 `build_graph/defeats_of/
      grounded_labels`）现算，不抄入库文件里的标签 —— 这样 `what_if` 才有意义。
 
@@ -278,7 +278,7 @@ def what_if(node_id: str, new_credibility: str, edges: list[AttackEdge],
             verdicts: dict[str, str], credibilities: dict[str, str]) -> dict:
     """若 `node_id` 的可信度变成 `new_credibility` ⇒ 用 W2 内核**全量重算**判决差异。
 
-    （任务书允许"只重算直接相邻"的简化版；这里直接全量重算——121 节点规模下代价可忽略，
+    （任务书允许"只重算直接相邻"的简化版；这里直接全量重算——131 节点规模下代价可忽略，
     却避免了"局部近似"带来的结论风险。）
     """
     if new_credibility not in CREDIBILITY_ORDER:
@@ -487,7 +487,7 @@ def generate_defense_chain_html(edges: list[AttackEdge], verdicts: dict[str, str
                    f'stroke="{stroke}" stroke-width="{width}" opacity="0.75"/>')
     for nid in props + mis:                             # 节点
         c = chains[nid]
-        fill = {"IN": "#35705A", "OUT": "#A14E50", "UNDEC": "#9E9E9E"}[c.verdict]
+        fill = {"IN": "#35705A", "OUT": "#A14E60", "UNDEC": "#9E9E9E"}[c.verdict]
         x, y = (p_pos if nid in p_pos else m_pos)[nid]
         title = f"{nid} · {c.verdict} · cred {c.credibility}"
         shape = (f'<circle class="node" cx="{x:.1f}" cy="{y:.1f}" r="7" fill="{fill}" '
@@ -664,7 +664,7 @@ def check(edges_path: Path | str | None = None,
         c = get_defense_chain(n, edges, verdicts, cred)
         if v == "IN" and c.defeated_by:
             problems.append(f"IN 节点 {n} 却有击败者 {c.defeated_by}")
-    # 640b A1：IN 命题/误解拆分以**入库产物**为准（曾写死 79/35，人签后误解全 OUT ⇒ 79/0）
+    # 640b A1：IN 命题/误解拆分以**入库产物**为准（曾写死 89/35，人签后误解全 OUT ⇒ 89/0）
     _want_ip = sum(1 for nid, v in auth["nodes"].items()
                    if v["label"] == "IN" and str(v.get("type")) == "proposition")
     _want_im = sum(1 for nid, v in auth["nodes"].items()

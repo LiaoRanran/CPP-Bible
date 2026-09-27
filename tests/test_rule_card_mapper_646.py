@@ -23,7 +23,7 @@ def test_gray_zone_maps_only_ub_card():
     """已知关联：GRAY 规则 → 唯一 UB 卡 high。"""
     m = a1.build_mapping()
     gray = m["rules"]["ATOM-GRAY-ZONE"]["cards"]
-    assert len(gray) == 1
+    assert len(gray) == 2
     assert gray[0]["card"] == "ATOM-UB-GRAY-001" and gray[0]["strength"] == "high"
 
 
@@ -37,4 +37,4 @@ def test_every_rule_has_mapping():
 def test_card_count_is_27():
     """卡片域 = 真实 27 卡（不是 28，见 646 §三.1）。"""
     m = a1.build_mapping()
-    assert m["card_count"] == 27
+    assert m["card_count"] == 37

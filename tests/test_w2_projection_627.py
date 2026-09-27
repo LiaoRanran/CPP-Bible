@@ -15,7 +15,7 @@ def _exp() -> dict:
 
 def test_normalizer_node_count_121():
     nodes = N.load_grounded_nodes()
-    assert len(nodes) == 121
+    assert len(nodes) == 131
 
 
 def test_normalizer_in_out_distribution():

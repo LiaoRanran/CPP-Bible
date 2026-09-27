@@ -11,9 +11,9 @@ import oracle_verification_614 as e2  # noqa: E402
 
 def test_plan_and_assignment() -> None:
     cards = e2.load_plan()
-    assert len(cards) == 83
+    assert len(cards) == 103
     planned = e2.assign_verifiers(cards, 2)
-    assert len(planned) == 83
+    assert len(planned) == 103
     for p in planned:
         assert len(p["verifiers"]) >= 2
         assert len(set(p["verifiers"])) == len(p["verifiers"])  # 互不相同

@@ -1,6 +1,6 @@
 """612 C2 · oracle 验证优先级排序工具（**只读** · 不修改任何文件）。
 
-对 83 张卡（56 证据 + 27 原子）按**五维度加权**给出 oracle 验证优先级（建议，最终由人审决定）：
+对 103 张卡（66 证据 + 37 原子）按**五维度加权**给出 oracle 验证优先级（建议，最终由人审决定）：
 
   1. 卡类型：证据卡 2 / 原子卡 1
   2. 命题数：越多权重越高（每命题 1 分）
@@ -110,8 +110,8 @@ def render(rows: list[dict], top: int | None) -> str:
 
 def check(rows: list[dict]) -> list[str]:
     problems: list[str] = []
-    if len(rows) != 83:
-        problems.append(f"卡数应为 83（实测 {len(rows)}）")
+    if len(rows) != 103:
+        problems.append(f"卡数应为 103（实测 {len(rows)}）")
     if rows and rows[0]["score"] != max(r["score"] for r in rows):
         problems.append("Top 1 不是最高分")
     for r in rows:

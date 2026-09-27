@@ -25,3 +25,13 @@
 {"user_id": "default", "kc_id": "ATOM-MEM-VALUE-002", "mastery_prob": 0.1, "correct": null, "kind": "init", "timestamp": "2026-09-20T21:57:37", "simulated": false}
 {"user_id": "default", "kc_id": "ATOM-MEM-WEAK-001", "mastery_prob": 0.1, "correct": null, "kind": "init", "timestamp": "2026-09-20T21:57:37", "simulated": false}
 {"user_id": "default", "kc_id": "ATOM-UB-GRAY-001", "mastery_prob": 0.1, "correct": null, "kind": "init", "timestamp": "2026-09-20T21:57:37", "simulated": false}
+{"user_id": "default", "kc_id": "ATOM-LANG-BITFIELD-001", "mastery_prob": 0.1, "correct": null, "kind": "init", "timestamp": "2026-09-27T12:17:48", "simulated": false}
+{"user_id": "default", "kc_id": "ATOM-LANG-DECAY-001", "mastery_prob": 0.1, "correct": null, "kind": "init", "timestamp": "2026-09-27T12:17:48", "simulated": false}
+{"user_id": "default", "kc_id": "ATOM-LANG-FNPTR-001", "mastery_prob": 0.1, "correct": null, "kind": "init", "timestamp": "2026-09-27T12:17:48", "simulated": false}
+{"user_id": "default", "kc_id": "ATOM-LANG-INTPROMO-001", "mastery_prob": 0.1, "correct": null, "kind": "init", "timestamp": "2026-09-27T12:17:48", "simulated": false}
+{"user_id": "default", "kc_id": "ATOM-LANG-MACRO-001", "mastery_prob": 0.1, "correct": null, "kind": "init", "timestamp": "2026-09-27T12:17:48", "simulated": false}
+{"user_id": "default", "kc_id": "ATOM-LANG-SETJMP-001", "mastery_prob": 0.1, "correct": null, "kind": "init", "timestamp": "2026-09-27T12:17:48", "simulated": false}
+{"user_id": "default", "kc_id": "ATOM-LANG-VOLATILE-001", "mastery_prob": 0.1, "correct": null, "kind": "init", "timestamp": "2026-09-27T12:17:48", "simulated": false}
+{"user_id": "default", "kc_id": "ATOM-MEM-MALLOC-001", "mastery_prob": 0.1, "correct": null, "kind": "init", "timestamp": "2026-09-27T12:17:48", "simulated": false}
+{"user_id": "default", "kc_id": "ATOM-MEM-STRBOUND-001", "mastery_prob": 0.1, "correct": null, "kind": "init", "timestamp": "2026-09-27T12:17:48", "simulated": false}
+{"user_id": "default", "kc_id": "ATOM-UB-SIGNEDOVF-001", "mastery_prob": 0.1, "correct": null, "kind": "init", "timestamp": "2026-09-27T12:17:48", "simulated": false}

@@ -1,7 +1,7 @@
 # 629 §一 基线台账（standing baseline + 开工实测）
 
 > 工具：`tools/baseline_629.py`（纯标准库，只读，不跑监工四门禁）
-> HEAD：`83f72122`（ahead origin/master **38** commit）
+> HEAD：`db493498`（ahead origin/master **75** commit）
 > 口径说明：§四.2 要求『解析 gate_engine --check 输出』，但 §零.1 禁止跑监工门禁；
 > 本工具改为只读 `import gate_engine` → `run()`（不写盘，实测见下），与 §一 数字一致。
 
@@ -35,11 +35,11 @@
 | gate 规则数 | 67（其中自动化 64） |
 | gate 命中 | 121（block=0 warn=116 advice=5） |
 | gate warn 命中规则数 | 8（有 warn 的规则） |
-| ahead origin/master | 38 commit |
+| ahead origin/master | 75 commit |
 | 远端 HEAD | `262dc863` |
-| HEAD | `83f72122` 640b [E1]：总收尾报告——任务表/A1权威源设计(两路+交叉校验)/A2改造统计(10工具+18测试+7报告)/4处真因(conftest无主凭证·env泄漏·可信度口径·type:ignore真修)/§四.3模拟验证(仅改产物⇒12漂移告警,写死数字型批量红=0;还原后133项全绿)/诚实登记/交人★误解approve可信度档 |
-| `tools/*.py` | 439 个 |
-| `tests/test_*.py` | 439 个 |
+| HEAD | `db493498` 643 E4：白名单扩展决策器 |
+| `tools/*.py` | 493 个 |
+| `tests/test_*.py` | 492 个 |
 | `atoms/**/ATOM-*.md` | 27 张 |
 | `data/pck/certificates/*.pck.yaml` | 83 张 |
 | VSA 凭证 | 47 张 |
@@ -73,9 +73,9 @@
 ## 五、recent commits
 
 ```
-83f72122 640b [E1]：总收尾报告——任务表/A1权威源设计(两路+交叉校验)/A2改造统计(10工具+18测试+7报告)/4处真因(conftest无主凭证·env泄漏·可信度口径·type:ignore真修)/§四.3模拟验证(仅改产物⇒12漂移告警,写死数字型批量红=0;还原后133项全绿)/诚实登记/交人★误解approve可信度档
-5061eaa8 640b：bridge_edge_impact KNOWN_BASE 接单一权威源（曾写死 611 快照 114/7、121/0；现按 w2_authority 现算，双模式 79/42）
-b35206b0 640b [文档+产物]：开工快照(28项逐项清单+根因分层)/权威源设计文档/5份重生成报告(grounded_audit/dashboard×2/independent_verifier/third_party/v2_flag/defense_chain)/透明账本补录(50-57条:补登6个历史孤儿+新e2e凭证)
+db493498 643 E4：白名单扩展决策器
+fd5bd8e4 643 E3：闭环运行器（R4 轮）
+4e8b42cd 643 E2：规则老化探测器
 ```
 
 ## 六、`pytest -m "not slow"` 既有失败（629 开工冻结，F1 用『无新增失败』口径）

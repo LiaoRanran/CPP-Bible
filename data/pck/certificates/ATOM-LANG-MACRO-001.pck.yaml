@@ -1,0 +1,24 @@
+schema_version: 619-pck-v1
+claim:
+  id: ATOM-LANG-MACRO-001
+  statement: 函数式宏在替换前先展开实参，替换是**文本级**的：实测 `SQ(x) x*x` 在 `SQ(3+1)` 上得 7（而正确写法得 16），`MAX(a,b)`
+    传入 `i++` 时该实参被求值两次（实测 i 从 0 变 2）。
+  domain: lang
+  type: observation
+evidence:
+- type: replay
+  ref: evidence/lang/EV-LANG-009.md
+  hash: sha256:5e11083b481a677e2dbf1558ea05d727d664888a414be6e033826e314e2d93da
+negative_tests: []
+verifiers:
+- name: gate_engine
+  result: pass
+human_authority:
+  status: pending
+  review_method: batch_authorization
+uncertainty:
+  cs_upper_bound: 0.009062
+  estimand: L1
+provenance:
+  commit: 9fc692bf07eaf89c32ebaa7fe9333c6f402bd663
+  first_authorized_at: unknown
