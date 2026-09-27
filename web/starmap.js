@@ -1,22 +1,29 @@
 // 653 B · 星图 hero：W2 接地图（178 节点 / 388 攻击边 / 194 击败边）三维编码
 //   色 = 四态 · 大小 = 节点类型（卡 > 命题 > 误解）· 光（透明度）= credibility
-// 渲染：优先 cosmos.gl v3（CDN, GPU）；不可达时**诚实降级**为 2D canvas（同编码，可交互）。
+// 655 D 深化：① 节点 hover 卡片化（标题 + 四态 + credibility + 攻防计数）
+//            ② 点击 → 右侧**固定详情面板**（含攻击者/辩护者清单）
+//            ③ **边 hover**（拾取最近边）显示攻击/击败关系并高亮该边
+// 渲染：优先 cosmos.gl v3（本地 vendor）；不可达时**诚实降级**为 2D canvas（同编码，可交互）。
 import { STATE_COLORS, STATE_LABELS, KIND_LABELS, LINK_STYLE, fetchJSON, fmtInt, mountNav } from './app.js';
+// 655 D：统计与几何（攻防计数 / 最近边）抽到 graph_core.js ⇒ 可被 Node 真跑验证
+import { statsOf as coreStatsOf, pickEdgeIndex } from './graph_core.js';
 
 mountNav('starmap.html');
 
 const canvas = document.getElementById('graph');
 const stage = document.getElementById('stage');
 const tip = document.getElementById('tip');
+const detail = document.getElementById('detail');
 
 let G = null;          // graph.json
 let view = { x: 0, y: 0, k: 1 };
 let pos = [];          // [{x,y}]
-let visible = new Set();
+let idxById = new Map();
 const filters = { pass: true, pass_with_exception: true, fail: true, unknown: true, defeatedOnly: false };
 
 const RADIUS = { card: 7.5, prop: 4.2, misconception: 3.2 };
 const alphaOf = (c) => (c >= 3 ? 1.0 : c === 2 ? 0.72 : 0.5);
+const EDGE_PICK_PX = 7;      // 边拾取半径（屏幕像素）
 
 // ── 布局：一次性力导向（O(n²) 可行，n=178）────────────────────────────────
 function layout(nodes, links, iters = 320) {
@@ -67,10 +74,11 @@ function layout(nodes, links, iters = 320) {
 
 function passFilter(d) { return filters[d.state] !== false; }
 function passLink(l) { return !filters.defeatedOnly || l.defeated; }
+function nodeVisible(d) { return !!d && passFilter(d); }
 
 // ── 2D 渲染 ──────────────────────────────────────────────────────────────
 const ctx = canvas.getContext('2d');
-let hovered = -1, selected = -1;
+let hovered = -1, selected = -1, hoverEdge = -1;
 
 function resize() {
   const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -94,19 +102,22 @@ function draw() {
   const r = canvas.getBoundingClientRect();
   ctx.clearRect(0, 0, r.width, r.height);
   if (!G) return;
-  const idx = new Map(G.nodes.map((d, i) => [d.id, i]));
   // 边（击败边加亮；攻击边按击败与否区分）
-  for (const l of G.links) {
+  for (let i = 0; i < G.links.length; i++) {
+    const l = G.links[i];
     if (!passLink(l)) continue;
-    const a = idx.get(l.source), b = idx.get(l.target);
-    if (a == null || b == null || !passFilter(G.nodes[a]) || !passFilter(G.nodes[b])) continue;
+    const a = idxById.get(l.source), b = idxById.get(l.target);
+    if (a == null || b == null || !nodeVisible(G.nodes[a]) || !nodeVisible(G.nodes[b])) continue;
     const st = LINK_STYLE[l.kind] || LINK_STYLE.attack;
     const defeated = l.defeated && l.kind === 'attack';
-    ctx.beginPath();
     const A = toScreen(pos[a]), B = toScreen(pos[b]);
+    ctx.beginPath();
     ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y);
-    ctx.strokeStyle = `rgba(${defeated ? '217,107,107' : st.color},${defeated ? 0.42 : st.alpha})`;
-    ctx.lineWidth = (defeated ? 1.15 : st.width) * view.k;
+    const isHot = i === hoverEdge;
+    ctx.strokeStyle = isHot
+      ? (defeated ? 'rgba(217,107,107,.95)' : 'rgba(230,232,234,.85)')
+      : `rgba(${defeated ? '217,107,107' : st.color},${defeated ? 0.42 : st.alpha})`;
+    ctx.lineWidth = (isHot ? 2.2 : (defeated ? 1.15 : st.width)) * view.k;
     ctx.stroke();
   }
   // 节点
@@ -116,7 +127,7 @@ function draw() {
     const d = G.nodes[i];
     if (!passFilter(d)) continue;
     const p = toScreen(pos[i]);
-    const rad = (RADIUS[d.kind] || 4) * view.k * (d.kind === 'card' ? 1 : 1);
+    const rad = (RADIUS[d.kind] || 4) * view.k;
     const dim = sel && !(neigh.has(d.id) || d.id === sel.id);
     ctx.globalAlpha = dim ? 0.18 : alphaOf(d.credibility);
     ctx.beginPath();
@@ -125,7 +136,11 @@ function draw() {
     else ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
     ctx.fillStyle = STATE_COLORS[d.state] || STATE_COLORS.unknown;
     ctx.fill();
-    if (d.kind === 'card') { ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(230,232,234,.55)'; ctx.stroke(); }
+    if (d.kind === 'card' || i === hovered) {
+      ctx.lineWidth = i === hovered ? 1.6 : 1;
+      ctx.strokeStyle = i === hovered ? '#e6e8ea' : 'rgba(230,232,234,.55)';
+      ctx.stroke();
+    }
     ctx.globalAlpha = 1;
   }
 }
@@ -139,6 +154,24 @@ function neighbors(id) {
   return s;
 }
 
+// ── 拾取：节点优先，其次**最近边**（点到线段距离）─────────────────────────
+function pickNode(wx, wy) {
+  let best = -1, bd = 18 / view.k;
+  for (let i = 0; i < G.nodes.length; i++) {
+    if (!passFilter(G.nodes[i])) continue;
+    const d = Math.hypot(pos[i].x - wx, pos[i].y - wy);
+    if (d < bd) { bd = d; best = i; }
+  }
+  return best;
+}
+
+function pickEdge(sx, sy) {
+  return pickEdgeIndex({
+    links: G.links, nodes: G.nodes, pos, toScreen,
+    visible: nodeVisible, passLink, sx, sy, maxPx: EDGE_PICK_PX,
+  });
+}
+
 // ── 交互 ─────────────────────────────────────────────────────────────────
 let dragging = false, last = { x: 0, y: 0 }, moved = false;
 canvas.addEventListener('mousedown', (e) => { dragging = true; moved = false; last = { x: e.clientX, y: e.clientY }; });
@@ -150,33 +183,112 @@ canvas.addEventListener('mousemove', (e) => {
     view.y += (e.clientY - last.y) / view.k;
     last = { x: e.clientX, y: e.clientY }; moved = true; draw(); return;
   }
-  // hover 拾取
-  const w = toWorld(e.clientX - r.left, e.clientY - r.top);
-  let best = -1, bd = 18 / view.k;
-  for (let i = 0; i < (G?.nodes.length || 0); i++) {
-    if (!passFilter(G.nodes[i])) continue;
-    const d = Math.hypot(pos[i].x - w.x, pos[i].y - w.y);
-    if (d < bd) { bd = d; best = i; }
-  }
-  hovered = best;
-  if (best >= 0) {
-    const d = G.nodes[best];
-    tip.style.display = 'block';
-    tip.style.left = `${e.clientX - r.left + 14}px`;
-    tip.style.top = `${e.clientY - r.top + 12}px`;
-    tip.innerHTML = `<div class="t">${d.id}</div>
-      <div class="m">${KIND_LABELS[d.kind] || d.kind} · ${STATE_LABELS[d.state] || d.state}</div>
-      <div class="m">domain=${d.domain} · credibility=${d.credibility}${d.label ? ' · label=' + d.label : ''}</div>
-      ${d.title ? `<div class="m">${d.title}</div>` : ''}`;
+  const sx = e.clientX - r.left, sy = e.clientY - r.top;
+  const w = toWorld(sx, sy);
+  hovered = pickNode(w.x, w.y);
+  hoverEdge = hovered >= 0 ? -1 : pickEdge(sx, sy);
+  if (hovered >= 0) {
+    showTip(sx, sy, nodeTip(G.nodes[hovered]));
     canvas.style.cursor = 'pointer';
-  } else { tip.style.display = 'none'; canvas.style.cursor = 'grab'; }
+  } else if (hoverEdge >= 0) {
+    showTip(sx, sy, edgeTip(G.links[hoverEdge]));
+    canvas.style.cursor = 'crosshair';
+  } else {
+    tip.style.display = 'none'; canvas.style.cursor = 'grab';
+  }
+  if (hoverEdge >= 0 || hovered >= 0) draw();
 });
-canvas.addEventListener('click', () => { if (!moved) { selected = hovered; draw(); } });
+canvas.addEventListener('mouseleave', () => {
+  hovered = -1; hoverEdge = -1; tip.style.display = 'none'; draw();
+});
+canvas.addEventListener('click', () => {
+  if (moved) return;
+  selected = hovered;                 // -1 ⇒ 清空选中
+  renderDetail(selected);
+  draw();
+});
 canvas.addEventListener('wheel', (e) => {
   e.preventDefault();
   view.k = Math.max(0.25, Math.min(4, view.k * (e.deltaY < 0 ? 1.12 : 1 / 1.12)));
   draw();
 }, { passive: false });
+
+function showTip(x, y, html) {
+  tip.style.display = 'block';
+  tip.style.left = `${x + 14}px`;
+  tip.style.top = `${y + 12}px`;
+  tip.innerHTML = html;
+}
+
+function nodeTip(d) {
+  const st = statsOf(d.id);
+  return `<div class="t">${d.id}</div>
+    <div class="m">${KIND_LABELS[d.kind] || d.kind} · <b>${STATE_LABELS[d.state] || d.state}</b></div>
+    <div class="m">credibility=${d.credibility}${d.domain ? ` · domain=${d.domain}` : ''}${d.label ? ` · label=${d.label}` : ''}</div>
+    ${d.title ? `<div class="m">${d.title}</div>` : ''}
+    <div class="m">攻 ${st.attacks} · 被击败 ${st.defeated} · 防 ${st.defends}</div>
+    <div class="m">点击固定详情</div>`;
+}
+
+function edgeTip(l) {
+  const src = G.nodes[idxById.get(l.source)], dst = G.nodes[idxById.get(l.target)];
+  const kind = l.kind === 'attack' ? (l.defeated ? '攻击边 · **被击败**' : '攻击边 · 未被击败')
+    : l.kind === 'defend' ? '防御边' : '断言边（卡 → 命题）';
+  return `<div class="t">${l.source} → ${l.target}</div>
+    <div class="m">${kind}</div>
+    <div class="m">${KIND_LABELS[src.kind] || src.kind} → ${KIND_LABELS[dst.kind] || dst.kind}</div>
+    <div class="m">${STATE_LABELS[src.state] || src.state} → ${STATE_LABELS[dst.state] || dst.state}</div>`;
+}
+
+function statsOf(id) {
+  return coreStatsOf(G.links, id);       // 实现在 graph_core.js（Node 可测）
+}
+
+// ── 详情面板（655 D：点击固定）────────────────────────────────────────────
+function renderDetail(i) {
+  if (!detail) return;
+  if (i < 0 || !G) {
+    detail.innerHTML = `<h3>详情</h3><p class="muted">点击节点固定详情 · 悬停边看攻击/击败关系</p>`;
+    return;
+  }
+  const d = G.nodes[i];
+  const st = statsOf(d.id);
+  const inAttack = [], outAttack = [], defs = [];
+  for (let k = 0; k < G.links.length; k++) {
+    const l = G.links[k];
+    if (l.kind === 'defend' && (l.source === d.id || l.target === d.id)) defs.push([l, k]);
+    else if (l.kind === 'attack') {
+      if (l.target === d.id) inAttack.push([l, k]);
+      else if (l.source === d.id) outAttack.push([l, k]);
+    }
+  }
+  const other = (l) => (l.source === d.id ? l.target : l.source);
+  const row = ([l, k]) => {
+    const o = G.nodes[idxById.get(other(l))];
+    return `<li class="edge-row" data-edge="${k}">
+      <span class="mono">${o ? o.id : other(l)}</span>
+      <span class="muted">${o ? (KIND_LABELS[o.kind] || o.kind) : ''} · ${o ? (STATE_LABELS[o.state] || o.state) : ''}</span>
+      ${l.kind === 'attack' ? `<span class="${l.defeated ? 'tag-fail' : 'tag-warn'}">${l.defeated ? '被击败' : '未被击败'}</span>` : ''}
+    </li>`;
+  };
+  detail.innerHTML = `<h3>详情（已固定）</h3>
+    <div class="d-title mono">${d.id}</div>
+    <div class="d-grid">
+      <div><span class="stat-label">类型</span><div>${KIND_LABELS[d.kind] || d.kind}</div></div>
+      <div><span class="stat-label">四态</span><div class="state-text st-${d.state}">${STATE_LABELS[d.state] || d.state}</div></div>
+      <div><span class="stat-label">credibility</span><div class="mono">${d.credibility}</div></div>
+      <div><span class="stat-label">domain</span><div class="mono">${d.domain || '—'}</div></div>
+      ${d.status ? `<div><span class="stat-label">卡状态</span><div class="mono">${d.status}</div></div>` : ''}
+      ${d.props != null ? `<div><span class="stat-label">命题数</span><div class="mono">${d.props}</div></div>` : ''}
+      <div><span class="stat-label">攻击边</span><div class="mono">${st.attacks}（被击败 ${st.defeated}）</div></div>
+      <div><span class="stat-label">防御边</span><div class="mono">${st.defends}</div></div>
+    </div>
+    ${d.title ? `<p class="d-note">${d.title}</p>` : ''}
+    ${inAttack.length ? `<h3 style="margin-top:14px">受攻击（${inAttack.length}）</h3><ul class="edge-list">${inAttack.slice(0, 12).map(row).join('')}</ul>` : ''}
+    ${outAttack.length ? `<h3 style="margin-top:14px">发出攻击（${outAttack.length}）</h3><ul class="edge-list">${outAttack.slice(0, 12).map(row).join('')}</ul>` : ''}
+    ${defs.length ? `<h3 style="margin-top:14px">防御（${defs.length}）</h3><ul class="edge-list">${defs.slice(0, 12).map(row).join('')}</ul>` : ''}
+    <p class="muted" style="margin-top:12px">再次点击空白处取消固定。</p>`;
+}
 
 // ── 统计/图例/筛选 ───────────────────────────────────────────────────────
 function renderStats() {
@@ -192,6 +304,20 @@ function renderStats() {
   ].map(([v, l]) => `<div><div class="stat">${v}</div><div class="stat-label">${l}</div></div>`).join('');
 }
 
+/** 655 D：首屏描述文字也**现算**（不再写死 178/388/194，避免文档与数据漂移）。 */
+function renderLead() {
+  const c = G.meta.counts;
+  const el = document.getElementById('lead-desc');
+  if (!el) return;
+  const w2 = G.meta.w2_summary || {};
+  el.innerHTML = `真实台账渲染：<b>${fmtInt(c.nodes)}</b> 节点（${fmtInt(c.cards)} 卡 +
+    ${fmtInt(c.props)} 命题 + ${fmtInt(c.nodes - c.cards - c.props)} 误解）·
+    <b>${fmtInt(c.by_kind?.attack)}</b> 条攻击边（其中 <b>${fmtInt(c.defeated_links)}</b> 条被击败）·
+    ${fmtInt(c.by_kind?.defend)} 条防御边 · W2 接地：IN ${w2.IN ?? '—'} / OUT ${w2.OUT ?? '—'}。
+    数据由 <span class="kbd">tools/web_data_653.py</span> 从
+    <span class="kbd">data/grounded_labels_w2.json</span> 与 <span class="kbd">atoms/**</span> 生成，<b>不造数据</b>。`;
+}
+
 function wireFilters() {
   for (const k of ['pass', 'pass_with_exception', 'fail', 'unknown']) {
     const cb = document.getElementById('f-' + k);
@@ -200,7 +326,7 @@ function wireFilters() {
   const dd = document.getElementById('f-defeated');
   dd.addEventListener('change', () => { filters.defeatedOnly = dd.checked; draw(); });
   document.getElementById('reset').addEventListener('click', () => {
-    view = { x: 0, y: 0, k: 1 }; selected = -1; draw();
+    view = { x: 0, y: 0, k: 1 }; selected = -1; renderDetail(-1); draw();
   });
 }
 
@@ -223,7 +349,7 @@ async function tryCosmos() {
       enableDrag: true, enableZoom: true,
     };
     const graph = new Graph(canvas, cfg);
-    const n = G.nodes, idx = new Map(n.map((d, i) => [d.id, i]));
+    const n = G.nodes;
     const P = new Float32Array(n.length * 2);
     pos.forEach((p, i) => { P[i * 2] = p.x * 3; P[i * 2 + 1] = p.y * 3; });
     const S = new Float32Array(n.length); const C = new Float32Array(n.length * 4);
@@ -237,7 +363,7 @@ async function tryCosmos() {
       C[i * 4 + 3] = alphaOf(d.credibility);
     });
     const L = new Float32Array(G.links.length * 2);
-    G.links.forEach((l, i) => { L[i * 2] = idx.get(l.source) ?? 0; L[i * 2 + 1] = idx.get(l.target) ?? 0; });
+    G.links.forEach((l, i) => { L[i * 2] = idxById.get(l.source) ?? 0; L[i * 2 + 1] = idxById.get(l.target) ?? 0; });
     graph.setPointPositions(P); graph.setPointSizes(S); graph.setPointColors(C); graph.setLinks(L);
     graph.render();
     stage.classList.remove('fallback-note');
@@ -252,6 +378,23 @@ async function tryCosmos() {
   }
 }
 
+// ── 自动化验证钩子（655 D：给 tools/web_smoke_655.mjs 用；只读语义，不改渲染路径）──
+window.__starmap_hooks = {
+  /** 选中第 i 个节点并渲染详情面板（等价于"悬停后点击"）。 */
+  select(i) { selected = i; renderDetail(i); draw(); return i >= 0 ? G.nodes[i].id : null; },
+  /** 返回当前详情面板文本（供断言）。 */
+  detailText() { return detail ? detail.textContent : ''; },
+  /** 节点数（供断言）。 */
+  nodeCount() { return G ? G.nodes.length : 0; },
+  /** 边数（供断言）。 */
+  linkCount() { return G ? G.links.length : 0; },
+  /** 详细信息：`{id, state, credibility, attacks, defeated, defends}`。 */
+  info(i) {
+    const d = G.nodes[i];
+    return { id: d.id, state: d.state, credibility: d.credibility, ...statsOf(d.id) };
+  },
+};
+
 // ── 启动 ─────────────────────────────────────────────────────────────────
 (async function main() {
   try {
@@ -260,8 +403,11 @@ async function tryCosmos() {
     document.getElementById('stats').innerHTML = `<div class="muted">加载 data/graph.json 失败：${e.message}（请用本地静态服务器打开，file:// 下 fetch 会被浏览器拦截）</div>`;
     return;
   }
+  idxById = new Map(G.nodes.map((d, i) => [d.id, i]));
+  // 边预存两端下标（pickEdgeIndex 用；避免每次 hover 重建 Map）
+  for (const l of G.links) { l._ai = idxById.get(l.source); l._bi = idxById.get(l.target); }
   layout(G.nodes, G.links);
-  renderStats(); wireFilters(); resize();
+  renderLead(); renderStats(); renderDetail(-1); wireFilters(); resize();
   window.addEventListener('resize', resize);
   const gpu = await tryCosmos();
   if (!gpu) draw();

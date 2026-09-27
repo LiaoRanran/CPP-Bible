@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-09-27T23:32:31",
+  "generated_from": [
+    "atoms/**/ATOM-*.md",
+    "tools/gate_engine.py",
+    "queyi-core/tools/*_647.py+*_649.py",
+    "data/mutation/full_baseline_v7.json",
+    "data/grounded_labels_w2.json"
+  ],
+  "cards": {
+    "cards_real": 37,
+    "cards_draft": 10,
+    "cards_total": 47,
+    "card_statuses": {
+      "verified": 23,
+      "draft": 11,
+      "red-team-verified": 3
+    }
+  },
+  "rules": {
+    "rules_total": 67,
+    "rules_block": 44
+  },
+  "protectors": {
+    "protectors_total": 9,
+    "protectors_found": [
+      "conflict_detector_647",
+      "anti_windup_647",
+      "blind_protocol_647",
+      "calibration_tracker_647",
+      "mdl_gate_647",
+      "tool_gate_649",
+      "shadow_mode_649",
+      "circuit_breaker_649",
+      "budget_guard_649"
+    ],
+    "protectors_missing": [],
+    "protectors_root": "C:\\CodeLearnling\\note\\note\\queyi-core"
+  },
+  "escape": {
+    "available": true,
+    "variants": 1593,
+    "blocked": 1405,
+    "escaped": 1,
+    "n_a": 179,
+    "equivalent": 8,
+    "denominator": 1406,
+    "rate_pct": 0.0711,
+    "frozen_616": "1/1406 = 0.0711%",
+    "frozen_matches": true,
+    "note": "M2 可判 141→168 系 589 T2 注释净化 un-mask 真实 fixture 路径变异，非回归；唯一 escaped=1 = M1 / EV-CONC-001 / 删 negative_controls（冻结 TCE）"
+  },
+  "w2": {
+    "available": true,
+    "nodes": 131,
+    "IN": 89,
+    "OUT": 42,
+    "UNDEC": 0
+  },
+  "unavailable": [],
+  "note": "本文件由 tools/web_status_655.py 现算；前端只渲染、不写死数字。任何字段缺失都显式标 null 并进入 unavailable，不用占位值冒充真实。"
+}

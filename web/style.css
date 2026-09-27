@@ -125,8 +125,54 @@ tr.bad td { color: var(--fail); }
 .hash { font-family: var(--mono); font-size: 12px; word-break: break-all; color: var(--fg-dim); }
 
 footer { padding: 34px 26px 60px; color: var(--fg-mute); font-size: 12px; }
+
+/* ── 655 D：星图 舞台 + 详情面板 ─────────────────────── */
+.stage-wrap { display: grid; grid-template-columns: 1fr 330px; gap: 14px; align-items: start; }
+.detail {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  padding: 16px; min-height: 180px; max-height: 660px; overflow: auto;
+}
+.detail h3 { margin-bottom: 8px; }
+.detail .d-title { font-size: 13px; color: var(--fg); word-break: break-all; }
+.detail .d-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; margin-top: 12px; }
+.detail .d-grid .stat-label { display: block; margin-bottom: 2px; }
+.detail .d-note { margin-top: 12px; font-size: 13px; color: var(--fg-dim); }
+.detail .edge-list { list-style: none; margin: 0; padding: 0; }
+.detail .edge-row { display: flex; gap: 8px; align-items: baseline; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
+.detail .edge-row .mono { color: var(--fg); }
+.detail .edge-row .muted { font-size: 11px; }
+.tag-fail, .tag-warn { margin-left: auto; font-size: 11px; border-radius: 999px; padding: 1px 7px; border: 1px solid var(--line-2); }
+.tag-fail { color: var(--fail); border-color: rgba(217,107,107,.4); }
+.tag-warn { color: var(--pass-exc); border-color: rgba(216,166,87,.4); }
+/* 详情面板里的"四态文字"：只取色、不要图例圆点的背景 */
+.state-text { display: inline-block; background: none !important; }
+.state-text.st-pass { color: var(--pass); }
+.state-text.st-pass_with_exception { color: var(--pass-exc); }
+.state-text.st-fail { color: var(--fail); }
+.state-text.st-unknown { color: var(--unknown); }
+
+/* ── 655 D：landing "系统现状" 面板 ─────────────────── */
+.status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.status-grid .cell { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+.status-grid .num { font-family: var(--mono); font-size: 30px; line-height: 1.1; color: var(--fg); }
+.status-grid .num .unit { font-size: 14px; color: var(--fg-mute); margin-left: 4px; }
+.status-grid .cap { font-size: 12px; color: var(--fg-mute); text-transform: uppercase; letter-spacing: .08em; margin-top: 6px; }
+.status-grid .sub { font-size: 12px; color: var(--fg-dim); margin-top: 6px; }
+
+/* ── 655 D：批量验哈希 ─────────────────────────────── */
+.btnrow { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 10px 0 4px; }
+.batch-summary { font-family: var(--mono); font-size: 13px; color: var(--fg-dim); }
+.batch-summary b.ok { color: var(--pass); }
+.batch-summary b.bad { color: var(--fail); }
+.batch-summary b.skip { color: var(--pass-exc); }
+
+@media (max-width: 1080px) {
+  .stage-wrap { grid-template-columns: 1fr; }
+  .status-grid { grid-template-columns: repeat(2, 1fr); }
+}
 @media (max-width: 900px) {
   .grid.c3, .grid.c2 { grid-template-columns: 1fr; }
+  .status-grid { grid-template-columns: 1fr; }
   h1 { font-size: 27px; }
   .stage canvas { height: 460px; }
 }

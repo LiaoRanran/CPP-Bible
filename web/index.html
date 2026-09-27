@@ -15,7 +15,7 @@
       <p class="lead">CPP-Bible 把知识卡、证据、争论与判决放进同一个信任根：真实台账渲染的接地图、
         浏览器内可离线重算的哈希、以及随时能跑回来的复现清单。</p>
       <div class="toolbar" style="margin-top:18px">
-        <a class="btn" href="starmap.html">打开星图（178 节点）</a>
+        <a class="btn" href="starmap.html" id="starmap-btn">打开星图</a>
         <a class="btn" href="verify.html">现场验哈希</a>
         <span class="muted" id="mode-chip">—</span>
       </div>
@@ -23,6 +23,22 @@
     <div class="wrap wrap-wide" style="margin-top:26px">
       <div class="stage" id="stage"><canvas id="mini"></canvas></div>
     </div>
+  </section>
+
+  <!-- 655 D：系统现状（数字全部来自 web/data/status.json，由 tools/web_status_655.py 现算） -->
+  <section class="wrap">
+    <h3>系统现状（现算，非目标值）</h3>
+    <div class="status-grid" id="status-grid">
+      <div class="cell"><div class="num" id="s-cards">—</div><div class="cap">知识卡</div>
+        <div class="sub" id="s-cards-sub">加载中…</div></div>
+      <div class="cell"><div class="num" id="s-rules">—</div><div class="cap">判决规则</div>
+        <div class="sub" id="s-rules-sub">—</div></div>
+      <div class="cell"><div class="num" id="s-prot">—</div><div class="cap">保护器</div>
+        <div class="sub" id="s-prot-sub">—</div></div>
+      <div class="cell"><div class="num" id="s-escape">—</div><div class="cap">逃逸率</div>
+        <div class="sub" id="s-escape-sub">—</div></div>
+    </div>
+    <p class="muted" style="margin-top:12px" id="status-note"></p>
   </section>
 
   <section class="wrap">
@@ -54,13 +70,16 @@
 
   <section class="wrap">
     <div class="grid c3">
-      <div class="card"><h2>星图</h2><p>W2 加权接地模型的真实接地图：388 条攻击边、其中 <b>194 条被击败</b>。可筛选四态、只看击败边、点选看点。</p></div>
-      <div class="card"><h2>现场验哈希</h2><p>用浏览器 Web Crypto 对任意工件重算 sha256，与台账逐字节比对。<b>离线可用</b>，文件不出本机。</p></div>
-      <div class="card"><h2>复现清单</h2><p>648 十张 C 卡带版本串 + 命令 + 输入哈希 + 期望输出：一条命令即可重跑验收（见 <span class="kbd">replay_probe_651</span>）。</p></div>
+      <div class="card"><h2>星图</h2><p>W2 加权接地模型的真实接地图：攻击边与其中被击败的部分一目了然。可筛选四态、只看击败边，
+        <b>悬停看卡片摘要、点击固定详情、悬停边看攻击/击败关系</b>。</p></div>
+      <div class="card"><h2>现场验哈希</h2><p>用浏览器 Web Crypto 对工件重算 sha256，与台账逐字节比对：<b>支持一次拖入多个文件批量验证</b>，
+        结果可导出 CSV。<b>离线可用</b>，文件不出本机。</p></div>
+      <div class="card"><h2>复现清单</h2><p>十张 C 卡带版本串 + 命令 + 输入哈希 + 期望输出：一条命令即可重跑验收（见 <span class="kbd">replay_probe_651</span>）。</p></div>
     </div>
   </section>
 </main>
-<footer class="wrap">静态站 · 无后端 · 无追踪 · 数据由 <span class="mono">tools/web_data_653.py</span> 从真实台账生成（不造演示数据）。</footer>
+<footer class="wrap">静态站 · 无后端 · 无追踪 · 数据由 <span class="mono">tools/web_data_653.py</span> 与
+  <span class="mono">tools/web_status_655.py</span> 从真实台账生成（不造演示数据）。</footer>
 
 <script type="module">
 import { STATE_COLORS, fetchJSON, fmtInt } from './app.js';
@@ -72,6 +91,22 @@ let G, pos = [], t = 0, hover = -1;
 
 const RAD = { card: 6.4, prop: 3.4, misconception: 2.6 };
 const ALPHA = (c) => (c >= 3 ? 1 : c === 2 ? .72 : .5);
+const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/** 655 D：数字滚动动画（真实数值 → 从 0 计到目标；尊重 reduced-motion）。 */
+function countUp(el, target, { fmt = fmtInt, suffix = '', dur = 900 } = {}) {
+  if (!el) return;
+  if (REDUCED || !isFinite(target)) { el.innerHTML = fmt(target) + suffix; return; }
+  const t0 = performance.now();
+  const step = (now) => {
+    const k = Math.min(1, (now - t0) / dur);
+    const eased = 1 - Math.pow(1 - k, 3);
+    const v = target * eased;
+    el.innerHTML = fmt(Number.isInteger(target) ? Math.round(v) : v) + suffix;
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
 
 function resize() {
   const dpr = Math.min(2, devicePixelRatio || 1), r = canvas.getBoundingClientRect();
@@ -137,7 +172,42 @@ canvas.addEventListener('mousemove', (e) => {
 });
 canvas.addEventListener('mouseleave', () => { hover = -1; });
 
+/** 655 D：系统现状面板（数字来自 web/data/status.json；缺字段 ⇒ 显示"不可用"，不猜） */
+async function renderStatus() {
+  const grid = document.getElementById('status-grid');
+  try {
+    const S = await fetchJSON('data/status.json');
+    const cards = S.cards || {}, rules = S.rules || {}, prot = S.protectors || {}, esc = S.escape || {};
+    countUp(document.getElementById('s-cards'), cards.cards_real ?? 0);
+    document.getElementById('s-cards-sub').textContent =
+      `另有 ${cards.cards_draft ?? '—'} 张 draft650 草稿 · verified ${(cards.card_statuses || {}).verified ?? '—'}`;
+    countUp(document.getElementById('s-rules'), rules.rules_total ?? 0);
+    document.getElementById('s-rules-sub').textContent =
+      `其中 severity=block ${rules.rules_block ?? '—'} 条`;
+    countUp(document.getElementById('s-prot'), prot.protectors_total ?? 0);
+    const miss = (prot.protectors_missing || []).length;
+    document.getElementById('s-prot-sub').textContent = miss
+      ? `⚠ 缺 ${miss} 个：${prot.protectors_missing.join(', ')}`
+      : `全部就位（647 真上岗 5 + 649 三个态 4）· 源：queyi-core/tools/`;
+    if (esc.available && esc.rate_pct != null) {
+      countUp(document.getElementById('s-escape'), esc.rate_pct, { fmt: (v) => Number(v).toFixed(4), suffix: '%' });
+      document.getElementById('s-escape-sub').textContent =
+        `${esc.escaped}/${esc.denominator}（v7 基线，交叉核对 616：${esc.frozen_matches ? '一致' : '不一致'}）`;
+    } else {
+      document.getElementById('s-escape').textContent = '不可用';
+    }
+    const un = (S.unavailable || []);
+    document.getElementById('status-note').textContent =
+      `数据来源：${(S.generated_from || []).join('　·　')}　生成于 ${S.generated_at || '—'}` +
+      (un.length ? `　⚠ 缺项：${un.join('；')}` : '');
+  } catch (e) {
+    grid.innerHTML = `<div class="cell"><div class="sub">加载 data/status.json 失败：${e.message}
+      （请用本地静态服务器打开；生成命令 <span class="kbd">python tools/web_status_655.py</span>）</div></div>`;
+  }
+}
+
 (async function main() {
+  renderStatus();               // 与图数据并行拉取，互不阻塞
   try {
     G = await fetchJSON('data/graph.json');
   } catch (e) {
@@ -146,12 +216,21 @@ canvas.addEventListener('mouseleave', () => { hover = -1; });
     return;
   }
   const c = G.meta.counts, w2 = G.meta.w2_summary || {};
-  document.getElementById('stats').innerHTML = [
-    [fmtInt(c.nodes), '节点'], [fmtInt(c.by_kind?.attack), '攻击边'], [fmtInt(c.defeated_links), '击败边'],
-    [fmtInt(c.cards), '知识卡'], [fmtInt(c.props), '命题'], [`${w2.IN ?? '—'}/${w2.OUT ?? '—'}`, 'IN / OUT'],
-  ].map(([v, l]) => `<div class="card"><div class="stat">${v}</div><div class="stat-label">${l}</div></div>`).join('');
+  const stats = [
+    [c.nodes, '节点'], [c.by_kind?.attack, '攻击边'], [c.defeated_links, '击败边'],
+    [c.cards, '知识卡'], [c.props, '命题'], [null, 'IN / OUT'],
+  ];
+  document.getElementById('stats').innerHTML = stats.map(([v, l], i) => `
+    <div class="card"><div class="stat" id="stat-${i}">0</div><div class="stat-label">${l}</div></div>`).join('');
+  stats.forEach(([v, l], i) => {
+    const el = document.getElementById('stat-' + i);
+    if (v == null) el.textContent = `${w2.IN ?? '—'} / ${w2.OUT ?? '—'}`;   // 比例不作计数动画
+    else countUp(el, v);
+  });
+  const btn = document.getElementById('starmap-btn');
+  if (btn) btn.textContent = `打开星图（${fmtInt(c.nodes)} 节点）`;
   document.getElementById('src-note').textContent = '数据来源：' + (G.meta.generated_from || []).join('　·　');
-  document.getElementById('mode-chip').textContent = `${fmtInt(c.links)} 条边真实渲染`;
+  document.getElementById('mode-chip').textContent = `${fmtInt(c.links)} 条边真实渲染 · 计数为滚动动画`;
   initLayout(); resize(); window.addEventListener('resize', () => { resize(); draw(); });
   requestAnimationFrame(tick);
 })();
