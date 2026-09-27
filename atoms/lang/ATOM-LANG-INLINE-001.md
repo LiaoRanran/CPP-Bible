@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-LANG-INLINE-001
 title: inline 函数的定义必须跨 TU 一致：违反 ODR 是「无须诊断」的 UB，且形态由链接顺序与优化档决定
 domain: LANG

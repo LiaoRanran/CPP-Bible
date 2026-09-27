@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-SHARED-002
 title: shared_ptr 的线程安全边界与原子代价：控制块原子、对象不原子
 domain: MEM

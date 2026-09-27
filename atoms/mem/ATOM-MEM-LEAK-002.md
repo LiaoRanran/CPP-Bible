@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-LEAK-002
 title: 泄漏检测的工具边界：报告与否不能等价于泄漏有无
 domain: MEM

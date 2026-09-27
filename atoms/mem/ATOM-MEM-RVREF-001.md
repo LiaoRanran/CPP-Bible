@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-RVREF-001
 title: 别以为形参写成 T&& 就会自动移动：进了函数体，它是左值
 domain: MEM

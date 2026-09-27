@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-ALIGN-001
 title: 结构体有对齐与填充：成员按对齐排列插 padding，sizeof 含 padding；alignas 可控、memcpy 安全
 domain: MEM

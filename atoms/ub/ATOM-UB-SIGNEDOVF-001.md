@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-UB-SIGNEDOVF-001
 title: "有符号整数溢出是 UB：同一行「溢出检查」在两个编译器上答案相反"
 domain: UB

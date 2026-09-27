@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-WEAK-001
 title: std::weak_ptr 是非拥有观察者；用 weak_ptr 打破 shared_ptr 的循环引用
 domain: MEM

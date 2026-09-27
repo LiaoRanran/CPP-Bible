@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-ALLOC-002
 title: 分配器策略的时空权衡：arena / pool / bitmap（元数据换灵活性）
 domain: MEM

@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-RAII-001
 title: 资源要绑在对象生命周期上：构造获取、析构释放，异常也安全
 domain: MEM

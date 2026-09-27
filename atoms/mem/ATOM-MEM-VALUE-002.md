@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-VALUE-002
 title: 引用折叠与完美转发：为什么 std::forward 不能省
 domain: MEM

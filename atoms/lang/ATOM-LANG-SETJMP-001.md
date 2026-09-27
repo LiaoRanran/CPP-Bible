@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-LANG-SETJMP-001
 title: "longjmp 之后，非 volatile 的局部变量值是不确定的"
 domain: LANG

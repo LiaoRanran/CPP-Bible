@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-UNIQUE-001
 title: std::unique_ptr 是唯一所有权智能指针：移动转移、拷贝删除、sizeof 等于裸指针
 domain: MEM

@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-NEW-001
 title: new/delete 是两层：new=分配+构造、delete=析构+释放；new[]/delete[] 必须配对，nothrow 失败返 null
 domain: MEM

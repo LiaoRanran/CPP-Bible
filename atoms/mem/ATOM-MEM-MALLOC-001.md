@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-MALLOC-001
 title: "free 不清空指针变量，也不保证 malloc(0) 返回 NULL"
 domain: MEM

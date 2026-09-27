@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-LANG-FNPTR-001
 title: "函数指针必须与目标函数类型兼容，否则调用是未定义行为"
 domain: LANG

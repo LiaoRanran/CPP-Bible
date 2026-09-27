@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-VALUE-001
 title: C++ 的值不是"左/右"二分：glvalue×rvalue 正交出 lvalue / xvalue / prvalue 三类
 domain: MEM

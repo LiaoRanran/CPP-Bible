@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-STRBOUND-001
 title: "snprintf 的返回值是「本该写入的长度」，strncpy 不保证 NUL 终止"
 domain: MEM

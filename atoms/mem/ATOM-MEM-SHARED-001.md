@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-SHARED-001
 title: std::shared_ptr 用引用计数共享所有权；但循环引用会泄漏，须用 weak_ptr 打破
 domain: MEM

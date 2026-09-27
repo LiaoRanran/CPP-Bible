@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-LANG-VOLATILE-001
 title: "volatile 的作用是「每次都真的去访问一次」，不是「多线程同步」"
 domain: LANG

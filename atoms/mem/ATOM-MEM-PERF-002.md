@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-PERF-002
 title: SSO：std::string 为什么短字符串不分配堆内存
 domain: MEM

@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-ALLOC-001
 title: allocator：STL 容器的内存策略抽象
 domain: MEM

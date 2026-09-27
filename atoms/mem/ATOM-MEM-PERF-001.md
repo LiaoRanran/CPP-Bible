@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-PERF-001
 title: 移动比拷贝快多少？收益只来自"掏空源对象"，无动态资源的类型移动=拷贝
 domain: MEM

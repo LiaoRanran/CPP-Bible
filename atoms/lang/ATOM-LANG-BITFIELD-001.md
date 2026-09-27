@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-LANG-BITFIELD-001
 title: "位域的布局与 Plain int 位域的符号性都是实现定义的"
 domain: LANG

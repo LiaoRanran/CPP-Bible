@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-LEAK-001
 title: 内存泄漏的检测信号分层：为什么"ASan 没报"不等于"没泄漏"
 domain: MEM

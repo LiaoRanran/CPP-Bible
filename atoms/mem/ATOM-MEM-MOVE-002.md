@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-MOVE-002
 title: 用 std::move 申报所有权转移，真正的搬运发生在移动构造里
 domain: MEM

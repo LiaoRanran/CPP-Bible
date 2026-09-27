@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-HIST-AUTOPTR-001
 title: 别看 auto_ptr 的名字像智能指针：它的"拷贝"是转移，而 C++98 只能这么表达
 domain: HIST

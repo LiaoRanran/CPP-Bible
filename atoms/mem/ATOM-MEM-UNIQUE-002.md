@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-UNIQUE-002
 title: unique_ptr 自定义删除器与数组：删除器进不进类型系统
 domain: MEM

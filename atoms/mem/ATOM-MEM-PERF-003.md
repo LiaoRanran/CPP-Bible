@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-PERF-003
 title: 小对象分配的真实开销：SSO 阈值不可移植 + 分配策略必须基准测量
 domain: MEM

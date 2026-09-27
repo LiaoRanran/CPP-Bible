@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-CONC-FENCE-001
 title: 内存屏障（fence）只约束顺序，不提供原子性；屏障在循环体内才阻止消除，但屏障≠原子类型
 domain: conc

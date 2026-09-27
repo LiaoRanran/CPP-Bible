@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-CONC-LOCK-001
 title: "锁的代价与无锁的代价：高竞争下 CAS 的原子 RMW 代价可能超过 mutex，但依赖核数与竞争度"
 domain: conc

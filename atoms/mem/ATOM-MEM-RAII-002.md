@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-RAII-002
 title: Rule of 0/3/5：什么时候该写析构函数，什么时候不该
 domain: MEM

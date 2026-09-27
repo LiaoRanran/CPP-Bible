@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-LANG-INTPROMO-001
 title: "有符号与无符号比较时，有符号一侧会被转成无符号（-1 < 1u 是假）"
 domain: LANG

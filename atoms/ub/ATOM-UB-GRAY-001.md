@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-UB-GRAY-001
 title: 先分清副作用是 unsequenced 还是 indeterminately sequenced：前者是 UB，后者只是未指定
 domain: UB

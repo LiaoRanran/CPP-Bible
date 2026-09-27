@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-CONC-RACE-001
 title: "数据竞争是未定义行为；TSan 可检测，但『没被报 ≠ 没有』"
 domain: conc

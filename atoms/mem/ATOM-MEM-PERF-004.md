@@ -1,4 +1,5 @@
 ---
+schema_version: 1
 id: ATOM-MEM-PERF-004
 title: 伪共享：多线程"独立变量"为何慢 18 倍，以及对齐 padding 的代价
 domain: MEM
