@@ -23,7 +23,7 @@
 | G9 | **M4 验证器未接线全量 67 规则** | 现用**门禁读取面代表性子集**（id/status/claim_structured/claim_boundary/evidence/liveness）避免风险与耗时 | 把 `gate_engine` 以**只读沙箱**方式接进 challenger（需先解决其写盘面） |
 | G10 | **T2 逐保护器粒度** | 649 保护器只读**全局** `QUEYI_PROTECTOR_MODE`（无 per-protector 通道）⇒ 本工具用临时 env 实现"逐保护器验证" | 给保护器加 per-protector 配置读取（改 4 个工具，需重钉信任根） |
 | G11 | **T2 canary 真比例灰度** | `canary` 与 `enforce` **行为相同**（仅审计标签不同）；无采样机制 | 给保护器加采样开关（同 G10） |
-| G12 | **budget_guard / shadow_mode 的模式开关"只改标签"** | 差分实测：两档下 `halted()` 均 True、`protection_raised` 均 0；`decide()` 均 `record_only` | 让这两个保护器在 shadow 下**不置位**（或明确"它们本就不该有 shadow 语义"）⇒ 需人裁决语义 |
+| G12 | ~~**budget_guard / shadow_mode 的模式开关"只改标签"**~~ **← 653 A 已修** | **652 口径更正**：`budget_guard` 确实是**真·假开关**（从不抛异常，`halted()` 与 mode 无关）；但 `shadow_mode` 是**探针假象**（652 用了 age=0 的新规则 ⇒ 两档都 `record_only`，探针无法区分）。**653 A 修复**：budget_guard `enforce` 下超额**抛 `BudgetExceeded`** + `halted()` mode 感知；shadow_mode 新增**真拦截面 `gate()`**（出窗口且 enforce 才 `blocked`）。差分实测**四保护器全部可区分**。 | ✅ 已修（653 A）；`canary` 真比例灰度仍缺（G11） |
 | G13 | **嵌入式交叉编译 / HIL** | 无交叉工具链、无真机（M5 的"能编译≠对"无法闭环） | 装 arm-none-eabi-gcc + 开发板 |
 
 ## 三、口径/数据限制

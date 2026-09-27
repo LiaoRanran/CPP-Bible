@@ -1,8 +1,8 @@
 {
   "state": "awaiting_review",
-  "active_batch": 652,
-  "next_batch": 653,
-  "last_completed_batch": 652,
+  "active_batch": 653,
+  "next_batch": 654,
+  "last_completed_batch": 653,
   "last_commit": "a4f156b4",
   "last_review_at": "2026-09-26",
   "prev_current_task_642_start": "641 收尾（阶段0）已完成：0.1 修复内核 selftest 投影名（run.project(\"w2\") ⇒ _never_registered_projection_641；w2 会被 C++ 适配器注册进进程级 _PROJECTORS，同进程先跑 cpp 测试致 selftest 假失败，非生产 bug）+ 复跑 641 五测试文件 58 passed/0 failed；0.2 回填 data/641_acceptance_report.md §二.2 终验节（1 failed/3415 passed/16 skipped 真实数字 + 根因/修复/验证）+ 新增 §二.2b E1 门禁节（8/8）；0.3 写 _auto/outbox/641.md（收尾版）+ 本 status；0.4 三组 commit（5a4685c5 641 工具/测试、eb48b8a0 641 报告、db61d0ba 遗留现场 116 项入册）⇒ 工作区 CLEAN、ahead=43。641 全量复核留 642 D2 一并跑。",
@@ -296,12 +296,20 @@
       "verdict": "awaiting_review",
       "objective": "究极巨大建设：交人项自动化(A) + W4+ 头部(B H5/H6) + W4+ 中间(C M4/M5) + W4+ 尾部(D T3/T7/T2) + 差啥登记(E) + 收工(F)",
       "notes": "CPP-Bible +7 提交 / queyi-core +1；run_652_gate **8/8 PASS**（fast/full/ruff/mypy/selftest/跨仓保护器联调/零污染/信任根）。① A 交人项自动化：87 卡从 `git log --diff-filter=A` 补 `verified_at`（备份+只加字段，651 H7 复扫无 verified_at 归 0）；T1 **452 条判决真回填**→新文件（原账本 sha256 前后一致 ec8cbf5c…）；M7 **30 条队列迁移**→新文件（30 收/0 拒，原文件 sha256 一致 8f4842e1…）；**648 conftest.py 提交**（逐测试 Merkle 隔离）；全量 pytest **收集 4015 例/541 文件**（装 hypothesis 后 4 个收集错→0）；OTS **结构重锚**（digest 更新+--check 通过，attestation 仍 pending）。② B：`probe_assembler_652`(H5 六积木→单翻译单元→真机差分矩阵 8 例：4 ok/4 sanitizer_runtime_missing 诚实分类)；`esbmc_falsify_652`(H6 降级 tool_unavailable+拟命令；BMC 失败=硬结论、成功仅 unknown(bounded))。③ C：`challenger_652`(M4 十卡×5算子=50 变体、读取面检出 50/50、逃逸率 0.0；首跑 10 次'逃逸'实为 M4 正则未匹配块式 evidence 的 bug，当场修正)；`embedded_adapter_652`(M5 裸金属静态检查 10 fixtures 41 违规；诚实登记 LLM 嵌入式 pass@1=55.6%)。④ D：`rats_closure_652`(T3 信任根→RATS 三库 reference_values 7/endorsements 4/verifier_code 27)；`pck_export_652`(T7 **103 证书导出 in-toto link+C2PA 断言，103/103 硬绑定一致，共 182 硬绑定**)；**T2** `protector_rollout_652`(queyi-core 三态灰度 shadow→canary→enforce+一键回滚+**差分真验证**)。⑤ **关键诚实发现**：T2 差分验证照出 `budget_guard_649`/`shadow_mode_649` 在 enforce 与 shadow 下**观测信号完全相同**（halted 均 True、protection_raised 均 0、decide 均 record_only）⇒ 其'shadow 回滚'名不副实（G12 需人裁决语义）；生效的只有 tool_gate_649/circuit_breaker_649。⑥ E：`data/652_gaps.md` **19 条**差啥（缺什么/为什么缺-实测依据/何时能做）。⑦ 未做/差啥（不假装）：全量两阶段 pytest **未跑完**（fast 600s 仅 20% ⇒ 估 ~50min 超 idle-timeout，G4）；OTS 真上链（无 ots CLI，G1）；ESBMC 真跑（未装，G2）；sanitizer 闭环（缺 -lubsan 运行库，G3）；LLM 造积木（无 LLM，G8）；M4 未接全量 67 规则（G9）；T2 逐保护器粒度/真比例灰度（G10/G11）；HIL/交叉编译（G13）；训域小模型/CVM/形式化（G5-G7）；存量脏测试文件非本批（G17）。未 push/未代签/未改 CORE_TOOLS/未改 67 规则/受控目录零污染。详见 data/652_acceptance_report.md、data/652_gaps.md 与 _auto/outbox/652.md。"
+    },
+    {
+      "batch": 653,
+      "status": "completed",
+      "completed_at": "2026-09-27",
+      "verdict": "awaiting_review",
+      "objective": "修假保护器(A，最高优先级) + 前端 P0 三样(B 星图/现场验哈希/landing) + 收尾(C)",
+      "notes": "queyi-core +1 提交 / CPP-Bible +3；run_653_gate **9/9 PASS**（fast/full/ruff/mypy/web_data selftest/前端产物/跨仓保护器联调/零污染/信任根）。① **A 修假保护器**：`budget_guard_649` 653 前是**真·假开关**（`consume()` 超额只 `return allowed=False` 从不抛；`halted()` 与 mode 无关）⇒ 修真为 `enforce` 超额**抛 `BudgetExceeded`**（真·自动停）+ `halted()` **mode 感知** + **审计留痕 records**；`shadow_mode_649` 653 前**只有 decide() 建议、无拦截面** ⇒ 新增 **`gate()` 真拦截面**（窗口内/全局 shadow ⇒ record_only 放行+记录；出窗口且 enforce ⇒ **blocked=True**）+ blocked_count 记账。② **差分测试**（同输入两档必须不同）：新增 tests/test_653_protector_fix.py(8 例) + test_budget_guard_649 内差分例；实测 enforce=(抛,停)=(True,True) vs shadow=(不抛,不停)=(False,False)。③ **B7-B10 全部真上岗**：protector_rollout_652 --verify ⇒ mode_switch_effective=[tool_gate_649, shadow_mode_649, circuit_breaker_649, budget_guard_649]，not_effective=[]。④ **诚实更正**：652 判 shadow_mode 为假开关系**探针假象**（652 用 age=0 的新规则 ⇒ 两档都 record_only，探针无法区分），其真缺口是**无拦截面**；budget_guard 的假才是真的 ⇒ 两者修法不同已分别修；**连带更新 650/652 依赖旧语义的测试/断言**，并**补 652 遗漏的 baseline 计数**（tools 88→89、test_files 51→52）。⑤ **B 前端 P0 三样**（web/ 静态站，无后端/无构建，数据全部真实生成 tools/web_data_653.py **不造演示数据**）：星图 hero（W2 接地真实数据 **178 节点=47 卡+89 命题+42 误解 / 388 攻击边 / 194 击败边 / 616 防御边**，**声明计数与物化边精确一致**；三通道 **色=四态（实测 116 pass/10 pwe/42 fail/10 unknown 齐备）·形=类型·光=credibility**；优先 cosmos.gl v3 CDN+GPU，不可达自动降级 2D canvas 并在左下角**显式标注**）；现场验哈希（浏览器 Web Crypto 离线重算 sha256 vs 本机现算台账 16 条真实工件，文件不出本机）；landing（首屏=**真数据会动接地图**非截图，暗色克制无渐变光斑/粒子）。实测本地静态服务 9 资产全 200、3 JS 模块 node --check 全 OK、graph.json 0 缺键/0 悬空边。⑥ C 收尾：门禁 9/9；信任根 --check 4/4 OK；受控 atoms 零漂移。⑦ **未做（诚实不假装）**：canary 真比例灰度（标签差异，G11）；全量两阶段 pytest **未跑完**（fast 420s 仅 9%，与 652 的 600s→20% 一致 ⇒ 估 ~50-75min，证据 data/653_fast.txt）；OTS 真上链（无 ots CLI，G1）；652 结转 G9 challenger 接全量 67 规则 / G17 存量脏文件 / G14 verified_at 口径 / 651 三项。未 push/未代签/未改 CORE_TOOLS/未改 67 规则/受控目录零污染。详见 data/653_acceptance_report.md 与 _auto/outbox/653.md。"
     }
   ],
   "history_note": "610/611/613/614 已压缩；逐批原始 commit 见 git log。",
   "notes": "638 收工（8/8 全完成，**v25 阶段 3 启动批**）：四态结论与 Lifecycle FSM **真上线**（向后兼容：历史判决/报告一字未改）。3.1 四态 schema + 边界三元组强制（缺任一自动降级 unknown）——实测 23 张 verified 卡 **0 边界 ⇒ 全部 unknown**；3.2 五态 FSM + 11 条合法迁移 + 复活条件 + append-only 哈希链 ledger（28 卡初态 draft 2/verified 26，0 卡有 lifecycle 字段）。B1 known_error_rate 三层估算 **67/67 全「无数据」**（ledger 无规则字段、target_type 全 edge，**绝不编造**）+ 真实全库代理（改判 18.81% / 人审 8.76% / 逃逸 0.071%）。B2 RR 冲突双口径：卡级 23 张全分类 + 规则对级 927 候选（**退化**，高置信仅 24 对：type1 6/type2 14/type3 4）。C2 闭环调参 3 项（覆盖层，**未改 637 工具**）⇒ 异常 4→2、误报 2→0；C1 第二次运行 memo + 对比（误报率 0.5→0.0）。E1 run_638_gate **PASS**（7/7 工具 --check + ruff + mypy 0/430 文件 + 22/22 交付 + 57 例/7 文件测试）。交人项：四态何时全量、FSM 迁移规则、样本不足如何补数据、RR top3 先修哪个、闭环靠谱率、639 做什么。**未代签/未 push/未改 637 工具/受控目录零污染**。详见 data/638_acceptance_report.md。",
   "status": "awaiting_review",
-  "batch": 652,
+  "batch": 653,
   "updated_at": "2026-09-27T00:00:00",
   "current_task_649": "649：A KNighter 挖规则（452 改判账本→3 候选/1 过MDL/2 留档，rules/draft_*.yaml）+ B B7-B10 保护器（工具级门/shadow/熔断/预算，QUEYI_PROTECTOR_MODE 保留，各 5-10 单测）+ C 标准引用 CI（std_refs 注册表 238 条 + WG 监控 + 编译器矩阵 gcc13.1.0/clang22.1.8）+ D 测试并行隔离（per-worker evidence_store + readonly_and_report 自动串行锁）+ E 两阶段门禁 run_649_gate（阶段1 PASS；阶段2 全量 58 失败经 git stash 对照确认全为预存在，649 零回归；ruff/mypy 本批全绿、51 新测全过）。未 push/未代签/未改 CORE_TOOLS/未改 67 规则/受控零污染。详见 _auto/outbox/649.md。",
   "prev_current_task_630": "631: 17/17 任务全完成（A CI pytest红根治：跨批脆弱6+工具自检过期3清零，剩5=环境依赖4+UTF-16存疑1，无新增失败；B 自身免疫率执行：auto42条liveness落地(23卡42处,备份+结构校验+来源可复核)但率仍100%未改善(warn134→92)，human90条出清单不代填；C 污染根因：逐组实跑未复现，未定位到函数，根因假设(apply后restore前失败)未证实，防护设计交人；D coverage补全：19向量→P0 2/P1 16/P2 1，建L1.2(扫28卡命中4命题)+L8.4(5场景全检出,生产日志零变化)两P0探针，口径45.7%→51.4%；E 他验信任根：三路径评估推荐C(外部KMS+透明日志)，导出RSA-2048公钥+第三方验证指南(私钥不落盘)；F Core接口v0.2：5接口25方法只定义不实现，雷1触发标准3/5；G1 收工门禁PASS）。诚实偏差：自身免疫率未改善/污染未定位/coverage提升有限/§零.13与F1提交冲突(已按F1提交v02_631、未提交625残留)/630 coverage工具未改仍45.7%/未push。",
