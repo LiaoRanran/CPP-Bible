@@ -1,5 +1,6 @@
 ---
 id: ATOM-DRAFT650-004
+verified_at: 2026-09-27
 title: C++11 起静态局部变量初始化是线程安全的（magic statics）
 domain: cpp
 type: fact

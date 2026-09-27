@@ -1,5 +1,6 @@
 ---
 id: EV-MEM-039
+verified_at: 2026-09-11
 serves: [ATOM-MEM-PERF-003]
 kind: run
 hypothesis: >-

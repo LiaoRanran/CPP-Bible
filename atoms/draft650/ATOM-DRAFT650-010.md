@@ -1,5 +1,6 @@
 ---
 id: ATOM-DRAFT650-010
+verified_at: 2026-09-27
 title: RCU 读侧临界区禁止抢占与休眠，否则宽限期无法结束
 domain: conc
 type: mechanism

@@ -1,6 +1,7 @@
 ---
 schema_version: 1
 id: ATOM-LANG-DECAY-001
+verified_at: 2026-09-27
 title: "数组形参会退化为指针：函数内的 sizeof 拿不到数组长度"
 domain: LANG
 type: rule

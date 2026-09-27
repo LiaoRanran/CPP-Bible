@@ -1,5 +1,6 @@
 ---
 id: ATOM-DRAFT650-005
+verified_at: 2026-09-27
 title: const 引用会延长所绑定临时对象的生命周期到引用作用域
 domain: cpp
 type: fact

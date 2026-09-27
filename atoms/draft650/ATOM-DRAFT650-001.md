@@ -1,5 +1,6 @@
 ---
 id: ATOM-DRAFT650-001
+verified_at: 2026-09-27
 title: STM32 中断里改全局变量须 volatile 或关中断保护，否则编译器优化会丢弃更新
 domain: emb
 type: mechanism

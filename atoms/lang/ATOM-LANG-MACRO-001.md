@@ -1,6 +1,7 @@
 ---
 schema_version: 1
 id: ATOM-LANG-MACRO-001
+verified_at: 2026-09-27
 title: "宏是文本替换：不加括号会错优先级，传带副作用实参会被求值多次"
 domain: LANG
 type: pitfall

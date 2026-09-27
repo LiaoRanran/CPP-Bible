@@ -1,5 +1,6 @@
 ---
 id: EV-UB-002
+verified_at: 2026-09-10
 serves: [ATOM-UB-GRAY-001]      # G4 样板 B 配套证据（灰区判据原子）；人审通过原子化时启用
 status: example                  # example：样板配套证据，随样板一并人审
 kind: asm                        # run（自洽性观测）+ asm（优化器假定不别名的铁证）

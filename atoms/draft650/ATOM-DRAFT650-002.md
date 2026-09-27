@@ -1,5 +1,6 @@
 ---
 id: ATOM-DRAFT650-002
+verified_at: 2026-09-27
 title: 独立看门狗 IWDG 由 LSI 驱动，主时钟失效仍能复位 MCU
 domain: emb
 type: mechanism

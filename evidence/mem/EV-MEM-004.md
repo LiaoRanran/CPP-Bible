@@ -1,5 +1,6 @@
 ---
 id: EV-MEM-004
+verified_at: 2026-09-11
 serves: [ATOM-MEM-RVREF-001]     # G5 MEM 域第一批；原子锻造后 EV-SERVES-EXIST 债自动清零
 status: example                  # 随原子一同送审；人审通过前不作为已验收原子的正式证据
 kind: run

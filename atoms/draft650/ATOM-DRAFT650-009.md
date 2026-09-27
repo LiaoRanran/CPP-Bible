@@ -1,5 +1,6 @@
 ---
 id: ATOM-DRAFT650-009
+verified_at: 2026-09-27
 title: Cortex-M 中断/异常优先级数值越小优先级越高
 domain: emb
 type: fact

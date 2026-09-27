@@ -1,5 +1,6 @@
 ---
 id: ATOM-DRAFT650-003
+verified_at: 2026-09-27
 title: ARM 上 volatile 不足以保证跨核/外设观测顺序，还需 DMB/DSB
 domain: conc
 type: mechanism

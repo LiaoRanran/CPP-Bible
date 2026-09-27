@@ -1,5 +1,6 @@
 ---
 id: EV-CONC-001
+verified_at: 2026-09-12
 serves: [ATOM-CONC-FENCE-001]
 kind: asm
 hypothesis: >-

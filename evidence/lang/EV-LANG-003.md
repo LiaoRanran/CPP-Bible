@@ -1,5 +1,6 @@
 ---
 id: EV-LANG-003
+verified_at: 2026-09-27
 serves: [ATOM-LANG-DECAY-001]
 kind: run
 hypothesis: >-

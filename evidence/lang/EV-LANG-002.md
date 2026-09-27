@@ -1,5 +1,6 @@
 ---
 id: EV-LANG-002
+verified_at: 2026-09-12
 domain: lang
 type: criterion
 status: draft

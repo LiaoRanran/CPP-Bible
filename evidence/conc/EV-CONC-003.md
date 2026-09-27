@@ -1,5 +1,6 @@
 ---
 id: EV-CONC-003
+verified_at: 2026-09-12
 domain: conc
 type: criterion
 status: draft

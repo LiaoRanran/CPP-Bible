@@ -1,5 +1,6 @@
 ---
 id: ATOM-DRAFT650-008
+verified_at: 2026-09-27
 title: 有符号整数溢出是未定义行为，编译器可假设不发生
 domain: cpp
 type: fact

@@ -1,5 +1,6 @@
 ---
 id: ATOM-DRAFT650-006
+verified_at: 2026-09-27
 title: DMA 缓冲区须 cache 一致或置 non-cacheable，否则读到陈旧数据
 domain: emb
 type: mechanism

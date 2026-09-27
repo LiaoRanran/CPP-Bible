@@ -1,5 +1,6 @@
 ---
 id: ATOM-DRAFT650-007
+verified_at: 2026-09-27
 title: -O2 可能移除无副作用循环/变量，调试(-O0)与发布行为可不同
 domain: hist
 type: myth

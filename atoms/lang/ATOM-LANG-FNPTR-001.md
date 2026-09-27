@@ -1,6 +1,7 @@
 ---
 schema_version: 1
 id: ATOM-LANG-FNPTR-001
+verified_at: 2026-09-27
 title: "函数指针必须与目标函数类型兼容，否则调用是未定义行为"
 domain: LANG
 type: rule

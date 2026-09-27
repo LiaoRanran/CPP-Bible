@@ -1,5 +1,6 @@
 ---
 id: EV-MEM-003
+verified_at: 2026-09-10
 serves: [ATOM-HIST-AUTOPTR-001]   # G4 样板 C 配套证据；人审通过原子化时启用
 status: example                    # example：样板配套证据，随样板一并人审
 kind: run                          # run（类型系统差异，编译期可判定）

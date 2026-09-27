@@ -1,5 +1,6 @@
 ---
 id: EV-MEM-005
+verified_at: 2026-09-11
 serves: [ATOM-MEM-RVREF-001]     # 版本边界专用卡：与 EV-MEM-004 分工（004 讲论断，005 讲边界）
 status: example
 kind: run
