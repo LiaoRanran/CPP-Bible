@@ -1,8 +1,8 @@
 {
   "state": "awaiting_review",
-  "active_batch": 647,
-  "next_batch": 648,
-  "last_completed_batch": 647,
+  "active_batch": 649,
+  "next_batch": 650,
+  "last_completed_batch": 649,
   "last_commit": "a4f156b4",
   "last_review_at": "2026-09-26",
   "prev_current_task_642_start": "641 收尾（阶段0）已完成：0.1 修复内核 selftest 投影名（run.project(\"w2\") ⇒ _never_registered_projection_641；w2 会被 C++ 适配器注册进进程级 _PROJECTORS，同进程先跑 cpp 测试致 selftest 假失败，非生产 bug）+ 复跑 641 五测试文件 58 passed/0 failed；0.2 回填 data/641_acceptance_report.md §二.2 终验节（1 failed/3415 passed/16 skipped 真实数字 + 根因/修复/验证）+ 新增 §二.2b E1 门禁节（8/8）；0.3 写 _auto/outbox/641.md（收尾版）+ 本 status；0.4 三组 commit（5a4685c5 641 工具/测试、eb48b8a0 641 报告、db61d0ba 遗留现场 116 项入册）⇒ 工作区 CLEAN、ahead=43。641 全量复核留 642 D2 一并跑。",
@@ -272,13 +272,22 @@
       "verdict": "awaiting_review",
       "objective": "硬骨头批次：信任根独立(A1-A5) + 保护器真上岗(B1-B5) + 仓库拆分(C1-C4) + 工具合并 15→10(D1-D3) + 打靶准备(E1-E3) + 收工门禁(F1-F3)",
       "notes": "14 个 647 工具 + 门禁 + 17 测试文件 133 例；run_647_gate PASS；A1/A2 fail-open 修复；五保护器 enforce + 一键回滚 + 零漂移；queyi-core 真拆到仓库外 166 提交无远端；15→10 合并 10/10 合规；三份调研文档；两阶段 pytest 非全绿但基线对照证明 647 引入失败 0（陈旧锁/构建产物/xdist 假失败/6 个基线即红）。未 push(104)/未代签/受控零污染。"
+    },
+    {
+      "batch": 649,
+      "status": "completed",
+      "completed_at": "2026-09-27",
+      "verdict": "awaiting_review",
+      "objective": "A KNighter 挖规则 + B B7-B10 保护器 + C 标准引用 CI 化 + D 测试基建并行隔离 + E 两阶段门禁",
+      "notes": "6 任务全完成（阶段0 基线 + A/B/C/D + E 门禁）。① 阶段0：确认 648 已收工（CPP-Bible 已提交），双仓库基线快照入 data/649_baseline.md；② A KNighter：从真实 452 条改判账本（decision_event_v2_ledger.jsonl）按 (result,confidence,target_type) 聚类 → 3 候选，1 过 MDL(admitted)/2 留档；每条带 触发模式/历史证据/预测误报率(heuristic 代理，非统计估计)；产物 rules/draft_KNIGHT-00{1,2,3}.yaml + data/649_a_knighter.*；③ B B7-B10 保护器（工具级门/影子模式/熔断/预算），保留 QUEYI_PROTECTOR_MODE 全局开关、enforce 拒绝/影子放行只记录，各 5-10 单测；④ C std_ref_monitor_649.py：std_refs 注册表 238 条（版本+条款锚点+抽取哈希+获取日期）+ WG14/WG21 issue 监控 + 编译器矩阵 gcc 13.1.0/clang 22.1.8；⑤ D conftest 加 per-worker evidence_store 隔离 + readonly_and_report 自动串行锁 + parallel_lock_649.py（跨进程锁）；⑥ E run_649_gate 两阶段：阶段1（7 工具 --check + 51 新测 fail-fast）PASS；阶段2 全量 pytest 58 失败 —— **git stash 对照确认全为预存在（test_verifier_closure_641/647 + calibration_tracker_647 --check），649 零回归**；ruff(本批)/mypy(本批 7 文件) 全绿、51 新测全过。诚实 WARN：KNighter 预测误报率=heuristic 代理需真实误报样本校准；M1-M7 变异结果本 checkout 未找到仅用改判账本；信任根闭包未刷新（KNighter 仅产 draft 未入 67 规则集）。硬边界：未 push(queyi-core 无远端)/未代签/未改 CORE_TOOLS/未改 67 规则/受控零污染。详见 _auto/outbox/649.md。"
     }
   ],
   "history_note": "610/611/613/614 已压缩；逐批原始 commit 见 git log。",
   "notes": "638 收工（8/8 全完成，**v25 阶段 3 启动批**）：四态结论与 Lifecycle FSM **真上线**（向后兼容：历史判决/报告一字未改）。3.1 四态 schema + 边界三元组强制（缺任一自动降级 unknown）——实测 23 张 verified 卡 **0 边界 ⇒ 全部 unknown**；3.2 五态 FSM + 11 条合法迁移 + 复活条件 + append-only 哈希链 ledger（28 卡初态 draft 2/verified 26，0 卡有 lifecycle 字段）。B1 known_error_rate 三层估算 **67/67 全「无数据」**（ledger 无规则字段、target_type 全 edge，**绝不编造**）+ 真实全库代理（改判 18.81% / 人审 8.76% / 逃逸 0.071%）。B2 RR 冲突双口径：卡级 23 张全分类 + 规则对级 927 候选（**退化**，高置信仅 24 对：type1 6/type2 14/type3 4）。C2 闭环调参 3 项（覆盖层，**未改 637 工具**）⇒ 异常 4→2、误报 2→0；C1 第二次运行 memo + 对比（误报率 0.5→0.0）。E1 run_638_gate **PASS**（7/7 工具 --check + ruff + mypy 0/430 文件 + 22/22 交付 + 57 例/7 文件测试）。交人项：四态何时全量、FSM 迁移规则、样本不足如何补数据、RR top3 先修哪个、闭环靠谱率、639 做什么。**未代签/未 push/未改 637 工具/受控目录零污染**。详见 data/638_acceptance_report.md。",
   "status": "awaiting_review",
-  "batch": 647,
-  "updated_at": "2026-09-26T00:00:00",
+  "batch": 649,
+  "updated_at": "2026-09-27T00:00:00",
+  "current_task_649": "649：A KNighter 挖规则（452 改判账本→3 候选/1 过MDL/2 留档，rules/draft_*.yaml）+ B B7-B10 保护器（工具级门/shadow/熔断/预算，QUEYI_PROTECTOR_MODE 保留，各 5-10 单测）+ C 标准引用 CI（std_refs 注册表 238 条 + WG 监控 + 编译器矩阵 gcc13.1.0/clang22.1.8）+ D 测试并行隔离（per-worker evidence_store + readonly_and_report 自动串行锁）+ E 两阶段门禁 run_649_gate（阶段1 PASS；阶段2 全量 58 失败经 git stash 对照确认全为预存在，649 零回归；ruff/mypy 本批全绿、51 新测全过）。未 push/未代签/未改 CORE_TOOLS/未改 67 规则/受控零污染。详见 _auto/outbox/649.md。",
   "prev_current_task_630": "631: 17/17 任务全完成（A CI pytest红根治：跨批脆弱6+工具自检过期3清零，剩5=环境依赖4+UTF-16存疑1，无新增失败；B 自身免疫率执行：auto42条liveness落地(23卡42处,备份+结构校验+来源可复核)但率仍100%未改善(warn134→92)，human90条出清单不代填；C 污染根因：逐组实跑未复现，未定位到函数，根因假设(apply后restore前失败)未证实，防护设计交人；D coverage补全：19向量→P0 2/P1 16/P2 1，建L1.2(扫28卡命中4命题)+L8.4(5场景全检出,生产日志零变化)两P0探针，口径45.7%→51.4%；E 他验信任根：三路径评估推荐C(外部KMS+透明日志)，导出RSA-2048公钥+第三方验证指南(私钥不落盘)；F Core接口v0.2：5接口25方法只定义不实现，雷1触发标准3/5；G1 收工门禁PASS）。诚实偏差：自身免疫率未改善/污染未定位/coverage提升有限/§零.13与F1提交冲突(已按F1提交v02_631、未提交625残留)/630 coverage工具未改仍45.7%/未push。",
   "prev_current_task_632": "631: 17/17 任务全完成（A CI pytest红根治：跨批脆弱6+工具自检过期3清零，剩5=环境依赖4+UTF-16存疑1，无新增失败；B 自身免疫率执行：auto42条liveness落地(23卡42处,备份+结构校验+来源可复核)但率仍100%未改善(warn134→92)，human90条出清单不代填；C 污染根因：逐组实跑未复现，未定位到函数，根因假设(apply后restore前失败)未证实，防护设计交人；D coverage补全：19向量→P0 2/P1 16/P2 1，建L1.2(扫28卡命中4命题)+L8.4(5场景全检出,生产日志零变化)两P0探针，口径45.7%→51.4%；E 他验信任根：三路径评估推荐C(外部KMS+透明日志)，导出RSA-2048公钥+第三方验证指南(私钥不落盘)；F Core接口v0.2：5接口25方法只定义不实现，雷1触发标准3/5；G1 收工门禁PASS）。诚实偏差：自身免疫率未改善/污染未定位/coverage提升有限/§零.13与F1提交冲突(已按F1提交v02_631、未提交625残留)/630 coverage工具未改仍45.7%/未push。",
   "prev_current_task_633": "633: 11/11 任务全完成（化债批，先盘点后清理）。任务0 全量债务盘点(7维度静态扫描,总436项:P0 0/P1 114/P2 67/P3 255;化债前快照:脏61/工具370/无--check 82/TODO35(实为占位XXX误报,真债12)/密钥1/死链0/待push47)；A1 push 47+1 commit(1438cd5e..33e02efb,ahead归零)；A2 CI债清理:实测套件有数据副作用(跑测试重写data/,脏60->74,失败32->54非稳定),建ci_debt_clear分类工具,修630三份断言过期测试(仅改断言);B1 工作区保守清理:还原7个时间戳/计数假脏,28实质内容登记;B2 工具债:更正TODO误报,给3个被import老工具补--check(comment_blocks/backup/observability);C1 密钥备份+影响评估(默认不轮换,轮换致历史凭证不可验=>交人;gitignore加宽);C2 他验债:重建锚恢复一致(40条链自洽),7孤儿凭证移档,2 dangling登记;D1 PCK/镜像边交人清单(ref_missing口径2vs1待核);D2 文档债:修3死链,登记.pytest_tmp 652目录残留;E1 测试债分类(slow6/跨批30/环境117/快照25+四长期方案);F1 run_633_gate PASS+三报告+ROI。诚实偏差:套件副作用致失败计数非稳定/A2仅修断言过期型/B2仅补3工具/C1未轮换/C2重建锚钉住测试追加日志/D2矛盾未核/pytest 51(≈A2 54)/未再push(ahead>0)。硬边界全遵守(未跑监工门禁全量·未代签·未改625-632工具核心逻辑·未删改JSONL·未动CRLF假脏两文件·受控零污染)。",
