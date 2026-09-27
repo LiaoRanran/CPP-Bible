@@ -88,7 +88,8 @@ def count_rules() -> dict[str, Any]:
 
 
 def count_protectors() -> dict[str, Any]:
-    found, missing = [], []
+    found: list[str] = []
+    missing: list[str] = []
     for name in PROTECTOR_NAMES:
         (found if (QUEYI / "tools" / f"{name}.py").is_file() else missing).append(name)
     return {"protectors_total": len(found), "protectors_found": found,

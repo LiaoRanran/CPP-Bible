@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="19" skipped="2" tests="321" time="534.920" timestamp="2026-09-27T23:38:37.527738+08:00" hostname="DESKTOP-E96SKGK"><testcase classname="tests.test_artifact_version" name="test_version_mismatch_blocks" time="1.166" /><testcase classname="tests.test_artifact_version" name="test_version_match_passes" time="0.671" /><testcase classname="tests.test_artifact_version" name="test_missing_card_version_warns" time="0.686" /><testcase classname="tests.test_artifact_version" name="test_unregistered_artifact_warns" time="0.708" /><testcase classname="tests.test_artifact_version" name="test_missing_ledger_file_warns" time="0.668" /><testcase classname="tests.test_artifact_version" name="test_no_artifact_field_skipped" time="0.684" /><testcase classname="tests.test_artifact_version" name="test_corrupt_ledger_treated_as_unregistered" time="0.683" /><testcase classname="tests.test_autoimmune_auto_fill_631" name="test_plan_auto_contract_and_deliverable_records_42" time="4.894" /><testcase classname="tests.test_autoimmune_auto_fill_631" name="test_sources_are_verifiable" time="0.716" /><testcase classname="tests.test_autoimmune_auto_fill_631" name="test_edit_is_insert_then_replace" time="0.688" /><testcase classname="tests.test_autoimmune_auto_fill_631" name="test_apply_edit_is_idempotent" time="0.674" /><testcase classname="tests.test_autoimmune_auto_fill_631" name="test_diff_structure_flags_only_non_liveness_changes" time="0.659" /><testcase classname="tests.test_autoimmune_auto_fill_631" name="test_dry_run_does_not_touch_cards_and_check_passes" time="4.768" /><testcase classname="tests.test_autoimmune_fix_proposal_630" name="test_plan_a_covers_all_diagnosed" time="2.505" /><testcase classname="tests.test_autoimmune_fix_proposal_630" name="test_signed_by_is_never_auto" time="0.656" /><testcase classname="tests.test_autoimmune_fix_proposal_630" name="test_auto_items_have_concrete_values" time="0.402" /><testcase classname="tests.test_autoimmune_fix_proposal_630" name="test_liveness_symbol_is_fixture_specific" time="1.073" /><testcase classname="tests.test_autoimmune_fix_proposal_630" name="test_object_suggestion_is_within_norm_set" time="1.207" /><testcase classname="tests.test_autoimmune_fix_proposal_630" name="test_needs_human_approval_and_report" time="4.348" /><testcase classname="tests.test_autoimmune_recalc_630" name="test_v23_thresholds_parsed" time="1.666" /><testcase classname="tests.test_autoimmune_recalc_630" name="test_strict_scenario_real_verification" time="0.436" /><testcase classname="tests.test_autoimmune_recalc_630" name="test_liveness_verification_is_real" time="1.017"><skipped type="pytest.skip" message="633 A2：631 已落地 auto liveness ⇒ 无 auto 建议，公式性验证不适用">C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_autoimmune_recalc_630.py:46: 633 A2：631 已落地 auto liveness ⇒ 无 auto 建议，公式性验证不适用</skipped></testcase><testcase classname="tests.test_autoimmune_recalc_630" name="test_optimistic_scenario" time="0.409" /><testcase classname="tests.test_autoimmune_recalc_630" name="test_pessimistic_scenario_worse_than_nothing" time="0.392"><skipped type="pytest.skip" message="无 signed_by 可代签 ⇒ 悲观情景不适用">C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_autoimmune_recalc_630.py:69: 无 signed_by 可代签 ⇒ 悲观情景不适用</skipped></testcase><testcase classname="tests.test_autoimmune_recalc_630" name="test_read_only_report_and_selftest" time="2.959" /><testcase classname="tests.test_baseline_629" name="test_standing_matches_task_book" time="0.397" /><testcase classname="tests.test_baseline_629" name="test_gate_counts_measured_equals_standing" time="1.011"><failure message="assert (231, 30, 146, 55) == (121, 0, 116, 5)&#10;  &#10;  At index 0 diff: 231 != 121&#10;  Use -v to get more diff">def test_gate_counts_measured_equals_standing():
+        # 640 A1 更新：STANDING 是 629 开工时的历史快照（保持不动，作存档）；
+        # 实测值随批次演进（639 放权闸修复后 warn 186→116、命中 191→121、warn 规则 9→8），
+        # 本测试改为锁定**当前实测**，历史一致性由 STANDING 本身存档承载。
+        g = B.gate_counts()
+&gt;       assert (g["total"], g["block"], g["warn"], g["advice"]) == (121, 0, 116, 5)
+E       assert (231, 30, 146, 55) == (121, 0, 116, 5)
+E         
+E         At index 0 diff: 231 != 121
+E         Use -v to get more diff
+
+tests\test_baseline_629.py:26: AssertionError</failure></testcase><testcase classname="tests.test_baseline_629" name="test_head_anchor_is_ancestor" time="0.744" /><testcase classname="tests.test_baseline_629" name="test_git_facts_readable" time="0.683" /><testcase classname="tests.test_baseline_629" name="test_file_counts_measured" time="0.410"><failure message="AssertionError: 任务书说 28 张，实测 27 张（差异已登记）&#10;assert 47 == 27">def test_file_counts_measured():
+        f = B.file_counts()
+        assert f["tools_py"] &gt; 300 and f["tests_py"] &gt; 300
+&gt;       assert f["atoms_md"] == 27, "任务书说 28 张，实测 27 张（差异已登记）"
+E       AssertionError: 任务书说 28 张，实测 27 张（差异已登记）
+E       assert 47 == 27
+
+tests\test_baseline_629.py:49: AssertionError</failure></testcase><testcase classname="tests.test_baseline_629" name="test_report_sections_written" time="1.327" /><testcase classname="tests.test_baseline_629" name="test_selftest_and_baseline_failure_freeze" time="0.394" /><testcase classname="tests.test_flashcard_export" name="test_atom_claim_card_generation" time="0.407" /><testcase classname="tests.test_flashcard_export" name="test_misconception_card_generation" time="0.404" /><testcase classname="tests.test_flashcard_export" name="test_anki_csv_format" time="0.412" /><testcase classname="tests.test_flashcard_export" name="test_all_atoms_exported" time="0.411" /><testcase classname="tests.test_flashcard_export" name="test_all_misconceptions_exported" time="0.410" /><testcase classname="tests.test_flashcard_export" name="test_no_empty_fields" time="0.443" /><testcase classname="tests.test_flashcard_export" name="test_export_writes_files" time="0.532" /><testcase classname="tests.test_gate_engine" name="test_mis_library_deep_needs_two_refutations" time="0.521" /><testcase classname="tests.test_gate_engine" name="test_misconception_ref_must_exist" time="0.459" /><testcase classname="tests.test_gate_engine" name="test_ped_misconception_singular_not_reported" time="0.476" /><testcase classname="tests.test_gate_engine" name="test_ped_misconception_plural_not_reported" time="0.481" /><testcase classname="tests.test_gate_engine" name="test_ped_misconception_top_level_not_reported" time="0.418" /><testcase classname="tests.test_gate_engine" name="test_ped_misconception_missing_reported" time="0.442" /><testcase classname="tests.test_gate_engine" name="test_audience_required_and_beginner_needs_analogy" time="0.507" /><testcase classname="tests.test_gate_engine" name="test_prereq_readable_declaration_must_match_reality" time="0.437" /><testcase classname="tests.test_gate_engine" name="test_atom_missing_field_triggers" time="0.461" /><testcase classname="tests.test_gate_engine" name="test_atom_complete_does_not_trigger" time="0.477" /><testcase classname="tests.test_gate_engine" name="test_atom_empty_sources_still_triggers" time="0.448" /><testcase classname="tests.test_gate_engine" name="test_verified_without_evidence_blocks" time="0.432" /><testcase classname="tests.test_gate_engine" name="test_verified_with_evidence_passes" time="0.468" /><testcase classname="tests.test_gate_engine" name="test_dag_cycle_blocks" time="0.444" /><testcase classname="tests.test_gate_engine" name="test_dag_acyclic_passes" time="0.424" /><testcase classname="tests.test_gate_engine" name="test_atom_id_unique_pair" time="0.455" /><testcase classname="tests.test_gate_engine" name="test_bad_id_and_wrong_dir_block" time="0.449" /><testcase classname="tests.test_gate_engine" name="test_548_path_not_canonical_warns" time="0.521" /><testcase classname="tests.test_gate_engine" name="test_548_path_rule_zero_hits_on_real_repo" time="0.508" /><testcase classname="tests.test_gate_engine" name="test_s3_run_match_file_clean_passes" time="0.508" /><testcase classname="tests.test_gate_engine" name="test_s3_run_match_file_hardcoded_blocks" time="0.510" /><testcase classname="tests.test_gate_engine" name="test_out_undeclared_key_warns" time="0.481" /><testcase classname="tests.test_gate_engine" name="test_out_declared_keys_pass" time="0.495" /><testcase classname="tests.test_gate_engine" name="test_assert_universal_symbol_blocks" time="0.466" /><testcase classname="tests.test_gate_engine" name="test_assert_symbol_without_source_warns" time="0.434" /><testcase classname="tests.test_gate_engine" name="test_assert_symbol_mapped_passes" time="0.447" /><testcase classname="tests.test_gate_engine" name="test_assert_symbol_map_declared_passes" time="0.440" /><testcase classname="tests.test_gate_engine" name="test_assert_prose_skipped" time="0.465" /><testcase classname="tests.test_gate_engine" name="test_assert_universal_symbol_blocks_even_if_in_artifact" time="0.451" /><testcase classname="tests.test_gate_engine" name="test_assert_pseudo_instruction_contains_blocks" time="0.436" /><testcase classname="tests.test_gate_engine" name="test_assert_pseudo_instruction_in_region_with_real_symbol_passes" time="0.429" /><testcase classname="tests.test_gate_engine" name="test_assert_symbol_in_comment_not_treated_as_source" time="0.462" /><testcase classname="tests.test_gate_engine" name="test_artifact_producer_missing_on_new_card_blocks" time="0.507" /><testcase classname="tests.test_gate_engine" name="test_artifact_producer_non_compiler_blocks" time="0.445" /><testcase classname="tests.test_gate_engine" name="test_artifact_producer_compiler_passes" time="0.435" /><testcase classname="tests.test_gate_engine" name="test_artifact_producer_exempt_existing_card_passes" time="0.473" /><testcase classname="tests.test_gate_engine" name="test_artifact_producer_decoupled_from_command_blocks" time="0.439" /><testcase classname="tests.test_gate_engine" name="test_artifact_producer_o_target_mismatch_blocks" time="0.424" /><testcase classname="tests.test_gate_engine" name="test_artifact_producer_consistent_passes" time="0.408" /><testcase classname="tests.test_gate_engine" name="test_evidence_id_duplicate_blocks" time="0.477" /><testcase classname="tests.test_gate_engine" name="test_evidence_id_unique_passes" time="0.423" /><testcase classname="tests.test_gate_engine" name="test_relations_mapping_form_is_normalized" time="0.424" /><testcase classname="tests.test_gate_engine" name="test_relations_mapping_form_existing_target_passes" time="0.465" /><testcase classname="tests.test_gate_engine.TestAtomRelConflict" name="test_prerequisite_contradicts_blocks" time="0.474" /><testcase classname="tests.test_gate_engine.TestAtomRelConflict" name="test_self_contradicts_blocks" time="0.450" /><testcase classname="tests.test_gate_engine.TestAtomRelConflict" name="test_contrasts_not_conflict" time="0.451" /><testcase classname="tests.test_gate_engine.TestAtomRelConflict" name="test_dict_form_contradicts_blocks" time="0.427" /><testcase classname="tests.test_gate_engine" name="test_relations_scalar_warns" time="0.419" /><testcase classname="tests.test_gate_engine" name="test_relations_empty_no_scalar_warn" time="0.424" /><testcase classname="tests.test_gate_engine" name="test_poison_exit_code" time="0.417" /><testcase classname="tests.test_gate_engine" name="test_matrix_command_is_not_a_trace_anchor" time="0.444" /><testcase classname="tests.test_gate_engine" name="test_matrix_two_traces_passes" time="0.445" /><testcase classname="tests.test_gate_engine" name="test_missing_falsification_blocks" time="0.434" /><testcase classname="tests.test_gate_engine" name="test_falsification_present_passes" time="0.485" /><testcase classname="tests.test_gate_engine" name="test_matrix_missing_keys_blocks" time="0.484" /><testcase classname="tests.test_gate_engine" name="test_matrix_illegal_values_warn_per_key" time="0.480" /><testcase classname="tests.test_gate_engine" name="test_matrix_stock_real_values_all_pass" time="0.469" /><testcase classname="tests.test_gate_engine" name="test_matrix_non_list_value_warns" time="0.448" /><testcase classname="tests.test_gate_engine" name="test_misconception_levels_blocks_and_passes" time="0.465" /><testcase classname="tests.test_gate_engine" name="test_ub_atom_requires_gray_zone" time="0.436" /><testcase classname="tests.test_gate_engine" name="test_zero_diag_requires_werror" time="0.447" /><testcase classname="tests.test_gate_engine" name="test_zero_diag_rule_declared_block" time="0.406" /><testcase classname="tests.test_gate_engine" name="test_matrix_anchor_not_self_proving" time="0.488" /><testcase classname="tests.test_gate_engine" name="test_trivial_observation_scans_out_file" time="0.504" /><testcase classname="tests.test_gate_engine" name="test_daibu_is_not_placeholder" time="0.450" /><testcase classname="tests.test_gate_engine" name="test_advice_rules_never_block" time="0.659" /><testcase classname="tests.test_gate_engine" name="test_rule_ids_unique_and_pedagogy_has_basis" time="0.468" /><testcase classname="tests.test_gate_engine" name="test_duplicate_rule_registration_rejected" time="0.403" /><testcase classname="tests.test_gate_engine" name="test_manifest_has_no_drift_in_repo" time="0.411" /><testcase classname="tests.test_gate_engine" name="test_status_enum_single_source_of_truth" time="0.406" /><testcase classname="tests.test_gate_engine" name="test_status_value_pair" time="0.440" /><testcase classname="tests.test_gate_engine" name="test_status_transition_pair" time="0.512" /><testcase classname="tests.test_gate_engine" name="test_dal_match_pair" time="0.493" /><testcase classname="tests.test_gate_engine" name="test_s1_signoff_prefix_matches_level" time="0.428" /><testcase classname="tests.test_gate_engine" name="test_principal_ok_is_single_point" time="0.452" /><testcase classname="tests.test_gate_engine" name="test_signoff_requires_real_name_not_just_prefix" time="0.476" /><testcase classname="tests.test_gate_engine" name="test_status_history_and_dal_signoff_require_real_name" time="0.424" /><testcase classname="tests.test_gate_engine" name="test_cl_card_confirm_is_blocked" time="0.463" /><testcase classname="tests.test_gate_engine" name="test_cl_card_non_confirm_passes" time="0.422" /><testcase classname="tests.test_gate_engine" name="test_gcc_card_confirm_not_flagged" time="0.414" /><testcase classname="tests.test_gate_engine" name="test_temporal_python_overwrite_blocked" time="0.426" /><testcase classname="tests.test_gate_engine" name="test_temporal_powershell_overwrite_blocked" time="0.419" /><testcase classname="tests.test_gate_engine" name="test_temporal_cp_and_redirect_blocked" time="0.485" /><testcase classname="tests.test_gate_engine" name="test_temporal_pre_compile_overwrite_passes" time="0.431" /><testcase classname="tests.test_gate_engine" name="test_temporal_post_read_passes" time="0.445" /><testcase classname="tests.test_gate_engine" name="test_contains_in_text_empty_or_cjk_blocked" time="0.443" /><testcase classname="tests.test_gate_engine" name="test_contains_in_text_generic_mnemonic_advice" time="0.395" /><testcase classname="tests.test_gate_engine" name="test_contains_in_text_specific_passes" time="0.422" /><testcase classname="tests.test_gate_engine" name="test_haystack_empty_fields_do_not_scan_repo" time="0.500" /><testcase classname="tests.test_gate_engine" name="test_haystack_fixture_symbol_is_mappable" time="0.466" /><testcase classname="tests.test_gate_engine" name="test_haystack_both_empty_all_asserts_warn" time="0.498" /><testcase classname="tests.test_gate_engine" name="test_out_key_unicode_detected" time="0.482" /><testcase classname="tests.test_gate_engine" name="test_out_key_ascii_declared_passes" time="0.452" /><testcase classname="tests.test_gate_engine" name="test_run_key_declared_fake_key_blocks" time="0.489" /><testcase classname="tests.test_gate_engine" name="test_run_key_declared_all_present_passes" time="0.507" /><testcase classname="tests.test_gate_engine" name="test_run_key_declared_without_file_skipped" time="0.472" /><testcase classname="tests.test_gate_engine" name="test_run_key_declared_missing_out_blocks" time="0.422" /><testcase classname="tests.test_gate_engine" name="test_decl_key_parsing_variants" time="0.395" /><testcase classname="tests.test_gate_engine" name="test_artifact_missing_file_blocks" time="0.449" /><testcase classname="tests.test_gate_engine" name="test_artifact_existing_file_passes" time="0.462" /><testcase classname="tests.test_gate_engine" name="test_artifact_field_absent_skipped" time="0.484" /><testcase classname="tests.test_gate_engine" name="test_artifacts_array_missing_one_blocks" time="0.493" /><testcase classname="tests.test_gate_engine" name="test_claim_structured_new_card_blocks" time="0.490" /><testcase classname="tests.test_gate_engine" name="test_claim_structured_staging_card_only_warns" time="0.421" /><testcase classname="tests.test_gate_engine" name="test_claim_structured_bad_type_and_dup_id_block" time="0.460" /><testcase classname="tests.test_gate_engine" name="test_claim_structured_valid_passes_and_card_level_extracted_by" time="0.439" /><testcase classname="tests.test_gate_engine" name="test_observation_without_artifact_blocks" time="0.420" /><testcase classname="tests.test_gate_engine" name="test_observation_with_artifact_assert_passes" time="0.410" /><testcase classname="tests.test_gate_engine" name="test_observation_with_run_match_file_passes" time="0.447" /><testcase classname="tests.test_gate_engine" name="test_inference_prop_is_not_rule2_business" time="0.519" /><testcase classname="tests.test_gate_engine" name="test_observation_liveness_dead_observation_warns" time="0.458" /><testcase classname="tests.test_gate_engine" name="test_observation_liveness_live_observation_passes" time="0.431" /><testcase classname="tests.test_gate_engine" name="test_observation_liveness_skips_when_no_artifact_assertion" time="0.427" /><testcase classname="tests.test_gate_engine" name="test_inference_machine_only_verified_blocks" time="0.439" /><testcase classname="tests.test_gate_engine" name="test_inference_with_human_signoff_passes" time="0.445" /><testcase classname="tests.test_gate_engine" name="test_inference_registered_basis_downgrades_to_warn" time="0.438" /><testcase classname="tests.test_gate_engine" name="test_inference_empty_name_signoff_still_blocks" time="0.462" /><testcase classname="tests.test_gate_engine" name="test_draft_inference_is_not_this_rule_business" time="0.448" /><testcase classname="tests.test_gate_engine" name="test_inference_prop_without_signature_blocks_and_names_prop" time="0.463" /><testcase classname="tests.test_gate_engine" name="test_inference_card_level_signoff_warns_but_not_block" time="0.431" /><testcase classname="tests.test_gate_engine" name="test_inference_prop_level_signed_by_passes" time="0.474" /><testcase classname="tests.test_gate_engine" name="test_yaml_hardening_indent_signal_survives_without_pyyaml" time="0.455" /><testcase classname="tests.test_gate_engine" name="test_out_stale_mtime_warns" time="0.457" /><testcase classname="tests.test_gate_engine" name="test_out_fresh_mtime_passes" time="0.440" /><testcase classname="tests.test_gate_engine" name="test_fm_duplicate_key_blocked" time="0.410" /><testcase classname="tests.test_gate_engine" name="test_fm_unique_keys_pass" time="0.453" /><testcase classname="tests.test_gate_engine" name="test_no_unverified_status_blocks" time="0.425" /><testcase classname="tests.test_gate_engine" name="test_superiority_banned_words_blocks" time="0.453" /><testcase classname="tests.test_gate_engine" name="test_evidence_required_fields_blocks" time="0.474" /><testcase classname="tests.test_gate_engine" name="test_evidence_serves_exist_warns" time="0.448" /><testcase classname="tests.test_gate_engine" name="test_pedagogy_field_gaps_advice" time="0.441" /><testcase classname="tests.test_gate_engine" name="test_human_quadrant_rules_not_machine_triggered" time="0.382" /><testcase classname="tests.test_incremental_replay" name="test_no_manifest_all_selected" time="0.400" /><testcase classname="tests.test_incremental_replay" name="test_unchanged_confirm_skipped" time="0.397" /><testcase classname="tests.test_incremental_replay" name="test_changed_fingerprint_selected" time="0.407" /><testcase classname="tests.test_incremental_replay" name="test_new_card_selected" time="0.396" /><testcase classname="tests.test_incremental_replay" name="test_last_refute_selected" time="0.439" /><testcase classname="tests.test_incremental_replay" name="test_missing_fingerprint_selected" time="0.442" /><testcase classname="tests.test_incremental_replay" name="test_card_fingerprint_sensitive_to_fixture" time="0.616" /><testcase classname="tests.test_incremental_replay" name="test_card_fingerprint_sensitive_to_out_530" time="0.763" /><testcase classname="tests.test_incremental_replay" name="test_card_fingerprint_ignores_undeclared_out_530" time="0.453" /><testcase classname="tests.test_incremental_replay" name="test_update_manifest_keeps_skip_drops_deleted" time="0.436" /><testcase classname="tests.test_json_output" name="test_gate_engine_json" time="4.250" /><testcase classname="tests.test_json_output" name="test_replay_json" time="5.097" /><testcase classname="tests.test_json_output" name="test_poison_drill_json" time="16.292" /><testcase classname="tests.test_json_output" name="test_golden_lock_json" time="219.962"><failure message="AssertionError: assert 'fail' == 'pass'&#10;  &#10;  - pass&#10;  + fail">@pytest.mark.skipif(
+        os.environ.get("CI") == "true",
+        reason="依赖本地 golden 状态（warn 待人工 accept），CI 上不可重现；本地 slow 阶段已知预期红",
+    )
+    def test_golden_lock_json():
+        """559 B 说明：本用例**不**挂 `replay_serial` —— `golden_lock check` 自己会调
+        `replay_card` 复算（每卡取放同一把锁），若外层再持锁会把它逼成
+        `infra_error:replay_busy`（每卡等 120s）。它防的是"释放锁路径崩溃"那个真 bug
+        （`_release_replay_lock` 已改为绝不抛，见 atom_evidence_replay）。
+        """
+        p = _run(["tools/golden_lock.py", "check", "--json"])
+        data = _parse_json_only(p)
+        _check_schema(data, "golden_lock")
+        # 当前基线已 accept（warn 8→32），check 应无恶化 → status pass
+&gt;       assert data["status"] == "pass"
+E       AssertionError: assert 'fail' == 'pass'
+E         
+E         - pass
+E         + fail
+
+tests\test_json_output.py:86: AssertionError</failure></testcase><testcase classname="tests.test_learner_twin_gate_628" name="test_collector_runs_and_does_not_modify_sources" time="1.943" /><testcase classname="tests.test_learner_twin_gate_628" name="test_events_file_append_only" time="1.119" /><testcase classname="tests.test_learner_twin_gate_628" name="test_event_schema_complete" time="0.647" /><testcase classname="tests.test_learner_twin_gate_628" name="test_gate_state_thresholds" time="0.668" /><testcase classname="tests.test_learner_twin_gate_628" name="test_threshold_is_configurable" time="0.662" /><testcase classname="tests.test_learner_twin_gate_628" name="test_classify_three_states" time="0.642" /><testcase classname="tests.test_learner_twin_gate_628" name="test_current_state_is_closed_and_zero" time="0.657" /><testcase classname="tests.test_learner_twin_gate_628" name="test_report_written_with_gate_state" time="0.770" /><testcase classname="tests.test_learner_twin_gate_628" name="test_selftest_exit_zero" time="1.764" /><testcase classname="tests.test_merkle_integrity_601" name="test_build_is_deterministic" time="0.674" /><testcase classname="tests.test_merkle_integrity_601" name="test_empty_dir_root_is_sha256_of_empty" time="0.701" /><testcase classname="tests.test_merkle_integrity_601" name="test_single_file_height_zero" time="0.650" /><testcase classname="tests.test_merkle_integrity_601" name="test_domain_separation_and_direction" time="0.663" /><testcase classname="tests.test_merkle_integrity_601" name="test_prove_verify_all_leaves[1]" time="0.710" /><testcase classname="tests.test_merkle_integrity_601" name="test_prove_verify_all_leaves[2]" time="0.658" /><testcase classname="tests.test_merkle_integrity_601" name="test_prove_verify_all_leaves[3]" time="0.679" /><testcase classname="tests.test_merkle_integrity_601" name="test_prove_verify_all_leaves[5]" time="0.701" /><testcase classname="tests.test_merkle_integrity_601" name="test_prove_verify_all_leaves[7]" time="0.732" /><testcase classname="tests.test_merkle_integrity_601" name="test_prove_verify_all_leaves[16]" time="0.987" /><testcase classname="tests.test_merkle_integrity_601" name="test_prove_verify_all_leaves[29]" time="1.589" /><testcase classname="tests.test_merkle_integrity_601" name="test_prove_rejects_out_of_scope_file" time="0.632" /><testcase classname="tests.test_merkle_integrity_601" name="test_prove_accepts_path_style_variants" time="0.646" /><testcase classname="tests.test_merkle_integrity_601" name="test_verify_detects_tampered_file" time="0.581" /><testcase classname="tests.test_merkle_integrity_601" name="test_verify_detects_tampered_proof_and_wrong_root" time="0.671" /><testcase classname="tests.test_merkle_integrity_601" name="test_root_changes_on_rename_and_content_change" time="0.648" /><testcase classname="tests.test_merkle_integrity_601" name="test_consistency_after_append" time="0.650" /><testcase classname="tests.test_merkle_integrity_601" name="test_consistency_rejects_modified_or_removed" time="0.793" /><testcase classname="tests.test_merkle_integrity_601" name="test_check_all_detects_tamper_in_fake_repo" time="0.710" /><testcase classname="tests.test_merkle_integrity_601" name="test_check_all_missing_roots_is_exit2" time="18.599" /><testcase classname="tests.test_merkle_integrity_601" name="test_real_ledger_covers_five_dirs_and_matches_now" time="2.839"><failure message="assert 49 == 29">def test_real_ledger_covers_five_dirs_and_matches_now():
+        """真库台账：5 个目录、根与当前内容一致（这是 `--check-merkle` 的底座）。"""
+        doc = mi.load_roots()
+        assert doc is not None and doc["algo"] == mi.ALGO
+        assert set(doc["dirs"]) == {k for k, *_ in mi.COVERED_DIRS}
+        assert doc["generated_at"] is None, "台账默认不打点（幂等）"
+        problems, _skipped, code = mi.check_all()
+        assert (problems, code) == ([], 0)
+&gt;       assert doc["dirs"]["atoms"]["file_count"] == 29
+E       assert 49 == 29
+
+tests\test_merkle_integrity_601.py:209: AssertionError</failure></testcase><testcase classname="tests.test_merkle_integrity_601" name="test_covered_dirs_exclude_volatile_artifacts" time="0.923" /><testcase classname="tests.test_merkle_integrity_601" name="test_no_bare_except_exception_in_module" time="0.647" /><testcase classname="tests.test_merkle_integrity_601" name="test_tool_does_not_modify_covered_dirs" time="0.669" /><testcase classname="tests.test_merkle_integrity_601" name="test_copy_of_repo_dir_is_not_the_repo" time="1.235" /><testcase classname="tests.test_merkle_integrity_601" name="test_tool_integrity_check_includes_merkle" time="3.091" /><testcase classname="tests.test_merkle_integrity_601" name="test_tool_integrity_check_red_on_tampered_fake_repo" time="0.738" /><testcase classname="tests.test_merkle_integrity_601" name="test_update_rebuilds_merkle_before_pinning" time="0.691" /><testcase classname="tests.test_merkle_proof_613" name="test_roots_exist" time="0.678" /><testcase classname="tests.test_merkle_proof_613" name="test_sample_files_returns_paths" time="0.637" /><testcase classname="tests.test_merkle_proof_613" name="test_all_proofs_verify" time="5.062" /><testcase classname="tests.test_merkle_proof_613" name="test_proofs_cover_multiple_dirs" time="4.909" /><testcase classname="tests.test_merkle_proof_613" name="test_proof_has_steps_and_root" time="2.264" /><testcase classname="tests.test_merkle_proof_613" name="test_render_sections" time="2.058" /><testcase classname="tests.test_merkle_proof_613" name="test_check_passes" time="2.168" /><testcase classname="tests.test_p02_discriminative" name="test_boilerplate_only_candidates_refused" time="0.425" /><testcase classname="tests.test_p02_discriminative" name="test_never_hitting_candidate_does_not_excuse" time="0.423" /><testcase classname="tests.test_p02_discriminative" name="test_real_hit_candidate_passes" time="0.405" /><testcase classname="tests.test_p02_discriminative" name="test_contains_boilerplate_refused" time="0.420" /><testcase classname="tests.test_p02_discriminative" name="test_contains_real_symbol_passes" time="0.402" /><testcase classname="tests.test_p02_discriminative" name="test_absent_not_affected" time="0.420" /><testcase classname="tests.test_p02_discriminative" name="test_boilerplate_helper" time="0.391" /><testcase classname="tests.test_patch_blocks" name="test_multi_block_patch_does_not_shift" time="0.416" /><testcase classname="tests.test_patch_blocks" name="test_crlf_preserved_after_patch" time="0.444" /><testcase classname="tests.test_patch_blocks" name="test_dry_run_does_not_write" time="0.482" /><testcase classname="tests.test_patch_blocks" name="test_split_blocks_counts_only_cpp_fences" time="0.390" /><testcase classname="tests.test_patch_blocks" name="test_load_patch_rejects_bad_json" time="0.436" /><testcase classname="tests.test_patch_blocks" name="test_patch_on_missing_file_is_safe" time="0.439" /><testcase classname="tests.test_pollution_bisect_631" name="test_bisect_finds_unique_polluter" time="0.403" /><testcase classname="tests.test_pollution_bisect_631" name="test_bisect_boundaries" time="0.387" /><testcase classname="tests.test_pollution_bisect_631" name="test_bisect_intermittent_is_inconclusive" time="0.416" /><testcase classname="tests.test_pollution_bisect_631" name="test_bisect_edge_collections" time="0.397" /><testcase classname="tests.test_pollution_bisect_631" name="test_pollution_marker_and_candidates" time="6.107" /><testcase classname="tests.test_pollution_bisect_631" name="test_readonly_and_report" time="1.517" /><testcase classname="tests.test_prop_graph" name="test_build_totals_and_distributions" time="0.522"><failure message="AssertionError: {'tool': 'prop_graph', 'version': 'v1.1', 'propositions': 89, 'cards': 37, ...}&#10;assert 89 == 79">tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-34772-1790523517/test_build_totals_and_distribu0')
+
+    def test_build_totals_and_distributions(tmp_path: Path):
+        """79 命题 / 27 卡 / obs 50 / inf 29（T0 实测底座）。"""
+        db = pg.build(tmp_path / "p.db")
+        st = pg.stats(db)
+&gt;       assert st["propositions"] == 79, st
+E       AssertionError: {'tool': 'prop_graph', 'version': 'v1.1', 'propositions': 89, 'cards': 37, ...}
+E       assert 89 == 79
+
+tests\test_prop_graph.py:45: AssertionError</failure></testcase><testcase classname="tests.test_prop_graph" name="test_build_is_idempotent" time="0.507" /><testcase classname="tests.test_prop_graph" name="test_build_does_not_touch_cards" time="0.791" /><testcase classname="tests.test_prop_graph" name="test_query_by_type_and_sign" time="0.714"><failure message="AssertionError: assert (60 == 50)&#10; +  where 60 = len([{'prop_key': 'ATOM-CONC-FENCE-001/prop-1', 'card': 'ATOM-CONC-FENCE-001', 'card_path': 'atoms/conc/ATOM-CONC-FENCE-00...', 'card': 'ATOM-HIST-AUTOPTR-001', 'card_path': 'atoms/hist/ATOM-HIST-AUTOPTR-001.md', 'card_kind': 'atom', ...}, ...])">tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-34772-1790523517/test_query_by_type_and_sign0')
+
+    def test_query_by_type_and_sign(tmp_path: Path):
+        """按类型/签署/机验/卡/命题 id 检索：计数与逐条归属都对得上。"""
+        db = pg.build(tmp_path / "p.db")
+        obs = pg.query(db, ctype="observation")
+        inf = pg.query(db, ctype="inference")
+&gt;       assert len(obs) == 50 and len(inf) == 29
+E       AssertionError: assert (60 == 50)
+E        +  where 60 = len([{'prop_key': 'ATOM-CONC-FENCE-001/prop-1', 'card': 'ATOM-CONC-FENCE-001', 'card_path': 'atoms/conc/ATOM-CONC-FENCE-00...', 'card': 'ATOM-HIST-AUTOPTR-001', 'card_path': 'atoms/hist/ATOM-HIST-AUTOPTR-001.md', 'card_kind': 'atom', ...}, ...])
+
+tests\test_prop_graph.py:87: AssertionError</failure></testcase><testcase classname="tests.test_prop_graph" name="test_unsigned_props_have_no_card_signoff" time="0.755" /><testcase classname="tests.test_prop_graph" name="test_anchor_source_splits_card_vs_evidence" time="0.709"><failure message="assert False&#10; +  where False = all(&lt;generator object test_anchor_source_splits_card_vs_evidence.&lt;locals&gt;.&lt;genexpr&gt; at 0x00000181ADEFF440&gt;)">tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-34772-1790523517/test_anchor_source_splits_card0')
+
+    def test_anchor_source_splits_card_vs_evidence(tmp_path: Path):
+        """有锚要分清来源。实测底座：命题**全部来自 27 张 atom 卡**（证据卡不带
+        `claim_structured`），而 atom 卡自身无机械锚点 ⇒ 命题的锚一律是 `evidence`（靠证据卡带）。"""
+        db = pg.build(tmp_path / "p.db")
+        rows = pg.query(db)
+        assert {r["card_kind"] for r in rows} == {"atom"}, "claim_structured 只在原子卡上（实测）"
+        assert {r["anchor_source"] for r in rows} == {"evidence"}, \
+            "atom 卡自身无锚（实测 27/27）⇒ 命题只能靠 evidence 卡带锚"
+        assert all(r["machine_verified"] == 1 for r in rows)
+        # 640 A1：签署后不存在 unsigned ⇒ 「有锚未签」态为空集（该显形口径保留在
+        # pending_signoff 视图的 fail-soft 路径里）；机验与签署仍互相独立地分列记录。
+&gt;       assert all(r["signoff_state"] == "prop_signed" for r in rows)
+E       assert False
+E        +  where False = all(&lt;generator object test_anchor_source_splits_card_vs_evidence.&lt;locals&gt;.&lt;genexpr&gt; at 0x00000181ADEFF440&gt;)
+
+tests\test_prop_graph.py:126: AssertionError</failure></testcase><testcase classname="tests.test_prop_graph" name="test_566_old_schema_is_detected" time="0.692" /><testcase classname="tests.test_prop_graph" name="test_566_old_schema_read_path_fails_loud_with_fix" time="0.649" /><testcase classname="tests.test_prop_graph" name="test_566_old_schema_build_self_heals" time="0.773"><failure message="assert (89 == 79)">tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-34772-1790523517/test_566_old_schema_build_self0')
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x00000181ACE45BD0&gt;
+
+    def test_566_old_schema_build_self_heals(tmp_path: Path, capsys):
+        """监工场景端到端：旧库 → build（自愈且**可见**）→ stats/query 都不崩、列齐、命题数 79。"""
+        db = _make_old_db(tmp_path / "old.db")
+        pg.build(db)
+        assert "旧 schema 自愈" in capsys.readouterr().out, "自愈必须打出来（否则用户不知道发生了什么）"
+        st = pg.stats(db)
+&gt;       assert st["propositions"] == 79 and st["cards"] == 27
+E       assert (89 == 79)
+
+tests\test_prop_graph.py:187: AssertionError</failure></testcase><testcase classname="tests.test_prop_graph" name="test_566_official_db_is_current" time="0.655" /><testcase classname="tests.test_prop_graph" name="test_566_pending_signoff_lists_unsigned_only" time="0.715"><failure message="AssertionError: assert [{'prop_key':...m', ...}, ...] == []&#10;  &#10;  Left contains 10 more items, first extra item: {'prop_key': 'ATOM-LANG-BITFIELD-001/prop-1', 'card': 'ATOM-LANG-BITFIELD-001', 'card_path': 'atoms/lang/ATOM-LANG-BITFIELD-001.md', 'card_kind': 'atom', ...}&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-34772-1790523517/test_566_pending_signoff_lists0')
+
+    def test_566_pending_signoff_lists_unsigned_only(tmp_path: Path):
+        """待签视图 = `unsigned`（命题级 signed_by 与卡级 verified_by 都没有）——
+        卡级人签（card_signed）**不进**本视图（口径不与 stats 混）。
+        640 A1：签署后 unsigned=0 ⇒ 待签视图为空（fail-soft 路径由下方视图测试覆盖）。"""
+        db = pg.build(tmp_path / "p.db")
+        rows = pg.pending_signoff(db)
+&gt;       assert rows == []
+E       AssertionError: assert [{'prop_key':...m', ...}, ...] == []
+E         
+E         Left contains 10 more items, first extra item: {'prop_key': 'ATOM-LANG-BITFIELD-001/prop-1', 'card': 'ATOM-LANG-BITFIELD-001', 'card_path': 'atoms/lang/ATOM-LANG-BITFIELD-001.md', 'card_kind': 'atom', ...}
+E         Use -v to get more diff
+
+tests\test_prop_graph.py:214: AssertionError</failure></testcase><testcase classname="tests.test_prop_graph" name="test_566_backlog_counts_atoms_minus_with_props" time="0.703"><failure message="AssertionError: 47&#10;assert 47 == 27">tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-34772-1790523517/test_566_backlog_counts_atoms_0')
+
+    def test_566_backlog_counts_atoms_minus_with_props(tmp_path: Path):
+        """待回填 = 总原子卡 − 带命题卡（实测 27 − 27 = 0 ⇒ 无待办，fail-soft）。"""
+        db = pg.build(tmp_path / "p.db")
+        items, total = pg.backlog(db)
+        have = len({r["card"] for r in pg.query(db)})
+&gt;       assert total == 27, total
+E       AssertionError: 47
+E       assert 47 == 27
+
+tests\test_prop_graph.py:225: AssertionError</failure></testcase><testcase classname="tests.test_prop_graph" name="test_566_views_are_fail_soft_and_json" time="0.721"><failure message="AssertionError: assert '无待办' in '[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observation] bf_a=5 bf_b=21 ... tools/prop_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n'&#10; +  where '[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observation] bf_a=5 bf_b=21 ... tools/prop_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n' = CaptureResult(out='[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observatio...op_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n', err='').out&#10; +    where CaptureResult(out='[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observatio...op_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n', err='') = readouterr()&#10; +      where readouterr = &lt;_pytest.capture.CaptureFixture object at 0x00000181ADEF9350&gt;.readouterr">tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-34772-1790523517/test_566_views_are_fail_soft_a0')
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x00000181ADEF9350&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x00000181A9E21F60&gt;
+
+    def test_566_views_are_fail_soft_and_json(tmp_path: Path, capsys, monkeypatch):
+        """空结果 fail-soft（打印"无待办"不崩）+ 两个视图都支持 --json。
+        640 A1：签署后 pending-signoff 真实结果就是空 ⇒ 本测试同时覆盖真实空与 patch 空。"""
+        db = pg.build(tmp_path / "p.db")
+        assert pg.main(["query", "--db", str(db), "--pending-signoff"]) == 0
+&gt;       assert "无待办" in capsys.readouterr().out  # 640 A1：签署后无待签命题
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert '无待办' in '[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observation] bf_a=5 bf_b=21 ... tools/prop_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n'
+E        +  where '[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observation] bf_a=5 bf_b=21 ... tools/prop_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n' = CaptureResult(out='[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observatio...op_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n', err='').out
+E        +    where CaptureResult(out='[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observatio...op_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n', err='') = readouterr()
+E        +      where readouterr = &lt;_pytest.capture.CaptureFixture object at 0x00000181ADEF9350&gt;.readouterr
+
+tests\test_prop_graph.py:235: AssertionError</failure></testcase><testcase classname="tests.test_prop_graph" name="test_566_pending_view_prints_card_frontmatter_howto" time="0.703"><failure message="AssertionError: 签署后待签视图应为空（fail-soft）&#10;assert '无待办' in '[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observation] bf_a=5 bf_b=21 ... tools/prop_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n'">tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-34772-1790523517/test_566_pending_view_prints_c0')
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x00000181ADEF96E0&gt;
+
+    def test_566_pending_view_prints_card_frontmatter_howto(tmp_path: Path, capsys):
+        """人签指引必须落在**仓库既有接口**上（卡面 `verified_by: human:&lt;名&gt;` + git 作者校验）。
+        640 A1：签署后待签视图恒为空 ⇒ howto 文案只在 --json 的 howto 字段/工具 help 里可见；
+        此处锁定空态行为 + howto 文案仍可从 json 空态以外的常量途径获得。"""
+        db = pg.build(tmp_path / "p.db")
+        pg.main(["query", "--db", str(db), "--pending-signoff"])
+        out = capsys.readouterr().out
+&gt;       assert "无待办" in out, "签署后待签视图应为空（fail-soft）"
+E       AssertionError: 签署后待签视图应为空（fail-soft）
+E       assert '无待办' in '[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observation] bf_a=5 bf_b=21 ... tools/prop_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n'
+
+tests\test_prop_graph.py:260: AssertionError</failure></testcase><testcase classname="tests.test_prop_graph" name="test_cli_build_stats_query" time="0.727"><failure message="assert '命题 79' in &quot;[prop] 已重建 C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.pytest_tmp\\run-34772-1790523517\\test_cli_build_stats_query0\\p.db：命题 89 条（卡 37 张）· 按类型 {'inference': 29, 'observation': 60} · 按签署 {'prop_signed': 79, 'unsigned': 10}· 机验 89\n&quot;&#10; +  where &quot;[prop] 已重建 C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.pytest_tmp\\run-34772-1790523517\\test_cli_build_stats_query0\\p.db：命题 89 条（卡 37 张）· 按类型 {'inference': 29, 'observation': 60} · 按签署 {'prop_signed': 79, 'unsigned': 10}· 机验 89\n&quot; = CaptureResult(out=&quot;[prop] 已重建 C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.pytest_tmp\\run-34772-1790523517\\test_c...：命题 89 条（卡 37 张）· 按类型 {'inference': 29, 'observation': 60} · 按签署 {'prop_signed': 79, 'unsigned': 10}· 机验 89\n&quot;, err='').out&#10; +    where CaptureResult(out=&quot;[prop] 已重建 C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.pytest_tmp\\run-34772-1790523517\\test_c...：命题 89 条（卡 37 张）· 按类型 {'inference': 29, 'observation': 60} · 按签署 {'prop_signed': 79, 'unsigned': 10}· 机验 89\n&quot;, err='') = readouterr()&#10; +      where readouterr = &lt;_pytest.capture.CaptureFixture object at 0x00000181A5B79A30&gt;.readouterr">tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-34772-1790523517/test_cli_build_stats_query0')
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x00000181A5B79A30&gt;
+
+    def test_cli_build_stats_query(tmp_path: Path, capsys):
+        """CLI：build / stats / query 三条子命令可用（--json 机器可读）。"""
+        db = str(tmp_path / "p.db")
+        assert pg.main(["build", "--db", db]) == 0
+&gt;       assert "命题 79" in capsys.readouterr().out
+E       assert '命题 79' in "[prop] 已重建 C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.pytest_tmp\\run-34772-1790523517\\test_cli_build_stats_query0\\p.db：命题 89 条（卡 37 张）· 按类型 {'inference': 29, 'observation': 60} · 按签署 {'prop_signed': 79, 'unsigned': 10}· 机验 89\n"
+E        +  where "[prop] 已重建 C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.pytest_tmp\\run-34772-1790523517\\test_cli_build_stats_query0\\p.db：命题 89 条（卡 37 张）· 按类型 {'inference': 29, 'observation': 60} · 按签署 {'prop_signed': 79, 'unsigned': 10}· 机验 89\n" = CaptureResult(out="[prop] 已重建 C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.pytest_tmp\\run-34772-1790523517\\test_c...：命题 89 条（卡 37 张）· 按类型 {'inference': 29, 'observation': 60} · 按签署 {'prop_signed': 79, 'unsigned': 10}· 机验 89\n", err='').out
+E        +    where CaptureResult(out="[prop] 已重建 C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.pytest_tmp\\run-34772-1790523517\\test_c...：命题 89 条（卡 37 张）· 按类型 {'inference': 29, 'observation': 60} · 按签署 {'prop_signed': 79, 'unsigned': 10}· 机验 89\n", err='') = readouterr()
+E        +      where readouterr = &lt;_pytest.capture.CaptureFixture object at 0x00000181A5B79A30&gt;.readouterr
+
+tests\test_prop_graph.py:272: AssertionError</failure></testcase><testcase classname="tests.test_queyi_core_interface_v02_631" name="test_five_interfaces_present" time="0.669" /><testcase classname="tests.test_queyi_core_interface_v02_631" name="test_each_interface_has_methods_and_docstrings" time="0.662" /><testcase classname="tests.test_queyi_core_interface_v02_631" name="test_all_methods_unimplemented" time="0.658" /><testcase classname="tests.test_queyi_core_interface_v02_631" name="test_verifier_and_attacker_new_capabilities" time="0.689" /><testcase classname="tests.test_queyi_core_interface_v02_631" name="test_authority_append_only_semantics" time="0.651" /><testcase classname="tests.test_queyi_core_interface_v02_631" name="test_readonly_and_report" time="1.084" /><testcase classname="tests.test_replay_invariants_605" name="test_fingerprint_dir_deterministic" time="0.683" /><testcase classname="tests.test_replay_invariants_605" name="test_fingerprint_dir_missing" time="0.646" /><testcase classname="tests.test_replay_invariants_605" name="test_fingerprint_dir_detects_change" time="0.687" /><testcase classname="tests.test_replay_invariants_605" name="test_check_artifact_restore_pass" time="4.369"><failure message="assert False is True">def test_check_artifact_restore_pass():
+        r = ri.check_artifact_restore()
+        assert r["name"] == "artifact_restore"
+&gt;       assert r["passed"] is True
+E       assert False is True
+
+tests\test_replay_invariants_605.py:58: AssertionError</failure></testcase><testcase classname="tests.test_replay_invariants_605" name="test_check_build_reproducibility_pass" time="1.688" /><testcase classname="tests.test_replay_invariants_605" name="test_check_sandbox_isolation_pass" time="0.986" /><testcase classname="tests.test_replay_invariants_605" name="test_run_checks_all_pass" time="3.091"><failure message="assert False&#10; +  where False = all(&lt;generator object test_run_checks_all_pass.&lt;locals&gt;.&lt;genexpr&gt; at 0x00000181ADEFD630&gt;)">def test_run_checks_all_pass():
+        # heavy=False: 跳过 build_reproducibility（CI 编译环境差异，同 CLI 测试的 --no-heavy）
+        results = ri.run_checks(heavy=False)
+        # 不写死条数：606 给 `INVARIANTS` 追加了 `lock_consistency`（I3），605 的 `== 3` 断言就此过期
+        # （607 收工门禁暴露）。改为按名字比对默认集合 ⇒ 今后再加检查项不会再假红。
+        assert {r["name"] for r in results} == set(ri.INVARIANTS), results
+&gt;       assert all(r["passed"] for r in results)
+E       assert False
+E        +  where False = all(&lt;generator object test_run_checks_all_pass.&lt;locals&gt;.&lt;genexpr&gt; at 0x00000181ADEFD630&gt;)
+
+tests\test_replay_invariants_605.py:87: AssertionError</failure></testcase><testcase classname="tests.test_replay_invariants_605" name="test_run_checks_only_one" time="2.771" /><testcase classname="tests.test_replay_invariants_605" name="test_run_checks_unknown_invariant" time="0.677" /><testcase classname="tests.test_replay_invariants_605" name="test_cli_list" time="1.400" /><testcase classname="tests.test_replay_invariants_605" name="test_cli_check_exit_0" time="3.177"><failure message="AssertionError: assert 2 == 0&#10; +  where 2 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling.../conc/EV-CONC-002.md: fingerprint mismatch (manifest=0a8db4835c128ec6… actual=9c35b9e8887cd344…) (0.05s)\n', stderr='').returncode">def test_cli_check_exit_0():
+        # --no-heavy: build_reproducibility 依赖编译环境一致性（卡面 artifact_sha256=本地MinGW编译，
+        # CI Ubuntu g++ 重编译产物必然不同 ⇒ invariant 失败 exit 2）。CI 上跳过该 heavy invariant，
+        # 其余 4 项（artifact_restore/sandbox_isolation/lock_consistency/manifest_consistency）仍校验。
+        proc = subprocess.run([sys.executable, str(TOOL), "--check", "--no-heavy"],
+                              capture_output=True, text=True, timeout=120)
+&gt;       assert proc.returncode == 0
+E       AssertionError: assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling.../conc/EV-CONC-002.md: fingerprint mismatch (manifest=0a8db4835c128ec6… actual=9c35b9e8887cd344…) (0.05s)\n', stderr='').returncode
+
+tests\test_replay_invariants_605.py:119: AssertionError</failure></testcase><testcase classname="tests.test_replay_invariants_605" name="test_cli_check_single_invariant" time="1.249" /><testcase classname="tests.test_replay_invariants_605" name="test_cli_json_valid" time="3.123"><failure message="assert 2 == 0&#10; +  where 2 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling...c35b9e8887cd344…)&quot;,\n   &quot;cards_checked&quot;: 56,\n   &quot;mismatches&quot;: 56,\n   &quot;invalid_verdicts&quot;: 0\n  }\n ]\n}\n', stderr='').returncode">def test_cli_json_valid():
+        # 同 test_cli_check_exit_0：--no-heavy 跳过 build_reproducibility（CI 编译环境差异）
+        proc = subprocess.run([sys.executable, str(TOOL), "--check", "--json", "--no-heavy"],
+                              capture_output=True, text=True, timeout=120)
+&gt;       assert proc.returncode == 0
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling...c35b9e8887cd344…)",\n   "cards_checked": 56,\n   "mismatches": 56,\n   "invalid_verdicts": 0\n  }\n ]\n}\n', stderr='').returncode
+
+tests\test_replay_invariants_605.py:134: AssertionError</failure></testcase><testcase classname="tests.test_replay_lock_serial" name="test_replay_serial_fixture_contract" time="1.769" /><testcase classname="tests.test_replay_lock_serial" name="test_try_unlink_lock_tolerates_oserror" time="0.682" /><testcase classname="tests.test_replay_lock_serial" name="test_try_unlink_lock_removes_real_file" time="0.729" /><testcase classname="tests.test_replay_lock_serial" name="test_sensitive_read_tests_are_serialized" time="0.437" /><testcase classname="tests.test_replay_lock_serial" name="test_two_phase_commands_documented" time="0.463" /><testcase classname="tests.test_run_613_gate" name="test_all_listed_tools_exist_and_have_check" time="0.629" /><testcase classname="tests.test_run_613_gate" name="test_monitors_are_separate_from_conclusion" time="0.443" /><testcase classname="tests.test_run_613_gate" name="test_run_step_reports_rc" time="0.771" /><testcase classname="tests.test_run_613_gate" name="test_render_marks_failures_and_verdict" time="0.437" /><testcase classname="tests.test_run_613_gate" name="test_render_includes_monitors_section_when_full" time="0.392" /><testcase classname="tests.test_run_613_gate" name="test_update_status_sets_awaiting_review" time="0.399" /><testcase classname="tests.test_run_614_gate" name="test_tools_exist" time="0.393" /><testcase classname="tests.test_run_614_gate" name="test_render_has_sections" time="0.389" /><testcase classname="tests.test_run_614_gate" name="test_render_full_includes_monitor_note" time="0.393" /><testcase classname="tests.test_run_614_gate" name="test_update_status_writes_batch_614" time="0.411" /><testcase classname="tests.test_run_615_gate" name="test_all_tools_green_config" time="0.396" /><testcase classname="tests.test_run_615_gate" name="test_simulated_failure_and_status" time="0.435" /><testcase classname="tests.test_run_624_gate" name="test_batch_624_files_enumerated" time="0.748" /><testcase classname="tests.test_run_624_gate" name="test_ci_yml_ok" time="0.488" /><testcase classname="tests.test_run_624_gate" name="test_selftest_passes" time="0.548"><failure message="FileNotFoundError: [WinError 206] 文件名或扩展名太长。">def test_selftest_passes():
+&gt;       assert g.selftest() == 0
+               ^^^^^^^^^^^^
+
+tests\test_run_624_gate.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tools\run_624_gate.py:92: in selftest
+    rc, _ = G623.run_ruff(G623.collect_py_files(["tools", "tests"]))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools\run_623_gate.py:50: in run_ruff
+    proc = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ASUS\AppData\Roaming\uv\python\cpython-3.13.13-windows-x86_64-none\Lib\subprocess.py:554: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ASUS\AppData\Roaming\uv\python\cpython-3.13.13-windows-x86_64-none\Lib\subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;Popen: returncode: None args: ['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bib...&gt;
+args = 'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe -m ruff check tests\\conftest.py tests\\tes...er.py tools\\whitelist_expand_decision_643.py tools\\whitespace_fix.py tools\\writer_selfcheck.py tools\\xref_check.py'
+executable = None, preexec_fn = None, close_fds = False, pass_fds = ()
+cwd = 'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible', env = None
+startupinfo = &lt;subprocess.STARTUPINFO object at 0x00000181ADF10850&gt;
+creationflags = 0, shell = False, p2cread = Handle(1200), p2cwrite = -1
+c2pread = 11, c2pwrite = Handle(812), errread = 12, errwrite = Handle(1180)
+unused_restore_signals = True, unused_gid = None, unused_gids = None
+unused_uid = None, unused_umask = -1, unused_start_new_session = False
+unused_process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session, unused_process_group):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            if not executable:
+                # gh-101283: without a fully-qualified path, before Windows
+                # checks the system directories, it first looks in the
+                # application directory, and also the current directory if
+                # NeedCurrentDirectoryForExePathW(ExeName) is true, so try
+                # to avoid executing unqualified "cmd.exe".
+                comspec = os.environ.get('ComSpec')
+                if not comspec:
+                    system_root = os.environ.get('SystemRoot', '')
+                    comspec = os.path.join(system_root, 'System32', 'cmd.exe')
+                    if not os.path.isabs(comspec):
+                        raise FileNotFoundError('shell not found: neither %ComSpec% nor %SystemRoot% is set')
+                if os.path.isabs(comspec):
+                    executable = comspec
+            else:
+                comspec = executable
+    
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+&gt;           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 206] 文件名或扩展名太长。
+
+C:\Users\ASUS\AppData\Roaming\uv\python\cpython-3.13.13-windows-x86_64-none\Lib\subprocess.py:1554: FileNotFoundError</failure></testcase><testcase classname="tests.test_run_624_gate" name="test_gate_passes" time="0.414"><failure message="FileNotFoundError: [WinError 206] 文件名或扩展名太长。">def test_gate_passes():
+        # 完整收工门禁（整目录 ruff + 本批 ruff + 工具 --check + ci.yml + 零污染）
+&gt;       assert g.main([]) == 0
+               ^^^^^^^^^^
+
+tests\test_run_624_gate.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tools\run_624_gate.py:109: in main
+    rc, out = G623.run_ruff(G623.collect_py_files(["tools", "tests"]))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tools\run_623_gate.py:50: in run_ruff
+    proc = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ASUS\AppData\Roaming\uv\python\cpython-3.13.13-windows-x86_64-none\Lib\subprocess.py:554: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\ASUS\AppData\Roaming\uv\python\cpython-3.13.13-windows-x86_64-none\Lib\subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;Popen: returncode: None args: ['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bib...&gt;
+args = 'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe -m ruff check tests\\conftest.py tests\\tes...er.py tools\\whitelist_expand_decision_643.py tools\\whitespace_fix.py tools\\writer_selfcheck.py tools\\xref_check.py'
+executable = None, preexec_fn = None, close_fds = False, pass_fds = ()
+cwd = 'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible', env = None
+startupinfo = &lt;subprocess.STARTUPINFO object at 0x00000181AF0D87D0&gt;
+creationflags = 0, shell = False, p2cread = Handle(2036), p2cwrite = -1
+c2pread = 11, c2pwrite = Handle(1936), errread = 12, errwrite = Handle(1568)
+unused_restore_signals = True, unused_gid = None, unused_gids = None
+unused_uid = None, unused_umask = -1, unused_start_new_session = False
+unused_process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session, unused_process_group):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            if not executable:
+                # gh-101283: without a fully-qualified path, before Windows
+                # checks the system directories, it first looks in the
+                # application directory, and also the current directory if
+                # NeedCurrentDirectoryForExePathW(ExeName) is true, so try
+                # to avoid executing unqualified "cmd.exe".
+                comspec = os.environ.get('ComSpec')
+                if not comspec:
+                    system_root = os.environ.get('SystemRoot', '')
+                    comspec = os.path.join(system_root, 'System32', 'cmd.exe')
+                    if not os.path.isabs(comspec):
+                        raise FileNotFoundError('shell not found: neither %ComSpec% nor %SystemRoot% is set')
+                if os.path.isabs(comspec):
+                    executable = comspec
+            else:
+                comspec = executable
+    
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+&gt;           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 206] 文件名或扩展名太长。
+
+C:\Users\ASUS\AppData\Roaming\uv\python\cpython-3.13.13-windows-x86_64-none\Lib\subprocess.py:1554: FileNotFoundError</failure></testcase><testcase classname="tests.test_run_639_gate" name="test_debts_table_complete" time="0.388" /><testcase classname="tests.test_run_639_gate" name="test_controlled_dirs_match_spec" time="0.392" /><testcase classname="tests.test_run_639_gate" name="test_round_report_check_runs" time="0.388" /><testcase classname="tests.test_run_639_gate" name="test_static_checks_green" time="4.739" /><testcase classname="tests.test_run_639_gate" name="test_gate_logic_reflects_step_results" time="0.502" /><testcase classname="tests.test_run_639_gate" name="test_ledger_check_green" time="0.418" /><testcase classname="tests.test_slow_performance_608" name="test_tq_example_budget_lock" time="0.480" /><testcase classname="tests.test_slow_performance_608" name="test_tq_perf_probe" time="8.783" /><testcase classname="tests.test_writer_selfcheck" name="test_wc01_pass_and_fail" time="0.481" /><testcase classname="tests.test_writer_selfcheck" name="test_wc01_cross_compiler_skip" time="0.457" /><testcase classname="tests.test_writer_selfcheck" name="test_wc02_missing_label_warn" time="0.451" /><testcase classname="tests.test_writer_selfcheck" name="test_wc02_absent_claim_not_checked" time="0.520" /><testcase classname="tests.test_writer_selfcheck" name="test_wc03_msvc_skip_and_missing_fixture" time="0.458" /><testcase classname="tests.test_writer_selfcheck" name="test_wc04_out_same_generation" time="0.436" /><testcase classname="tests.test_writer_selfcheck" name="test_wc05_live_control" time="0.455" /><testcase classname="tests.test_writer_selfcheck" name="test_wc07_unbounded_loop" time="0.486" /><testcase classname="tests.test_writer_selfcheck" name="test_stock_zero_false_positive" time="1.860" /><testcase classname="tests.test_writer_selfcheck" name="test_fifth_batch_e1_e2_caught" time="16.550" /></testsuite></testsuites>
