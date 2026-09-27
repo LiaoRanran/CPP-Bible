@@ -100,7 +100,8 @@ def _load_cert(p: Path) -> dict | None:
 
 def export_all() -> dict:
     certs = sorted(PCK_DIR.glob("*.yaml")) + sorted(PCK_DIR.glob("*.yml"))
-    rows, failed = [], 0
+    rows: list[dict] = []
+    failed = 0
     for p in certs:
         cert = _load_cert(p)
         if cert is None:

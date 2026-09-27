@@ -100,7 +100,7 @@ def run_challenger() -> dict:
             calib = {"strata": m3.get("strata"), "forced": m3.get("forced_recalibration", [])}
         except json.JSONDecodeError:
             calib = {}
-    rows = []
+    rows: list[dict] = []
     caught = missed = 0
     base_ok = True
     for cid, rel in TEN_C.items():
