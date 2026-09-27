@@ -1,0 +1,25 @@
+{
+  "status": "ok",
+  "ledger": "data\\authority\\decision_event_v2_ledger.jsonl",
+  "tree_size": 452,
+  "root_hash": "38b62c76a13097fc55aa1e0c0c23256004653a17c95996d927785ec62a41c385",
+  "checkpoint": {
+    "tree_size": 452,
+    "root_hash": "38b62c76a13097fc55aa1e0c0c23256004653a17c95996d927785ec62a41c385",
+    "timestamp": "2026-09-27T00:00:00",
+    "prev_checkpoint_hash": null,
+    "signature": "fb561bbe7bf5486ae2dc258ed789b1ed8793337b3b3cc169f4a650889b88fd7d",
+    "algo": "HMAC-SHA256"
+  },
+  "inclusion_sample": {
+    "index": 0,
+    "proof_len": 9,
+    "verify": true
+  },
+  "consistency_sample": {
+    "m": 300,
+    "n": 452,
+    "proof_len": 8,
+    "verify": true
+  }
+}
