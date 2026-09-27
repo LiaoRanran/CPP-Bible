@@ -168,3 +168,44 @@ def _isolate_production_data():
         print(f"\n[634 A1/640 A5] 生产 data/ 写隔离：还原被改 {restored} 个、"
               f"删除新建 {deleted} 个、按豁免/保守策略保留 {kept} 个"
               f"（明细：_auto/cleanup_log.jsonl）", flush=True)
+
+
+# ── 648：仓外「Merkle 覆盖目录」逐测试隔离 ─────────────────────────────────────
+# 病（648 实测）：`tool_integrity --check` 的目录级 Merkle 根覆盖
+# `atoms/ evidence/ Examples/ Book/ data/mutation(full_baseline)`，而部分攻击/回归测试
+# 会**直接写真实的 atoms/ evidence/ 目录**且不还原；并行下另一 worker 的 integrity /
+# evidence_sufficiency 测试读到被污染的目录 → 偶发红。data/（3.2GB）只能会话级还原，
+# 但这几个目录体量小，故改为**逐测试**快照→严格还原（删新建、复原被改）。
+# 快照在每测试开始时拍摄（已含 648 新增的未跟踪文件），故只会清掉“本测试运行期间产生
+# 的污染”，不会误删 648 产物；跨测试共享写不属于预期用法（data/ 亦仅会话级还原）。
+_ISOLATE_DIRS = [os.path.join(ROOT, d) for d in ("atoms", "evidence", "Examples", "Book")]
+
+
+def _restore_strict(snap: dict, base: str) -> None:
+    """逐测试严格还原：删除快照外新建文件（污染），复原被改文件。"""
+    for r, _dirs, files in os.walk(base):
+        for f in files:
+            p = os.path.join(r, f)
+            if p not in snap:
+                try:
+                    os.remove(p)
+                except OSError:
+                    pass
+    for p, content in snap.items():
+        if content is None:
+            continue
+        if _read(p) != content:
+            try:
+                os.makedirs(os.path.dirname(p), exist_ok=True)
+                with open(p, "wb") as fh:
+                    fh.write(content)
+            except OSError:
+                pass
+
+
+@pytest.fixture(scope="function", autouse=True)
+def _isolate_merkle_dirs():
+    snaps = {d: _snapshot(d) for d in _ISOLATE_DIRS if os.path.isdir(d)}
+    yield
+    for d, snap in snaps.items():
+        _restore_strict(snap, d)
