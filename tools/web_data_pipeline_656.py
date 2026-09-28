@@ -277,7 +277,7 @@ def check_wiring() -> tuple[bool, list[dict[str, Any]]]:
 
 # ── 构建 ────────────────────────────────────────────────────────────────────
 def minify_css(text: str) -> str:
-    text = re.sub(r"/\*.*?\*/", "", text, flags=re.S)
+    text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
     return "\n".join(ln.rstrip() for ln in text.splitlines() if ln.strip())
 
 

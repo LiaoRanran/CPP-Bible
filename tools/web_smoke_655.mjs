@@ -190,5 +190,35 @@ const status = JSON.parse(fs.readFileSync(path.join(WEB, 'data', 'status.json'),
   dom.window.close();
 }
 
+// ── ④ card.html：学习 MVP 三段式（656 D）────────────────────────────────
+{
+  console.log('\n[4/4] web/card.html —— 学习 MVP（前置 / 学习 / 自测）');
+  const dom = await mkDom('card.html');
+  const { window: w } = dom;
+  await import(pathToFileURL(path.join(WEB, 'card.js')).href);
+  const ready = await waitFor(() => w.__card_ready === true, 8000);
+  check('页面就绪（__card_ready）', ready);
+  if (ready) {
+    const cards = JSON.parse(fs.readFileSync(path.join(WEB, 'data', 'cards.json'), 'utf-8'));
+    const first = w.document.getElementById('pick').value;
+    check('选卡下拉套数与 cards.json 一致',
+      w.document.getElementById('pick').options.length === cards.count,
+      `${w.document.getElementById('pick').options.length} vs ${cards.count}`);
+    check('默认卡在 cards.json 里', !!cards.cards[first], first);
+    check('前置段已渲染', w.document.getElementById('prereq').textContent.trim().length > 0);
+    const head = w.document.getElementById('card-head').textContent;
+    check('学习段含当前卡 id', head.includes(first), first);
+    check('学习段含台账路径（provenance）',
+      head.includes(cards.cards[first].path));
+    const nSc = w.document.querySelectorAll('#selfcheck qy-card').length;
+    check('自测段渲染出题目（≥5 题）', nSc >= 5, `${nSc} 题`);
+    check('四态状态组件已写入（qy-status）',
+      w.document.body.innerHTML.includes('qy-status state='));
+    const prog = w.document.getElementById('progress').textContent;
+    check('进度文案读本机存储', /本机已学\s+\d+\/\d+/.test(prog), prog.trim());
+  }
+  dom.window.close();
+}
+
 console.log(`\n[web-smoke-655] ${failures.length ? 'FAIL：' + failures.join(' / ') : '全部通过'}`);
 process.exit(failures.length ? 1 : 0);

@@ -1,0 +1,223 @@
+{
+  "id": "ATOM-CONC-RACE-001",
+  "path": "atoms/conc/ATOM-CONC-RACE-001.md",
+  "meta": {
+    "title": "数据竞争是未定义行为；TSan 可检测，但『没被报 ≠ 没有』",
+    "domain": "conc",
+    "type": "pitfall",
+    "status": "verified",
+    "dal": "C",
+    "audience": "intermediate",
+    "cognitive_load": "medium",
+    "prerequisites_readable": true,
+    "verified_by": "human:liaoranran",
+    "verified_at": "2026-09-12"
+  },
+  "claim": "数据竞争（无同步的并发冲突访问，且至少一方为写）是 C++ 未定义行为，不是\"结果偶尔算错\"—— 编译器可据此做激进优化，行为完全不可预测。TSan 能检测数据竞争，但\"没被 TSan 报 ≠ 没有数据竞争\"： 其漏报边界（插桩盲区 / 必须全量插桩 / 时序偶发）使工具沉默不能当作安全证明。",
+  "boundary": {
+    "mutation_set_hash": null,
+    "mutation_count": null,
+    "generator_version": null,
+    "claim_boundary": {
+      "standard": [
+        "C++11",
+        "C++14",
+        "C++17",
+        "C++20",
+        "C++23"
+      ],
+      "compilers": [
+        "GCC 15.3.0 (MinGW-w64)",
+        "GCC 14.2.0 (WSL)",
+        "GCC 13.3.0 (WSL)"
+      ],
+      "opt": [
+        "-O2"
+      ],
+      "platform": [
+        "x86-64"
+      ]
+    }
+  },
+  "verdict": {
+    "state": "unknown",
+    "requested": "pass",
+    "downgraded": true,
+    "boundary_ok": false,
+    "reasons": [
+      "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version",
+      "⇒ 按 §3.1.3 降级为 unknown"
+    ],
+    "file": "atoms/conc/ATOM-CONC-RACE-001.md",
+    "verified": true
+  },
+  "prerequisites": [
+    {
+      "id": "ATOM-CONC-FENCE-001",
+      "title": "内存屏障（fence）只约束顺序，不提供原子性；屏障在循环体内才阻止消除，但屏障≠原子类型",
+      "domain": "conc",
+      "status": "verified",
+      "verdict_state": "unknown",
+      "props": 2
+    }
+  ],
+  "props": [
+    {
+      "id": "prop-1",
+      "subject": "竞争与安全对照的留痕读数",
+      "predicate": "在 kIters=100000 下读出",
+      "object": "数据竞争 UB",
+      "claim_type": "observation",
+      "statement": "三场景（single|race|safe）在 kIters=100000 下的机器读数：single_total=100000、race_ops_total=200000、safe_ops_total=200000，且安全组终值 safe_final=200000（等于两线程操作总数，结果确定）。",
+      "evidence": [
+        "EV-CONC-005",
+        "EV-CONC-006"
+      ],
+      "external_basis": null,
+      "liveness": {
+        "kind": "fixture_symbol",
+        "symbol": "_Z12bench_singlev"
+      },
+      "signed_by": "human:liaoranran"
+    },
+    {
+      "id": "prop-2",
+      "subject": "数据竞争",
+      "predicate": "是",
+      "object": "数据竞争 UB",
+      "claim_type": "inference",
+      "statement": "数据竞争（无同步的并发冲突访问、且至少一方为写）是 C++ **未定义行为**，不是\"结果偶尔算错\"——编译器可据此做激进优化、行为完全不可预测。这条定性依据标准对 data race 的定义，不由本卡读数单独证明。",
+      "evidence": [
+        "EV-CONC-005",
+        "EV-CONC-006"
+      ],
+      "external_basis": "ISO/IEC 14882:2023 [intro.race]（data race 定义：不同线程对同对象无 happens-before 的并发冲突访问且至少一方为写 ⇒ UB）",
+      "liveness": null,
+      "signed_by": "human:liaoranran"
+    },
+    {
+      "id": "prop-3",
+      "subject": "TSan 沉默",
+      "predicate": "不能当作",
+      "object": "动态数据竞争检测局限性",
+      "claim_type": "inference",
+      "statement": "TSan 能检测数据竞争，但\"没被 TSan 报 ≠ 没有数据竞争\"——其漏报边界（插桩盲区、必须全量插桩、时序偶发）使工具沉默不能当作安全证明。这条边界依据 ThreadSanitizer 的实现原理说明，不由本卡读数单独证明。",
+      "evidence": [
+        "EV-CONC-005",
+        "EV-CONC-006"
+      ],
+      "external_basis": "cppreference ThreadSanitizer：编译期插桩 + 运行期 happens-before 边追踪检测数据竞争，但有漏报边界",
+      "liveness": null,
+      "signed_by": "human:liaoranran"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "EV-CONC-005",
+      "path": "evidence/conc/EV-CONC-005.md",
+      "exists": true,
+      "verdict": "confirm",
+      "type": "criterion",
+      "kind": "asm",
+      "dal": "A",
+      "status": "draft",
+      "hypothesis": "本夹具构造了一个教科书式数据竞争：两个线程并发读写同一非原子全局变量 g_shared，全程零同步原语 （无 mutex/atomic/barrier）。按 C++ 标准该形态即 data race，属未定义行为（UB）；三场景 （单线程基线 / 有竞争 / 原子无竞争）均真实编译进工件且运行时都执行。",
+      "fixture": "Examples/atoms/_atom_data_race.cpp",
+      "replay_command": "g++ -O2 -std=c++23 -pthread -DBENCH_FULL Examples/atoms/_atom_data_race.cpp -o build/_replay_data_race.exe && ./build/_replay_data_race.exe\ng++ -O2 -std=c++23 -pthread -DBENCH_FULL -S Examples/atoms/_atom_data_race.cpp -o Examples/atoms/_atom_data_race.asm",
+      "artifact": "Examples/atoms/_atom_data_race.asm",
+      "artifact_sha256": "5c5549aebfb148a053498f173aaa09757a92e180f54e956dc853c4761d2405bc",
+      "serves": [
+        "ATOM-CONC-RACE-001"
+      ],
+      "controlled_vars": [
+        {
+          "唯一变量": "是否存在数据竞争（有竞争 vs 无竞争对照）"
+        },
+        {
+          "活性对照": "单线程无同步基线（bench_single）"
+        },
+        {
+          "反例对照": "同语义改用 std::atomic（bench_safe）→ 无竞争"
+        }
+      ]
+    },
+    {
+      "id": "EV-CONC-006",
+      "path": "evidence/conc/EV-CONC-006.md",
+      "exists": true,
+      "verdict": "confirm",
+      "type": "detection",
+      "kind": "asm",
+      "dal": "A",
+      "status": "draft",
+      "hypothesis": "TSan 能检测本夹具的 data race（bench_race 两线程无同步并发写 g_shared），且对无竞争版本 （bench_safe，std::atomic）零误报；但 TSan 有漏报边界，\"没被报\"≠\"没有数据竞争\"。",
+      "fixture": "Examples/atoms/_atom_data_race.cpp",
+      "replay_command": "g++ -O2 -std=c++23 -pthread -DBENCH_FULL Examples/atoms/_atom_data_race.cpp -o build/_replay_data_race.exe && ./build/_replay_data_race.exe\ng++ -O2 -std=c++23 -pthread -DBENCH_FULL -S Examples/atoms/_atom_data_race.cpp -o Examples/atoms/_atom_data_race.asm",
+      "artifact": "Examples/atoms/_atom_data_race.asm",
+      "artifact_sha256": "5c5549aebfb148a053498f173aaa09757a92e180f54e956dc853c4761d2405bc",
+      "serves": [
+        "ATOM-CONC-RACE-001"
+      ],
+      "controlled_vars": [
+        {
+          "唯一变量": "是否存在数据竞争（有竞争 vs 无竞争对照）"
+        },
+        {
+          "活性对照": "单线程无同步基线（bench_single）"
+        },
+        {
+          "反例对照": "同语义改用 std::atomic（bench_safe）→ 无竞争"
+        }
+      ]
+    }
+  ],
+  "misconceptions": [],
+  "related_verified_same_domain": [
+    "ATOM-CONC-FENCE-001",
+    "ATOM-CONC-LOCK-001"
+  ],
+  "selfcheck": [
+    {
+      "q": "这张卡的判决四态是什么？为什么是这个态？",
+      "a": "unknown（boundary_ok=False，downgraded=True）——理由：缺边界三元组字段：mutation_set_hash,mutation_count,generator_version；⇒ 按 §3.1.3 降级为 unknown",
+      "source": "tools/four_state_verdict_638.classify_card（现算）"
+    },
+    {
+      "q": "这张卡的结论在什么边界内成立？（标准 / 编译器 / 优化 / 平台）",
+      "a": "标准 ['C++11', 'C++14', 'C++17', 'C++20', 'C++23']；编译器 ['GCC 15.3.0 (MinGW-w64)', 'GCC 14.2.0 (WSL)', 'GCC 13.3.0 (WSL)']；优化 ['-O2']；平台 ['x86-64']",
+      "source": "卡 frontmatter.claim_boundary"
+    },
+    {
+      "q": "命题 prop-1 的断言类型（claim_type）是什么？它引用哪几张证据卡？",
+      "a": "observation；证据 ['EV-CONC-005', 'EV-CONC-006']",
+      "source": "卡 frontmatter.claim_structured[0]"
+    },
+    {
+      "q": "命题 prop-2 是 inference（推断），它的外部依据是什么？",
+      "a": "ISO/IEC 14882:2023 [intro.race]（data race 定义：不同线程对同对象无 happens-before 的并发冲突访问且至少一方为写 ⇒ UB）",
+      "source": "卡 frontmatter.claim_structured[].external_basis"
+    },
+    {
+      "q": "这一条结论要怎么**自己跑一遍**复现？（写出命令）",
+      "a": "g++ -O2 -std=c++23 -pthread -DBENCH_FULL Examples/atoms/_atom_data_race.cpp -o build/_replay_data_race.exe && ./build/_replay_data_race.exe && g++ -O2 -std=c++23 -pthread -DBENCH_FULL -S Examples/atoms/_atom_data_race.cpp -o Examples/atoms/_atom_data_race.asm　//　g++ -O2 -std=c++23 -pthread -DBENCH_FULL Examples/atoms/_atom_data_race.cpp -o build/_replay_data_race.exe && ./build/_replay_data_race.exe && g++ -O2 -std=c++23 -pthread -DBENCH_FULL -S Examples/atoms/_atom_data_race.cpp -o Examples/atoms/_atom_data_race.asm",
+      "source": "证据卡 frontmatter.command（真实可跑命令）"
+    },
+    {
+      "q": "这些证据卡各自的机器判决（verdict）是什么？",
+      "a": "EV-CONC-005=confirm；EV-CONC-006=confirm",
+      "source": "证据卡 frontmatter.verdict"
+    },
+    {
+      "q": "读这张卡之前，本仓声明的**前置卡**是哪一张（或哪几张）？",
+      "a": "ATOM-CONC-FENCE-001（内存屏障（fence）只约束顺序，不提供原子性；屏障在循环体内才阻止消除，但屏障≠原子类型）",
+      "source": "卡 frontmatter.relations[].prerequisite（真实声明，非推测）"
+    }
+  ],
+  "generated_from": [
+    "atoms/**/<id>.md frontmatter",
+    "evidence/**/EV-*.md frontmatter（含复现命令）",
+    "tools/four_state_verdict_638.classify_card（四态现算）",
+    "web/data/graph.json（W2 攻击边）"
+  ],
+  "note": "全部字段来自真实台账；自测题由字段机械生成（每题带 source），不是 AI 生成的题目内容。缺项一律 null 并保留原因。"
+}

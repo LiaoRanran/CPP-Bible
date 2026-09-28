@@ -1,0 +1,865 @@
+{
+  "generated_at": "2026-09-28T10:23:54",
+  "tool": "tools/teach_card_656.py",
+  "count": 47,
+  "drafts": 10,
+  "cards": [
+    {
+      "id": "ATOM-HIST-AUTOPTR-001",
+      "title": "别看 auto_ptr 的名字像智能指针：它的\"拷贝\"是转移，而 C++98 只能这么表达",
+      "domain": "HIST",
+      "type": "evolution",
+      "status": "verified",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 4,
+      "evidence": [
+        "EV-HIST-001",
+        "EV-MEM-003"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-ALLOC-001",
+      "title": "allocator：STL 容器的内存策略抽象",
+      "domain": "MEM",
+      "type": "mechanism",
+      "status": "verified",
+      "dal": "B",
+      "audience": "expert",
+      "cognitive_load": "high",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 4,
+      "evidence": [
+        "EV-MEM-026",
+        "EV-MEM-027",
+        "EV-MEM-028"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-RAII-002",
+      "title": "Rule of 0/3/5：什么时候该写析构函数，什么时候不该",
+      "domain": "MEM",
+      "type": "rule",
+      "status": "verified",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 4,
+      "evidence": [
+        "EV-MEM-023",
+        "EV-MEM-024",
+        "EV-MEM-025"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-CONC-RACE-001",
+      "title": "数据竞争是未定义行为；TSan 可检测，但『没被报 ≠ 没有』",
+      "domain": "conc",
+      "type": "pitfall",
+      "status": "verified",
+      "dal": "C",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-CONC-005",
+        "EV-CONC-006"
+      ],
+      "prereqs": [
+        "ATOM-CONC-FENCE-001"
+      ]
+    },
+    {
+      "id": "ATOM-LANG-INLINE-001",
+      "title": "inline 函数的定义必须跨 TU 一致：违反 ODR 是「无须诊断」的 UB，且形态由链接顺序与优化档决定",
+      "domain": "LANG",
+      "type": "rule",
+      "status": "draft",
+      "dal": "A",
+      "audience": "intermediate",
+      "cognitive_load": "high",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-LANG-001",
+        "EV-LANG-002"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-ALIGN-001",
+      "title": "结构体有对齐与填充：成员按对齐排列插 padding，sizeof 含 padding；alignas 可控、memcpy 安全",
+      "domain": "MEM",
+      "type": "mechanism",
+      "status": "verified",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-019",
+        "EV-MEM-020"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-ALLOC-002",
+      "title": "分配器策略的时空权衡：arena / pool / bitmap（元数据换灵活性）",
+      "domain": "MEM",
+      "type": "mechanism",
+      "status": "red-team-verified",
+      "dal": "C",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-040",
+        "EV-MEM-041"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-LEAK-001",
+      "title": "内存泄漏的检测信号分层：为什么\"ASan 没报\"不等于\"没泄漏\"",
+      "domain": "MEM",
+      "type": "contrast",
+      "status": "verified",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-036",
+        "EV-MEM-037"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-LEAK-002",
+      "title": "泄漏检测的工具边界：报告与否不能等价于泄漏有无",
+      "domain": "MEM",
+      "type": "contrast",
+      "status": "red-team-verified",
+      "dal": "C",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-042",
+        "EV-MEM-043"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-MOVE-002",
+      "title": "用 std::move 申报所有权转移，真正的搬运发生在移动构造里",
+      "domain": "MEM",
+      "type": "mechanism",
+      "status": "verified",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": "high",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-001",
+        "EV-MEM-002"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-NEW-001",
+      "title": "new/delete 是两层：new=分配+构造、delete=析构+释放；new[]/delete[] 必须配对，nothrow 失败返 null",
+      "domain": "MEM",
+      "type": "mechanism",
+      "status": "verified",
+      "dal": "B",
+      "audience": "beginner",
+      "cognitive_load": "low",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-017",
+        "EV-MEM-018"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-PERF-003",
+      "title": "小对象分配的真实开销：SSO 阈值不可移植 + 分配策略必须基准测量",
+      "domain": "MEM",
+      "type": "experiment",
+      "status": "verified",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": "high",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-038",
+        "EV-MEM-039"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-PERF-004",
+      "title": "伪共享：多线程\"独立变量\"为何慢 18 倍，以及对齐 padding 的代价",
+      "domain": "MEM",
+      "type": "pitfall",
+      "status": "red-team-verified",
+      "dal": "C",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-044",
+        "EV-MEM-045"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-RAII-001",
+      "title": "资源要绑在对象生命周期上：构造获取、析构释放，异常也安全",
+      "domain": "MEM",
+      "type": "mechanism",
+      "status": "verified",
+      "dal": "B",
+      "audience": "beginner",
+      "cognitive_load": "low",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-009",
+        "EV-MEM-010"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-RVREF-001",
+      "title": "别以为形参写成 T&& 就会自动移动：进了函数体，它是左值",
+      "domain": "MEM",
+      "type": "pitfall",
+      "status": "verified",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-004",
+        "EV-MEM-005"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-SHARED-001",
+      "title": "std::shared_ptr 用引用计数共享所有权；但循环引用会泄漏，须用 weak_ptr 打破",
+      "domain": "MEM",
+      "type": "mechanism",
+      "status": "verified",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-013",
+        "EV-MEM-014"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-SHARED-002",
+      "title": "shared_ptr 的线程安全边界与原子代价：控制块原子、对象不原子",
+      "domain": "MEM",
+      "type": "pitfall",
+      "status": "verified",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-034",
+        "EV-MEM-035"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-UNIQUE-001",
+      "title": "std::unique_ptr 是唯一所有权智能指针：移动转移、拷贝删除、sizeof 等于裸指针",
+      "domain": "MEM",
+      "type": "mechanism",
+      "status": "verified",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-011",
+        "EV-MEM-012"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-UNIQUE-002",
+      "title": "unique_ptr 自定义删除器与数组：删除器进不进类型系统",
+      "domain": "MEM",
+      "type": "mechanism",
+      "status": "verified",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-032",
+        "EV-MEM-033"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-VALUE-001",
+      "title": "C++ 的值不是\"左/右\"二分：glvalue×rvalue 正交出 lvalue / xvalue / prvalue 三类",
+      "domain": "MEM",
+      "type": "mechanism",
+      "status": "verified",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-006",
+        "EV-MEM-007"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-VALUE-002",
+      "title": "引用折叠与完美转发：为什么 std::forward 不能省",
+      "domain": "MEM",
+      "type": "mechanism",
+      "status": "verified",
+      "dal": "B",
+      "audience": "expert",
+      "cognitive_load": "high",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-021",
+        "EV-MEM-022"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-WEAK-001",
+      "title": "std::weak_ptr 是非拥有观察者；用 weak_ptr 打破 shared_ptr 的循环引用",
+      "domain": "MEM",
+      "type": "mechanism",
+      "status": "verified",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 3,
+      "evidence": [
+        "EV-MEM-015",
+        "EV-MEM-016"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-CONC-FENCE-001",
+      "title": "内存屏障（fence）只约束顺序，不提供原子性；屏障在循环体内才阻止消除，但屏障≠原子类型",
+      "domain": "conc",
+      "type": "mechanism",
+      "status": "verified",
+      "dal": "A",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 2,
+      "evidence": [
+        "EV-CONC-001",
+        "EV-CONC-002"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-CONC-LOCK-001",
+      "title": "锁的代价与无锁的代价：高竞争下 CAS 的原子 RMW 代价可能超过 mutex，但依赖核数与竞争度",
+      "domain": "conc",
+      "type": "contrast",
+      "status": "verified",
+      "dal": "C",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 2,
+      "evidence": [
+        "EV-CONC-003",
+        "EV-CONC-004"
+      ],
+      "prereqs": [
+        "ATOM-CONC-FENCE-001"
+      ]
+    },
+    {
+      "id": "ATOM-MEM-PERF-001",
+      "title": "移动比拷贝快多少？收益只来自\"掏空源对象\"，无动态资源的类型移动=拷贝",
+      "domain": "MEM",
+      "type": "pitfall",
+      "status": "verified",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 2,
+      "evidence": [
+        "EV-MEM-001",
+        "EV-MEM-008"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-PERF-002",
+      "title": "SSO：std::string 为什么短字符串不分配堆内存",
+      "domain": "MEM",
+      "type": "pitfall",
+      "status": "verified",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 2,
+      "evidence": [
+        "EV-MEM-029"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-UB-GRAY-001",
+      "title": "先分清副作用是 unsequenced 还是 indeterminately sequenced：前者是 UB，后者只是未指定",
+      "domain": "UB",
+      "type": "contrast",
+      "status": "verified",
+      "dal": "A",
+      "audience": "intermediate",
+      "cognitive_load": "high",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 2,
+      "evidence": [
+        "EV-UB-001"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-LANG-BITFIELD-001",
+      "title": "位域的布局与 Plain int 位域的符号性都是实现定义的",
+      "domain": "LANG",
+      "type": "pitfall",
+      "status": "draft",
+      "dal": "C",
+      "audience": "expert",
+      "cognitive_load": "high",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 1,
+      "evidence": [
+        "EV-LANG-008"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-LANG-DECAY-001",
+      "title": "数组形参会退化为指针：函数内的 sizeof 拿不到数组长度",
+      "domain": "LANG",
+      "type": "rule",
+      "status": "draft",
+      "dal": "C",
+      "audience": "beginner",
+      "cognitive_load": "low",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 1,
+      "evidence": [
+        "EV-LANG-003"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-LANG-FNPTR-001",
+      "title": "函数指针必须与目标函数类型兼容，否则调用是未定义行为",
+      "domain": "LANG",
+      "type": "rule",
+      "status": "draft",
+      "dal": "C",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 1,
+      "evidence": [
+        "EV-LANG-004"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-LANG-INTPROMO-001",
+      "title": "有符号与无符号比较时，有符号一侧会被转成无符号（-1 < 1u 是假）",
+      "domain": "LANG",
+      "type": "rule",
+      "status": "draft",
+      "dal": "C",
+      "audience": "beginner",
+      "cognitive_load": "low",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 1,
+      "evidence": [
+        "EV-LANG-007"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-LANG-MACRO-001",
+      "title": "宏是文本替换：不加括号会错优先级，传带副作用实参会被求值多次",
+      "domain": "LANG",
+      "type": "pitfall",
+      "status": "draft",
+      "dal": "C",
+      "audience": "beginner",
+      "cognitive_load": "low",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 1,
+      "evidence": [
+        "EV-LANG-009"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-LANG-SETJMP-001",
+      "title": "longjmp 之后，非 volatile 的局部变量值是不确定的",
+      "domain": "LANG",
+      "type": "pitfall",
+      "status": "draft",
+      "dal": "C",
+      "audience": "intermediate",
+      "cognitive_load": "high",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 1,
+      "evidence": [
+        "EV-LANG-006"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-LANG-VOLATILE-001",
+      "title": "volatile 的作用是「每次都真的去访问一次」，不是「多线程同步」",
+      "domain": "LANG",
+      "type": "concept",
+      "status": "draft",
+      "dal": "C",
+      "audience": "intermediate",
+      "cognitive_load": "high",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 1,
+      "evidence": [
+        "EV-LANG-005"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-MALLOC-001",
+      "title": "free 不清空指针变量，也不保证 malloc(0) 返回 NULL",
+      "domain": "MEM",
+      "type": "idiom",
+      "status": "draft",
+      "dal": "C",
+      "audience": "beginner",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 1,
+      "evidence": [
+        "EV-MEM-046"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-MEM-STRBOUND-001",
+      "title": "snprintf 的返回值是「本该写入的长度」，strncpy 不保证 NUL 终止",
+      "domain": "MEM",
+      "type": "pitfall",
+      "status": "draft",
+      "dal": "C",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 1,
+      "evidence": [
+        "EV-MEM-047"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-UB-SIGNEDOVF-001",
+      "title": "有符号整数溢出是 UB：同一行「溢出检查」在两个编译器上答案相反",
+      "domain": "UB",
+      "type": "pitfall",
+      "status": "draft",
+      "dal": "C",
+      "audience": "intermediate",
+      "cognitive_load": "medium",
+      "draft": false,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 1,
+      "evidence": [
+        "EV-UB-003"
+      ],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-DRAFT650-001",
+      "title": "STM32 中断里改全局变量须 volatile 或关中断保护，否则编译器优化会丢弃更新",
+      "domain": "emb",
+      "type": "mechanism",
+      "status": "draft",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": null,
+      "draft": true,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 0,
+      "evidence": [],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-DRAFT650-002",
+      "title": "独立看门狗 IWDG 由 LSI 驱动，主时钟失效仍能复位 MCU",
+      "domain": "emb",
+      "type": "mechanism",
+      "status": "draft",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": null,
+      "draft": true,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 0,
+      "evidence": [],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-DRAFT650-003",
+      "title": "ARM 上 volatile 不足以保证跨核/外设观测顺序，还需 DMB/DSB",
+      "domain": "conc",
+      "type": "mechanism",
+      "status": "draft",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": null,
+      "draft": true,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 0,
+      "evidence": [],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-DRAFT650-004",
+      "title": "C++11 起静态局部变量初始化是线程安全的（magic statics）",
+      "domain": "cpp",
+      "type": "fact",
+      "status": "draft",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": null,
+      "draft": true,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 0,
+      "evidence": [],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-DRAFT650-005",
+      "title": "const 引用会延长所绑定临时对象的生命周期到引用作用域",
+      "domain": "cpp",
+      "type": "fact",
+      "status": "draft",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": null,
+      "draft": true,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 0,
+      "evidence": [],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-DRAFT650-006",
+      "title": "DMA 缓冲区须 cache 一致或置 non-cacheable，否则读到陈旧数据",
+      "domain": "emb",
+      "type": "mechanism",
+      "status": "draft",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": null,
+      "draft": true,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 0,
+      "evidence": [],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-DRAFT650-007",
+      "title": "-O2 可能移除无副作用循环/变量，调试(-O0)与发布行为可不同",
+      "domain": "hist",
+      "type": "myth",
+      "status": "draft",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": null,
+      "draft": true,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 0,
+      "evidence": [],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-DRAFT650-008",
+      "title": "有符号整数溢出是未定义行为，编译器可假设不发生",
+      "domain": "cpp",
+      "type": "fact",
+      "status": "draft",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": null,
+      "draft": true,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 0,
+      "evidence": [],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-DRAFT650-009",
+      "title": "Cortex-M 中断/异常优先级数值越小优先级越高",
+      "domain": "emb",
+      "type": "fact",
+      "status": "draft",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": null,
+      "draft": true,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 0,
+      "evidence": [],
+      "prereqs": []
+    },
+    {
+      "id": "ATOM-DRAFT650-010",
+      "title": "RCU 读侧临界区禁止抢占与休眠，否则宽限期无法结束",
+      "domain": "conc",
+      "type": "mechanism",
+      "status": "draft",
+      "dal": "B",
+      "audience": "intermediate",
+      "cognitive_load": null,
+      "draft": true,
+      "verdict_state": "unknown",
+      "downgraded": true,
+      "props": 0,
+      "evidence": [],
+      "prereqs": []
+    }
+  ]
+}
