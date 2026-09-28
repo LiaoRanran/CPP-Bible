@@ -191,7 +191,7 @@ async function renderStatus() {
       : `全部就位（647 真上岗 5 + 649 三个态 4）· 源：queyi-core/tools/`);
     if (esc.available && esc.rate_pct != null) {
       countUp(document.getElementById('s-escape'), esc.rate_pct, { fmt: (v) => Number(v).toFixed(4), suffix: '%' });
-      sub('s-escape', `${esc.escaped}/${esc.denominator}（v7 基线，交叉核对 616：${esc.frozen_matches ? '一致' : '不一致'}）`);
+      sub('s-escape', `${esc.escaped}/${esc.denominator}（v7 基线漏检率，非本书真实错误率；交叉核对 616：${esc.frozen_matches ? '一致' : '不一致'}）`);
     } else {
       document.getElementById('s-escape').setNum('不可用');
     }

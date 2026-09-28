@@ -142,3 +142,13 @@ bash tools/generate_pdf.sh --by-part   # PDF（分卷）
 
 [Apache-2.0](LICENSE) —— 内容与示例代码均以 Apache-2.0 许可发布。
 贡献即表示同意以同一许可证分发，并在 commit 上签署 [`DCO.md`](DCO.md)。
+
+## 逃逸率口径（重要，勿误读）
+
+前端"逃逸率 0.0711%（1/1406）"是**对自造变异分布（v7）的漏检率**，**不是本书的真实错误率**。
+
+- Clopper-Pearson 95% 单侧上界 = **0.337%**，且仅对该变异分布成立；
+- `mutation score`（core 97.3% / all 81.5%）衡量的是**测试充分度（Test adequacy）**，
+  **不等于外部效度**——详见 [`docs/metric_layers_658.md`](docs/metric_layers_658.md)；
+- 真实世界错误检测能力由盲化 holdout（[`data/holdout/`](data/holdout/)）与外部 corpus
+  （[`data/external_corpus_658.md`](data/external_corpus_658.md)）另行评估。

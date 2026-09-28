@@ -48,7 +48,9 @@
     "rate_pct": 0.0711,
     "frozen_616": "1/1406 = 0.0711%",
     "frozen_matches": true,
-    "note": "M2 可判 141→168 系 589 T2 注释净化 un-mask 真实 fixture 路径变异，非回归；唯一 escaped=1 = M1 / EV-CONC-001 / 删 negative_controls（冻结 TCE）"
+    "note": "M2 可判 141→168 系 589 T2 注释净化 un-mask 真实 fixture 路径变异，非回归；唯一 escaped=1 = M1 / EV-CONC-001 / 删 negative_controls（冻结 TCE）",
+    "interpretation": "逃逸率 = 对**自造变异分布(v7)**的漏检率（escaped/denominator = 1/1406 = 0.0711%），**不是本书的真实错误率**。Clopper-Pearson 95% 单侧上界 = 0.337%，且仅对该变异分布成立。mutation score（core 97.3%）≠ 外部效度——见 docs/metric_layers_658.md / A5。",
+    "cp95_upper_pct": 0.337
   },
   "w2": {
     "available": true,
