@@ -506,3 +506,291 @@ def test_stateful_ledger_machine():
     run_state_machine_as_test(LedgerMachine, settings=settings(
         max_examples=40, stateful_step_count=12, deadline=None,
         suppress_health_check=[HealthCheck.too_slow]))
+
+
+# ── P13 · 657 C 段：针对 656 变异**存活体**的定点补测 ─────────────────────
+# 为什么单开一节：656 B2 的变异报告 §三 列出了一批"改坏了也没人管"的分支。
+# 本节**每条对应报告里的一个真实存活体**（报告逐一登记 目标/行号/算子），
+# 把那些分支钉死；口径是**只加断言，不改被测代码语义**。
+# 反向说明：约 3 条存活体经分析属**等价变异**（见 657 验收报告），本节不硬凑假测试。
+
+#: 合法边界三元组（P13 各例复用）
+B = {"mutation_set_hash": "a" * 64, "mutation_count": "10", "generator_version": "v7"}
+
+
+def test_p13_has_boundary_rejects_non_dict():
+    assert fs.has_boundary(None) is False
+    assert fs.has_boundary([]) is False
+    assert fs.has_boundary("pass") is False
+
+
+def test_p13_has_boundary_rejects_bad_count_and_missing_hash():
+    assert fs.has_boundary({**B, "mutation_count": None}) is False
+    assert fs.has_boundary({**B, "mutation_count": "abc"}) is False
+    assert fs.has_boundary({**B, "mutation_count": 0}) is False
+    assert fs.has_boundary({**B, "mutation_count": "-1"}) is False
+    assert fs.has_boundary({**B, "mutation_set_hash": None}) is False
+
+
+def test_p13_classify_non_dict_is_unknown_and_not_downgraded():
+    c = fs.classify(None)  # type: ignore[arg-type]
+    assert c["state"] == "unknown" and c["requested"] == "unknown"
+    assert c["downgraded"] is False and c["boundary_ok"] is False
+
+
+def test_p13_already_unknown_is_not_marked_downgraded():
+    for rec in ({"verdict": "unknown"}, {**B, "verdict": "unknown"}):
+        c = fs.classify(rec)
+        assert c["state"] == "unknown" and c["downgraded"] is False
+
+
+def test_p13_missing_boundary_names_the_absent_fields_only():
+    c = fs.classify({"verdict": "pass"})
+    assert c["downgraded"] is True and c["boundary_ok"] is False
+    txt = " ".join(c["reasons"])
+    assert "缺边界三元组字段" in txt
+    for k in ("mutation_set_hash", "mutation_count", "generator_version"):
+        assert k in txt
+    # 只报**缺的**那个：补上 hash 与 count 后，理由里不该再出现这两个字段名
+    c2 = fs.classify({"verdict": "pass", "mutation_set_hash": "a" * 64,
+                      "mutation_count": 10})
+    t2 = " ".join(c2["reasons"])
+    assert "generator_version" in t2
+    assert "mutation_set_hash" not in t2 and "mutation_count" not in t2
+
+
+def test_p13_illegal_boundary_format_reason_is_distinct():
+    c = fs.classify({"verdict": "pass", "mutation_set_hash": "zz",
+                     "mutation_count": "10", "generator_version": "v7"})
+    assert c["state"] == "unknown" and c["downgraded"] is True
+    assert "格式非法" in " ".join(c["reasons"])
+
+
+def test_p13_exception_without_explanation_is_downgraded():
+    c = fs.classify({**B, "verdict": "pass", "exception": "条款X"})
+    assert c["state"] == "unknown" and c["downgraded"] is True and c["boundary_ok"] is True
+
+
+def test_p13_explanation_alone_triggers_pass_with_exception():
+    assert fs.enforce({**B, "verdict": "pass", "explanation": "因为Y"}) == "pass_with_exception"
+    assert fs.enforce({**B, "verdict": "pass", "exception": "条款X",
+                       "explanation": "因为Y"}) == "pass_with_exception"
+
+
+def test_p13_ok_path_reports_reasons_and_flags():
+    c = fs.classify({**B, "verdict": "pass"})
+    assert c["state"] == "pass" and c["downgraded"] is False and c["boundary_ok"] is True
+    assert c["reasons"], "通过路径也必须给出理由（空理由 = 无法审计）"
+
+
+def test_p13_unknown_word_is_not_silently_promoted_to_pass():
+    """词不在词表 ⇒ requested 必须是 unknown，不得因为"非空"就当通过词。"""
+    assert fs.enforce({**B, "verdict": "weird"}) == "unknown"
+    assert fs.classify({**B, "verdict": "weird"})["requested"] == "unknown"
+
+
+def test_p13_verdict_takes_precedence_over_result():
+    """`verdict` 优先于 `result`（只有前者缺失时才回退）——回退链顺序是语义。"""
+    assert fs.enforce({**B, "verdict": "pass", "result": "block"}) == "pass"
+    assert fs.enforce({**B, "result": "block"}) == "fail"
+
+
+def test_p13_empty_and_pass_words_both_pass():
+    assert fs.enforce({**B, "verdict": ""}) == "pass"
+    assert fs.enforce({**B, "verdict": "pass"}) == "pass"
+
+
+def test_p13_classify_card_empty_or_bad_path():
+    for bad in ("", "   ", None, 0):
+        c = fs.classify_card(bad)  # type: ignore[arg-type]
+        assert c["state"] == "unknown"
+        assert c["downgraded"] is True and c["boundary_ok"] is False
+
+
+def test_p13_classify_card_missing_file():
+    c = fs.classify_card(str(ROOT / "atoms" / "__no_such_card_657__.md"))
+    assert c["state"] == "unknown" and c["boundary_ok"] is False
+    assert c["downgraded"] is True
+    assert "文件不可读" in " ".join(c["reasons"])
+
+
+def test_p13_classify_card_reads_boundary_from_disk():
+    """真实卡：带边界 ⇒ pass（同时钉住"边界字段确实被读进 rec"这条）。"""
+    c = fs.classify_card(str(ROOT / "atoms" / "conc" / "ATOM-CONC-RACE-001.md"))
+    assert c["verified"] is True
+    assert c["boundary_ok"] is True and c["state"] == "pass"
+
+
+def test_p13_classify_card_draft_is_not_verified(tmp_path: Path):
+    p = tmp_path / "d.md"
+    p.write_text("---\nstatus: draft\n---\n\nbody\n", encoding="utf-8")
+    assert fs.classify_card(str(p))["verified"] is False
+
+
+def test_p13_explicit_falsification_wins_over_verified_status(tmp_path: Path):
+    """显式 falsification 不得被 `status: verified` 覆盖成 pass（变异体会犯这个错）。"""
+    p = tmp_path / "f.md"
+    p.write_text("---\nstatus: verified\nmutation_set_hash: " + "a" * 64 +
+                 "\nmutation_count: 10\ngenerator_version: v7\n"
+                 "falsification: refuted\n---\n\nbody\n", encoding="utf-8")
+    c = fs.classify_card(str(p))
+    assert c["boundary_ok"] is True
+    assert c["state"] == "fail"
+
+
+# ── P13 · Merkle / RFC6962 边界（ledger_checkpoint_651 存活体）─────────────
+def test_p13_inclusion_path_out_of_range_is_empty():
+    leaves = [b"a", b"b", b"c"]
+    assert lc.inclusion_path(0, []) == []        # n == 0
+    assert lc.inclusion_path(-1, leaves) == []   # m < 0
+    assert lc.inclusion_path(3, leaves) == []    # m >= n
+    assert lc.inclusion_path(99, leaves) == []
+
+
+def test_p13_verify_inclusion_rejects_over_long_proof():
+    leaf = b"leaf"
+    lh = lc.leaf_hash(leaf)
+    root = lc.node_hash(lh, lh)
+    assert lc.verify_inclusion(0, 1, leaf, [], lh) is True        # 单叶：空证明即可
+    assert lc.verify_inclusion(0, 1, leaf, [lh], root) is False   # n=1 时 sn 起手为 0
+
+
+def test_p13_verify_consistency_same_size_requires_equal_roots():
+    assert lc.verify_consistency(3, 3, [], b"old", b"old") is True
+    assert lc.verify_consistency(3, 3, [], b"old", b"new") is False
+    assert lc.verify_consistency(3, 3, [b"p"], b"old", b"old") is False
+
+
+def test_p13_verify_consistency_from_empty_tree_is_true():
+    assert lc.verify_consistency(0, 3, [], b"x", b"y") is True
+
+
+def test_p13_consistency_proof_required_when_fn_nonzero():
+    """m=6,n=8 ⇒ 归一化后 fn=2≠0 ⇒ 空证明必须 False（不能默默通过）。"""
+    assert lc.verify_consistency(6, 8, [], b"x", b"y") is False
+
+
+def test_p13_consistency_proof_too_long_is_rejected():
+    assert lc.verify_consistency(1, 2, [b"p", b"q"], b"x", b"x") is False
+
+
+def test_p13_verify_consistency_requires_both_roots():
+    leaves = [b"a", b"b", b"c", b"d"]
+    old, new = lc.mth(leaves[:2]), lc.mth(leaves)
+    proof = lc.consistency_proof(2, leaves)
+    assert lc.verify_consistency(2, 4, proof, old, new) is True
+    assert lc.verify_consistency(2, 4, proof, old, b"junk") is False   # 新根不对
+    assert lc.verify_consistency(2, 4, proof, b"junk", new) is False   # 旧根不对
+
+
+# ── P13 · 账本当前有效决定 / 链完整性（decision_event_v2_626 存活体）──────
+def test_p13_get_current_none_only_for_absent_target():
+    led = de.AuthorityLedger()
+    led.append(_mk_event(target_id="X"))
+    assert led.get_current("edge", "NOPE") is None
+    assert led.get_current("edge", "X") is not None
+
+
+def test_p13_get_current_follows_supersede_relation():
+    """★ 存活体 L245 的定点补测：`alive` 必须收**未被取代**的，不是被取代的那些。
+
+    真实形态：第二条以 `operation=REPLACE` supersede 第一条 ⇒ 当前有效决定 = 第二条。
+    （`alive` 若被改成"收集被取代的"，这里会返回第一条 ⇒ 直接被抓。）
+    """
+    led = de.AuthorityLedger()
+    e1 = _mk_event(target_id="S", result="APPROVE")
+    led.append(e1)
+    e2 = _mk_event(target_id="S", result="MODIFY", modification="改了",
+                   operation="REPLACE", supersedes=[e1.event_id])
+    led.append(e2)
+    cur = led.get_current("edge", "S")
+    assert cur is not None and cur.event_id == e2.event_id
+    assert led.get_current("edge", "S").result == "MODIFY"
+
+
+def test_p13_verify_chain_detects_deleted_middle_event():
+    """★ 存活体 L258 的定点补测：只删中间一条（其后继的 `prev_hash` 对不上）也必须判假。"""
+    led = de.AuthorityLedger()
+    for i in range(3):
+        led.append(_mk_event(target_id=f"P{i}", result="APPROVE"))
+    evs = led.all_events()
+    keep = [evs[0], evs[2]]
+    led._events = keep  # type: ignore[attr-defined]  # 模拟"链中被抽掉一条"
+    assert led.verify_chain() is False
+
+
+# ── P14 · 657 C 段（第二轮）：严格导入 / 读取 / 规范载荷 / JSONL 往返 ─────
+def test_p14_from_dict_strict_rejects_unknown_missing_and_non_dict():
+    with pytest.raises(de.StrictEventError):
+        de.DecisionEvent.from_dict_strict([])                       # 非 dict
+    with pytest.raises(de.StrictEventError):
+        de.DecisionEvent.from_dict_strict({"nope": 1})              # 未知字段
+    with pytest.raises(de.StrictEventError):
+        de.DecisionEvent.from_dict_strict({"result": "APPROVE"})    # 缺必填
+    full = _mk_event(reviewer="human:x", decided_at="2026-09-28")
+    assert de.DecisionEvent.from_dict_strict(full.to_dict()).result == "APPROVE"
+
+
+def test_p14_from_dict_lenient_keeps_known_drops_unknown():
+    e = de.DecisionEvent.from_dict({})
+    assert e.result == "APPROVE" and e.decision_origin == "human_observed"
+    d = _mk_event().to_dict()
+    d["完全不认识的字段"] = 1
+    assert de.DecisionEvent.from_dict(d).result == "APPROVE"
+
+
+def test_p14_get_matches_by_event_id():
+    led = de.AuthorityLedger()
+    e = _mk_event(target_id="G")
+    led.append(e)
+    assert led.get(e.event_id) is e
+    assert led.get("AE-999999-deadbeef") is None
+
+
+def test_p14_payload_is_canonical_and_excludes_derived_fields():
+    e = _mk_event(target_id="PL")
+    e.finalize(prev_hash=GENESIS, seq=1)
+    p = e._payload()
+    assert "event_id" not in p and "self_hash" not in p
+    assert "rule_id" not in p and "rule_version" not in p     # 空值不参与哈希
+    d = e.to_dict()
+    d.pop("self_hash", None)
+    d.pop("event_id", None)
+    for k in ("rule_id", "rule_version"):
+        if not d.get(k):
+            d.pop(k, None)
+    assert p == json.dumps(d, ensure_ascii=False, sort_keys=True, default=str)
+    e.rule_id = "KNIGHT-001"
+    assert "KNIGHT-001" in e._payload()                        # 非空规则归属进哈希
+
+
+def test_p14_export_import_jsonl_roundtrip(tmp_path: Path):
+    led = de.AuthorityLedger()
+    led.append(_mk_event(target_id="R0", result="APPROVE"))
+    led.append(_mk_event(target_id="R1", result="MODIFY", modification="改了"))
+    p = tmp_path / "nested" / "led.jsonl"      # 目录不存在 ⇒ export 必须自建
+    led.export_jsonl(str(p))
+    assert p.is_file()
+    raw = p.read_text(encoding="utf-8")
+    assert "改了" in raw, "ensure_ascii 被打开 ⇒ 中文被转义，人读不了"
+    back = de.AuthorityLedger.import_jsonl(str(p))
+    assert len(back) == 2
+    assert [e.self_hash for e in back.all_events()] == [e.self_hash for e in led.all_events()]
+    assert back.verify_chain() is True
+    # 严格导入：导出的历史事件缺 reviewer/decided_at ⇒ 必须抛（不许用默认值补齐）
+    with pytest.raises(de.StrictEventError):
+        de.AuthorityLedger.import_jsonl(str(p), strict=True)
+
+
+def test_p14_import_jsonl_missing_file_is_empty_ledger(tmp_path: Path):
+    led = de.AuthorityLedger.import_jsonl(str(tmp_path / "nope.jsonl"))
+    assert len(led) == 0 and led.all_events() == []
+
+
+def test_p14_make_event_normalizes_supersedes_and_known_kwargs():
+    assert de.make_event("edge", "T", "APPROVE", supersedes=None).supersedes == []
+    assert de.make_event("edge", "T", "APPROVE", supersedes=["AE-1"]).supersedes == ["AE-1"]
+    e = de.make_event("edge", "T", "APPROVE", confidence="high")
+    assert e.confidence == "high"          # 已知字段透传
+    e2 = de.make_event("edge", "T", "APPROVE", 完全不存在的字段=1)
+    assert not hasattr(e2, "完全不存在的字段")

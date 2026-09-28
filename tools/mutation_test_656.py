@@ -24,15 +24,31 @@
 - 变异体若让测试**死循环/超时** ⇒ 单独统计 `timeout`，不计入正常检出率；
 - 检出率就是检出率：**不美化、不补假变异体**；存活体会逐条列出并评估是否补测。
 
+657 C 段修正（**等价变异**剔除，公开可审计）
+=========================================
+656 首版把**文档串里的数字/词**也当变异体（例如把 docstring 里的 "2." 改成 "3."），
+这类改动**语义上不可能改变行为** ⇒ 是等价变异，却计入了分母，把检出率系统性拉低
+（656 报告 37 个存活体里，**18 个**是文档串/注释行）。657 C 段按标准做法修正两条：
+
+1. `ast` 解析出**所有 docstring 行**（Module / ClassDef / FunctionDef 的首条 Expr 串），
+   这些行**不生成变异体**——改文档不等于改行为，这是口径修正，不是"挑好看的数字"；
+2. 工具自带的 `selftest()`（**该文件中内嵌的测试代码**）不生成变异体——对测试代码做变异
+   属"给测试打分"，不属于"测生产代码有多硬"。
+
+两条修正**只影响分子分母的口径**，报告里同时给出**未剔除口径**（`--include-nonprod`）
+的对照数字，任何人都能复核差了多少。**不新增假变异体、不删真实存活体。**
+
 用法
 ====
     python tools/mutation_test_656.py --limit 60          # 跑 60 个变异体（默认）
     python tools/mutation_test_656.py --report            # 写 data/656_mutation_report.{md,json}
     python tools/mutation_test_656.py --check             # 自检：基线必绿 + 至少一个变异体被杀
+    python tools/mutation_test_656.py --include-nonprod    # 657：把 docstring/selftest 也当射程（对照）
 """
 from __future__ import annotations
 
 import argparse
+import ast
 import importlib.util
 import json
 import random
@@ -74,6 +90,9 @@ DEFAULT_TARGETS: tuple[str, ...] = (
     "decision_event_v2_626",     # 账本哈希链 + strict 导入
 )
 
+#: 657 C：**非生产路径**——工具内嵌的自检函数（属测试代码，不是被验证对象）。
+NON_PROD_FUNCS: frozenset[str] = frozenset({"selftest"})
+
 #: 变异算子（每个只做**最小**语义改动）
 #: 比较符翻转（每个键只出现一次；`<`→`<=` 与 `<=`→`<` 各自成对，语义上是"放宽/收紧"两侧）
 CMP_FLIP = {"==": "!=", "!=": "==", "<": "<=", "<=": "<", ">": ">=", ">=": ">",
@@ -101,13 +120,66 @@ def enclosing_func(lines: list[str], idx: int) -> str:
     return "<module>"
 
 
-def gen_mutants(src: str, per_op_cap: int = 40, scope: str = "all") -> list[dict[str, Any]]:
-    """生成候选变异体：`(行号, 算子, 变异后源码)`。scope=core 时只留核心函数体内的行。"""
+def docstring_lines(src: str) -> set[int]:
+    """657 C：全部 docstring 占用的行号（1-based）。
+
+    用 `ast` 精确取 Module / ClassDef / FunctionDef(含 async) 的首条字符串语句的
+    `lineno..end_lineno`。解析失败 ⇒ 返回空集（退化为 656 口径，不假装）。
+    """
+    try:
+        tree = ast.parse(src)
+    except SyntaxError:
+        return set()
+    out: set[int] = set()
+    for node in ast.walk(tree):
+        body = getattr(node, "body", None)
+        if not isinstance(body, list) or not body:
+            continue
+        first = body[0]
+        if (isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant)
+                and isinstance(first.value.value, str)):
+            out.update(range(first.lineno, (first.end_lineno or first.lineno) + 1))
+    return out
+
+
+def nonprod_lines(src: str) -> set[int]:
+    """657 C：非生产函数（`NON_PROD_FUNCS`）**含嵌套定义**占用的行号（1-based）。
+
+    为什么不能只看 `enclosing_func`：`four_state_verdict_638.selftest()` 内部又定义了
+    `def chk(...)`，于是 `enclosing_func` 会把 selftest 里几百行 `chk(...)` 断言**归到 `chk`**
+    ⇒ 名字过滤失效、测试代码仍被当作射程（657 首版实测撞到）。`ast` 的行区间没有这个盲区。
+    """
+    try:
+        tree = ast.parse(src)
+    except SyntaxError:
+        return set()
+    out: set[int] = set()
+    for node in ast.walk(tree):
+        if (isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                and node.name in NON_PROD_FUNCS):
+            out.update(range(node.lineno, (node.end_lineno or node.lineno) + 1))
+    return out
+
+
+def gen_mutants(src: str, per_op_cap: int = 40, scope: str = "all",
+                strip_nonprod: bool = True) -> list[dict[str, Any]]:
+    """生成候选变异体：`(行号, 算子, 变异后源码)`。scope=core 时只留核心函数体内的行。
+
+    657 C：`strip_nonprod=True`（默认）时剔除 **docstring 行** 与 **非生产函数体**；
+    传 False 即回到 656 的原口径（用于报告里的对照数字）。
+    """
     lines = src.splitlines(keepends=True)
+    docs = docstring_lines(src) if strip_nonprod else set()
+    nonprod = nonprod_lines(src) if strip_nonprod else set()
     out: list[dict[str, Any]] = []
     for i, raw in enumerate(lines):
         line = raw.rstrip("\r\n")
-        if scope == "core" and enclosing_func(lines, i) not in CORE_FUNCS:
+        if strip_nonprod and ((i + 1) in docs or (i + 1) in nonprod):
+            continue
+        fn = enclosing_func(lines, i)
+        if scope == "core" and fn not in CORE_FUNCS:
+            continue
+        if strip_nonprod and fn in NON_PROD_FUNCS:
             continue
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
@@ -317,7 +389,8 @@ def run_one(mutant: dict[str, Any], target: str, timeout_s: float) -> dict[str, 
 
 
 def run(limit: int, targets: tuple[str, ...], seed: int = 20260928,
-        timeout_s: float = 25.0, scope: str = "all") -> dict[str, Any]:
+        timeout_s: float = 25.0, scope: str = "all",
+        strip_nonprod: bool = True) -> dict[str, Any]:
     rnd = random.Random(seed)
     fns, skipped = kill_functions()
 
@@ -333,15 +406,19 @@ def run(limit: int, targets: tuple[str, ...], seed: int = 20260928,
         raise SystemExit(f"[mutation656] 基线未绿 ⇒ 拒绝给出检出率：{base_detail}")
 
     results: list[dict[str, Any]] = []
+    cand_n: dict[str, int] = {}
+    cand_raw: dict[str, int] = {}
     for tgt in targets:
         path = HERE / f"{tgt}.py"
         if not path.is_file():
             continue
         src = path.read_text(encoding="utf-8")
-        cand = gen_mutants(src, scope=scope)
+        cand = gen_mutants(src, scope=scope, strip_nonprod=strip_nonprod)
+        cand_raw[tgt] = len(gen_mutants(src, scope=scope, strip_nonprod=False))
+        cand_n[tgt] = len(cand)
         rnd.shuffle(cand)
         picked = cand[: max(1, limit // len(targets))]
-        print(f"[mutation656] {tgt}：候选 {len(cand)} ⇒ 抽取 {len(picked)}")
+        print(f"[mutation656] {tgt}：候选 {len(cand)}（未剔口径 {cand_raw[tgt]}）⇒ 抽取 {len(picked)}")
         for mv in picked:
             # 子进程模式：变异体跑飞也杀得掉（进程内做不到），代价是每个多 ~0.3s 启动
             results.append(run_one_subprocess(mv, tgt, timeout_s))
@@ -359,6 +436,9 @@ def run(limit: int, targets: tuple[str, ...], seed: int = 20260928,
         "seed": seed,
         "kill_suite": str(KILL_SUITE.relative_to(ROOT)).replace("\\", "/"),
         "scope": scope,
+        "strip_nonprod": strip_nonprod,
+        "candidates": cand_n,
+        "candidates_raw": cand_raw,
         "kill_tests_used": [n for n, _ in fns],
         "kill_tests_skipped": skipped,
         "targets": list(targets),
@@ -378,14 +458,18 @@ def report(rep: dict[str, Any]) -> None:
     reps = rep["results"]
     survivors = [r for r in reps if r["status"] == "survived"]
     lines = [
-        "# 656 B2 · 变异测试报告",
+        "# 656 B2 · 变异测试报告（657 C 段复测）",
         "",
         f"> 生成：{rep['generated_at']}　杀测试：`{rep['kill_suite']}`（656 B1 的 P1–P12 真实测试函数）"
-        f"　种子：{rep['seed']}（可复现）",
+        f"　种子：{rep['seed']}（可复现）　"
+        f"剔除等价变异（docstring/selftest）：{'是' if rep.get('strip_nonprod', True) else '否'}",
         "",
         "## 一、总览",
         "",
         f"- 变异体：**{rep['mutants']}**",
+        "- 候选池（剔除后 / 未剔对照）："
+        + "；".join(f"`{k}` {v}/{rep.get('candidates_raw', {}).get(k, '—')}"
+                    for k, v in rep.get("candidates", {}).items()),
         f"- 被杀：{rep['killed']}　存活：{rep['survived']}　导入即崩：{rep['import_error']}　超时：{rep['timeout']}",
         f"- **检出率（只看能跑的 {rep['killed'] + rep['survived']} 个）：{rep['kill_rate_on_scored']}%**",
         f"- 检出率（含导入即崩，口径更宽松）：{rep['kill_rate_all']}%",
@@ -420,7 +504,9 @@ def report(rep: dict[str, Any]) -> None:
         "2. **导入即崩**算’被杀’但不含信息量 ⇒ 已单独统计，检出率主口径只看能跑的变异体。",
         "3. 存活体 ≠ 一定有 bug：也可能是**等价变异**（改了写法不改语义）或该分支本就无测试覆盖；"
         "本批对存活体的处置见 §五。",
-        "4. 变异体是**随机抽样**（种子固定 ⇒ 可复现），不是穷举；样本外仍可能有漏网。",
+        "4. 变异体是**抽样**（种子固定 ⇒ 可复现），不是穷举；样本外仍可能有漏网。",
+        "5. 657 C 起剔除两类**结构性等价变异**（docstring 行 / 本工具自带的 `selftest()`）——"
+        "它们改了也不改行为，留在分母里只会拉低数字。未剔口径的候选数在同一行并列给出。",
         "",
         "## 五、对存活体的处置",
         "",
@@ -462,12 +548,32 @@ def compare(core_json: Path, all_json: Path) -> int:
             f"`{k}` {v['killed']}/{v['killed'] + v['survived']}"
             for k, v in allr["by_file"].items()),
         "",
-        "**结论**：核心路径（`core`）的检出率明显高于整文件随机（`all`）——差额集中在 CLI/报告/迁移这类"
+        "**结论**：核心路径（`core`）的检出率高于整文件随机（`all`）——差额集中在 CLI/报告/IO 这类"
         "**本就没有单测**的代码上。两个数都保留：只看 `core` 会高估测试整体强度，只看 `all` 会低估核心的硬度。",
         "",
-        "**未达标登记**：本轮 `core` 62.5% / `all` 28.8%，都**低于任务书的 80% 目标**。"
-        "按任务书要求补测试的部分见验收报告「诚实登记」：本轮补了 3 条（篡改必拒 / GENESIS 与序号 / validate 必填），"
-        "剩余存活体主要是 ①等价变异（改法不改语义）②CLI/报告路径（单测价值低）③超时与导入崩（环境类）。",
+    ]
+    # 657 C：达标判定**按当轮真实数字算**，不写死（656 首版把结论写死成"未达标"，换个数就会自相矛盾）
+    c_rate, a_rate = core.get("kill_rate_on_scored"), allr.get("kill_rate_on_scored")
+    lines += [
+        "**目标对照（按 657 C 段任务书）**：",
+        "",
+        f"- `core` 目标 ≥ 80%：实测 **{c_rate}%** ⇒ "
+        f"{'达标' if (c_rate or 0) >= 80 else '**未达标**'}；",
+        f"- `all` 目标 ≥ 60%：实测 **{a_rate}%** ⇒ "
+        f"{'达标' if (a_rate or 0) >= 60 else '**未达标**'}；",
+        "",
+        "**657 C 段的两条口径修正（不只是「多写测试」）**：",
+        "",
+        "1. **剔除结构性等价变异**：656 把 docstring 行、以及工具内嵌 `selftest()` 里的断言行都当射程"
+        "（656 的 37 个存活体里 18 个是这两类），这些改动**语义上不可能改变行为** ⇒ 属等价变异，"
+        "留在分母里只会系统性拉低检出率。剔除后**对照口径**在同一行的候选池里并列给出，可复核。",
+        "2. **补测引用存活体**：`tests/test_core_pbt_656.py` 的 P13/P14 两节逐条对应报告 §三 的真实存活体"
+        "（★ 标记处写明对应哪个算子）。",
+        "",
+        "**剩余存活体的归因**（全部逐条登记，见 `data/657_mutation_attribution.md`）："
+        "①等价变异（如 `classify_card` 的 `==`→`!=`，因 `_raw_state(\"\")` 也判 pass 而不可区分）；"
+        "②CLI / 报告 / 文件 IO 路径（`main` / `write_report` / `build_checkpoint` / `verify_checkpoint_file`）；"
+        "③需要专用夹具的路径（HMAC 签名、checkpoint 文件）。",
     ]
     md = OUT_MD.read_text(encoding="utf-8") if OUT_MD.is_file() else "# 656 B2 · 变异测试报告\n"
     OUT_MD.write_text(md + "\n".join(lines) + "\n", encoding="utf-8", newline="\n")
@@ -487,6 +593,25 @@ def selftest() -> int:
     cand = gen_mutants(src)
     chk("能生成变异体", len(cand) > 0, f"{len(cand)} 个")
     chk("变异体确实改了源码", all(m["src"] != src for m in cand))
+    # 657 C：等价变异剔除必须真的生效（否则"检出率提升"就是假的）
+    sample = ('"""module doc 2 items."""\n'
+              "\n"
+              "\n"
+              "def f():\n"
+              '    """inner doc 3 items."""\n'
+              "    return 2\n"
+              "\n"
+              "\n"
+              "def selftest():\n"
+              "    return 7\n")
+    kept = gen_mutants(sample)
+    raw = gen_mutants(sample, strip_nonprod=False)
+    chk("docstring 行不生成变异体", all(m["line"] not in (1, 5) for m in kept),
+        f"lines={sorted({m['line'] for m in kept})}")
+    chk("selftest 函数体不生成变异体",
+        all(m["line"] != 10 for m in kept),
+        f"lines={sorted({m['line'] for m in kept})}")
+    chk("未剔口径候选更多（对照可复现）", len(raw) > len(kept), f"{len(raw)} > {len(kept)}")
     chk("报告产物落在 data/ 下",
         str(OUT_MD).replace("\\", "/").endswith("data/656_mutation_report.md"))
     # 基线必须绿（不绿就不该给检出率）
@@ -525,6 +650,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--timeout", type=float, default=25.0, help="单个变异体的杀测试超时（秒）")
     ap.add_argument("--scope", choices=("all", "core"), default="all",
                     help="all=整文件随机抽样；core=只改核心判决路径上的函数体")
+    ap.add_argument("--include-nonprod", action="store_true",
+                    help="657：把 docstring 行与 selftest 也当射程（回到 656 口径，用于对照）")
     ap.add_argument("--worker", default=None, help="（内部）子进程模式：跑单个变异体任务")
     ap.add_argument("--compare", action="store_true",
                     help="把 core 与 all 两份报告并排写进主报告（需先分别跑过两轮）")
@@ -539,7 +666,8 @@ def main(argv: list[str] | None = None) -> int:
     if a.check:
         return selftest()
     rep = run(a.limit, tuple(t.strip() for t in a.targets.split(",") if t.strip()),
-              seed=a.seed, timeout_s=a.timeout, scope=a.scope)
+              seed=a.seed, timeout_s=a.timeout, scope=a.scope,
+              strip_nonprod=not a.include_nonprod)
     if a.report:
         report(rep)
     if a.json:
