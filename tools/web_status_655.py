@@ -13,7 +13,7 @@
 数据来源（逐个可追溯，缺任一 ⇒ 该字段为 `null` 并登记到 `unavailable`，**绝不编造**）
 ==============================================================================
 - 卡：`atoms/**/ATOM-*.md`（`draft650/` 单列）
-- 规则：`tools/gate_engine.py` 的 `RULES`（现 import 现算）
+- 规则：`data/_gate_rules.json`（规范清单，现算；`gate_engine.RULES` 仅兜底）
 - 保护器：姊妹仓 `queyi-core/tools/` 下 5×`*_647.py` + 4×`*_649.py`
 - 逃逸：`data/mutation/full_baseline_v7.json`（并**交叉核对** 616 冻结口径 `1/1406`）
 - W2：`data/grounded_labels_w2.json`
@@ -76,15 +76,27 @@ def count_cards() -> dict[str, Any]:
 
 
 def count_rules() -> dict[str, Any]:
+    # 660 B5：以 data/_gate_rules.json 实际条数为准（规范清单），不再 hardcode 67；
+    # gate_engine.RULES 仅在该清单缺失时兜底（吞引擎与清单的口径差）。
+    p = ROOT / "data" / "_gate_rules.json"
+    if p.is_file():
+        try:
+            rules = json.load(open(p, encoding="utf-8"))
+            block = sum(1 for r in rules if r.get("severity") == "block")
+            return {"rules_total": len(rules), "rules_block": block,
+                    "source": "data/_gate_rules.json"}
+        except Exception as e:  # noqa: BLE001
+            return {"rules_total": None, "rules_block": None, "rules_error": str(e)[:120]}
     try:
         sys.path.insert(0, str(HERE))
         import gate_engine  # noqa: PLC0415
 
         rules = list(gate_engine.RULES)
+        block = sum(1 for r in rules if getattr(r, "severity", "") == "block")
+        return {"rules_total": len(rules), "rules_block": block,
+                "source": "gate_engine.RULES", "note": "data/_gate_rules.json 缺失，回退引擎"}
     except Exception as e:  # noqa: BLE001
         return {"rules_total": None, "rules_block": None, "rules_error": str(e)[:120]}
-    block = sum(1 for r in rules if getattr(r, "severity", "") == "block")
-    return {"rules_total": len(rules), "rules_block": block}
 
 
 def count_protectors() -> dict[str, Any]:
@@ -176,7 +188,7 @@ def selftest() -> int:
     chk("卡数为正", int(rep["cards"]["cards_real"]) > 0, str(rep["cards"]["cards_real"]))
     chk("卡数 = verified+red-team+draft",
         rep["cards"]["cards_total"] == rep["cards"]["cards_real"] + rep["cards"]["cards_draft"])
-    chk("规则数 = 67（现状）", rep["rules"]["rules_total"] == 67, str(rep["rules"]))
+    chk("规则数 = 63（data/_gate_rules.json 实测）", rep["rules"]["rules_total"] == 63, str(rep["rules"]))
     chk("保护器 9/9 存在于姊妹仓", rep["protectors"]["protectors_total"] == 9,
         str(rep["protectors"]["protectors_missing"]))
     chk("逃逸分母与 616 冻结口径一致", bool(rep["escape"].get("frozen_matches")),

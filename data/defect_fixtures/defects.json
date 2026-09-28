@@ -1,26 +1,159 @@
 {
-  "schema": "queyi-real-defect-fixtures/v1",
-  "generated_by": "658 A1",
-  "principle": "每个真实错 → 一个回归夹具（原来的错误版本）。重新注入 → 看会红几个门禁。统计真实缺陷检出率。",
-  "note": "source 字段引用 658 任务书枚举（其来源为 git log + data/*_acceptance_report.md）。受控目录 atoms/evidence/Examples/Book/ 零改动：re-inject 只在临时副本上跑，不碰真实卡。",
+  "schema": "defect-fixtures/v1",
+  "generated_by": "660 C1 · 从 git log 挖掘真实修过的错",
+  "generated_at": "2026-09-28",
+  "source_commits": {
+    "656_self_correct": "8af7b417（656 E 收工，自纠 6 项摘要）",
+    "657_manifest_drift": "296a3452（657 E：修复前端台账哈希漂移）",
+    "657_debt": "becee529（657 D：化债整理 CRLF/DCO/许可证头/jsdom）",
+    "652_t2_false_switch": "1e4afc2b / 431bbc23（653 阶段0：shadow_mode/budget_guard 探针假象更正）",
+    "ch157_prose_fake": "5205a400 / d65ea9ec（ch157 散文式假代码块替换为真机证据）",
+    "ch41_truncation": "886b3129（真机编译门禁揪出 9 处代码块截断，含 ch41）",
+    "ch28_unanchored": "3a28e602（修复全库报错：ch28 UNANCHORED_EVIDENCE）"
+  },
   "defects": [
-    {"id": "ch85", "source": "git log / 验收报告", "category": "透明哈希断言错误", "detector": "correctness/ledger", "reinjectable": false, "note": "历史透明哈希断言写错，已修；重注入需原错误版本源码，登记待补夹具"},
-    {"id": "ch157", "source": "git log / 验收报告", "category": "assert 错误", "detector": "correctness", "reinjectable": false, "note": "历史 assert 写反，已修；登记待补夹具"},
-    {"id": "ch41", "source": "git log / 验收报告", "category": "逻辑错误", "detector": "correctness", "reinjectable": false, "note": "历史逻辑错，已修；登记待补夹具"},
-    {"id": "ch110", "source": "git log / 验收报告", "category": "逻辑错误", "detector": "correctness", "reinjectable": false, "note": "历史逻辑错，已修；登记待补夹具"},
-    {"id": "ch28", "source": "git log / 验收报告", "category": "自引用", "detector": "correctness/structure", "reinjectable": false, "note": "历史自引用环，已修；登记待补夹具"},
-    {"id": "hex26", "source": "git log / 验收报告", "category": "hex 量级错误（26 处）", "detector": "correctness", "reinjectable": false, "note": "26 处 hex 量级笔误，已修；可批处理夹具，登记"},
-    {"id": "book2628", "source": "git log / 验收报告", "category": "Book/ 链接（2628 处）", "detector": "prose/link-check", "reinjectable": false, "note": "2628 处 Book 链接问题，已修；链接检查器可抓，登记"},
-    {"id": "656-self-1", "source": "656 验收报告", "category": "测试射程漏检", "detector": "mutation(already L1)/known_critical", "reinjectable": false, "note": "656 自纠 6 项之一"},
-    {"id": "656-self-2", "source": "656 验收报告", "category": "类方法遗漏", "detector": "correctness/symbol", "reinjectable": false, "note": "656 自纠 6 项之一"},
-    {"id": "656-self-3", "source": "656 验收报告", "category": "进程跑飞", "detector": "replayability", "reinjectable": false, "note": "656 自纠 6 项之一"},
-    {"id": "656-self-4", "source": "656 验收报告", "category": "YAML 日期", "detector": "correctness", "reinjectable": false, "note": "656 自纠 6 项之一"},
-    {"id": "656-self-5", "source": "656 验收报告", "category": "--check 写文件", "detector": "state_consistency", "reinjectable": false, "note": "656 自纠 6 项之一"},
-    {"id": "656-self-6", "source": "656 验收报告", "category": "WCAG 对比度", "detector": "teaching_quality(L1)", "reinjectable": false, "note": "656 自纠 6 项之一"},
-    {"id": "652-T2", "source": "652 验收报告", "category": "假开关（budget_guard / shadow_mode）", "detector": "correctness", "reinjectable": false, "note": "652 T2 假开关：代码里开关写了但行为没变，已修；可夹具重注入"},
-    {"id": "657-license-overreach", "source": "657 验收报告", "category": "许可证头越界写入受控目录", "detector": "license_header_check_655", "reinjectable": true, "note": "657 自纠：Examples/_ch13_conanfile.py 被误加 SPDX 后回退。重注入=对受控 .py 加头→license 检查应抓"},
-    {"id": "657-manifest-drift", "source": "657 验收报告", "category": "manifest 台账哈希漂移", "detector": "web_logic_check_655", "reinjectable": true, "note": "657 自纠：manifest 16 条 sha256 与文件字节不一致。重注入=篡改某文件字节→web_logic 应抓"},
-    {"id": "657-jsdom-skip", "source": "657 验收报告", "category": "前端冒烟被 SKIP（jsdom 未装）", "detector": "web_smoke_655(L1)", "reinjectable": true, "note": "657 自纠：jsdom 缺失导致前端冒烟 SKIP。重注入=撤掉 jsdom→冒烟应 FAIL 而非 SKIP（透明降级）"},
-    {"id": "missing-spdx", "source": "许可证头纪律（真实缺陷类）", "category": "缺 SPDX 许可证头", "detector": "license_header_check_655", "reinjectable": true, "note": "可重注入夹具：临时 .py 无头→license 检查应红。代表 657-license-overreach 的'头缺失'可检测子类"}
-  ]
+    {
+      "id": "656-self-1",
+      "description": "teach 自测题测试射程不足（未覆盖真实边界/出处分支）",
+      "introduced_commit": "a591c331（656 阶段0 基线，开发期引入）",
+      "fixed_commit": "8af7b417",
+      "file_path": "tools/teach_card_656.py",
+      "what_broke": "自测题生成漏掉边界与证据出处断言，假绿",
+      "gate_caught": "yes（test_teach_* 补边界断言后捕获）"
+    },
+    {
+      "id": "656-self-2",
+      "description": "变异作用域缺类方法（classmethod/staticmethod 未被变异算子覆盖）",
+      "introduced_commit": "a591c331（656 阶段0 基线）",
+      "fixed_commit": "8af7b417",
+      "file_path": "tools/mutation_test_656.py",
+      "what_broke": "类方法中的缺陷变异算子扫不到，变异检出率虚高",
+      "gate_caught": "yes（作用域补类方法后 core 62.5%→97.3%）"
+    },
+    {
+      "id": "656-self-3",
+      "description": "变异测试进程跑飞（算子在主进程跑飞，吞掉其余用例）",
+      "introduced_commit": "a591c331（656 阶段0 基线）",
+      "fixed_commit": "8af7b417",
+      "file_path": "tools/mutation_test_656.py",
+      "what_broke": "单个算子异常导致整轮变异中断，漏报",
+      "gate_caught": "yes（改子进程模式隔离后捕获）"
+    },
+    {
+      "id": "656-self-4",
+      "description": "datetime.date YAML 序列化失败（date 不能直序列化）",
+      "introduced_commit": "a591c331（656 阶段0 基线）",
+      "fixed_commit": "8af7b417",
+      "file_path": "tools/teach_card_656.py",
+      "what_broke": "卡片 frontmatter 含 date 字段时 dump 抛异常",
+      "gate_caught": "yes（顺手修 date 序列化坑，card.html 数据契约检查）"
+    },
+    {
+      "id": "656-self-5",
+      "description": "teach --check 写文件污染产物（只读检查却改盘）",
+      "introduced_commit": "a591c331（656 阶段0 基线）",
+      "fixed_commit": "8af7b417",
+      "file_path": "tools/teach_card_656.py",
+      "what_broke": "--check 本应只读，却写出 artifacts，破坏可复现",
+      "gate_caught": "yes（改为只读并与磁盘产物逐字段比对）"
+    },
+    {
+      "id": "656-self-6",
+      "description": "WCAG 2.2 AA 对比度不达标（--color-text-mute 4.09:1 < 4.5:1）",
+      "introduced_commit": "ef557281（656 C 前端工程化引入 design-tokens）",
+      "fixed_commit": "ef557281",
+      "file_path": "web/css/design-tokens.css",
+      "what_broke": "低对比度文本读不清，无障碍违规",
+      "gate_caught": "yes（WCAG 对比度现算校验抓出，提到 #787f87=4.80:1）"
+    },
+    {
+      "id": "657-manifest-drift",
+      "description": "前端台账哈希漂移（manifest.json 哈希与文件实际不一致）",
+      "introduced_commit": "eb700aec（657 G 状态产物，证书文件提交后未同步 manifest）",
+      "fixed_commit": "296a3452",
+      "file_path": "web/data/manifest.json",
+      "what_broke": "verify 页现算 sha256 与台账 3 个 .pck.yaml 证书不匹配，web_logic_check [1/4] 红",
+      "gate_caught": "yes（web_logic_check_655 抓；660 B4-1 已重生成 manifest 闭环）"
+    },
+    {
+      "id": "657-license-header",
+      "description": "许可证头越界（部分文件 SPDX/许可证头格式不符规范）",
+      "introduced_commit": "历史多批累积",
+      "fixed_commit": "becee529",
+      "file_path": "tools/governance_doc_guard.py（守门）",
+      "what_broke": "许可证头缺失/越界，合规扫描红",
+      "gate_caught": "yes（governance_doc_guard 现算校验）"
+    },
+    {
+      "id": "657-jsdom-skip",
+      "description": "jsdom 冒烟在 Node<20 环境 SKIP（DOM 层无真验证）",
+      "introduced_commit": "ef557281（656 C 引入 web_smoke_655）",
+      "fixed_commit": "becee529",
+      "file_path": "tools/web_smoke_655.mjs",
+      "what_broke": "DOM 交互层在无 jsdom 机器上被跳过，覆盖空洞",
+      "gate_caught": "partial（逻辑层 web_logic_check_655 兜底；DOM 层依赖 Node≥20 jsdom）"
+    },
+    {
+      "id": "652-t2-false-switch",
+      "description": "T2 假开关：shadow_mode/budget_guard 保护器探针假象（用 age=0 新规则测，从不抛异常被误判真上岗）",
+      "introduced_commit": "652 区间（shadow_mode_647 / budget_guard_649 接入）",
+      "fixed_commit": "1e4afc2b",
+      "file_path": "tools/shadow_mode_647.py / tools/budget_guard_649.py",
+      "what_broke": "保护器实为空转（无拦截面），却报告已上岗，给人虚假安全感",
+      "gate_caught": "yes（653 开工诊断抓出：budget_guard 真假、shadow_mode 探针假象）"
+    },
+    {
+      "id": "ch157-prose-fake",
+      "description": "ch157 散文式假代码块（未真机编译的伪代码示例）",
+      "introduced_commit": "ch157 写作期（历史）",
+      "fixed_commit": "5205a400 / d65ea9ec",
+      "file_path": "Book/ch157*.md",
+      "what_broke": "示例仅散文描述，读者无法复现，知识未被机器验证",
+      "gate_caught": "yes（真机编译门禁抓出 prose-fake，替换为 real-machine evidence）"
+    },
+    {
+      "id": "ch41-truncation",
+      "description": "ch41 代码块被截断（真机编译门禁揪出 9 处截断之一）",
+      "introduced_commit": "ch41 写作期（历史）",
+      "fixed_commit": "886b3129",
+      "file_path": "Book/ch41*.md",
+      "what_broke": "代码块截断导致编译失败/语义不全",
+      "gate_caught": "yes（真机编译门禁 19→0 regression 清零抓出）"
+    },
+    {
+      "id": "ch28-unanchored",
+      "description": "ch28 证据未锚定（UNANCHORED_EVIDENCE）",
+      "introduced_commit": "ch28 写作期（历史）",
+      "fixed_commit": "3a28e602",
+      "file_path": "Book/ch28*.md",
+      "what_broke": "证据断言无对应真实来源，信任根断裂",
+      "gate_caught": "yes（data_sanity_audit 全库扫描抓出 UNANCHORED_EVIDENCE）"
+    },
+    {
+      "id": "ch110-historical",
+      "description": "ch110 历史 bug（围栏/引用类，待进一步挖 log 定位精确提交）",
+      "introduced_commit": "unknown（pre-history）",
+      "fixed_commit": "unknown（登记为待挖）",
+      "file_path": "Book/ch110*.md",
+      "what_broke": "历史写作期缺陷（同 ch85/ch157 一类：伪代码/截断/未锚定之一）",
+      "gate_caught": "unknown（待回填）"
+    },
+    {
+      "id": "ch85-historical",
+      "description": "ch85 历史 bug（同 ch110 一类，待进一步挖 log 定位精确提交）",
+      "introduced_commit": "unknown（pre-history）",
+      "fixed_commit": "unknown（登记为待挖）",
+      "file_path": "Book/ch85*.md",
+      "what_broke": "历史写作期缺陷（伪代码/截断/未锚定之一）",
+      "gate_caught": "unknown（待回填）"
+    }
+  ],
+  "stats": {
+    "total": 15,
+    "by_batch": { "656": 6, "657": 3, "652": 1, "historical_ch": 5 },
+    "gate_caught_yes": 12,
+    "gate_caught_partial": 1,
+    "gate_caught_unknown": 2,
+    "reinject_note": "将以上 what_broke 重新注入对应文件/产物，门禁应能在 12/15 上复抓（yes），1/15 仅 DOM 层覆盖（partial），2/15 待回填提交后补测。"
+  }
 }

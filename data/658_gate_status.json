@@ -8,15 +8,15 @@
     {
       "stage": "S0 元状态对账",
       "tier": "L0",
-      "cmd": "C:\\Users\\ASUS\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe tools/status_reconciler_658.py --check",
+      "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe tools/status_reconciler_658.py --check",
       "exit": 0,
       "pass": true,
-      "tail": " ===\n{\n  \"head\": \"645d73c8d89cb4644d9d3308894caba97792c7e0\",\n  \"branch\": \"master\",\n  \"ahead_of_origin_master\": 9,\n  \"behind_origin_master\": 0,\n  \"dirty\": true,\n  \"mutation\": {\n    \"core\": 97.3,\n    \"all\": 81.5\n  },\n  \"cards_atoms_total\": 48,\n  \"graph_nodes\": 178,\n  \"graph_links\": 1093,\n  \"_baseline_head\": \"ancestor(snapshot-behind)\",\n  \"_baseline_ahead\": 0\n}\n\n[OK] 元状态与 baseline.json 一致（受控目录零改动前提下）"
+      "tail": "nch\": \"master\",\n  \"ahead_of_origin_master\": 0,\n  \"behind_origin_master\": 0,\n  \"dirty\": true,\n  \"mutation\": {\n    \"core\": 97.3,\n    \"all\": 81.5\n  },\n  \"cards_atoms_total\": 48,\n  \"graph_nodes\": 178,\n  \"graph_links\": 1093,\n  \"rules_actual\": 63,\n  \"readme_rules\": 63,\n  \"readme_nodes\": 178,\n  \"_baseline_head\": \"ancestor(snapshot-behind)\",\n  \"_baseline_ahead\": 0\n}\n\n[OK] 元状态与 baseline.json 一致（受控目录零改动前提下）"
     },
     {
       "stage": "S1 门禁分层合法",
       "tier": "L0",
-      "cmd": "C:\\Users\\ASUS\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe tools/gate_tier_check_658.py --check",
+      "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe tools/gate_tier_check_658.py --check",
       "exit": 0,
       "pass": true,
       "tail": "L0 gates: 7  L1 gates: 10\n[OK] 门禁两层模型声明合法（mutation_score∈L1；CI 非阻断一致性见 WARN）"
@@ -24,15 +24,15 @@
     {
       "stage": "S2 真实缺陷检出",
       "tier": "L0",
-      "cmd": "C:\\Users\\ASUS\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe tools/defect_fixture_658.py --rate",
+      "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe tools/defect_fixture_658.py --rate",
       "exit": 0,
       "pass": true,
-      "tail": "=== 真实缺陷重注入检测 ===\n  657-manifest-drift     CAUGHT  (gate=web_logic_check_655 (sha256 ledger))\n  missing-spdx           CAUGHT  (gate=license_header_check_655 (SPDX presence))\n\n真实缺陷检出率（重注入子集） = 2/2 = 100.0%\n已登记有检测器门禁的缺陷 = 18/18（覆盖，非已验证会红）\n说明：不可重注入的缺陷缺原错误版本源码，只能登记覆盖；其'会红'未经重注入证明，这正是盲化 holdout（A2）要补的外部效度缺口。"
+      "tail": "=== 真实缺陷重注入检测 ===\n  657-manifest-drift     CAUGHT  (gate=web_logic_check_655 (sha256 ledger))\n\n真实缺陷检出率（重注入子集） = 1/1 = 100.0%\n已登记有检测器门禁的缺陷 = 0/15（覆盖，非已验证会红）\n说明：不可重注入的缺陷缺原错误版本源码，只能登记覆盖；其'会红'未经重注入证明，这正是盲化 holdout（A2）要补的外部效度缺口。"
     },
     {
       "stage": "S3 盲化 holdout",
       "tier": "L0",
-      "cmd": "C:\\Users\\ASUS\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe tools/holdout_658.py --status",
+      "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe tools/holdout_658.py --status",
       "exit": 0,
       "pass": true,
       "tail": "blind=True revealed=False seeds=5\n  h1   一张卡的 boundary 值填错（语义越界）\n  h2   某 hex 量级笔误（off-by-magnitude）\n  h3   文档里一条指向不存在文件的死链\n  h4   一个 .py 缺 SPDX 头\n  h5   manifest 台账 sha256 与文件字节不一致"
@@ -40,7 +40,7 @@
     {
       "stage": "S4 边界 provenance",
       "tier": "L1",
-      "cmd": "C:\\Users\\ASUS\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe tools/boundary_scope_658.py --report",
+      "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe tools/boundary_scope_658.py --report",
       "exit": 0,
       "pass": true,
       "tail": "边界卡总数：26\nprovenance 完整：26/26\nsemantic scope 完整：0/26（全部缺失，待 C4 补标准/编译器/平台）\nprovenance 字段：mutation_set_hash / mutation_count / generator_version / 证据SHA256 / 证据条数 / 编译器版本。"
@@ -56,7 +56,7 @@
     {
       "stage": "S6 单元测试(658)",
       "tier": "L0",
-      "cmd": "C:\\Users\\ASUS\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe -m pytest -q -p no:cacheprovider C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\tests\\test_external_validity_658.py C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\tests\\test_status_reconciler_658.py",
+      "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe -m pytest -q -p no:cacheprovider C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\tests\\test_external_validity_658.py C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\tests\\test_status_reconciler_658.py",
       "exit": 0,
       "pass": true,
       "tail": ".....                                                                    [100%]"

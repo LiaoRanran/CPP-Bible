@@ -15,6 +15,7 @@ const tip = document.getElementById('tip');
 const detail = document.getElementById('detail');
 
 let G = null;          // graph.json
+let attackedSet = new Set();  // 受攻击节点 id（attack 边 target），B4-2 视觉标记用
 let view = { x: 0, y: 0, k: 1 };
 let pos = [];          // [{x,y}]
 let idxById = new Map();
@@ -139,6 +140,16 @@ function draw() {
       ctx.lineWidth = i === hovered ? 1.6 : 1;
       ctx.strokeStyle = i === hovered ? '#e6e8ea' : 'rgba(230,232,234,.55)';
       ctx.stroke();
+    }
+    // B4-2：受攻击节点红色边框 + 光晕（不改位置/大小，仅加视觉标记）
+    if (attackedSet.has(d.id)) {
+      ctx.save();
+      ctx.shadowColor = 'rgba(255,72,72,.9)';
+      ctx.shadowBlur = 9 * view.k;
+      ctx.lineWidth = 1.8 * view.k;
+      ctx.strokeStyle = 'rgba(255,96,96,.95)';
+      ctx.stroke();
+      ctx.restore();
     }
     ctx.globalAlpha = 1;
   }
@@ -405,6 +416,9 @@ window.__starmap_hooks = {
   idxById = new Map(G.nodes.map((d, i) => [d.id, i]));
   // 边预存两端下标（pickEdgeIndex 用；避免每次 hover 重建 Map）
   for (const l of G.links) { l._ai = idxById.get(l.source); l._bi = idxById.get(l.target); }
+  // B4-2：受攻击节点 = 作为 attack 边 target 的节点
+  attackedSet = new Set();
+  for (const l of G.links) if (l.kind === 'attack') attackedSet.add(l.target);
   layout(G.nodes, G.links);
   renderLead(); renderStats(); renderDetail(-1); wireFilters(); resize();
   window.addEventListener('resize', resize);

@@ -5,7 +5,6 @@
 """
 import importlib.util
 import os
-import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 spec = importlib.util.spec_from_file_location(
@@ -35,8 +34,9 @@ def test_observed_facts_shape():
     assert "cards_atoms_total" in f
 
 
-def test_reconcile_tolerates_rules_discrepancy():
+def test_reconcile_rules_converged_to_gate_rules():
     f = mod.observed_facts()
+    # 660 B5：口径已收敛为 data/_gate_rules.json 实测，baseline 写实际数则无冲突
     baseline = {
         "git": {"head": f["head"], "ahead_of_origin_master": f["ahead_of_origin_master"],
                 "behind_origin_master": f["behind_origin_master"]},
@@ -44,8 +44,11 @@ def test_reconcile_tolerates_rules_discrepancy():
         "graph": {"nodes": f.get("graph_nodes"), "links": f.get("graph_links")},
         "mutation": {"core_kill_rate_pct": f.get("mutation", {}).get("core"),
                      "all_kill_rate_pct": f.get("mutation", {}).get("all")},
-        # rules 故意给错值，reconciler 必须容忍（不在 conflict 里）
-        "rules": {"documented_brief": 67, "documented_actual_claim": 63},
+        "rules": {"documented_brief": f["rules_actual"], "documented_actual_claim": f["rules_actual"]},
     }
     conflicts = mod.reconcile(f, baseline)
-    assert all("规则" not in c for c in conflicts), f"规则口径差不应判冲突: {conflicts}"
+    assert all("规则" not in c for c in conflicts), f"规则已收敛为实际数，不应判冲突: {conflicts}"
+    # 反证：baseline 仍写 67（stale）时，reconciler 必须抓出
+    stale = {**baseline, "rules": {"documented_brief": 67, "documented_actual_claim": 63}}
+    c2 = mod.reconcile(f, stale)
+    assert any("规则" in c for c in c2), f"baseline 写 67 应被对账抓出: {c2}"

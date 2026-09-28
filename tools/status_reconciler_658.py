@@ -15,6 +15,7 @@
     python tools/status_reconciler_658.py --json             # 只打印观测事实 JSON
 """
 from __future__ import annotations
+
 import argparse
 import json
 import os
@@ -24,13 +25,13 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROBE_DIRS = ("_arch_v", "_pytest_tmp", "backup_652", "node_modules", ".pytest_tmp")
-TOLERATED_KEYS = {"rules"}  # 658 E1 口径差：规则数 67/63/未在源码定位，容忍不判冲突
+TOLERATED_KEYS = set()  # 660 B5：规则口径已收敛为 data/_gate_rules.json 实测（63），不再容忍；差异改由下方显式对账
 
 
 def _run(args):
     try:
         return subprocess.run(args, cwd=ROOT, capture_output=True, text=True, timeout=120).stdout.strip()
-    except Exception as e:  # noqa: BLE001
+    except Exception:  # noqa: BLE001
         return ""
 
 
@@ -101,6 +102,26 @@ def observed_facts():
             facts["graph_links"] = len(g.get("links", []))
         except Exception:  # noqa: BLE001
             pass
+    # 660 B5：规则数以 data/_gate_rules.json 为准；README 陈述数用于对账
+    gp2 = os.path.join(ROOT, "data", "_gate_rules.json")
+    if os.path.isfile(gp2):
+        try:
+            d = json.load(open(gp2, encoding="utf-8"))
+            facts["rules_actual"] = len(d)
+        except Exception:  # noqa: BLE001
+            pass
+    rmd = os.path.join(ROOT, "README.md")
+    if os.path.isfile(rmd):
+        try:
+            txt = open(rmd, encoding="utf-8").read()
+            m = re.search(r"(\d+)\s*规则", txt)
+            if m:
+                facts["readme_rules"] = int(m.group(1))
+            m = re.search(r"(\d+)\s*节点\s*/\s*[\d,]*\s*边", txt)  # 仅匹配星图行，避开 W2 的 131 节点
+            if m:
+                facts["readme_nodes"] = int(m.group(1))
+        except Exception:  # noqa: BLE001
+            pass
     return facts
 
 
@@ -139,6 +160,18 @@ def reconcile(facts, baseline):
         conflicts.append(f"图节点数不一致：baseline={bg['nodes']} 实际={facts.get('graph_nodes')}")
     if bg.get("links") is not None and bg["links"] != facts.get("graph_links"):
         conflicts.append(f"图边数不一致：baseline={bg['links']} 实际={facts.get('graph_links')}")
+    # 660 B5：规则数以 _gate_rules.json 为准，README/baseline 必须一致
+    ra = facts.get("rules_actual")
+    if ra is not None:
+        dr = facts.get("readme_rules")
+        if dr is not None and dr != ra:
+            conflicts.append(f"README 规则数不一致：文档={dr} 实际={ra}（data/_gate_rules.json）")
+        br = baseline.get("rules", {}).get("documented_brief")
+        if br is not None and br != ra:
+            conflicts.append(f"baseline 规则数不一致：文档={br} 实际={ra}（data/_gate_rules.json）")
+    rn = facts.get("readme_nodes")
+    if rn is not None and facts.get("graph_nodes") is not None and rn != facts["graph_nodes"]:
+        conflicts.append(f"README 节点数不一致：文档={rn} 实际={facts['graph_nodes']}（web/data/graph.json）")
     # mutation 容忍 ±0.5（采样/舍入），且只在对账时对比
     bm = baseline.get("mutation", {})
     for k in ("core_kill_rate_pct", "all_kill_rate_pct"):
@@ -170,7 +203,7 @@ def emit_agent(facts):
     if os.path.isfile(p):
         txt = open(p, encoding="utf-8").read()
         if "<!-- GENERATED:BEGIN" in txt and "<!-- GENERATED:END -->" in txt:
-            txt = re.sub(r"<!-- GENERATED:BEGIN.*?GENERATED:END -->\n?", block, txt, flags=re.S)
+            txt = re.sub(r"<!-- GENERATED:BEGIN.*?GENERATED:END -->\n?", block, txt, flags=re.DOTALL)
         else:
             txt = txt.rstrip() + "\n\n" + block
         open(p, "w", encoding="utf-8").write(txt)
@@ -192,7 +225,7 @@ def emit_next(facts):
         f"- 元状态：mutation core/all {facts.get('mutation',{}).get('core','?')}/{facts.get('mutation',{}).get('all','?')}%；"
         f"卡 {facts.get('cards_atoms_total','?')}；图 {facts.get('graph_nodes','?')}/{facts.get('graph_links','?')}\n"
         f"- 边界现状：{cur.get('boundary_written','?')} 卡有边界（{cur.get('boundary_verified_pass','?')} verified-pass + {cur.get('boundary_redteam_verified','?')} red-team）；{cur.get('draft_empty','?')} draft 留空\n"
-        "- 口径差（容忍，不判冲突）：规则数 67/63/未在源码定位；图节点 README 178 vs 任务书称 121\n"
+        "- 口径差（660 B5 已收敛）：规则数=63（data/_gate_rules.json 实测；gate_engine.RULES 仍报 67，引擎与清单差额待权威源）；图节点=178（graph.json 实测，任务书称 121 待权威源）\n"
         "- 接手前先跑：`python tools/status_reconciler_658.py --check`（META-STATE-CONFLICT 即停）\n"
         "<!-- GENERATED:END -->\n"
     )
@@ -201,7 +234,7 @@ def emit_next(facts):
     if os.path.isfile(p):
         txt = open(p, encoding="utf-8").read()
         if "<!-- GENERATED:BEGIN" in txt and "<!-- GENERATED:END -->" in txt:
-            txt = re.sub(r"<!-- GENERATED:BEGIN.*?GENERATED:END -->\n?", block, txt, flags=re.S)
+            txt = re.sub(r"<!-- GENERATED:BEGIN.*?GENERATED:END -->\n?", block, txt, flags=re.DOTALL)
         else:
             txt = txt.rstrip() + "\n\n" + block
         open(p, "w", encoding="utf-8").write(txt)

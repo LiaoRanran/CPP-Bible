@@ -18,14 +18,15 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 `;
 
 export class QyButton extends HTMLElement {
+  static get observedAttributes() { return ['label', 'href', 'variant', 'disabled']; }
   connectedCallback() {
     if (this.shadowRoot) return;
     const root = this.attachShadow({ mode: 'open' });
     const href = this.getAttribute('href');
     const label = this.getAttribute('label') || '';
     root.innerHTML = `<style>${CSS}</style>
-      ${href ? `<a class="btn" href="${href}">${label}<slot></slot></a>`
-             : `<button type="button">${label}<slot></slot></button>`}`;
+      ${href ? `<a class="btn" href="${href}"><span class="lbl">${label}</span><slot></slot></a>`
+             : `<button type="button"><span class="lbl">${label}</span><slot></slot></button>`}`;
     if (!href) {
       root.querySelector('button').addEventListener('click', () => {
         this.dispatchEvent(new CustomEvent('qy-click', { bubbles: true }));
@@ -34,6 +35,14 @@ export class QyButton extends HTMLElement {
     const disabled = this.hasAttribute('disabled');
     const el = root.querySelector(href ? 'a.btn' : 'button');
     if (disabled && !href) el.disabled = true;
+  }
+  // 660 B4-3：label 属性变化后实时反映（修复 index.html 动态设 label 不生效）
+  attributeChangedCallback(name, _old, val) {
+    if (!this.shadowRoot) return;
+    if (name === 'label') {
+      const el = this.shadowRoot.querySelector('.lbl');
+      if (el) el.textContent = val || '';
+    }
   }
 }
 
