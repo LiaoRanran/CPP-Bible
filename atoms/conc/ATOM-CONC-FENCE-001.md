@@ -5,6 +5,9 @@ title: 内存屏障（fence）只约束顺序，不提供原子性；屏障在�
 domain: conc
 type: mechanism
 status: verified
+mutation_set_hash: c1ae0bb1c8b5e0473e5bc9478b66f8875f487a013525f0f3376386e886991175
+mutation_count: 10
+generator_version: full_baseline_v7.json
 verified_by: human:liaoranran
 verified_at: 2026-09-12
 dal: A

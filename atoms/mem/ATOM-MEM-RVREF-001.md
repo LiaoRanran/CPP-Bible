@@ -8,6 +8,9 @@ audience: intermediate         # 默认读者：知道 std::move、但没系统�
 cognitive_load: medium
 prerequisites_readable: true   # 前置 ATOM-MEM-MOVE-002 已锻造（relations 目标存在，机器可查）
 status: verified
+mutation_set_hash: 328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71
+mutation_count: 10
+generator_version: full_baseline_v7.json
 verified_by: human:liaoranran
 verified_at: 2026-09-11
 dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审

@@ -5,6 +5,9 @@ title: SSO：std::string 为什么短字符串不分配堆内存
 domain: MEM
 type: pitfall
 status: verified
+mutation_set_hash: b47a6fb89478cd90edec18a62ead2caee88821b0ef1055124805965fe861c085
+mutation_count: 10
+generator_version: full_baseline_v7.json
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-11        # 签署日期
 dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审

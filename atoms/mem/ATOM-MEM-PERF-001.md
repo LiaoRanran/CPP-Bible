@@ -5,6 +5,9 @@ title: 移动比拷贝快多少？收益只来自"掏空源对象"，无动态�
 domain: MEM
 type: pitfall
 status: verified
+mutation_set_hash: d8379e84b246fa25c3603ba763209038824f53ecb5cf9ae8978f2744c393bb8f
+mutation_count: 10
+generator_version: full_baseline_v7.json
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-11        # 签署日期
 dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审

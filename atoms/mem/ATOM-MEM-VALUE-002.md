@@ -5,6 +5,9 @@ title: 引用折叠与完美转发：为什么 std::forward 不能省
 domain: MEM
 type: mechanism
 status: verified
+mutation_set_hash: f8b75ec83befad4683ca1a62726eb3f53f3c3b6130a4680830f8b6e6a43ef571
+mutation_count: 10
+generator_version: full_baseline_v7.json
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-11        # 签署日期
 dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审

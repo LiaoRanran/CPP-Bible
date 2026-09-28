@@ -5,6 +5,9 @@ title: 别看 auto_ptr 的名字像智能指针：它的"拷贝"是转移，而 
 domain: HIST
 type: evolution
 status: verified
+mutation_set_hash: 328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71
+mutation_count: 10
+generator_version: full_baseline_v7.json
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-10        # 签署日期（人审通过，授予 5 分）
 dal: B                            # 失效后果分级（G6 §3）：B=教学结论方向错；A/B 须人审

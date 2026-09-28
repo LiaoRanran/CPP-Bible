@@ -7,6 +7,9 @@ type: contrast
 gray_zone: ub                  # 五类单值归属（M2 §7）：本原子域在 UB 侧、主体是"识别真 UB"
                                # （正文以"unspecified vs UB"对照展开，对照的另一侧见 claim）
 status: verified
+mutation_set_hash: d8379e84b246fa25c3603ba763209038824f53ecb5cf9ae8978f2744c393bb8f
+mutation_count: 10
+generator_version: full_baseline_v7.json
 verified_by: human:liaoranran  # 签署人（非 Agent）
 verified_at: 2026-09-10        # 签署日期（第 2 轮人审通过）
 dal: A                            # 失效后果分级（G6 §3）：A=UB/并发致程序崩溃或数据错误；须人审

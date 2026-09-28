@@ -5,6 +5,9 @@ title: "数据竞争是未定义行为；TSan 可检测，但『没被报 ≠ �
 domain: conc
 type: pitfall
 status: verified
+mutation_set_hash: ce578a4d5d2ad0d84b64aee4966f169946723eb0945bdb629a0985ba553d1481
+mutation_count: 11
+generator_version: full_baseline_v7.json
 dal: C
 human_review: optional
 verified_by: human:liaoranran

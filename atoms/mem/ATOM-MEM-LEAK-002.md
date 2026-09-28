@@ -5,6 +5,9 @@ title: 泄漏检测的工具边界：报告与否不能等价于泄漏有无
 domain: MEM
 type: contrast
 status: red-team-verified
+mutation_set_hash: 1acd558220371fe1b0b6b97d3c9b4ed379d00ae4f58fa0752d2d33a170903ea4
+mutation_count: 10
+generator_version: full_baseline_v7.json
 dal: C
 dal_reviewed_by: human:liaoranran  # DAL C: 工具边界，红队通过即可                     # 草稿；晋升链见 docs/kernel/G6_status_levels.md（非 draft 须带 dal + status_history）
 verified_by: redteam:g5_batch5

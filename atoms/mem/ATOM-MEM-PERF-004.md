@@ -5,6 +5,9 @@ title: 伪共享：多线程"独立变量"为何慢 18 倍，以及对齐 paddin
 domain: MEM
 type: pitfall
 status: red-team-verified
+mutation_set_hash: 1c4d40b9d0a540d1b3ca70d12b950e6be2b9e4f02395077d26173e24390058c9
+mutation_count: 10
+generator_version: full_baseline_v7.json
 dal: C
 dal_reviewed_by: human:liaoranran  # DAL C: 性能陷阱，红队通过即可                     # 草稿；晋升链见 docs/kernel/G6_status_levels.md（非 draft 须带 dal + status_history）
 verified_by: redteam:g5_batch5
