@@ -275,3 +275,15 @@ git commit -m "chore(gate): 更新 GCC15 编译报告基线（ch01/08/09/10 完�
 _更新时间：2026-09-02 | 覆盖到 30 章真深耕启动（样板 ch22 验收 + 名单/范式落 CONTENT_DEPTH_ROADMAP + 标题截断清零进门禁）_<br/>_上一收口：学习目标→问题驱动论证 60 章收官 + 交叉引用结构性硬伤根治 + ch157 断言修复_
 _HEAD：不写死——一律以 `git rev-parse HEAD` 与 `git status -sb` 为准（写死的哈希在提交那一刻即过期）_
 _历史：2026-07-17 版（APP15 阶段）已作废；2026-08-30 深夜版停在「P0-2 一半」，其 HEAD 尾注当时已落后一个提交，且 push 状态标反_
+
+<!-- GENERATED:BEGIN (status_reconciler_658.py · 全自动生成) -->
+# NEXT_LLM — 给下一个会话的接力棒
+
+- 当前 HEAD：`eb700aec398c1c240502f2b57e015bc9e1ff2f2d`（branch master，ahead 0）
+- 脏状态：True（受控目录 atoms/evidence/Examples/Book/ 零改动是硬红线）
+- 当前主线：658 批次（外部效度四层 / 门禁分层 / 元状态可验证 / research v0.1）
+- 元状态：mutation core/all 97.3/81.5%；卡 48；图 178/1093
+- 边界现状：26 卡有边界（23 verified-pass + 3 red-team）；21 draft 留空
+- 口径差（容忍，不判冲突）：规则数 67/63/未在源码定位；图节点 README 178 vs 任务书称 121
+- 接手前先跑：`python tools/status_reconciler_658.py --check`（META-STATE-CONFLICT 即停）
+<!-- GENERATED:END -->

@@ -1,0 +1,51 @@
+{
+  "schema": "queyi-canonical-state/v1",
+  "generated_by": "tools/status_reconciler_658.py",
+  "generated_at": "2026-09-28",
+  "git": {
+    "head": "eb700aec398c1c240502f2b57e015bc9e1ff2f2d",
+    "branch": "master",
+    "ahead_of_origin_master": 0,
+    "behind_origin_master": 0,
+    "dirty_tracked_or_untracked_non_probe": false
+  },
+  "quality": {
+    "statement": "见门禁产物（pytest junit / quality gate）；本 baseline 只存快照值，不判红绿",
+    "ruff_mypy_errors_on_658_files": 0
+  },
+  "compile": {
+    "statement": "657 收工实测全量 compile PASS（52 卡真编译，见 657_acceptance_report.md）"
+  },
+  "mutation": {
+    "core_kill_rate_pct": 97.3,
+    "all_kill_rate_pct": 81.5,
+    "source": "data/656_mutation_report_core.json / _all.json (657 C 段)",
+    "note": "97.3% 是对自造变异分布的检出率，≠ 外部效度（见 F 段 / A5）"
+  },
+  "cards": {
+    "atoms_total": 48,
+    "boundary_written": 26,
+    "boundary_verified_pass": 23,
+    "boundary_redteam_verified": 3,
+    "draft_empty": 21,
+    "four_state_now": "pass 23 / unknown 24 (21 draft + 3 other)",
+    "source": "657 B 段 + four_state_verdict_638 输出"
+  },
+  "graph": {
+    "nodes": 178,
+    "links": 1093,
+    "attacked_nodes": 388,
+    "defeated_nodes": 194,
+    "source": "web/data/graph.json (web_logic_check_655 校验通过)"
+  },
+  "rules": {
+    "documented_brief": 67,
+    "documented_actual_claim": 63,
+    "source_in_gate_engine_py": "未在 gate_engine.py 找到 RULES 注册表（docs 描述其为 67 条规则引擎）",
+    "status": "口径差待权威源确认（658 E1）；reconciler 对此键容忍，不判冲突"
+  },
+  "tolerated_discrepancies": [
+    "rules: 67(brief) vs 63(brief-claim) vs 未在源码定位 — 容忍",
+    "graph.nodes: README 178 与 658 任务书称权威 121 不一致 — 以 graph.json 实测 178 为准，121 待权威源"
+  ]
+}
