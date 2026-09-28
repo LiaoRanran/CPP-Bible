@@ -1,0 +1,39 @@
+{
+  "schema": "queyi-gate-tiers/v1",
+  "generated_by": "658 B 段",
+  "description": "门禁两层模型：L0 REDLINE（不通过=BLOCK） vs L1 ADVISORY（只出报告，不阻断 CI）。详见 docs/gate_tiers_658.md。",
+  "tiers": {
+    "L0": {
+      "meaning": "REDLINE — 不通过即 BLOCK，必须修复后才能合并",
+      "gates": [
+        {"id": "integrity", "name": "完整性/哈希校验", "tool": "tools/tool_integrity.py", "why": "信任根：文件完整性 + Merkle 根"},
+        {"id": "correctness", "name": "结构存在性/符号级/账本一致性", "tool": "run_656_gate (阶段1-2)", "why": "判决依赖的结构与账本必须自洽"},
+        {"id": "provenance", "name": "证据来源链完整", "tool": "atom_evidence_replay.py", "why": "每条证据须可溯源到 OTS 锚"},
+        {"id": "replayability", "name": "可复现（证据 replay）", "tool": "atom_evidence_replay.py --rebuild-manifest", "why": "别人能重跑出同样结论"},
+        {"id": "state_consistency", "name": "元状态对账", "tool": "tools/status_reconciler_658.py --check", "why": "文档说的状态==git 实际状态"},
+        {"id": "known_critical_defect", "name": "已知关键缺陷必须被抓", "tool": "A 段真实缺陷夹具 + holdout", "why": "回归集抓老错"},
+        {"id": "dco", "name": "DCO sign-off", "tool": "tools/dco_check_657.py", "why": "提交者纪律（658 E2 从报告态转硬）"}
+      ]
+    },
+    "L1": {
+      "meaning": "ADVISORY — 记录到报告，不阻断 CI；引擎读报告后可升级为 L0 问题",
+      "gates": [
+        {"id": "mutation_score", "name": "变异检出率", "current": "core 97.3% / all 81.5%", "why": "Test adequacy，非真实错误检测能力（A5 指标分层）"},
+        {"id": "asm_coverage", "name": "汇编覆盖率", "current": "203/513", "why": "覆盖深度附录"},
+        {"id": "prose_density", "name": "正文深度", "why": "写作质量附录"},
+        {"id": "completeness", "name": "完整度", "why": "覆盖广度附录"},
+        {"id": "performance", "name": "性能附录", "why": "基准附录"},
+        {"id": "teaching_quality", "name": "教学质量", "why": "card.html 学习路径评估"},
+        {"id": "asan_ubsan", "name": "AddressSanitizer / UBSan", "why": "内存安全（x86 下可选）"},
+        {"id": "clang_tidy", "name": "clang-tidy", "why": "静态分析建议"},
+        {"id": "aarch64_qemu", "name": "AArch64 + qemu-user 交叉编译", "why": "平台可移植性"},
+        {"id": "memory_order", "name": "内存序类测试", "why": "x86 TSO 测不出来的弱内存模型问题"}
+      ]
+    }
+  },
+  "invariants": [
+    "L1 门禁在 CI 中必须 continue-on-error: true（或等价非阻断），绝不红绿阻断合并",
+    "mutation_score 是 Test adequacy 指标，禁止据此宣称外部效度（A5）",
+    "引擎读 L1 报告后，若某 L1 维度连续 N 次退化，可提议升级为 L0（走 Authority Ledger 裁定）"
+  ]
+}
