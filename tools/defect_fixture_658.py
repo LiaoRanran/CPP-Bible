@@ -17,6 +17,7 @@
     python tools/defect_fixture_658.py --rate
 """
 from __future__ import annotations
+
 import argparse
 import hashlib
 import json
@@ -85,8 +86,9 @@ INJECTORS = {
 
 
 def cmd_list():
+    # 661 B2 修正：按 defects.json 真实 schema（id/description/file_path/gate_caught）取键，原按 reinjectable/detector/category 会 KeyError
     for x in load_defects():
-        print(f"  {x['id']:<22} reinjectable={str(x['reinjectable']):<5} detector={x['detector']:<28} {x['category']}")
+        print(f"  {x['id']:<22} gate_caught={str(x.get('gate_caught', ''))[:34]:<34} {x.get('file_path', '')}")
 
 
 def cmd_inject(defect_id):
@@ -112,7 +114,7 @@ def cmd_rate():
             caught += 1
         print(f"  {d['id']:<22} {flag}  (gate={r['gate']})")
     rate = (caught / total_re * 100) if total_re else 0.0
-    covered = sum(1 for d in defects if d.get("detector"))
+    covered = sum(1 for d in defects if str(d.get("gate_caught", "")).startswith("yes"))  # 661 B2：按真实 schema
     print(f"\n真实缺陷检出率（重注入子集） = {caught}/{total_re} = {rate:.1f}%")
     print(f"已登记有检测器门禁的缺陷 = {covered}/{len(defects)}（覆盖，非已验证会红）")
     print("说明：不可重注入的缺陷缺原错误版本源码，只能登记覆盖；其'会红'未经重注入证明，"

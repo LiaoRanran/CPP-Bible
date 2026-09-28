@@ -1,0 +1,120 @@
+{
+  "schema": "queyi-defect-injection/v1",
+  "generated_at": "2026-09-28",
+  "generated_by": "tools/defect_injection_661.py",
+  "total_defects": 15,
+  "reinjectable": 6,
+  "reinject_caught": 6,
+  "reinject_rate_pct": 100.0,
+  "not_reinjectable": 9,
+  "historical_gate_caught_yes": 12,
+  "coverage_all_pct": 80.0,
+  "honest_note": "重注入子集是硬指标；其余缺原错误版本/真机管线，只有历史 gate_caught 记录（软覆盖，未重注入证明）——正是盲化 holdout 要补的外部效度缺口。",
+  "results": [
+    {
+      "id": "656-self-1",
+      "status": "not_reinjectable",
+      "caught": null,
+      "gate": "yes（test_teach_* 补边界断言后捕获）",
+      "note": "测试射程(需重放 teach 自测题生成器，非单文件可注入)"
+    },
+    {
+      "id": "656-self-2",
+      "status": "not_reinjectable",
+      "caught": null,
+      "gate": "yes（作用域补类方法后 core 62.5%→97.3%）",
+      "note": "变异作用域(需跑变异引擎，非单文件可注入)"
+    },
+    {
+      "id": "656-self-3",
+      "status": "not_reinjectable",
+      "caught": null,
+      "gate": "yes（改子进程模式隔离后捕获）",
+      "note": "进程跑飞(需真机变异进程，环境相关)"
+    },
+    {
+      "id": "656-self-4",
+      "status": "reinjected",
+      "caught": true,
+      "gate": "frontmatter 数据契约(date 直序列化)",
+      "note": "JSON 直序列化 date 失败=True；YAML 内建支持 date=True"
+    },
+    {
+      "id": "656-self-5",
+      "status": "not_reinjectable",
+      "caught": null,
+      "gate": "yes（改为只读并与磁盘产物逐字段比对）",
+      "note": "只读产物比对(需磁盘产物快照)"
+    },
+    {
+      "id": "656-self-6",
+      "status": "reinjected",
+      "caught": true,
+      "gate": "WCAG 对比度现算(≥4.5:1)",
+      "note": "good=21.00 bad=4.05 worst=2.85"
+    },
+    {
+      "id": "657-manifest-drift",
+      "status": "reinjected",
+      "caught": true,
+      "gate": "web_logic_check_655(sha256 台账)",
+      "note": ""
+    },
+    {
+      "id": "657-license-header",
+      "status": "reinjected",
+      "caught": true,
+      "gate": "license/governance_doc_guard(SPDX)",
+      "note": ""
+    },
+    {
+      "id": "657-jsdom-skip",
+      "status": "not_reinjectable",
+      "caught": null,
+      "gate": "partial（逻辑层 web_logic_check_655 兜底；DOM 层依赖 Node≥20 jsdom）",
+      "note": "DOM 层(需 jsdom 运行环境)"
+    },
+    {
+      "id": "652-t2-false-switch",
+      "status": "not_reinjectable",
+      "caught": null,
+      "gate": "yes（653 开工诊断抓出：budget_guard 真假、shadow_mode 探针假象）",
+      "note": "探针假象(需真机 budget_guard/shadow_mode 管线)"
+    },
+    {
+      "id": "ch157-prose-fake",
+      "status": "not_reinjectable",
+      "caught": null,
+      "gate": "yes（真机编译门禁抓出 prose-fake，替换为 real-machine evidence）",
+      "note": "散文假代码块(需全书编译管线)"
+    },
+    {
+      "id": "ch41-truncation",
+      "status": "reinjected",
+      "caught": true,
+      "gate": "真机编译门禁(截断/未闭合围栏)",
+      "note": ""
+    },
+    {
+      "id": "ch28-unanchored",
+      "status": "reinjected",
+      "caught": true,
+      "gate": "data_sanity_audit(UNANCHORED_EVIDENCE)",
+      "note": ""
+    },
+    {
+      "id": "ch110-historical",
+      "status": "not_reinjectable",
+      "caught": null,
+      "gate": "unknown（待回填）",
+      "note": "历史 bug，gate_caught=unknown（待回填）"
+    },
+    {
+      "id": "ch85-historical",
+      "status": "not_reinjectable",
+      "caught": null,
+      "gate": "unknown（待回填）",
+      "note": "历史 bug，gate_caught=unknown（待回填）"
+    }
+  ]
+}
