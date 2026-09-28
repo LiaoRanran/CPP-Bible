@@ -64,6 +64,18 @@
 7. **选择偏差**：失败驱动选资的优势未做预算匹配对照（Phase 4 未跑）。
 8. **AI 署名**：LLM 贡献须登记。
 
-## 7. 未做（诚实登记）
+## 7. 未做（诚实登记，截至 663）
 
-- B2 独立生成 A/B/C、C1–C3 卡扩充（26 卡 frontmatter / 48→80 / 新卡过验证器）、D1 queyi-verifier 完整拆分、D2 33 项去写死 —— 本批未做，详见 `data/662_acceptance_report.md`。
+- **C2 卡 48→80**（需从 Book/ 拆 32 张，每张含断言+证据+复现+边界）：663 未做。
+- **C3 holdout 扩样**（从新卡挑 10 真错 → 总 17）：依赖 C2，未做。**故 holdout 真错仍仅 7 个，检出率 80% 是 5 个可测样本的点估计，无统计功效。**
+- **D1 queyi-verifier 完整拆分**：663 **部分完成**——补根级 `conftest.py` 后 collection 错误清零（`test_a1_isolation_634` / `test_conftest_safeguard_640` 共 12 测试转绿），已 push `queyi-verifier`（`4d9c2f8..5481f37`）；**全量 pytest 因套件耗时超本机 idle 限制未跑完**，两侧全绿待续。
+- **D2 33 项去写死**：未做。
+- **B2 独立生成 A/B/C**：未做。
+
+## 8. v0.2.1 增量（663 C1）
+
+26 张 `verified` / `red-team-verified` 卡已补 **semantic scope** 四字段（`cpp_standard` / `compiler` / `platform` / `input_domain`），**只加 frontmatter、正文零改**。
+
+- 派生规则诚实（宁缺勿猜）：`cpp_standard` 取卡所引 `ISO/IEC 14882:<年>`（basis，非"适用范围"）；`compiler`/`platform` 按卡文本命中；`input_domain` 无 `boundary` 则显式 `unknown`。
+- **局限**：派生值全部标 `needs_review=true`；`input_domain` 多为 `unknown`（需人工补）。**声明了 scope 字段 ≠ scope 已被正确声明。**
+- 因此 §5 的 claim 表**不变**：不新增"scope 已完善"类 claim；仅新增"26 卡已具备 scope 字段（值为机器派生，待核）"这一**事实性**陈述。
