@@ -47,5 +47,21 @@
   "tolerated_discrepancies": [
     "rules: 已收敛为 63（data/_gate_rules.json 实测，660 B5）；gate_engine.RULES 仍报 67，引擎与清单差额待权威源",
     "graph.nodes: README 178 与 658 任务书称权威 121 不一致 — 以 graph.json 实测 178 为准，121 待权威源"
-  ]
+  ],
+  "atoms": {
+    "cpp_files": 57,
+    "asm_files": 61,
+    "out_files": 17,
+    "total_files": 135,
+    "source": "git ls-files Examples/atoms/（660 E2 脚本现算，非手写）",
+    "note": "与 cards.atoms_total=48（真实卡数）口径不同：此处是夹具文件数；57 个 .cpp = 57 个错误主题"
+  },
+  "holdout": {
+    "count": 20,
+    "blind": true,
+    "revealed": false,
+    "source": "data/holdout/holdout.json（660 C2 初始化）",
+    "categories": "UB / 内存越界 / 未定义行为 / 编译器差异 / RAII / ODR / 生命周期",
+    "iron_rule": "reveal 不可逆；run_658_gate 默认不扫 data/holdout/"
+  }
 }

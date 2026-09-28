@@ -24,4 +24,4 @@ def test_holdout_blind_by_default():
     assert m.is_revealed() is False, "测试不得触发 reveal（不可逆）"
     h = m.load()
     assert h["blind"] is True
-    assert h["count"] == len(h["seeds"]) == 5
+    assert h["count"] == len(h["seeds"]) == 20  # 660 C2：holdout 扩到 20 个真实 C++ 错误类型样本
