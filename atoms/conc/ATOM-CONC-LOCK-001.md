@@ -5,6 +5,10 @@ title: "锁的代价与无锁的代价：高竞争下 CAS 的原子 RMW 代价�
 domain: conc
 type: contrast
 status: verified
+cpp_standard: [C++23]
+compiler: [gcc]
+platform: [windows]
+input_domain: "unknown"
 mutation_set_hash: c1ae0bb1c8b5e0473e5bc9478b66f8875f487a013525f0f3376386e886991175
 mutation_count: 10
 generator_version: full_baseline_v7.json

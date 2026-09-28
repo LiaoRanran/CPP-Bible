@@ -5,6 +5,10 @@ title: 分配器策略的时空权衡：arena / pool / bitmap（元数据换灵�
 domain: MEM
 type: mechanism
 status: red-team-verified
+cpp_standard: [C++23]
+compiler: [gcc]
+platform: [windows]
+input_domain: "unknown"
 mutation_set_hash: 1acd558220371fe1b0b6b97d3c9b4ed379d00ae4f58fa0752d2d33a170903ea4
 mutation_count: 10
 generator_version: full_baseline_v7.json

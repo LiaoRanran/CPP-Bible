@@ -5,6 +5,10 @@ title: allocator：STL 容器的内存策略抽象
 domain: MEM
 type: mechanism
 status: verified
+cpp_standard: [C++23]
+compiler: [gcc, clang]
+platform: [unknown]
+input_domain: "unknown"
 mutation_set_hash: 47a858cf4e7063e663887e923f065a5412289bfd9cb8f6abea0aa90dbc63ffb1
 mutation_count: 10
 generator_version: full_baseline_v7.json

@@ -5,6 +5,10 @@ title: unique_ptr 自定义删除器与数组：删除器进不进类型系统
 domain: MEM
 type: mechanism
 status: verified
+cpp_standard: [C++23]
+compiler: [gcc, clang]
+platform: [unknown]
+input_domain: "unknown"
 mutation_set_hash: f8b75ec83befad4683ca1a62726eb3f53f3c3b6130a4680830f8b6e6a43ef571
 mutation_count: 10
 generator_version: full_baseline_v7.json

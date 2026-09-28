@@ -5,6 +5,10 @@ title: std::unique_ptr 是唯一所有权智能指针：移动转移、拷贝删
 domain: MEM
 type: mechanism
 status: verified
+cpp_standard: [C++23]
+compiler: [gcc]
+platform: [unknown]
+input_domain: "unknown"
 mutation_set_hash: 328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71
 mutation_count: 10
 generator_version: full_baseline_v7.json

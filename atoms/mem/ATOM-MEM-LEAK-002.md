@@ -5,6 +5,10 @@ title: 泄漏检测的工具边界：报告与否不能等价于泄漏有无
 domain: MEM
 type: contrast
 status: red-team-verified
+cpp_standard: [C++23]
+compiler: [gcc, clang]
+platform: [windows, linux]
+input_domain: "unknown"
 mutation_set_hash: 1acd558220371fe1b0b6b97d3c9b4ed379d00ae4f58fa0752d2d33a170903ea4
 mutation_count: 10
 generator_version: full_baseline_v7.json

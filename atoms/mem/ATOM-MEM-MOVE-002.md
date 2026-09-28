@@ -5,6 +5,10 @@ title: 用 std::move 申报所有权转移，真正的搬运发生在移动构�
 domain: MEM
 type: mechanism
 status: verified
+cpp_standard: [C++23]
+compiler: [gcc]
+platform: [linux]
+input_domain: "unknown"
 mutation_set_hash: f8b75ec83befad4683ca1a62726eb3f53f3c3b6130a4680830f8b6e6a43ef571
 mutation_count: 10
 generator_version: full_baseline_v7.json

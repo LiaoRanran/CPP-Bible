@@ -5,6 +5,10 @@ title: "数据竞争是未定义行为；TSan 可检测，但『没被报 ≠ �
 domain: conc
 type: pitfall
 status: verified
+cpp_standard: [C++11, C++23]
+compiler: [gcc, clang]
+platform: [x86_64, linux]
+input_domain: "多线程并发写非原子共享变量（存在 happens-before 缺失）"
 mutation_set_hash: ce578a4d5d2ad0d84b64aee4966f169946723eb0945bdb629a0985ba553d1481
 mutation_count: 11
 generator_version: full_baseline_v7.json

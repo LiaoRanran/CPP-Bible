@@ -5,6 +5,10 @@ title: 小对象分配的真实开销：SSO 阈值不可移植 + 分配策略必
 domain: MEM
 type: experiment                  # 性能量化实验（M1_ontology 10 类；仓内合法类型集不含 'perf'，故取 experiment）
 status: verified
+cpp_standard: [C++23]
+compiler: [gcc, clang, msvc]
+platform: [windows, linux]
+input_domain: "unknown"
 mutation_set_hash: c5a6b393fcc2f62a0acf8065051969cae179185aafd3ef73d9de5c4712ca26ed
 mutation_count: 11
 generator_version: full_baseline_v7.json

@@ -7,6 +7,10 @@ type: contrast
 gray_zone: ub                  # 五类单值归属（M2 §7）：本原子域在 UB 侧、主体是"识别真 UB"
                                # （正文以"unspecified vs UB"对照展开，对照的另一侧见 claim）
 status: verified
+cpp_standard: [C++23]
+compiler: [gcc, clang]
+platform: [windows, linux]
+input_domain: "unknown"
 mutation_set_hash: d8379e84b246fa25c3603ba763209038824f53ecb5cf9ae8978f2744c393bb8f
 mutation_count: 10
 generator_version: full_baseline_v7.json

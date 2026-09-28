@@ -5,6 +5,10 @@ title: 内存泄漏的检测信号分层：为什么"ASan 没报"不等于"没�
 domain: MEM
 type: contrast                 # 三档 × 两结构的检测结论对照（M1_ontology §2 的 10 类之内；原写的 "tool" 不在枚举内，入库时被 ATOM-ID-FORMAT 拦下）
 status: verified
+cpp_standard: [C++23]
+compiler: [gcc, clang]
+platform: [linux]
+input_domain: "unknown"
 mutation_set_hash: 328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71
 mutation_count: 10
 generator_version: full_baseline_v7.json

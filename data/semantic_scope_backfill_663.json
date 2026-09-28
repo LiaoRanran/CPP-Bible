@@ -1,0 +1,441 @@
+{
+  "schema": "queyi-semantic-scope-backfill/v1",
+  "generated_at": "2026-09-28",
+  "generated_by": "tools/semantic_scope_backfill_663.py",
+  "mode": "write",
+  "target_status": [
+    "red-team-verified",
+    "verified"
+  ],
+  "cards_touched": 25,
+  "rule": "只加 frontmatter 字段，不改正文；cpp_standard 优先 ISO 14882 引用；派生不出即 unknown（不猜）",
+  "rows": [
+    {
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc"
+      ],
+      "platform": [
+        "riscv64",
+        "windows"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc"
+      ],
+      "platform": [
+        "windows"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "status": "verified",
+      "action": "skip(已齐)"
+    },
+    {
+      "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++11",
+        "C++17"
+      ],
+      "compiler": [
+        "gcc",
+        "clang",
+        "msvc"
+      ],
+      "platform": [
+        "linux"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc"
+      ],
+      "platform": [
+        "unknown"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc",
+        "clang"
+      ],
+      "platform": [
+        "unknown"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+      "status": "red-team-verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc"
+      ],
+      "platform": [
+        "windows"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc",
+        "clang"
+      ],
+      "platform": [
+        "linux"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+      "status": "red-team-verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc",
+        "clang"
+      ],
+      "platform": [
+        "windows",
+        "linux"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc"
+      ],
+      "platform": [
+        "linux"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc"
+      ],
+      "platform": [
+        "unknown"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc"
+      ],
+      "platform": [
+        "unknown"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc",
+        "clang",
+        "msvc"
+      ],
+      "platform": [
+        "unknown"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc",
+        "clang",
+        "msvc"
+      ],
+      "platform": [
+        "windows",
+        "linux"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+      "status": "red-team-verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++17"
+      ],
+      "compiler": [
+        "gcc"
+      ],
+      "platform": [
+        "windows",
+        "linux"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc"
+      ],
+      "platform": [
+        "unknown"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc",
+        "clang"
+      ],
+      "platform": [
+        "unknown"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc",
+        "clang"
+      ],
+      "platform": [
+        "unknown"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc"
+      ],
+      "platform": [
+        "unknown"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc",
+        "clang"
+      ],
+      "platform": [
+        "linux"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc"
+      ],
+      "platform": [
+        "unknown"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc",
+        "clang"
+      ],
+      "platform": [
+        "unknown"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc"
+      ],
+      "platform": [
+        "unknown"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc",
+        "clang",
+        "msvc"
+      ],
+      "platform": [
+        "unknown"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc"
+      ],
+      "platform": [
+        "unknown"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    },
+    {
+      "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+      "status": "verified",
+      "action": "added",
+      "cpp_standard": [
+        "C++23"
+      ],
+      "compiler": [
+        "gcc",
+        "clang"
+      ],
+      "platform": [
+        "windows",
+        "linux"
+      ],
+      "input_domain": "unknown",
+      "needs_review": true
+    }
+  ]
+}

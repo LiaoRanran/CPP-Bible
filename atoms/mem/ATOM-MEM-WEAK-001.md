@@ -5,6 +5,10 @@ title: std::weak_ptr 是非拥有观察者；用 weak_ptr 打破 shared_ptr 的�
 domain: MEM
 type: mechanism
 status: verified
+cpp_standard: [C++23]
+compiler: [gcc]
+platform: [unknown]
+input_domain: "unknown"
 mutation_set_hash: 328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71
 mutation_count: 10
 generator_version: full_baseline_v7.json

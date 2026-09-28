@@ -5,6 +5,10 @@ title: 移动比拷贝快多少？收益只来自"掏空源对象"，无动态�
 domain: MEM
 type: pitfall
 status: verified
+cpp_standard: [C++23]
+compiler: [gcc]
+platform: [unknown]
+input_domain: "unknown"
 mutation_set_hash: d8379e84b246fa25c3603ba763209038824f53ecb5cf9ae8978f2744c393bb8f
 mutation_count: 10
 generator_version: full_baseline_v7.json

@@ -5,6 +5,10 @@ title: 伪共享：多线程"独立变量"为何慢 18 倍，以及对齐 paddin
 domain: MEM
 type: pitfall
 status: red-team-verified
+cpp_standard: [C++17]
+compiler: [gcc]
+platform: [windows, linux]
+input_domain: "unknown"
 mutation_set_hash: 1c4d40b9d0a540d1b3ca70d12b950e6be2b9e4f02395077d26173e24390058c9
 mutation_count: 10
 generator_version: full_baseline_v7.json

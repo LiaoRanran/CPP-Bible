@@ -5,6 +5,10 @@ title: Rule of 0/3/5：什么时候该写析构函数，什么时候不该
 domain: MEM
 type: rule
 status: verified
+cpp_standard: [C++23]
+compiler: [gcc, clang]
+platform: [unknown]
+input_domain: "unknown"
 mutation_set_hash: 5827a1d70e7d0858cc0ae9803c0e641a254aca57ec320ac26dec20552e49a17c
 mutation_count: 10
 generator_version: full_baseline_v7.json

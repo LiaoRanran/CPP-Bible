@@ -5,6 +5,10 @@ title: shared_ptr 的线程安全边界与原子代价：控制块原子、对�
 domain: MEM
 type: pitfall
 status: verified
+cpp_standard: [C++23]
+compiler: [gcc, clang]
+platform: [linux]
+input_domain: "unknown"
 mutation_set_hash: f8b75ec83befad4683ca1a62726eb3f53f3c3b6130a4680830f8b6e6a43ef571
 mutation_count: 10
 generator_version: full_baseline_v7.json

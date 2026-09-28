@@ -5,6 +5,10 @@ title: SSO：std::string 为什么短字符串不分配堆内存
 domain: MEM
 type: pitfall
 status: verified
+cpp_standard: [C++23]
+compiler: [gcc, clang, msvc]
+platform: [unknown]
+input_domain: "unknown"
 mutation_set_hash: b47a6fb89478cd90edec18a62ead2caee88821b0ef1055124805965fe861c085
 mutation_count: 10
 generator_version: full_baseline_v7.json
