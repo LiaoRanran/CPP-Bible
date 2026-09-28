@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
+import counts_659 as counts  # noqa: E402
 import learner_behavior_logger as b1  # noqa: E402
 import learner_twin_dashboard_614 as b2  # noqa: E402
 
@@ -21,7 +22,7 @@ def _seed(tmp_path: Path) -> Path:
 def test_data_reading(tmp_path: Path) -> None:
     store = _seed(tmp_path)
     d = b2.build(store)
-    assert len(d["kcs"]) == 37
+    assert len(d["kcs"]) == counts.ATOMS_REAL
     # 至少被学习的 10 个 KC 掌握度应 > 初始 0.1
     learned = [k for k in d["kcs"] if d["mastery"].get(k["id"], 0.1) > 0.1]
     assert len(learned) >= 5
@@ -34,7 +35,7 @@ def test_html_generation(tmp_path: Path) -> None:
     d = b2.build(store)
     html = b2.render_html(d)
     assert "学习者镜像仪表盘" in html
-    assert html.count('class="cell"') == 37
+    assert html.count('class="cell"') == counts.ATOMS_REAL
     assert "掌握度热力图" in html and "推荐学习路径" in html and "统计" in html
 
 

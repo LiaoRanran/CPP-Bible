@@ -33,13 +33,15 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
+import counts_659  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 ATOMS = ROOT / "atoms"
 FLASH_DIR = ROOT / "data" / "flashcards" / "markdown"
 JSON_OUT = ROOT / "data" / "kc_inventory_612.json"
 REPORT_OUT = ROOT / "data" / "kc_inventory_612.md"
 
-KNOWN_KC_COUNT = 37  # 611/612 锁定的原子卡数
+KNOWN_KC_COUNT = counts_659.ATOMS_REAL  # 659 去写死：现算实卡数（排除 draft650 草稿）
 
 
 def _gate():
@@ -94,6 +96,8 @@ def build(atoms_root: Path = ATOMS, flash_dir: Path = FLASH_DIR) -> dict:
     kcs: list[dict] = []
     prereq_edges: list[tuple[str, str]] = []  # (kc, prereq)
     for p in g._cards(atoms_root, "ATOM-*.md"):
+        if "draft650" in p.parts:
+            continue  # 659：draft650 草稿卡尚未定稿，不计入 KC 台账
         meta = g._meta(p)
         cid = str(meta.get("id") or p.stem)
         title = str(meta.get("title") or "")

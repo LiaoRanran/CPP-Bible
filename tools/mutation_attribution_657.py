@@ -134,8 +134,8 @@ def write_report() -> str:
                      f"{x['kind']} |")
         L.append("")
     L += ["## 三、等价变异的逐条理由（**只有核实过的才标 equivalent**）", ""]
-    for (tgt, ln), why in sorted(KNOWN_EQUIVALENT.items()):
-        L.append(f"- `{tgt}` L{ln}：{why}")
+    for (tgt_k, ln_k), why in sorted(KNOWN_EQUIVALENT.items()):
+        L.append(f"- `{tgt_k}` L{ln_k}：{why}")
     L += ["", "## 四、诚实边界", "",
           "1. `equivalent` 只给**人工逐条核过**的 3 条；其余存活体一律按落点归类，"
           "**不为了把数字做好看而标等价**。",

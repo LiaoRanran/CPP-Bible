@@ -36,7 +36,12 @@ ALLOWED_NT_RESULTS = ("blocked", "escaped", "n_a")
 
 # ── 卡发现 ────────────────────────────────────────────────────────────────────
 def discover_cards(root: str = ROOT) -> list[str]:
-    """自动发现全量卡：atoms/**/ATOM-*.md + evidence/**/EV-*.md（相对路径，posix）。"""
+    """自动发现全量卡：atoms/**/ATOM-*.md + evidence/**/EV-*.md（相对路径，posix）。
+
+    659 去写死：PCK 迁移只针对**已定稿实卡**；`atoms/draft650/` 是 650 批新增的草稿卡，
+    尚未走人审定稿、不做 PCK 证书（与 646 `list_atoms()` 的实卡口径一致），
+    故 discover 跳过 `draft650/`，返回实卡口径（37 原子 + 66 证据 = 103）。
+    """
     found: list[str] = []
     for base, prefix in (("atoms", "ATOM-"), ("evidence", "EV-")):
         abs_base = os.path.join(root, base)
@@ -45,8 +50,10 @@ def discover_cards(root: str = ROOT) -> list[str]:
         for dirpath, _dirs, files in os.walk(abs_base):
             for f in sorted(files):
                 if f.endswith(".md") and f.startswith(prefix):
-                    rel = os.path.relpath(os.path.join(dirpath, f), root)
-                    found.append(rel.replace(os.sep, "/"))
+                    rel = os.path.relpath(os.path.join(dirpath, f), root).replace(os.sep, "/")
+                    if rel.startswith("atoms/draft650/"):
+                        continue
+                    found.append(rel)
     return sorted(found)
 
 

@@ -30,7 +30,11 @@ PLAN_OUT = ROOT / "data" / "oracle_verification_plan_611.jsonl"
 REPORT_OUT = ROOT / "data" / "oracle_verification_plan_611.md"
 
 # 611 D3 锁定分母（与 611 基线 §7 一致：103 = 66 证据卡 + 37 原子卡；已验 0 张）
-KNOWN = {"cards_total": 103, "evidence": 66, "atoms": 37, "verified": 0}
+import counts_659  # noqa: E402
+
+KNOWN = {"cards_total": counts_659.CARDS_TOTAL,
+         "evidence": counts_659.EVIDENCE_TOTAL,
+         "atoms": counts_659.ATOMS_TOTAL, "verified": 0}  # 659 去写死
 
 # 主题 → 建议主 oracle（启发式；仅提示）。EV 卡主用 replay，ATOM 卡主用 gate。
 _TOPIC_ORACLE = {

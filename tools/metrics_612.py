@@ -26,6 +26,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+import counts_659  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 REPORT_OUT = ROOT / "data" / "metrics_612.md"
 PLAN = ROOT / "data" / "oracle_verification_plan_611.jsonl"
@@ -35,9 +37,9 @@ REPORT_612 = ROOT / "data" / "oracle_verification_report_612.md"
 # 34 条 modify（low→medium）在两档下均不足以翻转判决 ⇒ 双模式趋同）
 KNOWN_KEEP_LOW = (89, 42)        # (IN, OUT) under keep-low
 KNOWN_UPGRADE_MEDIUM = (89, 42)  # (IN, OUT) under upgrade-medium
-KNOWN_ATOMIC = 37
+KNOWN_ATOMIC = counts_659.ATOMS_TOTAL  # 659 去写死
 KNOWN_MIS = 79
-KNOWN_ORACLE = 103
+KNOWN_ORACLE = counts_659.CARDS_REAL  # 659 去写死：oracle 质量分母=实卡 103
 
 
 # ── E1：modify 双模式 ─────────────────────────────────────────────────────

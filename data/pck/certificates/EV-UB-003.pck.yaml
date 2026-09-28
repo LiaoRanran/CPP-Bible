@@ -7,7 +7,7 @@ claim:
 evidence:
 - type: artifact
   ref: evidence/ub/EV-UB-003.md
-  hash: sha256:eb523183a2d3f7d7e1ad72477a10fbc976435ace3265fbd0715c0b119f8cc2fb
+  hash: sha256:5f442a31a6b557fb4a761c1320a81461b61dfe94496a0aaa870bf86c97f5353f
 negative_tests: []
 verifiers:
 - name: gate_engine

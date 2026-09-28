@@ -8,7 +8,7 @@ claim:
 evidence:
 - type: replay
   ref: evidence/mem/EV-MEM-047.md
-  hash: sha256:3e3ef217023d913b8eabb95aff581fd8537e652b520a9da8d4c08499ea3d7f54
+  hash: sha256:304663faf94a2cad18cdf81c1ed6f756274d064a29df287b5cb6aac3ce45fa1b
 negative_tests: []
 verifiers:
 - name: gate_engine

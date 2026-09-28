@@ -7,6 +7,7 @@
 """
 from __future__ import annotations
 
+import counts_659 as counts  # noqa: E402
 import prop_network_inventory as inv
 
 LEDGER = inv.OUT_DEFAULT
@@ -31,7 +32,7 @@ def test_ledger_lists_79_props_and_27_cards():
     assert len(prop_rows) == 89, f"命题行应 89 条，实得 {len(prop_rows)}"
     card_rows = [ln for ln in t.splitlines()
                  if ln.startswith("| `ATOM-") and "/prop-" not in ln]
-    assert len(card_rows) == 37, f"卡行应 37 条，实得 {len(card_rows)}"
+    assert len(card_rows) == counts.ATOMS_REAL, f"卡行应 {counts.ATOMS_REAL} 条，实得 {len(card_rows)}"
 
 
 def test_integrity_checks_are_clean():
@@ -41,7 +42,7 @@ def test_integrity_checks_are_clean():
     assert d["no_prop_cards"] == []
     assert d["bad_closure"] == []
     assert len(d["rows"]) == 89
-    assert d["stats"]["propositions"] == 89 and d["stats"]["cards"] == 37
+    assert d["stats"]["propositions"] == 89 and d["stats"]["cards"] == counts.ATOMS_REAL
 
 
 def test_ledger_matches_fresh_render_byte_for_byte():

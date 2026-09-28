@@ -22,6 +22,8 @@ import tempfile
 from pathlib import Path
 from typing import Any, cast
 
+import counts_659  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 
@@ -154,7 +156,7 @@ def main(argv: list[str] | None = None) -> int:
             d = build(tmp, USER, a.threshold)
             html = render_html(d)
             # 关键元素：37 个热力图 cell、统计块、推荐列表
-            if html.count('class="cell"') != 37:
+            if html.count('class="cell"') != counts_659.ATOMS_TOTAL:
                 n_cells = html.count('class="cell"')
                 problems.append(f"热力图 cell 数应为 37（实得 {n_cells}）")
             if "平均掌握度" not in html:

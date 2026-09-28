@@ -21,6 +21,8 @@ import json
 import sys
 from pathlib import Path
 
+import counts_659  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -112,7 +114,7 @@ def render(rows: list[dict], top: int | None) -> str:
 
 def check(rows: list[dict]) -> list[str]:
     problems: list[str] = []
-    if len(rows) != 103:
+    if len(rows) != counts_659.CARDS_TOTAL:  # 659 去写死（含 draft650 全量）
         problems.append(f"卡数应为 103（实测 {len(rows)}）")
     if rows and rows[0]["score"] != max(r["score"] for r in rows):
         problems.append("Top 1 不是最高分")

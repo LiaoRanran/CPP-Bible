@@ -28,6 +28,8 @@ import json
 import os
 import sys
 
+import counts_659  # noqa: E402
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
@@ -181,11 +183,11 @@ def selftest() -> int:
         extract({})["verdict"] == "UNDECIDED")
     chk("卡面已有 verdict 字段时优先",
         extract({"verdict": "confirm"})["basis"] == "card_verdict")
-    chk("发现 37 张原子卡", len(discover_atoms()) == 37)
+    chk("发现原子卡", len(discover_atoms()) == counts_659.ATOMS_TOTAL)
     chk("提取全部 37 张且带 basis",
         all(r.get("basis") and r.get("verdict") in
             ("SUPPORTED", "REFUTED", "UNDECIDED") for r in extract_all()))
-    chk("verdict_index 可用", len(verdict_index(extract_all())) == 37)
+    chk("verdict_index 可用", len(verdict_index(extract_all())) == counts_659.ATOMS_TOTAL)
     print(f"C2 selftest: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
 

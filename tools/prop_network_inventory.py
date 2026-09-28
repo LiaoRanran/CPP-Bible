@@ -53,6 +53,8 @@ def _liveness_map(ev_idx: dict[str, dict]) -> dict[str, dict]:
     for p in sorted(ge.ATOMS.rglob("ATOM-*.md")):
         if "README" in p.name:
             continue
+        if "draft650" in p.parts:
+            continue  # 659：草稿卡不入命题台账
         m = ge._meta(p)
         cid = str(m.get("id") or p.stem)
         for prop in (m.get("claim_structured") or []):
@@ -73,6 +75,8 @@ def _card_meta() -> dict[str, dict]:
         for p in sorted(root.rglob(pat)):
             if "README" in p.name:
                 continue
+            if "draft650" in p.parts:
+                continue  # 659：草稿卡不入命题台账
             m = ge._meta(p)
             out[str(m.get("id") or p.stem)] = {
                 "meta": m, "path": p.relative_to(ROOT).as_posix()}

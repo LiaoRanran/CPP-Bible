@@ -9,12 +9,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
+import counts_659 as counts  # noqa: E402
 import oracle_priority as c2  # noqa: E402
 
 
 def test_all_cards_scored():
     rows = c2.score_cards()
-    assert len(rows) == 103
+    assert len(rows) == counts.CARDS_TOTAL
     for r in rows:
         assert {"id", "type", "props", "escaped", "coverage_gap", "related_mis", "score"} <= set(r)
 

@@ -8,13 +8,14 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "tools"))
 
+import counts_659 as counts  # noqa: E402
 import pck_hash_drift_analyzer_627 as A
 
 
 def test_scan_count():
     r = A.analyze()
-    assert r["total_certs"] == 103
-    assert sum(r["by_worst_category"].values()) == 103
+    assert r["total_certs"] == counts.CARDS_REAL
+    assert sum(r["by_worst_category"].values()) == counts.CARDS_REAL
 
 
 def test_content_drift_resolved_by_628():
@@ -30,7 +31,7 @@ def test_gaps_resolved_except_ref_missing():
     r = A.analyze()
     assert r["by_worst_category"].get("ok", 0) == 102
     assert r["by_worst_category"].get("ref_missing", 0) == 1
-    assert sum(r["by_worst_category"].values()) == 103
+    assert sum(r["by_worst_category"].values()) == counts.CARDS_REAL
 
 
 def test_root_cause_classifies():

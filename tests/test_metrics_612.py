@@ -7,12 +7,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
+import counts_659 as counts  # noqa: E402
 import metrics_612 as e  # noqa: E402
 
 
 def test_e2_fragmentation_counts():
     d = e.e2_fragmentation()
-    assert d["atomic"] == 37
+    assert d["atomic"] == counts.ATOMS_TOTAL
     assert d["mis"] == 79
     assert d["evidence"] > 0
     assert d["total"] == d["atomic"] + d["evidence"] + d["mis"]
@@ -21,7 +22,7 @@ def test_e2_fragmentation_counts():
 
 def test_e3_oracle_quality_zero_review():
     q = e.e3_oracle_quality()
-    assert q["total"] == 103
+    assert q["total"] == counts.CARDS_REAL
     assert q["distinct_reviewers"] == 0
     assert q["reviews_done"] == 0
     assert q["modifications"] == 0

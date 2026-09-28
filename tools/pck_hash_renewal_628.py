@@ -207,8 +207,8 @@ def main(argv: Optional[list] = None) -> int:
     if args.apply or args.report:
         r = renew(apply_changes=True)
         v = verify()
+        st = r["stats"]
         if args.report:
-            st = r["stats"]
             lines = [
                 "# 628 A2 · PCK hash 漂移处置报告", "",
                 f"- 处置证书：{r['total_certs']} 张（备份 {n} 张 → `data/pck_backup_628/`）",

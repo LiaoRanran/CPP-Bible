@@ -11,6 +11,7 @@
     python tools/gate_tier_check_658.py --check
 """
 from __future__ import annotations
+
 import argparse
 import json
 import os
@@ -70,7 +71,7 @@ def check_ci_continues(l1, l0):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true")
-    a = ap.parse_args()
+    ap.parse_args()
     tiers = load_tiers()
     errors, l0, l1 = validate(tiers)
     warns = check_ci_continues(l1, l0)

@@ -24,6 +24,8 @@ import sys
 from pathlib import Path
 from typing import Any, cast
 
+import counts_659  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 
@@ -154,10 +156,10 @@ def check() -> list[str]:
     if gate_status(0) != "closed" or gate_status(1) != "opening" or gate_status(5) != "open":
         problems.append("门状态阈值错误（0=closed/1=opening/5=open）")
     d = detect()
-    if len(d["kcs"]) != 37:
-        problems.append(f"KC 应 37（实测 {len(d['kcs'])}）")
-    if d["triggered"] + d["ready"] + d["not_ready"] != 37:
-        problems.append("状态计数不等于 27")
+    if len(d["kcs"]) != counts_659.ATOMS_REAL:
+        problems.append(f"KC 应 {counts_659.ATOMS_REAL}（实测 {len(d['kcs'])}）")
+    if d["triggered"] + d["ready"] + d["not_ready"] != counts_659.ATOMS_REAL:
+        problems.append(f"状态计数不等于 {counts_659.ATOMS_REAL}")
     return problems
 
 

@@ -8,12 +8,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
+import counts_659 as counts  # noqa: E402
 import oracle_priority_614 as e1  # noqa: E402
 
 
 def test_card_count_83() -> None:
     rows = e1.score_cards()
-    assert len(rows) == 103
+    assert len(rows) == counts.CARDS_TOTAL
 
 
 def test_sorted_desc() -> None:

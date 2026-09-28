@@ -35,6 +35,8 @@ import os
 import sys
 from typing import Any, Optional
 
+import counts_659  # noqa: E402
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
@@ -245,7 +247,7 @@ def selftest() -> int:
     # 真实仓库：维度与只读性
     real = report()
     chk("真实矩阵 67 × 27", real["analysis"]["n_rules"] == 67
-        and real["analysis"]["n_cards"] == 37,
+        and real["analysis"]["n_cards"] == counts_659.ATOMS_TOTAL,
         f"{real['analysis']['n_rules']}x{real['analysis']['n_cards']}")
     chk("findings 非空", real["n_findings"] > 0, str(real["n_findings"]))
     chk("热力图含全部规则", heatmap_text(real["matrix"], real["cards"]).count("| `") >= 67)

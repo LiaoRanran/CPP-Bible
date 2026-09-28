@@ -9,16 +9,16 @@ claim:
 evidence:
 - type: replay
   ref: evidence/mem/EV-MEM-009.md
-  hash: sha256:9eefc52983b0b8f629dbb8f24b3b00df5348d9e84325f218c03181ffa1b177f5
+  hash: sha256:68b46f52013dcd513190b15f89a17e9cf8eeb7a21362f4eeea57dbe19bbebb03
 - type: replay
   ref: evidence/mem/EV-MEM-010.md
-  hash: sha256:a3eed4927e1be13f7e2fee745ae406347ca8a51c0d0b19e41fedaf6a508b9a9e
+  hash: sha256:d75f8792e2c59e2f3ae34d3b2908a95882c6f1225407cb22cefcd16a510da68d
 - type: replay
   ref: evidence/mem/EV-MEM-009.md
-  hash: sha256:9eefc52983b0b8f629dbb8f24b3b00df5348d9e84325f218c03181ffa1b177f5
+  hash: sha256:68b46f52013dcd513190b15f89a17e9cf8eeb7a21362f4eeea57dbe19bbebb03
 - type: replay
   ref: evidence/mem/EV-MEM-010.md
-  hash: sha256:a3eed4927e1be13f7e2fee745ae406347ca8a51c0d0b19e41fedaf6a508b9a9e
+  hash: sha256:d75f8792e2c59e2f3ae34d3b2908a95882c6f1225407cb22cefcd16a510da68d
 negative_tests:
 - mutation_id: atoms/mem/ATOM-MEM-RAII-001.md|M1|-
   result: n_a

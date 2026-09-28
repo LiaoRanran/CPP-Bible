@@ -7,7 +7,7 @@ claim:
 evidence:
 - type: artifact
   ref: evidence/lang/EV-LANG-007.md
-  hash: sha256:2129f9071cd8ff3608954b2b76d5c0860bec07e92804e40295e91e2a96819a52
+  hash: sha256:5803724c3667ba2a0261aa703b5cc695faae8b142bd4f8e56c5fdb7ee5b3aaa6
 negative_tests: []
 verifiers:
 - name: gate_engine

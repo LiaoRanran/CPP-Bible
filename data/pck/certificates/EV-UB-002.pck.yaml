@@ -8,7 +8,7 @@ claim:
 evidence:
 - type: artifact
   ref: evidence/ub/EV-UB-002.md
-  hash: sha256:95585e1a29caa8c53957ff33e1e1bb6a77824d854de8468cd0358b057de0a568
+  hash: sha256:a24b3aff7c2c3db09cb3c5a2c9c53b3f4c9431fc67b8dc13ebc65750b81d014a
 negative_tests:
 - mutation_id: evidence/ub/EV-UB-002.md|M1|删 artifact_sha256
   result: blocked

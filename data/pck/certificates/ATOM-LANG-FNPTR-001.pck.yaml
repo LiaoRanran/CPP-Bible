@@ -9,7 +9,7 @@ claim:
 evidence:
 - type: replay
   ref: evidence/lang/EV-LANG-004.md
-  hash: sha256:7f5a857b0ec3d21c454ffdd2f9d076f5a3d5b9ca8ab68d3900c017f13bdb0277
+  hash: sha256:15e4fd2755f96e34b0b99ff56d5174b433d789e973729fdc8e50aaf9eb5ab8ee
 negative_tests: []
 verifiers:
 - name: gate_engine

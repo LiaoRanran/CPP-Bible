@@ -7,7 +7,7 @@ claim:
 evidence:
 - type: artifact
   ref: evidence/hist/EV-HIST-001.md
-  hash: sha256:de015bf111e319f904272b2b5268d8f8df8535d6a0982ea3bb6906bfdabdd9c3
+  hash: sha256:6fbbc691f5759edb84f93608f0a8fdec8e1f3bd6bc7f195339acd39d8ec763cf
 negative_tests:
 - mutation_id: evidence/hist/EV-HIST-001.md|M1|删 artifact_sha256
   result: blocked

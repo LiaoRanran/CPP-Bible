@@ -12,19 +12,19 @@ claim:
 evidence:
 - type: replay
   ref: evidence/mem/EV-MEM-023.md
-  hash: sha256:2a496a3dfe8b6fcaa1fa89d962e1bac3882a1bcd9a25aca6e75573559293f8e6
+  hash: sha256:2db2ebe9ea8070599061128ef93db60079d3ae5a1708dce3577c397748016dc0
 - type: replay
   ref: evidence/mem/EV-MEM-024.md
-  hash: sha256:c1656c081ecca1be71431c527f02fb28887891c65eae136032be54ac3c57e2bb
+  hash: sha256:3f860773f3d736e0f457470f00c5183f1ade3833ef15aeeaab85cfb24c487ad9
 - type: replay
   ref: evidence/mem/EV-MEM-025.md
-  hash: sha256:4dd224e8b034b7897b54aa3109508cf5480c80dd17d218f0ee17d61b09d9e1c8
+  hash: sha256:510bfbd57a554438641b8be0b0ad17873e9ac9071644a1aed077200b6ab09927
 - type: replay
   ref: evidence/mem/EV-MEM-023.md
-  hash: sha256:2a496a3dfe8b6fcaa1fa89d962e1bac3882a1bcd9a25aca6e75573559293f8e6
+  hash: sha256:2db2ebe9ea8070599061128ef93db60079d3ae5a1708dce3577c397748016dc0
 - type: replay
   ref: evidence/mem/EV-MEM-024.md
-  hash: sha256:c1656c081ecca1be71431c527f02fb28887891c65eae136032be54ac3c57e2bb
+  hash: sha256:3f860773f3d736e0f457470f00c5183f1ade3833ef15aeeaab85cfb24c487ad9
 negative_tests:
 - mutation_id: atoms/mem/ATOM-MEM-RAII-002.md|M1|-
   result: n_a

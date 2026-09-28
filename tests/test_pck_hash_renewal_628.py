@@ -9,6 +9,7 @@ import yaml
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "tools"))
 
+import counts_659 as counts  # noqa: E402
 import pck_hash_renewal_628 as P
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -16,7 +17,7 @@ CERT_DIR = os.path.join(HERE, "data", "pck", "certificates")
 
 
 def test_all_83_certs_present():
-    assert len(glob.glob(os.path.join(CERT_DIR, "*.yaml"))) == 103
+    assert len(glob.glob(os.path.join(CERT_DIR, "*.yaml"))) == counts.CARDS_REAL
 
 
 def test_hash_matches_current_file():
