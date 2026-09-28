@@ -4,6 +4,18 @@
 > 门禁：**run_656_gate PASS 13/13**（fast / full / ruff / mypy / 核心器械自检 / 前端产物 / 数据管线 /
 > Node 真求值 / jsdom DOM 冒烟 / 学习卡数据 / 保护器联调 / 受控零污染 / 信任根）
 
+## 〇、阶段 A（G9 总闸门）状态说明 —— **并行会话执行，本报告不据为己有**
+
+656 任务书含 A（G9 总闸门 / v35 M1 元验证）/ B / C / D / E 五段。**A 段由并行会话完成**
+（提交 `71389680`：`tools/ots_anchor_656.py` 用官方 `opentimestamps 0.4.5` 真上链、旧自制 `.ots`
+归档为 `.homemade-613to652`、信任根闭包扩到 `supply_chain` 6 个并重钉、`docs/trust_termination_656.md`、
+`tests/test_ots_anchor_656.py` 6 例）+ 阶段 0 基线快照（`data/656_baseline.md`）。
+本报告作者**未参与** A 段的实现（§一…§八 是 B/C/D/E 的事实记录）。
+
+**合并态复核（本报告作者做的，只读）**：A 段改过信任根与 pin 面 ⇒ 本批门禁阶段 9 `tool_integrity --check`
+**4 节 OK**（信任根自洽）；A 段自带测试 `tests/test_ots_anchor_656.py` + `tests/test_tool_integrity.py`
+合跑 **18 例全绿**；A 段对 `web/data/{manifest,status}.json` 的影响已由数据管线重建并对齐（`--check` PASS）。
+
 ## 一、B1 核心 stateful PBT（P1–P12）
 
 **产出**：`tests/test_core_pbt_656.py`（**28 例**）+ `tests/test_core_boundary_656.py`（**24 例**），合计 **52 例**。

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T10:12:53",
+  "generated_at": "2026-09-28T10:27:19",
   "generated_from": [
     "atoms/**/ATOM-*.md",
     "tools/gate_engine.py",
