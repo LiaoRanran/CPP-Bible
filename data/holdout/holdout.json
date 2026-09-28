@@ -1,0 +1,15 @@
+{
+  "schema": "queyi-blind-holdout/v1",
+  "generated_by": "658 A2",
+  "count": 5,
+  "blind": true,
+  "iron_rule": "holdout 一旦 reveal，永远不能重新变回 blind（tools/holdout_658.py 写 .revealed 标记后拒绝 --blind）",
+  "note": "这些是'已知缺陷样本'，由 SEEDER 植入、开发验证器的人在开发期不知道里面有什么。门禁默认不扫 data/holdout/。验收时才 reveal，统计 catch/miss/unknown/false-positive。",
+  "seeds": [
+    {"id": "h1", "planted": "一张卡的 boundary 值填错（语义越界）", "detector": "four_state_verdict_638", "blind": true},
+    {"id": "h2", "planted": "某 hex 量级笔误（off-by-magnitude）", "detector": "correctness", "blind": true},
+    {"id": "h3", "planted": "文档里一条指向不存在文件的死链", "detector": "link-check", "blind": true},
+    {"id": "h4", "planted": "一个 .py 缺 SPDX 头", "detector": "license_header_check_655", "blind": true},
+    {"id": "h5", "planted": "manifest 台账 sha256 与文件字节不一致", "detector": "web_logic_check_655", "blind": true}
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "queyi-real-defect-fixtures/v1",
+  "generated_by": "658 A1",
+  "principle": "每个真实错 → 一个回归夹具（原来的错误版本）。重新注入 → 看会红几个门禁。统计真实缺陷检出率。",
+  "note": "source 字段引用 658 任务书枚举（其来源为 git log + data/*_acceptance_report.md）。受控目录 atoms/evidence/Examples/Book/ 零改动：re-inject 只在临时副本上跑，不碰真实卡。",
+  "defects": [
+    {"id": "ch85", "source": "git log / 验收报告", "category": "透明哈希断言错误", "detector": "correctness/ledger", "reinjectable": false, "note": "历史透明哈希断言写错，已修；重注入需原错误版本源码，登记待补夹具"},
+    {"id": "ch157", "source": "git log / 验收报告", "category": "assert 错误", "detector": "correctness", "reinjectable": false, "note": "历史 assert 写反，已修；登记待补夹具"},
+    {"id": "ch41", "source": "git log / 验收报告", "category": "逻辑错误", "detector": "correctness", "reinjectable": false, "note": "历史逻辑错，已修；登记待补夹具"},
+    {"id": "ch110", "source": "git log / 验收报告", "category": "逻辑错误", "detector": "correctness", "reinjectable": false, "note": "历史逻辑错，已修；登记待补夹具"},
+    {"id": "ch28", "source": "git log / 验收报告", "category": "自引用", "detector": "correctness/structure", "reinjectable": false, "note": "历史自引用环，已修；登记待补夹具"},
+    {"id": "hex26", "source": "git log / 验收报告", "category": "hex 量级错误（26 处）", "detector": "correctness", "reinjectable": false, "note": "26 处 hex 量级笔误，已修；可批处理夹具，登记"},
+    {"id": "book2628", "source": "git log / 验收报告", "category": "Book/ 链接（2628 处）", "detector": "prose/link-check", "reinjectable": false, "note": "2628 处 Book 链接问题，已修；链接检查器可抓，登记"},
+    {"id": "656-self-1", "source": "656 验收报告", "category": "测试射程漏检", "detector": "mutation(already L1)/known_critical", "reinjectable": false, "note": "656 自纠 6 项之一"},
+    {"id": "656-self-2", "source": "656 验收报告", "category": "类方法遗漏", "detector": "correctness/symbol", "reinjectable": false, "note": "656 自纠 6 项之一"},
+    {"id": "656-self-3", "source": "656 验收报告", "category": "进程跑飞", "detector": "replayability", "reinjectable": false, "note": "656 自纠 6 项之一"},
+    {"id": "656-self-4", "source": "656 验收报告", "category": "YAML 日期", "detector": "correctness", "reinjectable": false, "note": "656 自纠 6 项之一"},
+    {"id": "656-self-5", "source": "656 验收报告", "category": "--check 写文件", "detector": "state_consistency", "reinjectable": false, "note": "656 自纠 6 项之一"},
+    {"id": "656-self-6", "source": "656 验收报告", "category": "WCAG 对比度", "detector": "teaching_quality(L1)", "reinjectable": false, "note": "656 自纠 6 项之一"},
+    {"id": "652-T2", "source": "652 验收报告", "category": "假开关（budget_guard / shadow_mode）", "detector": "correctness", "reinjectable": false, "note": "652 T2 假开关：代码里开关写了但行为没变，已修；可夹具重注入"},
+    {"id": "657-license-overreach", "source": "657 验收报告", "category": "许可证头越界写入受控目录", "detector": "license_header_check_655", "reinjectable": true, "note": "657 自纠：Examples/_ch13_conanfile.py 被误加 SPDX 后回退。重注入=对受控 .py 加头→license 检查应抓"},
+    {"id": "657-manifest-drift", "source": "657 验收报告", "category": "manifest 台账哈希漂移", "detector": "web_logic_check_655", "reinjectable": true, "note": "657 自纠：manifest 16 条 sha256 与文件字节不一致。重注入=篡改某文件字节→web_logic 应抓"},
+    {"id": "657-jsdom-skip", "source": "657 验收报告", "category": "前端冒烟被 SKIP（jsdom 未装）", "detector": "web_smoke_655(L1)", "reinjectable": true, "note": "657 自纠：jsdom 缺失导致前端冒烟 SKIP。重注入=撤掉 jsdom→冒烟应 FAIL 而非 SKIP（透明降级）"},
+    {"id": "missing-spdx", "source": "许可证头纪律（真实缺陷类）", "category": "缺 SPDX 许可证头", "detector": "license_header_check_655", "reinjectable": true, "note": "可重注入夹具：临时 .py 无头→license 检查应红。代表 657-license-overreach 的'头缺失'可检测子类"}
+  ]
+}
