@@ -1,0 +1,179 @@
+{
+  "schema": "queyi-holdout-reveal/v2",
+  "reveal_index": 2,
+  "revealed_at": "2026-09-28",
+  "generated_by": "tools/holdout_reveal_662.py",
+  "based_on": "661 B1 标签经 662 A1 人工复核修正",
+  "labels": {
+    "error": 7,
+    "control": 9,
+    "unknown": 4
+  },
+  "error_subset": {
+    "catch": 4,
+    "miss": 1,
+    "unknown": 2,
+    "detect_rate_pct": 80.0
+  },
+  "control_subset": {
+    "false_positive": 1,
+    "total": 9
+  },
+  "compare_reveal_1": {
+    "changed_verdicts": [
+      {
+        "id": "h1",
+        "reveal_1": "catch",
+        "reveal_2": "unknown"
+      }
+    ],
+    "note": "reveal_1 把全部 20 个当出错样本 → catch=7/miss=9/unknown=4；reveal_2 以修正标签分母（真错 7）统计 → 检出率见 error_subset。miss 的大部分是对照/边界类，'不报'是正确行为。"
+  },
+  "detectors": {
+    "tsan": "thread",
+    "asan": "address",
+    "ubsan": "undefined"
+  },
+  "results": [
+    {
+      "id": "h1",
+      "planted": true,
+      "detector": "tsan",
+      "verdict": "unknown",
+      "note": "TSan 无法初始化（WSL 内存映射不兼容），检测器不可用 rc=66"
+    },
+    {
+      "id": "h2",
+      "planted": "unknown",
+      "detector": "unknown",
+      "verdict": "unknown",
+      "note": "无本地检测器"
+    },
+    {
+      "id": "h3",
+      "planted": false,
+      "detector": "wunsequenced",
+      "verdict": "catch",
+      "note": "g++ -Wunsequenced 告警"
+    },
+    {
+      "id": "h4",
+      "planted": "unknown",
+      "detector": "compiler-warn",
+      "verdict": "catch",
+      "note": "警告 8 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpai0oas0w\\_atom_auto_ptr.cpp:32:52:"
+    },
+    {
+      "id": "h5",
+      "planted": true,
+      "detector": "ubsan",
+      "verdict": "miss",
+      "note": "ubsan 无报告(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是"
+    },
+    {
+      "id": "h6",
+      "planted": "unknown",
+      "detector": "cross-compile",
+      "verdict": "miss",
+      "note": "两编译器输出一致"
+    },
+    {
+      "id": "h7",
+      "planted": true,
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中(rc=1) ================================================================= ==77==ERROR: LeakSanitizer: detected memory leaks  Indirect leak of 64 byte(s) in 2 object(s) allocated from:     #0 0x727c58cfe548 in operator new(unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:95     #1 0x5b4cd"
+    },
+    {
+      "id": "h8",
+      "planted": true,
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中(rc=1) ================================================================= ==104==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 12 byte(s) in 3 object(s) allocated from:     #0 0x71d9ad8fd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69     #1 0x63fe9e152307 in operator "
+    },
+    {
+      "id": "h9",
+      "planted": "unknown",
+      "detector": "compiler-warn",
+      "verdict": "miss",
+      "note": "无告警"
+    },
+    {
+      "id": "h10",
+      "planted": true,
+      "detector": "unknown",
+      "verdict": "unknown",
+      "note": "无本地检测器"
+    },
+    {
+      "id": "h11",
+      "planted": false,
+      "detector": "unknown",
+      "verdict": "unknown",
+      "note": "无本地检测器"
+    },
+    {
+      "id": "h12",
+      "planted": false,
+      "detector": "unknown",
+      "verdict": "unknown",
+      "note": "无本地检测器"
+    },
+    {
+      "id": "h13",
+      "planted": false,
+      "detector": "compiler-warn",
+      "verdict": "miss",
+      "note": "无告警"
+    },
+    {
+      "id": "h14",
+      "planted": true,
+      "detector": "linker",
+      "verdict": "catch",
+      "note": "链接失败(多定义/缺符号)"
+    },
+    {
+      "id": "h15",
+      "planted": true,
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中(rc=1) ================================================================= ==131==ERROR: AddressSanitizer: out of memory: allocator is trying to allocate 0x5d21dba000 bytes     #0 0x71a74ecfe990 in operator new[](unsigned long, std::nothrow_t const&) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:104 "
+    },
+    {
+      "id": "h16",
+      "planted": false,
+      "detector": "ubsan",
+      "verdict": "miss",
+      "note": "ubsan 无报告(rc=0) ret_plain copy=1 move=0 / ret_moved copy=0 move=1"
+    },
+    {
+      "id": "h17",
+      "planted": false,
+      "detector": "asan",
+      "verdict": "miss",
+      "note": "asan 无报告(rc=0) sizeof(std::string)=32 empty capacity=15 (SSO buffer chars) len=15 allocs=0 len=16 allocs=1"
+    },
+    {
+      "id": "h18",
+      "planted": false,
+      "detector": "ubsan",
+      "verdict": "miss",
+      "note": "ubsan 无报告(rc=0) alignof(Aligned)=16 sizeof(Aligned)=16 memcpy roundtrip x=7"
+    },
+    {
+      "id": "h19",
+      "planted": false,
+      "detector": "asan",
+      "verdict": "miss",
+      "note": "asan 无报告(rc=0) arena: calls=5 bytes=124 heap_new=0 std  : heap_new=5 (growth reallocations)"
+    },
+    {
+      "id": "h20",
+      "planted": false,
+      "detector": "compiler-warn",
+      "verdict": "miss",
+      "note": "无告警"
+    }
+  ]
+}
