@@ -38,6 +38,22 @@ def _git(args):
     return _run(["git"] + args)
 
 
+def _is_ancestor(a, b):
+    """a 是否为 b 的祖先（用于 HEAD 快照语义）。返回 True/False/None(未知)。"""
+    if not a or not b:
+        return None
+    try:
+        r = subprocess.run(["git", "merge-base", "--is-ancestor", a, b],
+                           cwd=ROOT, capture_output=True, text=True, timeout=60)
+        if r.returncode == 0:
+            return True
+        if r.returncode == 1:
+            return False
+        return None
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def observed_facts():
     facts = {}
     facts["head"] = _git(["rev-parse", "HEAD"])
@@ -101,12 +117,20 @@ def reconcile(facts, baseline):
         conflicts.append("baseline.json 不存在")
         return conflicts
     g = baseline.get("git", {})
-    if g.get("head") and facts["head"] and g["head"] != facts["head"]:
-        conflicts.append(f"HEAD 不一致：baseline={g['head'][:10]} 实际={facts['head'][:10]}")
-    if g.get("ahead_of_origin_master") is not None and g["ahead_of_origin_master"] != facts["ahead_of_origin_master"]:
-        conflicts.append(f"ahead 数不一致：baseline={g['ahead_of_origin_master']} 实际={facts['ahead_of_origin_master']}")
-    if g.get("behind_origin_master") is not None and g["behind_origin_master"] != facts["behind_origin_master"]:
-        conflicts.append(f"behind 数不一致：baseline={g['behind_origin_master']} 实际={facts['behind_origin_master']}")
+    # HEAD 采用「快照 + 祖先」语义：baseline 是某时刻的快照；
+    # 之后新增提交（快照落后）是正常的，只有「文档声明的 HEAD 不是实际 HEAD 的祖先」
+    # 才是真冲突（历史被改写 / 文档造假 / 指到不存在的提交）。
+    bh, fh = g.get("head"), facts.get("head")
+    if bh and fh:
+        if bh == fh:
+            facts["_baseline_head"] = "equal"
+        elif _is_ancestor(bh, fh):
+            facts["_baseline_head"] = "ancestor(snapshot-behind)"
+        else:
+            conflicts.append(
+                f"HEAD 非 baseline 后代：baseline={bh[:10]} 实际={fh[:10]}（历史被改写或文档造假）")
+    # ahead/behind 是快照数字，会随提交自然增长 → 仅记录，不判冲突
+    facts["_baseline_ahead"] = g.get("ahead_of_origin_master")
     bc = baseline.get("cards", {})
     if bc.get("atoms_total") is not None and bc["atoms_total"] != facts.get("cards_atoms_total"):
         conflicts.append(f"卡数不一致：baseline={bc['atoms_total']} 实际={facts.get('cards_atoms_total')}")
@@ -186,17 +210,45 @@ def emit_next(facts):
     print("NEXT_LLM.md GENERATED 块已更新（人工叙述保留）")
 
 
+def snapshot_baseline(facts):
+    """把当前观测事实写回 baseline.json（HEAD 快照点）。只更新机器可算的键。"""
+    p = os.path.join(ROOT, "data", "baseline.json")
+    base = load_baseline() or {}
+    base["git"] = {
+        "head": facts["head"],
+        "branch": facts["branch"],
+        "ahead_of_origin_master": facts["ahead_of_origin_master"],
+        "behind_origin_master": facts["behind_origin_master"],
+    }
+    c = dict(base.get("cards", {}))
+    c["atoms_total"] = facts.get("cards_atoms_total")
+    base["cards"] = c
+    base["graph"] = {"nodes": facts.get("graph_nodes"), "links": facts.get("graph_links")}
+    if facts.get("mutation"):
+        base["mutation"] = {
+            "core_kill_rate_pct": facts["mutation"].get("core"),
+            "all_kill_rate_pct": facts["mutation"].get("all"),
+        }
+    base["snapshot_note"] = "由 status_reconciler_658.py --snapshot 生成；git.head 为快照点（新增提交后自动放宽为祖先）"
+    json.dump(base, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+    print(f"baseline.json 已快照刷新：HEAD {facts['head'][:10]}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--emit-agent", action="store_true")
     ap.add_argument("--emit-next", action="store_true")
     ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--snapshot", action="store_true", help="把当前观测事实写回 baseline.json")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
     facts = observed_facts()
     if a.json:
         print(json.dumps(facts, ensure_ascii=False, indent=2))
+        return
+    if a.snapshot:
+        snapshot_baseline(facts)
         return
     if a.selftest:
         assert isinstance(facts, dict) and "head" in facts
