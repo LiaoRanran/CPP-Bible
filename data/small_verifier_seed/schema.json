@@ -1,0 +1,11 @@
+{
+  "schema": "queyi-small-verifier-seed/v1",
+  "fields": {
+    "claim": "str — 待核查的 C++ 知识断言",
+    "evidence": "str — 支撑证据原文（provenance 锚到的文件片段）",
+    "label": "supported | contradicted | unverifiable — 人类/账本裁定",
+    "card": "str — 来源卡 id",
+    "provenance_sha256": "str — 证据指纹（接 OTS 锚）"
+  },
+  "note": "本批仅定义格式与示例，不训练模型（训练交人）。"
+}

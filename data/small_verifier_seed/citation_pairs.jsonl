@@ -1,0 +1,3 @@
+{"assertion": "std::atomic 无锁因 Cit-3 证其顺序一致", "citation_id": "Cit-3", "citation_text": "顺序一致性由 C++ 标准保证"}
+{"assertion": "该卡结论基于作者直觉", "citation_id": "Cit-9", "citation_text": "UB 在 -O2 下被优化掉"}
+{"assertion": "因为 [atomics.order] 保证 seq_cst，所以该结论成立", "citation_id": "Cit-1", "citation_text": "C++20 [atomics.order] 定义 seq_cst 语义"}
