@@ -1,0 +1,14 @@
+{
+  "schema": "queyi-dataset-hashes/v1",
+  "generated_at": "2026-09-28",
+  "algorithm": "sha256",
+  "files": {
+    "data/holdout/holdout.json": "7a2bc05c70baaad52944423d97ab005218e11f6f6e1587c32786b037c688a98d",
+    "data/defect_fixtures/defects.json": "49824ce836e5c86e75aaa4026cdbf855cc7a53840e70f25267586cb9aba07ecd",
+    "data/_gate_rules.json": "6cdc454a38ea7233dcc002d4744cb5f039bdeabc9aa6c45da652386df4f0bbe0",
+    "web/data/graph.json": "aaca5434727c719afd6f1105af8d1729fb34af4847629b3fbc05b5952641a440",
+    "data/holdout_reveal_1_661.json": "c7d76a832c366dca222388137cba440522721baec8e01e5ed88c28186c8f92af",
+    "data/defect_injection_661.json": "b97a1faf34befa025acf50f220cce4ee6f361dff698e465ef0b7b8e8bcd7a7df",
+    "web/data/manifest.json": "2f42ac6a26a8a3f8db927b5d05a710d7262082405833799fcf9dc462b133b782"
+  }
+}
