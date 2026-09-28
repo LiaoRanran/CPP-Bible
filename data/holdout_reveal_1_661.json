@@ -1,0 +1,186 @@
+{
+  "schema": "queyi-holdout-reveal/v1",
+  "reveal_index": 1,
+  "revealed_at": "2026-09-28",
+  "generated_by": "tools/holdout_reveal_661.py",
+  "blind_before": true,
+  "blind_after": false,
+  "irreversible": true,
+  "harness_corrections": "测量修正重跑（不回盲）：TSan 退出码 66 计入 catch；ASan/LeakSanitizer 退出码非 0 计入 catch。首版仅查单字符串致漏判。",
+  "total": 20,
+  "catch": 7,
+  "miss": 9,
+  "unknown": 4,
+  "false_positive": 0,
+  "detectors": {
+    "tsan/asan/ubsan": "WSL g++ 13.3",
+    "warn/cross/link": "本机 g++13.1/clang22.1",
+    "unavailable": [
+      "perf-counter",
+      "sizeof-check",
+      "shared/weak 环引用运行期"
+    ]
+  },
+  "results": [
+    {
+      "id": "h1",
+      "category": "UB",
+      "atom_ref": "Examples/atoms/_atom_data_race.cpp",
+      "detector": "tsan",
+      "verdict": "catch",
+      "note": "tsan 命中(rc=66) single_total=100000 race_ops_total=200000 safe_ops_total=200000 safe_final=200000 ================== WARNING: ThreadSanitizer: data race (pid=25)   Read of size 4 at 0x588e276ec020 by thread T2:     #0 operator() /mnt/c/Users/ASUS/AppData/Local/Temp/tmpqc5m9aps/_atom_data_race.cpp:42 (rv_bin+0x26ca)"
+    },
+    {
+      "id": "h2",
+      "category": "perf/correct",
+      "atom_ref": "Examples/atoms/_atom_false_sharing.cpp",
+      "detector": "unknown",
+      "verdict": "unknown",
+      "note": "无本地检测器"
+    },
+    {
+      "id": "h3",
+      "category": "unspecified",
+      "atom_ref": "Examples/atoms/_atom_eval_order.cpp",
+      "detector": "wunsequenced",
+      "verdict": "catch",
+      "note": "g++ -Wunsequenced 告警"
+    },
+    {
+      "id": "h4",
+      "category": "deprecated/UB",
+      "atom_ref": "Examples/atoms/_atom_auto_ptr.cpp",
+      "detector": "compiler-warn",
+      "verdict": "catch",
+      "note": "警告 8 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmp62zywtxu\\_atom_auto_ptr.cpp:32:52:"
+    },
+    {
+      "id": "h5",
+      "category": "UB",
+      "atom_ref": "Examples/atoms/_atom_strict_alias.cpp",
+      "detector": "ubsan",
+      "verdict": "miss",
+      "note": "ubsan 无报告(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是"
+    },
+    {
+      "id": "h6",
+      "category": "memory-order",
+      "atom_ref": "Examples/atoms/_atom_fence_vs_atomic.cpp",
+      "detector": "cross-compile",
+      "verdict": "miss",
+      "note": "两编译器输出一致"
+    },
+    {
+      "id": "h7",
+      "category": "leak",
+      "atom_ref": "Examples/atoms/_atom_leak_detection.cpp",
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中(rc=1) ================================================================= ==82==ERROR: LeakSanitizer: detected memory leaks  Indirect leak of 64 byte(s) in 2 object(s) allocated from:     #0 0x7264440fe548 in operator new(unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:95     #1 0x631ef"
+    },
+    {
+      "id": "h8",
+      "category": "RAII/UB",
+      "atom_ref": "Examples/atoms/_atom_rule_three_bug.cpp",
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中(rc=1) ================================================================= ==109==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 12 byte(s) in 3 object(s) allocated from:     #0 0x7a3e4cefd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69     #1 0x5bc6e3ca6307 in operator "
+    },
+    {
+      "id": "h9",
+      "category": "move",
+      "atom_ref": "Examples/atoms/_atom_rule_five_noexcept.cpp",
+      "detector": "compiler-warn",
+      "verdict": "miss",
+      "note": "无告警"
+    },
+    {
+      "id": "h10",
+      "category": "leak",
+      "atom_ref": "Examples/atoms/_atom_shared_cycle.cpp",
+      "detector": "unknown",
+      "verdict": "unknown",
+      "note": "无本地检测器"
+    },
+    {
+      "id": "h11",
+      "category": "lifetime",
+      "atom_ref": "Examples/atoms/_atom_weak_cycle.cpp",
+      "detector": "unknown",
+      "verdict": "unknown",
+      "note": "无本地检测器"
+    },
+    {
+      "id": "h12",
+      "category": "size",
+      "atom_ref": "Examples/atoms/_atom_unique_size.cpp",
+      "detector": "unknown",
+      "verdict": "unknown",
+      "note": "无本地检测器"
+    },
+    {
+      "id": "h13",
+      "category": "move",
+      "atom_ref": "Examples/atoms/_atom_move_no_gain.cpp",
+      "detector": "compiler-warn",
+      "verdict": "miss",
+      "note": "无告警"
+    },
+    {
+      "id": "h14",
+      "category": "ODR",
+      "atom_ref": "Examples/atoms/_atom_inline_odr_a.cpp",
+      "detector": "linker",
+      "verdict": "catch",
+      "note": "链接失败(多定义/缺符号)"
+    },
+    {
+      "id": "h15",
+      "category": "UB",
+      "atom_ref": "Examples/atoms/_atom_new_array.cpp",
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中(rc=1) ================================================================= ==136==ERROR: AddressSanitizer: out of memory: allocator is trying to allocate 0x5d21dba000 bytes     #0 0x7c8c9d6fe990 in operator new[](unsigned long, std::nothrow_t const&) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:104 "
+    },
+    {
+      "id": "h16",
+      "category": "lifetime",
+      "atom_ref": "Examples/atoms/_atom_rvref_return.cpp",
+      "detector": "ubsan",
+      "verdict": "miss",
+      "note": "ubsan 无报告(rc=0) ret_plain copy=1 move=0 / ret_moved copy=0 move=1"
+    },
+    {
+      "id": "h17",
+      "category": "UB-assumption",
+      "atom_ref": "Examples/atoms/_atom_sso_size.cpp",
+      "detector": "asan",
+      "verdict": "miss",
+      "note": "asan 无报告(rc=0) sizeof(std::string)=32 empty capacity=15 (SSO buffer chars) len=15 allocs=0 len=16 allocs=1"
+    },
+    {
+      "id": "h18",
+      "category": "UB",
+      "atom_ref": "Examples/atoms/_atom_align_ctrl.cpp",
+      "detector": "ubsan",
+      "verdict": "miss",
+      "note": "ubsan 无报告(rc=0) alignof(Aligned)=16 sizeof(Aligned)=16 memcpy roundtrip x=7"
+    },
+    {
+      "id": "h19",
+      "category": "allocator",
+      "atom_ref": "Examples/atoms/_atom_alloc_arena.cpp",
+      "detector": "asan",
+      "verdict": "miss",
+      "note": "asan 无报告(rc=0) arena: calls=5 bytes=124 heap_new=0 std  : heap_new=5 (growth reallocations)"
+    },
+    {
+      "id": "h20",
+      "category": "move",
+      "atom_ref": "Examples/atoms/_atom_named_rvalue.cpp",
+      "detector": "compiler-warn",
+      "verdict": "miss",
+      "note": "无告警"
+    }
+  ]
+}

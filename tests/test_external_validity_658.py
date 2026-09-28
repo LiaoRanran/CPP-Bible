@@ -19,9 +19,13 @@ def test_real_defect_reinject_caught():
         assert r["caught"], f"{did} 重注入应被门禁抓住"
 
 
-def test_holdout_blind_by_default():
+def test_holdout_reveal_state():
+    """661 B1：reveal 后不可回盲；未 reveal 时须保持盲态。"""
     m = _load("holdout_658", "tools/holdout_658.py")
-    assert m.is_revealed() is False, "测试不得触发 reveal（不可逆）"
     h = m.load()
-    assert h["blind"] is True
-    assert h["count"] == len(h["seeds"]) == 20  # 660 C2：holdout 扩到 20 个真实 C++ 错误类型样本
+    assert h["count"] == len(h["seeds"]) == 20  # 660 C2：20 个真实 C++ 错误类型样本
+    if m.is_revealed():
+        assert os.path.isfile(os.path.join(ROOT, "data", "holdout_reveal_1_661.json")), \
+            "已 reveal 必须有 reveal 报告（661 B1）"
+    else:
+        assert h["blind"] is True, "未 reveal 时必须保持盲态"
