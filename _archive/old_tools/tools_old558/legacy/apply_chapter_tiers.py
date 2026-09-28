@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 apply_chapter_tiers.py — 全库章级 L1/L2/L3 分层标记（P2 规模化）
 

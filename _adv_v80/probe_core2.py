@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """v5 对抗复测（核心 v2）：绕开僵尸锁（沙箱锁路径）+ 合规 E12 + E07 细分。
 
 僵尸锁 build/.replay_lock（pid 39120，锁龄 2188s）导致正式路径 replay 全站 busy，

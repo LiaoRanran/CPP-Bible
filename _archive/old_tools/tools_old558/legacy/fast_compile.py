@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """fast_compile.py - 快速批量编译（并行）
 v1: 并行+分类（pass/fail/timeout）
 

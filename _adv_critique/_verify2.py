@@ -1,4 +1,6 @@
 ﻿﻿#!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """抽验 T1/T5 干净复测（真实字段形态）。"""
 import sys
 import tempfile

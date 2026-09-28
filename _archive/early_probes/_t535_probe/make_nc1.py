@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """B0 阴夹具生成器（535 批次2 · 一次性，带前置断言；不静默写错）。
 
 变换 = 对阳夹具 `Examples/atoms/_atom_fence_vs_atomic.cpp` 做**定点删除**：

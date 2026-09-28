@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # 临时诊断：绕过运行时 safe-delete 对 unlink/rmtree 的拦截，拿到干净的 golden_lock.measure()
 import os
 import shutil

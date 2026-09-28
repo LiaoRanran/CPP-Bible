@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """547 C 面探针：新旧接缝（549/548/535 的缝）。
 
 读真实门禁、在沙箱造卡，不写正式文件。每行 `[PASS|FAIL|ESCAPE|INFO]`。

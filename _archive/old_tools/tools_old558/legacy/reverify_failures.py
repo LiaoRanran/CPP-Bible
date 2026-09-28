@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """Re-verify ONLY the failed blocks recorded in compile_report.json.
 
 Much faster than a full recompile: recompiles just the specific block

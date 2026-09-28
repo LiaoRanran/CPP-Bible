@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """v5 对抗复测（最终）：夹具输出与 .out 严格一致，取真实 verdict。"""
 from __future__ import annotations
 

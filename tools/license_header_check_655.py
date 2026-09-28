@@ -73,6 +73,13 @@ HEAD_SCAN_LINES = 6
 ACTIVE_PREFIXES = ("tools/", "tests/", "web/", "Scripts/")
 ACTIVE_EXACT = ("conftest.py",)
 
+#: 657 D3（补）：**受控目录**不补头 —— 红线是「受控目录只加边界三元组、不改内容」，
+#: 且 ``Examples/`` 进 Merkle 根与 OTS 锚（动了就连带改根）。
+#: 657 首跑 ``--apply --scope all`` 实测撞到：``Examples/_ch13_conanfile.py`` 被补了头
+#: ⇒ 受控目录被污染。此表让工具**默认尊重红线**；要显式越线须加
+#: ``--include-controlled``（并把 Merkle 根 / OTS 连带重建的责任写在调用方）。
+CONTROLLED_PREFIXES = ("atoms/", "evidence/", "Examples/", "Book/")
+
 SKIP_DIRS = {"__pycache__", ".venv", "venv", "build", ".pytest_tmp", ".git", "node_modules"}
 _CODING_RE = re.compile(r"^#.*?coding[:=]\s*[-\w.]+")
 _SPDX_RE = re.compile(r"^#\s*SPDX-License-Identifier:\s*Apache-2\.0\s*$")
@@ -106,8 +113,10 @@ def _rel(p: Path) -> str:
     return p.relative_to(ROOT).as_posix()
 
 
-def in_scope(p: Path, scope: str) -> bool:
+def in_scope(p: Path, scope: str, include_controlled: bool = False) -> bool:
     rel = _rel(p)
+    if not include_controlled and rel.startswith(CONTROLLED_PREFIXES):
+        return False
     if scope == "all":
         return True
     return rel.startswith(ACTIVE_PREFIXES) or rel in ACTIVE_EXACT
@@ -161,11 +170,11 @@ def _scan_files(files: list[Path]) -> tuple[list[str], list[str]]:
     return sorted(miss), sorted(nocopy)
 
 
-def scan(scope: str) -> dict[str, Any]:
+def scan(scope: str, include_controlled: bool = False) -> dict[str, Any]:
     """按口径统计（active/all 均给出，active 用于判红）。"""
     files = tracked_py_files()
-    active = [p for p in files if in_scope(p, "active")]
-    allf = [p for p in files if in_scope(p, "all")]
+    active = [p for p in files if in_scope(p, "active", include_controlled)]
+    allf = [p for p in files if in_scope(p, "all", include_controlled)]
     missing, no_copy = _scan_files(active if scope == "active" else allf)
     return {
         "scope": scope,
@@ -180,8 +189,8 @@ def scan(scope: str) -> dict[str, Any]:
     }
 
 
-def apply_headers(scope: str, dry_run: bool) -> dict[str, Any]:
-    rep = scan(scope)
+def apply_headers(scope: str, dry_run: bool, include_controlled: bool = False) -> dict[str, Any]:
+    rep = scan(scope, include_controlled)
     changed: list[str] = []
     for rel in rep["missing"]:
         p = ROOT / rel
@@ -268,6 +277,11 @@ def selftest() -> int:
     chk("scope=all 含历史目录", in_scope(ROOT / "_archive" / "x.py", "all") is True)
     chk("scope=active 排除历史目录", in_scope(ROOT / "_archive" / "x.py", "active") is False)
     chk("scope=active 含 tools/", in_scope(ROOT / "tools" / "x.py", "active") is True)
+    chk("受控目录默认排除（红线）",
+        all(in_scope(ROOT / d / "x.py", "all") is False
+            for d in ("Examples", "atoms", "evidence", "Book")))
+    chk("受控目录显式 --include-controlled 才纳入",
+        in_scope(ROOT / "Examples" / "x.py", "all", True) is True)
     print(f"license_header_check_655 selftest: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
 
@@ -282,13 +296,16 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--dry-run", action="store_true", help="配合 --apply：只预览不改文件")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--include-controlled", action="store_true",
+                    help="657：把受控目录（atoms/evidence/Examples/Book）也纳入"
+                         "（默认排除；越线须显式，并自行承担 Merkle/OTS 连带重建）")
     a = ap.parse_args(argv)
 
     if a.selftest:
         return selftest()
 
     if a.apply:
-        rep = apply_headers(a.scope, a.dry_run)
+        rep = apply_headers(a.scope, a.dry_run, a.include_controlled)
         print(json.dumps(rep, ensure_ascii=False, indent=2) if a.json else
               f"[license-header] scope={rep['scope']} dry_run={rep['dry_run']} "
               f"待补/已补 {rep['changed_count']} 个文件")
@@ -300,7 +317,7 @@ def main(argv: list[str] | None = None) -> int:
         if not a.check:
             return 0
 
-    rep = scan(a.scope)
+    rep = scan(a.scope, a.include_controlled)
     if a.json:
         print(json.dumps(rep, ensure_ascii=False, indent=2))
     else:

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 把 ch151 验证过的论文级图表范式推广到其它有真实基准数字的 D5 附录章。
 

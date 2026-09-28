@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """site_audit 自测：构造最小站点，验证 PASS 与 FAIL 两条路径。"""
 import pathlib
 import shutil

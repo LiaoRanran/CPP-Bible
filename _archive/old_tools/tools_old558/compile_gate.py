@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """编译防回归门禁 (compile gate)。
 
 读取 `compile_all.py --main-only` 产出的 `tools/compile_report.json`，

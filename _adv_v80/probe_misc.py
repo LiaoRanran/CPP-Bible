@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """v5 对抗复测（misc）：E09 并发 / E16 闪卡 draft 导出 / E08 poison 退出码 / E14 无锚点。"""
 from __future__ import annotations
 

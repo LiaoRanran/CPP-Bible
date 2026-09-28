@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """v5 去水词 + 密度雷达 — deduplication_audit.py
 v4→v5 新增：
   --all       输出全 147 章（非仅底 10）

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """density_audit.py v3 — Deep Information Density Audit
 Key changes from v3:
 - Depth signals cap raised 5→15 (rewards chapters with real code)

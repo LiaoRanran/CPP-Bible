@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 label_specificity_harden.py — §1 立场分层标签「具体化」收口工具（确定性、围栏感知、保原生换行）。
 

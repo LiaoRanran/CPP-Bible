@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """disclaimer_audit.py — P2 通用免责声明套话审计（报告型，不入 CI 门禁）
 
 为什么需要这个轮子

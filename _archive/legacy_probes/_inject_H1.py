@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """Phase H1: rewrite off-topic template exercises -> topic-aligned ladders,
 and append a '附录：用法演绎' step-by-step scenario to 8 flagship chapters.
 CRLF-safe. Replaces from '## 自测练习（Exercises）' to EOF (uniform anchor)."""

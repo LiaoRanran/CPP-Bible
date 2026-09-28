@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """run_probe.py — 534 任务4/5 沙箱实测编排（全部真实子进程，kill 用 taskkill /F）。
 
 场景：S1 并发 next 争抢  S2 touch_set 冲突  MAIN kill-9 续跑  S4 yield 切子任务

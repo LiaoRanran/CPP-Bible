@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """prose_density —— 叙述密度测量：每章「纯段落行」占比。
 
 锐评诊断「全书叙述密度仅 32%、147 章平均真正在讲东西的不到 530 行」，

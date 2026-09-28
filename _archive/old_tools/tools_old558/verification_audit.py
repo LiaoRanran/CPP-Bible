@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 verification_audit.py — 验证状态标记覆盖度审计（对应 CONVENTIONS.md §10 / 宪章 §6）
 

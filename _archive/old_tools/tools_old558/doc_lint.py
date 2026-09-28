@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """doc_lint.py — 文档质量门禁（478 §三 / 479 任务 2）。
 
 解决的问题（478 §3.1 实录）：100+ 份文档反复出现「文档说 21 条规则、实际 50 条」

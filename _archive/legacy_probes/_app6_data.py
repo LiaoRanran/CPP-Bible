@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # APP6 注入数据：part04_memory 5 章(ch35/36/37/38/40) 习题重写 + 用法演绎附录
 # 约定与 APP5 一致：每章值为「从 ### 练习 1 起的全部注入尾」，按
 # "## 附录：用法演绎（从选型到落地）" 切分为 EX(习题) / APX(附录) 两部分。

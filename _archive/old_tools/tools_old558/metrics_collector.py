@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """metrics_collector.py — 质量度量 L1（508 任务6）。
 
 为什么（497/508）：仓库里已有 `gen_metrics.py`（**文档数字 vs 事实源**的一致性门禁）、

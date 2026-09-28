@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """575 任务 3：产出「待补命题级活性锚」清单（**只列清单，机器绝不写入卡面**）。
 
 输出 data/prop_liveness_todo.md：卡 / 命题 / 引用卡 / 可锚形态 / **建议可锚符号（仅提示）**。

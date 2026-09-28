@@ -1,0 +1,84 @@
+name: DCO
+
+# 657 D2：DCO（Developer Certificate of Origin）上 CI。
+#
+# 为什么单独一个 workflow（而不是塞进 ci.yml）：
+#   1. 它**秒级**完成（纯 git log 解析，零依赖），与 ci.yml 那套重型门禁的 wall 完全不重叠；
+#   2. 它只对 **PR / push 的提交区间**有意义，与 ci.yml 的"全仓质量门禁"是两件事，混在一起
+#      会让「DCO 失败」和「内容门禁失败」在同一个 job 里失去可读性；
+#   3. `concurrency-safety` 静态检查（tools/ci_concurrency_check_621.py）会解析 ci.yml 的
+#      job 依赖图；本 workflow 不碰受控目录、不改 ci.yml，故不影响那条不变量。
+#
+# 口径（与 DCO.md 一致）：每个提交正文必须含 `Signed-off-by: 姓名 <邮箱>`，且**署名者
+# 必须等于作者**（`git commit -s` 的语义）。豁免：合并提交、以及显式标注 `[skip-dco]`
+# 的提交（例如历史批量导入——本仓 610 之前的提交**未批量补签**，见 655 交人项 2：
+# 「DCO 上 CI 需对历史 commit 批量 --signoff」，本批**不代签**，故区间取 base..HEAD 而非全史）。
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  dco:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        fetch-depth: 0   # 需要完整历史才能取 base..HEAD 区间
+
+    - name: Set up Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.11'
+
+    - name: DCO sign-off check (base..HEAD · 报告态)
+      # 纯 git + 标准库，零第三方依赖（不引 tim-actions/dco 之类外部 action：
+      # 判据要能离线复算，这是本仓「可复现」的一贯口径）。
+      #
+      # ⚠️ 为什么此刻是 `continue-on-error: true`（**必须由人裁决后才转硬**）：
+      #   655 交人项 2 原文 —— 「DCO 是否上 CI 强制（现状：文档 + PR 勾选；若强制需对历史
+      #   commit 批量 `--signoff`）」。本仓**历史提交绝大多数没有签名**（610 之前整体未补签），
+      #   本批（657）的 B/C 两个提交也未带 `-s`。若直接转硬，**下一次 push 立刻变红**，
+      #   而红因与内容无关 —— 这正是 `.gitattributes` 里记着的教训（"让门禁沦为狼来了"）。
+      #   所以本批交付的是**可离线复算的检查器**：它把不合规提交逐条打印为 error 注解，
+      #   但先不阻断。裁决（历史批量补签 / 明确豁免口径）之后，把这一行改成 false 即转硬。
+      run: |
+        # PR ⇒ 取 base 引用后再算 base..HEAD；push ⇒ 工具自动回退 HEAD~1..HEAD
+        if [ -n "${GITHUB_BASE_REF:-}" ]; then
+          git fetch --no-tags --quiet origin "origin/${GITHUB_BASE_REF}" 2>/dev/null || \
+            git fetch --no-tags --quiet origin "${GITHUB_BASE_REF}" 2>/dev/null || true
+          export DCO_BASE="origin/${GITHUB_BASE_REF}"
+        fi
+        python3 tools/dco_check_657.py --report
+      continue-on-error: true
+
+    - name: CRLF 漂移度量（657 D1 · 非阻断，仅留痕）
+      # 杠杆 B（data/657_ci_levers.md）：`git ls-files --eol` 秒级，把「索引 LF + 工作树 CRLF」
+      # 的真实数量写进 data/657_crlf_convergence.{md,json} 并作为 artifact 上传，驱动「碰到即转」。
+      # 非阻断（continue-on-error）：它只度量、不擅自 renormalize（全量 renormalize 被
+      # .gitattributes 2026-09-13 的监工裁决明确否决），故不会因行尾历史债误红。
+      run: python3 tools/crlf_convergence_657.py --report
+      continue-on-error: true
+
+    - name: Upload CRLF / DCO 报告
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: 657-dco-crlf-reports
+        path: |
+          data/657_crlf_convergence.md
+          data/657_crlf_convergence.json
+          data/dco_657.json
+        if-no-files-found: ignore
+        retention-days: 14

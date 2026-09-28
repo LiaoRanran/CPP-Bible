@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 r"""fix_missing_includes.py — 自动补齐 [merged] 块缺失的标准库 include
 
 背景（2026-07-14, L1 内容质量闭环）：

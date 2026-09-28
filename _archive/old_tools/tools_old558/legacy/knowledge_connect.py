@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """knowledge_connect.py — Generate cross-chapter usage scenario tables for all chapters.
 Scans existing ⟶ links, generates "联合使用场景" appendix at chapter end.
 B-phase: turns reference manual into learning system."""

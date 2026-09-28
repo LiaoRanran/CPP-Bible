@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # p09_free_incentive.py (_arch_v19 维度9 自由探索) 纯标准库只读
 # 自由发现的新维度：验证的激励兼容性 (incentive-compatible verification)。
 # 假说：单用户系统中验证者=被验证者=同一效用函数，所有压力都朝"宽松/降级/豁免"方向，

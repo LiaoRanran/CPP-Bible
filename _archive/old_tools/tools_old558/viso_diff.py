@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """535 批次2 · V-iso 阴面最小 diff 机器判据（533 §2.2 正式化，原型：`_arch_v2_round2/iso_judge.py`）。
 
 **要解决的问题**：observation 卡可以"全绿但 claim 空转"——断言在机制被删掉之后照样成立，

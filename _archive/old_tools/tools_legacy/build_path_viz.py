@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """build_path_viz.py - 学习路径可视化生成器
 复用 learning_path.py 的 build_graph()，把 147 章依赖 DAG + 3 条路线
 渲染为自包含(无外部依赖)的交互式 HTML 知识地图。

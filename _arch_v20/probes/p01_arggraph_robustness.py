@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 p01_arggraph_robustness.py  — _arch_v20 只读探针
 方向 11（复杂系统/网络科学）+ 方向 12（信息论）实证：

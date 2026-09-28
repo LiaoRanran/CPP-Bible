@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """log_query.py — 日志查询 CLI（508 任务4 / 可观测性 L1）。
 
 读 `data/logs/*.jsonl`（见 `tools/observability.py`）并按维度过滤，彩色格式化输出。

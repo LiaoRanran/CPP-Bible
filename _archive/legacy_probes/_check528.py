@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """528 任务1：校验一批卡回填后的解析与规则命中（用法：python _check528.py ATOM-A ...）。"""
 import sys
 from pathlib import Path

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 json_project_gate.py — 贯穿项目线（台阶二）· 手写 JSON 库编译+运行门禁
 ====================================================================

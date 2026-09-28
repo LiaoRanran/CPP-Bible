@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """trace_logger.py — 结构化操作日志（498 任务 4 / P1-12 / 497 可观测性与失败恢复）。
 
 为什么（497）：Agent 的每次操作（写夹具/编译/replay/门禁/红队/人审/提交/改工具）此前

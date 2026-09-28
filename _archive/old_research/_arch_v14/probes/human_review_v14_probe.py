@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 595 异族调研 · 探针（只读，纯标准库，不装 numpy/scipy/clingo/外部 JS 库）
 =========================================================================

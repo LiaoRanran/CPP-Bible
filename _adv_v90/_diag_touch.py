@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 import sys, tempfile, json, sqlite3
 from pathlib import Path
 sys.path.insert(0, "tools")

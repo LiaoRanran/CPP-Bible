@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 r"""module_compile_check.py — C++20 Modules 感知编译校验 (L1, 2026-07-14)
 
 背景：

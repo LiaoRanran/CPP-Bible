@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """Python 工具链健壮性审计 (#202 工具)。
 
 扫描 tools/*.py，按类别产出可定位报告。用 ast 做结构检查（裸 except / 可变默认参数

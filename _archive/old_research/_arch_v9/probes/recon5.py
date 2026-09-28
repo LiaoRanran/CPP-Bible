@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """582 只读侦察⑤：写作所需的静态计数（零写；只读卡面与 db）。"""
 import json
 import pathlib

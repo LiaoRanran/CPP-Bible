@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # 585 只读探针：仅 import 读取，零写盘。验证几个关键断言（带磁盘实证锚点）。
 # 运行：.venv\Scripts\python.exe _arch_v10\probes\probe_trust_root.py
 import sys, inspect

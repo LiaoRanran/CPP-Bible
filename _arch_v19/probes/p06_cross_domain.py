@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # p06_cross_domain.py (_arch_v19 维度6 跨领域验证框架) 纯标准库只读
 # 实验：量化阙疑方法论的"领域耦合度"——哪些资产是 C++ 专属外壳，哪些是领域无关内核。
 #   - 63 gate 规则按标题/判据文本分类 C++绑定 vs 通用验证模式

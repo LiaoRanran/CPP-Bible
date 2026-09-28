@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """Wave 12: append D5 performance appendix to 10 gap-report chapters.
 
 Real numbers measured locally with g++ 13.1.0 (-O2 -std=c++23); header label

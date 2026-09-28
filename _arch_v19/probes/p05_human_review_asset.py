@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # p05_human_review_asset.py (_arch_v19 维度5 人审即内容) 纯标准库只读
 # 实验：把 388 条"人审"当作可复用的判断资产做质量审计：
 #   模板化率 / 独立逐条判断数 / 镜像边(错误相关=1) / 抽样外推的统计上界 /

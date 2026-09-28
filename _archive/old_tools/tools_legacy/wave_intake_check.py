@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 r"""wave_intake_check.py — Wave 收口复验（报告型，不入 CI 门禁）
 
 为什么需要这个轮子

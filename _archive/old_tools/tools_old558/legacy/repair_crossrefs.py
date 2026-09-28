@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """修复ch82-94新章中引用INDEX规划编号但实际文件名不同的断链"""
 import os
 

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """tools/teaching_audit.py — 写作红线审计（报告型，离线跑）。
 
 把 TEACHING.md 的「禁编造轶事」红线部分自动化：扫描全书中

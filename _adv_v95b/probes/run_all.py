@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """547 对抗探针总入口：跑 B/C/D 三面，汇总 ESCAPE 数。
 
 用法：.venv/Scripts/python.exe _adv_v95b/probes/run_all.py

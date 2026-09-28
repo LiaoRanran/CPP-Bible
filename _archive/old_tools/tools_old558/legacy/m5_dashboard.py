@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """M5 质量度量：北极星指标口径 + 三级 DoD（原子/章/全书）。
 
 聚合**既有事实源**，不重复实现：

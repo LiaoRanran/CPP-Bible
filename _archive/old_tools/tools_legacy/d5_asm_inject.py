@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """d5_asm_inject.py — 把生成的 D5.5 汇编实证小节插入章节 D5 附录末尾。
 
 D5 附录是四段结构（D5.1-D5.4）。本工具在 D5.4「方法学注」小节之后、下一个

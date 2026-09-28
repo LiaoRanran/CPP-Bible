@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """574 D 任务独立亲测：真实卡填 verified_by_oracle(99.0.0) 后 gate 判决必须逐字不变。"""
 import pathlib
 import subprocess

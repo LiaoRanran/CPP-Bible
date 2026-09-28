@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 s10_verify_mark.py — §10 验证标记「半自动分诊」注入器（方向 B 落地，E12）
 ================================================================================

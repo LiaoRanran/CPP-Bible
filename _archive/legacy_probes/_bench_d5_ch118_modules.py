@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """Wave8 ch118 D5 基准：C++20 模块的「编译期」加速（GCC 15.3.0, Windows/mingw）。
 模块的性能维度是【编译时间】而非运行时间——传统 #include 在每个 TU 重解析
 整个头，模块只需读取一次预构建的 BMI。本脚本复现这一差异：

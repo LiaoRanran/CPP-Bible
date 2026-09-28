@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """auto_include.py — 自动补全缺失头文件（突破 72→85+ 代码质量）
 
 扫描全书 cpp 块，对不含 #include 的块：

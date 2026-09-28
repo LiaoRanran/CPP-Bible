@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """learning_path.py - 学习路径生成器
 扫描所有交叉引用,构建DAG,生成DOT图+JSON依赖表
 

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """582 只读侦察②：prop_graph / stat_bounds / metrics / impact_analysis 的结构面（纯读）。"""
 import pathlib
 import re

@@ -2,9 +2,25 @@
 //   浏览器侧由 verify.js 调用；把"算哈希 / 匹配台账 / 判定 / 生成 CSV"从 DOM 里剥出来，
 //   是为了让这几步能被自动化用例**真求值**，而不是只做语法检查。
 
+/**
+ * 取可用的 `WebCrypto.subtle`（657 E/F 加固）。
+ *
+ * 为什么不直接写裸 `crypto`：① 裸 `crypto` 依赖「全局恰好有 WebCrypto」，在
+ * jsdom / 非 https 页面里可能是 undefined 或没有 `subtle` ⇒ 报错信息是
+ * 「reading 'subtle' of undefined」，人看不懂是环境问题；② Node 里跑测试时
+ * 全局可能被 harness 指到 jsdom 的 `window.crypto`（没有 `subtle`）。
+ * 顺序：`self.crypto`（浏览器经典脚本里 self===window）→ `globalThis.crypto`
+ * （Node 18+ 的 webcrypto）→ 都没有就**抛一句人能看懂的话**。
+ */
+function _subtle() {
+  const c = (typeof self !== 'undefined' && self && self.crypto) || globalThis.crypto;
+  if (c && c.subtle) return c.subtle;
+  throw new Error('WebCrypto.subtle 不可用：需要 https 或 localhost（Node 18+ 也可）');
+}
+
 /** 现算 sha256（十六进制）。需要 `crypto.subtle`（浏览器或 Node 的 webcrypto）。 */
 export async function sha256Hex(buf) {
-  const d = await crypto.subtle.digest('SHA-256', buf);
+  const d = await _subtle().digest('SHA-256', buf);
   return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 

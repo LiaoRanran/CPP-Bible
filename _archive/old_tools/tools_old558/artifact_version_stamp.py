@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """artifact_version_stamp.py — 工件-卡版本号迁移（498 任务 2，**台账方案**）。
 
 ⚠️ 为什么用台账而不是"给 .asm 加注释"（本轮实测教训，勿回退）

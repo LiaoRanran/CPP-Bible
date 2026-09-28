@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 阶段3 P0: 把 DRIFT 工件重生成对齐 canonical gcc-15.3.0 + -masm=intel
 =====================================================================

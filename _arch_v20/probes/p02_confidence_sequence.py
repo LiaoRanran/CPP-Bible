@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 p02_confidence_sequence.py — _arch_v20 只读探针
 方向 5（序贯分析/统计学习）实证：

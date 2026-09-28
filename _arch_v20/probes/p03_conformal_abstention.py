@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 p03_conformal_abstention.py — _arch_v20 只读探针
 自由方向 A（保形预测/选择性预测）+ 方向 12（信息论）：

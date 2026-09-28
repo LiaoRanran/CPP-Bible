@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """从 compile_report.json 生成 tools/compile_exempt.json（豁免清单生成器）。
 
 依据「章号 -> 主豁免原因」映射 + 错误文本模式，把当前报告里的所有失败块

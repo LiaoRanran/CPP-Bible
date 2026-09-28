@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """560 A · 性能画像探针（只读，不改任何正式文件）。
 
 输出 _arch_v4/probes/perf_*.json：

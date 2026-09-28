@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """只读探针：关闭观测写入(CPPBIBLE_OBS=0)后跑 gate，核对命中分布与规则元数据。
 不写任何文件。用法：.venv\\Scripts\\python.exe _arch_v11\\probes\\probe_gate_live.py
 """

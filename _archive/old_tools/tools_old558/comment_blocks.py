@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """纯注释 cpp 块盘点工具（L2 真机深耕管线）。
 
 与 compile_all.extract_blocks 采用相同的 ```cpp 围栏语义，因此本工具的 block 编号

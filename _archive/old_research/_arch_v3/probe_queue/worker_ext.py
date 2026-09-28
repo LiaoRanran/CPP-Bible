@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """worker_ext.py — 被 harness 驱动的"苦力 worker"（新会话=新进程=零上下文）。
 
 只知道环境变量给的 DB/ROOT/WORKER 身份与接管参数，不接收任何其它上下文：

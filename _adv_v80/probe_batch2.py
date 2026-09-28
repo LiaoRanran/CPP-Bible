@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """v5 对抗复测（批量 v2）：修正探针（每行 command 含产出 artifact 的编译行）
 + ccache 面 + P0-A 构建脚本边界。
 """

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """自动交叉引用注入：为裸章添加⟶链接（基于knowledge_graph依赖拓扑）"""
 import json
 import os

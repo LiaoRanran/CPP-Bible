@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """572 任务 1/2 先量：(b) 的存量命中面 + 生成 (a) 的人审断言计数基线。"""
 import json
 import sys

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """533 勘察补充：observation/inference 命题计数与 observation 用证据结构。"""
 import sys
 from collections import Counter

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 fill_part01_gaps.py — 补齐 part01 历史章节缺失的 v3 中间元素（⑥⑦⑧⑨⑩ 等），
 并补立场标签 [标准]。仅插入准确的时代相关内容，不改动任何已有史实正文。

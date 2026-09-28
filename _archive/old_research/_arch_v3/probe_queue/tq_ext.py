@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """tq_ext.py — 534 增量原型（沙箱）。基线 = 苦力落地版 tools/task_queue.py（d976170）。
 
 纪律：不复制落地版逻辑，import 它当库，只做它还没有的四件事：

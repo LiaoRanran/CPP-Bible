@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 论文级竖向条形图生成器（与 Book/part13_engineering/ch151_benchmark.md 图2 风格严格一致）。
 

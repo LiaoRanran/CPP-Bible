@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 normalize_headings.py — 将 CPP-Bible 章节的 H2 小节标题归一化为 ①–⑳ 圈码标记格式。
 

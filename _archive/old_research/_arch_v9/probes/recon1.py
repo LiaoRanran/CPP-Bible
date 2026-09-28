@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """582 只读侦察①：资产层文件清点 + 关键 jsonl/json 头几行（**纯读，不写正式目录**）。"""
 import json
 import pathlib

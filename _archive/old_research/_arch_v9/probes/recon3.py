@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """582 只读侦察③：metrics 三曲线/推翻/registry 实现 + MIS 样本 + liveness todo + 引用核验类工具。"""
 import json
 import pathlib

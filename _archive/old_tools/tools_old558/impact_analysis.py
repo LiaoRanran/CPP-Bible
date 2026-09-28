@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """425 上游依赖遍历（415 L2 最小闭环）：改一颗原子前，先看谁依赖它。
 
 问题（415 调研）：改一颗原子，哪些原子受影响？当前靠人记，应该机器算。

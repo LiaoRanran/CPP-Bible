@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """compile_classify.py — Classify compile failures from compile_report.json
 
 Reads tools/compile_report.json (produced by compile_all.py --main-only) and

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """mermaid_lint.py - zero-dependency mermaid syntax linter for the CPP-Bible book.
 
 Goals

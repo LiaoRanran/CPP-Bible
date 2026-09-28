@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """只读探针：解析 data/mutation/full_baseline_v6.json，输出全量口径统计。
 不写任何文件（除 stdout）。用法：.venv\\Scripts\\python.exe _arch_v11\\probes\\probe_v6_stats.py
 """

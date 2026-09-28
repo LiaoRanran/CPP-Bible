@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 602 探针：编译可复现性实证（只读 / 临时目录，不碰 Examples/ 正式夹具）。
 

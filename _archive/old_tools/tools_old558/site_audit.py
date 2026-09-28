@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """site_audit.py — 站点前端产物健康自检（front-end gate, 零依赖）。
 
 在 mkdocs build + pagefind 之后、上传/部署之前运行，校验静态产物完整性：

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """528 任务1：批量导出资子的 claim + 证据读数（写命题须逐字准确，不靠印象）。
 
 用法：python _dump528.py ATOM-A ATOM-B ...

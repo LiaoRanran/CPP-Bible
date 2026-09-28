@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """C++ 主程序块编译告警扫描 (#201 深度功能正确性信号)。
 
 对 Book/**/ch*.md 中所有含 `int main` 的 cpp 块，分别用

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """533 轮勘察：56 张证据卡的机验结构盘点（只读，不改正式文件）。
 
 输出每张 EV 卡：kind / fixture / artifact / run_match / artifact_assert 结构，

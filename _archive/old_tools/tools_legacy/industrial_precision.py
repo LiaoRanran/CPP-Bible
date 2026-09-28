@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """industrial_precision.py — 工业引用精度审计
 扫描全仓 GitHub URL 与工业域名，按精度分级：
   L3 (行级)    github.com/org/repo/blob/.../file.cc#L123

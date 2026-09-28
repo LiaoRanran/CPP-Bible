@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 generate_wg21_tracker.py — WG21 提案实现进度自动核对工具 (B3.3)
 

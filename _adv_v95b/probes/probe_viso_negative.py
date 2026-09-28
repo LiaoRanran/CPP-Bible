@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """547 B 面探针：V-iso 阴阳同构（545 未饱和）。
 
 纯函数 / schema 层为主，不编译、不改正式文件。每项一行 `[PASS|FAIL|ESCAPE|INFO]`。

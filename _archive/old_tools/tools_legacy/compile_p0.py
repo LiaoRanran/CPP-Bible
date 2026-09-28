@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """compile_p0.py — Targeted compile of known P0 chapters.
 
 Compiles only 'int main' blocks (--main-only semantics) and appends a

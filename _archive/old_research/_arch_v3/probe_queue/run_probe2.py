@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """run_probe2.py — 534 任务4 沙箱实测（驱动苦力落地版 tools/task_queue.py d976170 + 增量 tq_ext）。
 
 场景：S1 并发 claim  S2 touch_set 冲突  MAIN kill-9→人工 takeover 零上下文续跑

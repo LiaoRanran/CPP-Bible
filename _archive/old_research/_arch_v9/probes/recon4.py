@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """582 只读侦察④：引用核验工具 + KG 写点 + 前轮结论头（避免重复）。"""
 import pathlib
 import re

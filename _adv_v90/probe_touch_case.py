@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """536 A4 v3：用不同 payload_ref 造两个真任务（避免 id 幂等碰撞），测大小写逃逸。"""
 import sys, tempfile
 from pathlib import Path

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """559 Part B 复现探针：并发 replay 期间读仓库工件状态 ⇒ 敏感检查是否假红。
 
 机制（508 已记）：replay 校验一卡时是「删旧工件 → 重生成 → 比 sha → 还原」，

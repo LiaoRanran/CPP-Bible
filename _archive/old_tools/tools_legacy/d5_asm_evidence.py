@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """d5_asm_evidence.py — D5 附录汇编实证生成器（工具型，不直接改源）
 
 《现代 C++ 终极圣经》的 D5 性能附录目前只有四段基准结构（基准结果 / 非显然结论 /

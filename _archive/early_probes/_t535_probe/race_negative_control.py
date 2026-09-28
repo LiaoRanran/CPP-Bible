@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """C1 的阴性对照：把"朴素增量迁移"造出来，验证新 pytest 有牙齿。
 
 朴素版 = d976170 的 PRAGMA 顺序（journal_mode 先于 busy_timeout）+ 逐列

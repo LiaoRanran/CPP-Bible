@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """worker_sim.py — 被 harness 驱动的"苦力 worker"进程（新会话=新进程=零上下文）。
 
 它只知道三件事：

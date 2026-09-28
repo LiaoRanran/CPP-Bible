@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # p01_self_evolution.py (_arch_v19 维度1) 纯标准库只读
 # 目的：在本仓真实数据上测量 discover/propose/verify/merge/report 五步自进化循环的
 #       现有支撑度与瓶颈，并对 L0-L5 自进化等级给出证据化定级。

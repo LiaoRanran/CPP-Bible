@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """v5 对抗复测（核心）：E01/E03 现成探针 + 新逃逸 N1 + E07 变体 + E12 签收。
 
 只信实跑结果。不修改任何工具/正式文件。

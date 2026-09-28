@@ -1,0 +1,9 @@
+{
+  "name": "cpp-bible-toolchain-node",
+  "private": true,
+  "type": "module",
+  "note": "657 D7：仓库根的 Node 依赖清单（只服务 tools/ 下的 .mjs 检查器，与 web/ 的零构建静态站无关）。jsdom 供 tools/web_smoke_655.mjs 在 Node 里真跑 DOM 冒烟 —— 655 时因「受管 workspace 的 jsdom 与 Node 18 的 @exodus/bytes ESM 不兼容」只能 SKIP，657 改为把 jsdom@24（Node 18 兼容）钉进仓库根，冒烟从 SKIP 变为真跑。CI（Node ≥20）与本机（Node 18）都可用。",
+  "devDependencies": {
+    "jsdom": "24.1.3"
+  }
+}

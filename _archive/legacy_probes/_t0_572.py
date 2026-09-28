@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """572 任务 0：把 571 v2 里 M3 的 52 条逃逸逐条打印并三分类（a/b/c）。
 
 - (a) 条目变少可对基线：删条目 / 删 run_match_keys ⇒ 变异后计数 < 变异前计数；

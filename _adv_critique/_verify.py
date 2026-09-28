@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """批判者抽验：声称已修 vs 代码真相。monkeypatch 沙箱，零写正式目录。"""
 import sys
 import tempfile

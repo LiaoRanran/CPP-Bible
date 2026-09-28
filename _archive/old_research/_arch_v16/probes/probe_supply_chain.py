@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 600 探针：供应链溯源证明最小可行原型（方向 1 + 4 + 5）
 纯标准库，只读。演示：

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """星级格审计（star）+ H2 数量基线（h2）。
 
 ⚠️ 命名说明：仓库已有 `tools/structure_audit.py`（围栏感知结构缺陷扫描器：

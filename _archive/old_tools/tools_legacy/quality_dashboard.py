@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """quality_dashboard.py — 质量全景仪表盘
 
 生成自包含 HTML 文件（零外部依赖），展示：

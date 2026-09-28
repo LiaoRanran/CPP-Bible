@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # tools/table_style_audit.py
 # 审计 Markdown 表格视觉规范（CONVENTIONS §4.2）：
 #   - 断表（连续 pipe 行却无分隔行，且不在代码围栏内）

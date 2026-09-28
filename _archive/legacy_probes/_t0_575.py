@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """575 任务 0.3 盘点：50 条 observation 命题能不能在**命题级**指认活性锚？
 
 输出：命题 id / 所属卡 / 引用证据卡 / 可锚形态（fixture_symbol / quantified / run_key / 无）

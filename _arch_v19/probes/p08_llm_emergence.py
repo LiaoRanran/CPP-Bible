@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # p08_llm_emergence.py (_arch_v19 维度8 LLM 发展与涌现) 纯标准库只读
 # 实验：基于真实规则/证据结构，给阙疑 10 个核心能力打"LLM 能力 10 倍后"的重要性方向，
 #       每个方向都用仓内可核数字支撑，而非空谈。

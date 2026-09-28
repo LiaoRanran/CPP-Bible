@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """571 任务 1 侦察：M3 为何只有 7 个可判变体 —— 全库卡的门禁读取面形状分布。"""
 import sys
 from pathlib import Path

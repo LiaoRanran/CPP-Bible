@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # p02_vdd.py (_arch_v19 维度2 验证驱动生成 VDD) 纯标准库只读
 # 实验：把 63 条 gate 规则按"生成时可否作为硬约束"分类：
 #   A 类=纯文本/frontmatter 静态可判（生成器可在解码时强制，constrained decoding 可达）

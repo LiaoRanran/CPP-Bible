@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """门禁引擎（M4）：统一 Rule 接口 + 单一注册中心 + 四象限分流 + 可执行工单。
 
 设计要点（ADR-0004 / ADR-0005）：

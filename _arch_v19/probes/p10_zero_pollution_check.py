@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # p10_zero_pollution_check.py (_arch_v19, 595) 纯标准库只读
 # 机器比对：证明本调研的写操作仅发生在 _arch_v19/；该目录之外的工作区变化
 #          全部归属于同期并发建设会话（用 git reflog/时间线与文件名批次号佐证）。

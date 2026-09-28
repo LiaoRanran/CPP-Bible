@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """S4 黄金非回归锁：达标状态固化为快照，任何指标**恶化** → exit 1。
 
 底座 = ADR-0005（`l2_state.py` 的快照-漂移三件套：measure → save → check）。

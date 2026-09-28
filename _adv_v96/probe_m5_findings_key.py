@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """575 验收探针：独立验证 mutation_fuzz._findings_key 三元组吞掉 M5 告警的 bug，
 以及苦力声称的修法（文案并入键）能否翻盘。不改正式文件，全程 mf.sandbox 临时副本。"""
 import sys

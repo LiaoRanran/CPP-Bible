@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 align_part01.py — 将 part01 历史章节对齐到 v3 约定（机械部分）：
   1. 立场分层标签规范化：[平台·Itanium ABI] -> [平台]；[实现·CFront] -> [实现] 等。

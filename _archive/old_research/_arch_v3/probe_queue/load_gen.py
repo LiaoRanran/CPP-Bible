@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """load_gen.py — 多进程写压力（S7）：每进程 enqueue N 个 custom 任务 + 半数带 heartbeat。"""
 import os
 import subprocess

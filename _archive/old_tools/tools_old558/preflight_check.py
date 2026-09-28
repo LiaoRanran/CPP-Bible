@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 r"""
 preflight_check.py — 推送前本地/CI 预检门禁（错误左移，秒级反馈）
 

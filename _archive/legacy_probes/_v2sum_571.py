@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """571 任务 1：v2 全量基线摘要（等它落盘，然后逐算子对比 v1 + 贴 C-P 区间）。"""
 import json
 import time

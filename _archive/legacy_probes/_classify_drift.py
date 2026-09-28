@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 阶段3 证据库抽查 — DRIFT 分类器
 对 v3 判定的 20 个 DRIFT 案例，重编译 fresh + 完整归一化 diff，

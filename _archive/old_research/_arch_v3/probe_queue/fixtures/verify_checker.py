@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """verify 夹具（通过型）：检查 work/step1..5.txt 全部存在且非空。"""
 import sys
 from pathlib import Path

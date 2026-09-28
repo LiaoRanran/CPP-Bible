@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # tools/mermaid_theme_inject.py
 # 幂等注入统一 Mermaid frontmatter（theme: neutral + 九层真相模型 classDef 调色板）。
 # 仅当 ```mermaid 块首个非空内容行不是 `---`(frontmatter) 且不含 `%%{init` 时插入。

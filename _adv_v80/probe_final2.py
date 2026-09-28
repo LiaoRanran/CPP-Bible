@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """v5 对抗复测（定稿）：跨编译器结构断言路径 + 恒真断言 + 运行行产出 stdout。
 
 只有让卡能走完 replay 全流程（含 run_match）才能判定"逃逸/已拦"：

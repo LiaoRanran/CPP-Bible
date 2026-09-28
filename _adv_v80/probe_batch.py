@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """v5 对抗复测（批量）：N2 修正 + E10 两变种 + E05 + E11 + E04 + E06。
 
 关键口径：拦住 = 卡无法直推 confirm/verified（block 或 refute）；

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 APP2 精准编译验证（分段版）：只抽取我注入的两段——
   EX:  `## 自测练习` → `## 附录：用法演绎` 之间（习题答案）

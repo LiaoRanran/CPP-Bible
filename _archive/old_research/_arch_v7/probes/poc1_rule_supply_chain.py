@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """564 PoC-1 · 验证器自身安全：规则供给链攻击（meta 层，非卡层变异）。
 
 只读正式文件；全部"篡改"发生在进程内 monkeypatch 与 TEMP 副本上，不写正式目录。

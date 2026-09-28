@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """compile_all.py — Batch Compile All Chapters (enhanced v3)
 
 Extracts ```cpp blocks from all chapters and compiles them with

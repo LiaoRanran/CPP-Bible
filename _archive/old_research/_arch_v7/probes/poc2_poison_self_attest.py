@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """564 PoC-2 · 毒样例供给链：覆盖率"自证"与豁免台账"自批"（meta 层）。
 
 只读正式文件；演示全部针对进程内 monkeypatch / TEMP 文本副本，不写正式目录。

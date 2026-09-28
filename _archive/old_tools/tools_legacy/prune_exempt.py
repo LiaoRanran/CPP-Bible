@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """prune_exempt.py — A2 豁免消化工具
 
 依据一份**全量 main-only** 编译报告，将 tools/compile_exempt.json 精确收敛为

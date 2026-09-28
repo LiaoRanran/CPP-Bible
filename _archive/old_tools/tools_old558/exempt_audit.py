@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """编译豁免有效性审计门禁 (exempt audit).
 
 《现代 C++ 终极圣经》的 cpp 块由 `compile_all.py --main-only`

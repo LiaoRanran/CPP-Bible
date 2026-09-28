@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # p00_baseline_factcheck.py  (_arch_v19, 595)
 # 纯标准库只读探针：独立核实 brief 的全部权威数字，不照抄任何前序报告。
 # 用法: .venv/Scripts/python.exe _arch_v19/probes/p00_baseline_factcheck.py

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # p04_distributed.py (_arch_v19 维度4 分布式验证) 纯标准库只读
 # 实验1：盘点仓内"验证者"真实多样性——verified_by/编译器/证据 kind/判决来源。
 # 实验2：3 验证者 1 恶意的 BFT 多数表决，在"独立性=实测参数"下与理想独立情形对比。

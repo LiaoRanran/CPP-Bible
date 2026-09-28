@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 P0-15 安全网：逐文件比对 HEAD 与工作区所有「正常」代码围栏是否逐字节一致。
 

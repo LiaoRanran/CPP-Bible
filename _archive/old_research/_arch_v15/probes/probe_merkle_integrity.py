@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """
 597 探针：Merkle 树 / 哈希链 数据完整性（方向 6 可信计算 / 方向 9 数据完整性）
 纯标准库，只读。遍历 atoms/ 与 misconceptions/ 的 .md，构建 Merkle 树与哈希链，

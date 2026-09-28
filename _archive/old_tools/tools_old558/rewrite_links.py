@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """rewrite_links.py — 发布管线跨章链接重写器（站点 / PDF 共用）
 
 背景

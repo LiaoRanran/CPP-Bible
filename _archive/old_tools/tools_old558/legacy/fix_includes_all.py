@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """fix_includes_all.py — Generalized surgical include fixer.
 
 For EVERY cpp block in EVERY chapter under Book/, if it USES a symbol that

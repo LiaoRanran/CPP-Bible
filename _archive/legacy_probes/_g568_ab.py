@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """568 任务 2 验收：复用态 vs 重编译态，三数逐字对照（confirm / refute / infra）。"""
 import json
 import sys

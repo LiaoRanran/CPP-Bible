@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """413 Writer 自检层：7 项确定性检查（零 token），提交红队前拦 E1/E2 机械错误。
 
 背景（413/420）：第五批 3 颗原子跨 6 个窗口，根因是 E1（形式）/E2（工件）类机械错误

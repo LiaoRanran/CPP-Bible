@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """tq.py — 534 L2 调度层原型（沙箱版；施工时进 tools/task_queue.py）。
 
 在 529 P1-3 草案（tasks 表/6 子命令/BEGIN IMMEDIATE/attempts>3 blocked）上深化：

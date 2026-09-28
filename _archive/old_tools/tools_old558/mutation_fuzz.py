@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """539 Part B · mutation_fuzz：对**真实卡**自动批量变异，找毒样例还没覆盖的新逃逸（L3 第一块）。
 
 **与 `poison_drill` 的边界（互补，不合并）**：

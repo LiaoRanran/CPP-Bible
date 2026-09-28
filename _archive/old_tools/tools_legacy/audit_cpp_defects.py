@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """C++ 示例缺陷静态扫描 (深度审计 #201 工具)。
 
 目标：对 Book/**/ch*.md 中所有 ```cpp 代码块做静态启发式审查，按缺陷类别

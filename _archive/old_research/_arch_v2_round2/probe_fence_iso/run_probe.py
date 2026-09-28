@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """533 任务2 实测：FENCE-001 阴面构造 + 编译/运行/翻转/diff 全部量真实数据。
 
 沙箱纪律：只读正式夹具 Examples/atoms/_atom_fence_vs_atomic.cpp，

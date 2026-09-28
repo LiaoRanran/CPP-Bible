@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """563 · 把形容词算成数字：零误伤上界 / 拦截率置信区间 / 样本量公式。
 纯标准库（beta 分布精确分位用数值反解），数据全来自本仓真实文件。
 输出 _arch_v6/bounds_report.json + 控制台。

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """S7 写压力：N 次 enqueue（独立 touch 文件，避免 touch 互锁——本场景测 WAL 写锁）。"""
 import os
 import subprocess

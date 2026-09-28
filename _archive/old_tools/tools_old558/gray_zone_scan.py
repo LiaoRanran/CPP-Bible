@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """灰色地带（gray zone）初筛：把全书泛用的「未定义」细分。
 
 背景（G1 已查证）：书内「未定义行为/UB」共现 5158 行，而「未指定」99 行、

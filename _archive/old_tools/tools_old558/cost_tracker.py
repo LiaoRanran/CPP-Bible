@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """412 成本追踪（421）：记录每颗原子的 token 消耗估算，建立 CPVA 基线。
 
 没有测量就没有优化——本工具只记录、只读汇总，不改 gate/replay/poison 任何逻辑。

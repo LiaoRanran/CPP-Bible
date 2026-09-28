@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """533 V-iso 阴面最小 diff 机器判据原型（沙箱版，不动正式工具）。
 
 判据 v1（delete_mechanism 单形态）：

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """547 D 面探针：mutation_fuzz 判决诚实性（最高优先）。
 
 纯 gate / 单测式，不编译、不改正式文件。每项输出一行 `[PASS|FAIL|INFO] Dx ...`。

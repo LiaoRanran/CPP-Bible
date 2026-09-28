@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # p07_range_evolution.py (_arch_v19 维度7 超大规模靶场自进化) 纯标准库只读
 # 实验1：静态估算 56 证据卡 × M1-M7 的可变异点总量（不产变体文件，只数模式触发点）。
 # 实验2：检索"修复器"是否存在——自进化闭环 discover->verify->? 的最后一环。

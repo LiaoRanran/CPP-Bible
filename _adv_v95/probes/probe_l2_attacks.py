@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """545 独立对抗探针（攻击面 A：L2 task_queue 信任根）。
 
 只读正式文件；一切状态落在系统临时目录（DB_PATH / ANCHOR_ROOT 指向 tmp），

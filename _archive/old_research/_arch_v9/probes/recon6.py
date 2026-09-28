@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """582 只读侦察⑥：读 _arch_v4/560_E 的 E1/E2/E3 正文（核实任务书引用的前轮结论）。"""
 import pathlib
 

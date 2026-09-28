@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 # p03_meta_verification.py (_arch_v19 维度3 元验证) 纯标准库只读
 # 实验1：静态正则枚举规则  vs  import 活注册表，量化"读代码能否完整枚举规则"。
 # 实验2：用完全独立的第二实现重判 EV-MATRIX-UNBACKED，与 gate_engine 官方判定逐条比对
