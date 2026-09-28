@@ -1,0 +1,448 @@
+{
+  "schema": "queyi-boundary-provenance/v1",
+  "cards": [
+    {
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "c1ae0bb1c8b5e0473e5bc9478b66f8875f487a013525f0f3376386e886991175",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "6cc9dcfa98d4f16a",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "c1ae0bb1c8b5e0473e5bc9478b66f8875f487a013525f0f3376386e886991175",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "281e905dadcf2b3e",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "ce578a4d5d2ad0d84b64aee4966f169946723eb0945bdb629a0985ba553d1481",
+        "mutation_count": "11",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "c380cb38a5445ecb",
+        "evidence_count": 11,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "79b3b82184bc8299",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "bec1772933e79353",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "47a858cf4e7063e663887e923f065a5412289bfd9cb8f6abea0aa90dbc63ffb1",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "7c8209a3b44b7747",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+      "status": "red-team-verified",
+      "provenance": {
+        "mutation_set_hash": "1acd558220371fe1b0b6b97d3c9b4ed379d00ae4f58fa0752d2d33a170903ea4",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "a512499457370578",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "12bb404b058b87e4",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+      "status": "red-team-verified",
+      "provenance": {
+        "mutation_set_hash": "1acd558220371fe1b0b6b97d3c9b4ed379d00ae4f58fa0752d2d33a170903ea4",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "7ef45198a3f15f30",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "f8b75ec83befad4683ca1a62726eb3f53f3c3b6130a4680830f8b6e6a43ef571",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "b9508944234f0794",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "c951e6f1e3e4769a",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "d8379e84b246fa25c3603ba763209038824f53ecb5cf9ae8978f2744c393bb8f",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "16b059d0ecfd15f6",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "b47a6fb89478cd90edec18a62ead2caee88821b0ef1055124805965fe861c085",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "e760080c6229856c",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "c5a6b393fcc2f62a0acf8065051969cae179185aafd3ef73d9de5c4712ca26ed",
+        "mutation_count": "11",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "05be8cbf2ee4a130",
+        "evidence_count": 11,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+      "status": "red-team-verified",
+      "provenance": {
+        "mutation_set_hash": "1c4d40b9d0a540d1b3ca70d12b950e6be2b9e4f02395077d26173e24390058c9",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "59fe2b9699c9389a",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "c250f64a756597c9",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "5827a1d70e7d0858cc0ae9803c0e641a254aca57ec320ac26dec20552e49a17c",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "4ace89e01bc98515",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "527636fee1c839ed",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "9ed3f8a354dc16a7",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "f8b75ec83befad4683ca1a62726eb3f53f3c3b6130a4680830f8b6e6a43ef571",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "b7d79970fe3f0c06",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "d4d05feebad35720",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "f8b75ec83befad4683ca1a62726eb3f53f3c3b6130a4680830f8b6e6a43ef571",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "eb0ffcab867abd51",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "1a9774e0626032d4",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "f8b75ec83befad4683ca1a62726eb3f53f3c3b6130a4680830f8b6e6a43ef571",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "fd0d0a3d9a740149",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "328ba275db733e0eee3b395578c2cd1db13eea77203a3f4903dd46fb16607b71",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "9510126f0a080f64",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    },
+    {
+      "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+      "status": "verified",
+      "provenance": {
+        "mutation_set_hash": "d8379e84b246fa25c3603ba763209038824f53ecb5cf9ae8978f2744c393bb8f",
+        "mutation_count": "10",
+        "generator_version": "full_baseline_v7.json",
+        "evidence_sha256": "de35fa2d0fcf7472",
+        "evidence_count": 10,
+        "compiler_versions": [
+          "gcc 13.1.0",
+          "clang 22.1.8"
+        ]
+      },
+      "semantic_scope": {},
+      "scope_complete": false
+    }
+  ],
+  "note": "只读提取自 data/657_boundary_backfill.json，未改 atoms；semantic_scope 全空，待 C4 显式补充（受控零改动）"
+}
