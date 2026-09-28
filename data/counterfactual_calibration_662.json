@@ -1,0 +1,125 @@
+{
+  "schema": "queyi-counterfactual-calibration/v1",
+  "generated_at": "2026-09-28",
+  "generated_by": "tools/counterfactual_calibration_662.py",
+  "dataset": {
+    "positive": 10,
+    "negative": 10,
+    "total": 20,
+    "source": "data/counterfactual_cases_660.json（正例）+ 构造负例"
+  },
+  "current_threshold": 0.3,
+  "best": {
+    "tau": 0.05,
+    "tp": 10,
+    "fp": 0,
+    "fn": 0,
+    "tn": 10,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "sweep": [
+    {
+      "tau": 0.05,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 10,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "tau": 0.1,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 10,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "tau": 0.15,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 10,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "tau": 0.2,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 10,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "tau": 0.25,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 10,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "tau": 0.3,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 10,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "tau": 0.35,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 10,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "tau": 0.4,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 10,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "tau": 0.5,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 10,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "tau": 0.6,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 10,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    }
+  ],
+  "honest_note": "负例是**构造**的（同断言+无关引文），故 P/R 反映的是'区分显式引用 vs 无关引文'，非真实分布上的精度；真实语料需 B1 外部 corpus 的引文级标注（本批未做）。"
+}
