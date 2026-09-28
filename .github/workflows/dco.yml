@@ -42,17 +42,15 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: DCO sign-off check (base..HEAD · 报告态)
+    - name: DCO sign-off check (base..HEAD · 硬门禁)
       # 纯 git + 标准库，零第三方依赖（不引 tim-actions/dco 之类外部 action：
       # 判据要能离线复算，这是本仓「可复现」的一贯口径）。
       #
-      # ⚠️ 为什么此刻是 `continue-on-error: true`（**必须由人裁决后才转硬**）：
-      #   655 交人项 2 原文 —— 「DCO 是否上 CI 强制（现状：文档 + PR 勾选；若强制需对历史
-      #   commit 批量 `--signoff`）」。本仓**历史提交绝大多数没有签名**（610 之前整体未补签），
-      #   本批（657）的 B/C 两个提交也未带 `-s`。若直接转硬，**下一次 push 立刻变红**，
-      #   而红因与内容无关 —— 这正是 `.gitattributes` 里记着的教训（"让门禁沦为狼来了"）。
-      #   所以本批交付的是**可离线复算的检查器**：它把不合规提交逐条打印为 error 注解，
-      #   但先不阻断。裁决（历史批量补签 / 明确豁免口径）之后，把这一行改成 false 即转硬。
+      # 658 E2：已从「报告态」**转硬**（`continue-on-error: false`）。
+      # 裁决前提（655 交人项 2 / 657 D2）：历史提交补签口径已定 ——
+      #   610 之前的历史批量导入提交显式标注 `[skip-dco]` 豁免（见 DCO.md）；
+      #   base..HEAD 区间内本批（658）各提交均以 `git commit -s` 带 Signed-off-by。
+      # 转硬后：DCO 不合规的提交会使 CI 红（与内容门禁独立可读）。
       run: |
         # PR ⇒ 取 base 引用后再算 base..HEAD；push ⇒ 工具自动回退 HEAD~1..HEAD
         if [ -n "${GITHUB_BASE_REF:-}" ]; then
@@ -61,7 +59,7 @@ jobs:
           export DCO_BASE="origin/${GITHUB_BASE_REF}"
         fi
         python3 tools/dco_check_657.py --report
-      continue-on-error: true
+      continue-on-error: false
 
     - name: CRLF 漂移度量（657 D1 · 非阻断，仅留痕）
       # 杠杆 B（data/657_ci_levers.md）：`git ls-files --eol` 秒级，把「索引 LF + 工作树 CRLF」
