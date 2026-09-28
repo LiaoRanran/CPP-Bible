@@ -224,6 +224,22 @@
     "severity": "warn"
   },
   {
+    "rule": "EV-SERVES-EXIST-HC",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-REL-TARGET-HC",
+    "severity": "block"
+  },
+  {
+    "rule": "ATOM-REL-UNKNOWN-HC",
+    "severity": "block"
+  },
+  {
+    "rule": "CARD-PATH-NOT-CANONICAL-HC",
+    "severity": "block"
+  },
+  {
     "rule": "PED-MOTIVATION",
     "severity": "advice"
   },

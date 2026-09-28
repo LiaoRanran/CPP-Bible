@@ -12,7 +12,7 @@
 ```
                      ┌──────────────────────── 可复核的信任根 ────────────────────────┐
   Book/ 147 章  ──►  atoms/ 知识卡 ──► evidence/ 证据卡 ──► tools/ 门禁与判决 ──► web/ 静态站
-  (可编译的示例)      (37 张实卡 +           (47 卡，            (63 规则 / 9 保护器 /    (星图 / 现场验哈希 /
+  (可编译的示例)      (37 张实卡 +           (47 卡，            (67 规则 / 9 保护器 /    (星图 / 现场验哈希 /
                       10 张 draft)            L1-L5 获取级)       34 条哈希面)            复现清单)
                      └──────────▲──────────────▲───────────────▲──────────────▲───────────┘
                                 │              │               │              │
@@ -34,7 +34,7 @@
 |---|---|---|
 | 教程正文 | **147 章**，16 part，255,897 行，7,515 个 cpp 块 | `python tools/gen_metrics.py` |
 | 知识卡 | **37** 张实卡（`verified 23 / red-team-verified 3 / draft 11`）+ 10 张 `draft650` 草稿 | `atoms/**/ATOM-*.md` |
-| 判决规则 | **63** 条（其中 `severity=block` 40 条），规范清单见 `data/_gate_rules.json` | `len(_gate_rules.json)` |
+| 判决规则 | **67** 条（其中 `severity=block` 44 条），规范清单见 `data/_gate_rules.json`（= `gate_engine.RULES`；661 A2 裁定） | `len(gate_engine.RULES)` / `len(_gate_rules.json)` |
 | 保护器 | **9** 个（冲突检测 / anti-windup / 盲化 / 校准追踪 / MDL 准入 / 工具级门 / shadow / 熔断 / 预算） | `queyi-core/tools/*_64*.py` |
 | 逃逸率 | **1 / 1406 = 0.0711%**（v7 变异基线；统计上界 0.9062%，已用 e-process 复算） | `data/616_baseline.md` |
 | 接地模型 | W2 加权论辩求解：**131 节点**（IN 89 / OUT 42 / UNDEC 0） | `data/grounded_labels_w2.json` |

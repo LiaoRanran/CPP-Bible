@@ -16,20 +16,20 @@ def test_rounds_six():
 
 def test_cumulative_and_blind():
     res = m.compute()
-    assert res["total_rules"] == 63
+    assert res["total_rules"] == 67  # 661 A2：引擎/清单统一 67
     assert res["cumulative_count"] == 34
-    assert res["blind_count"] == 29
-    assert res["blind_count"] == 63 - res["cumulative_count"]
+    assert res["blind_count"] == 33
+    assert res["blind_count"] == 67 - res["cumulative_count"]
 
 
 def test_blind_reduction():
     res = m.compute()
-    assert res["blind_reduction"] == {"from": 37, "to": 29, "reduced_by": 8}
+    assert res["blind_reduction"] == {"from": 37, "to": 33, "reduced_by": 4}  # 661 A2：67 基数
 
 
 def test_heatmap_shape():
     res = m.compute()
-    assert len(res["heatmap"]) == 63
+    assert len(res["heatmap"]) == 67
     for v in res["heatmap"].values():
         assert set(v) == {"R1", "R2", "R3", "R4", "R5", "R6"}
 
@@ -37,8 +37,8 @@ def test_heatmap_shape():
 def test_markdown_render():
     md = m.to_markdown(m.compute())
     assert "规则触达热力图 v2" in md
-    assert "累计触达 34/63" in md
-    assert md.count("|") > 63 * 9
+    assert "累计触达 34/67" in md
+    assert md.count("|") > 67 * 9
 
 
 def test_detect_rate_r5r6_full():

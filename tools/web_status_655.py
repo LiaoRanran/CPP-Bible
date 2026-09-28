@@ -188,7 +188,7 @@ def selftest() -> int:
     chk("卡数为正", int(rep["cards"]["cards_real"]) > 0, str(rep["cards"]["cards_real"]))
     chk("卡数 = verified+red-team+draft",
         rep["cards"]["cards_total"] == rep["cards"]["cards_real"] + rep["cards"]["cards_draft"])
-    chk("规则数 = 63（data/_gate_rules.json 实测）", rep["rules"]["rules_total"] == 63, str(rep["rules"]))
+    chk("规则数 = 67（gate_engine.RULES / _gate_rules.json 已对齐，661 A2）", rep["rules"]["rules_total"] == 67, str(rep["rules"]))
     chk("保护器 9/9 存在于姊妹仓", rep["protectors"]["protectors_total"] == 9,
         str(rep["protectors"]["protectors_missing"]))
     chk("逃逸分母与 616 冻结口径一致", bool(rep["escape"].get("frozen_matches")),

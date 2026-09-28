@@ -13,7 +13,7 @@
 **口径**：
 - 检测率（VFDR）= (blocked + detected_nonblock) / (total − infra_error)。
 - 触达 = 该轮任一 row 的 new_block_rules ∪ new_nonblock_rules。
-- 盲区 v2 = 63 规则 − 6 轮累计触达。
+- 盲区 v2 = 规则清单（现算，661 A3） − 6 轮累计触达。
 
 铁律：只读统计，不改数据。必有 `--check`。
 """
@@ -104,7 +104,8 @@ def compute() -> dict:
 def to_markdown(res: dict) -> str:
     rules = _load_rules()
     sev = {r["id"]: r["severity"] for r in rules}
-    lines = ["# 624 A5 · 规则触达热力图 v2（63 规则 × 6 轮）", "",
+    total = len([r for r in rules if r.get("id")])  # 661 A3：规则数现算，不再写死 63
+    lines = [f"# 624 A5 · 规则触达热力图 v2（{total} 规则 × 6 轮）", "",
              "> 图例：`T`=该轮触达；`.`=未触达。", "",
              "| 规则 | 严重 | R1 | R2 | R3 | R4 | R5 | R6 | 累计 |",
              "|---|---|---|---|---|---|---|---|---|"]
@@ -115,7 +116,7 @@ def to_markdown(res: dict) -> str:
         cols = ["T" if res["heatmap"][rid][f"R{i}"] else "." for i in range(1, 7)]
         cum = "T" if rid in set(res["cumulative_touched"]) else "."
         lines.append(f"| {rid} | {sev.get(rid,'')} | " + " | ".join(cols) + f" | {cum} |")
-    lines += ["", f"**累计触达 {res['cumulative_count']}/63；盲区 {res['blind_count']}"
+    lines += ["", f"**累计触达 {res['cumulative_count']}/{total}；盲区 {res['blind_count']}"
                   f"（623 为 {BLIND_623}，缩减 {res['blind_reduction']['reduced_by']}）**", ""]
     return "\n".join(lines) + "\n"
 
@@ -129,13 +130,14 @@ def selftest() -> int:
         ok = ok and cond
 
     rules = _load_rules()
-    chk("规则清单 63 条", len(rules) == 63)
+    total = len([r for r in rules if r.get("id")])  # 661 A3：现算
+    chk(f"规则清单 {total} 条（现算，不写死）", total > 0)
     res = compute()
     chk("6 轮齐全", [r["round"] for r in res["rounds"]] == ["R1", "R2", "R3", "R4", "R5", "R6"])
-    chk("累计触达 ≥32 且 ≤63", 32 <= res["cumulative_count"] <= 63)
-    chk("盲区 = 63 − 累计", res["blind_count"] == 63 - res["cumulative_count"])
+    chk(f"累计触达 ≥32 且 ≤{total}", 32 <= res["cumulative_count"] <= total)
+    chk(f"盲区 = {total} − 累计", res["blind_count"] == total - res["cumulative_count"])
     chk("盲区缩减报告存在", res["blind_reduction"]["to"] == res["blind_count"])
-    chk("热力图覆盖 63 规则", len(res["heatmap"]) == 63)
+    chk(f"热力图覆盖 {total} 规则", len(res["heatmap"]) == total)
     chk("R5/R6 均在热力图中", all("R5" in v and "R6" in v for v in res["heatmap"].values()))
     print(f"A5 selftest: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1

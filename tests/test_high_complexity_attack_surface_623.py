@@ -20,7 +20,7 @@ def _load():
 def test_load_rules_count():
     mod = _load()
     rules = mod.load_rules()
-    assert len(rules) == 63
+    assert len(rules) == 67  # 661 A2：引擎/清单统一 67
 
 
 def test_reproduces_622_e2_finding():

@@ -225,7 +225,7 @@ def emit_next(facts):
         f"- 元状态：mutation core/all {facts.get('mutation',{}).get('core','?')}/{facts.get('mutation',{}).get('all','?')}%；"
         f"卡 {facts.get('cards_atoms_total','?')}；图 {facts.get('graph_nodes','?')}/{facts.get('graph_links','?')}\n"
         f"- 边界现状：{cur.get('boundary_written','?')} 卡有边界（{cur.get('boundary_verified_pass','?')} verified-pass + {cur.get('boundary_redteam_verified','?')} red-team）；{cur.get('draft_empty','?')} draft 留空\n"
-        "- 口径差（660 B5 已收敛）：规则数=63（data/_gate_rules.json 实测；gate_engine.RULES 仍报 67，引擎与清单差额待权威源）；图节点=178（graph.json 实测，任务书称 121 待权威源）\n"
+        "- 口径裁定（661 A2）：规则数=67（gate_engine.RULES 执行权威；data/_gate_rules.json 已同步 67，旧 63 是 623 缓存漏 4 条 -HC block 规则）；图节点=178（graph.json 实测，任务书称 121 待权威源）\n"
         "- 接手前先跑：`python tools/status_reconciler_658.py --check`（META-STATE-CONFLICT 即停）\n"
         "<!-- GENERATED:END -->\n"
     )

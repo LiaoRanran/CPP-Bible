@@ -39,13 +39,13 @@
     "source": "web/data/graph.json (web_logic_check_655 校验通过)"
   },
   "rules": {
-    "documented_brief": 63,
-    "documented_actual_claim": 63,
-    "source": "data/_gate_rules.json（660 B5 收敛为实测 63；gate_engine.RULES 仍报 67，属引擎与清单口径差，待权威源）",
-    "status": "已收敛为 63（660 B5）；引擎 67 与清单 63 的差额待权威源确认"
+    "documented_brief": 67,
+    "documented_actual_claim": 67,
+    "source": "gate_engine.RULES（执行权威）+ data/_gate_rules.json（已同步为 67；661 A2 裁定）",
+    "status": "已裁定为 67（661 A2）：engine=67、清单=67；644 差 4 条为 -HC 高复杂度 block 兜底规则（EV-SERVES-EXIST-HC/ATOM-REL-TARGET-HC/ATOM-REL-UNKNOWN-HC/CARD-PATH-NOT-CANONICAL-HC），automated 且带真实 check，必须计入；旧清单 63 是 623 缓存漏了这 4 条"
   },
   "tolerated_discrepancies": [
-    "rules: 已收敛为 63（data/_gate_rules.json 实测，660 B5）；gate_engine.RULES 仍报 67，引擎与清单差额待权威源",
+    "rules: 已归档无差异（661 A2：engine 与清单统一为 67）",
     "graph.nodes: README 178 与 658 任务书称权威 121 不一致 — 以 graph.json 实测 178 为准，121 待权威源"
   ],
   "atoms": {

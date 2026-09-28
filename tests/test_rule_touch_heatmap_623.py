@@ -38,4 +38,4 @@ def test_cumulative_matches_runs():
             cum.update(r.get("new_block_rules", []))
             cum.update(r.get("new_nonblock_rules", []))
     assert len(cum) == 26
-    assert len(rules) == 63
+    assert len(rules) == 67  # 661 A2：活缓存已同步引擎 67（623 存档快照 _heatmap_summary.json 仍 63，属历史）

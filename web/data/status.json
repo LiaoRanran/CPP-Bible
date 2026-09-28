@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T19:01:53",
+  "generated_at": "2026-09-28T21:14:32",
   "generated_from": [
     "atoms/**/ATOM-*.md",
     "tools/gate_engine.py",
@@ -18,8 +18,8 @@
     }
   },
   "rules": {
-    "rules_total": 63,
-    "rules_block": 40,
+    "rules_total": 67,
+    "rules_block": 44,
     "source": "data/_gate_rules.json"
   },
   "protectors": {

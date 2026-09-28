@@ -48,7 +48,9 @@ def test_reconcile_rules_converged_to_gate_rules():
     }
     conflicts = mod.reconcile(f, baseline)
     assert all("规则" not in c for c in conflicts), f"规则已收敛为实际数，不应判冲突: {conflicts}"
-    # 反证：baseline 仍写 67（stale）时，reconciler 必须抓出
-    stale = {**baseline, "rules": {"documented_brief": 67, "documented_actual_claim": 63}}
+    # 661 A2：口径裁定为 67（gate_engine.RULES 执行权威；_gate_rules.json 已同步 67）
+    assert f["rules_actual"] == 67, f"规则实际数应为 67，得 {f['rules_actual']}"
+    # 反证：baseline 仍写 stale 63 时，reconciler 必须抓出
+    stale = {**baseline, "rules": {"documented_brief": 63, "documented_actual_claim": 63}}
     c2 = mod.reconcile(f, stale)
-    assert any("规则" in c for c in c2), f"baseline 写 67 应被对账抓出: {c2}"
+    assert any("规则" in c for c in c2), f"baseline 写 63(stale) 应被对账抓出: {c2}"
