@@ -70,6 +70,10 @@ _VERDICT_RE = re.compile(r"^(?:verdict|falsification|decision):\s*(\S+)", re.MUL
 _EXPLANATION_RE = re.compile(r"^explanation:\s*(.*)$", re.MULTILINE)
 _VERIFIED_RE = re.compile(r"^status:\s*verified", re.MULTILINE)
 
+#: 656 B4：边界字段的行内正则**预编译**（原来在 `classify_card` 里每张卡现编 3 个）。
+#: 语义完全不变（同一 pattern、同样 MULTILINE），只是把编译从"每卡 3 次"挪到"导入时 1 次"。
+_BOUNDARY_RE = {k: re.compile(rf"^{k}:\s*(\S+)\s*$", re.MULTILINE) for k in BOUNDARY_FIELDS}
+
 _FAIL_WORDS = {"block", "fail", "failed", "reject", "rejected", "refut", "refuted", "false"}
 _PASS_WORDS = {"pass", "passed", "approve", "approved", "true", "ok"}
 
@@ -81,7 +85,13 @@ def boundary_of(rec: dict[str, Any]) -> dict[str, Any]:
 
 
 def has_boundary(rec: dict[str, Any]) -> bool:
-    """三个字段**都**齐且格式合法，才算有边界。"""
+    """三个字段**都**齐且格式合法，才算有边界。
+
+    656 B3：入参不是 dict ⇒ **显式**返回 False（原来会 `AttributeError` 炸出去，
+    把"空/坏入参"变成崩溃而不是"判不出来"——与四态语义不符）。
+    """
+    if not isinstance(rec, dict):
+        return False
     h = rec.get("mutation_set_hash")
     c = rec.get("mutation_count")
     v = rec.get("generator_version")
@@ -116,6 +126,11 @@ def classify(rec: dict[str, Any]) -> dict[str, Any]:
     返回 `{state, requested, downgraded, boundary_ok, reasons}`。
     """
     reasons: list[str] = []
+    if not isinstance(rec, dict):
+        # 656 B3：空/坏入参 ⇒ 显式 unknown（而不是让 `.get` 抛 AttributeError）
+        return {"state": "unknown", "requested": "unknown", "downgraded": False,
+                "boundary_ok": False,
+                "reasons": [f"入参不是 dict（得到 {type(rec).__name__}）⇒ 按 unknown 处理"]}
     requested = _raw_state(rec)
     bo = has_boundary(rec)
 
@@ -152,12 +167,19 @@ def enforce(rec: dict[str, Any]) -> str:
 
 # ── 卡级分类（读一张卡的判决） ────────────────────────────────────────────
 def classify_card(path: str) -> dict[str, Any]:
-    """读一张 atom/evidence 卡，抽出判决与边界，做四态分类。"""
+    """读一张 atom/evidence 卡，抽出判决与边界，做四态分类。
+
+    656 B3：`path` 为空 / 不是字符串 ⇒ 显式 unknown（原来 `open(None)` 抛 `TypeError`，
+    不属于 `OSError` ⇒ 会漏出去）。
+    """
+    if not isinstance(path, str) or not path.strip():
+        return {"file": str(path), "state": "unknown", "downgraded": True, "boundary_ok": False,
+                "reasons": ["路径为空或不是字符串 ⇒ 无法读卡"]}
     try:
         text = open(path, encoding="utf-8", errors="replace").read()
-    except OSError:
+    except (OSError, TypeError, ValueError) as e:
         return {"file": path, "state": "unknown", "downgraded": True, "boundary_ok": False,
-                "reasons": ["文件不可读"]}
+                "reasons": [f"文件不可读：{type(e).__name__}"]}
     m = _VERDICT_RE.search(text)
     ex = _EXPLANATION_RE.search(text)
     rec: dict[str, Any] = {
@@ -168,7 +190,7 @@ def classify_card(path: str) -> dict[str, Any]:
     if st and st.group(1).lower() == "verified" and not m:
         rec["verdict"] = "pass"   # verified 且无显式 falsification ⇒ 通过
     for k in BOUNDARY_FIELDS:
-        mm = re.search(rf"^{k}:\s*(\S+)\s*$", text, re.MULTILINE)
+        mm = _BOUNDARY_RE[k].search(text)      # 656 B4：用预编译版本（语义不变）
         if mm:
             rec[k] = mm.group(1).strip().strip('"').strip("'")
     out = classify(rec)

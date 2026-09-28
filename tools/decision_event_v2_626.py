@@ -39,6 +39,7 @@ import hashlib
 import json
 import os
 import sys
+import threading
 from dataclasses import asdict, dataclass, field
 from typing import Any, Optional
 
@@ -191,20 +192,28 @@ REQUIRED_FIELDS: tuple[str, ...] = (
 
 
 class AuthorityLedger:
-    """append-only 的 Authority 事件账本（哈希链）。"""
+    """append-only 的 Authority 事件账本（哈希链）。
+
+    656 B3：原先**隐式假设单线程**（`append` 里"取 prev → 分配 seq → 追加"三步不加锁，
+    并发会算出同一个 prev_hash / 同一个 seq ⇒ 哈希链悄悄分叉）。现在把这段临界区
+    **显式加锁**（可重入锁，单线程路径零行为变化）；读路径 `verify_chain` 同步持锁，
+    保证"验链时看不到写了一半的状态"。
+    """
 
     def __init__(self) -> None:
         self._events: list[DecisionEvent] = []
+        self._lock = threading.RLock()
 
     # ── 写 ──
     def append(self, event: DecisionEvent) -> str:
         errs = event.validate()
         if errs:
             raise ValueError("事件非法：" + "; ".join(errs))
-        prev = self._events[-1].self_hash if self._events else GENESIS
-        event.finalize(prev_hash=prev, seq=len(self._events) + 1)
-        self._events.append(event)
-        return event.self_hash
+        with self._lock:
+            prev = self._events[-1].self_hash if self._events else GENESIS
+            event.finalize(prev_hash=prev, seq=len(self._events) + 1)
+            self._events.append(event)
+            return event.self_hash
 
     # 刻意**不提供** update / delete —— append-only
 
@@ -241,13 +250,15 @@ class AuthorityLedger:
 
     # ── 校验 ──
     def verify_chain(self) -> bool:
+        """656 B3：持同一把锁 ⇒ 不会验到"写了一半"的链。"""
         prev = GENESIS
-        for e in self._events:
-            if e.prev_hash != prev:
-                return False
-            if e.compute_self_hash() != e.self_hash:
-                return False
-            prev = e.self_hash
+        with self._lock:
+            for e in self._events:
+                if e.prev_hash != prev:
+                    return False
+                if e.compute_self_hash() != e.self_hash:
+                    return False
+                prev = e.self_hash
         return True
 
     # ── 统计 ──

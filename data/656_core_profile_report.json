@@ -1,0 +1,101 @@
+{
+  "generated_at": "2026-09-28T02:21:58",
+  "python": "3.13.13",
+  "cards_measured": 47,
+  "rounds": 5,
+  "classify_card": {
+    "n": 5,
+    "mean_ms": 30.6131,
+    "p50_ms": 28.1825,
+    "p95_ms": 28.3872,
+    "max_ms": 41.8884
+  },
+  "classify_memory": {
+    "n": 2000,
+    "mean_ms": 0.0022,
+    "p50_ms": 0.0019,
+    "p95_ms": 0.0022,
+    "max_ms": 0.1545
+  },
+  "ledger_append20": {
+    "n": 5,
+    "mean_ms": 0.7113,
+    "p50_ms": 0.6635,
+    "p95_ms": 0.7862,
+    "max_ms": 0.8118
+  },
+  "top_hotspots": [
+    {
+      "ncalls": "329",
+      "tottime": 0.016,
+      "percall": 0.0,
+      "cumtime": 0.016,
+      "func": "{method 'search' of 're.Pattern' objects}"
+    },
+    {
+      "ncalls": "47",
+      "tottime": 0.004,
+      "percall": 0.0,
+      "cumtime": 0.004,
+      "func": "{built-in method _io.open}"
+    },
+    {
+      "ncalls": "47",
+      "tottime": 0.003,
+      "percall": 0.0,
+      "cumtime": 0.004,
+      "func": "{method 'read' of '_io.TextIOWrapper' objects}"
+    },
+    {
+      "ncalls": "47",
+      "tottime": 0.003,
+      "percall": 0.0,
+      "cumtime": 0.031,
+      "func": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\tools\\four_state_verdict_638.py:169(classify_card)"
+    },
+    {
+      "ncalls": "47",
+      "tottime": 0.001,
+      "percall": 0.0,
+      "cumtime": 0.001,
+      "func": "{built-in method _codecs.utf_8_decode}"
+    },
+    {
+      "ncalls": "564",
+      "tottime": 0.001,
+      "percall": 0.0,
+      "cumtime": 0.001,
+      "func": "<frozen ntpath>:50(normcase)"
+    },
+    {
+      "ncalls": "47",
+      "tottime": 0.001,
+      "percall": 0.0,
+      "cumtime": 0.003,
+      "func": "<frozen ntpath>:737(relpath)"
+    },
+    {
+      "ncalls": "94",
+      "tottime": 0.0,
+      "percall": 0.0,
+      "cumtime": 0.001,
+      "func": "<frozen ntpath>:529(abspath)"
+    },
+    {
+      "ncalls": "564",
+      "tottime": 0.0,
+      "percall": 0.0,
+      "cumtime": 0.0,
+      "func": "{built-in method _winapi.LCMapStringEx}"
+    },
+    {
+      "ncalls": "47",
+      "tottime": 0.0,
+      "percall": 0.0,
+      "cumtime": 0.001,
+      "func": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\tools\\four_state_verdict_638.py:123(classify)"
+    }
+  ],
+  "verdict_lt_1ms_per_card": true,
+  "per_card_mean_ms": 0.6513
+}

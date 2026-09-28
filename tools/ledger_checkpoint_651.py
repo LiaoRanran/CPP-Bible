@@ -79,8 +79,15 @@ def mth(leaves: list[bytes]) -> bytes | None:
 
 
 def inclusion_path(m: int, leaves: list[bytes]) -> list[bytes]:
-    """leaf m 的 inclusion 路径（RFC6962 PATH）。"""
+    """leaf m 的 inclusion 路径（RFC6962 PATH）。
+
+    656 B3：**空列表 / 下标越界 ⇒ 返回 []**。原来这条路径会无限递归
+    （`n=0` 时 `_largest_pow2_lt(0)=1`，`m-k` 与切片都回到自身）⇒ `RecursionError`，
+    把"查不到证明"变成"崩掉"。空树/越界是**合法查询**，必须给空证明而不是炸。
+    """
     n = len(leaves)
+    if n == 0 or m < 0 or m >= n:
+        return []
     if n == 1:
         return []
     k = _largest_pow2_lt(n)

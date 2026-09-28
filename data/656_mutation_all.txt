@@ -1,0 +1,7 @@
+[mutation656] four_state_verdict_638：候选 88 ⇒ 抽取 20
+[mutation656] ledger_checkpoint_651：候选 94 ⇒ 抽取 20
+[mutation656] decision_event_v2_626：候选 93 ⇒ 抽取 20
+[mutation656] 变异体 60｜被杀 15｜存活 37｜导入崩 8｜超时 0｜检出率 28.8%（可跑口径）
+            four_state_verdict_638: 3/17 = 17.6%
+            ledger_checkpoint_651: 10/18 = 55.6%
+            decision_event_v2_626: 2/17 = 11.8%
