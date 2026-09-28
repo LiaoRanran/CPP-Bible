@@ -1,0 +1,98 @@
+/* 656 C1 · 设计系统：唯一的**变量源**（Anthropic 式克制：一个主强调色、大量留白、字体是主角）
+ *
+ * 纪律：
+ *   1. 颜色 / 间距 / 圆角 / 阴影 / 动效时长 **只在这里定义**，其它样式表只准引用变量；
+ *   2. 每一对"前景/背景"都在 `tools/web_data_pipeline_656.py --check` 里做 **WCAG 2.2 AA**
+ *      对比度计算（正文 ≥ 4.5:1，大字号与图形元素 ≥ 3:1）——**算出来说话，不靠眼睛**；
+ *   3. 不改观感基调：暗色克制，无渐变光斑、无粒子、无装饰性阴影堆叠。
+ */
+:root {
+  /* ── 色板（语义命名，不用"蓝/绿"这类外观名）────────────────── */
+  --color-bg: #0b0d10;
+  --color-surface: #101317;
+  --color-surface-2: #14181d;
+  --color-line: #1e242b;
+  --color-line-strong: #2a3138;
+
+  --color-text: #e6e8ea;        /* 正文：在 bg 上 15.84:1 */
+  --color-text-dim: #9aa3ab;    /* 次级文字：7.60:1 */
+  /* 三级/图例：原 #6b747c 只有 4.09:1，**不过 WCAG AA**（被 --check 抓出）⇒ 提到 #787f87
+     （bg 上 4.80:1、surface 上 4.60:1，两处都达标）。改色值而不是删用法：这些文字仍在读。 */
+  --color-text-mute: #787f87;
+
+  --color-accent: #8ab4f8;      /* 唯一主强调色：链接 / 焦点 / 选中 */
+  --color-pass: #58c6b2;
+  --color-pass-exception: #d8a657;
+  --color-fail: #d96b6b;
+  --color-unknown: #7a838c;
+
+  /* ── 排版：字体是主角 ──────────────────────────────────────── */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+               "Noto Sans SC", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Cascadia Mono", monospace;
+  --font-size-sm: 12px;
+  --font-size-base: 15px;
+  --font-size-lg: 17px;
+  --font-size-xl: 27px;         /* 窄屏 h1 */
+  --font-size-2xl: 34px;        /* 宽屏 h1 */
+  --line-height-base: 1.6;
+  --line-height-tight: 1.25;
+
+  /* ── 间距（4 的倍数，克制）────────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 22px;
+  --space-6: 26px;
+  --space-8: 34px;
+  --space-10: 54px;
+
+  /* ── 圆角 / 描边 / 阴影 ───────────────────────────────────── */
+  --radius-sm: 4px;
+  --radius-md: 7px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --border-width: 1px;
+  --shadow-none: none;
+  --shadow-panel: none;         /* 暗色下靠描边分层，不靠阴影 */
+
+  /* ── 动效（尊重 prefers-reduced-motion）────────────────────── */
+  --motion-fast: 120ms;
+  --motion-base: 240ms;
+  --motion-slow: 900ms;         /* 数字滚动动画 */
+  --motion-ease: cubic-bezier(.4, 0, .2, 1);
+
+  /* ── 层级 ─────────────────────────────────────────────────── */
+  --z-tooltip: 5;
+  --z-nav: 20;
+
+  /* ── 布局 ─────────────────────────────────────────────────── */
+  --wrap-max: 1120px;
+  --wrap-wide-max: 1360px;
+
+  /* ── 兼容旧名（style.css 里已有的变量名保持可用，逐步迁移）──── */
+  --bg: var(--color-bg);
+  --panel: var(--color-surface);
+  --panel-2: var(--color-surface-2);
+  --line: var(--color-line);
+  --line-2: var(--color-line-strong);
+  --fg: var(--color-text);
+  --fg-dim: var(--color-text-dim);
+  --fg-mute: var(--color-text-mute);
+  --pass: var(--color-pass);
+  --pass-exc: var(--color-pass-exception);
+  --fail: var(--color-fail);
+  --unknown: var(--color-unknown);
+  --accent: var(--color-accent);
+  --mono: var(--font-mono);
+  --sans: var(--font-sans);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+    --motion-slow: 0ms;
+  }
+}

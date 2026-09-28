@@ -4,11 +4,10 @@
 //            ② 点击 → 右侧**固定详情面板**（含攻击者/辩护者清单）
 //            ③ **边 hover**（拾取最近边）显示攻击/击败关系并高亮该边
 // 渲染：优先 cosmos.gl v3（本地 vendor）；不可达时**诚实降级**为 2D canvas（同编码，可交互）。
-import { STATE_COLORS, STATE_LABELS, KIND_LABELS, LINK_STYLE, fetchJSON, fmtInt, mountNav } from './app.js';
+import { STATE_COLORS, STATE_LABELS, KIND_LABELS, LINK_STYLE, fetchJSON, fmtInt } from './app.js';
 // 655 D：统计与几何（攻防计数 / 最近边）抽到 graph_core.js ⇒ 可被 Node 真跑验证
 import { statsOf as coreStatsOf, pickEdgeIndex } from './graph_core.js';
-
-mountNav('starmap.html');
+// 656 C2：导航改为 `<qy-nav>` 组件（见 components/qy-nav.js），三个页面同一份实现
 
 const canvas = document.getElementById('graph');
 const stage = document.getElementById('stage');
@@ -268,14 +267,14 @@ function renderDetail(i) {
     return `<li class="edge-row" data-edge="${k}">
       <span class="mono">${o ? o.id : other(l)}</span>
       <span class="muted">${o ? (KIND_LABELS[o.kind] || o.kind) : ''} · ${o ? (STATE_LABELS[o.state] || o.state) : ''}</span>
-      ${l.kind === 'attack' ? `<span class="${l.defeated ? 'tag-fail' : 'tag-warn'}">${l.defeated ? '被击败' : '未被击败'}</span>` : ''}
+      ${l.kind === 'attack' ? `<qy-tag kind="${l.defeated ? 'bad' : 'warn'}">${l.defeated ? '被击败' : '未被击败'}</qy-tag>` : ''}
     </li>`;
   };
   detail.innerHTML = `<h3>详情（已固定）</h3>
     <div class="d-title mono">${d.id}</div>
     <div class="d-grid">
       <div><span class="stat-label">类型</span><div>${KIND_LABELS[d.kind] || d.kind}</div></div>
-      <div><span class="stat-label">四态</span><div class="state-text st-${d.state}">${STATE_LABELS[d.state] || d.state}</div></div>
+      <div><span class="stat-label">四态</span><div><qy-status state="${d.state}"></qy-status></div></div>
       <div><span class="stat-label">credibility</span><div class="mono">${d.credibility}</div></div>
       <div><span class="stat-label">domain</span><div class="mono">${d.domain || '—'}</div></div>
       ${d.status ? `<div><span class="stat-label">卡状态</span><div class="mono">${d.status}</div></div>` : ''}

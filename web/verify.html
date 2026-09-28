@@ -4,9 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>现场验哈希 · QueYi</title>
+<link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
+<script type="module" src="components/index.js"></script>
 </head>
 <body>
+<qy-nav current="verify.html"></qy-nav>
 <main class="wrap">
   <section style="padding:34px 0 16px">
     <h1 style="font-size:26px">现场验哈希</h1>
@@ -18,15 +21,13 @@
 
   <section style="padding:0 0 20px; border-bottom:0">
     <div class="grid c2">
-      <div class="card">
-        <h3>① 选一个台账条目（可选）</h3>
+      <qy-card title="① 选一个台账条目（可选）">
         <p class="muted">点「用这个比对」会把该台账哈希填入下方比对框；留空时站点按 <b>文件名</b> 自动匹配台账。
           批量模式（≥2 个文件）下忽略此框。</p>
         <input type="text" id="expected" placeholder="（可选）粘贴/选择期望的 sha256" style="width:100%;margin:8px 0 6px">
         <div class="muted">当前比对对象：<span id="expect-name">（未指定）</span></div>
-      </div>
-      <div class="card">
-        <h3>② 把文件拖进来 / 选择文件（可多选）</h3>
+      </qy-card>
+      <qy-card title="② 把文件拖进来 / 选择文件（可多选）">
         <div id="drop" style="border:1px dashed var(--line-2); border-radius:10px; padding:22px; text-align:center; color:var(--fg-dim); margin:8px 0 10px">
           拖拽一个或多个文件到此处
         </div>
@@ -36,7 +37,7 @@
           <button id="clear" disabled>清空结果</button>
           <span class="batch-summary" id="batch-summary">尚未验证</span>
         </div>
-      </div>
+      </qy-card>
     </div>
 
     <table>

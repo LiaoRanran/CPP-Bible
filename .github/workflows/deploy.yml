@@ -1,0 +1,86 @@
+name: Deploy web to Pages
+
+# 656 C4：GitHub Pages 部署。**不引入重型框架**——站点仍是原生静态站，
+# 这个 workflow 只做三件真活：
+#   ① 数据管线自检（`--check`）：schema / 索引漂移 / WCAG AA 对比度 / 组件接线；
+#   ② 前端真求值（Node 20：纯逻辑 22 断言 + jsdom 整页 DOM 冒烟）；
+#   ③ 构建（保守压缩 + 版本号 + manifest）后上传 Pages artifact。
+# 任一环节红 ⇒ 不发布（宁可不发，也不发一个数据漂移或对比度不达标的站）。
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'web/**'
+      - 'atoms/**'
+      - 'tools/web_data_653.py'
+      - 'tools/web_status_655.py'
+      - 'tools/web_data_pipeline_656.py'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install python deps (pyyaml)
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install pyyaml
+
+    - name: Set up Node 20
+      # 本机是 Node 18（jsdom 的 @exodus/bytes 在 18 下 ERR_REQUIRE_ESM ⇒ 只能 SKIP），
+      # CI 用 20 ⇒ 真 DOM 冒烟能跑起来（不是"永远 SKIP"的摆设）。
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install jsdom (for the real DOM smoke test)
+      run: npm install --no-save jsdom
+
+    - name: Pipeline self-check (schema / drift / WCAG AA / wiring)
+      run: python tools/web_data_pipeline_656.py --check
+
+    - name: Frontend logic (pure, Node)
+      run: node tools/web_logic_check_655.mjs
+
+    - name: Frontend DOM smoke (jsdom, real pages)
+      env:
+        WEB_SMOKE_NODE_MODULES: ${{ github.workspace }}/node_modules
+      run: node tools/web_smoke_655.mjs
+
+    - name: Build (minify + version + manifest)
+      run: python tools/web_data_pipeline_656.py --build
+
+    - uses: actions/configure-pages@v5
+
+    - uses: actions/upload-pages-artifact@v3
+      with:
+        path: web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - id: deployment
+      uses: actions/deploy-pages@v4

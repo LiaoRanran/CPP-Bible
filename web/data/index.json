@@ -1,0 +1,30 @@
+{
+  "generated_at": "2026-09-28T10:12:55",
+  "tool": "tools/web_data_pipeline_656.py",
+  "files": {
+    "card.json": {
+      "bytes": 10188,
+      "sha256": "c7843acdd92663d41b6d4b0f886ba448dc0585621db5f9fa18da30c2aa97743f"
+    },
+    "cards.json": {
+      "bytes": 377514,
+      "sha256": "d6e4ff01141b76cb82c340af2ccd772c98c4405b6d4e24d28f57a0212a7b9626"
+    },
+    "cards_index.json": {
+      "bytes": 23031,
+      "sha256": "d14aca6ba173a7b9bc4a9defdcea4a17d7ad98cf6e0d0760929a3a3f74d61494"
+    },
+    "graph.json": {
+      "bytes": 193086,
+      "sha256": "aaca5434727c719afd6f1105af8d1729fb34af4847629b3fbc05b5952641a440"
+    },
+    "manifest.json": {
+      "bytes": 3122,
+      "sha256": "f4a4e8cbe35c55112bcfe96d1ac07b80fd78ca1c4322d59b2956d184b6705f87"
+    },
+    "status.json": {
+      "bytes": 1659,
+      "sha256": "b1efd3c5fab114fc68518da3e691f618a2368cf4b293effe791994013b69a422"
+    }
+  }
+}

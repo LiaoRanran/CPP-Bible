@@ -1,11 +1,10 @@
 // 653 B · 现场验哈希：浏览器 Web Crypto 现场重算 sha256，与台账哈希逐字节比对
 // 655 D 深化：① 一次拖入/选择**多个**文件 ⇒ 批量验证结果表；② 结果**导出 CSV**。
 //   全程离线（不联网、无后端、不上传文件）；file:// 打开也能用（仅 manifest 需经 fetch，已给内联兜底）
-import { fetchJSON, shortHash, mountNav } from './app.js';
+import { fetchJSON, shortHash } from './app.js';
 // 655 D：纯逻辑（算哈希/匹配台账/判定/生成 CSV）抽到 verify_core.js ⇒ 可被 Node 真跑验证
 import { sha256Hex, pickExpected, verdictOf, buildCsv, csvFileName } from './verify_core.js';
-
-mountNav('verify.html');
+// 656 C2：导航改为 `<qy-nav>` 组件（见 components/qy-nav.js），三个页面同一份实现
 
 const $ = (id) => document.getElementById(id);
 let MANIFEST = { items: [], note: '' };
