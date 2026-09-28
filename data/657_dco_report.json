@@ -1,0 +1,31 @@
+{
+  "range": "HEAD~1..HEAD",
+  "total": 1,
+  "failed": 1,
+  "rows": [
+    {
+      "sha": "68568668a9",
+      "subject": "657 C：变异检出率 core 62.5%→97.3% / all 28.8%→81.5%（等价变异口径修正 + 逐存活体补测）",
+      "author_mail": "1026708211@qq.com",
+      "merge": false,
+      "signed_off": [],
+      "ok": false,
+      "why": [
+        "缺 Signed-off-by（`git commit -s`）"
+      ]
+    }
+  ],
+  "bad": [
+    {
+      "sha": "68568668a9",
+      "subject": "657 C：变异检出率 core 62.5%→97.3% / all 28.8%→81.5%（等价变异口径修正 + 逐存活体补测）",
+      "author_mail": "1026708211@qq.com",
+      "merge": false,
+      "signed_off": [],
+      "ok": false,
+      "why": [
+        "缺 Signed-off-by（`git commit -s`）"
+      ]
+    }
+  ]
+}
