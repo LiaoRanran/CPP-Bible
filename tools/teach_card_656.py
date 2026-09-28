@@ -312,17 +312,7 @@ def selfcheck_items(cid: str, fm: dict[str, Any], props: list[dict[str, Any]],
 
 # ── 入口 ────────────────────────────────────────────────────────────────────
 def write_index() -> dict[str, Any]:
-    cards = all_cards()
-    entries = [card_entry(cid, p) for cid, p in cards.items()]
-    # 排序：非 draft 优先、命题多优先、id 字典序（稳定可复现）
-    entries.sort(key=lambda e: (e["draft"], -int(e["props"] or 0), e["id"]))
-    payload = {
-        "generated_at": __import__("time").strftime("%Y-%m-%dT%H:%M:%S"),
-        "tool": "tools/teach_card_656.py",
-        "count": len(entries),
-        "drafts": sum(1 for e in entries if e["draft"]),
-        "cards": entries,
-    }
+    payload = build_index_payload(all_cards())
     # `default=str`：YAML 会把 `verified_at: 2026-09-12` 解析成 `datetime.date`，
     # 不兜底会在 json.dumps 处炸（本批实测撞到）。
     INDEX_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2, default=str) + "\n",
@@ -342,6 +332,79 @@ def pick_default(payload: dict[str, Any]) -> str:
     return str(payload["cards"][0]["id"])
 
 
+def check_only(cards: dict[str, Path], evid: dict[str, Path], want: str | None) -> int:
+    """只读校验：内存里重算 ⇒ 与磁盘产物比对（**不写任何文件**）。
+
+    比对口径：
+      * `cards_index.json`：忽略 `generated_at`（时间戳本身不该参与"内容是否陈旧"的判断）；
+      * `card.json`：逐字段比对（这是页面直接吃的那份）。
+    """
+    ok = True
+    problems: list[str] = []
+
+    fresh_idx = build_index_payload(cards)
+    if not INDEX_JSON.is_file():
+        problems.append("cards_index.json 缺失（跑 --list 生成）")
+        ok = False
+    else:
+        disk = json.loads(INDEX_JSON.read_text(encoding="utf-8"))
+        disk.pop("generated_at", None)
+        fresh = dict(fresh_idx)
+        fresh.pop("generated_at", None)
+        if disk != fresh:
+            problems.append("cards_index.json 与当前台账不一致（跑 --list 刷新）")
+            ok = False
+
+    cid = want or pick_default(fresh_idx)
+    if cid not in cards:
+        problems.append(f"找不到卡 {cid}")
+        ok = False
+    else:
+        fresh_card = build_card(cid, cards, evid)
+        if not CARD_JSON.is_file():
+            problems.append("card.json 缺失（跑 --card 生成）")
+            ok = False
+        else:
+            disk_card = json.loads(CARD_JSON.read_text(encoding="utf-8"))
+            if disk_card.get("id") != fresh_card["id"]:
+                problems.append(f"card.json 是另一张卡（磁盘 {disk_card.get('id')} ≠ 期望 {cid}）")
+                ok = False
+            elif disk_card != fresh_card:
+                problems.append("card.json 与当前台账不一致（跑 --card 刷新）")
+                ok = False
+        for k in ("id", "meta", "claim", "boundary", "verdict", "prerequisites",
+                  "props", "evidence", "selfcheck"):
+            if k not in fresh_card:
+                problems.append(f"缺字段 {k}")
+                ok = False
+        for s in fresh_card["selfcheck"]:
+            if not (s.get("q") and s.get("a") and s.get("source")):
+                problems.append("自测题缺 q/a/source")
+                ok = False
+        for e in fresh_card["evidence"]:
+            if not e.get("exists"):
+                problems.append(f"证据卡缺失：{e.get('id')}")
+        print(f"  [{'ok' if not problems else 'FAIL'}] 卡 {cid}：命题 {len(fresh_card['props'])}"
+              f"｜证据 {len(fresh_card['evidence'])}｜自测 {len(fresh_card['selfcheck'])}"
+              f"｜误解 {len(fresh_card['misconceptions'])}｜前置 {len(fresh_card['prerequisites'])}")
+    for p in problems:
+        print(f"  [FAIL] {p}")
+    print(f"teach_card_656 selftest: {'PASS' if ok else 'FAIL'}")
+    return 0 if ok else 1
+
+
+def build_index_payload(cards: dict[str, Path]) -> dict[str, Any]:
+    entries = [card_entry(cid, p) for cid, p in cards.items()]
+    entries.sort(key=lambda e: (e["draft"], -int(e["props"] or 0), e["id"]))
+    return {
+        "generated_at": __import__("time").strftime("%Y-%m-%dT%H:%M:%S"),
+        "tool": "tools/teach_card_656.py",
+        "count": len(entries),
+        "drafts": sum(1 for e in entries if e["draft"]),
+        "cards": entries,
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="656 D：学习 MVP 的真数据生成器")
     ap.add_argument("--card", default=None, help="卡 id（默认自动挑一张内容最全的）")
@@ -353,6 +416,13 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
 
     cards, evid = all_cards(), all_evidence()
+
+    # 656 E 自纠：`--check` 必须是**只读**的。原先 main 一进来就 write_index()，
+    # 于是 `--check` 也会刷新 cards_index.json 的 generated_at ⇒ 哈希漂移，
+    # 让"索引漂移"检查变成必然误报（构建期 vs 校验期互相打架）。
+    if a.check:
+        return check_only(cards, evid, a.card)
+
     idx = write_index()
 
     if a.all:
@@ -383,31 +453,6 @@ def main(argv: list[str] | None = None) -> int:
     card = build_card(cid, cards, evid)
     CARD_JSON.write_text(json.dumps(card, ensure_ascii=False, indent=2, default=str) + "\n",
                          encoding="utf-8", newline="\n")
-
-    if a.check:
-        ok = True
-        problems = []
-        for k in ("id", "meta", "claim", "boundary", "verdict", "prerequisites",
-                  "props", "evidence", "selfcheck"):
-            if k not in card:
-                problems.append(f"缺字段 {k}")
-                ok = False
-        if not card["props"]:
-            problems.append("该卡没有 claim_structured（自测题会退化）")
-        for e in card["evidence"]:
-            if not e.get("exists"):
-                problems.append(f"证据卡缺失：{e.get('id')}")
-        for s in card["selfcheck"]:
-            if not s.get("q") or not s.get("a") or not s.get("source"):
-                problems.append("自测题缺 q/a/source")
-                ok = False
-        print(f"  [{'ok' if not problems else 'FAIL'}] 卡 {cid}：命题 {len(card['props'])}"
-              f"｜证据 {len(card['evidence'])}｜自测 {len(card['selfcheck'])}"
-              f"｜误解 {len(card['misconceptions'])}｜前置 {len(card['prerequisites'])}")
-        for prob in problems:
-            print(f"  [FAIL] {prob}")
-        print(f"teach_card_656 selftest: {'PASS' if ok else 'FAIL'}")
-        return 0 if ok else 1
 
     if a.json:
         print(json.dumps(card, ensure_ascii=False, indent=2))
