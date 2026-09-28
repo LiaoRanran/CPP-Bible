@@ -1,0 +1,195 @@
+{
+  "schema": "queyi-external-corpus-reveal/v1",
+  "generated_at": "2026-09-28",
+  "generated_by": "tools/external_corpus_662.py",
+  "total": 20,
+  "catch": 5,
+  "miss": 10,
+  "unknown": 3,
+  "not_error": 2,
+  "detect_rate_pct": 33.3,
+  "source_verified_ratio": "17/20",
+  "honest_note": "detect_rate 分母 = catch+miss（可测且非测量类）；unknown 含无本地检测器/无片段；source 只写类别级出处，未编造具体 issue 编号。",
+  "results": [
+    {
+      "id": "d3-01",
+      "category": "UB",
+      "source": "cppreference: Undefined behavior（有符号溢出）",
+      "verified_source": true,
+      "detector": "ubsan",
+      "verdict": "catch",
+      "note": "ubsan 命中(rc=0)"
+    },
+    {
+      "id": "d3-02",
+      "category": "UB",
+      "source": "cppreference: Undefined behavior（数据竞争）",
+      "verified_source": true,
+      "detector": "tsan",
+      "verdict": "unknown",
+      "note": "TSan 无法初始化（WSL 不兼容）"
+    },
+    {
+      "id": "d3-03",
+      "category": "UB",
+      "source": "cppreference: Undefined behavior（越界）",
+      "verified_source": true,
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中(rc=1)"
+    },
+    {
+      "id": "d3-04",
+      "category": "UB",
+      "source": "cppreference: Undefined behavior（空指针解引用）",
+      "verified_source": true,
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中(rc=1)"
+    },
+    {
+      "id": "d3-05",
+      "category": "UB",
+      "source": "cppreference: Undefined behavior（除零）",
+      "verified_source": true,
+      "detector": "ubsan",
+      "verdict": "catch",
+      "note": "ubsan 命中(rc=136)"
+    },
+    {
+      "id": "d3-06",
+      "category": "UB",
+      "source": "cppreference: Undefined behavior（未初始化读取）",
+      "verified_source": true,
+      "detector": "compiler-warn",
+      "verdict": "miss",
+      "note": "无告警"
+    },
+    {
+      "id": "d3-07",
+      "category": "UB",
+      "source": "cppreference: reinterpret_cast / strict aliasing",
+      "verified_source": true,
+      "detector": "cross-compile",
+      "verdict": "miss",
+      "note": "两编译器一致"
+    },
+    {
+      "id": "d3-08",
+      "category": "unspecified",
+      "source": "标准 [expr.call]：实参求值顺序未指定",
+      "verified_source": true,
+      "detector": "wunsequenced",
+      "verdict": "miss",
+      "note": "无告警"
+    },
+    {
+      "id": "d3-09",
+      "category": "unspecified",
+      "source": "标准 [expr.post.incr]（C++17 前 i=i++ 未定义/未指定争议）",
+      "verified_source": true,
+      "detector": "wunsequenced",
+      "verdict": "miss",
+      "note": "无告警"
+    },
+    {
+      "id": "d3-10",
+      "category": "unspecified",
+      "source": "标准 [expr.shift]：负数右移实现定义",
+      "verified_source": true,
+      "detector": "cross-compile",
+      "verdict": "miss",
+      "note": "两编译器一致"
+    },
+    {
+      "id": "d3-11",
+      "category": "unspecified",
+      "source": "标准 [basic.fundamental]：char 符号性实现定义",
+      "verified_source": true,
+      "detector": "cross-compile",
+      "verdict": "miss",
+      "note": "两编译器一致"
+    },
+    {
+      "id": "d3-12",
+      "category": "unspecified",
+      "source": "标准 [expr.order]：函数实参顺序跨编译器差异",
+      "verified_source": true,
+      "detector": "cross-compile",
+      "verdict": "catch",
+      "note": "g++/clang++ 结果不同"
+    },
+    {
+      "id": "d3-13",
+      "category": "compiler-diff",
+      "source": "libstdc++/libc++ 文档：SSO 与 sizeof(std::string)",
+      "verified_source": true,
+      "detector": "measure",
+      "verdict": "not_error",
+      "note": "测量类，非错误"
+    },
+    {
+      "id": "d3-14",
+      "category": "compiler-diff",
+      "source": "标准 [vector.bool]：vector<bool> 特化",
+      "verified_source": true,
+      "detector": "compiler-warn",
+      "verdict": "miss",
+      "note": "无告警"
+    },
+    {
+      "id": "d3-15",
+      "category": "compiler-diff",
+      "source": "标准 [temp.dep.candidate]：两阶段查找（历史分歧）",
+      "verified_source": true,
+      "detector": "cross-compile",
+      "verdict": "miss",
+      "note": "两编译器一致"
+    },
+    {
+      "id": "d3-16",
+      "category": "compiler-diff",
+      "source": "编译器文档：异常/RTTI 开关差异（无本地检测器）",
+      "verified_source": false,
+      "detector": "unknown",
+      "verdict": "unknown",
+      "note": "无本地检测器/无片段"
+    },
+    {
+      "id": "d3-17",
+      "category": "ambiguity",
+      "source": "标准 [class.mem]：空基类优化非强制",
+      "verified_source": true,
+      "detector": "measure",
+      "verdict": "not_error",
+      "note": "测量类，非错误"
+    },
+    {
+      "id": "d3-18",
+      "category": "ambiguity",
+      "source": "标准 [atomics.order]：relaxed 的可见性无跨线程保证",
+      "verified_source": true,
+      "detector": "cross-compile",
+      "verdict": "miss",
+      "note": "两编译器一致"
+    },
+    {
+      "id": "d3-19",
+      "category": "compiler-bug",
+      "source": "编译器社区已知：-O2 下严格别名分歧（同 d3-07 的优化面）",
+      "verified_source": false,
+      "detector": "cross-compile",
+      "verdict": "miss",
+      "note": "两编译器一致"
+    },
+    {
+      "id": "d3-20",
+      "category": "compiler-bug",
+      "source": "跨编译器历史差异（MSVC 不可本地验证）",
+      "verified_source": false,
+      "detector": "unknown",
+      "verdict": "unknown",
+      "note": "无本地检测器/无片段"
+    }
+  ]
+}
