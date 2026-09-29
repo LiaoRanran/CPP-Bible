@@ -1,0 +1,411 @@
+{
+  "schema": "queyi-external-corpus-reveal/v2",
+  "generated_at": "2026-09-29",
+  "generated_by": "tools/external_corpus_reveal_665.py",
+  "detector_reuse": "import tools/external_corpus_662.py::detect（唯一判据），结果另存 665 文件",
+  "total": 40,
+  "catch": 14,
+  "miss": 18,
+  "unknown": 5,
+  "not_error": 3,
+  "detect_rate_pct": 43.8,
+  "by_layer": {
+    "A_local": {
+      "total": 25,
+      "catch": 13,
+      "miss": 11,
+      "unknown": 1,
+      "not_error": 0,
+      "measurable": 24,
+      "detect_rate_pct": 54.2
+    },
+    "B_cross_or_measure": {
+      "total": 11,
+      "catch": 1,
+      "miss": 7,
+      "unknown": 0,
+      "not_error": 3,
+      "measurable": 8,
+      "detect_rate_pct": 12.5
+    },
+    "C_no_local_detector": {
+      "total": 4,
+      "catch": 0,
+      "miss": 0,
+      "unknown": 4,
+      "not_error": 0,
+      "measurable": 0,
+      "detect_rate_pct": 0.0
+    }
+  },
+  "compare_662": {
+    "before_total": 20,
+    "before_detect_rate_pct": 33.3,
+    "after_total": 40,
+    "after_detect_rate_pct": 43.8,
+    "note": "分母仍是 catch+miss（可测且非测量类）；两轮的对比对象是**不同样本集合**，所以数字差异只能描样本构成，不能断言验证器变好变坏。"
+  },
+  "honest_note": "source 只写类别级出处；`verified_source=false` 的条目**未**被本机验证过。C 层（本机无检测器）样本若全是 unknown，这才算 662 那条猜测的证据；反过来，若 A 层检出率也不高，就说明问题不在『缺检测器』。",
+  "results": [
+    {
+      "id": "d3-01",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "ubsan",
+      "layer": "A_local",
+      "verdict": "catch",
+      "note": "ubsan 命中(rc=0)"
+    },
+    {
+      "id": "d3-02",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "tsan",
+      "layer": "A_local",
+      "verdict": "unknown",
+      "note": "TSan 无法初始化（WSL 不兼容）"
+    },
+    {
+      "id": "d3-03",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "asan",
+      "layer": "A_local",
+      "verdict": "catch",
+      "note": "asan 命中(rc=1)"
+    },
+    {
+      "id": "d3-04",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "asan",
+      "layer": "A_local",
+      "verdict": "catch",
+      "note": "asan 命中(rc=1)"
+    },
+    {
+      "id": "d3-05",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "ubsan",
+      "layer": "A_local",
+      "verdict": "catch",
+      "note": "ubsan 命中(rc=136)"
+    },
+    {
+      "id": "d3-06",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "compiler-warn",
+      "layer": "A_local",
+      "verdict": "miss",
+      "note": "无告警"
+    },
+    {
+      "id": "d3-07",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "cross-compile",
+      "layer": "B_cross_or_measure",
+      "verdict": "miss",
+      "note": "两编译器一致"
+    },
+    {
+      "id": "d3-08",
+      "category": "unspecified",
+      "verified_source": true,
+      "detector": "wunsequenced",
+      "layer": "A_local",
+      "verdict": "miss",
+      "note": "无告警"
+    },
+    {
+      "id": "d3-09",
+      "category": "unspecified",
+      "verified_source": true,
+      "detector": "wunsequenced",
+      "layer": "A_local",
+      "verdict": "miss",
+      "note": "无告警"
+    },
+    {
+      "id": "d3-10",
+      "category": "unspecified",
+      "verified_source": true,
+      "detector": "cross-compile",
+      "layer": "B_cross_or_measure",
+      "verdict": "miss",
+      "note": "两编译器一致"
+    },
+    {
+      "id": "d3-11",
+      "category": "unspecified",
+      "verified_source": true,
+      "detector": "cross-compile",
+      "layer": "B_cross_or_measure",
+      "verdict": "miss",
+      "note": "两编译器一致"
+    },
+    {
+      "id": "d3-12",
+      "category": "unspecified",
+      "verified_source": true,
+      "detector": "cross-compile",
+      "layer": "B_cross_or_measure",
+      "verdict": "catch",
+      "note": "g++/clang++ 结果不同"
+    },
+    {
+      "id": "d3-13",
+      "category": "compiler-diff",
+      "verified_source": true,
+      "detector": "measure",
+      "layer": "B_cross_or_measure",
+      "verdict": "not_error",
+      "note": "测量类，非错误"
+    },
+    {
+      "id": "d3-14",
+      "category": "compiler-diff",
+      "verified_source": true,
+      "detector": "compiler-warn",
+      "layer": "A_local",
+      "verdict": "miss",
+      "note": "无告警"
+    },
+    {
+      "id": "d3-15",
+      "category": "compiler-diff",
+      "verified_source": true,
+      "detector": "cross-compile",
+      "layer": "B_cross_or_measure",
+      "verdict": "miss",
+      "note": "两编译器一致"
+    },
+    {
+      "id": "d3-16",
+      "category": "compiler-diff",
+      "verified_source": false,
+      "detector": "unknown",
+      "layer": "C_no_local_detector",
+      "verdict": "unknown",
+      "note": "无本地检测器/无片段"
+    },
+    {
+      "id": "d3-17",
+      "category": "ambiguity",
+      "verified_source": true,
+      "detector": "measure",
+      "layer": "B_cross_or_measure",
+      "verdict": "not_error",
+      "note": "测量类，非错误"
+    },
+    {
+      "id": "d3-18",
+      "category": "ambiguity",
+      "verified_source": true,
+      "detector": "cross-compile",
+      "layer": "B_cross_or_measure",
+      "verdict": "miss",
+      "note": "两编译器一致"
+    },
+    {
+      "id": "d3-19",
+      "category": "compiler-bug",
+      "verified_source": false,
+      "detector": "cross-compile",
+      "layer": "B_cross_or_measure",
+      "verdict": "miss",
+      "note": "两编译器一致"
+    },
+    {
+      "id": "d3-20",
+      "category": "compiler-bug",
+      "verified_source": false,
+      "detector": "unknown",
+      "layer": "C_no_local_detector",
+      "verdict": "unknown",
+      "note": "无本地检测器/无片段"
+    },
+    {
+      "id": "d3-21",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "asan",
+      "layer": "A_local",
+      "verdict": "miss",
+      "note": "asan 无报告(rc=0)"
+    },
+    {
+      "id": "d3-22",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "asan",
+      "layer": "A_local",
+      "verdict": "miss",
+      "note": "asan 无报告(rc=0)"
+    },
+    {
+      "id": "d3-23",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "asan",
+      "layer": "A_local",
+      "verdict": "catch",
+      "note": "asan 命中(rc=1)"
+    },
+    {
+      "id": "d3-24",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "asan",
+      "layer": "A_local",
+      "verdict": "catch",
+      "note": "asan 命中(rc=1)"
+    },
+    {
+      "id": "d3-25",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "asan",
+      "layer": "A_local",
+      "verdict": "miss",
+      "note": "asan 无报告(rc=0)"
+    },
+    {
+      "id": "d3-26",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "ubsan",
+      "layer": "A_local",
+      "verdict": "catch",
+      "note": "ubsan 命中(rc=0)"
+    },
+    {
+      "id": "d3-27",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "ubsan",
+      "layer": "A_local",
+      "verdict": "catch",
+      "note": "ubsan 命中(rc=0)"
+    },
+    {
+      "id": "d3-28",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "ubsan",
+      "layer": "A_local",
+      "verdict": "catch",
+      "note": "ubsan 命中(rc=0)"
+    },
+    {
+      "id": "d3-29",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "wunsequenced",
+      "layer": "A_local",
+      "verdict": "miss",
+      "note": "无告警"
+    },
+    {
+      "id": "d3-30",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "wunsequenced",
+      "layer": "A_local",
+      "verdict": "miss",
+      "note": "无告警"
+    },
+    {
+      "id": "d3-31",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "compiler-warn",
+      "layer": "A_local",
+      "verdict": "catch",
+      "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_shvv47t0\\s.cpp:1:25: warning: addr"
+    },
+    {
+      "id": "d3-32",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "compiler-warn",
+      "layer": "A_local",
+      "verdict": "miss",
+      "note": "无告警"
+    },
+    {
+      "id": "d3-33",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "compiler-warn",
+      "layer": "A_local",
+      "verdict": "catch",
+      "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_tobqk1y1\\s.cpp:2:55: warning: comp"
+    },
+    {
+      "id": "d3-34",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "compiler-warn",
+      "layer": "A_local",
+      "verdict": "catch",
+      "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_k837ekcv\\s.cpp:1:20: warning: ISO "
+    },
+    {
+      "id": "d3-35",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "asan",
+      "layer": "A_local",
+      "verdict": "catch",
+      "note": "asan 命中(rc=1)"
+    },
+    {
+      "id": "d3-36",
+      "category": "UB",
+      "verified_source": true,
+      "detector": "ubsan",
+      "layer": "A_local",
+      "verdict": "miss",
+      "note": "ubsan 无报告(rc=0)"
+    },
+    {
+      "id": "d3-37",
+      "category": "unspecified",
+      "verified_source": true,
+      "detector": "cross-compile",
+      "layer": "B_cross_or_measure",
+      "verdict": "miss",
+      "note": "两编译器一致"
+    },
+    {
+      "id": "d3-38",
+      "category": "unspecified",
+      "verified_source": true,
+      "detector": "measure",
+      "layer": "B_cross_or_measure",
+      "verdict": "not_error",
+      "note": "测量类，非错误"
+    },
+    {
+      "id": "d3-39",
+      "category": "compiler-diff",
+      "verified_source": false,
+      "detector": "unknown",
+      "layer": "C_no_local_detector",
+      "verdict": "unknown",
+      "note": "无本地检测器/无片段"
+    },
+    {
+      "id": "d3-40",
+      "category": "UB",
+      "verified_source": false,
+      "detector": "unknown",
+      "layer": "C_no_local_detector",
+      "verdict": "unknown",
+      "note": "无本地检测器/无片段"
+    }
+  ]
+}

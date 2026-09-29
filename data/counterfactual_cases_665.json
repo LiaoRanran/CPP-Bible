@@ -1,0 +1,315 @@
+{
+  "schema": "queyi-counterfactual/v2",
+  "generated_at": "2026-09-29",
+  "generated_by": "tools/counterfactual_extend_665.py",
+  "operator_reuse": "tools/counterfactual_citation_658.py::counterfactual（唯一算子版本）",
+  "cases_total": 10,
+  "truth_labels": {
+    "dependent": 2,
+    "independent": 8
+  },
+  "confusion": {
+    "tp": 0,
+    "fp": 0,
+    "tn": 8,
+    "fn": 2
+  },
+  "scores": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
+  },
+  "honest_note": "真值标签的判据是**外部锚**（standard ⇒ 引文为假断言仍成立；measurement ⇒ 断言只靠这次实测），不是靠感觉。662 说'校准不充分'，本批把它换成可复算的 P/R/F1；样本只有 10 条，**任何百分比都是点估计**。",
+  "cases": [
+    {
+      "id": "cf11",
+      "card": "IG01",
+      "source_id": "ig-01",
+      "atom_ref": "data/cards_665/fixtures/ig-01.cpp",
+      "original_assertion": "有符号整数溢出是 UB（不是回绕）：标准规定结果超出类型可表示范围时行为未定义",
+      "original_citation": {
+        "id": "EV-IG01",
+        "text": "ubsan 实测：ubsan 命中（rc=1）：runtime error（签名 hit:runtime error）",
+        "measured_out": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/cards_665/fixtures/ig-01.cpp:1:31: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'\n",
+        "reproduce": "data/cards_665/fixtures/ig-01.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG01",
+        "text": "UBSan 在本机从未对 INT_MAX+1 报 runtime error（假）"
+      },
+      "question": "若 EV-IG01 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG01",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf12",
+      "card": "IG02",
+      "source_id": "ig-02",
+      "atom_ref": "data/cards_665/fixtures/ig-02.cpp",
+      "original_assertion": "数组越界访问是 UB：即使没崩，语义也已不被保证",
+      "original_citation": {
+        "id": "EV-IG02",
+        "text": "asan 实测：asan 命中（rc=1）：AddressSanitizer（签名 hit:AddressSanitizer）",
+        "measured_out": "=================================================================\n==51==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7cc7cf900034 at pc 0x595c65cc92ef bp 0x7ffd86b99c10 sp 0x7ffd86b99c0",
+        "reproduce": "data/cards_665/fixtures/ig-02.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG02",
+        "text": "ASan 在本机从未报过越界（假）"
+      },
+      "question": "若 EV-IG02 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG02",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf13",
+      "card": "IG03",
+      "source_id": "ig-03",
+      "atom_ref": "data/cards_665/fixtures/ig-03.cpp",
+      "original_assertion": "delete 空指针是标准保证的 no-op，不是不安全操作",
+      "original_citation": {
+        "id": "EV-IG03",
+        "text": "asan 实测：asan 无报告（rc=0）（签名 clean）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-03.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG03",
+        "text": "ASan 对 delete nullptr 报了错（假）"
+      },
+      "question": "若 EV-IG03 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG03",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf14",
+      "card": "IG05",
+      "source_id": "ig-05",
+      "atom_ref": "data/cards_665/fixtures/ig-05.cpp",
+      "original_assertion": "在本机 x86-64 MinGW-w64 上 sizeof(unique_ptr<int>) 等于 sizeof(void*)",
+      "original_citation": {
+        "id": "EV-IG05",
+        "text": "measure 实测：8 8（签名 out:0d19935697a09206）",
+        "measured_out": "8 8",
+        "reproduce": "data/cards_665/fixtures/ig-05.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG05",
+        "text": "本机实测 sizeof(unique_ptr<int>)=16 而 sizeof(void*)=8（假）"
+      },
+      "question": "若 EV-IG05 为假，原断言还成立吗？",
+      "external_anchor": "measurement",
+      "ground_truth": "dependent",
+      "operator": {
+        "citation_id": "EV-IG05",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": false
+    },
+    {
+      "id": "cf15",
+      "card": "IG06",
+      "source_id": "ig-06",
+      "atom_ref": "data/cards_665/fixtures/ig-06.cpp",
+      "original_assertion": "用 weak_ptr 断开环后两个对象都能析构（weak_ptr 不增加引用计数）",
+      "original_citation": {
+        "id": "EV-IG06",
+        "text": "asan 实测：asan 无报告（rc=0）（签名 clean）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-06.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG06",
+        "text": "weak_ptr 也会增加引用计数（假）"
+      },
+      "question": "若 EV-IG06 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG06",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf16",
+      "card": "IG07",
+      "source_id": "ig-07",
+      "atom_ref": "data/cards_665/fixtures/ig-07.cpp",
+      "original_assertion": "解引用空指针是 UB（不保证一定段错误）",
+      "original_citation": {
+        "id": "EV-IG07",
+        "text": "asan 实测：asan 命中（rc=1）：AddressSanitizer（签名 hit:AddressSanitizer）",
+        "measured_out": "AddressSanitizer:DEADLYSIGNAL\n=================================================================\n==131==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x64bcbbd4d19d bp 0x7ffe562ae",
+        "reproduce": "data/cards_665/fixtures/ig-07.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG07",
+        "text": "ASan 在本机从未对空指针解引用报 DEADLYSIGNAL（假）"
+      },
+      "question": "若 EV-IG07 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG07",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf17",
+      "card": "IG08",
+      "source_id": "ig-08",
+      "atom_ref": "data/cards_665/fixtures/ig-08.cpp",
+      "original_assertion": "整数除零是 UB/信号，不是 C++ 异常（catch(...) 抓不到）",
+      "original_citation": {
+        "id": "EV-IG08",
+        "text": "ubsan 实测：ubsan 命中（rc=136）：runtime error（签名 hit:runtime error）",
+        "measured_out": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/cards_665/fixtures/ig-08.cpp:1:42: runtime error: division by zero\n",
+        "reproduce": "data/cards_665/fixtures/ig-08.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG08",
+        "text": "UBSan 对除零从未报 runtime error（假）"
+      },
+      "question": "若 EV-IG08 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG08",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf18",
+      "card": "IG11",
+      "source_id": "ig-11",
+      "atom_ref": "data/cards_665/fixtures/ig-11.cpp",
+      "original_assertion": "在本机 MinGW-w64 上 sizeof(int) 等于 4",
+      "original_citation": {
+        "id": "EV-IG11",
+        "text": "measure 实测：4（签名 out:4b227777d4dd1fc6）",
+        "measured_out": "4",
+        "reproduce": "data/cards_665/fixtures/ig-11.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG11",
+        "text": "本机实测 sizeof(int)=8（假）"
+      },
+      "question": "若 EV-IG11 为假，原断言还成立吗？",
+      "external_anchor": "measurement",
+      "ground_truth": "dependent",
+      "operator": {
+        "citation_id": "EV-IG11",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": false
+    },
+    {
+      "id": "cf19",
+      "card": "IG12",
+      "source_id": "ig-12",
+      "atom_ref": "data/cards_665/fixtures/ig-12.cpp",
+      "original_assertion": "vector<bool> 是位压缩特化，取 &v[0] 得不到 bool*",
+      "original_citation": {
+        "id": "EV-IG12",
+        "text": "compiler-warn 实测：C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\cards_665\\fixtures\\ig-12.cpp:2:47: error: taking address of rvalue [-fpermissive]（签名 diag::2:47: error: taking address of rvalue [-fpermissive]）",
+        "measured_out": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\cards_665\\fixtures\\ig-12.cpp: In function 'int main()':\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\cards_665\\fixtures\\ig-12.cpp:2:47: error: taking add",
+        "reproduce": "data/cards_665/fixtures/ig-12.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG12",
+        "text": "g++ 接受 &v[0] 且类型就是 bool*（假）"
+      },
+      "question": "若 EV-IG12 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG12",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf20",
+      "card": "IG15",
+      "source_id": "ig-15",
+      "atom_ref": "data/cards_665/fixtures/ig-15.cpp",
+      "original_assertion": "具名右值引用形参是左值，直接传递会走拷贝（需显式 std::move）",
+      "original_citation": {
+        "id": "EV-IG15",
+        "text": "measure 实测：copy（签名 out:6f5a6034e770acbf）",
+        "measured_out": "copy",
+        "reproduce": "data/cards_665/fixtures/ig-15.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG15",
+        "text": "实测 h(T&&) 内部调用 g(x) 打印的是 move（假）"
+      },
+      "question": "若 EV-IG15 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG15",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    }
+  ]
+}
