@@ -1,24 +1,24 @@
 # 628 D1 · 学习者镜像门状态报告
 
-- 生成时刻：2026-09-26T08:42:02Z
+- 生成时刻：2026-09-29T10:48:44Z
 - **门状态：`closed`**（真实学习事件 0 / 阈值 50，进度 0.0%）
 - 近阈值线（50×0.8）：40 条
 
 ## 一、当前真实学习事件数量
 
 - **真实学习事件：0 条**
-- 候选事件合计：905 条
-- 其中不可判定归属：402 条（既无流水线标识、也无人类学习正向信号，**保守不计入**门）
-- 分来源：`{"git_commit": 550, "batch_record": 86, "file_mtime": 269}`
+- 候选事件合计：975 条
+- 其中不可判定归属：432 条（既无流水线标识、也无人类学习正向信号，**保守不计入**门）
+- 分来源：`{"git_commit": 556, "batch_record": 120, "file_mtime": 299}`
 
 ## 二、采集来源
 
 | # | 来源 | 说明 |
 |---|---|---|
-| 1 | `git log --name-only -- Book atoms evidence Examples` | 涉及学习内容的提交 550 条 |
-| 2 | `_auto/inbox/` + `_auto/outbox/` | 批次记录 86 条 |
-| 3 | `Book/ atoms/ evidence/` 文件 mtime | 269 条 |
-| 4 | 会话日志存储位置探测 | `C:\Users\ASUS\AppData\Roaming\CodeBuddy CN\User\globalStorage\tencent-cloud.coding-copilot`（345 文件）；`C:\Users\ASUS\.codebuddy\projects`（9 文件） |
+| 1 | `git log --name-only -- Book atoms evidence Examples` | 涉及学习内容的提交 556 条 |
+| 2 | `_auto/inbox/` + `_auto/outbox/` | 批次记录 120 条 |
+| 3 | `Book/ atoms/ evidence/` 文件 mtime | 299 条 |
+| 4 | 会话日志存储位置探测 | `C:\Users\ASUS\AppData\Roaming\CodeBuddy CN\User\globalStorage\tencent-cloud.coding-copilot`（394 文件）；`C:\Users\ASUS\.codebuddy\projects`（20 文件） |
 
 探测到的 IDE 会话存储**只用于定位**，其对话内容不构成"用户修改学习内容"的证据，因此**不计入门事件**。
 

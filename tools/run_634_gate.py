@@ -112,8 +112,18 @@ def check_coverage() -> dict[str, Any]:
 
 
 def check_autoimmune() -> dict[str, Any]:
+    """自身免疫率：**卡自称 verified、命题却没有签名** = 系统与自己的声明矛盾。
+
+    666 A2 修订（口径）：原实现只数"有命题但缺 `signed_by` 键"，不区分卡的 `status`。
+    634 当时全库只有 verified 卡，两者等价；650 之后 `atoms/` 里进了 10 张
+    `status: draft` 的新卡（人签唯人，机器**不得**代签），它们的命题天然没有
+    `signed_by` —— 按原口径会被算成"自身免疫 10/47"，把**诚实的未签**误报成**自相矛盾**。
+    改判据：只有 `status: verified`（或带人签的更高态）的卡缺签名才算自身免疫；
+    draft/machine-verified 的未签单独记为 `draft_unsigned`（供报告如实展示，不计病）。
+    """
     miss = 0
     total = 0
+    draft_unsigned = 0
     for r, _d, fs in os.walk(os.path.join(ROOT, "atoms")):
         for f in fs:
             if not f.endswith(".md"):
@@ -123,9 +133,17 @@ def check_autoimmune() -> dict[str, Any]:
             if not props:
                 continue
             total += 1
-            if any("signed_by" not in b for _pid, b in props):
+            unsigned = any("signed_by" not in b for _pid, b in props)
+            if not unsigned:
+                continue
+            m = re.search(r"^status:\s*(\S+)", s[3:], re.MULTILINE)
+            status = m.group(1).strip("'\"") if m else ""
+            if status in ("draft", "machine-verified"):
+                draft_unsigned += 1
+            else:
                 miss += 1
-    return {"cards": total, "missing": miss, "ok": miss == 0}
+    return {"cards": total, "missing": miss, "draft_unsigned": draft_unsigned,
+            "ok": miss == 0}
 
 
 def compare_7dims() -> dict[str, Any]:
@@ -168,7 +186,8 @@ def write_reports(g: dict[str, Any]) -> dict[str, str]:
          f"| 受控目录零污染 | {'✅' if g['controlled']['ok'] else '❌'} |",
          f"| pytest 数据副作用隔离 | {'✅ data/ 零改动' if g['isolation']['ok'] else '❌'} |",
          f"| coverage 复算 | {g['coverage']['pct']}%（{g['coverage']['ran']}/{g['coverage']['total']}） |",
-         f"| 自身免疫率复算 | 缺 signed_by 卡 {g['autoimmune']['missing']}/{g['autoimmune']['cards']} |",
+         f"| 自身免疫率复算 | 已签态卡缺 signed_by {g['autoimmune']['missing']}/{g['autoimmune']['cards']}"
+         f"（另有 draft 未签 {g['autoimmune'].get('draft_unsigned', 0)} 张，**不计病**） |",
          "", "## 二、11 任务完成情况", "",
          "| 线 | 任务 | 状态 |", "|---|---|---|",
          "| 0 | 开工快照+副作用根因 | ✅ |", "| A | A1 副作用根治 | ✅ |",
@@ -220,7 +239,8 @@ def selftest() -> int:
         chk(f"工具存在 {t}", os.path.exists(os.path.join(ROOT, "tools", f"{t}.py")))
     chk("79 工具清单可读", os.path.exists(TARGETS_FILE))
     chk("coverage 复算 ≥85", check_coverage()["ok"])
-    chk("自身免疫率 = 0", check_autoimmune()["ok"])
+    # 666 A2：口径见 check_autoimmune 的说明（draft 未签不计病）
+    chk("自身免疫率 = 0（已签态卡不许缺签名）", check_autoimmune()["ok"])
     chk("报告路径在 data 下", all(p.startswith(os.path.join(ROOT, "data")) for p in REPORTS.values()))
     return 0 if ok else 1
 

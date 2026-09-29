@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """holdout_reveal_662.py — 662 A2：标签修正后的第二次 reveal（reveal_2）。
 
 不同点（相对 661 B1）：

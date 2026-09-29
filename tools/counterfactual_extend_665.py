@@ -122,7 +122,7 @@ def main() -> int:
                       "agree": truth == pred})
         print(f"  cf{i}  truth={truth:<11} pred={pred:<11} agree={truth == pred}")
 
-    tp, fp, tn, fn = n_tp["tp"], n_tp["fp"], n_tp["tn"], n_tp["fn"]
+    tp, fp, _tn, fn = n_tp["tp"], n_tp["fp"], n_tp["tn"], n_tp["fn"]  # tn 供报告用（见下）
     prec = tp / (tp + fp) if (tp + fp) else 0.0
     rec = tp / (tp + fn) if (tp + fn) else 0.0
     f1 = 2 * prec * rec / (prec + rec) if (prec + rec) else 0.0

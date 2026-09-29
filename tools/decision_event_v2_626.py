@@ -141,7 +141,7 @@ class DecisionEvent:
     @staticmethod
     def from_dict(d: dict) -> "DecisionEvent":
         """宽容导入（= `from_dict_lenient()`，**历史语义保留**）。新事件请用 `from_dict_strict()`。"""
-        known = {f for f in DecisionEvent.__dataclass_fields__}  # type: ignore[attr-defined]
+        known = {f for f in getattr(DecisionEvent, "__dataclass_fields__")}  # 666 A1：getattr 免 ignore（同 647 A2 写法）
         return DecisionEvent(**{k: v for k, v in d.items() if k in known})
 
     @staticmethod
@@ -369,7 +369,7 @@ def selftest() -> int:
         ok = ok and cond
 
     # schema 字段完整性
-    fields = list(DecisionEvent.__dataclass_fields__)  # type: ignore[attr-defined]
+    fields = list(getattr(DecisionEvent, "__dataclass_fields__"))  # 666 A1：同 647 A2 写法（免 ignore）
     chk("DecisionEvent 字段 ≥24", len(fields) >= 24, f"({len(fields)})")
     for must in ("operation", "result", "review_method", "decision_origin",
                  "supersedes", "prev_hash", "self_hash", "cross_granularity_warning"):

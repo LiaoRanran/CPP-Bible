@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """holdout_658.py — A2 盲化 holdout。
 
 铁律（658 A2）：holdout 一旦 reveal，永远不能重新变回 blind。
@@ -14,6 +16,7 @@
 false_positive = 检测器误报（本批 seed 不故意构造误报，登记为 0，诚实记录）。
 """
 from __future__ import annotations
+
 import hashlib
 import json
 import os

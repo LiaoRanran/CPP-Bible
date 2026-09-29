@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 import abstain_classifier_621 as A  # noqa: E402
 import atom_verdict_extractor_622 as E  # noqa: E402
+import counts_659 as counts  # noqa: E402
 import pck_batch_migrator_620 as M  # noqa: E402
 
 OUT = os.path.join(ROOT, "data", "abstain_realignment_622.jsonl")
@@ -67,7 +68,7 @@ def test_alignment_crosstab_math():
 
 def test_pck_authority_map_covers_83():
     amap = A.pck_authority_map()
-    assert len(amap) == 103
+    assert len(amap) == counts.CARDS_REAL
     assert sum(1 for v in amap.values() if v == "approved") == 27
     assert sum(1 for v in amap.values() if v == "pending") == 76
 
@@ -75,7 +76,7 @@ def test_pck_authority_map_covers_83():
 def test_classify_all_v2_uses_pck_map():
     cards = M.discover_cards()
     rows = A.classify_all_v2(cards, extracted=E.verdict_index(E.extract_all()))
-    assert len(rows) == 103
+    assert len(rows) == counts.CARDS_REAL
     assert all(r["authority_source"] == "pck_human_authority" for r in rows)
 
 

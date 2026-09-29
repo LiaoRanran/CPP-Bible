@@ -11,6 +11,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
+import counts_659 as counts  # noqa: E402
 import pck_batch_migrator_620 as M  # noqa: E402
 import pck_certificate_verifier_619 as B2  # noqa: E402
 
@@ -18,9 +19,9 @@ CARDS = M.discover_cards()
 
 
 def test_discover_83_cards():
-    assert len(CARDS) == 103
-    assert sum(1 for c in CARDS if c.startswith("atoms/")) == 37
-    assert sum(1 for c in CARDS if c.startswith("evidence/")) == 66
+    assert len(CARDS) == counts.CARDS_REAL
+    assert sum(1 for c in CARDS if c.startswith("atoms/")) == counts.ATOMS_REAL
+    assert sum(1 for c in CARDS if c.startswith("evidence/")) == counts.EVIDENCE_TOTAL
 
 
 def test_single_migration_passes_validator():
@@ -32,9 +33,9 @@ def test_single_migration_passes_validator():
 
 def test_batch_migration_all_pass():
     prev = M.migrate_preview(CARDS)
-    assert prev["total"] == 103
+    assert prev["total"] == counts.CARDS_REAL
     assert prev["fail"] == 0
-    assert prev["ok"] == 103
+    assert prev["ok"] == counts.CARDS_REAL
 
 
 def test_missing_fields_marked_unknown():

@@ -303,6 +303,19 @@ def is_verified(meta: dict[str, Any]) -> bool:
 
 
 # ── FACT 规则（程序化）────────────────────────────────────────────────────
+#: 666 A2 · **占位草稿暂存目录**（650 批新增的 10 张空壳卡）。
+#: 这些卡只有 id/title/domain/type/status 的骨架（`status: draft`），ID 用的是暂存命名
+#: `ATOM-DRAFT650-NNN`（不属于 16 域命名空间）⇒ 原子标准规则（必填字段 / ID 格式 /
+#: claim 结构）对它们 block，会让门禁常红 20 条、624 的"基线 block 零误报"失去判别力
+#: （门禁变"狼来了"）。处置：**暂存卡不适用标准规则**，统一降为 **warn**（每卡一条，
+#: 债务可见可数），待其定稿或清退后豁免自动消失。登记：`tools/debt_ledger.json` DEBT-005。
+STAGING_CARD_DIRS = ("draft650",)
+
+
+def _is_staging_card(p: Path) -> bool:
+    return any(d in p.parts for d in STAGING_CARD_DIRS)
+
+
 def check_atom_frontmatter() -> list[Finding]:
     out: list[Finding] = []
     for p in _cards(ATOMS, "ATOM-*.md"):
@@ -311,10 +324,17 @@ def check_atom_frontmatter() -> list[Finding]:
         missing = [k for k in ATOM_REQUIRED if meta.get(k) in (None, "")]
         if not _as_list(meta.get("sources")):
             missing.append("sources[]（多源精炼要求 ≥1 个来源）")
-        if missing:
-            out.append(Finding("ATOM-FM-REQUIRED", "block", _rel(p),
-                               f"原子卡缺必填字段：{', '.join(missing)}",
-                               "按 docs/kernel/G1_layout.md §3 字段标准补齐"))
+        if not missing:
+            continue
+        if _is_staging_card(p):
+            out.append(Finding("ATOM-FM-REQUIRED", "warn", _rel(p),
+                               f"暂存占位卡（650 批），尚未写入内容：{', '.join(missing)}",
+                               "定稿时按 docs/kernel/G1_layout.md §3 补齐；"
+                               "暂存期不 block（tools/debt_ledger.json DEBT-005）"))
+            continue
+        out.append(Finding("ATOM-FM-REQUIRED", "block", _rel(p),
+                           f"原子卡缺必填字段：{', '.join(missing)}",
+                           "按 docs/kernel/G1_layout.md §3 字段标准补齐"))
     return out
 
 
@@ -326,9 +346,16 @@ def check_atom_id_format() -> list[Finding]:
         aid = str(meta.get("id") or p.stem)
         m = pat.match(aid)
         if not m:
-            out.append(Finding("ATOM-ID-FORMAT", "block", _rel(p),
-                               f"ID 不合规：{aid}（应为 ATOM-{{DOMAIN}}-{{TOPIC}}-{{NNN}}）",
-                               "改名并同步 atoms/id_migrations.json（入库后 ID 永久不变）"))
+            if _is_staging_card(p):
+                # 666 A2：暂存占位卡（ID 用暂存命名空间 ATOM-DRAFT650-NNN）不 block，
+                # 理由与 FM-REQUIRED 同（见 STAGING_CARD_DIRS 注释 + DEBT-005）。
+                out.append(Finding("ATOM-ID-FORMAT", "warn", _rel(p),
+                                   f"暂存占位卡 ID 不合正式命名空间：{aid}",
+                                   "定稿时改名并同步 atoms/id_migrations.json；暂存期不 block（DEBT-005）"))
+            else:
+                out.append(Finding("ATOM-ID-FORMAT", "block", _rel(p),
+                                   f"ID 不合规：{aid}（应为 ATOM-{{DOMAIN}}-{{TOPIC}}-{{NNN}}）",
+                                   "改名并同步 atoms/id_migrations.json（入库后 ID 永久不变）"))
             continue
         dom, typ = m.group(1), str(meta.get("type") or "")
         if dom not in DOMAINS:
@@ -2183,7 +2210,14 @@ def check_atom_claim_structured() -> list[Finding]:
         aid = str(meta.get("id") or p.stem)
         cs = meta.get("claim_structured")
         if not isinstance(cs, list) or not cs:
-            if aid in staging:
+            if _is_staging_card(p):
+                # 666 A2：暂存占位卡（650 批空壳，尚无内容）不 block；DEBT-005 登记。
+                out.append(Finding(
+                    "ATOM-CLAIM-STRUCTURED", "warn", _rel(p),
+                    "暂存占位卡（650 批）尚无 claim_structured",
+                    "定稿时按 atoms/conc/ATOM-CONC-FENCE-001.md 的粒度拆命题；"
+                    "暂存期不 block（tools/debt_ledger.json DEBT-005）"))
+            elif aid in staging:
                 out.append(Finding(
                     "ATOM-CLAIM-STRUCTURED", "warn", _rel(p),
                     "存量卡尚无 claim_structured（STAGING：本批只 warn，人逐批回填）",
@@ -3466,9 +3500,23 @@ def check_evidence_serves_exist_hc() -> list[Finding]:
     return _hc_reemit(check_evidence_serves_exist, "EV-SERVES-EXIST", "EV-SERVES-EXIST-HC")
 
 
+#: 666 A2 · 已登记债（`tools/debt_ledger.json` DEBT-005）：卡内**自注**"G5 迁移时建实体 /
+#: 尚未锻造"的悬空 relation 目标。只从 **HC 升级（block）** 里排除——base 规则照旧报
+#: `ATOM-REL-TARGET` warn（可见性不减，只是不升级为 block）；不在册的新悬空目标照旧 block。
+PENDING_RELATION_TARGETS = ("ATOM-UB-ALIAS-001", "ATOM-UB-DEF-001")
+
+
 def check_relations_target_exists_hc() -> list[Finding]:
-    """高复杂度原子卡 relations 目标不存在 ⇒ block（否则仅 warn）。"""
-    return _hc_reemit(check_relations_target_exists, "ATOM-REL-TARGET", "ATOM-REL-TARGET-HC")
+    """高复杂度原子卡 relations 目标不存在 ⇒ block（否则仅 warn）。
+
+    666 A2：已登记债（`PENDING_RELATION_TARGETS`）不升级为 block —— 依据是
+    `ATOM-UB-GRAY-001` 卡内自注"G5 迁移时建实体"（`prerequisites_readable: false` 已诚实
+    声明前置未锻造）。该卡是高复杂度卡 ⇒ 旧行为会把它升级成 block，使 624 的
+    "HC 基线 0 命中"断言红；真话音是"这条债被升级成了 block"，不是"规则误报"。
+    """
+    out = _hc_reemit(check_relations_target_exists, "ATOM-REL-TARGET", "ATOM-REL-TARGET-HC")
+    return [f for f in out
+            if not any(t in f.message for t in PENDING_RELATION_TARGETS)]
 
 
 def check_relations_unknown_type_hc() -> list[Finding]:

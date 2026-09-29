@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """migrate_queyi_to_verifier_660.py — 660 B6：把 queyi_core_* 模块迁到 queyi-verifier。
 
 做法：

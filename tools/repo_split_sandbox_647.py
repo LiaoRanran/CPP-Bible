@@ -150,7 +150,17 @@ def split_repo(dest: str, src: str = ROOT, files: Optional[list[str]] = None) ->
     if imp.returncode != 0:
         return {"ok": False, "why": f"fast-import 失败（{imp.returncode}）："
                                     f"{imp.stderr.decode('utf-8', 'replace')[:400]}"}
-    _git(["checkout", "-f", "master"], dest)
+    # 666 双仓复核：分支名由**导出流**决定，不能假定 master。
+    # 本仓（CPP-Bible）默认分支 master，而 queyi-verifier 是 main ⇒ 旧代码
+    # `checkout -f master` 在 verifier 侧报 "pathspec 'master' did not match"，
+    # HEAD 悬空 ⇒ rev-list 失败 ⇒ n_commits=0 ⇒ C1-2..C1-6 全红（实测）。
+    rc_b, br = _git(["rev-parse", "--abbrev-ref", "HEAD"], dest)
+    branch = br.strip() if rc_b == 0 else ""
+    if not branch or branch == "HEAD":
+        rc_l, lst = _git(["branch", "--list", "--format=%(refname:short)"], dest)
+        names = [x.strip() for x in lst.splitlines() if x.strip()]
+        branch = names[0] if names else "master"
+    _git(["checkout", "-f", branch], dest)
     rc, out = _git(["rev-list", "--count", "HEAD"], dest)
     n_commits = int(out.strip()) if rc == 0 and out.strip().isdigit() else 0
     rc2, head = _git(["rev-parse", "HEAD"], dest)
@@ -204,6 +214,59 @@ def history_preserved(dest: str, files: Optional[list[str]] = None) -> dict[str,
             "same": rc1 == 0 and rc2 == 0 and a.strip() == b.strip()}
 
 
+def _materialize_canonical(clone: str) -> list[str]:
+    """把 clone 里的**薄 wrapper** 换成 canonical 内容（666 A1）。**只改沙箱 clone。**
+
+    病（666 实测）：660 B6 之后本仓 `tools/queyi_core_*.py` / `queyi_data_models_645.py`
+    是 importlib 转发器，运行期要求同机的 `queyi-verifier/tools/` 存在；而沙箱 clone 里
+    没有那个目录 ⇒ `verify_standalone` 直接 `RuntimeError: queyi-verifier/tools not found`
+    （C1-3/C1-4 假红），`tests_collect` 也跟着红。
+
+    治法：拆分前把 wrapper 内容替换为 canonical 源码 —— 拆分仓要的本来就是**内核本身**，
+    wrapper 是 CPP-Bible 侧的胶水、不属于 core。canonical 从本仓的 `queyi-verifier/tools/`
+    取（660 B6 后的唯一真源）；取不到就保持原样（不静默换错东西）。
+    """
+    done: list[str] = []
+    tools_dir = os.path.join(clone, "tools")
+    if not os.path.isdir(tools_dir):
+        return done
+    # canonical 的落点用**向上逐级找**（与 wrapper 自身的 `_find_qv_tools` 同规则）：
+    # 本机是 `C:/CodeLearnling/queyi-verifier`，即 ROOT 的**上两级**，
+    # 不是 `ROOT/queyi-verifier`（666 A1 第一版就栽在这个想当然上）。
+    src_tools = None
+    d = ROOT
+    for _ in range(8):
+        cand_dir = os.path.join(d, "queyi-verifier", "tools")
+        if os.path.isdir(cand_dir):
+            src_tools = cand_dir
+            break
+        d = os.path.dirname(d)
+    if src_tools is None:
+        return done
+    for fn in sorted(os.listdir(tools_dir)):
+        if not fn.endswith(".py"):
+            continue
+        p = os.path.join(tools_dir, fn)
+        try:
+            head = open(p, encoding="utf-8", errors="replace").read(400)
+        except OSError:
+            continue
+        if "薄 wrapper" not in head:
+            continue
+        cand = os.path.join(src_tools, fn)
+        if os.path.isfile(cand):
+            shutil.copyfile(cand, p)
+            done.append(fn)
+    if done:
+        # 必须在 clone 里**提交**：split_repo 走 `git fast-export`（读对象库，不读工作树），
+        # 不提交的话导出的仍是 wrapper 版本，等于没替换。
+        _git(["add", *[os.path.join("tools", f) for f in done]], clone)
+        _git(["-c", "user.email=sandbox@local", "-c", "user.name=sandbox",
+              "commit", "-q", "-m", "666 A1 sandbox：薄 wrapper → canonical（仅供拆分沙箱）"],
+             clone)
+    return done
+
+
 def sandbox_run() -> dict[str, Any]:
     """完整沙箱实验（**临时目录**，用完即删；**原仓库零改动**）。"""
     tmp = tempfile.mkdtemp(prefix="queyi_split_647_")
@@ -213,6 +276,8 @@ def sandbox_run() -> dict[str, Any]:
         rc, out = _run(["git", "clone", "-q", ROOT, clone], timeout=900)
         if rc != 0:
             return {"ok": False, "why": f"clone 失败：{out}", "n_core_files": 0}
+        # 666 A1：先把薄 wrapper 换成 canonical（拆分仓要内核本身，胶水不属 core）
+        materialized = _materialize_canonical(clone)
         # 清单从**克隆**里取 ⇒ 只包含已提交文件（未提交的新工具不进历史拆分，符合预期）
         files = core_files(clone)
         dest = os.path.join(tmp, "queyi-core")
@@ -224,6 +289,7 @@ def sandbox_run() -> dict[str, Any]:
         hist = history_preserved(dest, files)
         return {"ok": bool(st["import_ok"] and s["n_commits"] > 0),
                 "n_core_files": len(files), "split": s, "standalone": st,
+                "materialized_wrappers": materialized,   # 666 A1：如实登记换掉了哪些 wrapper
                 "tests": tests, "history": hist, "tmp": tmp}
     finally:
         shutil.rmtree(tmp, ignore_errors=True)

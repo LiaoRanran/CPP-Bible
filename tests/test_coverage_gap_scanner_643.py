@@ -5,6 +5,7 @@
 """
 from __future__ import annotations
 
+import counts_659 as counts  # noqa: E402
 import coverage_gap_scanner_643 as B1
 
 
@@ -46,7 +47,7 @@ def test_matrix_dimensions():
     a = B1.analyze(m, rl, cl)
     assert (a["n_rules"], a["n_cards"]) == (15, 3)
     real = B1.report()["analysis"]
-    assert (real["n_rules"], real["n_cards"]) == (67, 37)
+    assert (real["n_rules"], real["n_cards"]) == (67, counts.ATOMS_TOTAL)
 
 
 # B1-4：四类判据各自成立（block 零命中 / 单卡 / 超阈值）

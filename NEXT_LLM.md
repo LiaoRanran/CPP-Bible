@@ -284,6 +284,10 @@ _历史：2026-07-17 版（APP15 阶段）已作废；2026-08-30 深夜版停在
 - 当前主线：658 批次（外部效度四层 / 门禁分层 / 元状态可验证 / research v0.1）
 - 元状态：mutation core/all 97.3/81.5%；卡 48；图 178/1093
 - 边界现状：26 卡有边界（23 verified-pass + 3 red-team）；21 draft 留空
-- 口径差（容忍，不判冲突）：规则数 67/63/未在源码定位；图节点 README 178 vs 任务书称 121
+- ~~口径差：规则数 67/63 未在源码定位；图节点 README 178 vs 任务书称 121~~
+  **666 A6 已定位**：规则 **67** 为活口径（`gate_engine.RULES` == `data/_gate_rules.json`，两源一致），
+  `63` 是 `_arch_v19_brief.md` 的**历史值**（版本化简报不改）；节点 **178**（`web/data/graph.json` 实测），
+  `121` 出自 `docs/migration_647.md` 的**拆分仓 tracked 文件数** ⇒ 与节点指标无函数关系，**作废**。
+  详见 `docs/caliber_convergence_658.md`。
 - 接手前先跑：`python tools/status_reconciler_658.py --check`（META-STATE-CONFLICT 即停）
 <!-- GENERATED:END -->

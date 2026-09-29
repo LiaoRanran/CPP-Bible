@@ -27,6 +27,15 @@ function renderProgress() {
   const total = ALL ? ALL.count : 0;
   const pct = total ? Math.round((100 * learned) / total) : 0;
   $('progress').textContent = `本机已学 ${learned}/${total}（${pct}%）`;
+  // 666 B4 新增：进度条（视觉）+ progressbar 语义（屏幕阅读器播报），两者同源
+  const fill = $('progress-fill');
+  const bar = $('progress-bar');
+  if (fill) fill.style.width = `${pct}%`;
+  if (bar) bar.setAttribute('aria-valuenow', String(pct));
+  const t = $('progress-pct');
+  if (t) t.textContent = `${pct}%`;
+  const lbl = $('progress-label');
+  if (lbl) lbl.textContent = `本机进度 ${learned}/${total}`;
 }
 function markLearned(id, on) {
   const p = progress[id] || {};

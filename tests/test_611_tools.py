@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
 import bridge_edge_candidates as c2  # noqa: E402
+import counts_659 as counts  # noqa: E402
 import defense_chain as dc  # noqa: E402
 import defense_chain_deepen as e3  # noqa: E402
 import fragmentation_repair_analysis as c3  # noqa: E402
@@ -66,9 +67,9 @@ def test_d2_liveness_plan():
 
 def test_d3_oracle_plan():
     p = d3.build_plan()
-    assert p["cards_total"] == 103
-    assert p["by_kind"].get("evidence") == 66
-    assert p["by_kind"].get("atom") == 37
+    assert p["cards_total"] == counts.CARDS_TOTAL
+    assert p["by_kind"].get("evidence") == counts.EVIDENCE_TOTAL
+    assert p["by_kind"].get("atom") == counts.ATOMS_TOTAL
     assert p["verified"] == 0
     assert d3.check(p) == []
 
@@ -82,7 +83,7 @@ def test_e1_metrics_611():
     assert m["out_mis_review"]["out_mis_count"] == PIN["out_mis"], "OUT MIS 数取权威产物"
     assert m["out_mis_review"]["out_nodes_total"] == PIN["out"]
     assert m["liveness_missing"]["missing_observation"] == 60
-    assert m["oracle_verification"]["cards_total"] == 103
+    assert m["oracle_verification"]["cards_total"] == counts.CARDS_TOTAL
     assert m["oracle_verification"]["verified"] == 0
 
 

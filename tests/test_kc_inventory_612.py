@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
 from pathlib import Path as _P  # noqa: E402
 
+import counts_659 as counts  # noqa: E402
 import kc_inventory as d1  # noqa: E402
 
 ROOT = _P(__file__).resolve().parents[1]
@@ -17,7 +18,7 @@ ROOT = _P(__file__).resolve().parents[1]
 
 def test_total_kc():
     d = d1.build()
-    assert d["total_kc"] == 37, d["total_kc"]
+    assert d["total_kc"] == counts.ATOMS_REAL, d["total_kc"]
 
 
 def test_difficulty_range():
@@ -60,4 +61,4 @@ def test_json_roundtrip():
     d = d1.build()
     txt = json.dumps(d, ensure_ascii=False)
     back = json.loads(txt)
-    assert back["total_kc"] == 37
+    assert back["total_kc"] == counts.ATOMS_REAL

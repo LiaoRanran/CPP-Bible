@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """defect_injection_661.py — 661 B2：真实缺陷注入测试（15 条）。
 
 做法：对 defects.json 的 15 条真实错，

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """boundary_scope_658.py — C 段：boundary 概念拆分（provenance vs semantic scope）。
 
 红线约束：atoms/ 是受控目录，**零改动**。657 的 26 张边界三元组已落在
@@ -16,6 +18,7 @@ semantic scope（知识语义边界）= 结论在什么条件下成立：
     python tools/boundary_scope_658.py --report    # 每卡 provenance 完整度 + semantic scope 缺失
 """
 from __future__ import annotations
+
 import argparse
 import hashlib
 import json

@@ -1,36 +1,36 @@
 # serializer version: 1
 # name: test_gate_summary_counts
   dict({
-    'advice': 5,
+    'advice': 55,
     'block': 0,
     'rules': 67,
-    'warn': 116,
+    'warn': 176,
   })
 # ---
 # name: test_kg_stats_counts
   dict({
-    'card_nodes': 165,
-    'concept_edges': 79,
-    'concepts': 131,
-    'concepts_multi_atom': 0,
+    'card_nodes': 195,
+    'concept_edges': 89,
+    'concepts': 150,
+    'concepts_multi_atom': 1,
     'dangling': 3,
-    'edges': 291,
+    'edges': 321,
     'edges_by_type': dict({
-      'ASSERTS': 60,
+      'ASSERTS': 70,
       'CONTRADICTS': 1,
       'CONTRASTS': 22,
       'PREREQUISITE': 27,
       'REFERENCES': 67,
-      'SERVES': 58,
-      'USES': 56,
+      'SERVES': 68,
+      'USES': 66,
     }),
     'max_component': 5,
-    'nodes': 332,
+    'nodes': 382,
     'nodes_by_type': dict({
-      'ARTIFACT': 51,
-      'ATOM': 30,
-      'EVIDENCE': 56,
-      'FIXTURE': 49,
+      'ARTIFACT': 61,
+      'ATOM': 50,
+      'EVIDENCE': 66,
+      'FIXTURE': 59,
       'MISCONCEPTION': 79,
       'RULE': 67,
     }),

@@ -200,12 +200,17 @@ def main() -> int:
                         "**不得**据此 Claim 外部效度提升。"),
         "new_sample_unknown": new_sample_fails,
         "opt_sensitivity": {
-            "why": ("本次 miss 样本在 pipeline 默认的 -O1 下可能被优化掉整段内存操作"
+            # 666 A5 备注：pipeline 已改为 -O0/-O2 双档；本节是 665 当时的 -O0/-O1 对照留证。
+        "why": ("本次 miss 样本在 pipeline 默认的 -O1 下可能被优化掉整段内存操作"
                     "（无可观测副作用）⇒ 报不出不等于检测器不会报，而是夹具与编译档的组合结果。"),
             "rows": sens,
         },
-        "honest_addendum": ("敏感性只用来解释 miss 的**成因**，不回改检出率："
-                            "报告正文的 66.7% 仍是 -O1 pipeline 口径下的数字。"),
+        "honest_addendum": (
+            "666 A5 起**口径已变**：pipeline 不再只跑单一 `-O1`，而是**先 -O0、再 -O2 两档都跑**"
+            "（`rv661.detect`），任一档报出即判 catch。"
+            "所以本报告的 `detect_rate_pct` 是**双档口径**；它高于 665 当时的 66.7% "
+            "**不是**因为验证器变强，而是因为旧口径把'只在 -O0 暴露'的缺陷记成了假 miss。"
+            "本节的 -O0/-O1 敏感性复跑因此退化为**历史对照**，保留作证据。"),
         "results": results,
     }
     json.dump(rep, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=2)

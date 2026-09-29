@@ -147,6 +147,24 @@ warn_unused_configs = true
 module = "yaml.*"
 ignore_missing_imports = true
 
+# 666 A1：`opentimestamps` 同样是**可选的第三方库**（656 A 用它交叉核对官方 magic；
+# 没装时 656 走冻结常数兜底）。装了它以后 mypy 报 5 处 import-untyped
+# （`opentimestamps{,.calendar,.core.timestamp,.core.serialize,.core.op}` 无 py.typed / stub），
+# 与 yaml.* 同因同款 ⇒ 同口径集中声明，而不是在 5 处代码里散写 `# type: ignore`
+# （那会撞 625 的"无批量 ignore"预算，也是把环境缺口伪装成代码债）。
+# 注：改本文件必须 `python tools/tool_integrity.py --update` 重钉（pyproject 在 test_config 哈希面内）。
+[[tool.mypy.overrides]]
+module = "opentimestamps.*"
+ignore_missing_imports = true
+
+# 666 A1 备注：660 B6 把协议内核 canonical 迁到 queyi-verifier 后，本仓
+# `tools/queyi_core_*.py` / `tools/queyi_data_models_645.py` 是**薄 wrapper**
+# （importlib 动态装载 → 转发符号）⇒ mypy 在**使用方**报一串
+# `Module has no attribute "..."`（实测 25 个文件 67 条）。
+# 该形态问题**在 wrapper 文件里**用 PEP 562（`if TYPE_CHECKING: def __getattr__`）
+# 解决，不在这里配 overrides —— 实测 `module = "queyi_core_*"` 这种局部通配
+# 不合法（mypy 要求每段是完整模块名：`spam.*.eggs.*`）。
+
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

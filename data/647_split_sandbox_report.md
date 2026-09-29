@@ -1,6 +1,6 @@
 # 647 C1 · 仓库拆分**沙箱验证**（原仓库零改动）
 
-- 结论：**通过**
+- 结论：**未通过**
 - core 文件数（声明的路径清单）：**119**
 
 ## 一、方案：为什么不是 `git subtree split`
@@ -17,42 +17,23 @@
 | 步骤 | 结果 |
 |---|---|
 | ① `git clone` 到临时目录 | 成功（原仓库**零改动**） |
-| ② fast-export/import 造 queyi-core | 提交 **168**，HEAD `e9b3b6b64c46` |
-| ③ 独立可跑（内核 import + selftest） | import=True，kernel `--check` rc=0 |
-| ④ 测试可跑（collect-only） | rc=0 |
-| ⑤ 历史保留（探针文件提交数） | 拆分仓库 **1** vs 原仓库 **1** ⇒ 相同=True |
+| ② fast-export/import 造 queyi-core | 提交 **0**，HEAD `` |
+| ③ 独立可跑（内核 import + selftest） | import=None，kernel `--check` rc=None |
+| ④ 测试可跑（collect-only） | rc=None |
+| ⑤ 历史保留（探针文件提交数） | 拆分仓库 **None** vs 原仓库 **None** ⇒ 相同=None |
 
 ```json
 {
-  "ok": true,
+  "ok": false,
+  "why": null,
   "n_core_files": 119,
   "split": {
-    "ok": true,
-    "dest": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_tu1v43jj\\queyi-core",
-    "n_commits": 168,
-    "head": "e9b3b6b64c46",
+    "ok": false,
+    "dest": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_7vhfsdgb\\queyi-core",
+    "n_commits": 0,
+    "head": "",
     "n_files_declared": 119
-  },
-  "standalone": {
-    "import_ok": true,
-    "import_tail": "ok",
-    "kernel_check_rc": 0,
-    "kernel_check_tail": "d 排序（确定性） \n  [ok] policy_digest 稳定 \n  [ok] 规则引擎遍历数 = 规则数 × artifact 数 \n  [ok] 汇总计数正确 \n  [ok] run_id 确定性（不含时间戳） \n  [ok] input_manifest_digest 自动补齐 \n  [ok] integrity 自校验通过 \n  [ok] 封存后只读（改字段抛错） \n  [ok] 篡改 results ⇒ integrity 失效 \n  [ok] summary 投影计数正确 \n  [ok] 投影确定性 \n  [ok] manifest 投影含 digests \n  [ok] 未注册投影 ⇒ KeyError（fail-loud） \n  [ok] 内置投影 3 个 \n  [ok] 内核 AST 扫描零领域 import []\nv1.0 core selftest: PASS\n"
-  },
-  "tests": {
-    "collect_rc": 0,
-    "n_error_files": 0,
-    "error_files": [],
-    "conftest_used": "最小 conftest（沙箱临时写入）",
-    "tail": "estmark = pytest.mark.slow\n\ntests\\test_loop_r5_runner_645.py:14\n  C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_tu1v43jj\\queyi-core\\tests\\test_loop_r5_runner_645.py:14: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    pytestmark = pytest.mark.slow\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n238 tests collected in 2.35s\n"
-  },
-  "history": {
-    "probe": "tests/test_anti_windup_647.py",
-    "in_split": "1",
-    "in_origin": "1",
-    "same": true
-  },
-  "tmp": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_split_647_tu1v43jj"
+  }
 }
 ```
 

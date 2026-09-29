@@ -11,6 +11,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
+import counts_659 as counts  # noqa: E402
 import pck_batch_migrator_620 as M  # noqa: E402
 import pck_certificate_verifier_619 as B2  # noqa: E402
 
@@ -20,8 +21,8 @@ CERT_DIR = M.DEFAULT_OUT_DIR
 
 def test_全量83张全部通过验证():
     prev = M.migrate_preview(CARDS)
-    assert prev["total"] == 103
-    assert prev["ok"] == 103
+    assert prev["total"] == counts.CARDS_REAL
+    assert prev["ok"] == counts.CARDS_REAL
     assert prev["fail"] == 0
 
 
@@ -32,7 +33,7 @@ def test_迁移可复现_两次输出内容一致():
         f1 = {f: open(os.path.join(d1, f), encoding="utf-8").read() for f in os.listdir(d1)}
         f2 = {f: open(os.path.join(d2, f), encoding="utf-8").read() for f in os.listdir(d2)}
         assert f1 == f2
-        assert len(f1) == 103
+        assert len(f1) == counts.CARDS_REAL
 
 
 def test_迁移产物落在非受控目录():
@@ -45,7 +46,7 @@ def test_已生成证书文件存在且可通过验证():
     if not os.path.isdir(CERT_DIR):
         return
     files = [f for f in os.listdir(CERT_DIR) if f.endswith(".pck.yaml")]
-    assert len(files) == 103
+    assert len(files) == counts.CARDS_REAL
     bad = []
     for f in files:
         cert = B2.load_cert(os.path.join(CERT_DIR, f))

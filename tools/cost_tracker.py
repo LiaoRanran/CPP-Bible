@@ -33,6 +33,7 @@ from __future__ import annotations
 import argparse
 import datetime as _dt
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -236,6 +237,47 @@ def cpva() -> dict[str, Any]:
     }
 
 
+def _is_link(p: str) -> bool:
+    """是否为**联结/符号联接**（Windows junction 不算 `is_symlink`，要单独判）。"""
+    if not os.path.exists(p):
+        return False
+    try:
+        if hasattr(os.path, "isjunction") and os.path.isjunction(p):   # py3.12+
+            return True
+    except OSError:
+        pass
+    if os.path.islink(p):
+        return True
+    try:
+        return bool(os.stat(p).st_file_attributes & 0x400)              # REPARSE_POINT
+    except (AttributeError, OSError):
+        return False
+
+
+def _tracking_root(rel: str) -> str:
+    """返回**真正跟踪** `rel` 的 git 仓库根（666 双仓复核）。
+
+    病：657 拆仓后 queyi-verifier 的 `atoms/` 是 junction 指向 CPP-Bible，
+    卡文件在本仓 `git ls-files` 里查不到 ⇒ `git log -- <rel>` 恒返回空，
+    回填把"查不到历史"静默写成"成本 = 0"（比报错更坏：数字看起来是真的）。
+
+    判据：语料锚目录（`rel` 的第一段）**是联结/符号链接** ⇒ 说明本仓的语料
+    在别处，回退到该文件**真实路径**（联结目标）所在仓库；否则一律用本仓
+    （CPP-Bible 行为不变）。只读。
+    """
+    anchor = os.path.join(str(ge.ROOT), rel.split("/")[0])
+    if not _is_link(anchor):
+        return str(ge.ROOT)
+    real = os.path.realpath(os.path.join(str(ge.ROOT), rel))
+    d = os.path.dirname(real)
+    if os.path.isdir(d):
+        r = subprocess.run(["git", "rev-parse", "--show-toplevel"],
+                           cwd=d, capture_output=True, text=True)
+        if r.returncode == 0 and r.stdout.strip():
+            return r.stdout.strip()
+    return str(ge.ROOT)
+
+
 def backfill(atom_id: str) -> dict[str, Any]:
     """从 git log 粗估单原子成本：commit 数≈窗口数，改动行数×40≈字符数。
 
@@ -252,7 +294,7 @@ def backfill(atom_id: str) -> dict[str, Any]:
     for rel in rels:
         r = subprocess.run(
             ["git", "log", "--follow", "--numstat", "--format=%h", "--", rel],
-            capture_output=True, text=True, cwd=ge.ROOT)
+            capture_output=True, text=True, cwd=_tracking_root(rel))
         for ln in r.stdout.split("\n"):
             ln = ln.strip()
             if not ln:

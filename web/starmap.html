@@ -9,8 +9,9 @@
 <script type="module" src="components/index.js"></script>
 </head>
 <body>
+<a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="starmap.html"></qy-nav>
-<main class="wrap wrap-wide">
+<main id="main" class="wrap wrap-wide">
   <section style="padding:34px 0 10px">
     <h1 style="font-size:26px">星图 · W2 接地图</h1>
     <p class="lead" style="font-size:15px" id="lead-desc">加载真实台账中…</p>
@@ -45,7 +46,7 @@
 
     <div class="stage-wrap">
       <div class="stage" id="stage">
-        <canvas id="graph"></canvas>
+        <canvas id="graph" role="img" aria-label="知识接地星图（可拖拽平移、滚轮缩放；悬停看摘要、点击固定详情）"></canvas>
         <div class="tooltip" id="tip"></div>
       </div>
       <aside class="detail" id="detail"></aside>

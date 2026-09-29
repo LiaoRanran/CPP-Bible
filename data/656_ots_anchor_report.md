@@ -1,29 +1,29 @@
 # 656 A · OTS 外部锚（G9 总闸门）报告
 
-> 生成：2026-09-28T01:22:28　引擎：`opentimestamps-lib`　目标：`data/supply_chain/merkle_roots.json`
+> 生成：2026-09-28T22:53:02　引擎：`none`　目标：`data/supply_chain/merkle_roots.json`
 
 ## 一、锚了什么
 
 - 目标文件：`data/supply_chain/merkle_roots.json`（1081 字节）
-- 其 sha256：`c09ee380e15ba46e20d4e1d44c4f808f15d8c32ffe484c0f1c82860824aa83cd`
+- 其 sha256：`01699c09d0dba3646906a4ae53230f38602df487efd3a72a47a8c549e2a171d4`
 - 该文件内含 5 个受控目录的 Merkle 根（Book, Examples, atoms, evidence, mutation_baselines）
 
 ## 二、当前判定
 
-- verdict：**pending**
-- 说明：已提交到日历，尚未拿到比特币区块头证明（需 --upgrade）
-- 官方实现能否解析：`True`
-- magic 是否等于官方 HEADER_MAGIC：`True`
-- 覆盖的 digest：`c09ee380e15ba46e20d4e1d44c4f808f15d8c32ffe484c0f1c82860824aa83cd`
-- attestations：`[{"kind": "pending", "type": "PendingAttestation", "uri": "https://bob.btc.calendar.opentimestamps.org"}, {"kind": "pending", "type": "PendingAttestation", "uri": "https://btc.calendar.catallaxy.com"}, {"kind": "pending", "type": "PendingAttestation", "uri": "https://alice.btc.calendar.opentimestamps.org"}, {"kind": "pending", "type": "PendingAttestation", "uri": "https://finney.calendar.eternitywall.com"}]`
+- verdict：**invalid**
+- 说明：无官方实现：只能校验文件头（magic 不符）⇒ 判 `invalid`：连文件头都不是 OTS。
+- 官方实现能否解析：`None`
+- magic 是否等于官方 HEADER_MAGIC：`False`
+- 覆盖的 digest：`None`
+- attestations：`null`
 
 ## 三、日历与依赖
 
 - 提交目标（公开 BTC 聚合日历）：
-  - `https://a.pool.eternitywall.com`
+  - `https://alice.btc.calendar.opentimestamps.org`
+  - `https://bob.btc.calendar.opentimestamps.org`
   - `https://a.pool.opentimestamps.org`
-  - `https://b.pool.opentimestamps.org`
-  - `https://ots.btc.catallaxy.com`
+  - `https://finney.calendar.eternitywall.com`
 
 ## 四、状态机（不许越级叫）
 

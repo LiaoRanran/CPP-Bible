@@ -26,8 +26,13 @@ from typing import Any, Optional
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
+sys.path.insert(0, HERE)
+import counts_659 as counts  # noqa: E402  666 A2：去写死（证据卡数从事实源现算）
 
 MANIFEST = os.path.join(ROOT, "build", "replay_manifest.json")
+#: 666 A2：manifest 条目数 == 证据卡数（原写死 56 是 626 时点的值；650–652 扩库后
+#: 证据卡 66 张，写死数字让 628 的两条测试与 selftest 一起假红）。
+EXPECTED_ENTRIES = counts.EVIDENCE_TOTAL
 OUT_MD = os.path.join(ROOT, "data", "debt_replay_fix_report_628.md")
 
 
@@ -85,7 +90,8 @@ def selftest() -> int:
         ok = ok and cond
 
     c = check()
-    chk("manifest 条目齐全（56 张证据卡）", c["entries"] == 56, f"({c['entries']})")
+    chk(f"manifest 条目齐全（{EXPECTED_ENTRIES} 张证据卡，现算）",
+        c["entries"] == EXPECTED_ENTRIES, f"({c['entries']})")
     chk("指纹失配 0（625 的 5 失配已被 626/627 期间刷新解决）",
         c["stale_count"] == 0, f"(stale={c['stale_count']})")
     chk("无缺失文件", c["missing_count"] == 0)

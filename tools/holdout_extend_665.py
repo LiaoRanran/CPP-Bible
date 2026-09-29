@@ -179,7 +179,7 @@ def merged(apply: bool = True) -> dict:
     base["seeds"] = [s for s in base["seeds"] if s["id"] not in {n["id"] for n in NEW_SEEDS}]
     if len(base["seeds"]) != 20:
         raise SystemExit(f"合并基线应为原 20 个 seed，实际 {len(base['seeds'])}：拒绝（防误改）")
-    out = json.loads(json.dumps(base))               # 深拷贝，别改到 base
+    out: dict = json.loads(json.dumps(base))         # 深拷贝，别改到 base（666 A1：加注解消 no-any-return）
     out["seeds"].extend({**s, "hidden": True, "revealed": True} for s in NEW_SEEDS)
     out["count"] = len(out["seeds"])
     out["generated_by"] = "660 C2 初始化 · 665 C1 扩样（canonical 合并视图）"
@@ -203,7 +203,8 @@ def merged(apply: bool = True) -> dict:
 def load_merged() -> dict:
     """读 canonical 合并视图；不在（未扩样）则退回归并原文件。"""
     if MERGED.is_file():
-        return json.loads(MERGED.read_text(encoding="utf-8"))
+        data: dict = json.loads(MERGED.read_text(encoding="utf-8"))  # 666 A1：注解消 no-any-return
+        return data
     return merged(apply=False)
 
 

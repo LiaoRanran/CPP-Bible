@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """holdout_reveal_661.py — 661 B1：盲化 holdout 第一次 reveal（不可逆）。
 
 铁律：reveal 后永不回盲（写 data/holdout/.revealed）。
@@ -98,25 +100,47 @@ def detect(kind: str, files: list) -> tuple:
         if kind in SAN:                       # WSL sanitizer
             w = [_to_wsl(c) for c in copies]
             san = SAN[kind]
-            c = f"g++ -std=c++17 -O1 -g -fsanitize={san} -pthread {' '.join(w)} -o /tmp/rv_bin"
-            rc, out = _wsl(c)
-            if rc != 0:
-                return ("unknown", f"编译失败({kind}): {out.strip()[:100]}")
-            rc, out = _wsl("/tmp/rv_bin", timeout=120)
-            low = out.lower()
-            snip = out.strip().replace("\n", " ")[:300]
-            # TSan 在 WSL 常见 FATAL（内存映射不兼容）→ 检测器不可用，记 unknown，避免误判 catch
-            if kind == "tsan" and "FATAL: ThreadSanitizer" in out:
-                return ("unknown", f"TSan 无法初始化（WSL 内存映射不兼容），检测器不可用 rc={rc}")
-            if kind == "tsan":
-                hit = "WARNING: ThreadSanitizer" in out or "data race" in low or rc == 66
-            elif kind == "asan":
-                hit = ("AddressSanitizer" in out or "LeakSanitizer" in out
-                       or "detected memory leaks" in low or "double-free" in low)
-            else:  # ubsan
-                hit = "runtime error" in out
-            return (("catch", f"{kind} 命中(rc={rc}) {snip}") if hit
-                    else ("miss", f"{kind} 无报告(rc={rc}) {snip}"))
+            # 666 A5：**两个档都跑**（先 -O0，再 -O2），任一档报出来即 catch。
+            # 旧口径只跑 `-O1` ⇒ "被优化掉整段内存操作"的夹具在验证器眼里成了 miss，
+            # 而 665 C2 的敏感性复跑实测：5 个 miss 里 **3 个（h26/h27/h30）在 -O0 下能 catch**
+            # ——那是**假 miss**（验证器跑错档位），不是检测器不会报。
+            # 代价：每个夹具多一次编译+运行（夹具很小）；unknown 只在**两档都不可用**时给。
+            tried: list[str] = []
+            hits: list[str] = []
+            notes: list[str] = []
+            unavail: list[str] = []
+            for opt in ("-O0", "-O2"):
+                exe = f"/tmp/rv_bin_{opt.lstrip('-')}"
+                c = f"g++ -std=c++17 {opt} -g -fsanitize={san} -pthread {' '.join(w)} -o {exe}"
+                rc, out = _wsl(c)
+                if rc != 0:
+                    unavail.append(f"{opt} 编译失败: {out.strip()[:80]}")
+                    continue
+                rc, out = _wsl(exe, timeout=120)
+                low = out.lower()
+                snip = out.strip().replace("\n", " ")[:200]
+                # TSan 在 WSL 常见 FATAL（内存映射不兼容）→ 该档不可用（不误判 catch）
+                if kind == "tsan" and "FATAL: ThreadSanitizer" in out:
+                    unavail.append(f"{opt} TSan 无法初始化（WSL 内存映射不兼容）")
+                    continue
+                tried.append(opt)
+                if kind == "tsan":
+                    hit = "WARNING: ThreadSanitizer" in out or "data race" in low or rc == 66
+                elif kind == "asan":
+                    hit = ("AddressSanitizer" in out or "LeakSanitizer" in out
+                           or "detected memory leaks" in low or "double-free" in low)
+                else:  # ubsan
+                    hit = "runtime error" in out
+                if hit:
+                    hits.append(f"{opt}(rc={rc}) {snip}")
+                else:
+                    notes.append(f"{opt}(rc={rc}) {snip or '无输出'}")
+            if hits:
+                return ("catch", f"{kind} 命中[{'; '.join(hits)}]（档位 {','.join(tried)}）")
+            if not tried:
+                return ("unknown", f"检测器不可用({kind})：{'; '.join(unavail)[:150]}")
+            detail = "; ".join(notes)
+            return ("miss", f"{kind} 两档均无报告[{detail}]")
 
         if kind == "wunsequenced":
             rc, out = _local(["g++", "-std=c++17", "-Wall", "-Wextra", "-Wunsequenced",

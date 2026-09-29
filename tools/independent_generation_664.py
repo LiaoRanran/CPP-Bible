@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """independent_generation_664.py — 664 B2：独立生成 A/B/C 跑一轮。
 
 角色（同一批次内分离，避免"生成者即验证者"的知情偏差）：
@@ -113,8 +115,8 @@ def run_detector(kind, code):
     exe = os.path.join(d, "s.exe")
     if kind in ("compiler-warn",):
         rc, out = _sh(["g++", "-std=c++17", "-Wall", "-Wextra", "-fsyntax-only", src])
-        w = [l for l in out.splitlines() if "warning:" in l] or (
-            [l for l in out.splitlines() if "error:" in l])
+        w = [ln for ln in out.splitlines() if "warning:" in ln] or (
+            [ln for ln in out.splitlines() if "error:" in ln])
         return (("catch", w[0][:70]) if w else ("miss", "无告警/无错误"))
     if kind == "cross-compile":
         outs = []

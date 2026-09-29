@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 r"""semantic_scope_backfill_663.py — 663 C1：给 26 张 verified 卡补 semantic scope。
 
 红线：**只加 frontmatter 字段，不改正文**。插入点 = `status:` 行之后。
@@ -30,7 +32,7 @@ ISO_MAP = {"2011": "C++11", "2014": "C++14", "2017": "C++17", "2020": "C++20", "
 
 
 def _fm_block(txt):
-    return re.match(r"^---\n(.*?)\n---", txt, re.S)
+    return re.match(r"^---\n(.*?)\n---", txt, re.DOTALL)
 
 
 def derive(txt, fm_txt):
@@ -44,14 +46,14 @@ def derive(txt, fm_txt):
     comp = []
     for pat, name in ((r"\bgcc\b|\bg\+\+", "gcc"), (r"\bclang\b|\bclang\+\+", "clang"),
                       (r"\bmsvc\b", "msvc")):
-        if re.search(pat, txt, re.I):
+        if re.search(pat, txt, re.IGNORECASE):
             comp.append(name)
     compiler = comp or ["unknown"]
 
     plat = []
     for pat, name in ((r"x86_64", "x86_64"), (r"aarch64", "aarch64"), (r"riscv64", "riscv64"),
                       (r"\bwindows\b", "windows"), (r"\blinux\b", "linux")):
-        if re.search(pat, txt, re.I):
+        if re.search(pat, txt, re.IGNORECASE):
             plat.append(name)
     platform = plat or ["unknown"]
     return cpp_standard, compiler, platform
@@ -74,17 +76,17 @@ def main() -> int:
             if not m:
                 continue
             fm_txt = m.group(1)
-            sm = re.search(r"^status:\s*(\S+)", fm_txt, re.M)
+            sm = re.search(r"^status:\s*(\S+)", fm_txt, re.MULTILINE)
             status = sm.group(1).strip() if sm else "?"
             if status not in TARGET_STATUS:
                 continue
             rel = os.path.relpath(p, ROOT).replace("\\", "/")
-            missing = [k for k in FIELDS if not re.search(rf"^{k}:", fm_txt, re.M)]
+            missing = [k for k in FIELDS if not re.search(rf"^{k}:", fm_txt, re.MULTILINE)]
             if not missing:
                 rows.append({"card": rel, "status": status, "action": "skip(已齐)"})
                 continue
             cpp_standard, compiler, platform = derive(txt, fm_txt)
-            bm = re.search(r"^boundary:\s*(.+)$", fm_txt, re.M)
+            bm = re.search(r"^boundary:\s*(.+)$", fm_txt, re.MULTILINE)
             input_domain = bm.group(1).strip() if bm else "unknown"
             lines = [
                 f"cpp_standard: [{', '.join(cpp_standard)}]",
@@ -94,7 +96,7 @@ def main() -> int:
             ]
             if not a.dry_run:
                 new_fm = re.sub(r"^(status:\s*\S+)$", r"\1\n" + "\n".join(lines),
-                                fm_txt, count=1, flags=re.M)
+                                fm_txt, count=1, flags=re.MULTILINE)
                 new_txt = txt[:m.start(1)] + new_fm + txt[m.end(1):]
                 open(p, "w", encoding="utf-8", newline="\n").write(new_txt)
             changed += 1

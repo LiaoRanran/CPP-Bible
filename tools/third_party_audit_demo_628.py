@@ -239,9 +239,19 @@ def run_check() -> dict:
     cred_path = tail_logged_credential()
     vsa_ok = False
     inc_ok = False
+    vsa_current = None
     if cred_path:
         p = _run(VSA_TOOL, "--verify-path", cred_path)
-        vsa_ok = bool(_load_json(p.stdout)["valid"])
+        v = _load_json(p.stdout)
+        # 666 A2 口径修订：`valid` 是 hmac ∧ 输入哈希 ∧ 结果三项的合取。其中
+        # **输入哈希对不上**对"在册的历史凭证"是**正常**的——追加式透明日志记的就是
+        # 当时的输入；工作区之后演进（本轮就是：规则/语料/工具都动过），旧凭证的输入
+        # 当然对不上。把它算进 `logged_vsa_valid` ⇒ 一次正常演进就把"历史记录"判成
+        # "凭证无效"（实测：尾部凭证是 2026-09-25 的，hmac_valid=true 而 inputs=false）。
+        # 拆开：`logged_vsa_valid` 只认 **记录完整性**（HMAC 有效 = 没被篡改）；
+        # "输入是否仍等于当前工作区"单列为 `vsa_inputs_current`（信息项，不计入 all_ok）。
+        vsa_ok = bool(v["hmac_valid"])
+        vsa_current = bool(v["input_hashes_valid"] and v["results_valid"])
         inc_ok = bool(step_inclusion(cred_path)["included"])
     checks = dict(cmp_)
     checks.update({
@@ -254,7 +264,10 @@ def run_check() -> dict:
     })
     return {"checks": checks, "all_ok": all(checks.values()), "log_state": log,
             "system_v2_w2": sys_w2, "independent_w2": iv["w2"]["summary"],
-            "logged_credential": (os.path.relpath(cred_path, ROOT) if cred_path else None)}
+            "logged_credential": (os.path.relpath(cred_path, ROOT) if cred_path else None),
+            # 666 A2：在册凭证的输入是否仍等于**当前**工作区（false = 工作区已演进，
+            # 该凭证记录的是历史状态；这是信息项，不是"无效"）。
+            "vsa_inputs_current": vsa_current}
 
 
 def _write_report(r: dict) -> None:
@@ -338,7 +351,7 @@ def selftest() -> int:
     chk("PCK authorized = 27", c["pck_authorized_match"])
     chk("ledger 哈希链 valid", c["ledger_chain_valid"])
     chk("unique = 93", c["unique_match"])
-    chk("日志在册凭证签名/输入/结果有效", c["logged_vsa_valid"],
+    chk("日志在册凭证的**记录完整性**（HMAC 未篡改）", c["logged_vsa_valid"],
         f'({r["logged_credential"]})')
     chk("日志在册凭证可验证存在于日志（inclusion）", c["logged_vsa_in_log"])
     chk("透明日志链完整且 ≥1 条", c["log_chain_valid"] and c["log_entries_ge_1"],

@@ -3,48 +3,72 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QueYi · 可复核的知识信任根</title>
+<meta name="description" content="祈易（QueYi）：一个可被独立验收的 C++ 知识验证器 —— 判决、证据、复算三者绑定，任何人都能打断这条链。">
+<meta name="color-scheme" content="dark light">
+<title>祈易 QueYi · 可被独立验收的 C++ 知识</title>
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
 <script type="module" src="components/index.js"></script>
+<script type="module" src="home.js"></script>
 </head>
 <body>
-<qy-nav current="index.html" badge="656 C · 静态站无后端"></qy-nav>
-<main>
-  <!-- 首屏：**会动的产品**（真数据渲染，不是截图） -->
-  <section class="hero" style="padding:64px 0 40px">
-    <div class="wrap">
-      <h1>每一条知识，都带着<br>可复核的证据与攻击记录。</h1>
-      <p class="lead">CPP-Bible 把知识卡、证据、争论与判决放进同一个信任根：真实台账渲染的接地图、
-        浏览器内可离线重算的哈希、以及随时能跑回来的复现清单。</p>
-      <div class="toolbar" style="margin-top:18px">
-        <qy-button href="starmap.html" variant="primary" label="打开星图" id="starmap-btn"></qy-button>
-        <qy-button href="verify.html" label="现场验哈希"></qy-button>
-        <span class="muted" id="mode-chip">—</span>
-      </div>
-    </div>
-    <div class="wrap wrap-wide" style="margin-top:26px">
-      <div class="stage" id="stage"><canvas id="mini"></canvas></div>
+<a class="skip-link" href="#main">跳到主要内容</a>
+<qy-nav current="index.html" badge="静态站 · 无后端"></qy-nav>
+
+<main id="main">
+  <!-- ① 顶部：项目名 + 一句话定位 -->
+  <section class="wrap" style="padding-top:var(--space-6)">
+    <h1>祈易 QueYi</h1>
+    <p class="lead">一个<b>可被独立验收</b>的 C++ 知识验证器：每条结论都绑定证据与复现命令，
+      任何人可以重算、可以指出哪一环不成立 —— 而不需要先信任我们。</p>
+    <div class="toolbar">
+      <qy-button href="cards.html" variant="primary" label="浏览卡库"></qy-button>
+      <qy-button href="card.html" label="学一张卡"></qy-button>
+      <qy-button href="starmap.html" label="打开星图" id="starmap-btn"></qy-button>
+      <qy-button href="verify.html" label="现场验哈希"></qy-button>
+      <span class="muted" id="mode-chip">—</span>
     </div>
   </section>
 
-  <!-- 655 D：系统现状（数字全部来自 web/data/status.json，由 tools/web_status_655.py 现算） -->
+  <!-- ② 首屏：真数据渲染的接地图（会动，不是截图） -->
+  <section class="wrap wrap-wide" style="padding-top:0">
+    <div class="stage" id="stage"><canvas id="mini" aria-label="知识接地网络示意图（真实数据渲染；完整交互见星图页）" role="img"></canvas></div>
+  </section>
+
+  <!-- ③ 核心指标（数字由 tools/web_metrics_666.py 现算，前端只渲染） -->
+  <section class="wrap">
+    <h3>核心指标 · 现算（非目标值）</h3>
+    <div class="metrics" id="metrics">
+      <div class="metric"><div class="num">—</div><div class="cap">加载中…</div></div>
+    </div>
+    <p class="muted" id="metrics-note" style="margin-top:var(--space-2)">加载中…</p>
+  </section>
+
+  <!-- ④ 系统状态时间线 -->
+  <section class="wrap">
+    <h3>系统状态时间线</h3>
+    <ul class="timeline" id="timeline"><li><div class="t-why">加载中…</div></li></ul>
+  </section>
+
+  <!-- ⑤ 系统现状面板（保护器 / 逃逸率；655 D 既有） -->
   <section class="wrap">
     <h3>系统现状（现算，非目标值）</h3>
     <div class="status-grid" id="status-grid">
       <qy-panel id="s-cards" caption="知识卡" num="—" sub="加载中…"></qy-panel>
-      <qy-panel id="s-rules" caption="判决规则" num="—" sub="—"></qy-panel>
       <qy-panel id="s-prot" caption="保护器" num="—" sub="—"></qy-panel>
       <qy-panel id="s-escape" caption="逃逸率" num="—" sub="—"></qy-panel>
+      <qy-panel id="s-unknown" caption="unknown 口径" num="—" sub="未知不降级为通过"></qy-panel>
     </div>
-    <p class="muted" style="margin-top:12px" id="status-note"></p>
+    <p class="muted" style="margin-top:var(--space-2)" id="status-note"></p>
   </section>
 
+  <!-- ⑥ 星图统计 -->
   <section class="wrap">
     <div class="grid c3" id="stats"></div>
-    <p class="muted" style="margin-top:14px" id="src-note"></p>
+    <p class="muted" style="margin-top:var(--space-2)" id="src-note"></p>
   </section>
 
+  <!-- ⑦ 三通道编码 -->
   <section class="wrap">
     <h3>三通道编码</h3>
     <div class="legend">
@@ -67,172 +91,41 @@
     </div>
   </section>
 
+  <!-- ⑧ 三个入口 -->
   <section class="wrap">
+    <h3>怎么用</h3>
     <div class="grid c3">
-      <div class="card"><h2>星图</h2><p>W2 加权接地模型的真实接地图：攻击边与其中被击败的部分一目了然。可筛选四态、只看击败边，
-        <b>悬停看卡片摘要、点击固定详情、悬停边看攻击/击败关系</b>。</p></div>
-      <div class="card"><h2>现场验哈希</h2><p>用浏览器 Web Crypto 对工件重算 sha256，与台账逐字节比对：<b>支持一次拖入多个文件批量验证</b>，
+      <div class="card"><h2>卡库</h2><p>按状态 / 域 / 标准筛选与搜索全部知识卡，
+        每张可展开看断言、边界与证据；<b>机器卡单独标注、不进教学台账</b>。</p></div>
+      <div class="card"><h2>现场验哈希</h2><p>用浏览器 Web Crypto 对工件重算 sha256，与台账逐字节比对：<b>可一次拖入多个文件批量验证</b>，
         结果可导出 CSV。<b>离线可用</b>，文件不出本机。</p></div>
-      <div class="card"><h2>复现清单</h2><p>十张 C 卡带版本串 + 命令 + 输入哈希 + 期望输出：一条命令即可重跑验收（见 <span class="kbd">replay_probe_651</span>）。</p></div>
+      <div class="card"><h2>复现清单</h2><p>每条证据带版本串 + 命令 + 输入哈希 + 期望输出：
+        一条命令即可重跑验收（见 <span class="kbd">replay_probe_651</span>）。</p></div>
     </div>
   </section>
+
+  <!-- ⑨ 底部：最新提交 + 链接 -->
+  <section class="wrap">
+    <h3>最新提交</h3>
+    <div id="commits" class="subtle">加载中…</div>
+    <h3 style="margin-top:var(--space-4)">链接</h3>
+    <p class="muted">
+      <a href="cards.html">卡库</a> ·
+      <a href="card.html">学一张卡</a> ·
+      <a href="starmap.html">星图</a> ·
+      <a href="verify.html">验哈希</a> ·
+      <a href="data/metrics_666.json">指标原始数据（JSON）</a> ·
+      <a href="data/manifest.json">工件哈希清单</a>
+    </p>
+    <p class="muted" style="margin-top:var(--space-2)">
+      期望值：<span class="kbd">data/metrics_666.json</span> 的 <span class="kbd">ledger_redline</span>
+      字段写着账本红线（452 事件零改）—— 本页只渲染它，不替它背书。
+    </p>
+  </section>
 </main>
-<footer class="wrap">静态站 · 无后端 · 无追踪 · 数据由 <span class="mono">tools/web_data_653.py</span> 与
-  <span class="mono">tools/web_status_655.py</span> 从真实台账生成（不造演示数据）。</footer>
 
-<script type="module">
-import { STATE_COLORS, fetchJSON, fmtInt } from './app.js';
-// 首屏 hero：真数据、会动（缓慢漂移 + 悬停高亮），不引入粒子/光斑
-const canvas = document.getElementById('mini');
-const ctx = canvas.getContext('2d');
-const stage = document.getElementById('stage');
-let G, pos = [], t = 0, hover = -1;
-
-const RAD = { card: 6.4, prop: 3.4, misconception: 2.6 };
-const ALPHA = (c) => (c >= 3 ? 1 : c === 2 ? .72 : .5);
-const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-/** 655 D：数字滚动动画（真实数值 → 从 0 计到目标；尊重 reduced-motion）。 */
-function countUp(el, target, { fmt = fmtInt, suffix = '', dur = 900 } = {}) {
-  if (!el) return;
-  // 656 C2：目标可能是 `<qy-panel>`（有自己的 setNum）或普通元素
-  const put = (v) => { if (typeof el.setNum === 'function') el.setNum(v); else el.innerHTML = v; };
-  if (REDUCED || !isFinite(target)) { put(fmt(target) + suffix); return; }
-  const t0 = performance.now();
-  const step = (now) => {
-    const k = Math.min(1, (now - t0) / dur);
-    const eased = 1 - Math.pow(1 - k, 3);
-    const v = target * eased;
-    put(fmt(Number.isInteger(target) ? Math.round(v) : v) + suffix);
-    if (k < 1) requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
-}
-
-function resize() {
-  const dpr = Math.min(2, devicePixelRatio || 1), r = canvas.getBoundingClientRect();
-  canvas.width = Math.floor(r.width * dpr); canvas.height = Math.floor(r.height * dpr);
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-}
-function initLayout() {
-  const n = G.nodes.length;
-  pos = G.nodes.map((d, i) => {
-    const a = (i / n) * Math.PI * 2 * 3.2;
-    const r = 120 + (i % 7) * 26;
-    return { x: Math.cos(a) * r, y: Math.sin(a) * r * .62 };
-  });
-}
-function draw() {
-  const r = canvas.getBoundingClientRect();
-  ctx.clearRect(0, 0, r.width, r.height);
-  const idx = new Map(G.nodes.map((d, i) => [d.id, i]));
-  ctx.save();
-  ctx.translate(r.width / 2, r.height / 2);
-  const k = Math.min(1.5, r.width / 900) * 1.15;
-  ctx.scale(k, k);
-  ctx.rotate(t * 0.00035);
-  for (const l of G.links) {
-    if (l.kind === 'defend') continue;                 // hero 只画攻击/断言边，避免糊
-    const a = idx.get(l.source), b = idx.get(l.target);
-    if (a == null || b == null) continue;
-    ctx.beginPath(); ctx.moveTo(pos[a].x, pos[a].y); ctx.lineTo(pos[b].x, pos[b].y);
-    ctx.strokeStyle = l.defeated ? 'rgba(217,107,107,.42)' : 'rgba(140,150,160,.12)';
-    ctx.lineWidth = l.defeated ? 1.1 : .5; ctx.stroke();
-  }
-  for (let i = 0; i < G.nodes.length; i++) {
-    const d = G.nodes[i], p = pos[i];
-    ctx.globalAlpha = hover >= 0 && hover !== i ? .28 : ALPHA(d.credibility);
-    const rad = RAD[d.kind] || 3;
-    ctx.beginPath();
-    if (d.kind === 'misconception') ctx.rect(p.x - rad, p.y - rad, rad * 2, rad * 2);
-    else ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
-    ctx.fillStyle = STATE_COLORS[d.state] || STATE_COLORS.unknown; ctx.fill();
-    if (d.kind === 'card') { ctx.lineWidth = .9; ctx.strokeStyle = 'rgba(230,232,234,.5)'; ctx.stroke(); }
-    ctx.globalAlpha = 1;
-  }
-  ctx.restore();
-}
-function tick() {
-  t += 1;
-  // 缓慢漂移（真数据，非装饰）
-  for (let i = 0; i < pos.length; i++) {
-    pos[i].x += Math.sin((t + i * 37) * 0.004) * 0.10;
-    pos[i].y += Math.cos((t + i * 53) * 0.004) * 0.10;
-  }
-  draw(); requestAnimationFrame(tick);
-}
-canvas.addEventListener('mousemove', (e) => {
-  const r = canvas.getBoundingClientRect();
-  ctx.save(); ctx.translate(r.width / 2, r.height / 2);
-  const k = Math.min(1.5, r.width / 900) * 1.15;
-  const x = (e.clientX - r.left - r.width / 2) / k, y = (e.clientY - r.top - r.height / 2) / k;
-  let best = -1, bd = 14;
-  for (let i = 0; i < pos.length; i++) { const d = Math.hypot(pos[i].x - x, pos[i].y - y); if (d < bd) { bd = d; best = i; } }
-  ctx.restore(); hover = best;
-  canvas.style.cursor = best >= 0 ? 'pointer' : 'default';
-});
-canvas.addEventListener('mouseleave', () => { hover = -1; });
-
-/** 655 D：系统现状面板（数字来自 web/data/status.json；缺字段 ⇒ 显示"不可用"，不猜） */
-async function renderStatus() {
-  const grid = document.getElementById('status-grid');
-  try {
-    const S = await fetchJSON('data/status.json');
-    const cards = S.cards || {}, rules = S.rules || {}, prot = S.protectors || {}, esc = S.escape || {};
-    const sub = (id, text) => document.getElementById(id).setAttribute('sub', text);
-    countUp(document.getElementById('s-cards'), cards.cards_real ?? 0);
-    sub('s-cards', `另有 ${cards.cards_draft ?? '—'} 张 draft650 草稿 · verified ${(cards.card_statuses || {}).verified ?? '—'}`);
-    countUp(document.getElementById('s-rules'), rules.rules_total ?? 0);
-    sub('s-rules', `其中 severity=block ${rules.rules_block ?? '—'} 条`);
-    countUp(document.getElementById('s-prot'), prot.protectors_total ?? 0);
-    const miss = (prot.protectors_missing || []).length;
-    sub('s-prot', miss
-      ? `⚠ 缺 ${miss} 个：${prot.protectors_missing.join(', ')}`
-      : `全部就位（647 真上岗 5 + 649 三个态 4）· 源：queyi-core/tools/`);
-    if (esc.available && esc.rate_pct != null) {
-      countUp(document.getElementById('s-escape'), esc.rate_pct, { fmt: (v) => Number(v).toFixed(4), suffix: '%' });
-      sub('s-escape', `${esc.escaped}/${esc.denominator}（v7 基线漏检率，非本书真实错误率；交叉核对 616：${esc.frozen_matches ? '一致' : '不一致'}）`);
-    } else {
-      document.getElementById('s-escape').setNum('不可用');
-    }
-    const un = (S.unavailable || []);
-    document.getElementById('status-note').textContent =
-      `数据来源：${(S.generated_from || []).join('　·　')}　生成于 ${S.generated_at || '—'}` +
-      (un.length ? `　⚠ 缺项：${un.join('；')}` : '');
-  } catch (e) {
-    grid.innerHTML = `<div class="cell"><div class="sub">加载 data/status.json 失败：${e.message}
-      （请用本地静态服务器打开；生成命令 <span class="kbd">python tools/web_status_655.py</span>）</div></div>`;
-  }
-}
-
-(async function main() {
-  renderStatus();               // 与图数据并行拉取，互不阻塞
-  try {
-    G = await fetchJSON('data/graph.json');
-  } catch (e) {
-    stage.classList.add('fallback-note');
-    document.getElementById('mode-chip').textContent = '需经本地静态服务器打开（file:// 下 fetch 受限）';
-    return;
-  }
-  const c = G.meta.counts, w2 = G.meta.w2_summary || {};
-  const stats = [
-    [c.nodes, '节点'], [c.by_kind?.attack, '攻击边'], [c.defeated_links, '击败边'],
-    [c.cards, '知识卡'], [c.props, '命题'], [null, 'IN / OUT'],
-  ];
-  document.getElementById('stats').innerHTML = stats.map(([v, l], i) => `
-    <div class="card"><div class="stat" id="stat-${i}">0</div><div class="stat-label">${l}</div></div>`).join('');
-  stats.forEach(([v, l], i) => {
-    const el = document.getElementById('stat-' + i);
-    if (v == null) el.textContent = `${w2.IN ?? '—'} / ${w2.OUT ?? '—'}`;   // 比例不作计数动画
-    else countUp(el, v);
-  });
-  const btn = document.getElementById('starmap-btn');
-  if (btn) btn.setAttribute('label', `打开星图（${fmtInt(c.nodes)} 节点）`);
-  document.getElementById('src-note').textContent = '数据来源：' + (G.meta.generated_from || []).join('　·　');
-  document.getElementById('mode-chip').textContent = `${fmtInt(c.links)} 条边真实渲染 · 计数为滚动动画`;
-  initLayout(); resize(); window.addEventListener('resize', () => { resize(); draw(); });
-  requestAnimationFrame(tick);
-})();
-</script>
+<footer class="wrap">静态站 · 无后端 · 无追踪 · 数据由 <span class="mono">tools/web_metrics_666.py</span>、
+  <span class="mono">tools/web_data_pipeline_656.py</span> 与 <span class="mono">tools/web_status_655.py</span>
+  从真实台账生成（不造演示数据）。</footer>
 </body>
 </html>

@@ -43,3 +43,44 @@ performance、teaching quality、AddressSanitizer/UBSan、clang-tidy、AArch64+q
 - L1 在 CI 必须 `continue-on-error: true`，绝不阻断合并。
 - mutation score 是 Test adequacy，禁止据此宣称外部效度。
 - 升级 L1→L0 须经 Authority Ledger，不能工具自说自话。
+
+---
+
+## 666 批补：两层各自的**可执行口径**（B 段落地版）
+
+> 666 的活是把上表的"是什么"落到"**跑什么命令、阻断谁、看哪个数字**"。
+
+### L0 REDLINE —— 跑法 / 阻断 / 现场
+
+| 门禁 | 命令（主仓） | 阻断谁 | 失败时的现场 |
+|---|---|---|---|
+| integrity | `python tools/tool_integrity.py --check` | 发布 + CI 合并 | `tools/.tool_checksums` + `data/supply_chain/merkle_roots.json` |
+| correctness | `python tools/run_656_gate.py --check` | 同上 | `data/656_*` 报告 |
+| provenance | `python tools/atom_evidence_replay.py --check` | 同上 | `data/evidence_store/`（内容寻址） |
+| replayability | `pytest -n0 -q tests/test_ledger_* tests/test_*replay*` | 同上 | 逐条复算命令在测试里 |
+| state consistency | `python tools/status_reconciler_658.py --check` | 同上 | `data/baseline.json`（口径见 `caliber_convergence_658.md`） |
+| known critical defect | `python tools/holdout_reveal_*` + `poison_drill` | 同上 | `data/holdout_reveal_*.json` |
+| dco | `python tools/dco_check_657.py --check` | 同上 | 提交者纪律 |
+
+**L0 的判定标准**：失败 = **不许发布**，且**不许**用"改断言/改阈值/加 ignore"绕过；
+绕过必须走 ADR 并人签（见 `docs/adr/`）。
+
+### L1 ADVISORY —— 跑法 / 谁看 / 升级路径
+
+| 维度 | 命令 | 现场 | 升级为 L0 的条件（须人签） |
+|---|---|---|---|
+| mutation score | `python tools/mutation_fuzz.py --report` | core 97.3% / all 81.5%（666 时点） | **永不**（内部指标，最多进威胁清单） |
+| 双档编译证据 | `python tools/compiler_probe_645.py` | 28 卡 / 147 次编译 / 28 双编译器确认 | 出现与卡面断言矛盾的实测 ⇒ 升级 |
+| sanitizer 分层 | `python tools/external_corpus_reveal_665.py` | A 54.2% / B 12.5% / C 0%（全 unknown） | C 层出现"有仪表却全 miss" ⇒ 升级 |
+| 前端质量 | `python tools/web_*` + 手工检查 | 见 `docs/666_frontend.md` | 无障碍/性能**实测**不达标且影响可用性 ⇒ 升级 |
+| 文档一致性 | `python tools/docstring_quality_646.py` / `chapter_lint.py` | 报告 | 影响可复算入口的文档错误 ⇒ 升级 |
+
+**L1 的判定标准**：只出**报告**，CI `continue-on-error: true`；但**报告缺失必须在验收报告里显形**
+（"没跑"≠"没问题"，见 `docs/discipline/error_handling.md` §1）。
+
+### 665/666 的两条经验（写进本层的理由）
+
+1. **"低分"要在 L1 里先怀疑配置**：666 A5 的 5 个 miss 里 3 个换 `-O0` 就被抓 ——
+   若当时把检出率当 L0 闸门，就会得出"验证器不行"的错误结论。
+2. **口径变更必须在 L0/L1 边界上说清**：66.7% → 81.2% 是**口径变更**，不是能力提升；
+   升级/降级判据都要写"换口径"这一行（见 `docs/discipline/release.md` §5）。

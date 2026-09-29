@@ -15,9 +15,9 @@
   },
   "claim": "数据竞争（无同步的并发冲突访问，且至少一方为写）是 C++ 未定义行为，不是\"结果偶尔算错\"—— 编译器可据此做激进优化，行为完全不可预测。TSan 能检测数据竞争，但\"没被 TSan 报 ≠ 没有数据竞争\"： 其漏报边界（插桩盲区 / 必须全量插桩 / 时序偶发）使工具沉默不能当作安全证明。",
   "boundary": {
-    "mutation_set_hash": null,
-    "mutation_count": null,
-    "generator_version": null,
+    "mutation_set_hash": "ce578a4d5d2ad0d84b64aee4966f169946723eb0945bdb629a0985ba553d1481",
+    "mutation_count": 11,
+    "generator_version": "full_baseline_v7.json",
     "claim_boundary": {
       "standard": [
         "C++11",
@@ -40,13 +40,12 @@
     }
   },
   "verdict": {
-    "state": "unknown",
+    "state": "pass",
     "requested": "pass",
-    "downgraded": true,
-    "boundary_ok": false,
+    "downgraded": false,
+    "boundary_ok": true,
     "reasons": [
-      "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version",
-      "⇒ 按 §3.1.3 降级为 unknown"
+      "有边界，按原始判决定态"
     ],
     "file": "atoms/conc/ATOM-CONC-RACE-001.md",
     "verified": true
@@ -57,7 +56,7 @@
       "title": "内存屏障（fence）只约束顺序，不提供原子性；屏障在循环体内才阻止消除，但屏障≠原子类型",
       "domain": "conc",
       "status": "verified",
-      "verdict_state": "unknown",
+      "verdict_state": "pass",
       "props": 2
     }
   ],
@@ -179,7 +178,7 @@
   "selfcheck": [
     {
       "q": "这张卡的判决四态是什么？为什么是这个态？",
-      "a": "unknown（boundary_ok=False，downgraded=True）——理由：缺边界三元组字段：mutation_set_hash,mutation_count,generator_version；⇒ 按 §3.1.3 降级为 unknown",
+      "a": "pass（boundary_ok=True，downgraded=False）——理由：有边界，按原始判决定态",
       "source": "tools/four_state_verdict_638.classify_card（现算）"
     },
     {

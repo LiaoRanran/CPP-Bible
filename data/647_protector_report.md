@@ -7,8 +7,8 @@
 
 | 保护器 | enforce（647 真上岗） | shadow（642 灰度） |
 |---|---|---|
-| **B1** 单卡判决 | `{"卡片": 23, "高置信动作数": 1, "判决态被改变（enforce 强制量）": 1, "动作分布": {"pass": 21, "block": 1, "warn": 1}}` | `{"卡片": 23, "高置信动作数": 1, "判决态被改变（enforce 强制量）": 0, "动作分布": {"pass": 21, "block": 1, "warn": 1}}` |
-| **B2** 人审队列项 | `{"队列": 65, "冻结不入队（enforce 强制量）": 0, "积压警报": false, "占用%": 65.0}` | `{"队列": 65, "冻结不入队（enforce 强制量）": 0, "积压警报": false, "占用%": 65.0}` |
+| **B1** 单卡判决 | `{"卡片": 23, "高置信动作数": 23, "判决态被改变（enforce 强制量）": 23, "动作分布": {"block": 23}}` | `{"卡片": 23, "高置信动作数": 23, "判决态被改变（enforce 强制量）": 0, "动作分布": {"block": 23}}` |
+| **B2** 人审队列项 | `{"队列": 107, "冻结不入队（enforce 强制量）": 85, "积压警报": true, "占用%": 107.0}` | `{"队列": 107, "冻结不入队（enforce 强制量）": 0, "积压警报": true, "占用%": 107.0}` |
 | **B3** 人审条目 | `{"新判决": 3, "强制盲化（enforce 强制量）": 3, "被盲化总数": 3, "生效方法分布": {"ITEM_BLIND": 3}}` | `{"新判决": 3, "强制盲化（enforce 强制量）": 0, "被盲化总数": 1, "生效方法分布": {"BATCH_AUTH": 1, "ITEM_OPEN": 1, "ITEM_BLIND": 1}}` |
 | **B4** 规则 | `{"规则": 67, "降级（enforce 强制量）": 3, "暂停（enforce 强制量）": 2, "有样本": 67}` | `{"规则": 67, "降级（enforce 强制量）": 0, "暂停（enforce 强制量）": 0, "有样本": 67}` |
 | **B5** 规则候选 | `{"候选": 6, "不放行（enforce 强制量）": 5, "结论分布": {"ADMIT": 1, "REJECT_编码长度": 1, "PENDING_HUMAN": 1, "REJECT_豁免率": 1, "REFUSE_已有规则": 1, "REJECT_热力图缺失": 1}}` | `{"候选": 6, "不放行（enforce 强制量）": 0, "结论分布": {"ADMIT": 1, "REJECT_编码长度": 1, "PENDING_HUMAN": 1, "REJECT_豁免率": 1, "REFUSE_已有规则": 1, "REJECT_热力图缺失": 1}}` |
@@ -31,14 +31,14 @@
 
 | 生产工件 | 联调前 | 联调后 | 相同 |
 |---|---|---|---|
-| `gate_engine.py` | `03cd20dcdbee…` | `03cd20dcdbee…` | ✅ |
-| `atom_evidence_replay.py` | `4b142e68a97a…` | `4b142e68a97a…` | ✅ |
-| `poison_drill.py` | `37f638004c4d…` | `37f638004c4d…` | ✅ |
-| `toolchain.py` | `5920bff6af16…` | `5920bff6af16…` | ✅ |
-| `cppbible.py` | `4454db9b4992…` | `4454db9b4992…` | ✅ |
+| `gate_engine.py` | `6c273924f07e…` | `6c273924f07e…` | ✅ |
+| `atom_evidence_replay.py` | `8aadf74691b4…` | `8aadf74691b4…` | ✅ |
+| `poison_drill.py` | `db28f1aa838d…` | `db28f1aa838d…` | ✅ |
+| `toolchain.py` | `8d77446d5559…` | `8d77446d5559…` | ✅ |
+| `cppbible.py` | `ca4c63bb18fa…` | `ca4c63bb18fa…` | ✅ |
 | `decision_ledger` | `ec8cbf5cca2d…` | `ec8cbf5cca2d…` | ✅ |
 | `authority_log` | `01b17c520cde…` | `01b17c520cde…` | ✅ |
-| `human_queue` | `79c88f6ff7f5…` | `79c88f6ff7f5…` | ✅ |
+| `human_queue` | `bffc170772f2…` | `bffc170772f2…` | ✅ |
 | `transparency_log` | `03d828216363…` | `03d828216363…` | ✅ |
 | `verified_cards` | `078616367855…` | `078616367855…` | ✅ |
 
@@ -48,7 +48,7 @@
 
 - `protector_mode_647.rollback()` ⇒ 模式 enforce → **shadow**
 - 回滚后**强制量是否归零**：**True**
-- 回滚后实测：`{"B1": {"卡片": 23, "高置信动作数": 1, "判决态被改变（enforce 强制量）": 0, "动作分布": {"pass": 21, "block": 1, "warn": 1}}, "B2": {"队列": 65, "冻结不入队（enforce 强制量）": 0, "积压警报": false, "占用%": 65.0}, "B3": {"新判决": 3, "强制盲化（enforce 强制量）": 0, "被盲化总数": 1, "生效方法分布": {"BATCH_AUTH": 1, "ITEM_OPEN": 1, "ITEM_BLIND": 1}}, "B4": {"规则": 67, "降级（enforce 强制量）": 0, "暂停（enforce 强制量）": 0, "有样本": 67}, "B5": {"候选": 6, "不放行（enforce 强制量）": 0, "结论分布": {"ADMIT": 1, "REJECT_编码长度": 1, "PENDING_HUMAN": 1, "REJECT_豁免率": 1, "REFUSE_已有规则": 1, "REJECT_热力图缺失": 1}}}`
+- 回滚后实测：`{"B1": {"卡片": 23, "高置信动作数": 23, "判决态被改变（enforce 强制量）": 0, "动作分布": {"block": 23}}, "B2": {"队列": 107, "冻结不入队（enforce 强制量）": 0, "积压警报": true, "占用%": 107.0}, "B3": {"新判决": 3, "强制盲化（enforce 强制量）": 0, "被盲化总数": 1, "生效方法分布": {"BATCH_AUTH": 1, "ITEM_OPEN": 1, "ITEM_BLIND": 1}}, "B4": {"规则": 67, "降级（enforce 强制量）": 0, "暂停（enforce 强制量）": 0, "有样本": 67}, "B5": {"候选": 6, "不放行（enforce 强制量）": 0, "结论分布": {"ADMIT": 1, "REJECT_编码长度": 1, "PENDING_HUMAN": 1, "REJECT_豁免率": 1, "REFUSE_已有规则": 1, "REJECT_热力图缺失": 1}}}`
 
 ## 诚实登记
 

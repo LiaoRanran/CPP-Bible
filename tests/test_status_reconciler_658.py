@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """658 D 段：status_reconciler_658 的反自证能力自检。
 
 原则：这个测试**只**验证 reconciler 本身不依赖 queyi core、能独立产出事实、

@@ -1,66 +1,88 @@
-/* 656 C1 · 设计系统：唯一的**变量源**（Anthropic 式克制：一个主强调色、大量留白、字体是主角）
+/* 666 B1 · 设计系统（Claude 式克制：暖中性底 + 单一暖橙强调色 + 8px 基数 + 少装饰）
  *
- * 纪律：
- *   1. 颜色 / 间距 / 圆角 / 阴影 / 动效时长 **只在这里定义**，其它样式表只准引用变量；
- *   2. 每一对"前景/背景"都在 `tools/web_data_pipeline_656.py --check` 里做 **WCAG 2.2 AA**
- *      对比度计算（正文 ≥ 4.5:1，大字号与图形元素 ≥ 3:1）——**算出来说话，不靠眼睛**；
- *   3. 不改观感基调：暗色克制，无渐变光斑、无粒子、无装饰性阴影堆叠。
+ * 纪律（666 起加严）：
+ *   1. 颜色 / 间距 / 圆角 / 动效 **只在这里定义**，其它样式表与组件只准 `var(--…)`；
+ *   2. 每一对"前景/背景"都由 `tools/web_data_pipeline_656.py --check` 现算 **WCAG 2.2 AA**
+ *      （正文 ≥ 4.5:1、图形元素 ≥ 3:1）——**算出来说话，不靠眼睛**；
+ *   3. **深/浅双主题**：默认跟随系统（`prefers-color-scheme`），可用
+ *      `document.documentElement.dataset.theme = "light" | "dark"` 显式覆盖（存 localStorage）；
+ *      两套都通过同一组对比度阈值（见 `.well-lit` 注释里的实测值）；
+ *   4. 不堆装饰：无渐变光斑、无粒子、无多层阴影；层级靠**描边 + 底色差**。
+ *
+ * 兼容：旧变量名（--bg/--panel/--fg/…）保留为**别名**，老样式表与组件零改动即可迁移。
  */
+
+/* ── 深色（默认）───────────────────────────────────────────── */
 :root {
-  /* ── 色板（语义命名，不用"蓝/绿"这类外观名）────────────────── */
-  --color-bg: #0b0d10;
-  --color-surface: #101317;
-  --color-surface-2: #14181d;
-  --color-line: #1e242b;
-  --color-line-strong: #2a3138;
+  color-scheme: dark;
 
-  --color-text: #e6e8ea;        /* 正文：在 bg 上 15.84:1 */
-  --color-text-dim: #9aa3ab;    /* 次级文字：7.60:1 */
-  /* 三级/图例：原 #6b747c 只有 4.09:1，**不过 WCAG AA**（被 --check 抓出）⇒ 提到 #787f87
-     （bg 上 4.80:1、surface 上 4.60:1，两处都达标）。改色值而不是删用法：这些文字仍在读。 */
-  --color-text-mute: #787f87;
+  /* 底层：暖中性灰（不是纯黑，避免刺眼与"黑洞感"） */
+  --color-bg: #1a1a1a;          /* 底 */
+  --color-surface: #202020;     /* 卡片/面板 */
+  --color-surface-2: #262625;   /* 次级面（输入框、hover 底） */
+  --color-line: #2f2f2c;        /* 描边 */
+  --color-line-strong: #3d3d3a; /* 强描边（可交互元素边界） */
+  --color-overlay: rgba(12, 12, 12, .72);  /* 顶栏毛玻璃底 */
 
-  --color-accent: #8ab4f8;      /* 唯一主强调色：链接 / 焦点 / 选中 */
-  --color-pass: #58c6b2;
-  --color-pass-exception: #d8a657;
-  --color-fail: #d96b6b;
-  --color-unknown: #7a838c;
+  /* 文字（对比度实测见 .well-lit） */
+  --color-text: #e8e6e3;        /* 正文 13.97:1 on bg */
+  --color-text-dim: #b3aea7;    /* 次级 7.90:1 */
+  --color-text-mute: #979089;   /* 三级 5.52:1（仍过 AA 正文） */
+
+  /* 唯一强调色：Claude 橙（链接/焦点/选中） */
+  --color-accent: #d97757;      /* 5.57:1 on bg */
+  --color-accent-soft: rgba(217, 119, 87, .16);  /* 选中底/焦点底（非文字） */
+
+  /* 四态（语义固定：色通道） */
+  --color-pass: #5fc3ae;        /* 8.21:1 */
+  --color-pass-exception: #d9a959; /* 8.10:1 */
+  --color-fail: #e07a72;        /* 5.96:1 */
+  --color-unknown: #8b9299;     /* 5.53:1 */
 
   /* ── 排版：字体是主角 ──────────────────────────────────────── */
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
-               "Noto Sans SC", sans-serif;
+  --font-sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+              Arial, "Noto Sans SC", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Cascadia Mono", monospace;
   --font-size-sm: 12px;
   --font-size-base: 15px;
   --font-size-lg: 17px;
-  --font-size-xl: 27px;         /* 窄屏 h1 */
-  --font-size-2xl: 34px;        /* 宽屏 h1 */
+  --font-size-xl: 27px;
+  --font-size-2xl: 34px;
   --line-height-base: 1.6;
   --line-height-tight: 1.25;
+  --letter-tight: -.01em;
 
-  /* ── 间距（4 的倍数，克制）────────────────────────────────── */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 22px;
-  --space-6: 26px;
-  --space-8: 34px;
-  --space-10: 54px;
+  /* ── 间距：**8px 基数**（666 B1 从 4px 基数上调，理由：更少的档位=更少的随意） */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+  --space-8: 64px;
+  --space-10: 80px;
 
-  /* ── 圆角 / 描边 / 阴影 ───────────────────────────────────── */
-  --radius-sm: 4px;
-  --radius-md: 7px;
-  --radius-lg: 10px;
-  --radius-xl: 12px;
+  /* ── 圆角：8px 基数 ───────────────────────────────────────── */
+  --radius-sm: 6px;
+  --radius-md: 8px;             /* 主圆角（卡片/按钮/输入框） */
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill: 999px;
   --border-width: 1px;
+
+  /* ── 阴影：Claude 式"几乎不用阴影"，仅焦点/浮层用极轻值 ────── */
   --shadow-none: none;
-  --shadow-panel: none;         /* 暗色下靠描边分层，不靠阴影 */
+  --shadow-panel: none;
+  --shadow-pop: 0 6px 24px rgba(0, 0, 0, .32);
+
+  /* ── 焦点（WCAG 2.2 2.4.11/2.4.13：焦点必须可见且不被遮挡）── */
+  --focus-ring: 2px solid var(--color-accent);
+  --focus-ring-offset: 2px;
 
   /* ── 动效（尊重 prefers-reduced-motion）────────────────────── */
   --motion-fast: 120ms;
   --motion-base: 240ms;
-  --motion-slow: 900ms;         /* 数字滚动动画 */
+  --motion-slow: 900ms;         /* 数字滚动 */
   --motion-ease: cubic-bezier(.4, 0, .2, 1);
 
   /* ── 层级 ─────────────────────────────────────────────────── */
@@ -71,7 +93,7 @@
   --wrap-max: 1120px;
   --wrap-wide-max: 1360px;
 
-  /* ── 兼容旧名（style.css 里已有的变量名保持可用，逐步迁移）──── */
+  /* ── 兼容旧名（style.css / 组件里既有变量名保持可用）────────── */
   --bg: var(--color-bg);
   --panel: var(--color-surface);
   --panel-2: var(--color-surface-2);
@@ -88,6 +110,62 @@
   --mono: var(--font-mono);
   --sans: var(--font-sans);
 }
+
+/* ── 浅色主题 ────────────────────────────────────────────────────
+ * 触发方式（任一）：
+ *   · 系统 `prefers-color-scheme: light`（默认跟随）
+ *   · 显式 `html[data-theme="light"]`（用户在页脚切换，存 localStorage）
+ * 对比度实测（同一套阈值）：text 15.82 / dim 7.37 / mute 5.40 / accent 4.87（on bg）*/
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --color-bg: #faf9f7;
+    --color-surface: #ffffff;
+    --color-surface-2: #f2f0ed;
+    --color-line: #e6e2dc;
+    --color-line-strong: #d3cec6;
+    --color-overlay: rgba(250, 249, 247, .85);
+    --color-text: #1f1e1d;
+    --color-text-dim: #56524d;
+    --color-text-mute: #6b6660;
+    --color-accent: #b0522f;
+    --color-accent-soft: rgba(176, 82, 47, .12);
+    --color-pass: #12695a;
+    --color-pass-exception: #8a5a10;
+    --color-fail: #a8322b;
+    --color-unknown: #5b6068;
+    --shadow-pop: 0 6px 24px rgba(31, 30, 29, .12);
+  }
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+  --color-bg: #faf9f7;
+  --color-surface: #ffffff;
+  --color-surface-2: #f2f0ed;
+  --color-line: #e6e2dc;
+  --color-line-strong: #d3cec6;
+  --color-overlay: rgba(250, 249, 247, .85);
+  --color-text: #1f1e1d;
+  --color-text-dim: #56524d;
+  --color-text-mute: #6b6660;
+  --color-accent: #b0522f;
+  --color-accent-soft: rgba(176, 82, 47, .12);
+  --color-pass: #12695a;
+  --color-pass-exception: #8a5a10;
+  --color-fail: #a8322b;
+  --color-unknown: #5b6068;
+  --shadow-pop: 0 6px 24px rgba(31, 30, 29, .12);
+}
+
+html[data-theme="dark"] { color-scheme: dark; }
+
+/* 对比度备忘（**不要改这里的注释数值除非重算**；`--check` 会现算并报错）
+ * 深：text/bg 13.97 | dim/bg 7.90 | mute/bg 5.52 | accent/bg 5.57
+ *     pass 8.21 | exc 8.10 | fail 5.96 | unknown 5.53（图形阈值 3.0）
+ * 浅：text/bg 15.82 | dim/bg 7.37 | mute/bg 5.40 | accent/bg 4.87
+ *     pass 6.25 | exc 5.62 | fail 6.32 | unknown 6.02
+ */
 
 @media (prefers-reduced-motion: reduce) {
   :root {

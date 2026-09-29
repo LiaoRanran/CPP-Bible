@@ -75,7 +75,21 @@ def mth(leaves: list[bytes]) -> bytes | None:
     if n == 1:
         return leaf_hash(leaves[0])
     k = _largest_pow2_lt(n)
-    return node_hash(mth(leaves[:k]), mth(leaves[k:]))  # type: ignore[arg-type]
+    return node_hash(_mth_nonempty(leaves[:k]), _mth_nonempty(leaves[k:]))
+
+
+def _mth_nonempty(leaves: list[bytes]) -> bytes:
+    """非空子树的 MTH（内部契约：调用方保证 `len(leaves) >= 1`）。
+
+    666 A1：本文件原有 **6 处 `# type: ignore`**（arg-type/list-item），全因
+    `mth()` 的返回类型是 `bytes | None`（空树合法），而每个调用点的**切片都必然非空**
+    （`k = _largest_pow2_lt(n)` ⇒ `0 < k < n`）——类型系统看不到这条不变量。
+    修法不是加 ignore，而是把不变量**写成一个断言**：一次收敛，6 处调用点全部干净
+    （625 的「无批量 ignore」预算：本文件 6 → 0）。
+    """
+    h = mth(leaves)
+    assert h is not None, "内部契约破坏：非空切片不应得到 None"
+    return h
 
 
 def inclusion_path(m: int, leaves: list[bytes]) -> list[bytes]:
@@ -92,8 +106,8 @@ def inclusion_path(m: int, leaves: list[bytes]) -> list[bytes]:
         return []
     k = _largest_pow2_lt(n)
     if m < k:
-        return inclusion_path(m, leaves[:k]) + [mth(leaves[k:])]  # type: ignore[list-item]
-    return inclusion_path(m - k, leaves[k:]) + [mth(leaves[:k])]  # type: ignore[list-item]
+        return inclusion_path(m, leaves[:k]) + [_mth_nonempty(leaves[k:])]
+    return inclusion_path(m - k, leaves[k:]) + [_mth_nonempty(leaves[:k])]
 
 
 def verify_inclusion(m: int, n: int, leaf: bytes, proof: list[bytes], root: bytes) -> bool:
@@ -122,11 +136,16 @@ def consistency_proof(m: int, leaves: list[bytes]) -> list[bytes]:
 def _subproof(m: int, leaves: list[bytes], b: bool) -> list[bytes]:
     n = len(leaves)
     if m == n:
-        return [] if b else [mth(leaves)]  # type: ignore[list-item]
+        if b:
+            return []
+        # 666 A1：m==n==0 时旧写法会产出 `[None]`（被 ignore 掩盖的**假证明**）；
+        # 现在 fail-loud（调用方 `verify_consistency` 的 m==0 分支已先行拦截）。
+        assert m > 0, "size-0 树没有 consistency proof"
+        return [_mth_nonempty(leaves)]
     k = _largest_pow2_lt(n)
     if m <= k:
-        return _subproof(m, leaves[:k], b) + [mth(leaves[k:])]  # type: ignore[list-item]
-    return _subproof(m - k, leaves[k:], False) + [mth(leaves[:k])]  # type: ignore[list-item]
+        return _subproof(m, leaves[:k], b) + [_mth_nonempty(leaves[k:])]
+    return _subproof(m - k, leaves[k:], False) + [_mth_nonempty(leaves[:k])]
 
 
 def verify_consistency(m: int, n: int, proof: list[bytes], old_root: bytes, new_root: bytes) -> bool:

@@ -40,6 +40,7 @@ import argparse
 import fnmatch
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -169,7 +170,7 @@ def build_all(out: Path | str = ROOTS_PATH, *, now: str | None = None,
     for key, rel, inc, exc in COVERED_DIRS:
         if names is not None and key not in names:
             continue
-        d = ROOT / rel
+        d = corpus_root() / rel
         if not d.is_dir():
             doc["dirs"][key] = {"path": rel, "missing": True}
             continue
@@ -188,6 +189,49 @@ def load_roots(path: Path | str = ROOTS_PATH) -> Any:
     return json.loads(p.read_text(encoding="utf-8"))
 
 
+def _is_link(p: Path) -> bool:
+    """目录是否为**联结/符号联接**（Windows junction 不算 `is_symlink`，要单独判）。"""
+    if not p.exists():
+        return False
+    try:
+        if hasattr(os.path, "isjunction") and os.path.isjunction(p):   # py3.12+
+            return True
+    except OSError:
+        pass
+    if p.is_symlink():
+        return True
+    try:
+        return bool(p.stat().st_file_attributes & 0x400)               # REPARSE_POINT
+    except (AttributeError, OSError):
+        return False
+
+
+def corpus_root() -> Path:
+    """返回**承载受控语料**的仓库根（666 双仓复核）。
+
+    病：657 拆仓后 queyi-verifier 的 `atoms/ Book/ evidence/ …` 是 junction 指向
+    CPP-Bible，本仓的 `Examples/` 只是部分副本 ⇒ 在 ROOT 上算 Merkle 根，会得到
+    "根不匹配（文件数 1571 → 177）"这类**假红**：不是语料被篡改，而是量错了目录。
+
+    判据（只读）：`Book` **是联结/符号链接** ⇒ 说明 ROOT 是本仓、语料在别处，
+    取联结目标所在仓库；否则一律用 ROOT（CPP-Bible 行为不变；测试里的假仓
+    没有链接、也不是 git 仓 ⇒ 绝不会被换成真仓，585 攻击回归锁按原样生效）。
+    """
+    import subprocess
+    probe = ROOT / "Book"
+    if not _is_link(probe):
+        return ROOT
+    real = probe.resolve()
+    for d in (real.parent, real):
+        if not Path(d).is_dir():
+            continue
+        r = subprocess.run(["git", "rev-parse", "--show-toplevel"],
+                           cwd=str(d), capture_output=True, text=True)
+        if r.returncode == 0 and r.stdout.strip():
+            return Path(r.stdout.strip())
+    return ROOT
+
+
 def check_all(roots_path: Path | str = ROOTS_PATH) -> tuple[list[str], list[str], int]:
     """已存根 vs 当前目录；返回 (problems, skipped, exit_code)（缺台账 ⇒ exit 2）。"""
     doc = load_roots(roots_path)
@@ -204,7 +248,7 @@ def check_all(roots_path: Path | str = ROOTS_PATH) -> tuple[list[str], list[str]
         except KeyError:
             skipped.append(f"{key}：不在当前 COVERED_DIRS 配置里 ⇒ 跳过（台账比配置新？）")
             continue
-        d = ROOT / rel
+        d = corpus_root() / rel
         if not d.is_dir():
             skipped.append(f"{key}：目录 {rel} 不存在 ⇒ 跳过")
             continue

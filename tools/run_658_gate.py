@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """run_658_gate.py — 658 批次验收门禁（编排器）。
 
 把 658 各段交付串成一条可一键复跑的验收流水线，逐阶段收集 pass/fail，
@@ -17,6 +19,7 @@
   S6 单元测试      pytest tests/*658*                    （L0）
 """
 from __future__ import annotations
+
 import glob
 import json
 import os

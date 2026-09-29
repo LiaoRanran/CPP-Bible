@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """gate_tier_check_658.py — 校验门禁两层模型声明与 CI 实际一致。
 
 不变式（658 B 段）：

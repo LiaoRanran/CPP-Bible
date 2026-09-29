@@ -57,7 +57,8 @@ def main() -> int:
     c = _load_ext665().load_merged()
     old = json.load(open(OLD, encoding="utf-8")) if os.path.isfile(OLD) else {}
 
-    rows, by_layer = [], {}
+    rows: list = []          # 666 A1：加注解消 var-annotated
+    by_layer: dict = {}
     for s in c["samples"]:
         kind = s["expected_detector"]
         v, note = ex.detect(kind, s.get("code"))

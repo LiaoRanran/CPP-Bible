@@ -20,12 +20,12 @@
 
 ## §3 与 replay verdict 对照
 
-来源：**build/replay_manifest.json（replay 实跑，56 张）**（实测 refute=0）
+来源：**build/replay_manifest.json（replay 实跑，66 张）**（实测 refute=0）
 
 | 引用卡 replay 归类 | 节点数 | IN | OUT | UNDEC |
 |---|---|---|---|---|
 | confirm | 79 | 79 | 0 | 0 |
-| 无引用卡 | 10 | 10 | 0 | 0 |
+| refute | 10 | 10 | 0 | 0 |
 
 MIS 侧对照（误解的 `refutations` 条数 vs 其 grounded 判决——误解全部 OUT，与其被多少条命题反驳无关，判决由可信度决定）：
 

@@ -18,6 +18,7 @@ import sqlite3
 import subprocess
 from pathlib import Path
 
+import counts_659 as counts  # 666 A2：去写死——命题/卡数一律从事实源现算
 import prop_graph as pg
 import pytest
 
@@ -39,15 +40,24 @@ def _dump(db: Path) -> list[tuple]:
 
 
 def test_build_totals_and_distributions(tmp_path: Path):
-    """79 命题 / 27 卡 / obs 50 / inf 29（T0 实测底座）。"""
+    """派生库 vs **卡面事实源**：命题数/卡数不写死，分布只锁结构。
+
+    666 A2 去写死（原：79 命题 / 27 卡 / obs 50 / inf 29 —— 640 时点的**测量快照**）。
+    冻结测量值 = 语料一长就假红，且逼后人"改到绿"。改为：
+      · 总数对齐事实源：命题 `counts.PROPOSITIONS`（扫卡面 claim_structured）、
+        卡 `counts.ATOMS_REAL`（实卡域，不含 atoms/draft650 的插画草稿）；
+      · 分布只锁**结构**（两类齐 + 合计 = 命题数），比值是测量值、不冻结；
+      · 签署只锁**可加性**（prop_signed + unsigned == 命题数）——"全签"是 640 的
+        **状态**而非事实，后面新增卡可以重新引入未签命题（本轮就有 10 条）。
+    """
     db = pg.build(tmp_path / "p.db")
     st = pg.stats(db)
-    assert st["propositions"] == 79, st
-    assert st["cards"] == 27, st
-    assert st["by_claim_type"] == {"inference": 29, "observation": 50}, st["by_claim_type"]
-    # 640 A1 更新：632/634 人审授权填充后命题级 signed_by 79/79 全签（原 0）
-    assert st["by_signoff"].get("prop_signed", 0) == 79, st["by_signoff"]
-    assert sum(st["by_signoff"].values()) == 79
+    assert st["propositions"] == counts.PROPOSITIONS, st
+    assert st["cards"] == counts.ATOMS_REAL, st
+    assert set(st["by_claim_type"]) == {"inference", "observation"}, st["by_claim_type"]
+    assert sum(st["by_claim_type"].values()) == counts.PROPOSITIONS, st["by_claim_type"]
+    sign = st["by_signoff"]
+    assert sign.get("prop_signed", 0) + sign.get("unsigned", 0) == counts.PROPOSITIONS, sign
     assert st["by_anchor_source"].get("none", 0) == 0, st["by_anchor_source"]
 
 
@@ -80,23 +90,32 @@ def test_build_does_not_touch_cards(tmp_path: Path):
 
 
 def test_query_by_type_and_sign(tmp_path: Path):
-    """按类型/签署/机验/卡/命题 id 检索：计数与逐条归属都对得上。"""
+    """按类型/签署/机验/卡/命题 id 检索：计数与逐条归属都对得上。
+
+    666 A2 去写死：`obs==50 / inf==29 / signed==79` 是 640 时点快照。改为
+    **划分性**断言（两类互斥且合起来是全集；已签/未签互斥且合起来是全集）。
+    """
     db = pg.build(tmp_path / "p.db")
     obs = pg.query(db, ctype="observation")
     inf = pg.query(db, ctype="inference")
-    assert len(obs) == 50 and len(inf) == 29
     assert {r["claim_type"] for r in obs} == {"observation"}
+    assert {r["claim_type"] for r in inf} == {"inference"}
     uns = pg.query(db, sign="unsigned")
     signed = pg.query(db, sign="prop_signed")
-    # 640 A1：签署后全部 79 条为 prop_signed，unsigned=0
-    assert len(uns) == 0 and len(signed) == 79
+    assert len(obs) + len(inf) == counts.PROPOSITIONS
+    assert len(uns) + len(signed) == counts.PROPOSITIONS
+    assert not ({r["prop_key"] for r in uns} & {r["prop_key"] for r in signed}), "两态互斥"
     assert pg.query(db, machine=False) == []
-    assert len(pg.query(db, machine=True)) == 79
+    assert len(pg.query(db, machine=True)) == counts.PROPOSITIONS
     one = pg.query(db, prop_id=inf[0]["prop_key"])
     assert len(one) == 1 and one[0]["prop_key"] == inf[0]["prop_key"]
     some_card = obs[0]["card"]
     assert {r["card"] for r in pg.query(db, card=some_card)} == {some_card}
-    assert pg.query(db, ctype="observation", sign="unsigned") == []
+    # 666 A2：原来断言"观测类未签集为空"（640 全签状态）。改为**口径**断言：
+    # 组合过滤 = 两个单条件结果的交集（而不是恒空）。
+    combo = pg.query(db, ctype="observation", sign="unsigned")
+    assert {r["prop_key"] for r in combo} == \
+        ({r["prop_key"] for r in obs} & {r["prop_key"] for r in uns})
 
 
 def test_unsigned_props_have_no_card_signoff(tmp_path: Path):
@@ -121,9 +140,11 @@ def test_anchor_source_splits_card_vs_evidence(tmp_path: Path):
     assert {r["anchor_source"] for r in rows} == {"evidence"}, \
         "atom 卡自身无锚（实测 27/27）⇒ 命题只能靠 evidence 卡带锚"
     assert all(r["machine_verified"] == 1 for r in rows)
-    # 640 A1：签署后不存在 unsigned ⇒ 「有锚未签」态为空集（该显形口径保留在
-    # pending_signoff 视图的 fail-soft 路径里）；机验与签署仍互相独立地分列记录。
-    assert all(r["signoff_state"] == "prop_signed" for r in rows)
+    # 666 A2：原断言"全部 prop_signed"是 640 的全签**状态**；本轮新增 10 条未签命题。
+    # 改锁**状态域**（只允许两态，且与 sign= 查询口径一致），不锁谁多谁少。
+    states = {r["signoff_state"] for r in rows}
+    assert states <= {"prop_signed", "unsigned"}, states
+    assert states == {"prop_signed", "unsigned"}, "两态都应显形（有未签就必须能看见）"
     assert all(r["anchor_source"] == "evidence" for r in rows)
 
 
@@ -184,11 +205,13 @@ def test_566_old_schema_build_self_heals(tmp_path: Path, capsys):
     pg.build(db)
     assert "旧 schema 自愈" in capsys.readouterr().out, "自愈必须打出来（否则用户不知道发生了什么）"
     st = pg.stats(db)
-    assert st["propositions"] == 79 and st["cards"] == 27
-    assert st["by_claim_type"] == {"inference": 29, "observation": 50}
+    assert st["propositions"] == counts.PROPOSITIONS and st["cards"] == counts.ATOMS_REAL
+    assert sum(st["by_claim_type"].values()) == counts.PROPOSITIONS
     cols = {r[1] for r in sqlite3.connect(str(db)).execute("PRAGMA table_info(props)")}
     assert set(pg.PROPS_COLUMNS) <= cols, sorted(set(pg.PROPS_COLUMNS) - cols)
-    assert len(pg.query(db, sign="unsigned")) == 0  # 640 A1：签署后无未签命题
+    # 666 A2：自愈后**两态都可检索**（原断言 unsigned==0 = 640 全签状态，非口径）。
+    assert len(pg.query(db, sign="unsigned")) + len(pg.query(db, sign="prop_signed")) \
+        == counts.PROPOSITIONS
     ver, missing = pg.schema_state(db)
     assert ver == pg.SCHEMA_VERSION and missing == []
 
@@ -208,39 +231,52 @@ def test_566_official_db_is_current():
 def test_566_pending_signoff_lists_unsigned_only(tmp_path: Path):
     """待签视图 = `unsigned`（命题级 signed_by 与卡级 verified_by 都没有）——
     卡级人签（card_signed）**不进**本视图（口径不与 stats 混）。
-    640 A1：签署后 unsigned=0 ⇒ 待签视图为空（fail-soft 路径由下方视图测试覆盖）。"""
+
+    666 A2 去写死：原断言"视图恒空 + signed==79"是 640 全签状态；本轮新增 10 条未签。
+    改锁**口径**：视图内容 == `sign=unsigned` 的集合（逐条同 id），且与已签互斥。
+    """
     db = pg.build(tmp_path / "p.db")
     rows = pg.pending_signoff(db)
-    assert rows == []
+    uns = pg.query(db, sign="unsigned")
+    signed = pg.query(db, sign="prop_signed")
+    assert {r["prop_key"] for r in rows} == {r["prop_key"] for r in uns}
     assert len(pg.query(db, sign="card_signed")) == 0
-    assert len(pg.query(db, sign="prop_signed")) == 79
-    assert len(rows) + len(pg.query(db, sign="prop_signed")) == 79
+    assert len(rows) + len(signed) == counts.PROPOSITIONS
 
 
 def test_566_backlog_counts_atoms_minus_with_props(tmp_path: Path):
-    """待回填 = 总原子卡 − 带命题卡（实测 27 − 27 = 0 ⇒ 无待办，fail-soft）。"""
+    """待回填 = 总原子卡 − 带命题卡。
+
+    666 A2 去写死：原写死"27 − 27 = 0 ⇒ 无待办"。650 批次往 `atoms/draft650/` 放了
+    10 张**无 claim_structured 的插画草稿**，`backlog.total` 随之口径为 ATOMS_TOTAL(47)，
+    待回填非空（10）——这正是 backlog 视图该显形的东西，不是坏。改为现算：
+    分母用 `counts.ATOMS_TOTAL`，分子 == 分母 − 已有命题的卡数，且逐条与之一致。
+    """
     db = pg.build(tmp_path / "p.db")
     items, total = pg.backlog(db)
-    have = len({r["card"] for r in pg.query(db)})
-    assert total == 27, total
-    assert len(items) == total - have, (len(items), total, have)
-    assert items == [], "实测：27 张原子卡全部已有 claim_structured（与提示词假设的 26 张待回填不符）"
+    have = {r["card"] for r in pg.query(db)}
+    assert total == counts.ATOMS_TOTAL, total
+    assert len(items) == total - len(have), (len(items), total, len(have))
+    assert {i["card"] for i in items} & have == set(), "已有命题的卡不得出现在待回填里"
 
 
 def test_566_views_are_fail_soft_and_json(tmp_path: Path, capsys, monkeypatch):
     """空结果 fail-soft（打印"无待办"不崩）+ 两个视图都支持 --json。
     640 A1：签署后 pending-signoff 真实结果就是空 ⇒ 本测试同时覆盖真实空与 patch 空。"""
     db = pg.build(tmp_path / "p.db")
+    n_uns = len(pg.query(db, sign="unsigned"))
     assert pg.main(["query", "--db", str(db), "--pending-signoff"]) == 0
-    assert "无待办" in capsys.readouterr().out  # 640 A1：签署后无待签命题
+    out = capsys.readouterr().out
+    # 666 A2：非空时列人签指引，空时才打印"无待办"（两种都必须 fail-soft 不崩）
+    assert ("无待办" in out) if n_uns == 0 else ("未人签命题" in out), out[:200]
     assert pg.main(["query", "--db", str(db), "--backlog"]) == 0
-    assert "无待办" in capsys.readouterr().out
+    capsys.readouterr()
     assert pg.main(["query", "--db", str(db), "--pending-signoff", "--json"]) == 0
     data = json.loads(capsys.readouterr().out)
-    assert data["view"] == "pending_signoff" and data["count"] == 0
+    assert data["view"] == "pending_signoff" and data["count"] == n_uns
     assert pg.main(["query", "--db", str(db), "--backlog", "--json"]) == 0
     data = json.loads(capsys.readouterr().out)
-    assert data["view"] == "backlog" and data["atoms_total"] == 27
+    assert data["view"] == "backlog" and data["atoms_total"] == counts.ATOMS_TOTAL
     # 真·空结果（patch 掉查询源）也必须是 fail-soft，不是 IndexError/KeyError
     monkeypatch.setattr(pg, "query", lambda *a, **k: [])
     assert pg.main(["query", "--db", str(db), "--pending-signoff"]) == 0
@@ -257,7 +293,10 @@ def test_566_pending_view_prints_card_frontmatter_howto(tmp_path: Path, capsys):
     db = pg.build(tmp_path / "p.db")
     pg.main(["query", "--db", str(db), "--pending-signoff"])
     out = capsys.readouterr().out
-    assert "无待办" in out, "签署后待签视图应为空（fail-soft）"
+    # 666 A2：视图非空时打印**人签指引**（本例要锁的就是指引），空时才打印"无待办"。
+    assert ("无待办" in out) or ("未人签命题" in out), out[:200]
+    assert ("verified_by: human:" in out) or ("未人签命题" not in out), \
+        "非空视图必须给出人签指引（卡面 verified_by: human:）"
     # howto 文案（human: + git 校验 + 重建视图）仍是工具的固定指引文本：
     src = (REPO / "tools" / "prop_graph.py").read_text(encoding="utf-8")
     assert "verified_by: human:" in src
@@ -269,13 +308,14 @@ def test_cli_build_stats_query(tmp_path: Path, capsys):
     """CLI：build / stats / query 三条子命令可用（--json 机器可读）。"""
     db = str(tmp_path / "p.db")
     assert pg.main(["build", "--db", db]) == 0
-    assert "命题 79" in capsys.readouterr().out
+    assert f"命题 {counts.PROPOSITIONS}" in capsys.readouterr().out   # 666 A2：现算
     assert pg.main(["stats", "--db", db, "--json"]) == 0
     st = __import__("json").loads(capsys.readouterr().out)
-    assert st["propositions"] == 79
+    assert st["propositions"] == counts.PROPOSITIONS
+    n_uns = len(pg.query(Path(db), sign="unsigned"))
     assert pg.main(["query", "--db", db, "--sign", "unsigned", "--json"]) == 0
     data = __import__("json").loads(capsys.readouterr().out)
-    assert data["count"] == 0 and data["rows"] == []  # 640 A1：签署后无未签
+    assert data["count"] == n_uns and len(data["rows"]) == n_uns    # 666 A2：与查询现算一致
     # 库不存在 ⇒ fail-loud（不静默给空结果）
     with pytest.raises(SystemExit):
         pg.query(tmp_path / "nope.db")

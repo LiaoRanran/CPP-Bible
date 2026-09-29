@@ -4,13 +4,11 @@
   "theta_warn": 0.5,
   "n": 23,
   "by_action": {
-    "pass": 21,
-    "block": 1,
-    "warn": 1
+    "block": 23
   },
-  "n_blocked": 1,
-  "n_verdict_changed": 1,
-  "n_refused": 1,
+  "n_blocked": 23,
+  "n_verdict_changed": 23,
+  "n_refused": 23,
   "synthetic": [
     {
       "name": "高置信（C=1.0：欠定 + 悬挂引用 + 反证）",

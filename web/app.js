@@ -1,9 +1,12 @@
 // 653 B · 共享工具（无框架、无构建、无后端）
+// 666 B1：四态色与 LINK_STYLE 改为**与 css/design-tokens.css 同一组值**
+//   （canvas 拿不到 CSS 变量，必须在这里镜像；改色请**同时**改两处 —— 
+//    `tools/web_data_pipeline_656.py --check` 会算对比度，两处不一致时肉眼可见）。
 export const STATE_COLORS = {
-  pass: '#58c6b2',
-  pass_with_exception: '#d8a657',
-  fail: '#d96b6b',
-  unknown: '#7a838c',
+  pass: '#5fc3ae',
+  pass_with_exception: '#d9a959',
+  fail: '#e07a72',
+  unknown: '#8b9299',
 };
 export const STATE_LABELS = {
   pass: 'pass · 通过',
@@ -13,9 +16,9 @@ export const STATE_LABELS = {
 };
 export const KIND_LABELS = { card: '卡（原子知识）', prop: '命题', misconception: '误解（攻击者）' };
 export const LINK_STYLE = {
-  attack:   { color: '217,107,107', width: 0.6, alpha: 0.55 },  // 攻击边
-  defend:   { color: '88,198,178',  width: 0.5, alpha: 0.30 },  // 防御边
-  asserts:  { color: '138,180,248', width: 0.7, alpha: 0.35 },  // 卡→命题
+  attack:   { color: '224,122,114', width: 0.6, alpha: 0.55 },  // 攻击边（fail 色）
+  defend:   { color: '95,195,174',  width: 0.5, alpha: 0.30 },  // 防御边（pass 色）
+  asserts:  { color: '217,119,87',  width: 0.7, alpha: 0.35 },  // 卡→命题（accent 色）
 };
 
 export async function fetchJSON(url) {

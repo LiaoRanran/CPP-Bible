@@ -1,30 +1,38 @@
 {
-  "generated_at": "2026-09-28T10:27:20",
+  "generated_at": "2026-09-29T18:49:42",
   "tool": "tools/web_data_pipeline_656.py",
   "files": {
     "card.json": {
-      "bytes": 10188,
-      "sha256": "c7843acdd92663d41b6d4b0f886ba448dc0585621db5f9fa18da30c2aa97743f"
+      "bytes": 10091,
+      "sha256": "ff8451e8d21ad0af1d7cca4ac2c6d92ee0520d81e2c97709b5a774b6d5bf0720"
     },
     "cards.json": {
       "bytes": 377514,
       "sha256": "d6e4ff01141b76cb82c340af2ccd772c98c4405b6d4e24d28f57a0212a7b9626"
     },
     "cards_index.json": {
-      "bytes": 23031,
-      "sha256": "e295e0cdedd576466340cea0ab588b17e9403a448e48131b1c124cccdd414360"
+      "bytes": 22979,
+      "sha256": "2c000c75233a3763c49c378ef3db027033e7fb8a25352ae015c8a750e7c4ab93"
     },
     "graph.json": {
       "bytes": 193086,
       "sha256": "aaca5434727c719afd6f1105af8d1729fb34af4847629b3fbc05b5952641a440"
     },
+    "ig_cards_665.json": {
+      "bytes": 9006,
+      "sha256": "b8f1dab729fafe544831127b7a59b3f04c4acfeb74e922397256163e3c98a730"
+    },
     "manifest.json": {
       "bytes": 3122,
-      "sha256": "f4a4e8cbe35c55112bcfe96d1ac07b80fd78ca1c4322d59b2956d184b6705f87"
+      "sha256": "56ff3c42b67e48ebb69546c071c259bdf0832453fe547e61a559eab01b32d89a"
+    },
+    "metrics_666.json": {
+      "bytes": 3805,
+      "sha256": "79b8668c276f528ba373b5a5ee8bdae4708f92ce7e5e73314525bb31c47027bf"
     },
     "status.json": {
-      "bytes": 1659,
-      "sha256": "5ee1e5fc9c16729e1c8d843190391dd4c92f7bae5ffa76ff0f52523f5d14b089"
+      "bytes": 1698,
+      "sha256": "f388369b7afd229c3ae64c6971e8f94f0609f384500858ea42c3c3a057f5359f"
     }
   }
 }

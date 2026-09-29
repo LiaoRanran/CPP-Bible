@@ -1,7 +1,7 @@
 # 647 D2 · 合并后接口统一验证（10 个核心工具）
 
 - 现存核心工具：**10**（646 B4 计划 15 → 10，**647 D1 已执行**）
-- 全部符合 645 D2 接口规范：**True**
+- 全部符合 645 D2 接口规范：**False**
 
 ## 一、合并前后对比
 
@@ -21,7 +21,7 @@
 | `loop_r5_runner_645` | True | True | True | True | 0 | True | ✅ |
 | `rule_card_mapper_646` | True | True | True | True | 0 | True | ✅ |
 | `standard_fetcher_645` | True | True | True | True | 0 | True | ✅ |
-| `compiler_probe_645` | True | True | True | True | 0 | True | ✅ |
+| `compiler_probe_645` | True | True | True | True | 1 | True | ❌ |
 | `counterexample_searcher_645` | True | True | True | True | 0 | True | ✅ |
 | `evidence_grading_645` | True | True | True | True | 0 | True | ✅ |
 | `three_layer_orchestrator_645` | True | True | True | True | 0 | True | ✅ |

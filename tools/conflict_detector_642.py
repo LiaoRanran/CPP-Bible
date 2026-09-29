@@ -50,7 +50,7 @@ def flag_decision(decision: core.Decision, det: dict[str, Any]) -> dict[str, Any
     返回值 = `decision.to_dict()` + 三个 `conflict_*` 字段；`state` / `decision_id`
     等一切原有字段**逐字不变**（由 `verdict_unchanged()` 机械核验）。
     """
-    out = decision.to_dict()
+    out: dict[str, Any] = dict(decision.to_dict())   # 666 A1：显式化（core 是动态 wrapper ⇒ to_dict() 为 Any）
     for k in FLAG_FIELDS:
         out.pop(k, None)          # 幂等：重复 flag 不叠加
     out["conflict_flag"] = bool(det.get("exceeds_theta"))

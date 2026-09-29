@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """658 A 段：外部效度工具自检（不触发不可逆 reveal）。"""
 import importlib.util
 import os

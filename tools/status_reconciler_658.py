@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """status_reconciler_658.py — 元状态对账器（658 D 段）。
 
 设计原则（658 D5 反自证）：**越蠢越好**。
@@ -25,7 +27,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROBE_DIRS = ("_arch_v", "_pytest_tmp", "backup_652", "node_modules", ".pytest_tmp")
-TOLERATED_KEYS = set()  # 660 B5：规则口径已收敛为 data/_gate_rules.json 实测（63），不再容忍；差异改由下方显式对账
+TOLERATED_KEYS: set = set()  # 660 B5：规则口径已收敛；666 A6 定位为 data/_gate_rules.json 实测 == gate_engine.RULES == 67（旧值 63 见 _arch_v19_brief.md，属历史快照）
 
 
 def _run(args):

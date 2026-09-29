@@ -1,30 +1,31 @@
 {
   "mode": "enforce",
   "state": {
-    "queue_len": 65,
+    "queue_len": 107,
     "weekly_new": 104,
-    "occupancy_pct": 65.0,
-    "avg_wait_days": 22.8,
-    "A": false,
+    "occupancy_pct": 107.0,
+    "avg_wait_days": 37.4,
+    "A": true,
     "B": true,
     "C": true,
-    "level": "半饱和",
+    "level": "饱和",
     "budget_exceeded": true
   },
-  "n": 65,
-  "n_frozen_enforced": 0,
+  "n": 107,
+  "n_frozen_enforced": 85,
   "priority_dist": {
     "高": 4,
-    "中": 61
+    "中": 61,
+    "低": 42
   },
   "backlog": {
-    "alert": false,
-    "occupancy_pct": 65.0,
+    "alert": true,
+    "occupancy_pct": 107.0,
     "threshold_pct": 80.0,
-    "needs_human_cleanup": false,
-    "action": "无需清理"
+    "needs_human_cleanup": true,
+    "action": "触发「需人审清理」警报"
   },
-  "queue_file_sha_unchanged": "79c88f6ff7f57576c230f17a2dcc3c8e8c0e361f46f6031c624834b343ab33e2",
+  "queue_file_sha_unchanged": "bffc170772f23e486347717f2962e7fc87ae5204e181f4ad5d9671b45ff59157",
   "synthetic": [
     {
       "state": "正常",

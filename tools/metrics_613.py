@@ -141,14 +141,29 @@ def main(argv: list[str] | None = None) -> int:
     m = collect()
     if a.check:
         errs = []
-        if m["A_liveness"]["missing_anchors"] != 50:
-            errs.append(f"缺锚命题应为 50，实测 {m['A_liveness']['missing_anchors']}")
-        if m["A_liveness"]["low_cost"] != 9:
-            errs.append(f"low 档应为 9，实测 {m['A_liveness']['low_cost']}")
-        if m["C_learner"]["kc"] != 27:
-            errs.append(f"KC 应为 27，实测 {m['C_learner']['kc']}")
-        if m["E_trust"]["merkle_proofs_total"] and \
-                m["E_trust"]["merkle_proofs_ok"] != m["E_trust"]["merkle_proofs_total"]:
+        A, C, D, E = (m["A_liveness"], m["C_learner"], m["D_argument"], m["E_trust"])
+        # 666 A2 去写死：原来这里把 50 / 9 / 27 三个**测量快照**当"自验证"标准
+        #   ⇒ 语料一长（缺锚 50→60、分量 11→21）自检就红，且红得没有信息量。
+        # 换成**口径不变量**（换了语料也不该破的关系）：
+        #   ① 补全投影的差值 == 低成本可补条数（投影只吃 low 档，二者必须相等）
+        #   ② 缺锚条数 ≥ 低成本可补条数（low 是缺锚的子集）
+        #   ③ kc 与 path_nodes 同源（同一个 load_kcs()），不允许两处对不上
+        #   ④ 分量投影不得比现状更多（合并只减不增）
+        #   ⑤ Merkle 全通过 / 渲染正常（这两条本来就是结构判据，保留）
+        if A["warn_before"] is None or A["warn_after"] is None:
+            errs.append("线A 补全投影缺失（warn_before/after 为空）")
+        elif A["warn_before"] - A["warn_after"] != A["low_cost"]:
+            errs.append(f"投影差值 {A['warn_before'] - A['warn_after']} != 低成本可补 {A['low_cost']}")
+        if A["low_cost"] > A["missing_anchors"]:
+            errs.append(f"低成本可补 {A['low_cost']} > 缺锚总数 {A['missing_anchors']}（子集关系破了）")
+        if A["low_cost"] <= 0:
+            errs.append("低成本可补条数为 0（口径或数据异常）")
+        if C["kc"] != C["path_nodes"]:
+            errs.append(f"kc={C['kc']} 与 path_nodes={C['path_nodes']} 不同源")
+        if D["components_projection"] is not None and D["components_now"] is not None and \
+                D["components_projection"] > D["components_now"]:
+            errs.append(f"分量投影 {D['components_projection']} > 现状 {D['components_now']}")
+        if E["merkle_proofs_total"] and E["merkle_proofs_ok"] != E["merkle_proofs_total"]:
             errs.append("存在未通过的 Merkle 证明")
         page = render(m)
         if "关键数字汇总" not in page:

@@ -32,8 +32,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
-import re
 import subprocess
 import sys
 import time
@@ -146,7 +144,7 @@ def run_probe(kind: str, src: Path) -> tuple[str, str, str, int, str]:
     """跑一遍，给出 机器判决 / 人读说明 / 可复算签名 / 实跑次数 / 原始输出。"""
     if kind == "compiler-warn":
         rc, out = _sh(["g++", "-std=c++17", "-Wall", "-Wextra", "-fsyntax-only", str(src)])
-        lines = [l for l in out.splitlines() if ("warning:" in l or "error:" in l)]
+        lines = [ln for ln in out.splitlines() if ("warning:" in ln or "error:" in ln)]
         if not lines:
             return "miss", "无告警/无错误（rc=%d）" % rc, "no-diagnostic", 1, out
         # 首行含临时路径 ⇒ 只取文件名之后的部分，保证跨次运行稳定
@@ -405,7 +403,10 @@ def build() -> int:
     except Exception:  # noqa: BLE001
         pass
 
-    dist, fs_dist, rows, agree_n = {}, {}, [], 0
+    dist: dict = {}          # 666 A1：加注解消 var-annotated
+    fs_dist: dict = {}
+    rows: list = []
+    agree_n = 0
     for c, m in cards:
         pr = prior.get(c["id"], {})
         m["b_refuted_664"] = pr.get("b_refuted")

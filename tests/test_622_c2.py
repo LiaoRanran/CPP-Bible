@@ -12,6 +12,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 import atom_verdict_extractor_622 as E  # noqa: E402
+import counts_659 as counts  # noqa: E402
 
 OUT = os.path.join(ROOT, "data", "atom_verdict_extraction_622.jsonl")
 
@@ -54,15 +55,15 @@ def test_status_history_refuted_detected():
 
 
 def test_discover_27_atoms():
-    assert len(E.discover_atoms()) == 37
+    assert len(E.discover_atoms()) == counts.ATOMS_TOTAL
 
 
 def test_extract_all_and_index():
     rows = E.extract_all()
-    assert len(rows) == 37
+    assert len(rows) == counts.ATOMS_TOTAL
     assert all(r["verdict"] in ("SUPPORTED", "REFUTED", "UNDECIDED") for r in rows)
     idx = E.verdict_index(rows)
-    assert len(idx) == 37
+    assert len(idx) == counts.ATOMS_TOTAL
 
 
 def test_artifact_matches_tool():

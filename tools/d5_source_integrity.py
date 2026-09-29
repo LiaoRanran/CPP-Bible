@@ -46,14 +46,59 @@ BENCH_NUM_RE = re.compile(r'_bench_d5_(?:ch)?(\d+)')
 BENCH_RE = re.compile(r'_bench_d5_[^`\s]+\.cpp')
 
 
+def _is_link(p):
+    """是否为**联结/符号联接**（Windows junction 不算 `is_symlink`，要单独判）。"""
+    if not os.path.exists(p):
+        return False
+    try:
+        if hasattr(os.path, "isjunction") and os.path.isjunction(p):   # py3.12+
+            return True
+    except OSError:
+        pass
+    if os.path.islink(p):
+        return True
+    try:
+        return bool(os.stat(p).st_file_attributes & 0x400)              # REPARSE_POINT
+    except (AttributeError, OSError):
+        return False
+
+
+def _tracking_repos():
+    """返回候选 git 仓库根列表：本仓 + **真正承载语料**的仓库（666 双仓复核）。
+
+    病：657 拆仓后 queyi-verifier 的 `_archive/benchmarks/` 是 junction 指向
+    CPP-Bible，本仓不跟踪这些基准源 ⇒ `git ls-files` 恒空 ⇒ 门禁把"可复现契约"
+    判成"文件丢失"（假红），而真正该报的"库根有文件但未跟踪"反倒报不出来。
+
+    判据（只读）：本仓跟踪 `Book/` ⇒ 只用本仓（CPP-Bible 行为不变）；否则追加
+    归档目录**真实路径**（junction 目标）所在仓库。契约「真实存在 + git 跟踪」
+    不放宽——只是把"哪本仓"从假定改成解析。
+    """
+    repos = [os.getcwd()]
+    if _is_link(ARCHIVE_BENCH):
+        real = os.path.realpath(ARCHIVE_BENCH)
+        for d in (os.path.dirname(real), real):
+            if not os.path.isdir(d):
+                continue
+            r = subprocess.run(['git', 'rev-parse', '--show-toplevel'],
+                               cwd=d, capture_output=True, text=True)
+            if r.returncode == 0 and r.stdout.strip() and r.stdout.strip() not in repos:
+                repos.append(r.stdout.strip())
+                break
+    return repos
+
+
 def git_tracked(pattern):
     """git 跟踪集合（basename）。613 B2：基准源可能已迁至 `_archive/benchmarks/`，
-    故同时查询库根与归档目录两个 pathspec（契约「真实存在且 git 跟踪」不变）。"""
-    out = subprocess.run(['git', 'ls-files', pattern],
-                         capture_output=True, text=True).stdout.split()
-    arc = subprocess.run(['git', 'ls-files', os.path.join(ARCHIVE_REL, pattern)],
-                         capture_output=True, text=True).stdout.split()
-    return set(os.path.basename(x) for x in (out + arc))
+    故同时查询库根与归档目录两个 pathspec（契约「真实存在且 git 跟踪」不变）。
+    666：仓库根由 `_tracking_repos()` 解析（拆仓后语料在 CPP-Bible 侧）。"""
+    out = []
+    for repo in _tracking_repos():
+        out += subprocess.run(['git', 'ls-files', pattern],
+                              capture_output=True, text=True, cwd=repo).stdout.split()
+        out += subprocess.run(['git', 'ls-files', os.path.join(ARCHIVE_REL, pattern)],
+                              capture_output=True, text=True, cwd=repo).stdout.split()
+    return set(os.path.basename(x) for x in out)
 
 
 def collect_claims():

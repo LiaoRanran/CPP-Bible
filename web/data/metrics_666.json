@@ -1,0 +1,111 @@
+{
+  "schema": "queyi-web-metrics/666",
+  "generated_by": "tools/web_metrics_666.py",
+  "metrics": {
+    "cards_real": 37,
+    "cards_draft": 10,
+    "rules_total": 67,
+    "holdout": {
+      "rate_pct": 81.2,
+      "catch": 13,
+      "miss": 3,
+      "unknown": 1,
+      "denominator": "catch+miss（可测；unknown 不计）",
+      "caliber": "双档（-O0 与 -O2 都跑，任一档报出即 catch）",
+      "cmd": "python tools/holdout_reveal_3_665.py"
+    },
+    "external": {
+      "rate_pct": 43.8,
+      "total": 40,
+      "catch": 14,
+      "miss": 18,
+      "unknown": 5,
+      "cmd": "python tools/external_corpus_reveal_665.py"
+    },
+    "ledger_events": 452,
+    "ledger_path": "data/646_authority_rule_annotation.jsonl",
+    "ledger_redline": "452 事件零改（本批未动该文件）",
+    "transparency_log_entries": 58,
+    "merkle_dirs": [
+      "Book",
+      "Examples",
+      "atoms",
+      "evidence",
+      "mutation_baselines"
+    ],
+    "merkle_files": 1877
+  },
+  "timeline": [
+    {
+      "batch": "641",
+      "date": "2026-09",
+      "state": "pass",
+      "what": "协议内核 v1.0 落地（四态判决 + 半格 + 账本）",
+      "why": "把「可被独立验收」变成可执行代码：判决、账本、Merkle 各自可复算"
+    },
+    {
+      "batch": "645/646",
+      "date": "2026-09",
+      "state": "pass",
+      "what": "编译器实测证据（L1 双编译器）+ 规则-卡映射 67/67",
+      "why": "断言不再只靠「书上说」：每条有真机编译输出"
+    },
+    {
+      "batch": "647",
+      "date": "2026-09",
+      "state": "pass",
+      "what": "内核拆分到独立仓 `queyi-verifier`（单一实现、两处入口）",
+      "why": "验证器可被第三方单独拉取安装"
+    },
+    {
+      "batch": "656",
+      "date": "2026-09-28",
+      "state": "pass",
+      "what": "门禁分层（L0 红线 / L1 建议）+ 内部变异测试",
+      "why": "把「必须过」与「记录下来看」分开，避免狼来了"
+    },
+    {
+      "batch": "661/664/665",
+      "date": "2026-09-29",
+      "state": "reason",
+      "what": "缺陷注入 / 独立生成 / 扩样（holdout 30、外部语料 40、反事实 20）",
+      "why": "样本量是主要矛盾；但扩样样本**无盲态**，不得用于 Claim 外部效度"
+    },
+    {
+      "batch": "666",
+      "date": "2026-09-29",
+      "state": "pass",
+      "what": "两侧套件全绿 + 双档检测 pipeline + 口径收敛（67 / 178）",
+      "why": "低分常是**测量配置错**：3 个假 miss 换档位即抓住；旧值作废而非静默替换"
+    }
+  ],
+  "commits": [
+    {
+      "hash": "22e47b45",
+      "date": "2026-09-29",
+      "subject": "665 E/F/G/H：轨迹 5→10、论文 v0.3、闭环图、机器卡进前端 + 验收报告与回归测试"
+    },
+    {
+      "hash": "4ab6ec02",
+      "date": "2026-09-29",
+      "subject": "665 C/D：holdout 20→30（真错 7→17）+ 外部 corpus 20→40（分三层）"
+    },
+    {
+      "hash": "8d60516c",
+      "date": "2026-09-29",
+      "subject": "665 B1：664 独立生成批次拆成 16 张可复算机器卡（真机复跑；--check 16/16）"
+    },
+    {
+      "hash": "698b8232",
+      "date": "2026-09-28",
+      "subject": "664 F：验收报告（B2 完成；C2/C3/D2 未做；D1 全量后台运行中未收尾）"
+    },
+    {
+      "hash": "c6cfadc3",
+      "date": "2026-09-28",
+      "subject": "664 B2：独立生成 A/B/C 跑一轮（15 断言；B 推翻 9/15=60%）"
+    }
+  ],
+  "unavailable": [],
+  "honest_note": "本文件的**数字全部现算**（扫卡 / 读引擎 / 读 reveal 报告），前端只渲染；拿不到的项记 null 并进 unavailable，不用占位值冒充。检出率是**双档口径**；与 665 的单档 66.7% 不可直接比较（旧值作废）。"
+}

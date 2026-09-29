@@ -36,7 +36,35 @@ sys.path.insert(0, HERE)
 import queyi_core_v10_641 as core  # noqa: E402  （只读其常量做交叉核验）
 
 OUT_MD = os.path.join(ROOT, "data", "642_kernel_minimality_audit.md")
-KERNEL = os.path.join(HERE, "queyi_core_v10_641.py")
+
+
+def _resolve_tool(filename: str) -> str:
+    """工具源码路径（666 A1：660 B6 拆仓后本仓可能是**薄 wrapper** ⇒ 追到 canonical）。
+
+    病（实测）：本仓 `tools/queyi_core_*.py` 变成 importlib 转发器后，审计读到的是转发器
+    ⇒ 五问全失配：写盘面为空（应 `OUT_JSON/OUT_MD`）、符号表只有
+    `_find_qv_tools/_spec/_mod`、依赖方向判定失败（"适配器确实 import 内核" 也失败，
+    因为转发器里没有 `import queyi_core_v10_641` 这条语句）、selftest 红。
+    治法：头部标注"薄 wrapper"时，改审计 `queyi-verifier/tools/<同名文件>`（唯一真源）；
+    非 wrapper（= verifier 侧 canonical）时行为逐字不变。
+    """
+    local = os.path.join(HERE, filename)
+    try:
+        head = open(local, encoding="utf-8", errors="replace").read(400)
+    except OSError:
+        return local
+    if "薄 wrapper" not in head:
+        return local
+    d = HERE
+    for _ in range(8):
+        cand = os.path.join(d, "queyi-verifier", "tools", filename)
+        if os.path.isfile(cand):
+            return cand
+        d = os.path.dirname(d)
+    return local
+
+
+KERNEL = _resolve_tool("queyi_core_v10_641.py")
 ADAPTERS = ("queyi_core_cpp_641.py", "queyi_core_toy_641.py")
 
 #: 高攻击面能力（内核不该有）
@@ -172,7 +200,7 @@ def audit() -> dict[str, Any]:
         "symbols": sym, "stats": stats,
         "n_symbols": len(present), "keep": keep, "move_out": moved,
         "layers": KERNEL_LAYERS,
-        "adapters_import_kernel": {a: ("queyi_core_v10_641" in imports_of(os.path.join(HERE, a)))
+        "adapters_import_kernel": {a: ("queyi_core_v10_641" in imports_of(_resolve_tool(a)))
                                    for a in ADAPTERS},
         "kernel_imports_adapters": sorted(set(imps) & set(ADAPTERS)),
     }

@@ -36,8 +36,10 @@ def test_manifest_consistency_zero_mismatch():
 
 
 def test_manifest_has_56_entries():
+    # 666 A2：去写死——原写死 56（626 时点），650–652 扩库后证据卡 66 张 ⇒ 改现算。
+    import counts_659 as counts
     c = R.check()
-    assert c["entries"] == 56
+    assert c["entries"] == counts.EVIDENCE_TOTAL
 
 
 def test_disposition_report_exists():

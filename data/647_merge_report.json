@@ -92,8 +92,8 @@
       "report_globals": [
         "REPORT_MD"
       ],
-      "check_rc": 0,
-      "ok": true
+      "check_rc": 1,
+      "ok": false
     },
     {
       "tool": "counterexample_searcher_645",
@@ -197,5 +197,5 @@
       "ok": true
     }
   ],
-  "all_ok": true
+  "all_ok": false
 }

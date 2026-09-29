@@ -65,6 +65,10 @@ def test_pck_ledger_unique_consistency(check_result):
     assert c["pck_authorized_match"] and c["ledger_chain_valid"] and c["unique_match"]
     assert c["logged_vsa_valid"] and c["logged_vsa_in_log"]
     assert c["log_files_ok"] and c["all_credentials_logged"]
+    # 666 A2：在册凭证的"输入 == 当前工作区"单列为信息项 —— 追加式日志记的是**当时**的
+    # 输入，工作区一演进它就会是 False（要求它恒真 = 要求工作区永不演进）。这里只要求
+    # **该字段必须显形**（漂移可见），不要求为真。
+    assert "vsa_inputs_current" in check_result, "输入漂移必须显形，不许藏"
 
 
 def test_vsa_generated_appended_and_valid(e2e_result):

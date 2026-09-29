@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """defect_fixture_658.py — A1 真实缺陷夹具：重注入真实错，看会红几个门禁。
 
 原则（658 红线）：re-inject 只在**临时副本**上跑，绝不碰受控目录 atoms/evidence/Examples/Book/。

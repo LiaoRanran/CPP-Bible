@@ -1,6 +1,6 @@
 # 613 · 信任根 OTS 上链凭据（E1）
 
-> 生成：`python tools/ots_anchor_613.py` ｜ 时间：2026-09-27T21:12:55
+> 生成：`python tools/ots_anchor_613.py` ｜ 时间：2026-09-29T16:53:46
 > **attestation 仍 pending**：本工具不 submit 日历 ⇒ 比特币证明段是占位零，
 > **不得当作时间戳证明**（609 铁律）。真正上链由人执行 submit（交人）。
 
@@ -9,9 +9,9 @@
 | 项 | 值 |
 |---|---|
 | 文件 | `data/supply_chain/merkle_roots.json` |
-| sha256 | `7ab71c2f711725a639abfbe37377417f071d6fc20586b01a58dd4db12ba70bbb` |
-| .ots | `data/supply_chain/merkle_roots.json.ots`（131 B） |
-| 生成时间 | 2026-09-27T21:12:55+08:00 |
+| sha256 | `a7f192015033f243debf8ddfebc232b9975b3909d92fa9b1bbf038cbcb061860` |
+| .ots | `data/supply_chain/merkle_roots.json.ots`（133 B） |
+| 生成时间 | 2026-09-29T16:53:46+08:00 |
 
 ## 二、结构校验
 
@@ -19,8 +19,8 @@
 |---|---|
 | OTS 版本 | 1 |
 | 操作序列 | sha256 → append |
-| .ots 内 digest | `7ab71c2f711725a639abfbe37377417f071d6fc20586b01a58dd4db12ba70bbb` |
-| 文件当前 digest | `7ab71c2f711725a639abfbe37377417f071d6fc20586b01a58dd4db12ba70bbb` |
+| .ots 内 digest | `a7f192015033f243debf8ddfebc232b9975b3909d92fa9b1bbf038cbcb061860` |
+| 文件当前 digest | `a7f192015033f243debf8ddfebc232b9975b3909d92fa9b1bbf038cbcb061860` |
 | **digest 一致** | ✅ |
 | attestation 类型 | bitcoin |
 | **attestation pending** | ⚠ 是（未上链） |

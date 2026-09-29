@@ -13,6 +13,7 @@ import pytest
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
+import counts_659 as counts  # noqa: E402  666 A2：去写死（卡域现算）
 import perf_646 as perf  # noqa: E402
 import rule_card_mapper_646 as a1  # noqa: E402
 import three_layer_orchestrator_646 as c2  # noqa: E402
@@ -24,7 +25,10 @@ def test_mapping_and_coupling_end_to_end():
     perf.clear()
     c2.clear_caches()
     m = a1.build_mapping()
-    assert m["rule_count"] == 67 and m["card_count"] == 27
+    # 666 A2：去写死。原写死 `card_count == 27`（646 时点语料 27 张）——630–652 扩库后
+    # 工具口径（`evidence_base_644.list_atoms()`）随语料涨到 37，写死值让它假红。
+    # 注意：这里的"卡域"就是**实卡域**（ATOMS_REAL），不是 draft650 的全量域。
+    assert m["rule_count"] == 67 and m["card_count"] == counts.ATOMS_REAL
     res = c2.orchestrate(min_chains=5)
     assert res["chains_with_evidence"] >= 5
     assert res["attribution_rate"] >= 0.5
@@ -38,7 +42,9 @@ def test_sufficiency_and_ledger_end_to_end():
     import evidence_sufficiency_646 as b3
     perf.clear()
     suff = b3.judge()
-    assert suff["cards_total"] == 27 and suff["sufficient"] == 27
+    # 666 A2：去写死（同上一处，口径 = 实卡域）。
+    assert suff["cards_total"] == counts.ATOMS_REAL
+    assert suff["sufficient"] == counts.ATOMS_REAL
     before = a5._ledger_sha256()
     ann = a5.annotate()
     assert ann["events"] == 452 and ann["rules_with_events"] == 67

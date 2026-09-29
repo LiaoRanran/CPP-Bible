@@ -36,9 +36,49 @@ _FIX_RE = re.compile(r"触达|新增.{0,12}规则|规则数|RULER|盲区.{0,6}�
 _COUNT_RE = re.compile(r"(\d+)\s*(?:条|个)?\s*(?:escaped|逃逸)")
 
 
+def _is_link(p: str) -> bool:
+    """是否为**联结/符号联接**（Windows junction 不算 `is_symlink`，要单独判）。"""
+    if not os.path.exists(p):
+        return False
+    try:
+        if hasattr(os.path, "isjunction") and os.path.isjunction(p):   # py3.12+
+            return True
+    except OSError:
+        pass
+    if os.path.islink(p):
+        return True
+    try:
+        return bool(os.stat(p).st_file_attributes & 0x400)              # REPARSE_POINT
+    except (AttributeError, OSError):
+        return False
+
+
+def _history_root() -> str:
+    """返回承载本项目历史的 git 仓库根（666 双仓复核）。
+
+    病：657 拆仓后 `ROOT` 在 queyi-verifier 侧只有拆分后的少量提交，而语料/卡
+    是 junction 指向 CPP-Bible ⇒ 直接 `git log` 在 ROOT 跑，样本量从"数百条
+    提交"掉到"数条"，τ_d 的样本基础被静默抽空（不是"跑通了"）。
+
+    判据（只读、不改语义）：`atoms/` **是联结/符号链接** ⇒ 说明 ROOT 是本仓、
+    语料在别处，取联结目标所在仓库；否则一律用 ROOT（CPP-Bible 行为不变）。
+    """
+    if not _is_link(os.path.join(ROOT, "atoms")):
+        return ROOT
+    real = os.path.realpath(os.path.join(ROOT, "atoms"))
+    for d in (os.path.dirname(real), real):
+        if not os.path.isdir(d):
+            continue
+        r = subprocess.run(["git", "rev-parse", "--show-toplevel"],
+                           cwd=d, capture_output=True, text=True)
+        if r.returncode == 0 and r.stdout.strip():
+            return r.stdout.strip()
+    return ROOT
+
+
 def git_log() -> list[dict[str, str]]:
     out = subprocess.run(["git", "log", "--all", "--date=short",
-                          "--pretty=format:%h|%ad|%s"], cwd=ROOT,
+                          "--pretty=format:%h|%ad|%s"], cwd=_history_root(),
                          capture_output=True, text=True).stdout
     rows = []
     for ln in out.splitlines():

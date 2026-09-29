@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="祈易卡库：按状态 / 域 / 类型筛选与搜索全部知识卡；机器卡单独标注，不进教学台账。">
+<meta name="color-scheme" content="dark light">
+<title>卡库 · QueYi</title>
+<link rel="stylesheet" href="css/design-tokens.css">
+<link rel="stylesheet" href="style.css">
+<script type="module" src="components/index.js"></script>
+<script type="module" src="cards.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要内容</a>
+<qy-nav current="cards.html" badge="静态站 · 无后端"></qy-nav>
+
+<main id="main" class="wrap">
+  <section style="padding-top:var(--space-5)">
+    <h1 style="font-size:26px">卡库</h1>
+    <p class="lead" style="font-size:15px">全部知识卡（含草稿）与独立的<b>机器卡</b>区。
+      数据来自 <span class="kbd">web/data/cards_index.json</span>（台账索引）与
+      <span class="kbd">web/data/ig_cards_665.json</span>（机器卡），
+      由 <span class="kbd">tools/web_data_653.py</span> / <span class="kbd">tools/web_ig_cards_665.py</span> 现算。</p>
+    <p class="muted">口径提醒：<b>verified 唯人签</b>。机器卡（665 B1 独立生成批次）一律
+      <span class="kbd">needs_review</span>，<b>不混入</b>教学台账。</p>
+  </section>
+
+  <!-- 筛选与搜索（B3）：全部原生控件 ⇒ 键盘/屏幕阅读器天然可用 -->
+  <section aria-labelledby="filters-h">
+    <h3 id="filters-h">筛选与搜索</h3>
+    <div class="list-toolbar">
+      <div class="field">
+        <label for="q">搜索（id / 标题）</label>
+        <input id="q" type="search" placeholder="ATOM-… 或标题关键词" autocomplete="off" style="min-width:260px">
+      </div>
+      <div class="field">
+        <label for="f-status">状态</label>
+        <select id="f-status"><option value="">全部</option></select>
+      </div>
+      <div class="field">
+        <label for="f-domain">域</label>
+        <select id="f-domain"><option value="">全部</option></select>
+      </div>
+      <div class="field">
+        <label for="f-type">类型</label>
+        <select id="f-type"><option value="">全部</option></select>
+      </div>
+      <div class="field">
+        <label for="f-scope">范围</label>
+        <select id="f-scope">
+          <option value="real">实卡域（不含 draft650）</option>
+          <option value="all">全部（含草稿）</option>
+          <option value="draft">只看草稿</option>
+        </select>
+      </div>
+      <button id="reset" type="button">重置</button>
+    </div>
+    <p class="muted" id="count" role="status" aria-live="polite">加载中…</p>
+    <ul class="card-grid" id="grid" role="list"></ul>
+    <div style="text-align:center;padding:var(--space-2) 0" id="more-wrap">
+      <button id="more" type="button" hidden>加载更多</button>
+    </div>
+  </section>
+
+  <!-- 机器卡（独立区，不与教学台账混） -->
+  <section aria-labelledby="ig-h">
+    <h3 id="ig-h">机器卡（machine-derived · 无人签）</h3>
+    <p class="muted" id="ig-note">加载中…</p>
+    <ul class="card-grid" id="ig-grid" role="list"></ul>
+  </section>
+</main>
+
+<footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="card.html">学一张卡</a>
+  · <a href="starmap.html">星图</a> · <a href="verify.html">验哈希</a></footer>
+</body>
+</html>

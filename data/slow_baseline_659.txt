@@ -1,0 +1,521 @@
+                     [100%]
+================================== FAILURES ===================================
+E   AssertionError: gate rc=1 命中 183（block=32 warn=146 advice=5）
+    assert False
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_620_gate.py:53: AssertionError: gate rc=1 命中 183（block=32 warn=146 advice=5）
+E   AssertionError: 受控目录有未提交改动： D Examples/atoms/_atom_unique_size.asm
+    assert False
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_622_gate.py:35: AssertionError: 受控目录有未提交改动： D Examples/atoms/_atom_unique_size.asm
+E   assert (67 == 67 and 37 == 27)
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_646_end_to_end_slow.py:27: assert (67 == 67 and 37 == 27)
+E   assert (37 == 27)
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_646_end_to_end_slow.py:41: assert (37 == 27)
+E   assert (1 == 0)
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_autoimmune_threshold_630.py:34: assert (1 == 0)
+E   assert 1 == 0
+     +  where 1 = <function selftest at 0x0000012D628771A0>()
+     +    where <function selftest at 0x0000012D628771A0> = T.selftest
+---------------------------- Captured stdout call -----------------------------
+  [ok] v23 阈值解析成功（5/10/20/40） ({'hard_target': 5, 'hard_cap': 10, 'soft_target': 20, 'soft_fatigue': 40, 'found': True, 'source': '_arch_v23/02_自身免疫率度量框架.md'})
+  [ok] 外部依据已摘录（≥3 条） (['Google 测试 flaky', 'SOC 成熟团队误报率', '支付硬拦目标', '免疫库自反应存量'])
+  [ok] v23 动作映射已摘录 (5)
+  [FAIL] 硬开火率 × 干净卡数自洽 
+  [ok] 软警报率 = warn 卡数 ÷ 干净卡数 (100.0%)
+  [ok] 判定：硬达标 + 软超疲劳线 
+  [ok] 紧迫度明确要求不动 block 层 
+  [ok] 报告 + JSON 存在 
+C3 autoimmune threshold check: FAIL
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_autoimmune_threshold_630.py:58: assert 1 == 0
+E   assert (238, 35, 148, 55) == (121, 0, 116, 5)
+      
+      At index 0 diff: 238 != 121
+      Use -v to get more diff
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_baseline_629.py:26: assert (238, 35, 148, 55) == (121, 0, 116, 5)
+E   AssertionError: 任务书说 28 张，实测 27 张（差异已登记）
+    assert 47 == 27
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_baseline_629.py:49: AssertionError: 任务书说 28 张，实测 27 张（差异已登记）
+E   AssertionError: assert 2 == 0
+     +  where 2 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling...missing); evidence/ub/EV-UB-002.md: card_fingerprint returned MISSING (fixture/artifact missing) (0.07s)\n', stderr='').returncode
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_guard_hijack_640.py:60: AssertionError: assert 2 == 0
+E   AssertionError: assert 'fail' == 'pass'
+      
+      - pass
+      + fail
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_json_output.py:86: AssertionError: assert 'fail' == 'pass'
+E   AssertionError: assert (['Examples（E... → 1568）'], 1) == ([], 0)
+      
+      At index 0 diff: ['Examples（Examples）：根不匹配（台账 27a325e47455… 实际 ccc897a00e3c…，文件数 1571 → 1568）'] != []
+      Use -v to get more diff
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_merkle_integrity_601.py:208: AssertionError: assert (['Examples（E... → 1568）'], 1) == ([], 0)
+E   AssertionError: assert 1 == 0
+     +  where 1 = <function main at 0x0000012D61BBD3A0>(['--check'])
+     +    where <function main at 0x0000012D61BBD3A0> = <module 'tool_integrity' from 'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\tools\\tool_integrity.py'>.main
+---------------------------- Captured stdout call -----------------------------
+[tool_integrity] OK：5 个核心工具与基准一致
+[tool_integrity] OK：信任根数据文件与基准一致（6 个已存在，警告 0 条）
+[tool_integrity] ❌ [merkle] Examples（Examples）：根不匹配（台账 27a325e47455… 实际 ccc897a00e3c…，文件数 1571 → 1568）
+[tool_integrity] OK：判决尺子与基准一致（22 个）
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_merkle_integrity_601.py:259: AssertionError: assert 1 == 0
+E   AssertionError: 存在验证失败的证明：[{'dir': 'Examples', 'file': 'Examples/README.md', 'steps': 11, 'root': '27a325e47455b75e…', 'verified': False, 'msg': '根 hash 不匹配（期望 27a325e47455… 实际 ccc897a00e3c…）'}, {'dir': 'Examples', 'file': 'Examples/_asm_constexpr.asm', 'steps': 11, 'root': '27a325e47455b75e…', 'verified': False, 'msg': '根 hash 不匹配（期望 27a325e47455… 实际 ccc897a00e3c…）'}]
+    assert not [{'dir': 'Examples', 'file': 'Examples/README.md', 'steps': 11, 'root': '27a325e47455b75e…', ...}, {'dir': 'Examples', 'file': 'Examples/_asm_constexpr.asm', 'steps': 11, 'root': '27a325e47455b75e…', ...}]
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_merkle_proof_613.py:30: AssertionError: 存在验证失败的证明：[{'dir': 'Examples', 'file': 'Examples/README.md', 'steps': 11, 'root': '27a325e47455b75e…', 'verified': False, 'msg': '根 hash 不匹配（期望 27a325e47455… 实际 ccc897a00e3c…）'}, {'dir': 'Examples', 'file': 'Examples/_asm_constexpr.asm', 'steps': 11, 'root': '27a325e47455b75e…', 'verified': False, 'msg': '根 hash 不匹配（期望 27a325e47455… 实际 ccc897a00e3c…）'}]
+E   AssertionError: assert 1 == 0
+     +  where 1 = <function main at 0x0000012D64FAFC40>(['--check'])
+     +    where <function main at 0x0000012D64FAFC40> = e3.main
+---------------------------- Captured stdout call -----------------------------
+[E3] ✗ 1 条证明验证失败：Examples/README.md 根 hash 不匹配（期望 27a325e47455… 实际 ccc897a00e3c…）
+[E3] ❌ 1 项失败
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_merkle_proof_613.py:51: AssertionError: assert 1 == 0
+E   assert 60 == 50
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_metrics_613.py:22: assert 60 == 50
+E   assert 21 == 11
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_metrics_613.py:37: assert 21 == 11
+E   assert 4 == 5
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_metrics_613.py:43: assert 4 == 5
+E   AssertionError: assert 1 == 0
+     +  where 1 = <function main at 0x0000012D6501B560>(['--check'])
+     +    where <function main at 0x0000012D6501B560> = f2.main
+---------------------------- Captured stdout call -----------------------------
+[F2] ✗ 缺锚命题应为 50，实测 60
+[F2] ✗ 存在未通过的 Merkle 证明
+[F2] ❌ 2 项失败
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_metrics_613.py:60: AssertionError: assert 1 == 0
+E   AssertionError: assert [+ received] == [- snapshot]
+        dict({
+      -   'advice': 5,
+      +   'advice': 55,
+      -   'block': 0,
+      +   'block': 35,
+          'rules': 67,
+      -   'warn': 116,
+      +   'warn': 148,
+        })
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_output_snapshots.py:47: AssertionError: assert [+ received] == [- snapshot]
+E   AssertionError: assert [+ received] == [- snapshot]
+        dict({
+      -   'card_nodes': 165,
+      +   'card_nodes': 195,
+      -   'concept_edges': 79,
+      +   'concept_edges': 89,
+      -   'concepts': 131,
+      +   'concepts': 150,...
+      
+      ...Full output truncated (32 lines hidden), use '-vv' to show
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_output_snapshots.py:101: AssertionError: assert [+ received] == [- snapshot]
+E   AssertionError: §零.6：受控目录必须零污染
+    assert False
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_pre_push_630.py:21: AssertionError: §零.6：受控目录必须零污染
+E   AssertionError: §零.6：受控目录必须零污染
+    assert False
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_pre_push_630.py:51: AssertionError: §零.6：受控目录必须零污染
+E   assert False is True
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_pre_push_630.py:82: assert False is True
+E   assert (True and False)
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_pre_push_checklist_627.py:45: assert (True and False)
+E   assert False
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_pre_push_checklist_627.py:50: assert False
+E   AssertionError: {'tool': 'prop_graph', 'version': 'v1.1', 'propositions': 89, 'cards': 37, ...}
+    assert 89 == 79
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_prop_graph.py:45: AssertionError: {'tool': 'prop_graph', 'version': 'v1.1', 'propositions': 89, 'cards': 37, ...}
+E   AssertionError: assert (60 == 50)
+     +  where 60 = len([{'prop_key': 'ATOM-CONC-FENCE-001/prop-1', 'card': 'ATOM-CONC-FENCE-001', 'card_path': 'atoms/conc/ATOM-CONC-FENCE-00...', 'card': 'ATOM-HIST-AUTOPTR-001', 'card_path': 'atoms/hist/ATOM-HIST-AUTOPTR-001.md', 'card_kind': 'atom', ...}, ...])
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_prop_graph.py:87: AssertionError: assert (60 == 50)
+E   assert False
+     +  where False = all(<generator object test_anchor_source_splits_card_vs_evidence.<locals>.<genexpr> at 0x0000012D6C4FA8E0>)
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_prop_graph.py:126: assert False
+E   assert (89 == 79)
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_prop_graph.py:187: assert (89 == 79)
+E   AssertionError: assert [{'prop_key':...m', ...}, ...] == []
+      
+      Left contains 10 more items, first extra item: {'prop_key': 'ATOM-LANG-BITFIELD-001/prop-1', 'card': 'ATOM-LANG-BITFIELD-001', 'card_path': 'atoms/lang/ATOM-LANG-BITFIELD-001.md', 'card_kind': 'atom', ...}
+      Use -v to get more diff
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_prop_graph.py:214: AssertionError: assert [{'prop_key':...m', ...}, ...] == []
+E   AssertionError: 47
+    assert 47 == 27
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_prop_graph.py:225: AssertionError: 47
+E   AssertionError: assert '无待办' in '[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observation] bf_a=5 bf_b=21 ... tools/prop_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n'
+     +  where '[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observation] bf_a=5 bf_b=21 ... tools/prop_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n' = CaptureResult(out='[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observatio...op_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n', err='').out
+     +    where CaptureResult(out='[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observatio...op_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n', err='') = readouterr()
+     +      where readouterr = <_pytest.capture.CaptureFixture object at 0x0000012D6C401150>.readouterr
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_prop_graph.py:235: AssertionError: assert '无待办' in '[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observation] bf_a=5 bf_b=21 ... tools/prop_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n'
+E   AssertionError: 签署后待签视图应为空（fail-soft）
+    assert '无待办' in '[prop] 未人签命题 10 条（命题级 signed_by 与卡级 verified_by 都没有）：\n- ATOM-LANG-BITFIELD-001/prop-1  [observation] bf_a=5 bf_b=21 ... tools/prop_graph.py build\n  3) 复核生效：        .venv\\Scripts\\python.exe tools/prop_graph.py query --pending-signoff\n'
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_prop_graph.py:260: AssertionError: 签署后待签视图应为空（fail-soft）
+E   assert '命题 79' in "[prop] 已重建 C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.pytest_tmp\\run-35940-1790591362\\test_cli_build_stats_query0\\p.db：命题 89 条（卡 37 张）· 按类型 {'inference': 29, 'observation': 60} · 按签署 {'prop_signed': 79, 'unsigned': 10}· 机验 89\n"
+     +  where "[prop] 已重建 C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.pytest_tmp\\run-35940-1790591362\\test_cli_build_stats_query0\\p.db：命题 89 条（卡 37 张）· 按类型 {'inference': 29, 'observation': 60} · 按签署 {'prop_signed': 79, 'unsigned': 10}· 机验 89\n" = CaptureResult(out="[prop] 已重建 C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.pytest_tmp\\run-35940-1790591362\\test_c...：命题 89 条（卡 37 张）· 按类型 {'inference': 29, 'observation': 60} · 按签署 {'prop_signed': 79, 'unsigned': 10}· 机验 89\n", err='').out
+     +    where CaptureResult(out="[prop] 已重建 C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.pytest_tmp\\run-35940-1790591362\\test_c...：命题 89 条（卡 37 张）· 按类型 {'inference': 29, 'observation': 60} · 按签署 {'prop_signed': 79, 'unsigned': 10}· 机验 89\n", err='') = readouterr()
+     +      where readouterr = <_pytest.capture.CaptureFixture object at 0x0000012D6C4D94F0>.readouterr
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_prop_graph.py:272: assert '命题 79' in "[prop] 已重建 C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.pytest_tmp\\run-35940-1790591362\\test_cli_build_stats_query0\\p.db：命题 89 条（卡 37 张）· 按类型 {'inference': 29, 'observation': 60} · 按签署 {'prop_signed': 79, 'unsigned': 10}· 机验 89\n"
+E   assert False is True
+     +  where False = restore()
+     +    where restore = <queyi_core_cpp_641.CppAttacker object at 0x0000012D6BFDCAD0>.restore
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_queyi_core_cpp_641.py:63: assert False is True
+E   assert False is True
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_queyi_core_cpp_641.py:80: assert False is True
+E   AssertionError: assert 1 == 0
+     +  where 1 = <function main at 0x0000012D654299E0>(['--check'])
+     +    where <function main at 0x0000012D654299E0> = cpp.main
+---------------------------- Captured stdout call -----------------------------
+  [ok] canonicalize 去 BOM + CRLF 
+  [ok] 卡片可读成内容寻址 artifact 
+  [ok] 外置规则加载（C++ 67 条） 实测 67
+  [ok] DomainPack.canonicalize 可用 
+  [ok] environment 含 revision 
+  [ok] VerifierPort 产出四态判定 pass
+  [ok] EvidencePort 无卡片 ⇒ unknown 
+  [ok] Attacker 默认 dry-run 且不施加变异 
+  [FAIL] Attacker.restore 实证受控零污染 
+  [ok] Authority.append 只出 staged（不代签） 
+  [ok] Authority.verify_chain 可用 
+  [ok] run 封存且自校验通过 
+  [ok] run 绑定 policy/environment digest 
+  [ok] 对账：规则条数一致 
+  [ok] 对账：规则 ID 集合一致 
+  [ok] W2 投影来自权威源 
+cpp domain selftest: FAIL
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_queyi_core_cpp_641.py:109: AssertionError: assert 1 == 0
+E   assert False is True
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_replay_invariants_605.py:58: assert False is True
+E   assert False
+     +  where False = all(<generator object test_run_checks_all_pass.<locals>.<genexpr> at 0x0000012D6BFEB5E0>)
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_replay_invariants_605.py:87: assert False
+E   AssertionError: assert 2 == 0
+     +  where 2 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling...missing); evidence/ub/EV-UB-002.md: card_fingerprint returned MISSING (fixture/artifact missing) (0.06s)\n', stderr='').returncode
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_replay_invariants_605.py:119: AssertionError: assert 2 == 0
+E   assert 2 == 0
+     +  where 2 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling.../artifact missing)",\n   "cards_checked": 66,\n   "mismatches": 3,\n   "invalid_verdicts": 0\n  }\n ]\n}\n', stderr='').returncode
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_replay_invariants_605.py:134: assert 2 == 0
+E   assert 2 == 0
+     +  where 2 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling.../artifact missing)",\n   "cards_checked": 66,\n   "mismatches": 3,\n   "invalid_verdicts": 0\n  }\n ]\n}\n', stderr='').returncode
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_replay_invariants_606.py:64: assert 2 == 0
+E   assert False
+     +  where False = all(<generator object test_metrics_invariants_all_true.<locals>.<genexpr> at 0x0000012D6CA50380>)
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_replay_invariants_606.py:85: assert False
+E   AssertionError: I1 failed: card=EV-CONC-001 verdict=confirm Examples/ before=876ae50320bba058 after=59273bb0b76bfa06 NOT RESTORED ✗
+    assert False
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_replay_invariants_608.py:48: AssertionError: I1 failed: card=EV-CONC-001 verdict=confirm Examples/ before=876ae50320bba058 after=59273bb0b76bfa06 NOT RESTORED ✗
+E   AssertionError: fingerprint mismatches: 66 cards checked, 3 fingerprint mismatches, 0 invalid verdicts INCONSISTENT ✗ | mismatches: evidence/mem/EV-MEM-011.md: card_fingerprint returned MISSING (fixture/artifact missing); evidence/ub/EV-UB-001.md: card_fingerprint returned MISSING (fixture/artifact missing); evidence/ub/EV-UB-002.md: card_fingerprint returned MISSING (fixture/artifact missing)
+    assert 3 == 0
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_replay_invariants_608.py:154: AssertionError: fingerprint mismatches: 66 cards checked, 3 fingerprint mismatches, 0 invalid verdicts INCONSISTENT ✗ | mismatches: evidence/mem/EV-MEM-011.md: card_fingerprint returned MISSING (fixture/artifact missing); evidence/ub/EV-UB-001.md: card_fingerprint returned MISSING (fixture/artifact missing); evidence/ub/EV-UB-002.md: card_fingerprint returned MISSING (fixture/artifact missing)
+E   assert False is True
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_612_gate.py:29: assert False is True
+E   FileNotFoundError: [WinError 206] 文件名或扩展名太长。
+C:\Users\ASUS\AppData\Roaming\uv\python\cpython-3.13.13-windows-x86_64-none\Lib\subprocess.py:1554: FileNotFoundError: [WinError 206] 文件名或扩展名太长。
+E   FileNotFoundError: [WinError 206] 文件名或扩展名太长。
+---------------------------- Captured stdout call -----------------------------
+  [ok] 枚举到 624 新文件
+  [ok] 整目录枚举非空
+  [ok] ci.yml 可解析
+C:\Users\ASUS\AppData\Roaming\uv\python\cpython-3.13.13-windows-x86_64-none\Lib\subprocess.py:1554: FileNotFoundError: [WinError 206] 文件名或扩展名太长。
+E   FileNotFoundError: [WinError 206] 文件名或扩展名太长。
+C:\Users\ASUS\AppData\Roaming\uv\python\cpython-3.13.13-windows-x86_64-none\Lib\subprocess.py:1554: FileNotFoundError: [WinError 206] 文件名或扩展名太长。
+E   assert 1 == 0
+     +  where 1 = <function check at 0x0000012D6561C180>()
+     +    where <function check at 0x0000012D6561C180> = G.check
+---------------------------- Captured stdout call -----------------------------
+  [ok] 整目录 ruff 全绿 
+  [ok] loop_stability_metrics_625 --check   [ok] 读取 7 轮   [ok] 累计触达 ≤ 67   [ok] VFDR 可计算（0≤vfdr）   [ok] 触发标准①有 5 项   [ok] satisfied 与 checks 一致   [ok] 合成：单调增长检测可算 B2 selftest: PASS 
+  [ok] vfdr_convergence_625 --check   [ok] 规则 67 条   [ok] 7 轮   [ok] 累计触达 0< cum ≤67   [ok] 盲区 = 67 - cum   [ok] 盲区缩减（≤ 623 的 37）   [ok] VFDR 可算 B3 selftest: PASS 
+  [ok] path_config_625 --check   [ok] 默认 root = tools 父目录   [ok] 默认 atoms/evidence/data 派生自 root   [ok] resolve_atom_path 派生正确   [ok] resolve_data_path 派生正确   [ok] 路径自检可调用 C1 selftest: PASS 
+  [ok] queyi_core_interface_design_625 --check   [ok] 5 个接口   [ok] 每接口有 attrs+methods   [ok] 版本 v0.1   [ok] 映射非空   [ok] 关系图非空   [ok] 实现计划含 5 接口 C2 selftest: PASS 
+  [ok] queyi_core_trigger_check_625 --check   [ok] 5 条标准   [ok] 状态取值合法   [ok] satisfied 计数一致   [ok] ① 至少部分满足   [ok] ⑤ 核心 6/6 C3 selftest: PASS 
+  [ok] round7_mutator_625 --check   [ok] 规则总数为 67   [ok] 盲区非空且 < 40   [ok] 生成 ~100 条（≥95 且 ≤110）   [ok] Y1/Y2/Y3 均存在   [ok] 每条含 edits   [ok] Y1 覆盖全部盲区 B1 selftest: PASS 
+  [ok] human_review_dashboard_625 --check   [ok] synced annotations 可读   [ok] 生成 ≥80 条复核项（624 E2 上限）   [ok] HTML 含关键元素   [ok] 含筛选脚本   [ok] 权威日志可读 D2 selftest: PASS 
+  [ok] human_review_executor_625 --check   [ok] build_entry 返回带 hash 的条目   [ok] 哈希链含前驱   [ok] 非法 power 抛错   [ok] 未代签：Authority 日志未被修改   [ok] append_entry 已定义但未调用 D3 selftest: PASS 
+  [ok] pck_upgrade_strategy_625 --check   [ok] 证书总数 103   [ok] authorized 27   [ok] 目标需净增 ≥1   [ok] 待人审证据证 >0   [ok] 未修改任何证书文件 D4 selftest: PASS 
+  [FAIL] tool_integrity --check（尺子 34/34） 
+  [FAIL] ots_anchor --check 
+  [FAIL] mypy tools/ = 0 errors (5 errors)
+  [FAIL] 受控目录零污染 
+F1 gate: FAIL
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_625_gate.py:44: assert 1 == 0
+E   AssertionError: Examples 被污染
+    assert 1 == 0
+     +  where 1 = CompletedProcess(args=['git', 'diff', '--quiet', '--', 'Examples'], returncode=1, stdout=b'', stderr=b'').returncode
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_629_gate.py:89: AssertionError: Examples 被污染
+E   AssertionError: 干净卡数 (100.0%)
+        [ok] 判定：硬达标 + 软超疲劳线 
+        [ok] 紧迫度明确要求不动 block 层 
+        [ok] 报告 + JSON 存在 
+      C3 autoimmune threshold check: FAIL
+      
+        [ok] 工具 stale_test_triage_630.py --check 
+        [FAIL] 工具 pre_push_630.py --check ] 未提交项分类正确（代码类 / data 类） 
+        [ok] 闸门语义字段齐全（all_ok / blocking / pending） 
+        [ok] status 分类器：并行产物归预期 
+        [ok] status 分类器：普通未跟踪文件归意外 
+        [ok] ahead 已测（非负整数） (0)
+        [ok] 报告 + JSON 存在 
+      B1 pre-push check: FAIL
+      
+        [ok] 门禁覆盖本批全部 630 工具（按批次标记核验） ([])
+        [ok] 整目录 ruff 全绿 
+        [FAIL] mypy tools/ = 0 errors \chapter_lint.py:107: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+      Found 5 errors in 1 file (checked 580 source files)
+      
+        [skip] 本批新增测试（10 文件）—— 由 --check 完整调用时执行
+        [skip] 非 slow 全量 pytest（--no-tests）
+        [FAIL] 受控目录零污染 (['Examples'])
+        [ok] push 后 `origin/master..HEAD` = 0 (ahead=0)
+        [ok] AST 自证：不调用监工四门禁 ([])
+      630 收工门禁: FAIL ❌
+      
+    assert 1 == 0
+     +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling...les'])\n  [ok] push 后 `origin/master..HEAD` = 0 (ahead=0)\n  [ok] AST 自证：不调用监工四门禁 ([])\n630 收工门禁: FAIL ❌\n", stderr='').returncode
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_630_gate.py:74: AssertionError: 干净卡数 (100.0%)
+E   AssertionError: Examples 被污染
+    assert 1 == 0
+     +  where 1 = CompletedProcess(args=['git', 'diff', '--quiet', '--', 'Examples'], returncode=1, stdout=b'', stderr=b'').returncode
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_630_gate.py:85: AssertionError: Examples 被污染
+E   assert (False)
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_634_gate.py:32: assert (False)
+E   assert 1 == 0
+     +  where 1 = <function selftest at 0x0000012D655E8EA0>()
+     +    where <function selftest at 0x0000012D655E8EA0> = G.selftest
+---------------------------- Captured stdout call -----------------------------
+  [ok] 新工具清单 ≥6 
+  [ok] 工具存在 baseline_634 
+  [ok] 工具存在 add_check_batch_634 
+  [ok] 工具存在 soft_baseline_634 
+  [ok] 工具存在 coverage_probe_batch_634 
+  [ok] 工具存在 horizon_634 
+  [ok] 工具存在 na_rate_634 
+  [ok] 79 工具清单可读 
+  [ok] coverage 复算 ≥85 
+  [FAIL] 自身免疫率 = 0 
+  [ok] 报告路径在 data 下 
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_634_gate.py:42: assert 1 == 0
+E   assert False is True
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_635_gate.py:31: assert False is True
+E   assert 1 == 0
+     +  where 1 = <function selftest at 0x0000012D65643EC0>()
+     +    where <function selftest at 0x0000012D65643EC0> = G.selftest
+---------------------------- Captured stdout call -----------------------------
+  [ok] 11 新工具 
+  [ok] 工具存在 baseline_635 
+  [ok] 工具存在 boundary_fields_635 
+  [ok] 工具存在 tau_d_635 
+  [ok] 工具存在 four_questions_635 
+  [ok] 工具存在 grounding_inventory_635 
+  [ok] 工具存在 defeater_ledger_635 
+  [ok] 工具存在 error_cost_ratio_635 
+  [ok] 工具存在 systematic_error_635 
+  [ok] 工具存在 contamination_drill_635 
+  [ok] 工具存在 exception_review_635 
+  [ok] 工具存在 verifier_admissibility_635 
+  [ok] 11 交付文件 
+  [FAIL] 受控目录干净 
+  [ok] 交付齐备 
+  [ok] 报告路径在 data 下 
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_635_gate.py:41: assert 1 == 0
+E   assert False is True
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_636_gate.py:31: assert False is True
+E   assert 1 == 0
+     +  where 1 = <function selftest at 0x0000012D6568D800>()
+     +    where <function selftest at 0x0000012D6568D800> = G.selftest
+---------------------------- Captured stdout call -----------------------------
+  [ok] 8 新工具 
+  [ok] 工具存在 baseline_636 
+  [ok] 工具存在 conflict_detector_636 
+  [ok] 工具存在 anti_windup_636 
+  [ok] 工具存在 blind_protocol_636 
+  [ok] 工具存在 calibration_tracker_636 
+  [ok] 工具存在 mdl_trial_636 
+  [ok] 工具存在 contamination_tracker_636 
+  [ok] 工具存在 four_state_636 
+  [ok] 8 交付文件 
+  [FAIL] 受控目录干净 
+  [ok] 交付齐备 
+  [ok] 报告路径在 data 下 
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_636_gate.py:41: assert 1 == 0
+E   assert False is True
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_637_gate.py:31: assert False is True
+E   assert 1 == 0
+     +  where 1 = <function selftest at 0x0000012D6568EF20>()
+     +    where <function selftest at 0x0000012D6568EF20> = G.selftest
+---------------------------- Captured stdout call -----------------------------
+  [ok] 6 新工具 
+  [ok] 工具存在 self_observer_637 
+  [ok] 工具存在 error_detector_637 
+  [ok] 工具存在 candidate_generator_637 
+  [ok] 工具存在 cost_benefit_637 
+  [ok] 工具存在 evolution_memo_637 
+  [ok] 工具存在 run_637_gate 
+  [ok] 8 交付文件 
+  [FAIL] 受控目录干净 
+  [ok] 报告路径在 data 下 
+  [ok] 闭环工具名合法 
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_637_gate.py:36: assert 1 == 0
+E   assert (False is True)
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_638_gate.py:49: assert (False is True)
+E   assert False
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_639_gate.py:32: assert False
+E   assert False is True
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_641_gate.py:50: assert False is True
+E   AssertionError: assert 1 == 0
+     +  where 1 = <function main at 0x0000012D656C89A0>(['--check'])
+     +    where <function main at 0x0000012D656C89A0> = G.main
+---------------------------- Captured stdout call -----------------------------
+  [FAIL] 641 新工具 --check — queyi_core_cpp_641: end 只出 staged（不代签） 
+  [ok] Authority.verify_chain 可用 
+  [ok] run 封存且自校验通过 
+  [ok] run 绑定 policy/environment digest 
+  [ok] 对账：规则条数一致 
+  [ok] 对账：规则 ID 集合一致 
+  [ok] W2 投影来自权威源 
+cpp domain selftest: FAIL
+  [ok] ruff 全绿 — stub
+  [ok] mypy 0 errors — stub
+  [FAIL] 受控目录零污染 — 受控目录零改动
+  [ok] 内核零领域 import（AST） — 领域 import：零
+  [ok] C++ 端到端对账 — stub
+  [ok] 通用性（kernel_digest 两域相同） — cpp=5a89cb02f5ad… toy=5a89cb02f5ad… 相同=True
+  [ok] 信任根闭包（缺失即 FAIL） — 闭包 24 文件 status=OK；缺失攻击 ⇒ FAIL
+E1 gate: FAIL
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_641_gate.py:74: AssertionError: assert 1 == 0
+E   assert False is True
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_642_gate.py:43: assert False is True
+E   AssertionError: assert 1 == 0
+     +  where 1 = <function main at 0x0000012D656CA8E0>(['--check'])
+     +    where <function main at 0x0000012D656CA8E0> = G.main
+---------------------------- Captured stdout call -----------------------------
+  [ok] 642 新工具 --check — stub
+  [ok] 641 收尾确认 — stub
+  [ok] ruff 全绿 — stub
+  [ok] mypy 0 errors — stub
+  [FAIL] 受控目录零污染 — 受控目录零改动
+  [ok] 保护器灰度验证（零漂移/零改判/可回滚） — 漂移 零；判决被改变 0；标记键 15 且回滚到底为空；键空间互不重叠=True
+  [ok] 内核零领域 import（AST） — 领域 import：零
+  [ok] CORE_TOOLS/信任根/尺子完整性 — stub
+D1 gate: FAIL
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_run_642_gate.py:74: AssertionError: assert 1 == 0
+E   AssertionError: {'w2_match': True, 'verifier_vs_system': True, 'frozen_labels_match': True, 'pck_authorized_match': True, ...}
+    assert False
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_third_party_audit_demo_628.py:45: AssertionError: {'w2_match': True, 'verifier_vs_system': True, 'frozen_labels_match': True, 'pck_authorized_match': True, ...}
+E   assert (False)
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_third_party_audit_demo_628.py:66: assert (False)
+E   AssertionError: [tool_integrity] OK：5 个核心工具与基准一致
+      [tool_integrity] OK：信任根数据文件与基准一致（6 个已存在，警告 0 条）
+      [tool_integrity] ❌ [merkle] Examples（Examples）：根不匹配（台账 27a325e47455… 实际 ccc897a00e3c…，文件数 1571 → 1568）
+      [tool_integrity] OK：判决尺子与基准一致（22 个）
+      
+    assert 1 == 0
+     +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', 'C:\\CodeLearnling...s（Examples）：根不匹配（台账 27a325e47455… 实际 ccc897a00e3c…，文件数 1571 → 1568）\n[tool_integrity] OK：判决尺子与基准一致（22 个）\n', stderr='').returncode
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_tool_integrity.py:83: AssertionError: [tool_integrity] OK：5 个核心工具与基准一致
+E   AssertionError: assert 1 == 0
+     +  where 1 = <function main at 0x0000012D61BBD3A0>(['--check'])
+     +    where <function main at 0x0000012D61BBD3A0> = ti.main
+---------------------------- Captured stdout call -----------------------------
+[tool_integrity] OK：0 个核心工具与基准一致
+[tool_integrity] ⚠ [supply_chain] tools/poison_exemptions.yaml：已存在但**未钉**（旧格式基准或新覆盖文件）⇒ 跑 --update
+[tool_integrity] ⚠ [supply_chain] tools/poison_surface_map.json：已存在但**未钉**（旧格式基准或新覆盖文件）⇒ 跑 --update
+[tool_integrity] ⚠ [supply_chain] data/governance_docs_manifest.json：已存在但**未钉**（旧格式基准或新覆盖文件）⇒ 跑 --update
+[tool_integrity] ⚠ [supply_chain] data/supply_chain/merkle_roots.json：已存在但**未钉**（旧格式基准或新覆盖文件）⇒ 跑 --update
+[tool_integrity] ⚠ [supply_chain] data/supply_chain/layout.json：已存在但**未钉**（旧格式基准或新覆盖文件）⇒ 跑 --update
+[tool_integrity] ⚠ [supply_chain] data/supply_chain/merkle_roots.json.ots：已存在但**未钉**（旧格式基准或新覆盖文件）⇒ 跑 --update
+[tool_integrity] OK：信任根数据文件与基准一致（6 个已存在，警告 6 条）
+[tool_integrity] ❌ [merkle] Examples（Examples）：根不匹配（台账 27a325e47455… 实际 ccc897a00e3c…，文件数 1571 → 1568）
+[tool_integrity] ⚠ [ruler] 缺 ruler 节（旧格式基准）—— 跑 --update 补齐
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_tool_integrity.py:94: AssertionError: assert 1 == 0
+E   AssertionError: assert 1 == 0
+     +  where 1 = <function main at 0x0000012D61BBD3A0>(['--check'])
+     +    where <function main at 0x0000012D61BBD3A0> = ti.main
+---------------------------- Captured stdout call -----------------------------
+[tool_integrity] OK：5 个核心工具与基准一致
+[tool_integrity] OK：信任根数据文件与基准一致（6 个已存在，警告 0 条）
+[tool_integrity] ❌ [merkle] Examples（Examples）：根不匹配（台账 27a325e47455… 实际 ccc897a00e3c…，文件数 1571 → 1568）
+[tool_integrity] OK：判决尺子与基准一致（22 个）
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_tool_integrity_supply_chain_601.py:107: AssertionError: assert 1 == 0
+E   AssertionError: assert 1 == 0
+     +  where 1 = <function main at 0x0000012D61BBD3A0>(['--check'])
+     +    where <function main at 0x0000012D61BBD3A0> = ti.main
+---------------------------- Captured stdout call -----------------------------
+[tool_integrity] OK：5 个核心工具与基准一致
+[tool_integrity] ⚠ [supply_chain] tools/poison_surface_map.json：不存在（该产出尚未生成，如任务1/2 的 Merkle 根/layout） ⇒ 跳过（副本/部分检出下无判别力）
+[tool_integrity] ⚠ [supply_chain] data/supply_chain/merkle_roots.json：不存在（该产出尚未生成，如任务1/2 的 Merkle 根/layout） ⇒ 跳过（副本/部分检出下无判别力）
+[tool_integrity] ⚠ [supply_chain] data/supply_chain/layout.json：不存在（该产出尚未生成，如任务1/2 的 Merkle 根/layout） ⇒ 跳过（副本/部分检出下无判别力）
+[tool_integrity] ⚠ [supply_chain] data/supply_chain/merkle_roots.json.ots：不存在（该产出尚未生成，如任务1/2 的 Merkle 根/layout） ⇒ 跳过（副本/部分检出下无判别力）
+[tool_integrity] OK：信任根数据文件与基准一致（2 个已存在，警告 4 条）
+[tool_integrity] ❌ [merkle] Examples（Examples）：根不匹配（台账 27a325e47455… 实际 ccc897a00e3c…，文件数 1571 → 1568）
+[tool_integrity] ⚠ [ruler] 缺 ruler 节（旧格式基准）—— 跑 --update 补齐
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_tool_integrity_supply_chain_601.py:119: AssertionError: assert 1 == 0
+E   AssertionError: 存量卡出现 6 个 fail（误伤或真债，需逐条裁决）
+    assert 6 == 0
+C:\CodeLearnling\note\note\C++\CPP-Bible\tests\test_writer_selfcheck.py:129: AssertionError: 存量卡出现 6 个 fail（误伤或真债，需逐条裁决）
+--------------------------- snapshot report summary ---------------------------
+2 snapshots failed. 3 snapshots passed.
+=========================== short test summary info ===========================
+FAILED tests/test_620_gate.py::test_check_gate_block_zero - AssertionError: g...
+FAILED tests/test_622_gate.py::test_controlled_dirs_clean - AssertionError: ...
+FAILED tests/test_646_end_to_end_slow.py::test_mapping_and_coupling_end_to_end
+FAILED tests/test_646_end_to_end_slow.py::test_sufficiency_and_ledger_end_to_end
+FAILED tests/test_autoimmune_threshold_630.py::test_measured_reconciles - ass...
+FAILED tests/test_autoimmune_threshold_630.py::test_report_and_selftest - ass...
+FAILED tests/test_baseline_629.py::test_gate_counts_measured_equals_standing
+FAILED tests/test_baseline_629.py::test_file_counts_measured - AssertionError...
+FAILED tests/test_guard_hijack_640.py::test_replay_invariants_check_runs_real_invariants
+FAILED tests/test_json_output.py::test_golden_lock_json - AssertionError: ass...
+FAILED tests/test_merkle_integrity_601.py::test_real_ledger_covers_five_dirs_and_matches_now
+FAILED tests/test_merkle_integrity_601.py::test_tool_integrity_check_includes_merkle
+FAILED tests/test_merkle_proof_613.py::test_all_proofs_verify - AssertionErro...
+FAILED tests/test_merkle_proof_613.py::test_check_passes - AssertionError: as...
+FAILED tests/test_metrics_613.py::test_line_a_numbers - assert 60 == 50
+FAILED tests/test_metrics_613.py::test_line_d_honest_status - assert 21 == 11
+FAILED tests/test_metrics_613.py::test_line_e_pending_and_proofs - assert 4 == 5
+FAILED tests/test_metrics_613.py::test_check_passes - AssertionError: assert ...
+FAILED tests/test_output_snapshots.py::test_gate_summary_counts - AssertionEr...
+FAILED tests/test_output_snapshots.py::test_kg_stats_counts - AssertionError:...
+FAILED tests/test_pre_push_630.py::test_controlled_dirs_clean - AssertionErro...
+FAILED tests/test_pre_push_630.py::test_check_components_all_green - Assertio...
+FAILED tests/test_pre_push_630.py::test_report_json_and_selftest - assert Fal...
+FAILED tests/test_pre_push_checklist_627.py::test_static_clean - assert (True...
+FAILED tests/test_pre_push_checklist_627.py::test_controlled_clean - assert F...
+FAILED tests/test_prop_graph.py::test_build_totals_and_distributions - Assert...
+FAILED tests/test_prop_graph.py::test_query_by_type_and_sign - AssertionError...
+FAILED tests/test_prop_graph.py::test_anchor_source_splits_card_vs_evidence
+FAILED tests/test_prop_graph.py::test_566_old_schema_build_self_heals - asser...
+FAILED tests/test_prop_graph.py::test_566_pending_signoff_lists_unsigned_only
+FAILED tests/test_prop_graph.py::test_566_backlog_counts_atoms_minus_with_props
+FAILED tests/test_prop_graph.py::test_566_views_are_fail_soft_and_json - Asse...
+FAILED tests/test_prop_graph.py::test_566_pending_view_prints_card_frontmatter_howto
+FAILED tests/test_prop_graph.py::test_cli_build_stats_query - assert '命题 79...
+FAILED tests/test_queyi_core_cpp_641.py::test_attacker_never_mutates_and_restore_proves_clean
+FAILED tests/test_queyi_core_cpp_641.py::test_run_is_sealed_and_binds_digests
+FAILED tests/test_queyi_core_cpp_641.py::test_cli_check_passes - AssertionErr...
+FAILED tests/test_replay_invariants_605.py::test_check_artifact_restore_pass
+FAILED tests/test_replay_invariants_605.py::test_run_checks_all_pass - assert...
+FAILED tests/test_replay_invariants_605.py::test_cli_check_exit_0 - Assertion...
+FAILED tests/test_replay_invariants_605.py::test_cli_json_valid - assert 2 == 0
+FAILED tests/test_replay_invariants_606.py::test_cli_check_has_5_results - as...
+FAILED tests/test_replay_invariants_606.py::test_metrics_invariants_all_true
+FAILED tests/test_replay_invariants_608.py::test_i1_artifact_restore_real_replay
+FAILED tests/test_replay_invariants_608.py::test_i5_manifest_consistency - As...
+FAILED tests/test_run_612_gate.py::test_pollution_clean - assert False is True
+FAILED tests/test_run_623_gate.py::test_real_tools_dir_green_after_b2 - FileN...
+FAILED tests/test_run_624_gate.py::test_selftest_passes - FileNotFoundError: ...
+FAILED tests/test_run_624_gate.py::test_gate_passes - FileNotFoundError: [Win...
+FAILED tests/test_run_625_gate.py::test_full_gate_passes - assert 1 == 0
+FAILED tests/test_run_629_gate.py::test_controlled_dirs_clean_and_ci_untouched
+FAILED tests/test_run_630_gate.py::test_gate_other_steps_pass - AssertionErro...
+FAILED tests/test_run_630_gate.py::test_controlled_clean_and_selftest - Asser...
+FAILED tests/test_run_634_gate.py::test_autoimmune_zero - assert (False)
+FAILED tests/test_run_634_gate.py::test_selftest - assert 1 == 0
+FAILED tests/test_run_635_gate.py::test_controlled - assert False is True
+FAILED tests/test_run_635_gate.py::test_selftest - assert 1 == 0
+FAILED tests/test_run_636_gate.py::test_controlled - assert False is True
+FAILED tests/test_run_636_gate.py::test_selftest - assert 1 == 0
+FAILED tests/test_run_637_gate.py::test_controlled - assert False is True
+FAILED tests/test_run_637_gate.py::test_selftest - assert 1 == 0
+FAILED tests/test_run_638_gate.py::test_controlled_dirs - assert (False is True)
+FAILED tests/test_run_639_gate.py::test_static_checks_green - assert False
+FAILED tests/test_run_641_gate.py::test_controlled_clean_check - assert False...
+FAILED tests/test_run_641_gate.py::test_cli_smoke - AssertionError: assert 1 ...
+FAILED tests/test_run_642_gate.py::test_controlled_clean_check - assert False...
+FAILED tests/test_run_642_gate.py::test_cli_smoke - AssertionError: assert 1 ...
+FAILED tests/test_third_party_audit_demo_628.py::test_e2e_check_all_green - A...
+FAILED tests/test_third_party_audit_demo_628.py::test_pck_ledger_unique_consistency
+FAILED tests/test_tool_integrity.py::test_567_check_flag_on_real_repo - Asser...
+FAILED tests/test_tool_integrity.py::test_567_check_lists_tampered_file_with_prefixes
+FAILED tests/test_tool_integrity_supply_chain_601.py::test_cli_check_and_check_supply_chain_green_on_real_repo
+FAILED tests/test_tool_integrity_supply_chain_601.py::test_cli_check_red_on_tampered_supply_chain
+FAILED tests/test_writer_selfcheck.py::test_stock_zero_false_positive - Asser...

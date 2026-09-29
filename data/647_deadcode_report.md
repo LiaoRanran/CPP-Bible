@@ -9,7 +9,7 @@
 | 项 | 值 |
 |---|---|
 | ruff 可用 | True |
-| 退出码 | 0 |
+| 退出码 | 1 |
 | **剩余违规** | **0** |
 
 ## 二、只报不删的（死函数候选）
@@ -20,7 +20,7 @@
 
 | 模块 | 函数 | 行 |
 |---|---|---|
-| `three_layer_orchestrator_645` | `effect_main` | 384 |
+| `three_layer_orchestrator_645` | `effect_main` | 386 |
 
 ## 诚实登记
 

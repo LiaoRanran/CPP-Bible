@@ -140,7 +140,7 @@ def merged(apply: bool = True) -> dict:
     old = [s for s in c["samples"] if s["id"] not in {n["id"] for n in NEW}]
     if len(old) != 20:
         raise SystemExit(f"合并基线应为原 20 条，实际 {len(old)}：拒绝（防误改）")
-    out = json.loads(json.dumps({**c, "samples": old}))          # 深拷贝
+    out: dict = json.loads(json.dumps({**c, "samples": old}))    # 深拷贝（666 A1：加注解消 no-any-return）
     out["samples"].extend(NEW)
     out["count"] = len(out["samples"])
     out["generated_by"] = (out.get("generated_by", "662 B1") + " · 665 D1 扩样（canonical 合并视图）")
@@ -166,7 +166,8 @@ def merged(apply: bool = True) -> dict:
 def load_merged() -> dict:
     """读 canonical 合并视图；不在（未扩样）则退回归并原文件。"""
     if MERGED.is_file():
-        return json.loads(MERGED.read_text(encoding="utf-8"))
+        data: dict = json.loads(MERGED.read_text(encoding="utf-8"))  # 666 A1：注解消 no-any-return
+        return data
     return merged(apply=False)
 
 

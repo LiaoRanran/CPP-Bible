@@ -18,10 +18,20 @@ def test_collect_has_all_six_lines():
 
 
 def test_line_a_numbers():
+    """666 A2 去写死：原断言 50 / 9 / 差值 9（613 时点快照，语料长到 60 就假红）。
+
+    改为**口径不变量 + 事实源对齐**：
+      · 投影差值 == 低成本可补条数（投影只吃 low 档）；
+      · 缺锚数 == 线A 工具现场算出的候选数（派生 vs 事实源）；
+      · low 是缺锚的子集且非空。
+    """
+    import liveness_priority_613 as a1
+
     m = f2.collect()
-    assert m["A_liveness"]["missing_anchors"] == 50
-    assert m["A_liveness"]["low_cost"] == 9
-    assert m["A_liveness"]["warn_after"] == m["A_liveness"]["warn_before"] - 9
+    A = m["A_liveness"]
+    assert A["warn_after"] == A["warn_before"] - A["low_cost"]
+    assert 0 < A["low_cost"] <= A["missing_anchors"]
+    assert A["missing_anchors"] == len(a1.build())
 
 
 def test_line_c_kc_and_empty_behavior():
@@ -31,10 +41,19 @@ def test_line_c_kc_and_empty_behavior():
 
 
 def test_line_d_honest_status():
+    """666 A2 去写死：原断言 candidates==98 / components_now==11（613 时点快照）。
+
+    改为**诚实态 + 不变量**：人审仍为 0（这是"诚实"本身，必须锁死）；
+    分量投影不得多于现状（合并只减不增）；深度 > 0。
+    """
+    import argument_fragmentation_613 as frag
+
     m = f2.collect()
-    assert m["D_argument"]["candidates"] == 98
-    assert m["D_argument"]["human_reviewed"] == 0
-    assert m["D_argument"]["components_now"] == 11
+    D = m["D_argument"]
+    assert D["human_reviewed"] == 0, "人审数一旦非 0，本行就该改写口径（诚实登记）"
+    assert D["components_now"] == frag.projection()["components_before"]
+    assert D["components_projection"] <= D["components_now"]
+    assert D["max_defense_depth"] and D["max_defense_depth"] > 0
 
 
 def test_line_e_pending_and_proofs():

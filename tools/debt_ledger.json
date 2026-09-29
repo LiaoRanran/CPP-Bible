@@ -27,6 +27,15 @@
    "owner": "human:liaoranran",
    "opened": "2026-09-13",
    "due": "2026-12-12"
+  },
+  {
+   "id": "DEBT-005",
+   "cause": "650 批在 atoms/draft650/ 留下 10 张**占位空壳卡**（只有 id/title/domain/type/status，ID 用暂存命名空间 ATOM-DRAFT650-NNN）⇒ 原子标准规则（ATOM-FM-REQUIRED / ATOM-ID-FORMAT / ATOM-CLAIM-STRUCTURED）对它们 block，624 基线出现 20 条常红",
+   "risk": "门禁对\"真违规\"与\"还没写\"不再有判别力（狼来了）；反过来，若长期降级不管，这 10 张空壳会以\"草稿卡\"身份混进卡数统计",
+   "compensation": "666 A2 处置：暂存卡对三条标准规则降 warn（可见、可数、不 block），并在 gate_engine 里以 STAGING_CARD_DIRS 显式登记；到期前必须二选一：① 定稿（补内容 + 正式 ID + claim_structured）② 清退出 atoms/ 受控树。两条路都属内容改动，需人执行（Agent 不代做）",
+   "owner": "human:liaoranran",
+   "opened": "2026-09-29",
+   "due": "2026-12-12"
   }
  ]
 }

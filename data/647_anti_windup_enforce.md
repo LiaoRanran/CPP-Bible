@@ -5,10 +5,10 @@
 
 ## 一、当前队列与警报
 
-- 队列长度：**65**；占用：**65.0%**；等级：**半饱和**
+- 队列长度：**107**；占用：**107.0%**；等级：**饱和**
 - 周新增：**104**（超预算：True）
-- **积压警报：False**（>80% ⇒ 需人审清理；当前 65.0%）
-- 队列文件未被改动（sha256 `79c88f6ff7f57576…`，只读）
+- **积压警报：True**（>80% ⇒ 需人审清理；当前 107.0%）
+- 队列文件未被改动（sha256 `bffc170772f23e48…`，只读）
 
 ## 二、enforce vs shadow 的差别（合成输入，验证机制）
 
@@ -19,14 +19,53 @@
 | 半饱和+超预算 | 51.0 | — | ⛔ 冻结 | — | ✅ |
 | 饱和 | 101.0 | ⚠️ | ⛔ 冻结 | — | ✅ |
 
-## 三、对当前队列回放（65 项）
+## 三、对当前队列回放（107 项）
 
-- 优先级分布：`{'高': 4, '中': 61}`
-- **会被冻结（enforce 下不入队）**：**0** 项
+- 优先级分布：`{'高': 4, '中': 61, '低': 42}`
+- **会被冻结（enforce 下不入队）**：**85** 项
 
 | 卡 | 规则 | 优先级 | 等待代理(天) | 冻结(真) | 理由 |
 |---|---|---|---|---|---|
-| — | — | — | — | — | 队列优先级分布 {'高': 4, '中': 61} **无「低」项** ⇒ 冻结规则在真实队列上未触发（**数据分布所致，非实现缺陷**） |
+| `ATOM-MEM-LEAK-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 29.8 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-MOVE-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 29.4 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-MOVE-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 29.1 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-NEW-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 28.7 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-NEW-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 28.3 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-NEW-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 28.0 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-PERF-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 27.7 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-PERF-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 27.3 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-PERF-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 26.9 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-PERF-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 26.6 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-PERF-003` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 26.2 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-PERF-003` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 25.9 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-RAII-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 25.6 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-RAII-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 25.2 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-RAII-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 24.8 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-RAII-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 24.5 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-RAII-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 24.2 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-RAII-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 23.8 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-RVREF-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 23.4 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-RVREF-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 23.1 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-RVREF-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 22.8 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-SHARED-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 22.4 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-SHARED-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 22.1 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-SHARED-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 21.7 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-SHARED-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 21.3 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-SHARED-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 21.0 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-SHARED-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 20.7 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-UNIQUE-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 20.3 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-UNIQUE-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 19.9 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-UNIQUE-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 19.6 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-UNIQUE-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 19.2 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-UNIQUE-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 18.9 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-UNIQUE-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 18.6 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-VALUE-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 18.2 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-VALUE-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 17.8 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-VALUE-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 17.5 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-VALUE-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 17.2 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-VALUE-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 16.8 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-VALUE-002` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 16.4 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
+| `ATOM-MEM-WEAK-001` | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 中 | 16.1 | ⛔ | 队列饱和 ⇒ 冻结非高优先级入队 |
 
 ## 四、误判风险评估 + 回滚方案
 

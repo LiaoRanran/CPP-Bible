@@ -58,6 +58,40 @@ def _evidence() -> int:
     return sum(1 for p in d.rglob("EV-*.md"))
 
 
+def _propositions() -> int:
+    """命题数（事实源 = **卡面** `claim_structured` 的条目总数）。
+
+    口径（566/640）：一个 `claim_structured` 元素 = 一条命题；证据卡不带该字段（实测）。
+    刻意**不读** `data/propositions.db`：那是派生库，派生坏了不该让"事实源"跟着坏；
+    两者一致由 `tests/test_prop_graph.py` 的"派生 vs 事实源"断言来锁。
+
+    666 A2 背景：659 曾想加这个常量但**回退**了——因为 `tests/test_prop_graph.py` 里
+    `79` 一处指"命题总数"、一处指"已签数"，盲替 `PROPOSITIONS` 会把已签断言改错。
+    本批按"逐断言建立事实源"重做：总数用本常量，**已签数**用 `st["by_signoff"]` 现算。
+    """
+    try:
+        import yaml  # 运行时依赖（pyproject dependencies 已声明 pyyaml）
+    except ImportError:                                    # 无 yaml ⇒ 不臆造数字
+        return 0
+    total = 0
+    for p in sorted((ROOT / "atoms").rglob("ATOM-*.md")):
+        text = p.read_text(encoding="utf-8", errors="replace")
+        if not text.startswith("---"):
+            continue
+        end = text.find("\n---", 3)
+        if end < 0:
+            continue
+        try:
+            meta = yaml.safe_load(text[3:end])
+        except Exception:                                  # 卡面损坏由 gate 报，这里不重复
+            continue
+        if isinstance(meta, dict):
+            cs = meta.get("claim_structured")
+            if isinstance(cs, list):
+                total += len(cs)
+    return total
+
+
 _ATOMS_REAL, _ATOMS_DRAFT = _atoms()
 _EVIDENCE = _evidence()
 
@@ -69,6 +103,8 @@ ATOMS_DRAFT = _ATOMS_DRAFT
 ATOMS_TOTAL = _ATOMS_REAL + _ATOMS_DRAFT
 #: 证据卡
 EVIDENCE_TOTAL = _EVIDENCE
+#: 命题（卡面 `claim_structured` 条目总数）——666 A2 新增，见 `_propositions()` 的说明
+PROPOSITIONS = _propositions()
 #: 卡（实卡口径：原子实卡 + 证据卡）——历史写死 103 的位置现应取此值
 CARDS_REAL = _ATOMS_REAL + _EVIDENCE
 #: 卡（全量口径：原子全量 + 证据卡）——历史写死 83/103 的位置现应取此值

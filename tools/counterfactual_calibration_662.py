@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """counterfactual_calibration_662.py — 662 B3：反事实引文算子校准。
 
 现状：算子 `tools/counterfactual_citation_658.py` 用 token 重叠≥0.3 或显式引用 id 判 dependent。
@@ -84,6 +86,7 @@ def main() -> int:
     for r in rows:
         print(f"  tau={r['tau']:<5} P={r['precision']:<5} R={r['recall']:<5} F1={r['f1']:<5} "
               f"(tp={r['tp']} fp={r['fp']} fn={r['fn']} tn={r['tn']})")
+    assert best is not None, "扫描至少产生一行（rows 恒非空）⇒ best 必被赋值"
     print(f"\n最佳 τ={best['tau']} → P={best['precision']} R={best['recall']} F1={best['f1']}")
     print(f"已写 {os.path.relpath(OUT, ROOT)}")
     return 0

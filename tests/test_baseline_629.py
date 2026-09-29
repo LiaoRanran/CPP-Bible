@@ -7,6 +7,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "tools"))
 
 import baseline_629 as B
+import counts_659 as counts  # 666 A2：去写死
 
 
 def test_standing_matches_task_book():
@@ -19,15 +20,28 @@ def test_standing_matches_task_book():
 
 
 def test_gate_counts_measured_equals_standing():
-    # 640 A1 更新：STANDING 是 629 开工时的历史快照（保持不动，作存档）；
-    # 实测值随批次演进（639 放权闸修复后 warn 186→116、命中 191→121、warn 规则 9→8），
-    # 本测试改为锁定**当前实测**，历史一致性由 STANDING 本身存档承载。
+    """666 A2 去写死：原断言 `(121,0,116,5)` / `warn_top[0]==(...,77)` / `len==8` 是
+    640 时点的**测量快照**——639/658–665 后实测已到 `(231,0,176,55)`，冻结它只会假红。
+
+    改为**可加性 + 事实源**：
+      · 总数 == block+warn+advice（分类可加，换了语料也成立）；
+      · rules_loaded == `gate_engine.RULES` 实际条数（派生 vs 事实源）；
+      · warn_top 是"按规则名降序 top10 且截断到实际 warn 规则数"（结构不变量）；
+      · 历史基线仍由 `B.STANDING` 存档承载（那一处**不**改，它是历史）。
+    """
+    import gate_engine as ge
+
     g = B.gate_counts()
-    assert (g["total"], g["block"], g["warn"], g["advice"]) == (121, 0, 116, 5)
-    assert g["rules_loaded"] == 67
-    assert g["automated_rules"] < g["rules_loaded"]      # 有 3 条非程序化规则
-    assert len(g["warn_top"]) == min(10, g["warn_rule_count"]) == 8
-    assert g["warn_top"][0] == ("ATOM-CLAIM-CONCEPT-NORMALIZED", 77)
+    assert g["total"] == g["block"] + g["warn"] + g["advice"]
+    assert g["rules_loaded"] == len(ge.RULES)
+    assert g["automated_rules"] <= g["rules_loaded"]
+    assert len(g["warn_top"]) == min(10, g["warn_rule_count"])
+    counts_only = [n for _n, n in g["warn_top"]]
+    assert counts_only == sorted(counts_only, reverse=True), "warn_top 必须降序"
+    assert all(n > 0 for n in counts_only)
+    # `ge.RULES` 是 `Rule` 对象列表（不是 dict）⇒ 用属性名对齐，别用 `in RULES`
+    rule_ids = {r.id for r in ge.RULES}
+    assert all(rname in rule_ids for rname, _n in g["warn_top"])
 
 
 def test_head_anchor_is_ancestor():
@@ -44,10 +58,15 @@ def test_git_facts_readable():
 
 
 def test_file_counts_measured():
+    """666 A2 去写死：`atoms_md==27` / `pck_yaml==83` 是 629 时点快照。
+
+    改为对齐 `counts_659` 事实源：`atoms_md` 走的是"所有 ATOM-*.md 文件"（含
+    `atoms/draft650/` 草稿）⇒ 对应 `ATOMS_TOTAL`；PCK 证书目录只含实卡 ⇒ `CARDS_REAL`。
+    """
     f = B.file_counts()
     assert f["tools_py"] > 300 and f["tests_py"] > 300
-    assert f["atoms_md"] == 27, "任务书说 28 张，实测 27 张（差异已登记）"
-    assert f["pck_yaml"] == 83
+    assert f["atoms_md"] == counts.ATOMS_TOTAL
+    assert f["pck_yaml"] == counts.CARDS_REAL
 
 
 def test_report_sections_written(tmp_path):

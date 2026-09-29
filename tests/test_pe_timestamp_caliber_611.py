@@ -37,6 +37,22 @@ DEEP = ROOT / "data" / "build_reproducibility_deep.md"
 CAPTURE = ROOT / "data" / "build_reproducibility_report.md"
 
 
+def _tracking_repo(rel: str) -> str:
+    """返回**真正跟踪** `rel` 的 git 仓库根（666 双仓复核；本仓跟踪 ⇒ 本仓）。"""
+    if subprocess.run(["git", "ls-files", "--error-unmatch", "--", rel],
+                      cwd=str(ROOT), capture_output=True, text=True).returncode == 0:
+        return str(ROOT)
+    real = os.path.realpath(str(ROOT / rel))
+    for d in (os.path.dirname(real), real):
+        if not os.path.isdir(d):
+            continue
+        r = subprocess.run(["git", "rev-parse", "--show-toplevel"],
+                           cwd=d, capture_output=True, text=True)
+        if r.returncode == 0 and r.stdout.strip():
+            return r.stdout.strip()
+    return str(ROOT)
+
+
 def test_deep_report_has_pe_section():
     text = DEEP.read_text(encoding="utf-8")
     assert "## 五、PE 时间戳口径" in text, "编译可复现报告缺 PE 章节"
@@ -68,9 +84,14 @@ def test_603_capture_untouched_by_this_batch():
     text = raw[2:].decode("utf-8", errors="replace")
     assert "611 A3" not in text, "不许往捕获产物里混入 UTF-8 章节"
     assert "build_reproducibility" in text
+    # 666 双仓复核：`data/` 在 queyi-verifier 侧是 junction 指向 CPP-Bible，
+    # 本仓 git **不跟踪** data/ ⇒ 直接 `cat-file HEAD:data/...` 取到空 blob，
+    # 会把"跨仓没查对仓库"误报成"文件被人改了"。故先解析**真正跟踪**它的仓库。
+    repo = _tracking_repo("data/build_reproducibility_report.md")
     blob = subprocess.run(["git", "cat-file", "-p",
                            "HEAD:data/build_reproducibility_report.md"],
-                          cwd=str(ROOT), capture_output=True).stdout
+                          cwd=repo, capture_output=True).stdout
+    assert blob, "取不到 HEAD blob（跨仓解析失败）"
     assert blob == raw, "该文件与 HEAD 不一致（被谁改了？本批不改它）"
 
 

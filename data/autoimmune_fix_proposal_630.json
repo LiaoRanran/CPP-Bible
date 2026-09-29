@@ -28,6 +28,18 @@
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
       },
       {
+        "card_id": "ATOM-CONC-FENCE-001",
+        "card_rel": "atoms/conc/ATOM-CONC-FENCE-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_Z10spin_plainv'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
         "card_id": "ATOM-CONC-LOCK-001",
         "card_rel": "atoms/conc/ATOM-CONC-LOCK-001.md",
         "prop_id": "prop-1",
@@ -52,6 +64,18 @@
         "value": null,
         "suggest": "std::move 的性能收益",
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
+      },
+      {
+        "card_id": "ATOM-CONC-LOCK-001",
+        "card_rel": "atoms/conc/ATOM-CONC-LOCK-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_Z12bench_singlev'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
       },
       {
         "card_id": "ATOM-CONC-RACE-001",
@@ -93,6 +117,18 @@
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
       },
       {
+        "card_id": "ATOM-CONC-RACE-001",
+        "card_rel": "atoms/conc/ATOM-CONC-RACE-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_Z12bench_singlev'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
         "card_id": "ATOM-HIST-AUTOPTR-001",
         "card_rel": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
         "prop_id": "prop-1",
@@ -130,6 +166,42 @@
         "value": null,
         "suggest": "auto_ptr 的历史定位",
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
+      },
+      {
+        "card_id": "ATOM-HIST-AUTOPTR-001",
+        "card_rel": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_ZNSt8auto_ptr'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-HIST-AUTOPTR-001",
+        "card_rel": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_ZNSt8auto_ptr'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-HIST-AUTOPTR-001",
+        "card_rel": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+        "prop_id": "prop-4",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_ZNSt8auto_ptr'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
       },
       {
         "card_id": "ATOM-MEM-ALIGN-001",
@@ -169,6 +241,30 @@
         "value": null,
         "suggest": "未测序修改与严格别名",
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
+      },
+      {
+        "card_id": "ATOM-MEM-ALIGN-001",
+        "card_rel": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'Padded'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-ALIGN-001",
+        "card_rel": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'Aligned'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
       },
       {
         "card_id": "ATOM-MEM-ALLOC-001",
@@ -223,6 +319,42 @@
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
       },
       {
+        "card_id": "ATOM-MEM-ALLOC-001",
+        "card_rel": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'allocation only'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-ALLOC-001",
+        "card_rel": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'arena'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-ALLOC-001",
+        "card_rel": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+        "prop_id": "prop-3",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'monotonic'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
         "card_id": "ATOM-MEM-LEAK-001",
         "card_rel": "atoms/mem/ATOM-MEM-LEAK-001.md",
         "prop_id": "prop-1",
@@ -260,6 +392,30 @@
         "value": null,
         "suggest": "内存序",
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
+      },
+      {
+        "card_id": "ATOM-MEM-LEAK-001",
+        "card_rel": "atoms/mem/ATOM-MEM-LEAK-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'destroyed after scope='}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-LEAK-001",
+        "card_rel": "atoms/mem/ATOM-MEM-LEAK-001.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'destroyed after scope='}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
       },
       {
         "card_id": "ATOM-MEM-MOVE-002",
@@ -301,6 +457,30 @@
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
       },
       {
+        "card_id": "ATOM-MEM-MOVE-002",
+        "card_rel": "atoms/mem/ATOM-MEM-MOVE-002.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_ZL8g_allocs'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-MOVE-002",
+        "card_rel": "atoms/mem/ATOM-MEM-MOVE-002.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_ZL8g_allocs'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
         "card_id": "ATOM-MEM-NEW-001",
         "card_rel": "atoms/mem/ATOM-MEM-NEW-001.md",
         "prop_id": "prop-1",
@@ -340,6 +520,30 @@
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
       },
       {
+        "card_id": "ATOM-MEM-NEW-001",
+        "card_rel": "atoms/mem/ATOM-MEM-NEW-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_Znwm'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-NEW-001",
+        "card_rel": "atoms/mem/ATOM-MEM-NEW-001.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_Znay'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
         "card_id": "ATOM-MEM-PERF-001",
         "card_rel": "atoms/mem/ATOM-MEM-PERF-001.md",
         "prop_id": "prop-1",
@@ -366,6 +570,18 @@
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
       },
       {
+        "card_id": "ATOM-MEM-PERF-001",
+        "card_rel": "atoms/mem/ATOM-MEM-PERF-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_Znay'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
         "card_id": "ATOM-MEM-PERF-002",
         "card_rel": "atoms/mem/ATOM-MEM-PERF-002.md",
         "prop_id": "prop-1",
@@ -390,6 +606,18 @@
         "value": null,
         "suggest": "libstdc++ 侧的 string 布局",
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
+      },
+      {
+        "card_id": "ATOM-MEM-PERF-002",
+        "card_rel": "atoms/mem/ATOM-MEM-PERF-002.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'max_zero_alloc_len'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
       },
       {
         "card_id": "ATOM-MEM-PERF-003",
@@ -431,6 +659,18 @@
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
       },
       {
+        "card_id": "ATOM-MEM-PERF-003",
+        "card_rel": "atoms/mem/ATOM-MEM-PERF-003.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'first_heap_len='}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
         "card_id": "ATOM-MEM-RAII-001",
         "card_rel": "atoms/mem/ATOM-MEM-RAII-001.md",
         "prop_id": "prop-1",
@@ -468,6 +708,30 @@
         "value": null,
         "suggest": "RAII 的异常安全性",
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
+      },
+      {
+        "card_id": "ATOM-MEM-RAII-001",
+        "card_rel": "atoms/mem/ATOM-MEM-RAII-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'g_live'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-RAII-001",
+        "card_rel": "atoms/mem/ATOM-MEM-RAII-001.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'dtor C'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
       },
       {
         "card_id": "ATOM-MEM-RAII-002",
@@ -522,6 +786,42 @@
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
       },
       {
+        "card_id": "ATOM-MEM-RAII-002",
+        "card_rel": "atoms/mem/ATOM-MEM-RAII-002.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'rule zero'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-RAII-002",
+        "card_rel": "atoms/mem/ATOM-MEM-RAII-002.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'Buggy'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-RAII-002",
+        "card_rel": "atoms/mem/ATOM-MEM-RAII-002.md",
+        "prop_id": "prop-3",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'relocation'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
         "card_id": "ATOM-MEM-RVREF-001",
         "card_rel": "atoms/mem/ATOM-MEM-RVREF-001.md",
         "prop_id": "prop-1",
@@ -561,6 +861,30 @@
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
       },
       {
+        "card_id": "ATOM-MEM-RVREF-001",
+        "card_rel": "atoms/mem/ATOM-MEM-RVREF-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_ZN5Probe6copiesE'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-RVREF-001",
+        "card_rel": "atoms/mem/ATOM-MEM-RVREF-001.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_ZN5Probe6copiesE'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
         "card_id": "ATOM-MEM-SHARED-001",
         "card_rel": "atoms/mem/ATOM-MEM-SHARED-001.md",
         "prop_id": "prop-1",
@@ -598,6 +922,30 @@
         "value": null,
         "suggest": "shared_ptr 的引用计数与析构",
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
+      },
+      {
+        "card_id": "ATOM-MEM-SHARED-001",
+        "card_rel": "atoms/mem/ATOM-MEM-SHARED-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'destroyed'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-SHARED-001",
+        "card_rel": "atoms/mem/ATOM-MEM-SHARED-001.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'destroyed'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
       },
       {
         "card_id": "ATOM-MEM-SHARED-002",
@@ -639,6 +987,30 @@
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
       },
       {
+        "card_id": "ATOM-MEM-SHARED-002",
+        "card_rel": "atoms/mem/ATOM-MEM-SHARED-002.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-SHARED-002",
+        "card_rel": "atoms/mem/ATOM-MEM-SHARED-002.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
         "card_id": "ATOM-MEM-UNIQUE-001",
         "card_rel": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
         "prop_id": "prop-1",
@@ -676,6 +1048,30 @@
         "value": null,
         "suggest": "unique_ptr 的所有权语义",
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
+      },
+      {
+        "card_id": "ATOM-MEM-UNIQUE-001",
+        "card_rel": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'unique_ptr'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-UNIQUE-001",
+        "card_rel": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'destroyed'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
       },
       {
         "card_id": "ATOM-MEM-UNIQUE-002",
@@ -717,6 +1113,30 @@
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
       },
       {
+        "card_id": "ATOM-MEM-UNIQUE-002",
+        "card_rel": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'unique_ptrIi12StatelessDelE'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-UNIQUE-002",
+        "card_rel": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'Sp_counted_deleterIPi6TagDel'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
         "card_id": "ATOM-MEM-VALUE-001",
         "card_rel": "atoms/mem/ATOM-MEM-VALUE-001.md",
         "prop_id": "prop-1",
@@ -756,6 +1176,30 @@
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
       },
       {
+        "card_id": "ATOM-MEM-VALUE-001",
+        "card_rel": "atoms/mem/ATOM-MEM-VALUE-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'xvalue'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-VALUE-001",
+        "card_rel": "atoms/mem/ATOM-MEM-VALUE-001.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'xvalue'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
         "card_id": "ATOM-MEM-VALUE-002",
         "card_rel": "atoms/mem/ATOM-MEM-VALUE-002.md",
         "prop_id": "prop-1",
@@ -795,6 +1239,30 @@
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
       },
       {
+        "card_id": "ATOM-MEM-VALUE-002",
+        "card_rel": "atoms/mem/ATOM-MEM-VALUE-002.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'sink_lvalue'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-VALUE-002",
+        "card_rel": "atoms/mem/ATOM-MEM-VALUE-002.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'wrap_forward'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
         "card_id": "ATOM-MEM-WEAK-001",
         "card_rel": "atoms/mem/ATOM-MEM-WEAK-001.md",
         "prop_id": "prop-1",
@@ -832,6 +1300,30 @@
         "value": null,
         "suggest": "weak_ptr 的语义",
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
+      },
+      {
+        "card_id": "ATOM-MEM-WEAK-001",
+        "card_rel": "atoms/mem/ATOM-MEM-WEAK-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'destroyed'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
+      },
+      {
+        "card_id": "ATOM-MEM-WEAK-001",
+        "card_rel": "atoms/mem/ATOM-MEM-WEAK-001.md",
+        "prop_id": "prop-2",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': 'destroyed'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
       },
       {
         "card_id": "ATOM-UB-GRAY-001",
@@ -845,11 +1337,23 @@
         "value": null,
         "suggest": "函数实参的求值顺序",
         "basis": "object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选则应改 claim_type 或补概念条目"
+      },
+      {
+        "card_id": "ATOM-UB-GRAY-001",
+        "card_rel": "atoms/ub/ATOM-UB-GRAY-001.md",
+        "prop_id": "prop-1",
+        "rule": "OBSERVATION-LIVENESS",
+        "field": "liveness",
+        "diag_type": "字段值不符型",
+        "current": "{'kind': 'fixture_symbol', 'symbol': '_Z1gv'}",
+        "mode": "human",
+        "value": null,
+        "basis": "引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原文建议改标 inference 并补外部依据）"
       }
     ],
-    "total": 65,
+    "total": 107,
     "auto": 0,
-    "human": 65,
+    "human": 107,
     "cards": [
       "ATOM-CONC-FENCE-001",
       "ATOM-CONC-LOCK-001",
@@ -904,12 +1408,12 @@
   },
   "compare": {
     "A": {
-      "scope": "65 条字段（23 张卡）",
+      "scope": "107 条字段（23 张卡）",
       "files_touched": "23 张原子卡（受控目录！）",
       "reversible": "可逆（每张卡改动可单独回滚；建议改动前备份 + 逐卡 commit）",
       "audit": "好（逐卡 diff 可审；可进 ReviewItemLedger 留痕）",
       "debt": "偿付（债消失，不是掩盖）",
-      "risk": "中——65 条需人填（>5 ⇒ §十.3 需人审批量处理）；改受控目录需遵守 §零.6 并逐条人审",
+      "risk": "中——107 条需人填（>5 ⇒ §十.3 需人审批量处理）；改受控目录需遵守 §零.6 并逐条人审",
       "gate_numbers": "不变（不动规则 ⇒ 191/67 等冻结数字不动）"
     },
     "B": {

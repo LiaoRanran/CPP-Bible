@@ -36,7 +36,7 @@ NOTE = "624 E1：W2(synced) 判决 IN 且人审已授权（传播既有授权，
 
 
 def _load_yaml(path: str) -> dict:
-    import yaml  # type: ignore[import-untyped]
+    import yaml  # 666 A1：pyproject 的 [[tool.mypy.overrides]] 已声明 yaml.* 缺 stub ⇒ 去掉冗余 ignore
     with open(path, encoding="utf-8") as fh:
         return cast("dict[str, Any]", yaml.safe_load(fh))
 
@@ -82,7 +82,7 @@ def apply_upgrade(certs: list[tuple[str, dict]], cands: list[str],
         ha["authority_note"] = NOTE
         cert["human_authority"] = ha
         if write:
-            import yaml  # type: ignore[import-untyped]
+            import yaml  # 666 A1：pyproject 的 [[tool.mypy.overrides]] 已声明 yaml.* 缺 stub ⇒ 去掉冗余 ignore
             with open(path, "w", encoding="utf-8", newline="\n") as fh:
                 yaml.safe_dump(cert, fh, allow_unicode=True, sort_keys=False)
         n += 1

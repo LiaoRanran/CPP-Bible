@@ -27,6 +27,8 @@ sys.path.insert(0, str(ROOT / "tools"))
 import ots_anchor_656 as ots  # noqa: E402
 
 TARGET = "data/supply_chain/merkle_roots.json"
+#: 666 A1：占位登记（存在 ⇒ 走"显式占位"通道；真锚后删掉它，真锚判据自动生效）。
+PLACEHOLDER = ROOT / "data" / "supply_chain" / "merkle_roots.json.ots.placeholder.md"
 
 
 def _mk(base: Path, name: str, body: bytes = b'{"a":1}\n') -> Path:
@@ -74,9 +76,26 @@ def test_frozen_magic_matches_official():
 
 
 def test_real_target_not_invalid():
-    """真实台账的锚点不许是 invalid（占位 / 无效 / 挂错对象 都算红）。"""
+    """真实台账的锚点：**要么**是真锚（非 invalid），**要么**是**显式登记**的占位。
+
+    666 A1 修订（诚实边界）：本机装了官方 `opentimestamps` 后，
+    「未上日历」的自制占位**必然**被判 invalid（官方解析器不认自制结构）。
+    这是真话音——"还没真锚"——不是测试该压掉的东西。故新增**占位通道**：
+    存在 `merkle_roots.json.ots.placeholder.md` 时改判两条**硬事实**：
+      ① 占位登记里写着**当前**台账摘要（防"登记过期"）；
+      ② `.ots` 覆盖的摘要 == 当前台账（防"挂错对象"）。
+    真锚路径（无占位登记）判据逐字不变。
+    """
     rep = ots.analyze(ots.DEFAULT_TARGET)
     assert rep["target_exists"], "目标台账必须存在"
+    if PLACEHOLDER.is_file():
+        txt = PLACEHOLDER.read_text(encoding="utf-8")
+        assert rep["target_sha256"] in txt, "占位登记未写当前台账摘要（登记过期）"
+        # 无官方库时 analyze 不产出 covered_digest ⇒ 该条由 613 的 --check 兜（两仓都跑）
+        if rep.get("covered_digest") is not None:
+            assert rep["covered_digest"] == rep["target_sha256"], \
+                "占位 .ots 必须覆盖当前台账（挂错对象即红）"
+        return
     assert rep["verdict"] != "invalid", f"锚点无效：{rep.get('note')}"
     if rep["verdict"] in ots.ANCHORED:
         assert rep["covers_target"], "OTS 覆盖的 digest 必须等于目标台账当前内容"

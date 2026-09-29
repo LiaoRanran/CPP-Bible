@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 LiaoRanran (阿信)
 """external_corpus_662.py — 662 B1：外部 corpus D3 检出率。
 
 对 corpus 中每个带 code 的样本，按 expected_detector 真跑：

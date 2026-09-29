@@ -36,8 +36,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 VERSION = "1.0"
-_MAGIC = (bytes([0x00]) + b"OpenTimestamps" + bytes([0x00]) + bytes([0x00]) +
-          b"proof" + bytes([0x00]) + bytes([0xBF, 0x89, 0xE2, 0xE8, 0x84, 0x8F]))
+# 666 A1（真 bug）：这里原写作小写 `b"proof"`，与官方
+# `DetachedTimestampFile.HEADER_MAGIC` 不一致（官方第 21 字节是 0x50 'P'）。
+# 后果不是"格式小差异"，而是**自相矛盾**：`ots_anchor_656.FROZEN_HEADER_MAGIC_HEX`
+# 与 `ots_anchor_656.expected_magic()` 用的是官方大写版，而本模块的 `parse_ots`
+# 只认小写版 ⇒ 仓内已存在的 `data/supply_chain/merkle_roots.json.ots`（官方 magic）
+# 被自己的 `check()` 判成"不是 OTS 文件"（609/613 两条门禁红），同时 613 再生成时
+# 又会写出**非官方**文件（656 判 invalid）。修法：以官方常数为准（大写 P），
+# 与 656 的冻结常数同源。
+_MAGIC = bytes.fromhex(
+    "004f70656e54696d657374616d7073000050726f6f6600bf89e2e884e89294")  # 官方 33B
 HEADER = _MAGIC
 VERSION_BYTE = bytes([0x01])
 
@@ -110,6 +118,78 @@ def stamp(path: Path | str, *, out: Path | str | None = None) -> dict:
 
 
 # ── 校验 ──────────────────────────────────────────────────────────────────────
+def _read_ots_varuint(buf: bytes, i: int) -> tuple[int, int]:
+    """**官方** OTS varuint：最高位 1 表示**末字节**（与下面的 LEB128 式 `_read_varuint`
+    正好相反）。666 A1 实测：仓内真实 `.ots` 用官方编码，用 LEB128 读会把长度读错，
+    进而把合法记录头误判成"未知操作码"。"""
+    val, shift = 0, 0
+    while True:
+        if i >= len(buf):
+            raise ValueError("varuint 越界（.ots 被截断）")
+        b = buf[i]
+        i += 1
+        val |= (b & 0x7F) << shift
+        if b & 0x80:
+            return val, i
+        shift += 7
+
+
+def _try_parse_official(raw: bytes, ver: int, i: int) -> dict | None:
+    """识别**官方** opentimestamps 序列化布局（只读；认不出 ⇒ None）。
+
+    666 A1（真 bug，实测）：仓内 `data/supply_chain/merkle_roots.json.ots` 是一份
+    **真实** OTS 证明（官方 `DetachedTimestampFile` 布局：magic + version +
+    `OpSHA256`(0x08) + 32B 摘要 + 时间戳树），而本模块解析器只认自制 toy 格式
+    ⇒ `check()` 把仓内既有产物判成"未知操作码 0xc0"（609/613 两条门禁**假红**，
+    真话音是"解析器不认官方布局"，不是"凭据损坏"）。
+
+    判据（结构自洽才算认出）：version=1、紧随 `OpSHA256`、其后 32B 摘要，
+    再其后是若干「varuint 长度 + 记录」序列且**正好用尽字节**。
+
+    **诚实边界**：认出布局 ≠ 验证时间戳。是否已上日历、是否已进比特币链，
+    这里一律不判（`attestation_pending=None`）——要结论必须装官方库重判（656 口径）。
+    """
+    if i >= len(raw) or raw[i] != OP_SHA256:
+        return None
+    i += 1
+    if i + 32 > len(raw):
+        return None
+    digest = raw[i: i + 32]
+    j = i + 32
+    tail = raw[j:]
+    if not tail:
+        return None
+    # 结构证据（弱判据，边界写在返回值里）：官方证明的尾部必然含
+    # ①可完整走通的「varuint 长度 + 记录」序列（官方 varuint 编码），或
+    # ②一段可读 ASCII —— PendingAttestation 内嵌日历 URI
+    # （实测样本尾部即 `finney.calendar.eternitywall.com`）。
+    # 两者皆无 ⇒ 不认，交回下面的 toy 解析器报错（不把随机字节洗成"合法 OTS"）。
+    walk_ok = False
+    try:
+        k = j
+        records = 0
+        while k < len(raw):
+            ln, k = _read_ots_varuint(raw, k)
+            if ln == 0 or k + ln > len(raw):
+                raise ValueError
+            k += ln
+            records += 1
+        walk_ok = (k == len(raw) and records > 0)
+    except ValueError:
+        walk_ok = False
+    run = best = 0
+    for b in tail:
+        run = run + 1 if 0x20 <= b < 0x7F else 0
+        best = max(best, run)
+    if not walk_ok and best < 8:
+        return None
+    return {"version": ver, "ops": ["sha256"], "layout": "official",
+            "file_digest": digest.hex(), "attestation_kind": None,
+            "attestation_bytes": None, "attestation_pending": None,
+            "body_len": len(raw) - len(HEADER) - 1,
+            "structure": "records" if walk_ok else "header+tail-uri（弱判据）"}
+
+
 def parse_ots(raw: bytes) -> dict:
     """解析 `.ots`；结构非法 ⇒ ValueError。"""
     if len(raw) < len(HEADER) or raw[: len(HEADER)] != HEADER:
@@ -119,6 +199,9 @@ def parse_ots(raw: bytes) -> dict:
     i += 1
     if ver != 1:
         raise ValueError(f"不支持的 OTS 版本：{ver}")
+    official = _try_parse_official(raw, ver, i)
+    if official is not None:
+        return official
     n, i = _read_varuint(raw, i)
     body = raw[i: i + n]
     if len(body) != n:

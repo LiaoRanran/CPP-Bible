@@ -7,6 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
+import counts_659 as counts  # noqa: E402
 import learner_state as d3  # noqa: E402
 
 
@@ -19,7 +20,7 @@ def _init(tmp_path):
 def test_init_all_kc_01(tmp_path):
     store = _init(tmp_path)
     recs = d3.load_all(store)
-    assert len(recs) == 37
+    assert len(recs) == counts.ATOMS_REAL
     assert all(abs(r["mastery_prob"] - 0.1) < 1e-9 for r in recs)
     assert all(r["kind"] == "init" for r in recs)
 
@@ -28,7 +29,7 @@ def test_init_idempotent(tmp_path):
     store = _init(tmp_path)
     added = d3.init(store)  # 已存在 ⇒ 不再添加
     assert added == 0
-    assert len(d3.load_all(store)) == 37
+    assert len(d3.load_all(store)) == counts.ATOMS_REAL
 
 
 def test_update_changes_mastery(tmp_path):

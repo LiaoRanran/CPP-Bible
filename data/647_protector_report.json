@@ -2,26 +2,26 @@
   "enforce": {
     "mode": "enforce",
     "before": {
-      "gate_engine.py": "03cd20dcdbeee51296243ac593ea63a35e7f9f40ce10145e46bc03a5646036ec",
-      "atom_evidence_replay.py": "4b142e68a97a3c2b99a409255b65b12cb58cd77d7079c9d120b15df4a2bcc6ff",
-      "poison_drill.py": "37f638004c4dbdcb6e14777bc3fc16fddeb0ad04e398f6d27efe5ff392a6a9ee",
-      "toolchain.py": "5920bff6af16cb809b61407a13f39c005c0edc02c7917cab5221e0c38a95e650",
-      "cppbible.py": "4454db9b499238dc762a20a199bf44f841c2f6bfa99bd8b2c34b809efd7826b5",
+      "gate_engine.py": "6c273924f07e9fdea3ee72e3b06f1ac387ab7bffbc035b04775549db11b88a49",
+      "atom_evidence_replay.py": "8aadf74691b4243490e5161c42eda97d36f8b36cd01c3f670254ad9f91579eaa",
+      "poison_drill.py": "db28f1aa838dba8d8b8f7050e45495f65e966d37d4f32347a5054ddb96fd3d3d",
+      "toolchain.py": "8d77446d55599a348377e0ebf17c6c422885aa3f616840ef8a37235247452ad8",
+      "cppbible.py": "ca4c63bb18fa844c56c91ffb671c8971a40f4b2b12f36f8b2a8d090d34ba743f",
       "decision_ledger": "ec8cbf5cca2def3ded8517264ae163ad64658dfc8d85d96fa7ac9804c194b385",
       "authority_log": "01b17c520cde75f869d2620dd88d64c873c038783894caeaf326fd34d499b90c",
-      "human_queue": "79c88f6ff7f57576c230f17a2dcc3c8e8c0e361f46f6031c624834b343ab33e2",
+      "human_queue": "bffc170772f23e486347717f2962e7fc87ae5204e181f4ad5d9671b45ff59157",
       "transparency_log": "03d82821636364143b449e01241f7c5dfe1703e8869813cd447f85a4d39176f8",
       "verified_cards": "078616367855aa0e15fbb82d1283ded7322c0c4948faa8e6e2142e879e6ae021"
     },
     "after": {
-      "gate_engine.py": "03cd20dcdbeee51296243ac593ea63a35e7f9f40ce10145e46bc03a5646036ec",
-      "atom_evidence_replay.py": "4b142e68a97a3c2b99a409255b65b12cb58cd77d7079c9d120b15df4a2bcc6ff",
-      "poison_drill.py": "37f638004c4dbdcb6e14777bc3fc16fddeb0ad04e398f6d27efe5ff392a6a9ee",
-      "toolchain.py": "5920bff6af16cb809b61407a13f39c005c0edc02c7917cab5221e0c38a95e650",
-      "cppbible.py": "4454db9b499238dc762a20a199bf44f841c2f6bfa99bd8b2c34b809efd7826b5",
+      "gate_engine.py": "6c273924f07e9fdea3ee72e3b06f1ac387ab7bffbc035b04775549db11b88a49",
+      "atom_evidence_replay.py": "8aadf74691b4243490e5161c42eda97d36f8b36cd01c3f670254ad9f91579eaa",
+      "poison_drill.py": "db28f1aa838dba8d8b8f7050e45495f65e966d37d4f32347a5054ddb96fd3d3d",
+      "toolchain.py": "8d77446d55599a348377e0ebf17c6c422885aa3f616840ef8a37235247452ad8",
+      "cppbible.py": "ca4c63bb18fa844c56c91ffb671c8971a40f4b2b12f36f8b2a8d090d34ba743f",
       "decision_ledger": "ec8cbf5cca2def3ded8517264ae163ad64658dfc8d85d96fa7ac9804c194b385",
       "authority_log": "01b17c520cde75f869d2620dd88d64c873c038783894caeaf326fd34d499b90c",
-      "human_queue": "79c88f6ff7f57576c230f17a2dcc3c8e8c0e361f46f6031c624834b343ab33e2",
+      "human_queue": "bffc170772f23e486347717f2962e7fc87ae5204e181f4ad5d9671b45ff59157",
       "transparency_log": "03d82821636364143b449e01241f7c5dfe1703e8869813cd447f85a4d39176f8",
       "verified_cards": "078616367855aa0e15fbb82d1283ded7322c0c4948faa8e6e2142e879e6ae021"
     },
@@ -30,19 +30,17 @@
     "effects": {
       "B1": {
         "卡片": 23,
-        "高置信动作数": 1,
-        "判决态被改变（enforce 强制量）": 1,
+        "高置信动作数": 23,
+        "判决态被改变（enforce 强制量）": 23,
         "动作分布": {
-          "pass": 21,
-          "block": 1,
-          "warn": 1
+          "block": 23
         }
       },
       "B2": {
-        "队列": 65,
-        "冻结不入队（enforce 强制量）": 0,
-        "积压警报": false,
-        "占用%": 65.0
+        "队列": 107,
+        "冻结不入队（enforce 强制量）": 85,
+        "积压警报": true,
+        "占用%": 107.0
       },
       "B3": {
         "新判决": 3,
@@ -72,12 +70,13 @@
       }
     },
     "marks": {
-      "conflict_flag": false,
+      "conflict_flag": true,
       "conflict_types": [
-        "RR"
+        "RR",
+        "EE"
       ],
-      "conflict_strength": 0.0,
-      "conflict_action": "pass",
+      "conflict_strength": 2.0,
+      "conflict_action": "block",
       "queued_pending": true,
       "frozen": false,
       "frozen_enforced": false,
@@ -109,19 +108,17 @@
   "shadow": {
     "B1": {
       "卡片": 23,
-      "高置信动作数": 1,
+      "高置信动作数": 23,
       "判决态被改变（enforce 强制量）": 0,
       "动作分布": {
-        "pass": 21,
-        "block": 1,
-        "warn": 1
+        "block": 23
       }
     },
     "B2": {
-      "队列": 65,
+      "队列": 107,
       "冻结不入队（enforce 强制量）": 0,
-      "积压警报": false,
-      "占用%": 65.0
+      "积压警报": true,
+      "占用%": 107.0
     },
     "B3": {
       "新判决": 3,
@@ -162,19 +159,17 @@
     "effects_after_rollback": {
       "B1": {
         "卡片": 23,
-        "高置信动作数": 1,
+        "高置信动作数": 23,
         "判决态被改变（enforce 强制量）": 0,
         "动作分布": {
-          "pass": 21,
-          "block": 1,
-          "warn": 1
+          "block": 23
         }
       },
       "B2": {
-        "队列": 65,
+        "队列": 107,
         "冻结不入队（enforce 强制量）": 0,
-        "积压警报": false,
-        "占用%": 65.0
+        "积压警报": true,
+        "占用%": 107.0
       },
       "B3": {
         "新判决": 3,
