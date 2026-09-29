@@ -175,12 +175,47 @@
 3. **`debt_ledger` FAIL**：`负债率 20% > 15%（4/20）——停线`。台账阈值触发**停线**语义，
    需人决策（清票 / 调阈值 / 保留停线）。
 
-### E.2 本批发现的一个真缺陷：**钩子自污染**
+### E.1b 解封命令（**给人**，复制即用）
 
-`pre-push` 钩子跑 `compile_gate.py`，而该 gate **会写受控目录** `Examples/atoms/*.asm`；
-紧接着钩子又检查"受控目录必须干净"⇒ **自己把自己的前置条件弄脏**，push 恒失败。
-本批的处置：**接受 gate 产物 + 重钉 Merkle + 记录**（不是绕过钩子）。
+```powershell
+# ① 金锁：先看差了什么（本批只恶化 1 项：warn_findings 116 → 176 = 新规则在存量卡上命中）
+.venv\Scripts\python.exe tools\golden_lock.py check
+#    人看过、认可分类后（示例：理由与分类请按你的判断填）：
+.venv\Scripts\python.exe tools\golden_lock.py check --accept "666：新规则(ATOM-FM-REQUIRED 等)在存量卡上的命中 = 可见债显形，非判决变坏" --classify "warn_findings=real"
+
+# ② 债务台账：负债率 20% > 15%（4/20）触发"停线" —— 清票 / 调阈值 / 保留停线，由人定
+.venv\Scripts\python.exe tools\debt_ledger.py --check
+
+# ③ 证据重放：648 批次的记录写成 `xxx.exe > out`，运行器拒收 shell 重定向（rc=127）
+.venv\Scripts\python.exe tools\atom_evidence_replay.py --check
+#    口径二选一：把重定向写进命令行之外（推荐），或让运行器支持 `>`（有安全代价）
+
+# 三项处理完后：
+git push origin HEAD
+```
+
+### E.2 本批发现的三个真缺陷（都不是"功能 bug"，而是**链路自污染**）
+
+**(1) 钩子自污染**：`pre-push` 钩子跑 `compile_gate.py`，而该 gate **会写受控目录**
+`Examples/atoms/*.asm`；紧接着钩子又检查"受控目录必须干净"⇒ **自己把自己的前置条件弄脏**，push 恒失败。
+处置：**接受 gate 产物 + 重钉 Merkle + 记录**（不是绕过钩子）。
 交人项：把 gate 输出改到临时目录，或钩子跑完 gate 后 `git checkout -- Examples/atoms/`。
+
+**(2) 测试污染受控目录**：一次全量测试之后，`atoms/conc/ATOM-CONC-FENCE-001.md` 的
+frontmatter **丢了 `id:` 行**（46/47 张卡有，独它没有）⇒ 直接导致两条红：
+`test_evidence_base_644::test_parse_frontmatter`（断言 `id` in meta）与
+`test_evidence_sufficiency_646::test_real_27_cards_all_sufficient`（27 → 26，id 退化成文件名）。
+- 证据：`git diff -- atoms/conc/ATOM-CONC-FENCE-001.md` 显示只少了那一行；
+- 恢复：`git checkout -- atoms/`；
+- **未定位到具体污染测试**（已排除 `test_evidence_base_644` / `test_evidence_migration_644` /
+  `test_622_a4` / `test_evidence_sufficiency_646` 四个文件**单独**跑的情况）；
+- 交人项：在慢测末尾加断言 `git status --short -- atoms/ evidence/`，让污染源自己暴露。
+
+**(3) OTS 与重钉的循环**：`tool_integrity --update` 每重钉一次就重写 `merkle_roots.json`，
+而 `.ots` 锚的正是它的摘要 ⇒ **重钉一次、锚就过期一次**；连 `git` 的 CRLF 归一化（提交动作本身）
+也会改变文件字节 ⇒ 提交同样会让锚过期。处置：新增 `tools/ots_placeholder_666.py`，
+把**正确顺序**固化（`--update` → `--write` → `--update`，且第三步后台账内容必须不变），
+`--check`/`--selftest` 可复算；顺序写在工具 docstring 里。
 
 ---
 
@@ -195,7 +230,9 @@
 
 ## 诚实登记：本批**没做到**的
 
-1. **slow 全绿**：未达成（见 §A3 与 `data/666_slow_triage.md`）。
+0. **主仓 push**：未完成（§E.1 三项需人）。拆仓已 push 两次（`1da8a50`、`c8c106b`）。
+1. **slow 全绿**：未达成 —— r3 干净跑 9 红，修完代码/口径类后剩 6 条（全部 = 需人签 或 Windows 命令行长度），
+   见 §A3 与 `data/666_slow_triage.md`。
 2. **A2 的"33 项"只覆盖 657 triage 的 A 类 12 文件**；其余写死断言仍在。
 3. **B4/B6/B7**：按 §B 的"部分"处理（自测交互、虚拟滚动、屏幕阅读器/缩放实测未做）。
 4. **反事实算子**：F1=1.0 是**上界**，不可对外引用；外部校准（B1）未做。
