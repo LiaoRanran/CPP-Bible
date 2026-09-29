@@ -206,7 +206,13 @@ def test_real_ledger_covers_five_dirs_and_matches_now():
     assert doc["generated_at"] is None, "台账默认不打点（幂等）"
     problems, _skipped, code = mi.check_all()
     assert (problems, code) == ([], 0)
-    assert doc["dirs"]["atoms"]["file_count"] == 29
+    # 666 A2 去写死：原来写死 `atoms == 29`（601 时点语料），扩库后实际 49 ⇒ 假红。
+    # 改为**现算**：用工具自己的 `iter_files`（同一口径：含排除规则）数一遍，与台账比。
+    inc, exc = mi.dir_config("atoms")[1], mi.dir_config("atoms")[2]
+    fresh = len(list(mi.iter_files(
+        mi.ROOT / mi.dir_config("atoms")[0], include=inc, exclude=tuple(exc))))
+    assert doc["dirs"]["atoms"]["file_count"] == fresh, \
+        f"台账 {doc['dirs']['atoms']['file_count']} != 现算 {fresh}"
     assert doc["dirs"]["mutation_baselines"]["file_count"] == 7
 
 

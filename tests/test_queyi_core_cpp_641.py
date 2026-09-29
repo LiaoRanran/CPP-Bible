@@ -96,12 +96,35 @@ def test_reconcile_reports_zero_unattributed_diff_on_rules():
     assert by_metric["W2 节点数"]["kernel"] == by_metric["W2 节点数"]["legacy"]
 
 
+def _resolve_tool(filename: str) -> str:
+    """666 A1：660 B6 拆仓后本仓 `tools/queyi_core_*.py` 是**薄 wrapper**（importlib 转发器），
+    它的 import 只有 `importlib/os/sys/typing` ⇒ 依赖方向断言会假红。
+    追到 canonical（`queyi-verifier/tools/<同名>`）再判方向；非 wrapper 时行为不变。
+    """
+    local = os.path.join(ROOT, "tools", filename)
+    try:
+        head = open(local, encoding="utf-8", errors="replace").read(400)
+    except OSError:
+        return local
+    if "薄 wrapper" not in head:
+        return local
+    d = os.path.join(ROOT, "tools")
+    for _ in range(8):
+        cand = os.path.join(d, "queyi-verifier", "tools", filename)
+        if os.path.isfile(cand):
+            return cand
+        d = os.path.dirname(d)
+    return local
+
+
 def test_kernel_does_not_import_adapter():
     """§四.2 依赖方向：**内核 ← 适配器**，不能反向（AST 机械证明）。"""
-    kernel_imports = core.module_imports(os.path.join(ROOT, "tools", "queyi_core_v10_641.py"))
+    kernel = _resolve_tool("queyi_core_v10_641.py")
+    adapter = _resolve_tool("queyi_core_cpp_641.py")
+    kernel_imports = core.module_imports(kernel)
     assert "queyi_core_cpp_641" not in kernel_imports
     assert "gate_engine" not in kernel_imports
-    adapter_imports = core.module_imports(os.path.join(ROOT, "tools", "queyi_core_cpp_641.py"))
+    adapter_imports = core.module_imports(adapter)
     assert "queyi_core_v10_641" in adapter_imports
 
 
