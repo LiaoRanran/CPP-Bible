@@ -15,12 +15,12 @@
     {
       "path": "data/supply_chain/merkle_roots.json",
       "bytes": 1081,
-      "sha256": "a7f192015033f243debf8ddfebc232b9975b3909d92fa9b1bbf038cbcb061860"
+      "sha256": "230d11641cab59250e2c3cecffcd572fce978cf693782c028e01f13b7a7d63ef"
     },
     {
       "path": "tools/.tool_checksums",
       "bytes": 3171,
-      "sha256": "152617cb3ac28e14e82ae463342ad2501df3bba087f6fa4502977cd9a5baf733"
+      "sha256": "0184fb451d505029dcbe7e96f71bcb379d65295a11f7b439d9fb857bf7af17d3"
     },
     {
       "path": "data/pck/certificates/ATOM-CONC-FENCE-001.pck.yaml",

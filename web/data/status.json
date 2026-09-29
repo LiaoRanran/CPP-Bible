@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T18:49:41",
+  "generated_at": "2026-09-29T23:47:37",
   "generated_from": [
     "atoms/**/ATOM-*.md",
     "tools/gate_engine.py",
@@ -57,6 +57,24 @@
     "IN": 89,
     "OUT": 42,
     "UNDEC": 0
+  },
+  "ig_cards_665": {
+    "total": 16,
+    "verdict_dist": {
+      "catch": 6,
+      "miss": 5,
+      "unknown": 1,
+      "measure": 4
+    },
+    "four_state_dist": {
+      "pass": 12,
+      "unknown": 4
+    },
+    "agree_with_664": "",
+    "status": "机器卡 · machine-derived（无人签，不算 verified）",
+    "source": "data/cards_665/index_665.json",
+    "web_index": "web/data/ig_cards_665.json",
+    "recheck_cmd": "python tools/ig_cards_665.py --check"
   },
   "unavailable": [],
   "note": "本文件由 tools/web_status_655.py 现算；前端只渲染、不写死数字。任何字段缺失都显式标 null 并进入 unavailable，不用占位值冒充真实。"

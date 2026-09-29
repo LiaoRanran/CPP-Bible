@@ -144,12 +144,47 @@ def w2_summary() -> dict[str, Any]:
     return out
 
 
+def machine_cards() -> dict[str, Any]:
+    """665 G1 的机器卡块（666 修：**由生成器产出**，不再手工追加）。
+
+    病（实测）：665 G1 是**手工**往 `web/data/status.json` 里加了 `ig_cards_665` 块；
+    而本工具会重写该文件 ⇒ 666 跑一次 `web_data_pipeline_656.py --build` 就把它抹掉，
+    `test_ig_cards_665::test_web_ig_cards_are_labelled_machine_derived` 随之 KeyError。
+    **治法**：把它变成生成器的一部分（数字从 `web/data/ig_cards_665.json` 现算）。
+    """
+    p = ROOT / "web" / "data" / "ig_cards_665.json"
+    if not p.is_file():
+        return {}
+    try:
+        ig = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        return {}
+    vd: dict[str, int] = {}
+    fd: dict[str, int] = {}
+    for c in ig.get("cards", []):
+        if c.get("verdict"):
+            vd[c["verdict"]] = vd.get(c["verdict"], 0) + 1
+        if c.get("four_state"):
+            fd[c["four_state"]] = fd.get(c["four_state"], 0) + 1
+    return {
+        "total": ig.get("total"),
+        "verdict_dist": vd,
+        "four_state_dist": fd,
+        "agree_with_664": ig.get("agree_with_664", ""),
+        "status": "机器卡 · machine-derived（无人签，不算 verified）",
+        "source": "data/cards_665/index_665.json",
+        "web_index": "web/data/ig_cards_665.json",
+        "recheck_cmd": ig.get("recheck_cmd", "python tools/ig_cards_665.py --check"),
+    }
+
+
 def build() -> dict[str, Any]:
     cards = count_cards()
     rules = count_rules()
     prot = count_protectors()
     esc = escape_rate()
     w2 = w2_summary()
+    ig = machine_cards()
     unavailable = []
     if rules.get("rules_total") is None:
         unavailable.append("rules：gate_engine 导入失败")
@@ -170,6 +205,7 @@ def build() -> dict[str, Any]:
         "protectors": prot,
         "escape": esc,
         "w2": w2,
+        "ig_cards_665": ig,          # 666：机器卡块改由生成器产出（不再手工追加）
         "unavailable": unavailable,
         "note": ("本文件由 tools/web_status_655.py 现算；前端只渲染、不写死数字。"
                  "任何字段缺失都显式标 null 并进入 unavailable，不用占位值冒充真实。"),
