@@ -75,15 +75,24 @@ def test_migrate_plan_is_pure_mapping():
     assert plan[0]["legacy"] == "block"
 
 
-# 3.1-8：真实语料审计（23 张 verified 卡在无边界下全部 unknown）
+# 3.1-8：真实语料审计（**边界回填后**：有边界计 23/23，卡不再停在 unknown）
 def test_audit_real_corpus():
     a = m.audit()
     assert len(a["baselines"]) >= 30
     assert set(a["baseline_dist"]) <= set(m.STATES)
     assert len(a["cards"]) >= 20
-    # 实测：卡当前无边界三元组 ⇒ 全部 unknown（如实断言，若日后回填则此断言会失败并暴露）
-    assert a["cards_with_boundary"] == 0
-    assert a["card_dist"] == {"unknown": len(a["cards"])}
+    # 638 原本断言"卡无边界 ⇒ 全部 unknown"，那是一条**刻意触发线**：
+    # 665 回填边界后它按设计亮了（23/23 有边界）。故改为断言**关系**，不冻结数字——
+    # 否则下次边界再变一次，测试又会以"红了"的方式而不是"说清了"的方式报信。
+    assert a["cards_with_boundary"] == sum(1 for c in a["cards"] if c.get("boundary_ok")), \
+        "有边界计数必须与逐卡 boundary_ok 一致（防只加一个总数计数的写法）"
+    assert a["cards_with_boundary"] <= len(a["cards"])
+    assert set(a["card_dist"]) <= set(m.STATES)
+    assert sum(a["card_dist"].values()) == len(a["cards"]), a["card_dist"]
+    # 语义锁：有边界的卡不应停在 unknown（unknown 只留给缺边界/证据不足）
+    for c in a["cards"]:
+        if c.get("boundary_ok"):
+            assert c["state"] != "unknown", c
 
 
 # 3.1-9：输出路径在 data 下（--check 不写盘）
