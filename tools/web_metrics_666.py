@@ -72,7 +72,8 @@ MILESTONES: list[dict[str, str]] = [
 
 def _json(rel: str) -> dict:
     with open(os.path.join(ROOT, rel), encoding="utf-8") as fh:
-        return json.load(fh)
+        data: dict = json.load(fh)      # 666 A1：注解消 no-any-return（json.load 返 Any）
+        return data
 
 
 def _count_lines(path: str) -> int:
@@ -171,6 +172,29 @@ def collect() -> dict:
     }
 
 
+def selftest() -> int:
+    """只读自检（不写盘）：数据源可达、字段齐全、缺失项显式登记。"""
+    ok = True
+
+    def chk(name: str, cond: bool, extra: str = "") -> None:
+        nonlocal ok
+        print(f"  [{'ok' if cond else 'FAIL'}] {name} {extra}")
+        ok = ok and cond
+
+    fresh = collect()
+    chk("卡数 > 0", fresh["metrics"]["cards_real"] > 0, f"({fresh['metrics']['cards_real']})")
+    chk("规则数 == 引擎条数", fresh["metrics"]["rules_total"] > 0,
+        f"({fresh['metrics']['rules_total']})")
+    chk("检出率可读", bool(fresh["metrics"]["holdout"]), "")
+    chk("账本事件 > 0", bool(fresh["metrics"]["ledger_events"]), "")
+    chk("时间线非空", len(fresh["timeline"]) >= 5, f"({len(fresh['timeline'])})")
+    chk("提交列表可读（无 git 时允许为空）", isinstance(fresh["commits"], list))
+    chk("拿不到的项都显式登记", isinstance(fresh["unavailable"], list),
+        f"({fresh['unavailable']})")
+    print("web_metrics_666 selftest: %s" % ("PASS" if ok else "FAIL"))
+    return 0 if ok else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="666 B2 · 首页指标与时间线数据（现算）")
     ap.add_argument("--check", action="store_true", help="只读：现算 vs 已落盘")
@@ -178,27 +202,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--selftest", action="store_true", help="自检")
     a = ap.parse_args(argv)
 
-    fresh = collect()
-
     if a.selftest:
-        ok = True
+        return selftest()
 
-        def chk(name: str, cond: bool, extra: str = "") -> None:
-            nonlocal ok
-            print(f"  [{'ok' if cond else 'FAIL'}] {name} {extra}")
-            ok = ok and cond
-
-        chk("卡数 > 0", fresh["metrics"]["cards_real"] > 0, f"({fresh['metrics']['cards_real']})")
-        chk("规则数 == 引擎条数", fresh["metrics"]["rules_total"] > 0,
-            f"({fresh['metrics']['rules_total']})")
-        chk("检出率可读", bool(fresh["metrics"]["holdout"]), "")
-        chk("账本事件 > 0", bool(fresh["metrics"]["ledger_events"]), "")
-        chk("时间线非空", len(fresh["timeline"]) >= 5, f"({len(fresh['timeline'])})")
-        chk("提交列表可读（无 git 时允许为空）", isinstance(fresh["commits"], list))
-        chk("拿不到的项都显式登记", isinstance(fresh["unavailable"], list),
-            f"({fresh['unavailable']})")
-        print("web_metrics_666 selftest: %s" % ("PASS" if ok else "FAIL"))
-        return 0 if ok else 1
+    fresh = collect()
 
     if a.check:
         if not os.path.isfile(OUT):
