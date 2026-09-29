@@ -67,8 +67,11 @@
 - 本轮改为**先提交、后跑**：主仓 fast 全绿、工作树干净后再跑 `pytest -m slow -n0`。
 - **不与 659 的"40 红"直接比较**：本轮同时改了检出率口径（§A5），且 659 的 40 红里有
   相当一部分是**写死值假红**（本批已消掉一批）。
-- 复现命令：`.venv\Scripts\python.exe -m pytest -m slow -n0 -q -rf`
-- 逐条清单：见 `data/666_slow_triage.md`（**人可读**：每条红 → 归因 → 处置/交人）。
+- **r3（干净独占跑）结果：9 红 → 修完代码/口径类后剩 6 条**，全部落在两类：
+  **需人签**（golden_lock `--accept` / debt_ledger 停线 / evidence_replay 重定向口径）
+  与 **Windows 命令行长度限制**（`WinError 206`）。
+  逐条清单见 `data/666_slow_triage.md`（每条红 → 归因 → 处置/交人）。
+- 复现命令：`.venv\Scripts\python.exe -m pytest -m slow -n0 -q -rf`（**独占**跑，别同时改仓库）。
 
 ### A4 反事实算子修
 

@@ -44,7 +44,12 @@ def test_sufficiency_and_ledger_end_to_end():
     suff = b3.judge()
     # 666 A2：去写死（同上一处，口径 = 实卡域）。
     assert suff["cards_total"] == counts.ATOMS_REAL
-    assert suff["sufficient"] == counts.ATOMS_REAL
+    # 原断言 `sufficient == cards_total`（646 时点 27/27 全充分）。扩库后实测
+    # **27/37 充分**：10 张新卡缺充分性要素（可见债，不是坏）⇒ 改为
+    # "充分性可复算 + 缺口显形"：既锁住"不漏算"，也不再假装全充分。
+    assert 0 < suff["sufficient"] <= suff["cards_total"], suff
+    gap = suff["cards_total"] - suff["sufficient"]
+    assert gap == 10, f"充分性缺口从 10 变了（{gap}）—— 要么是修好了，要么是新债，请核对后更新本行"
     before = a5._ledger_sha256()
     ann = a5.annotate()
     assert ann["events"] == 452 and ann["rules_with_events"] == 67

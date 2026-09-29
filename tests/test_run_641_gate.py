@@ -61,8 +61,20 @@ def test_generality_check():
 
 
 def test_new_tools_have_check_flag():
+    """666 A1：660 B6 拆仓后本仓 `queyi_core_*.py` 是**薄 wrapper**（只做 importlib 转发），
+    它当然没有 `--check` —— 原来的字面检查会假红。改为：wrapper 追到 canonical 再判
+    （非 wrapper 行为逐字不变）。"""
     for name in G.NEW_TOOLS:
-        src = open(os.path.join(ROOT, "tools", name + ".py"), encoding="utf-8").read()
+        p = os.path.join(ROOT, "tools", name + ".py")
+        src = open(p, encoding="utf-8").read()
+        if "薄 wrapper" in src[:400]:
+            d = os.path.join(ROOT, "tools")
+            for _ in range(8):
+                cand = os.path.join(d, "queyi-verifier", "tools", name + ".py")
+                if os.path.isfile(cand):
+                    src = open(cand, encoding="utf-8").read()
+                    break
+                d = os.path.dirname(d)
         assert "--check" in src, f"{name} 缺 --check"
 
 
