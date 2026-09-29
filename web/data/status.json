@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T21:14:32",
+  "generated_at": "2026-09-29T01:27:16",
   "generated_from": [
     "atoms/**/ATOM-*.md",
     "tools/gate_engine.py",
@@ -59,5 +59,23 @@
     "UNDEC": 0
   },
   "unavailable": [],
-  "note": "本文件由 tools/web_status_655.py 现算；前端只渲染、不写死数字。任何字段缺失都显式标 null 并进入 unavailable，不用占位值冒充真实。"
+  "note": "本文件由 tools/web_status_655.py 现算；前端只渲染、不写死数字。任何字段缺失都显式标 null 并进入 unavailable，不用占位值冒充真实。 665 G1 追加：ig_cards_665 为**机器卡**（无人签），与 atom 卡分开计数，不混入口径。 665 G1 追加：ig_cards_665 为**机器卡**（无人签），与 atom 卡分开计数，不混入口径。",
+  "ig_cards_665": {
+    "total": 16,
+    "verdict_dist": {
+      "catch": 6,
+      "miss": 5,
+      "unknown": 1,
+      "measure": 4
+    },
+    "four_state_dist": {
+      "pass": 12,
+      "unknown": 4
+    },
+    "agree_with_664": "16/16",
+    "status": "机器卡 · machine-derived（无人签，不算 verified）",
+    "source": "data/cards_665/index_665.json",
+    "web_index": "web/data/ig_cards_665.json",
+    "recheck_cmd": "python tools/ig_cards_665.py --check"
+  }
 }
