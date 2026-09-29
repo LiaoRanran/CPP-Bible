@@ -8,12 +8,13 @@
 |---|---|
 | 高 | 4 |
 | 中 | 61 |
-| 低 | 0 |
-| **合计** | **65** |
+| 低 | 42 |
+| **合计** | **107** |
 
 | 字段 | 条数 |
 |---|---|
 | `object` | 65 |
+| `liveness` | 42 |
 
 > `signed_by` 全部为**高**：机器永不代签（§零.3），且填错会把 warn 升格为 block。
 
@@ -86,10 +87,52 @@
 | 63 | **中** | `ATOM-MEM-WEAK-001` | prop-2 | `object` | weak_ptr | weak_ptr 的语义 | object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选 |
 | 64 | **中** | `ATOM-MEM-WEAK-001` | prop-3 | `object` | weak_ptr | weak_ptr 的语义 | object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选 |
 | 65 | **中** | `ATOM-UB-GRAY-001` | prop-2 | `object` | 未定义行为与求值顺序 | 函数实参的求值顺序 | object 是语义判断，机器不改；给出规范集内最相似候选供人确认，若无合适候选 |
+| 66 | **低** | `ATOM-CONC-FENCE-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 67 | **低** | `ATOM-CONC-LOCK-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 68 | **低** | `ATOM-CONC-RACE-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 69 | **低** | `ATOM-HIST-AUTOPTR-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 70 | **低** | `ATOM-HIST-AUTOPTR-001` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 71 | **低** | `ATOM-HIST-AUTOPTR-001` | prop-4 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 72 | **低** | `ATOM-MEM-ALIGN-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 73 | **低** | `ATOM-MEM-ALIGN-001` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 74 | **低** | `ATOM-MEM-ALLOC-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 75 | **低** | `ATOM-MEM-ALLOC-001` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 76 | **低** | `ATOM-MEM-ALLOC-001` | prop-3 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 77 | **低** | `ATOM-MEM-LEAK-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 78 | **低** | `ATOM-MEM-LEAK-001` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 79 | **低** | `ATOM-MEM-MOVE-002` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 80 | **低** | `ATOM-MEM-MOVE-002` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 81 | **低** | `ATOM-MEM-NEW-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 82 | **低** | `ATOM-MEM-NEW-001` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 83 | **低** | `ATOM-MEM-PERF-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 84 | **低** | `ATOM-MEM-PERF-002` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 85 | **低** | `ATOM-MEM-PERF-003` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 86 | **低** | `ATOM-MEM-RAII-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 87 | **低** | `ATOM-MEM-RAII-001` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 88 | **低** | `ATOM-MEM-RAII-002` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 89 | **低** | `ATOM-MEM-RAII-002` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 90 | **低** | `ATOM-MEM-RAII-002` | prop-3 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 91 | **低** | `ATOM-MEM-RVREF-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 92 | **低** | `ATOM-MEM-RVREF-001` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 93 | **低** | `ATOM-MEM-SHARED-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 94 | **低** | `ATOM-MEM-SHARED-001` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 95 | **低** | `ATOM-MEM-SHARED-002` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 96 | **低** | `ATOM-MEM-SHARED-002` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 97 | **低** | `ATOM-MEM-UNIQUE-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 98 | **低** | `ATOM-MEM-UNIQUE-001` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 99 | **低** | `ATOM-MEM-UNIQUE-002` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 100 | **低** | `ATOM-MEM-UNIQUE-002` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 101 | **低** | `ATOM-MEM-VALUE-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 102 | **低** | `ATOM-MEM-VALUE-001` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 103 | **低** | `ATOM-MEM-VALUE-002` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 104 | **低** | `ATOM-MEM-VALUE-002` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 105 | **低** | `ATOM-MEM-WEAK-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 106 | **低** | `ATOM-MEM-WEAK-001` | prop-2 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
+| 107 | **低** | `ATOM-UB-GRAY-001` | prop-1 | `liveness` | {'kind': 'fixture_symbol', ' | — | 引用卡里找不到夹具特有符号 ⇒ 该命题可能不该是 observation（规则原 |
 
 ## 三、机器可读输出
 
-- JSONL：`data/autoimmune_human_queue_631.jsonl`（65 行，每行一条，字段含 card_id/prop_id/field/suggest/priority/why_not_auto）
+- JSONL：`data/autoimmune_human_queue_631.jsonl`（107 行，每行一条，字段含 card_id/prop_id/field/suggest/priority/why_not_auto）
 
 ## 四、诚实登记
 

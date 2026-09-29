@@ -11,10 +11,10 @@
   },
   "error_subset": {
     "total": 17,
-    "catch": 13,
-    "miss": 3,
-    "unknown": 1,
-    "detect_rate_pct": 81.2
+    "catch": 10,
+    "miss": 5,
+    "unknown": 2,
+    "detect_rate_pct": 66.7
   },
   "control_subset": {
     "total": 9,
@@ -24,14 +24,17 @@
     "before_total": 7,
     "before_rate_pct": 80.0,
     "after_total": 17,
-    "after_rate_pct": 81.2,
-    "changed_verdicts": [
-      "h1"
-    ],
+    "after_rate_pct": 66.7,
+    "changed_verdicts": [],
     "note": "注意口径：分母从 7 抬到 17 之后，检出率的变化只说明**样本构成变了**，不说明验证器变好/变差；两轮都把 unknown（检测器不可用）留在分母之外。"
   },
   "honest_note": "665 C1 追加的 10 个样本**不具备盲态**（在原 holdout reveal 之后追加），本轮只用于**增大样本量**（可测真错 5 → 见 error_subset 分母），**不得**据此 Claim 外部效度提升。",
   "new_sample_unknown": [
+    {
+      "id": "h1",
+      "detector": "tsan",
+      "note": "TSan 无法初始化（WSL 内存映射不兼容），检测器不可用 rc=66"
+    },
     {
       "id": "h10",
       "detector": "unknown",
@@ -41,6 +44,30 @@
   "opt_sensitivity": {
     "why": "本次 miss 样本在 pipeline 默认的 -O1 下可能被优化掉整段内存操作（无可观测副作用）⇒ 报不出不等于检测器不会报，而是夹具与编译档的组合结果。",
     "rows": [
+      {
+        "id": "h26",
+        "opt": "-O1",
+        "verdict": "miss",
+        "note": ""
+      },
+      {
+        "id": "h26",
+        "opt": "-O0",
+        "verdict": "catch",
+        "note": "================================================================="
+      },
+      {
+        "id": "h27",
+        "opt": "-O1",
+        "verdict": "miss",
+        "note": ""
+      },
+      {
+        "id": "h27",
+        "opt": "-O0",
+        "verdict": "catch",
+        "note": "================================================================="
+      },
       {
         "id": "h29",
         "opt": "-O1",
@@ -52,20 +79,32 @@
         "opt": "-O0",
         "verdict": "miss",
         "note": ""
+      },
+      {
+        "id": "h30",
+        "opt": "-O1",
+        "verdict": "miss",
+        "note": ""
+      },
+      {
+        "id": "h30",
+        "opt": "-O0",
+        "verdict": "catch",
+        "note": "================================================================="
       }
     ]
   },
-  "honest_addendum": "666 A5 起**口径已变**：pipeline 不再只跑单一 `-O1`，而是**先 -O0、再 -O2 两档都跑**（`rv661.detect`），任一档报出即判 catch。所以本报告的 `detect_rate_pct` 是**双档口径**；它高于 665 当时的 66.7% **不是**因为验证器变强，而是因为旧口径把'只在 -O0 暴露'的缺陷记成了假 miss。本节的 -O0/-O1 敏感性复跑因此退化为**历史对照**，保留作证据。",
+  "honest_addendum": "敏感性只用来解释 miss 的**成因**，不回改检出率：报告正文的 66.7% 仍是 -O1 pipeline 口径下的数字。",
   "results": [
     {
       "id": "h1",
       "planted": true,
       "detector": "tsan",
-      "verdict": "miss",
-      "note": "tsan 两档均无报告[-O0(rc=139) 无输出]",
+      "verdict": "unknown",
+      "note": "TSan 无法初始化（WSL 内存映射不兼容），检测器不可用 rc=66",
       "is_665_new": false,
       "reveal_2": "unknown",
-      "changed_vs_reveal_2": true
+      "changed_vs_reveal_2": false
     },
     {
       "id": "h2",
@@ -92,7 +131,7 @@
       "planted": "unknown",
       "detector": "compiler-warn",
       "verdict": "catch",
-      "note": "警告 8 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmp7t4mqwn1\\_atom_auto_ptr.cpp:32:52:",
+      "note": "警告 8 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpn8klew3q\\_atom_auto_ptr.cpp:32:52:",
       "is_665_new": false,
       "reveal_2": "catch",
       "changed_vs_reveal_2": false
@@ -102,7 +141,7 @@
       "planted": true,
       "detector": "ubsan",
       "verdict": "miss",
-      "note": "ubsan 两档均无报告[-O0(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是; -O2(rc=0) A 函数返回=1 内存实际=1073741824 自洽=否 B UB路径=1073741824 合规路径=1073741824 一致=是]",
+      "note": "ubsan 无报告(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是",
       "is_665_new": false,
       "reveal_2": "miss",
       "changed_vs_reveal_2": false
@@ -122,7 +161,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==129==ERROR: LeakSanitizer: detected memory leaks  Indirect leak of 32 byte(s) in 1 object(s) allocated from:     #0 0x73d6edcfe548 i; -O2(rc=1) ==========",
+      "note": "asan 命中(rc=1) ================================================================= ==77==ERROR: LeakSanitizer: detected memory leaks  Indirect leak of 64 byte(s) in 2 object(s) allocated from:     #0 0x7a045e6fe548 in operator new(unsigned lon",
       "is_665_new": false,
       "reveal_2": "catch",
       "changed_vs_reveal_2": false
@@ -132,7 +171,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==183==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 4 byte(s) in 1 object(s) allocated from:     #0 0x724f12cfd9c7 in m; -O2(rc=1) ==========",
+      "note": "asan 命中(rc=1) ================================================================= ==104==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 12 byte(s) in 3 object(s) allocated from:     #0 0x7dbe48cfd9c7 in malloc ../../../../src/lib",
       "is_665_new": false,
       "reveal_2": "catch",
       "changed_vs_reveal_2": false
@@ -202,7 +241,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==237==ERROR: AddressSanitizer: out of memory: allocator is trying to allocate 0x5d21dba000 bytes     #0 0x7ae630efe990 in operator ne; -O2(rc=1) ==========",
+      "note": "asan 命中(rc=1) ================================================================= ==131==ERROR: AddressSanitizer: out of memory: allocator is trying to allocate 0x5d21dba000 bytes     #0 0x7d8a430fe990 in operator new[](unsigned long, std::no",
       "is_665_new": false,
       "reveal_2": "catch",
       "changed_vs_reveal_2": false
@@ -212,7 +251,7 @@
       "planted": false,
       "detector": "ubsan",
       "verdict": "miss",
-      "note": "ubsan 两档均无报告[-O0(rc=0) ret_plain copy=1 move=0 / ret_moved copy=0 move=1; -O2(rc=0) ret_plain copy=1 move=0 / ret_moved copy=0 move=1]",
+      "note": "ubsan 无报告(rc=0) ret_plain copy=1 move=0 / ret_moved copy=0 move=1",
       "is_665_new": false,
       "reveal_2": "miss",
       "changed_vs_reveal_2": false
@@ -222,7 +261,7 @@
       "planted": false,
       "detector": "asan",
       "verdict": "miss",
-      "note": "asan 两档均无报告[-O0(rc=0) sizeof(std::string)=32 empty capacity=15 (SSO buffer chars) len=15 allocs=0 len=16 allocs=1; -O2(rc=0) sizeof(std::string)=32 empty capacity=15 (SSO buffer chars) len=15 allocs=0 len=16 allocs=1]",
+      "note": "asan 无报告(rc=0) sizeof(std::string)=32 empty capacity=15 (SSO buffer chars) len=15 allocs=0 len=16 allocs=1",
       "is_665_new": false,
       "reveal_2": "miss",
       "changed_vs_reveal_2": false
@@ -232,7 +271,7 @@
       "planted": false,
       "detector": "ubsan",
       "verdict": "miss",
-      "note": "ubsan 两档均无报告[-O0(rc=0) alignof(Aligned)=16 sizeof(Aligned)=16 memcpy roundtrip x=7; -O2(rc=0) alignof(Aligned)=16 sizeof(Aligned)=16 memcpy roundtrip x=7]",
+      "note": "ubsan 无报告(rc=0) alignof(Aligned)=16 sizeof(Aligned)=16 memcpy roundtrip x=7",
       "is_665_new": false,
       "reveal_2": "miss",
       "changed_vs_reveal_2": false
@@ -242,7 +281,7 @@
       "planted": false,
       "detector": "asan",
       "verdict": "miss",
-      "note": "asan 两档均无报告[-O0(rc=0) arena: calls=5 bytes=124 heap_new=0 std  : heap_new=5 (growth reallocations); -O2(rc=0) arena: calls=5 bytes=124 heap_new=0 std  : heap_new=5 (growth reallocations)]",
+      "note": "asan 无报告(rc=0) arena: calls=5 bytes=124 heap_new=0 std  : heap_new=5 (growth reallocations)",
       "is_665_new": false,
       "reveal_2": "miss",
       "changed_vs_reveal_2": false
@@ -262,7 +301,7 @@
       "planted": true,
       "detector": "ubsan",
       "verdict": "catch",
-      "note": "ubsan 命中[-O0(rc=1) /mnt/c/Users/ASUS/AppData/Local/Temp/tmp03z9du0_/ig-01.cpp:1:31: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'; -O2(rc=1) /mnt/c/Users/ASUS/AppData/Local/Temp/tmp03z9du0_/ig-01",
+      "note": "ubsan 命中(rc=1) /mnt/c/Users/ASUS/AppData/Local/Temp/tmp1czn92js/ig-01.cpp:1:31: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -272,7 +311,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==553==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7c7142900034 at pc 0x59ee4912c2e7 bp 0x7ffce1775090 sp 0x7ffce17750; -O2(rc=1) ==========",
+      "note": "asan 命中(rc=1) ================================================================= ==289==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x789ba2b00034 at pc 0x55cf30f032ef bp 0x7ffd541589f0 sp 0x7ffd541589e0 WRITE of size 4 at 0x78",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -282,7 +321,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==605==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x624746ba31d8 bp 0x7ffc4c0dc; -O2(rc=1) AddressSan",
+      "note": "asan 命中(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==315==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x62a173d7119d bp 0x7fffca9030d0 sp 0x7fffca903038 T0) ",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -292,7 +331,7 @@
       "planted": true,
       "detector": "ubsan",
       "verdict": "catch",
-      "note": "ubsan 命中[-O0(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpdfzop_dy/ig-08.cpp:1:42: runtime error: division by zero; -O2(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpdfzop_dy/ig-08.cpp:1:42: runtime error: division by zero]（档位 -O0,-O2）",
+      "note": "ubsan 命中(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/tmp8xdhucxn/ig-08.cpp:1:42: runtime error: division by zero",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -302,7 +341,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==709==ERROR: AddressSanitizer: alloc-dealloc-mismatch (operator new [] vs operator delete) on 0x502000000010     #0 0x7a4f63cff5e8 in; -O2(rc=1) ==========",
+      "note": "asan 命中(rc=1) ================================================================= ==367==ERROR: AddressSanitizer: alloc-dealloc-mismatch (operator new [] vs operator delete) on 0x502000000010     #0 0x731eb78ff5e8 in operator delete(void*, un",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -311,8 +350,8 @@
       "id": "h26",
       "planted": true,
       "detector": "asan",
-      "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==761==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x5875c89dc26d bp 0x7fffec364920 sp 0x7fffec364910]（档位 -O0,-O2）",
+      "verdict": "miss",
+      "note": "asan 无报告(rc=2) ",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -321,8 +360,8 @@
       "id": "h27",
       "planted": true,
       "detector": "asan",
-      "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==814==ERROR: AddressSanitizer: attempting double-free on 0x502000000010 in thread T0:     #0 0x77de876ff5e8 in operator delete(void*,]（档位 -O0,-O2）",
+      "verdict": "miss",
+      "note": "asan 无报告(rc=0) ",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -332,7 +371,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==867==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x61e2e7e6d347 bp 0x7ffece463; -O2(rc=1) AddressSan",
+      "note": "asan 命中(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==447==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x5af2feca51a7 bp 0x7ffda49be840 sp 0x7ffda49be7a8 T0) ",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -342,7 +381,7 @@
       "planted": true,
       "detector": "ubsan",
       "verdict": "miss",
-      "note": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "note": "ubsan 无报告(rc=0) ",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -351,8 +390,8 @@
       "id": "h30",
       "planted": true,
       "detector": "asan",
-      "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==971==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 256 byte(s) in 1 object(s) allocated from:     #0 0x755a292fe6c8 in]（档位 -O0,-O2）",
+      "verdict": "miss",
+      "note": "asan 无报告(rc=0) ",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false

@@ -1,11 +1,11 @@
 {
-  "total_warns": 65,
+  "total_warns": 107,
   "cards_total": 23,
   "strict": {
     "filled_auto": 0,
     "verified_pass": 0,
     "failed": [],
-    "remaining_warns": 65,
+    "remaining_warns": 107,
     "cards_still_warned": 23,
     "cards_became_clean": 0,
     "soft_rate_pct": 100.0,
@@ -44,10 +44,10 @@
   },
   "thresholds": {
     "source": "_arch_v23/02_自身免疫率度量框架.md",
-    "hard_target_pct": 5,
-    "hard_cap_pct": 10,
-    "soft_target_pct": 20,
-    "soft_fatigue_pct": 40,
-    "found": true
+    "hard_target_pct": null,
+    "hard_cap_pct": null,
+    "soft_target_pct": null,
+    "soft_fatigue_pct": null,
+    "found": false
   }
 }

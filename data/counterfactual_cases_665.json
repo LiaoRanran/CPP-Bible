@@ -9,15 +9,15 @@
     "independent": 8
   },
   "confusion": {
-    "tp": 2,
+    "tp": 0,
     "fp": 0,
     "tn": 8,
-    "fn": 0
+    "fn": 2
   },
   "scores": {
-    "precision": 1.0,
-    "recall": 1.0,
-    "f1": 1.0
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0
   },
   "honest_note": "真值标签的判据是**外部锚**（standard ⇒ 引文为假断言仍成立；measurement ⇒ 断言只靠这次实测），不是靠感觉。662 说'校准不充分'，本批把它换成可复算的 P/R/F1；样本只有 10 条，**任何百分比都是点估计**。",
   "cases": [
@@ -129,13 +129,13 @@
       "ground_truth": "dependent",
       "operator": {
         "citation_id": "EV-IG05",
-        "dependent": true,
-        "mechanism": "断言自报机器/平台相关实测（标记：本机/sizeof(/x86-64）⇒ 支撑面只有实测",
-        "verdict_if_citation_false": "UNCERTAIN（需重新取证）",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
         "confidence": "low(prototype)"
       },
-      "operator_prediction": "dependent",
-      "agree": true
+      "operator_prediction": "independent",
+      "agree": false
     },
     {
       "id": "cf15",
@@ -245,13 +245,13 @@
       "ground_truth": "dependent",
       "operator": {
         "citation_id": "EV-IG11",
-        "dependent": true,
-        "mechanism": "断言自报机器/平台相关实测（标记：本机/sizeof(/mingw）⇒ 支撑面只有实测",
-        "verdict_if_citation_false": "UNCERTAIN（需重新取证）",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
         "confidence": "low(prototype)"
       },
-      "operator_prediction": "dependent",
-      "agree": true
+      "operator_prediction": "independent",
+      "agree": false
     },
     {
       "id": "cf19",

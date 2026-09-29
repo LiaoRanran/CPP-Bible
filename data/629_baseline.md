@@ -1,7 +1,7 @@
 # 629 §一 基线台账（standing baseline + 开工实测）
 
 > 工具：`tools/baseline_629.py`（纯标准库，只读，不跑监工四门禁）
-> HEAD：`22e47b45`（ahead origin/master **0** commit）
+> HEAD：`db493498`（ahead origin/master **75** commit）
 > 口径说明：§四.2 要求『解析 gate_engine --check 输出』，但 §零.1 禁止跑监工门禁；
 > 本工具改为只读 `import gate_engine` → `run()`（不写盘，实测见下），与 §一 数字一致。
 
@@ -33,15 +33,15 @@
 | 指标 | 实测 |
 |---|---|
 | gate 规则数 | 67（其中自动化 64） |
-| gate 命中 | 231（block=0 warn=176 advice=55） |
-| gate warn 命中规则数 | 13（有 warn 的规则） |
-| ahead origin/master | 0 commit |
-| 远端 HEAD | `22e47b45` |
-| HEAD | `22e47b45` 665 E/F/G/H：轨迹 5→10、论文 v0.3、闭环图、机器卡进前端 + 验收报告与回归测试 |
-| `tools/*.py` | 595 个 |
-| `tests/test_*.py` | 552 个 |
-| `atoms/**/ATOM-*.md` | 47 张 |
-| `data/pck/certificates/*.pck.yaml` | 103 张 |
+| gate 命中 | 121（block=0 warn=116 advice=5） |
+| gate warn 命中规则数 | 8（有 warn 的规则） |
+| ahead origin/master | 75 commit |
+| 远端 HEAD | `262dc863` |
+| HEAD | `db493498` 643 E4：白名单扩展决策器 |
+| `tools/*.py` | 493 个 |
+| `tests/test_*.py` | 492 个 |
+| `atoms/**/ATOM-*.md` | 27 张 |
+| `data/pck/certificates/*.pck.yaml` | 83 张 |
 | VSA 凭证 | 47 张 |
 | 透明日志条目 | 58 条 |
 
@@ -49,25 +49,22 @@
 
 | # | 规则 ID | warn 数 |
 |---|---|---|
-| 1 | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 87 |
+| 1 | `ATOM-CLAIM-CONCEPT-NORMALIZED` | 77 |
 | 2 | `EV-MATRIX-UNBACKED` | 16 |
-| 3 | `ATOM-FM-REQUIRED` | 10 |
-| 4 | `ATOM-ID-FORMAT` | 10 |
-| 5 | `EV-MATRIX` | 10 |
-| 6 | `ATOM-AUDIENCE` | 10 |
-| 7 | `ATOM-CLAIM-STRUCTURED` | 10 |
-| 8 | `OBSERVATION-LIVENESS` | 8 |
-| 9 | `EV-OUT-UNDECLARED-KEY` | 6 |
-| 10 | `EV-FALSIFICATION-QUANT` | 4 |
+| 3 | `OBSERVATION-LIVENESS` | 8 |
+| 4 | `EV-OUT-UNDECLARED-KEY` | 6 |
+| 5 | `EV-FALSIFICATION-QUANT` | 4 |
+| 6 | `ATOM-REL-TARGET` | 2 |
+| 7 | `EV-ASSERT-SYMBOL-MAPPED` | 2 |
+| 8 | `EV-SERVES-EXIST` | 1 |
 
 ## 四、实测 vs 任务书（差异标注，不修改基线）
 
 | 项 | 任务书 | 实测 | 性质 |
 |---|---|---|---|
-| gate_hits | 191 | 231 | **不符** |
-| gate_warn | 186 | 176 | **不符** |
-| gate_advice | 5 | 55 | **不符** |
-| remote | 793b5c45（624） | 22e47b45 | **不符** |
+| gate_hits | 191 | 121 | **不符** |
+| gate_warn | 186 | 116 | **不符** |
+| remote | 793b5c45（624） | 262dc863 | **不符** |
 | vsa | 14 张（HMAC） | 47 张（HMAC） | 基线漂移(允许) |
 | transparency_log | 23 条（GENESIS 起） | 58 条（GENESIS 起） | 基线漂移(允许) |
 
@@ -76,9 +73,9 @@
 ## 五、recent commits
 
 ```
-22e47b45 665 E/F/G/H：轨迹 5→10、论文 v0.3、闭环图、机器卡进前端 + 验收报告与回归测试
-4ab6ec02 665 C/D：holdout 20→30（真错 7→17）+ 外部 corpus 20→40（分三层）
-8d60516c 665 B1：664 独立生成批次拆成 16 张可复算机器卡（真机复跑；--check 16/16）
+db493498 643 E4：白名单扩展决策器
+fd5bd8e4 643 E3：闭环运行器（R4 轮）
+4e8b42cd 643 E2：规则老化探测器
 ```
 
 ## 六、`pytest -m "not slow"` 既有失败（629 开工冻结，F1 用『无新增失败』口径）
