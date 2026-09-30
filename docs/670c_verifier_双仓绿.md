@@ -10,7 +10,7 @@
 | 仓库 | HEAD | fast 选中 | 失败 | 结论 |
 |---|---|---|---|---|
 | **CPP-Bible** | `465f1f6b`（本批执行期间被 670d/670e 推进过） | 见下注 | **48** | ❌ **未绿**（预存在债务 + 670a 在改 tests/ 与 data/） |
-| **queyi-verifier** | `c8c106b`（工作树干净） | **3327** | **10** | ❌ **未绿**（**全部**为 670c 之前就存在，见 `docs/670c_verifier_failures.md`） |
+| **queyi-verifier** | `c8c106b`（工作树干净） | **3327** | **10 → 62（两次跑不一致）** | ❌ **未绿**（**全部**为 670c 之前就存在；失败数随语料镜像新旧浮动，见 `docs/670c_verifier_failures.md` §1.1） |
 | **670c 本批新增的测试** | — | **60 个用例**（见下） | **0** | ✅ 全绿 |
 
 **670c 新增测试全绿清单**（两侧合计）：
@@ -42,7 +42,13 @@ tests/test_reproduce_670c.py      11 passed   （一键复现器）
 
 另有预存在 lint 债务：`ruff check tools/` 2 条 F401（`tools/gate_rules_669d.py` 的 os/sys 未使用，**669d 冻结件，红线不许改**）。
 
-### queyi-verifier 侧（10 条）
+### queyi-verifier 侧（第 1 次 10 条 / 第 2 次 62 条 —— **数不稳定，这本身是发现**）
+> 两次跑同一 HEAD、同一干净工作树，失败数从 11 涨到 62。多出来的那批根因是**语料镜像刷新后钉值陈旧**：
+> `test_prop_inventory_592` 期待 89 条命题、实得 **99**；`test_622_d2` 期待 131 节点、实得 **141** ——
+> **+10/+10 恰好等于 670a 新加 5 张卡各带 2 条 prop 的增量**（与 CPP-Bible 侧 §4.1 独立测到的增量一致）。
+> verifier 的 `atoms/`/`data/` 是**未跟踪的语料镜像**（`git ls-files` = 0），会随主仓刷新；刷新的确切触发点**未查明，如实登记**。
+> 第 1 次的 11 条全部仍在第 2 次集合内。以下为**第 1 次**的 10 条（根因 (b) 类，两次都在）：
+
 **全部**为 670c 之前就存在：670c 在该仓只创建了临时探针文件、未改任何受版本控制的文件，且 `git status` 工作树干净（HEAD `c8c106b`）。根因、逐条清单与"为什么不去修绿"见 `docs/670c_verifier_failures.md`：
 - **6 条同一根因**：`data/supply_chain/link_613_verify.json` 这条 in-toto 溯源 link 钉的 `merkle_roots.json` 哈希已陈旧（`2c4a92a7672b ≠ 230d11641cab`）。
 - 其余 4 条：控制字符、`tau_d` 自检、ruler coverage integrity、`cost_tracker` 从 git 回填为 0（该仓是 647 用 `git fast-export` 拆出来的，提交元数据形态不同 ⇒ 环境性）。

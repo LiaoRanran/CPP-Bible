@@ -27,7 +27,7 @@
 | B2 | 一键复现脚本 + ≥5 测试 | ✅ | `tools/reproduce_all_670c.py`（36KB）+ `tests/test_reproduce_670c.py` **11 passed**；`--skip-slow`；失败不中断；写 `data/reproduction_report_670c.json` |
 | B3 | 数据集哈希清单 + 自动生成工具 | ✅ | `tools/hash_datasets_670c.py` 实跑：**54 个文件 / 838555 字节**；`data/dataset_hashes_670c.json` 含 python 3.13.13、git commit、分组、SHA256 |
 | B4 | Croissant 元数据 | ✅ | `data/croissant_670c.json`：`conformsTo = http://mlcommons.org/croissant/1.0`，**46 个 distribution / 9 个 recordSet**，字段取自实际 JSON 结构 |
-| C1 | verifier 失败清单 | ✅ | `docs/670c_verifier_failures.md`：10 条逐条定位 + 根因 + "非 670c 引入"的证据 |
+| C1 | verifier 失败清单 | ✅ | `docs/670c_verifier_failures.md`：逐条定位 + 根因 + "非 670c 引入"的证据；**含两次跑 11→62 的差异归因**（语料镜像刷新致钉值陈旧，见 §3.1） |
 | C2 | 逐红修复 | ⚠️ **部分** | 修了**本批自己引入的 4 条 lint 债**（1 处变量遮蔽致 mypy 报错 + 2 处 `no-any-return` + 2 处 import 排序）；verifier 那 10 条**判定不修**，理由见 C1 §3 |
 | C3 | 两侧 fast 全绿 | ❌ **未达成** | 见下 §3；已如实登记并给出收口路径 |
 | C4 | 拆分完整性检查 + ≥5 测试 | ✅ | `tools/check_split_670c.py` + `tests/test_split_670c.py` **14 passed** |
@@ -68,10 +68,24 @@
 | 仓库 | HEAD | 选中 | 失败 | 归属 |
 |---|---|---|---|---|
 | CPP-Bible | `465f1f6b` | — | **48** | 预存在"语料长大→钉值/快照陈旧" + 670a 正在改 `tests/`/`data/` |
-| queyi-verifier | `c8c106b` | 3327 | **10** | **全部**为 670c 之前就存在（工作树干净，本批未改任何受控文件） |
+| queyi-verifier | `c8c106b` | 3327 | **10 → 62（两次跑不一致）** | **全部**为 670c 之前就存在（工作树干净，本批未改任何受控文件） |
 | 670c 自己新增的测试 | — | 60 用例 | **0** | ✅ |
 
-**verifier 10 条的根因高度集中**：6 条同一个根因——`data/supply_chain/link_613_verify.json` 这条 in-toto 溯源 link 钉的 `merkle_roots.json` 哈希已陈旧（`2c4a92a7672b ≠ 230d11641cab`），而 `merkle_roots.json` **相对 HEAD 是干净的** ⇒ 是已提交状态内部的不一致。另 4 条：控制字符、`tau_d` 自检、ruler coverage、`cost_tracker` 从 git 回填为 0（该仓由 647 `git fast-export` 拆出，提交元数据形态不同）。
+### 3.1 【重要】verifier 的失败数**不稳定**：11 → 62，根因是语料镜像刷新
+同仓、同 HEAD（`c8c106b`）、同样干净的工作树，两次完整跑得到 **11** 与 **62** 条失败。第 1 次的 11 条全部仍在第 2 次集合内。逐条查证多出来的约 51 条，根因高度一致——**语料镜像长大了，测试里钉死的条数没跟着走**：
+
+```
+test_prop_inventory_592::test_ledger_lists_79_props_and_27_cards
+    assert len(prop_rows) == 89  ->  实得 99
+test_622_d2::test_labels_node_composition
+    assert sum(kinds.values()) == 131  ->  实得 141
+```
+
+**+10 命题 / +10 节点**，与 670c 在 CPP-Bible 侧**独立**测到的增量**完全一致**：670a 新加的 5 张卡（`ATOM-MEM-NEWARR-001` + 4 张 `ATOM-UB-*`）各带 2 条 prop ⇒ +10 prop / +10 节点（§4.1 的图差分）。verifier 的 `atoms/`/`data/` 是**未跟踪的语料镜像**（`git ls-files data atoms` = **0**），随主仓刷新；**刷新的确切触发点未查明——如实登记为未查明**，不编一个解释。
+
+**方法论收获**：一个"fast 失败数"如果没有绑定语料版本，就不是一个可引用的数字。这也正是本批新增 `drift_watch_670c.py`（关键数字绑定来源文件 + 阈值）与 `dataset_hashes_670c.json`（54 文件 SHA256 + commit）要解决的问题。
+
+**verifier 第 1 次那 10 条的根因高度集中**：6 条同一个根因——`data/supply_chain/link_613_verify.json` 这条 in-toto 溯源 link 钉的 `merkle_roots.json` 哈希已陈旧（`2c4a92a7672b ≠ 230d11641cab`），而 `merkle_roots.json` **相对 HEAD 是干净的** ⇒ 是已提交状态内部的不一致。另 4 条：控制字符、`tau_d` 自检、ruler coverage、`cost_tracker` 从 git 回填为 0（该仓由 647 `git fast-export` 拆出，提交元数据形态不同）。
 
 **为什么不修绿**：重录 link 会让检查闭嘴，而"信任锚漂移必须响"正是这套系统的价值所在；重钉属治理动作（647 §六 留交人裁决），不该由前端/复现 kit 批次单方面决定。同一纪律在本批别处也执行了：星图冒烟"存在受攻击的卡节点"在数据上就是假的（**0/47 张卡有攻击边**），改动前后同样 FAIL，**没有**为让它变绿去改数据或改别人的脚本。
 
@@ -93,7 +107,9 @@ A2/A3/A5 三个子代理独立报告"dist 会 404、新页面没进 ASSETS"。�
 
 ## 5. 诚实登记：已知限制与未做到
 
-1. **C3 未全绿**（§3）；**C2 只修了本批自己引入的 lint 债**，verifier 的 10 条按治理理由不修。
+1. **C3 未全绿**（§3）；**C2 只修了本批自己引入的 lint 债**，verifier 的失败按治理理由不修。
+   —— 且 verifier 的失败数**本身不稳定**（11→62，随语料镜像浮动，§3.1），刷新的确切触发点**未查明**。
+2. **"两侧 fast 全绿"这个验收口径需要修正**：在语料仍在增长（670a 在扩卡）、且测试把条数钉死在旧值的情况下，全绿不是一个可达状态。建议把断言改成"读现算值 + 与冻结快照比对并显式登记差额"，而不是硬编码 89/131/27。
 2. **baseline / ablation 仍未落盘**：`data/experiments/` 只有 `669_experiments.json`，实验页两张图按设计显示「待670a生成」。字段契约已写进 `docs/670c_前端完成度.md` §四。
 3. **前端无真实浏览器像素级验收**：测试是 **Node 真求值 + jsdom 结构冒烟**，不等价于端到端浏览器测试；星图的 canvas 观感需人工过一眼。
 4. **对比度审计只覆盖 27 组配对**（670c 新组件），不是全站审计。

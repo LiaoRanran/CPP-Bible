@@ -26,6 +26,36 @@ cd C:\CodeLearnling\queyi-verifier
 
 **为什么这不是 670c 造成的**：670c 在 verifier 仓只创建了探针文件（`_split_probe*.py` 等），**没有修改任何受版本控制的文件**；`git status` 可证工作树干净，且失败集合包含 `data/supply_chain/` 这类 670c 从未触碰的信任根。换言之上表是 **HEAD `c8c106b` 自带的状态**。
 
+### 1.1 ⚠️ 第二次跑变成 62 条 —— 失败数**不稳定**，且这条本身就是最该登记的发现
+
+本批收尾时又完整跑了一次（为产出仓库惯例的 `pytest_fast_670c_run1.txt`），结果：
+
+| 次 | 命令 | 失败 |
+|---|---|---|
+| 第 1 次 | `-n 16 -q --durations=25` | **11** |
+| 第 2 次 | `-n 16 -q`（同仓同 HEAD，工作树仍干净） | **62** |
+
+第 1 次的 11 条**全部**仍在第 2 次的集合里；第 2 次多出约 51 条。逐条查证多出来的那批，根因高度一致 —— **语料镜像长大了，测试里钉死的条数没跟着走**：
+
+```
+tests/test_prop_inventory_592.py::test_ledger_lists_79_props_and_27_cards
+    assert len(prop_rows) == 89, f"命题行应 89 条，实得 {len(prop_rows)}"
+E   AssertionError: 命题行应 89 条，实得 99
+
+tests/test_622_d2.py::test_labels_node_composition
+    assert sum(kinds.values()) == 131
+E   assert 141 == 131
+```
+
+**+10 命题 / +10 节点**，与 670c 在 **CPP-Bible** 侧独立测到的增量**完全一致**：670a 新加的 5 张卡（`ATOM-MEM-NEWARR-001` + 4 张 `ATOM-UB-*`）各带 2 条 prop ⇒ +10 prop、+10 节点（见 `data/670c_acceptance_report.md` §4.1）。也就是说：
+
+- verifier 的`atoms/`/`data/` 是**未跟踪的语料镜像**（`git ls-files data atoms` = **0**），会随主仓语料刷新；刷新发生在两次跑之间（两次跑之间 `data/`/`atoms/` 的 mtime 未见变化，故刷新的确切触发点未定位，**如实记为未查明**）。
+- 一旦镜像刷新，一批"钉死旧条数"的断言就集体转红。
+
+**因此 C1 的准确结论应读作**：verifier fast 的失败数**取决于语料镜像的新旧**，不是 670c 引入的，也不该被当成一个固定数字引用。两类根因贯穿两次跑：
+(a) **语料长大 vs 钉值陈旧**（第 2 次那 ~51 条）；
+(b) **信任锚/溯源 link 陈旧**（§2.1 那 6 条，两次都在）。
+
 ---
 
 ## 2. 逐条失败（10 条）
