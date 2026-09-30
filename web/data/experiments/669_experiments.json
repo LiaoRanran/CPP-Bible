@@ -1,0 +1,211 @@
+{
+ "schema": "queyi-experiments/v1",
+ "registry": {
+  "experiment": "669 P3 实验启动",
+  "protocol_version": "669-P3/v1",
+  "seed": null,
+  "commit": "30972323",
+  "verifier_version": "tools/holdout_reveal_3_665.py",
+  "dataset_version": "queyi-external-corpus-reveal/v2 / queyi-counterfactual/v2",
+  "instrument": "WSL g++ (Ubuntu 13.3.0) + ASan/UBSan/TSan（编译并运行；非静态规则）",
+  "opt_levels": [
+   "-O0",
+   "-O2"
+  ],
+  "env": {
+   "wsl_gpp": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+   "local_gpp": "g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+   "local_clang": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+   "host": "win32",
+   "python": "3.13.13",
+   "roll": "sanitizer 类在 WSL 里编译运行；warn/cross/link 类用本机编译器；WSL 不可用时记 unknown"
+  },
+  "blocked": [
+   {
+    "baseline": "B1 Rule-only",
+    "why": "主仓 holdout/corpus 判定走外部 sanitizer 仪器，无'仅静态规则'可执行路径",
+    "need": "拆仓验证器暴露 detect_static(sample) -> verdict"
+   },
+   {
+    "baseline": "B2/B3 Full-non-failure / budget-matched random",
+    "why": "资产选择接口在拆仓验证器里（主仓不可见），无接口即无对照",
+    "need": "拆仓暴露 select_assets(pool, n, strategy, seed) -> [asset]；随机臂必须带种子与分配表"
+   }
+  ],
+  "honest_note": "本批实验**只做全量复算与本仓可执行的消融**；B1/B2/B3 未做，登记在案，不编造数字。n<30 的行标 exploratory=True。"
+ },
+ "baselines": [
+  {
+   "name": "holdout 真错（双档，可测口径）",
+   "k": 14,
+   "n": 16,
+   "rate_pct": 87.5,
+   "cp_lo_pct": 61.7,
+   "cp_hi_pct": 98.4,
+   "wilson_lo_pct": 64.0,
+   "wilson_hi_pct": 96.5,
+   "exploratory": true,
+   "source": "data/holdout_reveal_3_665.json",
+   "note": "unknown 1 剔除"
+  },
+  {
+   "name": "holdout 对照（误报）",
+   "k": 1,
+   "n": 9,
+   "rate_pct": 11.1,
+   "cp_lo_pct": 0.3,
+   "cp_hi_pct": 48.2,
+   "wilson_lo_pct": 2.0,
+   "wilson_hi_pct": 43.5,
+   "exploratory": true,
+   "source": "data/holdout_reveal_3_665.json",
+   "note": "对照子集：本不是缺陷"
+  },
+  {
+   "name": "external 可测口径",
+   "k": 14,
+   "n": 32,
+   "rate_pct": 43.8,
+   "cp_lo_pct": 26.4,
+   "cp_hi_pct": 62.3,
+   "wilson_lo_pct": 28.2,
+   "wilson_hi_pct": 60.7,
+   "exploratory": false,
+   "source": "data/external_corpus_reveal_665.json",
+   "note": "剔除 unknown 5 + not_error 3"
+  },
+  {
+   "name": "external 全样本口径",
+   "k": 14,
+   "n": 40,
+   "rate_pct": 35.0,
+   "cp_lo_pct": 20.6,
+   "cp_hi_pct": 51.7,
+   "wilson_lo_pct": 22.1,
+   "wilson_hi_pct": 50.5,
+   "exploratory": false,
+   "source": "data/external_corpus_reveal_665.json",
+   "note": ""
+  },
+  {
+   "name": "external 层 A",
+   "k": 13,
+   "n": 24,
+   "rate_pct": 54.2,
+   "cp_lo_pct": 32.8,
+   "cp_hi_pct": 74.4,
+   "wilson_lo_pct": 35.1,
+   "wilson_hi_pct": 72.1,
+   "exploratory": true,
+   "source": "data/external_corpus_reveal_665.json",
+   "note": "层内 total 25"
+  },
+  {
+   "name": "external 层 B",
+   "k": 1,
+   "n": 8,
+   "rate_pct": 12.5,
+   "cp_lo_pct": 0.3,
+   "cp_hi_pct": 52.7,
+   "wilson_lo_pct": 2.2,
+   "wilson_hi_pct": 47.1,
+   "exploratory": true,
+   "source": "data/external_corpus_reveal_665.json",
+   "note": "层内 total 11"
+  },
+  {
+   "name": "external 层 C（无可用检测器）",
+   "k": 0,
+   "n": 0,
+   "rate_pct": null,
+   "cp_lo_pct": 0.0,
+   "cp_hi_pct": 100.0,
+   "wilson_lo_pct": 0.0,
+   "wilson_hi_pct": 100.0,
+   "exploratory": true,
+   "source": "data/external_corpus_reveal_665.json",
+   "note": "层内 total 4"
+  }
+ ],
+ "caliber_ablation": {
+  "arms": {
+   "A_valid_only（本批主口径：unknown 剔除）": {
+    "holdout": {
+     "k": 14,
+     "n": 16,
+     "rate_pct": 87.5,
+     "cp_lo_pct": 61.7,
+     "cp_hi_pct": 98.4,
+     "wilson_lo_pct": 64.0,
+     "wilson_hi_pct": 96.5,
+     "exploratory": true
+    },
+    "external": {
+     "k": 14,
+     "n": 32,
+     "rate_pct": 43.8,
+     "cp_lo_pct": 26.4,
+     "cp_hi_pct": 62.3,
+     "wilson_lo_pct": 28.2,
+     "wilson_hi_pct": 60.7,
+     "exploratory": false
+    }
+   },
+   "B_unknown_as_miss（保守：unknown 记 miss）": {
+    "holdout": {
+     "k": 14,
+     "n": 17,
+     "rate_pct": 82.4,
+     "cp_lo_pct": 56.6,
+     "cp_hi_pct": 96.2,
+     "wilson_lo_pct": 59.0,
+     "wilson_hi_pct": 93.8,
+     "exploratory": true
+    },
+    "external": {
+     "k": 14,
+     "n": 37,
+     "rate_pct": 37.8,
+     "cp_lo_pct": 22.5,
+     "cp_hi_pct": 55.2,
+     "wilson_lo_pct": 24.1,
+     "wilson_hi_pct": 53.9,
+     "exploratory": false
+    }
+   },
+   "C_all_samples（最保守：unknown + not_error 都进分母）": {
+    "holdout": {
+     "k": 14,
+     "n": 17,
+     "rate_pct": 82.4,
+     "cp_lo_pct": 56.6,
+     "cp_hi_pct": 96.2,
+     "wilson_lo_pct": 59.0,
+     "wilson_hi_pct": 93.8,
+     "exploratory": true
+    },
+    "external": {
+     "k": 14,
+     "n": 40,
+     "rate_pct": 35.0,
+     "cp_lo_pct": 20.6,
+     "cp_hi_pct": 51.7,
+     "wilson_lo_pct": 22.1,
+     "wilson_hi_pct": 50.5,
+     "exploratory": false
+    }
+   }
+  },
+  "delta_pp": {
+   "holdout": {
+    "A_minus_B_pp": 5.1,
+    "A_minus_C_pp": 5.1
+   },
+   "external": {
+    "A_minus_B_pp": 6.0,
+    "A_minus_C_pp": 8.8
+   }
+  },
+  "note": "三臂共用同一份原始计数（catch/miss/unknown/not_error），只变分母口径 ⇒ Δ 全是口径效应，不是检测能力变化"
+ }
+}

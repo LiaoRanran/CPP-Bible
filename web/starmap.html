@@ -3,8 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="祈易（QueYi）星图：真实台账的知识接地力导向图 —— Canvas 2D 渲染、domain 聚类标签、搜索居中、悬停看卡数与平均证据强度。">
 <title>星图 · QueYi</title>
 <link rel="stylesheet" href="css/design-tokens.css">
+<link rel="stylesheet" href="css/669c.css">
 <link rel="stylesheet" href="style.css">
 <script type="module" src="components/index.js"></script>
 </head>
@@ -12,22 +14,33 @@
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="starmap.html"></qy-nav>
 <main id="main" class="wrap wrap-wide">
-  <section style="padding:34px 0 10px">
-    <h1 style="font-size:26px">星图 · W2 接地图</h1>
-    <p class="lead" style="font-size:15px" id="lead-desc">加载真实台账中…</p>
-    <div class="grid c3" id="stats" style="margin-top:18px"></div>
+  <section style="padding:var(--space-4) 0 var(--space-2)">
+    <div class="page-head">
+      <div>
+        <h1>星图 · W2 接地图</h1>
+        <p class="lede" id="lead-desc">加载真实台账中…</p>
+      </div>
+      <p class="section-sub" id="mode" role="status" aria-live="polite">—</p>
+    </div>
+    <div class="stat-grid" id="stats" style="margin-top:var(--space-2)"></div>
   </section>
 
-  <section style="padding:10px 0 30px; border-bottom:0">
-    <h3>三通道编码 · 色=四态 / 形=类型 / 光=credibility</h3>
-    <div class="legend" style="margin-bottom:10px">
+  <section style="padding:0 0 var(--space-5)">
+    <h2 class="section-title">三通道编码 · 色=四态 / 形=类型 / 光=credibility</h2>
+    <p class="section-sub">聚类 = 节点的 <b>domain</b>（展示层小写归一：数据里同一域有 MEM/mem 两态）；
+      误解节点的 domain 在数据里是 <span class="mono">"?"</span>，展示层按 id 前缀
+      <span class="mono">MIS-&lt;域&gt;-NNN</span> 归属（不改数据；与"攻击目标所在域"的多数票一致 40/42，另 2 个是跨域攻击）。
+      边粗细 = <b>关系强度</b>（<b>派生量</b>：种类基线 × 两端度数取对数 × 是否被击败 —— 数据里没有 weight 字段）；
+      聚类色取自 design-tokens 的语义色（其中 2 档由 <span class="mono">mixHex()</span> 从 token 色混合派生，不新造色板）。</p>
+
+    <div class="legend" style="margin:var(--space-2) 0 var(--space-3)">
       <div class="chan"><b>色</b>
         <span class="dot st-pass"></span>pass　
         <span class="dot st-pass_with_exception"></span>pass_with_exception　
         <span class="dot st-fail"></span>fail　
         <span class="dot st-unknown"></span>unknown
       </div>
-      <div class="chan"><b>形</b> 大圆描边=卡　小圆=命题　方块=误解(攻击者)</div>
+      <div class="chan"><b>形</b> 大圆描边=卡　小圆=命题　方块=误解（攻击者）</div>
       <div class="chan"><b>光</b> 不透明=cred3　0.72=cred2　0.5=cred1</div>
     </div>
 
@@ -36,48 +49,57 @@
       <label class="toggle"><input type="checkbox" id="f-pass_with_exception" checked>pass_with_exception</label>
       <label class="toggle"><input type="checkbox" id="f-fail" checked>fail</label>
       <label class="toggle"><input type="checkbox" id="f-unknown" checked>unknown</label>
-      <span style="width:10px"></span>
+      <span class="spacer"></span>
       <label class="toggle"><input type="checkbox" id="f-defeated">只看被击败的边</label>
-      <button id="reset">复位视图</button>
-      <span class="spacer" style="flex:1"></span>
-      <span class="muted">渲染：<span id="mode">—</span>　拖拽平移 · 滚轮缩放 ·
-        <b>悬停</b>看摘要 · <b>点击</b>固定详情 · <b>悬停边</b>看攻击/击败关系</span>
+      <button id="reset" type="button">复位视图（整体自适应）</button>
     </div>
 
-    <!-- 667 阶段2：搜索 / 聚类筛选 / 缩放 / 线宽按权重 -->
     <div class="toolbar">
-      <div class="field">
-        <label for="q">搜索节点（id / 标题）</label>
-        <input id="q" type="search" placeholder="例如 ATOM-MEM-LEAK、race" autocomplete="off">
-      </div>
-      <div class="field">
-        <label for="f-cluster">聚类（domain）</label>
-        <select id="f-cluster"><option value="all">全部</option></select>
-      </div>
+      <label class="muted" for="q">搜索节点（id / 标题 / domain）</label>
+      <input class="search-input" id="q" type="search" placeholder="例如 ATOM-CONC-FENCE-001、race、mem"
+        autocomplete="off" aria-describedby="q-count">
+      <button id="q-next" type="button">下一个命中 ⏎</button>
+      <label class="muted" for="f-cluster">聚类</label>
+      <select id="f-cluster"><option value="all">全部</option></select>
       <label class="toggle"><input type="checkbox" id="f-weight" checked>连线粗细按权重</label>
-      <button id="zin" type="button" aria-label="放大">放大 ＋</button>
-      <button id="zout" type="button" aria-label="缩小">缩小 －</button>
-      <button id="reset">复位视图</button>
+      <button id="zin" type="button" aria-label="放大">＋</button>
+      <button id="zout" type="button" aria-label="缩小">－</button>
       <p id="q-count" class="muted" role="status" aria-live="polite"></p>
     </div>
 
-    <div class="legend" id="clusters" style="margin:6px 0 10px"></div>
+    <div class="legend" id="clusters" style="margin:var(--space-1) 0 var(--space-2)"></div>
     <div id="cluster-panel"></div>
 
     <div class="stage-wrap">
-      <div class="stage" id="stage">
-        <canvas id="graph" role="img" aria-label="知识接地星图（可拖拽平移、滚轮缩放；悬停看摘要、点击固定详情）"></canvas>
-        <div class="tooltip" id="tip"></div>
+      <div class="canvas-wrap" id="stage">
+        <canvas id="graph" tabindex="0" role="img"
+          aria-label="知识接地星图：可用方向键平移、滚轮缩放、悬停看摘要、点击固定详情；搜索框输入卡名会高亮并居中。"
+          style="height:clamp(420px, 62vh, 660px)"></canvas>
+        <svg id="cluster-labels" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none"></svg>
+        <div class="canvas-tip" id="tip" hidden></div>
       </div>
       <aside class="detail" id="detail"></aside>
     </div>
-    <p class="muted" style="margin-top:12px">GPU 渲染用 <b>cosmos.gl v3</b>，依赖已<b>本地化到 <span class="kbd">web/vendor/</span></b>
-      （<span class="kbd">cosmos 3.4.1</span> + <span class="kbd">luma.gl 9.3.6</span> 全族统一；离线可用、不依赖 CDN）。
-      若本地依赖仍不可用，站点**自动降级**为 2D canvas（同一套三通道编码与交互），并在左下角显式标注——不假装是 GPU 渲染。</p>
+
+    <div class="kbd-hints" style="margin-top:var(--space-2)">
+      <span><kbd>悬停</kbd>节点看卡数与证据强度</span>
+      <span><kbd>悬停</kbd>聚类标签看该域卡数 / 平均证据强度</span>
+      <span><kbd>点击</kbd>固定右侧详情</span>
+      <span><kbd>拖拽</kbd>平移 · <kbd>滚轮</kbd>缩放 · <kbd>方向键</kbd>平移 · <kbd>0</kbd>复位 · <kbd>Esc</kbd>取消固定</span>
+    </div>
+
+    <p class="section-sub" style="margin-top:var(--space-2)">
+      渲染：<b>自写力导向 + Canvas 2D</b>（不引 d3、不依赖 GPU / CDN）：布局在加载时<b>一次求解</b>
+      （迭代步数、耗时与最近点对距离都写在右上角，不假装很快），之后<b>按需重绘</b>，没有每帧物理循环。
+      <b>prefers-reduced-motion</b> 下关闭入场动画与悬停发光。数据由
+      <span class="mono">tools/web_data_653.py</span> 从 <span class="mono">data/grounded_labels_w2.json</span>
+      与 <span class="mono">atoms/**</span> 生成，页面数字全部现算，<b>不造数据</b>。
+    </p>
   </section>
 </main>
 <footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> ·
-  <a href="verdicts.html">判决与数字</a> · <a href="verify.html">现场验哈希</a></footer>
+  <a href="verdicts.html">判决与数字</a> · <a href="cards.html">卡库</a> ·
+  <a href="verify.html">现场验哈希</a></footer>
 <script type="module" src="starmap.js"></script>
 </body>
 </html>

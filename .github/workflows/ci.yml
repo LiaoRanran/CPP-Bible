@@ -1,4 +1,4 @@
-﻿name: CPP-Bible CI
+name: CPP-Bible CI
 
 on:
   push:
@@ -526,6 +526,112 @@ jobs:
         python3 tools/debt_ledger.py check
         python3 tools/poison_drill.py
       continue-on-error: false
+
+  # ── 670c D4：工程纪律自动化（主门禁 · fast 测试 · 前端测试 · 复现冒烟）─────────────
+  # 为什么单开一个 job：这四件事是「纪律视图」，必须与内容门禁的失败**分开可读**——
+  # 主门禁一旦红，读者要能一眼看到「红的是 658/669d/D2/D3 的哪一条」，而不是被 36 步内容门禁淹没。
+  # **不强制全绿**：仓库存在预存在债务（669d known_gaps 已登记项 + 若干 L1 项），故本 job 各步
+  # continue-on-error: true；但结论**必须显形**（step summary + artifact），因为「红而可见」远好于
+  # 「绿而无声」（docs/discipline/error_handling.md §1：没跑 ≠ 没问题）。
+  # DCO 检查**已存在**（657 D2 建立的 .github/workflows/dco.yml，硬门禁 continue-on-error: false），
+  # 本 job 不重复实现，避免两处判据分叉。
+  discipline-670c:
+    # 621 B3（并发安全）：本 job 会读受控的卡层与工件层，而 replay 会「删旧写新」重写工件 ⇒
+    # 必须等 replay 跑完（写者先、读者后），否则会采到中间态产生**假红**（619 的 2 条 BLOCK 误报即此形态）。
+    needs: [replay]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        fetch-depth: 0   # 658 的元状态对账要读 git 状态/历史
+    - name: Set up Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.11'
+    - name: Install discipline job dependencies
+      # 与 quality/pytest job 同口径：门禁工具顶层 import yaml；pytest-xdist 用于 fast 子集并行。
+      run: python3 -m pip install --quiet pyyaml pytest pytest-xdist
+      continue-on-error: false
+
+    - name: Master gate 670c (658 + 669d 六条 + D2 守卫 + D3 漂移 · --check 受控目录零写)
+      # 一条命令答「现在有几条红线是红的」：overall / L0-L1 分层 / 未登记 BLOCK 数。
+      # --check 额外做受控目录（atoms evidence Examples Book + 452 账本）前后快照：
+      # 有写入即判红 —— 把「受控目录零写」这条红线机器化，而不是靠人自觉。
+      # 非阻断（continue-on-error）：预存在债务不该让本 job 红到没人愿意看。
+      continue-on-error: true
+      run: |
+        set -uo pipefail
+        mkdir -p build
+        python3 tools/run_master_gate_670c.py --check --out build/master_gate_670c.json > build/master_gate_670c.log 2>&1
+        rc=$?
+        cat build/master_gate_670c.log
+        {
+          echo "## 670c 主门禁（exit=$rc，0=PASS）"
+          echo ''
+          echo '```'
+          tail -c 6000 build/master_gate_670c.log
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
+        [ "$rc" = "0" ] || echo "::warning::670c 主门禁未全绿（exit=$rc）——结论见 step summary 与 artifact 670c-discipline-reports"
+        exit $rc
+
+    - name: Fast tests (pytest -m "not slow" · 含 670c D1-D3 新测试)
+      # 与 pytest job 同口径的「快测」子集（slow 标记的串行重活仍只在 pytest job 跑）。
+      # 放在本 job 的目的：主门禁与它的测试**同屏**，红了立刻能看出是门禁坏了还是测试坏了。
+      continue-on-error: true
+      run: |
+        set -uo pipefail
+        mkdir -p build
+        python3 -m pytest tests/ -q -m "not slow" -n 16 --maxfail=10 2>&1 | tee build/pytest_fast_670c.log
+        rc="${PIPESTATUS[0]}"
+        { echo "## fast 测试（exit=$rc）"; echo ''; echo '```'; tail -n 60 build/pytest_fast_670c.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+        [ "$rc" = "0" ] || echo "::warning::fast 测试未全绿（exit=$rc）——预存在债务，明细见 artifact"
+        exit $rc
+
+    - name: Frontend tests (web/ · npm test)
+      # web/package.json 的 npm test = `node tests/learn_engine.test.mjs && node tests/smoke.mjs`；
+      # 两个 .mjs 只 import node 内置模块与仓库内相对路径 ⇒ **无需 npm install**（离线可跑，无网络抖动）。
+      continue-on-error: true
+      run: |
+        set -uo pipefail
+        mkdir -p build
+        (cd web && npm test) 2>&1 | tee build/web_test_670c.log
+        rc="${PIPESTATUS[0]}"
+        { echo "## 前端测试（exit=$rc）"; echo ''; echo '```'; tail -n 40 build/web_test_670c.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+        exit $rc
+
+    - name: Reproduction smoke (只列清单 / 语法检查，不真跑全流程)
+      # 复现入口 run_reproduction.sh **没有** --list/--dry-run，而它不在本批允许改动的文件里
+      # ⇒ 不改它、也不真跑全流程；冒烟只做三件不执行流水线的事：
+      #   ① ci_local_precheck.py --list：从 ci.yml 现抽快门禁步骤名（复现链路的定义；结构变了会报错退出）；
+      #   ② bash -n：复现脚本语法检查（不执行任何一步）；
+      #   ③ 步骤头计数：确认复现脚本仍是有步骤的骨架（数字可复算）。
+      continue-on-error: true
+      run: |
+        set -uo pipefail
+        mkdir -p build
+        python3 tools/ci_local_precheck.py --list | tee build/repro_smoke_670c.log
+        bash -n run_reproduction.sh
+        echo "run_reproduction.sh 语法检查通过（未执行任何一步）" | tee -a build/repro_smoke_670c.log
+        n=$(grep -c '^echo "===' run_reproduction.sh)
+        echo "run_reproduction.sh 步骤头数量 = $n" | tee -a build/repro_smoke_670c.log
+        test "$n" -ge 1
+
+    - name: Upload 670c discipline reports
+      # 本仓 job 日志下载需 admin（实测 API 403）⇒ 报告必须落到 artifact 才能被无权限者复核。
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: 670c-discipline-reports
+        path: |
+          build/master_gate_670c.json
+          build/master_gate_670c.log
+          build/pytest_fast_670c.log
+          build/web_test_670c.log
+          build/repro_smoke_670c.log
+        if-no-files-found: warn
+        retention-days: 14
 
   compile:
     # 508 任务2：compile/publish-check 的下游依赖从「仅 quality」扩为「四个并行门禁 job」——

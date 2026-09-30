@@ -2,5 +2,12 @@
   "name": "queyi-web",
   "private": true,
   "type": "module",
-  "note": "655 D：声明 web/ 下的 .js 为 ESM，使前端纯逻辑（verify_core/graph_core）能被 Node 真跑（tools/web_logic_check_655.mjs）。浏览器完全忽略本文件；站点仍是零构建静态站。"
+  "note": "655 D：声明 web/ 下的 .js 为 ESM，使前端纯逻辑（verify_core/graph_core/learn_engine/charts/cards_core）能被 Node 真跑。浏览器完全忽略本文件；站点仍是零构建静态站。670c：test 脚本覆盖全部 6 个页面的纯逻辑测试 + jsdom 冒烟。",
+  "scripts": {
+    "test": "node tests/learn_engine.test.mjs && node tests/charts.test.mjs && node tests/cards.test.mjs && node tests/verdicts.test.mjs && node tests/starmap.test.mjs && node tests/contrast.test.mjs && node tests/smoke.mjs",
+    "test:contrast": "node js/contrast_check.js"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  }
 }

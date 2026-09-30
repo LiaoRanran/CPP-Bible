@@ -1,0 +1,169 @@
+{
+  "schema": "queyi-drift-report/v1",
+  "tool": "drift_watch_670c",
+  "generated_at": "2026-09-30 20:57:04",
+  "generated_at_epoch": 1790773024.952,
+  "threshold": 0.1,
+  "threshold_pct": 10.0,
+  "output": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\drift_report_670c.json",
+  "metrics": [
+    {
+      "key": "cards_total",
+      "label": "卡数（全量口径）",
+      "value": 123,
+      "unit": "张",
+      "source": "tools/counts_659.py",
+      "formula": "原子卡全量 + 证据卡（counts_659 现算）",
+      "available": true
+    },
+    {
+      "key": "rules_total",
+      "label": "规则数",
+      "value": 67,
+      "unit": "条",
+      "source": "tools/gate_engine.py",
+      "formula": "len(RULES)",
+      "cross_check": {
+        "data/_gate_rules.json": 67,
+        "consistent": true
+      },
+      "available": true
+    },
+    {
+      "key": "ledger_events",
+      "label": "账本数（452 账本）",
+      "value": 452,
+      "unit": "条",
+      "source": "data/authority/decision_event_v2_ledger.jsonl",
+      "formula": "非空行数",
+      "available": true
+    },
+    {
+      "key": "holdout_rate_pct",
+      "label": "holdout 检出率（可测口径）",
+      "value": 87.5,
+      "unit": "%",
+      "source": "data/holdout_reveal_3_665.json",
+      "formula": "catch/(catch+miss) = 14/16",
+      "available": true
+    },
+    {
+      "key": "corpus_rate_pct",
+      "label": "corpus 检出率（可测口径）",
+      "value": 43.75,
+      "unit": "%",
+      "source": "data/external_corpus_reveal_665.json",
+      "formula": "catch/(catch+miss) = 14/32",
+      "available": true
+    },
+    {
+      "key": "mutation_core_pct",
+      "label": "变异率（core 击杀率）",
+      "value": 97.3451,
+      "unit": "%",
+      "source": "data/656_mutation_report_core.json",
+      "formula": "killed/(killed+survived) = 110/113",
+      "available": true
+    }
+  ],
+  "values": {
+    "cards_total": 123,
+    "rules_total": 67,
+    "ledger_events": 452,
+    "holdout_rate_pct": 87.5,
+    "corpus_rate_pct": 43.75,
+    "mutation_core_pct": 97.3451
+  },
+  "unavailable": [],
+  "notes": [
+    "data/experiments/ 下无更新的实验记录 ⇒ 越阈值的变化一律判红。"
+  ],
+  "overall": "PASS",
+  "baseline_found": true,
+  "baseline": {
+    "cards_total": 123,
+    "rules_total": 67,
+    "ledger_events": 452,
+    "holdout_rate_pct": 87.5,
+    "corpus_rate_pct": 43.75,
+    "mutation_core_pct": 97.3451
+  },
+  "baseline_generated_at_epoch": 1790773020.187,
+  "ok": [
+    {
+      "key": "cards_total",
+      "label": "卡数（全量口径）",
+      "baseline": 123,
+      "current": 123,
+      "pct_change": 0.0,
+      "pct_change_pct": 0.0,
+      "threshold": 0.1,
+      "source": "tools/counts_659.py"
+    },
+    {
+      "key": "rules_total",
+      "label": "规则数",
+      "baseline": 67,
+      "current": 67,
+      "pct_change": 0.0,
+      "pct_change_pct": 0.0,
+      "threshold": 0.1,
+      "source": "tools/gate_engine.py"
+    },
+    {
+      "key": "ledger_events",
+      "label": "账本数（452 账本）",
+      "baseline": 452,
+      "current": 452,
+      "pct_change": 0.0,
+      "pct_change_pct": 0.0,
+      "threshold": 0.1,
+      "source": "data/authority/decision_event_v2_ledger.jsonl"
+    },
+    {
+      "key": "holdout_rate_pct",
+      "label": "holdout 检出率（可测口径）",
+      "baseline": 87.5,
+      "current": 87.5,
+      "pct_change": 0.0,
+      "pct_change_pct": 0.0,
+      "threshold": 0.1,
+      "source": "data/holdout_reveal_3_665.json"
+    },
+    {
+      "key": "corpus_rate_pct",
+      "label": "corpus 检出率（可测口径）",
+      "baseline": 43.75,
+      "current": 43.75,
+      "pct_change": 0.0,
+      "pct_change_pct": 0.0,
+      "threshold": 0.1,
+      "source": "data/external_corpus_reveal_665.json"
+    },
+    {
+      "key": "mutation_core_pct",
+      "label": "变异率（core 击杀率）",
+      "baseline": 97.3451,
+      "current": 97.3451,
+      "pct_change": 0.0,
+      "pct_change_pct": 0.0,
+      "threshold": 0.1,
+      "source": "data/656_mutation_report_core.json"
+    }
+  ],
+  "drifted_unjustified": [],
+  "drifted_justified": [],
+  "experiments": {
+    "dir": "data/experiments",
+    "fresh": [],
+    "considered_since_epoch": 1790773020.187
+  },
+  "baseline_values_for_next_run": {
+    "cards_total": 123,
+    "rules_total": 67,
+    "ledger_events": 452,
+    "holdout_rate_pct": 87.5,
+    "corpus_rate_pct": 43.75,
+    "mutation_core_pct": 97.3451
+  }
+}

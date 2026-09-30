@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-09-30T01:07:14",
+  "provenance": "真实值取自 data/metrics_666.json 与 data/verdicts_667.json（均现算，非目标值）。baseline / ablation 为规划占位：对应 669 任务 A03/A04，尚未生成真实数据，图表中标注「待生成」，不编造数字。",
+  "corpus_rates": [
+    { "label": "holdout（双档 -O0/-O2）", "rate": 87.5, "num": 14, "den": 16 },
+    { "label": "external 全样本（14/40）", "rate": 35.0, "num": 14, "den": 40 },
+    { "label": "external 可测口径（14/32）", "rate": 43.8, "num": 14, "den": 32 },
+    { "label": "counterfactual（10/10）", "rate": 100.0, "num": 10, "den": 10 }
+  ],
+  "mutation": [
+    { "label": "core · on_scored", "rate": 97.3 },
+    { "label": "all · on_scored", "rate": 81.5 },
+    { "label": "core · 全部变异体", "rate": 74.8 },
+    { "label": "all · 全部变异体", "rate": 57.4 }
+  ],
+  "holdout_outcomes": [
+    { "label": "catch（抓住）", "value": 14 },
+    { "label": "miss（漏）", "value": 2 },
+    { "label": "unknown（不可用）", "value": 1 }
+  ],
+  "ability": [
+    { "label": "知识卡（实）", "value": 42 },
+    { "label": "草稿卡", "value": 10 },
+    { "label": "atom 文件", "value": 53 },
+    { "label": "命题", "value": 99 },
+    { "label": "门禁规则", "value": 67 },
+    { "label": "账本事件", "value": 452 },
+    { "label": "保护器", "value": 9 }
+  ],
+  "escape": { "rate_pct": 0.0711, "escaped": 1, "denominator": 1406 },
+  "timeline": [
+    { "batch": "641", "state": "pass", "what": "协议内核 v1.0（四态判决 + 半格 + 账本）" },
+    { "batch": "645/646", "state": "pass", "what": "编译器实测证据（L1 双编译器）+ 规则-卡映射 67/67" },
+    { "batch": "647", "state": "pass", "what": "内核拆分到独立仓 queyi-verifier" },
+    { "batch": "656", "state": "pass", "what": "门禁分层（L0 红线 / L1 建议）+ 内部变异测试" },
+    { "batch": "661/664/665", "state": "reason", "what": "缺陷注入 / 独立生成 / 扩样（无盲态，不用于外部效度 Claim）" },
+    { "batch": "666", "state": "pass", "what": "双档检测 pipeline + 口径收敛（67 / 178）" }
+  ],
+  "baselines": {
+    "status": "planned",
+    "note": "4 个 budget-matched baseline（regex / cppcheck / clang-tidy / sanitizer）待生成（669 任务 A03）。生成后此处填入逐样本检出率，与阙疑对比。",
+    "planned": ["阙疑（双档）", "regex", "cppcheck", "clang-tidy", "sanitizer"]
+  },
+  "ablation": {
+    "status": "planned",
+    "note": "ablation A–F 六组（Full / -变异基线 / -Merkle 审计 / -B1 冲突仲裁 / -边界三元组 / random-budget）待生成（669 任务 A04）。生成后此处填入各组检出率与效应量。"
+  }
+}

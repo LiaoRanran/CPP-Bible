@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="祈易学习页：用间隔重复（SM-2）+ 主动回忆 + 错例驱动，把知识卡和机器卡反例变成可复习的牌组。进度存本机，可导出/导入。">
+<meta name="color-scheme" content="dark light">
+<title>学习 · QueYi</title>
+<link rel="stylesheet" href="css/design-tokens.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/669c.css">
+<script type="module" src="components/index.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要内容</a>
+<qy-nav current="learn.html" badge="学习 · 本机进度"></qy-nav>
+
+<main id="main" class="wrap">
+  <section class="page-head" style="padding-top:var(--space-5)">
+    <div>
+      <h1>学习台</h1>
+      <p class="lede">基于学习科学（<span class="mono">_arch_v38</span>）：
+        <b>间隔重复</b>（SM-2 调度）+ <b>主动回忆</b>（先回想再揭晓）+ <b>错例驱动</b>（先看错误代码再看正确断言）。
+        进度只在<b>本机 localStorage</b> 保存，可一键导出/导入，<b>不出本机</b>。</p>
+    </div>
+    <div class="kbd-hints" aria-label="键盘快捷键">
+      <span><kbd>空格</kbd> 揭晓</span>
+      <span><kbd>←</kbd><kbd>→</kbd> 上/下一张</span>
+      <span><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd> 评分</span>
+    </div>
+  </section>
+
+  <!-- 学习路径可视化 -->
+  <section aria-labelledby="path-h">
+    <h3 id="path-h">学习路径</h3>
+    <p class="section-sub">三阶段：先把<b>前置关系</b>走通，再做<b>断言 / 四态 / 证据</b>的主动回忆，最后<b>自测</b>评分。
+      当前阶段高亮，已达成的阶段显示完成色。</p>
+    <div class="path-flow glass glass-tint" id="path-flow"></div>
+  </section>
+
+  <!-- 仪表盘 -->
+  <section aria-labelledby="dash-h" style="margin-top:var(--space-4)">
+    <h3 id="dash-h">学习统计</h3>
+    <div class="stat-grid" id="dash"></div>
+    <div class="progress" style="margin-top:var(--space-2); max-width:520px">
+      <span class="muted" style="font-size:12px">掌握进度</span>
+      <span class="bar"><i id="mastery-bar"></i></span>
+      <span class="pct" id="mastery-pct">—</span>
+    </div>
+  </section>
+
+  <!-- SM-2 可视化 -->
+  <section aria-labelledby="viz-h" style="margin-top:var(--space-4)">
+    <h3 id="viz-h">掌握度曲线与薄弱点</h3>
+    <div class="stack" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:var(--space-3)">
+      <div class="glass glass-tint" style="padding:var(--space-3)">
+        <div class="row-between"><span class="section-title">掌握度曲线</span>
+          <span class="section-sub" id="curve-note"></span></div>
+        <div class="spark" id="spark"></div>
+        <p class="section-sub">按历史事件重放 SM-2 状态：实线为"已掌握"张数随时间的变化。</p>
+      </div>
+      <div class="glass glass-tint" style="padding:var(--space-3)">
+        <div class="row-between"><span class="section-title">薄弱知识点热力图</span>
+          <span class="section-sub">按域聚合</span></div>
+        <div class="heat" id="heat" style="margin-top:var(--space-2)"></div>
+        <p class="section-sub">颜色越浅＝掌握越少；红框＝有失败记录。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 牌组切换 + 过滤 -->
+  <section aria-labelledby="deck-h" style="margin-top:var(--space-4)">
+    <h3 id="deck-h">牌组</h3>
+    <div class="deck-tabs" role="tablist" aria-label="选择牌组">
+      <button class="deck-tab" role="tab" aria-selected="true" data-deck="atom">知识卡（主动回忆）</button>
+      <button class="deck-tab" role="tab" aria-selected="false" data-deck="error">错例牌组（错例驱动）</button>
+    </div>
+    <div class="toolbar" style="margin-top:var(--space-2)">
+      <div class="field" id="f-domain-wrap">
+        <label for="f-domain">域</label>
+        <select id="f-domain"><option value="">全部</option></select>
+      </div>
+      <div class="field">
+        <label for="q">搜索</label>
+        <input id="q" type="search" placeholder="id / 标题 / 断言" autocomplete="off" class="search-input">
+      </div>
+      <div class="field">
+        <label for="f-scope">范围</label>
+        <select id="f-scope">
+          <option value="due">今日该复习的优先</option>
+          <option value="all">全部</option>
+          <option value="untouched">未学过</option>
+          <option value="weak">薄弱</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- 学习区 -->
+  <section aria-labelledby="study-h" style="margin-top:var(--space-3)">
+    <h3 id="study-h">现在学这张</h3>
+    <div id="study" class="study-card glass glass-tint" aria-live="polite"></div>
+    <p class="section-sub" id="pos-note"></p>
+  </section>
+
+  <!-- 今日队列 -->
+  <section aria-labelledby="queue-h" style="margin-top:var(--space-3)">
+    <h3 id="queue-h">今日队列</h3>
+    <ul class="queue-list" id="queue" role="list"></ul>
+  </section>
+
+  <!-- 导入导出 -->
+  <section aria-labelledby="io-h" style="margin-top:var(--space-3)">
+    <h3 id="io-h">进度备份</h3>
+    <div class="toolbar">
+      <button id="export" type="button" class="primary">导出进度（JSON）</button>
+      <button id="import" type="button">导入进度</button>
+      <button id="reset-progress" type="button" class="ghost">清空本机进度</button>
+      <input id="import-file" type="file" accept="application/json" hidden>
+    </div>
+    <p class="section-sub" id="io-note">进度键名：<span class="mono">qy-learn-progress-v1</span>　·　导入按"更靠前的进度优先"合并，坏条目自动跳过。</p>
+  </section>
+</main>
+
+<footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="cards.html">卡库</a>
+  · <a href="experiments.html">实验结果</a> · <a href="verify.html">验哈希</a></footer>
+
+<script type="module">
+// 670c A1 · 学习页控制器（DOM 接线；纯逻辑在 ./js/learn_engine.js）
+import { fetchJSON } from './app.js';
+import {
+  sm2, isDue, isMastered, isWeak, isTouched, freshState,
+  buildCardDeck, buildErrorDeck, errorCardCompleteness,
+  deckStatsEx, dueQueue, DAY,
+  pathProgress, masteryCurve, weakHeatmap, streakDays,
+  nextReviewAt, formatNextReview, handleKey,
+  exportPayload, importPayload,
+} from './js/learn_engine.js';
+
+const $ = (id) => document.getElementById(id);
+const STORE = 'qy-learn-progress-v1';
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+const fmt = (n) => (n ?? 0).toLocaleString('en-US');
+
+let ATOMS = [];          // 知识卡牌组
+let ERRORS = [];         // 错例牌组
+let progress = load();   // { [id]: state }
+let deck = 'atom';       // 当前牌组
+let list = [];           // 过滤后队列（card 对象）
+let pos = 0;             // 当前在 list 中的下标
+let revealed = false;
+let deckSigned = null;   // 错例牌组是否已签（来自数据文件 signed 字段）
+
+function load() {
+  try { return JSON.parse(localStorage.getItem(STORE)) || {}; }
+  catch { return {}; }
+}
+function save() {
+  try { localStorage.setItem(STORE, JSON.stringify(progress)); } catch {}
+}
+function stateOf(id) { return progress[id] || freshState(); }
+
+// ── 数据加载（两路并行，互不阻塞）──
+(async function init() {
+  try {
+    const [idx, errDeck] = await Promise.all([
+      fetchJSON('data/cards_index.json'),
+      // 670c 优先用带反例代码的错例牌组；取不到再退回 665 旧格式
+      fetchJSON('data/err_deck_670c.json')
+        .catch(() => fetchJSON('data/ig_cards_665.json').catch(() => ({ cards: [] }))),
+    ]);
+    ATOMS = buildCardDeck(idx.cards || []);
+    ERRORS = buildErrorDeck(errDeck);
+    deckSigned = typeof errDeck.signed === 'boolean' ? errDeck.signed : null;
+    fillDomains();
+    bindControls();
+    render();
+  } catch (e) {
+    $('study').innerHTML = '<div class="empty"><b>数据加载失败</b><p>' + esc(e.message)
+      + '。请用本地静态服务器打开（如 <span class="mono">python -m http.server</span>），且 data/ 目录可访问。</p></div>';
+  }
+})();
+
+function fillDomains() {
+  const wrap = $('f-domain-wrap');
+  if (deck !== 'atom') { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const doms = [...new Set(ATOMS.map((c) => c.domain).filter(Boolean))].sort();
+  $('f-domain').innerHTML = '<option value="">全部</option>'
+    + doms.map((d) => '<option value="' + esc(d) + '">' + esc(d) + '</option>').join('');
+}
+
+function bindControls() {
+  document.querySelectorAll('.deck-tab').forEach((b) => b.addEventListener('click', () => {
+    document.querySelectorAll('.deck-tab').forEach((x) => x.setAttribute('aria-selected', 'false'));
+    b.setAttribute('aria-selected', 'true');
+    deck = b.dataset.deck; pos = 0; revealed = false;
+    fillDomains(); render();
+  }));
+  $('q').addEventListener('input', () => { pos = 0; render(); });
+  $('f-domain').addEventListener('change', () => { pos = 0; render(); });
+  $('f-scope').addEventListener('change', () => { pos = 0; render(); });
+  $('export').addEventListener('click', exportProgress);
+  $('import').addEventListener('click', () => $('import-file').click());
+  $('import-file').addEventListener('change', importProgress);
+  $('reset-progress').addEventListener('click', () => {
+    if (confirm('清空本机全部学习进度？此操作不可撤销。')) { progress = {}; save(); render(); }
+  });
+  document.addEventListener('keydown', onKey);
+}
+
+// ── 键盘快捷键（判定逻辑在 learn_engine.handleKey，纯函数可测）──
+function onKey(e) {
+  const tag = e.target && e.target.tagName;
+  if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;  // 不抢输入框的键
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const r = handleKey(e.key, { hasCard: list.length > 0, revealed, index: pos, length: list.length });
+  if (r.action === 'none') return;
+  e.preventDefault();
+  if (r.action === 'reveal') { revealed = true; renderStudy(); }
+  else if (r.action === 'prev') { pos = (pos - 1 + list.length) % list.length; revealed = false; renderStudy(); }
+  else if (r.action === 'next') { pos = (pos + 1) % list.length; revealed = false; renderStudy(); }
+  else if (r.action === 'grade') grade(list[pos], r.q);
+}
+
+// ── 过滤 + 队列生成 ──
+function currentDeck() { return deck === 'atom' ? ATOMS : ERRORS; }
+function filterList() {
+  const q = ($('q').value || '').trim().toLowerCase();
+  const dom = $('f-domain').value;
+  const scope = $('f-scope').value;
+  let arr = currentDeck();
+  if (deck === 'atom' && dom) arr = arr.filter((c) => c.domain === dom);
+  if (q) arr = arr.filter((c) => [
+    c.id, c.title, c.assertion, c.wrong_assertion, c.correct_assertion,
+    c.counterexample, c.detector, c.domain,
+  ].filter(Boolean).join(' ').toLowerCase().includes(q));
+  if (scope === 'untouched') arr = arr.filter((c) => !isTouched(progress[c.id]));
+  else if (scope === 'weak') arr = arr.filter((c) => isWeak(progress[c.id]));
+  else if (scope === 'due') {
+    const qids = dueQueue(progress, arr, 9999);
+    const set = new Set(qids);
+    arr = arr.filter((c) => set.has(c.id));
+  }
+  return arr;
+}
+
+// ── 渲染：路径 + 统计 + 可视化 + 队列 + 当前卡 ──
+function render() {
+  const d = currentDeck();
+  const stats = deckStatsEx(progress, d);
+  $('dash').innerHTML = [
+    ['已学', fmt(stats.studied), ''],
+    ['掌握', fmt(stats.mastered), 'is-good'],
+    ['薄弱', fmt(stats.weak), stats.weak ? 'is-weak' : ''],
+    ['待复习', fmt(stats.due), ''],
+    ['未学', fmt(stats.untouched), ''],
+    ['连续天数', fmt(stats.streak.current), stats.streak.current >= 3 ? 'is-good' : ''],
+  ].map(([cap, num, cls]) => '<div class="stat-tile ' + cls + '"><div class="st-n">' + num
+    + '</div><div class="st-l">' + cap + '</div></div>').join('');
+  const pct = stats.total ? Math.round(100 * stats.mastered / stats.total) : 0;
+  $('mastery-bar').style.width = pct + '%';
+  $('mastery-pct').textContent = pct + '%';
+
+  renderPath(pathProgress(progress, d));
+  renderCurve(masteryCurve(progress, d));
+  renderHeat(weakHeatmap(progress, d));
+
+  list = filterList();
+  renderQueue();
+  renderStudy();
+}
+
+// 学习路径：三阶段 SVG 流程图，当前阶段高亮
+function renderPath(p) {
+  const W = 600, H = 104, NW = 168, NH = 68, GAP = 40, Y = 18;
+  const parts = [];
+  p.stages.forEach((s, i) => {
+    const x = 12 + i * (NW + GAP);
+    const label = s.name + '：' + s.done + '/' + s.total;
+    parts.push('<g class="pf-node is-' + s.status + '" transform="translate(' + x + ',' + Y + ')" role="listitem" aria-label="' + esc(label) + '">');
+    parts.push('<rect width="' + NW + '" height="' + NH + '" rx="10"></rect>');
+    parts.push('<text class="pf-name" x="12" y="26">' + esc(s.name) + '</text>');
+    parts.push('<text class="pf-count" x="12" y="46">' + s.done + '/' + s.total + ' · ' + Math.round(s.ratio * 100) + '%</text>');
+    parts.push('<text x="12" y="60" style="font-size:10px">' + esc(s.status === 'done' ? '已完成' : s.status === 'current' ? '进行中' : '待开始') + '</text>');
+    parts.push('</g>');
+    if (i < p.stages.length - 1) {
+      const x1 = x + NW, x2 = x + NW + GAP;
+      const cls = s.status === 'done' ? 'pf-edge is-done' : (i === p.currentStage ? 'pf-edge is-current' : 'pf-edge');
+      const cy = Y + NH / 2;
+      parts.push('<line class="' + cls + '" x1="' + x1 + '" y1="' + cy + '" x2="' + (x2 - 10) + '" y2="' + cy + '"></line>');
+      parts.push('<polygon class="pf-badge" points="' + (x2 - 12) + ',' + (cy - 4) + ' ' + x2 + ',' + cy + ' ' + (x2 - 12) + ',' + (cy + 4) + '"></polygon>');
+    }
+  });
+  $('path-flow').innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="list" aria-label="学习路径三阶段进度">'
+    + parts.join('') + '</svg>';
+}
+
+// 掌握度曲线（内联 SVG，零依赖）
+function renderCurve(curve) {
+  const box = $('spark');
+  const pts = curve.points;
+  $('curve-note').textContent = pts.length ? (pts.length + ' 个快照 · ' + curve.events + ' 次复习') : '暂无记录';
+  if (pts.length < 2) {
+    box.innerHTML = '<div class="chart-empty"><span class="ce-t">还没有复习记录</span>复习几张卡后，这里会画出掌握度随时间的变化。</div>';
+    return;
+  }
+  const W = 340, H = 96, P = 8;
+  const minT = pts[0].t, maxT = pts[pts.length - 1].t;
+  const span = Math.max(1, maxT - minT);
+  const maxY = Math.max(1, ...pts.map((p) => p.studied));
+  const X = (t) => P + (W - 2 * P) * ((t - minT) / span);
+  const Y = (v) => H - P - (H - 2 * P) * (v / maxY);
+  const line = pts.map((p, i) => (i ? 'L' : 'M') + X(p.t).toFixed(1) + ',' + Y(p.mastered).toFixed(1)).join(' ');
+  const area = line + ' L' + X(maxT).toFixed(1) + ',' + (H - P) + ' L' + X(minT).toFixed(1) + ',' + (H - P) + ' Z';
+  const dots = pts.map((p) => '<circle class="sp-dot" cx="' + X(p.t).toFixed(1) + '" cy="' + Y(p.mastered).toFixed(1) + '" r="2.5"><title>'
+    + new Date(p.t).toISOString().slice(0, 10) + '：已掌握 ' + p.mastered + '/' + p.studied + '</title></circle>').join('');
+  const grid = [0, 0.5, 1].map((f) => '<line class="sp-grid" x1="' + P + '" y1="' + Y(maxY * f).toFixed(1) + '" x2="' + (W - P) + '" y2="' + Y(maxY * f).toFixed(1) + '"></line>').join('');
+  box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="掌握度曲线">'
+    + '<title>已掌握张数随时间变化（峰值 ' + maxY + '）</title>' + grid
+    + '<path class="sp-area" d="' + area + '" opacity=".35"></path>'
+    + '<path class="sp-line" d="' + line + '"></path>' + dots + '</svg>';
+}
+
+// 薄弱热力图（按域）
+function renderHeat(cells) {
+  const box = $('heat');
+  if (!cells.length) {
+    box.innerHTML = '<div class="chart-empty"><span class="ce-t">这个牌组没有可聚合的域</span></div>';
+    return;
+  }
+  box.innerHTML = cells.map((c) => '<div class="heat-cell' + (c.isWeak ? ' is-weak' : '')
+    + '" data-level="' + c.level + '" title="' + esc(c.key) + '：掌握 ' + c.mastered + '/' + c.total
+    + '，已学 ' + c.studied + '，薄弱 ' + c.weak + '">'
+    + '<div class="hc-n">' + c.mastered + '/' + c.total + '</div>'
+    + '<div class="hc-l">' + esc(c.key) + '</div></div>').join('');
+}
+
+function renderQueue() {
+  const ids = dueQueue(progress, list, 12);
+  const map = Object.fromEntries(list.map((c) => [c.id, c]));
+  $('queue').innerHTML = ids.length
+    ? ids.map((id) => {
+        const c = map[id]; const st = progress[id];
+        const tag = st && isMastered(st) ? '已掌握' : st && isWeak(st) ? '薄弱' : (isTouched(st) ? '复习中' : '新');
+        return '<li class="queue-item" data-id="' + esc(id) + '">'
+          + '<span class="chip">' + esc(tag) + '</span>'
+          + '<span class="qi-title">' + esc(c.title || c.wrong_assertion || c.assertion || id) + '</span></li>';
+      }).join('')
+    : '<li class="muted">今天这个范围内没有要复习的 —— 切换"范围"或"牌组"试试。</li>';
+  $('queue').querySelectorAll('.queue-item').forEach((li) => li.addEventListener('click', () => {
+    const i = list.findIndex((c) => c.id === li.dataset.id);
+    if (i >= 0) { pos = i; revealed = false; renderStudy(); }
+  }));
+}
+
+function renderStudy() {
+  const box = $('study');
+  if (!list.length) {
+    box.innerHTML = '<div class="empty"><b>没有匹配的卡</b><p>调整上方筛选，或切换牌组。知识卡来自 '
+      + '<span class="mono">data/cards_index.json</span>（已排除草稿）；错例来自 '
+      + '<span class="mono">data/err_deck_670c.json</span>（机器卡的反例四段式）。</p></div>';
+    $('pos-note').textContent = '';
+    return;
+  }
+  if (pos >= list.length) pos = 0;
+  const c = list[pos];
+  const st = stateOf(c.id);
+  box.innerHTML = c.kind === 'atom' ? atomView(c, st) : errorView(c, st);
+  revealed = false;
+  box.querySelector('#flip')?.addEventListener('click', () => { revealed = true; renderStudy(); });
+  box.querySelectorAll('.grade').forEach((b) => b.addEventListener('click', () => grade(c, Number(b.dataset.q))));
+  box.querySelector('#skip')?.addEventListener('click', () => { pos = (pos + 1) % list.length; revealed = false; renderStudy(); });
+  $('pos-note').textContent = '第 ' + (pos + 1) + ' / ' + list.length + ' 张　·　'
+    + '下次复习：' + formatNextReview(st) + '　·　易学因子 ' + (st.ease?.toFixed(2) ?? '2.50');
+}
+
+// 知识卡：三阶段（前置 → 断言/边界/四态/证据 → 自测）
+function atomView(c, st) {
+  const pill = '<span class="state-pill" data-state="' + esc(c.verdict_state) + '"><i></i>' + esc(c.verdict_state) + '</span>';
+  const prereqs = c.prereqs.length
+    ? c.prereqs.map((p) => '<a class="chip link" href="card.html?card=' + encodeURIComponent(p) + '">' + esc(p) + '</a>').join(' ')
+    : '<span class="muted">无先修声明（或本仓未声明）</span>';
+  const evidence = c.evidence.length
+    ? c.evidence.map((e) => '<span class="chip">' + esc(e) + '</span>').join(' ')
+    : '<span class="muted">无</span>';
+  const answer = '<div class="answer">'
+      + '<div class="claim-line">' + esc(c.title) + '</div>'
+      + '<div class="ci-tags" style="margin-top:8px">' + pill
+      + (c.domain ? ' <span class="chip">域 ' + esc(c.domain) + '</span>' : '')
+      + (c.dal ? ' <span class="chip">DAL ' + esc(c.dal) + '</span>' : '')
+      + (c.audience ? ' <span class="chip">受众 ' + esc(c.audience) + '</span>' : '') + '</div>'
+      + '<div class="ci-tags" style="margin-top:6px">证据：' + evidence + '</div>'
+      + '<p class="muted" style="margin-top:8px">边界三元组（input_domain / precondition / failure_mode）见 '
+      + '<a class="chip link" href="card.html?card=' + encodeURIComponent(c.id) + '">卡详情 →</a></p></div>';
+  return '<div class="stages">'
+      + '<div class="stage"><span class="st-num">1</span><div><b>前置关系</b><div class="ci-tags" style="margin-top:6px">' + prereqs + '</div></div></div>'
+      + '<div class="stage"><span class="st-num">2</span><div><b>断言 / 四态 / 证据</b>'
+      + '<p class="muted" style="margin:6px 0 0">先盖住答案，在脑子里回想这条卡讲什么，再按"揭晓"（或空格）。</p>'
+      + (revealed ? answer : '<button id="flip" class="primary" type="button">揭晓断言</button>') + '</div></div>'
+      + '<div class="stage"><span class="st-num">3</span><div><b>自测</b>'
+      + (revealed ? gradeRow(st) : '<p class="muted">揭晓后在此评分（或按 1–4）。</p>') + '</div></div>'
+    + '</div>';
+}
+
+// 错例卡：四段式（错误断言 → 反例代码 → sanitizer 输出 → 正确断言）
+function errorView(c, st) {
+  const complete = errorCardCompleteness(c);
+  const badge = c.needs_review
+    ? '<span class="chip" title="机器生成、无人签，不作为已核准知识">机器生成 · 未签</span>' : '';
+  const step1 = '<div class="claim-line bad">✗ ' + esc(c.wrong_assertion || '（无错误断言文本）') + '</div>'
+    + (c.refuted ? '<p class="section-sub">该主张已被反例证伪（b_refuted=true）。</p>' : '');
+  const step2 = c.fixture_code
+    ? '<pre class="code">' + esc(c.fixture_code) + '</pre>'
+      + (c.fixture_path ? '<p class="section-sub mono">' + esc(c.fixture_path) + '</p>' : '')
+    : '<p class="muted">本卡无反例源码。</p>';
+  const step3 = c.sanitizer_output
+    ? '<pre class="sanitizer-out">' + esc(c.sanitizer_output) + '</pre>'
+    : '<p class="muted">本卡无 sanitizer 输出（' + esc(c.verdict || 'verdict 未知') + '：检测器未命中）。</p>';
+  const step4 = revealed
+    ? '<div class="answer"><div class="claim-line ok">✓ ' + esc(c.correct_assertion || '（无正确断言文本）') + '</div>'
+      + '<div class="ci-tags" style="margin-top:8px">' + badge
+      + (c.detector ? ' <span class="chip">检测器 ' + esc(c.detector) + '</span>' : '')
+      + (c.four_state ? ' <span class="state-pill" data-state="' + esc(c.four_state) + '"><i></i>' + esc(c.four_state) + '</span>' : '')
+      + (!complete.correct_assertion ? ' <span class="chip">正确断言缺失</span>' : '') + '</div>'
+      + '<p class="section-sub">正确断言来源：<span class="mono">' + esc(c.correct_source) + '</span></p></div>'
+    : '<button id="flip" class="primary" type="button">揭晓正确断言</button>';
+  const note = (deckSigned === false || c.needs_review)
+    ? '<p class="section-sub">这批错例来自机器卡（' + esc(c.source_id || c.id) + '），'
+      + '<b>无人签</b>，不进 cards.json 台账；"正确断言"由反例文字派生，见上来源标注。</p>' : '';
+  return '<div class="stages err-card">'
+      + '<div class="stage"><span class="st-num">1</span><div><b>错误断言</b>' + step1 + '</div></div>'
+      + '<div class="stage"><span class="st-num">2</span><div><b>反例代码</b>' + step2 + '</div></div>'
+      + '<div class="stage"><span class="st-num">3</span><div><b>sanitizer 输出</b>' + step3 + '</div></div>'
+      + '<div class="stage"><span class="st-num">4</span><div><b>正确断言</b>' + step4 + note + '</div></div>'
+      + '<div class="stage"><span class="st-num">5</span><div><b>自测</b>'
+      + (revealed ? gradeRow(st) : '<p class="muted">揭晓后在此评分（或按 1–4）。</p>') + '</div></div>'
+    + '</div>';
+}
+
+const GRADES = [[1, '忘了'], [3, '困难'], [4, '还行'], [5, '流畅']];
+function gradeRow(st) {
+  const next = formatNextReview(sm2(st, 4));
+  return '<div class="grade-row"><span class="muted">你回想得怎么样？</span>'
+    + GRADES.map(([q, label], i) => '<button class="grade" data-q="' + q + '" type="button">'
+      + (i + 1) + ' ' + label + '</button>').join('')
+    + '<button id="skip" class="ghost" type="button">跳过</button></div>'
+    + '<p class="section-sub">若评"还行"，下次复习约在 ' + esc(next) + '　·　当前易学因子 '
+    + (st.ease?.toFixed(2) ?? '2.50') + '</p>';
+}
+
+function grade(c, q) {
+  progress[c.id] = sm2(stateOf(c.id), q);
+  save();
+  pos = (pos + 1) % list.length;
+  revealed = false;
+  render();
+}
+
+// ── 导入导出（纯本机）──
+function exportProgress() {
+  const blob = new Blob([exportPayload(progress, { source: 'learn.html', cards: currentDeck().length })],
+    { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'queyi-learn-progress.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  $('io-note').textContent = '已导出 ' + Object.keys(progress).length + ' 张卡进度。';
+}
+function importProgress(e) {
+  const file = e.target.files?.[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const r = importPayload(String(reader.result), progress);
+    if (!r.ok) { $('io-note').textContent = '导入失败：' + r.error; return; }
+    progress = r.progress;
+    save(); render();
+    $('io-note').textContent = '已合并导入 ' + r.imported + ' 张卡进度'
+      + (r.skipped ? '，跳过 ' + r.skipped + ' 条坏数据' : '') + '。';
+  };
+  reader.readAsText(file);
+}
+</script>
+</body>
+</html>

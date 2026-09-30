@@ -3,11 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="祈易卡库：按状态 / 域 / 类型筛选与搜索全部知识卡；机器卡单独标注，不进教学台账。">
+<meta name="description" content="祈易卡库：全文搜索 + 高级筛选（四态 / 证据强度 / 域 / 标准）+ 批量对比 + 证据链 + 卡关系图；机器卡单独标注，不进教学台账。">
 <meta name="color-scheme" content="dark light">
 <title>卡库 · QueYi</title>
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/669c.css">
 <script type="module" src="components/index.js"></script>
 <script type="module" src="cards.js"></script>
 </head>
@@ -16,59 +17,134 @@
 <qy-nav current="cards.html" badge="静态站 · 无后端"></qy-nav>
 
 <main id="main" class="wrap">
-  <section style="padding-top:var(--space-5)">
-    <h1 style="font-size:26px">卡库</h1>
-    <p class="lead" style="font-size:15px">全部知识卡（含草稿）与独立的<b>机器卡</b>区。
-      数据来自 <span class="kbd">web/data/cards_index.json</span>（台账索引）与
-      <span class="kbd">web/data/ig_cards_665.json</span>（机器卡），
-      由 <span class="kbd">tools/web_data_653.py</span> / <span class="kbd">tools/web_ig_cards_665.py</span> 现算。</p>
-    <p class="muted">口径提醒：<b>verified 唯人签</b>。机器卡（665 B1 独立生成批次）一律
-      <span class="kbd">needs_review</span>，<b>不混入</b>教学台账。</p>
-  </section>
-
-  <!-- 筛选与搜索（B3）：全部原生控件 ⇒ 键盘/屏幕阅读器天然可用 -->
-  <section aria-labelledby="filters-h">
-    <h3 id="filters-h">筛选与搜索</h3>
-    <div class="list-toolbar">
-      <div class="field">
-        <label for="q">搜索（id / 标题）</label>
-        <input id="q" type="search" placeholder="ATOM-… 或标题关键词" autocomplete="off" style="min-width:260px">
-      </div>
-      <div class="field">
-        <label for="f-status">状态</label>
-        <select id="f-status"><option value="">全部</option></select>
-      </div>
-      <div class="field">
-        <label for="f-domain">域</label>
-        <select id="f-domain"><option value="">全部</option></select>
-      </div>
-      <div class="field">
-        <label for="f-type">类型</label>
-        <select id="f-type"><option value="">全部</option></select>
-      </div>
-      <div class="field">
-        <label for="f-scope">范围</label>
-        <select id="f-scope">
-          <option value="real">实卡域（不含 draft650）</option>
-          <option value="all">全部（含草稿）</option>
-          <option value="draft">只看草稿</option>
-        </select>
-      </div>
-      <button id="reset" type="button">重置</button>
+  <header class="page-head">
+    <div>
+      <h1>卡库</h1>
+      <p class="lede">全部知识卡（含草稿）与独立的<b>机器卡</b>区。数据来自
+        <span class="kbd">web/data/cards_index.json</span>（台账索引）、
+        <span class="kbd">web/data/cards.json</span>（全卡：claim / 命题 / 边界 / 证据明细）、
+        <span class="kbd">web/data/ig_cards_665.json</span>（机器卡）。
+        口径提醒：<b>verified 唯人签</b>；机器卡（665 B1 独立生成批次）一律
+        <span class="kbd">needs_review</span>，<b>不混入</b>教学台账。</p>
     </div>
+    <span class="chip mono" id="data-stamp">加载中…</span>
+  </header>
+
+  <!-- 670c A3 · 搜索 + 高级筛选：多选维度内 OR、维度间 AND；全文多词 AND -->
+  <section aria-labelledby="filters-h">
+    <div class="row-between">
+      <div>
+        <h3 id="filters-h" class="section-title">筛选与搜索</h3>
+        <p class="section-sub">全文覆盖 断言 / 证据 id / 标签；大小写不敏感，空格分词后 <b>多词 AND</b>。</p>
+      </div>
+      <div class="kbd-hints"><kbd>/</kbd> 聚焦搜索 <kbd>Esc</kbd> 关弹窗</div>
+    </div>
+    <div class="toolbar" style="margin-top:var(--space-2)">
+      <label class="sr-only" for="q">全文搜索</label>
+      <input id="q" class="search-input" type="search" autocomplete="off"
+        placeholder="多词 AND：fence atomic ／ EV-CONC-001 ／ 内存 ／ conc">
+      <button id="reset" type="button" class="ghost">重置全部筛选</button>
+      <span class="spacer"></span>
+      <span class="muted" id="q-hint">空查询 = 不约束</span>
+    </div>
+    <div class="filter-bar" style="margin-top:var(--space-1)">
+      <label for="f-verdict">四态（多选 · OR）<select id="f-verdict" multiple size="4"></select></label>
+      <label for="f-strength">证据强度（多选 · OR）<select id="f-strength" multiple size="4"></select></label>
+      <label for="f-domain">域（多选 · OR）<select id="f-domain" multiple size="4"></select></label>
+      <label for="f-std">标准（多选 · OR）<select id="f-std" multiple size="4"></select></label>
+      <label for="f-status">status<select id="f-status"><option value="">全部</option></select></label>
+      <label for="f-type">类型<select id="f-type"><option value="">全部</option></select></label>
+      <label for="f-scope">范围<select id="f-scope">
+        <option value="real">实卡域（不含 draft650）</option>
+        <option value="all">全部（含草稿）</option>
+        <option value="draft">只看 draft650</option>
+      </select></label>
+      <label for="f-sort">排序<select id="f-sort">
+        <option value="default">默认（id）</option>
+        <option value="strength">证据强度（高→低）</option>
+        <option value="state">四态分组</option>
+        <option value="evidence">证据条数</option>
+        <option value="domain">域</option>
+        <option value="title">标题</option>
+      </select></label>
+    </div>
+    <p class="section-sub" id="filter-note">维度内 <b>OR</b>（同一维度多选取并集）· 维度间 <b>AND</b>（不同维度取交集）·
+      空选择 = 该维度不约束。强度档：none 无证据 → declared 仅声明 → present 有文件 → confirmed 全 confirm。</p>
     <p class="muted" id="count" role="status" aria-live="polite">加载中…</p>
     <ul class="card-grid" id="grid" role="list"></ul>
     <div style="text-align:center;padding:var(--space-2) 0" id="more-wrap">
-      <button id="more" type="button" hidden>加载更多</button>
+      <button id="more" type="button" class="ghost" hidden>加载更多</button>
     </div>
+  </section>
+
+  <!-- 670c A3 · 批量对比（勾选 2–3 张） -->
+  <section aria-labelledby="cmp-h">
+    <div class="row-between">
+      <div>
+        <h3 id="cmp-h" class="section-title">批量对比（勾选 2–3 张）</h3>
+        <p class="section-sub">并排看 断言 / 证据 / 证据文件 / 四态 / 边界 / 标准 / 先修；取值不同的行标 <b>≠</b>。
+          少于 2 张或多于 3 张一律<b>不出表</b>（宁缺勿假）。</p>
+      </div>
+      <button id="cmp-clear" type="button" class="ghost">清空选择</button>
+    </div>
+    <div class="compare-bar" id="cmp-bar" style="margin-top:var(--space-2)">
+      <span class="mono" id="cmp-count">已选 0 / 3</span>
+      <button id="cmp-run" type="button" class="primary">对比</button>
+      <span class="spacer"></span>
+      <span class="muted" id="cmp-msg">在列表卡片的右上角勾选「对比」框</span>
+    </div>
+    <div id="compare-out" class="compare-grid" style="margin-top:var(--space-2)" aria-live="polite"></div>
+    <div id="compare-empty" class="chart-empty" style="margin-top:var(--space-2)">
+      <span class="ce-t">还没有对比对象</span>勾选 2–3 张卡后自动出表；1 张或 4 张都不出。
+    </div>
+  </section>
+
+  <!-- 670c A3 · 证据链树（card → evidence id → 证据文件 → sanitizer 输出） -->
+  <section aria-labelledby="chain-h">
+    <div class="row-between">
+      <div>
+        <h3 id="chain-h" class="section-title">证据链（卡 → 证据 id → 证据文件 → sanitizer 输出）</h3>
+        <p class="section-sub">每一层只照抄台账字段：<b>没记</b>就是「未记录」、<b>未入库</b>就是「无输出可查」——
+          不推断、不补写、不代替它背书。</p>
+      </div>
+      <label class="mono" for="chain-card" style="font-size:12px">选卡
+        <select id="chain-card" class="search-input" style="flex:0 0 auto;min-width:260px"></select>
+      </label>
+    </div>
+    <div id="chain-out" style="margin-top:var(--space-2);overflow:auto"></div>
+    <p class="section-sub" id="chain-sum"></p>
+  </section>
+
+  <!-- 670c A3 · 卡关系图（SVG · 先修有向边 + 可选同域相关无向边） -->
+  <section aria-labelledby="rel-h">
+    <div class="row-between">
+      <div>
+        <h3 id="rel-h" class="section-title">卡关系图（箭头 = 前置 → 用到它的卡）</h3>
+        <p class="section-sub">自环单列；引用到台账里查不到的 id 记「缺失前置」；不在当前筛选视图内但台账里有 ⇒ 记「视图外」；
+          环单独计数。点节点可高亮（<span class="mono">.rel-node.is-focus</span>）并跳到它的证据链。</p>
+      </div>
+      <label class="mono" for="rel-related" style="font-size:12px">
+        <input type="checkbox" id="rel-related"> 并入「同域 verified 相关」无向边</label>
+    </div>
+    <div class="rel-graph" id="rel-graph" style="margin-top:var(--space-2)"></div>
+    <p class="section-sub" id="rel-stats">加载中…</p>
   </section>
 
   <!-- 机器卡（独立区，不与教学台账混） -->
   <section aria-labelledby="ig-h">
-    <h3 id="ig-h">机器卡（machine-derived · 无人签）</h3>
+    <h3 id="ig-h" class="section-title">机器卡（machine-derived · 无人签）</h3>
     <p class="muted" id="ig-note">加载中…</p>
     <ul class="card-grid" id="ig-grid" role="list"></ul>
   </section>
+
+  <!-- 详情弹窗（669c A2 + 670c A3 证据链）：完整证据 + 复现说明 + 四态理由 + 证据链树 -->
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-box glass glass-tint">
+      <button class="modal-x" id="modal-close" type="button" aria-label="关闭">×</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
 </main>
 
 <footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="card.html">学一张卡</a>

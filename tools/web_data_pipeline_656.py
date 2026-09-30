@@ -78,21 +78,32 @@ GENERATORS: list[list[str]] = [
     [sys.executable, str(HERE / "web_status_655.py")],
     [sys.executable, str(HERE / "teach_card_656.py"), "--list"],
     [sys.executable, str(HERE / "teach_card_656.py"), "--card", "ATOM-CONC-RACE-001"],
+    # 670c A2/A4：把仓库根的真实数据同步进 web/data/（页面以 web/ 为文档根）
+    [sys.executable, str(HERE / "web_experiments_sync_670c.py")],
 ]
 
 #: 需要进 dist 的静态资源（相对 web/）
 ASSETS: list[str] = [
     "index.html", "starmap.html", "verify.html", "card.html",
     "verdicts.html", "cards.html",
+    # 670c A1/A2：学习页与实验页（669c 建页，670c 深化）
+    "learn.html", "experiments.html",
     "app.js", "starmap.js", "verify.js", "verify_core.js", "graph_core.js",
     "card.js", "cards.js", "verdicts.js", "verdicts_core.js",
+    # 670c：页面用的纯逻辑模块（少了这些 dist 里的页面会 404 加载不到核心）
+    "js/learn_engine.js", "js/charts.js", "js/cards_core.js", "js/contrast_check.js",
+    "js/verdicts_core.js",
     "style.css", "css/design-tokens.css",
+    # 670c A6：新页面的共享组件层（此前 dist 里没有它，新页面会掉样式）
+    "css/669c.css",
     "components/index.js", "components/qy-nav.js", "components/qy-card.js",
     "components/qy-panel.js", "components/qy-button.js", "components/qy-tag.js",
     "components/qy-status.js",
 ]
 PAGES = ["index.html", "starmap.html", "verify.html", "card.html",
-         "verdicts.html", "cards.html"]
+         "verdicts.html", "cards.html",
+         # 670c A1/A2：接线门禁要覆盖到这两个页面
+         "learn.html", "experiments.html"]
 
 
 # ── 基础 ────────────────────────────────────────────────────────────────────
@@ -379,12 +390,25 @@ def build() -> dict[str, Any]:
         items[rel] = {"present": True, "raw_bytes": len(raw.encode("utf-8")),
                       "bytes": dst.stat().st_size, "sha256": digest,
                       "version": digest[:8], "minified": bool(ok_mini and final == mini)}
+    # 670c：dist 也要带上页面 fetch 的数据。
+    # 病（670c 实测）：ASSETS 只列 html/css/js ⇒ dist/*.html 里的 fetch('data/*.json')
+    # 全部 404，dist 版本页面数据永远加载不出来。这里把 web/data/**.json 原样复制过去。
+    data_files = 0
+    for p in sorted(DATA.rglob("*.json")):
+        # 注意：变量名不能叫 rel —— 上面的 ASSETS 循环里 rel 已被用作 str（mypy 会报类型冲突）
+        drel = p.relative_to(DATA)
+        dst = DIST / "data" / drel
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        dst.write_text(p.read_text(encoding="utf-8"), encoding="utf-8", newline="\n")
+        data_files += 1
+
     DIST_MANIFEST.write_text(json.dumps({
         "generated_at": __import__("time").strftime("%Y-%m-%dT%H:%M:%S"),
         "tool": "tools/web_data_pipeline_656.py",
         "assets": items,
+        "data_files": data_files,
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
-    rep["dist"] = {"manifest": "dist/manifest.json", "assets": len(items),
+    rep["dist"] = {"manifest": "dist/manifest.json", "assets": len(items), "data_files": data_files,
                    "minified": sum(1 for v in items.values() if v.get("minified")),
                    "raw_total": sum(v.get("raw_bytes", 0) for v in items.values()),
                    "dist_total": sum(v.get("bytes", 0) for v in items.values())}

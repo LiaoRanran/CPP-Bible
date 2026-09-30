@@ -1,0 +1,66 @@
+{
+  "schema": "queyi-guard-rerun/v1",
+  "generated_by": "tools/guard_rerun_670c.py",
+  "generated_at": "2026-09-30 20:57:01",
+  "note": "基线 = 一次「源码指纹 + 产物指纹」快照。判据：源码语义变了而产物没变 ⇒ STALE。刷新基线请在**确认产物已重跑**之后执行 --update。",
+  "tools": {
+    "atom_evidence_replay": {
+      "src": "tools/atom_evidence_replay.py",
+      "src_sha256": "b370c3a656acae63a6d40523b524cf0f8a9dc265fc69717bb688261c5ae0e65b",
+      "src_ast_sha256": "5d4acd92cf3b33579de27032a57c87432e629adb126179398ddf80a3c27cb9f4",
+      "src_mtime": 1790734465.3706672,
+      "products": {
+        "build/replay_manifest.json": "4466ad90ddedd6be599bfa9fc750a89d8be3be511bd6566897cf0296a7780319"
+      },
+      "declared_products": [
+        "build/replay_manifest.json"
+      ]
+    },
+    "cppbible": {
+      "src": "tools/cppbible.py",
+      "src_sha256": "ca4c63bb18fa844c56c91ffb671c8971a40f4b2b12f36f8b2a8d090d34ba743f",
+      "src_ast_sha256": "a4efa7a226affca63aeceb1dd9898e4e354cc1e198748d707bd7303a05ceb95f",
+      "src_mtime": 1790521172.5854185,
+      "products": {
+        "tools/compile_report.json": "268637431f0ac641d92a8b135f9c2d6f05b614006e743b62c0d397f6d736f504"
+      },
+      "declared_products": [
+        "tools/compile_report.json"
+      ]
+    },
+    "gate_engine": {
+      "src": "tools/gate_engine.py",
+      "src_sha256": "39418b23586fca3367d068e3ad1af3bf1a92d375e72d18ba7b8b037bc4923ab2",
+      "src_ast_sha256": "0896764de96e43b82a16b271bac47d92cd8ce568670fb040c03aa78ab5036a18",
+      "src_mtime": 1790672940.4280956,
+      "products": {
+        "data/_gate_rules.json": "6cdc454a38ea7233dcc002d4744cb5f039bdeabc9aa6c45da652386df4f0bbe0",
+        "tools/assert_count_baseline.json": "04b1b1a9a1508c437a9c55f48b737982a126280afd2bfef3e63eb030926d0530"
+      },
+      "declared_products": [
+        "data/_gate_rules.json",
+        "tools/assert_count_baseline.json"
+      ]
+    },
+    "poison_drill": {
+      "src": "tools/poison_drill.py",
+      "src_sha256": "db28f1aa838dba8d8b8f7050e45495f65e966d37d4f32347a5054ddb96fd3d3d",
+      "src_ast_sha256": "4ddbdf29bf901b8b8d607f4107c0096cf3e42270cedc085be06ae490707c6817",
+      "src_mtime": 1790521172.790677,
+      "products": {
+        "tools/poison_surface_map.json": "de4a8e771edd059265a7eea75bf0f9298de9494a26a36841b5223ff6479dc0e1"
+      },
+      "declared_products": [
+        "tools/poison_surface_map.json"
+      ]
+    },
+    "toolchain": {
+      "src": "tools/toolchain.py",
+      "src_sha256": "8d77446d55599a348377e0ebf17c6c422885aa3f616840ef8a37235247452ad8",
+      "src_ast_sha256": "9e7345ecddaa83f1bef4f9f483cb9bde2a9e62e737a994f5140d250c924d6622",
+      "src_mtime": 1790521172.9367743,
+      "products": {},
+      "declared_products": []
+    }
+  }
+}

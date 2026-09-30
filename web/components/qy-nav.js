@@ -7,7 +7,9 @@ const LINKS = [
   ['index.html', '总览'],
   ['cards.html', '卡库'],
   ['card.html', '学一张卡'],
+  ['learn.html', '学习'],
   ['starmap.html', '星图'],
+  ['experiments.html', '实验'],
   ['verdicts.html', '判决与数字'],
   ['verify.html', '验哈希'],
 ];

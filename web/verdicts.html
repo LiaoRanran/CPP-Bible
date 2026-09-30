@@ -7,6 +7,8 @@
 <meta name="description" content="判决历史（时间倒序、状态色标、筛选排序）、状态仪表盘与数据对比表；数字全部由 tools/web_verdicts_667.py 现算。">
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
+<!-- 670c A4：时间线 / 漂移条 / 差异表复用 669c.css 已就绪的共享类（本文件不外挂新 CSS） -->
+<link rel="stylesheet" href="css/669c.css">
 </head>
 <body>
 <a class="skip-link" href="#main">跳到主要内容</a>
@@ -97,6 +99,109 @@
 
   <section>
     <div class="section-head">
+      <div class="eyebrow">670c A4 · 时间线</div>
+      <h2>判决历史时间线</h2>
+      <p>按 <b>when</b> 排，不是按落盘顺序排 —— 落盘按 seq，夹具（2026-09-28）其实比机器卡
+        （2026-09-29）更早。表格里看不出来，这条时间线看得出来。四态用左侧色点标出。</p>
+    </div>
+
+    <div class="toolbar">
+      <div class="field">
+        <label for="tl-dir">方向</label>
+        <select id="tl-dir">
+          <option value="asc">时间 ↑（旧→新）</option>
+          <option value="desc">时间 ↓（新→旧）</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="tl-state">只看四态</label>
+        <select id="tl-state"><option value="all">全部</option></select>
+      </div>
+      <span class="spacer"></span>
+      <p class="section-sub" id="tl-note" role="status" aria-live="polite"></p>
+    </div>
+
+    <ol class="timeline" id="tl"></ol>
+    <div id="tl-empty"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <div class="eyebrow">670c A4 · 分布变化</div>
+      <h2>四态随时间怎么变</h2>
+      <p>堆叠柱 = 每个桶里四态各占多少；折线 = 该桶 <span class="mono">pass</span> 占比。
+        <b>桶是按时间序切的</b>，所以"变化"是真的随时间变化，不是随落盘顺序变化。</p>
+    </div>
+
+    <div class="card glass chart-card">
+      <div class="chart-toolbar">
+        <div class="field">
+          <label for="fs-bucket">分桶方式</label>
+          <select id="fs-bucket"></select>
+        </div>
+        <div class="field">
+          <label for="fs-size">窗口大小（仅"按条数"用）</label>
+          <select id="fs-size">
+            <option value="3">3 条</option>
+            <option value="5" selected>5 条</option>
+            <option value="8">8 条</option>
+            <option value="10">10 条</option>
+          </select>
+        </div>
+        <span class="spacer"></span>
+        <p class="section-sub" id="fs-sub"></p>
+      </div>
+      <div class="chart" id="fs-chart" role="img" aria-label="四态分布变化图"></div>
+      <div class="chart-legend" id="fs-legend"></div>
+      <ul class="chart-notes" id="fs-notes"></ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <div class="eyebrow">670c A4 · 漂移检测</div>
+      <h2>漂移幅度</h2>
+      <p>零点在中线：<b>向右 = 现算比声明大，向左 = 现算比声明小</b>；量程按本页最大 |Δ| 归一。
+        只有文字、没有数值的登记项<b>照样列出但不画长度</b> —— 不拿"看起来很短"冒充"确实没漂移"。</p>
+    </div>
+    <div class="card glass" id="drift-bars"></div>
+    <p class="note-faint" id="drift-note"></p>
+
+    <div class="section-head" style="margin-top:var(--space-4)">
+      <h2>数据对比表：声明值 vs 现算值</h2>
+      <p>容差只按<b>有依据</b>的精度设（整数计数 0；率值按落盘小数位）。
+        <b>恰好等于容差不算不一致</b>。口径差（caliber / frozen）只登记、<b>不判红绿</b> ——
+        两个分母都合法，一律标红会变成狼来了。</p>
+    </div>
+    <div class="toolbar">
+      <label class="kbd-hints" for="diff-only">
+        <input type="checkbox" id="diff-only"> 只显示不一致的行
+      </label>
+      <span class="spacer"></span>
+      <p class="section-sub" id="diff-sub" role="status" aria-live="polite"></p>
+    </div>
+    <div class="table-wrap">
+      <table class="diff-table" id="diff">
+        <caption class="sr-only">声明值与现算值对比（不一致行高亮）</caption>
+        <thead>
+          <tr>
+            <th scope="col">指标</th>
+            <th scope="col">声明值</th>
+            <th scope="col">现算值</th>
+            <th scope="col">差异（相对）</th>
+            <th scope="col">容差</th>
+            <th scope="col">判定</th>
+            <th scope="col">来源</th>
+          </tr>
+        </thead>
+        <tbody id="diff-body"></tbody>
+      </table>
+    </div>
+    <div id="diff-empty"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
       <div class="eyebrow">口径差 · 漂移</div>
       <h2>数据对比表</h2>
       <p>同一个量有两种算法时，<b>两个都列</b>。漂移项单独标红，并把"该信哪个"交给人。</p>
@@ -123,8 +228,11 @@
 
 <footer>
   <div class="wrap">
-    <p>数据来源：<span class="kbd">web/data/verdicts_667.json</span>（<span class="kbd">python tools/web_verdicts_667.py --write</span> 现算）。
-      复算：<span class="kbd">--selftest</span> / <span class="kbd">--check</span>。
+    <p>数据来源：<span class="kbd">web/data/verdicts_667.json</span>（<span class="kbd">python tools/web_verdicts_667.py --write</span> 现算）、
+      <span class="kbd">web/data/status.json</span>、<span class="kbd">web/data/metrics_666.json</span>、
+      漂移登记 <span class="kbd">data/baseline.json</span>（在<b>仓库根</b>，详见页内说明）。
+      复算：<span class="kbd">--selftest</span> / <span class="kbd">--check</span>；
+      纯逻辑测试：<span class="kbd">cd web &amp;&amp; node tests/verdicts.test.mjs</span>。
       静态站，无后端；请用本地服务器打开（<span class="kbd">python -m http.server 8765 --directory web</span>）。</p>
   </div>
 </footer>

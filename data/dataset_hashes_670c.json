@@ -1,0 +1,518 @@
+{
+  "schema": "queyi-dataset-hashes/v2",
+  "batch": "670c",
+  "generated_by": "tools/hash_datasets_670c.py",
+  "tool_version": "hash_datasets_670c/v1",
+  "generated_at": "2026-09-30T20:48:19",
+  "algorithm": "sha256",
+  "hash_unit": "raw-bytes（不做换行归一；CRLF 转换会显形）",
+  "python": "3.13.13",
+  "git_commit": "920d3318567b680bca3e407b4a02ecd83a62d30f",
+  "count": 54,
+  "missing": [],
+  "total_bytes": 838555,
+  "groups": [
+    "cards_index",
+    "corpus",
+    "corpus_reveal",
+    "counterfactual",
+    "counterfactual_calibration",
+    "defects",
+    "experiments",
+    "gate_status",
+    "holdout",
+    "holdout_reveal",
+    "mutation",
+    "rules",
+    "web_metrics"
+  ],
+  "files": [
+    {
+      "group": "holdout",
+      "path": "data/holdout/holdout.json",
+      "frozen": true,
+      "note": "canonical 合并视图（旧 20 + 665 追加 10 = 30）；holdout_reveal_3_665 的输入",
+      "missing": false,
+      "size": 13032,
+      "sha256": "b55dc07cb7c7e983867ebfd1d356ce685429f43524bb1bf469aed9daea8994a2"
+    },
+    {
+      "group": "holdout",
+      "path": "data/holdout/holdout_665.json",
+      "frozen": true,
+      "note": "665 C1 扩样文件（与 holdout.json 同为 canonical 视图，内容应一致）",
+      "missing": false,
+      "size": 13032,
+      "sha256": "b55dc07cb7c7e983867ebfd1d356ce685429f43524bb1bf469aed9daea8994a2"
+    },
+    {
+      "group": "holdout",
+      "path": "data/holdout/holdout_extension_669d.json",
+      "frozen": true,
+      "note": "669d D1 补充 10 条（supplementary，未并入 holdout.json）",
+      "missing": false,
+      "size": 5433,
+      "sha256": "4c55a72db64c5b5037b0bbfc51c4a2574ba20417a41f9caedf4457d0a9b14096"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/h26.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 58,
+      "sha256": "46fd74b935e866d56ac794ff86a267723ccc8bc7bf11e485e19964f620990b03"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/h27.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 61,
+      "sha256": "3a8559d3353a552d0a146d5575facfb3fb87d92320a89c0aff14eb60b2e8f915"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/h28.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 65,
+      "sha256": "0b9d6de5bdc302435c95a69aad8c380a6d91b653fa958f308f3961dfbc9cd643"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/h29.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 55,
+      "sha256": "10140a796f8e8530d676aaac49e5df87630480d68dcf8957780d58de2bc6cc3a"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/h30.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 35,
+      "sha256": "a37eac4324790c07f2d422f2703575148703714b8efba58a4be65500a848b60f"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-01.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 48,
+      "sha256": "a6e43581ac0874820048fa276a405e0382968bb6161584944be43530bc47d847"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-02.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 56,
+      "sha256": "31294d437366433bf14d909fbc8b40b5ab58951c1788ee81bd830118b5236b65"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-03.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 47,
+      "sha256": "3ec000b391029b3f0450ca459c649f164f82a62691c5b4fb1f573459dd0cb10d"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-04.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 139,
+      "sha256": "e7ec4ba80c2e48120b204ca6e3504af2a8b14f40d4640ae9309f1d0437ba6969"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-05.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 119,
+      "sha256": "797535bab1e9dd330eea86b55de372d0e5a66ac3e1fbec2ec7622a1e9c3d888a"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-06.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 173,
+      "sha256": "56d45048f66497c1e4e4ecc99137d49f9e97afd5f485c7731ef3c11d2e771c48"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-07.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 43,
+      "sha256": "f423aeded2974396b404757f6767382cfa9b5c7e15be8a6402e03d5b4b79eb34"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-08.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 46,
+      "sha256": "0981ce1e39152938820b9f37d4bbe0de8a36d71bd544c243d20b55d230764dd5"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-09.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 66,
+      "sha256": "02167e85ddf1ff5d35fb6aa2d64941f56bc2be8b10cfa615c3bb9ec6f1d6d484"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-10.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 69,
+      "sha256": "db62dfeb8361b9aab2a69c542b52cce32cb72413c4c2e3a415ed7017eda0b98e"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-11.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 65,
+      "sha256": "3ec3ed2f3b91e84865ff51f9d37c1fa4b494552c48dcc225d3e0b5866036b35f"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-12.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 77,
+      "sha256": "c6e14c5ca2ebd89a6cc6fbc61f0ab0a317c1afcb40bed64243408217cfeb7607"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-13.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 81,
+      "sha256": "5db90455b2e13d1bc8744ccf21fafe493ad9ae4fff45a6889a753a9f31ff7042"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-14.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 50,
+      "sha256": "cb38bdb21e113142457c900c00b02712fbba8a5fd65e6caa0cd39cf571bde71d"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-15.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 151,
+      "sha256": "5d42f65b895bbd0bc35032fd04e597672374edbaf274dc0f7321a1900a660e73"
+    },
+    {
+      "group": "holdout",
+      "path": "data/cards_665/fixtures/ig-16.cpp",
+      "frozen": true,
+      "note": "h21–h30 与 ig-* 的真实夹具源码；holdout 新样本由它们编译而来",
+      "missing": false,
+      "size": 162,
+      "sha256": "c54373d913f30199d6e11b30d9cba08092d12918c15716a8480ec39f06395c54"
+    },
+    {
+      "group": "corpus",
+      "path": "data/external_corpus/external_corpus_662.json",
+      "frozen": true,
+      "note": "canonical 合并视图（662 的 20 + 665 追加 20 = 40）",
+      "missing": false,
+      "size": 16841,
+      "sha256": "46c2dbed5712408422d41a90336c733d62e4aaa4d40552c85d91f0ec3de3a07d"
+    },
+    {
+      "group": "corpus",
+      "path": "data/external_corpus/external_corpus_665.json",
+      "frozen": true,
+      "note": "665 D1 扩样视图（与 662 文件同为 canonical，内容应一致）",
+      "missing": false,
+      "size": 16841,
+      "sha256": "46c2dbed5712408422d41a90336c733d62e4aaa4d40552c85d91f0ec3de3a07d"
+    },
+    {
+      "group": "corpus",
+      "path": "data/external_corpus/external_corpus_669d.json",
+      "frozen": true,
+      "note": "669d D3 补充 20 条（supplementary）",
+      "missing": false,
+      "size": 8491,
+      "sha256": "ce11d88ba1db01b3750b654a31ec88e5822d40e320f324a4abfe45c11e90b969"
+    },
+    {
+      "group": "defects",
+      "path": "data/defect_fixtures/defects.json",
+      "frozen": true,
+      "note": "15 条真实修过的缺陷 + 各条 gate_caught 判定",
+      "missing": false,
+      "size": 8066,
+      "sha256": "49824ce836e5c86e75aaa4026cdbf855cc7a53840e70f25267586cb9aba07ecd"
+    },
+    {
+      "group": "defects",
+      "path": "data/defect_injection_661.json",
+      "frozen": true,
+      "note": "661 重注入结果（门禁复抓率的事实源）",
+      "missing": false,
+      "size": 3901,
+      "sha256": "b97a1faf34befa025acf50f220cce4ee6f361dff698e465ef0b7b8e8bcd7a7df"
+    },
+    {
+      "group": "counterfactual",
+      "path": "data/counterfactual_cases_660.json",
+      "frozen": true,
+      "note": "660 的 10 案例（**无真值标签** ⇒ 不进 P/R/F1 分母，见 665 的 denominator.unscored_sibling）",
+      "missing": false,
+      "size": 7404,
+      "sha256": "b4bcfca87cc2e4e5ac7ef2842169e65c0c966ac737fc622519f47a8d80e4c393"
+    },
+    {
+      "group": "counterfactual",
+      "path": "data/counterfactual_cases_665.json",
+      "frozen": true,
+      "note": "665 打分案例（10 条，带 external_anchor 真值标签）",
+      "missing": false,
+      "size": 14480,
+      "sha256": "57448bb9e83e3c38e29e2f13f30fa5bc321c7ba36c682edc6cc979cba796605d"
+    },
+    {
+      "group": "counterfactual",
+      "path": "data/counterfactual_cases_669d.json",
+      "frozen": true,
+      "note": "669d D2 补充 20 条（supplementary）",
+      "missing": false,
+      "size": 23560,
+      "sha256": "81dc75607690873454f621100999b26445c3b5623696c1bff37afb304563c26e"
+    },
+    {
+      "group": "cards_index",
+      "path": "web/data/cards_index.json",
+      "frozen": true,
+      "note": "tools/teach_card_656.py 产出的卡索引（count=47，含 10 草稿）",
+      "missing": false,
+      "size": 22979,
+      "sha256": "69d4f5a46db3a917bc4032b4d563eda560431f707342ea9820427057befe6fc1"
+    },
+    {
+      "group": "cards_index",
+      "path": "web/data/cards.json",
+      "frozen": true,
+      "note": "卡的全文（前端渲染源）",
+      "missing": false,
+      "size": 377514,
+      "sha256": "d6e4ff01141b76cb82c340af2ccd772c98c4405b6d4e24d28f57a0212a7b9626"
+    },
+    {
+      "group": "cards_index",
+      "path": "data/cards_665/index_665.json",
+      "frozen": true,
+      "note": "665 B1 机器卡 16 张（独立台账，不混入 cards.json）",
+      "missing": false,
+      "size": 22447,
+      "sha256": "e5b25398de9ed97497e2273181b2c31070cf87339cef15b8aff91ff17f4d7b1f"
+    },
+    {
+      "group": "cards_index",
+      "path": "web/data/ig_cards_665.json",
+      "frozen": true,
+      "note": "665 机器卡的前端入口",
+      "missing": false,
+      "size": 9006,
+      "sha256": "b8f1dab729fafe544831127b7a59b3f04c4acfeb74e922397256163e3c98a730"
+    },
+    {
+      "group": "rules",
+      "path": "data/_gate_rules.json",
+      "frozen": true,
+      "note": "67 条规则清单（= 引擎唯一事实源；改它就等于改「什么算通过」）",
+      "missing": false,
+      "size": 4823,
+      "sha256": "6cdc454a38ea7233dcc002d4744cb5f039bdeabc9aa6c45da652386df4f0bbe0"
+    },
+    {
+      "group": "holdout_reveal",
+      "path": "data/holdout_reveal_3_665.json",
+      "frozen": false,
+      "note": "holdout reveal_3 报告（tools/holdout_reveal_3_665.py 的产物）",
+      "missing": false,
+      "size": 14927,
+      "sha256": "5d1a26fbfcbc179f8c22692998442a6907277fdc4ac499af7687414ff742ea4f"
+    },
+    {
+      "group": "holdout_reveal",
+      "path": "data/holdout/reveal_3_detail_668.json",
+      "frozen": false,
+      "note": "reveal_3 逐样本明细 + 环境（同一次运行写出）",
+      "missing": false,
+      "size": 13015,
+      "sha256": "faa93448a480b4e28b8b8d9fc01431e1a790bc132dd4afd7ae7fecc8ca25f96f"
+    },
+    {
+      "group": "holdout_reveal",
+      "path": "data/holdout_reveal_1_661.json",
+      "frozen": false,
+      "note": "历史 reveal（不可回盲的历史留痕）",
+      "missing": false,
+      "size": 6768,
+      "sha256": "c7d76a832c366dca222388137cba440522721baec8e01e5ed88c28186c8f92af"
+    },
+    {
+      "group": "holdout_reveal",
+      "path": "data/holdout_reveal_2_662.json",
+      "frozen": false,
+      "note": "历史 reveal_2（reveal_3 的对比基线）",
+      "missing": false,
+      "size": 5496,
+      "sha256": "542155b8da3018725419503a1236c0914f83cdecd4842d28b194f0a87a1e19ac"
+    },
+    {
+      "group": "corpus_reveal",
+      "path": "data/external_corpus_reveal_662.json",
+      "frozen": false,
+      "note": "662 的 20 条留痕（不得覆写）",
+      "missing": false,
+      "size": 5938,
+      "sha256": "b2a1b663785634e6ec7ed75087371266f3ce6fc8f5931f23299aede5747f0004"
+    },
+    {
+      "group": "corpus_reveal",
+      "path": "data/external_corpus_reveal_665.json",
+      "frozen": false,
+      "note": "665 的 40 条结果（论文 external 数字的事实源）",
+      "missing": false,
+      "size": 11084,
+      "sha256": "e7185b6b0997182db345b45efe5df6e68a23076d8a34a4117a806c52322baeb8"
+    },
+    {
+      "group": "counterfactual_calibration",
+      "path": "data/counterfactual_calibration_662.json",
+      "frozen": false,
+      "note": "662 阈值扫描（构造负例口径）",
+      "missing": false,
+      "size": 2391,
+      "sha256": "50ab9bf4b71c0dcdcc556dfeec05684851cef02ef8b27dcc39f8e053de4898af"
+    },
+    {
+      "group": "gate_status",
+      "path": "data/658_gate_status.json",
+      "frozen": false,
+      "note": "658 门禁状态（run_658_gate.py 的产物；670c 红线：只读不重跑）",
+      "missing": false,
+      "size": 3824,
+      "sha256": "525342bcc08dc48634db9fdfd92de4eb4c4c44c7d8cb37728b902c824d5f7ce3"
+    },
+    {
+      "group": "gate_status",
+      "path": "data/669d_gate_status.json",
+      "frozen": false,
+      "note": "669d 门禁状态（669d 文件冻结：670c 只用 --no-write 复核）",
+      "missing": false,
+      "size": 6646,
+      "sha256": "0567d01ddcd9a3158cea8b1a16c69aab6b90f9d6c66fc418035d5691dbec91bb"
+    },
+    {
+      "group": "gate_status",
+      "path": "data/669d_known_gaps.json",
+      "frozen": false,
+      "note": "669d 已登记缺口台账（降级 WARN 的唯一依据）",
+      "missing": false,
+      "size": 10460,
+      "sha256": "3206d0b30bf105cee2404e331c376f96291481765e6c67e68512b756dba3238d"
+    },
+    {
+      "group": "experiments",
+      "path": "data/experiments/669_experiments.json",
+      "frozen": false,
+      "note": "669 P3 基线表 + 口径消融（docs/669_实验结果.md 的事实源）",
+      "missing": false,
+      "size": 5693,
+      "sha256": "c7de14430a22e536052642fa991d2ad03e1f3e6a7e142e2eb26c7adf93c3b392"
+    },
+    {
+      "group": "experiments",
+      "path": "data/669_caliber_report.json",
+      "frozen": false,
+      "note": "669 口径表（率 ↔ 分母 ↔ CI）",
+      "missing": false,
+      "size": 27952,
+      "sha256": "a4cfbf5a63b576b30053ca3f0c722c0f5d02e495bbf2e68ee1067de4cb86c2ec"
+    },
+    {
+      "group": "mutation",
+      "path": "data/656_mutation_report_core.json",
+      "frozen": false,
+      "note": "656 变异 core 作用域报告（97.3% = 110/147）",
+      "missing": false,
+      "size": 52329,
+      "sha256": "f96dab3e467c36e35ecc64719601c958c30a6da114cc217bf655c135e2ca1ca0"
+    },
+    {
+      "group": "mutation",
+      "path": "data/656_mutation_report_all.json",
+      "frozen": false,
+      "note": "656 变异 all 作用域报告（81.5% = 128/223）",
+      "missing": false,
+      "size": 76352,
+      "sha256": "5fdb5a63f864a13f6d6e19afad84b998bc8a09deada1dcf048ae2f3a37f554c2"
+    },
+    {
+      "group": "web_metrics",
+      "path": "web/data/metrics_666.json",
+      "frozen": false,
+      "note": "前端指标现算（666）",
+      "missing": false,
+      "size": 4954,
+      "sha256": "72b4129119407583132e88dcae4a769c95b12273be761b43f20f2194581832ba"
+    },
+    {
+      "group": "web_metrics",
+      "path": "web/data/status.json",
+      "frozen": false,
+      "note": "前端状态块（含 ig_cards_665 段）",
+      "missing": false,
+      "size": 2169,
+      "sha256": "eea42e770ab9c56c8569b8d4d53fb9cebecc45d0044d415475a87278e9f23d5b"
+    },
+    {
+      "group": "web_metrics",
+      "path": "web/data/verdicts_667.json",
+      "frozen": false,
+      "note": "前端判决看板（cards_real=42 / holdout / external 现算值）",
+      "missing": false,
+      "size": 19041,
+      "sha256": "36a256c44a4a837fbd794effdcbbc99d3c2daf9dcc5409f792a6e5a4483c7869"
+    }
+  ],
+  "honest_note": "本清单只证明「文件与某次落盘一致」，不证明清单自身可信（依赖 git 历史留痕）。frozen=True 是**输入**数据集，漂移即 ERROR；frozen=False 是**产物**，漂移记 WARN。"
+}

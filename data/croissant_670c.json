@@ -1,0 +1,1533 @@
+{
+  "@context": {
+    "@language": "zh",
+    "@vocab": "https://schema.org/",
+    "cr": "http://mlcommons.org/croissant/",
+    "sc": "https://schema.org/",
+    "dct": "http://purl.org/dc/terms/",
+    "queyi": "https://github.com/LiaoRanran/CPP-Bible/vocab#"
+  },
+  "@type": "sc:Dataset",
+  "conformsTo": "http://mlcommons.org/croissant/1.0",
+  "name": "queyi-verifier-eval-670c",
+  "alternateName": "CPP-Bible 670c 复现包数据集",
+  "description": "que yi（queyi）验证器的评测数据集复现包。含五族**输入**数据集与它们的**结果产物**：① holdout 30 条盲化种子（真错 17 / 对照 9 / unknown 4；665 追加的 10 条无盲态）；② 外部 corpus 40 条（按检测器可用性分 A/B/C 三层）；③ 15 条从 git log 挖出的真实缺陷夹具；④ 反事实引文算子案例（660 的 10 条无真值 + 665 的 10 条带 external_anchor 真值）；⑤ AtomCard 台账与 665 机器卡（16 张 machine-derived）。所有检出率都**必须连同分母与口径一起读**：holdout 14/16 = 87.5%（可测真错口径，unknown 不计入分母）、external 14/32 = 43.8%（可测口径）或 14/40 = 35.0%（全样本口径）。sanitizer 类判定依赖 **WSL + g++ + ASan/UBSan/TSan 真机编译并运行**；缺 WSL 时这些样本降级为 unknown，检出率会掉（669d 实测 35.0% → 10.0%），这是环境依赖，不是能力变化。复现步骤见仓库根 REPLICATION.md；数据完整性校验见 data/dataset_hashes_670c.json。",
+  "version": "670c/1.0",
+  "datePublished": "2026-09-30",
+  "dateModified": "2026-09-30T20:48:19",
+  "license": "https://www.apache.org/licenses/LICENSE-2.0",
+  "queyi:licenseNote": "仓库根 LICENSE 与全部源文件 SPDX 头均为 Apache-2.0；pyproject.toml 的 license 字段写 MIT，两者不一致 —— 以 LICENSE 文件与 SPDX 头为准，已在 REPLICATION.md 登记（不静默择一）。",
+  "url": "https://github.com/LiaoRanran/CPP-Bible",
+  "sameAs": "https://liaoranran.github.io/CPP-Bible",
+  "citeAs": "LiaoRanran (阿信). (2026). queyi 验证器评测数据集（CPP-Bible 670c 复现包）[Data set]. https://github.com/LiaoRanran/CPP-Bible",
+  "queyi:citeAsNote": "论文尚未定稿，此处只给仓库级引用。投稿后应换成正式论文引用 —— 论文稿件在 research/ 目录，670c 段按红线不读取该目录，故此处**未核对**论文标题与作者列表。",
+  "authors": [
+    {
+      "@type": "sc:Person",
+      "name": "LiaoRanran (阿信)"
+    }
+  ],
+  "publisher": {
+    "@type": "sc:Organization",
+    "name": "CPP-Bible 项目"
+  },
+  "keywords": [
+    "C++",
+    "undefined behavior",
+    "sanitizer",
+    "verifier",
+    "mutation testing",
+    "holdout",
+    "counterfactual",
+    "reproducibility",
+    "Croissant"
+  ],
+  "isAccessibleForFree": true,
+  "queyi:batch": "670c",
+  "queyi:segment": "B 段 · 独立复现 kit",
+  "queyi:gitCommit": "920d3318567b680bca3e407b4a02ecd83a62d30f",
+  "queyi:contentUrlBase": "distribution[].contentUrl 是**仓库相对路径**（数据集随仓库分发，不是独立托管）；解析基准为 https://github.com/LiaoRanran/CPP-Bible/blob/920d3318567b680bca3e407b4a02ecd83a62d30f/ 。",
+  "queyi:hashManifest": "data/dataset_hashes_670c.json",
+  "queyi:hashNote": "全部 sha256 现取自 data/dataset_hashes_670c.json（由 tools/hash_datasets_670c.py 生成，哈希原始字节、不做换行归一）。校验命令：python tools/hash_datasets_670c.py --check",
+  "queyi:reproductionGuide": "REPLICATION.md",
+  "distribution": [
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/holdout/holdout.json",
+      "name": "holdout.json",
+      "contentUrl": "data/holdout/holdout.json",
+      "encodingFormat": "application/json",
+      "sha256": "b55dc07cb7c7e983867ebfd1d356ce685429f43524bb1bf469aed9daea8994a2",
+      "contentSize": 13032,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout canonical 合并视图（30 条种子：真错 17 / 对照 9 / unknown 4）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/holdout/holdout_665.json",
+      "name": "holdout_665.json",
+      "contentUrl": "data/holdout/holdout_665.json",
+      "encodingFormat": "application/json",
+      "sha256": "b55dc07cb7c7e983867ebfd1d356ce685429f43524bb1bf469aed9daea8994a2",
+      "contentSize": 13032,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "665 C1 扩样文件（与 holdout.json 同为 canonical 视图）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/holdout/holdout_extension_669d.json",
+      "name": "holdout_extension_669d.json",
+      "contentUrl": "data/holdout/holdout_extension_669d.json",
+      "encodingFormat": "application/json",
+      "sha256": "4c55a72db64c5b5037b0bbfc51c4a2574ba20417a41f9caedf4457d0a9b14096",
+      "contentSize": 5433,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "669d D1 补充 holdout（10 条，supplementary）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/external_corpus/external_corpus_662.json",
+      "name": "external_corpus_662.json",
+      "contentUrl": "data/external_corpus/external_corpus_662.json",
+      "encodingFormat": "application/json",
+      "sha256": "46c2dbed5712408422d41a90336c733d62e4aaa4d40552c85d91f0ec3de3a07d",
+      "contentSize": 16841,
+      "queyi:group": "corpus",
+      "queyi:frozen": true,
+      "description": "外部 corpus canonical 合并视图（40 条）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/external_corpus/external_corpus_665.json",
+      "name": "external_corpus_665.json",
+      "contentUrl": "data/external_corpus/external_corpus_665.json",
+      "encodingFormat": "application/json",
+      "sha256": "46c2dbed5712408422d41a90336c733d62e4aaa4d40552c85d91f0ec3de3a07d",
+      "contentSize": 16841,
+      "queyi:group": "corpus",
+      "queyi:frozen": true,
+      "description": "665 D1 扩样视图（40 条）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/external_corpus/external_corpus_669d.json",
+      "name": "external_corpus_669d.json",
+      "contentUrl": "data/external_corpus/external_corpus_669d.json",
+      "encodingFormat": "application/json",
+      "sha256": "ce11d88ba1db01b3750b654a31ec88e5822d40e320f324a4abfe45c11e90b969",
+      "contentSize": 8491,
+      "queyi:group": "corpus",
+      "queyi:frozen": true,
+      "description": "669d D3 补充外部语料（20 条，supplementary）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/defect_fixtures/defects.json",
+      "name": "defects.json",
+      "contentUrl": "data/defect_fixtures/defects.json",
+      "encodingFormat": "application/json",
+      "sha256": "49824ce836e5c86e75aaa4026cdbf855cc7a53840e70f25267586cb9aba07ecd",
+      "contentSize": 8066,
+      "queyi:group": "defects",
+      "queyi:frozen": true,
+      "description": "15 条从 git log 挖出的真实缺陷夹具"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/defect_injection_661.json",
+      "name": "defect_injection_661.json",
+      "contentUrl": "data/defect_injection_661.json",
+      "encodingFormat": "application/json",
+      "sha256": "b97a1faf34befa025acf50f220cce4ee6f361dff698e465ef0b7b8e8bcd7a7df",
+      "contentSize": 3901,
+      "queyi:group": "defects",
+      "queyi:frozen": true,
+      "description": "661 重注入结果（门禁复抓率事实源）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/counterfactual_cases_660.json",
+      "name": "counterfactual_cases_660.json",
+      "contentUrl": "data/counterfactual_cases_660.json",
+      "encodingFormat": "application/json",
+      "sha256": "b4bcfca87cc2e4e5ac7ef2842169e65c0c966ac737fc622519f47a8d80e4c393",
+      "contentSize": 7404,
+      "queyi:group": "counterfactual",
+      "queyi:frozen": true,
+      "description": "660 反事实引文 10 案例（无真值标签）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/counterfactual_cases_665.json",
+      "name": "counterfactual_cases_665.json",
+      "contentUrl": "data/counterfactual_cases_665.json",
+      "encodingFormat": "application/json",
+      "sha256": "57448bb9e83e3c38e29e2f13f30fa5bc321c7ba36c682edc6cc979cba796605d",
+      "contentSize": 14480,
+      "queyi:group": "counterfactual",
+      "queyi:frozen": true,
+      "description": "665 反事实引文打分案例（10 条，带 external_anchor 真值）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/counterfactual_cases_669d.json",
+      "name": "counterfactual_cases_669d.json",
+      "contentUrl": "data/counterfactual_cases_669d.json",
+      "encodingFormat": "application/json",
+      "sha256": "81dc75607690873454f621100999b26445c3b5623696c1bff37afb304563c26e",
+      "contentSize": 23560,
+      "queyi:group": "counterfactual",
+      "queyi:frozen": true,
+      "description": "669d D2 补充反事实案例（20 条，supplementary）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "web/data/cards_index.json",
+      "name": "cards_index.json",
+      "contentUrl": "web/data/cards_index.json",
+      "encodingFormat": "application/json",
+      "sha256": "69d4f5a46db3a917bc4032b4d563eda560431f707342ea9820427057befe6fc1",
+      "contentSize": 22979,
+      "queyi:group": "cards_index",
+      "queyi:frozen": true,
+      "description": "AtomCard 索引（count=47，含 10 草稿）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "web/data/cards.json",
+      "name": "cards.json",
+      "contentUrl": "web/data/cards.json",
+      "encodingFormat": "application/json",
+      "sha256": "d6e4ff01141b76cb82c340af2ccd772c98c4405b6d4e24d28f57a0212a7b9626",
+      "contentSize": 377514,
+      "queyi:group": "cards_index",
+      "queyi:frozen": true,
+      "description": "AtomCard 全文（前端渲染源）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/index_665.json",
+      "name": "index_665.json",
+      "contentUrl": "data/cards_665/index_665.json",
+      "encodingFormat": "application/json",
+      "sha256": "e5b25398de9ed97497e2273181b2c31070cf87339cef15b8aff91ff17f4d7b1f",
+      "contentSize": 22447,
+      "queyi:group": "cards_index",
+      "queyi:frozen": true,
+      "description": "665 机器卡 16 张（machine-derived，独立台账）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "web/data/ig_cards_665.json",
+      "name": "ig_cards_665.json",
+      "contentUrl": "web/data/ig_cards_665.json",
+      "encodingFormat": "application/json",
+      "sha256": "b8f1dab729fafe544831127b7a59b3f04c4acfeb74e922397256163e3c98a730",
+      "contentSize": 9006,
+      "queyi:group": "cards_index",
+      "queyi:frozen": true,
+      "description": "665 机器卡前端入口"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/_gate_rules.json",
+      "name": "_gate_rules.json",
+      "contentUrl": "data/_gate_rules.json",
+      "encodingFormat": "application/json",
+      "sha256": "6cdc454a38ea7233dcc002d4744cb5f039bdeabc9aa6c45da652386df4f0bbe0",
+      "contentSize": 4823,
+      "queyi:group": "rules",
+      "queyi:frozen": true,
+      "description": "67 条规则清单（引擎唯一事实源）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/holdout_reveal_3_665.json",
+      "name": "holdout_reveal_3_665.json",
+      "contentUrl": "data/holdout_reveal_3_665.json",
+      "encodingFormat": "application/json",
+      "sha256": "5d1a26fbfcbc179f8c22692998442a6907277fdc4ac499af7687414ff742ea4f",
+      "contentSize": 14927,
+      "queyi:group": "holdout_reveal",
+      "queyi:frozen": false,
+      "description": "holdout reveal_3 报告：14/16 = 87.5%（单侧口径见 denominator）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/holdout/reveal_3_detail_668.json",
+      "name": "reveal_3_detail_668.json",
+      "contentUrl": "data/holdout/reveal_3_detail_668.json",
+      "encodingFormat": "application/json",
+      "sha256": "faa93448a480b4e28b8b8d9fc01431e1a790bc132dd4afd7ae7fecc8ca25f96f",
+      "contentSize": 13015,
+      "queyi:group": "holdout_reveal",
+      "queyi:frozen": false,
+      "description": "reveal_3 逐样本明细 + 运行环境"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/external_corpus_reveal_665.json",
+      "name": "external_corpus_reveal_665.json",
+      "contentUrl": "data/external_corpus_reveal_665.json",
+      "encodingFormat": "application/json",
+      "sha256": "e7185b6b0997182db345b45efe5df6e68a23076d8a34a4117a806c52322baeb8",
+      "contentSize": 11084,
+      "queyi:group": "corpus_reveal",
+      "queyi:frozen": false,
+      "description": "external corpus 结果：14/32 = 43.8%；全样本口径 14/40 = 35.0%"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/counterfactual_calibration_662.json",
+      "name": "counterfactual_calibration_662.json",
+      "contentUrl": "data/counterfactual_calibration_662.json",
+      "encodingFormat": "application/json",
+      "sha256": "50ab9bf4b71c0dcdcc556dfeec05684851cef02ef8b27dcc39f8e053de4898af",
+      "contentSize": 2391,
+      "queyi:group": "counterfactual_calibration",
+      "queyi:frozen": false,
+      "description": "反事实算子阈值扫描（构造负例口径）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/656_mutation_report_core.json",
+      "name": "656_mutation_report_core.json",
+      "contentUrl": "data/656_mutation_report_core.json",
+      "encodingFormat": "application/json",
+      "sha256": "f96dab3e467c36e35ecc64719601c958c30a6da114cc217bf655c135e2ca1ca0",
+      "contentSize": 52329,
+      "queyi:group": "mutation",
+      "queyi:frozen": false,
+      "description": "内部变异测试 core 作用域：110/147，kill_rate_on_scored 97.3%（内部指标，非缺陷检测率）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/656_mutation_report_all.json",
+      "name": "656_mutation_report_all.json",
+      "contentUrl": "data/656_mutation_report_all.json",
+      "encodingFormat": "application/json",
+      "sha256": "5fdb5a63f864a13f6d6e19afad84b998bc8a09deada1dcf048ae2f3a37f554c2",
+      "contentSize": 76352,
+      "queyi:group": "mutation",
+      "queyi:frozen": false,
+      "description": "内部变异测试 all 作用域：128/223，kill_rate_on_scored 81.5%"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/experiments/669_experiments.json",
+      "name": "669_experiments.json",
+      "contentUrl": "data/experiments/669_experiments.json",
+      "encodingFormat": "application/json",
+      "sha256": "c7de14430a22e536052642fa991d2ad03e1f3e6a7e142e2eb26c7adf93c3b392",
+      "contentSize": 5693,
+      "queyi:group": "experiments",
+      "queyi:frozen": false,
+      "description": "669 P3 基线表 + 口径消融（docs/669_实验结果.md 的事实源）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/669_caliber_report.json",
+      "name": "669_caliber_report.json",
+      "contentUrl": "data/669_caliber_report.json",
+      "encodingFormat": "application/json",
+      "sha256": "a4cfbf5a63b576b30053ca3f0c722c0f5d02e495bbf2e68ee1067de4cb86c2ec",
+      "contentSize": 27952,
+      "queyi:group": "experiments",
+      "queyi:frozen": false,
+      "description": "669 口径表：率 ↔ 分母 ↔ Clopper–Pearson CI"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "web/data/verdicts_667.json",
+      "name": "verdicts_667.json",
+      "contentUrl": "web/data/verdicts_667.json",
+      "encodingFormat": "application/json",
+      "sha256": "36a256c44a4a837fbd794effdcbbc99d3c2daf9dcc5409f792a6e5a4483c7869",
+      "contentSize": 19041,
+      "queyi:group": "web_metrics",
+      "queyi:frozen": false,
+      "description": "前端判决看板（cards_real=42 / holdout / external 现算值）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/h26.cpp",
+      "name": "h26.cpp",
+      "contentUrl": "data/cards_665/fixtures/h26.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "46fd74b935e866d56ac794ff86a267723ccc8bc7bf11e485e19964f620990b03",
+      "contentSize": 58,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/h27.cpp",
+      "name": "h27.cpp",
+      "contentUrl": "data/cards_665/fixtures/h27.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "3a8559d3353a552d0a146d5575facfb3fb87d92320a89c0aff14eb60b2e8f915",
+      "contentSize": 61,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/h28.cpp",
+      "name": "h28.cpp",
+      "contentUrl": "data/cards_665/fixtures/h28.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "0b9d6de5bdc302435c95a69aad8c380a6d91b653fa958f308f3961dfbc9cd643",
+      "contentSize": 65,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/h29.cpp",
+      "name": "h29.cpp",
+      "contentUrl": "data/cards_665/fixtures/h29.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "10140a796f8e8530d676aaac49e5df87630480d68dcf8957780d58de2bc6cc3a",
+      "contentSize": 55,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/h30.cpp",
+      "name": "h30.cpp",
+      "contentUrl": "data/cards_665/fixtures/h30.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "a37eac4324790c07f2d422f2703575148703714b8efba58a4be65500a848b60f",
+      "contentSize": 35,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-01.cpp",
+      "name": "ig-01.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-01.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "a6e43581ac0874820048fa276a405e0382968bb6161584944be43530bc47d847",
+      "contentSize": 48,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-02.cpp",
+      "name": "ig-02.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-02.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "31294d437366433bf14d909fbc8b40b5ab58951c1788ee81bd830118b5236b65",
+      "contentSize": 56,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-03.cpp",
+      "name": "ig-03.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-03.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "3ec000b391029b3f0450ca459c649f164f82a62691c5b4fb1f573459dd0cb10d",
+      "contentSize": 47,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-04.cpp",
+      "name": "ig-04.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-04.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "e7ec4ba80c2e48120b204ca6e3504af2a8b14f40d4640ae9309f1d0437ba6969",
+      "contentSize": 139,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-05.cpp",
+      "name": "ig-05.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-05.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "797535bab1e9dd330eea86b55de372d0e5a66ac3e1fbec2ec7622a1e9c3d888a",
+      "contentSize": 119,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-06.cpp",
+      "name": "ig-06.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-06.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "56d45048f66497c1e4e4ecc99137d49f9e97afd5f485c7731ef3c11d2e771c48",
+      "contentSize": 173,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-07.cpp",
+      "name": "ig-07.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-07.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "f423aeded2974396b404757f6767382cfa9b5c7e15be8a6402e03d5b4b79eb34",
+      "contentSize": 43,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-08.cpp",
+      "name": "ig-08.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-08.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "0981ce1e39152938820b9f37d4bbe0de8a36d71bd544c243d20b55d230764dd5",
+      "contentSize": 46,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-09.cpp",
+      "name": "ig-09.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-09.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "02167e85ddf1ff5d35fb6aa2d64941f56bc2be8b10cfa615c3bb9ec6f1d6d484",
+      "contentSize": 66,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-10.cpp",
+      "name": "ig-10.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-10.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "db62dfeb8361b9aab2a69c542b52cce32cb72413c4c2e3a415ed7017eda0b98e",
+      "contentSize": 69,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-11.cpp",
+      "name": "ig-11.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-11.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "3ec3ed2f3b91e84865ff51f9d37c1fa4b494552c48dcc225d3e0b5866036b35f",
+      "contentSize": 65,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-12.cpp",
+      "name": "ig-12.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-12.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "c6e14c5ca2ebd89a6cc6fbc61f0ab0a317c1afcb40bed64243408217cfeb7607",
+      "contentSize": 77,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-13.cpp",
+      "name": "ig-13.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-13.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "5db90455b2e13d1bc8744ccf21fafe493ad9ae4fff45a6889a753a9f31ff7042",
+      "contentSize": 81,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-14.cpp",
+      "name": "ig-14.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-14.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "cb38bdb21e113142457c900c00b02712fbba8a5fd65e6caa0cd39cf571bde71d",
+      "contentSize": 50,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-15.cpp",
+      "name": "ig-15.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-15.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "5d42f65b895bbd0bc35032fd04e597672374edbaf274dc0f7321a1900a660e73",
+      "contentSize": 151,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data/cards_665/fixtures/ig-16.cpp",
+      "name": "ig-16.cpp",
+      "contentUrl": "data/cards_665/fixtures/ig-16.cpp",
+      "encodingFormat": "text/x-c++src",
+      "sha256": "c54373d913f30199d6e11b30d9cba08092d12918c15716a8480ec39f06395c54",
+      "contentSize": 162,
+      "queyi:group": "holdout",
+      "queyi:frozen": true,
+      "description": "holdout/机器卡夹具源码（真机编译检测的输入）"
+    }
+  ],
+  "recordSet": [
+    {
+      "@type": "cr:RecordSet",
+      "@id": "holdout-seeds",
+      "name": "holdout 种子（盲化真错/对照）",
+      "description": "holdout 的判据样本。planted 是真值标签；detector 是预期可用的检测器（unknown ⇒ 本机无检测器）。665 追加的 h21–h30 在原 reveal 之后加入 ⇒ 无盲态。",
+      "source": [
+        {
+          "fileObject": {
+            "@id": "data/holdout/holdout.json"
+          },
+          "extract": {
+            "jsonPath": "$.seeds[*]"
+          }
+        },
+        {
+          "fileObject": {
+            "@id": "data/holdout/holdout_665.json"
+          },
+          "extract": {
+            "jsonPath": "$.seeds[*]"
+          }
+        },
+        {
+          "fileObject": {
+            "@id": "data/holdout/holdout_extension_669d.json"
+          },
+          "extract": {
+            "jsonPath": "$.seeds[*]"
+          }
+        }
+      ],
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-seeds/id",
+          "name": "id",
+          "dataType": "sc:Text",
+          "description": "样本 id（h1–h30，669d 补充为 h31–h40）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-seeds/category",
+          "name": "category",
+          "dataType": "sc:Text",
+          "description": "缺陷类别（UB / MEM / CONC / HIST / LANG …）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-seeds/atom_ref",
+          "name": "atom_ref",
+          "dataType": "sc:Text",
+          "description": "对应的 atom 夹具相对路径（Examples/atoms/... 或 data/cards_665/fixtures/...）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-seeds/planted",
+          "name": "planted",
+          "dataType": "sc:Boolean",
+          "description": "真值标签：true=植入真错 / false=对照（本不是缺陷）/ null=分不清"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-seeds/planted_desc",
+          "name": "planted_desc",
+          "dataType": "sc:Text",
+          "description": "植入说明（人写的语义描述）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-seeds/detector",
+          "name": "detector",
+          "dataType": "sc:Text",
+          "description": "预期可用的检测器（tsan/asan/ubsan/compiler-warn/cross-compile/unknown）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-seeds/hidden",
+          "name": "hidden",
+          "dataType": "sc:Boolean",
+          "description": "是否曾处于盲态"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-seeds/revealed",
+          "name": "revealed",
+          "dataType": "sc:Boolean",
+          "description": "是否已 reveal（一旦 reveal 永不可回盲）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-seeds/basis",
+          "name": "basis",
+          "dataType": "sc:Text",
+          "description": "标签依据（头部注释语义 / 外部锚）"
+        }
+      ],
+      "queyi:note": "holdout.json 与 holdout_665.json 是同一 canonical 视图的两份文件；669d 的补充文件未并入它们。"
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "external-corpus-samples",
+      "name": "外部语料样本",
+      "description": "自带代码片段的外部语料，按 expected_detector 决定用哪条真机检测路径。",
+      "source": [
+        {
+          "fileObject": {
+            "@id": "data/external_corpus/external_corpus_662.json"
+          },
+          "extract": {
+            "jsonPath": "$.samples[*]"
+          }
+        },
+        {
+          "fileObject": {
+            "@id": "data/external_corpus/external_corpus_665.json"
+          },
+          "extract": {
+            "jsonPath": "$.samples[*]"
+          }
+        },
+        {
+          "fileObject": {
+            "@id": "data/external_corpus/external_corpus_669d.json"
+          },
+          "extract": {
+            "jsonPath": "$.samples[*]"
+          }
+        }
+      ],
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "external-corpus-samples/id",
+          "name": "id",
+          "dataType": "sc:Text",
+          "description": "样本 id（d3-01…）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "external-corpus-samples/category",
+          "name": "category",
+          "dataType": "sc:Text",
+          "description": "缺陷类别"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "external-corpus-samples/source",
+          "name": "source",
+          "dataType": "sc:Text",
+          "description": "类别级出处（cppreference 章节 / 标准条款名 / 编译器文档）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "external-corpus-samples/verified_source",
+          "name": "verified_source",
+          "dataType": "sc:Boolean",
+          "description": "该出处是否被本机验证过（false 表示未验证，不进任何「已验证」计数）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "external-corpus-samples/description",
+          "name": "description",
+          "dataType": "sc:Text",
+          "description": "样本要检验的语义主张"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "external-corpus-samples/expected_detector",
+          "name": "expected_detector",
+          "dataType": "sc:Text",
+          "description": "预期检测器；none/unknown ⇒ 本机无检测器，判定为 unknown"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "external-corpus-samples/code",
+          "name": "code",
+          "dataType": "sc:Text",
+          "description": "可编译的 C++ 片段（corpus 自带代码，不依赖仓库夹具）"
+        }
+      ],
+      "queyi:note": "662/665 两份是同一 canonical 视图（40 条）；669d 的 20 条要求按 expected_detector 分层报告，禁止合并成一个数。"
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "defect-fixtures",
+      "name": "真实缺陷夹具",
+      "description": "从 git log 挖出的、**真实修过**的缺陷；每条写明当时门禁是否抓到。",
+      "source": [
+        {
+          "fileObject": {
+            "@id": "data/defect_fixtures/defects.json"
+          },
+          "extract": {
+            "jsonPath": "$.defects[*]"
+          }
+        }
+      ],
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "defect-fixtures/id",
+          "name": "id",
+          "dataType": "sc:Text",
+          "description": "缺陷 id（如 656-self-1）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "defect-fixtures/description",
+          "name": "description",
+          "dataType": "sc:Text",
+          "description": "缺陷一句话描述"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "defect-fixtures/introduced_commit",
+          "name": "introduced_commit",
+          "dataType": "sc:Text",
+          "description": "引入该缺陷的提交（开发期/历史章节）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "defect-fixtures/fixed_commit",
+          "name": "fixed_commit",
+          "dataType": "sc:Text",
+          "description": "修复该缺陷的提交"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "defect-fixtures/file_path",
+          "name": "file_path",
+          "dataType": "sc:Text",
+          "description": "缺陷所在文件"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "defect-fixtures/what_broke",
+          "name": "what_broke",
+          "dataType": "sc:Text",
+          "description": "具体的失效形态（重注入时改什么）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "defect-fixtures/gate_caught",
+          "name": "gate_caught",
+          "dataType": "sc:Text",
+          "description": "当时门禁是否抓到（yes / partial / unknown）"
+        }
+      ],
+      "queyi:note": "gate_caught 是当时的历史判定，不是今天的重跑值；重跑值在 data/defect_injection_661.json。"
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "counterfactual-cases",
+      "name": "反事实引文案例",
+      "description": "断言 + 引文 + 反事实问题；665/669d 的案例带 external_anchor 真值标签 ×（standard/measurement）。",
+      "source": [
+        {
+          "fileObject": {
+            "@id": "data/counterfactual_cases_660.json"
+          },
+          "extract": {
+            "jsonPath": "$.cases[*]"
+          }
+        },
+        {
+          "fileObject": {
+            "@id": "data/counterfactual_cases_665.json"
+          },
+          "extract": {
+            "jsonPath": "$.cases[*]"
+          }
+        },
+        {
+          "fileObject": {
+            "@id": "data/counterfactual_cases_669d.json"
+          },
+          "extract": {
+            "jsonPath": "$.cases[*]"
+          }
+        }
+      ],
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "counterfactual-cases/id",
+          "name": "id",
+          "dataType": "sc:Text",
+          "description": "案例 id（cf1…cf20）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "counterfactual-cases/card",
+          "name": "card",
+          "dataType": "sc:Text",
+          "description": "对应卡 / 断言来源（卡 id 或机器卡 id）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "counterfactual-cases/source_id",
+          "name": "source_id",
+          "dataType": "sc:Text",
+          "description": "665/669d 案例的来源夹具 id（660 案例无此字段）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "counterfactual-cases/mechanism_class",
+          "name": "mechanism_class",
+          "dataType": "sc:Text",
+          "description": "机制类别（none / machine_marker）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "counterfactual-cases/atom_ref",
+          "name": "atom_ref",
+          "dataType": "sc:Text",
+          "description": "对应夹具路径（660 案例无此字段）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "counterfactual-cases/original_assertion",
+          "name": "original_assertion",
+          "dataType": "sc:Text",
+          "description": "原断言文本"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "counterfactual-cases/original_citation",
+          "name": "original_citation",
+          "dataType": "sc:Text",
+          "description": "原引文（对象：id/text，669d 另含 measured_out）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "counterfactual-cases/fake_citation",
+          "name": "fake_citation",
+          "dataType": "sc:Text",
+          "description": "把引文改为假的反事实版本"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "counterfactual-cases/question",
+          "name": "question",
+          "dataType": "sc:Text",
+          "description": "反事实问题（若引文为假，断言还成立吗）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "counterfactual-cases/external_anchor",
+          "name": "external_anchor",
+          "dataType": "sc:Text",
+          "description": "真值判据的外部锚（standard ⇒ independent / measurement ⇒ dependent）；660 案例无此字段"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "counterfactual-cases/ground_truth",
+          "name": "ground_truth",
+          "dataType": "sc:Text",
+          "description": "真值标签（dependent / independent）；660 案例无此字段"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "counterfactual-cases/operator",
+          "name": "operator",
+          "dataType": "sc:Text",
+          "description": "算子输出（citation_id / dependent / mechanism / verdict_if_citation_false / confidence）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "counterfactual-cases/operator_prediction",
+          "name": "operator_prediction",
+          "dataType": "sc:Text",
+          "description": "算子预测标签（665/669d 案例）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "counterfactual-cases/agree",
+          "name": "agree",
+          "dataType": "sc:Boolean",
+          "description": "算子预测是否与真值一致"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "counterfactual-cases/mini_checker",
+          "name": "mini_checker",
+          "dataType": "sc:Text",
+          "description": "660 案例自带的检查器输出（仅 660 有）"
+        }
+      ],
+      "queyi:note": "P/R/F1 的分母**只算带 ground_truth 标签的案例**（665 = 10 条）；660 的 10 条不进分母。"
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "machine-cards-665",
+      "name": "665 机器卡",
+      "description": "665 B1 把 664 独立生成的断言拆成可复现的机器卡（无人签，不算 verified）。",
+      "source": [
+        {
+          "fileObject": {
+            "@id": "data/cards_665/index_665.json"
+          },
+          "extract": {
+            "jsonPath": "$.cards[*]"
+          }
+        }
+      ],
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/id",
+          "name": "id",
+          "dataType": "sc:Text",
+          "description": "机器卡 id（IG01…IG16）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/source_id",
+          "name": "source_id",
+          "dataType": "sc:Text",
+          "description": "来源夹具 id（ig-01…）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/assertion_under_test",
+          "name": "assertion_under_test",
+          "dataType": "sc:Text",
+          "description": "被检验的断言"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/counterexample",
+          "name": "counterexample",
+          "dataType": "sc:Text",
+          "description": "反例/反证说明"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/fixture_rel",
+          "name": "fixture_rel",
+          "dataType": "sc:Text",
+          "description": "夹具相对路径"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/fixture_sha256",
+          "name": "fixture_sha256",
+          "dataType": "sc:Text",
+          "description": "夹具源码的 sha256（卡与夹具的绑定）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/detector",
+          "name": "detector",
+          "dataType": "sc:Text",
+          "description": "实际使用的检测器"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/expect",
+          "name": "expect",
+          "dataType": "sc:Text",
+          "description": "期望判定（catch / miss / measure / unknown）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/verdict",
+          "name": "verdict",
+          "dataType": "sc:Text",
+          "description": "实测判定"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/note",
+          "name": "note",
+          "dataType": "sc:Text",
+          "description": "实测输出摘要"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/signature",
+          "name": "signature",
+          "dataType": "sc:Text",
+          "description": "判定签名（用于 --check 复算比对）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/runs",
+          "name": "runs",
+          "dataType": "sc:Text",
+          "description": "复跑次数"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/verdict_word",
+          "name": "verdict_word",
+          "dataType": "sc:Text",
+          "description": "判决词（pass / refute / …）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/support_reason",
+          "name": "support_reason",
+          "dataType": "sc:Text",
+          "description": "支持/反驳的理由"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/four_state",
+          "name": "four_state",
+          "dataType": "sc:Text",
+          "description": "四态判决（pass / refute / unknown / n_a）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/four_state_reason",
+          "name": "four_state_reason",
+          "dataType": "sc:Text",
+          "description": "四态定态理由"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/boundary",
+          "name": "boundary",
+          "dataType": "sc:Text",
+          "description": "边界三元组（standard / compiler / platform）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/mutation_set_hash",
+          "name": "mutation_set_hash",
+          "dataType": "sc:Text",
+          "description": "变异集哈希（血统标记）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/measured_out",
+          "name": "measured_out",
+          "dataType": "sc:Text",
+          "description": "真机测量原始输出"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/measured_at",
+          "name": "measured_at",
+          "dataType": "sc:Text",
+          "description": "测量时间"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/b_refuted_664",
+          "name": "b_refuted_664",
+          "dataType": "sc:Boolean",
+          "description": "664 的独立生成是否被反驳"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/validator_verdict_664",
+          "name": "validator_verdict_664",
+          "dataType": "sc:Text",
+          "description": "664 验证器的判定"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "machine-cards-665/agree_with_664",
+          "name": "agree_with_664",
+          "dataType": "sc:Boolean",
+          "description": "两者是否一致"
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "atom-cards",
+      "name": "AtomCard 台账",
+      "description": "主仓的 AtomCard 索引（含草稿）。注意 cards_real 的现算值为 42（web/data/verdicts_667.json），本文件 count=47 是 teach_card_656 的口径（37 实卡 + 10 草稿），两份口径不同已在 REPLICATION.md 登记。",
+      "source": [
+        {
+          "fileObject": {
+            "@id": "web/data/cards_index.json"
+          },
+          "extract": {
+            "jsonPath": "$.cards[*]"
+          }
+        }
+      ],
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "atom-cards/id",
+          "name": "id",
+          "dataType": "sc:Text",
+          "description": "AtomCard id（ATOM-…）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "atom-cards/title",
+          "name": "title",
+          "dataType": "sc:Text",
+          "description": "卡标题"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "atom-cards/domain",
+          "name": "domain",
+          "dataType": "sc:Text",
+          "description": "领域（MEM / CONC / HIST / LANG …）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "atom-cards/type",
+          "name": "type",
+          "dataType": "sc:Text",
+          "description": "卡类型"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "atom-cards/status",
+          "name": "status",
+          "dataType": "sc:Text",
+          "description": "状态（verified / draft / red-team-verified）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "atom-cards/dal",
+          "name": "dal",
+          "dataType": "sc:Text",
+          "description": "设计保证等级（DAL）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "atom-cards/audience",
+          "name": "audience",
+          "dataType": "sc:Text",
+          "description": "目标读者层次"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "atom-cards/cognitive_load",
+          "name": "cognitive_load",
+          "dataType": "sc:Text",
+          "description": "认知负荷档"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "atom-cards/draft",
+          "name": "draft",
+          "dataType": "sc:Boolean",
+          "description": "是否草稿"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "atom-cards/verdict_state",
+          "name": "verdict_state",
+          "dataType": "sc:Text",
+          "description": "当前判决态"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "atom-cards/downgraded",
+          "name": "downgraded",
+          "dataType": "sc:Boolean",
+          "description": "是否被降级"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "atom-cards/props",
+          "name": "props",
+          "dataType": "sc:Integer",
+          "description": "关联命题数"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "atom-cards/evidence",
+          "name": "evidence",
+          "dataType": "sc:Text",
+          "description": "证据 id 列表"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "atom-cards/prereqs",
+          "name": "prereqs",
+          "dataType": "sc:Text",
+          "description": "前置卡 id 列表"
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "holdout-reveal-results",
+      "name": "holdout reveal_3 逐样本判定",
+      "description": "reveal_3 的逐样本结果（含 -O0/-O2 双档摘要与相对 reveal_2 的变化）。",
+      "source": [
+        {
+          "fileObject": {
+            "@id": "data/holdout_reveal_3_665.json"
+          },
+          "extract": {
+            "jsonPath": "$.results[*]"
+          }
+        }
+      ],
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-reveal-results/id",
+          "name": "id",
+          "dataType": "sc:Text",
+          "description": "样本 id"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-reveal-results/planted",
+          "name": "planted",
+          "dataType": "sc:Boolean",
+          "description": "真值标签"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-reveal-results/detector",
+          "name": "detector",
+          "dataType": "sc:Text",
+          "description": "使用的检测器"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-reveal-results/verdict",
+          "name": "verdict",
+          "dataType": "sc:Text",
+          "description": "判定（catch / miss / unknown / not_error）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-reveal-results/note",
+          "name": "note",
+          "dataType": "sc:Text",
+          "description": "测量输出摘要（含 -O0/-O2 两档）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-reveal-results/is_665_new",
+          "name": "is_665_new",
+          "dataType": "sc:Boolean",
+          "description": "是否为 665 追加样本（追加样本无盲态）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-reveal-results/reveal_2",
+          "name": "reveal_2",
+          "dataType": "sc:Text",
+          "description": "reveal_2 的判定（对比用）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "holdout-reveal-results/changed_vs_reveal_2",
+          "name": "changed_vs_reveal_2",
+          "dataType": "sc:Boolean",
+          "description": "相对 reveal_2 是否改变判定"
+        }
+      ],
+      "queyi:note": "注意『变化 ≠ 能力提升』：判定变化由口径/编译档变化引起，报告中已逐条登记。"
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "external-corpus-reveal-results",
+      "name": "外部语料逐样本判定",
+      "description": "external corpus 的逐样本判定与所属层。",
+      "source": [
+        {
+          "fileObject": {
+            "@id": "data/external_corpus_reveal_665.json"
+          },
+          "extract": {
+            "jsonPath": "$.results[*]"
+          }
+        }
+      ],
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "external-corpus-reveal-results/id",
+          "name": "id",
+          "dataType": "sc:Text",
+          "description": "样本 id"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "external-corpus-reveal-results/category",
+          "name": "category",
+          "dataType": "sc:Text",
+          "description": "类别"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "external-corpus-reveal-results/verified_source",
+          "name": "verified_source",
+          "dataType": "sc:Boolean",
+          "description": "出处是否已验证"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "external-corpus-reveal-results/detector",
+          "name": "detector",
+          "dataType": "sc:Text",
+          "description": "检测器"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "external-corpus-reveal-results/layer",
+          "name": "layer",
+          "dataType": "sc:Text",
+          "description": "层（A_local / B_cross_or_measure / C_no_local_detector）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "external-corpus-reveal-results/verdict",
+          "name": "verdict",
+          "dataType": "sc:Text",
+          "description": "判定"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "external-corpus-reveal-results/note",
+          "name": "note",
+          "dataType": "sc:Text",
+          "description": "测量输出摘要"
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "mutation-scope-summary",
+      "name": "变异测试作用域汇总",
+      "description": "内部变异测试的两作用域汇总（core / all）。这是**内部自证**指标，不得当缺陷检测率。",
+      "source": [
+        {
+          "fileObject": {
+            "@id": "data/656_mutation_report_core.json"
+          },
+          "extract": {
+            "jsonPath": "$"
+          }
+        },
+        {
+          "fileObject": {
+            "@id": "data/656_mutation_report_all.json"
+          },
+          "extract": {
+            "jsonPath": "$"
+          }
+        }
+      ],
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "mutation-scope-summary/scope",
+          "name": "scope",
+          "dataType": "sc:Text",
+          "description": "作用域（core / all）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "mutation-scope-summary/seed",
+          "name": "seed",
+          "dataType": "sc:Integer",
+          "description": "变异体抽样种子（20260928）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "mutation-scope-summary/kill_suite",
+          "name": "kill_suite",
+          "dataType": "sc:Text",
+          "description": "杀测试文件（tests/test_core_pbt_656.py）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "mutation-scope-summary/mutants",
+          "name": "mutants",
+          "dataType": "sc:Integer",
+          "description": "变异体总数"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "mutation-scope-summary/killed",
+          "name": "killed",
+          "dataType": "sc:Integer",
+          "description": "被杀数"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "mutation-scope-summary/survived",
+          "name": "survived",
+          "dataType": "sc:Integer",
+          "description": "存活数"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "mutation-scope-summary/import_error",
+          "name": "import_error",
+          "dataType": "sc:Integer",
+          "description": "导入即崩（不含信息量的「杀」）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "mutation-scope-summary/timeout",
+          "name": "timeout",
+          "dataType": "sc:Integer",
+          "description": "超时数"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "mutation-scope-summary/kill_rate_on_scored",
+          "name": "kill_rate_on_scored",
+          "dataType": "sc:Number",
+          "description": "检出率（分母 = killed + survived）"
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "mutation-scope-summary/kill_rate_all",
+          "name": "kill_rate_all",
+          "dataType": "sc:Number",
+          "description": "检出率（分母 = 全部变异体）"
+        }
+      ],
+      "queyi:note": "results[] 逐条变异体明细体量大且属过程数据，此处 recordSet 只覆盖汇总字段。"
+    }
+  ]
+}

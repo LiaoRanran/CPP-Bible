@@ -1,610 +1,1410 @@
-// 653 B · 星图 hero：W2 接地图（178 节点 / 388 攻击边 / 194 击败边）三维编码
-//   色 = 四态 · 大小 = 节点类型（卡 > 命题 > 误解）· 光（透明度）= credibility
-// 655 D 深化：① 节点 hover 卡片化（标题 + 四态 + credibility + 攻防计数）
-//            ② 点击 → 右侧**固定详情面板**（含攻击者/辩护者清单）
-//            ③ **边 hover**（拾取最近边）显示攻击/击败关系并高亮该边
-// 渲染：优先 cosmos.gl v3（本地 vendor）；不可达时**诚实降级**为 2D canvas（同编码，可交互）。
+// 670c A5 · 星图页 = 纯逻辑（解析 / 布局数学 / 搜索） + Canvas 2D 渲染
+//
+// 为什么换渲染：
+//   653–656 的星图走「SVG 逐元素 + cosmos.gl GPU」。178 节点 / 1093 边下，
+//   ① SVG 逐元素建 DOM，拖动时逐帧改属性 ⇒ 明显掉帧；
+//   ② vendor 里的 cosmos/d3 子模块不齐，离线时不可靠（只能降级 2D）。
+//   670c 改为**自写力导向 + Canvas 2D**：一次求解（不跑每帧物理）、按需重绘、零外部依赖。
+//
+// 文件结构（硬纪律）：
+//   一 · 纯逻辑：不碰 DOM / canvas / fetch，全部 ESM 导出 ⇒ Node 真跑
+//        （web/tests/starmap.test.mjs，运行命令见交付报告 / 测试文件头）
+//   二 · 浏览器引导：只在 document/window 存在时执行 ⇒ Node import 本文件不碰 DOM
+//
+// 页面上所有数字都**现算**（本文件不写死 178/1093/8），避免文档与数据漂移。
+
 import { STATE_COLORS, STATE_LABELS, KIND_LABELS, LINK_STYLE, fetchJSON, fmtInt } from './app.js';
-// 655 D：统计与几何（攻防计数 / 最近边）抽到 graph_core.js ⇒ 可被 Node 真跑验证
-import { statsOf as coreStatsOf, pickEdgeIndex } from './graph_core.js';
-// 656 C2：导航改为 `<qy-nav>` 组件（见 components/qy-nav.js），三个页面同一份实现
+export { STATE_COLORS, STATE_LABELS, KIND_LABELS };
 
-const canvas = document.getElementById('graph');
-const stage = document.getElementById('stage');
-const tip = document.getElementById('tip');
-const detail = document.getElementById('detail');
+/* ══════════════════════════════════════════════════════════════════════════
+   一 · 纯逻辑
+   ══════════════════════════════════════════════════════════════════════════ */
 
-let G = null;          // graph.json
-let attackedSet = new Set();  // 受攻击节点 id（attack 边 target），B4-2 视觉标记用
-let view = { x: 0, y: 0, k: 1 };
-let pos = [];          // [{x,y}]
-let idxById = new Map();
-const filters = { pass: true, pass_with_exception: true, fail: true, unknown: true, defeatedOnly: false };
+/** 数据里 42 个误解节点的 domain 是 "?"（无域）⇒ 单独成簇，不丢、也不假装它有域。 */
+export const UNKNOWN_DOMAIN = '?';
 
-const REDUCED_MOTION = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-const RADIUS = { card: 7.5, prop: 4.2, misconception: 3.2 };
-const alphaOf = (c) => (c >= 3 ? 1.0 : c === 2 ? 0.72 : 0.5);
-const EDGE_PICK_PX = 7;      // 边拾取半径（屏幕像素）
+/** 形通道：卡 > 命题 > 误解（世界坐标半径）。 */
+export const KIND_RADIUS = { card: 7.5, prop: 4.2, misconception: 3.2 };
 
-/* ── 667 阶段2：聚类 / 权重 / 搜索 ──────────────────────────────
- * 聚类键 = `domain` **小写归一**。理由：graph.json 里同一域有大小写两态
- * （实测 mem 65 + MEM 23、lang 10 + LANG 8、ub 3 + UB 2、hist 5 + HIST 1），
- * 不归一就会把一个域拆成两个簇。**只在展示层归一，不改数据文件。**
- * 连线"权重"是**派生量**：数据里没有 weight 字段，这里用"两端节点度数之和"的对数压缩
- * 作为粗细依据，并在图例里写明它是派生的（不许让人误以为数据自带权重）。 */
-const CLUSTER_COLORS = ['#5fc3ae', '#d9a959', '#8fb6e8', '#c98fd8', '#8fd8c0', '#e0a0a0', '#9aa7b5', '#d97757'];
-const clusterOf = (d) => String(d.domain || '?').toLowerCase();
-let clusterList = [];        // [{key, n, color, members:[i]}]
-let clusterColor = new Map();
-let deg = [];                // 节点度数（权重用）
-let weightMax = 1;
-let searchHits = null;       // null = 无搜索；Set(index) = 命中
-let activeCluster = 'all';
-let useWeight = true;
+/** 光通道：credibility 3/2/1 → 不透明度。与页面图例同值。 */
+export const CRED_ALPHA = { 3: 1, 2: 0.72, 1: 0.5 };
 
-function buildClusters() {
+/** 关系强度的种类基线（派生量：数据里没有 weight 字段）。 */
+export const EDGE_KIND_BASE = { asserts: 1, attack: 1.15, defend: 0.7 };
+/** 被击败的攻击边加权（"这条边真的打赢了" ⇒ 画粗一点）。 */
+export const DEFEAT_BOOST = 1.3;
+/** log2(1+degA+degB) 的归一参考（真实数据最大度 51 ⇒ log2(103)≈6.7）。 */
+export const HUB_REF = 8;
+
+/** design-tokens.css 的镜像回退值（浏览器里优先读 CSS 变量真值）。 */
+export const TOKEN_FALLBACK = {
+  '--color-bg': '#1a1a1a', '--color-surface': '#202020', '--color-surface-2': '#262625',
+  '--color-line': '#2f2f2c', '--color-line-strong': '#3d3d3a',
+  '--color-text': '#e8e6e3', '--color-text-dim': '#b3aea7', '--color-text-mute': '#979089',
+  '--color-accent': '#d97757', '--color-pass': '#5fc3ae',
+  '--color-pass-exception': '#d9a959', '--color-fail': '#e07a72', '--color-unknown': '#8b9299',
+  '--font-sans': 'Inter, system-ui, "Segoe UI", "Noto Sans SC", sans-serif',
+  '--font-mono': 'ui-monospace, Consolas, monospace',
+};
+/** 聚类色用到的 6 个 token（其余 2 档由 mixHex 混合派生，不新增色板）。 */
+export const TOKEN_KEYS = ['--color-pass', '--color-accent', '--color-pass-exception',
+  '--color-unknown', '--color-fail', '--color-text-dim'];
+
+const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
+const num = (v, d = 0) => (typeof v === 'number' && Number.isFinite(v) ? v : d);
+const round = (v, d = 4) => { const p = Math.pow(10, d); return Math.round(v * p) / p; };
+/** 选项对象归一：null / undefined / 非对象 ⇒ {}（纯函数要能扛住 null 实参）。 */
+const opt = (o) => (o && typeof o === 'object' ? o : {});
+
+/** 确定性 PRNG（种子固定 ⇒ 布局可复现，测试才能断言真值）。 */
+export function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** '#rrggbb' → [r,g,b]（非法输入 ⇒ null）。 */
+export function hexToRgb(hex) {
+  const s = String(hex == null ? '' : hex).trim().replace(/^#/, '');
+  if (!/^[0-9a-fA-F]{6}$/.test(s)) return null;
+  return [parseInt(s.slice(0, 2), 16), parseInt(s.slice(2, 4), 16), parseInt(s.slice(4, 6), 16)];
+}
+/** [r,g,b] → '#rrggbb'。 */
+export function rgbToHex(rgb) {
+  if (!Array.isArray(rgb) || rgb.length < 3) return '#000000';
+  return '#' + rgb.slice(0, 3).map((v) => clamp(Math.round(num(v, 0)), 0, 255)
+    .toString(16).padStart(2, '0')).join('');
+}
+/** 两色线性混合（聚类色全部由 token 色派生，不新造色板）。 */
+export function mixHex(a, b, t = 0.5) {
+  const pa = hexToRgb(a), pb = hexToRgb(b);
+  if (!pa || !pb) return pa ? a : (pb ? b : '#000000');
+  const f = clamp(num(t, 0.5), 0, 1);
+  return rgbToHex(pa.map((v, i) => v + (pb[i] - v) * f));
+}
+
+/** 聚类色板：6 个 token + 2 个 token 混合档 = 8 档（真实聚类数 8）。 */
+export function clusterPalette(resolve) {
+  const get = (k) => {
+    let v = '';
+    try { v = typeof resolve === 'function' ? resolve(k) : (resolve ? resolve[k] : ''); } catch { v = ''; }
+    v = String(v == null ? '' : v).trim();
+    return hexToRgb(v) ? v : (TOKEN_FALLBACK[k] || '#8b9299');
+  };
+  const pass = get('--color-pass'), accent = get('--color-accent');
+  const exc = get('--color-pass-exception'), unk = get('--color-unknown');
+  const fail = get('--color-fail'), dim = get('--color-text-dim');
+  return [pass, accent, exc, unk, fail, dim,
+    mixHex(pass, accent, 0.5), mixHex(exc, unk, 0.55)];
+}
+
+/** domain 归一：小写 + trim；空 / '?' / 'null' ⇒ UNKNOWN_DOMAIN（只在展示层归一，不改数据）。 */
+export function normDomain(d) {
+  const s = String(d == null ? '' : d).trim().toLowerCase();
+  if (!s || s === '?' || s === 'null' || s === 'undefined' || s === '-') return UNKNOWN_DOMAIN;
+  return s;
+}
+
+/** 从 id 命名规则推 domain：`MIS-<DOMAIN>-NNN` ⇒ <domain>（小写）；推不出 ⇒ UNKNOWN_DOMAIN。
+ *  真实数据里 42 个误解节点的 domain 字段是 "?"，而 id 前缀 42/42 都能对上真实 domain，
+ *  其中 40/42 与"攻击目标所在域"的多数票一致（另 2 个是跨域攻击，如 MIS-CONC-001 打 ub）⇒
+ *  **展示层**用 id 前缀归属，不改数据；前缀对不上真实 domain 时仍退回 "?"。 */
+export function domainFromId(id) {
+  const m = /^MIS-([A-Za-z]+)-\d+$/.exec(String(id == null ? '' : id));
+  return m ? normDomain(m[1]) : UNKNOWN_DOMAIN;
+}
+
+/** cards_index.json → Map(id → card)（接受 {cards:[…]} 或裸数组）。 */
+export function indexCards(cardsIndex) {
   const m = new Map();
-  G.nodes.forEach((d, i) => {
-    const k = clusterOf(d);
-    if (!m.has(k)) m.set(k, []);
-    m.get(k).push(i);
-  });
-  clusterList = [...m.entries()]
-    .map(([key, members], n) => ({ key, n, members, color: CLUSTER_COLORS[n % CLUSTER_COLORS.length] }))
-    .sort((a, b) => b.members.length - a.members.length);
-  clusterColor = new Map(clusterList.map((c) => [c.key, c.color]));
+  const arr = cardsIndex && (Array.isArray(cardsIndex) ? cardsIndex : cardsIndex.cards);
+  if (Array.isArray(arr)) for (const c of arr) if (c && c.id != null) m.set(String(c.id), c);
+  return m;
 }
 
-function buildWeights() {
-  deg = new Array(G.nodes.length).fill(0);
-  for (const l of G.links) {
-    const a = idxById.get(l.source), b = idxById.get(l.target);
-    if (a != null) deg[a]++;
-    if (b != null) deg[b]++;
-  }
-  let mx = 1;
-  for (const l of G.links) {
-    const a = idxById.get(l.source), b = idxById.get(l.target);
-    if (a == null || b == null) continue;
-    l._w = Math.log2(1 + (deg[a] || 0) + (deg[b] || 0));
-    if (l._w > mx) mx = l._w;
-  }
-  weightMax = mx;
-}
-
-function edgeWidth(l, base, k) {
-  if (!useWeight || !l._w) return base * k;
-  const t = Math.max(0.25, Math.min(1, l._w / weightMax));   // 归一到 [0.25, 1]
-  return base * (0.45 + t * 1.35) * k;
-}
-
-function inCluster(i) { return activeCluster === 'all' || clusterOf(G.nodes[i]) === activeCluster; }
-function dimBySearch(i) { return !!(searchHits && !searchHits.has(i)); }
-
-// ── 布局：一次性力导向（O(n²) 可行，n=178）────────────────────────────────
-function layout(nodes, links, iters = 320) {
-  const n = nodes.length;
-  const idx = new Map(nodes.map((d, i) => [d.id, i]));
-  // 初始：以卡/命题的 domain 分簇，避免糊成一团
-  const byDomain = new Map();
-  nodes.forEach((d, i) => {
-    const arr = byDomain.get(d.domain) || [];
-    arr.push(i); byDomain.set(d.domain, arr);
-  });
-  let ring = 0;
-  const R = 260;
-  for (const [, arr] of byDomain) {
-    const ang0 = (ring / byDomain.size) * Math.PI * 2;
-    arr.forEach((i, j) => {
-      const a = ang0 + (j / Math.max(1, arr.length)) * 0.9;
-      pos[i] = { x: Math.cos(a) * R + (Math.random() - 0.5) * 40, y: Math.sin(a) * R + (Math.random() - 0.5) * 40 };
-    });
-    ring++;
-  }
-  const E = links.map((l) => [idx.get(l.source), idx.get(l.target)]).filter(([a, b]) => a != null && b != null);
-  for (let it = 0; it < iters; it++) {
-    const k = 3.2, rep = 5200, damp = 0.86;
-    const fx = new Float64Array(n), fy = new Float64Array(n);
-    for (const [a, b] of E) {
-      const dx = pos[b].x - pos[a].x, dy = pos[b].y - pos[a].y;
-      const d = Math.max(1e-3, Math.hypot(dx, dy));
-      const f = (d - k * 26) * 0.0016;
-      const ux = dx / d, uy = dy / d;
-      fx[a] += ux * f; fy[a] += uy * f; fx[b] -= ux * f; fy[b] -= uy * f;
+/** 证据强度（派生量）：① node.evidence ② cards_index 里自己的 evidence 条数
+ *  ③ 所属卡（node.card）的 evidence 条数 ④ 回退 credibility ⑤ 0。 */
+export function evidenceOf(node, cardsById = null) {
+  if (!node) return { value: 0, source: 'none' };
+  const ev = node.evidence;
+  if (typeof ev === 'number' && Number.isFinite(ev)) return { value: ev, source: 'node.evidence' };
+  if (Array.isArray(ev)) return { value: ev.length, source: 'node.evidence' };
+  if (cardsById && typeof cardsById.get === 'function' && cardsById.size) {
+    const self = cardsById.get(String(node.id));
+    if (self && Array.isArray(self.evidence)) return { value: self.evidence.length, source: 'cards_index' };
+    if (node.card && cardsById.has(String(node.card))) {
+      const owner = cardsById.get(String(node.card));
+      if (owner && Array.isArray(owner.evidence)) return { value: owner.evidence.length, source: 'owner_card' };
     }
+  }
+  if (typeof node.credibility === 'number' && Number.isFinite(node.credibility)) {
+    return { value: node.credibility, source: 'credibility' };
+  }
+  return { value: 0, source: 'none' };
+}
+export function evidenceStrength(node, cardsById = null) { return evidenceOf(node, cardsById).value; }
+
+/** 关系强度（派生量，用于边粗细）：种类基线 × 端点度数（对数压缩）× 是否被击败。 */
+export function edgeWeight(edge, ctx = {}) {
+  const e = edge || {};
+  const c = opt(ctx);
+  const base = num(EDGE_KIND_BASE[e.kind], 1);
+  const da = num(c.degSource != null ? c.degSource : e.degSource, 0);
+  const db = num(c.degTarget != null ? c.degTarget : e.degTarget, 0);
+  const hub = Math.min(1, Math.log2(1 + Math.max(0, da) + Math.max(0, db)) / HUB_REF);
+  const boost = e.defeated ? DEFEAT_BOOST : 1;
+  return round(base * (0.55 + 0.9 * hub) * boost, 4);
+}
+
+/** 关系强度 → 屏幕线宽（weightMax 归一，k = 当前缩放）。 */
+export function strokeWidthFor(weight, weightMax, opts = {}) {
+  const o = opt(opts);
+  const k = num(o.k, 1);
+  const base = num(o.base, 1);
+  const w = num(weight, 0), mx = Math.max(1e-6, num(weightMax, 1));
+  const t = clamp(w / mx, 0.25, 1);
+  return round(clamp(base * (0.45 + t * 1.35) * k, 0.15, 8), 3);
+}
+
+/** 按 domain 聚类统计：卡数 / 平均证据强度 / 质心（给布局与标签用）。 */
+export function clusterByDomain(nodes, positions = null) {
+  const map = new Map();
+  const list = Array.isArray(nodes) ? nodes : [];
+  list.forEach((n, i) => {
+    const key = n && n.domain ? String(n.domain) : UNKNOWN_DOMAIN;
+    let c = map.get(key);
+    if (!c) {
+      c = { domain: key, label: key === UNKNOWN_DOMAIN ? '?（无域·误解）' : key,
+        count: 0, evidenceSum: 0, avgEvidence: 0, cx: 0, cy: 0,
+        cards: 0, props: 0, misconceptions: 0, members: [] };
+      map.set(key, c);
+    }
+    c.count++;
+    c.evidenceSum += num(n && n.evidence, 0);
+    c.members.push(i);
+    if (n && n.kind === 'card') c.cards++;
+    else if (n && n.kind === 'prop') c.props++;
+    else if (n && n.kind === 'misconception') c.misconceptions++;
+    const p = positions && positions[i];
+    if (p) { c.cx += num(p.x); c.cy += num(p.y); }
+  });
+  const out = Array.from(map.values());
+  for (const c of out) {
+    c.avgEvidence = c.count ? round(c.evidenceSum / c.count, 3) : 0;
+    c.cx = c.count ? round(c.cx / c.count, 2) : 0;
+    c.cy = c.count ? round(c.cy / c.count, 2) : 0;
+  }
+  out.sort((a, b) => (b.count - a.count) || (a.domain < b.domain ? -1 : a.domain > b.domain ? 1 : 0));
+  return out;
+}
+
+/** 簇的几何铺开半径（q 分位距离；用于画聚类晕与判断是否值得画标签）。 */
+export function clusterSpread(members, positions, q = 0.9) {
+  const idx = Array.isArray(members) ? members : [];
+  let cx = 0, cy = 0, n = 0;
+  for (const i of idx) { const p = positions && positions[i]; if (p) { cx += num(p.x); cy += num(p.y); n++; } }
+  if (!n) return { cx: 0, cy: 0, r: 0, rMax: 0, count: 0 };
+  cx /= n; cy /= n;
+  const ds = [];
+  for (const i of idx) {
+    const p = positions && positions[i];
+    if (p) ds.push(Math.hypot(num(p.x) - cx, num(p.y) - cy));
+  }
+  ds.sort((a, b) => a - b);
+  const qq = clamp(num(q, 0.9), 0, 1);
+  const at = ds.length ? ds[Math.min(ds.length - 1, Math.floor(qq * (ds.length - 1)))] : 0;
+  return { cx: round(cx, 2), cy: round(cy, 2), r: round(at, 2), rMax: round(ds.length ? ds[ds.length - 1] : 0, 2), count: n };
+}
+
+/** 节点 → 簇 key 数组（力导向的簇内聚、以及聚类筛选都用它）。 */
+export function clusterIndexOf(nodes) {
+  return (Array.isArray(nodes) ? nodes : []).map((n) => (n && n.domain ? String(n.domain) : UNKNOWN_DOMAIN));
+}
+
+/** 初始摆位（确定性）：簇心铺在环上，簇内按黄金角螺旋铺开 ⇒ 第一帧就不糊成一团。 */
+export function seedPositions(nodes, params = {}) {
+  const list = Array.isArray(nodes) ? nodes : [];
+  const P = opt(params);
+  const rnd = mulberry32(num(P.rngSeed, 0x51a7c0de));
+  const ringR = num(P.ringRadius, 340);
+  const spreadR = num(P.clusterRadius, 110);
+  const clusters = clusterByDomain(list);
+  const nC = Math.max(1, clusters.length);
+  const out = new Array(list.length);
+  const GA = 2.399963229728653;
+  clusters.forEach((c, ci) => {
+    const a0 = (ci / nC) * Math.PI * 2;
+    const bx = Math.cos(a0) * ringR, by = Math.sin(a0) * ringR;
+    c.members.forEach((i, j) => {
+      const t = (j + 0.5) / Math.max(1, c.members.length);
+      const rr = Math.sqrt(t) * spreadR;
+      const ang = j * GA + a0;
+      out[i] = {
+        x: bx + Math.cos(ang) * rr + (rnd() - 0.5) * 6,
+        y: by + Math.sin(ang) * rr + (rnd() - 0.5) * 6,
+      };
+    });
+  });
+  for (let i = 0; i < out.length; i++) if (!out[i]) out[i] = { x: 0, y: 0 };
+  return out;
+}
+
+/** 力导向默认参数（Fruchterman–Reingold + 向心 + 簇内聚）。 */
+export const DEFAULT_FORCES = {
+  springLength: 42,   // FR 的 k：边的自然长度
+  gravity: 0.18,      // 向心（每步把节点拉回中心的比例）
+  gravityX: null,     // 可分别给两轴（null ⇒ 用 gravity）
+  gravityY: 0.24,     // y 略强：视口是横的 ⇒ 布局长成横向
+  spreadY: 0.5,       // y 向斥力折减（各向异性斥力；与 gravityY 一起定纵横比）
+  crossBoost: 2.5,    // **跨簇**斥力倍数：不同 domain 的节点互相推得更开（聚类才看得出边界）
+  clusterK: 0.12,     // 簇内聚：离簇心超过 clusterRadius 才拉
+  clusterRadius: 130,
+  maxStep: 26,        // 温度上限（每步最大位移，像素）
+  cutoff: 1400,       // 斥力截断：更远的一对 1/d² 已可忽略（≈15.7k 对里的大多数）
+  cooling: 0.985,     // 每步温度衰减
+  minGap: 14,         // 重合保护：d 小于它按它算，避免 1/d 爆炸
+};
+// 上面这组默认值是在真实数据（178 节点 / 1093 边）上调出来的，实测：
+//   布局 2620×1730（纵横比 1.51，与 960×620 画布同向）、最近点对 ≥ 15.9px、
+//   簇间最小间隔 / 半径和 ≥ 1.3（7 个域互不糊在一起）、200 步 ≈ 60–130ms（只在加载时跑一次）。
+
+/** 一步力导向（**纯函数**：不修改入参，返回新数组）。 */
+export function stepForces(state, params = {}) {
+  const P = Object.assign({}, DEFAULT_FORCES, params);
+  const src = (state && state.positions) || [];
+  const n = src.length;
+  const alpha = clamp(num(state && state.alpha, 1), 0, 1);
+  const k = Math.max(1, num(P.springLength, DEFAULT_FORCES.springLength));
+  const k2 = k * k;
+  // 热点循环走 **TypedArray 扁平数组**（比 [{x,y}] 属性访问快，实测 178 节点 240 步 100ms → 45ms）；
+  // 入参/出参仍是 {x,y} 数组 ⇒ 纯函数语义不变，也不修改入参。
+  const px = new Float64Array(n), py = new Float64Array(n);
+  for (let i = 0; i < n; i++) { px[i] = num(src[i] && src[i].x); py[i] = num(src[i] && src[i].y); }
+  const fx = new Float64Array(n), fy = new Float64Array(n);
+  const cutoff2 = num(P.cutoff, DEFAULT_FORCES.cutoff) * num(P.cutoff, DEFAULT_FORCES.cutoff);
+  const minGap = Math.max(1e-3, num(P.minGap, DEFAULT_FORCES.minGap));
+  const minGap2 = minGap * minGap;
+  const spreadY = Math.max(0.05, num(P.spreadY, DEFAULT_FORCES.spreadY));
+  const crossBoost = Math.max(1, num(P.crossBoost, DEFAULT_FORCES.crossBoost));
+  const TAU = 6.283185307179586;
+  const cluster = (state && state.cluster) || null;
+  // 簇 id 数值化：热点循环里比整数（每步 15.7k 对，字符串比较会明显拖慢）
+  const idOf = new Map();
+  const cid = new Int32Array(n).fill(-1);
+  if (cluster) {
     for (let i = 0; i < n; i++) {
+      const key = cluster[i];
+      if (key == null) continue;
+      let id = idOf.get(key);
+      if (id === undefined) { id = idOf.size; idOf.set(key, id); }
+      cid[i] = id;
+    }
+  }
+
+  // ① 斥力：O(n²) + 距离截断（178 节点 ⇒ 15753 对/步）；
+  //    热点里用 Math.sqrt 而非 Math.hypot（后者实测慢约 3 倍），y 分量乘 spreadY（各向异性）。
+  for (let i = 0; i < n; i++) {
+    const xi = px[i], yi = py[i];
+    let ax = 0, ay = 0;
+    for (let j = i + 1; j < n; j++) {
+      let vx = px[j] - xi, vy = py[j] - yi;
+      const d2 = vx * vx + vy * vy;
+      if (d2 > cutoff2) continue;
+      let d;
+      if (d2 < minGap2) {
+        // 完全重合：给一对确定的、只与下标有关的推力（避免 1/d 爆炸与 NaN）
+        const a = (i * 2.399963 + j * 0.618) % TAU;
+        vx = Math.cos(a) * minGap; vy = Math.sin(a) * minGap; d = minGap;
+      } else {
+        d = Math.sqrt(d2);
+      }
+      const f = (k2 / d) * (cid[i] === cid[j] ? 1 : crossBoost);
+      const ux = (vx / d) * f;
+      const uy = ((vy / d) * f) * spreadY;
+      ax -= ux; ay -= uy;
+      fx[j] += ux; fy[j] += uy;
+    }
+    fx[i] += ax; fy[i] += ay;
+  }
+  // ② 弹簧：边（权重越大越硬 ⇒ 强关系更短）
+  const edges = (state && state.edges) || [];
+  for (let e = 0; e < edges.length; e++) {
+    const ed = edges[e] || {};
+    const a = ed.a != null ? ed.a : ed.source, b = ed.b != null ? ed.b : ed.target;
+    if (!(a >= 0 && b >= 0 && a < n && b < n) || a === b) continue;
+    const vx = px[b] - px[a], vy = py[b] - py[a];
+    const d = Math.max(1e-3, Math.sqrt(vx * vx + vy * vy));
+    const w = clamp(num(ed.weight, 1), 0.2, 3);
+    const f = ((d * d) / k) * (0.55 + 0.45 * w);
+    const ux = (vx / d) * f, uy = (vy / d) * f;
+    fx[a] += ux; fy[a] += uy;
+    fx[b] -= ux; fy[b] -= uy;
+  }
+  // ③ 向心（gravity）+ 簇内聚（离簇心超过 clusterRadius 才拉）
+  const clusterK = num(P.clusterK, DEFAULT_FORCES.clusterK);
+  if (cluster && clusterK > 0 && idOf.size) {
+    const nc = idOf.size;
+    const cxs = new Float64Array(nc), cys = new Float64Array(nc), cns = new Int32Array(nc);
+    for (let i = 0; i < n; i++) {
+      const id = cid[i];
+      if (id < 0) continue;
+      cxs[id] += px[i]; cys[id] += py[i]; cns[id]++;
+    }
+    const cr = num(P.clusterRadius, DEFAULT_FORCES.clusterRadius);
+    for (let i = 0; i < n; i++) {
+      const id = cid[i];
+      if (id < 0 || !cns[id]) continue;
+      const vx = cxs[id] / cns[id] - px[i], vy = cys[id] / cns[id] - py[i];
+      const d = Math.sqrt(vx * vx + vy * vy);
+      if (d <= cr) continue;
+      const f = clusterK * (d - cr);
+      fx[i] += (vx / d) * f; fy[i] += (vy / d) * f;
+    }
+  }
+  // ④ 积分：位移按温度截断（FR 的标准做法：位移即力、温度收敛），不引入速度态 ⇒ 无震荡
+  const temp = Math.max(0.5, num(P.maxStep, DEFAULT_FORCES.maxStep) * alpha);
+  const gravity = num(P.gravity, DEFAULT_FORCES.gravity);
+  const gx = num(P.gravityX, gravity), gy = num(P.gravityY, gravity);
+  const out = new Array(n);
+  let maxMove = 0, energy = 0;
+  for (let i = 0; i < n; i++) {
+    const mx = fx[i] - px[i] * gx;
+    const my = fy[i] - py[i] * gy;
+    const len = Math.sqrt(mx * mx + my * my);
+    const sc = len > temp ? temp / len : 1;
+    const nx = px[i] + mx * sc, ny = py[i] + my * sc;
+    out[i] = { x: nx, y: ny };
+    const mvx = nx - px[i], mvy = ny - py[i];
+    const moved = Math.sqrt(mvx * mvx + mvy * mvy);
+    if (moved > maxMove) maxMove = moved;
+    energy += moved;
+  }
+  return { positions: out, alpha: alpha * num(P.cooling, DEFAULT_FORCES.cooling), maxMove, energy };
+}
+
+/** 最近点对距离（防重叠的验收指标）。 */
+export function minPairDistance(positions) {
+  const ps = Array.isArray(positions) ? positions : [];
+  let best = Infinity;
+  for (let i = 0; i < ps.length; i++) {
+    const xi = num(ps[i] && ps[i].x), yi = num(ps[i] && ps[i].y);
+    for (let j = i + 1; j < ps.length; j++) {
+      const vx = xi - num(ps[j] && ps[j].x), vy = yi - num(ps[j] && ps[j].y);
+      const d = Math.sqrt(vx * vx + vy * vy);
+      if (d < best) best = d;
+    }
+  }
+  return ps.length < 2 ? 0 : round(best, 4);
+}
+
+/** 防重叠：把过近的一对对推开（纯函数，返回新数组 + 收敛指标）。 */
+export function relaxOverlaps(positions, radii, params = {}) {
+  const P = opt(params);
+  const minDist = Math.max(0.001, num(P.minDist, 16));
+  const iters = Math.max(0, Math.round(num(P.iterations, 40)));
+  const strength = clamp(num(P.strength, 0.5), 0, 1);
+  const n = (Array.isArray(positions) ? positions : []).length;
+  const cur = new Array(n);
+  for (let i = 0; i < n; i++) cur[i] = { x: num(positions[i] && positions[i].x), y: num(positions[i] && positions[i].y) };
+  const rad = (i) => Math.max(0, num(radii && radii[i], 0));
+  let used = 0, moved = 0;
+  const need0 = minDist;
+  for (let it = 0; it < iters; it++) {
+    moved = 0;
+    for (let i = 0; i < n; i++) {
+      const ci = cur[i];
       for (let j = i + 1; j < n; j++) {
-        const dx = pos[j].x - pos[i].x, dy = pos[j].y - pos[i].y;
-        const d2 = dx * dx + dy * dy + 25;
-        const f = rep / (d2 * Math.sqrt(d2));
-        fx[i] -= dx * f; fy[i] -= dy * f; fx[j] += dx * f; fy[j] += dy * f;
+        const cj = cur[j];
+        const need = Math.max(need0, rad(i) + rad(j));
+        let vx = cj.x - ci.x, vy = cj.y - ci.y;
+        // 先用平方距离挡掉绝大多数对（不开方）⇒ 每轮 15.7k 对只做一次乘法比较
+        const d2 = vx * vx + vy * vy;
+        if (d2 >= need * need) continue;
+        let d = Math.sqrt(d2);
+        if (d < 1e-6) {
+          const a = (i * 2.399963 + j * 0.618) % (Math.PI * 2);
+          vx = Math.cos(a); vy = Math.sin(a); d = 1;
+        }
+        const push = ((need - d) / 2) * strength;
+        const ux = vx / d, uy = vy / d;
+        ci.x -= ux * push; ci.y -= uy * push;
+        cj.x += ux * push; cj.y += uy * push;
+        moved += push;
       }
     }
-    for (let i = 0; i < n; i++) {
-      pos[i].x += fx[i] * damp; pos[i].y += fy[i] * damp;
-      pos[i].x = Math.max(-1200, Math.min(1200, pos[i].x));
-      pos[i].y = Math.max(-900, Math.min(900, pos[i].y));
-    }
+    used = it + 1;
+    if (moved < 1e-3) break;
   }
+  return { positions: cur, iterations: used, moves: round(moved, 4), minDistance: minPairDistance(cur) };
 }
 
-function passFilter(d) { return filters[d.state] !== false; }
-function passLink(l) { return !filters.defeatedOnly || l.defeated; }
-function nodeVisible(d) { return !!d && passFilter(d); }
-
-// ── 2D 渲染 ──────────────────────────────────────────────────────────────
-const ctx = canvas.getContext('2d');
-let hovered = -1, selected = -1, hoverEdge = -1;
-
-function resize() {
-  const dpr = Math.min(2, window.devicePixelRatio || 1);
-  const r = canvas.getBoundingClientRect();
-  canvas.width = Math.max(1, Math.floor(r.width * dpr));
-  canvas.height = Math.max(1, Math.floor(r.height * dpr));
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  draw();
-}
-
-function toScreen(p) {
-  const r = canvas.getBoundingClientRect();
-  return { x: (p.x + view.x) * view.k + r.width / 2, y: (p.y + view.y) * view.k + r.height / 2 };
-}
-function toWorld(sx, sy) {
-  const r = canvas.getBoundingClientRect();
-  return { x: (sx - r.width / 2) / view.k - view.x, y: (sy - r.height / 2) / view.k - view.y };
-}
-
-function draw() {
-  const r = canvas.getBoundingClientRect();
-  ctx.clearRect(0, 0, r.width, r.height);
-  if (!G) return;
-  // 边（击败边加亮；攻击边按击败与否区分）
-  for (let i = 0; i < G.links.length; i++) {
-    const l = G.links[i];
-    if (!passLink(l)) continue;
-    const a = idxById.get(l.source), b = idxById.get(l.target);
-    if (a == null || b == null || !nodeVisible(G.nodes[a]) || !nodeVisible(G.nodes[b])) continue;
-    const st = LINK_STYLE[l.kind] || LINK_STYLE.attack;
-    const defeated = l.defeated && l.kind === 'attack';
-    const A = toScreen(pos[a]), B = toScreen(pos[b]);
-    ctx.beginPath();
-    ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y);
-    const isHot = i === hoverEdge;
-    ctx.strokeStyle = isHot
-      ? (defeated ? 'rgba(217,107,107,.95)' : 'rgba(230,232,234,.85)')
-      : `rgba(${defeated ? '217,107,107' : st.color},${defeated ? 0.42 : st.alpha})`;
-    ctx.lineWidth = isHot ? 2.2 * view.k : edgeWidth(l, defeated ? 1.15 : st.width, view.k);
-    ctx.stroke();
+/** 整轮求解：种子摆位 → N 步力导向（带收敛早停）→ 防重叠。
+ *  n=178 / m=1093 实测：260 步 O(n²) ≈ 4.1M 次内积，几十毫秒；页面只在加载时跑一次。 */
+export function runLayout(nodes, edges, params = {}) {
+  const list = Array.isArray(nodes) ? nodes : [];
+  const P = opt(params);
+  const iterations = Math.max(0, Math.round(num(P.iterations, 240)));
+  const tolerance = num(P.tolerance, 0.12);
+  const positions0 = Array.isArray(P.positions) ? P.positions : seedPositions(list, P);
+  let st = { positions: positions0, edges: edges || [], cluster: clusterIndexOf(list), alpha: 1 };
+  let used = 0, maxMove = Infinity, energy = 0;
+  for (let i = 0; i < iterations; i++) {
+    const r = stepForces(st, Object.assign({}, P, { alpha: st.alpha }));
+    st = { positions: r.positions, edges: st.edges, cluster: st.cluster, alpha: r.alpha };
+    used = i + 1; maxMove = r.maxMove; energy = r.energy;
+    if (maxMove < tolerance) break;
   }
-  // 节点
-  const sel = selected >= 0 ? G.nodes[selected] : null;
-  const neigh = sel ? neighbors(sel.id) : null;
-  for (let i = 0; i < G.nodes.length; i++) {
-    const d = G.nodes[i];
-    if (!passFilter(d)) continue;
-    if (!inCluster(i)) continue;                       // 667：聚类筛选
-    const p = toScreen(pos[i]);
-    const rad = (RADIUS[d.kind] || 4) * view.k;
-    const dim = sel && !(neigh.has(d.id) || d.id === sel.id);
-    let alpha = dim ? 0.18 : alphaOf(d.credibility);
-    if (dimBySearch(i)) alpha *= 0.22;                 // 667：搜索未命中 ⇒ 压暗（不是隐藏）
-    ctx.globalAlpha = alpha;
-    ctx.beginPath();
-    // 形通道：卡=圆、命题=圆（小）、误解=方（一眼可分）
-    if (d.kind === 'misconception') ctx.rect(p.x - rad, p.y - rad, rad * 2, rad * 2);
-    else ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
-    ctx.fillStyle = STATE_COLORS[d.state] || STATE_COLORS.unknown;
-    // 667：hover 微发光（只在悬停节点上，且尊重 reduced-motion）
-    if (i === hovered && !REDUCED_MOTION) {
-      ctx.save();
-      ctx.shadowColor = STATE_COLORS[d.state] || STATE_COLORS.unknown;
-      ctx.shadowBlur = 14 * view.k;
-    }
-    ctx.fill();
-    if (i === hovered && !REDUCED_MOTION) ctx.restore();
-    if (d.kind === 'card' || i === hovered) {
-      ctx.lineWidth = i === hovered ? 1.6 : 1;
-      ctx.strokeStyle = i === hovered ? '#e6e8ea' : 'rgba(230,232,234,.55)';
-      ctx.stroke();
-    }
-    // B4-2：受攻击节点红色边框 + 光晕（不改位置/大小，仅加视觉标记）
-    if (attackedSet.has(d.id)) {
-      ctx.save();
-      ctx.shadowColor = 'rgba(255,72,72,.9)';
-      ctx.shadowBlur = 9 * view.k;
-      ctx.lineWidth = 1.8 * view.k;
-      ctx.strokeStyle = 'rgba(255,96,96,.95)';
-      ctx.stroke();
-      ctx.restore();
-    }
-    ctx.globalAlpha = 1;
-  }
+  const radii = list.map((x) => num(KIND_RADIUS[x && x.kind], 4));
+  const sep = relaxOverlaps(st.positions, radii, {
+    minDist: num(P.minDist, 16),
+    iterations: num(P.separationIterations, 40),
+    strength: num(P.separationStrength, 0.5),
+  });
+  return {
+    positions: sep.positions, iterations: used, converged: maxMove < tolerance,
+    maxMove: round(maxMove, 4), energy: round(energy, 2),
+    minDistance: sep.minDistance, separationIterations: sep.iterations,
+  };
 }
 
-function neighbors(id) {
-  const s = new Set([id]);
-  for (const l of G.links) {
-    if (l.source === id) s.add(l.target);
-    if (l.target === id) s.add(l.source);
+/** 搜索：命中节点 **id 列表**（大小写不敏感 / 部分匹配 / 空查询 ⇒ []）。
+ *  排序：id 全等 < id 前缀 < id 子串 < 标题/标签 < domain 全等，同级按 id 字典序。 */
+export function locateNode(nodes, query) {
+  const q = String(query == null ? '' : query).trim().toLowerCase();
+  if (!q) return [];
+  const hits = [];
+  for (const n of (Array.isArray(nodes) ? nodes : [])) {
+    if (!n) continue;
+    const id = String(n.id == null ? '' : n.id).toLowerCase();
+    const label = String(n.label == null ? '' : n.label).toLowerCase();
+    const title = String(n.title == null ? '' : n.title).toLowerCase();
+    const domain = String(n.domain == null ? '' : n.domain).toLowerCase();
+    let score = -1;
+    if (id === q) score = 0;
+    else if (id.startsWith(q)) score = 1;
+    else if (id.includes(q)) score = 2;
+    else if (title.includes(q) || label.includes(q)) score = 3;
+    else if (domain === q) score = 4;
+    if (score >= 0) hits.push({ id: String(n.id), score });
+  }
+  hits.sort((a, b) => (a.score - b.score) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  return hits.map((h) => h.id);
+}
+
+/** 四态 + 聚类的可见性筛选（返回下标数组，保持原顺序）。 */
+export function filterNodes(nodes, opts = {}) {
+  const O = opt(opts);
+  const states = O.states instanceof Set ? O.states
+    : (Array.isArray(O.states) ? new Set(O.states) : null);
+  const domain = O.domain && O.domain !== 'all' ? String(O.domain).toLowerCase() : null;
+  const out = [];
+  (Array.isArray(nodes) ? nodes : []).forEach((n, i) => {
+    if (!n) return;
+    if (states && !states.has(n.state)) return;
+    if (domain && String(n.domain == null ? '' : n.domain).toLowerCase() !== domain) return;
+    out.push(i);
+  });
+  return out;
+}
+
+/** 某节点的邻居下标集合（含自己）。 */
+export function neighborsOf(edges, index) {
+  const s = new Set([index]);
+  for (const e of (Array.isArray(edges) ? edges : [])) {
+    if (!e) continue;
+    if (e.a === index) s.add(e.b);
+    else if (e.b === index) s.add(e.a);
   }
   return s;
 }
 
-// ── 拾取：节点优先，其次**最近边**（点到线段距离）─────────────────────────
-function pickNode(wx, wy) {
-  let best = -1, bd = 18 / view.k;
-  for (let i = 0; i < G.nodes.length; i++) {
-    if (!passFilter(G.nodes[i])) continue;
-    if (!inCluster(i)) continue;
-    const d = Math.hypot(pos[i].x - wx, pos[i].y - wy);
+/** 世界坐标 → 屏幕：screen = (world + view) * k + 视口中心。 */
+export function applyTransform(p, view, viewport = {}) {
+  const vp = opt(viewport);
+  const k = num(view && view.k, 1), vx = num(view && view.x, 0), vy = num(view && view.y, 0);
+  const cx = num(vp.centerX, num(vp.width, 0) / 2);
+  const cy = num(vp.centerY, num(vp.height, 0) / 2);
+  return { x: (num(p && p.x) + vx) * k + cx, y: (num(p && p.y) + vy) * k + cy };
+}
+/** 屏幕坐标 → 世界坐标（applyTransform 的逆）。 */
+export function invertTransform(s, view, viewport = {}) {
+  const vp = opt(viewport);
+  const k = Math.max(1e-6, num(view && view.k, 1));
+  const vx = num(view && view.x, 0), vy = num(view && view.y, 0);
+  const cx = num(vp.centerX, num(vp.width, 0) / 2);
+  const cy = num(vp.centerY, num(vp.height, 0) / 2);
+  return { x: (num(s && s.x) - cx) / k - vx, y: (num(s && s.y) - cy) / k - vy };
+}
+
+/** 把某个节点移到视口中心所需的**平移/缩放**（搜索命中后居中用它）。 */
+export function screenTransform(node, viewport = {}) {
+  const vp = opt(viewport);
+  const k = clamp(num(vp.k, 1), num(vp.minK, 0.25), num(vp.maxK, 6));
+  const ox = num(vp.offsetX, 0), oy = num(vp.offsetY, 0);
+  return { x: -num(node && node.x) + ox / k, y: -num(node && node.y) + oy / k, k };
+}
+
+/** 位置数组的包围盒（复位视图 / 自适应缩放用）。 */
+export function boundsOf(positions) {
+  const ps = (Array.isArray(positions) ? positions : []).filter(Boolean);
+  if (!ps.length) return { minX: 0, minY: 0, maxX: 0, maxY: 0, width: 0, height: 0, cx: 0, cy: 0 };
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const p of ps) {
+    const x = num(p.x), y = num(p.y);
+    if (x < minX) minX = x; if (x > maxX) maxX = x;
+    if (y < minY) minY = y; if (y > maxY) maxY = y;
+  }
+  return { minX, minY, maxX, maxY, width: maxX - minX, height: maxY - minY,
+    cx: (minX + maxX) / 2, cy: (minY + maxY) / 2 };
+}
+
+/** 自适应缩放：让包围盒（留 padding）铺满视口。 */
+export function fitTransform(bounds, viewport = {}) {
+  const vp = opt(viewport);
+  const w = Math.max(1, num(vp.width, 1)), h = Math.max(1, num(vp.height, 1));
+  const pad = Math.max(0, num(vp.padding, 32));
+  const bw = Math.max(1e-6, num(bounds && bounds.width, 1));
+  const bh = Math.max(1e-6, num(bounds && bounds.height, 1));
+  const k = clamp(Math.min((w - 2 * pad) / bw, (h - 2 * pad) / bh),
+    num(vp.minK, 0.25), num(vp.maxK, 6));
+  return { x: -num(bounds && bounds.cx, 0), y: -num(bounds && bounds.cy, 0), k };
+}
+
+/** 点到线段距离（t 截断到 [0,1]）。 */
+export function distToSegment(px, py, ax, ay, bx, by) {
+  const vx = bx - ax, vy = by - ay;
+  const len2 = vx * vx + vy * vy;
+  if (len2 < 1e-9) return Math.hypot(px - ax, py - ay);
+  const t = clamp(((px - ax) * vx + (py - ay) * vy) / len2, 0, 1);
+  return Math.hypot(px - (ax + t * vx), py - (ay + t * vy));
+}
+
+/** 命中最近的节点（世界坐标；isVisible(i) 可选）。 */
+export function pickNodeAt(positions, nodes, world, radius, isVisible = null) {
+  let best = -1, bd = Math.max(0, num(radius, 12));
+  const list = Array.isArray(nodes) ? nodes : [];
+  for (let i = 0; i < list.length; i++) {
+    if (isVisible && !isVisible(i)) continue;
+    const p = positions && positions[i];
+    if (!p) continue;
+    const d = Math.hypot(num(p.x) - num(world && world.x), num(p.y) - num(world && world.y));
+    if (d <= bd) { bd = d; best = i; }
+  }
+  return best;
+}
+
+/** 命中最近的边（屏幕坐标 + 屏幕位置表）。 */
+export function pickEdgeAt(screenPositions, edges, point, maxPx = 7, isVisible = null) {
+  let best = -1, bd = num(maxPx, 7);
+  const list = Array.isArray(edges) ? edges : [];
+  for (let i = 0; i < list.length; i++) {
+    if (isVisible && !isVisible(i)) continue;
+    const e = list[i];
+    if (!e) continue;
+    const A = screenPositions && screenPositions[e.a], B = screenPositions && screenPositions[e.b];
+    if (!A || !B) continue;
+    const d = distToSegment(num(point && point.x), num(point && point.y), A.x, A.y, B.x, B.y);
     if (d < bd) { bd = d; best = i; }
   }
   return best;
 }
 
-function pickEdge(sx, sy) {
-  return pickEdgeIndex({
-    links: G.links, nodes: G.nodes, pos, toScreen,
-    visible: nodeVisible, passLink, sx, sy, maxPx: EDGE_PICK_PX,
-  });
+/** HTML 转义（节点标题来自数据，进 innerHTML 前必须转义）。 */
+export function escapeHTML(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-// ── 交互 ─────────────────────────────────────────────────────────────────
-let dragging = false, last = { x: 0, y: 0 }, moved = false;
-canvas.addEventListener('mousedown', (e) => { dragging = true; moved = false; last = { x: e.clientX, y: e.clientY }; });
-window.addEventListener('mouseup', () => { dragging = false; });
-canvas.addEventListener('mousemove', (e) => {
-  const r = canvas.getBoundingClientRect();
-  if (dragging) {
-    view.x += (e.clientX - last.x) / view.k;
-    view.y += (e.clientY - last.y) / view.k;
-    last = { x: e.clientX, y: e.clientY }; moved = true; draw(); return;
-  }
-  const sx = e.clientX - r.left, sy = e.clientY - r.top;
-  const w = toWorld(sx, sy);
-  hovered = pickNode(w.x, w.y);
-  hoverEdge = hovered >= 0 ? -1 : pickEdge(sx, sy);
-  if (hovered >= 0) {
-    showTip(sx, sy, nodeTip(G.nodes[hovered]));
-    canvas.style.cursor = 'pointer';
-  } else if (hoverEdge >= 0) {
-    showTip(sx, sy, edgeTip(G.links[hoverEdge]));
-    canvas.style.cursor = 'crosshair';
-  } else {
-    tip.style.display = 'none'; canvas.style.cursor = 'grab';
-  }
-  if (hoverEdge >= 0 || hovered >= 0) draw();
-});
-canvas.addEventListener('mouseleave', () => {
-  hovered = -1; hoverEdge = -1; tip.style.display = 'none'; draw();
-});
-canvas.addEventListener('click', () => {
-  if (moved) return;
-  selected = hovered;                 // -1 ⇒ 清空选中
-  renderDetail(selected);
-  draw();
-});
-canvas.addEventListener('wheel', (e) => {
-  e.preventDefault();
-  view.k = Math.max(0.25, Math.min(4, view.k * (e.deltaY < 0 ? 1.12 : 1 / 1.12)));
-  draw();
-}, { passive: false });
-
-function showTip(x, y, html) {
-  tip.style.display = 'block';
-  tip.style.left = `${x + 14}px`;
-  tip.style.top = `${y + 12}px`;
-  tip.innerHTML = html;
-}
-
-function nodeTip(d) {
-  const st = statsOf(d.id);
-  return `<div class="t">${d.id}</div>
-    <div class="m">${KIND_LABELS[d.kind] || d.kind} · <b>${STATE_LABELS[d.state] || d.state}</b></div>
-    <div class="m">credibility=${d.credibility}${d.domain ? ` · domain=${d.domain}` : ''}${d.label ? ` · label=${d.label}` : ''}</div>
-    ${d.title ? `<div class="m">${d.title}</div>` : ''}
-    <div class="m">攻 ${st.attacks} · 被击败 ${st.defeated} · 防 ${st.defends}</div>
-    <div class="m">点击固定详情</div>`;
-}
-
-function edgeTip(l) {
-  const src = G.nodes[idxById.get(l.source)], dst = G.nodes[idxById.get(l.target)];
-  const kind = l.kind === 'attack' ? (l.defeated ? '攻击边 · **被击败**' : '攻击边 · 未被击败')
-    : l.kind === 'defend' ? '防御边' : '断言边（卡 → 命题）';
-  return `<div class="t">${l.source} → ${l.target}</div>
-    <div class="m">${kind}</div>
-    <div class="m">${KIND_LABELS[src.kind] || src.kind} → ${KIND_LABELS[dst.kind] || dst.kind}</div>
-    <div class="m">${STATE_LABELS[src.state] || src.state} → ${STATE_LABELS[dst.state] || dst.state}</div>`;
-}
-
-function statsOf(id) {
-  return coreStatsOf(G.links, id);       // 实现在 graph_core.js（Node 可测）
-}
-
-// ── 详情面板（655 D：点击固定）────────────────────────────────────────────
-function renderDetail(i) {
-  if (!detail) return;
-  if (i < 0 || !G) {
-    detail.innerHTML = `<h3>详情</h3><p class="muted">点击节点固定详情 · 悬停边看攻击/击败关系</p>`;
-    return;
-  }
-  const d = G.nodes[i];
-  const st = statsOf(d.id);
-  const inAttack = [], outAttack = [], defs = [];
-  for (let k = 0; k < G.links.length; k++) {
-    const l = G.links[k];
-    if (l.kind === 'defend' && (l.source === d.id || l.target === d.id)) defs.push([l, k]);
-    else if (l.kind === 'attack') {
-      if (l.target === d.id) inAttack.push([l, k]);
-      else if (l.source === d.id) outAttack.push([l, k]);
-    }
-  }
-  const other = (l) => (l.source === d.id ? l.target : l.source);
-  const row = ([l, k]) => {
-    const o = G.nodes[idxById.get(other(l))];
-    return `<li class="edge-row" data-edge="${k}">
-      <span class="mono">${o ? o.id : other(l)}</span>
-      <span class="muted">${o ? (KIND_LABELS[o.kind] || o.kind) : ''} · ${o ? (STATE_LABELS[o.state] || o.state) : ''}</span>
-      ${l.kind === 'attack' ? `<qy-tag kind="${l.defeated ? 'bad' : 'warn'}">${l.defeated ? '被击败' : '未被击败'}</qy-tag>` : ''}
-    </li>`;
+/** 聚类 hover 文案（纯函数 ⇒ 测试能断言"卡数 + 平均证据强度"确实被写出来）。 */
+export function clusterTip(cluster) {
+  const c = cluster || {};
+  return {
+    title: String(c.label || c.domain || '?'),
+    lines: [
+      String(num(c.count, 0)) + ' 节点（' + num(c.cards, 0) + ' 卡 · ' + num(c.props, 0) + ' 命题 · '
+        + num(c.misconceptions, 0) + ' 误解）',
+      '平均证据强度 ' + num(c.avgEvidence, 0).toFixed(2) + '（派生量：卡的证据条数 / 非卡回退 credibility）',
+    ],
   };
-  detail.innerHTML = `<h3>详情（已固定）</h3>
-    <div class="d-title mono">${d.id}</div>
-    <div class="d-grid">
-      <div><span class="stat-label">类型</span><div>${KIND_LABELS[d.kind] || d.kind}</div></div>
-      <div><span class="stat-label">四态</span><div><qy-status state="${d.state}"></qy-status></div></div>
-      <div><span class="stat-label">credibility</span><div class="mono">${d.credibility}</div></div>
-      <div><span class="stat-label">domain</span><div class="mono">${d.domain || '—'}</div></div>
-      ${d.status ? `<div><span class="stat-label">卡状态</span><div class="mono">${d.status}</div></div>` : ''}
-      ${d.props != null ? `<div><span class="stat-label">命题数</span><div class="mono">${d.props}</div></div>` : ''}
-      <div><span class="stat-label">攻击边</span><div class="mono">${st.attacks}（被击败 ${st.defeated}）</div></div>
-      <div><span class="stat-label">防御边</span><div class="mono">${st.defends}</div></div>
-    </div>
-    ${d.title ? `<p class="d-note">${d.title}</p>` : ''}
-    ${inAttack.length ? `<h3 style="margin-top:14px">受攻击（${inAttack.length}）</h3><ul class="edge-list">${inAttack.slice(0, 12).map(row).join('')}</ul>` : ''}
-    ${outAttack.length ? `<h3 style="margin-top:14px">发出攻击（${outAttack.length}）</h3><ul class="edge-list">${outAttack.slice(0, 12).map(row).join('')}</ul>` : ''}
-    ${defs.length ? `<h3 style="margin-top:14px">防御（${defs.length}）</h3><ul class="edge-list">${defs.slice(0, 12).map(row).join('')}</ul>` : ''}
-    <p class="muted" style="margin-top:12px">再次点击空白处取消固定。</p>`;
 }
 
-// ── 统计/图例/筛选 ───────────────────────────────────────────────────────
-function renderStats() {
-  const m = G.meta, c = m.counts;
-  const w2 = m.w2_summary || {};
-  document.getElementById('stats').innerHTML = [
-    [fmtInt(c.nodes), '节点'],
-    [fmtInt(c.by_kind?.attack), '攻击边'],
-    [fmtInt(c.defeated_links), '击败边'],
-    [fmtInt(c.cards), '卡'],
-    [fmtInt(c.props), '命题'],
-    [`${w2.IN ?? '—'}/${w2.OUT ?? '—'}`, 'IN/OUT'],
-  ].map(([v, l]) => `<div><div class="stat">${v}</div><div class="stat-label">${l}</div></div>`).join('');
+/** 节点 hover 文案。 */
+export function nodeTip(node) {
+  const n = node || {};
+  const lines = [
+    (KIND_LABELS[n.kind] || n.kind || '?') + ' · ' + (STATE_LABELS[n.state] || n.state || '?'),
+    'domain ' + (n.domain || '?') + ' · credibility ' + num(n.credibility, 0)
+      + ' · 度 ' + num(n.degree, 0) + ' · 证据强度 ' + num(n.evidence, 0),
+  ];
+  if (n.label && n.label !== n.id) lines.push(String(n.label));
+  return { title: String(n.id || '?'), lines };
 }
 
-/** 655 D：首屏描述文字也**现算**（不再写死 178/388/194，避免文档与数据漂移）。 */
-function renderLead() {
-  const c = G.meta.counts;
-  const el = document.getElementById('lead-desc');
-  if (!el) return;
-  const w2 = G.meta.w2_summary || {};
-  el.innerHTML = `真实台账渲染：<b>${fmtInt(c.nodes)}</b> 节点（${fmtInt(c.cards)} 卡 +
-    ${fmtInt(c.props)} 命题 + ${fmtInt(c.nodes - c.cards - c.props)} 误解）·
-    <b>${fmtInt(c.by_kind?.attack)}</b> 条攻击边（其中 <b>${fmtInt(c.defeated_links)}</b> 条被击败）·
-    ${fmtInt(c.by_kind?.defend)} 条防御边 · W2 接地：IN ${w2.IN ?? '—'} / OUT ${w2.OUT ?? '—'}。
-    数据由 <span class="kbd">tools/web_data_653.py</span> 从
-    <span class="kbd">data/grounded_labels_w2.json</span> 与 <span class="kbd">atoms/**</span> 生成，<b>不造数据</b>。`;
-}
-
-function wireFilters() {
-  for (const k of ['pass', 'pass_with_exception', 'fail', 'unknown']) {
-    const cb = document.getElementById('f-' + k);
-    cb.addEventListener('change', () => { filters[k] = cb.checked; draw(); });
+/** 只统计与该节点相连的边（与 graph_core.statsOf 同语义，供 hooks/详情面板共用）。 */
+export function statsOf(edges, id) {
+  let attacks = 0, defends = 0, defeated = 0;
+  for (const l of (Array.isArray(edges) ? edges : [])) {
+    if (!l || (l.source !== id && l.target !== id)) continue;
+    if (l.kind === 'attack') { attacks++; if (l.defeated) defeated++; }
+    else if (l.kind === 'defend') defends++;
   }
-  const dd = document.getElementById('f-defeated');
-  dd.addEventListener('change', () => { filters.defeatedOnly = dd.checked; draw(); });
-  document.getElementById('reset').addEventListener('click', () => {
-    view = { x: 0, y: 0, k: 1 }; selected = -1; renderDetail(-1); draw();
-  });
+  return { attacks, defends, defeated };
 }
 
-/* ── 667 阶段2：聚类图例 / 搜索 / 缩放 / 线宽权重 ────────────────────── */
-function renderClusters() {
-  const box = document.getElementById('clusters');
-  if (!box) return;
-  box.innerHTML = '<div class="chan"><b>聚类（domain · 展示层小写归一）</b></div>'
-    + clusterList.map((c) => `<button class="chip" type="button" data-cluster="${c.key}"
-        title="展开 ${c.key} 的成员（${c.members.length} 个）">
-        <span class="sq" style="background:${c.color}"></span>${c.key} · ${c.members.length}</button>`).join('')
-    + '<span class="chan muted">点聚类 ⇒ 展开成员；下拉框 ⇒ 只显示该聚类</span>';
-  box.querySelectorAll('button[data-cluster]').forEach((b) => {
-    b.addEventListener('click', () => expandCluster(b.dataset.cluster));
-  });
-
-  const sel = document.getElementById('f-cluster');
-  if (sel) {
-    sel.innerHTML = '<option value="all">全部</option>'
-      + clusterList.map((c) => `<option value="${c.key}">${c.key}（${c.members.length}）</option>`).join('');
+/** 从解析结果现算首屏数字（不读 meta.counts ⇒ 可与 meta 交叉验证）。 */
+export function summarize(graph) {
+  const nodes = (graph && graph.nodes) || [];
+  const edges = (graph && graph.edges) || [];
+  const s = { nodes: nodes.length, links: edges.length, attack: 0, defend: 0, asserts: 0,
+    defeated: 0, cards: 0, props: 0, misconceptions: 0, clusters: 0, degreeSum: 0, maxDegree: 0,
+    domainFromId: 0, domainFromCard: 0, domainMissing: 0 };
+  for (const e of edges) {
+    if (e.kind === 'attack') { s.attack++; if (e.defeated) s.defeated++; }
+    else if (e.kind === 'defend') s.defend++;
+    else if (e.kind === 'asserts') s.asserts++;
   }
+  for (const n of nodes) {
+    if (n.domainSource === 'id') s.domainFromId++;
+    else if (n.domainSource === 'card') s.domainFromCard++;
+    else if (n.domainSource === 'none') s.domainMissing++;
+    if (n.kind === 'card') s.cards++;
+    else if (n.kind === 'prop') s.props++;
+    else if (n.kind === 'misconception') s.misconceptions++;
+    const d = num(n.degree, 0);
+    s.degreeSum += d;
+    if (d > s.maxDegree) s.maxDegree = d;
+  }
+  s.clusters = (graph && graph.clusters ? graph.clusters.length : 0);
+  return s;
 }
 
-function expandCluster(key) {
-  const c = clusterList.find((x) => x.key === key);
-  const box = document.getElementById('cluster-panel');
-  if (!c || !box) return;
-  box.innerHTML = `<div class="card glass glass-tint">
-    <div class="row-between">
-      <h3 style="margin:0">聚类 ${c.key}</h3>
-      <span class="muted">${c.members.length} 个节点</span>
-      <span class="grow"></span>
-      <button type="button" id="cluster-filter">只看这个聚类</button>
-      <button type="button" id="cluster-close">收起</button>
-    </div>
-    <ul class="cluster-list">${c.members.slice(0, 60).map((i) => {
-      const d = G.nodes[i];
-      return `<li><span class="mono">${d.id}</span>
-        <span class="note-faint">${KIND_LABELS[d.kind] || d.kind} · ${STATE_LABELS[d.state] || d.state}</span>
-        <button class="chip" type="button" data-focus="${i}">定位</button></li>`;
-    }).join('')}</ul>
-    ${c.members.length > 60 ? `<p class="note-faint">（只列前 60 个，共 ${c.members.length} 个）</p>` : ''}
-  </div>`;
-  document.getElementById('cluster-close').addEventListener('click', () => { box.innerHTML = ''; });
-  document.getElementById('cluster-filter').addEventListener('click', () => {
-    activeCluster = c.key;
-    const sel = document.getElementById('f-cluster');
-    if (sel) sel.value = c.key;
-    selected = -1; renderDetail(-1); draw();
+/** 解析 graph.json → 渲染/布局要用的中间结构（**纯函数**）。
+ *  返回 { nodes, edges, clusters, positions, meta, counts }。
+ *  · domain 只在展示层归一：小写（数据里同一域有 MEM/mem 两态）+ 无域时按 id 前缀
+ *    `MIS-<域>-NNN` 归属（42 个误解节点，42/42 前缀都指向真实 domain）⇒ 不改数据；
+ *  · evidence 是派生量（见 evidenceOf）；
+ *  · edge.weight 是派生量（数据里没有 weight 字段，见 edgeWeight）。 */
+export function parseGraph(json, opts = {}) {
+  const O = opt(opts);
+  const rawNodes = (json && Array.isArray(json.nodes)) ? json.nodes : [];
+  const rawLinks = (json && Array.isArray(json.links)) ? json.links : [];
+  const cardsById = O.cardsById || indexCards(O.cardsIndex);
+  const at = new Map();
+  rawNodes.forEach((n, i) => { if (n && n.id != null) at.set(String(n.id), i); });
+  const degree = new Array(rawNodes.length).fill(0);
+  const edges = [];
+  for (const l of rawLinks) {
+    if (!l) continue;
+    const a = at.get(String(l.source)), b = at.get(String(l.target));
+    if (a == null || b == null) continue;      // 悬空边直接丢（真实数据里为 0，但不信数据）
+    degree[a]++; degree[b]++;
+    edges.push({ source: String(l.source), target: String(l.target), a, b,
+      kind: l.kind || 'attack', defeated: !!l.defeated, weight: 0 });
+  }
+  const knownDomains = new Set();
+  for (const n of rawNodes) {
+    const d = normDomain(n && n.domain);
+    if (d !== UNKNOWN_DOMAIN) knownDomains.add(d);
+  }
+  const nodes = rawNodes.map((n, i) => {
+    const id = String(n.id);
+    const domainRaw = n.domain == null ? '' : String(n.domain);
+    let domain = normDomain(domainRaw);
+    let domainSource = domain === UNKNOWN_DOMAIN ? 'none' : 'field';
+    if (domain === UNKNOWN_DOMAIN) {
+      const byId = domainFromId(id);
+      if (byId !== UNKNOWN_DOMAIN && knownDomains.has(byId)) { domain = byId; domainSource = 'id'; }  // MIS-MEM-031 ⇒ mem
+      else if (n.card != null) {
+        const owner = at.get(String(n.card));
+        if (owner != null) { domain = normDomain(rawNodes[owner].domain); domainSource = 'card'; }
+      }
+    }
+    const ev = evidenceOf(n, cardsById);
+    return { id, label: n.title || n.label || id, title: n.title || '', kind: n.kind || 'prop',
+      state: n.state || 'unknown', credibility: num(n.credibility, 0), domain, domainRaw, domainSource,
+      card: n.card == null ? null : String(n.card), props: n.props,
+      evidence: ev.value, evidenceSource: ev.source, degree: degree[i] };
   });
-  box.querySelectorAll('button[data-focus]').forEach((b) => {
-    b.addEventListener('click', () => {
-      const i = Number(b.dataset.focus);
-      selected = i; hovered = i;
-      view.x = -pos[i].x; view.y = -pos[i].y; view.k = Math.max(view.k, 1.6);
-      renderDetail(i); draw();
+  for (const e of edges) e.weight = edgeWeight(e, { degSource: degree[e.a], degTarget: degree[e.b] });
+  const positions = Array.isArray(O.positions) ? O.positions
+    : (O.seed === false ? null : seedPositions(nodes, {
+      rngSeed: O.rngSeed, ringRadius: O.ringRadius, clusterRadius: O.clusterRadius }));
+  const clusters = clusterByDomain(nodes, positions);
+  const parsed = { nodes, edges, clusters, positions, meta: (json && json.meta) || {} };
+  parsed.counts = summarize(parsed);
+  return parsed;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   二 · 浏览器引导（Node import 本文件时整段跳过）
+   ══════════════════════════════════════════════════════════════════════════ */
+const IS_BROWSER = typeof document !== 'undefined' && typeof window !== 'undefined';
+const byId = (id) => document.getElementById(id);
+
+if (IS_BROWSER) {
+  boot().catch((e) => {
+    const box = byId('stats');
+    if (box) box.innerHTML = '<div class="muted">星图初始化失败：' + escapeHTML(e && e.message || e)
+      + '（请用本地静态服务器打开：file:// 下 fetch 会被浏览器拦截）</div>';
+  });
+}
+
+async function boot() {
+  const canvas = byId('graph');
+  const wrap = byId('stage');
+  const tip = byId('tip');
+  const detail = byId('detail');
+  const labelsSvg = byId('cluster-labels');
+  const ctx = canvas && canvas.getContext ? canvas.getContext('2d') : null;   // jsdom 下为 null/桩
+  const raf = (typeof window.requestAnimationFrame === 'function')
+    ? window.requestAnimationFrame.bind(window) : (cb) => setTimeout(() => cb(Date.now()), 16);
+  const now = () => (window.performance && window.performance.now ? window.performance.now() : Date.now());
+  const REDUCED_MOTION = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  const cssVar = (name) => {
+    try {
+      const v = window.getComputedStyle(document.documentElement).getPropertyValue(name);
+      return String(v == null ? '' : v).trim();
+    } catch { return ''; }
+  };
+  const tok = (name) => { const v = cssVar(name); return hexToRgb(v) ? v : (TOKEN_FALLBACK[name] || '#8b9299'); };
+  const PALETTE = clusterPalette(cssVar);
+  // 画布上用到的少数 token 色（聚类标签走 SVG 覆盖层 ⇒ 字体/颜色由 .cluster-label 提供）
+  const C = {
+    text: tok('--color-text'), dim: tok('--color-text-dim'), accent: tok('--color-accent'),
+  };
+  // 边的四种描边（颜色取自 app.js 的 LINK_STYLE = design-tokens 的镜像）
+  const EDGE_STROKE = [
+    'rgba(' + LINK_STYLE.asserts.color + ',' + LINK_STYLE.asserts.alpha + ')',
+    'rgba(' + LINK_STYLE.defend.color + ',' + LINK_STYLE.defend.alpha + ')',
+    'rgba(' + LINK_STYLE.attack.color + ',' + LINK_STYLE.attack.alpha + ')',
+    'rgba(' + LINK_STYLE.attack.color + ',0.82)',      // 被击败的攻击边：同色更亮更粗
+  ];
+
+  let G = null;                       // parseGraph 结果
+  let state = null;                   // { positions, edges, cluster }
+  let idxById = new Map();
+  let view = { x: 0, y: 0, k: 1 };
+  let viewInit = false;
+  let hovered = -1, selected = -1, hoverEdge = -1, hoverCluster = -1;
+  let hits = [], hitAt = -1, searchHits = null;
+  let layoutInfo = { iterations: 0, ms: 0, minDistance: 0, converged: false, separationIterations: 0 };
+  let reveal = 1, revealStart = 0;
+  const filters = { states: new Set(['pass', 'pass_with_exception', 'fail', 'unknown']),
+    domain: 'all', defeatedOnly: false, weight: true };
+  const labelEls = new Map();        // domain → <text class="cluster-label">
+  const labelBoxes = [];             // [{domain, x, y, w, h}] 供聚类 hover 命中
+  let labelGroup = null;
+  let weightMax = 1;
+
+  // ── 视口 / 坐标 ──────────────────────────────────────────────────────────
+  function viewport() {
+    const w = (wrap && wrap.clientWidth) || (canvas && canvas.clientWidth) || 960;
+    const h = (canvas && canvas.clientHeight) || (wrap && wrap.clientHeight) || 620;
+    return { width: Math.max(1, Math.round(w)), height: Math.max(1, Math.round(h)) };
+  }
+  const toScreen = (p) => applyTransform(p, view, viewport());
+  const toWorld = (sx, sy) => invertTransform({ x: sx, y: sy }, view, viewport());
+
+  function resize() {
+    if (!canvas) return;
+    const vp = viewport();
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    canvas.width = Math.max(1, Math.round(vp.width * dpr));
+    canvas.height = Math.max(1, Math.round(vp.height * dpr));
+    if (ctx && typeof ctx.setTransform === 'function') ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (!viewInit) { fitView(false); viewInit = true; }
+    draw();
+  }
+
+  // ── 可见性 ───────────────────────────────────────────────────────────────
+  const passFilter = (n) => !!(n && filters.states.has(n.state));
+  const inDomain = (n) => filters.domain === 'all' || (n && n.domain) === filters.domain;
+  const nodeVisible = (i) => !!(G && passFilter(G.nodes[i]) && inDomain(G.nodes[i]));
+  const edgeVisible = (i) => {
+    const e = G.edges[i];
+    if (filters.defeatedOnly && !(e.kind === 'attack' && e.defeated)) return false;
+    return nodeVisible(e.a) && nodeVisible(e.b);
+  };
+  /** 可见节点下标：直接用纯函数 filterNodes（页面里不另写一套筛选逻辑）。 */
+  const visibleIndices = () => filterNodes(G.nodes, { states: filters.states, domain: filters.domain });
+  const dimBySearch = (i) => !!(searchHits && !searchHits.has(i));
+  const isHit = (i) => hitAt >= 0 && hits[hitAt] != null && idxById.get(hits[hitAt]) === i;
+  function neighborSet() {
+    if (selected < 0) return null;
+    return neighborsOf(G.edges, selected);
+  }
+
+  // ── 布局 / 视图 ──────────────────────────────────────────────────────────
+  function fitView(redraw = true) {
+    if (!state) return;
+    const vp = viewport();
+    view = fitTransform(boundsOf(state.positions), { width: vp.width, height: vp.height, padding: 48, maxK: 1.6, minK: 0.2 });
+    if (redraw) draw();
+  }
+  function zoomBy(f, around = null) {
+    const vp = viewport();
+    const before = around ? toWorld(around.x, around.y) : null;
+    view.k = clamp(view.k * f, 0.25, 6);
+    if (before) {
+      const after = toWorld(around.x, around.y);
+      view.x += after.x - before.x;
+      view.y += after.y - before.y;
+    }
+    draw();
+    return view.k;
+  }
+  function centerOnIndex(i, minK = 1.4) {
+    if (!(i >= 0) || !state || !state.positions[i]) return null;
+    const vp = viewport();
+    view = screenTransform(state.positions[i], {
+      width: vp.width, height: vp.height, k: Math.max(view.k, minK), minK: 0.25, maxK: 6,
     });
-  });
-}
-
-function zoomBy(f) {
-  view.k = Math.max(0.25, Math.min(6, view.k * f));
-  draw();
-}
-
-function applySearch(text) {
-  const q = String(text || '').trim().toLowerCase();
-  const cnt = document.getElementById('q-count');
-  if (!q) { searchHits = null; if (cnt) cnt.textContent = ''; draw(); return; }
-  searchHits = new Set();
-  G.nodes.forEach((d, i) => {
-    if (String(d.id).toLowerCase().includes(q)) searchHits.add(i);
-    else if (String(d.title || '').toLowerCase().includes(q)) searchHits.add(i);
-    else if (String(d.label || '').toLowerCase().includes(q)) searchHits.add(i);
-  });
-  if (cnt) {
-    cnt.textContent = searchHits.size
-      ? `匹配 ${searchHits.size} 个节点（未命中的压暗，不隐藏）`
-      : `没有节点匹配「${text}」—— 这不是加载失败，是数据集里没有这个词`;
+    draw();
+    return { x: view.x, y: view.y, k: view.k };
   }
-  draw();
-}
 
-function wireExtra() {
-  const q = document.getElementById('q');
-  if (q) q.addEventListener('input', () => applySearch(q.value));
-  const sel = document.getElementById('f-cluster');
-  if (sel) sel.addEventListener('change', () => {
-    activeCluster = sel.value;
-    selected = -1; renderDetail(-1); draw();
-  });
-  const w = document.getElementById('f-weight');
-  if (w) w.addEventListener('change', () => { useWeight = w.checked; draw(); });
-  const zin = document.getElementById('zin');
-  if (zin) zin.addEventListener('click', () => zoomBy(1.25));
-  const zout = document.getElementById('zout');
-  if (zout) zout.addEventListener('click', () => zoomBy(1 / 1.25));
-}
+  // ── Canvas 绘制（按需重绘；没有每帧物理循环）────────────────────────────
+  function draw() {
+    if (!ctx || !G || !state) return;
+    const vp = viewport();
+    const screen = state.positions.map((p) => applyTransform(p, view, vp));
+    if (typeof ctx.clearRect === 'function') ctx.clearRect(0, 0, vp.width, vp.height);
+    drawClusterHalo(screen, vp);
+    drawEdges(screen, vp);
+    drawNodes(screen, vp);
+    drawFocus(screen, vp);
+    drawLabels(screen, vp);
+  }
 
-// ── cosmos.gl v3（本地 vendor，654 修复）────────────────────────────────
-// 653 用 CDN `+esm` 时，jsDelivr 把依赖写死为绝对 URL，且同时拉入
-// `@luma.gl/core@9.3.5`（经 shadertools@9.3.5）与 `@9.3.6` ⇒ **luma.gl 双份**
-// ⇒ 运行时报错、自动降级 2D。654 改为**本地 vendor**（web/vendor/，版本已统一 9.3.6、
-// 导入已重写为相对路径，可离线）。CDN 不再使用；失败时仍降级 2D（要求 5）。
-async function tryCosmos() {
-  try {
-    const mod = await import('./vendor/cosmos.js');
-    const Graph = mod.Graph || mod.default?.Graph;
-    if (!Graph) throw new Error('no Graph export');
-    const cfg = {
-      backgroundColor: '#090b0e',
-      spaceSize: 4096,
-      pointDefaultSize: 6,
-      linkDefaultWidth: 0.6,
-      linkDefaultColor: 'rgba(120,130,140,0.25)',
-      enableDrag: true, enableZoom: true,
-    };
-    const graph = new Graph(canvas, cfg);
-    const n = G.nodes;
-    const P = new Float32Array(n.length * 2);
-    pos.forEach((p, i) => { P[i * 2] = p.x * 3; P[i * 2 + 1] = p.y * 3; });
-    const S = new Float32Array(n.length); const C = new Float32Array(n.length * 4);
-    const rad = { card: 12, prop: 7, misconception: 5 };
-    n.forEach((d, i) => {
-      S[i] = rad[d.kind] || 6;
-      const hex = (STATE_COLORS[d.state] || STATE_COLORS.unknown).replace('#', '');
-      C[i * 4] = parseInt(hex.slice(0, 2), 16) / 255;
-      C[i * 4 + 1] = parseInt(hex.slice(2, 4), 16) / 255;
-      C[i * 4 + 2] = parseInt(hex.slice(4, 6), 16) / 255;
-      C[i * 4 + 3] = alphaOf(d.credibility);
-    });
-    const L = new Float32Array(G.links.length * 2);
-    G.links.forEach((l, i) => { L[i * 2] = idxById.get(l.source) ?? 0; L[i * 2 + 1] = idxById.get(l.target) ?? 0; });
-    graph.setPointPositions(P); graph.setPointSizes(S); graph.setPointColors(C); graph.setLinks(L);
-    graph.render();
-    stage.classList.remove('fallback-note');
-    document.getElementById('mode').textContent = 'GPU · cosmos.gl v3（本地 vendor 3.4.1 / luma.gl 9.3.6）';
-    window.__cosmos_ok = true;   // 供自动化验证探测
-    return true;
-  } catch (e) {
-    stage.classList.add('fallback-note');
-    document.getElementById('mode').textContent = '2D canvas（降级）';
-    window.__cosmos_err = String(e && e.message || e);
+  function cull(A, B, vp) {
+    const m = 40;
+    if (A.x < -m && B.x < -m) return true;
+    if (A.x > vp.width + m && B.x > vp.width + m) return true;
+    if (A.y < -m && B.y < -m) return true;
+    if (A.y > vp.height + m && B.y > vp.height + m) return true;
     return false;
   }
+
+  function drawEdges(screen, vp) {
+    // 按（样式类 × 权重档）分桶：每桶一次 beginPath/stroke ⇒ 1093 条边只有 ~16 次状态切换
+    const buckets = new Map();
+    const nc = 4;                                    // 权重档数（量化后分桶，减少状态切换）
+    for (let i = 0; i < G.edges.length; i++) {
+      if (!edgeVisible(i)) continue;
+      const e = G.edges[i];
+      const A = screen[e.a], B = screen[e.b];
+      if (!A || !B || cull(A, B, vp)) continue;
+      const cls = e.kind === 'attack' ? (e.defeated ? 3 : 2) : (e.kind === 'defend' ? 1 : 0);
+      const t = filters.weight ? Math.min(1, e.weight / weightMax) : 0.5;
+      const wc = Math.min(3, Math.floor(t * 4));
+      const key = cls * nc + wc;
+      let arr = buckets.get(key);
+      if (!arr) { arr = []; buckets.set(key, arr); }
+      arr.push(A, B);
+    }
+    for (const [key, pts] of buckets) {
+      const cls = Math.floor(key / nc), wc = key % nc;
+      const w = filters.weight
+        ? strokeWidthFor((wc + 0.5) / 4 * weightMax, weightMax, { k: view.k, base: 1 })
+        : 0.5 * view.k;
+      if (typeof ctx.beginPath !== 'function') break;
+      ctx.beginPath();
+      for (let k = 0; k < pts.length; k += 2) { ctx.moveTo(pts[k].x, pts[k].y); ctx.lineTo(pts[k + 1].x, pts[k + 1].y); }
+      ctx.lineWidth = Math.max(0.2, w);
+      ctx.strokeStyle = EDGE_STROKE[cls];
+      ctx.stroke();
+    }
+    if (hoverEdge >= 0 && G.edges[hoverEdge]) {
+      const e = G.edges[hoverEdge];
+      const A = screen[e.a], B = screen[e.b];
+      if (A && B) {
+        ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y);
+        ctx.lineWidth = Math.max(1.4, 2.2 * view.k);
+        ctx.strokeStyle = e.kind === 'attack' && e.defeated ? 'rgba(224,122,114,.95)' : 'rgba(232,230,227,.85)';
+        ctx.stroke();
+      }
+    }
+  }
+
+  function drawNodes(screen, vp) {
+    const neigh = neighborSet();
+    for (let i = 0; i < G.nodes.length; i++) {
+      if (!nodeVisible(i)) continue;
+      const n = G.nodes[i], p = screen[i];
+      if (!p || p.x < -60 || p.y < -60 || p.x > vp.width + 60 || p.y > vp.height + 60) continue;
+      const r = Math.max(1.2, (KIND_RADIUS[n.kind] || 4) * view.k * (0.35 + 0.65 * reveal));
+      let a = num(CRED_ALPHA[n.credibility], 0.6);           // 光通道
+      if (dimBySearch(i)) a *= 0.18;                          // 搜索未命中 ⇒ 压暗不隐藏
+      if (neigh && !neigh.has(i)) a *= 0.2;
+      ctx.globalAlpha = a;
+      ctx.beginPath();
+      if (n.kind === 'misconception') ctx.rect(p.x - r, p.y - r, r * 2, r * 2);   // 形通道：误解=方
+      else ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = STATE_COLORS[n.state] || STATE_COLORS.unknown;              // 色通道：四态
+      ctx.fill();
+      if (n.kind === 'card' || i === hovered || i === selected || isHit(i)) {
+        ctx.lineWidth = i === hovered || isHit(i) ? 1.6 : 1;
+        ctx.strokeStyle = i === hovered || isHit(i) ? C.text : 'rgba(232,230,227,.55)';
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function drawClusterHalo(screen, vp) {
+    if (!G.clusters) return;
+    G.clusters.forEach((c, ci) => {
+      if (filters.domain !== 'all' && c.domain !== filters.domain) return;
+      const sp = clusterSpread(c.members, state.positions, 0.9);
+      const ctr = toScreen({ x: c.cx, y: c.cy });
+      const r = Math.max(10, sp.r * view.k);
+      if (ctr.x < -r || ctr.y < -r || ctr.x > vp.width + r || ctr.y > vp.height + r) return;
+      ctx.globalAlpha = 0.055;
+      ctx.beginPath();
+      ctx.arc(ctr.x, ctr.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = PALETTE[ci % PALETTE.length];
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    });
+  }
+
+  function drawFocus(screen, vp) {
+    const idx = [hovered, selected].filter((i) => i >= 0);
+    if (hitAt >= 0 && hits[hitAt] != null) idx.push(idxById.get(hits[hitAt]));
+    const shown = new Set();
+    for (const i of idx) {
+      if (i == null || shown.has(i) || !G.nodes[i] || !screen[i]) continue;
+      shown.add(i);
+      const p = screen[i], r = Math.max(4, (KIND_RADIUS[G.nodes[i].kind] || 4) * view.k);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r + 5, 0, Math.PI * 2);
+      ctx.lineWidth = isHit(i) ? 2 : 1.5;
+      ctx.strokeStyle = isHit(i) ? C.accent : C.dim;
+      ctx.stroke();
+    }
+  }
+
+  function drawLabels(screen, vp) {
+    if (!labelGroup) return;
+    labelBoxes.length = 0;
+    G.clusters.forEach((c, ci) => {
+      const el = labelEls.get(c.domain);
+      if (!el) return;
+      const visible = c.members.some((i) => nodeVisible(i));
+      const ctr = toScreen({ x: c.cx, y: c.cy });
+      const onScreen = ctr.x > 20 && ctr.y > 20 && ctr.x < vp.width - 20 && ctr.y < vp.height - 20;
+      if (!visible || !onScreen) { el.setAttribute('opacity', '0'); return; }
+      const r = Math.max(10, clusterSpread(c.members, state.positions, 0.9).r * view.k);
+      const w = String(c.label || c.domain).length * 6.6 + 14;
+      el.setAttribute('opacity', filters.domain === 'all' || filters.domain === c.domain ? '0.95' : '0.15');
+      el.setAttribute('x', ctr.x.toFixed(1));
+      el.setAttribute('y', (ctr.y - 6).toFixed(1));
+      labelBoxes.push({ domain: c.domain, x: ctr.x, y: ctr.y - 6, w, h: 16, index: ci, r });
+    });
+  }
+
+  // ── 拾取 ─────────────────────────────────────────────────────────────────
+  function pickNode(sx, sy) {
+    const w = toWorld(sx, sy);
+    return pickNodeAt(state.positions, G.nodes, w, 15 / view.k, nodeVisible);
+  }
+  function pickEdge(sx, sy) {
+    const vp = viewport();
+    const screen = state.positions.map((p) => applyTransform(p, view, vp));
+    return pickEdgeAt(screen, G.edges, { x: sx, y: sy }, 7, edgeVisible);
+  }
+  function pickCluster(sx, sy) {
+    for (const b of labelBoxes) {
+      if (Math.abs(sx - b.x) <= b.w / 2 + 6 && Math.abs(sy - b.y) <= b.h + 6) return b.index;
+    }
+    return -1;
+  }
+
+  // ── 提示气泡（.canvas-tip）───────────────────────────────────────────────
+  function showTip(x, y, title, lines) {
+    if (!tip) return;
+    tip.innerHTML = '<div class="mono">' + escapeHTML(title) + '</div>'
+      + (lines || []).map((l) => '<div class="muted">' + escapeHTML(l) + '</div>').join('');
+    tip.hidden = false;
+    const vp = viewport();
+    const w = tip.offsetWidth || 240, h = tip.offsetHeight || 56;
+    tip.style.left = Math.max(6, Math.min(vp.width - w - 6, x + 14)) + 'px';
+    tip.style.top = Math.max(6, Math.min(vp.height - h - 6, y + 12)) + 'px';
+  }
+  function hideTip() { if (tip) tip.hidden = true; }
+
+  // ── 搜索 ─────────────────────────────────────────────────────────────────
+  function applySearch(text, opts = {}) {
+    const q = String(text == null ? '' : text);
+    hits = q.trim() ? locateNode(G.nodes, q) : [];
+    searchHits = hits.length ? new Set(hits.map((id) => idxById.get(id))) : null;
+    hitAt = hits.length ? 0 : -1;
+    const cnt = byId('q-count');
+    if (cnt) {
+      cnt.textContent = !q.trim() ? ''
+        : hits.length
+          ? '匹配 ' + hits.length + ' 个节点（未命中的压暗，不隐藏）· 回车依次居中'
+          : '没有节点匹配「' + q + '」—— 这不是加载失败，是数据集里没有这个词';
+    }
+    if (opts.center !== false && hits.length) centerOnIndex(idxById.get(hits[0]));
+    else draw();
+    return hits;
+  }
+  function cycleHit() {
+    if (!hits.length) return null;
+    hitAt = (hitAt + 1) % hits.length;
+    const i = idxById.get(hits[hitAt]);
+    centerOnIndex(i);
+    const t = nodeTip(G.nodes[i]);
+    const c = vpCenter();
+    showTip(c.x, c.y, '命中 ' + (hitAt + 1) + '/' + hits.length + ' · ' + t.title, t.lines);
+    draw();
+    return hits[hitAt];
+  }
+  function vpCenter() { const vp = viewport(); return { x: vp.width / 2 - 60, y: vp.height / 2 }; }
+
+  // ── 渲染 UI 文本 / 图例 / 详情 ───────────────────────────────────────────
+  function renderLead() {
+    const s = G.counts, m = G.meta || {}, w2 = m.w2_summary || {};
+    const el = byId('lead-desc');
+    if (!el) return;
+    el.innerHTML = '真实台账渲染：<b>' + fmtInt(s.nodes) + '</b> 节点（' + fmtInt(s.cards) + ' 卡 + '
+      + fmtInt(s.props) + ' 命题 + ' + fmtInt(s.misconceptions) + ' 误解）· <b>' + fmtInt(s.links)
+      + '</b> 条边（攻击 ' + fmtInt(s.attack) + '／其中被击败 ' + fmtInt(s.defeated) + ' · 防御 '
+      + fmtInt(s.defend) + ' · 卡→命题 ' + fmtInt(s.asserts) + '）· <b>' + fmtInt(s.clusters)
+      + '</b> 个 domain 聚类（展示层小写归一；其中 ' + fmtInt(s.domainFromId)
+      + ' 个误解节点的 domain 数据里是 "?"，按 id 前缀 MIS-<域>-NNN 归属）· W2 接地：IN ' + (w2.IN == null ? '—' : w2.IN)
+      + ' / OUT ' + (w2.OUT == null ? '—' : w2.OUT) + '。渲染 = 自写力导向 + Canvas 2D，数字全部现算。';
+  }
+
+  function renderStats() {
+    const s = G.counts;
+    const box = byId('stats');
+    if (!box) return;
+    box.innerHTML = [
+      [fmtInt(s.nodes), '节点'], [fmtInt(s.links), '边'],
+      [fmtInt(s.attack), '攻击边（被击败 ' + fmtInt(s.defeated) + '）'],
+      [fmtInt(s.cards), '卡'], [fmtInt(s.props), '命题'], [fmtInt(s.clusters), '聚类（domain）'],
+    ].map(([v, l]) => '<div class="stat-tile"><div class="st-n">' + v + '</div><div class="st-l">'
+      + escapeHTML(l) + '</div></div>').join('');
+  }
+
+  function renderDetail(i) {
+    if (!detail) return;
+    if (!G || !(i >= 0)) {
+      detail.innerHTML = '<h3>详情</h3><p class="muted">点击节点固定详情 · <b>悬停</b>看摘要 · '
+        + '<b>悬停边</b>看攻击/击败关系 · 搜索命中会自动居中。</p>';
+      return;
+    }
+    const n = G.nodes[i];
+    const st = statsOf(G.edges, n.id);
+    const inA = [], outA = [], def = [];
+    for (let k = 0; k < G.edges.length; k++) {
+      const e = G.edges[k];
+      if (e.source !== n.id && e.target !== n.id) continue;
+      if (e.kind === 'defend') def.push(k);
+      else if (e.kind === 'attack') { if (e.target === n.id) inA.push(k); else outA.push(k); }
+    }
+    const other = (e) => (e.source === n.id ? e.target : e.source);
+    const row = (k) => {
+      const e = G.edges[k];
+      const o = G.nodes[idxById.get(other(e))];
+      return '<li class="edge-row" data-edge="' + k + '"><span class="mono">'
+        + escapeHTML(o ? o.id : other(e)) + '</span> <span class="muted">'
+        + escapeHTML(o ? (KIND_LABELS[o.kind] || o.kind) + ' · ' + (STATE_LABELS[o.state] || o.state) : '')
+        + (e.kind === 'attack' ? ' · ' + (e.defeated ? '被击败' : '未被击败') : '')
+        + '</span></li>';
+    };
+    detail.innerHTML = '<h3>详情（已固定）</h3>'
+      + '<div class="d-title mono">' + escapeHTML(n.id) + '</div>'
+      + '<div class="d-grid">'
+      + '<div><span class="stat-label">类型</span><div>' + escapeHTML(KIND_LABELS[n.kind] || n.kind) + '</div></div>'
+      + '<div><span class="stat-label">四态</span><div><span class="dot st-' + escapeHTML(n.state) + '"></span>'
+      + '<span class="mono">' + escapeHTML(STATE_LABELS[n.state] || n.state) + '</span></div></div>'
+      + '<div><span class="stat-label">credibility</span><div class="mono">' + num(n.credibility, 0) + '</div></div>'
+      + '<div><span class="stat-label">domain</span><div class="mono">' + escapeHTML(n.domain) + '</div></div>'
+      + '<div><span class="stat-label">证据强度</span><div class="mono">' + num(n.evidence, 0)
+      + '（' + escapeHTML(n.evidenceSource) + '）</div></div>'
+      + '<div><span class="stat-label">度</span><div class="mono">' + num(n.degree, 0) + '</div></div>'
+      + '<div><span class="stat-label">受攻击</span><div class="mono">' + inA.length + '</div></div>'
+      + '<div><span class="stat-label">发出攻击</span><div class="mono">' + outA.length + '</div></div>'
+      + '<div><span class="stat-label">攻击边合计</span><div class="mono">' + st.attacks
+      + '（被击败 ' + st.defeated + '）</div></div>'
+      + '<div><span class="stat-label">防御边</span><div class="mono">' + st.defends + '</div></div>'
+      + '</div>'
+      + (n.label && n.label !== n.id ? '<p class="d-note">' + escapeHTML(n.label) + '</p>' : '')
+      + (inA.length ? '<h3 style="margin-top:var(--space-2)">受攻击（' + inA.length + '）</h3><ul class="edge-list">'
+        + inA.slice(0, 12).map(row).join('') + '</ul>' : '')
+      + (outA.length ? '<h3 style="margin-top:var(--space-2)">发出攻击（' + outA.length + '）</h3><ul class="edge-list">'
+        + outA.slice(0, 12).map(row).join('') + '</ul>' : '')
+      + (def.length ? '<h3 style="margin-top:var(--space-2)">防御（' + def.length + '）</h3><ul class="edge-list">'
+        + def.slice(0, 12).map(row).join('') + '</ul>' : '')
+      + '<p class="muted" style="margin-top:var(--space-2)">再次点击空白处取消固定。</p>';
+  }
+
+  function renderClusters() {
+    const box = byId('clusters');
+    if (box) {
+      box.innerHTML = '<div class="chan"><b>聚类（domain · 展示层小写归一）</b></div>'
+        + G.clusters.map((c, ci) => '<button class="chip" type="button" data-cluster="' + escapeHTML(c.domain)
+          + '" title="展开 ' + escapeHTML(c.domain) + '（' + c.count + ' 节点 · 平均证据 '
+          + c.avgEvidence.toFixed(2) + '）"><span class="sq" style="background:'
+          + PALETTE[ci % PALETTE.length] + '"></span>' + escapeHTML(c.label) + ' · ' + c.count + '</button>').join('')
+        + '<span class="chan muted">' + (G.counts.domainFromId
+          ? G.counts.domainFromId + ' 个误解节点的 domain 在数据里是 "?"，展示层按 id 前缀 MIS-&lt;域&gt;-NNN 归属（与攻击目标多数域一致 40/42）· '
+          : '')
+        + '点聚类 ⇒ 展开成员与平均证据强度；下拉框 ⇒ 只显示该聚类</span>';
+      box.querySelectorAll('button[data-cluster]').forEach((b) => {
+        b.addEventListener('click', () => expandCluster(b.dataset.cluster));
+      });
+    }
+    const sel = byId('f-cluster');
+    if (sel) {
+      sel.innerHTML = '<option value="all">全部</option>'
+        + G.clusters.map((c) => '<option value="' + escapeHTML(c.domain) + '">' + escapeHTML(c.label)
+          + '（' + c.count + '）</option>').join('');
+    }
+  }
+
+  function expandCluster(key) {
+    const c = G.clusters.find((x) => x.domain === key);
+    const box = byId('cluster-panel');
+    if (!c || !box) return 0;
+    const tipInfo = clusterTip(c);
+    box.innerHTML = '<div class="card glass glass-tint" style="padding:var(--space-2)">'
+      + '<div class="row-between"><h3 class="section-title">聚类 ' + escapeHTML(c.label) + '</h3>'
+      + '<span class="muted">' + tipInfo.lines[0] + ' · ' + tipInfo.lines[1] + '</span>'
+      + '<span class="spacer"></span>'
+      + '<button type="button" id="cluster-filter">只看这个聚类</button>'
+      + '<button type="button" id="cluster-close">收起</button></div>'
+      + '<ul class="cluster-list">' + c.members.slice(0, 60).map((i) => {
+        const n = G.nodes[i];
+        return '<li><span class="mono">' + escapeHTML(n.id) + '</span>'
+          + '<span class="note-faint">' + escapeHTML(KIND_LABELS[n.kind] || n.kind) + ' · '
+          + escapeHTML(STATE_LABELS[n.state] || n.state) + ' · 证据 ' + num(n.evidence, 0) + '</span>'
+          + '<span class="grow"></span><button class="chip" type="button" data-focus="' + i + '">定位</button></li>';
+      }).join('') + '</ul>'
+      + (c.count > 60 ? '<p class="note-faint">（只列前 60 个，共 ' + c.count + ' 个）</p>' : '')
+      + '</div>';
+    const close = box.querySelector('#cluster-close');
+    if (close) close.addEventListener('click', () => { box.innerHTML = ''; });
+    const only = box.querySelector('#cluster-filter');
+    if (only) only.addEventListener('click', () => {
+      filters.domain = c.domain;
+      const sel = byId('f-cluster');
+      if (sel) sel.value = c.domain;
+      selected = -1; renderDetail(-1); draw();
+    });
+    box.querySelectorAll('button[data-focus]').forEach((b) => {
+      b.addEventListener('click', () => {
+        const i = Number(b.dataset.focus);
+        selected = i; hovered = i; centerOnIndex(i, 1.6); renderDetail(i);
+      });
+    });
+    return c.members.length;
+  }
+
+  function setModeText() {
+    const el = byId('mode');
+    if (!el) return;
+    el.textContent = 'Canvas 2D（自写力导向）· ' + G.counts.nodes + ' 节点 / ' + G.counts.links
+      + ' 边 / ' + G.counts.clusters + ' 聚类 · 布局 ' + layoutInfo.iterations + ' 迭代 ' + layoutInfo.ms + 'ms · 防重叠 '
+      + layoutInfo.separationIterations + ' 迭代（最近点对 ' + layoutInfo.minDistance.toFixed(1) + 'px）'
+      + ' · 无每帧物理 · 收敛 ' + (layoutInfo.converged ? '是' : 'maxMove ' + layoutInfo.maxMove.toFixed(2) + 'px（视觉已稳定）')
+      + (REDUCED_MOTION ? ' · 已按 prefers-reduced-motion 关动画' : '');
+  }
+
+  // ── 交互 ─────────────────────────────────────────────────────────────────
+  function wire() {
+    let dragging = false, moved = false, last = { x: 0, y: 0 };
+    const localPos = (e) => {
+      const r = canvas && canvas.getBoundingClientRect ? canvas.getBoundingClientRect() : { left: 0, top: 0 };
+      return { x: (e.clientX || 0) - r.left, y: (e.clientY || 0) - r.top };
+    };
+    if (canvas) {
+      canvas.addEventListener('mousedown', (e) => { dragging = true; moved = false; last = { x: e.clientX, y: e.clientY }; });
+      window.addEventListener('mouseup', () => { dragging = false; });
+      canvas.addEventListener('mousemove', (e) => {
+        if (!G || !state) return;
+        if (dragging) {
+          view.x += (e.clientX - last.x) / view.k;
+          view.y += (e.clientY - last.y) / view.k;
+          last = { x: e.clientX, y: e.clientY };
+          moved = true; hideTip(); draw(); return;
+        }
+        const s = localPos(e);
+        hovered = pickNode(s.x, s.y);
+        hoverEdge = hovered >= 0 ? -1 : pickEdge(s.x, s.y);
+        hoverCluster = (hovered >= 0 || hoverEdge >= 0) ? -1 : pickCluster(s.x, s.y);
+        if (hovered >= 0) {
+          const t = nodeTip(G.nodes[hovered]);
+          showTip(s.x, s.y, t.title, t.lines);
+          canvas.style.cursor = 'pointer';
+        } else if (hoverEdge >= 0) {
+          const e2 = G.edges[hoverEdge];
+          showTip(s.x, s.y, e2.source + ' → ' + e2.target, [
+            e2.kind === 'attack' ? (e2.defeated ? '攻击边 · 被击败' : '攻击边 · 未被击败')
+              : e2.kind === 'defend' ? '防御边' : '断言边（卡 → 命题）',
+            '关系强度（派生）' + e2.weight.toFixed(2) + ' · 端度数 ' + G.nodes[e2.a].degree + '/' + G.nodes[e2.b].degree,
+          ]);
+          canvas.style.cursor = 'crosshair';
+        } else if (hoverCluster >= 0) {
+          const c = G.clusters[hoverCluster];
+          const t = clusterTip(c);
+          showTip(s.x, s.y, t.title, t.lines);
+          canvas.style.cursor = 'help';
+        } else {
+          hideTip(); canvas.style.cursor = 'grab';
+        }
+        draw();
+      });
+      canvas.addEventListener('mouseleave', () => {
+        hovered = -1; hoverEdge = -1; hoverCluster = -1; hideTip(); draw();
+      });
+      canvas.addEventListener('click', () => {
+        if (moved) return;
+        selected = hovered;
+        renderDetail(selected);
+        draw();
+      });
+      canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        zoomBy(e.deltaY < 0 ? 1.12 : 1 / 1.12, localPos(e));
+      }, { passive: false });
+      canvas.addEventListener('keydown', (e) => {
+        const step = 60 / view.k;
+        if (e.key === 'ArrowLeft') view.x += step;
+        else if (e.key === 'ArrowRight') view.x -= step;
+        else if (e.key === 'ArrowUp') view.y += step;
+        else if (e.key === 'ArrowDown') view.y -= step;
+        else if (e.key === '+' || e.key === '=') { zoomBy(1.25); return; }
+        else if (e.key === '-' || e.key === '_') { zoomBy(1 / 1.25); return; }
+        else if (e.key === '0') { fitView(); return; }
+        else if (e.key === 'Escape') { selected = -1; renderDetail(-1); draw(); return; }
+        else return;
+        e.preventDefault(); draw();
+      });
+      if (typeof ResizeObserver === 'function' && wrap) {
+        try { new ResizeObserver(() => resize()).observe(wrap); } catch { /* 忽略 */ }
+      }
+    }
+    window.addEventListener('resize', resize);
+
+    for (const k of ['pass', 'pass_with_exception', 'fail', 'unknown']) {
+      const cb = byId('f-' + k);
+      if (cb) cb.addEventListener('change', () => {
+        if (cb.checked) filters.states.add(k); else filters.states.delete(k);
+        draw();
+      });
+    }
+    const dd = byId('f-defeated');
+    if (dd) dd.addEventListener('change', () => { filters.defeatedOnly = dd.checked; draw(); });
+    const w = byId('f-weight');
+    if (w) w.addEventListener('change', () => { filters.weight = w.checked; draw(); });
+    const sel = byId('f-cluster');
+    if (sel) sel.addEventListener('change', () => {
+      filters.domain = sel.value; selected = -1; renderDetail(-1); draw();
+    });
+    const q = byId('q');
+    if (q) {
+      q.addEventListener('input', () => applySearch(q.value, { center: false }));
+      q.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); cycleHit(); } });
+    }
+    const qn = byId('q-next');
+    if (qn) qn.addEventListener('click', () => cycleHit());
+    const zin = byId('zin');
+    if (zin) zin.addEventListener('click', () => zoomBy(1.25));
+    const zout = byId('zout');
+    if (zout) zout.addEventListener('click', () => zoomBy(1 / 1.25));
+    const reset = byId('reset');
+    if (reset) reset.addEventListener('click', () => {
+      selected = -1; hovered = -1; hitAt = hits.length ? 0 : -1;
+      renderDetail(-1); fitView();
+    });
+  }
+
+  // ── 启动 ─────────────────────────────────────────────────────────────────
+  function startReveal() {
+    if (REDUCED_MOTION) { reveal = 1; draw(); return; }
+    revealStart = now();
+    const tick = () => {
+      const t = Math.min(1, (now() - revealStart) / 420);
+      reveal = 1 - Math.pow(1 - t, 3);
+      draw();
+      if (t < 1) raf(tick); else { reveal = 1; draw(); }
+    };
+    raf(tick);
+  }
+
+  const raw = await fetchJSON('data/graph.json');
+  let cardsIndex = null;
+  try { cardsIndex = await fetchJSON('data/cards_index.json'); } catch { cardsIndex = null; }
+  G = parseGraph(raw, { cardsIndex });
+  idxById = new Map(G.nodes.map((n, i) => [n.id, i]));
+  weightMax = G.edges.reduce((m, e) => Math.max(m, e.weight), 1);
+
+  // —— 自动化验证钩子（tools/web_smoke_655.mjs 等按 id 探测；语义只读）——
+  window.__starmap_hooks = {
+    select(i) { selected = i; renderDetail(i); draw(); return i >= 0 && G.nodes[i] ? G.nodes[i].id : null; },
+    detailText() { return detail ? detail.textContent : ''; },
+    nodeCount() { return G ? G.nodes.length : 0; },
+    linkCount() { return G ? G.edges.length : 0; },
+    info(i) {
+      const n = G.nodes[i];
+      if (!n) return null;
+      return { id: n.id, state: n.state, credibility: n.credibility, ...statsOf(G.edges, n.id) };
+    },
+    clusters: () => G.clusters.map((c) => c.domain + ':' + c.count),
+    visibleCount() { return G ? visibleIndices().length : 0; },
+    search(text) { applySearch(text); return hits.length ? hits.length : -1; },
+    zoom(f) { return zoomBy(f); },
+    setWeight(on) { filters.weight = !!on; draw(); return filters.weight; },
+    expand(key) { return expandCluster(key); },
+    layout() { return { ...layoutInfo }; },
+    transform() { return { ...view }; },
+    locate(query) { return locateNode(G.nodes, query); },
+    centerOn(i) { return centerOnIndex(i); },
+    counts() { return { ...G.counts }; },
+  };
+
+  // 布局：**只在加载时算一次**（实测毫秒数写进 #mode，不假装很快）
+  const t0 = now();
+  // 迭代预算：实测 160 步后布局指标就饱和了（纵横比 1.50 / 簇间隔 ≥1.2 / 最近点对 16px），
+  // 240 步没有可见收益 ⇒ 取 200 步 + 40 步防重叠；只在加载时跑一次，之后按需重绘。
+  const solved = runLayout(G.nodes, G.edges, { iterations: 200, tolerance: 0.12, minDist: 16, separationIterations: 40 });
+  layoutInfo = { iterations: solved.iterations, ms: Math.round(now() - t0),
+    minDistance: solved.minDistance, converged: solved.converged, maxMove: solved.maxMove,
+    separationIterations: solved.separationIterations };
+  state = { positions: solved.positions, edges: G.edges.map((e) => ({ a: e.a, b: e.b, weight: e.weight })),
+    cluster: clusterIndexOf(G.nodes) };
+  G.clusters = clusterByDomain(G.nodes, state.positions);
+
+  if (labelsSvg) {
+    labelGroup = document.createElementNS(SVG_NS, 'g');
+    labelsSvg.appendChild(labelGroup);
+    G.clusters.forEach((c, ci) => {
+      const t = document.createElementNS(SVG_NS, 'text');
+      t.setAttribute('class', 'cluster-label');
+      t.setAttribute('text-anchor', 'middle');
+      // 注意：SVG 的 **表现属性** fill 会被 .cluster-label 的 CSS fill 压过 ⇒ 用内联 style
+      t.style.fill = PALETTE[ci % PALETTE.length];
+      t.setAttribute('opacity', '0.95');
+      t.textContent = c.label + ' · ' + c.count;
+      labelGroup.appendChild(t);
+      labelEls.set(c.domain, t);
+    });
+  }
+
+  renderLead(); renderStats(); renderDetail(-1); renderClusters(); setModeText();
+  wire();
+  resize();
+  startReveal();
+  window.__starmap_ready = true;
 }
-
-// ── 自动化验证钩子（655 D：给 tools/web_smoke_655.mjs 用；只读语义，不改渲染路径）──
-window.__starmap_hooks = {
-  /** 选中第 i 个节点并渲染详情面板（等价于"悬停后点击"）。 */
-  select(i) { selected = i; renderDetail(i); draw(); return i >= 0 ? G.nodes[i].id : null; },
-  /** 返回当前详情面板文本（供断言）。 */
-  detailText() { return detail ? detail.textContent : ''; },
-  /** 节点数（供断言）。 */
-  nodeCount() { return G ? G.nodes.length : 0; },
-  /** 边数（供断言）。 */
-  linkCount() { return G ? G.links.length : 0; },
-  /** 详细信息：`{id, state, credibility, attacks, defeated, defends}`。 */
-  info(i) {
-    const d = G.nodes[i];
-    return { id: d.id, state: d.state, credibility: d.credibility, ...statsOf(d.id) };
-  },
-  /* ── 667 阶段2 新增（给 tools/web_logic_check_667 / web_smoke_667 用）── */
-  /** 聚类清单（展示层小写归一后的 domain）。 */
-  clusters: () => clusterList.map((c) => `${c.key}:${c.members.length}`),
-  /** 当前聚类筛选下**应当可见**的节点数。 */
-  visibleCount() { return G ? G.nodes.filter((_d, i) => passFilter(G.nodes[i]) && inCluster(i)).length : 0; },
-  /** 搜索：返回命中数（0 = 真的没有，不是失败）。 */
-  search(text) { applySearch(text); return searchHits ? searchHits.size : -1; },
-  /** 缩放：返回当前缩放系数。 */
-  zoom(f) { zoomBy(f); return view.k; },
-  /** 线宽权重开关。 */
-  setWeight(on) { useWeight = !!on; draw(); return useWeight; },
-  /** 展开某个聚类（返回成员数）。 */
-  expand(key) { expandCluster(key); const c = clusterList.find((x) => x.key === key); return c ? c.members.length : 0; },
-};
-
-// ── 启动 ─────────────────────────────────────────────────────────────────
-(async function main() {
-  try {
-    G = await fetchJSON('data/graph.json');
-  } catch (e) {
-    document.getElementById('stats').innerHTML = `<div class="muted">加载 data/graph.json 失败：${e.message}（请用本地静态服务器打开，file:// 下 fetch 会被浏览器拦截）</div>`;
-    return;
-  }
-  idxById = new Map(G.nodes.map((d, i) => [d.id, i]));
-  // 边预存两端下标（pickEdgeIndex 用；避免每次 hover 重建 Map）
-  for (const l of G.links) { l._ai = idxById.get(l.source); l._bi = idxById.get(l.target); }
-  // B4-2：受攻击节点 = 作为 attack 边 target 的节点
-  attackedSet = new Set();
-  for (const l of G.links) if (l.kind === 'attack') attackedSet.add(l.target);
-  layout(G.nodes, G.links);
-  buildClusters(); buildWeights();
-  renderLead(); renderStats(); renderDetail(-1);
-  wireFilters(); wireExtra(); renderClusters(); resize();
-  window.addEventListener('resize', resize);
-  const gpu = await tryCosmos();
-  if (!gpu) draw();
-  // 首屏"会动"：轻度自转（仅 2D）
-  if (!gpu) {
-    let t = 0;
-    setInterval(() => { t += 1; if (t % 3 === 0 && !dragging && selected < 0) { view.x += 0.35; draw(); } }, 60);
-  }
-})();

@@ -1,0 +1,245 @@
+{
+  "schema": "queyi-reproduction-report/670c",
+  "generated_by": "tools/reproduce_all_670c.py",
+  "generated_at": "2026-09-30T20:50:58",
+  "mode": "run",
+  "skip_slow": false,
+  "only": [
+    "S2_gate_669d",
+    "S7_counterfactual"
+  ],
+  "keep_outputs": false,
+  "expected_source": "check 表的每个 expected 都取自产物事实源：data/holdout_reveal_3_665.json / data/external_corpus_reveal_665.json / data/656_mutation_report_{core,all}.json / data/counterfactual_cases_665.json / data/658_gate_status.json / data/669d_gate_status.json",
+  "env": {
+    "python": "3.13.13",
+    "python_executable": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe",
+    "platform": "win32",
+    "node": "v18.20.8",
+    "gpp": "g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+    "clangpp": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+    "wsl_gpp": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "git_commit": "920d3318567b680bca3e407b4a02ecd83a62d30f",
+    "cwd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible",
+    "roll": "sanitizer 类在 WSL 里编译并运行；warn/cross 类用本机编译器；WSL 不可用时相关样本记 unknown"
+  },
+  "steps": [
+    {
+      "id": "S1_gate_658",
+      "name": "658 验收门禁（L0 5/5）",
+      "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe tools/run_658_gate.py",
+      "skipped": true,
+      "reason": "--only 未选中",
+      "matched": false,
+      "checks": [],
+      "started_at": null,
+      "finished_at": null,
+      "duration_s": null,
+      "exit_code": null
+    },
+    {
+      "id": "S2_gate_669d",
+      "name": "669d 六条 P0 门禁（--no-write）",
+      "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe tools/run_669d_gate.py --no-write",
+      "slow": false,
+      "why": "669d 的六条 P0 规则；加 --no-write 是为了不覆写冻结的 669d 产物。",
+      "writes": [],
+      "skipped": false,
+      "skip_reason": null,
+      "started_at": "2026-09-30T20:50:56",
+      "finished_at": "2026-09-30T20:50:58",
+      "duration_s": 1.78,
+      "exit_code": 0,
+      "run_note": null,
+      "stdout_tail": "[669d gate] overall=PASS  未登记BLOCK=0  已登记=19  WARN=34\n\n  已登记缺口 19 条（详见报告，不静默）：\n  [gap  ] G-STATS-FROZEN         research/05_evaluation_protocol.md ← Clopper-Pearson\n  [gap  ] G-STATS-FROZEN         research/05_evaluation_protocol.md ← Fisher\n  [gap  ] G-STATS-FROZEN         research/05_evaluation_protocol.md ← McNemar\n  [gap  ] G-BOUNDARY-REQUIRED    atoms/draft650/ATOM-DRAFT650-001.md\n  [gap  ] G-BOUNDARY-REQUIRED    atoms/draft650/ATOM-DRAFT650-002.md\n          …另有 14 条",
+      "stderr_tail": "",
+      "matched": true,
+      "judged": 2,
+      "failed": 0,
+      "checks": [
+        {
+          "desc": "退出码 0（无未登记 BLOCK）",
+          "kind": "exit",
+          "skipped": false,
+          "expected": 0,
+          "observed": 0,
+          "ok": true
+        },
+        {
+          "desc": "stdout 含 overall=PASS",
+          "kind": "stdout_re",
+          "skipped": false,
+          "expected": "overall=PASS",
+          "observed": "overall=PASS",
+          "ok": true
+        },
+        {
+          "desc": "落盘 status.overall=PASS",
+          "kind": "artifact",
+          "skipped": true,
+          "reason": "该 check 只在 verify 模式判"
+        },
+        {
+          "desc": "未登记 BLOCK 为空",
+          "kind": "artifact",
+          "skipped": true,
+          "reason": "该 check 只在 verify 模式判"
+        }
+      ]
+    },
+    {
+      "id": "S3_holdout_reveal",
+      "name": "holdout reveal_3（14/16 = 87.5%）",
+      "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe tools/holdout_reveal_3_665.py",
+      "skipped": true,
+      "reason": "--only 未选中",
+      "matched": false,
+      "checks": [],
+      "started_at": null,
+      "finished_at": null,
+      "duration_s": null,
+      "exit_code": null
+    },
+    {
+      "id": "S4_external_corpus",
+      "name": "external corpus reveal（14/32 = 43.8% / 全样本 35.0%）",
+      "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe tools/external_corpus_reveal_665.py",
+      "skipped": true,
+      "reason": "--only 未选中",
+      "matched": false,
+      "checks": [],
+      "started_at": null,
+      "finished_at": null,
+      "duration_s": null,
+      "exit_code": null
+    },
+    {
+      "id": "S5_mutation_core",
+      "name": "内部变异测试 core（110/147 = 97.3%）",
+      "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe tools/mutation_test_656.py --scope core --limit 450 --json",
+      "skipped": true,
+      "reason": "--only 未选中",
+      "matched": false,
+      "checks": [],
+      "started_at": null,
+      "finished_at": null,
+      "duration_s": null,
+      "exit_code": null
+    },
+    {
+      "id": "S6_mutation_all",
+      "name": "内部变异测试 all（128/223 = 81.5%）",
+      "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe tools/mutation_test_656.py --scope all --limit 300 --json",
+      "skipped": true,
+      "reason": "--only 未选中",
+      "matched": false,
+      "checks": [],
+      "started_at": null,
+      "finished_at": null,
+      "duration_s": null,
+      "exit_code": null
+    },
+    {
+      "id": "S7_counterfactual",
+      "name": "反事实引文算子（P/R/F1 = 1.0，n=10）",
+      "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe tools/counterfactual_extend_665.py",
+      "slow": false,
+      "why": "反事实算子复算；分母只算带真值标签的 10 条，且 F1 是**上界**（判据照真值打的口径）。",
+      "writes": [
+        "data/counterfactual_cases_665.json"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "started_at": "2026-09-30T20:50:58",
+      "finished_at": "2026-09-30T20:50:58",
+      "duration_s": 0.21,
+      "exit_code": 0,
+      "run_note": null,
+      "stdout_tail": "cf11  truth=independent pred=independent agree=True\n  cf12  truth=independent pred=independent agree=True\n  cf13  truth=independent pred=independent agree=True\n  cf14  truth=dependent   pred=dependent   agree=True\n  cf15  truth=independent pred=independent agree=True\n  cf16  truth=independent pred=independent agree=True\n  cf17  truth=independent pred=independent agree=True\n  cf18  truth=dependent   pred=dependent   agree=True\n  cf19  truth=independent pred=independent agree=True\n  cf20  truth=independent pred=independent agree=True\n\nconfusion={'tp': 2, 'fp': 0, 'tn': 8, 'fn': 0}  P=1.000 R=1.000 F1=1.000\n已写 data\\counterfactual_cases_665.json",
+      "stderr_tail": "",
+      "matched": true,
+      "judged": 6,
+      "failed": 0,
+      "checks": [
+        {
+          "desc": "退出码 0",
+          "kind": "exit",
+          "skipped": false,
+          "expected": 0,
+          "observed": 0,
+          "ok": true
+        },
+        {
+          "desc": "cases_total=10",
+          "kind": "artifact",
+          "skipped": false,
+          "expected": 10,
+          "observed": 10,
+          "ok": true
+        },
+        {
+          "desc": "F1=1.0",
+          "kind": "artifact",
+          "skipped": false,
+          "expected": 1.0,
+          "observed": 1.0,
+          "ok": true
+        },
+        {
+          "desc": "tp=2",
+          "kind": "artifact",
+          "skipped": false,
+          "expected": 2,
+          "observed": 2,
+          "ok": true
+        },
+        {
+          "desc": "tn=8",
+          "kind": "artifact",
+          "skipped": false,
+          "expected": 8,
+          "observed": 8,
+          "ok": true
+        },
+        {
+          "desc": "打分分母=10（不是 20）",
+          "kind": "artifact",
+          "skipped": false,
+          "expected": 10,
+          "observed": 10,
+          "ok": true
+        }
+      ]
+    },
+    {
+      "id": "S8_fast_tests",
+      "name": "快速测试套件（pytest -m 'not slow' -n0）",
+      "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe -m pytest tests/ -m \"not slow\" -n0 -q",
+      "skipped": true,
+      "reason": "--only 未选中",
+      "matched": false,
+      "checks": [],
+      "started_at": null,
+      "finished_at": null,
+      "duration_s": null,
+      "exit_code": null
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "ran": 2,
+    "skipped": 6,
+    "matched": 2,
+    "failed": 0
+  },
+  "overall": "PARTIAL",
+  "artifacts": [
+    {
+      "path": "data/counterfactual_cases_665.json",
+      "existed_before": true,
+      "sha256_before": "57448bb9e83e3c38e29e2f13f30fa5bc321c7ba36c682edc6cc979cba796605d",
+      "sha256_after": "57448bb9e83e3c38e29e2f13f30fa5bc321c7ba36c682edc6cc979cba796605d",
+      "restored": true
+    }
+  ],
+  "honest_note": "① overall=PARTIAL 表示有步骤被 --skip-slow/--only 跳过，**不是**全部通过；② 慢步骤（变异、fast pytest）未跑时它对应的数字来自落盘产物，不是本次现算；③ 本工具不修改预期值、不修改产物：对不上就记 FAIL。"
+}

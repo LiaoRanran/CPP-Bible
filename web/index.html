@@ -23,6 +23,8 @@
       任何人可以重算、可以指出哪一环不成立 —— 而不需要先信任我们。</p>
     <div class="toolbar">
       <qy-button href="cards.html" variant="primary" label="浏览卡库"></qy-button>
+      <qy-button href="learn.html" label="学习台"></qy-button>
+      <qy-button href="experiments.html" label="实验结果"></qy-button>
       <qy-button href="card.html" label="学一张卡"></qy-button>
       <qy-button href="starmap.html" label="打开星图" id="starmap-btn"></qy-button>
       <qy-button href="verify.html" label="现场验哈希"></qy-button>
@@ -95,10 +97,17 @@
   <section class="wrap">
     <h3>怎么用</h3>
     <div class="grid c3">
-      <div class="card"><h2>卡库</h2><p>按状态 / 域 / 标准筛选与搜索全部知识卡，
-        每张可展开看断言、边界与证据；<b>机器卡单独标注、不进教学台账</b>。</p></div>
+      <div class="card"><h2>卡库</h2><p>按状态 / 四态 / 域 / 类型筛选，按证据强度排序，搜全部知识卡；
+        每张可展开看断言、边界与证据，点「详情」看四态判决理由；<b>机器卡单独标注、不进教学台账</b>。</p></div>
+      <div class="card"><h2>学习台</h2><p>把 42 张知识卡与机器卡反例变成<b>可复习的牌组</b>：间隔重复（SM-2）+ 主动回忆 + 错例驱动。
+        进度存本机，可导出/导入。</p></div>
       <div class="card"><h2>现场验哈希</h2><p>用浏览器 Web Crypto 对工件重算 sha256，与台账逐字节比对：<b>可一次拖入多个文件批量验证</b>，
         结果可导出 CSV。<b>离线可用</b>，文件不出本机。</p></div>
+    </div>
+    <div class="grid c3" style="margin-top:var(--space-2)">
+      <div class="card"><h2>实验结果</h2><p>检出率（holdout / external / counterfactual）、变异杀死率、结果分布与系统演化 ——
+        <b>现算自真实台账</b>，分母与口径一并给出。</p></div>
+      <div class="card"><h2>星图</h2><p>178 节点 / 1093 边的知识接地网络（真实数据渲染），可缩放、可点选看详情。</p></div>
       <div class="card"><h2>复现清单</h2><p>每条证据带版本串 + 命令 + 输入哈希 + 期望输出：
         一条命令即可重跑验收（见 <span class="kbd">replay_probe_651</span>）。</p></div>
     </div>
@@ -111,6 +120,8 @@
     <h3 style="margin-top:var(--space-4)">链接</h3>
     <p class="muted">
       <a href="cards.html">卡库</a> ·
+      <a href="learn.html">学习台</a> ·
+      <a href="experiments.html">实验结果</a> ·
       <a href="card.html">学一张卡</a> ·
       <a href="starmap.html">星图</a> ·
       <a href="verify.html">验哈希</a> ·

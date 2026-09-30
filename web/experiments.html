@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="祈易实验结果（670c A2）：baseline 对比（Static / Random / Failure-driven × holdout / corpus / defect）、口径消融、系统演化、检测器构成、能力构成。全部数字现算自真实产物；baseline 未生成时显式标注「待670a生成」，不编造数字。">
+<meta name="color-scheme" content="dark light">
+<title>实验结果 · QueYi</title>
+<link rel="stylesheet" href="css/design-tokens.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/669c.css">
+<script type="module" src="components/index.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要内容</a>
+<qy-nav current="experiments.html" badge="实验 · 真实现算"></qy-nav>
+
+<main id="main" class="wrap">
+  <header class="page-head" style="padding-top:var(--space-5)">
+    <div>
+      <h1>实验结果</h1>
+      <p class="lede">五张图全部<b>现算自真实产物</b>（metrics_666 / status / experiments / graph / 669_experiments）。
+        前端只渲染、不写死；每根柱都带 <b>Wilson 95% 置信区间</b>与 k/n，点开即见样本明细。
+        baseline 三源未就绪时显式标注「<b>待670a生成</b>」——分母与口径一并给出，避免「43.8% 误读」。</p>
+    </div>
+  </header>
+
+  <!-- 数据源状态（诚实登记：哪条路径 200、哪条 404） -->
+  <section class="chart-card glass glass-tint stack" aria-labelledby="src-h">
+    <div class="row-between">
+      <h3 class="section-title" id="src-h">数据源</h3>
+      <span class="section-sub" id="src-note">加载中…</span>
+    </div>
+    <ul class="kbd-hints" id="src-list"><li class="dim">正在按顺序尝试 baseline 三源…</li></ul>
+  </section>
+
+  <!-- ① baseline 对比 -------------------------------------------------- -->
+  <section aria-labelledby="c1-h">
+    <div class="row-between">
+      <div>
+        <h3 class="section-title" id="c1-h">① baseline 对比 · 检出率（%）</h3>
+        <p class="section-sub">Static / Random / Failure-driven × holdout / corpus / defect；误差线 = Wilson 95% CI，柱上数字 = 点估计</p>
+      </div>
+    </div>
+    <div class="chart-card glass glass-tint">
+      <div class="chart-toolbar" role="group" aria-label="数据集切换">
+        <span class="dim">数据集</span>
+        <div class="deck-tabs" id="ds-tabs" role="tablist" aria-label="选择数据集">
+          <button class="deck-tab" type="button" role="tab" data-ds="all" aria-selected="true">全部</button>
+          <button class="deck-tab" type="button" role="tab" data-ds="holdout" aria-selected="false">holdout</button>
+          <button class="deck-tab" type="button" role="tab" data-ds="corpus" aria-selected="false">corpus</button>
+          <button class="deck-tab" type="button" role="tab" data-ds="defect" aria-selected="false">defect</button>
+        </div>
+        <span class="spacer"></span>
+        <span class="dim" id="base-note"></span>
+      </div>
+      <div class="chart" id="c-baseline"></div>
+      <div class="detail-panel" id="d-baseline" hidden></div>
+      <p class="section-sub">口径提醒：holdout 是<b>双档（-O0/-O2 任一报出即 catch）</b>；corpus 给的是<b>可测口径</b>（unknown 剔除），全样本口径见下方面板与口径消融图。</p>
+    </div>
+  </section>
+
+  <!-- ② 口径消融 -------------------------------------------------------- -->
+  <section aria-labelledby="c2-h">
+    <div class="row-between">
+      <div>
+        <h3 class="section-title" id="c2-h">② 口径消融 · 分母效应（%）</h3>
+        <p class="section-sub">全样本 / 可测 / 排除 unknown：同一份原始计数，只变分母 —— 差异全是口径效应，不是检测能力变化</p>
+      </div>
+    </div>
+    <div class="chart-card glass glass-tint">
+      <div class="chart-toolbar" role="group" aria-label="口径切换">
+        <span class="dim">口径</span>
+        <div class="deck-tabs" id="cal-tabs" role="tablist" aria-label="选择口径">
+          <button class="deck-tab" type="button" role="tab" data-cal="all" aria-selected="true">三臂全看</button>
+          <button class="deck-tab" type="button" role="tab" data-cal="A_valid_only" aria-selected="false">可测（unknown 剔除）</button>
+          <button class="deck-tab" type="button" role="tab" data-cal="B_unknown_as_miss" aria-selected="false">排除 unknown</button>
+          <button class="deck-tab" type="button" role="tab" data-cal="C_all_samples" aria-selected="false">全样本</button>
+        </div>
+        <span class="spacer"></span>
+        <span class="dim" id="cal-note"></span>
+      </div>
+      <div class="chart" id="c-caliber"></div>
+      <div class="detail-panel" id="d-caliber" hidden></div>
+    </div>
+  </section>
+
+  <!-- ③ 演化折线 -------------------------------------------------------- -->
+  <section aria-labelledby="c3-h">
+    <div class="row-between">
+      <div>
+        <h3 class="section-title" id="c3-h">③ 系统演化 · 各批次变异杀死率 / holdout 检出率（%）</h3>
+        <p class="section-sub">批次骨架取自 timeline；<b>只有能追溯到批次的真实值才落点</b>，无值批次画空心点（不插值、不推测）</p>
+      </div>
+    </div>
+    <div class="chart-card glass glass-tint">
+      <div class="chart-toolbar">
+        <span class="dim">批次</span>
+        <span class="mono dim" id="evo-batches">—</span>
+        <span class="spacer"></span>
+        <span class="dim" id="evo-note"></span>
+      </div>
+      <div class="chart" id="c-evolution"></div>
+      <div class="detail-panel" id="d-evolution" hidden></div>
+    </div>
+  </section>
+
+  <!-- ④⑤ 检测器构成 / 能力构成 ------------------------------------------ -->
+  <section class="grid c2" aria-labelledby="c4-h">
+    <div>
+      <h3 class="section-title" id="c4-h">④ 检测器构成</h3>
+      <p class="section-sub">sanitizer / compiler-warn / cross-compile / perf / compile-time</p>
+      <div class="chart-card glass glass-tint">
+        <div class="chart-toolbar"><span class="dim" id="det-note">—</span></div>
+        <div class="chart" id="c-detectors"></div>
+        <div class="detail-panel" id="d-detectors" hidden></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="section-title">⑤ 能力构成</h3>
+      <p class="section-sub">67 规则 / 9 保护器 / 452 账本 / 42 卡 / 178 节点 / 变异 97.3%</p>
+      <div class="chart-card glass glass-tint">
+        <div class="chart-toolbar"><span class="dim" id="abi-note">—</span></div>
+        <div class="chart" id="c-ability"></div>
+        <div class="detail-panel" id="d-ability" hidden></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="raw-h">
+    <h3 class="section-title" id="raw-h">原始数据</h3>
+    <p class="section-sub">
+      <a href="data/experiments.json">experiments.json</a> ·
+      <a href="data/metrics_666.json">metrics_666.json</a> ·
+      <a href="data/status.json">status.json</a> ·
+      <a href="data/graph.json">graph.json</a> ·
+      baseline 三源：<span class="mono">data/experiments/baseline_static.json</span> ·
+      <span class="mono">data/experiments/baseline_random.json</span> ·
+      <span class="mono">data/experiments/669_experiments.json</span>（按此顺序尝试）
+    </p>
+  </section>
+</main>
+
+<footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="learn.html">学习台</a>
+  · <a href="cards.html">卡库</a> · <a href="verify.html">验哈希</a></footer>
+
+<script type="module">
+import { fetchJSON } from './app.js';
+import {
+  BASELINE_PATHS, PENDING, esc,
+  loadBaselines, loadSupplements,
+  buildGroupedBars, buildCaliberBars, buildLineChart, buildPie, buildRadar,
+  emptyStateSvg, selectionFromDataset, selectionDetail, detailPanelHtml,
+  buildEvolutionSeries, buildDetectorSlices, buildAbilityAxes,
+} from './js/charts.js';
+
+const $ = (id) => document.getElementById(id);
+const state = {
+  base: { ok: false, sources: [], tried: [], arms: [] },
+  sup: { results: {}, tried: [] },
+  exp: null, metrics: null, status: null, graph: null, e669: null,
+  arms: [], calibers: null, detectors: [], evolution: null,
+  datasets: ['holdout', 'corpus', 'defect'], caliber: 'all',
+};
+const ALL_DS = ['holdout', 'corpus', 'defect'];
+
+/* ── 渲染兜底：任何一张图出错都降级成空状态，绝不让整页崩 ── */
+function safe(hostId, fn) {
+  try { fn(); }
+  catch (e) {
+    const h = $(hostId);
+    if (h) h.innerHTML = emptyStateSvg('渲染异常（已降级，页面其余部分不受影响）：' + String((e && e.message) || e));
+  }
+}
+
+/* ── 选中明细：点柱 / 扇区 / 点 ⇒ .detail-panel ── */
+function wire(hostId, panelId, dataFn, opts) {
+  const host = $(hostId);
+  const panel = $(panelId);
+  if (!host || !panel) return;
+  const show = (ev) => {
+    const t = ev.target;
+    const el = (t && t.closest) ? t.closest('[data-role]') : null;
+    if (!el) return;
+    let detail = null;
+    try { detail = selectionDetail(dataFn(), selectionFromDataset(el.dataset || {}), opts || {}); }
+    catch (e) { detail = { ok: false, text: '明细渲染异常（已降级）：' + String((e && e.message) || e) }; }
+    panel.innerHTML = detailPanelHtml(detail);
+    panel.hidden = false;
+    const prev = host.querySelector('.is-selected');
+    if (prev && prev !== el) prev.classList.remove('is-selected');
+    if (el.classList && (el.classList.contains('bar') || el.classList.contains('pie-seg') || el.classList.contains('line-dot'))) {
+      el.classList.add('is-selected');
+    }
+  };
+  host.addEventListener('click', show);
+  host.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar') { ev.preventDefault(); show(ev); }
+  });
+}
+
+/* ── 合并 670a 契约字段（含则用，无则 null） ── */
+function mergedField(name) {
+  for (const s of (state.base.sources || [])) {
+    const v = s.data && s.data[name];
+    if (v && (Array.isArray(v) ? v.length : true)) return v;
+  }
+  return null;
+}
+function mergedCalibers() {
+  for (const s of (state.base.sources || [])) if (s.data && s.data.calibers) return s.data.calibers;
+  return null;
+}
+function mergedDetectors() {
+  for (const s of (state.base.sources || [])) if (s.data && s.data.detectors && s.data.detectors.length) return s.data.detectors;
+  return null;
+}
+
+/* ── ① baseline 分组柱 ── */
+function renderBaseline() {
+  const arms = state.arms || [];
+  const note = (state.base.sources && state.base.sources.length)
+    ? ('数据源：' + state.base.sources.map((s) => s.path).join(' + '))
+    : ('三个 baseline 源全部未就绪（' + BASELINE_PATHS.join(' / ') + '）');
+  $('base-note').textContent = note;
+  const svg = buildGroupedBars({
+    title: 'baseline 对比 · 检出率（%）', unit: '%', datasets: state.datasets, arms: arms, width: 880, height: 380,
+    emptyMsg: 'baseline 数据未就绪：按顺序尝试 ' + BASELINE_PATHS.join(' / ') + ' 全部失败 ⇒ 「' + PENDING + '」。'
+      + '670a 写入后此处自动出现 Static / Random / Failure-driven 三臂 × holdout / corpus / defect 三语料。',
+    note: note,
+  });
+  $('c-baseline').innerHTML = svg;
+}
+function renderCaliber() {
+  const cal = state.calibers;
+  if (!cal) {
+    $('cal-note').textContent = '待 670a';
+    $('c-caliber').innerHTML = emptyStateSvg('口径消融需要 caliber_ablation.arms（全样本 / 可测 / 排除 unknown）：当前未取到（' + PENDING + '）');
+    return;
+  }
+  const arms = (state.caliber === 'all') ? cal.arms : cal.arms.filter((a) => String(a.key).indexOf(state.caliber) === 0);
+  $('cal-note').textContent = (state.caliber === 'all' ? cal.arms.length + ' 臂' : '1 臂') + ' · 分母不同、分子同源';
+  $('c-caliber').innerHTML = buildCaliberBars({
+    calibers: { arms: arms.length ? arms : cal.arms, datasets: cal.datasets, note: cal.note, delta_pp: cal.delta_pp },
+    title: '口径消融 · 分母效应（%）', unit: '%', width: 880, height: 380,
+  });
+}
+/* ── ③ 演化折线 ── */
+function renderEvolution() {
+  const evo = state.evolution || buildEvolutionSeries({});
+  $('evo-batches').textContent = (evo.batches || []).join(' → ') || '—';
+  $('evo-note').textContent = evo.ok ? ('有真实值的批次 ' + evo.rows.filter((r) => r.mutation_pct !== null || r.holdout_pct !== null).length + ' 个') : '待 670a';
+  $('c-evolution').innerHTML = buildLineChart({
+    title: '系统演化 · 变异杀死率 / holdout 检出率（%）', unit: '%', yMax: 100, width: 880, height: 320,
+    xLabels: evo.batches, series: evo.series, desc: evo.notes,
+    emptyMsg: '演化折线需要批次骨架（timeline）与可追溯的真实率值：当前未取到（' + PENDING + '）',
+  });
+}
+/* ── ④ 检测器构成 ── */
+function renderDetectors() {
+  const d = buildDetectorSlices({ detectors: mergedDetectors(), experiments: state.exp });
+  $('det-note').textContent = d.pending ? ('回退口径：' + (d.source || '无') + '（真 detectors 字段待 670a）') : '口径：detectors（真实计数）';
+  $('c-detectors').innerHTML = buildPie({
+    title: '检测器构成', slices: d.slices, width: 660, height: 320,
+    emptyMsg: '检测器构成（sanitizer / compiler-warn / cross-compile / perf / compile-time）与回退分布都不可用（' + PENDING + '）',
+  });
+  $('d-detectors').innerHTML = detailPanelHtml({ ok: false, text: d.note });
+  $('d-detectors').hidden = false;
+}
+/* ── ⑤ 能力构成雷达 ── */
+function renderAbility() {
+  const ab = buildAbilityAxes({
+    metrics666: state.metrics, status: state.status, experiments: state.exp,
+    graphNodes: (state.graph && Array.isArray(state.graph.nodes)) ? state.graph.nodes.length : null,
+  });
+  $('abi-note').textContent = ab.missing.length ? ('缺真实值的轴：' + ab.missing.join('、')) : '六轴全部命中真实产物';
+  $('c-ability').innerHTML = buildRadar({ title: '能力构成（实际 / 目标）', axes: ab.axes, desc: ab.notes, width: 620, height: 400 });
+}
+
+function renderAll() {
+  safe('c-baseline', renderBaseline);
+  safe('c-caliber', renderCaliber);
+  safe('c-evolution', renderEvolution);
+  safe('c-detectors', renderDetectors);
+  safe('c-ability', renderAbility);
+}
+
+/* ── 数据源状态（诚实登记 200 / 404） ── */
+function renderSources() {
+  const items = [];
+  (state.base.tried || []).forEach((t) => items.push({ path: t.path, ok: t.ok, error: t.error }));
+  (state.sup.tried || []).forEach((t) => items.push({ path: t.path, ok: t.ok, error: t.error }));
+  $('src-list').innerHTML = items.map((t) => '<li>' + (t.ok ? '✓' : '×') + ' <span class="mono">' + esc(t.path)
+    + '</span>' + (t.ok ? '' : ' <span class="dim">' + esc(t.error || '失败') + '</span>') + '</li>').join('');
+  const okBase = state.base.sources.length;
+  $('src-note').textContent = okBase
+    ? ('baseline 命中 ' + okBase + '/' + BASELINE_PATHS.length + ' 源 —— 缺的臂不虚构，图里标 n/a')
+    : ('baseline 三源全部未就绪 ⇒ baseline / 口径两图显示「' + PENDING + '」（页面其余图仍按真实产物渲染）');
+}
+
+/* ── 控件 ── */
+function bindTabs(attr, onPick) {
+  const btns = Array.prototype.slice.call(document.querySelectorAll('[' + attr + ']'));
+  btns.forEach((b) => b.addEventListener('click', () => {
+    btns.forEach((x) => x.setAttribute('aria-selected', String(x === b)));
+    onPick(b.getAttribute(attr));
+  }));
+}
+
+/* ── 启动 ── */
+(async function main() {
+  try {
+    state.base = await loadBaselines(fetchJSON, BASELINE_PATHS);
+  } catch (e) {
+    state.base = { ok: false, sources: [], arms: [], tried: [{ path: '(loadBaselines 异常)', ok: false, error: String((e && e.message) || e) }] };
+  }
+  try {
+    state.sup = await loadSupplements(fetchJSON);
+  } catch (e) {
+    state.sup = { results: {}, tried: [{ key: '(loadSupplements 异常)', path: '(补充源)', ok: false, error: String((e && e.message) || e) }] };
+  }
+  state.exp = state.sup.results.experiments || null;
+  state.metrics = state.sup.results.metrics666 || null;
+  state.status = state.sup.results.status || null;
+  state.graph = state.sup.results.graph || null;
+  const e669 = (state.base.sources || []).filter((s) => /669_experiments/.test(s.path))[0];
+  state.e669 = e669 ? e669.raw : null;
+
+  state.arms = state.base.arms || [];
+  state.calibers = mergedCalibers();
+  state.evolution = buildEvolutionSeries({
+    metrics666: state.metrics, experiments: state.exp, experiments669: state.e669, evolution: mergedField('evolution'),
+  });
+
+  renderSources();
+  renderAll();
+
+  bindTabs('data-ds', (v) => {
+    state.datasets = (v === 'all') ? ALL_DS.slice() : [v];
+    safe('c-baseline', renderBaseline);
+  });
+  bindTabs('data-cal', (v) => {
+    state.caliber = v || 'all';
+    safe('c-caliber', renderCaliber);
+  });
+
+  wire('c-baseline', 'd-baseline', () => ({ arms: state.arms }), { note: '口径与分母见「口径消融」图；缺数据的柱标 n/a，不填 0' });
+  wire('c-caliber', 'd-caliber', () => (state.calibers ? { arms: state.calibers.arms } : { arms: [] }));
+  wire('c-evolution', 'd-evolution', () => ({ arms: [] }));
+  wire('c-detectors', 'd-detectors', () => ({ arms: [] }));
+  wire('c-ability', 'd-ability', () => ({ arms: [] }));
+})();
+</script>
+</body>
+</html>

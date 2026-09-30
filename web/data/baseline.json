@@ -1,0 +1,62 @@
+{
+  "schema": "queyi-canonical-state/v1",
+  "generated_by": "tools/status_reconciler_658.py",
+  "generated_at": "2026-09-28",
+  "git": {
+    "head": "4ae457d2340ac584595ff376b2677780d4322338",
+    "branch": "master",
+    "ahead_of_origin_master": 0,
+    "behind_origin_master": 0
+  },
+  "quality": {
+    "statement": "见门禁产物（pytest junit / quality gate）；本 baseline 只存快照值，不判红绿",
+    "ruff_mypy_errors_on_658_files": 0
+  },
+  "compile": {
+    "statement": "657 收工实测全量 compile PASS（52 卡真编译，见 657_acceptance_report.md）"
+  },
+  "mutation": {
+    "core_kill_rate_pct": 97.3,
+    "all_kill_rate_pct": 81.5
+  },
+  "cards": {
+    "atoms_total": 53,
+    "boundary_written": 26,
+    "boundary_verified_pass": 23,
+    "boundary_redteam_verified": 3,
+    "draft_empty": 21,
+    "four_state_now": "pass 23 / unknown 24 (21 draft + 3 other)",
+    "source": "657 B 段 + four_state_verdict_638 输出"
+  },
+  "graph": {
+    "nodes": 178,
+    "links": 1093
+  },
+  "rules": {
+    "documented_brief": 67,
+    "documented_actual_claim": 67,
+    "source": "gate_engine.RULES（执行权威）+ data/_gate_rules.json（已同步为 67；661 A2 裁定）",
+    "status": "已裁定为 67（661 A2）：engine=67、清单=67；644 差 4 条为 -HC 高复杂度 block 兜底规则（EV-SERVES-EXIST-HC/ATOM-REL-TARGET-HC/ATOM-REL-UNKNOWN-HC/CARD-PATH-NOT-CANONICAL-HC），automated 且带真实 check，必须计入；旧清单 63 是 623 缓存漏了这 4 条"
+  },
+  "tolerated_discrepancies": [
+    "rules: 已归档无差异（661 A2：engine 与清单统一为 67）",
+    "graph.nodes: README 178 与 658 任务书称权威 121 不一致 — 以 graph.json 实测 178 为准，121 待权威源"
+  ],
+  "atoms": {
+    "cpp_files": 57,
+    "asm_files": 61,
+    "out_files": 17,
+    "total_files": 135,
+    "source": "git ls-files Examples/atoms/（660 E2 脚本现算，非手写）",
+    "note": "与 cards.atoms_total=48（真实卡数）口径不同：此处是夹具文件数；57 个 .cpp = 57 个错误主题"
+  },
+  "holdout": {
+    "count": 20,
+    "blind": true,
+    "revealed": false,
+    "source": "data/holdout/holdout.json（660 C2 初始化）",
+    "categories": "UB / 内存越界 / 未定义行为 / 编译器差异 / RAII / ODR / 生命周期",
+    "iron_rule": "reveal 不可逆；run_658_gate 默认不扫 data/holdout/"
+  },
+  "snapshot_note": "由 status_reconciler_658.py --snapshot 生成；git.head 为快照点（新增提交后自动放宽为祖先）"
+}
