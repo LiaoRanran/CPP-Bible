@@ -56,8 +56,8 @@
 | `test_prop_graph::test_anchor_source_splits_card_vs_evidence` | 5 张新卡的 10 条命题**没有对应的证据卡**（我把证据内联在卡面 `evidence_668:` 里）⇒ 锚来源集合变成 `{evidence, none}`，而测试要求只有 `evidence` | **未修，登记**：正确修法是给 5 张新卡各配 1 张 `evidence/**/EV-*.md`（需满足 `EV-FM-REQUIRED` / `EV-MATRIX` / `EV-ARTIFACT-PRODUCER` / `EV-FALSIFICATION` 等 block 规则，工作量 ≈ 5 张卡 × 半日）。**这不是假红**，是本批 P1-2 的**未完成部分** |
 | `test_prop_graph::test_build_totals_and_distributions` | 命题总数 89 → 99（+10） | 同上游；若坚持"先证据卡后命题"，应同步更新该测试的事实源 |
 | `test_prop_graph::test_build_does_not_touch_cards` | 「build 动了受控目录」——实为**工作树未提交**（本批改了 10 张证据卡 + 5 张新卡）导致 `git status` 非空 | **提交后自动消失**（本批已提交，见 `data/668_acceptance_report.md`） |
-| `test_boundary_backfill_657::test_check_is_read_only` | 同上（工作树脏） | 同上 |
-| `test_boundary_backfill_657::test_plan_scans_all_47_cards` | 测试名与断言里**写死了 47** | **该修**：改成 `counts_659.ATOMS_TOTAL` 现算（659 的既定规则）。本批**未做**（登记） |
+| `test_boundary_backfill_657::test_check_is_read_only` | 其实**不是**工作树脏：它调 `bf.selftest()`，而 657 的自检里有 `len(rows) == 47`（**写死**）⇒ 卡数一变就红 | ✅ **已修**：改成与 `counts_659.ATOMS_TOTAL` 对账（见下一行）｜⚠ 我先前把本条归因为"工作树脏"是**错的**，已更正 |
+| `test_boundary_backfill_657::test_plan_scans_all_47_cards` | 测试名与断言里**写死了 47** | ✅ **已修**：断言改为 `counts.ATOMS_TOTAL` 现算（659 的既定规则；测试名保留，加注释说明"47 是当时口径"） |
 
 ---
 
@@ -83,7 +83,20 @@
 |---|---:|---|
 | 已修（本批） | 4 项 + evidence 10 行 | Agent |
 | 需人签 | 2（golden_lock、debt_ledger 停线） | 维护者 |
-| 真缺陷·本批未做（已给方案 + 工作量） | 3（prop-graph 证据卡 / 657 写死 47 / WinError 206） | 下一批或人 |
+| 真缺陷·本批未做（已给方案 + 工作量） | **2**（prop-graph 证据卡 / WinError 206）<br>另有 1 项**已当场修**（657 写死 47，见 §3） | 下一批或人 |
 | 环境/工具链 | 1（`EV-MEM-046` 编译失败） | 人确认 |
 | 由"工作树未提交"引起 | 2 | 已提交 ⇒ 消失 |
-| **全量 fast 套件** | **未跑完**（收工时约 44%，日志 `data/668_fast.txt`） | **不假设绿**；下一批续跑 |
+| **全量 fast 套件** | **未跑完**（收工时 **47%** 被主动终止，日志 `data/668_fast.txt`） | **不假设绿**；下一批续跑 |
+
+---
+
+## 6. 本批**现场抓到**的第三个受控目录污染源（可复现）
+
+| 项 | 内容 |
+|---|---|
+| 现象 | 跑 `python tools/atom_evidence_replay.py --check` 之后，`git status` 出现 **`Examples/atoms/*.asm` 3 删 6 改** |
+| 机制 | 该工具的设计是「**删旧工件 → 重新生成 → 比 sha256**」，并靠 `restore_artifact=True` 还原；但在**编译失败/命令失败的卡**上还原不完整，`gcc -S` 重生成的 `.asm` 与原文件也不逐字节相同（版本/时间戳） |
+| 危害 | `Examples/` 在**供应链 Merkle 覆盖内**（1571 文件），一旦被改 ⇒ 根失效；而 666 只登记过"测试污染受控目录（`ATOM-CONC-FENCE-001` 丢 `id:` 行）"，**污染源当时未定位** —— 本次给出了第二个可复现来源 |
+| 处置（本批） | ① `git restore --staged --worktree -- Examples/` 还原；② 重建 Merkle + `tool_integrity --update`；③ `merkle --check` 通过 |
+| 交人 | 该工具的 `restore_artifact` 需要"失败也还原"（try/finally 覆盖全部路径），或改为在**临时目录**里重生成工件。**本批未改**（动的是门禁核心工具） |
+| 附带发现 | **后台并行跑 pytest 时，该污染会持续发生**（我先把全量套件放后台，结果 `Examples/` 反复被改回）⇒ **门禁与"跑测试"不该同时进行**，这条也解释了 666 "同一目录时红时绿"的一部分 |

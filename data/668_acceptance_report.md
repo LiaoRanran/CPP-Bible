@@ -123,7 +123,7 @@ semantic scope / evidence / 四态 + 理由），并与 `counts_659` 对账（42
 | 红 | 根因 | 为什么没修 | 修法与工作量 |
 |---|---|---|---|
 | `test_prop_graph::test_anchor_source_splits_card_vs_evidence` 等 3 条 | 5 张新卡无证据卡 | 需满足 `EV-FM-REQUIRED`/`EV-MATRIX`/`EV-ARTIFACT-PRODUCER`/`EV-FALSIFICATION` 等 block 规则 | 5 张证据卡 ≈ 半日 |
-| `test_boundary_backfill_657::test_plan_scans_all_47_cards` | 断言**写死 47** | 属"去写死"类，应改 `counts_659.ATOMS_TOTAL` | 10 分钟 |
+| ~~`test_boundary_backfill_657` 2 条~~ | 断言/自检**写死 47**（不是工作树脏——我先前归因错了） | — | ✅ **已当场修**：断言与 657 自检都改成与 `counts_659.ATOMS_TOTAL` 对账（15 例全绿） |
 | `WinError 206`（3 条） | Windows 命令行长度上限 | 改动落在门禁核心，风险高于本批额度 | gate 改临时响应文件 |
 | `golden_lock` / `debt_ledger`（2 条） | **唯人签** | 机器不代签 | 人 |
 | `evidence run` 比对顺序敏感 | 运行器缺"按 `run_match_keys` 集合比对" | 同上门禁核心 | 人定 |
@@ -141,6 +141,11 @@ semantic scope / evidence / 四态 + 理由），并与 `counts_659` 对账（42
 | 不擅自 push | ✅ 未 push（ahead 留给下一轮） |
 | 所有数字脚本现算 | ✅ 全部产物由工具现算落盘；口径/分母写进产物 |
 | 做不完的诚实登记 | ✅ 见 §5.2 |
+
+**新增现场发现（可复现）**：跑 `atom_evidence_replay.py --check` 会让 `Examples/atoms/*.asm` **3 删 6 改**
+（该工具"删旧工件→重生成"在失败路径上还原不全）；且**后台同时跑 pytest 时反复发生**。
+本批已 `git restore` 还原并重钉 Merkle —— 这很可能是 666 那条"测试污染受控目录、污染源未定位"的
+**第二个来源**。详见 `docs/668_ci_triage.md` §6。
 
 **重钉记录（必须复核）**：因 P1-2 授权扩卡，`data/supply_chain/merkle_roots.json` 被**重建**
 （atoms 49 → 54 文件）、`tools/.tool_checksums` 的 supply_chain 节被更新、

@@ -358,7 +358,14 @@ def selftest() -> int:
     before = _atoms_fp()
     rows = plan()
     D = derived_rows(rows)
-    chk("扫到 47 张卡", len(rows) == 47, f"{len(rows)}")
+    # 668 P2-3：原来是 `len(rows) == 47`（写死）——语料扩容后必红，且红得没有信息量。
+    # 改成与 counts_659（基数唯一权威源）对账：**同一个量只有一个数字**。
+    try:
+        import counts_659 as _counts
+        _expect = _counts.ATOMS_TOTAL
+    except Exception:  # noqa: BLE001
+        _expect = 47
+    chk(f"扫到的卡数 == counts_659.ATOMS_TOTAL（{_expect}）", len(rows) == _expect, f"{len(rows)}")
     chk("有可回填对象（目标状态 + 真实基线覆盖）", len(D) > 0, f"{len(D)} 张")
     chk("回填对象三元组合法（64hex / count>0 / version 非空）",
         all(triplet_ok(r["triplet"]) for r in D))

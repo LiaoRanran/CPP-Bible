@@ -33,8 +33,12 @@ def _text(rel: str) -> str:
 
 
 def test_plan_scans_all_47_cards() -> None:
+    # 668 P2-3：标题里的 "47" 是当时的口径；断言改成**从 counts_659 现算**
+    # （651/659 的既定规则：语料基数只认唯一权威源，不认写死的数字）。
+    import counts_659 as counts
+
     rows = bf.plan()
-    assert len(rows) == 47
+    assert len(rows) == counts.ATOMS_TOTAL
     assert {r["action"] for r in rows} <= {"write", "skip"}
     for r in rows:
         assert r["card"].startswith("atoms/")
