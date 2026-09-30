@@ -6,6 +6,10 @@
 //   · web/data/graph.json（星图真数据）
 // 拿不到就显示"不可用"，绝不猜（见 docs/discipline/error_handling.md）。
 import { STATE_COLORS, fetchJSON, fmtInt } from './app.js';
+import {
+  initRobustness, fetchJSON as robustFetch, renderErrorCard, renderEmpty,
+  setState, formatMetric,
+} from './js/robustness.js';
 
 const $ = (id) => document.getElementById(id);
 const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -47,14 +51,22 @@ function metricCard([num, unit, cap, sub]) {
 export async function renderMetrics() {
   const box = $('metrics');
   if (!box) return;
+  setState(box, 'loading');
   let M;
   try {
-    M = (await fetchJSON('data/metrics_666.json')).metrics;
+    const r = await robustFetch('data/metrics_666.json', { requiredKeys: ['metrics'] });
+    M = r.data.metrics;
+    if (!M || Object.keys(M).length === 0) {
+      setState(box, 'empty');
+      renderEmpty(box, 'no-data', renderMetrics);
+      return;
+    }
   } catch (e) {
-    box.innerHTML = `<div class="metric"><div class="sub">加载 data/metrics_666.json 失败：${e.message}
-      （生成命令 <span class="kbd">python tools/web_metrics_666.py --write</span>；请用本地静态服务器打开）</div></div>`;
+    setState(box, 'error');
+    renderErrorCard(box, e.kind || 'unknown', renderMetrics);
     return;
   }
+  setState(box, 'ready');
   const h = M.holdout || {};
   const spec = [
     [M.cards_real ?? 0, '', '知识卡（实卡域）',
@@ -69,8 +81,8 @@ export async function renderMetrics() {
   spec.forEach(([v, _u, _c, _s], i) => {
     const n = nodes[i]._num;
     const put = (txt) => { n.textContent = ''; n.appendChild(document.createTextNode(txt)); n.appendChild(nodes[i]._unit); };
-    const keep = put;
-    countUp({ setNum: keep }, v, { suffix: '' });
+    if (v == null || v === 0) { put(formatMetric(v)); return; }  // B3：0/缺失显示 '--'，不误导
+    countUp({ setNum: put }, v, { suffix: '' });
   });
   const note = $('metrics-note');
   if (note) {
@@ -104,13 +116,12 @@ export async function renderCommits() {
   try {
     const D = await fetchJSON('data/metrics_666.json');
     const rows = D.commits || [];
-    box.innerHTML = rows.length
-      ? `<ul class="mono" style="list-style:none;margin:0;padding:0;font-size:12px">` +
-        rows.map((c) => `<li style="padding:3px 0"><span class="muted">${c.date}</span>
-          <span class="kbd">${c.hash}</span> ${c.subject}</li>`).join('') + '</ul>'
-      : '<span class="muted">（本机 git 不可用 ⇒ 提交列表为空，不造数据）</span>';
+    if (!rows.length) { renderEmpty(box, 'no-commits', renderCommits); return; }
+    box.innerHTML = `<ul class="mono" style="list-style:none;margin:0;padding:0;font-size:12px">` +
+      rows.map((c) => `<li style="padding:3px 0"><span class="muted">${c.date}</span>
+        <span class="kbd">${c.hash}</span> ${c.subject}</li>`).join('') + '</ul>';
   } catch (e) {
-    box.textContent = `提交列表不可用：${e.message}`;
+    renderErrorCard(box, e.kind || 'unknown', renderCommits);
   }
 }
 
@@ -118,8 +129,9 @@ export async function renderCommits() {
 export async function renderStatus() {
   const grid = $('status-grid');
   if (!grid) return;
+  setState(grid, 'loading');
   try {
-    const S = await fetchJSON('data/status.json');
+    const S = (await robustFetch('data/status.json', { requiredKeys: ['cards'] })).data;
     const cards = S.cards || {}, prot = S.protectors || {}, esc = S.escape || {};
     const sub = (id, text) => $(id).setAttribute('sub', text);
     countUp($('s-cards'), cards.cards_real ?? 0);
@@ -139,8 +151,8 @@ export async function renderStatus() {
       `数据来源：${(S.generated_from || []).join('　·　')}　生成于 ${S.generated_at || '—'}`
       + (un.length ? `　⚠ 缺项：${un.join('；')}` : '');
   } catch (e) {
-    grid.innerHTML = `<div class="cell"><div class="sub">加载 data/status.json 失败：${e.message}
-      （生成命令 <span class="kbd">python tools/web_status_655.py</span>）</div></div>`;
+    setState(grid, 'error');
+    renderErrorCard(grid, e.kind || 'unknown', renderStatus);
   }
 }
 
@@ -250,6 +262,7 @@ export async function renderHero() {
 }
 
 export function boot() {
+  initRobustness();
   renderMetrics();
   renderTimeline();
   renderCommits();

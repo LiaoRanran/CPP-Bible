@@ -6,9 +6,15 @@
 <title>现场验哈希 · QueYi</title>
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/robustness.css">
 <script type="module" src="components/index.js"></script>
 </head>
 <body>
+<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3;border-radius:12px">
+<h1>现场验哈希 · 需要 JavaScript</h1>
+<p>哈希校验用浏览器 Web Crypto 重算 sha256，需要 JavaScript（文件不出本机）。</p>
+<p style="color:#b0aeab;font-size:13px">请启用 JavaScript 获得完整体验。</p>
+</div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="verify.html"></qy-nav>
 <main id="main" class="wrap">
@@ -61,5 +67,6 @@
 </main>
 <footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="starmap.html">星图</a></footer>
 <script type="module" src="verify.js"></script>
+<script type="module">import { initRobustness } from './js/robustness.js'; initRobustness();</script>
 </body>
 </html>

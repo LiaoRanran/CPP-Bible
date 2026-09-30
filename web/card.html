@@ -6,9 +6,16 @@
 <title>学一张卡 · QueYi</title>
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/robustness.css">
 <script type="module" src="components/index.js"></script>
 </head>
 <body>
+<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3;border-radius:12px">
+<h1>知识卡 · 需要 JavaScript</h1>
+<p>卡片详情需要 JavaScript 才能加载（断言 + 边界三元组 + 证据 + 四态判决）。</p>
+<p>示例：ATOM-UB-WRAP-001「有符号整数溢出是 UB」——证据：UBSan 双档命中。</p>
+<p style="color:#b0aeab;font-size:13px">请启用 JavaScript 获得完整体验。</p>
+</div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="card.html"></qy-nav>
 <main id="main" class="wrap">
@@ -77,5 +84,6 @@
 <footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="starmap.html">星图</a>
   · <a href="verify.html">验哈希</a></footer>
 <script type="module" src="card.js"></script>
+<script type="module">import { initRobustness } from './js/robustness.js'; initRobustness();</script>
 </body>
 </html>

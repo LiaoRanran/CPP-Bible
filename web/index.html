@@ -8,10 +8,17 @@
 <title>祈易 QueYi · 可被独立验收的 C++ 知识</title>
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/robustness.css">
 <script type="module" src="components/index.js"></script>
 <script type="module" src="home.js"></script>
 </head>
 <body>
+<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3;border-radius:12px">
+<h1>祈易 QueYi</h1>
+<p>一个<b>可被独立验收</b>的 C++ 知识验证器：结论绑定证据与复现命令。</p>
+<p>现算：判决规则 67 · 实卡 42 · 账本 452 · holdout 87.5%（14/16）· 外部 corpus 35.0%（14/40）。</p>
+<p style="color:#b0aeab;font-size:13px">请启用 JavaScript 获得完整体验。</p>
+</div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="index.html" badge="静态站 · 无后端"></qy-nav>
 
@@ -40,8 +47,10 @@
   <!-- ③ 核心指标（数字由 tools/web_metrics_666.py 现算，前端只渲染） -->
   <section class="wrap">
     <h3>核心指标 · 现算（非目标值）</h3>
-    <div class="metrics" id="metrics">
-      <div class="metric"><div class="num">—</div><div class="cap">加载中…</div></div>
+    <div class="metrics" id="metrics" data-qy-state="loading" aria-busy="true">
+      <div class="metric qy-skeleton qy-skel-card" aria-hidden="true"></div>
+      <div class="metric qy-skeleton qy-skel-card" aria-hidden="true"></div>
+      <div class="metric qy-skeleton qy-skel-card" aria-hidden="true"></div>
     </div>
     <p class="muted" id="metrics-note" style="margin-top:var(--space-2)">加载中…</p>
   </section>
@@ -49,7 +58,10 @@
   <!-- ④ 系统状态时间线 -->
   <section class="wrap">
     <h3>系统状态时间线</h3>
-    <ul class="timeline" id="timeline"><li><div class="t-why">加载中…</div></li></ul>
+    <ul class="timeline" id="timeline" data-qy-state="loading" aria-busy="true">
+      <li class="qy-skeleton qy-skel-line" aria-hidden="true"></li>
+      <li class="qy-skeleton qy-skel-line" aria-hidden="true"></li>
+    </ul>
   </section>
 
   <!-- ⑤ 系统现状面板（保护器 / 逃逸率；655 D 既有） -->
@@ -138,5 +150,6 @@
 <footer class="wrap">静态站 · 无后端 · 无追踪 · 数据由 <span class="mono">tools/web_metrics_666.py</span>、
   <span class="mono">tools/web_data_pipeline_656.py</span> 与 <span class="mono">tools/web_status_655.py</span>
   从真实台账生成（不造演示数据）。</footer>
+<script type="module">import { initRobustness } from './js/robustness.js'; initRobustness();</script>
 </body>
 </html>

@@ -1,0 +1,64 @@
+/* 670c3 · 前端健壮性样式：骨架屏 / 错误卡 / 空状态 / 全局横幅 / noscript 降级
+   目标 ≤2KB。全部使用项目设计令牌的兜底值，不新增硬编码色（除 noscript 内联要求）。 */
+
+/* ---- 骨架屏 ---- */
+.qy-skeleton { background: var(--bg-2, #232323); border-radius: 8px; position: relative; overflow: hidden; }
+.qy-skeleton::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+  animation: qy-pulse 1.4s ease-in-out infinite;
+}
+.qy-skel-line { height: 12px; margin: 8px 0; }
+.qy-skel-card { height: 72px; margin: 8px 0; }
+.qy-skel-title { height: 28px; width: 40%; margin: 16px 0; }
+@keyframes qy-pulse { 0% { opacity: .35 } 50% { opacity: 1 } 100% { opacity: .35 } }
+
+/* 状态切换过渡 200ms */
+[data-qy-state] { transition: opacity 200ms ease; }
+
+/* ---- 全局错误横幅 ---- */
+.qy-banner {
+  position: sticky; top: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 8px 16px; background: #7f1d1d; color: #fff; font-size: 14px;
+}
+.qy-banner[hidden] { display: none; }
+.qy-banner-close { background: none; border: 0; color: #fff; font-size: 18px; cursor: pointer; }
+
+/* ---- 错误卡 ---- */
+.qy-error-card {
+  max-width: 600px; margin: 24px auto; padding: 24px; text-align: center;
+  border: 1px solid var(--border, #3a3a3a); border-radius: 12px;
+}
+.qy-err-icon { font-size: 32px; }
+.qy-err-title { font-size: 18px; font-weight: 600; margin: 8px 0; }
+.qy-err-hint { color: var(--fg-muted, #a8a8a8); margin-bottom: 8px; }
+.qy-err-final { color: var(--fg-muted, #a8a8a8); font-size: 13px; margin-bottom: 16px; }
+
+/* ---- 空状态 ---- */
+.qy-empty { max-width: 600px; margin: 24px auto; padding: 24px; text-align: center; }
+.qy-empty-icon { font-size: 28px; opacity: .7; }
+.qy-empty-text { margin: 8px 0 12px; color: var(--fg-muted, #a8a8a8); }
+
+/* ---- 按钮 ---- */
+.qy-btn {
+  padding: 8px 16px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--border, #3a3a3a); background: var(--bg-2, #232323); color: inherit;
+}
+.qy-btn:hover { border-color: var(--accent, #6ea8fe); }
+.qy-btn:focus-visible { outline: 2px solid var(--accent, #6ea8fe); outline-offset: 2px; }
+
+/* ---- noscript 降级（深色兜底，不依赖外部 CSS） ---- */
+.ns-fallback {
+  max-width: 600px; margin: 48px auto; padding: 24px;
+  background: #1a1a1a; color: #e8e6e3; border-radius: 12px; line-height: 1.7;
+}
+.ns-fallback h1 { font-size: 20px; margin-bottom: 12px; }
+.ns-fallback a { color: #8ab4f8; }
+.ns-note { margin-top: 16px; color: #b0aeab; font-size: 13px; }
+
+/* ---- 无障碍：尊重 reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .qy-skeleton::after { animation: none; }
+  [data-qy-state] { transition: none; }
+}

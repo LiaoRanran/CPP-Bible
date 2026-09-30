@@ -9,9 +9,16 @@
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="css/669c.css">
+<link rel="stylesheet" href="css/robustness.css">
 <script type="module" src="components/index.js"></script>
 </head>
 <body>
+<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3;border-radius:12px">
+<h1>学习台 · 需要 JavaScript</h1>
+<p>学习台需要 JavaScript 才能运行（间隔重复 + 主动回忆 + 错例驱动）。</p>
+<p>学习路径：卡库 → 按域筛选 → 逐张读断言/边界/证据 → 复习错例。</p>
+<p style="color:#b0aeab;font-size:13px">请启用 JavaScript 获得完整体验。</p>
+</div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="learn.html" badge="学习 · 本机进度"></qy-nav>
 
@@ -482,5 +489,6 @@ function importProgress(e) {
   reader.readAsText(file);
 }
 </script>
+<script type="module">import { initRobustness } from './js/robustness.js'; initRobustness();</script>
 </body>
 </html>
