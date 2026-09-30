@@ -2,25 +2,52 @@
   "schema": "queyi-web-metrics/666",
   "generated_by": "tools/web_metrics_666.py",
   "metrics": {
-    "cards_real": 37,
+    "cards_real": 42,
     "cards_draft": 10,
     "rules_total": 67,
     "holdout": {
-      "rate_pct": 81.2,
-      "catch": 13,
-      "miss": 3,
+      "rate_pct": 87.5,
+      "catch": 14,
+      "miss": 2,
       "unknown": 1,
-      "denominator": "catch+miss（可测；unknown 不计）",
-      "caliber": "双档（-O0 与 -O2 都跑，任一档报出即 catch）",
+      "den": 16,
+      "denominator": "catch+miss（可测真错样本）",
+      "caliber": "sanitizer 类：-O0 + -O2 两档都跑，任一档报出即 catch；warn/cross/link 类：单次本机编译；unknown = 检测器不可用（不计入分母）",
+      "opt_levels": [
+        "-O0",
+        "-O2"
+      ],
+      "env": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "detail": "data/holdout/reveal_3_detail_668.json",
       "cmd": "python tools/holdout_reveal_3_665.py"
     },
     "external": {
       "rate_pct": 43.8,
+      "rate_pct_all": 35.0,
       "total": 40,
       "catch": 14,
       "miss": 18,
       "unknown": 5,
+      "den": 32,
+      "denominator": {
+        "value": 32,
+        "meaning": "catch+miss（可测且非测量类的样本）",
+        "excluded": {
+          "unknown（本机无检测器）": 5,
+          "not_error（对照，本不是缺陷）": 3
+        },
+        "all_samples": 40
+      },
       "cmd": "python tools/external_corpus_reveal_665.py"
+    },
+    "counterfactual": {
+      "p": 1.0,
+      "r": 1.0,
+      "f1": 1.0,
+      "cases": 10,
+      "denominator": "本文件里**带 ground_truth 标签**的案例数（P/R/F1 的分母）",
+      "third_criterion_hits": 2,
+      "cmd": "python tools/counterfactual_extend_665.py"
     },
     "ledger_events": 452,
     "ledger_path": "data/646_authority_rule_annotation.jsonl",
@@ -33,7 +60,7 @@
       "evidence",
       "mutation_baselines"
     ],
-    "merkle_files": 1877
+    "merkle_files": 1882
   },
   "timeline": [
     {
@@ -81,31 +108,31 @@
   ],
   "commits": [
     {
-      "hash": "22e47b45",
+      "hash": "4ae457d2",
       "date": "2026-09-29",
-      "subject": "665 E/F/G/H：轨迹 5→10、论文 v0.3、闭环图、机器卡进前端 + 验收报告与回归测试"
+      "subject": "666 E：验收报告终稿（串行/并行口径警告 + asm 以卡为准的更正 + 生成器 vs 手工追加通则）"
     },
     {
-      "hash": "4ab6ec02",
+      "hash": "e64aca75",
       "date": "2026-09-29",
-      "subject": "665 C/D：holdout 20→30（真错 7→17）+ 外部 corpus 20→40（分三层）"
+      "subject": "666 收尾：串行 fast 0 红（修掉最后两条）+ 两处\"生成器 vs 手工追加\"的根因修复"
     },
     {
-      "hash": "8d60516c",
+      "hash": "d6c4fab0",
       "date": "2026-09-29",
-      "subject": "665 B1：664 独立生成批次拆成 16 张可复算机器卡（真机复跑；--check 16/16）"
+      "subject": "666 E：验收报告补齐（解封命令 + 三个自污染缺陷 + 诚实登记更新）"
     },
     {
-      "hash": "698b8232",
-      "date": "2026-09-28",
-      "subject": "664 F：验收报告（B2 完成；C2/C3/D2 未做；D1 全量后台运行中未收尾）"
+      "hash": "d1cda280",
+      "date": "2026-09-29",
+      "subject": "666 B2：web_metrics_666 抽出 selftest()（按仓库约定）+ 7 例回归测试 + mypy 注解"
     },
     {
-      "hash": "c6cfadc3",
-      "date": "2026-09-28",
-      "subject": "664 B2：独立生成 A/B/C 跑一轮（15 断言；B 推翻 9/15=60%）"
+      "hash": "49dcb85d",
+      "date": "2026-09-29",
+      "subject": "666 A3：slow 收尾（充分性缺口显形 / 641 旗标追 canonical / status.json 按流程更新）+ r3 逐条 triage"
     }
   ],
   "unavailable": [],
-  "honest_note": "本文件的**数字全部现算**（扫卡 / 读引擎 / 读 reveal 报告），前端只渲染；拿不到的项记 null 并进 unavailable，不用占位值冒充。检出率是**双档口径**；与 665 的单档 66.7% 不可直接比较（旧值作废）。"
+  "honest_note": "本文件的**数字全部现算**（扫卡 / 读引擎 / 读 reveal 报告），前端只渲染；拿不到的项记 null 并进 unavailable，不用占位值冒充。**口径与分母从产物读**（`holdout.caliber` / `holdout.denominator`），不在这里写死。668 已把 holdout / external / counterfactual 三个率的现算值纳入 `--check` 比对范围（666 漏查这三项 ⇒ 曾出现假绿）。"
 }

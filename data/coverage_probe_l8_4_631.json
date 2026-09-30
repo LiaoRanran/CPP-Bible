@@ -45,7 +45,7 @@
       "name": "伪造追加（凭证不存在）",
       "expect_rejected": true,
       "ok": false,
-      "error": "not found: C:\\CodeLearnling\\queyi-verifier\\data\\vsa\\__does_not_exist__.json",
+      "error": "not found: C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\vsa\\__does_not_exist__.json",
       "rejected": true,
       "as_expected": true
     }

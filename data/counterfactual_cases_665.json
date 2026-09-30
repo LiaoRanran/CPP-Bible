@@ -1,30 +1,55 @@
 {
   "schema": "queyi-counterfactual/v2",
-  "generated_at": "2026-09-29",
+  "generated_at": "2026-09-30",
   "generated_by": "tools/counterfactual_extend_665.py",
   "operator_reuse": "tools/counterfactual_citation_658.py::counterfactual（唯一算子版本）",
   "cases_total": 10,
+  "denominator": {
+    "value": 10,
+    "meaning": "本文件里**带 ground_truth 标签**的案例数（P/R/F1 的分母）",
+    "scored": 10,
+    "unscored_sibling": {
+      "file": "data/counterfactual_cases_660.json",
+      "cases": 10,
+      "why": "660 只记录算子输出，**没有真值标签** ⇒ 不能进 P/R/F1（登记，不计入）"
+    },
+    "why_it_matters": "对外说'20 条'而实际打分 10 条 = 分母未声明（667 已记过一次同类问题）"
+  },
   "truth_labels": {
     "dependent": 2,
     "independent": 8
   },
   "confusion": {
-    "tp": 0,
+    "tp": 2,
     "fp": 0,
     "tn": 8,
-    "fn": 2
+    "fn": 0
   },
   "scores": {
-    "precision": 0.0,
-    "recall": 0.0,
-    "f1": 0.0
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
   },
-  "honest_note": "真值标签的判据是**外部锚**（standard ⇒ 引文为假断言仍成立；measurement ⇒ 断言只靠这次实测），不是靠感觉。662 说'校准不充分'，本批把它换成可复算的 P/R/F1；样本只有 10 条，**任何百分比都是点估计**。",
+  "mechanism_counts": {
+    "none": 8,
+    "machine_marker": 2
+  },
+  "third_criterion": {
+    "name": "machine_marker（666 A4 新增的第 3 条判据）",
+    "hits": [
+      "cf14",
+      "cf18"
+    ],
+    "hit_count": 2,
+    "note": "这两条真·dependent 断言（平台测量类）正是判据 1/2 抓不到的；判据 3 把它们抓住了。**但真值标签与判据 3 同源** ⇒ F1 是上界。"
+  },
+  "honest_note": "真值标签的判据是**外部锚**（standard ⇒ 引文为假断言仍成立；measurement ⇒ 断言只靠这次实测），不是靠感觉。662 说'校准不充分'，本批把它换成可复算的 P/R/F1；分母只有 10 条，**任何百分比都是点估计**（n=10 时 95% CI 宽度约 ±30pp，Clopper–Pearson）。⚠ 判据 3 与真值标签**同源**（都按'是否平台测量'判）⇒ 本 F1 是**上界**，不代表泛化能力；要真校准需引文级标注的外部语料（未做）。",
   "cases": [
     {
       "id": "cf11",
       "card": "IG01",
       "source_id": "ig-01",
+      "mechanism_class": "none",
       "atom_ref": "data/cards_665/fixtures/ig-01.cpp",
       "original_assertion": "有符号整数溢出是 UB（不是回绕）：标准规定结果超出类型可表示范围时行为未定义",
       "original_citation": {
@@ -54,6 +79,7 @@
       "id": "cf12",
       "card": "IG02",
       "source_id": "ig-02",
+      "mechanism_class": "none",
       "atom_ref": "data/cards_665/fixtures/ig-02.cpp",
       "original_assertion": "数组越界访问是 UB：即使没崩，语义也已不被保证",
       "original_citation": {
@@ -83,6 +109,7 @@
       "id": "cf13",
       "card": "IG03",
       "source_id": "ig-03",
+      "mechanism_class": "none",
       "atom_ref": "data/cards_665/fixtures/ig-03.cpp",
       "original_assertion": "delete 空指针是标准保证的 no-op，不是不安全操作",
       "original_citation": {
@@ -112,6 +139,7 @@
       "id": "cf14",
       "card": "IG05",
       "source_id": "ig-05",
+      "mechanism_class": "machine_marker",
       "atom_ref": "data/cards_665/fixtures/ig-05.cpp",
       "original_assertion": "在本机 x86-64 MinGW-w64 上 sizeof(unique_ptr<int>) 等于 sizeof(void*)",
       "original_citation": {
@@ -129,18 +157,19 @@
       "ground_truth": "dependent",
       "operator": {
         "citation_id": "EV-IG05",
-        "dependent": false,
-        "mechanism": "断言与引文无显著语义重叠",
-        "verdict_if_citation_false": "仍成立（独立）",
+        "dependent": true,
+        "mechanism": "断言自报机器/平台相关实测（标记：本机/sizeof(/x86-64）⇒ 支撑面只有实测",
+        "verdict_if_citation_false": "UNCERTAIN（需重新取证）",
         "confidence": "low(prototype)"
       },
-      "operator_prediction": "independent",
-      "agree": false
+      "operator_prediction": "dependent",
+      "agree": true
     },
     {
       "id": "cf15",
       "card": "IG06",
       "source_id": "ig-06",
+      "mechanism_class": "none",
       "atom_ref": "data/cards_665/fixtures/ig-06.cpp",
       "original_assertion": "用 weak_ptr 断开环后两个对象都能析构（weak_ptr 不增加引用计数）",
       "original_citation": {
@@ -170,6 +199,7 @@
       "id": "cf16",
       "card": "IG07",
       "source_id": "ig-07",
+      "mechanism_class": "none",
       "atom_ref": "data/cards_665/fixtures/ig-07.cpp",
       "original_assertion": "解引用空指针是 UB（不保证一定段错误）",
       "original_citation": {
@@ -199,6 +229,7 @@
       "id": "cf17",
       "card": "IG08",
       "source_id": "ig-08",
+      "mechanism_class": "none",
       "atom_ref": "data/cards_665/fixtures/ig-08.cpp",
       "original_assertion": "整数除零是 UB/信号，不是 C++ 异常（catch(...) 抓不到）",
       "original_citation": {
@@ -228,6 +259,7 @@
       "id": "cf18",
       "card": "IG11",
       "source_id": "ig-11",
+      "mechanism_class": "machine_marker",
       "atom_ref": "data/cards_665/fixtures/ig-11.cpp",
       "original_assertion": "在本机 MinGW-w64 上 sizeof(int) 等于 4",
       "original_citation": {
@@ -245,18 +277,19 @@
       "ground_truth": "dependent",
       "operator": {
         "citation_id": "EV-IG11",
-        "dependent": false,
-        "mechanism": "断言与引文无显著语义重叠",
-        "verdict_if_citation_false": "仍成立（独立）",
+        "dependent": true,
+        "mechanism": "断言自报机器/平台相关实测（标记：本机/sizeof(/mingw）⇒ 支撑面只有实测",
+        "verdict_if_citation_false": "UNCERTAIN（需重新取证）",
         "confidence": "low(prototype)"
       },
-      "operator_prediction": "independent",
-      "agree": false
+      "operator_prediction": "dependent",
+      "agree": true
     },
     {
       "id": "cf19",
       "card": "IG12",
       "source_id": "ig-12",
+      "mechanism_class": "none",
       "atom_ref": "data/cards_665/fixtures/ig-12.cpp",
       "original_assertion": "vector<bool> 是位压缩特化，取 &v[0] 得不到 bool*",
       "original_citation": {
@@ -286,6 +319,7 @@
       "id": "cf20",
       "card": "IG15",
       "source_id": "ig-15",
+      "mechanism_class": "none",
       "atom_ref": "data/cards_665/fixtures/ig-15.cpp",
       "original_assertion": "具名右值引用形参是左值，直接传递会走拷贝（需显式 std::move）",
       "original_citation": {

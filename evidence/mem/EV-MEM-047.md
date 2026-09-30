@@ -15,7 +15,7 @@ fixture: Examples/atoms/_c_strbound.c
 command: |
   gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_strbound.c -o Examples/atoms/_c_strbound.asm
   gcc -std=c11 -O2 -Wall -Wextra Examples/atoms/_c_strbound.c -o build/c648/_c_strbound.exe
-  build/c648/_c_strbound.exe > Examples/atoms/_c_strbound.out
+  build/c648/_c_strbound.exe
 artifact: Examples/atoms/_c_strbound.asm
 artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_strbound.c -o Examples/atoms/_c_strbound.asm
 artifact_sha256: 1ba9f95a9314d6ddb22bcbdb05751ce0343fb17a32262dc36b19e9a2bed23767

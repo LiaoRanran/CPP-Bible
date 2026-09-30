@@ -15,7 +15,7 @@ fixture: Examples/atoms/_c_fnptr.c
 command: |
   gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_fnptr.c -o Examples/atoms/_c_fnptr.asm
   gcc -std=c11 -O2 -Wall -Wextra Examples/atoms/_c_fnptr.c -o build/c648/_c_fnptr.exe
-  build/c648/_c_fnptr.exe > Examples/atoms/_c_fnptr.out
+  build/c648/_c_fnptr.exe
 artifact: Examples/atoms/_c_fnptr.asm
 artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_fnptr.c -o Examples/atoms/_c_fnptr.asm
 artifact_sha256: a013afa520d2be26bd3639c8d93dcb7099a79bb7d6777b1506031fa62028f28f

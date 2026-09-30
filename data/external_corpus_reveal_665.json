@@ -1,6 +1,6 @@
 {
   "schema": "queyi-external-corpus-reveal/v2",
-  "generated_at": "2026-09-29",
+  "generated_at": "2026-09-30",
   "generated_by": "tools/external_corpus_reveal_665.py",
   "detector_reuse": "import tools/external_corpus_662.py::detect（唯一判据），结果另存 665 文件",
   "total": 40,
@@ -9,6 +9,16 @@
   "unknown": 5,
   "not_error": 3,
   "detect_rate_pct": 43.8,
+  "denominator": {
+    "value": 32,
+    "meaning": "catch+miss（可测且非测量类的样本）",
+    "excluded": {
+      "unknown（本机无检测器）": 5,
+      "not_error（对照，本不是缺陷）": 3
+    },
+    "all_samples": 40
+  },
+  "rate_pct_all_samples": 35.0,
   "by_layer": {
     "A_local": {
       "total": 25,
@@ -324,7 +334,7 @@
       "detector": "compiler-warn",
       "layer": "A_local",
       "verdict": "catch",
-      "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_shvv47t0\\s.cpp:1:25: warning: addr"
+      "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_mcpeow7f\\s.cpp:1:25: warning: addr"
     },
     {
       "id": "d3-32",
@@ -342,7 +352,7 @@
       "detector": "compiler-warn",
       "layer": "A_local",
       "verdict": "catch",
-      "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_tobqk1y1\\s.cpp:2:55: warning: comp"
+      "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_bgxwgggi\\s.cpp:2:55: warning: comp"
     },
     {
       "id": "d3-34",
@@ -351,7 +361,7 @@
       "detector": "compiler-warn",
       "layer": "A_local",
       "verdict": "catch",
-      "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_k837ekcv\\s.cpp:1:20: warning: ISO "
+      "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_1cjwifp_\\s.cpp:1:20: warning: ISO "
     },
     {
       "id": "d3-35",

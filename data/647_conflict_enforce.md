@@ -15,38 +15,17 @@
 
 ## 二、对**新判决面**实跑（真实 verified 卡，当作新判决；**不回溯历史**）
 
-- 判决数：**23**；动作分布 `{'block': 23}`
-- **被 block：23**；判决态被改变：**23**
+- 判决数：**23**；动作分布 `{'pass': 21, 'block': 1, 'warn': 1}`
+- **被 block：1**；判决态被改变：**1**
 
 ### 2.1 ⚠️ 真实卡上的实际拦截（**生产影响，必须看**）
 
-- 实测：C ≥ 0.8 且双方有证据的卡 **23 张**，**判决态被改变 23 条** ⇒ **enforce 下这些卡会被真的改判为 `fail`**（不是纸面推演）。
+- 实测：C ≥ 0.8 且双方有证据的卡 **1 张**，**判决态被改变 1 条** ⇒ **enforce 下这些卡会被真的改判为 `fail`**（不是纸面推演）。
 
 | 卡 | 动作 | C | 型 | 双方证据 | 判决态被改变 |
 |---|---|---|---|---|---|
-| `ATOM-CONC-FENCE-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-CONC-LOCK-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-CONC-RACE-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-HIST-AUTOPTR-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-ALIGN-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-ALLOC-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-LEAK-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-MOVE-002` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-NEW-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-PERF-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-PERF-002` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-PERF-003` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-RAII-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-RAII-002` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-RVREF-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-SHARED-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-SHARED-002` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-UNIQUE-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-UNIQUE-002` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-VALUE-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-VALUE-002` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-WEAK-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-UB-GRAY-001` | **block** | 2.0 | RR/EE | True | ⚠️ 是 |
+| `ATOM-MEM-PERF-003` | **block** | 1.333 | RR/EE | True | ⚠️ 是 |
+| `ATOM-MEM-UNIQUE-002` | **warn** | 0.5 | RR/EE | True | 否 |
 
 - **EE 型由「≥2 条引用且有悬挂」推出 ⇒ 可能是误判**（证据 id 与证据文件名口径不一致会造假悬挂）——本批**未**逐一核实该卡是否真悬挂引用；
 - 若判定为误拦：`QUEYI_PROTECTOR_MODE=shadow` 立即回滚（只标记不改判）。
@@ -65,29 +44,29 @@
 
 | 卡 | 动作 | C | 型 | 双方证据 | 判决态改变 |
 |---|---|---|---|---|---|
-| `ATOM-CONC-FENCE-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-CONC-LOCK-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-CONC-RACE-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-HIST-AUTOPTR-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-ALIGN-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-ALLOC-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-LEAK-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-MOVE-002` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-NEW-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-PERF-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-PERF-002` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-PERF-003` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-RAII-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-RAII-002` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-RVREF-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-SHARED-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-SHARED-002` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-UNIQUE-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-UNIQUE-002` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-VALUE-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-VALUE-002` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-MEM-WEAK-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
-| `ATOM-UB-GRAY-001` | block | 2.0 | RR/EE | True | ⚠️ 是 |
+| `ATOM-CONC-FENCE-001` | pass | 0.0 | RR | False | 否 |
+| `ATOM-CONC-LOCK-001` | pass | 0.0 | RR | False | 否 |
+| `ATOM-CONC-RACE-001` | pass | 0.0 | RR | False | 否 |
+| `ATOM-HIST-AUTOPTR-001` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-ALIGN-001` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-ALLOC-001` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-LEAK-001` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-MOVE-002` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-NEW-001` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-PERF-001` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-PERF-002` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-PERF-003` | block | 1.333 | RR/EE | True | ⚠️ 是 |
+| `ATOM-MEM-RAII-001` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-RAII-002` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-RVREF-001` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-SHARED-001` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-SHARED-002` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-UNIQUE-001` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-UNIQUE-002` | warn | 0.5 | RR/EE | True | 否 |
+| `ATOM-MEM-VALUE-001` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-VALUE-002` | pass | 0.0 | RR | False | 否 |
+| `ATOM-MEM-WEAK-001` | pass | 0.0 | RR | False | 否 |
+| `ATOM-UB-GRAY-001` | pass | 0.0 | RR | False | 否 |
 
 ## 四、误判风险评估 + 回滚方案
 

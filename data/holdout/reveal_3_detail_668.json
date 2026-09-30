@@ -1,0 +1,386 @@
+{
+  "schema": "queyi-holdout-reveal-detail/1",
+  "generated_by": "tools/holdout_reveal_3_665.py",
+  "generated_at": "2026-09-30",
+  "summary_for": "data/holdout_reveal_3_665.json",
+  "caliber": "sanitizer 类：-O0 + -O2 两档都跑，任一档报出即 catch；warn/cross/link 类：单次本机编译；unknown = 检测器不可用（不计入分母）",
+  "opt_levels": [
+    "-O0",
+    "-O2"
+  ],
+  "denominator": {
+    "value": 16,
+    "meaning": "catch+miss（可测真错样本）",
+    "excluded": {
+      "detector_unknown": 1,
+      "label_unknown": 4
+    },
+    "all_error_labeled": 17
+  },
+  "env": {
+    "wsl_gpp": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "local_gpp": "g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+    "local_clang": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+    "host": "win32",
+    "python": "3.13.13",
+    "roll": "sanitizer 类在 WSL 里编译运行；warn/cross/link 类用本机编译器；WSL 不可用时记 unknown"
+  },
+  "per_sample": [
+    {
+      "id": "h1",
+      "planted": true,
+      "detector": "tsan",
+      "verdict": "catch",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "tsan 命中[-O0(rc=66) single_total=100000 race_ops_total=200000 safe_ops_total=200000 safe_final=200000 ================== WARNING: ThreadSanitizer: data race (pid=1122)   Read of size 4 at 0x55555555d01c by thread T2:    ; -O2(rc=66) single_t"
+    },
+    {
+      "id": "h2",
+      "planted": "unknown",
+      "detector": "unknown",
+      "verdict": "unknown",
+      "opts_seen": [],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "无本地检测器"
+    },
+    {
+      "id": "h3",
+      "planted": false,
+      "detector": "wunsequenced",
+      "verdict": "catch",
+      "opts_seen": [],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "g++ -Wunsequenced 告警"
+    },
+    {
+      "id": "h4",
+      "planted": "unknown",
+      "detector": "compiler-warn",
+      "verdict": "catch",
+      "opts_seen": [],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "警告 8 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpwmgf2c05\\_atom_auto_ptr.cpp:32:52:"
+    },
+    {
+      "id": "h5",
+      "planted": true,
+      "detector": "ubsan",
+      "verdict": "miss",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "ubsan 两档均无报告[-O0(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是; -O2(rc=0) A 函数返回=1 内存实际=1073741824 自洽=否 B UB路径=1073741824 合规路径=1073741824 一致=是]"
+    },
+    {
+      "id": "h6",
+      "planted": "unknown",
+      "detector": "cross-compile",
+      "verdict": "miss",
+      "opts_seen": [],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "两编译器输出一致"
+    },
+    {
+      "id": "h7",
+      "planted": true,
+      "detector": "asan",
+      "verdict": "catch",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==1236==ERROR: LeakSanitizer: detected memory leaks  Indirect leak of 32 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fe548 ; -O2(rc=1) =========="
+    },
+    {
+      "id": "h8",
+      "planted": true,
+      "detector": "asan",
+      "verdict": "catch",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==1290==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 4 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fd9c7 in ; -O2(rc=1) =========="
+    },
+    {
+      "id": "h9",
+      "planted": "unknown",
+      "detector": "compiler-warn",
+      "verdict": "miss",
+      "opts_seen": [],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "无告警"
+    },
+    {
+      "id": "h10",
+      "planted": true,
+      "detector": "unknown",
+      "verdict": "unknown",
+      "opts_seen": [],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "无本地检测器"
+    },
+    {
+      "id": "h11",
+      "planted": false,
+      "detector": "unknown",
+      "verdict": "unknown",
+      "opts_seen": [],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "无本地检测器"
+    },
+    {
+      "id": "h12",
+      "planted": false,
+      "detector": "unknown",
+      "verdict": "unknown",
+      "opts_seen": [],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "无本地检测器"
+    },
+    {
+      "id": "h13",
+      "planted": false,
+      "detector": "compiler-warn",
+      "verdict": "miss",
+      "opts_seen": [],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "无告警"
+    },
+    {
+      "id": "h14",
+      "planted": true,
+      "detector": "linker",
+      "verdict": "catch",
+      "opts_seen": [],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "链接失败(多定义/缺符号)"
+    },
+    {
+      "id": "h15",
+      "planted": true,
+      "detector": "asan",
+      "verdict": "catch",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==1344==ERROR: AddressSanitizer: out of memory: allocator is trying to allocate 0x5d21dba000 bytes     #0 0x7ffff78fe990 in operator n; -O2(rc=1) =========="
+    },
+    {
+      "id": "h16",
+      "planted": false,
+      "detector": "ubsan",
+      "verdict": "miss",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "ubsan 两档均无报告[-O0(rc=0) ret_plain copy=1 move=0 / ret_moved copy=0 move=1; -O2(rc=0) ret_plain copy=1 move=0 / ret_moved copy=0 move=1]"
+    },
+    {
+      "id": "h17",
+      "planted": false,
+      "detector": "asan",
+      "verdict": "miss",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "asan 两档均无报告[-O0(rc=0) sizeof(std::string)=32 empty capacity=15 (SSO buffer chars) len=15 allocs=0 len=16 allocs=1; -O2(rc=0) sizeof(std::string)=32 empty capacity=15 (SSO buffer chars) len=15 allocs=0 len=16 allocs=1]"
+    },
+    {
+      "id": "h18",
+      "planted": false,
+      "detector": "ubsan",
+      "verdict": "miss",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "ubsan 两档均无报告[-O0(rc=0) alignof(Aligned)=16 sizeof(Aligned)=16 memcpy roundtrip x=7; -O2(rc=0) alignof(Aligned)=16 sizeof(Aligned)=16 memcpy roundtrip x=7]"
+    },
+    {
+      "id": "h19",
+      "planted": false,
+      "detector": "asan",
+      "verdict": "miss",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "asan 两档均无报告[-O0(rc=0) arena: calls=5 bytes=124 heap_new=0 std  : heap_new=5 (growth reallocations); -O2(rc=0) arena: calls=5 bytes=124 heap_new=0 std  : heap_new=5 (growth reallocations)]"
+    },
+    {
+      "id": "h20",
+      "planted": false,
+      "detector": "compiler-warn",
+      "verdict": "miss",
+      "opts_seen": [],
+      "is_665_new": false,
+      "source": "Examples/atoms",
+      "note": "无告警"
+    },
+    {
+      "id": "h21",
+      "planted": true,
+      "detector": "ubsan",
+      "verdict": "catch",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": true,
+      "source": "data/cards_665/fixtures",
+      "note": "ubsan 命中[-O0(rc=1) /mnt/c/Users/ASUS/AppData/Local/Temp/tmphi4vjnu7/ig-01.cpp:1:31: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'; -O2(rc=1) /mnt/c/Users/ASUS/AppData/Local/Temp/tmphi4vjnu7/ig-01"
+    },
+    {
+      "id": "h22",
+      "planted": true,
+      "detector": "asan",
+      "verdict": "catch",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": true,
+      "source": "data/cards_665/fixtures",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==1660==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff4f00034 at pc 0x5555555552e7 bp 0x7fffffffe480 sp 0x7fffffffe; -O2(rc=1) =========="
+    },
+    {
+      "id": "h23",
+      "planted": true,
+      "detector": "asan",
+      "verdict": "catch",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": true,
+      "source": "data/cards_665/fixtures",
+      "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==1712==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x5555555551d8 bp 0x7fffffff; -O2(rc=1) AddressSan"
+    },
+    {
+      "id": "h24",
+      "planted": true,
+      "detector": "ubsan",
+      "verdict": "catch",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": true,
+      "source": "data/cards_665/fixtures",
+      "note": "ubsan 命中[-O0(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpcvbtmpri/ig-08.cpp:1:42: runtime error: division by zero; -O2(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpcvbtmpri/ig-08.cpp:1:42: runtime error: division by zero]（档位 -O0,-O2）"
+    },
+    {
+      "id": "h25",
+      "planted": true,
+      "detector": "asan",
+      "verdict": "catch",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": true,
+      "source": "data/cards_665/fixtures",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==1816==ERROR: AddressSanitizer: alloc-dealloc-mismatch (operator new [] vs operator delete) on 0x502000000010     #0 0x7ffff78ff5e8 i; -O2(rc=1) =========="
+    },
+    {
+      "id": "h26",
+      "planted": true,
+      "detector": "asan",
+      "verdict": "catch",
+      "opts_seen": [
+        "-O0"
+      ],
+      "is_665_new": true,
+      "source": "data/cards_665/fixtures",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==1868==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x55555555526d bp 0x7fffffffe4f0 sp 0x7fffffffe4e]（档位 -O0,-O2）"
+    },
+    {
+      "id": "h27",
+      "planted": true,
+      "detector": "asan",
+      "verdict": "catch",
+      "opts_seen": [
+        "-O0"
+      ],
+      "is_665_new": true,
+      "source": "data/cards_665/fixtures",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==1921==ERROR: AddressSanitizer: attempting double-free on 0x502000000010 in thread T0:     #0 0x7ffff78ff5e8 in operator delete(void*]（档位 -O0,-O2）"
+    },
+    {
+      "id": "h28",
+      "planted": true,
+      "detector": "asan",
+      "verdict": "catch",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": true,
+      "source": "data/cards_665/fixtures",
+      "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==1974==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x555555555347 bp 0x7fffffff; -O2(rc=1) AddressSan"
+    },
+    {
+      "id": "h29",
+      "planted": true,
+      "detector": "ubsan",
+      "verdict": "miss",
+      "opts_seen": [
+        "-O0",
+        "-O2"
+      ],
+      "is_665_new": true,
+      "source": "data/cards_665/fixtures",
+      "note": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]"
+    },
+    {
+      "id": "h30",
+      "planted": true,
+      "detector": "asan",
+      "verdict": "catch",
+      "opts_seen": [
+        "-O0"
+      ],
+      "is_665_new": true,
+      "source": "data/cards_665/fixtures",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==2078==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 256 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fe6c8 i]（档位 -O0,-O2）"
+    }
+  ],
+  "changed_vs_previous_run": [],
+  "note": "`opts_seen` 是从 note 文本**解析**出来的派生量（不另存状态）。本文件与主报告由**同一次运行**写出，两者不一致即为缺陷。`changed_vs_previous_run` 说明'重跑改变了哪些判定'——**变化本身不是能力提升**，是口径/测量配置变化的结果。"
+}

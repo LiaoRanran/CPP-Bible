@@ -1,0 +1,9 @@
+{
+  "schema": "queyi-evidence-redirect/668",
+  "generated_by": "tools/evidence_cmd_redirect_668.py",
+  "rule": "删掉冗余的 shell 重定向；运行器自己捕获 stdout 并与 expected.run 比对",
+  "cards_scanned": 67,
+  "pending": 0,
+  "cards_affected": [],
+  "rows": []
+}

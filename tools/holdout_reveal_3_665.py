@@ -27,6 +27,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import re
 import subprocess
 import time
 
@@ -35,6 +36,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 HOLD = os.path.join(ROOT, "data", "holdout", "holdout.json")
 R2 = os.path.join(ROOT, "data", "holdout_reveal_2_662.json")
 OUT = os.path.join(ROOT, "data", "holdout_reveal_3_665.json")
+#: 668：**逐样本明细 + 运行环境**单独落盘到 `data/holdout/`（同一次运行、同一个生成器）。
+DETAIL = os.path.join(ROOT, "data", "holdout", "reveal_3_detail_668.json")
 FIXTURES = os.path.join(ROOT, "data", "cards_665", "fixtures")
 
 #: 665 C1 新增样本的复现计划（文件名相对 `data/cards_665/fixtures/`）
@@ -113,12 +116,46 @@ def _load_ext665():
     return m
 
 
+#: 从 note 文本里解析**实际跑过的档位**（派生量：不另存一份状态，避免第二事实源）
+_OPT_RE = re.compile(r"(-O[0-3sg])\(")
+
+
+def opts_from_note(note: str) -> list[str]:
+    """返回该样本实际被编译过的优化档（如 `['-O0', '-O2']`）。"""
+    return sorted(set(_OPT_RE.findall(note)))
+
+
+def env_probe() -> dict:
+    """记录**跑出这些数字的环境** —— 数字离开环境就不可复算。"""
+    import sys  # 局部 import：只在真要探环境时才需要
+
+    wsl = subprocess_run(["wsl", "-e", "bash", "-lc", "g++ --version | head -1"])[1].strip()
+    gpp = (subprocess_run(["g++", "--version"])[1].strip().splitlines() or [""])[0]
+    clang = (subprocess_run(["clang++", "--version"])[1].strip().splitlines() or [""])[0]
+    return {
+        "wsl_gpp": wsl.splitlines()[0].strip() if wsl else "(不可用)",
+        "local_gpp": gpp.strip() or "(不可用)",
+        "local_clang": clang.strip() or "(不可用)",
+        "host": sys.platform,
+        "python": sys.version.split()[0],
+        "roll": "sanitizer 类在 WSL 里编译运行；warn/cross/link 类用本机编译器；WSL 不可用时记 unknown",
+    }
+
+
 def main() -> int:
     rv = _load_rv661()
     # 读 **canonical 合并视图**（旧 20 + 665 的 10）。直接读 holdout.json 不行：
     # 那个文件是 holdout_658.py 的产物，旧工具一跑就会把 665 的追加抹掉（本批踩过）。
     h = _load_ext665().load_merged()
     r2 = json.load(open(R2, encoding="utf-8")) if os.path.isfile(R2) else {}
+    # 668：**先读上一次的落盘**，好在明细里给出"哪个样本变了"（重跑不是覆盖，是留痕）
+    old_map: dict = {}
+    if os.path.isfile(OUT):
+        try:
+            old_map = {x["id"]: x.get("verdict") for x in
+                       json.load(open(OUT, encoding="utf-8")).get("results", [])}
+        except Exception:  # noqa: BLE001
+            old_map = {}
     r2_map = {x["id"]: x for x in r2.get("results", [])}
 
     results = []
@@ -176,12 +213,27 @@ def main() -> int:
     denom = err_catch + err_miss
     rate = (err_catch / denom * 100) if denom else 0.0
     prev = r2.get("error_subset", {})
+    opt_levels = list(getattr(rv, "OPT_LEVELS", ()))
+    env = env_probe()
     rep = {
         "schema": "queyi-holdout-reveal/v3",
         "reveal_index": 3,
         "revealed_at": time.strftime("%Y-%m-%d"),
         "generated_by": "tools/holdout_reveal_3_665.py",
         "detector_reuse": "复用 tools/holdout_reveal_661.py::detect（同一判据）；新样本仅切换 ATOMS 目录",
+        # 668：口径与分母**由生成器写进产物**（666 的 81.2% 就是因为口径写在工具注释里、
+        # 数字写在文档里、两边没人对过）。谁引用这个数字，就必须引用这两个字段。
+        "caliber": (f"sanitizer 类：{' + '.join(opt_levels)} 两档都跑，任一档报出即 catch；"
+                    "warn/cross/link 类：单次本机编译；unknown = 检测器不可用（不计入分母）"),
+        "opt_levels": opt_levels,
+        "denominator": {
+            "value": denom,
+            "meaning": "catch+miss（可测真错样本）",
+            "excluded": {"detector_unknown": err_unknown, "label_unknown": unknown_label},
+            "all_error_labeled": err_total,
+        },
+        "env": env,
+        "per_sample_detail": "data/holdout/reveal_3_detail_668.json",
         "labels": {"error": err_total, "control": ctrl_total, "unknown": unknown_label},
         "error_subset": {"total": err_total, "catch": err_catch, "miss": err_miss,
                          "unknown": err_unknown, "detect_rate_pct": round(rate, 1)},
@@ -207,17 +259,59 @@ def main() -> int:
         },
         "honest_addendum": (
             "666 A5 起**口径已变**：pipeline 不再只跑单一 `-O1`，而是**先 -O0、再 -O2 两档都跑**"
-            "（`rv661.detect`），任一档报出即判 catch。"
+            "（`rv661.detect` 读 `rv661.OPT_LEVELS`），任一档报出即判 catch。"
             "所以本报告的 `detect_rate_pct` 是**双档口径**；它高于 665 当时的 66.7% "
             "**不是**因为验证器变强，而是因为旧口径把'只在 -O0 暴露'的缺陷记成了假 miss。"
-            "本节的 -O0/-O1 敏感性复跑因此退化为**历史对照**，保留作证据。"),
+            "本节的 -O0/-O1 敏感性复跑因此退化为**历史对照**，保留作证据。"
+            "【668 补】666 期间对外声称的 **81.2%（13/16）从未出现在任何产物里**："
+            "当时只改了 `detect` 的档位、**没有重跑本工具**，13/16 是未经落盘的估计。"
+            "668 重跑后真实值是 `error_subset.detect_rate_pct`（见本文件），"
+            "逐样本变化见 `data/holdout/reveal_3_detail_668.json::changed_vs_previous_run`。"),
         "results": results,
     }
     json.dump(rep, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+
+    # —— 668：逐样本明细 + 环境，落到 data/holdout/（同一次运行、同一个生成器）——
+    opt_levels = list(getattr(rv, "OPT_LEVELS", ()))
+    per_sample = [
+        {"id": r["id"], "planted": r["planted"], "detector": r["detector"],
+         "verdict": r["verdict"], "opts_seen": opts_from_note(r["note"]),
+         "is_665_new": r["is_665_new"],
+         "source": ("data/cards_665/fixtures" if r["is_665_new"] else "Examples/atoms"),
+         "note": r["note"]}
+        for r in results
+    ]
+    detail = {
+        "schema": "queyi-holdout-reveal-detail/1",
+        "generated_by": "tools/holdout_reveal_3_665.py",
+        "generated_at": time.strftime("%Y-%m-%d"),
+        "summary_for": "data/holdout_reveal_3_665.json",
+        "caliber": rep["caliber"],
+        "opt_levels": opt_levels,
+        "denominator": rep["denominator"],
+        "env": env,
+        "per_sample": per_sample,
+        "changed_vs_previous_run": [
+            {"id": r["id"], "before": old_map.get(r["id"]), "after": r["verdict"],
+             "planted": r["planted"], "detector": r["detector"]}
+            for r in results
+            if old_map and old_map.get(r["id"]) != r["verdict"]
+        ],
+        "note": ("`opts_seen` 是从 note 文本**解析**出来的派生量（不另存状态）。"
+                 "本文件与主报告由**同一次运行**写出，两者不一致即为缺陷。"
+                 "`changed_vs_previous_run` 说明'重跑改变了哪些判定'——"
+                 "**变化本身不是能力提升**，是口径/测量配置变化的结果。"),
+    }
+    os.makedirs(os.path.dirname(DETAIL), exist_ok=True)
+    with open(DETAIL, "w", encoding="utf-8", newline="\n") as fh:
+        json.dump(detail, fh, ensure_ascii=False, indent=2)
+        fh.write("\n")
+
     print(f"\n真错子集({err_total}): catch={err_catch} miss={err_miss} unknown={err_unknown} → 检出率={rate:.1f}%")
     print(f"对照子集({ctrl_total}): false_positive={ctrl_fp}；unknown 标签={unknown_label}")
     print(f"reveal_2 检出率={prev.get('detect_rate_pct')}% → reveal_3={rate:.1f}%")
     print(f"已写 {os.path.relpath(OUT, ROOT)}")
+    print(f"已写 {os.path.relpath(DETAIL, ROOT)}（逐样本 {len(per_sample)} 条 + 环境）")
     return 0
 
 

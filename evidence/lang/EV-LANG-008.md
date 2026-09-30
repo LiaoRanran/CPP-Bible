@@ -15,7 +15,7 @@ fixture: Examples/atoms/_c_bitfield.c
 command: |
   gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_bitfield.c -o Examples/atoms/_c_bitfield.asm
   gcc -std=c11 -O2 -Wall -Wextra Examples/atoms/_c_bitfield.c -o build/c648/_c_bitfield.exe
-  build/c648/_c_bitfield.exe > Examples/atoms/_c_bitfield.out
+  build/c648/_c_bitfield.exe
 artifact: Examples/atoms/_c_bitfield.asm
 artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_bitfield.c -o Examples/atoms/_c_bitfield.asm
 artifact_sha256: 9610238ae891e83c4f7b917dbe72e0d679a9b02a2b7e975d7541d630dbe8112b

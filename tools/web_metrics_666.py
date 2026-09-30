@@ -15,9 +15,10 @@
 |---|---|
 | 卡数 | `counts_659.ATOMS_REAL` / `ATOMS_DRAFT`（扫 `atoms/`） |
 | 规则数 | `gate_engine.RULES`（与 `data/_gate_rules.json` 同源） |
-| 检出率 | `data/holdout_reveal_3_665.json::error_subset.detect_rate_pct`（**双档口径**） |
+| 检出率 | `data/holdout_reveal_3_665.json::error_subset.detect_rate_pct`；**口径与分母从产物的 `caliber`/`denominator` 读**（668 起，不写死） |
 | 账本事件 | `data/646_authority_rule_annotation.jsonl` 行数（452 红线所在账本） |
-| 外部语料 | `data/external_corpus_reveal_665.json::detect_rate_pct` |
+| 外部语料 | `data/external_corpus_reveal_665.json`：**两个分母都算**（catch+miss 与全样本） |
+| 反事实 | `data/counterfactual_cases_665.json::scores`（P/R/F1 + 分母 + 第三判据命中数） |
 | 时间线 | 关键批次里程碑（写死**批次与含义**，不写死数字）+ `git log` 最近提交 |
 
 边界（为什么不是"抄一份 status.json"）
@@ -117,10 +118,17 @@ def collect() -> dict:
     try:
         r3 = _json("data/holdout_reveal_3_665.json")
         sub = r3.get("error_subset", {})
+        # 668：**口径与分母从产物读**，不许在工具里写死 —— 666 的 81.2% 就是
+        # "口径字符串写在工具里、数字写在文档里、两边没人对过"造成的。
         detect = {"rate_pct": sub.get("detect_rate_pct"), "catch": sub.get("catch"),
                   "miss": sub.get("miss"), "unknown": sub.get("unknown"),
-                  "denominator": "catch+miss（可测；unknown 不计）",
-                  "caliber": "双档（-O0 与 -O2 都跑，任一档报出即 catch）",
+                  "den": (sub.get("catch") or 0) + (sub.get("miss") or 0),
+                  "denominator": (r3.get("denominator") or {}).get("meaning")
+                  or "产物未声明分母（旧产物）",
+                  "caliber": r3.get("caliber") or "产物未声明口径（旧产物）",
+                  "opt_levels": r3.get("opt_levels") or [],
+                  "env": (r3.get("env") or {}).get("wsl_gpp"),
+                  "detail": r3.get("per_sample_detail"),
                   "cmd": "python tools/holdout_reveal_3_665.py"}
     except Exception as e:  # noqa: BLE001
         unavailable.append(f"holdout_reveal_3_665.json: {e}")
@@ -129,12 +137,31 @@ def collect() -> dict:
     ext = None
     try:
         r = _json("data/external_corpus_reveal_665.json")
-        ext = {"rate_pct": r.get("detect_rate_pct"), "total": r.get("total"),
-               "catch": r.get("catch"), "miss": r.get("miss"), "unknown": r.get("unknown"),
+        catch, miss = r.get("catch") or 0, r.get("miss") or 0
+        total = r.get("total") or 0
+        ext = {"rate_pct": r.get("detect_rate_pct"),
+               "rate_pct_all": (round(catch / total * 100, 1) if total else None),
+               "total": total, "catch": catch, "miss": miss,
+               "unknown": r.get("unknown"), "den": catch + miss,
+               "denominator": r.get("denominator") or "catch+miss（产物未声明 ⇒ 这里按口径推算）",
                "cmd": "python tools/external_corpus_reveal_665.py"}
     except Exception as e:  # noqa: BLE001
         unavailable.append(f"external_corpus_reveal_665.json: {e}")
     m["external"] = ext
+
+    cf = None
+    try:
+        c = _json("data/counterfactual_cases_665.json")
+        sc = c.get("scores") or {}
+        cf = {"p": sc.get("precision"), "r": sc.get("recall"), "f1": sc.get("f1"),
+              "cases": c.get("cases_total"),
+              "denominator": (c.get("denominator") or {}).get("meaning")
+              or "产物未声明分母（旧产物）",
+              "third_criterion_hits": (c.get("third_criterion") or {}).get("hit_count"),
+              "cmd": "python tools/counterfactual_extend_665.py"}
+    except Exception as e:  # noqa: BLE001
+        unavailable.append(f"counterfactual_cases_665.json: {e}")
+    m["counterfactual"] = cf
 
     n_led = _count_lines(LEDGER)
     if n_led < 0:
@@ -168,7 +195,9 @@ def collect() -> dict:
         "unavailable": unavailable,
         "honest_note": ("本文件的**数字全部现算**（扫卡 / 读引擎 / 读 reveal 报告），"
                         "前端只渲染；拿不到的项记 null 并进 unavailable，不用占位值冒充。"
-                        "检出率是**双档口径**；与 665 的单档 66.7% 不可直接比较（旧值作废）。"),
+                        "**口径与分母从产物读**（`holdout.caliber` / `holdout.denominator`），"
+                        "不在这里写死。668 已把 holdout / external / counterfactual 三个率的"
+                        "现算值纳入 `--check` 比对范围（666 漏查这三项 ⇒ 曾出现假绿）。"),
     }
 
 
@@ -186,6 +215,18 @@ def selftest() -> int:
     chk("规则数 == 引擎条数", fresh["metrics"]["rules_total"] > 0,
         f"({fresh['metrics']['rules_total']})")
     chk("检出率可读", bool(fresh["metrics"]["holdout"]), "")
+    # 668：口径必须**来自产物**，不能是工具里写死的字符串
+    h = fresh["metrics"].get("holdout") or {}
+    chk("检出率带分母（数值）", isinstance(h.get("den"), int) and h["den"] > 0, f"(den={h.get('den')})")
+    chk("检出率带分母（说明）", bool(h.get("denominator")) and "未声明" not in str(h.get("denominator")), "")
+    chk("检出率带口径（来自产物）", bool(h.get("caliber")) and "未声明" not in str(h.get("caliber")), "")
+    chk("口径声明的档位 == 实际档位", h.get("opt_levels") == ["-O0", "-O2"], f"({h.get('opt_levels')})")
+    e = fresh["metrics"].get("external") or {}
+    chk("外部语料两个分母都在", e.get("rate_pct") is not None and e.get("rate_pct_all") is not None,
+        f"({e.get('rate_pct')} / {e.get('rate_pct_all')})")
+    c = fresh["metrics"].get("counterfactual") or {}
+    chk("反事实有 F1 与分母", c.get("f1") is not None and c.get("cases"),
+        f"(F1={c.get('f1')} n={c.get('cases')})")
     chk("账本事件 > 0", bool(fresh["metrics"]["ledger_events"]), "")
     chk("时间线非空", len(fresh["timeline"]) >= 5, f"({len(fresh['timeline'])})")
     chk("提交列表可读（无 git 时允许为空）", isinstance(fresh["commits"], list))
@@ -211,12 +252,27 @@ def main(argv: list[str] | None = None) -> int:
         if not os.path.isfile(OUT):
             print(f"[web666] ✗ 未落盘 {os.path.relpath(OUT, ROOT)}（先 --write）")
             return 1
-        old = _json("web/data/metrics_666.json")
+        # 668：读 **OUT**（可被测试指向别处），而不是硬编码路径 ——
+        # 原来 `--check` 无视 `OUT`，monkeypatch 掉的落盘文件对不上，测试只能"绕过"，
+        # 于是这条自检路径**从来没有被真正测过**。
+        with open(OUT, encoding="utf-8") as fh:
+            old = json.load(fh)
         drift = []
         for k in ("cards_real", "cards_draft", "rules_total", "ledger_events",
                   "transparency_log_entries"):
             if old.get("metrics", {}).get(k) != fresh["metrics"].get(k):
                 drift.append((k, old.get("metrics", {}).get(k), fresh["metrics"].get(k)))
+        # 668：**补齐射程** —— 666 的 --check 偏偏没查最要紧的两个率，
+        # 于是"落盘 81.2% / 现算 66.7%"共存了一个批次还报绿。
+        # 纪律（R4）：加了字段就必须能被"改一个数 ⇒ 变红"验证。
+        for key, fields in (("holdout", ("rate_pct", "catch", "miss", "unknown", "den")),
+                            ("external", ("rate_pct", "catch", "miss", "total", "unknown")),
+                            ("counterfactual", ("f1", "cases"))):
+            o = old.get("metrics", {}).get(key) or {}
+            n = fresh["metrics"].get(key) or {}
+            for f in fields:
+                if o.get(f) != n.get(f):
+                    drift.append((f"{key}.{f}", o.get(f), n.get(f)))
         for r in drift:
             print(f"[web666] ✗ 漂移 {r[0]}：落盘 {r[1]} → 现算 {r[2]}")
         print("[web666] " + ("✅ 与现算一致" if not drift else f"❌ {len(drift)} 项漂移（重跑 --write）"))

@@ -15,7 +15,7 @@ fixture: Examples/atoms/_c_intpromo.c
 command: |
   gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_intpromo.c -o Examples/atoms/_c_intpromo.asm
   gcc -std=c11 -O2 -Wall -Wextra Examples/atoms/_c_intpromo.c -o build/c648/_c_intpromo.exe
-  build/c648/_c_intpromo.exe > Examples/atoms/_c_intpromo.out
+  build/c648/_c_intpromo.exe
 artifact: Examples/atoms/_c_intpromo.asm
 artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_intpromo.c -o Examples/atoms/_c_intpromo.asm
 artifact_sha256: 8294058c9ff42b04e033aba984fae1c6b51c017e014d0a5d4a896ca58bcff08c

@@ -15,7 +15,7 @@ fixture: Examples/atoms/_c_malloc.c
 command: |
   gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_malloc.c -o Examples/atoms/_c_malloc.asm
   gcc -std=c11 -O2 -Wall -Wextra Examples/atoms/_c_malloc.c -o build/c648/_c_malloc.exe
-  build/c648/_c_malloc.exe > Examples/atoms/_c_malloc.out
+  build/c648/_c_malloc.exe
 artifact: Examples/atoms/_c_malloc.asm
 artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_malloc.c -o Examples/atoms/_c_malloc.asm
 artifact_sha256: b375bd2a05cd1a6737e185ea2f9767883b9ecbf3efad20b99e18d7c4696d72f5

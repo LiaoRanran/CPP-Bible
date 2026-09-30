@@ -1,0 +1,1225 @@
+{
+  "schema": "queyi-boundary-backfill/668",
+  "generated_by": "tools/semantic_scope_backfill_668.py",
+  "rule": "三元组只由**真实** mutation 基线现算（复用 boundary_backfill_657.triplet_for），四态只由 four_state_verdict_638.classify_card 判定；本工具**不新增**任何判据。",
+  "summary": {
+    "atoms_real": 42,
+    "atoms_draft650": 10,
+    "four_state_all": {
+      "pass": 26,
+      "unknown": 26
+    },
+    "four_state_real": {
+      "pass": 26,
+      "unknown": 16
+    },
+    "with_boundary": 26,
+    "counts_659_atoms_real": 42,
+    "counts_659_atoms_draft": 10
+  },
+  "gaps": {
+    "no_triplet": 26,
+    "no_triplet_and_in_scope": 0,
+    "no_triplet_because_draft": 26,
+    "scope_missing_any": 21,
+    "scope_missing_within_scope": 0,
+    "verdict": "没有可补的卡：回填范围内（verified / red-team-verified）且缺三元组的卡 = 0 张；其余 26 张全是 `draft`，按 657 既定规则『判决未定，不预先写边界』**不应**回填。"
+  },
+  "rows": [
+    {
+      "card": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc]",
+        "platform": "[riscv64, windows]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-CONC-001\n  - EV-CONC-002\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc]",
+        "platform": "[windows]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-CONC-003\n  - EV-CONC-004\nsources:\n  - {kind: cppreference",
+        "independent: true}",
+        "ref: \"std::atomic（RMW 在 x86-64 编译为带 lock 前缀指令，提供硬件同步开销；lock-free 为非保证属性）"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 11,
+      "scope": {
+        "cpp_standard": "[C++11, C++23]",
+        "compiler": "[gcc, clang]",
+        "platform": "[x86_64, linux]",
+        "input_domain": "\"多线程并发写非原子共享变量（存在 happens-before 缺失）\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-CONC-005\n  - EV-CONC-006\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/draft650/ATOM-DRAFT650-001.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/draft650/ATOM-DRAFT650-002.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/draft650/ATOM-DRAFT650-003.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/draft650/ATOM-DRAFT650-004.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/draft650/ATOM-DRAFT650-005.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/draft650/ATOM-DRAFT650-006.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/draft650/ATOM-DRAFT650-007.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/draft650/ATOM-DRAFT650-008.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/draft650/ATOM-DRAFT650-009.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/draft650/ATOM-DRAFT650-010.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++11, C++17]",
+        "compiler": "[gcc, clang, msvc]",
+        "platform": "[linux]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-HIST-001\n  - EV-MEM-003\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/lang/ATOM-LANG-BITFIELD-001.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [
+        "- EV-LANG-008\r\nsources:\r\n  - {kind: iso",
+        "a bit-field that immediately follows ano",
+        "a bit-field that immediately follows another bit-field in a structure shall be packed into adjacent bits of the same unit. If insufficient space remains",
+        "at: 2026-09-27",
+        "by: writer:agent}\r\npedagogy:\r\n  motivation: \"位域明明写死了比特数，为什么还说它不可移植？\"\r\n  socratic: \"把位域结构体直接 memcpy 成字节发出去，接收方凭什么还原？\"\r\n  predict_first: \"先猜 4 位位域存 -1 读回来是 -1 还是 15。\"\r\n---\r\n\r\n# ATOM-LANG-BITFIELD-001 · 位域的布局与 Plain int 位域的符号性都是实现定义的\r\n\r\n> 状态 `draft`：**verified 唯人签，Agent 不自置**（不代签）。待 human 签署后晋升。\r\n\r\n## 实测（gcc -std=c11 -O2）\r\n\r\n```\r\nbf_a=5 bf_b=21 bf_byte0=173 bf_byte1=15 bf_c_signed_readback=-1 bf_sizeof=4\r\n```\r\n\r\n## 反例：让它失败的实验\r\n\r\n`bf_c_signed_readback=-1` 只在「实现把 plain int 位域当 signed」时成立；换编译器即可变成 15。把它写进寄存器映射或序列化格式就是埋雷。\r\n\r\n## 标准依据\r\n\r\n> An implementation may allocate any addressable storage unit large enough to hold a bit- field. If enough space remains",
+        "independent: true}\r\nfirst_hand: true\r\nsuperiority: >-\r\n  常见材料只给结论；本卡给的是**同一次运行里的两个数字**——正确写法与「看起来对」的写法\r\n  各自的输出（见反例节），以及 N1570 对应条款的原文出处（可复核的字节偏移）。\r\ndepth:\r\n  layer: abi\r\nstatus_history:\r\n  - {level: draft",
+        "ref: \"ISO/IEC 9899:2011 6.7.2.1p11：An implementation may allocate any addressable storage unit large enough to hold a bit- field. If enough space remains",
+        "whether a bit-field that does not fit is put into the next unit or overlaps adjacent units is implementation-defined. The orde\r\n\r\n— ISO/IEC 9899:2011 6.7.2.1p11（N1570，字节偏移 359259，取自 https://port70.net/~nsz/c/c11/n1570.html#6.7.2.1p11）。\r\n\r\nC17（N2310）与 C23（N3096）本批**只留下载留痕**（PDF，本环境无解析库），条款号**未逐条核对**，需人核。\r\n\r\n## 边界（不该用在哪里）\r\n\r\n不要把位域用于寄存器映射或跨机序列化；要布局就显式用掩码与移位。"
+      ],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/lang/ATOM-LANG-DECAY-001.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [
+        "- EV-LANG-003\r\nsources:\r\n  - {kind: iso",
+        "at: 2026-09-27",
+        "by: writer:agent}\r\npedagogy:",
+        "independent: true}\r\nfirst_hand: true\r\nsuperiority: >-\r\n  常见材料只给结论；本卡给的是**同一次运行里的两个数字**——正确写法与「看起来对」的写法\r\n  各自的输出（见反例节），以及 N1570 对应条款的原文出处（可复核的字节偏移）。\r\ndepth:\r\n  layer: compiler\r\nstatus_history:\r\n  - {level: draft",
+        "ref: \"ISO/IEC 9899:2011 6.7.6.3p7：A declaration of a parameter as ''array of type'' shall be adjusted to ''qualified pointer to type",
+        "where the type qualifiers (if any) are those specified wit"
+      ],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/lang/ATOM-LANG-FNPTR-001.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [
+        "- EV-LANG-004\r\nsources:\r\n  - {kind: iso",
+        "at: 2026-09-27",
+        "by: writer:agent}\r\npedagogy:\r\n  motivation: \"转换能编译、地址也非空——那调用为什么还是 UB？\"\r\n  socratic: \"如果两者参数个数不同，栈上的实参由谁负责匹配？\"\r\n  predict_first: \"先猜编译器会不会在该转换处报警告。\"\r\n---\r\n\r\n# ATOM-LANG-FNPTR-001 · 函数指针必须与目标函数类型兼容，否则调用是未定义行为\r\n\r\n> 状态 `draft`：**verified 唯人签，Agent 不自置**（不代签）。待 human 签署后晋升。\r\n\r\n## 实测（gcc -std=c11 -O2）\r\n\r\n```\r\nbad_addr_nonzero=1 fnptr_sizeof=8 good_call=5\r\n```\r\n\r\n## 反例：让它失败的实验\r\n\r\n`bad_addr_nonzero=1` 说明「转换本身能过、地址也非空」——于是容易误以为调用也安全。真正的判据是编译器的 `-Wcast-function-type` 诊断与标准条款，而不是「它跑起来了」。\r\n\r\n## 标准依据\r\n\r\n> If the function is defined with a type that is not compatible with the type (of the expression) pointed to by the expression that denotes the called function",
+        "independent: true}\r\nfirst_hand: true\r\nsuperiority: >-\r\n  常见材料只给结论；本卡给的是**同一次运行里的两个数字**——正确写法与「看起来对」的写法\r\n  各自的输出（见反例节），以及 N1570 对应条款的原文出处（可复核的字节偏移）。\r\ndepth:\r\n  layer: compiler\r\nstatus_history:\r\n  - {level: draft",
+        "ref: \"ISO/IEC 9899:2011 6.5.2.2p9：If the function is defined with a type that is not compatible with the type (of the expression) pointed to by the expression that denotes the called function",
+        "t",
+        "the behavior is undefined.\r\n\r\n— ISO/IEC 9899:2011 6.5.2.2p9（N1570，字节偏移 274411，取自 https://port70.net/~nsz/c/c11/n1570.html#6.5.2.2p9）。\r\n\r\nC17（N2310）与 C23（N3096）本批**只留下载留痕**（PDF，本环境无解析库），条款号**未逐条核对**，需人核。\r\n\r\n## 边界（不该用在哪里）\r\n\r\n不要靠强转函数指针「复用」回调签名；改签名或用适配函数。"
+      ],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/lang/ATOM-LANG-INLINE-001.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [
+        "- EV-LANG-001\r\n  - EV-LANG-002\r\nsources:"
+      ],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/lang/ATOM-LANG-INTPROMO-001.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [
+        "- EV-LANG-007\r\nsources:\r\n  - {kind: iso",
+        "at: 2026-09-27",
+        "by: writer:agent}\r\npedagogy:\r\n  motivation: \"为什么 -1 明明更小，`-1 < 1u` 却是假？\"\r\n  socratic: \"把 int 与 size_t 混比时，谁是「被转的那个」？\"\r\n  predict_first: \"先猜 `cmp_signed_unsigned` 是 1 还是 0。\"\r\n---\r\n\r\n# ATOM-LANG-INTPROMO-001 · 有符号与无符号比较时，有符号一侧会被转成无符号（-1 < 1u 是假）\r\n\r\n> 状态 `draft`：**verified 唯人签，Agent 不自置**（不代签）。待 human 签署后晋升。\r\n\r\n## 实测（gcc -std=c11 -O2）\r\n\r\n```\r\nchar_promoted_sum=200 char_sum_type_size=4 cmp_signed_unsigned=0 minus1_as_unsigned=4294967295\r\n```\r\n\r\n打个比方（类比）：把它想成「借来的尺子量不出自己的长度」。\r\n\r\n## 反例：让它失败的实验\r\n\r\n`cmp_signed_unsigned=0` 是反直觉的（-1 明明更小），把数组长度 `size_t` 与 `int` 混比时这个转换会造出经典越界；对照 `char_promoted_sum=200` 说明提升本身是好事，问题出在符号性。\r\n\r\n## 标准依据\r\n\r\n> Many operators that expect operands of arithmetic type cause conversions and yield result types in a similar way. The purpose is to determine a common real type for the operands and result. For the specified operands",
+        "each operand is converted",
+        "independent: true}\r\nfirst_hand: true\r\nsuperiority: >-\r\n  常见材料只给结论；本卡给的是**同一次运行里的两个数字**——正确写法与「看起来对」的写法\r\n  各自的输出（见反例节），以及 N1570 对应条款的原文出处（可复核的字节偏移）。\r\ndepth:\r\n  layer: runtime\r\nstatus_history:\r\n  - {level: draft",
+        "ref: \"ISO/IEC 9899:2011 6.3.1.8p1：Many operators that expect operands of arithmetic type cause conversions and yield result types in a similar way. The purpose is to determine a common real type",
+        "the common real type is\r\n\r\n— ISO/IEC 9899:2011 6.3.1.8p1（N1570，字节偏移 196616，取自 https://port70.net/~nsz/c/c11/n1570.html#6.3.1.8p1）。\r\n\r\nC17（N2310）与 C23（N3096）本批**只留下载留痕**（PDF，本环境无解析库），条款号**未逐条核对**，需人核。\r\n\r\n## 边界（不该用在哪里）\r\n\r\n不要把有符号与无符号混在同一表达式里比较；循环下标统一用 size_t 并避免减成负数。",
+        "to a type whose corresponding real type is the common real type. Unless explicitly stated otherwise",
+        "without change of type domain"
+      ],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/lang/ATOM-LANG-MACRO-001.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [
+        "- EV-LANG-009\r\nsources:\r\n  - {kind: iso",
+        "argument substitution takes place. A parameter in the replacement list",
+        "at: 2026-09-27",
+        "by: writer:agent}\r\npedagogy:\r\n  motivation: \"为什么加了括号还可能有坑？\"\r\n  socratic: \"`MAX(i++",
+        "each argument's p\r\n\r\n— ISO/IEC 9899:2011 6.10.3.1p1（N1570，字节偏移 505977，取自 https://port70.net/~nsz/c/c11/n1570.html#6.10.3.1p1）。\r\n\r\nC17（N2310）与 C23（N3096）本批**只留下载留痕**（PDF，本环境无解析库），条款号**未逐条核对**，需人核。\r\n\r\n## 边界（不该用在哪里）\r\n\r\n不要用宏实现有副作用的「函数」；优先 static inline 函数（有类型检查、求值一次）。",
+        "independent: true}\r\nfirst_hand: true\r\nsuperiority: >-\r\n  常见材料只给结论；本卡给的是**同一次运行里的两个数字**——正确写法与「看起来对」的写法\r\n  各自的输出（见反例节），以及 N1570 对应条款的原文出处（可复核的字节偏移）。\r\ndepth:\r\n  layer: compiler\r\nstatus_history:\r\n  - {level: draft",
+        "is replaced by the corresponding argument after all macros contained therein have been expanded. Before being substituted",
+        "j)` 里 i++ 到底被执行了几次？\"\r\n  predict_first: \"先猜 SQ_BAD(3+1) 是 16 还是 7。\"\r\n---\r\n\r\n# ATOM-LANG-MACRO-001 · 宏是文本替换：不加括号会错优先级，传带副作用实参会被求值多次\r\n\r\n> 状态 `draft`：**verified 唯人签，Agent 不自置**（不代签）。待 human 签署后晋升。\r\n\r\n## 实测（gcc -std=c11 -O2）\r\n\r\n```\r\ni_after=2 max_bad_result=1 sq_bad=7 sq_good=16\r\n```\r\n\r\n打个比方（类比）：宏像复印机：它复印的是你写的那串字符，而不是「那个值」——印两次就跑两次。\r\n\r\n## 反例：让它失败的实验\r\n\r\n`sq_bad=7` 与 `sq_good=16` 同一次运行对照；`i_after=2` 直接证明「i++ 被求值了两次」（写的人只想要一次）。\r\n\r\n## 标准依据\r\n\r\n> After the arguments for the invocation of a function-like macro have been identified",
+        "ref: \"ISO/IEC 9899:2011 6.10.3.1p1：After the arguments for the invocation of a function-like macro have been identified",
+        "un",
+        "unless preceded by a # or ## preprocessing token or followed by a ## preprocessing token (see below)"
+      ],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/lang/ATOM-LANG-SETJMP-001.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [
+        "- EV-LANG-006\r\nsources:\r\n  - {kind: iso",
+        "and all other components of the abstract machine 249) have state",
+        "as of the time the longjmp function was called",
+        "at: 2026-09-27",
+        "by: writer:agent}\r\npedagogy:\r\n  motivation: \"为什么「跳回来之后变量还是我设的值」在 -O2 下就不一定了？\"\r\n  socratic: \"值「不确定」和「值被改坏了」是一回事吗？\"\r\n  predict_first: \"先猜 -O0 与 -O2 会不会给出不同的读数。\"\r\n---\r\n\r\n# ATOM-LANG-SETJMP-001 · longjmp 之后，非 volatile 的局部变量值是不确定的\r\n\r\n> 状态 `draft`：**verified 唯人签，Agent 不自置**（不代签）。待 human 签署后晋升。\r\n\r\n## 实测（gcc -std=c11 -O2）\r\n\r\n```\r\nafter_longjmp_plain=0 after_longjmp_volatile=5\r\n```\r\n\r\n## 反例：让它失败的实验\r\n\r\n`after_longjmp_plain` 在 -O0 与 -O2 下可以不一样（这就是「不确定」的实测形态）；只有 `after_longjmp_volatile` 恒为 5。用普通局部变量在长跳转后传递状态是错的。\r\n\r\n## 标准依据\r\n\r\n> All accessible objects have values",
+        "except tha",
+        "except that the values of objects of automatic storage duration that are local to the function containing the invocation of the corresponding setjmp macro that do not have volatile-qualified type and have been changed between the setjmp invocation an\r\n\r\n— ISO/IEC 9899:2011 7.13.2.1p3（N1570，字节偏移 733616，取自 https://port70.net/~nsz/c/c11/n1570.html#7.13.2.1p3）。\r\n\r\nC17（N2310）与 C23（N3096）本批**只留下载留痕**（PDF，本环境无解析库），条款号**未逐条核对**，需人核。\r\n\r\n## 边界（不该用在哪里）\r\n\r\n不要跨 longjmp 用普通局部变量传状态；需要就用 volatile 或静态存储期。",
+        "independent: true}\r\nfirst_hand: true\r\nsuperiority: >-\r\n  常见材料只给结论；本卡给的是**同一次运行里的两个数字**——正确写法与「看起来对」的写法\r\n  各自的输出（见反例节），以及 N1570 对应条款的原文出处（可复核的字节偏移）。\r\ndepth:\r\n  layer: compiler\r\nstatus_history:\r\n  - {level: draft",
+        "ref: \"ISO/IEC 9899:2011 7.13.2.1p3：All accessible objects have values"
+      ],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/lang/ATOM-LANG-VOLATILE-001.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [
+        "- EV-LANG-005\r\nsources:\r\n  - {kind: iso",
+        "as described in 5.1.2.3 . Furthermore",
+        "at every sequence point the value last stored in the object shall agree with that prescribed by the\r\n\r\n— ISO/IEC 9899:2011 6.7.3p7（N1570，字节偏移 380807，取自 https://port70.net/~nsz/c/c11/n1570.html#6.7.3p7）。\r\n\r\nC17（N2310）与 C23（N3096）本批**只留下载留痕**（PDF，本环境无解析库），条款号**未逐条核对**，需人核。\r\n\r\n## 边界（不该用在哪里）\r\n\r\n不要用 volatile 做线程同步（不原子、不建立顺序）；同步请用原子类型或锁。",
+        "at: 2026-09-27",
+        "by: writer:agent}\r\npedagogy:\r\n  motivation: \"volatile 到底是「原子」还是「别优化掉」？\"\r\n  socratic: \"两次读都被保留了，就说明两个线程不会交错吗？\"\r\n  predict_first: \"先猜汇编里 plain_flag 与 vol_flag 谁被读的次数多。\"\r\n---\r\n\r\n# ATOM-LANG-VOLATILE-001 · volatile 的作用是「每次都真的去访问一次」，不是「多线程同步」\r\n\r\n> 状态 `draft`：**verified 唯人签，Agent 不自置**（不代签）。待 human 签署后晋升。\r\n\r\n## 实测（gcc -std=c11 -O2）\r\n\r\n```\r\nsink=0\r\n```\r\n\r\n## 反例：让它失败的实验\r\n\r\n把 `volatile` 当「线程安全的开关」是最常见的误解：它只保证「每次都去内存读」，既不原子也不建立顺序 —— 汇编里读的次数变了，但「读-改-写」仍可能交错。\r\n\r\n## 标准依据\r\n\r\n> An object that has volatile-qualified type may be modified in ways unknown to the implementation or have other unknown side effects. Therefore any expression referring to such an object shall be evaluated strictly according to the rules of the abstract machine",
+        "independent: true}\r\nfirst_hand: true\r\nsuperiority: >-\r\n  常见材料只给结论；本卡给的是**同一次运行里的两个数字**——正确写法与「看起来对」的写法\r\n  各自的输出（见反例节），以及 N1570 对应条款的原文出处（可复核的字节偏移）。\r\ndepth:\r\n  layer: asm\r\nstatus_history:\r\n  - {level: draft",
+        "ref: \"ISO/IEC 9899:2011 6.7.3p7：An object that has volatile-qualified type may be modified in ways unknown to the implementation or have other unknown side effects. Therefore any expression re"
+      ],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc]",
+        "platform": "[unknown]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-019          # padding 量化：offsetof b=4、padding=3、sizeof=8\n  - EV-MEM-020          # alignas 可控 + memcpy 安全 + 强转 UB 注释实证\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc, clang]",
+        "platform": "[unknown]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-026          # 两层分离：allocate 零构造、construct/destroy 显式走 traits\n  - EV-MEM-027          # 策略可替换：arena 接入 vector，零堆分配 + 同构对照\n  - EV-MEM-028          # 运行时多态：pmr monotonic 零上游触碰 + 观测通路修正留痕\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-ALLOC-002.md",
+      "status": "red-team-verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc]",
+        "platform": "[windows]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "EV-MEM-040",
+        "EV-MEM-041"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-LEAK-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc, clang]",
+        "platform": "[linux]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-036          # 正确侧基线：owner/observer 结构整树析构（destroyed=3）+ 两个运行期观测\n  - EV-MEM-037          # 缺陷侧 + 检测标定：零析构（destroyed=0）+ 三档 × 两结构 5 个 LSan 数据点\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-LEAK-002.md",
+      "status": "red-team-verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc, clang]",
+        "platform": "[windows, linux]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "EV-MEM-042",
+        "EV-MEM-043"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-MALLOC-001.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [
+        "- EV-MEM-046\r\nsources:\r\n  - {kind: iso",
+        "at: 2026-09-27",
+        "by: writer:agent}\r\npedagogy:\r\n  motivation: \"为什么 `if (p) use(p);` 挡不住悬垂指针？\"\r\n  socratic: \"free(p) 之后再加一句 p = NULL，改变的是指针还是那块内存？\"\r\n  predict_first: \"先猜 malloc(0) 返回 NULL 还是非 NULL，再看两个编译器的实测。\"\r\n---\r\n\r\n# ATOM-MEM-MALLOC-001 · free 不清空指针变量，也不保证 malloc(0) 返回 NULL\r\n\r\n> 状态 `draft`：**verified 唯人签，Agent 不自置**（不代签）。待 human 签署后晋升。\r\n\r\n## 实测（gcc -std=c11 -O2）\r\n\r\n```\r\nalloc_aligned=1 dangling_value_nonzero=1 malloc0_null=0 reached_after_free_null=1\r\n```\r\n\r\n打个比方（类比）：free 像是把房间退了，可你手里的房卡还写着那个房间号——刷卡不会报错，但房间已经不是你的了。\r\n\r\n## 反例：让它失败的实验\r\n\r\n`dangling_value_nonzero=1` 证明「free 后指针变量仍非 NULL」，所以 `if (p) { use(p); }` 这类「保护」是无效的；把 `malloc(0)` 当「必定返回 NULL」来判错 likewise 会误判。\r\n\r\n## 标准依据\r\n\r\n> The free function causes the space pointed to by ptr to be deallocated",
+        "if the argument does not match a pointer earlier returned by a memory management function",
+        "independent: true}\r\nfirst_hand: true\r\nsuperiority: >-\r\n  常见材料只给结论；本卡给的是**同一次运行里的两个数字**——正确写法与「看起来对」的写法\r\n  各自的输出（见反例节），以及 N1570 对应条款的原文出处（可复核的字节偏移）。\r\ndepth:\r\n  layer: runtime\r\nstatus_history:\r\n  - {level: draft",
+        "made available for further allocation. If ptr is a null pointer",
+        "no action occu",
+        "no action occurs. Otherwise",
+        "or if the space has been deallocated by a call to free or realloc",
+        "ref: \"ISO/IEC 9899:2011 7.22.3.3p2：The free function causes the space pointed to by ptr to be deallocated",
+        "that is",
+        "the behavior is undefined.\r\n\r\n— ISO/IEC 9899:2011 7.22.3.3p2（N1570，字节偏移 958873，取自 https://port70.net/~nsz/c/c11/n1570.html#7.22.3.3p2）。\r\n\r\nC17（N2310）与 C23（N3096）本批**只留下载留痕**（PDF，本环境无解析库），条款号**未逐条核对**，需人核。\r\n\r\n## 边界（不该用在哪里）\r\n\r\n不要用 `if (p)` 判断内存是否还有效；释放后立刻置空是唯一的自保写法。"
+      ],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-MOVE-002.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc]",
+        "platform": "[linux]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-001\n  - EV-MEM-002\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-NEW-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc]",
+        "platform": "[unknown]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-017          # new/delete 两层分离（alloc/ctor 各一次、dealloc/dtor 各一次）"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-NEWARR-001.md",
+      "status": "machine-verified",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": "[C++17]",
+        "compiler": "[WSL g++ (Ubuntu 13.3.0)]",
+        "platform": "[WSL2 Linux x86-64]",
+        "input_domain": "unknown"
+      },
+      "scope_missing": [],
+      "evidence": [],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc]",
+        "platform": "[unknown]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-008          # 专属量化卡：heap 移动 0 分配 / 值类型移动==拷贝\n  - EV-MEM-001          # 扩展服务：移动不分配堆内存（运行计数基础）\n  - EV-MEM-002          # 扩展服务：纯值类型移动无收益（32 字节搬运断面）\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-002.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc, clang, msvc]",
+        "platform": "[unknown]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-029          # 阈值实测：0..24 全长度扫描 + 双通路交叉验证（15→16 阶跃）\n  - EV-MEM-030          # 代价差：短拷贝 0 分配 vs 长拷贝 1 分配 vs 拼接越阈落堆（兼证伪 COW 残留）\n  - EV-MEM-031          # 形状参数：sizeof=32/capacity=15 实测 + 三实现文档值对比（M2 边界）\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-003.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 11,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc, clang, msvc]",
+        "platform": "[windows, linux]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-038          # SSO 跨实现实测：libstdc++ 32/15 vs libc++-18 24/22（含判据活性对照）\n  - EV-MEM-039          # 分配器基准：三策略同工作量，两层输出（断言锚 / 留痕）分离\nmisconceptions: [MIS-MEM-028",
+        "MIS-MEM-029"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-PERF-004.md",
+      "status": "red-team-verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++17]",
+        "compiler": "[gcc]",
+        "platform": "[windows, linux]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "EV-MEM-044",
+        "EV-MEM-045"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-RAII-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc]",
+        "platform": "[unknown]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-009          # 主论断：异常路径 RAII 析构仍调用（g_live 归 0），裸路径泄漏（g_live 留 1）\n  - EV-MEM-010          # 逆序析构：多对象按构造逆序清理，跨栈帧\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-RAII-002.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc, clang]",
+        "platform": "[unknown]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-023          # Rule of Zero：成员形状驱动隐式规则（类型系统 + 运行期恰一次观测）\n  - EV-MEM-024          # 违反 Rule of Three：隐式浅拷贝 → 一块资源两次析构（WSL ASan 实报 double-free）\n  - EV-MEM-025          # Rule of Five 细节：移动不标 noexcept → vector 扩容退化为拷贝\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-RVREF-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc, clang]",
+        "platform": "[unknown]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-004          # 主体论断（三角验证，九档一致）\n  - EV-MEM-005          # 版本边界（return 语句，c++17 vs c++20 分界）\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-SHARED-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc]",
+        "platform": "[unknown]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-013          # 引用计数：拷贝 +1 / 析构 -1 / 归零才释放\n  - EV-MEM-014          # 证伪：循环引用泄漏（shared 并非总是安全）\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-SHARED-002.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc, clang]",
+        "platform": "[linux]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-034          # 引用计数原子：控制块锚点 + lock 指令 + 多线程副本并发（烟测）\n  - EV-MEM-035          # 镜像对照：unique_ptr 工件全文零 lock（单条 absent 覆盖全形态）\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-STRBOUND-001.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [
+        "",
+        "- EV-MEM-047\r\nsources:\r\n  - {kind: iso",
+        "at: 2026-09-27",
+        "by: writer:agent}\r\npedagogy:\r\n  motivation: \"为什么「用 snprintf 就安全了」这句话只对了一半？\"\r\n  socratic: \"返回值比缓冲还大时，多出来的字符去哪了？\"\r\n  predict_first: \"先猜 snprintf 的返回值是 7（实际写入）还是 10（本该写入）。\"\r\n---\r\n\r\n# ATOM-MEM-STRBOUND-001 · snprintf 的返回值是「本该写入的长度」，strncpy 不保证 NUL 终止\r\n\r\n> 状态 `draft`：**verified 唯人签，Agent 不自置**（不代签）。待 human 签署后晋升。\r\n\r\n## 实测（gcc -std=c11 -O2）\r\n\r\n```\r\nsnprintf_ret=10 snprintf_truncated=1 snprintf_written=7 strncpy_last_byte=56 strncpy_nul_terminated=0\r\n```\r\n\r\n## 反例：让它失败的实验",
+        "independent: true}\r\nfirst_hand: true\r\nsuperiority: >-\r\n  常见材料只给结论；本卡给的是**同一次运行里的两个数字**——正确写法与「看起来对」的写法\r\n  各自的输出（见反例节），以及 N1570 对应条款的原文出处（可复核的字节偏移）。\r\ndepth:\r\n  layer: runtime\r\nstatus_history:\r\n  - {level: draft",
+        "not counting the terminating null character",
+        "ref: \"ISO/IEC 9899:2011 7.21.6.5p3：The snprintf function returns the number of characters that would have been written had n been sufficiently large"
+      ],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc]",
+        "platform": "[unknown]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-011          # 零开销：sizeof == 裸指针\n  - EV-MEM-012          # 移动转移所有权 + 唯一析构 + 拷贝删（编译期证伪）\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc, clang]",
+        "platform": "[unknown]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-032          # 删除器进类型系统：sizeof 六连 + trait 三连 + mangled 类型名（含 final 真反例）\n  - EV-MEM-033          # 删除器类型擦除：sizeof 恒定 + 控制块类型 + 分配计数对照（2/1/1）\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-VALUE-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc]",
+        "platform": "[unknown]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-006          # 主论断：五分类 decltype 编译期证明 + 运行期打印\n  - EV-MEM-007          # 证伪：xvalue 有身份（移动后源被改动），不是 prvalue\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-VALUE-002.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc, clang, msvc]",
+        "platform": "[unknown]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-021          # 主论断：4 条折叠规则 static_assert + 万能引用推导观测 + const T&& 反例\n  - EV-MEM-022          # 代价实证：forward vs 省略 forward 的拷贝/移动计数（-O0/-O2 双跑一致）\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/mem/ATOM-MEM-WEAK-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc]",
+        "platform": "[unknown]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-MEM-015          # weak 不增计数、lock 提升、expired 观测\n  - EV-MEM-016          # weak 打破循环（与 EV-MEM-014 泄漏对照）\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/ub/ATOM-UB-DIVZERO-001.md",
+      "status": "machine-verified",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": "[C++17]",
+        "compiler": "[WSL g++ (Ubuntu 13.3.0)]",
+        "platform": "[WSL2 Linux x86-64]",
+        "input_domain": "unknown"
+      },
+      "scope_missing": [],
+      "evidence": [],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/ub/ATOM-UB-GRAY-001.md",
+      "status": "verified",
+      "in_backfill_scope": true,
+      "triplet_ok": true,
+      "baseline_source": "full_baseline_v7.json",
+      "variants": 10,
+      "scope": {
+        "cpp_standard": "[C++23]",
+        "compiler": "[gcc, clang]",
+        "platform": "[windows, linux]",
+        "input_domain": "\"unknown\""
+      },
+      "scope_missing": [],
+      "evidence": [
+        "- EV-UB-001\n  - EV-UB-002\nsources:"
+      ],
+      "four_state": "pass",
+      "four_state_reason": "有边界，按原始判决定态"
+    },
+    {
+      "card": "atoms/ub/ATOM-UB-NULLDEREF-001.md",
+      "status": "machine-verified",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": "[C++17]",
+        "compiler": "[WSL g++ (Ubuntu 13.3.0)]",
+        "platform": "[WSL2 Linux x86-64]",
+        "input_domain": "unknown"
+      },
+      "scope_missing": [],
+      "evidence": [],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/ub/ATOM-UB-OOB-001.md",
+      "status": "machine-verified",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": "[C++17]",
+        "compiler": "[WSL g++ (Ubuntu 13.3.0)]",
+        "platform": "[WSL2 Linux x86-64]",
+        "input_domain": "unknown"
+      },
+      "scope_missing": [],
+      "evidence": [],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/ub/ATOM-UB-SIGNEDOVF-001.md",
+      "status": "draft",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": null,
+        "compiler": null,
+        "platform": null,
+        "input_domain": null
+      },
+      "scope_missing": [
+        "cpp_standard",
+        "compiler",
+        "platform",
+        "input_domain"
+      ],
+      "evidence": [
+        "- EV-UB-003\r\nsources:\r\n  - {kind: iso",
+        "at: 2026-09-27",
+        "by: writer:agent}\r\npedagogy:\r\n  motivation: \"为什么同一行「溢出检查」换个编译器答案就反了？\"\r\n  socratic: \"UB 的意思是「会崩」还是「编译器可以任意处理」？\"\r\n  predict_first: \"先猜 `INT_MAX + 1 > INT_MAX` 在 gcc 与 clang 上是否同值。\"\r\n---\r\n\r\n# ATOM-UB-SIGNEDOVF-001 · 有符号整数溢出是 UB：同一行「溢出检查」在两个编译器上答案相反\r\n\r\n> 状态 `draft`：**verified 唯人签，Agent 不自置**（不代签）。待 human 签署后晋升。\r\n\r\n## 实测（gcc -std=c11 -O2）\r\n\r\n```\r\nsigned_plus1_gt=1 unsigned_plus1_gt=0 unsigned_wrapped=0\r\n```\r\n\r\n## 反例：让它失败的实验\r\n\r\n`signed_plus1_gt` 在 -O0/-O2 下给出**不同**答案，就是「UB 不是『会回绕』」而是「编译器可以任意处理」的直接证据；把它当溢出检测用是错的。\r\n\r\n## 标准依据\r\n\r\n> If an exceptional condition occurs during the evaluation of an expression (that is",
+        "if the result is not mathematically defined or not in the range of represent",
+        "if the result is not mathematically defined or not in the range of representable values for its type)",
+        "independent: true}\r\nfirst_hand: true\r\nsuperiority: >-\r\n  常见材料只给结论；本卡给的是**同一次运行里的两个数字**——正确写法与「看起来对」的写法\r\n  各自的输出（见反例节），以及 N1570 对应条款的原文出处（可复核的字节偏移）。\r\ndepth:\r\n  layer: compiler\r\nstatus_history:\r\n  - {level: draft",
+        "ref: \"ISO/IEC 9899:2011 6.5p5：If an exceptional condition occurs during the evaluation of an expression (that is",
+        "the behavior is undefined.\r\n\r\n— ISO/IEC 9899:2011 6.5p5（N1570，字节偏移 257122，取自 https://port70.net/~nsz/c/c11/n1570.html#6.5p5）。\r\n\r\nC17（N2310）与 C23（N3096）本批**只留下载留痕**（PDF，本环境无解析库），条款号**未逐条核对**，需人核。\r\n\r\n## 边界（不该用在哪里）\r\n\r\n不要用「加完再比较」检测有符号溢出；用无符号或先与极限比较。"
+      ],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    },
+    {
+      "card": "atoms/ub/ATOM-UB-WRAP-001.md",
+      "status": "machine-verified",
+      "in_backfill_scope": false,
+      "triplet_ok": false,
+      "baseline_source": "",
+      "variants": 0,
+      "scope": {
+        "cpp_standard": "[C++17]",
+        "compiler": "[WSL g++ (Ubuntu 13.3.0)]",
+        "platform": "[WSL2 Linux x86-64]",
+        "input_domain": "unknown"
+      },
+      "scope_missing": [],
+      "evidence": [],
+      "four_state": "unknown",
+      "four_state_reason": "缺边界三元组字段：mutation_set_hash,mutation_count,generator_version; ⇒ 按 §3.1.3 降级为 unknown"
+    }
+  ]
+}

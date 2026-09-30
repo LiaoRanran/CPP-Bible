@@ -37,6 +37,12 @@ body {
   * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
 }
 
+/* 屏幕阅读器专用文本（视觉上不可见，但可被朗读；不用 display:none，那会一起被忽略） */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
 a { color: var(--color-accent); text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; }
 a:focus-visible { outline-offset: 3px; }
@@ -337,6 +343,193 @@ footer a { color: var(--color-text-dim); }
 .batch-summary b.ok { color: var(--color-pass); }
 .batch-summary b.bad { color: var(--color-fail); }
 .batch-summary b.skip { color: var(--color-pass-exception); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   667 阶段2 · 深化：琉璃质感 / 表格 / 空状态 / 仪表盘 / 留白 / 触控
+   纪律同 666 B1：**只引用 design-tokens.css 的变量**，这里不写死任何颜色。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── ① 琉璃质感：毛玻璃面 + 微妙渐变 + 语义辉光 ──────────────────
+ * 两件事必须同时成立，否则就是"好看但不可用"：
+ *   (a) `backdrop-filter` 不受支持时 → 用 `--glass-bg-fallback` **不透明回退**，
+ *       绝不能把正文压在半透明噪音上（对比度会失控）；
+ *   (b) 辉光只给**小语义元素**（状态点/节点/选中项），不给整块面板。 */
+.glass {
+  background: var(--glass-bg-fallback);
+  border: var(--border-width) solid var(--glass-line);
+  border-radius: var(--radius-lg);
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .glass {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(115%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(115%);
+  }
+}
+.glass-tint { background-image: var(--grad-surface); }
+.glass-hover {
+  transition: border-color var(--motion-base) var(--motion-ease),
+              box-shadow var(--motion-base) var(--motion-ease);
+}
+.glass-hover:hover, .glass-hover:focus-within {
+  border-color: var(--color-line-strong);
+  box-shadow: var(--glow-accent);
+}
+.glow-pass { box-shadow: var(--glow-pass); }
+.glow-fail { box-shadow: var(--glow-fail); }
+.glow-unknown { box-shadow: var(--glow-unknown); }
+.glow-accent { box-shadow: var(--glow-accent); }
+@media (prefers-reduced-motion: reduce) {
+  .glass-hover { transition: none; }
+  .glow-pass, .glow-fail, .glow-unknown, .glow-accent { box-shadow: none; }
+}
+
+/* ── ② 表格：可排序表头 + 状态色标 + 悬停行 + 空状态 ──────────── */
+.table-wrap {
+  overflow-x: auto;
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-lg);
+}
+table.data { font-size: 13px; min-width: 640px; }
+table.data thead th {
+  position: sticky; top: 0; z-index: 1;
+  background: var(--color-surface);
+  border-bottom: var(--border-width) solid var(--color-line-strong);
+  padding: 0;                      /* 排序按钮自己撑高度（触控 44px） */
+  white-space: nowrap;
+}
+table.data th .th-btn {
+  all: unset; box-sizing: border-box; cursor: pointer;
+  display: flex; align-items: center; gap: 6px; width: 100%;
+  min-height: var(--touch-min); padding: 0 12px;
+  color: var(--color-text-mute); font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: .08em;
+}
+table.data th .th-btn:hover { color: var(--color-text); }
+/* `.th-btn` 用了 `all: unset`，会把全局焦点环一起清掉 ⇒ 必须在这里**显式补回**焦点可见性 */
+table.data th .th-btn:focus-visible {
+  outline: var(--focus-ring); outline-offset: -3px; border-radius: 0;
+}
+table.data th .th-btn[aria-sort] { color: var(--color-accent); }
+table.data th .th-btn .arrow { font-size: 10px; opacity: .8; }
+table.data tbody tr { transition: background-color var(--motion-fast) var(--motion-ease); }
+table.data tbody tr:hover, table.data tbody tr:focus-within { background: var(--color-surface-2); }
+table.data td {
+  padding: 10px 12px; border-bottom: var(--border-width) solid var(--color-line);
+  color: var(--color-text-dim); vertical-align: top;
+}
+table.data tbody tr:last-child td { border-bottom: 0; }
+table.data td.w-id { font-family: var(--font-mono); color: var(--color-text); white-space: nowrap; }
+table.data td.w-when { font-family: var(--font-mono); font-size: 12px; white-space: nowrap; }
+table.data td.w-state { white-space: nowrap; }
+table.data td.w-detail { min-width: 220px; max-width: 420px; }
+/* 状态色标：只取色，不把整行染色（否则正文对比度跟着变） */
+.state-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 11px;
+  border: var(--border-width) solid var(--color-line-strong);
+  border-radius: var(--radius-pill); padding: 2px 9px;
+}
+.state-pill > i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.state-pill[data-state="pass"] { color: var(--color-pass); border-color: var(--color-pass); }
+.state-pill[data-state="pass"] > i { background: var(--color-pass); box-shadow: var(--glow-pass); }
+.state-pill[data-state="pass_with_exception"] { color: var(--color-pass-exception); border-color: var(--color-pass-exception); }
+.state-pill[data-state="pass_with_exception"] > i { background: var(--color-pass-exception); }
+.state-pill[data-state="fail"] { color: var(--color-fail); border-color: var(--color-fail); }
+.state-pill[data-state="fail"] > i { background: var(--color-fail); box-shadow: var(--glow-fail); }
+.state-pill[data-state="unknown"] { color: var(--color-unknown); border-color: var(--color-unknown); }
+.state-pill[data-state="unknown"] > i { background: var(--color-unknown); }
+/* 对比表：左右两值 + 口径注记 */
+table.data td.cmp-left { font-family: var(--font-mono); color: var(--color-text); }
+table.data td.cmp-right { font-family: var(--font-mono); color: var(--color-text-dim); }
+.kind-tag {
+  font-size: 11px; border-radius: var(--radius-pill); padding: 1px 8px;
+  border: var(--border-width) solid var(--color-line-strong); color: var(--color-text-mute);
+  white-space: nowrap;
+}
+.kind-tag[data-kind="drift"] { color: var(--color-fail); border-color: var(--color-fail); }
+.kind-tag[data-kind="caliber"] { color: var(--color-pass-exception); border-color: var(--color-pass-exception); }
+.kind-tag[data-kind="frozen"] { color: var(--color-unknown); border-color: var(--color-unknown); }
+.kind-tag[data-kind="ok"] { color: var(--color-pass); border-color: var(--color-pass); }
+
+/* 空状态：不是"什么都没画"，而是**说明为什么空 + 下一步** */
+.empty {
+  display: flex; flex-direction: column; gap: var(--space-1);
+  align-items: flex-start; justify-content: center;
+  padding: var(--space-6) var(--space-3);
+  border: var(--border-width) dashed var(--color-line-strong);
+  border-radius: var(--radius-lg); color: var(--color-text-mute);
+}
+.empty b { color: var(--color-text); font-size: 15px; font-weight: 600; }
+.empty p { margin: 0; font-size: 13px; max-width: 62ch; }
+.empty .kbd { color: var(--color-text-dim); }
+
+/* ── ③ 仪表盘大数字（更松：数字大、说明淡、留白多）────────────── */
+.dash {
+  display: grid; gap: var(--space-2);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.dash .cell { padding: var(--space-3); }
+.dash .d-num {
+  font-family: var(--font-mono); font-size: 40px; line-height: 1.05;
+  color: var(--color-text); font-variant-numeric: tabular-nums;
+  letter-spacing: -.02em;
+}
+.dash .d-num .u { font-size: 15px; color: var(--color-text-mute); margin-left: 5px; }
+.dash .d-cap {
+  margin-top: var(--space-1); font-size: 11px; color: var(--color-text-mute);
+  text-transform: uppercase; letter-spacing: .1em;
+}
+.dash .d-sub { margin-top: 6px; font-size: 12px; color: var(--color-text-dim); }
+.dash .cell[data-warn="1"] { border-color: var(--color-pass-exception); }
+.dash .cell[data-warn="1"] .d-num { color: var(--color-pass-exception); }
+.dash .cell[data-bad="1"] { border-color: var(--color-fail); }
+.dash .cell[data-bad="1"] .d-num { color: var(--color-fail); }
+.warn-line {
+  margin-top: var(--space-2); font-size: 12px; color: var(--color-pass-exception);
+  border-left: 2px solid var(--color-pass-exception); padding-left: 10px;
+}
+
+/* ── ④ 层级与留白：标题大而松、正文小而密、注释更淡 ────────────── */
+.section-head { margin-bottom: var(--space-5); }
+.section-head h2 { font-size: 20px; margin-bottom: 6px; }
+.section-head p { margin: 0; font-size: 13px; max-width: 68ch; }
+.eyebrow {
+  font-size: 11px; color: var(--color-text-mute); text-transform: uppercase;
+  letter-spacing: .14em; margin-bottom: var(--space-1);
+}
+.prose { max-width: 68ch; font-size: 13px; }
+.note-faint { font-size: 12px; color: var(--color-text-mute); }
+@media (min-width: 1100px) {
+  section { padding: var(--space-8) 0; }      /* 桌面端更松：别塞满 */
+}
+
+/* ── ④b 星图加强：聚类面板（展开成员）─────────────────────────── */
+.row-between { display: flex; align-items: baseline; gap: var(--space-1); flex-wrap: wrap; }
+.row-between .grow { flex: 1; }
+.cluster-list {
+  list-style: none; margin: var(--space-1) 0 0; padding: 0;
+  max-height: 240px; overflow: auto;
+}
+.cluster-list li {
+  display: flex; align-items: baseline; gap: var(--space-1);
+  padding: 5px 0; border-bottom: var(--border-width) solid var(--color-line); font-size: 12px;
+}
+.cluster-list li .mono { font-size: 11px; }
+.cluster-list li .grow { flex: 1; }
+#clusters .chip { min-height: 30px; }
+
+/* ── ⑤ 触控：移动端 44px（WCAG 2.2 2.5.8 要求 24px，本项目按 44px 做）── */
+@media (max-width: 900px) {
+  button, .btn, .toggle, input[type="text"], input[type="search"], select,
+  .theme-toggle, summary, table.data th .th-btn {
+    min-height: var(--touch-min);
+  }
+  .nav a { min-height: var(--touch-min); display: inline-flex; align-items: center; }
+  .chip { padding: 4px 10px; }
+  .dash .d-num { font-size: 32px; }
+  table.data { min-width: 560px; }
+}
 
 @media (max-width: 1080px) {
   .stage-wrap { grid-template-columns: 1fr; }

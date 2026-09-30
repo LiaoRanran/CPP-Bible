@@ -67,6 +67,9 @@ SCHEMAS: dict[str, list[str]] = {
                     "generated_from", "unavailable"],
     "cards_index.json": ["count", "cards"],
     "card.json": ["id", "meta", "claim", "verdict", "props", "evidence", "selfcheck"],
+    # 667 新增：判决页数据（缺任一 ⇒ 页面会渲染成 undefined）
+    "verdicts_667.json": ["dashboard", "verdicts", "verdicts_total", "compare",
+                          "drift", "excluded", "unavailable"],
 }
 
 #: 生成器（顺序有意义：先图/台账，后现状，最后学习卡数据）
@@ -80,14 +83,16 @@ GENERATORS: list[list[str]] = [
 #: 需要进 dist 的静态资源（相对 web/）
 ASSETS: list[str] = [
     "index.html", "starmap.html", "verify.html", "card.html",
+    "verdicts.html", "cards.html",
     "app.js", "starmap.js", "verify.js", "verify_core.js", "graph_core.js",
-    "card.js",
+    "card.js", "cards.js", "verdicts.js", "verdicts_core.js",
     "style.css", "css/design-tokens.css",
     "components/index.js", "components/qy-nav.js", "components/qy-card.js",
     "components/qy-panel.js", "components/qy-button.js", "components/qy-tag.js",
     "components/qy-status.js",
 ]
-PAGES = ["index.html", "starmap.html", "verify.html", "card.html"]
+PAGES = ["index.html", "starmap.html", "verify.html", "card.html",
+         "verdicts.html", "cards.html"]
 
 
 # ── 基础 ────────────────────────────────────────────────────────────────────
@@ -134,6 +139,13 @@ CONTRAST_RULES: list[tuple[str, str, float, str]] = [
     ("--color-pass-exception", "--color-bg", 3.0, "四态色点（非文本）"),
     ("--color-fail", "--color-bg", 3.0, "四态色点（非文本）"),
     ("--color-unknown", "--color-bg", 3.0, "四态色点（非文本）"),
+    # 667 新增：四态色在 667 起**也用作文字**（判决表的状态标签 `.state-pill`），
+    # 文字就不再是"图形阈值 3.0"而是 **4.5**；且它压在卡面（surface）上而不是页面底（bg）上。
+    ("--color-pass", "--color-surface", 4.5, "状态标签文字"),
+    ("--color-pass-exception", "--color-surface", 4.5, "状态标签文字"),
+    ("--color-fail", "--color-surface", 4.5, "状态标签文字"),
+    ("--color-unknown", "--color-surface", 4.5, "状态标签文字"),
+    ("--color-accent", "--color-surface", 4.5, "表头排序文字"),
 ]
 
 
@@ -144,24 +156,54 @@ def parse_tokens(text: str) -> dict[str, str]:
     return out
 
 
+def _block(text: str, selector: str) -> str:
+    """取出某个选择器后**第一段** `{...}` 的内容（令牌文件里没有嵌套花括号）。"""
+    m = re.search(re.escape(selector) + r"\s*\{", text)
+    if not m:
+        return ""
+    end = text.find("}", m.end())
+    return text[m.end():end] if end > 0 else ""
+
+
+def parse_token_blocks(text: str) -> dict[str, dict[str, str]]:
+    """**分主题**解析令牌。
+
+    667 修正：旧版 `parse_tokens` 对同名变量**取最后一次出现**，而文件里浅色块写在后面
+    ⇒ `--check` 实际**只验了浅色主题**，深色主题从未被算过（666 B1 却声称"深浅两套都过"）。
+    这里按块分开取，两套都算。
+    """
+    return {
+        "dark": parse_tokens(_block(text, ":root")),
+        "light": parse_tokens(_block(text, "html[data-theme='light']"))
+                 or parse_tokens(_block(text, 'html[data-theme="light"]')),
+    }
+
+
 def check_contrast() -> tuple[bool, list[dict[str, Any]]]:
     if not TOKENS.is_file():
         return False, [{"error": "缺少 css/design-tokens.css"}]
-    tk = parse_tokens(TOKENS.read_text(encoding="utf-8"))
+    blocks = parse_token_blocks(TOKENS.read_text(encoding="utf-8"))
     rows: list[dict[str, Any]] = []
     ok = True
-    for fg, bg, need, label in CONTRAST_RULES:
-        f, b = tk.get(fg), tk.get(bg)
-        if not f or not b:
-            rows.append({"fg": fg, "bg": bg, "ratio": None, "need": need,
-                         "ok": False, "label": label, "note": "令牌缺失"})
+    for theme in ("dark", "light"):
+        tk = blocks.get(theme) or {}
+        if not tk:
+            rows.append({"fg": theme, "bg": theme, "ratio": None, "need": 0,
+                         "ok": False, "label": "主题块", "note": f"{theme} 主题令牌块未找到"})
             ok = False
             continue
-        ratio = contrast(f, b)
-        passed = ratio >= need
-        ok = ok and passed
-        rows.append({"fg": fg, "bg": bg, "ratio": ratio, "need": need,
-                     "ok": passed, "label": label})
+        for fg, bg, need, label in CONTRAST_RULES:
+            f, b = tk.get(fg), tk.get(bg)
+            if not f or not b:
+                rows.append({"fg": f"[{theme}] {fg}", "bg": bg, "ratio": None, "need": need,
+                             "ok": False, "label": label, "note": "令牌缺失"})
+                ok = False
+                continue
+            ratio = contrast(f, b)
+            passed = ratio >= need
+            ok = ok and passed
+            rows.append({"fg": f"[{theme}] {fg}", "bg": bg, "ratio": ratio, "need": need,
+                         "ok": passed, "label": label})
     return ok, rows
 
 

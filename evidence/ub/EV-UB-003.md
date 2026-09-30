@@ -15,7 +15,7 @@ fixture: Examples/atoms/_c_signedovf.c
 command: |
   gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_signedovf.c -o Examples/atoms/_c_signedovf.asm
   gcc -std=c11 -O2 -Wall -Wextra Examples/atoms/_c_signedovf.c -o build/c648/_c_signedovf.exe
-  build/c648/_c_signedovf.exe > Examples/atoms/_c_signedovf.out
+  build/c648/_c_signedovf.exe
 artifact: Examples/atoms/_c_signedovf.asm
 artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_signedovf.c -o Examples/atoms/_c_signedovf.asm
 artifact_sha256: 685393cbc5fe1961d2c28e312b7479ad26e6472fd916d5c6638332a58e671065

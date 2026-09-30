@@ -1,12 +1,12 @@
 {
  "schema": "cppbible-golden-lock/1.0",
- "updated": "2026-09-25",
- "commit": "7be6c0bb",
+ "updated": "2026-09-30",
+ "commit": "4ae457d2",
  "metrics": {
   "block_findings": 0,
-  "warn_findings": 116,
-  "atoms_total": 27,
-  "evidence_total": 56,
+  "warn_findings": 176,
+  "atoms_total": 47,
+  "evidence_total": 66,
   "verified_atoms": 26,
   "human_verified": 23,
   "red_team_verified": 3,
@@ -250,6 +250,31 @@
    },
    "commit": "dd5b029",
    "dirty": true
+  },
+  {
+   "ts": "2026-09-30T00:27:22",
+   "reason": "666：新规则(ATOM-FM-REQUIRED等)在存量卡上的命中=可见债显形，非判决变坏",
+   "classify": {
+    "warn_findings": "real"
+   },
+   "worse": [
+    "warn_findings: 116 → 176"
+   ],
+   "metrics_after": {
+    "block_findings": 0,
+    "warn_findings": 176,
+    "atoms_total": 47,
+    "evidence_total": 66,
+    "verified_atoms": 26,
+    "human_verified": 23,
+    "red_team_verified": 3,
+    "machine_verified": 0,
+    "dal_gap": 0,
+    "replay_confirm": 56,
+    "replay_infra_error": 0
+   },
+   "commit": "4ae457d2",
+   "dirty": true
   }
  ],
  "dirty": true,
@@ -262,6 +287,7 @@
   "EV-ASSERT-SYMBOL-MAPPED": "real",
   "ATOM-REL-TARGET": "legacy",
   "EV-SERVES-EXIST": "legacy",
-  "OBSERVATION-LIVENESS": "legacy"
+  "OBSERVATION-LIVENESS": "legacy",
+  "warn_findings": "real"
  }
 }

@@ -15,7 +15,7 @@ fixture: Examples/atoms/_c_volatile.c
 command: |
   gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_volatile.c -o Examples/atoms/_c_volatile.asm
   gcc -std=c11 -O2 -Wall -Wextra Examples/atoms/_c_volatile.c -o build/c648/_c_volatile.exe
-  build/c648/_c_volatile.exe > Examples/atoms/_c_volatile.out
+  build/c648/_c_volatile.exe
 artifact: Examples/atoms/_c_volatile.asm
 artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_volatile.c -o Examples/atoms/_c_volatile.asm
 artifact_sha256: 9ae63e9da91970ac6f5e16a7aaadde9b50d6ca77f056ed934f6f9cffbbe3c493

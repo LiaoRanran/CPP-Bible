@@ -44,6 +44,26 @@
         <b>悬停</b>看摘要 · <b>点击</b>固定详情 · <b>悬停边</b>看攻击/击败关系</span>
     </div>
 
+    <!-- 667 阶段2：搜索 / 聚类筛选 / 缩放 / 线宽按权重 -->
+    <div class="toolbar">
+      <div class="field">
+        <label for="q">搜索节点（id / 标题）</label>
+        <input id="q" type="search" placeholder="例如 ATOM-MEM-LEAK、race" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="f-cluster">聚类（domain）</label>
+        <select id="f-cluster"><option value="all">全部</option></select>
+      </div>
+      <label class="toggle"><input type="checkbox" id="f-weight" checked>连线粗细按权重</label>
+      <button id="zin" type="button" aria-label="放大">放大 ＋</button>
+      <button id="zout" type="button" aria-label="缩小">缩小 －</button>
+      <button id="reset">复位视图</button>
+      <p id="q-count" class="muted" role="status" aria-live="polite"></p>
+    </div>
+
+    <div class="legend" id="clusters" style="margin:6px 0 10px"></div>
+    <div id="cluster-panel"></div>
+
     <div class="stage-wrap">
       <div class="stage" id="stage">
         <canvas id="graph" role="img" aria-label="知识接地星图（可拖拽平移、滚轮缩放；悬停看摘要、点击固定详情）"></canvas>
@@ -56,7 +76,8 @@
       若本地依赖仍不可用，站点**自动降级**为 2D canvas（同一套三通道编码与交互），并在左下角显式标注——不假装是 GPU 渲染。</p>
   </section>
 </main>
-<footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="verify.html">现场验哈希</a></footer>
+<footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> ·
+  <a href="verdicts.html">判决与数字</a> · <a href="verify.html">现场验哈希</a></footer>
 <script type="module" src="starmap.js"></script>
 </body>
 </html>

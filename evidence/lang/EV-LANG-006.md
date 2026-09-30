@@ -15,7 +15,7 @@ fixture: Examples/atoms/_c_setjmp.c
 command: |
   gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_setjmp.c -o Examples/atoms/_c_setjmp.asm
   gcc -std=c11 -O2 -Wall -Wextra Examples/atoms/_c_setjmp.c -o build/c648/_c_setjmp.exe
-  build/c648/_c_setjmp.exe > Examples/atoms/_c_setjmp.out
+  build/c648/_c_setjmp.exe
 artifact: Examples/atoms/_c_setjmp.asm
 artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_setjmp.c -o Examples/atoms/_c_setjmp.asm
 artifact_sha256: e6a7ed718fa902689d16f4d98906a8b982cc523588984680451718bada51487e

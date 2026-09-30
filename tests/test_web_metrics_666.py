@@ -31,10 +31,17 @@ def test_cards_and_rules_match_fact_sources():
 
 
 def test_holdout_rate_is_dual_opt_caliber():
-    """检出率必须带**双档口径**说明（否则会被当"能力提升"误读）。"""
+    """检出率必须带**双档口径**说明（否则会被当"能力提升"误读）。
+
+    668 修正：原断言写的是 `"双档" in caliber`，而 `caliber` 当时是**工具里写死的字符串** ——
+    测试锁的是**标签**而不是数据源，于是"代码改成双档、产物还是单档"时它照样绿（667 的假绿）。
+    现在口径**由产物提供**，断言也就改成读产物、并核对档位清单本身。
+    """
     h = W.collect()["metrics"]["holdout"]
     assert h and isinstance(h["rate_pct"], float)
-    assert "双档" in h["caliber"] and "-O0" in h["caliber"] and "-O2" in h["caliber"]
+    assert h["opt_levels"] == ["-O0", "-O2"], "档位取自产物（holdout_reveal_3_665.json::opt_levels）"
+    assert "-O0" in h["caliber"] and "-O2" in h["caliber"]
+    assert h["den"] == h["catch"] + h["miss"] and h["den"] > 0
     assert h["catch"] + h["miss"] + h["unknown"] > 0
 
 

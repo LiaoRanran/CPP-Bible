@@ -3,11 +3,10 @@
   "generated_by": "tools/status_reconciler_658.py",
   "generated_at": "2026-09-28",
   "git": {
-    "head": "eb700aec398c1c240502f2b57e015bc9e1ff2f2d",
+    "head": "4ae457d2340ac584595ff376b2677780d4322338",
     "branch": "master",
     "ahead_of_origin_master": 0,
-    "behind_origin_master": 0,
-    "dirty_tracked_or_untracked_non_probe": false
+    "behind_origin_master": 0
   },
   "quality": {
     "statement": "见门禁产物（pytest junit / quality gate）；本 baseline 只存快照值，不判红绿",
@@ -18,12 +17,10 @@
   },
   "mutation": {
     "core_kill_rate_pct": 97.3,
-    "all_kill_rate_pct": 81.5,
-    "source": "data/656_mutation_report_core.json / _all.json (657 C 段)",
-    "note": "97.3% 是对自造变异分布的检出率，≠ 外部效度（见 F 段 / A5）"
+    "all_kill_rate_pct": 81.5
   },
   "cards": {
-    "atoms_total": 48,
+    "atoms_total": 53,
     "boundary_written": 26,
     "boundary_verified_pass": 23,
     "boundary_redteam_verified": 3,
@@ -33,10 +30,7 @@
   },
   "graph": {
     "nodes": 178,
-    "links": 1093,
-    "attacked_nodes": 388,
-    "defeated_nodes": 194,
-    "source": "web/data/graph.json (web_logic_check_655 校验通过)"
+    "links": 1093
   },
   "rules": {
     "documented_brief": 67,
@@ -63,5 +57,6 @@
     "source": "data/holdout/holdout.json（660 C2 初始化）",
     "categories": "UB / 内存越界 / 未定义行为 / 编译器差异 / RAII / ODR / 生命周期",
     "iron_rule": "reveal 不可逆；run_658_gate 默认不扫 data/holdout/"
-  }
+  },
+  "snapshot_note": "由 status_reconciler_658.py --snapshot 生成；git.head 为快照点（新增提交后自动放宽为祖先）"
 }

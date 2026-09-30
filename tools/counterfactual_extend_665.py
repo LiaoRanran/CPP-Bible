@@ -83,6 +83,21 @@ CASES: list[dict] = [
 ]
 
 
+def mechanism_class(mech: str) -> str:
+    """把算子给出的 `mechanism` 文案归类到**是哪条判据命中的**（668：给第三判据一个可数的口径）。
+
+    算子返回的是自然语言（"断言显式引用引文 id" / "共用 N 个 token" / "自报机器…"），
+    归类靠关键词。分类口径**写在这里**，不散落在报告里 —— 否则下一个人又要靠猜。
+    """
+    if "显式引用" in mech:
+        return "cited_id"          # 判据 1
+    if "共享" in mech:
+        return "token_overlap"     # 判据 2
+    if "自报机器" in mech:
+        return "machine_marker"    # 判据 3（666 A4）
+    return "none"
+
+
 def main() -> int:
     cf = _load_op658()
     idx = json.load(open(INDEX, encoding="utf-8"))
@@ -108,6 +123,7 @@ def main() -> int:
         else:
             n_tp["fn"] += 1
         cases.append({"id": f"cf{i}", "card": row["id"], "source_id": c["cid"],
+                      "mechanism_class": mechanism_class(res.get("mechanism", "")),
                       "atom_ref": row["fixture_rel"],
                       "original_assertion": c["assertion"],
                       "original_citation": {"id": citation_id, "text": citation_text,
@@ -126,20 +142,49 @@ def main() -> int:
     prec = tp / (tp + fp) if (tp + fp) else 0.0
     rec = tp / (tp + fn) if (tp + fn) else 0.0
     f1 = 2 * prec * rec / (prec + rec) if (prec + rec) else 0.0
+    mech_counts: dict[str, int] = {}
+    for c in cases:
+        mech_counts[c["mechanism_class"]] = mech_counts.get(c["mechanism_class"], 0) + 1
+    third_hits = [c["id"] for c in cases if c["mechanism_class"] == "machine_marker"]
+
     rep = {
         "schema": "queyi-counterfactual/v2",
         "generated_at": time.strftime("%Y-%m-%d"),
         "generated_by": "tools/counterfactual_extend_665.py",
         "operator_reuse": "tools/counterfactual_citation_658.py::counterfactual（唯一算子版本）",
         "cases_total": len(cases),
+        # 668：**分母必须自己说清**。666 的"20 条"是把本文件的 10 条与 660 的 10 条
+        # 混着说了 —— 而 660 那 10 条**没有 ground_truth 标签**，根本进不了 P/R/F1。
+        "denominator": {
+            "value": len(cases),
+            "meaning": "本文件里**带 ground_truth 标签**的案例数（P/R/F1 的分母）",
+            "scored": len(cases),
+            "unscored_sibling": {
+                "file": "data/counterfactual_cases_660.json",
+                "cases": 10,
+                "why": "660 只记录算子输出，**没有真值标签** ⇒ 不能进 P/R/F1（登记，不计入）",
+            },
+            "why_it_matters": "对外说'20 条'而实际打分 10 条 = 分母未声明（667 已记过一次同类问题）",
+        },
         "truth_labels": {"dependent": sum(1 for c in cases if c["ground_truth"] == "dependent"),
                          "independent": sum(1 for c in cases if c["ground_truth"] == "independent")},
         "confusion": n_tp,
         "scores": {"precision": round(prec, 3), "recall": round(rec, 3), "f1": round(f1, 3)},
+        "mechanism_counts": mech_counts,
+        "third_criterion": {
+            "name": "machine_marker（666 A4 新增的第 3 条判据）",
+            "hits": third_hits,
+            "hit_count": len(third_hits),
+            "note": ("这两条真·dependent 断言（平台测量类）正是判据 1/2 抓不到的；"
+                     "判据 3 把它们抓住了。**但真值标签与判据 3 同源** ⇒ F1 是上界。"),
+        },
         "honest_note": ("真值标签的判据是**外部锚**（standard ⇒ 引文为假断言仍成立；"
                         "measurement ⇒ 断言只靠这次实测），不是靠感觉。"
                         "662 说'校准不充分'，本批把它换成可复算的 P/R/F1；"
-                        "样本只有 10 条，**任何百分比都是点估计**。"),
+                        f"分母只有 {len(cases)} 条，**任何百分比都是点估计**（n={len(cases)} 时 "
+                        "95% CI 宽度约 ±30pp，Clopper–Pearson）。"
+                        "⚠ 判据 3 与真值标签**同源**（都按'是否平台测量'判）⇒ "
+                        "本 F1 是**上界**，不代表泛化能力；要真校准需引文级标注的外部语料（未做）。"),
         "cases": cases,
     }
     json.dump(rep, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=2)

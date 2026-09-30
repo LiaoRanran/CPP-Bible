@@ -20,7 +20,7 @@ verify(hash, receipt) -> bool     # 第三方凭 hash + 凭据独立验证
 
 - 透明日志：**58** 条，末条 index=57
 - anchor（末条 entry_hash）：`2da866b6a16288a095c8b0a32c8fa28410a2b7c5c6dd33f26a4fffcc80913b0f`
-- receipt：`{"provider": "mock-local", "hash": "2da866b6a16288a095c8b0a32c8fa28410a2b7c5c6dd33f26a4fffcc80913b0f", "published_at": "2026-09-28T15:35:03Z", "receipt_id": "6a074ec107ae20d80f7f1d99c257b38170cf3312bd1ec9b7da1b5eeac841f39e", "receipt_digest": "e73efe6fe2e1fceed67d7dcf9a5899980beab0e07bb300b1665a62abbb721486"}`
+- receipt：`{"provider": "mock-local", "hash": "2da866b6a16288a095c8b0a32c8fa28410a2b7c5c6dd33f26a4fffcc80913b0f", "published_at": "2026-09-30T01:36:14Z", "receipt_id": "be4f52705259b8fadec185e9a15421fb4452b2fbcec2ee756c03729652563a2c", "receipt_digest": "1020cbe00937475db0f4ebe6bdd27bd097f0459f93af89ce2e83eba31f100842"}`
 - **验证可验：True**；改一个字符 ⇒ 检出：True
 
 ## 四、独立性的真实状态（不夸大）

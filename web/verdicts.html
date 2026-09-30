@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>判决与数字 · 祈易 QueYi</title>
+<meta name="description" content="判决历史（时间倒序、状态色标、筛选排序）、状态仪表盘与数据对比表；数字全部由 tools/web_verdicts_667.py 现算。">
+<link rel="stylesheet" href="css/design-tokens.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要内容</a>
+<qy-nav current="verdicts.html"></qy-nav>
+
+<main id="main" class="wrap">
+
+  <section>
+    <div class="section-head">
+      <div class="eyebrow">667 · 状态仪表盘</div>
+      <h1>判决与数字</h1>
+      <p class="lead">这一页的每一个数字都由 <span class="kbd">tools/web_verdicts_667.py</span>
+        现场复算后落盘，前端只渲染。<b>对不上的数字会自己标红</b>，不会静默替换。</p>
+    </div>
+
+    <div class="dash" id="dash"></div>
+    <p class="note-faint" id="dash-note"></p>
+    <div id="drift-box"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <div class="eyebrow">逐条 · 可筛选可排序</div>
+      <h2>判决历史</h2>
+      <p>按时间倒序。<b>只有真正落了逐条结果的产物才进这张表</b>——
+        只有聚合数的样本集不进表，理由登记在下方「为什么只有这些条目」。</p>
+    </div>
+
+    <div class="list-toolbar">
+      <div class="field">
+        <label for="q">搜索（id / 说明 / 检测器）</label>
+        <input id="q" type="search" placeholder="例如 ubsan、IG01、注入" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="f-state">状态</label>
+        <select id="f-state">
+          <option value="all">全部</option>
+          <option value="pass">pass</option>
+          <option value="pass_with_exception">pass_with_exception</option>
+          <option value="fail">fail</option>
+          <option value="unknown">unknown</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-source">来源</label>
+        <select id="f-source"><option value="all">全部</option></select>
+      </div>
+      <div class="field">
+        <label for="f-sort">排序</label>
+        <select id="f-sort">
+          <option value="when:desc">时间 ↓（新→旧）</option>
+          <option value="when:asc">时间 ↑（旧→新）</option>
+          <option value="state:desc">状态（坏→好）</option>
+          <option value="state:asc">状态（好→坏）</option>
+          <option value="id:asc">id ↑</option>
+          <option value="id:desc">id ↓</option>
+          <option value="source:asc">来源 ↑</option>
+        </select>
+      </div>
+      <button id="reset" type="button">重置筛选</button>
+    </div>
+
+    <p id="count" class="muted" role="status" aria-live="polite"></p>
+
+    <div class="table-wrap" id="vt-wrap">
+      <table class="data" id="vt">
+        <caption class="sr-only">判决历史（逐条）</caption>
+        <thead>
+          <tr>
+            <th scope="col"><button class="th-btn" type="button" data-key="when">时间<span class="arrow"></span></button></th>
+            <th scope="col"><button class="th-btn" type="button" data-key="source">来源<span class="arrow"></span></button></th>
+            <th scope="col"><button class="th-btn" type="button" data-key="id">条目<span class="arrow"></span></button></th>
+            <th scope="col"><button class="th-btn" type="button" data-key="state">四态<span class="arrow"></span></button></th>
+            <th scope="col">检测器 / 期望</th>
+            <th scope="col">说明</th>
+          </tr>
+        </thead>
+        <tbody id="vt-body"></tbody>
+      </table>
+    </div>
+    <div id="vt-empty"></div>
+
+    <details class="card" id="exc-box">
+      <summary>为什么只有这些条目（不含对照的诚实登记）</summary>
+      <ul id="excluded" class="prose"></ul>
+    </details>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <div class="eyebrow">口径差 · 漂移</div>
+      <h2>数据对比表</h2>
+      <p>同一个量有两种算法时，<b>两个都列</b>。漂移项单独标红，并把"该信哪个"交给人。</p>
+    </div>
+    <div class="table-wrap" id="ct-wrap">
+      <table class="data" id="ct">
+        <caption class="sr-only">数据对比表</caption>
+        <thead>
+          <tr>
+            <th scope="col">指标</th>
+            <th scope="col">左值</th>
+            <th scope="col">右值</th>
+            <th scope="col">性质</th>
+            <th scope="col">说明</th>
+          </tr>
+        </thead>
+        <tbody id="ct-body"></tbody>
+      </table>
+    </div>
+    <div id="ct-empty"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>数据来源：<span class="kbd">web/data/verdicts_667.json</span>（<span class="kbd">python tools/web_verdicts_667.py --write</span> 现算）。
+      复算：<span class="kbd">--selftest</span> / <span class="kbd">--check</span>。
+      静态站，无后端；请用本地服务器打开（<span class="kbd">python -m http.server 8765 --directory web</span>）。</p>
+  </div>
+</footer>
+
+<script type="module" src="./verdicts.js"></script>
+<script type="module" src="./components/index.js"></script>
+</body>
+</html>

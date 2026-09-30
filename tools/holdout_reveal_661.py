@@ -58,6 +58,11 @@ PLAN = {
 }
 SAN = {"tsan": "thread", "asan": "address", "ubsan": "undefined"}
 
+#: 668：sanitizer 类检测器的**编译档位清单**（单一事实源）。
+#: 谁要引用"双档口径"都必须读这里，不许在别处再抄一遍字符串 —— 666 的 81.2% 就是
+#: "口径写在工具里、数字写在文档里、两边谁也没对过"造成的。
+OPT_LEVELS: tuple[str, ...] = ("-O0", "-O2")
+
 
 def _to_wsl(path: str) -> str:
     p = path.replace("\\", "/")
@@ -81,6 +86,23 @@ def _local(cmd, timeout=180):
         return r.returncode, (r.stdout or "") + (r.stderr or "")
     except Exception as e:  # noqa: BLE001
         return -1, f"local_error:{e}"
+
+
+_SETARCH: str | None = None
+
+
+def _setarch_prefix() -> str:
+    """668：TSan 在 WSL 的**高熵 ASLR** 下会间歇性 `FATAL: ThreadSanitizer: unexpected memory
+    mapping` —— 同一夹具时 catch 时 unknown。实测 `setarch -R`（关 ASLR）能稳定出报告。
+
+    这不是"让检测器更容易报"，而是**把测量变成可复现的测量**：
+    没关 ASLR 时，"catch"和"unknown"都是环境掷骰子的结果，那样的数字进不了论文。
+    """
+    global _SETARCH
+    if _SETARCH is None:
+        rc, _ = _wsl("command -v setarch")
+        _SETARCH = "setarch -R " if rc == 0 else ""
+    return _SETARCH
 
 
 def detect(kind: str, files: list) -> tuple:
@@ -109,19 +131,19 @@ def detect(kind: str, files: list) -> tuple:
             hits: list[str] = []
             notes: list[str] = []
             unavail: list[str] = []
-            for opt in ("-O0", "-O2"):
+            for opt in OPT_LEVELS:
                 exe = f"/tmp/rv_bin_{opt.lstrip('-')}"
                 c = f"g++ -std=c++17 {opt} -g -fsanitize={san} -pthread {' '.join(w)} -o {exe}"
                 rc, out = _wsl(c)
                 if rc != 0:
                     unavail.append(f"{opt} 编译失败: {out.strip()[:80]}")
                     continue
-                rc, out = _wsl(exe, timeout=120)
+                rc, out = _wsl(_setarch_prefix() + exe, timeout=120)
                 low = out.lower()
                 snip = out.strip().replace("\n", " ")[:200]
-                # TSan 在 WSL 常见 FATAL（内存映射不兼容）→ 该档不可用（不误判 catch）
+                # TSan 在 WSL 仍可能 FATAL（关 ASLR 也压不住时）→ 该档不可用（不误判 catch）
                 if kind == "tsan" and "FATAL: ThreadSanitizer" in out:
-                    unavail.append(f"{opt} TSan 无法初始化（WSL 内存映射不兼容）")
+                    unavail.append(f"{opt} TSan 无法初始化（已试 setarch -R，仍不受支持）")
                     continue
                 tried.append(opt)
                 if kind == "tsan":

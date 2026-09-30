@@ -21,9 +21,65 @@ let pos = [];          // [{x,y}]
 let idxById = new Map();
 const filters = { pass: true, pass_with_exception: true, fail: true, unknown: true, defeatedOnly: false };
 
+const REDUCED_MOTION = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 const RADIUS = { card: 7.5, prop: 4.2, misconception: 3.2 };
 const alphaOf = (c) => (c >= 3 ? 1.0 : c === 2 ? 0.72 : 0.5);
 const EDGE_PICK_PX = 7;      // 边拾取半径（屏幕像素）
+
+/* ── 667 阶段2：聚类 / 权重 / 搜索 ──────────────────────────────
+ * 聚类键 = `domain` **小写归一**。理由：graph.json 里同一域有大小写两态
+ * （实测 mem 65 + MEM 23、lang 10 + LANG 8、ub 3 + UB 2、hist 5 + HIST 1），
+ * 不归一就会把一个域拆成两个簇。**只在展示层归一，不改数据文件。**
+ * 连线"权重"是**派生量**：数据里没有 weight 字段，这里用"两端节点度数之和"的对数压缩
+ * 作为粗细依据，并在图例里写明它是派生的（不许让人误以为数据自带权重）。 */
+const CLUSTER_COLORS = ['#5fc3ae', '#d9a959', '#8fb6e8', '#c98fd8', '#8fd8c0', '#e0a0a0', '#9aa7b5', '#d97757'];
+const clusterOf = (d) => String(d.domain || '?').toLowerCase();
+let clusterList = [];        // [{key, n, color, members:[i]}]
+let clusterColor = new Map();
+let deg = [];                // 节点度数（权重用）
+let weightMax = 1;
+let searchHits = null;       // null = 无搜索；Set(index) = 命中
+let activeCluster = 'all';
+let useWeight = true;
+
+function buildClusters() {
+  const m = new Map();
+  G.nodes.forEach((d, i) => {
+    const k = clusterOf(d);
+    if (!m.has(k)) m.set(k, []);
+    m.get(k).push(i);
+  });
+  clusterList = [...m.entries()]
+    .map(([key, members], n) => ({ key, n, members, color: CLUSTER_COLORS[n % CLUSTER_COLORS.length] }))
+    .sort((a, b) => b.members.length - a.members.length);
+  clusterColor = new Map(clusterList.map((c) => [c.key, c.color]));
+}
+
+function buildWeights() {
+  deg = new Array(G.nodes.length).fill(0);
+  for (const l of G.links) {
+    const a = idxById.get(l.source), b = idxById.get(l.target);
+    if (a != null) deg[a]++;
+    if (b != null) deg[b]++;
+  }
+  let mx = 1;
+  for (const l of G.links) {
+    const a = idxById.get(l.source), b = idxById.get(l.target);
+    if (a == null || b == null) continue;
+    l._w = Math.log2(1 + (deg[a] || 0) + (deg[b] || 0));
+    if (l._w > mx) mx = l._w;
+  }
+  weightMax = mx;
+}
+
+function edgeWidth(l, base, k) {
+  if (!useWeight || !l._w) return base * k;
+  const t = Math.max(0.25, Math.min(1, l._w / weightMax));   // 归一到 [0.25, 1]
+  return base * (0.45 + t * 1.35) * k;
+}
+
+function inCluster(i) { return activeCluster === 'all' || clusterOf(G.nodes[i]) === activeCluster; }
+function dimBySearch(i) { return !!(searchHits && !searchHits.has(i)); }
 
 // ── 布局：一次性力导向（O(n²) 可行，n=178）────────────────────────────────
 function layout(nodes, links, iters = 320) {
@@ -117,7 +173,7 @@ function draw() {
     ctx.strokeStyle = isHot
       ? (defeated ? 'rgba(217,107,107,.95)' : 'rgba(230,232,234,.85)')
       : `rgba(${defeated ? '217,107,107' : st.color},${defeated ? 0.42 : st.alpha})`;
-    ctx.lineWidth = (isHot ? 2.2 : (defeated ? 1.15 : st.width)) * view.k;
+    ctx.lineWidth = isHot ? 2.2 * view.k : edgeWidth(l, defeated ? 1.15 : st.width, view.k);
     ctx.stroke();
   }
   // 节点
@@ -126,16 +182,26 @@ function draw() {
   for (let i = 0; i < G.nodes.length; i++) {
     const d = G.nodes[i];
     if (!passFilter(d)) continue;
+    if (!inCluster(i)) continue;                       // 667：聚类筛选
     const p = toScreen(pos[i]);
     const rad = (RADIUS[d.kind] || 4) * view.k;
     const dim = sel && !(neigh.has(d.id) || d.id === sel.id);
-    ctx.globalAlpha = dim ? 0.18 : alphaOf(d.credibility);
+    let alpha = dim ? 0.18 : alphaOf(d.credibility);
+    if (dimBySearch(i)) alpha *= 0.22;                 // 667：搜索未命中 ⇒ 压暗（不是隐藏）
+    ctx.globalAlpha = alpha;
     ctx.beginPath();
     // 形通道：卡=圆、命题=圆（小）、误解=方（一眼可分）
     if (d.kind === 'misconception') ctx.rect(p.x - rad, p.y - rad, rad * 2, rad * 2);
     else ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
     ctx.fillStyle = STATE_COLORS[d.state] || STATE_COLORS.unknown;
+    // 667：hover 微发光（只在悬停节点上，且尊重 reduced-motion）
+    if (i === hovered && !REDUCED_MOTION) {
+      ctx.save();
+      ctx.shadowColor = STATE_COLORS[d.state] || STATE_COLORS.unknown;
+      ctx.shadowBlur = 14 * view.k;
+    }
     ctx.fill();
+    if (i === hovered && !REDUCED_MOTION) ctx.restore();
     if (d.kind === 'card' || i === hovered) {
       ctx.lineWidth = i === hovered ? 1.6 : 1;
       ctx.strokeStyle = i === hovered ? '#e6e8ea' : 'rgba(230,232,234,.55)';
@@ -169,6 +235,7 @@ function pickNode(wx, wy) {
   let best = -1, bd = 18 / view.k;
   for (let i = 0; i < G.nodes.length; i++) {
     if (!passFilter(G.nodes[i])) continue;
+    if (!inCluster(i)) continue;
     const d = Math.hypot(pos[i].x - wx, pos[i].y - wy);
     if (d < bd) { bd = d; best = i; }
   }
@@ -340,6 +407,102 @@ function wireFilters() {
   });
 }
 
+/* ── 667 阶段2：聚类图例 / 搜索 / 缩放 / 线宽权重 ────────────────────── */
+function renderClusters() {
+  const box = document.getElementById('clusters');
+  if (!box) return;
+  box.innerHTML = '<div class="chan"><b>聚类（domain · 展示层小写归一）</b></div>'
+    + clusterList.map((c) => `<button class="chip" type="button" data-cluster="${c.key}"
+        title="展开 ${c.key} 的成员（${c.members.length} 个）">
+        <span class="sq" style="background:${c.color}"></span>${c.key} · ${c.members.length}</button>`).join('')
+    + '<span class="chan muted">点聚类 ⇒ 展开成员；下拉框 ⇒ 只显示该聚类</span>';
+  box.querySelectorAll('button[data-cluster]').forEach((b) => {
+    b.addEventListener('click', () => expandCluster(b.dataset.cluster));
+  });
+
+  const sel = document.getElementById('f-cluster');
+  if (sel) {
+    sel.innerHTML = '<option value="all">全部</option>'
+      + clusterList.map((c) => `<option value="${c.key}">${c.key}（${c.members.length}）</option>`).join('');
+  }
+}
+
+function expandCluster(key) {
+  const c = clusterList.find((x) => x.key === key);
+  const box = document.getElementById('cluster-panel');
+  if (!c || !box) return;
+  box.innerHTML = `<div class="card glass glass-tint">
+    <div class="row-between">
+      <h3 style="margin:0">聚类 ${c.key}</h3>
+      <span class="muted">${c.members.length} 个节点</span>
+      <span class="grow"></span>
+      <button type="button" id="cluster-filter">只看这个聚类</button>
+      <button type="button" id="cluster-close">收起</button>
+    </div>
+    <ul class="cluster-list">${c.members.slice(0, 60).map((i) => {
+      const d = G.nodes[i];
+      return `<li><span class="mono">${d.id}</span>
+        <span class="note-faint">${KIND_LABELS[d.kind] || d.kind} · ${STATE_LABELS[d.state] || d.state}</span>
+        <button class="chip" type="button" data-focus="${i}">定位</button></li>`;
+    }).join('')}</ul>
+    ${c.members.length > 60 ? `<p class="note-faint">（只列前 60 个，共 ${c.members.length} 个）</p>` : ''}
+  </div>`;
+  document.getElementById('cluster-close').addEventListener('click', () => { box.innerHTML = ''; });
+  document.getElementById('cluster-filter').addEventListener('click', () => {
+    activeCluster = c.key;
+    const sel = document.getElementById('f-cluster');
+    if (sel) sel.value = c.key;
+    selected = -1; renderDetail(-1); draw();
+  });
+  box.querySelectorAll('button[data-focus]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const i = Number(b.dataset.focus);
+      selected = i; hovered = i;
+      view.x = -pos[i].x; view.y = -pos[i].y; view.k = Math.max(view.k, 1.6);
+      renderDetail(i); draw();
+    });
+  });
+}
+
+function zoomBy(f) {
+  view.k = Math.max(0.25, Math.min(6, view.k * f));
+  draw();
+}
+
+function applySearch(text) {
+  const q = String(text || '').trim().toLowerCase();
+  const cnt = document.getElementById('q-count');
+  if (!q) { searchHits = null; if (cnt) cnt.textContent = ''; draw(); return; }
+  searchHits = new Set();
+  G.nodes.forEach((d, i) => {
+    if (String(d.id).toLowerCase().includes(q)) searchHits.add(i);
+    else if (String(d.title || '').toLowerCase().includes(q)) searchHits.add(i);
+    else if (String(d.label || '').toLowerCase().includes(q)) searchHits.add(i);
+  });
+  if (cnt) {
+    cnt.textContent = searchHits.size
+      ? `匹配 ${searchHits.size} 个节点（未命中的压暗，不隐藏）`
+      : `没有节点匹配「${text}」—— 这不是加载失败，是数据集里没有这个词`;
+  }
+  draw();
+}
+
+function wireExtra() {
+  const q = document.getElementById('q');
+  if (q) q.addEventListener('input', () => applySearch(q.value));
+  const sel = document.getElementById('f-cluster');
+  if (sel) sel.addEventListener('change', () => {
+    activeCluster = sel.value;
+    selected = -1; renderDetail(-1); draw();
+  });
+  const w = document.getElementById('f-weight');
+  if (w) w.addEventListener('change', () => { useWeight = w.checked; draw(); });
+  const zin = document.getElementById('zin');
+  if (zin) zin.addEventListener('click', () => zoomBy(1.25));
+  const zout = document.getElementById('zout');
+  if (zout) zout.addEventListener('click', () => zoomBy(1 / 1.25));
+}
+
 // ── cosmos.gl v3（本地 vendor，654 修复）────────────────────────────────
 // 653 用 CDN `+esm` 时，jsDelivr 把依赖写死为绝对 URL，且同时拉入
 // `@luma.gl/core@9.3.5`（经 shadertools@9.3.5）与 `@9.3.6` ⇒ **luma.gl 双份**
@@ -403,6 +566,19 @@ window.__starmap_hooks = {
     const d = G.nodes[i];
     return { id: d.id, state: d.state, credibility: d.credibility, ...statsOf(d.id) };
   },
+  /* ── 667 阶段2 新增（给 tools/web_logic_check_667 / web_smoke_667 用）── */
+  /** 聚类清单（展示层小写归一后的 domain）。 */
+  clusters: () => clusterList.map((c) => `${c.key}:${c.members.length}`),
+  /** 当前聚类筛选下**应当可见**的节点数。 */
+  visibleCount() { return G ? G.nodes.filter((_d, i) => passFilter(G.nodes[i]) && inCluster(i)).length : 0; },
+  /** 搜索：返回命中数（0 = 真的没有，不是失败）。 */
+  search(text) { applySearch(text); return searchHits ? searchHits.size : -1; },
+  /** 缩放：返回当前缩放系数。 */
+  zoom(f) { zoomBy(f); return view.k; },
+  /** 线宽权重开关。 */
+  setWeight(on) { useWeight = !!on; draw(); return useWeight; },
+  /** 展开某个聚类（返回成员数）。 */
+  expand(key) { expandCluster(key); const c = clusterList.find((x) => x.key === key); return c ? c.members.length : 0; },
 };
 
 // ── 启动 ─────────────────────────────────────────────────────────────────
@@ -420,7 +596,9 @@ window.__starmap_hooks = {
   attackedSet = new Set();
   for (const l of G.links) if (l.kind === 'attack') attackedSet.add(l.target);
   layout(G.nodes, G.links);
-  renderLead(); renderStats(); renderDetail(-1); wireFilters(); resize();
+  buildClusters(); buildWeights();
+  renderLead(); renderStats(); renderDetail(-1);
+  wireFilters(); wireExtra(); renderClusters(); resize();
   window.addEventListener('resize', resize);
   const gpu = await tryCosmos();
   if (!gpu) draw();

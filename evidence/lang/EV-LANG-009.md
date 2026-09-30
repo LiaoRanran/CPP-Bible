@@ -15,7 +15,7 @@ fixture: Examples/atoms/_c_macro.c
 command: |
   gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_macro.c -o Examples/atoms/_c_macro.asm
   gcc -std=c11 -O2 -Wall -Wextra Examples/atoms/_c_macro.c -o build/c648/_c_macro.exe
-  build/c648/_c_macro.exe > Examples/atoms/_c_macro.out
+  build/c648/_c_macro.exe
 artifact: Examples/atoms/_c_macro.asm
 artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_macro.c -o Examples/atoms/_c_macro.asm
 artifact_sha256: eca0a33e9d346dd6bcc18b2aef8418646cfe1b4f8a54705cc6ef97e9c33856a5

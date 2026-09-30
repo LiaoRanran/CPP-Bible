@@ -8,6 +8,7 @@ const LINKS = [
   ['cards.html', '卡库'],
   ['card.html', '学一张卡'],
   ['starmap.html', '星图'],
+  ['verdicts.html', '判决与数字'],
   ['verify.html', '验哈希'],
 ];
 

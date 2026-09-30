@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T23:47:39",
+  "generated_at": "2026-09-30T01:07:14",
   "tool": "tools/web_data_pipeline_656.py",
   "files": {
     "card.json": {
@@ -12,7 +12,7 @@
     },
     "cards_index.json": {
       "bytes": 22979,
-      "sha256": "47a9239ebecdfae989be4243644c40405d05fff5f00fe1b84f72c51061d4b64f"
+      "sha256": "69d4f5a46db3a917bc4032b4d563eda560431f707342ea9820427057befe6fc1"
     },
     "graph.json": {
       "bytes": 193086,
@@ -24,7 +24,7 @@
     },
     "manifest.json": {
       "bytes": 3122,
-      "sha256": "c95e0e822f3e868b24bd2ff0a53aec1609ba4371e4b77e7c6d1cfc62a45c714d"
+      "sha256": "56ff3c42b67e48ebb69546c071c259bdf0832453fe547e61a559eab01b32d89a"
     },
     "metrics_666.json": {
       "bytes": 3805,
@@ -32,7 +32,11 @@
     },
     "status.json": {
       "bytes": 2169,
-      "sha256": "471e44e50f262eaa2b682e8590d7fc026a5af6b93b534f33b21d451c85598b06"
+      "sha256": "eea42e770ab9c56c8569b8d4d53fb9cebecc45d0044d415475a87278e9f23d5b"
+    },
+    "verdicts_667.json": {
+      "bytes": 19346,
+      "sha256": "6f0bdcfb1c29445e46a96615edf4d98e3f7a8bfe6a78bdcc637635d7120c0977"
     }
   }
 }

@@ -82,6 +82,8 @@ def main() -> int:
     for layer, d in by_layer.items():
         d["detect_rate_pct"] = round(d["catch"] / d["measurable"] * 100, 1) if d["measurable"] else 0.0
 
+    rate = round(catch / denom * 100, 1) if denom else 0.0
+    rate_all = round(catch / len(rows) * 100, 1) if rows else 0.0
     rep = {
         "schema": "queyi-external-corpus-reveal/v2",
         "generated_at": time.strftime("%Y-%m-%d"),
@@ -89,13 +91,22 @@ def main() -> int:
         "detector_reuse": "import tools/external_corpus_662.py::detect（唯一判据），结果另存 665 文件",
         "total": len(rows),
         "catch": catch, "miss": miss, "unknown": unknown, "not_error": not_error,
-        "detect_rate_pct": round(catch / denom * 100, 1) if denom else 0.0,
+        "detect_rate_pct": rate,
+        # 668 P1-3：**分母声明**。667 曾误判为"算术不自洽"，实际 14/32 算术无误，
+        # 真问题是产物与文档都只写"40 条 43.8%"，读者按 40 一算得 35.0%。
+        "denominator": {
+            "value": denom,
+            "meaning": "catch+miss（可测且非测量类的样本）",
+            "excluded": {"unknown（本机无检测器）": unknown, "not_error（对照，本不是缺陷）": not_error},
+            "all_samples": len(rows),
+        },
+        "rate_pct_all_samples": rate_all,
         "by_layer": by_layer,
         "compare_662": {
             "before_total": old.get("total"),
             "before_detect_rate_pct": old.get("detect_rate_pct"),
             "after_total": len(rows),
-            "after_detect_rate_pct": round(catch / denom * 100, 1) if denom else 0.0,
+            "after_detect_rate_pct": rate,
             "note": ("分母仍是 catch+miss（可测且非测量类）；两轮的对比对象是**不同样本集合**，"
                      "所以数字差异只能描样本构成，不能断言验证器变好变坏。"),
         },

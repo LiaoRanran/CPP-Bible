@@ -15,7 +15,7 @@ fixture: Examples/atoms/_c_decay.c
 command: |
   gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_decay.c -o Examples/atoms/_c_decay.asm
   gcc -std=c11 -O2 -Wall -Wextra Examples/atoms/_c_decay.c -o build/c648/_c_decay.exe
-  build/c648/_c_decay.exe > Examples/atoms/_c_decay.out
+  build/c648/_c_decay.exe
 artifact: Examples/atoms/_c_decay.asm
 artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_decay.c -o Examples/atoms/_c_decay.asm
 artifact_sha256: 97509b8f4bf442598807454e49eff591c65e4e8dd0917537e2fac8371d2a6e2f

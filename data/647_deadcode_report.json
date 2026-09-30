@@ -14,7 +14,7 @@
   ],
   "ruff": {
     "available": true,
-    "rc": 1,
+    "rc": 0,
     "n_remaining": 0,
     "violations": []
   },
