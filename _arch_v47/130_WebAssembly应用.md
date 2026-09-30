@@ -42,7 +42,7 @@ WASM 提案沿用类 TC39 阶段制。Post-MVP 已落地：可变全局导入导
 
 ### 六、确定性与沙箱边界
 
-WASM 语义刻意做了浮点可控（可配置 NaN 行为）、无隐式系统调用、执行结果仅取决于模块与输入，天然适合**确定性重放**。确定性还体现在浮点细节：WASM 规定了确定的舍入与运算顺序，NaN 载荷策略可配置，避免了 C++ 原生浮点在不同编译器优化下重排的问题。沙箱由线性内存（访问带边界检查）+ 模块验证（类型/栈/控制流校验）+ 显式导入构成，模块无法跳到线性内存中执行指令，也无法接触未导入的宿主函数。但风险并未归零：JIT 本身的 bug、Spectre 类侧信道、运行时实现缺陷——Patrick Ventuzelo 在 Black Hat USA 2022 演示模糊测试 WASM VM，仅 wasmtime 校验路径即发现约 6 个缺陷[13]。
+WASM 语义刻意做了浮点可控（可配置 NaN 行为）、无隐式系统调用、执行结果仅取决于模块与输入，天然适合**确定性重放**。确定性还体现在浮点细节：WASM 规定了确定的舍入与运算顺序，NaN 载荷策略可配置，避免了 C++ 原生浮点在不同编译器优化下重排的问题。沙箱由线性内存（访问带边界检查）+ 模块验证（类型/栈/控制流校验）+ 显式导入构成，模块无法跳到线性内存中执行指令，也无法接触未导入的宿主函数。但风险并未归零：JIT 本身的 bug、Spectre 类侧信道、运行时实现缺陷——安全研究者在 Black Hat USA 2022 公开演示对 WASM VM 的系统模糊测试，发现多个运行时校验路径缺陷[9]。
 
 ---
 
@@ -66,7 +66,7 @@ WASM 语义刻意做了浮点可控（可配置 NaN 行为）、无隐式系统�
 
 ### 五、现实节奏与嵌入式背景的复用
 
-WAMR 的存在使同一套规则 .wasm 未来可下沉到嵌入式目标（作者的本职领域）——例如在资源受限设备上做静态检查探针，这给论文"领域外延"提供自然的 future work，也让作者背景从劣势变成合理的故事线。但优先级必须排清：WASM 化是论文冻结后的增强项，不能干扰 2027 年投稿前 holdout/corpus/变异/反事实四组核心数字的稳定。还要划清一条能力边界：WASM 版规则只覆盖"纯 AST 分析"路径，凡需调用真实编译器或 sanitizer 的实卡，浏览器内只能展示流程、无法在端内产出判决，页面必须如实标注，不能用预录结果冒充实时执行——一旦被复现者发现"演示造假"，对 0 影响力作者的信誉伤害远大于没有 demo。
+WAMR 的存在使同一套规则 .wasm 未来可下沉到嵌入式目标（作者的本职领域）——例如在资源受限设备上做静态检查探针，这给论文"领域外延"提供自然的 future work，也让作者背景从劣势变成合理的故事线；叙述时应给出具体目标（如某类 MCU 上的内存与启动预算），而非空泛声称该方案可以普遍适用于一切设备与全部应用场景。但优先级必须排清：WASM 化是论文冻结后的增强项，不能干扰 2027 年投稿前 holdout/corpus/变异/反事实四组核心数字的稳定。还要划清一条能力边界：WASM 版规则只覆盖"纯 AST 分析"路径，凡需调用真实编译器或 sanitizer 的实卡，浏览器内只能展示流程、无法在端内产出判决，页面必须如实标注，不能用预录结果冒充实时执行——一旦被复现者发现"演示造假"，对 0 影响力作者的信誉伤害远大于没有 demo。
 
 ---
 
@@ -103,4 +103,3 @@ WAMR 的存在使同一套规则 .wasm 未来可下沉到嵌入式目标（作�
 10. Fastly, "Announcing Lucet" 与 Compute 平台 — https://www.fastly.com/blog/announcing-lucet-fastly-native-webassembly-compiler-runtime
 11. Cloudflare, "Introducing Cloudflare Workers" — https://blog.cloudflare.com/announcing-cloudflare-workers-the-platform-for-building-a-new-serverless-cloud/ — 2017-09
 12. Envoy 官方文档，"Extending Envoy with WebAssembly" — https://www.envoyproxy.io/docs/envoy/latest/start/wasm
-13. Ventuzelo, "A Journey Into Fuzzing WebAssembly Virtual Machines", Black Hat USA 2022 — https://i.blackhat.com/USA-22/Wednesday/US-22-Ventuzelo-A-Journey-Into-Fuzzing-WebAssembly-Virtual-Machines.pdf
