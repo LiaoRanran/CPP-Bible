@@ -1,0 +1,1657 @@
+                                                                    [100%]
+================================== FAILURES ===================================
+________________________ test_c3_fragmentation_repair _________________________
+
+    def test_c3_fragmentation_repair():
+        r = c3.analyze(cands=c3.load_candidates())
+>       assert r["components_before"] == 21
+E       assert 31 == 21
+
+tests\test_611_tools.py:46: AssertionError
+____________________________ test_d2_liveness_plan ____________________________
+
+    def test_d2_liveness_plan():
+        p = d2.build_plan()
+>       assert p["total_missing"] == 60
+E       assert 65 == 60
+
+tests\test_611_tools.py:64: AssertionError
+_____________________________ test_e1_metrics_611 _____________________________
+
+    def test_e1_metrics_611():
+        notes: dict = {}
+        m = e1.collect_611_new_metrics(notes)
+        assert notes == {}  # 全部采集器成功，无错误记账
+        assert m["argument_graph_fragmentation"]["components"] == wd.components()["count"]
+        assert m["bridge_candidates"]["total"] == 98       # C2 产物件数（数据产物，非 W2 派生量）
+        assert m["out_mis_review"]["out_mis_count"] == PIN["out_mis"], "OUT MIS 数取权威产物"
+        assert m["out_mis_review"]["out_nodes_total"] == PIN["out"]
+>       assert m["liveness_missing"]["missing_observation"] == 60
+E       assert 65 == 60
+
+tests\test_611_tools.py:85: AssertionError
+________________________ test_e3_defense_chain_deepen _________________________
+
+    def test_e3_defense_chain_deepen():
+        """真实库：只断言**不变量与内部一致**（承重/最大级联是随人签演进的派生量）。
+    
+        640c 现状：`nodes_whose_demote_changes_something == 0`、`max_ripple == 0` ——
+        因为每条 MIS 都被 **≥2 个** `high` 命题击败（实测最少 2 个），单独压垮一个命题不改变任何判决。
+        这是**正确行为**（不是坏了），故改断言内部一致性而非旧快照 107/1。
+        """
+        a = e3.analyze()
+>       assert a["total_nodes"] == len(a["demote_ripple"]) == len(a["escalate_ripple"]) == PIN["nodes"]
+E       AssertionError: assert 141 == 131
+E        +  where 141 = len({'ATOM-CONC-FENCE-001::prop-1': 0, 'ATOM-CONC-FENCE-001::prop-2': 0, 'ATOM-CONC-LOCK-001::prop-1': 0, 'ATOM-CONC-LOCK-001::prop-2': 0, ...})
+
+tests\test_611_tools.py:106: AssertionError
+____________________________ test_selftest_passes _____________________________
+
+    def test_selftest_passes():
+>       assert M.selftest() == 0
+E       assert 1 == 0
+E        +  where 1 = <function selftest at 0x0000023492415620>()
+E        +    where <function selftest at 0x0000023492415620> = M.selftest
+
+tests\test_620_b1.py:78: AssertionError
+---------------------------- Captured stdout call -----------------------------
+  [FAIL] 自动发现全量卡 = 103 张（37 原子 + 66 证据）
+  [FAIL] 原子卡 37 张
+  [FAIL] 证据卡 66 张
+  [ok] 单张迁移通过 B2
+  [ok] cert 含 7 个必需字段
+  [ok] 缺失字段标 unknown 而非编造
+  [ok] 幂等：同输入两次构建一致
+  [ok] negative_tests 结果均在 B2 允许域
+  [ok] 报告可汇总
+B1 selftest: FAIL
+____________________________ test_已生成证书文件存在且可通过验证 _____________________________
+
+    def test_已生成证书文件存在且可通过验证():
+        if not os.path.isdir(CERT_DIR):
+            return
+        files = [f for f in os.listdir(CERT_DIR) if f.endswith(".pck.yaml")]
+>       assert len(files) == counts.CARDS_REAL
+E       AssertionError: assert 103 == 113
+E        +  where 103 = len(['ATOM-CONC-FENCE-001.pck.yaml', 'ATOM-CONC-LOCK-001.pck.yaml', 'ATOM-CONC-RACE-001.pck.yaml', 'ATOM-HIST-AUTOPTR-001.pck.yaml', 'ATOM-LANG-BITFIELD-001.pck.yaml', 'ATOM-LANG-DECAY-001.pck.yaml', ...])
+E        +  and   113 = counts.CARDS_REAL
+
+tests\test_620_b2.py:49: AssertionError
+____________________ test_证据卡human_authority全为pending_如实反映 ____________________
+
+    def test_证据卡human_authority全为pending_如实反映():
+        ev_cards = [c for c in CARDS if c.startswith("evidence/")]
+>       assert len(ev_cards) == 66
+E       AssertionError: assert 71 == 66
+E        +  where 71 = len(['evidence/conc/EV-CONC-001.md', 'evidence/conc/EV-CONC-002.md', 'evidence/conc/EV-CONC-003.md', 'evidence/conc/EV-CONC-004.md', 'evidence/conc/EV-CONC-005.md', 'evidence/conc/EV-CONC-006.md', ...])
+
+tests\test_620_b2.py:60: AssertionError
+_______________________ test_620_tools_regression_pass ________________________
+
+    def test_620_tools_regression_pass():
+        ok, msg = G.check_tools_620()
+>       assert ok, msg
+E       AssertionError: 失败：pck_batch_migrator_620(exit 1)
+E       assert False
+
+tests\test_621_gate.py:45: AssertionError
+_______________________ test_generate_v2_deterministic ________________________
+
+    def test_generate_v2_deterministic():
+        """确定性：同一卡清单 + 同一 v7 ⇒ 同一批 mutation_id。
+    
+        注意：生成结果依赖**卡清单的顺序**（round-robin 分配），
+        故必须用与生产同样的 discover_cards() 全量清单重放。
+        """
+        if not os.path.exists(MUTS2):
+            return
+        import pck_batch_migrator_620 as M
+        muts = [json.loads(ln) for ln in open(MUTS2, encoding="utf-8") if ln.strip()]
+        again = MG.generate_v2(M.discover_cards(), MG.load_v7(), count=len(muts), include_classic=False)
+>       assert [m["mutation_id"] for m in again] == [m["mutation_id"] for m in muts]
+E       AssertionError: assert ['MUT-621-d35...7f21e1f', ...] == ['MUT-621-d35...7f21e1f', ...]
+E         
+E         At index 20 diff: 'MUT-621-ac7876db55c4' != 'MUT-621-0077ecc8e9bf'
+E         Use -v to get more diff
+
+tests\test_622_a4.py:51: AssertionError
+______________________ test_pck_authority_map_covers_83 _______________________
+
+    def test_pck_authority_map_covers_83():
+        amap = A.pck_authority_map()
+>       assert len(amap) == counts.CARDS_REAL
+E       AssertionError: assert 103 == 113
+E        +  where 103 = len({'ATOM-CONC-FENCE-001': 'approved', 'ATOM-CONC-LOCK-001': 'approved', 'ATOM-CONC-RACE-001': 'approved', 'ATOM-HIST-AUTOPTR-001': 'approved', ...})
+E        +  and   113 = counts.CARDS_REAL
+
+tests\test_622_c3.py:71: AssertionError
+_____________ test_backfill_selftest_and_verified_at_now_present ______________
+
+    def test_backfill_selftest_and_verified_at_now_present():
+        assert bv.selftest() == 0
+        # A1 执行后：atoms+evidence 中不应再有缺 verified_at 的卡
+>       assert bv.plan() == []
+E       AssertionError: assert [PlanRow(card...ff-filter=A')] == []
+E         
+E         Left contains 5 more items, first extra item: PlanRow(card='EV-MEM-NEWARR-669', path='evidence/mem/EV-MEM-NEWARR-669.md', verified_at='2026-09-30', basis='git log --diff-filter=A')
+E         Use -v to get more diff
+
+tests\test_652_tools.py:26: AssertionError
+---------------------------- Captured stdout call -----------------------------
+  [ok] frontmatter 解析 
+  [ok] 已有 verified_at 会被跳过（plan 语义） 
+  [ok] git 首提交日期可查 2026-07-14
+  [ok] 不存在的路径 ⇒ None 
+backfill_verified_at_652 selftest: PASS
+________________________ test_detect_credibility_gaps _________________________
+
+    def test_detect_credibility_gaps():
+        """分布取自**入库产物**（独立路径）⇒ 有真实验证力（现算 vs 磁盘）。"""
+        gaps = aa.detect_credibility_gaps(CRED)
+>       assert gaps["distribution"] == PIN["credibility_distribution"]
+E       AssertionError: assert {'high': 79, ... 55, 'low': 7} == {'high': 79, ... 45, 'low': 7}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'medium': 55} != {'medium': 45}
+E         Use -v to get more diff
+
+tests\test_argument_audit_610.py:136: AssertionError
+___________________ test_authority_cross_source_consistent ____________________
+
+    def test_authority_cross_source_consistent():
+        d = wd.derived()
+>       assert d["consistent"], f"现算与入库产物不一致（漂移告警）：{d['mismatch']}"
+E       AssertionError: 现算与入库产物不一致（漂移告警）：['nodes', 'in', 'credibility_distribution']
+E       assert False
+
+tests\test_argument_audit_610.py:144: AssertionError
+__________________________ test_cli_basic_detectors ___________________________
+
+capsys = <_pytest.capture.CaptureFixture object at 0x000002349612B250>
+
+    def test_cli_basic_detectors(capsys):
+        assert aa.main(["no-attackers"]) == 0
+        lines = [x for x in capsys.readouterr().out.splitlines() if x.strip()]
+        assert lines == wd.no_attacker_propositions()
+    
+        assert aa.main(["no-defenders"]) == 0
+        out = [x for x in capsys.readouterr().out.strip().splitlines() if x.strip()]
+        assert out == wd.out_mis_no_defender()
+    
+        assert aa.main(["isolated"]) == 0
+        assert len([x for x in capsys.readouterr().out.splitlines() if x.strip()]) \
+            == LIVE["components"]["isolated"]
+    
+        assert aa.main(["unreviewed"]) == 0
+        assert capsys.readouterr().out.strip() == ""
+    
+        assert aa.main(["credibility-gaps", "--json"]) == 0
+>       assert json.loads(capsys.readouterr().out)["distribution"] == PIN["credibility_distribution"]
+E       AssertionError: assert {'high': 79, ... 55, 'low': 7} == {'high': 79, ... 45, 'low': 7}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'medium': 55} != {'medium': 45}
+E         Use -v to get more diff
+
+tests\test_argument_audit_610.py:165: AssertionError
+________________________ test_check_consistency_strict ________________________
+
+    def test_check_consistency_strict():
+        """不变量 + 跨源全绿（`check()` 已重写为**不变量**校验，不再锁快照数字）。"""
+>       assert aa.check() == []
+E       assert ['判决汇总 99/42/...5, 'low': 7}"] == []
+E         
+E         Left contains 2 more items, first extra item: '判决汇总 99/42/0（141）≠ 产物 89/42/0（131）'
+E         Use -v to get more diff
+
+tests\test_argument_audit_610.py:170: AssertionError
+_____________________ test_generate_full_report_sections ______________________
+
+    def test_generate_full_report_sections():
+        for sec in ("## 1. 总览", "## 2. P0 漏洞", "## 3. P1 漏洞", "## 4. P2 漏洞",
+                    "## 5. 详细描述 / 影响 / 修复建议", "## 6. 漏洞统计", "## 7. 后续建议（NDW 分类）"):
+            assert sec in REPORT, f"报告缺小节：{sec}"
+        # 总览数字 = 现算（不写死）
+        assert f"- 节点 **{len(VERDICTS)}**（命题 {N_PROPS} + 误解 {N_MIS}）" in REPORT
+        assert f"边 **{LIVE_EDGES()}**（其中**构成击败** {PIN['defeating_edges']}）" in REPORT
+>       assert f"- 判决 **IN {PIN['in']} / OUT {PIN['out']} / UNDEC {PIN['undec']}**" in REPORT
+E       assert '- 判决 **IN 89 / OUT 42 / UNDEC 0**' in "# 论证漏洞报告（610 C3 · 智能原型 2）\n\n> 只读生成：数据来自候选边 + 用户授权人审 + 610 B1 的辩护链引擎（同一口径）。\n\n## 1. 总览\n\n- 节点 **141**（命题 99 + 误解 42...材料；\n- **Won't（本批不做）**：不给 OUT 的 MIS 硬造辩护者、不改生成器阈值、不重冻结 W2、不执行任何人审（人审权力在用户手中）；\n\n> 本报告**只呈现事实与建议**；所有修复动作都需人确认后另行开批。\n"
+
+tests\test_argument_audit_report_610.py:41: AssertionError
+___________________________ test_projection_numbers ___________________________
+
+    def test_projection_numbers():
+        p = d2.projection()
+>       assert p["components_before"] == 21 and p["components_after"] == 17
+E       assert (31 == 21)
+
+tests\test_argument_fragmentation_613.py:16: AssertionError
+______________________________ test_check_passes ______________________________
+
+    def test_check_passes():
+>       assert d2.main(["--check"]) == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = <function main at 0x00000234928E2980>(['--check'])
+E        +    where <function main at 0x00000234928E2980> = d2.main
+
+tests\test_argument_fragmentation_613.py:41: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[D2] ✗ 分量投影异常: 31→27
+[D2] ❌ 1 项失败
+______________________ test_components_match_known_facts ______________________
+
+    def test_components_match_known_facts():
+        c = c1.analyze()
+>       assert c["components"] == KNOWN["components"]
+E       assert 31 == 21
+
+tests\test_argument_graph_analysis_611.py:27: AssertionError
+__________________ test_isolated_nodes_are_all_propositions ___________________
+
+    def test_isolated_nodes_are_all_propositions():
+        import argument_audit as aa  # noqa: E402
+        c = c1.analyze()
+>       assert len(c["isolated"]) == KNOWN["isolated"]
+E       AssertionError: assert 24 == 14
+E        +  where 24 = len(['ATOM-CONC-FENCE-001::prop-1', 'ATOM-CONC-FENCE-001::prop-2', 'ATOM-CONC-LOCK-001::prop-1', 'ATOM-CONC-LOCK-001::prop-2', 'ATOM-LANG-BITFIELD-001::prop-1', 'ATOM-LANG-DECAY-001::prop-1', ...])
+
+tests\test_argument_graph_analysis_611.py:39: AssertionError
+____________ test_check_locks_structure_and_report_is_reproducible ____________
+
+    def test_check_locks_structure_and_report_is_reproducible():
+>       assert c1.check() == []
+E       AssertionError: assert ['components ...7（实测 0.5674）'] == []
+E         
+E         Left contains 4 more items, first extra item: 'components 应为 21（实测 31）'
+E         Use -v to get more diff
+
+tests\test_argument_graph_analysis_611.py:49: AssertionError
+________________ test_zero_approved_matches_baseline_keep_low _________________
+
+    def test_zero_approved_matches_baseline_keep_low():
+        r = a3.impact("keep-low", "approved-only")
+        assert r["bridges_applied"] == 0
+        # 640 A1：签署后权威产物重算（IN79/OUT42/击败194），两档基线趋同
+>       assert r["base_summary"]["IN"] == 89 and r["base_summary"]["OUT"] == 42
+E       assert (99 == 89)
+
+tests\test_bridge_edge_impact_612.py:25: AssertionError
+_____________ test_zero_approved_matches_baseline_upgrade_medium ______________
+
+    def test_zero_approved_matches_baseline_upgrade_medium():
+        r = a3.impact("upgrade-medium", "approved-only")
+>       assert r["base_summary"]["IN"] == 89 and r["base_summary"]["OUT"] == 42
+E       assert (99 == 89)
+
+tests\test_bridge_edge_impact_612.py:30: AssertionError
+_____________ test_whatif_all_medium_runs_and_improves_components _____________
+
+    def test_whatif_all_medium_runs_and_improves_components():
+        r = a3.impact("keep-low", "all-medium")
+        assert r["bridges_applied"] == 98
+>       assert r["components_before"] == 21 and r["components_after"] == 17
+E       assert (31 == 21)
+
+tests\test_bridge_edge_impact_612.py:36: AssertionError
+______________________________ test_check_passes ______________________________
+
+    def test_check_passes():
+>       assert a3.main(["--check"]) == 0
+E       AssertionError: assert 2 == 0
+E        +  where 2 = <function main at 0x0000023493027A60>(['--check'])
+E        +    where <function main at 0x0000023493027A60> = a3.main
+
+tests\test_bridge_edge_impact_612.py:49: AssertionError
+---------------------------- Captured stderr call -----------------------------
+[A3] ❌ 加桥前分量数应为 21（实测 31）
+[A3] ❌ 全量加桥后分量数应为 17（实测 27）
+___________________ test_repo_data_has_no_control_chars_now ___________________
+
+    def test_repo_data_has_no_control_chars_now():
+        # 626 A2 已清洗：data/ 应无残留
+        found = C.scan(os.path.join(ROOT, "data"))
+>       assert found == [], f"仍有控制字符文件: {found}"
+E       AssertionError: 仍有控制字符文件: [('data\\668_fast.txt', ['0x0'])]
+E       assert [('data\\668_...xt', ['0x0'])] == []
+E         
+E         Left contains one more item: ('data\\668_fast.txt', ['0x0'])
+E         Use -v to get more diff
+
+tests\test_control_char_cleaner_626.py:56: AssertionError
+_____________________________ test_full_coverage ______________________________
+
+    def test_full_coverage():
+        """真实搜索：覆盖全部 27 卡。"""
+        res = b2.run_search()
+>       assert res["cards_total"] == 37
+E       assert 42 == 37
+
+tests\test_counterexample_searcher_646.py:21: AssertionError
+________________________ test_manifest_has_56_entries _________________________
+
+    def test_manifest_has_56_entries():
+        # 666 A2：去写死——原写死 56（626 时点），650–652 扩库后证据卡 66 张 ⇒ 改现算。
+        import counts_659 as counts
+        c = R.check()
+>       assert c["entries"] == counts.EVIDENCE_TOTAL
+E       AssertionError: assert 66 == 71
+E        +  where 71 = <module 'counts_659' from 'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\tools\\counts_659.py'>.EVIDENCE_TOTAL
+
+tests\test_debt_replay_fix_628.py:42: AssertionError
+_______________________________ test_load_data ________________________________
+
+    def test_load_data():
+        from w2_authority_640b import current as _w2
+        exp = _w2()
+        assert len(EDGES) == 388
+>       assert len(VERDICTS) == 131
+E       AssertionError: assert 141 == 131
+E        +  where 141 = len({'ATOM-CONC-FENCE-001::prop-1': 'IN', 'ATOM-CONC-FENCE-001::prop-2': 'IN', 'ATOM-CONC-LOCK-001::prop-1': 'IN', 'ATOM-CONC-LOCK-001::prop-2': 'IN', ...})
+
+tests\test_defense_chain_610.py:37: AssertionError
+________________ test_check_matches_authoritative_w2_artifact _________________
+
+    def test_check_matches_authoritative_w2_artifact():
+        """与入库 W2 产物**逐节点**一致（含数字档 credibility 映射）⇒ exit 0。"""
+>       assert dc.check() == []
+E       AssertionError: assert ['判决汇总 99/42/.../0 ≠ 产物 89/0'] == []
+E         
+E         Left contains 2 more items, first extra item: '判决汇总 99/42/0 ≠ 产物 89/42/0（节点 141）'
+E         Use -v to get more diff
+
+tests\test_defense_chain_610.py:135: AssertionError
+_______________________________ test_cli_stats ________________________________
+
+capsys = <_pytest.capture.CaptureFixture object at 0x000002349C28A8A0>
+
+    def test_cli_stats(capsys):
+        from w2_authority_640b import current as _w2
+        exp = _w2()
+        assert dc.main(["stats", "--json"]) == 0
+        st = json.loads(capsys.readouterr().out)
+>       assert (st["total_nodes"], st["in"], st["out"], st["undec"]) == (
+            131, exp["IN"], exp["OUT"], exp["UNDEC"])
+E       assert (141, 99, 42, 0) == (131, 99, 42, 0)
+E         
+E         At index 0 diff: 141 != 131
+E         Use -v to get more diff
+
+tests\test_defense_chain_cli_610.py:63: AssertionError
+_________________ test_cli_list_no_defenders_and_no_attackers _________________
+
+capsys = <_pytest.capture.CaptureFixture object at 0x000002349C201FD0>
+
+    def test_cli_list_no_defenders_and_no_attackers(capsys):
+        assert dc.main(["list-no-defenders"]) == 0
+        nd = [x for x in capsys.readouterr().out.splitlines() if x.strip()]
+        assert nd, "no-defenders 不应为空"
+        assert dc.main(["list-no-attackers"]) == 0
+        na = [x for x in capsys.readouterr().out.splitlines() if x.strip()]
+>       assert len(na) == 14, f"无攻击者命题应为 14（新增 10 张孤立卡各 1 条），实得 {len(na)}\n{na}"
+E       AssertionError: 无攻击者命题应为 14（新增 10 张孤立卡各 1 条），实得 24
+E         ['ATOM-CONC-FENCE-001::prop-1', 'ATOM-CONC-FENCE-001::prop-2', 'ATOM-CONC-LOCK-001::prop-1', 'ATOM-CONC-LOCK-001::prop-2', 'ATOM-LANG-BITFIELD-001::prop-1', 'ATOM-LANG-DECAY-001::prop-1', 'ATOM-LANG-FNPTR-001::prop-1', 'ATOM-LANG-INTPROMO-001::prop-1', 'ATOM-LANG-MACRO-001::prop-1', 'ATOM-LANG-SETJMP-001::prop-1', 'ATOM-LANG-VOLATILE-001::prop-1', 'ATOM-MEM-MALLOC-001::prop-1', 'ATOM-MEM-NEWARR-001::prop-1', 'ATOM-MEM-NEWARR-001::prop-2', 'ATOM-MEM-STRBOUND-001::prop-1', 'ATOM-UB-DIVZERO-001::prop-1', 'ATOM-UB-DIVZERO-001::prop-2', 'ATOM-UB-NULLDEREF-001::prop-1', 'ATOM-UB-NULLDEREF-001::prop-2', 'ATOM-UB-OOB-001::prop-1', 'ATOM-UB-OOB-001::prop-2', 'ATOM-UB-SIGNEDOVF-001::prop-1', 'ATOM-UB-WRAP-001::prop-1', 'ATOM-UB-WRAP-001::prop-2']
+E       assert 24 == 14
+E        +  where 24 = len(['ATOM-CONC-FENCE-001::prop-1', 'ATOM-CONC-FENCE-001::prop-2', 'ATOM-CONC-LOCK-001::prop-1', 'ATOM-CONC-LOCK-001::prop-2', 'ATOM-LANG-BITFIELD-001::prop-1', 'ATOM-LANG-DECAY-001::prop-1', ...])
+
+tests\test_defense_chain_cli_610.py:86: AssertionError
+___________________________ test_check_consistency ____________________________
+
+capsys = <_pytest.capture.CaptureFixture object at 0x000002349D40CAD0>
+
+    def test_check_consistency(capsys):
+        from w2_authority_640b import current as _w2
+        exp = _w2()
+>       assert dc.main(["--check"]) == 0
+E       AssertionError: assert 2 == 0
+E        +  where 2 = <function main at 0x00000234922999E0>(['--check'])
+E        +    where <function main at 0x00000234922999E0> = dc.main
+
+tests\test_defense_chain_cli_610.py:106: AssertionError
+---------------------------- Captured stderr call -----------------------------
+[chain] --check FAIL：2 项
+  - 判决汇总 99/42/0 ≠ 产物 89/42/0（节点 141）
+  - IN 命题/误解 99/0 ≠ 产物 89/0
+_________________ test_all_evidence_cards_get_verdict_or_skip _________________
+
+    def test_all_evidence_cards_get_verdict_or_skip() -> None:
+        c = v2.compare()
+        assert c["raw_cards"] >= 56            # 全证据卡被扫
+>       assert c["applicable"] == 19           # 多编译器适用卡
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert 24 == 19
+
+tests\test_ev_matrix_dual_impl_615.py:29: AssertionError
+_____________________ test_agreement_in_reasonable_range ______________________
+
+    def test_agreement_in_reasonable_range() -> None:
+        c = v2.compare()
+        rate = c["agree"] / c["applicable"]
+        assert 0.50 <= rate <= 1.0
+        # 与历史记录一致（68.4% / 6 分歧卡）
+>       assert rate == 13 / 19
+E       assert 0.75 == (13 / 19)
+
+tests\test_ev_matrix_dual_impl_615.py:38: AssertionError
+_____________________ test_aligned_rate_not_below_before ______________________
+
+    def test_aligned_rate_not_below_before() -> None:
+        before = v2._rate(v2.compare())
+        after = v2.compare_aligned()["rate"]
+        assert after >= before
+        assert after == 1.0            # 补上预处理后 100%（19/19）
+>       assert abs(before - 13 / 19) < 1e-9
+E       assert 0.06578947368421051 < 1e-09
+E        +  where 0.06578947368421051 = abs((0.75 - (13 / 19)))
+
+tests\test_ev_matrix_dual_impl_fix_615.py:19: AssertionError
+________________________ test_lock_tool_and_comparison ________________________
+
+    def test_lock_tool_and_comparison() -> None:
+        assert (ROOT / "tools" / "ev_matrix_dual_impl_lock.py").is_file()
+        c = lock.compare()
+>       assert c["applicable"] == 19
+E       assert 24 == 19
+
+tests\test_ev_matrix_dual_impl_lock_616.py:18: AssertionError
+_________________________ test_agreement_at_least_95 __________________________
+
+    def test_agreement_at_least_95() -> None:
+        c = v2.compare_full()
+>       assert c["applicable"] == 19
+E       assert 24 == 19
+
+tests\test_ev_matrix_v2_updated_616.py:29: AssertionError
+______________________________ test_check_passes ______________________________
+
+    def test_check_passes() -> None:
+>       assert v2.check() == []
+E       AssertionError: assert ['适用卡应为 19（实测 24）'] == []
+E         
+E         Left contains one more item: '适用卡应为 19（实测 24）'
+E         Use -v to get more diff
+
+tests\test_ev_matrix_v2_updated_616.py:40: AssertionError
+______________________ test_real_27_cards_all_sufficient ______________________
+
+    def test_real_27_cards_all_sufficient():
+        """真实 27 卡全部充分，幻影卡被排除。"""
+        res = b3.judge()
+>       assert res["cards_total"] == 37
+E       assert 42 == 37
+
+tests\test_evidence_sufficiency_646.py:21: AssertionError
+____________ test_report_has_all_sections_and_reconciles_with_594 _____________
+
+    def test_report_has_all_sections_and_reconciles_with_594():
+        """章节结构不变；数字取现算权威值（640b：不再写死 114/7）。"""
+        from w2_authority_640b import current as _w2
+        exp = _w2()
+        text = ga.render(ga.collect())
+        for s in SECTIONS:
+            assert s in text, f"报告缺小节：{s}"
+>       assert f"IN {exp['IN']} / OUT {exp['OUT']} / UNDEC {exp['UNDEC']}" in text
+E       AssertionError: assert 'IN 99 / OUT 42 / UNDEC 0' in '# grounded 标注实测与对照报告（596 任务3 · W2 模型）\n\n> **只读生成**：`.venv\\Scripts\\python.exe tools\\grounded_audit.py`（`--check` 校...卡的 MIS 关联记在**原子卡侧** `misconceptions` 字段，本批按任务书只读 MIS 侧 `related_atoms` ⇒ 不产边，偏差 D5）——它们无攻击者 ⇒ 立即 IN，不影响 IN/OUT 总数。\n\n'
+
+tests\test_grounded_audit_596.py:34: AssertionError
+_______________ test_gate_baseline_block_zero_no_false_positive _______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000023494FFFB60>
+
+    def test_gate_baseline_block_zero_no_false_positive(monkeypatch):
+        monkeypatch.setenv("CPPBIBLE_OBS", "0")
+        findings = ge.run(include_advice=True)
+        blocks = [f for f in findings if f.severity == "block"]
+>       assert blocks == []                       # 新规则对存量 0 误报
+        ^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert [Finding(rule...库，或人签下调 DAL')] == []
+E         
+E         Left contains 5 more items, first extra item: Finding(rule_id='ATOM-DAL-MATCH', severity='block', target='atoms/mem/ATOM-MEM-NEWARR-001.md', message='DAL B 须 human-verified（当前：machine-verified）', fix_hint='先人审签署再入库，或人签下调 DAL')
+E         Use -v to get more diff
+
+tests\test_high_complexity_rules_regression_624.py:25: AssertionError
+_______________________ test_data_matches_current_state _______________________
+
+data = {'generated_at': '2026-09-30T03:38:23Z', 'review': {'unique': 93, 'records': 93, 'by_status': {'pending': 93}, 'pending': 93, ...}, 'methods': {'ITEM_OPEN': 30, 'MIRROR_DERIVED': 194, 'BATCH_AUTH': 228}, 'blind_count': 0, ...}
+
+    def test_data_matches_current_state(data):
+        from w2_authority_640b import current as _w2
+        exp = _w2()
+        assert data["review"]["unique"] == 93
+>       assert data["w2"]["labels"] == {"IN": exp["IN"], "OUT": exp["OUT"],
+                                        "UNDEC": exp["UNDEC"]}
+E       AssertionError: assert {'IN': 89, 'O...2, 'UNDEC': 0} == {'IN': 99, 'O...2, 'UNDEC': 0}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'IN': 89} != {'IN': 99}
+E         Use -v to get more diff
+
+tests\test_human_review_dashboard_v2_628.py:50: AssertionError
+____________________ test_w2_independent_recompute_matches ____________________
+
+    def test_w2_independent_recompute_matches():
+        """独立重算（零项目导入的朴素实现）必须与系统权威源一致（640b：动态比对）。"""
+        import w2_authority_640b as A
+        exp = A.current()
+        r = I.verify_w2()
+>       assert r["summary"] == {"IN": exp["IN"], "OUT": exp["OUT"], "UNDEC": exp["UNDEC"]}
+E       AssertionError: assert {'IN': 89, 'O...2, 'UNDEC': 0} == {'IN': 99, 'O...2, 'UNDEC': 0}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'IN': 89} != {'IN': 99}
+E         Use -v to get more diff
+
+tests\test_independent_verifier_628.py:30: AssertionError
+__________________ test_d2_5_every_tool_satisfies_interface ___________________
+
+    def test_d2_5_every_tool_satisfies_interface():
+        res = V.audit()
+        bad = [t["tool"] for t in res["tools"] if not t["ok"]]
+>       assert bad == [], bad
+E       AssertionError: ['rule_card_mapper_646']
+E       assert ['rule_card_mapper_646'] == []
+E         
+E         Left contains one more item: 'rule_card_mapper_646'
+E         Use -v to get more diff
+
+tests\test_interface_verify_647.py:37: AssertionError
+________________________ test_d2_6_report_and_selftest ________________________
+
+    def test_d2_6_report_and_selftest():
+        assert V.selftest() == 0
+>       assert V.main(["--report"]) == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = <function main at 0x0000023492664EA0>(['--report'])
+E        +    where <function main at 0x0000023492664EA0> = V.main
+
+tests\test_interface_verify_647.py:43: AssertionError
+---------------------------- Captured stdout call -----------------------------
+  [ok] 计划合并 15 → 10（3 组合并，删 5 文件） 
+  [ok] 10 个核心工具全部存在 10
+  [ok] 成员 coupling_feedback_645 文件已删除 
+  [ok] 成员 coupling_effect_645 文件已删除 
+  [ok] 成员 evidence_sufficiency_645 文件已删除 
+  [ok] 成员 rule_error_tracker_645 文件已删除 
+  [ok] 成员 rule_aging_detector_645 文件已删除 
+  [ok] 合并无损（入口齐全） []
+  [ok] 报告路径在 data 下 
+D2 interface-verify selftest: PASS
+written C:\CodeLearnling\note\note\C++\CPP-Bible\data\647_merge_report.md
+__________________ test_generation_covers_all_missing_props ___________________
+
+    def test_generation_covers_all_missing_props():
+        d = b1.build()
+>       assert d["total_props"] == 60
+E       assert 65 == 60
+
+tests\test_liveness_candidate_generator_612.py:17: AssertionError
+______________________________ test_check_passes ______________________________
+
+    def test_check_passes():
+>       assert b1.main(["--check"]) == 0
+E       AssertionError: assert 2 == 0
+E        +  where 2 = <function main at 0x00000234955645E0>(['--check'])
+E        +    where <function main at 0x00000234955645E0> = b1.main
+
+tests\test_liveness_candidate_generator_612.py:49: AssertionError
+---------------------------- Captured stderr call -----------------------------
+[B1] ❌ 缺锚命题应为 60（实测 65）
+__________________ test_projection_is_before_minus_addressed __________________
+
+    def test_projection_is_before_minus_addressed():
+        proj = a2.projection(9)
+>       assert proj["warn_before"] == 60
+E       assert 65 == 60
+
+tests\test_liveness_completion_613.py:43: AssertionError
+_____________________ test_zero_completion_keeps_baseline _____________________
+
+    def test_zero_completion_keeps_baseline():
+        r = b3.analyze(0)
+        assert r["addressed"] == 0
+>       assert r["warn_after"] == r["warn_before"] == 60
+E       assert 65 == 60
+
+tests\test_liveness_impact_612.py:23: AssertionError
+_______________________ test_full_completion_clears_all _______________________
+
+    def test_full_completion_clears_all():
+        r = b3.analyze(None)
+>       assert r["addressed"] == 60
+E       assert 65 == 60
+
+tests\test_liveness_impact_612.py:28: AssertionError
+______________________________ test_check_passes ______________________________
+
+    def test_check_passes():
+>       assert b3.main(["--check"]) == 0
+E       AssertionError: assert 2 == 0
+E        +  where 2 = <function main at 0x00000234955058A0>(['--check'])
+E        +    where <function main at 0x00000234955058A0> = b3.main
+
+tests\test_liveness_impact_612.py:33: AssertionError
+---------------------------- Captured stderr call -----------------------------
+[B3] ❌ 当前 OBSERVATION-LIVENESS warn 应为 60（实测 65）
+________________________ test_all_50_props_enumerated _________________________
+
+    def test_all_50_props_enumerated():
+        # 612 已知坑③：C 类命题在候选 jsonl 无行，必须从审计真源枚举
+        rows = a1.build()
+>       assert len(rows) == 60, f"应枚举 60 条缺锚命题，实测 {len(rows)}"
+E       AssertionError: 应枚举 60 条缺锚命题，实测 65
+E       assert 65 == 60
+E        +  where 65 = len([{'proposition_id': 'ATOM-HIST-AUTOPTR-001::prop-2', 'card': 'ATOM-HIST-AUTOPTR-001', 'domain': 'HIST', 'difficulty': ...proposition_id': 'ATOM-MEM-MOVE-002::prop-1', 'card': 'ATOM-MEM-MOVE-002', 'domain': 'MEM', 'difficulty': 4, ...}, ...])
+
+tests\test_liveness_priority_613.py:16: AssertionError
+____________________ test_cost_distribution_matches_612_b1 ____________________
+
+    def test_cost_distribution_matches_612_b1():
+        rows = a1.build()
+        n = {c: len([r for r in rows if r["cost"] == c]) for c in ("low", "medium", "high")}
+>       assert n["low"] == 9 and n["medium"] == 26 and n["high"] == 25
+E       assert (9 == 9 and 26 == 26 and 30 == 25)
+
+tests\test_liveness_priority_613.py:22: AssertionError
+______________________________ test_check_passes ______________________________
+
+    def test_check_passes():
+>       assert a1.main(["--check"]) == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = <function main at 0x000002349552B420>(['--check'])
+E        +    where <function main at 0x000002349552B420> = a1.main
+
+tests\test_liveness_priority_613.py:48: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[A1] ✗ 命题数应为 60，实测 65
+[A1] ❌ 1 项失败
+_____________________ test_e3_oracle_quality_zero_review ______________________
+
+    def test_e3_oracle_quality_zero_review():
+        q = e.e3_oracle_quality()
+>       assert q["total"] == counts.CARDS_REAL
+E       assert 103 == 113
+E        +  where 113 = counts.CARDS_REAL
+
+tests\test_metrics_612.py:25: AssertionError
+_________________________ test_e1_modify_modes_locked _________________________
+
+    def test_e1_modify_modes_locked():
+        m = e.e1_modify_modes()
+        # 640 A1：签署后命题可信度 high ⇒ 双模式判决趋同（机制差异保留，见 640_b_class_fix.md）
+>       assert (m["keep-low"]["IN"], m["keep-low"]["OUT"]) == (89, 42)
+E       assert (99, 42) == (89, 42)
+E         
+E         At index 0 diff: 99 != 89
+E         Use -v to get more diff
+
+tests\test_metrics_612.py:36: AssertionError
+___________________________ test_main_check_passes ____________________________
+
+    def test_main_check_passes():
+>       assert e.main(["--check"]) == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = <function main at 0x0000023495660400>(['--check'])
+E        +    where <function main at 0x0000023495660400> = e.main
+
+tests\test_metrics_612.py:52: AssertionError
+---------------------------- Captured stderr call -----------------------------
+[E] ❌ 自检失败：
+    - keep-low 应为 IN89/OUT42（实测 IN99/OUT42）
+    - upgrade-medium 应为 IN89/OUT42（实测 IN99/OUT42）
+    - oracle 卡应为 113（实测 103）
+___________________________ test_main_writes_report ___________________________
+
+    def test_main_writes_report():
+        rc = e.main([])
+>       assert rc == 0
+E       assert 1 == 0
+
+tests\test_metrics_612.py:57: AssertionError
+---------------------------- Captured stderr call -----------------------------
+[E] ❌ 自检失败：
+    - keep-low 应为 IN89/OUT42（实测 IN99/OUT42）
+    - upgrade-medium 应为 IN89/OUT42（实测 IN99/OUT42）
+    - oracle 卡应为 113（实测 103）
+______________________ test_collect_defense_chain_stats _______________________
+
+    def test_collect_defense_chain_stats():
+        out = m610.collect_defense_chain_stats({})
+        for k in ("total_nodes", "in", "out", "undec", "total_edges", "defeating_edges",
+                  "no_defenders", "no_attackers", "source"):
+            assert k in out, f"缺字段 {k}"
+>       assert out["total_nodes"] == 131
+E       assert 141 == 131
+
+tests\test_metrics_defense_chain_stats_610.py:25: AssertionError
+_______________________ test_no_defenders_no_attackers ________________________
+
+    def test_no_defenders_no_attackers():
+        """no_defenders = OUT 数（每个 OUT 节点必有击败者…口径见工具）；可信度分布随人签演进。"""
+        from w2_authority_640b import current as _w2
+        exp = _w2()
+        out = m610.collect_defense_chain_stats({})
+>       assert out["no_attackers"] == 14
+E       assert 24 == 14
+
+tests\test_metrics_defense_chain_stats_610.py:49: AssertionError
+________________________ test_agrees_with_608_grounded ________________________
+
+    def test_agrees_with_608_grounded():
+        from w2_authority_640b import current as _w2
+        exp = _w2()
+        a = m610.collect_defense_chain_stats({})
+        b = mc.collect_608_new_metrics({}, with_heavy=False)["grounded"]
+>       assert (a["in"], a["out"], a["undec"]) == (b["in"], b["out"], b["undec"]) == (
+            exp["IN"], exp["OUT"], exp["UNDEC"])
+E       assert (99, 42, 0) == (89, 42, 0)
+E         
+E         At index 0 diff: 99 != 89
+E         Use -v to get more diff
+
+tests\test_metrics_defense_chain_stats_610.py:75: AssertionError
+___________________ test_divergence_is_surfaced_not_hidden ____________________
+
+    def test_divergence_is_surfaced_not_hidden():
+        """口径分歧必须显形。640 A1：签署后两口径数值趋同 ⇒ divergence=False；
+        机制差异（keep-low 34 条 modify 未生效）仍由 modes/caliber 字段留痕。"""
+        out = m610.collect_grounded_status({})
+>       assert out["solver_recompute"]["in"] == 89
+E       assert 99 == 89
+
+tests\test_metrics_grounded_status_610.py:48: AssertionError
+____________________________ test_grounded_status _____________________________
+
+    def test_grounded_status():
+        """W2 判决取单一权威源（640b：不再写死——随人签演进）。"""
+        from w2_authority_640b import current as _w2
+        exp = _w2()
+        out = mc.collect_608_new_metrics({}, with_heavy=False)["grounded"]
+>       assert out["in"] == exp["IN"] and out["out"] == exp["OUT"] and out["undec"] == exp["UNDEC"]
+E       assert (89 == 99)
+
+tests\test_metrics_new_indicators_608.py:39: AssertionError
+________________________ test_w2_unchanged_after_write ________________________
+
+    def test_w2_unchanged_after_write():
+        from w2_authority_640b import current as _w2
+        exp = _w2()
+        v = M.verify_written()
+        assert v["w2_unchanged"]
+>       assert v["w2_summary"] == {"IN": exp["IN"], "OUT": exp["OUT"],
+                                   "UNDEC": exp["UNDEC"]}
+E       AssertionError: assert {'IN': 89, 'O...2, 'UNDEC': 0} == {'IN': 99, 'O...2, 'UNDEC': 0}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'IN': 89} != {'IN': 99}
+E         Use -v to get more diff
+
+tests\test_mirror_symmetry_write_628.py:45: AssertionError
+___________ test_default_mode_is_keep_low_and_matches_authoritative ___________
+
+    def test_default_mode_is_keep_low_and_matches_authoritative():
+        assert w2.DEFAULT_MODIFY_MODE == "keep-low"
+        assert w2.MODIFY_MODES == ("keep-low", "upgrade-medium")
+        edges = w2.load_edges()
+        anns = hrc.load_annotations()
+        eff, changes = w2.reviewed_edges(edges, anns)                    # 不传 ⇒ 默认档
+        doc = w2.solve(eff)
+        art = json.loads((ROOT / "data" / "grounded_labels_w2.json").read_text(encoding="utf-8"))
+        # 640 A1 更新：632/634 命题级人签 ⇒ 命题可信度 high ⇒ 权威产物重算
+        # （IN79/OUT42/击败边 194；旧值 114/7/17 是签署前快照）
+>       assert (doc["summary"]["IN"], doc["summary"]["OUT"], doc["summary"]["UNDEC"]) == (89, 42, 0)
+E       assert (99, 42, 0) == (89, 42, 0)
+E         
+E         At index 0 diff: 99 != 89
+E         Use -v to get more diff
+
+tests\test_modify_mode_611.py:54: AssertionError
+__________________ test_upgrade_mode_reproduces_609_caliber ___________________
+
+    def test_upgrade_mode_reproduces_609_caliber():
+        edges = w2.load_edges()
+        anns = hrc.load_annotations()
+        eff, changes = w2.reviewed_edges(edges, anns, modify_mode="upgrade-medium")
+        doc = w2.solve(eff)
+        # 640 A1：609 口径机制保留（34 条 modify 全部 effective=True、档位=medium）；
+        # 但签署后命题可信度 high ⇒ upgrade 亦无法翻转 ⇒ 标签与 keep-low 趋同（79/42/194）
+>       assert (doc["summary"]["IN"], doc["summary"]["OUT"], doc["summary"]["UNDEC"]) == (89, 42, 0)
+E       assert (99, 42, 0) == (89, 42, 0)
+E         
+E         At index 0 diff: 99 != 89
+E         Use -v to get more diff
+
+tests\test_modify_mode_611.py:78: AssertionError
+_________________ test_cli_both_modes_and_reports_noop_count __________________
+
+capsys = <_pytest.capture.CaptureFixture object at 0x000002349D9288D0>
+
+    def test_cli_both_modes_and_reports_noop_count(capsys):
+        assert w2.main(["stats", "--no-human-reviewed", "--json"]) == 0
+>       assert json.loads(capsys.readouterr().out)["by_label"]["IN"] == 89
+E       assert 99 == 89
+
+tests\test_modify_mode_611.py:94: AssertionError
+___________________ test_metrics_record_two_mode_divergence ___________________
+
+    def test_metrics_record_two_mode_divergence():
+        out = m610.collect_modify_mode({})
+        assert out["current_mode"] == "keep-low"
+        assert set(out["modes"]) == {"keep-low", "upgrade-medium"}
+        lo, up = out["modes"]["keep-low"], out["modes"]["upgrade-medium"]
+        # 640 A1：签署后两档判决趋同（机制差异仍在：keep-low 下 34 条 modify 未生效留痕）
+>       assert (lo["in"], lo["out"], lo["defeating_edges"]) == (89, 42, 194)
+E       assert (99, 42, 194) == (89, 42, 194)
+E         
+E         At index 0 diff: 99 != 89
+E         Use -v to get more diff
+
+tests\test_modify_mode_611.py:136: AssertionError
+__________________ test_two_mode_verdicts_match_known_facts ___________________
+
+    def test_two_mode_verdicts_match_known_facts():
+        c = b2.compute()
+        kl, up = c["keep_low"], c["upgrade"]
+        # 640 A1：签署后权威产物重算，两档判决趋同（IN79/OUT42/击败194）
+>       assert (kl["in"], kl["out"], kl["defeating_edges"]) == (89, 42, 194)
+E       assert (99, 42, 194) == (89, 42, 194)
+E         
+E         At index 0 diff: 99 != 89
+E         Use -v to get more diff
+
+tests\test_modify_mode_analysis_611.py:29: AssertionError
+________________ test_check_is_consistent_and_tool_is_readonly ________________
+
+tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-18840-1790737139/test_check_is_consistent_and_t0')
+
+    def test_check_is_consistent_and_tool_is_readonly(tmp_path: Path):
+        # --check 对现网报告应零问题
+>       assert b2.check() == []
+E       AssertionError: assert ['报告缺/不一致：| 9...一致：| 99 | 42'] == []
+E         
+E         Left contains 2 more items, first extra item: '报告缺/不一致：| 99 | 42'
+E         Use -v to get more diff
+
+tests\test_modify_mode_analysis_611.py:65: AssertionError
+____________________________ test_mypy_tools_clean ____________________________
+
+    def test_mypy_tools_clean():
+        p = subprocess.run([PY, "-m", "mypy", "tools/"], cwd=ROOT, capture_output=True, text=True)
+>       assert p.returncode == 0, p.stdout + p.stderr
+E       AssertionError: tools\codeblock_style.py:247: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+E         tools\chapter_lint.py:107: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+E         tools\gate_rules_669d.py:231: error: Returning Any from function declared to return "int | None"  [no-any-return]
+E         tools\experiments_669.py:50: error: Returning Any from function declared to return "dict[Any, Any]"  [no-any-return]
+E         tools\experiments_669.py:173: error: Value of type "Collection[Any]" is not indexable  [index]
+E         tools\experiments_669.py:174: error: Value of type "Collection[Any]" is not indexable  [index]
+E         tools\caliber_check_669.py:71: error: Returning Any from function declared to return "dict[Any, Any]"  [no-any-return]
+E         tools\run_669d_gate.py:142: error: Incompatible types in assignment (expression has type "dict[str, dict[Any, Any]]", variable has type "list[dict[Any, Any]]")  [assignment]
+E         tools\run_669d_gate.py:143: error: Argument 2 to "classify" has incompatible type "list[dict[Any, Any]]"; expected "dict[str, dict[Any, Any]]"  [arg-type]
+E         tools\web_metrics_666.py:228: error: Argument 2 to "chk" has incompatible type "Literal[False] | Any | None"; expected "bool"  [arg-type]
+E         Found 8 errors in 5 files (checked 607 source files)
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', '-m', 'mypy', 'too...[False] | Any | None"; expected "bool"  [arg-type]\nFound 8 errors in 5 files (checked 607 source files)\n', stderr='').returncode
+
+tests\test_mypy_fix_625.py:28: AssertionError
+__________________________ test_ruff_clean_after_fix __________________________
+
+    def test_ruff_clean_after_fix():
+        p = subprocess.run([PY, "-m", "ruff", "check", "tools/", "tests/"],
+                           cwd=ROOT, capture_output=True, text=True)
+>       assert p.returncode == 0, p.stdout + p.stderr
+E       AssertionError: I001 [*] Import block is un-sorted or un-formatted
+E           --> tests\test_gate_rules_669d.py:22:1
+E            |
+E         20 | sys.path.insert(0, str(ROOT / "tools"))
+E         21 |
+E         22 | import gate_rules_669d as G  # noqa: E402
+E            | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         help: Organize imports
+E            |
+E         23 |
+E            -
+E         24 | # ─────────────────────────────────────────────────────────────────────────────
+E            |
+E         
+E         F841 Local variable `fixture_sha16` is assigned to but never used
+E            --> tools\ev_ub_atoms_669.py:281:5
+E             |
+E         279 |                       a["kind"], ", ".join(f'"{t}"' for t in a["texts"])))
+E         280 |     prod = (f'g++ -std=c++17 -O2 -S -masm=intel {row["fixture_rel"]} -o {card["artifact"]}')
+E         281 |     fixture_sha16 = row["fixture_sha256"][:16]
+E             |     ^^^^^^^^^^^^^
+E         282 |     stem = "_atom_" + card["ev_id"].lower().replace("ev-", "").replace("-", "_")
+E         283 |     det_log = f"Examples/atoms/{stem}.out"
+E             |
+E         help: Remove assignment to unused variable `fixture_sha16`
+E         
+E         F401 [*] `os` imported but unused
+E           --> tools\gate_rules_669d.py:36:8
+E            |
+E         34 | import argparse
+E         35 | import json
+E         36 | import os
+E            |        ^^
+E         37 | import re
+E         38 | import sys
+E            |
+E         help: Remove unused import: `os`
+E            |
+E         35 | import json
+E            - import os
+E         36 | import re
+E            |
+E         
+E         F401 [*] `sys` imported but unused
+E           --> tools\gate_rules_669d.py:38:8
+E            |
+E         36 | import os
+E         37 | import re
+E         38 | import sys
+E            |        ^^^
+E         39 | from pathlib import Path
+E         40 | from typing import Any, Callable
+E            |
+E         help: Remove unused import: `sys`
+E            |
+E         37 | import re
+E            - import sys
+E         38 | from pathlib import Path
+E            |
+E         
+E         Found 4 errors.
+E         [*] 3 fixable with the `--fix` option (1 hidden fix can be enabled with the `--unsafe-fixes` option).
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe', '-m', 'ruff', 'che....\n[*] 3 fixable with the `--fix` option (1 hidden fix can be enabled with the `--unsafe-fixes` option).\n', stderr='').returncode
+
+tests\test_mypy_fix_625.py:62: AssertionError
+_______________________________ test_scan_count _______________________________
+
+    def test_scan_count():
+        r = A.analyze()
+>       assert r["total_certs"] == counts.CARDS_REAL
+E       assert 103 == 113
+E        +  where 113 = counts.CARDS_REAL
+
+tests\test_pck_hash_drift_analyzer_627.py:17: AssertionError
+_____________________ test_content_drift_resolved_by_628 ______________________
+
+    def test_content_drift_resolved_by_628():
+        """630 D2 更新：627 当时实测 content_drift = 56；628 A2 重算 hash 后已 **0**。
+        名字从 `test_content_drift_56` 改为现名，避免名字与新断言自相矛盾。"""
+        r = A.analyze()
+>       assert r["n_content_drift_certs"] == 0
+E       assert 20 == 0
+
+tests\test_pck_hash_drift_analyzer_627.py:25: AssertionError
+____________________ test_gaps_resolved_except_ref_missing ____________________
+
+    def test_gaps_resolved_except_ref_missing():
+        """630 D2 更新：627 当时实测「无健康证书」（ok=0）；628 A2 修复后 ok=82、仅剩
+        `ref_missing` 1 张（该张按 A2 约定不自动修）。"""
+        r = A.analyze()
+>       assert r["by_worst_category"].get("ok", 0) == 102
+E       AssertionError: assert 82 == 102
+E        +  where 82 = <built-in method get of dict object at 0x000002349BA57F40>('ok', 0)
+E        +    where <built-in method get of dict object at 0x000002349BA57F40> = {'ok': 82, 'ref_missing': 1, 'content_drift': 20}.get
+
+tests\test_pck_hash_drift_analyzer_627.py:32: AssertionError
+__________________________ test_all_83_certs_present __________________________
+
+    def test_all_83_certs_present():
+>       assert len(glob.glob(os.path.join(CERT_DIR, "*.yaml"))) == counts.CARDS_REAL
+E       AssertionError: assert 103 == 113
+E        +  where 103 = len(['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\pck\\certificates\\ATOM-CONC-FENCE-001.pck.yaml', 'C:\\CodeLear...pck.yaml', 'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\pck\\certificates\\ATOM-LANG-DECAY-001.pck.yaml', ...])
+E        +    where ['C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\pck\\certificates\\ATOM-CONC-FENCE-001.pck.yaml', 'C:\\CodeLear...pck.yaml', 'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\pck\\certificates\\ATOM-LANG-DECAY-001.pck.yaml', ...] = <function glob at 0x000002348ECDF560>('C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\pck\\certificates\\*.yaml')
+E        +      where <function glob at 0x000002348ECDF560> = glob.glob
+E        +      and   'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\pck\\certificates\\*.yaml' = <function join at 0x000002348EB43920>('C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\pck\\certificates', '*.yaml')
+E        +        where <function join at 0x000002348EB43920> = <module 'ntpath' (frozen)>.join
+E        +          where <module 'ntpath' (frozen)> = os.path
+E        +  and   113 = counts.CARDS_REAL
+
+tests\test_pck_hash_renewal_628.py:20: AssertionError
+_______________________ test_hash_matches_current_file ________________________
+
+    def test_hash_matches_current_file():
+        v = P.verify()
+>       assert v["hash_ok"] >= 82 and v["bad_count"] == 0
+E       assert (162 >= 82 and 20 == 0)
+
+tests\test_pck_hash_renewal_628.py:25: AssertionError
+___________________________ test_renewal_idempotent ___________________________
+
+    def test_renewal_idempotent():
+        # 再跑一次 apply：全部 already_ok，不新增改动
+        before = P.verify()
+        r = P.renew(apply_changes=True)
+        after = P.verify()
+>       assert before == after
+E       AssertionError: assert {'total_evide...d', ...], ...} == {'total_evide...bad': [], ...}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'bad_count': 20} != {'bad_count': 0}
+E         {'bad': ['ATOM-LANG-BITFIELD-001.pck:evidence/lang/EV-LANG-008.md', 'ATOM-LANG-DECAY-001.pck:evidence/lang/EV-LANG-003... 'ATOM-LANG-MACRO-001.pck:evidence/lang/EV-LANG-009.md', 'ATOM-LANG-SETJMP-001.pck:evidence/lang/EV-LANG-006.md', ...]} != {'bad': []}
+E         {'hash_ok': 162} != {'hash_ok': 182}
+E         {'consistent': False} != {'consistent': True}
+E         Use -v to get more diff
+
+tests\test_pck_hash_renewal_628.py:64: AssertionError
+___________________ test_ledger_lists_79_props_and_27_cards ___________________
+
+    def test_ledger_lists_79_props_and_27_cards():
+        t = _text()
+        prop_rows = [ln for ln in t.splitlines() if ln.startswith("| ") and "/prop-" in ln]
+        assert len(prop_rows) == 89, f"命题行应 89 条，实得 {len(prop_rows)}"
+        card_rows = [ln for ln in t.splitlines()
+                     if ln.startswith("| `ATOM-") and "/prop-" not in ln]
+>       assert len(card_rows) == counts.ATOMS_REAL, f"卡行应 {counts.ATOMS_REAL} 条，实得 {len(card_rows)}"
+E       AssertionError: 卡行应 42 条，实得 37
+E       assert 37 == 42
+E        +  where 37 = len(['| `ATOM-CONC-FENCE-001` | 2 | human:liaoranran | 未填（正常状态） | 5–5 |', '| `ATOM-CONC-LOCK-001` | 2 | human:liaoranran |...|', '| `ATOM-LANG-BITFIELD-001` | 1 | — | 未填（正常状态） | 3–3 |', '| `ATOM-LANG-DECAY-001` | 1 | — | 未填（正常状态） | 3–3 |', ...])
+E        +  and   42 = counts.ATOMS_REAL
+
+tests\test_prop_inventory_592.py:35: AssertionError
+_______________________ test_integrity_checks_are_clean _______________________
+
+    def test_integrity_checks_are_clean():
+        """三条完整性校验：引用卡不存在 = 0、无命题原子卡 = 0、闭包异常（>50 或 =1）= 0。"""
+        d = inv.collect()
+        assert d["bad_refs"] == []
+        assert d["no_prop_cards"] == []
+>       assert d["bad_closure"] == []
+E       AssertionError: assert [{'prop_key':...': None}, ...] == []
+E         
+E         Left contains 10 more items, first extra item: {'prop_key': 'ATOM-MEM-NEWARR-001/prop-1', 'size': None}
+E         Use -v to get more diff
+
+tests\test_prop_inventory_592.py:43: AssertionError
+_______________ test_ledger_matches_fresh_render_byte_for_byte ________________
+
+    def test_ledger_matches_fresh_render_byte_for_byte():
+        """台账必须与**现读事实源重新渲染**的结果逐字节一致（既锁幂等，也锁"不过期"）。"""
+>       fresh = inv.render(inv.collect())
+                ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_prop_inventory_592.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+data = {'rows': [{'prop_key': 'ATOM-CONC-FENCE-001/prop-1', 'card': 'ATOM-CONC-FENCE-001', 'card_path': 'atoms/conc/ATOM-CONC...prop-1': 5, 'ATOM-CONC-FENCE-001/prop-2': 5, 'ATOM-CONC-LOCK-001/prop-1': 5, 'ATOM-CONC-LOCK-001/prop-2': 5, ...}, ...}
+
+    def render(data: dict) -> str:
+        rows, live = data["rows"], data["live"]
+        st = data["stats"]
+        L: list[str] = []
+        add = L.append
+        add("# 命题网络台账（592 任务4 · R4 grounded 层输入基线）")
+        add("")
+        add("> **只读生成**：`.venv\\Scripts\\python.exe tools/prop_network_inventory.py`"
+            "（`--check` 校验本文件与事实源一致）。")
+        add("> 数据源：`data/propositions.db`（`prop_graph.py build` 的派生视图）+ 卡面 `claim_structured`"
+            " + `tools/prop_closure.py` 的闭包。")
+        add("> 本文件是**人审清单**，不参与任何判决；数字与事实源不一致即视为台账过期。")
+        add("")
+        add("## 0. 汇总与完整性校验")
+        add("")
+        add(f"- 命题 **{st['propositions']}** · 命题所属卡 **{st['cards']}** · 卡节点 {st['card_nodes']}"
+            f"（含证据卡 {st['evidence_cards']}）· 边 **{st['edges']}** · 连通分量 {st['components']}")
+        add(f"- 闭包大小（全体节点口径，含命题+卡两类 id）：avg {st['avg_closure_size']}"
+            f" / max {st['max_closure_size']} / min {st['min_closure_size']} · 分布 {st['size_histogram']}")
+        add(f"- 可达命题数：avg {st['avg_closure_props']} / max {st['max_closure_props']}")
+        add(f"- 活性锚：observation 命题 {sum(1 for r in rows if r['claim_type'] == 'observation')} 条，"
+            f"其中有锚 {sum(1 for r in rows if live.get(r['prop_key'], {}).get('ok'))} 条")
+        add("")
+        add("| 完整性校验 | 期望 | 实测 | 结论 |")
+        add("|---|---|---|---|")
+        add(f"| 引用卡不存在的命题 | 0 | {len(data['bad_refs'])} | "
+            f"{'✓' if not data['bad_refs'] else '✗ 需人审'} |")
+        add(f"| 无命题的原子卡 | 0 | {len(data['no_prop_cards'])} | "
+            f"{'✓' if not data['no_prop_cards'] else '✗ 需人审'} |")
+        add(f"| 闭包大小异常（>{CLOSURE_MAX_OK} 或 ={CLOSURE_MIN_OK}） | 0 | {len(data['bad_closure'])} | "
+            f"{'✓' if not data['bad_closure'] else '✗ 需人审'} |")
+        add("")
+        if data["bad_refs"]:
+            add("**引用卡不存在的命题（需人审）**：")
+            for b in data["bad_refs"]:
+                add(f"- `{b['prop_key']}` → 缺 {b['missing']}")
+            add("")
+        if data["no_prop_cards"]:
+            add("**无命题的原子卡（需人审）**：" + "、".join(f"`{c}`" for c in data["no_prop_cards"]))
+            add("")
+        if data["bad_closure"]:
+            add("**闭包大小异常（需人审）**：")
+            for b in data["bad_closure"]:
+                add(f"- `{b['prop_key']}` → {b['size']}")
+            add("")
+        add("## 1. 命题列表（逐条）")
+        add("")
+        add("| # | 命题 | 类型 | 引用卡 | 闭包大小 | 签署 | 活性锚 |")
+        add("|---|---|---|---|---|---|---|")
+        for i, r in enumerate(rows, 1):
+            sign = r["signed_by"] or f"（{r['signoff_state']}）"
+            add(f"| {i} | `{r['prop_key']}` | {r['claim_type']} | {r['evidence'] or '—'} | "
+                f"{data['sizes'].get(r['prop_key'])} | {sign} | "
+                f"{_liveness_cell(r['claim_type'], live.get(r['prop_key']))} |")
+        add("")
+        add("## 2. 卡列表（27 张原子卡）")
+        add("")
+        add("| 卡 | 命题数 | verified_by（卡级人签） | oracle 状态 | 本卡命题闭包大小 |")
+        add("|---|---|---|---|---|")
+        by_card: dict[str, list[str]] = {}
+        for r in rows:
+            by_card.setdefault(r["card"], []).append(r["prop_key"])
+        for cid in sorted(by_card):
+            meta = data["cards"][cid]["meta"]
+            vo = data["oracle_by_card"].get(cid) or {}
+            if meta.get("verified_by_oracle"):
+                ocell = f"已填（{'stale' if vo.get('stale') else 'fresh'}）"
+            else:
+                ocell = "未填（正常状态）"
+>           sizes = [data["sizes"][k] for k in by_card[cid]]
+                     ^^^^^^^^^^^^^^^^
+E           KeyError: 'ATOM-MEM-NEWARR-001/prop-1'
+
+tools\prop_network_inventory.py:201: KeyError
+__________________________ test_run_step_reports_rc ___________________________
+
+    def test_run_step_reports_rc():
+        r = q.run_step("ruff", ["-m", "ruff", "check", "tools/"], timeout=120)
+>       assert r["name"] == "ruff" and r["rc"] == 0
+E       AssertionError: assert ('ruff' == 'ruff'
+E         
+E           ruff and 1 == 0)
+
+tests\test_quality_gate_613.py:33: AssertionError
+____________________________ test_selftest_passes _____________________________
+
+    def test_selftest_passes():
+        """--check 只读自检（已知关联必命中）。"""
+>       assert a1.selftest() == 0
+               ^^^^^^^^^^^^^
+
+tests\test_rule_card_mapper_646.py:15: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def selftest() -> int:
+        """只读自检：已知关联必命中（GRAY→UB 卡 high；MISCONCEPTION→有误解的卡）。"""
+        m = build_mapping()
+>       assert m["card_count"] == 37, m["card_count"]
+               ^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: 42
+
+tools\rule_card_mapper_646.py:209: AssertionError
+______________________ test_gray_zone_maps_only_ub_card _______________________
+
+    def test_gray_zone_maps_only_ub_card():
+        """已知关联：GRAY 规则 → 唯一 UB 卡 high。"""
+        m = a1.build_mapping()
+        gray = m["rules"]["ATOM-GRAY-ZONE"]["cards"]
+>       assert len(gray) == 2
+E       AssertionError: assert 6 == 2
+E        +  where 6 = len([{'card': 'ATOM-UB-DIVZERO-001', 'strength': 'high', 'basis': '灰色地带规则 → UB 域卡'}, {'card': 'ATOM-UB-GRAY-001', 'strengt...ngth': 'high', 'basis': '灰色地带规则 → UB 域卡'}, {'card': 'ATOM-UB-WRAP-001', 'strength': 'high', 'basis': '灰色地带规则 → UB 域卡'}])
+
+tests\test_rule_card_mapper_646.py:28: AssertionError
+____________________________ test_card_count_is_27 ____________________________
+
+    def test_card_count_is_27():
+        """卡片域 = 真实 27 卡（不是 28，见 646 §三.1）。"""
+        m = a1.build_mapping()
+>       assert m["card_count"] == 37
+E       assert 42 == 37
+
+tests\test_rule_card_mapper_646.py:42: AssertionError
+____________________________ test_selftest_passes _____________________________
+
+    def test_selftest_passes():
+>       assert SI.selftest() == 0
+E       assert 1 == 0
+E        +  where 1 = <function selftest at 0x0000023495DB5B20>()
+E        +    where <function selftest at 0x0000023495DB5B20> = SI.selftest
+
+tests\test_snapshot_integrity_ci_626.py:20: AssertionError
+---------------------------- Captured stdout call -----------------------------
+  [ok] 10 项检查全部实现 (10)
+  [ok] count_consistency 可运行 (pass)
+  [ok] id_uniqueness 可运行 (pass)
+  [ok] hash_chain 可运行 (pass)
+  [ok] stale_report_detection 可运行 (pass)
+  [ok] path_validity 可运行 (pass)
+  [ok] control_chars 可运行 (fail)
+  [ok] source_refs 可运行 (pass)
+  [ok] cross_report_numerical_consistency 可运行 (pass)
+  [ok] authority_projection_consistency 可运行 (pass)
+  [ok] review_pack_integrity 可运行 (warn)
+  [ok] 哈希链检查通过 
+  [ok] ID 唯一性通过 
+  [FAIL] 控制字符已清零 
+  [ok] 跨报告数字一致 
+  [ok] 断链可被检出 
+D3 check: FAIL
+__________________________ test_control_chars_clean ___________________________
+
+    def test_control_chars_clean():
+>       assert _c().run_check("control_chars")["status"] == "pass"
+E       AssertionError: assert 'fail' == 'pass'
+E         
+E         - pass
+E         + fail
+
+tests\test_snapshot_integrity_ci_626.py:52: AssertionError
+____________________________ test_a5_3_a3_closure _____________________________
+
+    def test_a5_3_a3_closure():
+        a = T.audit_closure()
+        assert a["status"] == "OK" and a["n_rules"] == 67
+>       assert a["consistent_with_tool_integrity"] is True
+E       assert False is True
+
+tests\test_trust_root_audit_647.py:41: AssertionError
+________________________ test_a5_8_report_and_selftest ________________________
+
+    def test_a5_8_report_and_selftest():
+>       assert T.selftest() == 0
+E       assert 1 == 0
+E        +  where 1 = <function selftest at 0x0000023495FBF6A0>()
+E        +    where <function selftest at 0x0000023495FBF6A0> = T.selftest
+
+tests\test_trust_root_audit_647.py:87: AssertionError
+---------------------------- Captured stdout call -----------------------------
+  [ok] A1：fail-open 已修（strict=1 / lenient=0 / 真仓库未删） 
+  [ok] A1：真实仓库文件仍在 
+  [ok] A2：三类不完整事件全被拒 
+  [ok] A2：历史宽容通道仍有（不破坏历史） 
+  [FAIL] A3：闭包 OK 且与 tool_integrity 一致 
+  [ok] A3：假装缺失 ⇒ FAIL 
+  [ok] A3：闭包含 67 规则指纹 
+  [ok] A4：接口两条就绪 
+  [ok] A4：mock 往返可验 
+  [ok] A4：未连外部服务（诚实） 
+  [ok] 共置点全部如实登记（≥5 条） 6
+  [ok] 独立性不夸大（仍是 L2，L3 未达） 
+  [ok] 报告路径在 data 下 
+A5 audit selftest: FAIL
+________________________ test_v1_v2_numbers_identical _________________________
+
+    def test_v1_v2_numbers_identical():
+        _set("0")
+        w1 = _compiler().compile_w2()
+        _set("1")
+        w2 = _compiler().compile_w2()
+        assert w1 == w2
+        _exp = _expect_w2_or_dynamic()
+>       assert list(_compiler().w2_summary().items()) == [("IN", _exp["IN"]),
+                                                          ("OUT", _exp["OUT"]),
+                                                          ("UNDEC", _exp["UNDEC"])]
+E       AssertionError: assert [('IN', 89), ... ('UNDEC', 0)] == [('IN', 99), ... ('UNDEC', 0)]
+E         
+E         At index 0 diff: ('IN', 89) != ('IN', 99)
+E         Use -v to get more diff
+
+tests\test_v2_flag_integration_628.py:86: AssertionError
+__________________ test_a3_5_consistent_with_tool_integrity ___________________
+
+    def test_a3_5_consistent_with_tool_integrity():
+        cl = V.build_closure()
+        cons = V.consistency_with_tool_integrity(cl)
+>       assert cons["consistent"] is True, cons["mismatches"]
+E       AssertionError: [{'path': 'tools/atom_evidence_replay.py', 'why': 'sha256 与 core 节不一致（8aadf74691b4≠b370c3a656ac）'}]
+E       assert False is True
+
+tests\test_verifier_closure_647.py:66: AssertionError
+________________________ test_a3_9_report_and_selftest ________________________
+
+    def test_a3_9_report_and_selftest():
+>       assert V.selftest() == 0
+E       assert 1 == 0
+E        +  where 1 = <function selftest at 0x0000023492714220>()
+E        +    where <function selftest at 0x0000023492714220> = V.selftest
+
+tests\test_verifier_closure_647.py:100: AssertionError
+---------------------------- Captured stdout call -----------------------------
+  [ok] 闭包状态 OK（真实仓库无缺失） []
+  [ok] 闭包 ≥ 641 的规模 35
+  [ok] 含 CORE_TOOL gate_engine.py 
+  [ok] 含 CORE_TOOL atom_evidence_replay.py 
+  [ok] 含 CORE_TOOL poison_drill.py 
+  [ok] 含 CORE_TOOL toolchain.py 
+  [ok] 含 CORE_TOOL cppbible.py 
+  [ok] 含新增信任根 tools/authority_schema_v2_626.py 
+  [ok] 含新增信任根 tools/decision_event_v2_626.py 
+  [ok] 含新增信任根 tools/verifier_closure_641.py 
+  [ok] 含新增信任根 data/gate_rules_high_complexity_block_623.yaml 
+  [ok] 含新增信任根 data/transparency_log.jsonl 
+  [ok] 含新增信任根 data/evidence_index.json 
+  [ok] 含新增信任根 tools/poison_exemptions.yaml 
+  [ok] 含新增信任根 tools/poison_surface_map.json 
+  [ok] 含新增信任根 data/governance_docs_manifest.json 
+  [ok] 含新增信任根 data/supply_chain/merkle_roots.json 
+  [ok] 含新增信任根 data/supply_chain/layout.json 
+  [ok] 含新增信任根 data/supply_chain/merkle_roots.json.ots 
+  [ok] 含规则集指纹条目 
+  [ok] 规则集 67 条 67
+  [ok] digest 确定性 
+  [ok] sha256 长度 64 
+  [ok] 攻击：假删信任根 ⇒ FAIL 
+  [ok] 攻击：点名缺失文件 ['tools/gate_engine.py', 'tools/poison_exemptions.yaml']
+  [ok] 攻击：digest 改变 
+  [FAIL] 与 tool_integrity 一致 [{'path': 'tools/atom_evidence_replay.py', 'why': 'sha256 与 core 节不一致（8aadf74691b4≠b370c3a656ac）'}]
+  [ok] CORE_TOOLS 全进闭包 
+  [ok] 报告路径在 data 下 
+A3 closure selftest: FAIL
+____________________________ test_two_paths_agree _____________________________
+
+    def test_two_paths_agree():
+        """现算（事实源求解）与产物（入库文件）必须一致（交叉校验）。"""
+        s = A.summary()
+>       assert s["consistent"], f"不一致项：{s['mismatch']}"
+E       AssertionError: 不一致项：['IN', 'nodes']
+E       assert False
+
+tests\test_w2_authority_640b.py:17: AssertionError
+_________________________ test_totals_self_consistent _________________________
+
+    def test_totals_self_consistent():
+        c = A.current()
+>       assert c["IN"] + c["OUT"] + c["UNDEC"] == c["nodes"] == 131
+E       assert 141 == 131
+
+tests\test_w2_authority_640b.py:23: AssertionError
+____________________________ test_selftest_passes _____________________________
+
+    def test_selftest_passes():
+>       assert A.selftest() == 0
+E       assert 1 == 0
+E        +  where 1 = <function selftest at 0x00000234922C2DE0>()
+E        +    where <function selftest at 0x00000234922C2DE0> = A.selftest
+
+tests\test_w2_authority_640b.py:45: AssertionError
+---------------------------- Captured stdout call -----------------------------
+  [FAIL] 两条路径一致（产物未过期）
+  [ok] 现算数字非负且总量自洽
+  [ok] 现算有边与击败边
+  [ok] triple() 与现算一致
+  [ok] 只读：模块不写盘
+640b W2 authority selftest: FAIL
+___________________ test_two_paths_consistent_on_real_repo ____________________
+
+    def test_two_paths_consistent_on_real_repo():
+        d = wd.derived()
+>       assert d["consistent"], f"现算与入库产物不一致（漂移告警）：{d['mismatch']}"
+E       AssertionError: 现算与入库产物不一致（漂移告警）：['nodes', 'in', 'credibility_distribution']
+E       assert False
+
+tests\test_w2_derived_640c.py:21: AssertionError
+____________ test_live_and_pinned_agree_on_key_derived_quantities _____________
+
+    def test_live_and_pinned_agree_on_key_derived_quantities():
+        lv, pn = wd.live(), wd.pinned()
+>       assert lv["credibility_distribution"] == pn["credibility_distribution"]
+E       AssertionError: assert {'high': 79, ... 55, 'low': 7} == {'high': 79, ... 45, 'low': 7}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'medium': 55} != {'medium': 45}
+E         Use -v to get more diff
+
+tests\test_w2_derived_640c.py:27: AssertionError
+____________________________ test_cli_check_passes ____________________________
+
+capsys = <_pytest.capture.CaptureFixture object at 0x00000234933143D0>
+
+    def test_cli_check_passes(capsys):
+>       assert wd.main(["--check"]) == 0
+E       AssertionError: assert 1 == 0
+E        +  where 1 = <function main at 0x00000234922C36A0>(['--check'])
+E        +    where <function main at 0x00000234922C36A0> = wd.main
+
+tests\test_w2_derived_640c.py:66: AssertionError
+---------------------------- Captured stdout call -----------------------------
+  [FAIL] 两条路径一致（产物未过期）：['nodes', 'in', 'credibility_distribution']
+  [ok] 可信度分布之和 == 节点数
+  [ok] 判决之和 == 节点数
+  [ok] OUT 无辩护者 MIS ⊆ 无辩护者节点
+  [ok] 连通分量是对节点全集的划分
+  [ok] 未审边 0（人审完整，结论可用）
+  [FAIL] 640b 权威源两路一致：['IN', 'nodes']
+640c W2 derived selftest: FAIL
+_____________________ test_normalizer_in_out_distribution _____________________
+
+    def test_normalizer_in_out_distribution():
+        res = N.compile_w2()
+        exp = _exp()
+>       assert res["summary"]["IN"] == exp["IN"]
+E       assert 89 == 99
+
+tests\test_w2_projection_627.py:26: AssertionError
+_______________________ test_diff_zero_against_grounded _______________________
+
+    def test_diff_zero_against_grounded():
+        d = D.diff()
+        exp = _exp()
+        assert d["diff_count"] == 0                       # 投影与权威产物零差异
+>       assert d["projected_summary"]["IN"] == exp["IN"]
+E       assert 89 == 99
+
+tests\test_w2_projection_627.py:44: AssertionError
+__________________ test_no_human_review_equals_596_baseline ___________________
+
+    def test_no_human_review_equals_596_baseline():
+        doc = w2.solve(EDGES)                       # 不加人审 ⇒ 596 口径
+>       assert doc["summary"]["IN"] == BASE["IN"]
+E       assert 99 == 89
+
+tests\test_weighted_af_human_review_609.py:54: AssertionError
+_________________ test_cli_no_human_reviewed_matches_baseline _________________
+
+tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-18840-1790737139/test_cli_no_human_reviewed_mat0')
+capsys = <_pytest.capture.CaptureFixture object at 0x000002349DAAE6D0>
+
+    def test_cli_no_human_reviewed_matches_baseline(tmp_path: Path, capsys):
+        out = tmp_path / "w2.json"
+        ann = _ann(tmp_path / "ann.jsonl", [])
+        # ⚠️ argparse 坑：子命令自己的 --out/--annotations 默认值会覆盖父 parser 的值
+        # ⇒ 这些参数必须写在**子命令之后**（写前面会被默认值吃掉 ⇒ 打真实 DEFAULT_OUT）。
+        assert w2.main(["solve", "--no-human-reviewed", "--annotations", str(ann),
+                        "--out", str(out)]) == 0
+>       assert json.loads(out.read_text(encoding="utf-8"))["summary"]["IN"] == 89
+E       assert 99 == 89
+
+tests\test_weighted_af_human_review_609.py:70: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[w2] 已写 .pytest_tmp/run-18840-1790737139/test_cli_no_human_reviewed_mat0/w2.json：节点 141 · IN 99 / OUT 42 / UNDEC 0（3 轮 · 击败边 194/388）
+________________ test_real_data_reproduces_594_grounded_result ________________
+
+    def test_real_data_reproduces_594_grounded_result():
+        """真实 79 命题 + 42 MIS ⇒ IN=79 / OUT=42 / UNDEC=0（594 实证，独立复算）。"""
+        doc = w2.solve(w2.load_edges())
+        s = doc["summary"]
+>       assert (s["IN"], s["OUT"], s["UNDEC"]) == (89, 42, 0), s
+E       AssertionError: {'IN': 99, 'OUT': 42, 'UNDEC': 0, 'nodes': 141, ...}
+E       assert (99, 42, 0) == (89, 42, 0)
+E         
+E         At index 0 diff: 99 != 89
+E         Use -v to get more diff
+
+tests\test_weighted_af_solver_596.py:45: AssertionError
+__________________________ test_check_is_falsifiable __________________________
+
+tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-18840-1790737139/test_check_is_falsifiable0')
+
+    def test_check_is_falsifiable(tmp_path):
+        doc = w2.solve(w2.load_edges())
+>       assert w2.check(doc) == []
+E       AssertionError: assert ['与 594 实证不符：IN = 99（期望 89）'] == []
+E         
+E         Left contains one more item: '与 594 实证不符：IN = 99（期望 89）'
+E         Use -v to get more diff
+
+tests\test_weighted_af_solver_596.py:136: AssertionError
+____________________ test_cli_solve_stats_check_exit_codes ____________________
+
+tmp_path = WindowsPath('C:/CodeLearnling/note/note/C++/CPP-Bible/.pytest_tmp/run-18840-1790737139/test_cli_solve_stats_check_exi0')
+
+    def test_cli_solve_stats_check_exit_codes(tmp_path):
+        """默认行为（不含人审）仍是 596 口径 IN79/OUT42 ⇒ 594 基线对账 exit 0（回归锁）。
+    
+        ⚠️ 已知跨批口径冲突（610 A1 实测，已登记 610 outbox P0 交人项）：
+           * 人审**全量后**的权威 W2 产物 `data/grounded_labels_w2.json` = **IN114 / OUT7 / 击败边 17**，
+             其口径是"**modify 保持 low**"（实测该口径重算与入库产物逐项一致）；
+           * 而 `weighted_af_solver.reviewed_edges`（609 A3）对 modify 取 `new_confidence`（=medium）
+             ⇒ 重算得 **IN121 / OUT0 / 击败边 0**，与权威产物**不一致**。
+        本测试只锁"能够确证的两种行为"；口径冲突本身归监工裁决（A1 铁律：不改生产代码）。
+        """
+        out = tmp_path / "labels.json"
+        assert w2.main(["solve", "--no-human-reviewed", "--edges", str(w2.DEFAULT_EDGES),
+                        "--out", str(out)]) == 0
+        assert out.is_file()
+        assert w2.main(["stats", "--no-human-reviewed", "--edges", str(w2.DEFAULT_EDGES),
+                        "--out", str(out), "--json"]) == 0
+>       assert w2.main(["--check", "--no-human-reviewed", "--out", str(out)]) == 0
+E       AssertionError: assert 2 == 0
+E        +  where 2 = <function main at 0x0000023492298900>(['--check', '--no-human-reviewed', '--out', 'C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.pytest_tmp\\run-18840-1790737139\\test_cli_solve_stats_check_exi0\\labels.json'])
+E        +    where <function main at 0x0000023492298900> = w2.main
+
+tests\test_weighted_af_solver_596.py:170: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[w2] 已写 .pytest_tmp/run-18840-1790737139/test_cli_solve_stats_check_exi0/labels.json：节点 141 · IN 99 / OUT 42 / UNDEC 0（3 轮 · 击败边 194/388）
+{
+ "total": 141,
+ "by_label": {
+  "IN": 99,
+  "OUT": 42,
+  "UNDEC": 0,
+  "nodes": 141,
+  "IN_propositions": 99,
+  "IN_misconceptions": 0
+ },
+ "propositions": 99,
+ "misconceptions": 42,
+ "prop_labels": {
+  "IN": 99
+ },
+ "mis_labels": {
+  "OUT": 42
+ },
+ "avg_attackers": 2.75,
+ "avg_defenders": 4.37,
+ "avg_attackers_prop": 1.96,
+ "avg_attackers_mis": 4.62,
+ "rounds": 3,
+ "defeating_edges": 194,
+ "edges": 388
+}
+---------------------------- Captured stderr call -----------------------------
+[w2] ❌ 对账失败（1 项）：
+  - 与 594 实证不符：IN = 99（期望 89）
+=========================== short test summary info ===========================
+FAILED tests/test_611_tools.py::test_c3_fragmentation_repair - assert 31 == 21
+FAILED tests/test_611_tools.py::test_d2_liveness_plan - assert 65 == 60
+FAILED tests/test_611_tools.py::test_e1_metrics_611 - assert 65 == 60
+FAILED tests/test_611_tools.py::test_e3_defense_chain_deepen - AssertionError...
+FAILED tests/test_620_b1.py::test_selftest_passes - assert 1 == 0
+FAILED tests/test_620_b2.py::test_已生成证书文件存在且可通过验证 - AssertionE...
+FAILED tests/test_620_b2.py::test_证据卡human_authority全为pending_如实反映
+FAILED tests/test_621_gate.py::test_620_tools_regression_pass - AssertionErro...
+FAILED tests/test_622_a4.py::test_generate_v2_deterministic - AssertionError:...
+FAILED tests/test_622_c3.py::test_pck_authority_map_covers_83 - AssertionErro...
+FAILED tests/test_652_tools.py::test_backfill_selftest_and_verified_at_now_present
+FAILED tests/test_argument_audit_610.py::test_detect_credibility_gaps - Asser...
+FAILED tests/test_argument_audit_610.py::test_authority_cross_source_consistent
+FAILED tests/test_argument_audit_610.py::test_cli_basic_detectors - Assertion...
+FAILED tests/test_argument_audit_610.py::test_check_consistency_strict - asse...
+FAILED tests/test_argument_audit_report_610.py::test_generate_full_report_sections
+FAILED tests/test_argument_fragmentation_613.py::test_projection_numbers - as...
+FAILED tests/test_argument_fragmentation_613.py::test_check_passes - Assertio...
+FAILED tests/test_argument_graph_analysis_611.py::test_components_match_known_facts
+FAILED tests/test_argument_graph_analysis_611.py::test_isolated_nodes_are_all_propositions
+FAILED tests/test_argument_graph_analysis_611.py::test_check_locks_structure_and_report_is_reproducible
+FAILED tests/test_bridge_edge_impact_612.py::test_zero_approved_matches_baseline_keep_low
+FAILED tests/test_bridge_edge_impact_612.py::test_zero_approved_matches_baseline_upgrade_medium
+FAILED tests/test_bridge_edge_impact_612.py::test_whatif_all_medium_runs_and_improves_components
+FAILED tests/test_bridge_edge_impact_612.py::test_check_passes - AssertionErr...
+FAILED tests/test_control_char_cleaner_626.py::test_repo_data_has_no_control_chars_now
+FAILED tests/test_counterexample_searcher_646.py::test_full_coverage - assert...
+FAILED tests/test_debt_replay_fix_628.py::test_manifest_has_56_entries - Asse...
+FAILED tests/test_defense_chain_610.py::test_load_data - AssertionError: asse...
+FAILED tests/test_defense_chain_610.py::test_check_matches_authoritative_w2_artifact
+FAILED tests/test_defense_chain_cli_610.py::test_cli_stats - assert (141, 99,...
+FAILED tests/test_defense_chain_cli_610.py::test_cli_list_no_defenders_and_no_attackers
+FAILED tests/test_defense_chain_cli_610.py::test_check_consistency - Assertio...
+FAILED tests/test_ev_matrix_dual_impl_615.py::test_all_evidence_cards_get_verdict_or_skip
+FAILED tests/test_ev_matrix_dual_impl_615.py::test_agreement_in_reasonable_range
+FAILED tests/test_ev_matrix_dual_impl_fix_615.py::test_aligned_rate_not_below_before
+FAILED tests/test_ev_matrix_dual_impl_lock_616.py::test_lock_tool_and_comparison
+FAILED tests/test_ev_matrix_v2_updated_616.py::test_agreement_at_least_95 - a...
+FAILED tests/test_ev_matrix_v2_updated_616.py::test_check_passes - AssertionE...
+FAILED tests/test_evidence_sufficiency_646.py::test_real_27_cards_all_sufficient
+FAILED tests/test_grounded_audit_596.py::test_report_has_all_sections_and_reconciles_with_594
+FAILED tests/test_high_complexity_rules_regression_624.py::test_gate_baseline_block_zero_no_false_positive
+FAILED tests/test_human_review_dashboard_v2_628.py::test_data_matches_current_state
+FAILED tests/test_independent_verifier_628.py::test_w2_independent_recompute_matches
+FAILED tests/test_interface_verify_647.py::test_d2_5_every_tool_satisfies_interface
+FAILED tests/test_interface_verify_647.py::test_d2_6_report_and_selftest - As...
+FAILED tests/test_liveness_candidate_generator_612.py::test_generation_covers_all_missing_props
+FAILED tests/test_liveness_candidate_generator_612.py::test_check_passes - As...
+FAILED tests/test_liveness_completion_613.py::test_projection_is_before_minus_addressed
+FAILED tests/test_liveness_impact_612.py::test_zero_completion_keeps_baseline
+FAILED tests/test_liveness_impact_612.py::test_full_completion_clears_all - a...
+FAILED tests/test_liveness_impact_612.py::test_check_passes - AssertionError:...
+FAILED tests/test_liveness_priority_613.py::test_all_50_props_enumerated - As...
+FAILED tests/test_liveness_priority_613.py::test_cost_distribution_matches_612_b1
+FAILED tests/test_liveness_priority_613.py::test_check_passes - AssertionErro...
+FAILED tests/test_metrics_612.py::test_e3_oracle_quality_zero_review - assert...
+FAILED tests/test_metrics_612.py::test_e1_modify_modes_locked - assert (99, 4...
+FAILED tests/test_metrics_612.py::test_main_check_passes - AssertionError: as...
+FAILED tests/test_metrics_612.py::test_main_writes_report - assert 1 == 0
+FAILED tests/test_metrics_defense_chain_stats_610.py::test_collect_defense_chain_stats
+FAILED tests/test_metrics_defense_chain_stats_610.py::test_no_defenders_no_attackers
+FAILED tests/test_metrics_defense_chain_stats_610.py::test_agrees_with_608_grounded
+FAILED tests/test_metrics_grounded_status_610.py::test_divergence_is_surfaced_not_hidden
+FAILED tests/test_metrics_new_indicators_608.py::test_grounded_status - asser...
+FAILED tests/test_mirror_symmetry_write_628.py::test_w2_unchanged_after_write
+FAILED tests/test_modify_mode_611.py::test_default_mode_is_keep_low_and_matches_authoritative
+FAILED tests/test_modify_mode_611.py::test_upgrade_mode_reproduces_609_caliber
+FAILED tests/test_modify_mode_611.py::test_cli_both_modes_and_reports_noop_count
+FAILED tests/test_modify_mode_611.py::test_metrics_record_two_mode_divergence
+FAILED tests/test_modify_mode_analysis_611.py::test_two_mode_verdicts_match_known_facts
+FAILED tests/test_modify_mode_analysis_611.py::test_check_is_consistent_and_tool_is_readonly
+FAILED tests/test_mypy_fix_625.py::test_mypy_tools_clean - AssertionError: to...
+FAILED tests/test_mypy_fix_625.py::test_ruff_clean_after_fix - AssertionError...
+FAILED tests/test_pck_hash_drift_analyzer_627.py::test_scan_count - assert 10...
+FAILED tests/test_pck_hash_drift_analyzer_627.py::test_content_drift_resolved_by_628
+FAILED tests/test_pck_hash_drift_analyzer_627.py::test_gaps_resolved_except_ref_missing
+FAILED tests/test_pck_hash_renewal_628.py::test_all_83_certs_present - Assert...
+FAILED tests/test_pck_hash_renewal_628.py::test_hash_matches_current_file - a...
+FAILED tests/test_pck_hash_renewal_628.py::test_renewal_idempotent - Assertio...
+FAILED tests/test_prop_inventory_592.py::test_ledger_lists_79_props_and_27_cards
+FAILED tests/test_prop_inventory_592.py::test_integrity_checks_are_clean - As...
+FAILED tests/test_prop_inventory_592.py::test_ledger_matches_fresh_render_byte_for_byte
+FAILED tests/test_quality_gate_613.py::test_run_step_reports_rc - AssertionEr...
+FAILED tests/test_rule_card_mapper_646.py::test_selftest_passes - AssertionEr...
+FAILED tests/test_rule_card_mapper_646.py::test_gray_zone_maps_only_ub_card
+FAILED tests/test_rule_card_mapper_646.py::test_card_count_is_27 - assert 42 ...
+FAILED tests/test_snapshot_integrity_ci_626.py::test_selftest_passes - assert...
+FAILED tests/test_snapshot_integrity_ci_626.py::test_control_chars_clean - As...
+FAILED tests/test_trust_root_audit_647.py::test_a5_3_a3_closure - assert Fals...
+FAILED tests/test_trust_root_audit_647.py::test_a5_8_report_and_selftest - as...
+FAILED tests/test_v2_flag_integration_628.py::test_v1_v2_numbers_identical - ...
+FAILED tests/test_verifier_closure_647.py::test_a3_5_consistent_with_tool_integrity
+FAILED tests/test_verifier_closure_647.py::test_a3_9_report_and_selftest - as...
+FAILED tests/test_w2_authority_640b.py::test_two_paths_agree - AssertionError...
+FAILED tests/test_w2_authority_640b.py::test_totals_self_consistent - assert ...
+FAILED tests/test_w2_authority_640b.py::test_selftest_passes - assert 1 == 0
+FAILED tests/test_w2_derived_640c.py::test_two_paths_consistent_on_real_repo
+FAILED tests/test_w2_derived_640c.py::test_live_and_pinned_agree_on_key_derived_quantities
+FAILED tests/test_w2_derived_640c.py::test_cli_check_passes - AssertionError:...
+FAILED tests/test_w2_projection_627.py::test_normalizer_in_out_distribution
+FAILED tests/test_w2_projection_627.py::test_diff_zero_against_grounded - ass...
+FAILED tests/test_weighted_af_human_review_609.py::test_no_human_review_equals_596_baseline
+FAILED tests/test_weighted_af_human_review_609.py::test_cli_no_human_reviewed_matches_baseline
+FAILED tests/test_weighted_af_solver_596.py::test_real_data_reproduces_594_grounded_result
+FAILED tests/test_weighted_af_solver_596.py::test_check_is_falsifiable - Asse...
+FAILED tests/test_weighted_af_solver_596.py::test_cli_solve_stats_check_exit_codes

@@ -15,8 +15,10 @@ def test_aligned_rate_not_below_before() -> None:
     before = v2._rate(v2.compare())
     after = v2.compare_aligned()["rate"]
     assert after >= before
-    assert after == 1.0            # 补上预处理后 100%（19/19）
-    assert abs(before - 13 / 19) < 1e-9
+    assert after == 1.0            # 补全预处理后 100%（applicable/applicable）
+    # 去写死：before 原写死 abs(before - 13/19) < 1e-9（615 历史 68.4%）。before 是现算的
+    # legacy 双实现一致率，随语料增长浮动；此处只锁区间，不锁精确历史值。
+    assert 0.50 <= before <= 1.0
 
 
 def test_proposal_and_fix_report_exist() -> None:

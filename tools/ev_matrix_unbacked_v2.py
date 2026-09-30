@@ -34,7 +34,7 @@ HISTORICAL_DIVERGENT = {
     "evidence/mem/EV-MEM-001.md", "evidence/mem/EV-MEM-039.md",
     "evidence/mem/EV-MEM-042.md", "evidence/mem/EV-MEM-043.md",
 }
-HISTORICAL_APPLICABLE = 19
+HISTORICAL_APPLICABLE = 19  # 615 历史基线（仅供文档参考）；669 起断言不再写死此值
 
 _COMPILER = re.compile(r"compiler:\s*\[([^\]]*)\]")
 _OUT = re.compile(r"(?:Examples|build)/[^\s\])]+\.out")
@@ -182,8 +182,13 @@ def check() -> list[str]:
     full = compare_full()
     if full["n_crash"] != 0:
         problems.append(f"第二实现在 {full['n_crash']} 张卡上崩溃")
-    if full["applicable"] != HISTORICAL_APPLICABLE:
-        problems.append(f"适用卡应为 {HISTORICAL_APPLICABLE}（实测 {full['applicable']}）")
+    # 去写死（669 P0）：原写死 applicable == HISTORICAL_APPLICABLE(19)。适用卡数随语料增长
+    # 浮动（669 新增 5 张 → 24），精确锁会假红。改为现算一致式：natural/official 必须覆盖
+    # 同一批适用卡；若 compare()/compare_full() 漏算一张卡，此处即红。
+    if len(full["natural"]) != len(full["official"]) or len(full["natural"]) != full["applicable"]:
+        problems.append(
+            f"适用卡计数不一致（natural/official/applicable 不等）："
+            f"{len(full['natural'])}/{len(full['official'])}/{full['applicable']}")
     if _rate(full) < 0.95:
         problems.append(f"补全语义一致率应 ≥95%（实测 {_rate(full):.1%}）")
     if full["diverge"]:

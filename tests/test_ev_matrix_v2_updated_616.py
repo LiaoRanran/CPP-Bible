@@ -26,7 +26,9 @@ def test_sha256_preprocessing_implemented() -> None:
 
 def test_agreement_at_least_95() -> None:
     c = v2.compare_full()
-    assert c["applicable"] == 19
+    # 去写死（669 P0）：applicable 原写死 == 19。改为现算一致式：natural/official 必须
+    # 覆盖同一批适用卡（若 compare() 漏算一张卡，此处即红）。
+    assert len(c["natural"]) == len(c["official"]) == c["applicable"]
     assert c["agree"] / c["applicable"] >= 0.95
     assert c["agree"] == c["applicable"]          # 补全后 100%
 

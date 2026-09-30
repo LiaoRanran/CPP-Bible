@@ -11,7 +11,7 @@
       "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe tools/status_reconciler_658.py --check",
       "exit": 0,
       "pass": true,
-      "tail": "nch\": \"master\",\n  \"ahead_of_origin_master\": 2,\n  \"behind_origin_master\": 0,\n  \"dirty\": true,\n  \"mutation\": {\n    \"core\": 97.3,\n    \"all\": 81.5\n  },\n  \"cards_atoms_total\": 53,\n  \"graph_nodes\": 178,\n  \"graph_links\": 1093,\n  \"rules_actual\": 67,\n  \"readme_rules\": 67,\n  \"readme_nodes\": 178,\n  \"_baseline_head\": \"ancestor(snapshot-behind)\",\n  \"_baseline_ahead\": 0\n}\n\n[OK] 元状态与 baseline.json 一致（受控目录零改动前提下）"
+      "tail": "nch\": \"master\",\n  \"ahead_of_origin_master\": 5,\n  \"behind_origin_master\": 0,\n  \"dirty\": true,\n  \"mutation\": {\n    \"core\": 97.3,\n    \"all\": 81.5\n  },\n  \"cards_atoms_total\": 53,\n  \"graph_nodes\": 178,\n  \"graph_links\": 1093,\n  \"rules_actual\": 67,\n  \"readme_rules\": 67,\n  \"readme_nodes\": 178,\n  \"_baseline_head\": \"ancestor(snapshot-behind)\",\n  \"_baseline_ahead\": 0\n}\n\n[OK] 元状态与 baseline.json 一致（受控目录零改动前提下）"
     },
     {
       "stage": "S1 门禁分层合法",

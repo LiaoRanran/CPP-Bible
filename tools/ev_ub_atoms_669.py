@@ -278,7 +278,6 @@ def _render_card(card: dict, row: dict, sha: str, toolchain: str, line: str,
                   else '{kind: %s, texts: [%s]}' % (
                       a["kind"], ", ".join(f'"{t}"' for t in a["texts"])))
     prod = (f'g++ -std=c++17 -O2 -S -masm=intel {row["fixture_rel"]} -o {card["artifact"]}')
-    fixture_sha16 = row["fixture_sha256"][:16]
     stem = "_atom_" + card["ev_id"].lower().replace("ev-", "").replace("-", "_")
     det_log = f"Examples/atoms/{stem}.out"
     probe_log = f"Examples/atoms/{stem}.win.out"
