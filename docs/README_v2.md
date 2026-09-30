@@ -103,7 +103,15 @@ python tools/reproduce_all_670c.py --skip-slow
 | **前端完成度与已知限制** | [docs/670c_前端完成度.md](docs/670c_前端完成度.md) |
 | **调研消化资产**（669/669b/669c 规划） | `docs/669_调研消化/` |
 
-前端 6 个页面（学习 / 实验 / 卡库 / 判决 / 星图 + 总览）共 **599 条 Node 真求值断言 + 8 页 jsdom 结构冒烟**，全绿：`cd web && npm test`。
+前端 8 个页面（总览 / 卡库 / 学习 / 实验 / 判决 / 星图 / 验哈希 / 卡片）共 **888 条 Node 真求值断言 + 8 页 jsdom 结构冒烟**，全绿：`cd web && npm test`。
+
+**前端工程化（670c → 670c5 五批）**：
+- **健壮性**（670c3）：8/8 页面 `noscript` 纯 HTML 降级（≤500B/页）；入口页 loading/error/empty 三态；`window.onerror`+`unhandledrejection` 全局兜底横幅。
+- **可访问性**（670c4）：WCAG 2.1 AA **8 页 0 问题**（`tools/a11y_audit_670c4.py`）；对比度 27 组 0 失败；`header/nav/main/section/footer` 语义；一页一 `h1` 不跳级。
+- **键盘导航**（670c4/670c5）：`g`+`h/c/l/e/v/s` 全局跳转、`?` 帮助弹窗、`Esc` 关闭；卡库 `/` 聚焦搜索、`j/k` 移动、`Enter` 打开；学习页 `1-4` 评分；弹窗焦点陷阱 + 回位。
+- **响应式**（670c5）：320–1440px 无横向滚动；触控目标 ≥44px；断点令牌 `sm640/md768/lg1024/xl1280`（`web/css/responsive.css`）。
+- **性能**（670c5）：首页 **gzip 76.3KB**（预算 120KB）；无外部 CDN 依赖；全部 `<script type="module">`；DOM 标签每页 ≤238。
+- **构建**：`node web/build.mjs` 重建 `dist/`；`python tools/dist_verify_670c2.py` 验证（8 HTML / 引用 0 缺失）。
 
 ---
 

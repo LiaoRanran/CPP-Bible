@@ -310,3 +310,33 @@ holdout reveal 逐样本 / corpus reveal 逐样本 / 变异测试汇总）。
 6. **§0 的"WSL（可选）"与"Node ≥20"已过时**：WSL 是硬依赖（§6.1）；Node 18 亦可（本机实测 + 根 `package.json` note）。
 7. **任务书里的三条命令名与仓库不符**（§9 末尾已逐条列出真实入口）。
 8. `data/dataset_hashes_661.json` 仍是 661 的 7 文件版本，**未**被本批替换（670c 另出 `…_670c.json`，不动旧产物）。
+
+---
+
+## 15. 前端复现（670c5 追加）
+
+前端是**零构建静态站**（浏览器忽略 `web/package.json`），无需 `npm install` 即可打开；测试用纯 Node（jsdom 仅冒烟用，缺则跳过）。
+
+```bash
+# 1) 起本地静态服务器（不要用 file://，fetch 会被拦）
+python -m http.server 8000 --directory web
+#   打开 http://localhost:8000/index.html
+
+# 2) 前端测试（888 断言，全绿）
+cd web && npm test        # 或逐条：node tests/<name>.test.mjs
+
+# 3) 重建 dist（可选；dist/ 被 .gitignore 忽略）
+node web/build.mjs
+python tools/dist_verify_670c2.py     # 8 HTML / 引用 0 缺失 / 首页 ≤200KB
+
+# 4) 前端质量审计（静态，无需浏览器）
+python tools/a11y_audit_670c4.py --write        # WCAG 2.1 AA：8 页 0 问题
+python tools/responsive_audit_670c5.py --write  # 响应式：0 严重
+python tools/perf_audit_670c5.py --write        # 性能：首页 gzip ≤120KB
+```
+
+**预期**：`npm test` 全绿（888 断言）；`a11y_audit` 输出 `critical=0`；`perf_audit` 首页 gzip ≈ 76KB。
+
+**依赖说明**：上述 4 个前端命令**不需要 WSL / g++**（与 §6 的检测器复现不同）；只有 `holdout_reveal_*` / `external_corpus_reveal_*` 才需要 WSL。
+
+**常见问题**：`file://` 打开时 `fetch` 被浏览器拦截 ⇒ 数据加载失败卡会提示改用 `python -m http.server`（这是 670c3 的预期行为，不是 bug）。

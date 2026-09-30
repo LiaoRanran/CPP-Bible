@@ -1,0 +1,99 @@
+{
+  "pages": [
+    {
+      "page": "index.html",
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "cards.html",
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "learn.html",
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "experiments.html",
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "verdicts.html",
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "starmap.html",
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "verify.html",
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "card.html",
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    }
+  ],
+  "global": {
+    "box-sizing": true,
+    "overflow-x 处理": true,
+    "grid auto-fit/minmax": true,
+    "表格滚动容器": true,
+    "图片 max-width:100%": true,
+    "触控目标 ≥44px": true,
+    "弹窗 max-width": true,
+    "reduced-motion": true
+  },
+  "media_query_widths": [
+    640,
+    900,
+    1080,
+    1100,
+    1280
+  ],
+  "total": {
+    "critical": 0,
+    "moderate": 0,
+    "minor": 1
+  },
+  "critical_total": 0
+}

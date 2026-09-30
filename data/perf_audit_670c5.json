@@ -1,0 +1,113 @@
+{
+  "pages": [
+    {
+      "page": "index.html",
+      "html_kb": 8.2,
+      "dom_nodes": 139,
+      "assets_gzip_kb": 76.3,
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "cards.html",
+      "html_kb": 9.1,
+      "dom_nodes": 141,
+      "assets_gzip_kb": 44.4,
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "learn.html",
+      "html_kb": 25.5,
+      "dom_nodes": 238,
+      "assets_gzip_kb": 46.1,
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "experiments.html",
+      "html_kb": 17.9,
+      "dom_nodes": 127,
+      "assets_gzip_kb": 55.7,
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "verdicts.html",
+      "html_kb": 10.6,
+      "dom_nodes": 204,
+      "assets_gzip_kb": 34.8,
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "starmap.html",
+      "html_kb": 6.6,
+      "dom_nodes": 112,
+      "assets_gzip_kb": 54.9,
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "verify.html",
+      "html_kb": 4.4,
+      "dom_nodes": 80,
+      "assets_gzip_kb": 24.4,
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "card.html",
+      "html_kb": 4.6,
+      "dom_nodes": 75,
+      "assets_gzip_kb": 29.0,
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    }
+  ],
+  "js_debug_residue": [],
+  "home_assets_gzip_kb": 76.3,
+  "budget": {
+    "html_kb": 60,
+    "dom_nodes": 1500,
+    "home_gzip_kb": 120
+  },
+  "total": {
+    "critical": 0,
+    "moderate": 0,
+    "minor": 0
+  },
+  "critical_total": 0
+}

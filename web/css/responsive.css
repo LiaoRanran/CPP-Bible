@@ -1,0 +1,34 @@
+/* 670c5 · 响应式与触控（移动端优先）
+   统一断点：sm=640 / md=768 / lg=1024 / xl=1280（见下方 :root 令牌，供 JS 读取） */
+
+:root {
+  --bp-sm: 640px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+}
+
+/* 媒体与画布不溢出容器 */
+img, canvas, svg, video { max-width: 100%; height: auto; }
+
+/* 触控目标 ≥44×44（WCAG 2.5.5 建议）：对主要控件生效，不强行改小图标 */
+button, .qy-btn, qy-button, .toolbar a, nav a, .skip-link { min-height: 44px; }
+nav a, .toolbar a { display: inline-flex; align-items: center; }
+
+/* 表格窄屏横向滚动（给表格套 .table-scroll 或 .qy-table-wrap 即可） */
+.table-scroll, .qy-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { max-width: 100%; }
+
+/* 长文本不溢出 */
+.lead, p, td, th, li { overflow-wrap: anywhere; }
+
+/* 窄屏：弹窗近全屏 + 禁横向滚动 */
+@media (max-width: 640px) {
+  .qy-dialog-box { max-width: 95vw; max-height: 90vh; }
+  body { overflow-x: hidden; }
+}
+
+/* 大屏：内容不过度拉伸 */
+@media (min-width: 1280px) {
+  .wrap { max-width: 1200px; }
+}
