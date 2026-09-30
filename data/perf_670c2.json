@@ -1,0 +1,76 @@
+{
+  "measurements": {
+    "gate_run_ms": 2845.9,
+    "paper_gate_ms": 297.9,
+    "data_parse_ms": {
+      "baseline.json": {
+        "parse_ms": 1.05,
+        "bytes": 2978
+      },
+      "card.json": {
+        "parse_ms": 0.92,
+        "bytes": 12122
+      },
+      "cards.json": {
+        "parse_ms": 6.72,
+        "bytes": 414568
+      },
+      "cards_index.json": {
+        "parse_ms": 1.46,
+        "bytes": 20906
+      },
+      "err_deck_670c.json": {
+        "parse_ms": 1.6,
+        "bytes": 23230
+      },
+      "experiments.json": {
+        "parse_ms": 0.99,
+        "bytes": 3436
+      },
+      "graph.json": {
+        "parse_ms": 3.79,
+        "bytes": 162279
+      },
+      "ig_cards_665.json": {
+        "parse_ms": 1.19,
+        "bytes": 8841
+      },
+      "index.json": {
+        "parse_ms": 0.63,
+        "bytes": 1109
+      },
+      "manifest.json": {
+        "parse_ms": 0.74,
+        "bytes": 2676
+      },
+      "metrics_666.json": {
+        "parse_ms": 0.96,
+        "bytes": 5888
+      },
+      "status.json": {
+        "parse_ms": 0.86,
+        "bytes": 2071
+      },
+      "verdicts_667.json": {
+        "parse_ms": 1.28,
+        "bytes": 19999
+      }
+    },
+    "asset_size_kb": {
+      "web/starmap.js": 67.5,
+      "web/js/charts.js": 78.4,
+      "web/js/cards_core.js": 34.2,
+      "web/style.css": 28.7
+    }
+  },
+  "thresholds": {
+    "gate_run_ms": 30000,
+    "paper_gate_ms": 15000,
+    "data_parse_ms": 500
+  },
+  "warns": [],
+  "notes": [
+    "data_parse_ms 是 JSON 解析代理指标，非浏览器渲染/筛选延迟。",
+    "星图 60fps / 卡库筛选 ≤100ms 需 headless 浏览器测量，本批未做。"
+  ]
+}

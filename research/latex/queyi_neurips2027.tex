@@ -1,6 +1,6 @@
 % =====================================================================
 %  Queyi — NeurIPS 2027 Datasets & Benchmarks submission (anonymous)
-%  Migrated from research/paper_v0.7.md (670e). All numbers match v0.7.
+%  Migrated from the Chinese working draft (v0.7). All numbers match that draft.
 %  Engine: pdflatex/bibtex  (or tectonic).  Style: official neurips_2025.sty
 % =====================================================================
 \documentclass{article}
@@ -59,6 +59,7 @@ specific WSL sanitizer environment (they fail silently elsewhere); sample sizes 
 
 % =====================================================================
 \section{Introduction}
+\label{sec:intro}
 % =====================================================================
 \paragraph{The problem: generation is easy, verification is not.}
 An LLM can emit thousands of C++ technical assertions in minutes. They are \emph{numerous}
@@ -114,6 +115,7 @@ samples under the same caliber} (\S\ref{sec:exp}, Fig.~\ref{fig:evolution}).
 
 % =====================================================================
 \section{Related Work}
+\label{sec:related}
 % =====================================================================
 We compress prior work into four lines (a seven-direction table is in Appendix~\ref{app:related}).
 All comparisons are \emph{positional and qualitative}, not empirical claims about those systems.
@@ -548,6 +550,7 @@ same-sample re-measurement is 668 vs.\ 665, and it changed the \emph{flag}, not 
 
 % =====================================================================
 \section{Analysis}
+\label{sec:analysis}
 % =====================================================================
 \textbf{(1) Labels are the largest error source.} A batch reported ``20 holdout samples'' of which
 only \textbf{7} were true errors; using 20 as the denominator gives 35\%, using the true-error
@@ -591,6 +594,7 @@ Temporal & OTS anchor expired~\cite{opentimestamps}; sample aging; environment d
 
 % =====================================================================
 \section{Claim Boundary}
+\label{sec:claim}
 % =====================================================================
 \begin{table}[t]
 \caption{What the current evidence does and does not support.}
@@ -620,6 +624,7 @@ $\times$ not supported & Evolution trend & only a single same-sample re-measurem
 
 % =====================================================================
 \section{Conclusion}
+\label{sec:conclusion}
 % =====================================================================
 LLMs drive the \emph{generation} cost of technical knowledge to near zero, but the
 \emph{verification} cost does not fall. We argue that verification cannot be solved by
