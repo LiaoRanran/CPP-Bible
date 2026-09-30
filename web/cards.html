@@ -10,15 +10,16 @@
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="css/669c.css">
 <link rel="stylesheet" href="css/robustness.css">
+<link rel="stylesheet" href="css/a11y.css">
 <script type="module" src="components/index.js"></script>
 <script type="module" src="cards.js"></script>
 </head>
 <body>
-<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3;border-radius:12px">
-<h1>卡库 · 需要 JavaScript</h1>
+<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3">
+<p style="font-size:20px;font-weight:700;margin:0 0 12px">卡库 · 需要 JavaScript</p>
 <p>卡库需要 JavaScript 才能浏览（42 张知识卡 + 机器卡，可按四态/域/类型筛选）。</p>
 <p><a href="index.html" style="color:#8ab4f8">返回首页</a></p>
-<p style="color:#b0aeab;font-size:13px">请启用 JavaScript 获得完整体验。</p>
+<p style="color:#b0aeab;font-size:13px">请启用 JavaScript。</p>
 </div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="cards.html" badge="静态站 · 无后端"></qy-nav>
@@ -41,7 +42,7 @@
   <section aria-labelledby="filters-h">
     <div class="row-between">
       <div>
-        <h3 id="filters-h" class="section-title">筛选与搜索</h3>
+        <h2 id="filters-h" class="section-title">筛选与搜索</h2>
         <p class="section-sub">全文覆盖 断言 / 证据 id / 标签；大小写不敏感，空格分词后 <b>多词 AND</b>。</p>
       </div>
       <div class="kbd-hints"><kbd>/</kbd> 聚焦搜索 <kbd>Esc</kbd> 关弹窗</div>
@@ -88,7 +89,7 @@
   <section aria-labelledby="cmp-h">
     <div class="row-between">
       <div>
-        <h3 id="cmp-h" class="section-title">批量对比（勾选 2–3 张）</h3>
+        <h2 id="cmp-h" class="section-title">批量对比（勾选 2–3 张）</h2>
         <p class="section-sub">并排看 断言 / 证据 / 证据文件 / 四态 / 边界 / 标准 / 先修；取值不同的行标 <b>≠</b>。
           少于 2 张或多于 3 张一律<b>不出表</b>（宁缺勿假）。</p>
       </div>
@@ -110,7 +111,7 @@
   <section aria-labelledby="chain-h">
     <div class="row-between">
       <div>
-        <h3 id="chain-h" class="section-title">证据链（卡 → 证据 id → 证据文件 → sanitizer 输出）</h3>
+        <h2 id="chain-h" class="section-title">证据链（卡 → 证据 id → 证据文件 → sanitizer 输出）</h2>
         <p class="section-sub">每一层只照抄台账字段：<b>没记</b>就是「未记录」、<b>未入库</b>就是「无输出可查」——
           不推断、不补写、不代替它背书。</p>
       </div>
@@ -126,7 +127,7 @@
   <section aria-labelledby="rel-h">
     <div class="row-between">
       <div>
-        <h3 id="rel-h" class="section-title">卡关系图（箭头 = 前置 → 用到它的卡）</h3>
+        <h2 id="rel-h" class="section-title">卡关系图（箭头 = 前置 → 用到它的卡）</h2>
         <p class="section-sub">自环单列；引用到台账里查不到的 id 记「缺失前置」；不在当前筛选视图内但台账里有 ⇒ 记「视图外」；
           环单独计数。点节点可高亮（<span class="mono">.rel-node.is-focus</span>）并跳到它的证据链。</p>
       </div>
@@ -139,7 +140,7 @@
 
   <!-- 机器卡（独立区，不与教学台账混） -->
   <section aria-labelledby="ig-h">
-    <h3 id="ig-h" class="section-title">机器卡（machine-derived · 无人签）</h3>
+    <h2 id="ig-h" class="section-title">机器卡（machine-derived · 无人签）</h2>
     <p class="muted" id="ig-note">加载中…</p>
     <ul class="card-grid" id="ig-grid" role="list"></ul>
   </section>
@@ -157,5 +158,6 @@
 <footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="card.html">学一张卡</a>
   · <a href="starmap.html">星图</a> · <a href="verify.html">验哈希</a></footer>
 <script type="module">import { initRobustness } from './js/robustness.js'; initRobustness();</script>
+<script type="module">import { initA11y } from './js/a11y.js'; initA11y();</script>
 </body>
 </html>

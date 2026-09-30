@@ -7,19 +7,20 @@
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="css/robustness.css">
+<link rel="stylesheet" href="css/a11y.css">
 <script type="module" src="components/index.js"></script>
 </head>
 <body>
-<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3;border-radius:12px">
-<h1>知识卡 · 需要 JavaScript</h1>
+<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3">
+<p style="font-size:20px;font-weight:700;margin:0 0 12px">知识卡 · 需要 JavaScript</p>
 <p>卡片详情需要 JavaScript 才能加载（断言 + 边界三元组 + 证据 + 四态判决）。</p>
 <p>示例：ATOM-UB-WRAP-001「有符号整数溢出是 UB」——证据：UBSan 双档命中。</p>
-<p style="color:#b0aeab;font-size:13px">请启用 JavaScript 获得完整体验。</p>
+<p style="color:#b0aeab;font-size:13px">请启用 JavaScript。</p>
 </div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="card.html"></qy-nav>
 <main id="main" class="wrap">
-  <section style="padding:34px 0 14px">
+  <header style="padding:34px 0 14px">
     <h1 style="font-size:26px">学一张卡</h1>
     <p class="lead" style="font-size:15px">三段式：<b>前置</b>（本仓声明的先修）→ <b>学习</b>（断言 / 边界 / 证据 / 反例）→
       <b>自测</b>（题目由台账字段机械生成，每题带出处）。全部内容来自真实台账
@@ -47,18 +48,18 @@
       <span class="pct" id="progress-pct">0%</span>
     </div>
     <p class="muted" id="ledger-note"></p>
-  </section>
+  </header>
 
   <!-- ① 前置 -->
   <section id="sec-prereq" style="padding:8px 0 22px">
-    <h3>① 前置 · 本仓声明的先修</h3>
+    <h2>① 前置 · 本仓声明的先修</h2>
     <div id="prereq" class="grid c2"></div>
     <div id="related" style="margin-top:12px"></div>
   </section>
 
   <!-- ② 学习 -->
   <section id="sec-learn" style="padding:8px 0 22px">
-    <h3>② 学习</h3>
+    <h2>② 学习</h2>
     <div id="card-head"></div>
     <div id="claim" style="margin-top:12px"></div>
     <div class="grid c2" style="margin-top:12px">
@@ -72,7 +73,7 @@
 
   <!-- ③ 自测 -->
   <section id="sec-check" style="padding:8px 0 34px; border-bottom:0">
-    <h3>③ 自测 · 每题由台账字段生成</h3>
+    <h2>③ 自测 · 每题由台账字段生成</h2>
     <div class="toolbar">
       <qy-button id="reveal-all" label="全部显示答案"></qy-button>
       <qy-button id="hide-all" label="全部收起"></qy-button>
@@ -85,5 +86,6 @@
   · <a href="verify.html">验哈希</a></footer>
 <script type="module" src="card.js"></script>
 <script type="module">import { initRobustness } from './js/robustness.js'; initRobustness();</script>
+<script type="module">import { initA11y } from './js/a11y.js'; initA11y();</script>
 </body>
 </html>

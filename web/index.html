@@ -9,22 +9,23 @@
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="css/robustness.css">
+<link rel="stylesheet" href="css/a11y.css">
 <script type="module" src="components/index.js"></script>
 <script type="module" src="home.js"></script>
 </head>
 <body>
-<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3;border-radius:12px">
-<h1>祈易 QueYi</h1>
+<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3">
+<p style="font-size:20px;font-weight:700;margin:0 0 12px">祈易 QueYi</p>
 <p>一个<b>可被独立验收</b>的 C++ 知识验证器：结论绑定证据与复现命令。</p>
 <p>现算：判决规则 67 · 实卡 42 · 账本 452 · holdout 87.5%（14/16）· 外部 corpus 35.0%（14/40）。</p>
-<p style="color:#b0aeab;font-size:13px">请启用 JavaScript 获得完整体验。</p>
+<p style="color:#b0aeab;font-size:13px">请启用 JavaScript。</p>
 </div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="index.html" badge="静态站 · 无后端"></qy-nav>
 
 <main id="main">
   <!-- ① 顶部：项目名 + 一句话定位 -->
-  <section class="wrap" style="padding-top:var(--space-6)">
+  <header class="wrap" style="padding-top:var(--space-6)">
     <h1>祈易 QueYi</h1>
     <p class="lead">一个<b>可被独立验收</b>的 C++ 知识验证器：每条结论都绑定证据与复现命令，
       任何人可以重算、可以指出哪一环不成立 —— 而不需要先信任我们。</p>
@@ -37,7 +38,7 @@
       <qy-button href="verify.html" label="现场验哈希"></qy-button>
       <span class="muted" id="mode-chip">—</span>
     </div>
-  </section>
+  </header>
 
   <!-- ② 首屏：真数据渲染的接地图（会动，不是截图） -->
   <section class="wrap wrap-wide" style="padding-top:0">
@@ -46,7 +47,7 @@
 
   <!-- ③ 核心指标（数字由 tools/web_metrics_666.py 现算，前端只渲染） -->
   <section class="wrap">
-    <h3>核心指标 · 现算（非目标值）</h3>
+    <h2>核心指标 · 现算（非目标值）</h2>
     <div class="metrics" id="metrics" data-qy-state="loading" aria-busy="true">
       <div class="metric qy-skeleton qy-skel-card" aria-hidden="true"></div>
       <div class="metric qy-skeleton qy-skel-card" aria-hidden="true"></div>
@@ -57,7 +58,7 @@
 
   <!-- ④ 系统状态时间线 -->
   <section class="wrap">
-    <h3>系统状态时间线</h3>
+    <h2>系统状态时间线</h2>
     <ul class="timeline" id="timeline" data-qy-state="loading" aria-busy="true">
       <li class="qy-skeleton qy-skel-line" aria-hidden="true"></li>
       <li class="qy-skeleton qy-skel-line" aria-hidden="true"></li>
@@ -66,7 +67,7 @@
 
   <!-- ⑤ 系统现状面板（保护器 / 逃逸率；655 D 既有） -->
   <section class="wrap">
-    <h3>系统现状（现算，非目标值）</h3>
+    <h2>系统现状（现算，非目标值）</h2>
     <div class="status-grid" id="status-grid">
       <qy-panel id="s-cards" caption="知识卡" num="—" sub="加载中…"></qy-panel>
       <qy-panel id="s-prot" caption="保护器" num="—" sub="—"></qy-panel>
@@ -84,7 +85,7 @@
 
   <!-- ⑦ 三通道编码 -->
   <section class="wrap">
-    <h3>三通道编码</h3>
+    <h2>三通道编码</h2>
     <div class="legend">
       <div class="chan"><b>色 · 四态</b>
         <div><span class="dot st-pass"></span>pass</div>
@@ -107,29 +108,29 @@
 
   <!-- ⑧ 三个入口 -->
   <section class="wrap">
-    <h3>怎么用</h3>
+    <h2>怎么用</h2>
     <div class="grid c3">
-      <div class="card"><h2>卡库</h2><p>按状态 / 四态 / 域 / 类型筛选，按证据强度排序，搜全部知识卡；
+      <div class="card"><h3>卡库</h3><p>按状态 / 四态 / 域 / 类型筛选，按证据强度排序，搜全部知识卡；
         每张可展开看断言、边界与证据，点「详情」看四态判决理由；<b>机器卡单独标注、不进教学台账</b>。</p></div>
-      <div class="card"><h2>学习台</h2><p>把 42 张知识卡与机器卡反例变成<b>可复习的牌组</b>：间隔重复（SM-2）+ 主动回忆 + 错例驱动。
+      <div class="card"><h3>学习台</h3><p>把 42 张知识卡与机器卡反例变成<b>可复习的牌组</b>：间隔重复（SM-2）+ 主动回忆 + 错例驱动。
         进度存本机，可导出/导入。</p></div>
-      <div class="card"><h2>现场验哈希</h2><p>用浏览器 Web Crypto 对工件重算 sha256，与台账逐字节比对：<b>可一次拖入多个文件批量验证</b>，
+      <div class="card"><h3>现场验哈希</h3><p>用浏览器 Web Crypto 对工件重算 sha256，与台账逐字节比对：<b>可一次拖入多个文件批量验证</b>，
         结果可导出 CSV。<b>离线可用</b>，文件不出本机。</p></div>
     </div>
     <div class="grid c3" style="margin-top:var(--space-2)">
-      <div class="card"><h2>实验结果</h2><p>检出率（holdout / external / counterfactual）、变异杀死率、结果分布与系统演化 ——
+      <div class="card"><h3>实验结果</h3><p>检出率（holdout / external / counterfactual）、变异杀死率、结果分布与系统演化 ——
         <b>现算自真实台账</b>，分母与口径一并给出。</p></div>
-      <div class="card"><h2>星图</h2><p>178 节点 / 1093 边的知识接地网络（真实数据渲染），可缩放、可点选看详情。</p></div>
-      <div class="card"><h2>复现清单</h2><p>每条证据带版本串 + 命令 + 输入哈希 + 期望输出：
+      <div class="card"><h3>星图</h3><p>178 节点 / 1093 边的知识接地网络（真实数据渲染），可缩放、可点选看详情。</p></div>
+      <div class="card"><h3>复现清单</h3><p>每条证据带版本串 + 命令 + 输入哈希 + 期望输出：
         一条命令即可重跑验收（见 <span class="kbd">replay_probe_651</span>）。</p></div>
     </div>
   </section>
 
   <!-- ⑨ 底部：最新提交 + 链接 -->
   <section class="wrap">
-    <h3>最新提交</h3>
+    <h2>最新提交</h2>
     <div id="commits" class="subtle">加载中…</div>
-    <h3 style="margin-top:var(--space-4)">链接</h3>
+    <h2 style="margin-top:var(--space-4)">链接</h2>
     <p class="muted">
       <a href="cards.html">卡库</a> ·
       <a href="learn.html">学习台</a> ·
@@ -151,5 +152,6 @@
   <span class="mono">tools/web_data_pipeline_656.py</span> 与 <span class="mono">tools/web_status_655.py</span>
   从真实台账生成（不造演示数据）。</footer>
 <script type="module">import { initRobustness } from './js/robustness.js'; initRobustness();</script>
+<script type="module">import { initA11y } from './js/a11y.js'; initA11y();</script>
 </body>
 </html>

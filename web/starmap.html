@@ -9,18 +9,19 @@
 <link rel="stylesheet" href="css/669c.css">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="css/robustness.css">
+<link rel="stylesheet" href="css/a11y.css">
 <script type="module" src="components/index.js"></script>
 </head>
 <body>
-<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3;border-radius:12px">
-<h1>知识星图 · 需要 JavaScript</h1>
+<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3">
+<p style="font-size:20px;font-weight:700;margin:0 0 12px">知识星图 · 需要 JavaScript</p>
 <p>星图（178 节点 / 1093 边）需要 JavaScript 才能渲染。</p>
-<p style="color:#b0aeab;font-size:13px">请启用 JavaScript 获得完整体验。</p>
+<p style="color:#b0aeab;font-size:13px">请启用 JavaScript。</p>
 </div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="starmap.html"></qy-nav>
 <main id="main" class="wrap wrap-wide">
-  <section style="padding:var(--space-4) 0 var(--space-2)">
+  <header style="padding:var(--space-4) 0 var(--space-2)">
     <div class="page-head">
       <div>
         <h1>星图 · W2 接地图</h1>
@@ -29,7 +30,7 @@
       <p class="section-sub" id="mode" role="status" aria-live="polite">—</p>
     </div>
     <div class="stat-grid" id="stats" style="margin-top:var(--space-2)"></div>
-  </section>
+  </header>
 
   <section style="padding:0 0 var(--space-5)">
     <h2 class="section-title">三通道编码 · 色=四态 / 形=类型 / 光=credibility</h2>
@@ -108,5 +109,6 @@
   <a href="verify.html">现场验哈希</a></footer>
 <script type="module" src="starmap.js"></script>
 <script type="module">import { initRobustness } from './js/robustness.js'; initRobustness();</script>
+<script type="module">import { initA11y } from './js/a11y.js'; initA11y();</script>
 </body>
 </html>

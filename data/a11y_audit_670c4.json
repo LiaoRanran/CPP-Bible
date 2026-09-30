@@ -1,0 +1,46 @@
+{
+  "pages": [
+    {
+      "page": "index.html",
+      "issues": [],
+      "counts": {}
+    },
+    {
+      "page": "cards.html",
+      "issues": [],
+      "counts": {}
+    },
+    {
+      "page": "learn.html",
+      "issues": [],
+      "counts": {}
+    },
+    {
+      "page": "experiments.html",
+      "issues": [],
+      "counts": {}
+    },
+    {
+      "page": "verdicts.html",
+      "issues": [],
+      "counts": {}
+    },
+    {
+      "page": "starmap.html",
+      "issues": [],
+      "counts": {}
+    },
+    {
+      "page": "verify.html",
+      "issues": [],
+      "counts": {}
+    },
+    {
+      "page": "card.html",
+      "issues": [],
+      "counts": {}
+    }
+  ],
+  "total": {},
+  "critical_total": 0
+}

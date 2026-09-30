@@ -10,14 +10,15 @@
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="css/669c.css">
 <link rel="stylesheet" href="css/robustness.css">
+<link rel="stylesheet" href="css/a11y.css">
 <script type="module" src="components/index.js"></script>
 </head>
 <body>
-<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3;border-radius:12px">
-<h1>实验结果（纯文字）</h1>
+<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3">
+<p style="font-size:20px;font-weight:700;margin:0 0 12px">实验结果（纯文字）</p>
 <p>holdout 87.5%（14/16，95% CI 61.7–98.4）</p>
 <p>外部 corpus 35.0%（14/40，20.6–51.7）；可测 43.8%（14/32）</p>
-<p>变异 core 97.3%（110/113）；反事实 F1 1.0（分母 10，上界）</p>
+<p>变异 core 97.3%（110/113）；反事实 F1 1.0（上界）</p>
 <p style="color:#b0aeab;font-size:13px">请启用 JavaScript 查看图表。</p>
 </div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
@@ -36,7 +37,7 @@
   <!-- 数据源状态（诚实登记：哪条路径 200、哪条 404） -->
   <section class="chart-card glass glass-tint stack" aria-labelledby="src-h">
     <div class="row-between">
-      <h3 class="section-title" id="src-h">数据源</h3>
+      <h2 class="section-title" id="src-h">数据源</h2>
       <span class="section-sub" id="src-note">加载中…</span>
     </div>
     <ul class="kbd-hints" id="src-list"><li class="dim">正在按顺序尝试 baseline 三源…</li></ul>
@@ -46,7 +47,7 @@
   <section aria-labelledby="c1-h">
     <div class="row-between">
       <div>
-        <h3 class="section-title" id="c1-h">① baseline 对比 · 检出率（%）</h3>
+        <h2 class="section-title" id="c1-h">① baseline 对比 · 检出率（%）</h2>
         <p class="section-sub">Static / Random / Failure-driven × holdout / corpus / defect；误差线 = Wilson 95% CI，柱上数字 = 点估计</p>
       </div>
     </div>
@@ -72,7 +73,7 @@
   <section aria-labelledby="c2-h">
     <div class="row-between">
       <div>
-        <h3 class="section-title" id="c2-h">② 口径消融 · 分母效应（%）</h3>
+        <h2 class="section-title" id="c2-h">② 口径消融 · 分母效应（%）</h2>
         <p class="section-sub">全样本 / 可测 / 排除 unknown：同一份原始计数，只变分母 —— 差异全是口径效应，不是检测能力变化</p>
       </div>
     </div>
@@ -97,7 +98,7 @@
   <section aria-labelledby="c3-h">
     <div class="row-between">
       <div>
-        <h3 class="section-title" id="c3-h">③ 系统演化 · 各批次变异杀死率 / holdout 检出率（%）</h3>
+        <h2 class="section-title" id="c3-h">③ 系统演化 · 各批次变异杀死率 / holdout 检出率（%）</h2>
         <p class="section-sub">批次骨架取自 timeline；<b>只有能追溯到批次的真实值才落点</b>，无值批次画空心点（不插值、不推测）</p>
       </div>
     </div>
@@ -116,7 +117,7 @@
   <!-- ④⑤ 检测器构成 / 能力构成 ------------------------------------------ -->
   <section class="grid c2" aria-labelledby="c4-h">
     <div>
-      <h3 class="section-title" id="c4-h">④ 检测器构成</h3>
+      <h2 class="section-title" id="c4-h">④ 检测器构成</h2>
       <p class="section-sub">sanitizer / compiler-warn / cross-compile / perf / compile-time</p>
       <div class="chart-card glass glass-tint">
         <div class="chart-toolbar"><span class="dim" id="det-note">—</span></div>
@@ -125,7 +126,7 @@
       </div>
     </div>
     <div>
-      <h3 class="section-title">⑤ 能力构成</h3>
+      <h2 class="section-title">⑤ 能力构成</h2>
       <p class="section-sub">67 规则 / 9 保护器 / 452 账本 / 42 卡 / 178 节点 / 变异 97.3%</p>
       <div class="chart-card glass glass-tint">
         <div class="chart-toolbar"><span class="dim" id="abi-note">—</span></div>
@@ -136,7 +137,7 @@
   </section>
 
   <section aria-labelledby="raw-h">
-    <h3 class="section-title" id="raw-h">原始数据</h3>
+    <h2 class="section-title" id="raw-h">原始数据</h2>
     <p class="section-sub">
       <a href="data/experiments.json">experiments.json</a> ·
       <a href="data/metrics_666.json">metrics_666.json</a> ·
@@ -360,5 +361,6 @@ function bindTabs(attr, onPick) {
 })();
 </script>
 <script type="module">import { initRobustness } from './js/robustness.js'; initRobustness();</script>
+<script type="module">import { initA11y } from './js/a11y.js'; initA11y();</script>
 </body>
 </html>

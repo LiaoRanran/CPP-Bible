@@ -1,0 +1,46 @@
+/* 670c4 · 可访问性样式：焦点环 / 屏幕阅读器专用 / 帮助弹窗
+   目标：所有可交互元素 :focus-visible 统一 2px solid #d97757 + 2px offset。 */
+
+/* 统一焦点样式（B4）。高对比度模式下 outline 仍可见。 */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid #d97757;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* 已有自定义焦点样式的元素（如 .skip-link）保留其行为，但确保可见 */
+.skip-link:focus { outline: 2px solid #d97757; outline-offset: 2px; }
+
+/* 屏幕阅读器专用（视觉隐藏、可被朗读） */
+.qy-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* 帮助弹窗 */
+.qy-dialog {
+  position: fixed; inset: 0; z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0, 0, 0, .6);
+}
+.qy-dialog[hidden] { display: none; }
+.qy-dialog-box {
+  background: var(--bg-1, #1a1a1a); color: var(--fg, #e8e6e3);
+  border: 1px solid var(--line, #3a3a3a); border-radius: 12px;
+  padding: 24px; max-width: 520px; width: calc(100% - 32px);
+  max-height: 80vh; overflow: auto;
+}
+.qy-dialog-box h2 { margin: 0 0 12px; font-size: 18px; }
+.qy-help-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+.qy-help-table th { text-align: left; padding: 4px 12px 4px 0; white-space: nowrap; font-weight: 600; }
+.qy-help-table td { padding: 4px 0; color: var(--fg-muted, #a8a8a8); }
+.qy-help-table kbd {
+  display: inline-block; padding: 1px 6px; border: 1px solid var(--line, #3a3a3a);
+  border-radius: 4px; font-family: ui-monospace, monospace; font-size: 12px;
+}
+
+/* 高对比度模式：确保焦点与边框可见 */
+@media (forced-colors: active) {
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid Highlight;
+  }
+}
