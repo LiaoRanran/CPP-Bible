@@ -1,0 +1,159 @@
+{
+  "schema": "queyi-known-gaps/v1",
+  "generated_by": "tools/run_669d_gate.py",
+  "note": "只降级已登记项；新出现的 BLOCK 仍必须修。每条均写明 reason 与 owner。669d 因红线（受控目录零改动 / 不碰 669 正在改的文件）只登记不代改。",
+  "gaps": [
+    {
+      "rule": "G-STATS-FROZEN",
+      "target": "research/05_evaluation_protocol.md ← Clopper-Pearson",
+      "message": "协议未冻结 Clopper-Pearson 统计口径",
+      "reason": "669d D4 已把统计口径冻结在 research/669d_统计口径.md（Clopper-Pearson 95% CI / McNemar / Fisher / BH / Cohen κ）；本批红线禁止改 research 既有协议文件，待 669 工程把该文件内容合入 05_evaluation_protocol.md 后本条自动消解。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-STATS-FROZEN",
+      "target": "research/05_evaluation_protocol.md ← Fisher",
+      "message": "协议未冻结 Fisher 统计口径",
+      "reason": "669d D4 已把统计口径冻结在 research/669d_统计口径.md（Clopper-Pearson 95% CI / McNemar / Fisher / BH / Cohen κ）；本批红线禁止改 research 既有协议文件，待 669 工程把该文件内容合入 05_evaluation_protocol.md 后本条自动消解。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-STATS-FROZEN",
+      "target": "research/05_evaluation_protocol.md ← McNemar",
+      "message": "协议未冻结 McNemar 统计口径",
+      "reason": "669d D4 已把统计口径冻结在 research/669d_统计口径.md（Clopper-Pearson 95% CI / McNemar / Fisher / BH / Cohen κ）；本批红线禁止改 research 既有协议文件，待 669 工程把该文件内容合入 05_evaluation_protocol.md 后本条自动消解。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "target": "atoms/draft650/ATOM-DRAFT650-001.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "target": "atoms/draft650/ATOM-DRAFT650-002.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "target": "atoms/draft650/ATOM-DRAFT650-003.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "target": "atoms/draft650/ATOM-DRAFT650-004.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "target": "atoms/draft650/ATOM-DRAFT650-005.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "target": "atoms/draft650/ATOM-DRAFT650-006.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "target": "atoms/draft650/ATOM-DRAFT650-007.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "target": "atoms/draft650/ATOM-DRAFT650-008.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "target": "atoms/draft650/ATOM-DRAFT650-009.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "target": "atoms/draft650/ATOM-DRAFT650-010.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "target": "atoms/mem/ATOM-MEM-NEWARR-001.md",
+      "message": "status=machine-verified 但缺 provenance 三元组: mutation_set_hash, mutation_count, generator_version",
+      "reason": "668 拆卡批次由 machine:card_split_668 生成的卡，未带 provenance 三元组。需 boundary_backfill 补 mutation_set_hash/mutation_count/generator_version；本批红线禁止改 atoms/，故只登记不代改。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "target": "atoms/ub/ATOM-UB-DIVZERO-001.md",
+      "message": "status=machine-verified 但缺 provenance 三元组: mutation_set_hash, mutation_count, generator_version",
+      "reason": "668 拆卡批次由 machine:card_split_668 生成的卡，未带 provenance 三元组。需 boundary_backfill 补 mutation_set_hash/mutation_count/generator_version；本批红线禁止改 atoms/，故只登记不代改。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "target": "atoms/ub/ATOM-UB-NULLDEREF-001.md",
+      "message": "status=machine-verified 但缺 provenance 三元组: mutation_set_hash, mutation_count, generator_version",
+      "reason": "668 拆卡批次由 machine:card_split_668 生成的卡，未带 provenance 三元组。需 boundary_backfill 补 mutation_set_hash/mutation_count/generator_version；本批红线禁止改 atoms/，故只登记不代改。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "target": "atoms/ub/ATOM-UB-OOB-001.md",
+      "message": "status=machine-verified 但缺 provenance 三元组: mutation_set_hash, mutation_count, generator_version",
+      "reason": "668 拆卡批次由 machine:card_split_668 生成的卡，未带 provenance 三元组。需 boundary_backfill 补 mutation_set_hash/mutation_count/generator_version；本批红线禁止改 atoms/，故只登记不代改。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "target": "atoms/ub/ATOM-UB-WRAP-001.md",
+      "message": "status=machine-verified 但缺 provenance 三元组: mutation_set_hash, mutation_count, generator_version",
+      "reason": "668 拆卡批次由 machine:card_split_668 生成的卡，未带 provenance 三元组。需 boundary_backfill 补 mutation_set_hash/mutation_count/generator_version；本批红线禁止改 atoms/，故只登记不代改。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    },
+    {
+      "rule": "G-BASELINE-EXISTS",
+      "target": "web/data/experiments.json ← escape",
+      "message": "实验结果 [escape] 含指标「escape」，但 data/baseline.json 无对应基线",
+      "reason": "escape 指标（616 冻结 1/1406 = 0.0711%）缺少 static gate 基线的同指标对照。web/data/experiments.json 自陈 baselines.status=planned，属已知待生成项。",
+      "owner": "669 工程（669d 审计登记）",
+      "registered_at": "2026-09-30"
+    }
+  ]
+}

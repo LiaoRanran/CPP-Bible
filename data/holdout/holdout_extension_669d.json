@@ -1,0 +1,131 @@
+{
+  "schema": "queyi-holdout-extension/v1",
+  "generated_by": "669d D1 扩样（supplementary，不并入 holdout.json）",
+  "generated_at": "2026-09-30",
+  "blind": false,
+  "revealed": true,
+  "reveal_irreversible": false,
+  "count": 10,
+  "label_legend": "planted=true 真错 / false 对照 / unknown 分不清（性能类/历史类/演示类）；与 holdout.json 同口径",
+  "iron_rule": "本文件是 669d 新增的**补充** holdout，run_658_gate 默认不扫 data/holdout/ 目录；合并进 holdout.json 由 669 工程执行（红线：669d 不碰 holdout.json）。",
+  "audit_note": "669d D1：新增 10 条种子，planted=true 5 / false 2 / unknown 3。atom_ref 复用 holdout.json 既有的 Examples/atoms/_atom_*.cpp 约定（不新建 atom 文件）。实际检出率须由 669 工程的检测器基座现算，不在 669d 口径内。",
+  "caliber": {
+    "planted_true": 5,
+    "planted_false": 2,
+    "planted_unknown": 3,
+    "detector_available_subset": 5,
+    "note": "plant=true 且 detector∈{tsan,ubsan,asan,compiler-warn,-Wunsequenced,perf-counter,cross-compile} 的子集 = 5/5；strict-aliasing(h33) 的 UBSan 实际常检不出，已在其 basis 标注，故真实可检可能 <5。"
+  },
+  "seeds": [
+    {
+      "id": "h31",
+      "category": "UB",
+      "atom_ref": "Examples/atoms/_atom_data_race.cpp",
+      "planted": true,
+      "planted_desc": "数据竞争（扩样）：两线程无同步并发写非原子全局，新增第三写者放大竞态窗口",
+      "detector": "tsan",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用 h1 的 atom 夹具；新增写者使 TSan 更易触发，仍属 UB 类真错"
+    },
+    {
+      "id": "h32",
+      "category": "UB",
+      "atom_ref": "Examples/atoms/_atom_rule_three_bug_asan.cpp",
+      "planted": true,
+      "planted_desc": "复制语义缺失导致浅拷贝/双释放（扩样，UB，asan 可检）",
+      "detector": "asan",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用项目既有 rule-of-three bug atom；ASan 可检"
+    },
+    {
+      "id": "h33",
+      "category": "UB",
+      "atom_ref": "Examples/atoms/_atom_strict_alias.cpp",
+      "planted": true,
+      "planted_desc": "严格别名违规（扩样）：通过 char* 读取 int 对象",
+      "detector": "ubsan",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用 h5 的 atom；注：UBSan 通常检不出别名类 UB，真实可检性低，登记为口径风险"
+    },
+    {
+      "id": "h34",
+      "category": "memory-order",
+      "atom_ref": "Examples/atoms/_atom_fence_vs_atomic.cpp",
+      "planted": true,
+      "planted_desc": "fence 与 atomic 混用下的丢失更新（扩样）：relaxed 语义不保证跨线程可见",
+      "detector": "tsan",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用项目既有 fence-vs-atomic atom；TSan 对数据竞争派生可见性可检"
+    },
+    {
+      "id": "h35",
+      "category": "unspecified",
+      "atom_ref": "Examples/atoms/_atom_eval_order.cpp",
+      "planted": false,
+      "planted_desc": "实参求值顺序未指定（扩样，对照）：二元运算符两侧子表达式顺序",
+      "detector": "-Wunsequenced",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用 h3 的 atom；灰色地带对照（unspecified 非 UB）"
+    },
+    {
+      "id": "h36",
+      "category": "well-defined",
+      "atom_ref": "Examples/atoms/_atom_raii.cpp",
+      "planted": false,
+      "planted_desc": "RAII 确定性析构（对照）：资源获取即初始化，行为良定义",
+      "detector": "compiler-warn",
+      "hidden": true,
+      "revealed": true,
+      "basis": "对照项：标准明确定义，检测器不应报真错"
+    },
+    {
+      "id": "h37",
+      "category": "perf",
+      "atom_ref": "Examples/atoms/_atom_false_sharing.cpp",
+      "planted": "unknown",
+      "planted_desc": "伪共享（扩样）：两线程写同一 cache line 不同字，性能病理非 UB",
+      "detector": "perf-counter",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用 h2 的 atom；判据是地址差（确定性），属性能病理非 UB ⇒ 分不清"
+    },
+    {
+      "id": "h38",
+      "category": "historical",
+      "atom_ref": "Examples/atoms/_atom_auto_ptr.cpp",
+      "planted": "unknown",
+      "planted_desc": "auto_ptr 拷贝即转移所有权（扩样，C++98 妥协）",
+      "detector": "compiler-warn",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用 h4 的 atom；受控实验（演化类），C++98 合理妥协 ⇒ 分不清是错还是历史"
+    },
+    {
+      "id": "h39",
+      "category": "demo",
+      "atom_ref": "Examples/atoms/_atom_sso_cost.cpp",
+      "planted": "unknown",
+      "planted_desc": "SSO 容量/复制成本的教学权衡（扩样，演示类）",
+      "detector": "-",
+      "hidden": true,
+      "revealed": true,
+      "basis": "演示/教学类权衡（SSO 大小 vs 堆分配）⇒ 分不清是错还是表达风格"
+    },
+    {
+      "id": "h40",
+      "category": "UB",
+      "atom_ref": "Examples/atoms/_atom_leak_detection.cpp",
+      "planted": true,
+      "planted_desc": "内存泄漏/资源未释放（扩样，asan 可检）",
+      "detector": "asan",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用项目既有 leak atom；ASan 可检（泄漏属资源类 UB 边界）"
+    }
+  ]
+}

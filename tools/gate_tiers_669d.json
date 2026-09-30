@@ -1,0 +1,58 @@
+{
+  "schema": "queyi-gate-tiers/v1",
+  "generated_by": "669d B7",
+  "description": "669d 新增六条 P0 门禁的层级登记。本文件是**新文件**（669d 后缀），不修改既有 tools/gate_tiers_658.json —— 669 工程正在改那份文件，红线要求不碰。669 工程确认后可自行把这六条合入 gate_tiers_658.json 的 L0 REDLINE。",
+  "tiers": {
+    "L0": {
+      "meaning": "REDLINE — 不通过即 BLOCK，必须修复后才能合并",
+      "gates": [
+        {
+          "id": "G-RATE-CONSISTENCY",
+          "name": "检出率三处一致（产物/前端/论文）",
+          "tool": "tools/gate_rules_669d.py --rule G-RATE-CONSISTENCY",
+          "why": "堵 666「81.2% 假绿」：同一指标在产物、前端、论文三处必须同源；不一致直接 BLOCK"
+        },
+        {
+          "id": "G-DENOMINATOR",
+          "name": "分母声明与可重算",
+          "tool": "tools/gate_rules_669d.py --rule G-DENOMINATOR",
+          "why": "堵「43.8% 分母错」：比率必须带 denominator、k<=den，且能从逐样本明细重算（容差 0.001）"
+        },
+        {
+          "id": "G-STATS-FROZEN",
+          "name": "统计口径冻结且有实现",
+          "tool": "tools/gate_rules_669d.py --rule G-STATS-FROZEN",
+          "why": "防改协议凑结果：协议冻结的 Clopper-Pearson / Fisher / McNemar 必须有 tools/ 下的对应实现"
+        },
+        {
+          "id": "G-BOUNDARY-REQUIRED",
+          "name": "卡必须有边界 / provenance 三元组",
+          "tool": "tools/gate_rules_669d.py --rule G-BOUNDARY-REQUIRED",
+          "why": "verified 状态卡必须有 mutation_set_hash / mutation_count / generator_version；草稿卡豁免但必须显式标 boundary: unknown"
+        },
+        {
+          "id": "G-BASELINE-EXISTS",
+          "name": "实验必须有基线",
+          "tool": "tools/gate_rules_669d.py --rule G-BASELINE-EXISTS",
+          "why": "无 baseline 的实验结果不构成证据：web/data/experiments.json 每个率指标须在 data/baseline.json 有同指标基线"
+        }
+      ]
+    },
+    "L1": {
+      "meaning": "ADVISORY — 记录到报告，不阻断 CI",
+      "gates": [
+        {
+          "id": "G-IRR",
+          "name": "标注者间一致性",
+          "tool": "tools/gate_rules_669d.py --rule G-IRR",
+          "why": "人工标注卡（verified_by 含人名）须有 IRR 记录（≥2 人、κ≥0.6）；当前 0 条记录 ⇒ 只 WARN 不 BLOCK，待补第二标注者"
+        }
+      ]
+    }
+  },
+  "invariants": [
+    "新增缺口必须更新 data/669d_known_gaps.json 并写明 reason；未登记的 BLOCK 一律不得豁免",
+    "known_gaps 只降级已登记项，绝不降级新出现的问题（防止变成新的假绿通道）",
+    "G-RATE-CONSISTENCY / G-DENOMINATOR 的判据必须**现算**，禁止从产物抄数"
+  ]
+}

@@ -1,0 +1,650 @@
+{
+  "schema": "queyi-counterfactual/v2",
+  "generated_at": "2026-09-30",
+  "generated_by": "669d D2 扩样（supplementary，不并入 counterfactual_cases_665.json）",
+  "operator_reuse": "tools/counterfactual_citation_658.py::counterfactual（唯一算子版本，未改）",
+  "cases_total": 20,
+  "denominator": {
+    "value": 20,
+    "meaning": "本文件里**带 ground_truth 标签**的案例数（P/R/F1 的分母）",
+    "scored": 20,
+    "unscored_sibling": null,
+    "why_it_matters": "分母必须显式声明：本文件 20 条**全部**带真值标签，故 20 全进 P/R/F1；与 665 的 10 条互不重叠、不可合并计算（不同样本集）。"
+  },
+  "truth_labels": {
+    "dependent": 7,
+    "independent": 13
+  },
+  "confusion": {
+    "tp": 7,
+    "fp": 0,
+    "tn": 13,
+    "fn": 0
+  },
+  "scores": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "mechanism_counts": {
+    "none": 13,
+    "machine_marker": 7
+  },
+  "third_criterion": {
+    "name": "machine_marker（666 A4 新增的第 3 条判据）",
+    "hits": [
+      "cf34",
+      "cf35",
+      "cf36",
+      "cf37",
+      "cf38",
+      "cf39",
+      "cf40"
+    ],
+    "hit_count": 7,
+    "note": "本扩样的 7 条真·dependent 断言（平台测量类）正是判据 1/2 抓不到的；判据 3 把它们抓住了。**但真值标签与判据 3 同源** ⇒ F1 是上界（与 665 同性质）。"
+  },
+  "honest_note": "① 真值标签的判据是**外部锚**（standard ⇒ 引文为假断言仍成立；measurement ⇒ 断言只靠这次实测），不是靠感觉。② 分母 20 条，**任何百分比都是点估计**（n=20 时 95% CI 宽度约 ±22pp，Clopper–Pearson）。③ ⚠ 判据 3 与真值标签**同源** ⇒ 本 F1 是**上界**，不代表泛化能力；要真校准需引文级标注的外部语料（未做）。④ 669d 红线禁止执行检测器，故本文件各案例的 `measured_out` 置空，须由 669 工程的检测器基座现跑补齐（`reproduce` 已给出可复算的 fixture 路径）。⑤ 本扩样与 `counterfactual_cases_665.json` 的 10 条**不可合并**计算。",
+  "cases": [
+    {
+      "id": "cf21",
+      "card": "IG04",
+      "source_id": "ig-04",
+      "mechanism_class": "none",
+      "atom_ref": "data/cards_665/fixtures/ig-04.cpp",
+      "original_assertion": "整数除零是 UB：标准不要求任何特定结果",
+      "original_citation": {
+        "id": "EV-IG04",
+        "text": "ubsan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-04.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG04",
+        "text": "UBSan 从未对整数除零报过 runtime error（假）"
+      },
+      "question": "若 EV-IG04 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG04",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf22",
+      "card": "IG05",
+      "source_id": "ig-05",
+      "mechanism_class": "none",
+      "atom_ref": "data/cards_665/fixtures/ig-05.cpp",
+      "original_assertion": "读取未初始化标量是 UB（不确定值）",
+      "original_citation": {
+        "id": "EV-IG05",
+        "text": "编译器实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-05.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG05",
+        "text": "本机编译器从未对未初始化读取给过任何警告（假）"
+      },
+      "question": "若 EV-IG05 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG05",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf23",
+      "card": "IG06",
+      "source_id": "ig-06",
+      "mechanism_class": "none",
+      "atom_ref": "data/cards_665/fixtures/ig-06.cpp",
+      "original_assertion": "解引用空指针是 UB（标准未定义为崩溃）",
+      "original_citation": {
+        "id": "EV-IG06",
+        "text": "asan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-06.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG06",
+        "text": "ASan 从未报过空指针解引用（假）"
+      },
+      "question": "若 EV-IG06 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG06",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf24",
+      "card": "IG07",
+      "source_id": "ig-07",
+      "mechanism_class": "none",
+      "atom_ref": "data/cards_665/fixtures/ig-07.cpp",
+      "original_assertion": "严格别名违规是 UB：通过不兼容类型指针访问对象",
+      "original_citation": {
+        "id": "EV-IG07",
+        "text": "ubsan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-07.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG07",
+        "text": "UBSan 从未报过严格别名违规（假）"
+      },
+      "question": "若 EV-IG07 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG07",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf25",
+      "card": "IG08",
+      "source_id": "ig-08",
+      "mechanism_class": "none",
+      "atom_ref": "data/cards_665/fixtures/ig-08.cpp",
+      "original_assertion": "无同步的数据竞争是 UB（C++ 内存模型）",
+      "original_citation": {
+        "id": "EV-IG08",
+        "text": "tsan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-08.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG08",
+        "text": "TSan 从未报过数据竞争（假）"
+      },
+      "question": "若 EV-IG08 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG08",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf26",
+      "card": "IG09",
+      "source_id": "ig-09",
+      "mechanism_class": "none",
+      "atom_ref": "data/cards_665/fixtures/ig-09.cpp",
+      "original_assertion": "数组越界访问是 UB：即使没崩语义也已不被保证",
+      "original_citation": {
+        "id": "EV-IG09",
+        "text": "asan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-09.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG09",
+        "text": "ASan 从未报过越界（假）"
+      },
+      "question": "若 EV-IG09 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG09",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf27",
+      "card": "IG10",
+      "source_id": "ig-10",
+      "mechanism_class": "none",
+      "atom_ref": "data/cards_665/fixtures/ig-10.cpp",
+      "original_assertion": "对同一指针二次 delete 是 UB",
+      "original_citation": {
+        "id": "EV-IG10",
+        "text": "asan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-10.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG10",
+        "text": "ASan 从未报过 double free（假）"
+      },
+      "question": "若 EV-IG10 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG10",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf28",
+      "card": "IG11",
+      "source_id": "ig-11",
+      "mechanism_class": "none",
+      "atom_ref": "data/cards_665/fixtures/ig-11.cpp",
+      "original_assertion": "释放后使用（use-after-free）是 UB",
+      "original_citation": {
+        "id": "EV-IG11",
+        "text": "asan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-11.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG11",
+        "text": "ASan 从未报过 use-after-free（假）"
+      },
+      "question": "若 EV-IG11 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG11",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf29",
+      "card": "IG12",
+      "source_id": "ig-12",
+      "mechanism_class": "none",
+      "atom_ref": "data/cards_665/fixtures/ig-12.cpp",
+      "original_assertion": "有符号整数溢出是 UB（不是回绕）",
+      "original_citation": {
+        "id": "EV-IG12",
+        "text": "ubsan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-12.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG12",
+        "text": "UBSan 从未对有符号溢出报过 runtime error（假）"
+      },
+      "question": "若 EV-IG12 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG12",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf30",
+      "card": "IG13",
+      "source_id": "ig-13",
+      "mechanism_class": "none",
+      "atom_ref": "data/cards_665/fixtures/ig-13.cpp",
+      "original_assertion": "整数除零是 UB，与浮点除零（定义为 inf/nan）不同",
+      "original_citation": {
+        "id": "EV-IG13",
+        "text": "ubsan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-13.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG13",
+        "text": "UBSan 从未对整数除零报错（假）"
+      },
+      "question": "若 EV-IG13 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG13",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf31",
+      "card": "IG14",
+      "source_id": "ig-14",
+      "mechanism_class": "none",
+      "atom_ref": "data/cards_665/fixtures/ig-14.cpp",
+      "original_assertion": "对 int 左移 ≥ 位宽是 UB（移位计数越界）",
+      "original_citation": {
+        "id": "EV-IG14",
+        "text": "ubsan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-14.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG14",
+        "text": "UBSan 从未报过移位越界（假）"
+      },
+      "question": "若 EV-IG14 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG14",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf32",
+      "card": "IG15",
+      "source_id": "ig-15",
+      "mechanism_class": "none",
+      "atom_ref": "data/cards_665/fixtures/ig-15.cpp",
+      "original_assertion": "严格别名违规可致跨编译档行为不一致（UB）",
+      "original_citation": {
+        "id": "EV-IG15",
+        "text": "cross-compile 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-15.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG15",
+        "text": "跨档编译从未观察到别名相关差异（假）"
+      },
+      "question": "若 EV-IG15 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG15",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf33",
+      "card": "IG16",
+      "source_id": "ig-16",
+      "mechanism_class": "none",
+      "atom_ref": "data/cards_665/fixtures/ig-16.cpp",
+      "original_assertion": "对非原子共享变量的并发读写在 C++ 内存模型下是 UB",
+      "original_citation": {
+        "id": "EV-IG16",
+        "text": "tsan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-16.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG16",
+        "text": "TSan 从未报过该模式的竞争（假）"
+      },
+      "question": "若 EV-IG16 为假，原断言还成立吗？",
+      "external_anchor": "standard",
+      "ground_truth": "independent",
+      "operator": {
+        "citation_id": "EV-IG16",
+        "dependent": false,
+        "mechanism": "断言与引文无显著语义重叠",
+        "verdict_if_citation_false": "仍成立（独立）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "independent",
+      "agree": true
+    },
+    {
+      "id": "cf34",
+      "card": "IG01",
+      "source_id": "ig-01",
+      "mechanism_class": "machine_marker",
+      "atom_ref": "data/cards_665/fixtures/ig-01.cpp",
+      "original_assertion": "UBSan 在本机对该有符号溢出样例报了 runtime error",
+      "original_citation": {
+        "id": "EV-IG01",
+        "text": "ubsan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-01.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG01",
+        "text": "UBSan 在本机从未对该样例报 runtime error（假）"
+      },
+      "question": "若 EV-IG01 为假，原断言还成立吗？",
+      "external_anchor": "measurement",
+      "ground_truth": "dependent",
+      "operator": {
+        "citation_id": "EV-IG01",
+        "dependent": true,
+        "mechanism": "machine_marker：断言是对本机实测结果的直陈，引文为假则断言不成立",
+        "verdict_if_citation_false": "不成立（依赖）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "dependent",
+      "agree": true
+    },
+    {
+      "id": "cf35",
+      "card": "IG02",
+      "source_id": "ig-02",
+      "mechanism_class": "machine_marker",
+      "atom_ref": "data/cards_665/fixtures/ig-02.cpp",
+      "original_assertion": "ASan 在本机对该越界样例报了 stack-buffer-overflow",
+      "original_citation": {
+        "id": "EV-IG02",
+        "text": "asan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-02.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG02",
+        "text": "ASan 在本机从未对该样例报越界（假）"
+      },
+      "question": "若 EV-IG02 为假，原断言还成立吗？",
+      "external_anchor": "measurement",
+      "ground_truth": "dependent",
+      "operator": {
+        "citation_id": "EV-IG02",
+        "dependent": true,
+        "mechanism": "machine_marker：断言是对本机实测结果的直陈，引文为假则断言不成立",
+        "verdict_if_citation_false": "不成立（依赖）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "dependent",
+      "agree": true
+    },
+    {
+      "id": "cf36",
+      "card": "IG03",
+      "source_id": "ig-03",
+      "mechanism_class": "machine_marker",
+      "atom_ref": "data/cards_665/fixtures/ig-03.cpp",
+      "original_assertion": "ASan 在本机对 delete nullptr 无报告（rc=0）",
+      "original_citation": {
+        "id": "EV-IG03",
+        "text": "asan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-03.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG03",
+        "text": "ASan 在本机对 delete nullptr 报了错（假）"
+      },
+      "question": "若 EV-IG03 为假，原断言还成立吗？",
+      "external_anchor": "measurement",
+      "ground_truth": "dependent",
+      "operator": {
+        "citation_id": "EV-IG03",
+        "dependent": true,
+        "mechanism": "machine_marker：断言是对本机实测结果的直陈，引文为假则断言不成立",
+        "verdict_if_citation_false": "不成立（依赖）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "dependent",
+      "agree": true
+    },
+    {
+      "id": "cf37",
+      "card": "IG04",
+      "source_id": "ig-04",
+      "mechanism_class": "machine_marker",
+      "atom_ref": "data/cards_665/fixtures/ig-04.cpp",
+      "original_assertion": "TSan 在本机对该竞争样例报了 data race",
+      "original_citation": {
+        "id": "EV-IG04",
+        "text": "tsan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-04.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG04",
+        "text": "TSan 在本机从未对该样例报竞争（假）"
+      },
+      "question": "若 EV-IG04 为假，原断言还成立吗？",
+      "external_anchor": "measurement",
+      "ground_truth": "dependent",
+      "operator": {
+        "citation_id": "EV-IG04",
+        "dependent": true,
+        "mechanism": "machine_marker：断言是对本机实测结果的直陈，引文为假则断言不成立",
+        "verdict_if_citation_false": "不成立（依赖）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "dependent",
+      "agree": true
+    },
+    {
+      "id": "cf38",
+      "card": "IG05",
+      "source_id": "ig-05",
+      "mechanism_class": "machine_marker",
+      "atom_ref": "data/cards_665/fixtures/ig-05.cpp",
+      "original_assertion": "UBSan 在本机对该除零样例报了 runtime error",
+      "original_citation": {
+        "id": "EV-IG05",
+        "text": "ubsan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-05.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG05",
+        "text": "UBSan 在本机从未对该样例报 runtime error（假）"
+      },
+      "question": "若 EV-IG05 为假，原断言还成立吗？",
+      "external_anchor": "measurement",
+      "ground_truth": "dependent",
+      "operator": {
+        "citation_id": "EV-IG05",
+        "dependent": true,
+        "mechanism": "machine_marker：断言是对本机实测结果的直陈，引文为假则断言不成立",
+        "verdict_if_citation_false": "不成立（依赖）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "dependent",
+      "agree": true
+    },
+    {
+      "id": "cf39",
+      "card": "IG06",
+      "source_id": "ig-06",
+      "mechanism_class": "machine_marker",
+      "atom_ref": "data/cards_665/fixtures/ig-06.cpp",
+      "original_assertion": "ASan 在本机对该 UAF 样例报了 heap-use-after-free",
+      "original_citation": {
+        "id": "EV-IG06",
+        "text": "asan 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-06.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG06",
+        "text": "ASan 在本机从未对该样例报 UAF（假）"
+      },
+      "question": "若 EV-IG06 为假，原断言还成立吗？",
+      "external_anchor": "measurement",
+      "ground_truth": "dependent",
+      "operator": {
+        "citation_id": "EV-IG06",
+        "dependent": true,
+        "mechanism": "machine_marker：断言是对本机实测结果的直陈，引文为假则断言不成立",
+        "verdict_if_citation_false": "不成立（依赖）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "dependent",
+      "agree": true
+    },
+    {
+      "id": "cf40",
+      "card": "IG07",
+      "source_id": "ig-07",
+      "mechanism_class": "machine_marker",
+      "atom_ref": "data/cards_665/fixtures/ig-07.cpp",
+      "original_assertion": "本机编译器对该未初始化读取样例报了 -Wuninitialized 警告",
+      "original_citation": {
+        "id": "EV-IG07",
+        "text": "compiler-warn 实测（待 669 基座现跑）",
+        "measured_out": "",
+        "reproduce": "data/cards_665/fixtures/ig-07.cpp"
+      },
+      "fake_citation": {
+        "id": "EV-IG07",
+        "text": "本机编译器对该样例从未给警告（假）"
+      },
+      "question": "若 EV-IG07 为假，原断言还成立吗？",
+      "external_anchor": "measurement",
+      "ground_truth": "dependent",
+      "operator": {
+        "citation_id": "EV-IG07",
+        "dependent": true,
+        "mechanism": "machine_marker：断言是对本机实测结果的直陈，引文为假则断言不成立",
+        "verdict_if_citation_false": "不成立（依赖）",
+        "confidence": "low(prototype)"
+      },
+      "operator_prediction": "dependent",
+      "agree": true
+    }
+  ]
+}
