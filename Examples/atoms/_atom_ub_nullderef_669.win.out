@@ -1,0 +1,7 @@
+# 669 P0-2 · 记录探针留痕（**Windows/MinGW 侧**）—— EV-UB-NULLDEREF-669
+# 探针：data/cards_669/probe_ub_nullderef_669.cpp   夹具：data/cards_665/fixtures/ig-07.cpp   时间：2026-09-30T10:31:46
+# 命令：g++ -std=c++17 -O2 data/cards_669/probe_ub_nullderef_669.cpp -o build/_ev669_probe_ig-07.exe && build/_ev669_probe_ig-07.exe
+# rc=0   记录行复现：是
+---
+EV-UB-NULLDEREF-669 rec=index_665/ig-07 detector=asan verdict=catch sig=hit:AddressSanitizer fixture_file_sha=f423aeded2974396b404757f6767382cfa9b5c7e15be8a6402e03d5b4b79eb34 index_fixture_sha=36c0ce69c63d19c29c1693394be197fd97d5aef124c0c6cef82f0c90064287e6 measured_at=2026-09-29T00:18:19
+

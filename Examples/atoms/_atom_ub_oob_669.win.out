@@ -1,0 +1,7 @@
+# 669 P0-2 · 记录探针留痕（**Windows/MinGW 侧**）—— EV-UB-OOB-669
+# 探针：data/cards_669/probe_ub_oob_669.cpp   夹具：data/cards_665/fixtures/ig-02.cpp   时间：2026-09-30T10:31:46
+# 命令：g++ -std=c++17 -O2 data/cards_669/probe_ub_oob_669.cpp -o build/_ev669_probe_ig-02.exe && build/_ev669_probe_ig-02.exe
+# rc=0   记录行复现：是
+---
+EV-UB-OOB-669 rec=index_665/ig-02 detector=asan verdict=catch sig=hit:AddressSanitizer fixture_file_sha=31294d437366433bf14d909fbc8b40b5ab58951c1788ee81bd830118b5236b65 index_fixture_sha=e2f9abdb484ef6d8a81bb34f14a01ea947ae449c5f4c6086c92f7764522de400 measured_at=2026-09-29T00:18:16
+

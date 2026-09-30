@@ -1,0 +1,55 @@
+# 669 P0-2 · 检测器复跑留痕（**WSL 侧**）—— EV-UB-OOB-669
+# 夹具：data/cards_665/fixtures/ig-02.cpp（文件 sha256 31294d437366433bf14d909fbc8b40b5ab58951c1788ee81bd830118b5236b65）
+# 命令：wsl -e bash -lc "g++ -std=c++17 -O1 -g -fsanitize=address -pthread /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/cards_665/fixtures/ig-02.cpp -o /tmp/ev669_ig-02 && /tmp/ev669_ig-02"
+# 时间：2026-09-30T10:31:46   rc=1   期望签名：hit:AddressSanitizer   命中：是
+# 说明：本文件是 **真机复跑** 的原始输出（不是转录）；检测器需 libasan/libubsan，故只能在 WSL 侧跑（MinGW 无该运行库）。
+---
+=================================================================
+==106==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7d6b16500034 at pc 0x579a46c8c2ef bp 0x7ffd42487450 sp 0x7ffd42487440
+WRITE of size 4 at 0x7d6b16500034 thread T0
+    #0 0x579a46c8c2ee in main /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/cards_665/fixtures/ig-02.cpp:1
+    #1 0x7d6b1862a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8e9fd827446c24067541ac5390e6f527fb5947bb)
+    #2 0x7d6b1862a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8e9fd827446c24067541ac5390e6f527fb5947bb)
+    #3 0x579a46c8c124 in _start (/tmp/ev669_ig-02+0x1124) (BuildId: b437c51fc42b643f9dae143c44c04988a32e17a0)
+
+Address 0x7d6b16500034 is located in stack of thread T0 at offset 52 in frame
+    #0 0x579a46c8c1f8 in main /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/cards_665/fixtures/ig-02.cpp:1
+
+  This frame has 1 object(s):
+    [32, 48) 'a' (line 1) <== Memory access at offset 52 overflows this variable
+HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
+      (longjmp and C++ exceptions *are* supported)
+SUMMARY: AddressSanitizer: stack-buffer-overflow /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/cards_665/fixtures/ig-02.cpp:1 in main
+Shadow bytes around the buggy address:
+  0x7d6b164ffd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7d6b164ffe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7d6b164ffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7d6b164fff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7d6b164fff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7d6b16500000: f1 f1 f1 f1 00 00[f3]f3 00 00 00 00 00 00 00 00
+  0x7d6b16500080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7d6b16500100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7d6b16500180: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7d6b16500200: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7d6b16500280: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==106==ABORTING
+

@@ -22,6 +22,7 @@ claim_structured:
     object: asan 在夹具上的真实输出
     claim_type: observation
     statement: asan 对该夹具判定为 catch（信号：hit:AddressSanitizer）。
+    evidence: [EV-UB-OOB-669]
     evidence_668: [IG-668-IG02]
     extracted_by: machine:card_split_668
   - id: prop-2
@@ -32,6 +33,7 @@ claim_structured:
     statement: 本判定在 WSL g++ (Ubuntu 13.3.0) / WSL2 Linux x86-64 上、以 asan 观测得到；
               换编译器或换平台不保证同样的可观测结果。
     external_basis: "ISO/IEC 14882（未定义行为条款）"
+    evidence: [EV-UB-OOB-669]
     extracted_by: machine:card_split_668
 claim_boundary:
   standard: [C++17]
@@ -53,7 +55,30 @@ relations: []
 sources:
   - {kind: iso, ref: "ISO/IEC 14882（未定义行为 / 分配释放配对相关条款）", independent: true}
 first_hand: true
+verified_by: machine:card_split_668   # 机器 principal（**非**人签；人级结论仍待 human_review）
+verified_at: 2026-09-30
+evidence:
+  - EV-UB-OOB-669
+superiority: >-
+  「越界不一定崩」在资料里通常只是一句告诫；本卡给出两条**机器对照**：① asan 在真机上确证越界
+  （`stack-buffer-overflow`，夹具**文件字节** sha 与记录双锁）；② 同一夹具 `-O2` 的汇编里
+  **越界写与数组一并消失**（只剩 `mov eax, 1`）——"没崩"与"没问题"之间差的不是运气，
+  而是优化器是否证否了这段代码。
+depth:
+  layer: asm
+  drill_note: >-
+    工件 `Examples/atoms/_atom_ub_oob_669.asm`：`a[i] = 1` 与 `return a[i]` 在 -O2 下不再留下
+    真实的栈槽读改写（数组与索引一起被消去）；与 asan 运行期报出的 `stack-buffer-overflow`
+    形成「编译期消失 / 运行期可达」的对照。
+pedagogy:
+  motivation: 为什么"越界只是读到旁边那点垃圾"这种直觉靠不住？——因为越界本身是 UB，读到的什么都合法。
+  misconceptions: [MIS-UB-004, MIS-UB-001]
+  socratic:
+    - "同一段越界写，-O2 汇编里为什么连数组都不见了？"
+    - "asan 能在运行期抓到它，说明标准允许它发生吗？还是只说明检测器不依赖标准？"
+  predict_first: 先猜 `-O2` 下 `main` 里还有没有真实的 16 字节数组访问，再看卡面 §3。
 status_history:
+  - {level: draft, at: "2026-09-29", by: machine:card_split_668}
   - {level: machine-verified, at: "2026-09-30", by: machine:card_split_668}
 ---
 

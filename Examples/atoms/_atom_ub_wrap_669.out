@@ -1,0 +1,8 @@
+# 669 P0-2 · 检测器复跑留痕（**WSL 侧**）—— EV-UB-WRAP-669
+# 夹具：data/cards_665/fixtures/ig-01.cpp（文件 sha256 a6e43581ac0874820048fa276a405e0382968bb6161584944be43530bc47d847）
+# 命令：wsl -e bash -lc "g++ -std=c++17 -O1 -g -fsanitize=undefined -pthread /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/cards_665/fixtures/ig-01.cpp -o /tmp/ev669_ig-01 && /tmp/ev669_ig-01"
+# 时间：2026-09-30T10:31:46   rc=1   期望签名：hit:runtime error   命中：是
+# 说明：本文件是 **真机复跑** 的原始输出（不是转录）；检测器需 libasan/libubsan，故只能在 WSL 侧跑（MinGW 无该运行库）。
+---
+/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/cards_665/fixtures/ig-01.cpp:1:31: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'
+

@@ -1,0 +1,25 @@
+# 669 P0-2 · 检测器复跑留痕（**WSL 侧**）—— EV-MEM-NEWARR-669
+# 夹具：data/cards_665/fixtures/ig-14.cpp（文件 sha256 cb38bdb21e113142457c900c00b02712fbba8a5fd65e6caa0cd39cf571bde71d）
+# 命令：wsl -e bash -lc "g++ -std=c++17 -O1 -g -fsanitize=address -pthread /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/cards_665/fixtures/ig-14.cpp -o /tmp/ev669_ig-14 && /tmp/ev669_ig-14"
+# 时间：2026-09-30T10:31:46   rc=1   期望签名：hit:AddressSanitizer   命中：是
+# 说明：本文件是 **真机复跑** 的原始输出（不是转录）；检测器需 libasan/libubsan，故只能在 WSL 侧跑（MinGW 无该运行库）。
+---
+=================================================================
+==154==ERROR: AddressSanitizer: alloc-dealloc-mismatch (operator new [] vs operator delete) on 0x502000000010
+    #0 0x785783eff5e8 in operator delete(void*, unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164
+    #1 0x612e19d921c7 in main /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/cards_665/fixtures/ig-14.cpp:1
+    #2 0x78578362a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8e9fd827446c24067541ac5390e6f527fb5947bb)
+    #3 0x78578362a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8e9fd827446c24067541ac5390e6f527fb5947bb)
+    #4 0x612e19d920e4 in _start (/tmp/ev669_ig-14+0x10e4) (BuildId: cf7ea5e94d892278cf355a1ed5eb0dd2cb738e77)
+
+0x502000000010 is located 0 bytes inside of 16-byte region [0x502000000010,0x502000000020)
+allocated by thread T0 here:
+    #0 0x785783efe6c8 in operator new[](unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:98
+    #1 0x612e19d921ba in main /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/cards_665/fixtures/ig-14.cpp:1
+    #2 0x78578362a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8e9fd827446c24067541ac5390e6f527fb5947bb)
+    #3 0x612e19d920e4 in _start (/tmp/ev669_ig-14+0x10e4) (BuildId: cf7ea5e94d892278cf355a1ed5eb0dd2cb738e77)
+
+SUMMARY: AddressSanitizer: alloc-dealloc-mismatch ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164 in operator delete(void*, unsigned long)
+==154==HINT: if you don't care about these errors you may set ASAN_OPTIONS=alloc_dealloc_mismatch=0
+==154==ABORTING
+

@@ -1,0 +1,20 @@
+# 669 P0-2 · 检测器复跑留痕（**WSL 侧**）—— EV-UB-NULLDEREF-669
+# 夹具：data/cards_665/fixtures/ig-07.cpp（文件 sha256 f423aeded2974396b404757f6767382cfa9b5c7e15be8a6402e03d5b4b79eb34）
+# 命令：wsl -e bash -lc "g++ -std=c++17 -O1 -g -fsanitize=address -pthread /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/cards_665/fixtures/ig-07.cpp -o /tmp/ev669_ig-07 && /tmp/ev669_ig-07"
+# 时间：2026-09-30T10:31:46   rc=1   期望签名：hit:AddressSanitizer   命中：是
+# 说明：本文件是 **真机复跑** 的原始输出（不是转录）；检测器需 libasan/libubsan，故只能在 WSL 侧跑（MinGW 无该运行库）。
+---
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==122==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x62c91d05419d bp 0x7ffd26f072c0 sp 0x7ffd26f07228 T0)
+==122==The signal is caused by a WRITE memory access.
+==122==Hint: address points to the zero page.
+    #0 0x62c91d05419d in main /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/cards_665/fixtures/ig-07.cpp:1
+    #1 0x7ba3b382a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8e9fd827446c24067541ac5390e6f527fb5947bb)
+    #2 0x7ba3b382a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8e9fd827446c24067541ac5390e6f527fb5947bb)
+    #3 0x62c91d0540c4 in _start (/tmp/ev669_ig-07+0x10c4) (BuildId: fe9a6316ba461b196176f0cef1e65c91995d1c2b)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/cards_665/fixtures/ig-07.cpp:1 in main
+==122==ABORTING
+

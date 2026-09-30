@@ -22,6 +22,7 @@ claim_structured:
     object: asan 在夹具上的真实输出
     claim_type: observation
     statement: asan 对该夹具判定为 catch（信号：hit:AddressSanitizer）。
+    evidence: [EV-UB-NULLDEREF-669]
     evidence_668: [IG-668-IG07]
     extracted_by: machine:card_split_668
   - id: prop-2
@@ -32,6 +33,7 @@ claim_structured:
     statement: 本判定在 WSL g++ (Ubuntu 13.3.0) / WSL2 Linux x86-64 上、以 asan 观测得到；
               换编译器或换平台不保证同样的可观测结果。
     external_basis: "ISO/IEC 14882（未定义行为条款）"
+    evidence: [EV-UB-NULLDEREF-669]
     extracted_by: machine:card_split_668
 claim_boundary:
   standard: [C++17]
@@ -53,7 +55,30 @@ relations: []
 sources:
   - {kind: iso, ref: "ISO/IEC 14882（未定义行为 / 分配释放配对相关条款）", independent: true}
 first_hand: true
+verified_by: machine:card_split_668   # 机器 principal（**非**人签；人级结论仍待 human_review）
+verified_at: 2026-09-30
+evidence:
+  - EV-UB-NULLDEREF-669
+superiority: >-
+  「解引用空指针一定 SIGSEGV」这句话里混了两层：**标准层**（UB，优化器有权删掉整段）与
+  **本平台层**（这台机器这次真的崩）。本卡的增量是把两层分栏并各给一条机器证据：
+  ① asan 记录 `SEGV on unknown address 0x000000000000`（真崩，夹具字节 sha + 记录双锁）；
+  ② `-O2` 汇编里是**对地址 0 的真实写入** `mov DWORD PTR ds:0, 0` + `ud2`（两平台同形）——
+  ⇒ 本夹具上优化器**没有**选择删除它，"崩"是这次实现的结果，不是标准的承诺。
+depth:
+  layer: asm
+  drill_note: >-
+    工件 `Examples/atoms/_atom_ub_nullderef_669.asm`：`main` 内 `mov DWORD PTR ds:0, 0` 后接 `ud2`
+    （不可达标记）。写入地址 0 是"会崩"的机器形态；`ud2` 是编译器对"这里已经不可继续"的标注。
+pedagogy:
+  motivation: 为什么"我这儿一定崩"不能提升为知识？——因为崩与不崩都合法，编译器可以选任意一种。
+  misconceptions: [MIS-UB-003, MIS-UB-001]
+  socratic:
+    - "`if (p != nullptr)` 守住了这一处，能守住编译器对别处的推论吗？"
+    - "既然本夹具的汇编是「真的写到地址 0」，那「优化器有权删掉它」这句话还成立吗？"
+  predict_first: 先猜 `-O2` 下这段代码会不会被整段删掉，再看卡面 §3 的 `ud2`。
 status_history:
+  - {level: draft, at: "2026-09-29", by: machine:card_split_668}
   - {level: machine-verified, at: "2026-09-30", by: machine:card_split_668}
 ---
 

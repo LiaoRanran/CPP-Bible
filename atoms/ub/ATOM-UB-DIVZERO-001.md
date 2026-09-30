@@ -22,6 +22,7 @@ claim_structured:
     object: ubsan 在夹具上的真实输出
     claim_type: observation
     statement: ubsan 对该夹具判定为 catch（信号：hit:runtime error）。
+    evidence: [EV-UB-DIVZERO-669]
     evidence_668: [IG-668-IG08]
     extracted_by: machine:card_split_668
   - id: prop-2
@@ -32,6 +33,7 @@ claim_structured:
     statement: 本判定在 WSL g++ (Ubuntu 13.3.0) / WSL2 Linux x86-64 上、以 ubsan 观测得到；
               换编译器或换平台不保证同样的可观测结果。
     external_basis: "ISO/IEC 14882（未定义行为条款）"
+    evidence: [EV-UB-DIVZERO-669]
     extracted_by: machine:card_split_668
 claim_boundary:
   standard: [C++17]
@@ -53,7 +55,30 @@ relations: []
 sources:
   - {kind: iso, ref: "ISO/IEC 14882（未定义行为 / 分配释放配对相关条款）", independent: true}
 first_hand: true
+verified_by: machine:card_split_668   # 机器 principal（**非**人签；人级结论仍待 human_review）
+verified_at: 2026-09-30
+evidence:
+  - EV-UB-DIVZERO-669
+superiority: >-
+  多数资料停在"除零是 UB"；本卡把**异常语义**这条最容易被 `catch (...)` 误导的点与机器证据绑在一起：
+  ① 665 的 ubsan 记录 `division by zero`（真机 WSL，夹具字节 sha 与记录双锁）；
+  ② 本机 `-O2` 汇编里 `volatile` 让 `idiv ecx` **真实存在**（不可折叠，两平台同形）；
+  ③ 与 `EV-UB-WRAP-669`/`EV-UB-OOB-669` 的「整段消失」并排，说明 UB 的机器形态取决于**可证性**。
+  ⇒ 触发的是信号/UB，没有任何 C++ 异常对象可被 `catch` 捕获。
+depth:
+  layer: asm
+  drill_note: >-
+    工件 `Examples/atoms/_atom_ub_divzero_669.asm`：`mov`×2（读 volatile 的 a、b）+ `cdq` + `idiv ecx`。
+    volatile 读阻止常量折叠 ⇒ 除法指令真实存在；这条是「同是 UB，有的被折没、有的必须真算」的对照点。
+pedagogy:
+  motivation: 为什么 `try { return a/b; } catch (...) {}` 挡不住除零？——因为除零不是异常，是 UB/信号。
+  misconceptions: [MIS-UB-001]
+  socratic:
+    - "`catch (...)` 能抓住信号吗？标准里 `...` 覆盖的是什么？"
+    - "既然 `idiv` 真的执行了，能不能说'除零一定会让程序终止'？标准保证吗？"
+  predict_first: 先预测 `int` 除零在本机会发生什么（异常？信号？静默？），再看卡面 §2 的记录。
 status_history:
+  - {level: draft, at: "2026-09-29", by: machine:card_split_668}
   - {level: machine-verified, at: "2026-09-30", by: machine:card_split_668}
 ---
 

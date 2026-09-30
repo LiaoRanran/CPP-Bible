@@ -22,6 +22,7 @@ claim_structured:
     object: asan 在夹具上的真实输出
     claim_type: observation
     statement: asan 对该夹具判定为 catch（信号：hit:AddressSanitizer）。
+    evidence: [EV-MEM-NEWARR-669]
     evidence_668: [IG-668-IG14]
     extracted_by: machine:card_split_668
   - id: prop-2
@@ -32,6 +33,7 @@ claim_structured:
     statement: 本判定在 WSL g++ (Ubuntu 13.3.0) / WSL2 Linux x86-64 上、以 asan 观测得到；
               换编译器或换平台不保证同样的可观测结果。
     external_basis: "ISO/IEC 14882（未定义行为条款）"
+    evidence: [EV-MEM-NEWARR-669]
     extracted_by: machine:card_split_668
 claim_boundary:
   standard: [C++17]
@@ -53,7 +55,31 @@ relations: []
 sources:
   - {kind: iso, ref: "ISO/IEC 14882（未定义行为 / 分配释放配对相关条款）", independent: true}
 first_hand: true
+verified_by: machine:card_split_668   # 机器 principal（**非**人签；人级结论仍待 human_review）
+verified_at: 2026-09-30
+evidence:
+  - EV-MEM-NEWARR-669
+superiority: >-
+  「new[]/delete 混用只是少调几个析构」的说法在本卡被两条机器证据否掉：
+  ① 工件里 `operator new[]`（族名 `_Zna…`）与 `operator delete(void*)`（族名 `_ZdlPv…`）**分属两个函数族**——
+  这是"配对不匹配"的直接机器指纹（MinGW 与 Linux 拼写不同，但族名子串一致 ⇒ 可跨编译器断言）；
+  ② 运行期 asan 报 `alloc-dealloc-mismatch (operator new [] vs operator delete)`。
+  ⇒ 二者共同说明：数组分配与标量释放走的不是同一条路径，"少调析构"是错误的心智模型。
+depth:
+  layer: asm
+  drill_note: >-
+    工件 `Examples/atoms/_atom_mem_newarr_669.asm`：`call _Znay`（operator new[]）与
+    `call _ZdlPvy`（operator delete(void*)）成对出现——函数族不同即是 UB 判据在汇编层的显形；
+    Linux 侧为 `_Znam@PLT` / `_ZdlPvm@PLT`，族名子串一致。
+pedagogy:
+  motivation: 为什么"混用只是少调几个析构"不成立？——因为分配与释放走的函数族不同，布局假设也不同。
+  misconceptions: [MIS-MEM-008, MIS-MEM-013]
+  socratic:
+    - "如果 `new[]` 与 `delete` 真的只是「少调几个析构」，为什么汇编里调用的是两个不同的函数族？"
+    - "把 `new[]` 换成 `malloc` 再 `delete`，会更容易还是更难查？"
+  predict_first: 先猜 `-O2` 下这两次调用会不会被内联掉/合并，再看卡面 §3 的 `call` 对。
 status_history:
+  - {level: draft, at: "2026-09-29", by: machine:card_split_668}
   - {level: machine-verified, at: "2026-09-30", by: machine:card_split_668}
 ---
 

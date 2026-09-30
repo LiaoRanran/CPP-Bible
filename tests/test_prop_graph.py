@@ -56,8 +56,13 @@ def test_build_totals_and_distributions(tmp_path: Path):
     assert st["cards"] == counts.ATOMS_REAL, st
     assert set(st["by_claim_type"]) == {"inference", "observation"}, st["by_claim_type"]
     assert sum(st["by_claim_type"].values()) == counts.PROPOSITIONS, st["by_claim_type"]
+    # 669 修订：签署状态域是**三态**（prop_signed / card_signed / unsigned，见 prop_graph.extract）——
+    # 668 的 5 张机器卡在 669 补了机器 principal 署名（`verified_by: machine:*`，gate 的
+    # S1-AUTHOR-SELF-VERIFY 要求），于是它们 10 条命题合法地进入 `card_signed`（卡级签署）。
+    # 原断言只认两态 ⇒ 把"域"当成"当时的观测值"锁死了。改为锁**域 + 可加性**。
     sign = st["by_signoff"]
-    assert sign.get("prop_signed", 0) + sign.get("unsigned", 0) == counts.PROPOSITIONS, sign
+    assert set(sign) <= {"prop_signed", "card_signed", "unsigned"}, sign
+    assert sum(sign.values()) == counts.PROPOSITIONS, sign
     assert st["by_anchor_source"].get("none", 0) == 0, st["by_anchor_source"]
 
 
@@ -102,9 +107,12 @@ def test_query_by_type_and_sign(tmp_path: Path):
     assert {r["claim_type"] for r in inf} == {"inference"}
     uns = pg.query(db, sign="unsigned")
     signed = pg.query(db, sign="prop_signed")
+    card_signed = pg.query(db, sign="card_signed")     # 669：机器 principal 卡级署名（第三态）
     assert len(obs) + len(inf) == counts.PROPOSITIONS
-    assert len(uns) + len(signed) == counts.PROPOSITIONS
-    assert not ({r["prop_key"] for r in uns} & {r["prop_key"] for r in signed}), "两态互斥"
+    assert len(uns) + len(signed) + len(card_signed) == counts.PROPOSITIONS
+    keysets = [{r["prop_key"] for r in g} for g in (uns, signed, card_signed)]
+    assert not (keysets[0] & keysets[1]) and not (keysets[0] & keysets[2]) \
+        and not (keysets[1] & keysets[2]), "三态必须互斥"
     assert pg.query(db, machine=False) == []
     assert len(pg.query(db, machine=True)) == counts.PROPOSITIONS
     one = pg.query(db, prop_id=inf[0]["prop_key"])
@@ -142,9 +150,11 @@ def test_anchor_source_splits_card_vs_evidence(tmp_path: Path):
     assert all(r["machine_verified"] == 1 for r in rows)
     # 666 A2：原断言"全部 prop_signed"是 640 的全签**状态**；本轮新增 10 条未签命题。
     # 改锁**状态域**（只允许两态，且与 sign= 查询口径一致），不锁谁多谁少。
+    # 669 修订：状态域扩到三态（prop_signed / card_signed / unsigned）——668 的 5 张机器卡
+    # 补齐机器 principal 署名后进入 card_signed；"未签"与"命题级人签"两态仍须显形。
     states = {r["signoff_state"] for r in rows}
-    assert states <= {"prop_signed", "unsigned"}, states
-    assert states == {"prop_signed", "unsigned"}, "两态都应显形（有未签就必须能看见）"
+    assert states <= {"prop_signed", "card_signed", "unsigned"}, states
+    assert {"prop_signed", "unsigned"} <= states, "未签与命题级签署两态都必须显形"
     assert all(r["anchor_source"] == "evidence" for r in rows)
 
 
@@ -210,8 +220,9 @@ def test_566_old_schema_build_self_heals(tmp_path: Path, capsys):
     cols = {r[1] for r in sqlite3.connect(str(db)).execute("PRAGMA table_info(props)")}
     assert set(pg.PROPS_COLUMNS) <= cols, sorted(set(pg.PROPS_COLUMNS) - cols)
     # 666 A2：自愈后**两态都可检索**（原断言 unsigned==0 = 640 全签状态，非口径）。
-    assert len(pg.query(db, sign="unsigned")) + len(pg.query(db, sign="prop_signed")) \
-        == counts.PROPOSITIONS
+    # 669：状态域为三态（`card_signed` 见 prop_graph.extract）⇒ 用全和断言。
+    assert sum(len(pg.query(db, sign=s)) for s in
+               ("unsigned", "prop_signed", "card_signed")) == counts.PROPOSITIONS
     ver, missing = pg.schema_state(db)
     assert ver == pg.SCHEMA_VERSION and missing == []
 
@@ -239,9 +250,12 @@ def test_566_pending_signoff_lists_unsigned_only(tmp_path: Path):
     rows = pg.pending_signoff(db)
     uns = pg.query(db, sign="unsigned")
     signed = pg.query(db, sign="prop_signed")
+    card_signed = pg.query(db, sign="card_signed")     # 669：机器 principal 卡级署名（第三态）
     assert {r["prop_key"] for r in rows} == {r["prop_key"] for r in uns}
-    assert len(pg.query(db, sign="card_signed")) == 0
-    assert len(rows) + len(signed) == counts.PROPOSITIONS
+    # 口径不变：待签视图 = 命题级未签，**不含**卡级署名（否则"卡级签过"会被当成"人已核准"）
+    assert not ({r["prop_key"] for r in rows} & {r["prop_key"] for r in card_signed}), \
+        "卡级署名（card_signed）不得进待签视图"
+    assert len(rows) + len(signed) + len(card_signed) == counts.PROPOSITIONS
 
 
 def test_566_backlog_counts_atoms_minus_with_props(tmp_path: Path):

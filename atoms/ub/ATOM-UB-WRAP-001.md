@@ -22,6 +22,7 @@ claim_structured:
     object: ubsan 在夹具上的真实输出
     claim_type: observation
     statement: ubsan 对该夹具判定为 catch（信号：hit:runtime error）。
+    evidence: [EV-UB-WRAP-669]
     evidence_668: [IG-668-IG01]
     extracted_by: machine:card_split_668
   - id: prop-2
@@ -32,6 +33,7 @@ claim_structured:
     statement: 本判定在 WSL g++ (Ubuntu 13.3.0) / WSL2 Linux x86-64 上、以 ubsan 观测得到；
               换编译器或换平台不保证同样的可观测结果。
     external_basis: "ISO/IEC 14882（未定义行为条款）"
+    evidence: [EV-UB-WRAP-669]
     extracted_by: machine:card_split_668
 claim_boundary:
   standard: [C++17]
@@ -53,7 +55,31 @@ relations: []
 sources:
   - {kind: iso, ref: "ISO/IEC 14882（未定义行为 / 分配释放配对相关条款）", independent: true}
 first_hand: true
+verified_by: machine:card_split_668   # 机器 principal（**非**人签；人级结论仍待 human_review）
+verified_at: 2026-09-30
+evidence:
+  - EV-UB-WRAP-669
+superiority: >-
+  「有符号溢出」在多数资料里只到"这是 UB"就停了；本卡把两条**机器可复算**的对照钉在一起：
+  ① 665 的 ubsan 在真机上直接报 `signed integer overflow`（夹具**文件字节** sha 与记录双重锁定，
+  `--check` 可复算）；② 同一夹具 `-O2` 的汇编里 `x += 1` 与 `x < 0` 被**整体折叠**成
+  `mov eax, 1` + `ret`（MinGW 15.3 与 Linux 13.3 同形）——「优化器有权假定它不发生」由此变成
+  可看见的字节，而不是一句告诫。
+depth:
+  layer: asm
+  drill_note: >-
+    工件 `Examples/atoms/_atom_ub_wrap_669.asm` 的 `main` 只有 `mov eax, 1` + `ret`：自增与比较都消失。
+    对照 `EV-UB-DIVZERO-669`（同是 UB，但 `volatile` 使它不可折叠、`idiv` 真实存在）⇒
+    能不能被优化器吃掉，取决于它能否被证明。
+pedagogy:
+  motivation: 为什么"我本地跑出回绕了"不能当成"标准保证回绕"？——标准没规定，编译器只是这次没吃掉你。
+  misconceptions: [MIS-UB-002, MIS-UB-001]
+  socratic:
+    - "同一行 `x += 1` 在 -O0 与 -O2 下的汇编差了整段——变的是标准还是编译器？"
+    - "如果编译器有权假定溢出不发生，那句 `x < 0` 还是你以为的意思吗？"
+  predict_first: 编译前先猜：`-O2` 下 `main` 里还剩几条指令？（写下答案，再看卡面 §3）
 status_history:
+  - {level: draft, at: "2026-09-29", by: machine:card_split_668}
   - {level: machine-verified, at: "2026-09-30", by: machine:card_split_668}
 ---
 

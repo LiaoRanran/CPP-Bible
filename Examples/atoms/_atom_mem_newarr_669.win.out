@@ -1,0 +1,7 @@
+# 669 P0-2 · 记录探针留痕（**Windows/MinGW 侧**）—— EV-MEM-NEWARR-669
+# 探针：data/cards_669/probe_mem_newarr_669.cpp   夹具：data/cards_665/fixtures/ig-14.cpp   时间：2026-09-30T10:31:46
+# 命令：g++ -std=c++17 -O2 data/cards_669/probe_mem_newarr_669.cpp -o build/_ev669_probe_ig-14.exe && build/_ev669_probe_ig-14.exe
+# rc=0   记录行复现：是
+---
+EV-MEM-NEWARR-669 rec=index_665/ig-14 detector=asan verdict=catch sig=hit:AddressSanitizer fixture_file_sha=cb38bdb21e113142457c900c00b02712fbba8a5fd65e6caa0cd39cf571bde71d index_fixture_sha=3557ed2c40078bff7c4aa77f858d25513ee08cbbcd7e975dd67e35dd02855c5c measured_at=2026-09-29T00:18:22
+

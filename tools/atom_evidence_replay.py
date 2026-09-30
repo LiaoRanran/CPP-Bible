@@ -30,11 +30,17 @@
     不解析编译器 stderr 文本（文本随版本漂移，判据会静默失效）。
 
 用法：
-    python tools/atom_evidence_replay.py                 # 扫描 evidence/**/EV-*.md
+    python tools/atom_evidence_replay.py                 # 扫描 evidence/**/EV-*.md（只读）
     python tools/atom_evidence_replay.py --card <path>   # 单卡
     python tools/atom_evidence_replay.py --check         # 任一非 confirm 即 exit 1（门禁用）
     python tools/atom_evidence_replay.py --no-sanitizer  # 跳过 sanitizer 校验
     python tools/atom_evidence_replay.py --keep-tmp      # 保留临时目录（排查用）
+    python tools/atom_evidence_replay.py --write         # 就地重生成仓库工件（669 P0-1）
+
+669 P0-1（受控目录零写）：默认与 `--check` **都不写仓库**——产出受控工件的命令行 `-o`
+目标改写到暂存目录，sha/结构断言/阴面全部用暂存产物判定（判决语义与就地模式逐字等价）。
+就地重生成（删旧工件→重生成→还原）只在 `--write` 下发生；且中断（SIGINT/SIGTERM）时
+先还原在飞工件再退锁退出，消除 668 §6 那类"3 删 6 改"污染。
 """
 # mypy: ignore-errors
 # 存量工具：类型注解债务，CI 先转绿，后续逐步修
@@ -1106,13 +1112,57 @@ def _drop_snapshot(bak: Path | None) -> None:
             pass
 
 
+# ── 669 P0-1：在飞工件登记表（中断自愈；只对就地模式有意义）────────────────────
+# 病（668 §6 实测）：`_on_terminate` 只释放锁就退出 —— 进程在「已删旧工件、尚未重生成」的
+#   窗口里被杀（后台跑 pytest 时被 kill/SIGTERM），`finally` 的还原来不及跑；更糟的是**固化**：
+#   下一轮看到工件不存在 ⇒ `original=None` ⇒ 不再还原，文件永久缺失（实测 3 删）。
+# 治：把在飞工件的还原信息登记在模块级；中断钩子先还原因素再退出。
+_INFLIGHT: dict[str, Any] | None = None
+
+
+def _register_inflight(*, art_path: Path, original: bytes | None, bak: Path | None,
+                       extras: list[tuple[Path, bytes | None]]) -> None:
+    """登记本次运行正在改写的工件（就地模式）；只读模式不登记（它不写仓库）。"""
+    global _INFLIGHT
+    _INFLIGHT = {"art_path": art_path, "original": original, "bak": bak,
+                 "extras": list(extras)}
+
+
+def _clear_inflight() -> None:
+    global _INFLIGHT
+    _INFLIGHT = None
+
+
+def _emergency_restore() -> None:
+    """中断时把在飞工件还原回本次运行前的字节（幂等，**绝不抛**）。
+
+    "原本不存在"的工件（`original is None`）保持**就地模式的历史语义**：不回删（新建工件
+    是"新卡首跑"的合法产物）；只读模式不产生这种窗口。
+    """
+    info = _INFLIGHT
+    if not info:
+        return
+    art: Path = info["art_path"]
+    try:
+        if info["original"] is not None:
+            art.write_bytes(info["original"])
+        elif info["bak"] is not None and art.is_file() and art.stat().st_size == 0:
+            _restore_artifact(art, info["bak"])
+        for _p, _b in info.get("extras") or []:
+            if _b is not None:
+                _p.write_bytes(_b)
+    except OSError:
+        pass          # 还原失败不掩盖原始退出码（残留 .bak 由下次运行的幂等自愈接管）
+
+
 def _install_lock_cleanup() -> None:
     """正常退出 / Ctrl+C / SIGTERM 时释放锁，缩小僵尸锁窗口。
 
     覆盖不到的场景：SIGKILL、解释器崩溃、`os._exit`——所以 pid 存活检测才是主
     保险，本钩子只是"尽量干净地退出"（472 P0-1）。
     """
-    atexit.register(_release_replay_lock)
+    atexit.register(_release_replay_lock)      # LIFO：先注册的后跑 ⇒ 下面这条先执行
+    atexit.register(_emergency_restore)        # 669 P0-1：异常退出也先还原在飞工件
     for name in ("SIGTERM", "SIGINT"):
         sig = getattr(signal, name, None)
         if sig is None:
@@ -1124,6 +1174,7 @@ def _install_lock_cleanup() -> None:
 
 
 def _on_terminate(signum, frame) -> None:
+    _emergency_restore()          # 669 P0-1：先还原在飞工件，再放锁退出（否则工件被删即固化）
     _release_replay_lock()
     raise SystemExit(1)
 
@@ -1596,7 +1647,8 @@ def check_build_reproducibility(
                             "", round((time.perf_counter() - t0) * 1000))
 
 
-def _recompile_invariant(cmd: str, art_rel: str, want_sha: str) -> tuple[str, str]:
+def _recompile_invariant(cmd: str, art_rel: str, want_sha: str,
+                         source_override: Path | None = None) -> tuple[str, str]:
     """P0-A（452 E01 根因修复）：临时目录独立重编译，比对 sha（防篡改）。
 
     603 重构：委托 `check_build_reproducibility` 取 `first_hash`（run1 的二进制 sha）；
@@ -1625,7 +1677,9 @@ def _recompile_invariant(cmd: str, art_rel: str, want_sha: str) -> tuple[str, st
         for ln in lines:                      # 逐行覆写同一 -o 目标 ⇒ 仅最后一行决定最终工件（原行为）
             out_name = Path(art_rel).name
             res = check_build_reproducibility(
-                source_path=run_root() / art_rel,   # 仅做存在性校验（artifact 已重生成，必存在）
+                # 仅做存在性校验（artifact 已重生成，必存在）。669 P0-1：只读模式下
+                # 重生成产物在暂存目录（仓库副本可能尚未提交）⇒ 调用方可显式指定。
+                source_path=source_override or (run_root() / art_rel),
                 compile_cmd=ln, work_dir=tmpdir, output_name=out_name,
                 ccaches_disable=True, check_level="sha")
             if res.compile_exit_code != 0:
@@ -1890,8 +1944,62 @@ def _recompile_invariant_extended(cmd: str, art_rel: str, want_sha: str | None =
             shutil.rmtree(tmpdir, ignore_errors=True)
 
 
+# ── 669 P0-1：只读模式的工件重定向（`--check` 不再改写受控目录）──────────────────
+# 病（668 §6 实测，且后台跑 pytest 时反复发生）：`--check` 靠「删仓库工件 → 在仓库里重生成
+#   → 比 sha256 → 还原」，一旦进程被中断（SIGTERM/kill）或并发抢占，还原就不完整 ——
+#   `Examples/atoms/*.asm` 出现 **3 删 6 改**；而 `Examples/` 在供应链 Merkle 覆盖内 ⇒ 根失效。
+#   更糟的是"删除"会被**固化**：下一轮看到文件不存在 ⇒ `original=None` ⇒ 不再还原，文件永久缺失。
+# 治：只读模式把**产出受控工件**的命令行 `-o` 目标改写到暂存目录，用暂存产物做全部校验
+#   （sha256 / 结构断言 / 阴面），仓库工件**一字不动**（不删，也就不需要还原）。
+#   就地重生成仍保留，但只在显式写入模式下发生（CLI `--write`；API `read_only=False`）。
+def _rel_norm(p: str | Path) -> str:
+    """路径归一（相对形式）：去引号、`\\`→`/`、去前导 `./`。用于卡片字段与命令行的比对。"""
+    return str(p).strip().strip("\"'").replace("\\", "/").removeprefix("./")
+
+
+def _stage_artifact_writes(cmd_lines: Sequence[str], rels: Sequence[str],
+                           stage_dir: Path) -> tuple[list[str], dict[str, Path], list[str]]:
+    """把产出受控工件的命令行 `-o` 目标改写到 `stage_dir`（只读模式唯一的写者隔离）。
+
+    返回 `(改写后的命令行, {工件相对路径: 暂存产出路径}, 告警行)`。
+    匹配口径与 `_artifact_compile_lines` 一致：`-o` 目标**等于**工件路径，或 basename 唯一相同。
+    匹配不上的行**原样保留**并告警（不静默：受控目录可能仍被该行写，须人工处理）。
+    """
+    stage: dict[str, Path] = {}
+    for i, rel in enumerate(r for r in rels if r):
+        key = _rel_norm(rel)
+        if key and key not in stage:
+            stage[key] = stage_dir / f"{i:02d}_{Path(key).name}"
+    if stage:
+        stage_dir.mkdir(parents=True, exist_ok=True)
+
+    def _sub(m: re.Match) -> str:
+        key = _rel_norm(m.group(1))
+        if key not in stage:
+            cand = [k for k in stage if Path(k).name == Path(key).name]
+            if len(cand) != 1:
+                return m.group(0)              # 不唯一/不匹配 ⇒ 不动这一行
+            key = cand[0]
+        return f'-o "{stage[key].as_posix()}"'
+
+    out: list[str] = []
+    warns: list[str] = []
+    for raw in cmd_lines:
+        new = raw
+        if raw.strip() and not raw.strip().startswith("#"):
+            new = re.sub(r"-o\s+(\S+)", _sub, raw)
+            if new == raw:
+                hit = [r for r in rels if r and _rel_norm(r) in _rel_norm(raw)]
+                if hit:
+                    warns.append(f"  ⚠️ 只读模式：{hit[0]} 的产出命令无法重定向"
+                                 f"（-o 目标不匹配）⇒ 该行原样执行，请人工确认")
+        out.append(new)
+    return out, stage, warns
+
+
 def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False,
-                restore_artifact: bool = True) -> tuple[str, list[str]]:
+                restore_artifact: bool = True,
+                read_only: bool = False) -> tuple[str, list[str]]:
     """执行四项校验。返回 (verdict, 日志行)。verdict ∈ confirm / refute:<reason> / infra_error:<reason>。
 
     三分类（2026-09-12，G6 §4.1 放权前必修）：
@@ -1907,6 +2015,12 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
     改写成异平台产物**——实测一次 WSL 复算就把 4 份 `.asm` 全换成 ELF/Linux 版（汇编里出现
     `endbr64` / `__printf_chk@PLT`），而卡里的 sha256 仍是 MinGW 的 → 仓库工件与卡**不同代**。
     校验工具是只读角色，不该改写被校验对象；要留调试痕迹时用 `--no-restore`。
+
+    `read_only`（669 P0-1，CLI `--check` / 默认）：**仓库工件一字不动**——产出受控工件的
+    命令行 `-o` 目标改写到暂存目录（`_stage_artifact_writes`），sha/断言/阴面全部用暂存产物
+    判定。判决语义与就地模式**逐字等价**（都是"卡的命令能否重生成出卡值"），但把"校验会不会
+    污染受控目录"这一整类事故从根上去掉（不再需要删旧工件，也不再需要靠 finally 还原兜底）。
+    需要**就地刷新**仓库工件时用 `--write`（或 API `read_only=False`）。
     """
     try:                                   # 卡可能不在仓库内（--card 指向临时路径）
         shown = path.relative_to(run_root()).as_posix()
@@ -1942,8 +2056,10 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
     # 校验口径：同编译器下逐个复算 sha；跨编译器时副产物**不校验字节**（它们没有结构
     # 断言机制、字节必不同）——如实标注残留风险，不静默放行。
     extra_arts: list[tuple[Path, str]] = []
+    extra_rels: list[str] = []
     for _it in (meta.get("artifacts") or []):
         if isinstance(_it, dict) and _it.get("path") and _it.get("sha256"):
+            extra_rels.append(str(_it["path"]))
             extra_arts.append((run_root() / str(_it["path"]), str(_it["sha256"]).strip().lower()))
     cmd_lines = str(meta["command"]).split("\n")
 
@@ -1975,16 +2091,35 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
     except TimeoutError as exc:
         shutil.rmtree(tmp, ignore_errors=True)
         return "infra_error:replay_busy", log + [f"  ⚠️ {exc}"]
-    # 472 P0-4：先尝试恢复上次中断残留的备份（幂等自愈），再对本次做落盘快照。
-    if restore_artifact:
-        _stale_bak = _bak_path(art_path)
-        if _stale_bak.is_file():
-            if _restore_artifact(art_path, _stale_bak):
-                log.append(f"  ♻️ 恢复上次中断的工件备份：{_stale_bak.name}")
-            _drop_snapshot(_stale_bak)
-    _bak = _snapshot_artifact(art_path) if restore_artifact else None
-    original = art_path.read_bytes() if art_path.exists() else None   # 校验前快照（见 docstring）
-    original_extra = [(p, p.read_bytes() if p.exists() else None) for p, _ in extra_arts]
+    # 669 P0-1：只读模式——工件产出重定向到暂存目录，仓库不删不改（无需快照，也无需还原）。
+    if read_only:
+        run_lines, stage_map, stage_warn = _stage_artifact_writes(
+            cmd_lines, [art_rel, *extra_rels], tmp / "_stage")
+        log.append(f"  🅁 只读模式：{len(stage_map)} 个工件产出重定向到暂存（仓库零写）")
+        log.extend(stage_warn)
+        art_check = stage_map.get(_rel_norm(art_rel), art_path)
+        extra_check = [(stage_map.get(_rel_norm(rel), p), want)
+                       for (p, want), rel in zip(extra_arts, extra_rels)]
+        _bak = None
+        original = None
+        original_extra: list[tuple[Path, bytes | None]] = []
+    else:
+        run_lines = cmd_lines
+        art_check = art_path
+        extra_check = list(extra_arts)
+        # 472 P0-4：先尝试恢复上次中断残留的备份（幂等自愈），再对本次做落盘快照。
+        if restore_artifact:
+            _stale_bak = _bak_path(art_path)
+            if _stale_bak.is_file():
+                if _restore_artifact(art_path, _stale_bak):
+                    log.append(f"  ♻️ 恢复上次中断的工件备份：{_stale_bak.name}")
+                _drop_snapshot(_stale_bak)
+        _bak = _snapshot_artifact(art_path) if restore_artifact else None
+        original = art_path.read_bytes() if art_path.exists() else None   # 校验前快照（见 docstring）
+        original_extra = [(p, p.read_bytes() if p.exists() else None) for p, _ in extra_arts]
+        # 669 P0-1：登记"在飞工件"，供中断（SIGINT/SIGTERM）自愈还原——见 _emergency_restore。
+        _register_inflight(art_path=art_path, original=original, bak=_bak,
+                           extras=original_extra)
     try:
         # 工件生成命令 = 命令行里出现 artifact 路径的那条（从卡推导，不硬编码）
         gen = [ln for ln in cmd_lines if ln.strip() and art_rel in ln]
@@ -1995,11 +2130,13 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
         # ② 先删旧工件（存在才删），确保"重生成"而非复用旧产物
         # 注意：工件**不存在**是合法场景（新卡首次复算）——由下面的命令生成，
         # 生成后仍缺失才判 artifact_absent（曾误判，2026-09-10 由测试暴露）。
-        art_path.unlink(missing_ok=True)
-        for _p, _ in extra_arts:
-            _p.unlink(missing_ok=True)        # 副产物同样先删：重生成才算数（W1）
+        # 669 P0-1：只读模式下不删仓库工件——重生成发生在暂存目录（`run_lines` 已重定向）。
+        if not read_only:
+            art_path.unlink(missing_ok=True)
+            for _p, _ in extra_arts:
+                _p.unlink(missing_ok=True)    # 副产物同样先删：重生成才算数（W1）
 
-        results, stdout_all = run_commands(cmd_lines, run_root(), env)
+        results, stdout_all = run_commands(run_lines, run_root(), env)
         bad = [r for r in results if r[1] != 0]
         if bad:
             log.append(f"  ❌ compile_rc：{len(bad)}/{len(results)} 条命令失败")
@@ -2079,10 +2216,19 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
         #   编译器身份**不匹配** → 改判 artifact_assert[] 结构断言（真实内容校验）；
         #                          断言缺失或不满足仍 refute——"降级"是换一种真校验，
         #                          不是逃生舱。
-        if not art_path.exists():
-            log.append(f"  ❌ artifact_sha  重生成后工件不存在：{art_rel}")
+        if not art_check.exists():
+            log.append(f"  ❌ artifact_sha  重生成后工件不存在：{art_rel}"
+                       f"{'（只读模式：暂存目录内）' if read_only else ''}")
             return "refute:artifact_absent", log
-        got_sha = _sha256(art_path)
+        got_sha = _sha256(art_check)
+        if read_only and art_path.is_file():
+            # 只读模式不改写仓库 ⇒ 顺带观测"仓库工件与本次重生成是否同代"（仅标注，不改判决；
+            # 字节级同代由 merkle/tool_integrity 的信任根覆盖）。
+            _disk_sha = _sha256(art_path)
+            if _disk_sha != got_sha:
+                log.append(f"  ℹ️ 只读模式：仓库工件 {art_rel} 与重生成不同代"
+                           f"（仓库 {_disk_sha[:16]}… vs 重生成 {got_sha[:16]}…）"
+                           f"——校验不写仓库，如需刷新用 --write")
         owner = str(meta.get("artifact_compiler") or "").strip()
         cur_id = _current_toolchain_id()
         if got_sha == want_sha:
@@ -2091,7 +2237,8 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
             # 证不了"字节是本次编译行产出的"（后置段/helper 脚本可覆写）。独立重编译
             # 复现卡值才算闭环；不一致 ⇒ 工件被篡改（refute）；构建脚本卡 fail-closed。
             rc_status, rc_detail = _recompile_invariant(
-                str(meta.get("command") or ""), art_rel, want_sha)
+                str(meta.get("command") or ""), art_rel, want_sha,
+                source_override=art_check if read_only else None)
             if rc_status == "tampered":
                 log.append(f"  ❌ recompile  {rc_detail}")
                 log.append("      → 编译后存在对 artifact 的写入（重编译不变量被破坏）")
@@ -2106,7 +2253,7 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
         elif owner and cur_id and owner != cur_id:
             log.append(f"  ⏭ artifact_sha  编译器不匹配，改判结构断言"
                        f"（本地 {cur_id} vs 卡归属 {owner}）")
-            a_ok, a_lines = check_artifact_assert(meta, art_path)
+            a_ok, a_lines = check_artifact_assert(meta, art_check)
             log.extend(a_lines)
             if not a_ok:
                 log.append("  ❌ artifact_assert  跨编译器替代校验未通过")
@@ -2123,9 +2270,9 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
         # ④b 多产物校验（W1）：副产物只有字节锚（无结构断言）——
         #     同编译器（主产物 sha 命中）：逐个复算，失配即 refute；
         #     跨编译器：字节必不同且无替代断言 → 跳过并**如实标注**残留风险（不静默放行）。
-        if extra_arts:
+        if extra_check:
             if got_sha == want_sha:
-                for _p, _want in extra_arts:
+                for _p, _want in extra_check:
                     _shown = _shown_path(_p)
                     if not _p.exists():
                         log.append(f"  ❌ artifacts  {_shown} 重生成后不存在")
@@ -2143,7 +2290,7 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
 
         # ④c V-iso 阴性判决（535 批次2 / 533 §2.3）：字段缺失 ⇒ 整段跳过，行为与现状逐字一致
         nc_verdict, nc_log = check_negative_controls(meta, workdir=tmp, env=env,
-                                                     art_path=art_path,
+                                                     art_path=art_check,
                                                      yang_stdout=stdout_all)
         log.extend(nc_log)
         if nc_verdict:
@@ -2160,7 +2307,8 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
             log.append("  ⏭ sanitizer    已按 --no-sanitizer 跳过")
         return "confirm", log
     finally:
-        if restore_artifact:
+        # 669 P0-1：只读模式仓库零写 ⇒ 无物可还原（不删、不改、不留 .bak）。
+        if restore_artifact and not read_only:
             if original is not None:
                 art_path.write_bytes(original)     # 还原：校验工具不改写被校验对象（见 docstring）
             # 472 P0-4：内存还原之外的**落盘兜底**——若本次写回未生效/工件仍为空，
@@ -2172,6 +2320,7 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
                 if _b is not None:
                     _p.write_bytes(_b)
             _drop_snapshot(_bak)                   # 正常路径：清掉备份不留残
+        _clear_inflight()                          # 669 P0-1：在飞登记出栈（正常/异常路径）
         _release_replay_lock()                     # 470 P0-G1：释放并发锁
         if not keep_tmp:
             shutil.rmtree(tmp, ignore_errors=True)
@@ -2198,16 +2347,19 @@ _replay_card_impl = replay_card
 
 
 def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False,
-                restore_artifact: bool = True) -> tuple[str, list[str]]:
+                restore_artifact: bool = True,
+                read_only: bool = False) -> tuple[str, list[str]]:
     """`replay_card` 的观测包装（508 任务4）：行为逐字等同原实现，只多两条日志。
 
-    签名与原函数完全一致（位置参数 path + 三个关键字参数），调用方无须改动。
+    签名与原函数一致（位置参数 path + 关键字参数），调用方无须改动；
+    669 P0-1 新增 `read_only` 透传（默认 False = 就地模式，存量调用方行为不变）。
     """
     t0 = time.perf_counter()
     try:
         verdict, log = _replay_card_impl(path, do_sanitizer=do_sanitizer,
                                          keep_tmp=keep_tmp,
-                                         restore_artifact=restore_artifact)
+                                         restore_artifact=restore_artifact,
+                                         read_only=read_only)
     except Exception as exc:                           # noqa: BLE001
         _obs_log("ERROR", f"replay raised {path.name}: {type(exc).__name__}: {exc}")
         raise                                          # 与原版一致：异常不被吞
@@ -2361,6 +2513,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     ap.add_argument("--keep-tmp", action="store_true", help="保留临时目录")
     ap.add_argument("--no-restore", action="store_true",
                     help="校验后不还原仓库工件（默认还原：校验不应改写被校验对象）")
+    ap.add_argument("--write", action="store_true",
+                    help="就地写入模式（669 P0-1）：删旧工件→在仓库里重生成→还原。"
+                         "默认与 --check 都是**只读**（工件产出重定向到暂存目录，仓库零写）；"
+                         "需要刷新仓库工件时才显式用本开关。")
     ap.add_argument("--json", nargs="?", const=True, default=False,
                     help="结构化 JSON 输出到 stdout")
     ap.add_argument("--no-ccache", action="store_true",
@@ -2390,12 +2546,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"[replay] 增量模式：{n_skip} 张卡全部命中缓存（无变化，未跑编译）")
             return 0
 
+    # 669 P0-1：**默认与 --check 都是只读**（仓库零写）；就地重生成只在 --write 下发生。
+    read_only = not a.write
+    print(f"[replay] 模式：{'只读（工件重定向到暂存，仓库零写）' if read_only else '就地写入（--write）'}")
     n_ok = n_refute = n_infra = 0
     verdicts: list[tuple[Path, str]] = []
     for card in cards:
         verdict, log = replay_card(card, do_sanitizer=not a.no_sanitizer,
                                    keep_tmp=a.keep_tmp,
-                                   restore_artifact=not a.no_restore)
+                                   restore_artifact=not a.no_restore,
+                                   read_only=read_only)
         verdicts.append((card, verdict))
         if verdict == "confirm":
             n_ok += 1
@@ -2428,6 +2588,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         payload = {
             "tool": "atom_evidence_replay", "version": "v6.1",
             "timestamp": _dt.datetime.now().isoformat(timespec="seconds"),
+            "read_only": read_only,        # 669 P0-1：口径可机器读取（true=仓库零写）
             "status": "fail" if (a.check and (n_refute or n_infra)) else "pass",
             "summary": {"confirm": n_ok, "refute": n_refute, "infra_error": n_infra},
             "findings": findings,

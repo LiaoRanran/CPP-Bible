@@ -8,7 +8,8 @@
   ① `web_metrics_666 --check` 必须覆盖三个率 —— **改一个数必须变红**（射程自检，R4）；
   ② 产物必须自带 `caliber` / `denominator`，且**能按分母重算出来**（R1）；
   ③ 逐样本明细与汇总值必须**互相一致**（同一生成器同一次运行）；
-  ④ 新卡不许代签（`machine-verified` + 无 `verified_by`），且**不许预写边界三元组**。
+  ④ 新卡不许**人签**（`machine-verified` + `verified_by` 只能是 `machine:*`/`redteam:*`），
+     且**不许预写边界三元组**（669 修订：原断言误把"机器 principal 留名"也当成了代签）。
 """
 from __future__ import annotations
 
@@ -117,12 +118,26 @@ NEW_CARDS = ["atoms/ub/ATOM-UB-WRAP-001.md", "atoms/ub/ATOM-UB-OOB-001.md",
 
 
 def test_new_cards_are_unsigned_and_keep_correct_status():
+    """669 修订：**不代签**的不变量是"没有人签"，不是"连机器 principal 都不许留名"。
+
+    668 原文写 `assert not re.search(r"^verified_by:")` —— 把两件事混为一谈：
+      · 人签（`verified_by: human:*`）= 放权体系里**唯人可置**的授权（绝不许代签，本批锁死）；
+      · **机器 principal 留名**（`verified_by: machine:*`）= 声明"是哪个机器判的"，
+        `gate_engine` 的 `S1-AUTHOR-SELF-VERIFY` 对 `status=machine-verified` **要求**该字段
+        （`LEVEL_PRINCIPALS["machine-verified"] == ("machine:",)`）。
+    668 的写法让 5 张卡在 gate 里各挂 1 条 block（实测：`S1-AUTHOR-SELF-VERIFY` ×5），
+    而按"不许留名"改是**反向**的（把可审计的判定主体抹掉）。669 按事实源（gate 规则）修正断言：
+    人签仍然**零容忍**，机器 principal 必须**前缀合法**（machine:/redteam:）。
+    """
     for rel in NEW_CARDS:
         text = open(os.path.join(ROOT, rel), encoding="utf-8").read()
         assert "status: machine-verified" in text, f"{rel} 状态必须是 machine-verified"
         assert "human_review: required" in text, f"{rel} 必须标 human_review required"
-        assert not re.search(r"^verified_by:", text, re.MULTILINE), \
-            f"{rel} 不得代签（不许出现 verified_by）"
+        assert not re.search(r"^verified_by:\s*human:", text, re.MULTILINE), \
+            f"{rel} 不得代签（human:* 署名必须由人复核后写入）"
+        m = re.search(r"^verified_by:\s*(\S+)", text, re.MULTILINE)
+        assert m is None or m.group(1).startswith(("machine:", "redteam:")), \
+            f"{rel} verified_by 只能是 machine:/redteam: 前缀（当前：{m.group(1) if m else ''}）"
         # 未跑变异 ⇒ 不得预写三元组（判决未定不预写边界）
         assert not re.search(r"^mutation_set_hash:", text, re.MULTILINE), \
             f"{rel} 不许预写边界三元组"

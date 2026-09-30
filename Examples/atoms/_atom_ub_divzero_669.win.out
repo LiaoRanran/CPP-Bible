@@ -1,0 +1,7 @@
+# 669 P0-2 · 记录探针留痕（**Windows/MinGW 侧**）—— EV-UB-DIVZERO-669
+# 探针：data/cards_669/probe_ub_divzero_669.cpp   夹具：data/cards_665/fixtures/ig-08.cpp   时间：2026-09-30T10:31:46
+# 命令：g++ -std=c++17 -O2 data/cards_669/probe_ub_divzero_669.cpp -o build/_ev669_probe_ig-08.exe && build/_ev669_probe_ig-08.exe
+# rc=0   记录行复现：是
+---
+EV-UB-DIVZERO-669 rec=index_665/ig-08 detector=ubsan verdict=catch sig=hit:runtime error fixture_file_sha=0981ce1e39152938820b9f37d4bbe0de8a36d71bd544c243d20b55d230764dd5 index_fixture_sha=bf80f5565f55bfdf80244141b2982316460e92b7a2b7dfb729c9feea5652be8d measured_at=2026-09-29T00:18:20
+
