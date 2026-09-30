@@ -1,0 +1,874 @@
+{
+ "schema": "queyi-caliber-report/v1",
+ "generated_by": "tools/caliber_check_669.py",
+ "ci_method": "Clopper-Pearson (beta), 95%; Wilson 作敏感性列",
+ "ci_impl": "tools/stat_bounds.py::cp_interval / wilson",
+ "rates": [
+  {
+   "id": "external.valid",
+   "label": "外部 corpus（可测口径）",
+   "k": 14,
+   "n": 32,
+   "rate_pct": 43.8,
+   "cp_lo_pct": 26.4,
+   "cp_hi_pct": 62.3,
+   "wilson_lo_pct": 28.2,
+   "wilson_hi_pct": 60.7,
+   "source": "data/external_corpus_reveal_665.json",
+   "note": "排除 unknown 5 + not_error 3"
+  },
+  {
+   "id": "external.all",
+   "label": "外部 corpus（全样本口径）",
+   "k": 14,
+   "n": 40,
+   "rate_pct": 35.0,
+   "cp_lo_pct": 20.6,
+   "cp_hi_pct": 51.7,
+   "wilson_lo_pct": 22.1,
+   "wilson_hi_pct": 50.5,
+   "source": "data/external_corpus_reveal_665.json",
+   "note": "总样本 40"
+  },
+  {
+   "id": "external.a",
+   "label": "外部 corpus 分层 A",
+   "k": 13,
+   "n": 24,
+   "rate_pct": 54.2,
+   "cp_lo_pct": 32.8,
+   "cp_hi_pct": 74.4,
+   "wilson_lo_pct": 35.1,
+   "wilson_hi_pct": 72.1,
+   "source": "data/external_corpus_reveal_665.json",
+   "note": "该层 total 25（measurable 24）"
+  },
+  {
+   "id": "external.a.total",
+   "label": "外部 corpus 分层 A（含 unknown 的全层）",
+   "k": 13,
+   "n": 25,
+   "rate_pct": 52.0,
+   "cp_lo_pct": 31.3,
+   "cp_hi_pct": 72.2,
+   "wilson_lo_pct": 33.5,
+   "wilson_hi_pct": 70.0,
+   "source": "data/external_corpus_reveal_665.json",
+   "note": ""
+  },
+  {
+   "id": "external.b",
+   "label": "外部 corpus 分层 B",
+   "k": 1,
+   "n": 8,
+   "rate_pct": 12.5,
+   "cp_lo_pct": 0.3,
+   "cp_hi_pct": 52.7,
+   "wilson_lo_pct": 2.2,
+   "wilson_hi_pct": 47.1,
+   "source": "data/external_corpus_reveal_665.json",
+   "note": "该层 total 11（measurable 8）"
+  },
+  {
+   "id": "external.b.total",
+   "label": "外部 corpus 分层 B（含 unknown 的全层）",
+   "k": 1,
+   "n": 11,
+   "rate_pct": 9.1,
+   "cp_lo_pct": 0.2,
+   "cp_hi_pct": 41.3,
+   "wilson_lo_pct": 1.6,
+   "wilson_hi_pct": 37.7,
+   "source": "data/external_corpus_reveal_665.json",
+   "note": ""
+  },
+  {
+   "id": "external.c",
+   "label": "外部 corpus 分层 C",
+   "k": 0,
+   "n": 0,
+   "rate_pct": 0.0,
+   "cp_lo_pct": 0.0,
+   "cp_hi_pct": 100.0,
+   "wilson_lo_pct": 0.0,
+   "wilson_hi_pct": 100.0,
+   "source": "data/external_corpus_reveal_665.json",
+   "note": "该层 total 4（measurable 0）"
+  },
+  {
+   "id": "external.c.total",
+   "label": "外部 corpus 分层 C（含 unknown 的全层）",
+   "k": 0,
+   "n": 4,
+   "rate_pct": 0.0,
+   "cp_lo_pct": 0.0,
+   "cp_hi_pct": 60.2,
+   "wilson_lo_pct": 0.0,
+   "wilson_hi_pct": 49.0,
+   "source": "data/external_corpus_reveal_665.json",
+   "note": ""
+  },
+  {
+   "id": "holdout.valid",
+   "label": "holdout 真错（双档口径）",
+   "k": 14,
+   "n": 16,
+   "rate_pct": 87.5,
+   "cp_lo_pct": 61.7,
+   "cp_hi_pct": 98.4,
+   "wilson_lo_pct": 64.0,
+   "wilson_hi_pct": 96.5,
+   "source": "data/holdout_reveal_3_665.json",
+   "note": "unknown 1"
+  },
+  {
+   "id": "holdout.control_fp",
+   "label": "holdout 对照（误报）",
+   "k": 1,
+   "n": 9,
+   "rate_pct": 11.1,
+   "cp_lo_pct": 0.3,
+   "cp_hi_pct": 48.2,
+   "wilson_lo_pct": 2.0,
+   "wilson_hi_pct": 43.5,
+   "source": "data/holdout_reveal_3_665.json",
+   "note": "对照子集：本不是缺陷"
+  },
+  {
+   "id": "counterfactual.p",
+   "label": "反事实算子 P",
+   "k": 2,
+   "n": 2,
+   "rate_pct": 100.0,
+   "cp_lo_pct": 15.8,
+   "cp_hi_pct": 100.0,
+   "wilson_lo_pct": 34.2,
+   "wilson_hi_pct": 100.0,
+   "source": "data/counterfactual_cases_665.json",
+   "note": "分母 10 条"
+  },
+  {
+   "id": "counterfactual.r",
+   "label": "反事实算子 R",
+   "k": 2,
+   "n": 2,
+   "rate_pct": 100.0,
+   "cp_lo_pct": 15.8,
+   "cp_hi_pct": 100.0,
+   "wilson_lo_pct": 34.2,
+   "wilson_hi_pct": 100.0,
+   "source": "data/counterfactual_cases_665.json",
+   "note": ""
+  },
+  {
+   "id": "external.unknown_as_miss",
+   "label": "external（unknown 记 miss）",
+   "k": 14,
+   "n": 37,
+   "rate_pct": 37.8,
+   "cp_lo_pct": 22.5,
+   "cp_hi_pct": 55.2,
+   "wilson_lo_pct": 24.1,
+   "wilson_hi_pct": 53.9,
+   "source": "data/external_corpus_reveal_665.json",
+   "note": "口径消融臂 B"
+  },
+  {
+   "id": "holdout.unknown_as_miss",
+   "label": "holdout 真错（unknown 记 miss）",
+   "k": 14,
+   "n": 17,
+   "rate_pct": 82.4,
+   "cp_lo_pct": 56.6,
+   "cp_hi_pct": 96.2,
+   "wilson_lo_pct": 59.0,
+   "wilson_hi_pct": 93.8,
+   "source": "data/holdout_reveal_3_665.json",
+   "note": "口径消融臂 B"
+  },
+  {
+   "id": "mutation.core",
+   "label": "内部变异 core",
+   "k": 110,
+   "n": 113,
+   "rate_pct": 97.3,
+   "cp_lo_pct": 92.4,
+   "cp_hi_pct": 99.4,
+   "wilson_lo_pct": 92.5,
+   "wilson_hi_pct": 99.1,
+   "source": "data/656_mutation_report_core.json",
+   "note": "killed+survived=113（import_error 30 / timeout 4 不计）；产物自称 97.3%"
+  },
+  {
+   "id": "mutation.all",
+   "label": "内部变异 all",
+   "k": 128,
+   "n": 157,
+   "rate_pct": 81.5,
+   "cp_lo_pct": 74.6,
+   "cp_hi_pct": 87.3,
+   "wilson_lo_pct": 74.7,
+   "wilson_hi_pct": 86.8,
+   "source": "data/656_mutation_report_all.json",
+   "note": "killed+survived=157（import_error 61 / timeout 5 不计）；产物自称 81.5%"
+  }
+ ],
+ "doc_sightings": [
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 6,
+   "value": 66.7,
+   "ok": true,
+   "ignored": false,
+   "text": ">   66.7% → **87.5%**（**不是验证器变强，是旧口径把 4 个缺陷记成了假 miss**）；"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 6,
+   "value": 87.5,
+   "ok": true,
+   "ignored": false,
+   "text": ">   66.7% → **87.5%**（**不是验证器变强，是旧口径把 4 个缺陷记成了假 miss**）；"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 19,
+   "value": 81.2,
+   "ok": true,
+   "ignored": false,
+   "text": "> | holdout 检出率 | 81.2%（13/16；95% CI 54.4–96.0） | **87.5%（14/16；95% CI 61.7–98.4）** | 666 只改了 `detect` 的档位、**没重跑生成器**；13/16 从未出现在任何产物里 |"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 19,
+   "value": 87.5,
+   "ok": true,
+   "ignored": false,
+   "text": "> | holdout 检出率 | 81.2%（13/16；95% CI 54.4–96.0） | **87.5%（14/16；95% CI 61.7–98.4）** | 666 只改了 `detect` 的档位、**没重跑生成器**；13/16 从未出现在任何产物里 |"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 29,
+   "value": 43.8,
+   "ok": true,
+   "ignored": false,
+   "text": "> 同一批 `14/32 = 43.8%` 与 `14/40 = 35.0%` **两个口径都报**（可测口径 / 全样本口径，见 §4 分母声明）。"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 29,
+   "value": 35.0,
+   "ok": true,
+   "ignored": false,
+   "text": "> 同一批 `14/32 = 43.8%` 与 `14/40 = 35.0%` **两个口径都报**（可测口径 / 全样本口径，见 §4 分母声明）。"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 38,
+   "value": 87.5,
+   "ok": true,
+   "ignored": false,
+   "text": "检出率（holdout reveal_3，`-O0`+`-O2` 双档口径）**87.5%**（14/16 可测；95% CI 61.7–98.4），"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 39,
+   "value": 43.8,
+   "ok": true,
+   "ignored": false,
+   "text": "外部 corpus **43.8%**（14/32 可测；95% CI 26.4–62.3；全样本口径 35.0% = 14/40，95% CI 20.6–51.7；分层见 §4），"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 39,
+   "value": 35.0,
+   "ok": true,
+   "ignored": false,
+   "text": "外部 corpus **43.8%**（14/32 可测；95% CI 26.4–62.3；全样本口径 35.0% = 14/40，95% CI 20.6–51.7；分层见 §4），"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 41,
+   "value": 97.3,
+   "ok": true,
+   "ignored": false,
+   "text": "我们**仍然放弃**把内部变异率（core 97.3%）当作缺陷检测率，**仍然放弃**把扩样样本当作盲态证据。"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 52,
+   "value": 66.7,
+   "ok": true,
+   "ignored": false,
+   "text": "66.7%（10/15；95% CI 38.4–88.2）→ **87.5%**（14/16；95% CI 61.7–98.4）：**这条改进没有让检测器多出一行代码**，只是不再用错误的档位去考它。"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 52,
+   "value": 87.5,
+   "ok": true,
+   "ignored": false,
+   "text": "66.7%（10/15；95% CI 38.4–88.2）→ **87.5%**（14/16；95% CI 61.7–98.4）：**这条改进没有让检测器多出一行代码**，只是不再用错误的档位去考它。"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 53,
+   "value": 81.2,
+   "ok": true,
+   "ignored": false,
+   "text": "（v0.4.1 补：当时的 81.2% 是**没重跑就写下的估计**；重跑后是 87.5%，见文首修订表。）"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 53,
+   "value": 87.5,
+   "ok": true,
+   "ignored": false,
+   "text": "（v0.4.1 补：当时的 81.2% 是**没重跑就写下的估计**；重跑后是 87.5%，见文首修订表。）"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 55,
+   "value": 66.7,
+   "ok": true,
+   "ignored": false,
+   "text": "（写死的 79/27/50、`STANDING` 里的 121/116/5、快照里的 advice 5、`-O1` 口径的 66.7%）。"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 91,
+   "value": 97.3,
+   "ok": true,
+   "ignored": true,
+   "text": "| 内部变异（656） | core **97.3%**（killed 110/113；95% CI 92.4–99.4）/ all **81.5%**（killed 128/157；95% CI 74.6–87.3） | **不作为**缺陷检测率（自证）。669 P1 更正：v0.4 原文写「ki"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 91,
+   "value": 81.5,
+   "ok": true,
+   "ignored": true,
+   "text": "| 内部变异（656） | core **97.3%**（killed 110/113；95% CI 92.4–99.4）/ all **81.5%**（killed 128/157；95% CI 74.6–87.3） | **不作为**缺陷检测率（自证）。669 P1 更正：v0.4 原文写「ki"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 91,
+   "value": 85.9,
+   "ok": false,
+   "ignored": true,
+   "text": "| 内部变异（656） | core **97.3%**（killed 110/113；95% CI 92.4–99.4）/ all **81.5%**（killed 128/157；95% CI 74.6–87.3） | **不作为**缺陷检测率（自证）。669 P1 更正：v0.4 原文写「ki"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 91,
+   "value": 81.5,
+   "ok": true,
+   "ignored": true,
+   "text": "| 内部变异（656） | core **97.3%**（killed 110/113；95% CI 92.4–99.4）/ all **81.5%**（killed 128/157；95% CI 74.6–87.3） | **不作为**缺陷检测率（自证）。669 P1 更正：v0.4 原文写「ki"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 92,
+   "value": 87.5,
+   "ok": true,
+   "ignored": false,
+   "text": "| **holdout reveal_3（双档口径）** | 真错 17：catch **14** / miss 2 / unknown 1 → **87.5%**（分母 16；95% CI 61.7–98.4）；对照误报 1/9（95% CI 0.3–48.2） | 旧 -O1 口径 66.7%（"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 92,
+   "value": 66.7,
+   "ok": true,
+   "ignored": false,
+   "text": "| **holdout reveal_3（双档口径）** | 真错 17：catch **14** / miss 2 / unknown 1 → **87.5%**（分母 16；95% CI 61.7–98.4）；对照误报 1/9（95% CI 0.3–48.2） | 旧 -O1 口径 66.7%（"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 95,
+   "value": 43.8,
+   "ok": true,
+   "ignored": false,
+   "text": "| **外部 corpus 40 条** | catch 14 / miss 18 / unknown 5 / not_error 3 → 可测口径 **43.8%**（14/32；95% CI 26.4–62.3）/ 全样本口径 **35.0%**（14/40；95% CI 20.6–51.7） "
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 95,
+   "value": 35.0,
+   "ok": true,
+   "ignored": false,
+   "text": "| **外部 corpus 40 条** | catch 14 / miss 18 / unknown 5 / not_error 3 → 可测口径 **43.8%**（14/32；95% CI 26.4–62.3）/ 全样本口径 **35.0%**（14/40；95% CI 20.6–51.7） "
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 95,
+   "value": 54.2,
+   "ok": true,
+   "ignored": false,
+   "text": "| **外部 corpus 40 条** | catch 14 / miss 18 / unknown 5 / not_error 3 → 可测口径 **43.8%**（14/32；95% CI 26.4–62.3）/ 全样本口径 **35.0%**（14/40；95% CI 20.6–51.7） "
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 95,
+   "value": 12.5,
+   "ok": true,
+   "ignored": false,
+   "text": "| **外部 corpus 40 条** | catch 14 / miss 18 / unknown 5 / not_error 3 → 可测口径 **43.8%**（14/32；95% CI 26.4–62.3）/ 全样本口径 **35.0%**（14/40；95% CI 20.6–51.7） "
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 107,
+   "value": 87.5,
+   "ok": true,
+   "ignored": false,
+   "text": "1. **检出率 87.5%（`-O0`+`-O2` 双档口径）可复算**：`python tools/holdout_reveal_3_665.py`；"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 112,
+   "value": 54.2,
+   "ok": true,
+   "ignored": false,
+   "text": "3. **外部效度的分层结构**：A 层 **54.2%**（13/24；95% CI 32.8–74.4）vs C 层 **0%**（0/4；95% CI 0–60.2）⇒ \"缺检测器\"假说有对照。"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 122,
+   "value": 66.7,
+   "ok": true,
+   "ignored": false,
+   "text": "1. ❌ **\"检出率从 66.7% 提到 87.5% = 验证器变强\"**：**变的是口径**。两组数字不可直接比较，"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 122,
+   "value": 87.5,
+   "ok": true,
+   "ignored": false,
+   "text": "1. ❌ **\"检出率从 66.7% 提到 87.5% = 验证器变强\"**：**变的是口径**。两组数字不可直接比较，"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 124,
+   "value": 81.2,
+   "ok": true,
+   "ignored": false,
+   "text": "1b. ❌ **\"数字写进工具就算改完了\"**：666 的 81.2% 就是这么来的 —— 改了 `detect` 的档位却**没重跑生成器**，"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 129,
+   "value": 43.8,
+   "ok": true,
+   "ignored": true,
+   "text": "4. ❌ **\"外部 corpus 43.8%（14/32）优于 33.3%\"**<!-- ci-check: ignore（此处引用的是被否定的错误比较，本身不是待成立的断言；区间见 §4） -->：两轮是**不同样本集合**（662 轮 20 条 vs 665 轮 40 条）。"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 129,
+   "value": 33.3,
+   "ok": true,
+   "ignored": true,
+   "text": "4. ❌ **\"外部 corpus 43.8%（14/32）优于 33.3%\"**<!-- ci-check: ignore（此处引用的是被否定的错误比较，本身不是待成立的断言；区间见 §4） -->：两轮是**不同样本集合**（662 轮 20 条 vs 665 轮 40 条）。"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 130,
+   "value": 33.3,
+   "ok": true,
+   "ignored": false,
+   "text": "662 的 33.3% **不可复算**——那一轮产物只记了率、没记分子/分母（见 `external_corpus_reveal_665.json`"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 155,
+   "value": 97.3,
+   "ok": true,
+   "ignored": false,
+   "text": "- **威胁**：对账器、门禁、报告都由同一套工具链产出 ⇒ 自证闭环；变异率（97.3%）是**内部指标**。"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 162,
+   "value": 12.5,
+   "ok": true,
+   "ignored": false,
+   "text": "外部 corpus 只到类别级出处；B 层（跨编译器差分）几乎抓不到（12.5%）。"
+  },
+  {
+   "file": "research/paper_v0.4.md",
+   "line": 212,
+   "value": 87.5,
+   "ok": true,
+   "ignored": false,
+   "text": "| `python tools/holdout_reveal_3_665.py` | 双档口径的 reveal + 检出率（**87.5%**）+ 逐样本明细 + 环境 |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 32,
+   "value": 85.9,
+   "ok": false,
+   "ignored": false,
+   "text": "（= 85.9% ≠ 声称的 81.5%），以及若干\"率无分母\"的引用。"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 32,
+   "value": 81.5,
+   "ok": true,
+   "ignored": false,
+   "text": "（= 85.9% ≠ 声称的 81.5%），以及若干\"率无分母\"的引用。"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 88,
+   "value": 60.2,
+   "ok": true,
+   "ignored": false,
+   "text": "* 零计数写 `0/n（95% CI 0–上限）`：`0/4` 上界 60.2%、`0/8` 上界 36.9%；"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 88,
+   "value": 36.9,
+   "ok": false,
+   "ignored": false,
+   "text": "* 零计数写 `0/n（95% CI 0–上限）`：`0/4` 上界 60.2%、`0/8` 上界 36.9%；"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 89,
+   "value": 54.1,
+   "ok": false,
+   "ignored": false,
+   "text": "* 满计数写 `n/n（95% CI 下界–100）`：`6/6` 下界 54.1%；"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 128,
+   "value": 87.5,
+   "ok": true,
+   "ignored": false,
+   "text": "| holdout 真错（双档） | 14/16 | 87.5% | 95% CI [61.7, 98.4] | [64.0, 96.5] | 探索性（n<30） |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 129,
+   "value": 11.1,
+   "ok": true,
+   "ignored": false,
+   "text": "| holdout 对照误报 | 1/9 | 11.1% | 95% CI [0.3, 48.2] | [2.0, 43.5] | 探索性 |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 130,
+   "value": 43.8,
+   "ok": true,
+   "ignored": false,
+   "text": "| external 可测口径 | 14/32 | 43.8% | 95% CI [26.4, 62.3] | [28.2, 60.7] | 主口径 |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 131,
+   "value": 35.0,
+   "ok": true,
+   "ignored": false,
+   "text": "| external 全样本 | 14/40 | 35.0% | 95% CI [20.6, 51.7] | [22.1, 50.5] | 第二口径 |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 132,
+   "value": 54.2,
+   "ok": true,
+   "ignored": false,
+   "text": "| external 层 A | 13/24 | 54.2% | 95% CI [32.8, 74.4] | [35.1, 72.1] | 探索性 |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 133,
+   "value": 12.5,
+   "ok": true,
+   "ignored": false,
+   "text": "| external 层 B | 1/8 | 12.5% | 95% CI [0.3, 52.7] | [2.2, 47.1] | 探索性 |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 136,
+   "value": 97.3,
+   "ok": true,
+   "ignored": false,
+   "text": "| 变异 kill（core） | 110/113 | 97.3% | 95% CI [92.4, 99.4] | — | 内部指标，不作缺陷检测率 |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 137,
+   "value": 81.5,
+   "ok": true,
+   "ignored": false,
+   "text": "| 变异 kill（all） | 128/157 | 81.5% | 95% CI [74.6, 87.3] | — | 同上 |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 140,
+   "value": 85.9,
+   "ok": false,
+   "ignored": true,
+   "text": "（110/128 = 85.9% ≠ 81.5%）<!-- ci-check: ignore（引用被更正掉的错误配对本身；正确值见上表） -->，正确的分母是 113（core）/ 157（all）；② v0.4 未给 `33.3%` 标注"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 140,
+   "value": 81.5,
+   "ok": true,
+   "ignored": true,
+   "text": "（110/128 = 85.9% ≠ 81.5%）<!-- ci-check: ignore（引用被更正掉的错误配对本身；正确值见上表） -->，正确的分母是 113（core）/ 157（all）；② v0.4 未给 `33.3%` 标注"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 140,
+   "value": 33.3,
+   "ok": true,
+   "ignored": true,
+   "text": "（110/128 = 85.9% ≠ 81.5%）<!-- ci-check: ignore（引用被更正掉的错误配对本身；正确值见上表） -->，正确的分母是 113（core）/ 157（all）；② v0.4 未给 `33.3%` 标注"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 147,
+   "value": 87.5,
+   "ok": true,
+   "ignored": false,
+   "text": "| A 主口径（unknown 剔除） | 87.5%（14/16；95% CI [61.7, 98.4]） | 43.8%（14/32；95% CI [26.4, 62.3]） |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 147,
+   "value": 43.8,
+   "ok": true,
+   "ignored": false,
+   "text": "| A 主口径（unknown 剔除） | 87.5%（14/16；95% CI [61.7, 98.4]） | 43.8%（14/32；95% CI [26.4, 62.3]） |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 148,
+   "value": 82.4,
+   "ok": true,
+   "ignored": false,
+   "text": "| B unknown 记 miss | 82.4%（14/17；95% CI [56.6, 96.2]） | 37.8%（14/37；95% CI [22.5, 55.2]） |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 148,
+   "value": 37.8,
+   "ok": true,
+   "ignored": false,
+   "text": "| B unknown 记 miss | 82.4%（14/17；95% CI [56.6, 96.2]） | 37.8%（14/37；95% CI [22.5, 55.2]） |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 149,
+   "value": 82.4,
+   "ok": true,
+   "ignored": false,
+   "text": "| C unknown + not_error 都进分母 | 82.4%（14/17；95% CI [56.6, 96.2]） | 35.0%（14/40；95% CI [20.6, 51.7]） |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 149,
+   "value": 35.0,
+   "ok": true,
+   "ignored": false,
+   "text": "| C unknown + not_error 都进分母 | 82.4%（14/17；95% CI [56.6, 96.2]） | 35.0%（14/40；95% CI [20.6, 51.7]） |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 153,
+   "value": 12.5,
+   "ok": true,
+   "ignored": false,
+   "text": "**读法**：口径效应（external 最多 8.8pp）**不小于**层间差异的一部分（B 层 12.5% 的 CI 上界 52.7%）⇒"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 153,
+   "value": 52.7,
+   "ok": true,
+   "ignored": false,
+   "text": "**读法**：口径效应（external 最多 8.8pp）**不小于**层间差异的一部分（B 层 12.5% 的 CI 上界 52.7%）⇒"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 154,
+   "value": 35.0,
+   "ok": true,
+   "ignored": false,
+   "text": "任何\"只报一个百分数\"的写法都会让读者在 35.0%–43.8% 之间自由发挥。"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 154,
+   "value": 43.8,
+   "ok": true,
+   "ignored": false,
+   "text": "任何\"只报一个百分数\"的写法都会让读者在 35.0%–43.8% 之间自由发挥。"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 159,
+   "value": 33.3,
+   "ok": true,
+   "ignored": false,
+   "text": "* **没报**：B1/B2/B3（§2.3，登记阻塞原因）；662 轮的 `33.3%`（**不可复算**：旧产物只记率，"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 178,
+   "value": 66.7,
+   "ok": true,
+   "ignored": false,
+   "text": "* **仪器配置就是结论**：单档 `-O1` → 双档 `-O0/-O2` 使 holdout 从 66.7%（10/15；95% CI [38.4, 88.2]）"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 179,
+   "value": 87.5,
+   "ok": true,
+   "ignored": false,
+   "text": "变成 87.5%（14/16；95% CI [61.7, 98.4]）。**检测器一行没改**，改的是\"怎么测\"。"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 188,
+   "value": 43.8,
+   "ok": true,
+   "ignored": false,
+   "text": "所以 pooled 43.8% 是**分层构成相关**的读数；换构成就换值（这就是要求\"两口径并列\"的原因）。"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 195,
+   "value": 12.5,
+   "ok": true,
+   "ignored": false,
+   "text": "（层 B 12.5% 的上界 52.7%）。**本批所有这类行都标 [探索性]**，不作为\"能支撑\"结论。"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 195,
+   "value": 52.7,
+   "ok": true,
+   "ignored": false,
+   "text": "（层 B 12.5% 的上界 52.7%）。**本批所有这类行都标 [探索性]**，不作为\"能支撑\"结论。"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 214,
+   "value": 87.5,
+   "ok": true,
+   "ignored": false,
+   "text": "| holdout 检出率（双档口径） | 87.5%（14/16；95% CI [61.7, 98.4]） | `python tools/holdout_reveal_3_665.py` |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 215,
+   "value": 43.8,
+   "ok": true,
+   "ignored": false,
+   "text": "| external 检出率（两口径） | 43.8%（14/32；95% CI [26.4, 62.3]）/ 35.0%（14/40；95% CI [20.6, 51.7]） | `python tools/external_corpus_reveal_665.py` |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 215,
+   "value": 35.0,
+   "ok": true,
+   "ignored": false,
+   "text": "| external 检出率（两口径） | 43.8%（14/32；95% CI [26.4, 62.3]）/ 35.0%（14/40；95% CI [20.6, 51.7]） | `python tools/external_corpus_reveal_665.py` |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 224,
+   "value": 87.5,
+   "ok": true,
+   "ignored": false,
+   "text": "* ❌ \"检出率 87.5% 说明验证器比 666 强\"：变的是**档位口径**，检测器一行没改（§5.2）。"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 225,
+   "value": 43.8,
+   "ok": true,
+   "ignored": false,
+   "text": "* ❌ \"external 43.8% 优于 662 轮的 33.3%\"：两轮样本集合不同，且 33.3% **不可复算**（§4.3）。"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 225,
+   "value": 33.3,
+   "ok": true,
+   "ignored": false,
+   "text": "* ❌ \"external 43.8% 优于 662 轮的 33.3%\"：两轮样本集合不同，且 33.3% **不可复算**（§4.3）。"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 225,
+   "value": 33.3,
+   "ok": true,
+   "ignored": false,
+   "text": "* ❌ \"external 43.8% 优于 662 轮的 33.3%\"：两轮样本集合不同，且 33.3% **不可复算**（§4.3）。"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 226,
+   "value": 60.2,
+   "ok": true,
+   "ignored": false,
+   "text": "* ❌ \"C 层检出率 0%\"：0/4 的 95% CI 上界是 60.2%（零计数与高真实率相容，不能说\"零缺陷漏检\"）。"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 227,
+   "value": 81.5,
+   "ok": true,
+   "ignored": false,
+   "text": "* ❌ \"变异 kill 81.5% 代表缺陷检测能力\"：内部充分度指标（自证闭环）。"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 235,
+   "value": 33.3,
+   "ok": true,
+   "ignored": false,
+   "text": "| 662 轮 external | 33.3% | 旧产物只记率、无分子/分母 ⇒ 永远拿不到口径与区间（§4.3） |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 236,
+   "value": 81.2,
+   "ok": true,
+   "ignored": false,
+   "text": "| 666 声称的 holdout | 81.2%（13/16；95% CI [54.4, 96.0]） | 从未出现在任何产物里；重跑为 87.5% ⇒ **作废**（v0.4 文首修订表） |"
+  },
+  {
+   "file": "research/paper_v0.5.md",
+   "line": 236,
+   "value": 87.5,
+   "ok": true,
+   "ignored": false,
+   "text": "| 666 声称的 holdout | 81.2%（13/16；95% CI [54.4, 96.0]） | 从未出现在任何产物里；重跑为 87.5% ⇒ **作废**（v0.4 文首修订表） |"
+  },
+  {
+   "file": "README.md",
+   "line": 151,
+   "value": 97.3,
+   "ok": true,
+   "ignored": false,
+   "text": "- `mutation score`（core 97.3% = 110/113，95% CI 92.4–99.4；all 81.5% = 128/157，95% CI 74.6–87.3）衡量的是**测试充分度（Test adequacy）**，"
+  },
+  {
+   "file": "README.md",
+   "line": 151,
+   "value": 81.5,
+   "ok": true,
+   "ignored": false,
+   "text": "- `mutation score`（core 97.3% = 110/113，95% CI 92.4–99.4；all 81.5% = 128/157，95% CI 74.6–87.3）衡量的是**测试充分度（Test adequacy）**，"
+  }
+ ]
+}
