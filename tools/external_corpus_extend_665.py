@@ -137,9 +137,13 @@ def check() -> list[str]:
 def merged(apply: bool = True) -> dict:
     """返回**合并视图**（旧 20 + 665 新增 20）。理由见模块头：旧工具会重写产物文件。"""
     c = json.loads(CORPUS.read_text(encoding="utf-8"))
-    old = [s for s in c["samples"] if s["id"] not in {n["id"] for n in NEW}]
+    # 670a：后续批次（669d）并入的样本**原样保留**、不计入"原 20 条"判据
+    late_ids = set(c.get("extend_669d", {}).get("added_ids") or [])
+    late_samples = [s for s in c["samples"] if s["id"] in late_ids]
+    old = [s for s in c["samples"]
+           if s["id"] not in {n["id"] for n in NEW} and s["id"] not in late_ids]
     if len(old) != 20:
-        raise SystemExit(f"合并基线应为原 20 条，实际 {len(old)}：拒绝（防误改）")
+        raise SystemExit(f"合并基线应为原 20 条（去掉后续扩样 id 后），实际 {len(old)}：拒绝（防误改）")
     out: dict = json.loads(json.dumps({**c, "samples": old}))    # 深拷贝（666 A1：加注解消 no-any-return）
     out["samples"].extend(NEW)
     out["count"] = len(out["samples"])
@@ -159,7 +163,13 @@ def merged(apply: bool = True) -> dict:
     }
     if apply:
         MERGED.write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        CORPUS.write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        # 670a：写 canonical 时把**后续批次（669d）**的样本续回（只增不减）
+        corpus_out: dict = json.loads(json.dumps(out))
+        corpus_out["samples"].extend(late_samples)
+        corpus_out["count"] = len(corpus_out["samples"])
+        corpus_out["extend_669d"] = c.get("extend_669d", {})
+        CORPUS.write_text(json.dumps(corpus_out, ensure_ascii=False, indent=2) + "\n",
+                          encoding="utf-8")
     return out
 
 

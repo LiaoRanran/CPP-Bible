@@ -12,12 +12,15 @@ import defense_chain_deep_613 as d3  # noqa: E402
 
 
 def test_node_count():
-    assert len(d3.load_nodes()) == 131
+    # 670a 去写死：节点数取 W2 权威源现算（原冻结 131）
+    import w2_authority_640b as auth  # noqa: E402
+    assert len(d3.load_nodes()) == auth.current()["nodes"]
 
 
 def test_depth_covers_all_nodes_and_is_deterministic():
+    import w2_authority_640b as auth  # noqa: E402
     c = d3.compute(d3.load_nodes())
-    assert len(c["depth"]) == c["n_nodes"] == 131
+    assert len(c["depth"]) == c["n_nodes"] == auth.current()["nodes"]
     assert c["depth"] == d3.compute(d3.load_nodes())["depth"]
     assert all(v >= 0 for v in c["depth"].values())
 

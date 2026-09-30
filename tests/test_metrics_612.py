@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
 import counts_659 as counts  # noqa: E402
 import metrics_612 as e  # noqa: E402
+import w2_authority_640b as auth  # noqa: E402
 
 
 def test_e2_fragmentation_counts():
@@ -21,8 +22,9 @@ def test_e2_fragmentation_counts():
 
 
 def test_e3_oracle_quality_zero_review():
+    """670a 去写死：oracle 分母改为与 611 D3 同口径现算（CARDS_TOTAL），不再冻结 CARDS_REAL。"""
     q = e.e3_oracle_quality()
-    assert q["total"] == counts.CARDS_REAL
+    assert q["total"] == counts.CARDS_TOTAL
     assert q["distinct_reviewers"] == 0
     assert q["reviews_done"] == 0
     assert q["modifications"] == 0
@@ -31,10 +33,11 @@ def test_e3_oracle_quality_zero_review():
 
 
 def test_e1_modify_modes_locked():
+    """670a 去写死：原冻结 (89,42)（640 时点快照）。改为与 W2 权威源现算一致 + 双档趋同。"""
     m = e.e1_modify_modes()
-    # 640 A1：签署后命题可信度 high ⇒ 双模式判决趋同（机制差异保留，见 640_b_class_fix.md）
-    assert (m["keep-low"]["IN"], m["keep-low"]["OUT"]) == (89, 42)
-    assert (m["upgrade-medium"]["IN"], m["upgrade-medium"]["OUT"]) == (89, 42)
+    ref = auth.current()
+    assert (m["keep-low"]["IN"], m["keep-low"]["OUT"]) == (ref["IN"], ref["OUT"])
+    assert (m["upgrade-medium"]["IN"], m["upgrade-medium"]["OUT"]) == (ref["IN"], ref["OUT"])
 
 
 def test_render_has_three_sections():

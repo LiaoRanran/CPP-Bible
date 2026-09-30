@@ -27,6 +27,7 @@ import json
 from pathlib import Path
 
 import human_review_cli as hrc
+import w2_authority_640b as auth  # 670a：W2 数字单一权威源
 import weighted_af_solver as w2
 
 EDGES = w2.load_edges()
@@ -34,7 +35,9 @@ FIRST = EDGES[0]
 FIRST_ID = str(FIRST["id"])
 TARGET_MIS = str(FIRST["target"])          # 实测 = MIS-CONC-003
 REASON = "人审确认：该攻击关系成立且反驳证据可核（609 A3 自测用理由，长度达标）"
-BASE = {"IN": 89, "OUT": 42, "UNDEC": 0, "nodes": 131}
+# 670a 去写死：596/594 向后兼容基线不再冻结 89/42/131，改取 W2 权威源**现算**
+BASE = {"IN": auth.current()["IN"], "OUT": auth.current()["OUT"],
+        "UNDEC": auth.current()["UNDEC"], "nodes": auth.current()["nodes"]}
 
 
 def _ann(p: Path, rows: list[dict]) -> Path:
@@ -55,7 +58,8 @@ def test_no_human_review_equals_596_baseline():
     assert doc["summary"]["OUT"] == BASE["OUT"]
     assert doc["summary"]["UNDEC"] == BASE["UNDEC"]
     assert doc["summary"]["nodes"] == BASE["nodes"]
-    assert doc["defeating_edges"] == 194 and doc["edges"] == 388
+    ref = auth.current()                                   # 670a：击败边/总边取权威源现算
+    assert doc["defeating_edges"] == ref["defeating_edges"] and doc["edges"] == ref["edges"]
     assert doc["rounds"] == 3
     assert w2.check(doc) == [], "596/594 口径被改坏了（这是硬回归）"
 
@@ -67,8 +71,12 @@ def test_cli_no_human_reviewed_matches_baseline(tmp_path: Path, capsys):
     # ⇒ 这些参数必须写在**子命令之后**（写前面会被默认值吃掉 ⇒ 打真实 DEFAULT_OUT）。
     assert w2.main(["solve", "--no-human-reviewed", "--annotations", str(ann),
                     "--out", str(out)]) == 0
-    assert json.loads(out.read_text(encoding="utf-8"))["summary"]["IN"] == 89
-    assert "IN 89 / OUT 42 / UNDEC 0（3 轮 · 击败边 194/388）" in capsys.readouterr().out
+    # 670a 去写死：未审图基线取 `unreviewed_baseline()` 现算
+    exp = w2.unreviewed_baseline()
+    assert json.loads(out.read_text(encoding="utf-8"))["summary"]["IN"] == exp["IN"]
+    tail = (f"IN {exp['IN']} / OUT {exp['OUT']} / UNDEC {exp['UNDEC']}"
+            f"（3 轮 · 击败边 {auth.current()['defeating_edges']}/{auth.current()['edges']}）")
+    assert tail in capsys.readouterr().out
 
 
 # ── 2. approve 权重升级 + 后果 ────────────────────────────────────────────────

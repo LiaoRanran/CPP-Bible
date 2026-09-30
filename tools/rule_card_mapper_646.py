@@ -204,9 +204,14 @@ def write_report(result: dict) -> None:
 
 
 def selftest() -> int:
-    """只读自检：已知关联必命中（GRAY→UB 卡 high；MISCONCEPTION→有误解的卡）。"""
+    """只读自检：已知关联必命中（GRAY→UB 卡 high；MISCONCEPTION→有误解的卡）。
+
+    670a 去写死：卡片域不再冻结 37，改与语料基数权威源 `counts_659.ATOMS_REAL`
+    **跨源对账**（本模块走 `evidence_base_644.list_atoms()`，权威源走 `atoms/**/ATOM-*.md` 现算）。
+    """
+    import counts_659 as counts  # noqa: E402
     m = build_mapping()
-    assert m["card_count"] == 37, m["card_count"]
+    assert m["card_count"] == counts.ATOMS_REAL, m["card_count"]
     # GRAY 规则 → UB 卡 high
     gray = m["rules"].get("ATOM-GRAY-ZONE")
     assert gray and any(c["card"] == "ATOM-UB-GRAY-001" and c["strength"] == "high"

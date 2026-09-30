@@ -30,6 +30,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 import human_review_cli as hrc  # noqa: E402
 import metrics_610 as m610  # noqa: E402
 import soft_baseline_634 as SB  # 634 A3  # noqa: E402
+import w2_authority_640b as auth  # noqa: E402
 import weighted_af_solver as w2  # noqa: E402
 
 REASON = "611 B1 测试：口径双模式锁（modify 档位口径由 --modify-mode 决定）"
@@ -49,10 +50,12 @@ def test_default_mode_is_keep_low_and_matches_authoritative():
     eff, changes = w2.reviewed_edges(edges, anns)                    # 不传 ⇒ 默认档
     doc = w2.solve(eff)
     art = json.loads((ROOT / "data" / "grounded_labels_w2.json").read_text(encoding="utf-8"))
-    # 640 A1 更新：632/634 命题级人签 ⇒ 命题可信度 high ⇒ 权威产物重算
-    # （IN79/OUT42/击败边 194；旧值 114/7/17 是签署前快照）
-    assert (doc["summary"]["IN"], doc["summary"]["OUT"], doc["summary"]["UNDEC"]) == (89, 42, 0)
-    assert doc["defeating_edges"] == 194 and doc["edges"] == 388 and doc["rounds"] == 3
+    # 670a 去写死：现算值不再冻结 (89,42,194/388)——改与 W2 权威源现算对齐
+    ref = auth.current()
+    assert (doc["summary"]["IN"], doc["summary"]["OUT"], doc["summary"]["UNDEC"]) == \
+        (ref["IN"], ref["OUT"], ref["UNDEC"])
+    assert doc["defeating_edges"] == ref["defeating_edges"] and doc["edges"] == ref["edges"]
+    assert doc["rounds"] == 3
     assert doc["summary"]["IN"] == art["summary"]["IN"]
     assert doc["summary"]["OUT"] == art["summary"]["OUT"]
     assert doc["defeating_edges"] == art["defeating_edges"]
@@ -73,10 +76,12 @@ def test_upgrade_mode_reproduces_609_caliber():
     anns = hrc.load_annotations()
     eff, changes = w2.reviewed_edges(edges, anns, modify_mode="upgrade-medium")
     doc = w2.solve(eff)
-    # 640 A1：609 口径机制保留（34 条 modify 全部 effective=True、档位=medium）；
-    # 但签署后命题可信度 high ⇒ upgrade 亦无法翻转 ⇒ 标签与 keep-low 趋同（79/42/194）
-    assert (doc["summary"]["IN"], doc["summary"]["OUT"], doc["summary"]["UNDEC"]) == (89, 42, 0)
-    assert doc["defeating_edges"] == 194 and doc["rounds"] == 3
+    # 670a 去写死：609 口径机制保留（34 条 modify 全部 effective=True、档位=medium）；
+    # 但签署后命题可信度 high ⇒ upgrade 亦无法翻转 ⇒ 标签与 keep-low 趋同（取权威源现算）
+    ref = auth.current()
+    assert (doc["summary"]["IN"], doc["summary"]["OUT"], doc["summary"]["UNDEC"]) == \
+        (ref["IN"], ref["OUT"], ref["UNDEC"])
+    assert doc["defeating_edges"] == ref["defeating_edges"] and doc["rounds"] == 3
     mods = [k for k, v in changes.items() if v["kind"] == "modify"]
     assert all(changes[k]["effective"] is True for k in mods)
     assert all(changes[k]["new_confidence"] == "medium" for k in mods)
@@ -90,8 +95,10 @@ def test_invalid_mode_fails_closed():
 
 
 def test_cli_both_modes_and_reports_noop_count(capsys):
+    """670a 去写死：IN 不再冻结 89，取 W2 权威源现算。"""
+    ref = auth.current()
     assert w2.main(["stats", "--no-human-reviewed", "--json"]) == 0
-    assert json.loads(capsys.readouterr().out)["by_label"]["IN"] == 89
+    assert json.loads(capsys.readouterr().out)["by_label"]["IN"] == ref["IN"]
     # 默认档（keep-low）：stderr 必须写明"34 条 modify 未生效"
     assert w2.main(["stats", "--json"]) == 0
     err = capsys.readouterr().err
@@ -100,7 +107,7 @@ def test_cli_both_modes_and_reports_noop_count(capsys):
     assert w2.main(["stats", "--modify-mode", "upgrade-medium", "--json"]) == 0
     out = capsys.readouterr()
     assert "modify 口径 upgrade-medium" in out.err and "0 条 modify 未生效" in out.err
-    assert json.loads(out.out)["by_label"]["IN"] == 89  # 640 A1：签署后两档趋同
+    assert json.loads(out.out)["by_label"]["IN"] == ref["IN"]  # 两档趋同（现算）
 
 
 def test_diff_does_not_blame_ignored_modify(tmp_path: Path, capsys):
@@ -132,9 +139,12 @@ def test_metrics_record_two_mode_divergence():
     assert out["current_mode"] == "keep-low"
     assert set(out["modes"]) == {"keep-low", "upgrade-medium"}
     lo, up = out["modes"]["keep-low"], out["modes"]["upgrade-medium"]
-    # 640 A1：签署后两档判决趋同（机制差异仍在：keep-low 下 34 条 modify 未生效留痕）
-    assert (lo["in"], lo["out"], lo["defeating_edges"]) == (89, 42, 194)
-    assert (up["in"], up["out"], up["defeating_edges"]) == (89, 42, 194)
+    # 670a 去写死：两档判决趋同，且与 W2 权威源现算一致（原冻结 89/42/194）
+    ref = auth.current()
+    assert (lo["in"], lo["out"], lo["defeating_edges"]) == \
+        (ref["IN"], ref["OUT"], ref["defeating_edges"])
+    assert (up["in"], up["out"], up["defeating_edges"]) == \
+        (ref["IN"], ref["OUT"], ref["defeating_edges"])
     assert out["divergence"] is False
     assert out["divergence_detail"] == {}  # 全零差值被过滤
     # grounded_status 采集器：默认档与权威产物一致
@@ -143,4 +153,4 @@ def test_metrics_record_two_mode_divergence():
     assert g["default_matches_artifact"] is True
     # 634 A3：全局计数，读单一基线
     assert g["solver_recompute"]["in"] == SB.soft("modify_solver_recompute_in", g["solver_recompute"]["in"])
-    assert g["solver_recompute_default"]["in"] == 89  # 640 A1：默认档现算（签署后）
+    assert g["solver_recompute_default"]["in"] == auth.current()["IN"]  # 670a：默认档现算

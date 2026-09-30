@@ -139,18 +139,19 @@ def render_report(c: dict) -> str:
         flag = "（OUT MIS）" if node in OUT_MIS_7 else ""
         lines.append(f"- `{node}` → {n} 条 {flag}")
     lines += ["", "## 三、两档优缺点（事实，不是裁决）", "",
-              "**`keep-low`（入库权威，640 重算后 IN89/OUT42/击败194）**：",
+              f"**`keep-low`（入库权威，现算 IN{kl['in']}/OUT{kl['out']}/击败{kl['defeating_edges']}）**：",
               "- ✅ 与已冻结的 `data/grounded_labels_w2.json` **逐字段一致**（640 A1 按签署后状态重算），"
               "不推翻既有交付；",
               "- ✅ 保守：人审说「保持 low」就保持 low，不替人升档；",
               "- ❌ 与 34 条 modify 人审的**字面意图**（`new_confidence=medium`）**不符** —— "
               "人审想升档，工具没升；",
-              "- ❌ OUT MIS 42 个（签署后命题可信度 high，误解本就无法击败命题）。",
+              f"- ❌ OUT MIS {len(kl['out_mis'])} 个（签署后命题可信度 high，误解本就无法击败命题）。",
               "",
               "**`upgrade-medium`（609 A3）**：",
               "- ✅ 尊重 34 条 modify 人审的**字面意图**（medium 落档）；",
               "- ❌ 640 A1 实测：签署后命题可信度 high，34 条 low→medium 的升档**不足以翻转任何判决** "
-              "⇒ 两档判决趋同（IN89/OUT42/击败194）——「upgrade 抽空攻击性」的 611 论据已随签署失效；",
+              f"⇒ 两档判决趋同（IN{up['in']}/OUT{up['out']}/击败{up['defeating_edges']}）"
+              "——「upgrade 抽空攻击性」的 611 论据已随签署失效；",
               "- ⚖️ 两档的**机制差异**仍在（keep-low 下 34 条 modify 未生效留痕），"
               "若未来出现足以翻转的 modify 档位将重新分歧。", "",
               "## 四、口径裁决建议（不擅自执行）", "",

@@ -128,8 +128,11 @@ def main(argv: list[str] | None = None) -> int:
 
     if a.check:
         errs = []
-        if c["n_nodes"] != 131:
-            errs.append(f"节点数应为 131，实测 {c['n_nodes']}")
+        # 670a 去写死：节点数取 W2 权威源现算（原冻结 131）
+        import w2_authority_640b as _auth  # noqa: E402
+        _n = _auth.current()["nodes"]
+        if c["n_nodes"] != _n:
+            errs.append(f"节点数应为 {_n}，实测 {c['n_nodes']}")
         if len(c["depth"]) != c["n_nodes"]:
             errs.append("深度未覆盖全部节点")
         if c["depth"] != compute(load_nodes())["depth"]:

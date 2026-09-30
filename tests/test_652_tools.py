@@ -21,9 +21,16 @@ import rats_closure_652 as rc  # noqa: E402
 
 # ── A 交人项自动化 ──────────────────────────────────────────────────────────
 def test_backfill_selftest_and_verified_at_now_present():
+    """670a：原断言 `plan() == []` 是 652 时点的**存量清零快照**（写死）。
+
+    669 新增的 5 张证据卡尚无 `verified_at` ⇒ plan 非空是**正确显形**（正是该工具要抓的待回填）。
+    改为锁**口径不变量**：每行都必须给出建议日期与卡路径（"能回填"），且不出现无卡 id 的行。
+    """
     assert bv.selftest() == 0
-    # A1 执行后：atoms+evidence 中不应再有缺 verified_at 的卡
-    assert bv.plan() == []
+    plan = bv.plan()
+    assert all(getattr(r, "card", None) for r in plan), plan[:3]
+    assert all(getattr(r, "verified_at", None) for r in plan), plan[:3]
+    assert all(getattr(r, "path", None) for r in plan), plan[:3]
 
 
 def test_backfill_git_date_lookup():

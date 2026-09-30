@@ -12,7 +12,17 @@ import liveness_priority_613 as a1  # noqa: E402
 
 
 def test_low_cost_count():
-    assert len(a2.load_low_cost()) == 9
+    """670a 去写死：low 档条数不再冻结 9。
+
+    改锁**定义性不变量**：low 档 == `cost_of` 判据（class A，或 class B 且 confidence=high），
+    且非空、非全集（否则排序退化）。
+    """
+    rows = a2.load_low_cost()
+    total = len(a1.build())
+    assert 0 < len(rows) < total, (len(rows), total)
+    assert all(r["cost"] == "low" for r in rows)
+    assert all(r["class"] == "A" or (r["class"] == "B" and r["confidence"] == "high")
+               for r in rows), [r["proposition_id"] for r in rows]
 
 
 def test_all_patches_valid():
@@ -39,10 +49,13 @@ def test_validate_rejects_universal_and_empty():
 
 
 def test_projection_is_before_minus_addressed():
-    proj = a2.projection(9)
-    assert proj["warn_before"] == 60
-    assert proj["warn_after"] == 51
-    assert proj["addressed"] == 9
+    """670a 去写死：不再冻结 60/51/9；锁「投影 warn_after = 基线 warn − 已处理条数」的算术不变量。"""
+    import liveness_impact as b3  # noqa: E402
+    n = len(a2.load_low_cost())
+    proj = a2.projection(n)
+    assert proj["warn_before"] == b3.current_warn_count()
+    assert proj["addressed"] == n
+    assert proj["warn_after"] == proj["warn_before"] - n
 
 
 def test_render_contains_yaml_fragment():

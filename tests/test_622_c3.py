@@ -66,9 +66,12 @@ def test_alignment_crosstab_math():
     assert ct["abstain_count"] == 1
 
 
-def test_pck_authority_map_covers_83():
+def test_pck_authority_map_covers_certified_cards():
+    """670a 去写死 + 诚实登记：`pck_authority_map` 覆盖的是**有证书**的卡，
+    与事实源卡数差一个登记缺口（`data/670a_cert_gap.json`）。"""
+    gap = json.load(open(os.path.join(ROOT, "data", "670a_cert_gap.json"), encoding="utf-8"))
     amap = A.pck_authority_map()
-    assert len(amap) == counts.CARDS_REAL
+    assert len(amap) == counts.CARDS_REAL - len(gap["gap_cards"])
     assert sum(1 for v in amap.values() if v == "approved") == 27
     assert sum(1 for v in amap.values() if v == "pending") == 76
 

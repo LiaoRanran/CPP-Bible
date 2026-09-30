@@ -1,7 +1,7 @@
 {
   "gate": "669d",
   "overall": "PASS",
-  "generated_at": "2026-09-30 20:10:51",
+  "generated_at": "2026-09-30 22:46:32",
   "new_blocks": [],
   "accepted_gaps": [
     {
@@ -32,6 +32,141 @@
       "gap_owner": "669 工程（669d 审计登记）"
     },
     {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "severity": "warn",
+      "target": "atoms/draft650/ATOM-DRAFT650-001.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "fix_hint": "草稿卡必须显式写 boundary: unknown",
+      "gap_reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "gap_owner": "669 工程（669d 审计登记）"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "severity": "warn",
+      "target": "atoms/draft650/ATOM-DRAFT650-002.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "fix_hint": "草稿卡必须显式写 boundary: unknown",
+      "gap_reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "gap_owner": "669 工程（669d 审计登记）"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "severity": "warn",
+      "target": "atoms/draft650/ATOM-DRAFT650-003.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "fix_hint": "草稿卡必须显式写 boundary: unknown",
+      "gap_reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "gap_owner": "669 工程（669d 审计登记）"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "severity": "warn",
+      "target": "atoms/draft650/ATOM-DRAFT650-004.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "fix_hint": "草稿卡必须显式写 boundary: unknown",
+      "gap_reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "gap_owner": "669 工程（669d 审计登记）"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "severity": "warn",
+      "target": "atoms/draft650/ATOM-DRAFT650-005.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "fix_hint": "草稿卡必须显式写 boundary: unknown",
+      "gap_reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "gap_owner": "669 工程（669d 审计登记）"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "severity": "warn",
+      "target": "atoms/draft650/ATOM-DRAFT650-006.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "fix_hint": "草稿卡必须显式写 boundary: unknown",
+      "gap_reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "gap_owner": "669 工程（669d 审计登记）"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "severity": "warn",
+      "target": "atoms/draft650/ATOM-DRAFT650-007.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "fix_hint": "草稿卡必须显式写 boundary: unknown",
+      "gap_reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "gap_owner": "669 工程（669d 审计登记）"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "severity": "warn",
+      "target": "atoms/draft650/ATOM-DRAFT650-008.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "fix_hint": "草稿卡必须显式写 boundary: unknown",
+      "gap_reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "gap_owner": "669 工程（669d 审计登记）"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "severity": "warn",
+      "target": "atoms/draft650/ATOM-DRAFT650-009.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "fix_hint": "草稿卡必须显式写 boundary: unknown",
+      "gap_reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "gap_owner": "669 工程（669d 审计登记）"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "severity": "warn",
+      "target": "atoms/draft650/ATOM-DRAFT650-010.md",
+      "message": "status=draft 为草稿但未显式标记 boundary（应标 boundary: unknown）",
+      "fix_hint": "草稿卡必须显式写 boundary: unknown",
+      "gap_reason": "650 批新增的草稿卡，当时未要求 boundary 字段。669 工程 boundary_backfill_657 正在推进补齐；本批红线禁止改 atoms/，故只登记不代改。草稿卡不参与外部效度 Claim。",
+      "gap_owner": "669 工程（669d 审计登记）"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-NEWARR-001.md",
+      "message": "status=machine-verified 但缺 provenance 三元组: mutation_set_hash, mutation_count, generator_version",
+      "fix_hint": "补 mutation_set_hash / mutation_count / generator_version",
+      "gap_reason": "668 拆卡批次由 machine:card_split_668 生成的卡，未带 provenance 三元组。需 boundary_backfill 补 mutation_set_hash/mutation_count/generator_version；本批红线禁止改 atoms/，故只登记不代改。",
+      "gap_owner": "669 工程（669d 审计登记）"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "severity": "warn",
+      "target": "atoms/ub/ATOM-UB-DIVZERO-001.md",
+      "message": "status=machine-verified 但缺 provenance 三元组: mutation_set_hash, mutation_count, generator_version",
+      "fix_hint": "补 mutation_set_hash / mutation_count / generator_version",
+      "gap_reason": "668 拆卡批次由 machine:card_split_668 生成的卡，未带 provenance 三元组。需 boundary_backfill 补 mutation_set_hash/mutation_count/generator_version；本批红线禁止改 atoms/，故只登记不代改。",
+      "gap_owner": "669 工程（669d 审计登记）"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "severity": "warn",
+      "target": "atoms/ub/ATOM-UB-NULLDEREF-001.md",
+      "message": "status=machine-verified 但缺 provenance 三元组: mutation_set_hash, mutation_count, generator_version",
+      "fix_hint": "补 mutation_set_hash / mutation_count / generator_version",
+      "gap_reason": "668 拆卡批次由 machine:card_split_668 生成的卡，未带 provenance 三元组。需 boundary_backfill 补 mutation_set_hash/mutation_count/generator_version；本批红线禁止改 atoms/，故只登记不代改。",
+      "gap_owner": "669 工程（669d 审计登记）"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "severity": "warn",
+      "target": "atoms/ub/ATOM-UB-OOB-001.md",
+      "message": "status=machine-verified 但缺 provenance 三元组: mutation_set_hash, mutation_count, generator_version",
+      "fix_hint": "补 mutation_set_hash / mutation_count / generator_version",
+      "gap_reason": "668 拆卡批次由 machine:card_split_668 生成的卡，未带 provenance 三元组。需 boundary_backfill 补 mutation_set_hash/mutation_count/generator_version；本批红线禁止改 atoms/，故只登记不代改。",
+      "gap_owner": "669 工程（669d 审计登记）"
+    },
+    {
+      "rule": "G-BOUNDARY-REQUIRED",
+      "severity": "warn",
+      "target": "atoms/ub/ATOM-UB-WRAP-001.md",
+      "message": "status=machine-verified 但缺 provenance 三元组: mutation_set_hash, mutation_count, generator_version",
+      "fix_hint": "补 mutation_set_hash / mutation_count / generator_version",
+      "gap_reason": "668 拆卡批次由 machine:card_split_668 生成的卡，未带 provenance 三元组。需 boundary_backfill 补 mutation_set_hash/mutation_count/generator_version；本批红线禁止改 atoms/，故只登记不代改。",
+      "gap_owner": "669 工程（669d 审计登记）"
+    },
+    {
       "rule": "G-BASELINE-EXISTS",
       "severity": "warn",
       "target": "web/data/experiments.json ← escape",
@@ -55,13 +190,6 @@
       "target": "research/05_evaluation_protocol.md ← BH 校正",
       "message": "协议未声明 BH 校正（建议补）",
       "fix_hint": "如需标注者一致性/多重比较，请冻结 BH 校正"
-    },
-    {
-      "rule": "G-BOUNDARY-REQUIRED",
-      "severity": "warn",
-      "target": "atoms/",
-      "message": "未安装 pyyaml ⇒ 无法解析 frontmatter（降级为 WARN）",
-      "fix_hint": "pip install pyyaml"
     },
     {
       "rule": "G-BASELINE-EXISTS",
@@ -129,9 +257,163 @@
     {
       "rule": "G-IRR",
       "severity": "warn",
-      "target": "atoms/",
-      "message": "无 pyyaml ⇒ 无法扫卡",
-      "fix_hint": "pip install pyyaml"
+      "target": "atoms/conc/ATOM-CONC-FENCE-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/conc/ATOM-CONC-LOCK-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/conc/ATOM-CONC-RACE-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/hist/ATOM-HIST-AUTOPTR-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-ALIGN-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-ALLOC-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-LEAK-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-MOVE-002.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-NEW-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-PERF-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-PERF-002.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-PERF-003.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-RAII-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-RAII-002.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-RVREF-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-SHARED-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-SHARED-002.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-UNIQUE-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-UNIQUE-002.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-VALUE-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-VALUE-002.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/mem/ATOM-MEM-WEAK-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
+    },
+    {
+      "rule": "G-IRR",
+      "severity": "warn",
+      "target": "atoms/ub/ATOM-UB-GRAY-001.md",
+      "message": "人工标注卡（verified_by=human:liaoranran）无 IRR 记录",
+      "fix_hint": "补第二标注者并登记 κ"
     }
   ]
 }

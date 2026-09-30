@@ -1,0 +1,117 @@
+{
+  "schema": "queyi-corpus-layered/670a",
+  "generated_by": "tools/merge_670a.py --merge",
+  "corpus": "data/external_corpus/external_corpus_665.json",
+  "corpus_count": 60,
+  "reveal_covered": 40,
+  "pending_reveal": 20,
+  "layers": {
+    "sanitizer": {
+      "n": 25,
+      "catch": 10,
+      "miss": 4,
+      "unknown": 1,
+      "not_error": 0,
+      "pending_reveal": 10,
+      "detectors": {
+        "ubsan": 9,
+        "tsan": 3,
+        "asan": 13
+      },
+      "measurable": 14,
+      "numerator": 10,
+      "denominator": 14,
+      "point": 0.7142857142857143,
+      "cp_low": 0.41896474281633833,
+      "cp_high": 0.9161106816928726,
+      "conf": 0.95
+    },
+    "compiler-warn": {
+      "n": 14,
+      "catch": 3,
+      "miss": 7,
+      "unknown": 0,
+      "not_error": 0,
+      "pending_reveal": 4,
+      "detectors": {
+        "compiler-warn": 10,
+        "wunsequenced": 4
+      },
+      "measurable": 10,
+      "numerator": 3,
+      "denominator": 10,
+      "point": 0.3,
+      "cp_low": 0.06673951117773444,
+      "cp_high": 0.6524528500599969,
+      "conf": 0.95
+    },
+    "cross-compile": {
+      "n": 10,
+      "catch": 1,
+      "miss": 7,
+      "unknown": 0,
+      "not_error": 0,
+      "pending_reveal": 2,
+      "detectors": {
+        "cross-compile": 10
+      },
+      "measurable": 8,
+      "numerator": 1,
+      "denominator": 8,
+      "point": 0.125,
+      "cp_low": 0.0031597235312519085,
+      "cp_high": 0.5265096708752062,
+      "conf": 0.95
+    },
+    "other": {
+      "n": 7,
+      "catch": 0,
+      "miss": 0,
+      "unknown": 4,
+      "not_error": 3,
+      "pending_reveal": 0,
+      "detectors": {
+        "measure": 3,
+        "unknown": 4
+      },
+      "measurable": 0,
+      "point": null,
+      "cp_low": null,
+      "cp_high": null,
+      "note": "层内无可测样本 ⇒ 拒绝给率（fail-loud）"
+    },
+    "compile-time": {
+      "n": 2,
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0,
+      "not_error": 0,
+      "pending_reveal": 2,
+      "detectors": {
+        "compile-time": 2
+      },
+      "measurable": 0,
+      "point": null,
+      "cp_low": null,
+      "cp_high": null,
+      "note": "层内无可测样本 ⇒ 拒绝给率（fail-loud）"
+    },
+    "perf": {
+      "n": 2,
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0,
+      "not_error": 0,
+      "pending_reveal": 2,
+      "detectors": {
+        "perf-counter": 2
+      },
+      "measurable": 0,
+      "point": null,
+      "cp_low": null,
+      "cp_high": null,
+      "note": "层内无可测样本 ⇒ 拒绝给率（fail-loud）"
+    }
+  },
+  "honest_note": "分层率由**逐样本 verdict 现算**；`pending_reveal` 的样本不进任何分母。⚠ 禁止把各层相加成一个总数（669d env_dependency.declared）。已 reveal 部分 = `external_corpus_reveal_665.json` 的样本，其层名映射来自本工具 LAYER_OF_DETECTOR（与 662 的 A/B/C 分层不同口径，此处按 669d 要求的 expected_detector 五类分层）。"
+}

@@ -37,8 +37,15 @@ DEFAULT_LABELS = ROOT / "data" / "grounded_labels_w2.json"
 DEFAULT_MANIFEST = ROOT / "build" / "replay_manifest.json"
 DEFAULT_MIS = ROOT / "misconceptions"
 OUT_DEFAULT = ROOT / "data" / "grounded_audit_report.md"
-#: 594 实证对账基线（任务 2 已复现；648 重基线：加 10 张卡 ⇒ 命题 79→89、节点 121→131）
-W2_EXPECTED = {"IN": 89, "OUT": 42, "UNDEC": 0}
+
+
+# 670a 去写死：594 实证对账基线不再在本模块复制一份（原 89/42/131 是 648 时点的快照，
+# 语料一扩容就假红）。统一取 W2 **单一权威源** `w2_authority_640b`（现算路径）。
+def w2_expected() -> dict:
+    """594 实证对账基线（现算）：IN/OUT/UNDEC/节点数取 640b 权威源。"""
+    import w2_authority_640b as auth  # noqa: E402
+    c = auth.current()
+    return {"IN": c["IN"], "OUT": c["OUT"], "UNDEC": c["UNDEC"], "nodes": c["nodes"]}
 
 
 # ── 读盘面（只读）──────────────────────────────────────────────────────────────
@@ -228,11 +235,13 @@ def render(data: dict) -> str:
     add("")
     add("| 指标 | 594 实证 | 本批实测 | 一致？ |")
     add("|---|---|---|---|")
-    for k, want in W2_EXPECTED.items():
+    exp = w2_expected()
+    for k in ("IN", "OUT", "UNDEC"):
+        want = exp[k]
         got = s.get(k)
         add(f"| {k} | {want} | {got} | {'✓' if got == want else '❌'} |")
-    add(f"| 节点数 | 131（89 命题 + 42 误解） | {s['nodes']} | "
-        f"{'✓' if s['nodes'] == 131 else '❌'} |")
+    add(f"| 节点数 | {exp['nodes']}（{exp['IN']} 命题 + {exp['OUT']} 误解） | {s['nodes']} | "
+        f"{'✓' if s['nodes'] == exp['nodes'] else '❌'} |")
     add("")
     add(f"另注：**{len([k for k in props if not props[k]['attackers']])} 条命题没有任何误解攻击**"
         "（其所属卡的 MIS 关联记在**原子卡侧** `misconceptions` 字段，本批按任务书只读 MIS 侧 "

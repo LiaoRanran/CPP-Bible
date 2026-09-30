@@ -8,6 +8,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 import counterexample_searcher_646 as b2  # noqa: E402
+import counts_659 as counts  # noqa: E402
 
 
 def test_selftest_passes():
@@ -16,10 +17,10 @@ def test_selftest_passes():
 
 
 def test_full_coverage():
-    """真实搜索：覆盖全部 27 卡。"""
+    """670a 去写死：卡片域取权威源现算；"全覆盖"锁为 `cards_with_candidate == cards_total`。"""
     res = b2.run_search()
-    assert res["cards_total"] == 37
-    assert res["cards_with_candidate"] == 37
+    assert res["cards_total"] == counts.ATOMS_REAL
+    assert res["cards_with_candidate"] == res["cards_total"]
 
 
 def test_candidates_have_source():

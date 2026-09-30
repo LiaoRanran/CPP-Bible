@@ -28,7 +28,8 @@ def test_w2_independent_recompute_matches():
     exp = A.current()
     r = I.verify_w2()
     assert r["summary"] == {"IN": exp["IN"], "OUT": exp["OUT"], "UNDEC": exp["UNDEC"]}
-    assert r["nodes"] == 131 and r["frozen_labels_match"]
+    # 670a 去写死：独立重算的节点数取权威源现算（原冻结 131）
+    assert r["nodes"] == exp["nodes"] and r["frozen_labels_match"]
 
 
 def test_pck_independent_count_matches():

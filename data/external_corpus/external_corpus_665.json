@@ -3,7 +3,7 @@
   "generated_by": "662 B1 · 外部 corpus D3 填充 · 665 D1 扩样（canonical 合并视图）",
   "generated_at": "2026-09-28",
   "source_policy": "source 只写可确证的**类别级**出处（cppreference 章节 / 标准条款名 / 编译器文档），不编造具体 issue 编号；offline 不可验证者标 verified_source=false。",
-  "count": 40,
+  "count": 60,
   "samples": [
     {
       "id": "d3-01",
@@ -364,6 +364,186 @@
       "description": "未初始化标量参与分支（MSan 才能稳定检出；本机无 MSan ⇒ expected_detector=unknown）",
       "expected_detector": "unknown",
       "code": "int main(){int x;if(x>0)return 1;return 0;}"
+    },
+    {
+      "id": "d3e-01",
+      "category": "UB",
+      "source": "cppreference: Undefined behavior（有符号溢出）",
+      "verified_source": true,
+      "description": "有符号整数溢出是 UB（非回绕）",
+      "expected_detector": "ubsan",
+      "code": "int main(){int x=2147483647;x+=1;return x;}"
+    },
+    {
+      "id": "d3e-02",
+      "category": "UB",
+      "source": "cppreference: Undefined behavior（数据竞争）",
+      "verified_source": true,
+      "description": "两线程无同步并发写同一非原子对象",
+      "expected_detector": "tsan",
+      "code": "#include <thread>\nint g=0;\nint main(){std::thread a([]{for(int i=0;i<100000;i++)g++;});std::thread b([]{for(int i=0;i<100000;i++)g++;});a.join();b.join();}"
+    },
+    {
+      "id": "d3e-03",
+      "category": "UB",
+      "source": "cppreference: Undefined behavior（越界）",
+      "verified_source": true,
+      "description": "数组越界读写",
+      "expected_detector": "asan",
+      "code": "int main(){int a[4]={0};int i=5;a[i]=1;return a[i];}"
+    },
+    {
+      "id": "d3e-04",
+      "category": "UB",
+      "source": "cppreference: Undefined behavior（空指针解引用）",
+      "verified_source": true,
+      "description": "解引用空指针",
+      "expected_detector": "asan",
+      "code": "int main(){int*p=nullptr;*p=1;return *p;}"
+    },
+    {
+      "id": "d3e-05",
+      "category": "UB",
+      "source": "cppreference: Undefined behavior（除零）",
+      "verified_source": true,
+      "description": "整数除零",
+      "expected_detector": "ubsan",
+      "code": "int main(){volatile int a=1;volatile int b=0;return a/b;}"
+    },
+    {
+      "id": "d3e-06",
+      "category": "UB",
+      "source": "cppreference: Undefined behavior（未初始化读取）",
+      "verified_source": true,
+      "description": "读取未初始化标量（UB；-Wmaybe-uninitialized 可提示）",
+      "expected_detector": "compiler-warn",
+      "code": "int f(){int x;return x*2;}\nint main(){return f();}"
+    },
+    {
+      "id": "d3e-07",
+      "category": "UB",
+      "source": "cppreference: reinterpret_cast / strict aliasing",
+      "verified_source": true,
+      "description": "严格别名：通过不兼容类型指针访问对象",
+      "expected_detector": "cross-compile",
+      "code": "int f(float*p){*(int*)p=1;return (int)*p;}\nint main(){float x=0;return f(&x);}"
+    },
+    {
+      "id": "d3e-08",
+      "category": "UB",
+      "source": "cppreference: new/delete（二次释放）",
+      "verified_source": true,
+      "description": "对同一指针二次 delete",
+      "expected_detector": "asan",
+      "code": "int main(){int*p=new int(1);delete p;delete p;return 0;}"
+    },
+    {
+      "id": "d3e-09",
+      "category": "UB",
+      "source": "cppreference: delete expression（释放后使用）",
+      "verified_source": true,
+      "description": "释放后使用（use-after-free）",
+      "expected_detector": "asan",
+      "code": "int main(){int*p=new int(7);delete p;return *p;}"
+    },
+    {
+      "id": "d3e-10",
+      "category": "UB",
+      "source": "cppreference: shift operators（移位越界）",
+      "verified_source": true,
+      "description": "左移位数 ≥ 类型位宽（UB）",
+      "expected_detector": "ubsan",
+      "code": "int main(){int x=1;return x<<33;}"
+    },
+    {
+      "id": "d3e-11",
+      "category": "UB",
+      "source": "cppreference: lifetime（返回局部引用）",
+      "verified_source": true,
+      "description": "返回悬垂引用（生命周期结束）",
+      "expected_detector": "compiler-warn",
+      "code": "int& f(){int x=1;return x;}\nint main(){int&r=f();return r;}"
+    },
+    {
+      "id": "d3e-12",
+      "category": "UB",
+      "source": "cppreference: std::vector（迭代器失效）",
+      "verified_source": true,
+      "description": "容器扩容后使用失效迭代器",
+      "expected_detector": "asan",
+      "code": "#include <vector>\nint main(){std::vector<int> v={1,2,3};int*p=&v[0];v.resize(1000);return *p;}"
+    },
+    {
+      "id": "d3e-13",
+      "category": "unspecified",
+      "source": "cppreference: order of evaluation（未指定）",
+      "verified_source": true,
+      "description": "函数实参求值顺序未指定（非 UB）",
+      "expected_detector": "compiler-warn",
+      "code": "int f(int,int){return 0;}\nint main(){int i=0;return f(i++,i++);}"
+    },
+    {
+      "id": "d3e-14",
+      "category": "unspecified",
+      "source": "cppreference: evaluation order（未序列化）",
+      "verified_source": true,
+      "description": "同一表达式内多次修改标量（C++17 前 UB，之后多为未指定）",
+      "expected_detector": "compiler-warn",
+      "code": "int main(){int i=0;i=i++ + ++i;return i;}"
+    },
+    {
+      "id": "d3e-15",
+      "category": "well-defined",
+      "source": "cppreference: delete expression（空指针 no-op）",
+      "verified_source": true,
+      "description": "delete 空指针是标准保证的 no-op（良定义）",
+      "expected_detector": "compile-time",
+      "code": "int main(){int*p=nullptr;delete p;return 0;}"
+    },
+    {
+      "id": "d3e-16",
+      "category": "well-defined",
+      "source": "cppreference: unsigned arithmetic（模运算）",
+      "verified_source": true,
+      "description": "无符号算术是模 2^N（良定义，非 UB）",
+      "expected_detector": "compile-time",
+      "code": "int main(){unsigned x=0u;x-=1u;return x==4294967295u?0:1;}"
+    },
+    {
+      "id": "d3e-17",
+      "category": "perf",
+      "source": "cppreference / 计算机体系结构（伪共享）",
+      "verified_source": true,
+      "description": "伪共享：两线程写同一 cache line 不同字（性能病理，非 UB）",
+      "expected_detector": "perf-counter",
+      "code": "#include <thread>\nstruct A{int a;int b;};\nA g;\nint main(){std::thread t1([]{for(int i=0;i<1000000;i++)g.a++;});std::thread t2([]{for(int i=0;i<1000000;i++)g.b++;});t1.join();t2.join();}"
+    },
+    {
+      "id": "d3e-18",
+      "category": "perf",
+      "source": "编译器优化文档（别名阻塞优化）",
+      "verified_source": false,
+      "description": "可能的别名使编译器无法向量化（性能，非 UB）",
+      "expected_detector": "perf-counter",
+      "code": "void f(int*a,int*b,int n){for(int i=0;i<n;i++)a[i]+=b[i];}"
+    },
+    {
+      "id": "d3e-19",
+      "category": "memory-order",
+      "source": "cppreference: std::memory_order（relaxed 可见性）",
+      "verified_source": true,
+      "description": "relaxed 原子操作不保证跨线程顺序（非 UB 但可能丢失更新）",
+      "expected_detector": "tsan",
+      "code": "#include <atomic>\n#include <thread>\nstd::atomic<int> x{0};\nint main(){std::thread t1([]{x.fetch_add(1,std::memory_order_relaxed);});std::thread t2([]{x.fetch_add(1,std::memory_order_relaxed);});t1.join();t2.join();return x.load();}"
+    },
+    {
+      "id": "d3e-20",
+      "category": "historical",
+      "source": "cppreference: std::auto_ptr（C++98 已弃用）",
+      "verified_source": true,
+      "description": "auto_ptr 拷贝即转移所有权（C++98 妥协，C++17 移除）",
+      "expected_detector": "cross-compile",
+      "code": "#include <memory>\nint main(){std::auto_ptr<int> a(new int(1));std::auto_ptr<int> b(a);return *b;}"
     }
   ],
   "extend_665": {
@@ -397,5 +577,38 @@
     "canonical_file": "data/external_corpus/external_corpus_665.json",
     "why_separate_file": "external_corpus_662.json 是 external_corpus_662.py 的产物，旧工具一跑就按内建 20 条重写 ⇒ 追加必须落在不被重写的 canonical 文件里",
     "honest_note": "刻意分层（A 本机可跑 / B 跨编译器·测量 / C 本机无检测器），让 662「低分因缺检测器」这个猜测变成**有对照的可检验命题**。"
+  },
+  "extend_669d": {
+    "source": "data/external_corpus/external_corpus_669d.json",
+    "added": 20,
+    "added_ids": [
+      "d3e-01",
+      "d3e-02",
+      "d3e-03",
+      "d3e-04",
+      "d3e-05",
+      "d3e-06",
+      "d3e-07",
+      "d3e-08",
+      "d3e-09",
+      "d3e-10",
+      "d3e-11",
+      "d3e-12",
+      "d3e-13",
+      "d3e-14",
+      "d3e-15",
+      "d3e-16",
+      "d3e-17",
+      "d3e-18",
+      "d3e-19",
+      "d3e-20"
+    ],
+    "total_after": 60,
+    "env_dependency": {
+      "note": "⚠ A2 根因：665 外部 corpus 中 15 条 sanitizer 样本依赖 WSL sanitizer 检测器；WSL 缺位时它们降级为 unknown，检出率从 35.0%（14/40）掉到 10.0%（4/40），而护栏仍绿。",
+      "hedge": "本扩样刻意分散 expected_detector：sanitizer 依赖 8 条（40%）、compiler-warn 5 条、cross-compile 3 条、perf-counter 2 条、compile-time/standard 2 条。使任一环境（有无 WSL）下都有一部分样本可判，降低单点环境依赖对总分的杠杆。",
+      "declared": "本文件的任何检出率必须**按 expected_detector 分层报告**，禁止合并成一个数（否则重演 665 的静默掉分）。"
+    },
+    "honest_note": "669d 扩样并入 canonical corpus（幂等按 id 去重）。**率一律分层报告**（669d `env_dependency.declared`），禁止合并成一个数；分层检出率见 `data/experiments/corpus_layered_670a.json`。新增 20 条尚未 reveal ⇒ 层内标 `pending_reveal`，不进分母。"
   }
 }

@@ -1087,6 +1087,32 @@
    "signoff_state": "prop_signed",
    "type": "proposition"
   },
+  "ATOM-MEM-NEWARR-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-MEM-NEWARR-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-MEM-NEWARR-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-MEM-NEWARR-001::prop-2": {
+   "attackers": [],
+   "card": "ATOM-MEM-NEWARR-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-MEM-NEWARR-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
   "ATOM-MEM-PERF-001::prop-1": {
    "attackers": [
     "MIS-MEM-029"
@@ -2307,6 +2333,32 @@
    "signoff_state": "prop_signed",
    "type": "proposition"
   },
+  "ATOM-UB-DIVZERO-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-UB-DIVZERO-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-UB-DIVZERO-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-UB-DIVZERO-001::prop-2": {
+   "attackers": [],
+   "card": "ATOM-UB-DIVZERO-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-UB-DIVZERO-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
   "ATOM-UB-GRAY-001::prop-1": {
    "attackers": [
     "MIS-CONC-001",
@@ -2381,6 +2433,58 @@
    "signoff_state": "prop_signed",
    "type": "proposition"
   },
+  "ATOM-UB-NULLDEREF-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-UB-NULLDEREF-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-UB-NULLDEREF-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-UB-NULLDEREF-001::prop-2": {
+   "attackers": [],
+   "card": "ATOM-UB-NULLDEREF-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-UB-NULLDEREF-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-UB-OOB-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-UB-OOB-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-UB-OOB-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-UB-OOB-001::prop-2": {
+   "attackers": [],
+   "card": "ATOM-UB-OOB-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-UB-OOB-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
   "ATOM-UB-SIGNEDOVF-001::prop-1": {
    "attackers": [],
    "card": "ATOM-UB-SIGNEDOVF-001",
@@ -2392,6 +2496,32 @@
    "id": "ATOM-UB-SIGNEDOVF-001::prop-1",
    "label": "IN",
    "signoff_state": "unsigned",
+   "type": "proposition"
+  },
+  "ATOM-UB-WRAP-001::prop-1": {
+   "attackers": [],
+   "card": "ATOM-UB-WRAP-001",
+   "claim_type": "observation",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-UB-WRAP-001::prop-1",
+   "label": "IN",
+   "signoff_state": "card_signed",
+   "type": "proposition"
+  },
+  "ATOM-UB-WRAP-001::prop-2": {
+   "attackers": [],
+   "card": "ATOM-UB-WRAP-001",
+   "claim_type": "inference",
+   "confidence": "medium",
+   "credibility": 2,
+   "defeated_attackers": [],
+   "defenders": [],
+   "id": "ATOM-UB-WRAP-001::prop-2",
+   "label": "IN",
+   "signoff_state": "card_signed",
    "type": "proposition"
   },
   "MIS-CONC-001": {
@@ -3053,12 +3183,12 @@
  },
  "rounds": 3,
  "summary": {
-  "IN": 89,
+  "IN": 99,
   "IN_misconceptions": 0,
-  "IN_propositions": 89,
+  "IN_propositions": 99,
   "OUT": 42,
   "UNDEC": 0,
-  "nodes": 131
+  "nodes": 141
  },
  "tool": "weighted_af_solver",
  "version": "1.1"

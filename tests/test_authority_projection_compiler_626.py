@@ -41,7 +41,9 @@ def test_w2_projection_vs_grounded_labels_deviation_registered():
     g = json.load(open(os.path.join(ROOT, "data", "grounded_labels_w2.json"),
                        encoding="utf-8"))
     gs = g.get("summary", {})
-    assert gs.get("nodes") == 131
+    # 670a 去写死：节点数取 W2 权威源现算（原冻结 131），并三方互校（现算 vs 产物 summary vs 产物 nodes）
+    import w2_authority_640b as auth  # noqa: E402
+    assert gs.get("nodes") == auth.current()["nodes"] == len(g["nodes"])
     assert len(w2) == gs.get("nodes")          # 归一化后节点数一致
     expected = {k: v["label"] for k, v in g["nodes"].items()}
     assert w2 == expected                      # 逐节点标签一致（V1 模式）

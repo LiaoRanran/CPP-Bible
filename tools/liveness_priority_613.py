@@ -165,8 +165,12 @@ def render(rows: list[dict]) -> str:
 
 def check(rows: list[dict]) -> list[str]:
     errs = []
-    if len(rows) != 60:
-        errs.append(f"命题数应为 60，实测 {len(rows)}")
+    # 670a 去写死：不冻结 60。`rows` 经 `load_all_props()`（审计的 `cards[].missing` 路径）枚举；
+    # OBSERVATION-LIVENESS warn 数经 `observation_status` 路径聚合——两条路径必须一致。
+    import liveness_impact as li  # noqa: E402
+    n_warn = li.current_warn_count()
+    if len(rows) != n_warn:
+        errs.append(f"命题数应与 OBSERVATION-LIVENESS warn 数一致（{len(rows)} vs {n_warn}）")
     for r in rows:
         if r["class"] not in CLASS_W:
             errs.append(f"{r['proposition_id']} class 非法: {r['class']}")

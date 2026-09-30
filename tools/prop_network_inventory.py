@@ -184,13 +184,13 @@ def render(data: dict) -> str:
             f"{data['sizes'].get(r['prop_key'])} | {sign} | "
             f"{_liveness_cell(r['claim_type'], live.get(r['prop_key']))} |")
     add("")
-    add("## 2. 卡列表（27 张原子卡）")
-    add("")
-    add("| 卡 | 命题数 | verified_by（卡级人签） | oracle 状态 | 本卡命题闭包大小 |")
-    add("|---|---|---|---|---|")
     by_card: dict[str, list[str]] = {}
     for r in rows:
         by_card.setdefault(r["card"], []).append(r["prop_key"])
+    add(f"## 2. 卡列表（{len(by_card)} 张原子卡）")
+    add("")
+    add("| 卡 | 命题数 | verified_by（卡级人签） | oracle 状态 | 本卡命题闭包大小 |")
+    add("|---|---|---|---|---|")
     for cid in sorted(by_card):
         meta = data["cards"][cid]["meta"]
         vo = data["oracle_by_card"].get(cid) or {}

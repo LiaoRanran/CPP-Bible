@@ -33,13 +33,14 @@ REPORT_OUT = ROOT / "data" / "metrics_612.md"
 PLAN = ROOT / "data" / "oracle_verification_plan_611.jsonl"
 REPORT_612 = ROOT / "data" / "oracle_verification_report_612.md"
 
-# 已知基线（640 A1 更新：632/634 命题级人签 ⇒ 命题可信度 high ⇒ 权威产物重算；
-# 34 条 modify（low→medium）在两档下均不足以翻转判决 ⇒ 双模式趋同）
-KNOWN_KEEP_LOW = (89, 42)        # (IN, OUT) under keep-low
-KNOWN_UPGRADE_MEDIUM = (89, 42)  # (IN, OUT) under upgrade-medium
+# 670a 去写死：E1 双模式基线不再冻结 (89, 42)——改取 W2 单一权威源**现算**
+# （`w2_authority_640b.current()`，口径 keep-low）。640 A1 的机制结论（34 条 modify 在两档
+# 下均不足以翻转判决 ⇒ 双模式趋同）由"两档相等"这条不变量单独锁住。
 KNOWN_ATOMIC = counts_659.ATOMS_TOTAL  # 659 去写死
 KNOWN_MIS = 79
-KNOWN_ORACLE = counts_659.CARDS_REAL  # 659 去写死：oracle 质量分母=实卡 103
+# 670a 去写死：oracle 质量分母 = 当前卡总量（与 611 D3 `oracle_verification_plan` 同口径
+# `counts_659.CARDS_TOTAL`；原写死 CARDS_REAL=103/113 是旧口径）
+KNOWN_ORACLE = counts_659.CARDS_TOTAL
 
 
 # ── E1：modify 双模式 ─────────────────────────────────────────────────────
@@ -74,8 +75,19 @@ def e2_fragmentation() -> dict:
 
 # ── E3：oracle 人审质量 ───────────────────────────────────────────────────
 def e3_oracle_quality() -> dict:
+    """E3：oracle 验证覆盖质量。
+
+    670a 去写死：分母不再读**可能过期的** `data/oracle_verification_plan_611.jsonl`
+    （实测停留在历史卡数），改由 `oracle_verification_plan.build_plan()` **现算**
+    —— 与 611 D3 同一口径（`counts_659.CARDS_TOTAL`）。jsonl 仅作降级回退。
+    """
     entries: list[dict] = []
-    if PLAN.is_file():
+    try:
+        import oracle_verification_plan as ovp  # noqa: E402
+        entries = list(ovp.build_plan()["rows"])
+    except Exception:                                    # noqa: BLE001
+        entries = []
+    if not entries and PLAN.is_file():
         for line in PLAN.read_text(encoding="utf-8").splitlines():
             if not line.strip():
                 continue
@@ -125,8 +137,9 @@ def render(e1: dict, e2: dict, e3: dict) -> str:
         L.append(f"| `{mode}` | {v['IN']} | {v['OUT']} | {v['UNDEC']} | "
                  f"{v['defeating_edges']} | {v['edges']} | {v['nodes']} |")
     L.append("")
-    L.append(f"- 锁定：keep-low = IN{KNOWN_KEEP_LOW[0]}/OUT{KNOWN_KEEP_LOW[1]}；"
-             f"upgrade-medium = IN{KNOWN_UPGRADE_MEDIUM[0]}/OUT{KNOWN_UPGRADE_MEDIUM[1]}。")
+    L.append(f"- 锁定：keep-low = IN{e1['keep-low']['IN']}/OUT{e1['keep-low']['OUT']}；"
+             f"upgrade-medium = IN{e1['upgrade-medium']['IN']}/OUT{e1['upgrade-medium']['OUT']}"
+             "（与 W2 权威源现算一致，不冻结数值）。")
     L.append("- 结论：两种口径直接复用 `weighted_af_solver`，结果与 610/612 基线一致，**无新行为**；"
              "差异仅来自入审 modify 边是否升 medium（口径分歧，非本批次引入）。")
     L.append("")
@@ -168,13 +181,17 @@ def main(argv: list[str] | None = None) -> int:
     e3 = e3_oracle_quality()
 
     problems: list[str] = []
-    # E1 基线锁定
-    if (e1["keep-low"]["IN"], e1["keep-low"]["OUT"]) != KNOWN_KEEP_LOW:
-        problems.append(f"keep-low 应为 IN{KNOWN_KEEP_LOW[0]}/OUT{KNOWN_KEEP_LOW[1]}"
-                        f"（实测 IN{e1['keep-low']['IN']}/OUT{e1['keep-low']['OUT']}）")
-    if (e1["upgrade-medium"]["IN"], e1["upgrade-medium"]["OUT"]) != KNOWN_UPGRADE_MEDIUM:
-        problems.append(f"upgrade-medium 应为 IN{KNOWN_UPGRADE_MEDIUM[0]}/OUT{KNOWN_UPGRADE_MEDIUM[1]}"
-                        f"（实测 IN{e1['upgrade-medium']['IN']}/OUT{e1['upgrade-medium']['OUT']}）")
+    # E1 基线锁定（670a 去写死）：两档都应与 W2 权威源**现算**一致，且两档彼此趋同
+    import w2_authority_640b as _auth  # noqa: E402
+    ref = _auth.current()
+    for mode in ("keep-low", "upgrade-medium"):
+        got = (e1[mode]["IN"], e1[mode]["OUT"])
+        if got != (ref["IN"], ref["OUT"]):
+            problems.append(f"{mode} 应为 IN{ref['IN']}/OUT{ref['OUT']}（实测 "
+                            f"IN{e1[mode]['IN']}/OUT{e1[mode]['OUT']}）")
+    if (e1["keep-low"]["IN"], e1["keep-low"]["OUT"]) != \
+            (e1["upgrade-medium"]["IN"], e1["upgrade-medium"]["OUT"]):
+        problems.append("两档判决应趋同（640 A1 机制结论：modify 不足以致翻转）")
     # E2 数量合理
     if e2["atomic"] != KNOWN_ATOMIC:
         problems.append(f"原子卡应为 {KNOWN_ATOMIC}（实测 {e2['atomic']}）")

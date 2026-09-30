@@ -31,8 +31,8 @@ REPORT_OUT = ROOT / "data" / "liveness_completion_plan_611.md"
 
 _KW_RX = re.compile(r"(?:ATOM|EV|example|EXAMPLE)-[A-Za-z0-9][A-Za-z0-9_-]*")
 
-# 611 D2 锁定：缺锚 observation 命题总数（607 实测 60，论证图/卡冻结前不变）
-KNOWN_MISSING = 60
+# 670a 去写死：缺锚 observation 命题总数不再冻结（原 611 D2 写死 60；事实源已随语料扩容增长）。
+# 口径统一由 `liveness_impact.current_warn_count()` 现算（见 `check()`）。
 
 
 def _suggest_symbol(evidence: list) -> str:
@@ -72,7 +72,7 @@ def render_report(p: dict) -> str:
         "> 仅生成「补全计划」：把每条缺锚 observation 命题、它的 evidence、以及**建议**的 `fixture_symbol` 列出。"
         "是否采用、补哪个符号是**人审权力**。", "",
         "## 一、总览", "",
-        f"- 缺锚 observation 命题 **{p['total_missing']}** 条（607 实测 60，已锁定）；",
+        f"- 缺锚 observation 命题 **{p['total_missing']}** 条（事实源现算，不冻结）；",
         "- 建议符号取自该命题 `evidence` 里第一个工件引用（ATOM-/EV-/example-）；evidence 空 ⇒ 待人裁定；", "",
         "## 二、补全计划明细", "",
         "| 卡 | 命题 id | 状态 | 建议 fixture_symbol | 证据 | 内容（截断） |",
@@ -95,8 +95,14 @@ def render_report(p: dict) -> str:
 
 def check(p: dict) -> list[str]:
     problems: list[str] = []
-    if p["total_missing"] != KNOWN_MISSING:
-        problems.append(f"缺锚 observation 命题应为 {KNOWN_MISSING}（实测 {p['total_missing']}）")
+    # 670a 去写死：不再冻结 60。`total_missing` 经 `proposition_liveness_audit.audit()["cards"]`
+    # 的 `missing` 聚合；OBSERVATION-LIVENESS warn 数经 `observation_status` 聚合——两条路径必须一致。
+    import liveness_impact as li  # noqa: E402
+    n_warn = li.current_warn_count()
+    if p["total_missing"] != n_warn:
+        problems.append(f"缺锚 observation 命题应为 {n_warn}（实测 {p['total_missing']}）")
+    if p["total_missing"] != len(p["rows"]):
+        problems.append(f"total_missing 应等于 rows 数（{p['total_missing']} vs {len(p['rows'])}）")
     return problems
 
 

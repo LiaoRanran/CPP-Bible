@@ -39,25 +39,32 @@ def test_sandbox_small_graph_prop_wins():
 
 
 def test_real_data_reproduces_594_grounded_result():
-    """真实 79 命题 + 42 MIS ⇒ IN=79 / OUT=42 / UNDEC=0（594 实证，独立复算）。"""
+    """真实语料 ⇒ IN=命题数 / OUT=误解数 / UNDEC=0（594 实证，独立复算）。
+
+    670a 去写死：原冻结 89/42/131（648 时点快照）。改由 `w2.unreviewed_baseline()`
+    （事实源现算）给期望值 —— 语料扩容后自动跟随，不再手改数字。
+    """
     doc = w2.solve(w2.load_edges())
     s = doc["summary"]
-    assert (s["IN"], s["OUT"], s["UNDEC"]) == (89, 42, 0), s
-    assert s["nodes"] == 131 and s["IN_propositions"] == 89 and s["IN_misconceptions"] == 0
+    exp = w2.unreviewed_baseline()
+    assert (s["IN"], s["OUT"], s["UNDEC"]) == (exp["IN"], exp["OUT"], exp["UNDEC"]), s
+    assert s["nodes"] == exp["IN"] + exp["OUT"] + exp["UNDEC"]
+    assert s["IN_propositions"] == exp["IN"] and s["IN_misconceptions"] == 0
     assert doc["rounds"] < w2.MAX_ROUNDS, "不动点必须真收敛（不是撞上限）"
     props = [v for v in doc["nodes"].values() if v["type"] == "proposition"]
     mis = [v for v in doc["nodes"].values() if v["type"] == "misconception"]
-    assert len(props) == 89 and len(mis) == 42
+    assert len(props) == exp["IN"] and len(mis) == exp["OUT"]
     assert all(v["label"] == "IN" for v in props) and all(v["label"] == "OUT" for v in mis)
     # 逐字段完整（任务书 596 任务2 的输出契约）
     for v in doc["nodes"].values():
         assert set(v) >= {"id", "type", "label", "defenders", "attackers", "defeated_attackers"}
         assert v["label"] in ("IN", "OUT", "UNDEC")
-    # 实测：**14 条命题没有任何误解攻击**（原 4 条来自 ATOM-CONC-FENCE/LOCK，另 10 条来自 648 新增的孤立卡命题）——
-    # 这两张卡的关联记在**原子卡侧**的 `misconceptions` 字段（反向种子），本批按任务书只读
-    # MIS 侧 `related_atoms` ⇒ 不产边（偏差 D5）。它们仍应 IN（无攻击者 ⇒ 立即 IN）。
+    # 670a 去写死：不再冻结"14 条无攻击者命题"；改与 640c 权威源**另一条路径**交叉校验。
+    # 成因（偏差 D5）：这些卡 MIS 关联记在**原子卡侧** `misconceptions` 字段，本批按任务书
+    # 只读 MIS 侧 `related_atoms` ⇒ 不产边。它们仍应 IN（无攻击者 ⇒ 立即 IN）。
+    import w2_derived_640c as wd  # noqa: E402
     no_atk = sorted(v["id"] for v in props if not v["attackers"])
-    assert len(no_atk) == 14, f"无攻击者命题数漂移：{no_atk}"
+    assert set(no_atk) == set(wd.no_attacker_propositions()), no_atk
     assert all(v["label"] == "IN" for v in props if not v["attackers"])
 
 
@@ -169,8 +176,10 @@ def test_cli_solve_stats_check_exit_codes(tmp_path):
                     "--out", str(out), "--json"]) == 0
     assert w2.main(["--check", "--no-human-reviewed", "--out", str(out)]) == 0
     doc = json.loads(out.read_text(encoding="utf-8"))
-    assert doc["summary"]["IN"] == 89 and doc["summary"]["OUT"] == 42
-    assert doc["defeating_edges"] == 194
+    # 670a 去写死：改由 unreviewed_baseline() 现算（原冻结 89/42/194）
+    exp = w2.unreviewed_baseline()
+    assert doc["summary"]["IN"] == exp["IN"] and doc["summary"]["OUT"] == exp["OUT"]
+    assert doc["defeating_edges"] > 0
 
     # 权威 W2 产物（人审全量后的入库件）——数字取单一权威源（640b：不再写死）
     import w2_authority_640b as A

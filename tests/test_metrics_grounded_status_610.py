@@ -22,11 +22,13 @@ import soft_baseline_634 as SB  # 634 A3  # noqa: E402
 
 
 def test_collect_grounded_status():
+    """670a 去写死：判决数/节点数不再冻结 89/42/131，改与 W2 权威源现算对齐。"""
+    import w2_authority_640b as auth  # noqa: E402
+    ref = auth.current()
     out = m610.collect_grounded_status({})
-    # 640 A1：签署后权威产物重算（IN79/OUT42/误解 0 在 IN）
-    assert out["in"] == 89 and out["out"] == 42 and out["undec"] == 0
-    assert out["nodes"] == 131
-    assert out["in_propositions"] == 89 and out["in_misconceptions"] == 0
+    assert out["in"] == ref["IN"] and out["out"] == ref["OUT"] and out["undec"] == ref["UNDEC"]
+    assert out["nodes"] == ref["nodes"]
+    assert out["in_propositions"] == ref["IN"] and out["in_misconceptions"] == 0
     assert "入库 W2 产物" in out["source"]
 
 
@@ -43,11 +45,16 @@ def test_grounded_status_include_human_reviewed():
 
 def test_divergence_is_surfaced_not_hidden():
     """口径分歧必须显形。640 A1：签署后两口径数值趋同 ⇒ divergence=False；
-    机制差异（keep-low 34 条 modify 未生效）仍由 modes/caliber 字段留痕。"""
+    机制差异（keep-low 34 条 modify 未生效）仍由 modes/caliber 字段留痕。
+
+    670a 去写死：现算值取 W2 权威源（原冻结 89/42/194）。
+    """
+    import w2_authority_640b as auth  # noqa: E402
+    ref = auth.current()
     out = m610.collect_grounded_status({})
-    assert out["solver_recompute"]["in"] == 89
-    assert out["solver_recompute"]["out"] == 42
-    assert out["solver_recompute"]["defeating_edges"] == 194
+    assert out["solver_recompute"]["in"] == ref["IN"]
+    assert out["solver_recompute"]["out"] == ref["OUT"]
+    assert out["solver_recompute"]["defeating_edges"] == ref["defeating_edges"]
     assert out["divergence"] is False
     assert "两档" in out["divergence_note"]
 

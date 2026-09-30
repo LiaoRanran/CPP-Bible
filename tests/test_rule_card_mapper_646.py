@@ -7,6 +7,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
+import counts_659 as counts  # noqa: E402
 import rule_card_mapper_646 as a1  # noqa: E402
 
 
@@ -21,12 +22,21 @@ def test_rule_tokens_drop_generic():
     assert "atom" not in t and "claim" in t and "normalized" in t
 
 
-def test_gray_zone_maps_only_ub_card():
-    """已知关联：GRAY 规则 → 唯一 UB 卡 high。"""
+def test_gray_zone_maps_only_ub_cards():
+    """670a 去写死：原冻结 2 张（669 新增 4 张 UB 卡后过期）。
+
+    改锁**口径**：GRAY 规则只映射 UB 域卡、且全为 high；关键词命中的
+    `ATOM-UB-GRAY-001` 必须在列且 basis 显式带关键词痕迹。
+    """
     m = a1.build_mapping()
     gray = m["rules"]["ATOM-GRAY-ZONE"]["cards"]
-    assert len(gray) == 2
-    assert gray[0]["card"] == "ATOM-UB-GRAY-001" and gray[0]["strength"] == "high"
+    assert gray, gray
+    assert all(c["card"].startswith("ATOM-UB-") for c in gray), gray
+    assert all(c["strength"] == "high" for c in gray), gray
+    names = [c["card"] for c in gray]
+    assert "ATOM-UB-GRAY-001" in names, names
+    hit = next(c for c in gray if c["card"] == "ATOM-UB-GRAY-001")
+    assert "关键词命中" in hit["basis"], hit
 
 
 def test_every_rule_has_mapping():
@@ -36,7 +46,7 @@ def test_every_rule_has_mapping():
     assert all(info["cards"] for info in m["rules"].values())
 
 
-def test_card_count_is_27():
-    """卡片域 = 真实 27 卡（不是 28，见 646 §三.1）。"""
+def test_card_count_matches_fact_source():
+    """670a 去写死：卡片域不再冻结 37/27，与 `counts_659.ATOMS_REAL` 跨源对账。"""
     m = a1.build_mapping()
-    assert m["card_count"] == 37
+    assert m["card_count"] == counts.ATOMS_REAL

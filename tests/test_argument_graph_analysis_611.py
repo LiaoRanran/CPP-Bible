@@ -18,25 +18,28 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 import argument_graph_analysis as c1  # noqa: E402
 
-KNOWN = {"components": 21, "isolated": 14, "largest": 80, "nodes": 131,
-         "edges": 388, "coverage": 0.6107}
+
+def _k() -> dict:
+    """670a 去写死：已知事实取 `argument_graph_analysis.known_facts()`（单一权威源现算）。"""
+    return c1.known_facts()
 
 
 def test_components_match_known_facts():
     c = c1.analyze()
-    assert c["components"] == KNOWN["components"]
-    assert c["largest_size"] == KNOWN["largest"]
-    assert c["nodes"] == KNOWN["nodes"]
-    assert c["edges"] == KNOWN["edges"]
-    assert abs(c["coverage"] - KNOWN["coverage"]) <= 0.002
-    assert len(c["sizes"]) == KNOWN["components"]
-    assert c["sizes"][0] == KNOWN["largest"]
+    k = _k()
+    assert c["components"] == k["components"]
+    assert c["largest_size"] == k["largest"]
+    assert c["nodes"] == k["nodes"]
+    assert c["edges"] == k["edges"]
+    assert abs(c["coverage"] - k["coverage"]) <= 0.002
+    assert len(c["sizes"]) == k["components"]
+    assert c["sizes"][0] == k["largest"]
 
 
 def test_isolated_nodes_are_all_propositions():
     import argument_audit as aa  # noqa: E402
     c = c1.analyze()
-    assert len(c["isolated"]) == KNOWN["isolated"]
+    assert len(c["isolated"]) == _k()["isolated"]
     edges, verdicts, _ = aa.load_state()
     for n in c["isolated"]:
         assert aa.dc.node_type_of(n, edges) == "proposition"
@@ -48,9 +51,10 @@ def test_isolated_nodes_are_all_propositions():
 def test_check_locks_structure_and_report_is_reproducible():
     assert c1.check() == []
     c = c1.analyze()
+    k = _k()
     text = c1.render_report(c)
-    for token in (f"连通分量 **{KNOWN['components']}**",
-                  f"孤立节点（仅 1 节点分量）**{KNOWN['isolated']}**",
-                  f"最大分量 {KNOWN['largest']} 节点 = 覆盖 {KNOWN['coverage']:.1%}",
-                  "论证图碎片化", "21 块"):
+    for token in (f"连通分量 **{k['components']}**",
+                  f"孤立节点（仅 1 节点分量）**{k['isolated']}**",
+                  f"最大分量 {k['largest']} 节点 = 覆盖 {k['coverage']:.1%}",
+                  "论证图碎片化", f"{k['components']} 块"):
         assert token in text, token

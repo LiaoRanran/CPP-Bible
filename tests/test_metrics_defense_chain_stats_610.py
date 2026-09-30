@@ -18,11 +18,13 @@ import metrics_collector as mc
 
 
 def test_collect_defense_chain_stats():
+    from w2_authority_640b import current as _w2
     out = m610.collect_defense_chain_stats({})
     for k in ("total_nodes", "in", "out", "undec", "total_edges", "defeating_edges",
               "no_defenders", "no_attackers", "source"):
         assert k in out, f"缺字段 {k}"
-    assert out["total_nodes"] == 131
+    # 670a 去写死：节点数取权威源现算（原冻结 131）
+    assert out["total_nodes"] == _w2()["nodes"]
     assert out["source"].startswith("defense_chain.py")
 
 
@@ -38,19 +40,22 @@ def test_defeating_edges():
     exp = _w2()
     out = m610.collect_defense_chain_stats({})
     assert out["defeating_edges"] == exp["defeating_edges"]
-    assert out["total_edges"] == exp["edges"] == 388
+    assert out["total_edges"] == exp["edges"]        # 670a：不冻结 388
 
 
 def test_no_defenders_no_attackers():
     """no_defenders = OUT 数（每个 OUT 节点必有击败者…口径见工具）；可信度分布随人签演进。"""
+    import w2_derived_640c as wd  # noqa: E402
     from w2_authority_640b import current as _w2
     exp = _w2()
     out = m610.collect_defense_chain_stats({})
-    assert out["no_attackers"] == 14
+    # 670a 去写死：无攻击者数取 640c 权威源现算（原冻结 14）
+    assert out["no_attackers"] == len(wd.no_attacker_propositions())
     assert out["no_defenders"] >= exp["OUT"]        # 含无攻击者的保守计法
     dist = out["credibility_distribution"]
     assert set(dist) == {"high", "medium", "low"}
-    assert dist["low"] == 7                          # 未人审边仍 low（322 条边口径）
+    assert dist == wd.credibility_distribution()     # 670a：分布与权威源现算逐项一致（原冻结 low=7）
+    assert sum(dist.values()) == exp["nodes"]
 
 
 def test_tool_not_found(monkeypatch):

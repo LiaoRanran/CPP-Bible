@@ -56,14 +56,16 @@ def test_cli_what_if_overturned(capsys):
 
 
 def test_cli_stats(capsys):
+    # 670a 去写死：节点数/无攻击者数取权威源现算（原冻结 131/14）
+    import w2_derived_640c as wd  # noqa: E402
     from w2_authority_640b import current as _w2
     exp = _w2()
     assert dc.main(["stats", "--json"]) == 0
     st = json.loads(capsys.readouterr().out)
     assert (st["total_nodes"], st["in"], st["out"], st["undec"]) == (
-        131, exp["IN"], exp["OUT"], exp["UNDEC"])
+        exp["nodes"], exp["IN"], exp["OUT"], exp["UNDEC"])
     assert st["total_edges"] == exp["edges"] and st["defeating_edges"] == exp["defeating_edges"]
-    assert st["no_attackers"] == 14
+    assert st["no_attackers"] == len(wd.no_attacker_propositions())
     assert set(st["credibility_distribution"]) == {"high", "medium", "low"}
     assert len(st["out_nodes"]) == exp["OUT"]
 
@@ -83,7 +85,10 @@ def test_cli_list_no_defenders_and_no_attackers(capsys):
     assert nd, "no-defenders 不应为空"
     assert dc.main(["list-no-attackers"]) == 0
     na = [x for x in capsys.readouterr().out.splitlines() if x.strip()]
-    assert len(na) == 14, f"无攻击者命题应为 14（新增 10 张孤立卡各 1 条），实得 {len(na)}\n{na}"
+    # 670a 去写死：与 640c 权威源现算集合逐项一致（原冻结 14）
+    import w2_derived_640c as wd  # noqa: E402
+    exp_set = set(wd.no_attacker_propositions())
+    assert set(na) == exp_set, f"实得 {len(na)} 条，权威源 {len(exp_set)} 条"
     for p in ("ATOM-CONC-FENCE-001::prop-1", "ATOM-CONC-FENCE-001::prop-2",
               "ATOM-CONC-LOCK-001::prop-1", "ATOM-CONC-LOCK-001::prop-2"):
         assert p in na, f"已知无攻击者命题缺失：{p}"

@@ -67,8 +67,10 @@ def test_five_json_apis_parse(server):
     _, top = _get(server, "/api/top")
     _, api_root = _get(server, "/api")
     summary = json.loads(s[1])["summary"]
-    assert s[0] == 200 and summary["nodes"] == 131
-    assert len(json.loads(nodes[1])["nodes"]) == 131
+    # 670a 去写死：节点数取 W2 权威源现算（原冻结 131）
+    import w2_authority_640b as auth  # noqa: E402
+    assert s[0] == 200 and summary["nodes"] == auth.current()["nodes"]
+    assert len(json.loads(nodes[1])["nodes"]) == auth.current()["nodes"]
     assert code_edges == 200 and len(json.loads(edges)["attack"]) > 0
     assert len(json.loads(top)["top"]) == 10
     assert "/api/nodes" in json.loads(api_root)["apis"]

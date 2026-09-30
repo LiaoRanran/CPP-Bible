@@ -6,10 +6,10 @@
 
 ## 0. 汇总与完整性校验
 
-- 命题 **89** · 命题所属卡 **37** · 卡节点 100（含证据卡 63）· 边 **304** · 连通分量 36
-- 闭包大小（全体节点口径，含命题+卡两类 id）：avg 5.73 / max 8 / min 3 · 分布 {'3': 10, '4': 4, '5': 6, '6': 57, '7': 4, '8': 8}
-- 可达命题数：avg 2.798 / max 4
-- 活性锚：observation 命题 60 条，其中有锚 52 条
+- 命题 **99** · 命题所属卡 **42** · 卡节点 110（含证据卡 68）· 边 **334** · 连通分量 41
+- 闭包大小（全体节点口径，含命题+卡两类 id）：avg 5.556 / max 8 / min 3 · 分布 {'3': 10, '4': 14, '5': 6, '6': 57, '7': 4, '8': 8}
+- 可达命题数：avg 2.717 / max 4
+- 活性锚：observation 命题 65 条，其中有锚 52 条
 
 | 完整性校验 | 期望 | 实测 | 结论 |
 |---|---|---|---|
@@ -65,53 +65,63 @@
 | 42 | `ATOM-MEM-NEW-001/prop-1` | observation | EV-MEM-017 | 6 | human:liaoranran | 有锚 |
 | 43 | `ATOM-MEM-NEW-001/prop-2` | observation | EV-MEM-018 | 6 | human:liaoranran | 有锚 |
 | 44 | `ATOM-MEM-NEW-001/prop-3` | inference | EV-MEM-017, EV-MEM-018 | 6 | human:liaoranran | n/a（inference） |
-| 45 | `ATOM-MEM-PERF-001/prop-1` | observation | EV-MEM-008 | 5 | human:liaoranran | 有锚 |
-| 46 | `ATOM-MEM-PERF-001/prop-2` | inference | EV-MEM-008, EV-MEM-001 | 5 | human:liaoranran | n/a（inference） |
-| 47 | `ATOM-MEM-PERF-002/prop-1` | observation | EV-MEM-029 | 4 | human:liaoranran | 有锚 |
-| 48 | `ATOM-MEM-PERF-002/prop-2` | inference | EV-MEM-029 | 4 | human:liaoranran | n/a（inference） |
-| 49 | `ATOM-MEM-PERF-003/prop-1` | observation | EV-MEM-038 | 6 | human:liaoranran | 有锚 |
-| 50 | `ATOM-MEM-PERF-003/prop-2` | inference | EV-MEM-038 | 6 | human:liaoranran | n/a（inference） |
-| 51 | `ATOM-MEM-PERF-003/prop-3` | inference | EV-MEM-039 | 6 | human:liaoranran | n/a（inference） |
-| 52 | `ATOM-MEM-PERF-004/prop-1` | observation | EV-MEM-044, EV-MEM-045 | 6 | human:liaoranran | 缺锚（无 liveness 字段） |
-| 53 | `ATOM-MEM-PERF-004/prop-2` | observation | EV-MEM-044, EV-MEM-045 | 6 | human:liaoranran | 缺锚（无 liveness 字段） |
-| 54 | `ATOM-MEM-PERF-004/prop-3` | inference | EV-MEM-044, EV-MEM-045 | 6 | human:liaoranran | n/a（inference） |
-| 55 | `ATOM-MEM-RAII-001/prop-1` | observation | EV-MEM-009 | 6 | human:liaoranran | 有锚 |
-| 56 | `ATOM-MEM-RAII-001/prop-2` | observation | EV-MEM-010 | 6 | human:liaoranran | 有锚 |
-| 57 | `ATOM-MEM-RAII-001/prop-3` | inference | EV-MEM-009, EV-MEM-010 | 6 | human:liaoranran | n/a（inference） |
-| 58 | `ATOM-MEM-RAII-002/prop-1` | observation | EV-MEM-023 | 8 | human:liaoranran | 有锚 |
-| 59 | `ATOM-MEM-RAII-002/prop-2` | observation | EV-MEM-024 | 8 | human:liaoranran | 有锚 |
-| 60 | `ATOM-MEM-RAII-002/prop-3` | observation | EV-MEM-025 | 8 | human:liaoranran | 有锚 |
-| 61 | `ATOM-MEM-RAII-002/prop-4` | inference | EV-MEM-023, EV-MEM-024, EV-MEM-025 | 8 | human:liaoranran | n/a（inference） |
-| 62 | `ATOM-MEM-RVREF-001/prop-1` | observation | EV-MEM-004 | 6 | human:liaoranran | 有锚 |
-| 63 | `ATOM-MEM-RVREF-001/prop-2` | observation | EV-MEM-005 | 6 | human:liaoranran | 有锚 |
-| 64 | `ATOM-MEM-RVREF-001/prop-3` | inference | EV-MEM-004, EV-MEM-005 | 6 | human:liaoranran | n/a（inference） |
-| 65 | `ATOM-MEM-SHARED-001/prop-1` | observation | EV-MEM-013 | 6 | human:liaoranran | 有锚 |
-| 66 | `ATOM-MEM-SHARED-001/prop-2` | observation | EV-MEM-014 | 6 | human:liaoranran | 有锚 |
-| 67 | `ATOM-MEM-SHARED-001/prop-3` | inference | EV-MEM-013, EV-MEM-014 | 6 | human:liaoranran | n/a（inference） |
-| 68 | `ATOM-MEM-SHARED-002/prop-1` | observation | EV-MEM-034 | 6 | human:liaoranran | 有锚 |
-| 69 | `ATOM-MEM-SHARED-002/prop-2` | observation | EV-MEM-034 | 6 | human:liaoranran | 有锚 |
-| 70 | `ATOM-MEM-SHARED-002/prop-3` | inference | EV-MEM-034, EV-MEM-035 | 6 | human:liaoranran | n/a（inference） |
-| 71 | `ATOM-MEM-STRBOUND-001/prop-1` | observation | EV-MEM-047 | 3 | （unsigned） | 有锚 |
-| 72 | `ATOM-MEM-UNIQUE-001/prop-1` | observation | EV-MEM-011 | 6 | human:liaoranran | 有锚 |
-| 73 | `ATOM-MEM-UNIQUE-001/prop-2` | observation | EV-MEM-012 | 6 | human:liaoranran | 有锚 |
-| 74 | `ATOM-MEM-UNIQUE-001/prop-3` | inference | EV-MEM-011, EV-MEM-012 | 6 | human:liaoranran | n/a（inference） |
-| 75 | `ATOM-MEM-UNIQUE-002/prop-1` | observation | EV-MEM-032 | 6 | human:liaoranran | 有锚 |
-| 76 | `ATOM-MEM-UNIQUE-002/prop-2` | observation | EV-MEM-033 | 6 | human:liaoranran | 有锚 |
-| 77 | `ATOM-MEM-UNIQUE-002/prop-3` | inference | EV-MEM-032, EV-MEM-033 | 6 | human:liaoranran | n/a（inference） |
-| 78 | `ATOM-MEM-VALUE-001/prop-1` | observation | EV-MEM-006 | 6 | human:liaoranran | 有锚 |
-| 79 | `ATOM-MEM-VALUE-001/prop-2` | observation | EV-MEM-007 | 6 | human:liaoranran | 有锚 |
-| 80 | `ATOM-MEM-VALUE-001/prop-3` | inference | EV-MEM-006, EV-MEM-007 | 6 | human:liaoranran | n/a（inference） |
-| 81 | `ATOM-MEM-VALUE-002/prop-1` | observation | EV-MEM-021 | 6 | human:liaoranran | 有锚 |
-| 82 | `ATOM-MEM-VALUE-002/prop-2` | observation | EV-MEM-022 | 6 | human:liaoranran | 有锚 |
-| 83 | `ATOM-MEM-VALUE-002/prop-3` | inference | EV-MEM-021, EV-MEM-022 | 6 | human:liaoranran | n/a（inference） |
-| 84 | `ATOM-MEM-WEAK-001/prop-1` | observation | EV-MEM-015 | 6 | human:liaoranran | 有锚 |
-| 85 | `ATOM-MEM-WEAK-001/prop-2` | observation | EV-MEM-016 | 6 | human:liaoranran | 有锚 |
-| 86 | `ATOM-MEM-WEAK-001/prop-3` | inference | EV-MEM-015, EV-MEM-016 | 6 | human:liaoranran | n/a（inference） |
-| 87 | `ATOM-UB-GRAY-001/prop-1` | observation | EV-UB-001 | 4 | human:liaoranran | 有锚 |
-| 88 | `ATOM-UB-GRAY-001/prop-2` | inference | EV-UB-001 | 4 | human:liaoranran | n/a（inference） |
-| 89 | `ATOM-UB-SIGNEDOVF-001/prop-1` | observation | EV-UB-003 | 3 | （unsigned） | 有锚 |
+| 45 | `ATOM-MEM-NEWARR-001/prop-1` | observation | EV-MEM-NEWARR-669 | 4 | （card_signed） | 缺锚（无 liveness 字段） |
+| 46 | `ATOM-MEM-NEWARR-001/prop-2` | inference | EV-MEM-NEWARR-669 | 4 | （card_signed） | n/a（inference） |
+| 47 | `ATOM-MEM-PERF-001/prop-1` | observation | EV-MEM-008 | 5 | human:liaoranran | 有锚 |
+| 48 | `ATOM-MEM-PERF-001/prop-2` | inference | EV-MEM-008, EV-MEM-001 | 5 | human:liaoranran | n/a（inference） |
+| 49 | `ATOM-MEM-PERF-002/prop-1` | observation | EV-MEM-029 | 4 | human:liaoranran | 有锚 |
+| 50 | `ATOM-MEM-PERF-002/prop-2` | inference | EV-MEM-029 | 4 | human:liaoranran | n/a（inference） |
+| 51 | `ATOM-MEM-PERF-003/prop-1` | observation | EV-MEM-038 | 6 | human:liaoranran | 有锚 |
+| 52 | `ATOM-MEM-PERF-003/prop-2` | inference | EV-MEM-038 | 6 | human:liaoranran | n/a（inference） |
+| 53 | `ATOM-MEM-PERF-003/prop-3` | inference | EV-MEM-039 | 6 | human:liaoranran | n/a（inference） |
+| 54 | `ATOM-MEM-PERF-004/prop-1` | observation | EV-MEM-044, EV-MEM-045 | 6 | human:liaoranran | 缺锚（无 liveness 字段） |
+| 55 | `ATOM-MEM-PERF-004/prop-2` | observation | EV-MEM-044, EV-MEM-045 | 6 | human:liaoranran | 缺锚（无 liveness 字段） |
+| 56 | `ATOM-MEM-PERF-004/prop-3` | inference | EV-MEM-044, EV-MEM-045 | 6 | human:liaoranran | n/a（inference） |
+| 57 | `ATOM-MEM-RAII-001/prop-1` | observation | EV-MEM-009 | 6 | human:liaoranran | 有锚 |
+| 58 | `ATOM-MEM-RAII-001/prop-2` | observation | EV-MEM-010 | 6 | human:liaoranran | 有锚 |
+| 59 | `ATOM-MEM-RAII-001/prop-3` | inference | EV-MEM-009, EV-MEM-010 | 6 | human:liaoranran | n/a（inference） |
+| 60 | `ATOM-MEM-RAII-002/prop-1` | observation | EV-MEM-023 | 8 | human:liaoranran | 有锚 |
+| 61 | `ATOM-MEM-RAII-002/prop-2` | observation | EV-MEM-024 | 8 | human:liaoranran | 有锚 |
+| 62 | `ATOM-MEM-RAII-002/prop-3` | observation | EV-MEM-025 | 8 | human:liaoranran | 有锚 |
+| 63 | `ATOM-MEM-RAII-002/prop-4` | inference | EV-MEM-023, EV-MEM-024, EV-MEM-025 | 8 | human:liaoranran | n/a（inference） |
+| 64 | `ATOM-MEM-RVREF-001/prop-1` | observation | EV-MEM-004 | 6 | human:liaoranran | 有锚 |
+| 65 | `ATOM-MEM-RVREF-001/prop-2` | observation | EV-MEM-005 | 6 | human:liaoranran | 有锚 |
+| 66 | `ATOM-MEM-RVREF-001/prop-3` | inference | EV-MEM-004, EV-MEM-005 | 6 | human:liaoranran | n/a（inference） |
+| 67 | `ATOM-MEM-SHARED-001/prop-1` | observation | EV-MEM-013 | 6 | human:liaoranran | 有锚 |
+| 68 | `ATOM-MEM-SHARED-001/prop-2` | observation | EV-MEM-014 | 6 | human:liaoranran | 有锚 |
+| 69 | `ATOM-MEM-SHARED-001/prop-3` | inference | EV-MEM-013, EV-MEM-014 | 6 | human:liaoranran | n/a（inference） |
+| 70 | `ATOM-MEM-SHARED-002/prop-1` | observation | EV-MEM-034 | 6 | human:liaoranran | 有锚 |
+| 71 | `ATOM-MEM-SHARED-002/prop-2` | observation | EV-MEM-034 | 6 | human:liaoranran | 有锚 |
+| 72 | `ATOM-MEM-SHARED-002/prop-3` | inference | EV-MEM-034, EV-MEM-035 | 6 | human:liaoranran | n/a（inference） |
+| 73 | `ATOM-MEM-STRBOUND-001/prop-1` | observation | EV-MEM-047 | 3 | （unsigned） | 有锚 |
+| 74 | `ATOM-MEM-UNIQUE-001/prop-1` | observation | EV-MEM-011 | 6 | human:liaoranran | 有锚 |
+| 75 | `ATOM-MEM-UNIQUE-001/prop-2` | observation | EV-MEM-012 | 6 | human:liaoranran | 有锚 |
+| 76 | `ATOM-MEM-UNIQUE-001/prop-3` | inference | EV-MEM-011, EV-MEM-012 | 6 | human:liaoranran | n/a（inference） |
+| 77 | `ATOM-MEM-UNIQUE-002/prop-1` | observation | EV-MEM-032 | 6 | human:liaoranran | 有锚 |
+| 78 | `ATOM-MEM-UNIQUE-002/prop-2` | observation | EV-MEM-033 | 6 | human:liaoranran | 有锚 |
+| 79 | `ATOM-MEM-UNIQUE-002/prop-3` | inference | EV-MEM-032, EV-MEM-033 | 6 | human:liaoranran | n/a（inference） |
+| 80 | `ATOM-MEM-VALUE-001/prop-1` | observation | EV-MEM-006 | 6 | human:liaoranran | 有锚 |
+| 81 | `ATOM-MEM-VALUE-001/prop-2` | observation | EV-MEM-007 | 6 | human:liaoranran | 有锚 |
+| 82 | `ATOM-MEM-VALUE-001/prop-3` | inference | EV-MEM-006, EV-MEM-007 | 6 | human:liaoranran | n/a（inference） |
+| 83 | `ATOM-MEM-VALUE-002/prop-1` | observation | EV-MEM-021 | 6 | human:liaoranran | 有锚 |
+| 84 | `ATOM-MEM-VALUE-002/prop-2` | observation | EV-MEM-022 | 6 | human:liaoranran | 有锚 |
+| 85 | `ATOM-MEM-VALUE-002/prop-3` | inference | EV-MEM-021, EV-MEM-022 | 6 | human:liaoranran | n/a（inference） |
+| 86 | `ATOM-MEM-WEAK-001/prop-1` | observation | EV-MEM-015 | 6 | human:liaoranran | 有锚 |
+| 87 | `ATOM-MEM-WEAK-001/prop-2` | observation | EV-MEM-016 | 6 | human:liaoranran | 有锚 |
+| 88 | `ATOM-MEM-WEAK-001/prop-3` | inference | EV-MEM-015, EV-MEM-016 | 6 | human:liaoranran | n/a（inference） |
+| 89 | `ATOM-UB-DIVZERO-001/prop-1` | observation | EV-UB-DIVZERO-669 | 4 | （card_signed） | 缺锚（无 liveness 字段） |
+| 90 | `ATOM-UB-DIVZERO-001/prop-2` | inference | EV-UB-DIVZERO-669 | 4 | （card_signed） | n/a（inference） |
+| 91 | `ATOM-UB-GRAY-001/prop-1` | observation | EV-UB-001 | 4 | human:liaoranran | 有锚 |
+| 92 | `ATOM-UB-GRAY-001/prop-2` | inference | EV-UB-001 | 4 | human:liaoranran | n/a（inference） |
+| 93 | `ATOM-UB-NULLDEREF-001/prop-1` | observation | EV-UB-NULLDEREF-669 | 4 | （card_signed） | 缺锚（无 liveness 字段） |
+| 94 | `ATOM-UB-NULLDEREF-001/prop-2` | inference | EV-UB-NULLDEREF-669 | 4 | （card_signed） | n/a（inference） |
+| 95 | `ATOM-UB-OOB-001/prop-1` | observation | EV-UB-OOB-669 | 4 | （card_signed） | 缺锚（无 liveness 字段） |
+| 96 | `ATOM-UB-OOB-001/prop-2` | inference | EV-UB-OOB-669 | 4 | （card_signed） | n/a（inference） |
+| 97 | `ATOM-UB-SIGNEDOVF-001/prop-1` | observation | EV-UB-003 | 3 | （unsigned） | 有锚 |
+| 98 | `ATOM-UB-WRAP-001/prop-1` | observation | EV-UB-WRAP-669 | 4 | （card_signed） | 缺锚（无 liveness 字段） |
+| 99 | `ATOM-UB-WRAP-001/prop-2` | inference | EV-UB-WRAP-669 | 4 | （card_signed） | n/a（inference） |
 
-## 2. 卡列表（27 张原子卡）
+## 2. 卡列表（42 张原子卡）
 
 | 卡 | 命题数 | verified_by（卡级人签） | oracle 状态 | 本卡命题闭包大小 |
 |---|---|---|---|---|
@@ -135,6 +145,7 @@
 | `ATOM-MEM-MALLOC-001` | 1 | — | 未填（正常状态） | 3–3 |
 | `ATOM-MEM-MOVE-002` | 3 | human:liaoranran | 未填（正常状态） | 6–6 |
 | `ATOM-MEM-NEW-001` | 3 | human:liaoranran | 未填（正常状态） | 6–6 |
+| `ATOM-MEM-NEWARR-001` | 2 | machine:card_split_668 | 未填（正常状态） | 4–4 |
 | `ATOM-MEM-PERF-001` | 2 | human:liaoranran | 未填（正常状态） | 5–5 |
 | `ATOM-MEM-PERF-002` | 2 | human:liaoranran | 未填（正常状态） | 4–4 |
 | `ATOM-MEM-PERF-003` | 3 | human:liaoranran | 未填（正常状态） | 6–6 |
@@ -150,22 +161,26 @@
 | `ATOM-MEM-VALUE-001` | 3 | human:liaoranran | 未填（正常状态） | 6–6 |
 | `ATOM-MEM-VALUE-002` | 3 | human:liaoranran | 未填（正常状态） | 6–6 |
 | `ATOM-MEM-WEAK-001` | 3 | human:liaoranran | 未填（正常状态） | 6–6 |
+| `ATOM-UB-DIVZERO-001` | 2 | machine:card_split_668 | 未填（正常状态） | 4–4 |
 | `ATOM-UB-GRAY-001` | 2 | human:liaoranran | 未填（正常状态） | 4–4 |
+| `ATOM-UB-NULLDEREF-001` | 2 | machine:card_split_668 | 未填（正常状态） | 4–4 |
+| `ATOM-UB-OOB-001` | 2 | machine:card_split_668 | 未填（正常状态） | 4–4 |
 | `ATOM-UB-SIGNEDOVF-001` | 1 | — | 未填（正常状态） | 3–3 |
+| `ATOM-UB-WRAP-001` | 2 | machine:card_split_668 | 未填（正常状态） | 4–4 |
 
 ## 3. 边统计
 
 | 边类型 | 条数 | 说明 |
 |---|---|---|
-| 命题 → 本卡 | 89 | 每条命题引用自己所属的原子卡 |
-| 命题 → 证据卡 | 126 | `claim_structured[*].evidence` 逐条 |
-| 卡 → 命题 | 89 | 卡声明自己的命题（反向边） |
-| **合计（去重后）** | **304** | 三类合计 304（含重复对） |
-| 卡节点 | 100 | 命题所属卡 37 + 证据卡 63 |
+| 命题 → 本卡 | 99 | 每条命题引用自己所属的原子卡 |
+| 命题 → 证据卡 | 136 | `claim_structured[*].evidence` 逐条 |
+| 卡 → 命题 | 99 | 卡声明自己的命题（反向边） |
+| **合计（去重后）** | **334** | 三类合计 334（含重复对） |
+| 卡节点 | 110 | 命题所属卡 42 + 证据卡 68 |
 
 ## 4. 闭包口径与对账
 
 - 闭包定义：从命题出发，沿 `card→prop` / `prop→card` / `prop→evidence` 有向边可达的**全部节点**（含命题与卡两类 id）。
 - 双实现对账：`tools/prop_closure.py cross-check`（Python BFS vs SQL `WITH RECURSIVE`）必须逐集合相等；不一致时该命令 **exit 2**。
-- oracle 统计（报告层只读，不改判决）：未填字段 103 张 · stale 0 张 · 放权开关 {"G-iso": false, "oracle_auto_accept": false, "llm_as_judge": false}
+- oracle 统计（报告层只读，不改判决）：未填字段 113 张 · stale 0 张 · 放权开关 {"G-iso": false, "oracle_auto_accept": false, "llm_as_judge": false}
 

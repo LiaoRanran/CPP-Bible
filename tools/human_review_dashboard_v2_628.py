@@ -480,11 +480,15 @@ def selftest() -> int:
     chk("唯一审查项 = 93", d["review"]["unique"] == EXPECT_UNIQUE, f'({d["review"]["unique"]})')
     chk("W2 = IN114/OUT7", d["w2"]["labels"]["IN"] == EXPECT_W2["IN"]
         and d["w2"]["labels"]["OUT"] == EXPECT_W2["OUT"], f'({d["w2"]["labels"]})')
-    chk("W2 节点 131", len(d["w2"]["nodes"]) == 131, f'({len(d["w2"]["nodes"])})')
+    # 670a 去写死：节点数取 W2 权威源现算（原冻结 131）
+    import w2_authority_640b as _auth  # noqa: E402
+    _n_nodes = _auth.current()["nodes"]
+    chk(f"W2 节点 {_n_nodes}", len(d["w2"]["nodes"]) == _n_nodes,
+        f'({len(d["w2"]["nodes"])})')
     chk("独立人类确认强度 = 0", d["blind_count"] == 0, f'({d["blind_count"]})')
     chk("透明日志链自算完整", d["attest"]["log"]["chain_valid"],
         f'({d["attest"]["log"]["entries"]} 条)')
-    chk("3D 节点数 = 131", len(_sphere(131)) == 131)
+    chk(f"3D 节点数 = {_n_nodes}", len(_sphere(_n_nodes)) == _n_nodes)
     print(f"C1 dashboard v2 check: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
 

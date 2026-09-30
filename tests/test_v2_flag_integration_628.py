@@ -67,13 +67,15 @@ def test_v1_uses_legacy_grounded_labels():
     g = json.load(open(GROUNDED, encoding="utf-8"))
     expected = {k: v["label"] for k, v in g["nodes"].items()}
     assert w2 == expected
-    assert len(w2) == 131
+    # 670a 去写死：节点数取权威源现算（原冻结 131）
+    assert len(w2) == _expect_w2_or_dynamic()["nodes"]
 
 
-def test_v2_uses_normalized_121_nodes():
+def test_v2_uses_normalized_nodes():
     _set("1")
     w2 = _compiler().compile_w2()
-    assert len(w2) == 131          # 归一化后 131，非 ledger edge 粒度 519
+    # 归一化后 = 节点全集粒度数（非 ledger edge 粒度）
+    assert len(w2) == _expect_w2_or_dynamic()["nodes"]
 
 
 def test_v1_v2_numbers_identical():

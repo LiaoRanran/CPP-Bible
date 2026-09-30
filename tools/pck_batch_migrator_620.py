@@ -193,9 +193,14 @@ def selftest() -> int:
         ok = ok and cond
 
     cards = discover_cards()
-    chk("自动发现全量卡 = 103 张（37 原子 + 66 证据）", len(cards) == 103)
-    chk("原子卡 37 张", sum(1 for c in cards if c.startswith("atoms/")) == 37)
-    chk("证据卡 66 张", sum(1 for c in cards if c.startswith("evidence/")) == 66)
+    # 670a 去写死：卡数不再冻结 103/37/66，与语料基数权威源 `counts_659` 对账
+    import counts_659 as counts  # noqa: E402
+    chk(f"自动发现全量卡 = {counts.CARDS_REAL} 张（{counts.ATOMS_REAL} 原子 + "
+        f"{counts.EVIDENCE_TOTAL} 证据）", len(cards) == counts.CARDS_REAL)
+    chk(f"原子卡 {counts.ATOMS_REAL} 张",
+        sum(1 for c in cards if c.startswith("atoms/")) == counts.ATOMS_REAL)
+    chk(f"证据卡 {counts.EVIDENCE_TOTAL} 张",
+        sum(1 for c in cards if c.startswith("evidence/")) == counts.EVIDENCE_TOTAL)
 
     # 单张迁移
     sample = build_cert(cards[0])

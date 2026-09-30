@@ -24,27 +24,31 @@ def _executed():
 
 
 def test_current_labels_match_artifact():
+    """670a 去写死：判决计数取 W2 权威源现算（原冻结 89/42/131）。"""
     if not os.path.exists(LABELS):
         return
+    import w2_authority_640b as auth  # noqa: E402
+    exp = auth.current()
     lbl = json.load(open(LABELS, encoding="utf-8"))
     nodes = lbl["nodes"]
     cnt: dict[str, int] = {}
     for v in nodes.values():
         cnt[v.get("label")] = cnt.get(v.get("label"), 0) + 1
-    # 640 A1：签署后权威产物重算（IN79/OUT42，误解层全部 OUT）
-    assert cnt.get("IN") == 89
-    assert cnt.get("OUT") == 42
-    assert cnt.get("UNDEC", 0) == 0
+    assert cnt.get("IN") == exp["IN"]
+    assert cnt.get("OUT") == exp["OUT"]
+    assert cnt.get("UNDEC", 0) == exp["UNDEC"]
+    assert sum(cnt.values()) == len(nodes)
 
 
 def test_labels_node_composition():
     if not os.path.exists(LABELS):
         return
+    import w2_authority_640b as auth  # noqa: E402
     lbl = json.load(open(LABELS, encoding="utf-8"))
     kinds: dict[str, int] = {}
     for v in lbl["nodes"].values():
         kinds[v.get("kind")] = kinds.get(v.get("kind"), 0) + 1
-    assert sum(kinds.values()) == 131
+    assert sum(kinds.values()) == len(lbl["nodes"]) == auth.current()["nodes"]
 
 
 def test_30_decisions_are_same_direction_as_annotations():

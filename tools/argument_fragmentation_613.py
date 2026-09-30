@@ -53,7 +53,7 @@ def render(p: dict, n_rev: int, n_app: int) -> str:
          f"时间：{datetime.now().isoformat(timespec='seconds')}",
          "> 口径：**现状＝真实**，**投影＝假设**（611 加桥 what-if），**已生效＝实际落权威边数**。", "",
          "## 一、三态对照", "",
-         "| 指标 | 现状（真实） | 投影（若 98 条全加） | 已生效 |", "|---|---|---|---|",
+         f"| 指标 | 现状（真实） | 投影（若 {p['candidates_added']} 条全加） | 已生效 |", "|---|---|---|---|",
          f"| 连通分量 | **{p['components_before']}** | {p['components_after']} | "
          f"{p['components_before']}（人审 0） |",
          f"| 最大分量节点 | {p['largest_before']} | {p['largest_after']} | "
@@ -67,9 +67,10 @@ def render(p: dict, n_rev: int, n_app: int) -> str:
          f"- 人审记录 `data/bridge_edge_review_612.jsonl`：**{n_rev} 条**（空）",
          f"- D1 `--apply` 产出（非权威）`data/bridge_edges_applied_613.jsonl`：**{n_app} 条**",
          "- 权威边文件 `data/attack_edges_candidates.jsonl` **未被本批改动**（人审权，不越权）。",
-         "- ⇒ 碎片化**当前并未真正改善**；21 分量 / 66.1% 覆盖是真实基线。", "",
+         f"- ⇒ 碎片化**当前并未真正改善**；{p['components_before']} 分量 / "
+         f"{p['coverage_before'] * 100:.1f}% 覆盖是真实基线。", "",
          "## 三、修复路径（交人）", "",
-         "1. 人审 98 条候选（方向 + 是否真成立），写入人审记录；",
+         f"1. 人审 {p['candidates_added']} 条候选（方向 + 是否真成立），写入人审记录；",
          "2. 人审通过后写权威边文件（**人执行**，本批不代劳）；",
          "3. 重跑本工具 ⇒ 「已生效」列才会向「投影」列靠拢。", "",
          f"> 611 注：{p.get('note', '')}"]
@@ -85,10 +86,18 @@ def main(argv: list[str] | None = None) -> int:
 
     if a.check:
         errs = []
-        if p["components_before"] != 21 or p["components_after"] != 17:
-            errs.append(f"分量投影异常: {p['components_before']}→{p['components_after']}")
-        if p["candidates_added"] != 98:
-            errs.append(f"候选边数应为 98，实测 {p['candidates_added']}")
+        # 670a 去写死：分量投影不再冻结 21→17（事实源扩容后已过期）。
+        # 改锁三条真不变量：现状锚定事实源现算 / 投影方向（加桥不增碎片）/ 候选边数自洽。
+        import fragmentation_repair_analysis as _fra  # noqa: E402
+        import w2_derived_640c as _wd  # noqa: E402
+        ref = _wd.components()
+        if p["components_before"] != ref["count"]:
+            errs.append(f"现状分量应 == 事实源现算（{ref['count']}），实测 {p['components_before']}")
+        if p["components_after"] > p["components_before"]:
+            errs.append(f"投影分量不应增加: {p['components_before']}→{p['components_after']}")
+        n_cands = len(_fra.load_candidates())
+        if p["candidates_added"] != n_cands:
+            errs.append(f"候选边数应与候选文件一致（应 {n_cands}），实测 {p['candidates_added']}")
         if n_rev != 0:
             errs.append(f"人审记录应为 0（本批未人审），实测 {n_rev}")
         page = render(p, n_rev, n_app)

@@ -85,9 +85,14 @@ def render(all_r: dict, partial_r: dict) -> str:
 
 def check(all_r: dict, partial_r: dict) -> list[str]:
     problems: list[str] = []
-    if all_r["warn_before"] != 60:
-        problems.append(f"当前 OBSERVATION-LIVENESS warn 应为 60（实测 {all_r['warn_before']}）")
-    if all_r["warn_after"] != 0:
+    # 670a 去写死：不再冻结 warn=60。`warn_before` 走 `proposition_liveness_audit.
+    # observation_status` 聚合，`total_props` 走 `liveness_review` 命题清单——两条路径必须一致。
+    if all_r["warn_before"] != all_r["total_props"]:
+        problems.append(f"warn_before({all_r['warn_before']}) 应等于缺锚命题总数"
+                        f"({all_r['total_props']})")
+    if all_r["warn_after"] != all_r["warn_before"] - all_r["addressed"]:
+        problems.append(f"warn_after 应 = warn_before − addressed（实测 {all_r}）")
+    if all_r["addressed"] != all_r["total_props"] or all_r["warn_after"] != 0:
         problems.append(f"全量补全后 warn 应为 0（实测 {all_r['warn_after']}）")
     if partial_r["addressed"] != 0 and partial_r["warn_after"] != partial_r["warn_before"]:
         problems.append("--partial 0 时 warn 应与基线一致")

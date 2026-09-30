@@ -15,6 +15,7 @@ import hashlib
 import sqlite3
 from pathlib import Path
 
+import counts_659 as counts  # noqa: E402
 import prop_closure as pc
 import prop_graph as pg
 import pytest
@@ -117,18 +118,22 @@ def test_cross_check_is_falsifiable(tmp_path: Path, monkeypatch: pytest.MonkeyPa
         bad.append({"prop_key": key, "only_python": [], "only_sql": []})
     monkeypatch.setattr(pc, "closure_sql", lambda _conn, start, _edges=None: {start})
     mism = pc.cross_check(REAL_DB)
-    assert len(mism) == len(bad) == 89, f"错实现应被逐条抓出，实得 {len(mism)}"
+    # 670a 去写死：条数取事实源现算（原冻结 89）
+    assert len(mism) == len(bad) == counts.PROPOSITIONS, f"错实现应被逐条抓出，实得 {len(mism)}"
     assert all(m["only_python"] for m in mism), "差异方向应指向 Python 多出来的节点"
 
 
 def test_cross_check_and_stats_on_real_db():
-    """真实库：双实现 79/79 一致；统计与 `prop_graph` 的命题数**交叉一致**。"""
+    """真实库：双实现逐条一致；统计与 `prop_graph` 的命题数**交叉一致**。
+
+    670a 去写死：命题/卡/边数取事实源现算（原冻结 89/37/304）。
+    """
     mismatches = pc.cross_check(REAL_DB)
     assert mismatches == [], f"双实现不一致：{mismatches[:5]}"
     st = pc.stats(REAL_DB)
-    assert st["propositions"] == pg.stats(REAL_DB)["propositions"] == 89
-    assert st["cards"] == 37
-    assert st["edges"] == 304
+    assert st["propositions"] == pg.stats(REAL_DB)["propositions"] == counts.PROPOSITIONS
+    assert st["cards"] == counts.ATOMS_REAL
+    assert st["edges"] == len(pc.load_edges(REAL_DB))     # 两条 API 互对账（不冻结数字）
     assert st["isolated"] == []
     assert st["max_closure_size"] <= 50, "闭包异常（>50）应在台账里单列"
 

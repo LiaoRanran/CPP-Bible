@@ -17,17 +17,21 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 import modify_mode_analysis as b2  # noqa: E402
+import w2_authority_640b as auth  # noqa: E402
 
 OUT_MIS_7 = ("MIS-LANG-001", "MIS-MEM-001", "MIS-MEM-003",
              "MIS-UB-001", "MIS-UB-004", "MIS-UB-008", "MIS-UB-014")
 
 
 def test_two_mode_verdicts_match_known_facts():
+    """670a 去写死：原冻结 (89,42,194)（640 时点快照）。改为与 W2 权威源现算一致 + 双档趋同。"""
     c = b2.compute()
     kl, up = c["keep_low"], c["upgrade"]
-    # 640 A1：签署后权威产物重算，两档判决趋同（IN79/OUT42/击败194）
-    assert (kl["in"], kl["out"], kl["defeating_edges"]) == (89, 42, 194)
-    assert (up["in"], up["out"], up["defeating_edges"]) == (89, 42, 194)
+    ref = auth.current()
+    assert (kl["in"], kl["out"], kl["defeating_edges"]) == \
+        (ref["IN"], ref["OUT"], ref["defeating_edges"])
+    assert (up["in"], up["out"], up["defeating_edges"]) == \
+        (ref["IN"], ref["OUT"], ref["defeating_edges"])
     assert kl["rounds"] == 3 and up["rounds"] == 3
 
 

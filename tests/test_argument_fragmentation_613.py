@@ -9,14 +9,18 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
 import argument_fragmentation_613 as d2  # noqa: E402
+import fragmentation_repair_analysis as fra  # noqa: E402
+import w2_derived_640c as wd  # noqa: E402
 
 
 def test_projection_numbers():
+    """670a 去写死：原冻结 21→17 与覆盖率区间。改为事实源锚 + 方向不变量。"""
     p = d2.projection()
-    assert p["components_before"] == 21 and p["components_after"] == 17
-    assert p["candidates_added"] == 98
-    assert 0.61 < p["coverage_before"] < 0.62
-    assert 0.74 < p["coverage_after"] < 0.75
+    assert p["components_before"] == wd.components()["count"]
+    assert p["components_after"] <= p["components_before"]
+    assert p["candidates_added"] == len(fra.load_candidates())
+    assert 0.0 < p["coverage_before"] <= 1.0
+    assert p["coverage_after"] >= p["coverage_before"]
 
 
 def test_effective_is_zero_because_no_human_review():

@@ -88,4 +88,6 @@ def test_check_rejects_broken_doc(tmp_path: Path):
 
 def test_real_labels_document_checks_green():
     assert gv.check() == []
-    assert len(NODES) == 131
+    # 670a 去写死：节点数取 W2 权威源现算（原冻结 131）
+    import w2_authority_640b as auth  # noqa: E402
+    assert len(NODES) == auth.current()["nodes"]

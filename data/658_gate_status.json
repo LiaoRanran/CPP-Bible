@@ -11,7 +11,7 @@
       "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe tools/status_reconciler_658.py --check",
       "exit": 0,
       "pass": true,
-      "tail": "nch\": \"master\",\n  \"ahead_of_origin_master\": 5,\n  \"behind_origin_master\": 0,\n  \"dirty\": true,\n  \"mutation\": {\n    \"core\": 97.3,\n    \"all\": 81.5\n  },\n  \"cards_atoms_total\": 53,\n  \"graph_nodes\": 178,\n  \"graph_links\": 1093,\n  \"rules_actual\": 67,\n  \"readme_rules\": 67,\n  \"readme_nodes\": 178,\n  \"_baseline_head\": \"ancestor(snapshot-behind)\",\n  \"_baseline_ahead\": 0\n}\n\n[OK] 元状态与 baseline.json 一致（受控目录零改动前提下）"
+      "tail": "nch\": \"master\",\n  \"ahead_of_origin_master\": 8,\n  \"behind_origin_master\": 0,\n  \"dirty\": true,\n  \"mutation\": {\n    \"core\": 97.3,\n    \"all\": 81.5\n  },\n  \"cards_atoms_total\": 53,\n  \"graph_nodes\": 178,\n  \"graph_links\": 1093,\n  \"rules_actual\": 67,\n  \"readme_rules\": 67,\n  \"readme_nodes\": 178,\n  \"_baseline_head\": \"ancestor(snapshot-behind)\",\n  \"_baseline_ahead\": 0\n}\n\n[OK] 元状态与 baseline.json 一致（受控目录零改动前提下）"
     },
     {
       "stage": "S1 门禁分层合法",
@@ -35,7 +35,7 @@
       "cmd": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\.venv\\Scripts\\python.exe tools/holdout_658.py --status",
       "exit": 0,
       "pass": true,
-      "tail": "ealed=True seeds=30\n  h1   True\n  h2   unknown\n  h3   False\n  h4   unknown\n  h5   True\n  h6   unknown\n  h7   True\n  h8   True\n  h9   unknown\n  h10  True\n  h11  False\n  h12  False\n  h13  False\n  h14  True\n  h15  True\n  h16  False\n  h17  False\n  h18  False\n  h19  False\n  h20  False\n  h21  True\n  h22  True\n  h23  True\n  h24  True\n  h25  True\n  h26  True\n  h27  True\n  h28  True\n  h29  True\n  h30  True"
+      "tail": "  unknown\n  h10  True\n  h11  False\n  h12  False\n  h13  False\n  h14  True\n  h15  True\n  h16  False\n  h17  False\n  h18  False\n  h19  False\n  h20  False\n  h21  True\n  h22  True\n  h23  True\n  h24  True\n  h25  True\n  h26  True\n  h27  True\n  h28  True\n  h29  True\n  h30  True\n  h31  True\n  h32  True\n  h33  True\n  h34  True\n  h35  False\n  h36  False\n  h37  unknown\n  h38  unknown\n  h39  unknown\n  h40  True"
     },
     {
       "stage": "S4 边界 provenance",

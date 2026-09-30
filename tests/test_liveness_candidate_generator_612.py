@@ -13,9 +13,16 @@ import liveness_candidate_generator as b1  # noqa: E402
 
 
 def test_generation_covers_all_missing_props():
+    """670a 去写死：缺锚命题数取事实源现算（不再冻结 60）。
+
+    口径：`build()` 经审计 `cards[].missing` 聚合；`liveness_impact.current_warn_count()`
+    经审计 `observation_status` 聚合——两条独立路径必须一致。
+    """
+    import liveness_impact as li  # noqa: E402
     d = b1.build()
-    assert d["total_props"] == 60
-    assert len(d["per_prop"]) == 60
+    n = li.current_warn_count()
+    assert d["total_props"] == n
+    assert len(d["per_prop"]) == d["total_props"]
 
 
 def test_classes_all_present():

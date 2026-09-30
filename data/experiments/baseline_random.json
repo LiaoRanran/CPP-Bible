@@ -1,0 +1,164 @@
+{
+  "schema": "queyi-baseline-experiment/670a",
+  "arm": "random_proxy†（仪器级预算对齐；**非论文 B3**）",
+  "seed": 20260930,
+  "selection": {
+    "holdout": {
+      "pool": [
+        "asan",
+        "compile-time",
+        "compiler-warn",
+        "cross-compile",
+        "linker",
+        "measure",
+        "perf-counter",
+        "tsan",
+        "ubsan",
+        "wunsequenced"
+      ],
+      "fd_used": [
+        "asan",
+        "linker",
+        "tsan",
+        "ubsan"
+      ],
+      "picked": [
+        "cross-compile",
+        "measure",
+        "perf-counter",
+        "tsan"
+      ],
+      "seed": 20260930,
+      "shared_by_fd_and_random": [
+        "tsan"
+      ]
+    },
+    "corpus": {
+      "pool": [
+        "asan",
+        "compile-time",
+        "compiler-warn",
+        "cross-compile",
+        "linker",
+        "measure",
+        "perf-counter",
+        "tsan",
+        "ubsan",
+        "wunsequenced"
+      ],
+      "fd_used": [
+        "asan",
+        "compiler-warn",
+        "cross-compile",
+        "ubsan"
+      ],
+      "picked": [
+        "cross-compile",
+        "measure",
+        "perf-counter",
+        "tsan"
+      ],
+      "seed": 20260930,
+      "shared_by_fd_and_random": [
+        "cross-compile"
+      ]
+    }
+  },
+  "holdout": {
+    "catch": 1,
+    "miss": 15,
+    "unknown": 1,
+    "not_error": 0,
+    "total": 17,
+    "all_samples": {
+      "k": 1,
+      "n": 17,
+      "numerator": 1,
+      "denominator": 17,
+      "point": 0.058823529411764705,
+      "cp_low": 0.0014881743912666264,
+      "cp_high": 0.2868893966672207,
+      "conf": 0.95
+    },
+    "measurable": {
+      "k": 1,
+      "n": 16,
+      "numerator": 1,
+      "denominator": 16,
+      "point": 0.0625,
+      "cp_low": 0.0015811117227658832,
+      "cp_high": 0.30232073843453156,
+      "conf": 0.95
+    },
+    "no_unknown": {
+      "k": 1,
+      "n": 16,
+      "numerator": 1,
+      "denominator": 16,
+      "point": 0.0625,
+      "cp_low": 0.0015811117227658832,
+      "cp_high": 0.30232073843453156,
+      "conf": 0.95
+    },
+    "delta_pp": {
+      "measurable_minus_all": 0.2999999999999998,
+      "measurable_minus_no_unknown": 0.0
+    }
+  },
+  "corpus": {
+    "catch": 1,
+    "miss": 31,
+    "unknown": 5,
+    "not_error": 3,
+    "total": 40,
+    "all_samples": {
+      "k": 1,
+      "n": 40,
+      "numerator": 1,
+      "denominator": 40,
+      "point": 0.025,
+      "cp_low": 0.0006327449320494309,
+      "cp_high": 0.13158585848276522,
+      "conf": 0.95
+    },
+    "measurable": {
+      "k": 1,
+      "n": 32,
+      "numerator": 1,
+      "denominator": 32,
+      "point": 0.03125,
+      "cp_low": 0.0007908685979525587,
+      "cp_high": 0.16217099418151099,
+      "conf": 0.95
+    },
+    "no_unknown": {
+      "k": 1,
+      "n": 35,
+      "numerator": 1,
+      "denominator": 35,
+      "point": 0.02857142857142857,
+      "cp_low": 0.0007231043763380937,
+      "cp_high": 0.1491720796564317,
+      "conf": 0.95
+    },
+    "delta_pp": {
+      "measurable_minus_all": 0.6000000000000001,
+      "measurable_minus_no_unknown": 0.20000000000000018
+    }
+  },
+  "blocked": [
+    {
+      "baseline": "B3 budget-matched random（**验证资产**口径，论文 §5.2）",
+      "why": "资产选择接口在拆仓验证器 queyi-verifier 里（主仓不可见）；主仓无 select_assets(pool, n, strategy, seed)",
+      "status": "BLOCKED",
+      "need": "queyi-verifier 暴露 select_assets(pool, n, strategy, seed) -> [asset] + 分配表"
+    },
+    {
+      "baseline": "B1 rule-only（真·静态规则判定器）",
+      "why": "主仓 holdout/corpus 判定走外部 sanitizer 仪器，无 detect_static(sample) 可执行路径",
+      "status": "PROXY（本文件 static 臂 = 口径重分箱，不是重跑）",
+      "need": "queyi-verifier 暴露 detect_static(sample) -> verdict"
+    }
+  ],
+  "honest_note": "FD 与 Static 是**同一批样本**的口径重分箱（配对可比）；random_proxy 是仪器级代理，**不是**论文 B3，结论不得进论文。所有率由逐样本现算，区间用 tools/stat_bounds.py 的 Clopper–Pearson 95%。"
+}

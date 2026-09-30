@@ -19,8 +19,10 @@ def test_two_paths_agree():
 
 
 def test_totals_self_consistent():
+    # 670a 去写死：不再冻结节点数 131（669 P0-2 补 5 张证据卡 ⇒ 141）。
+    # 改为锁「判决划分 = 节点数」，并**交叉校验两条路径**（现算 vs 入库产物）。
     c = A.current()
-    assert c["IN"] + c["OUT"] + c["UNDEC"] == c["nodes"] == 131
+    assert c["IN"] + c["OUT"] + c["UNDEC"] == c["nodes"] == A.artifact_summary()["nodes"]
     assert c["edges"] > 0 and c["defeating_edges"] > 0
 
 
@@ -30,9 +32,10 @@ def test_triple_matches_current():
 
 
 def test_artifact_summary_reads_file():
+    # 670a 去写死：产物节点数不再冻结，与现算权威源对齐（产物过期即红）
     a = A.artifact_summary()
     assert a["source"].endswith("grounded_labels_w2.json")
-    assert a["nodes"] == 131
+    assert a["nodes"] == A.current()["nodes"]
 
 
 def test_recompute_is_independent_path():

@@ -15,9 +15,10 @@ def _exp() -> dict:
     return _w2()
 
 
-def test_normalizer_node_count_121():
+def test_normalizer_node_count_matches_authority():
+    # 670a 去写死：原写死 131（更早是 121）；改与 640b 权威源现算对齐
     nodes = N.load_grounded_nodes()
-    assert len(nodes) == 131
+    assert len(nodes) == _exp()["nodes"]
 
 
 def test_normalizer_in_out_distribution():

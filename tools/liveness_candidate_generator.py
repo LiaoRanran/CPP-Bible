@@ -187,8 +187,18 @@ def render(d: dict) -> str:
 
 def check(d: dict) -> list[str]:
     problems: list[str] = []
-    if d["total_props"] != 60:
-        problems.append(f"缺锚命题应为 60（实测 {d['total_props']}）")
+    # 670a 去写死：不再冻结 60（事实源已随语料扩容增长）。
+    # 缺锚命题数由本模块经 `proposition_liveness_audit.audit()["cards"]` 聚合；
+    # OBSERVATION-LIVENESS warn 数经 `["observation_status"]` 聚合——**同一事实源的两条独立路径**，
+    # 两者必须相等（单一数字口径；不相等即口径漂移）。
+    import liveness_impact as li  # noqa: E402
+    n_warn = li.current_warn_count()
+    if d["total_props"] != n_warn:
+        problems.append(f"缺锚命题数与 OBSERVATION-LIVENESS warn 数不一致"
+                        f"（{d['total_props']} vs {n_warn}）")
+    if sum(d["counts"].values()) != d["total_props"]:
+        problems.append(f"A/B/C 之和应等于缺锚命题数"
+                        f"（{sum(d['counts'].values())} vs {d['total_props']}）")
     ids = [p["proposition_id"] for p in d["per_prop"]]
     if len(set(ids)) != len(ids):
         problems.append(f"proposition_id 不唯一（{len(ids)} 条中仅 {len(set(ids))} 个）")

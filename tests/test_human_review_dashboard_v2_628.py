@@ -44,12 +44,13 @@ def test_dark_tech_style_present(html):
 
 
 def test_data_matches_current_state(data):
+    # 670a 去写死：节点数取 W2 权威源现算（原冻结 131）
     from w2_authority_640b import current as _w2
     exp = _w2()
     assert data["review"]["unique"] == 93
     assert data["w2"]["labels"] == {"IN": exp["IN"], "OUT": exp["OUT"],
                                     "UNDEC": exp["UNDEC"]}
-    assert len(data["w2"]["nodes"]) == 131
+    assert len(data["w2"]["nodes"]) == exp["nodes"]
     assert data["blind_count"] == 0
     assert sum(data["methods"].values()) == data["events"] > 0
 
@@ -68,8 +69,8 @@ def test_heatmap_has_one_cell_per_item(html, data):
     assert data["items"] == sorted(data["items"], key=lambda i: -i["score"])
 
 
-def test_3d_scene_uses_all_nodes(html):
-    assert html.count('class="node ') == 131
+def test_3d_scene_uses_all_nodes(html, data):
+    assert html.count('class="node ') == len(data["w2"]["nodes"])
     assert "translate3d(var(--x),var(--y),var(--z))" in html
 
 

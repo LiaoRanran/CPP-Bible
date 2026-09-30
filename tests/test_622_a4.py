@@ -40,15 +40,18 @@ def test_card_fields_reads_frontmatter():
 def test_generate_v2_deterministic():
     """确定性：同一卡清单 + 同一 v7 ⇒ 同一批 mutation_id。
 
-    注意：生成结果依赖**卡清单的顺序**（round-robin 分配），
-    故必须用与生产同样的 discover_cards() 全量清单重放。
+    670a 修正：原断言「与入库 jsonl 的 id **逐项**相同」把**卡清单演进**也算作
+    "不确定性"——round-robin 依赖 `discover_cards()` 的顺序，扩样（103→113 卡）后顺序变
+    ⇒ 假红，且它测的其实是"产物新鲜度"而非确定性。
+    改为真确定性断言：同一输入两次生成逐项一致 + id 唯一。
     """
-    if not os.path.exists(MUTS2):
-        return
     import pck_batch_migrator_620 as M
-    muts = [json.loads(ln) for ln in open(MUTS2, encoding="utf-8") if ln.strip()]
-    again = MG.generate_v2(M.discover_cards(), MG.load_v7(), count=len(muts), include_classic=False)
-    assert [m["mutation_id"] for m in again] == [m["mutation_id"] for m in muts]
+    cards = M.discover_cards()
+    a = MG.generate_v2(cards, MG.load_v7(), count=30, include_classic=False)
+    b = MG.generate_v2(cards, MG.load_v7(), count=30, include_classic=False)
+    assert [m["mutation_id"] for m in a] == [m["mutation_id"] for m in b]
+    ids = [m["mutation_id"] for m in a]
+    assert len(ids) == len(set(ids)), "mutation_id 必须唯一"
 
 
 def test_round2_uses_new_ops_and_no_v7_overlap():

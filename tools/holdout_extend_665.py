@@ -108,10 +108,13 @@ def write_fixtures() -> list[Path]:
 def extend(apply: bool = False) -> tuple[dict, str]:
     """把 h21–h30 追加进 holdout.json。**不删、不改**原 20 个 seed。"""
     h = json.loads(HOLD.read_text(encoding="utf-8"))
-    before = [s["id"] for s in h["seeds"]]
+    # 670a 去写死/容忍后续批次：669d 已并入 10 条（记录在 `extend_669d.added_ids`）。
+    # 防误改判据不变 —— 仍是「去掉**所有已知扩展** id 后必须剩原 20 条」。
+    late = set(h.get("extend_669d", {}).get("added_ids") or [])
+    exist = {s["id"] for s in h["seeds"]}
+    before = [i for i in (s["id"] for s in h["seeds"]) if i not in late]
     if len(before) != 20:
-        raise SystemExit(f"原 holdout 应为 20 个 seed，实际 {len(before)}：拒绝续写（防误改）")
-    exist = set(before)
+        raise SystemExit(f"原 holdout 应为 20 个 seed（去掉后续扩样 id 后），实际 {len(before)}：拒绝续写（防误改）")
     added = []
     for s in NEW_SEEDS:
         if s["id"] in exist:
@@ -176,9 +179,13 @@ def merged(apply: bool = True) -> dict:
     顺带 best-effort 更新 `holdout.json`（让旧工具仍能读到扩样；但它被旧工具重写也不影响本文件的效力）。
     """
     base = json.loads(HOLD.read_text(encoding="utf-8"))
-    base["seeds"] = [s for s in base["seeds"] if s["id"] not in {n["id"] for n in NEW_SEEDS}]
+    # 670a：后续批次（669d）并入的种子**原样保留**、且不计入"原 20 条"判据
+    late_ids = set(base.get("extend_669d", {}).get("added_ids") or [])
+    late_seeds = [s for s in base["seeds"] if s["id"] in late_ids]
+    base["seeds"] = [s for s in base["seeds"]
+                     if s["id"] not in {n["id"] for n in NEW_SEEDS} and s["id"] not in late_ids]
     if len(base["seeds"]) != 20:
-        raise SystemExit(f"合并基线应为原 20 个 seed，实际 {len(base['seeds'])}：拒绝（防误改）")
+        raise SystemExit(f"合并基线应为原 20 个 seed（去掉后续扩样 id 后），实际 {len(base['seeds'])}：拒绝（防误改）")
     out: dict = json.loads(json.dumps(base))         # 深拷贝，别改到 base（666 A1：加注解消 no-any-return）
     out["seeds"].extend({**s, "hidden": True, "revealed": True} for s in NEW_SEEDS)
     out["count"] = len(out["seeds"])
@@ -196,7 +203,13 @@ def merged(apply: bool = True) -> dict:
     }
     if apply:
         MERGED.write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        HOLD.write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        # 670a：写 holdout.json 时把**后续批次（669d）**的种子续回（只增不减），
+        # 否则本工具会把 669d 的扩样静默抹掉（正是 665 §合并视图 要防的那类事故）。
+        hold_out: dict = json.loads(json.dumps(out))
+        hold_out["seeds"].extend(late_seeds)
+        hold_out["count"] = len(hold_out["seeds"])
+        hold_out["extend_669d"] = base.get("extend_669d", {})
+        HOLD.write_text(json.dumps(hold_out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return out
 
 

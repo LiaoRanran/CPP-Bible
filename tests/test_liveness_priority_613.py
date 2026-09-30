@@ -10,16 +10,29 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 import liveness_priority_613 as a1  # noqa: E402
 
 
-def test_all_50_props_enumerated():
+def test_all_missing_props_enumerated():
     # 612 已知坑③：C 类命题在候选 jsonl 无行，必须从审计真源枚举
+    # 670a 去写死：条数不再冻结 60，取事实源现算（== OBSERVATION-LIVENESS warn 数）
+    import liveness_impact as li  # noqa: E402
     rows = a1.build()
-    assert len(rows) == 60, f"应枚举 60 条缺锚命题，实测 {len(rows)}"
+    n = li.current_warn_count()
+    assert len(rows) == n, f"应枚举 {n} 条缺锚命题，实测 {len(rows)}"
+    assert len(a1.load_all_props()) == n
 
 
 def test_cost_distribution_matches_612_b1():
+    """670a 去写死：原写死 9/26/25（612 时点快照）。改为**划分性 + 定义性**断言：
+    三档互斥且合计 == 命题总数；每档与 `cost_of` 的 class/confidence 判据一一对应。
+    """
     rows = a1.build()
     n = {c: len([r for r in rows if r["cost"] == c]) for c in ("low", "medium", "high")}
-    assert n["low"] == 9 and n["medium"] == 26 and n["high"] == 25
+    assert sum(n.values()) == len(rows)
+    assert all(v > 0 for v in n.values()), n
+    assert n["low"] == sum(1 for r in rows if r["class"] == "A"
+                           or (r["class"] == "B" and r["confidence"] == "high"))
+    assert n["medium"] == sum(1 for r in rows
+                              if r["class"] == "B" and r["confidence"] == "medium")
+    assert n["high"] == sum(1 for r in rows if r["class"] == "C")
 
 
 def test_c_class_props_have_no_anchor():

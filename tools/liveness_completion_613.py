@@ -137,10 +137,12 @@ def main(argv: list[str] | None = None) -> int:
         bad = [f"{k}: {v}" for k, v in errs.items() if v]
         for b in bad:
             print(f"[A2] ✗ {b}")
-        if len(patches) != 9:
-            print(f"[A2] ✗ low 档应为 9 条，实测 {len(patches)}")
-            bad.append("count")
         proj = projection(len(patches))
+        # 670a 去写死：low 档条数不再冻结 9（改为「补丁集 == 投影实际处理的条数」，
+        # 两条路径：a1.build() 的 cost==low 计数 vs liveness_impact 的 addressed）
+        if len(patches) != proj["addressed"]:
+            print(f"[A2] ✗ 补丁数与投影 addressed 不一致：{len(patches)} vs {proj['addressed']}")
+            bad.append("count")
         if proj["warn_after"] != proj["warn_before"] - len(patches):
             print(f"[A2] ✗ 投影不一致：{proj}")
             bad.append("projection")

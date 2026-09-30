@@ -7,6 +7,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
+import counts_659 as counts  # noqa: E402
 import evidence_sufficiency_646 as b3  # noqa: E402
 
 
@@ -15,11 +16,14 @@ def test_selftest_passes():
     assert b3.selftest() == 0
 
 
-def test_real_27_cards_all_sufficient():
-    """真实 27 卡全部充分，幻影卡被排除。"""
+def test_real_cards_judged_and_phantom_excluded():
+    """670a 去写死：卡片域取权威源现算；充分/不足不再冻结 27/10，改锁**划分 + 判据自洽**。"""
     res = b3.judge()
-    assert res["cards_total"] == 37
-    assert res["sufficient"] == 27
-    assert res["insufficient"] == 10  # 648：10 张新卡各仅 1 条证据（判据 ≥3）⇒ 判不足，需补证据
+    assert res["cards_total"] == counts.ATOMS_REAL
+    assert res["sufficient"] + res["insufficient"] == res["cards_total"]
+    assert res["sufficient"] > 0 and res["insufficient"] > 0
+    # 判据自洽：status 必须等价于 missing 为空（判据改了这里就红）
+    for cid, info in res["per_card"].items():
+        assert (info["status"] == "sufficient") == (not info["missing"]), cid
     assert res["phantom_excluded"] == "ATOM-MEM-MOVE-001"
     assert "ATOM-MEM-MOVE-001" not in res["per_card"]

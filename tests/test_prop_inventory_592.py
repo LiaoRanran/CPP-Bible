@@ -26,10 +26,12 @@ def test_ledger_exists_and_has_all_sections():
         assert s in t, f"台账缺小节：{s}"
 
 
-def test_ledger_lists_79_props_and_27_cards():
+def test_ledger_lists_props_and_cards_matching_fact_source():
+    """670a 去写死：台账行数不再冻结 89/27，改与事实源现算对齐（counts_659 + DB 现算）。"""
     t = _text()
     prop_rows = [ln for ln in t.splitlines() if ln.startswith("| ") and "/prop-" in ln]
-    assert len(prop_rows) == 89, f"命题行应 89 条，实得 {len(prop_rows)}"
+    assert len(prop_rows) == counts.PROPOSITIONS, \
+        f"命题行应 {counts.PROPOSITIONS} 条，实得 {len(prop_rows)}"
     card_rows = [ln for ln in t.splitlines()
                  if ln.startswith("| `ATOM-") and "/prop-" not in ln]
     assert len(card_rows) == counts.ATOMS_REAL, f"卡行应 {counts.ATOMS_REAL} 条，实得 {len(card_rows)}"
@@ -41,8 +43,10 @@ def test_integrity_checks_are_clean():
     assert d["bad_refs"] == []
     assert d["no_prop_cards"] == []
     assert d["bad_closure"] == []
-    assert len(d["rows"]) == 89
-    assert d["stats"]["propositions"] == 89 and d["stats"]["cards"] == counts.ATOMS_REAL
+    # 670a 去写死：命题/卡数取事实源现算
+    assert len(d["rows"]) == counts.PROPOSITIONS
+    assert d["stats"]["propositions"] == counts.PROPOSITIONS
+    assert d["stats"]["cards"] == counts.ATOMS_REAL
 
 
 def test_ledger_matches_fresh_render_byte_for_byte():

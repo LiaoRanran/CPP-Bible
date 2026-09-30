@@ -42,11 +42,17 @@ def test_c2_bridge_candidates():
 
 
 def test_c3_fragmentation_repair():
+    """670a 去写死：加桥后的连通性投影不再冻结数值。
+
+    事实源锚：加桥前的分量/最大分量必须等于 `w2_derived_640c.components()`（论证图现算）；
+    加桥后只锁**改善方向**（分量不增、最大分量不减、判决不翻转）。
+    """
     r = c3.analyze(cands=c3.load_candidates())
-    assert r["components_before"] == 21
-    assert r["components_after"] == 17
-    assert r["largest_after"] == 97
-    assert r["coverage_after"] == 0.7405
+    ref = wd.components()
+    assert r["components_before"] == ref["count"]
+    assert r["largest_before"] == ref["largest"]
+    assert r["components_after"] <= r["components_before"]
+    assert r["largest_after"] >= r["largest_before"]
     assert r["verdict_changed"] == 0  # 候选皆 low，不应翻转胜负
     assert c3.check(r) == []
 
@@ -60,8 +66,11 @@ def test_d1_out_mis_review():
 
 
 def test_d2_liveness_plan():
+    """670a 去写死：缺锚数取事实源现算（不再冻结 60）。"""
+    import liveness_impact as li  # noqa: E402
     p = d2.build_plan()
-    assert p["total_missing"] == 60
+    n = li.current_warn_count()
+    assert p["total_missing"] == n == len(p["rows"])
     assert d2.check(p) == []
 
 
@@ -82,7 +91,9 @@ def test_e1_metrics_611():
     assert m["bridge_candidates"]["total"] == 98       # C2 产物件数（数据产物，非 W2 派生量）
     assert m["out_mis_review"]["out_mis_count"] == PIN["out_mis"], "OUT MIS 数取权威产物"
     assert m["out_mis_review"]["out_nodes_total"] == PIN["out"]
-    assert m["liveness_missing"]["missing_observation"] == 60
+    # 670a 去写死：缺锚 observation 数取事实源现算（原冻结 60）
+    import liveness_impact as li  # noqa: E402
+    assert m["liveness_missing"]["missing_observation"] == li.current_warn_count()
     assert m["oracle_verification"]["cards_total"] == counts.CARDS_TOTAL
     assert m["oracle_verification"]["verified"] == 0
 

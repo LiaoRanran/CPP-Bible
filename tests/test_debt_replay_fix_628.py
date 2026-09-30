@@ -35,11 +35,32 @@ def test_manifest_consistency_zero_mismatch():
     assert c["stale_count"] == 0 and c["missing_count"] == 0
 
 
-def test_manifest_has_56_entries():
-    # 666 A2：去写死——原写死 56（626 时点），650–652 扩库后证据卡 66 张 ⇒ 改现算。
+def test_manifest_covers_evidence_subset_and_is_consistent():
+    """670a 去写死：`build/replay_manifest.json` 是**构建产物**（gitignore；按"已 replay 过的卡"
+    增量累积），新卡未跑 replay 前条目数 **< 证据卡数** ⇒ 既不能写死 56、也不能与
+    `counts.EVIDENCE_TOTAL` 划等号（那是卡口径）。
+
+    改锁三条真不变量：① 无幽灵条目（每个 key 都必须是真实证据卡）；
+    ② 指纹/文件一致性 0 失配；③ 条目数 ≤ 证据卡数。
+    （"条目齐全"须跑 `atom_evidence_replay.py --rebuild-manifest`，属交人项。）
+    """
+    import json
+
     import counts_659 as counts
+    import gate_engine as ge
+    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    m = json.load(open(os.path.join(here, "build", "replay_manifest.json"), encoding="utf-8"))
+    cards = set()
+    for p in ge.EVIDENCE.rglob("EV-*.md"):
+        if "README" in p.name:
+            continue
+        cards.add(str(ge._meta(p).get("id") or p.stem))
+    keys = {os.path.basename(k)[:-len(".md")] for k in m}
+    assert keys <= cards, f"幽灵条目（清单里有、事实源没有）：{sorted(keys - cards)}"
     c = R.check()
-    assert c["entries"] == counts.EVIDENCE_TOTAL
+    assert c["entries"] == len(m)
+    assert c["stale_count"] == 0 and c["missing_count"] == 0
+    assert 0 < len(m) <= counts.EVIDENCE_TOTAL
 
 
 def test_disposition_report_exists():

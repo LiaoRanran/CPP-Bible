@@ -28,9 +28,17 @@ VERSION = "1.0"
 CAND_IN = ROOT / "data" / "bridge_edge_candidates_611.jsonl"
 REPORT_OUT = ROOT / "data" / "fragmentation_repair_analysis_611.md"
 
-# 611 C3 锁定：把全部 98 候选加入后，连通性的改善幅度（结构冻结前不变）
-KNOWN = {"components_after": 17, "largest_after": 97, "coverage_after": 0.7405,
-         "components_before": 21, "largest_before": 80, "isolated_before": 14}
+# 670a 去写死：611 C3 曾把「加全部候选桥后」的连通性快照冻结成 KNOWN（分量 21→17、
+# 最大分量 80→97、覆盖率 0.7405）。事实源（论证图）随语料扩容后这些值必然过期 ⇒ 假红。
+# 改为：`*_before` 锚定**事实源现算**（`w2_derived_640c.components()`）；
+# `*_after` 是 what-if 投影 ⇒ 只锁**改善方向**，不冻结具体数值（见 `check()`）。
+def _authority_components() -> dict | None:
+    """事实源现算的连通分量口径（与 640c 单一权威源一致）；不可用 ⇒ None（不臆造锚）。"""
+    try:
+        import w2_derived_640c as wd  # noqa: E402
+        return wd.components()
+    except Exception:                                  # noqa: BLE001
+        return None
 
 
 def load_candidates(path: Path | None = None) -> list[dict]:
@@ -130,12 +138,22 @@ def render_report(r: dict, cands: list[dict]) -> str:
 
 def check(r: dict) -> list[str]:
     problems: list[str] = []
-    if KNOWN["components_after"] is not None and r["components_after"] != KNOWN["components_after"]:
-        problems.append(f"加桥后分量应为 {KNOWN['components_after']}（实测 {r['components_after']}）")
-    if KNOWN["largest_after"] is not None and r["largest_after"] != KNOWN["largest_after"]:
-        problems.append(f"加桥后最大分量应为 {KNOWN['largest_after']}（实测 {r['largest_after']}）")
-    if KNOWN["coverage_after"] is not None and abs(r["coverage_after"] - KNOWN["coverage_after"]) > 0.002:
-        problems.append(f"加桥后覆盖率应为≈{KNOWN['coverage_after']}（实测 {r['coverage_after']}）")
+    ref = _authority_components()
+    if ref is not None:
+        # 事实源锚：加桥**前**的连通性必须等于论证图现算口径（不冻结到某个历史数值）
+        if r["components_before"] != ref["count"]:
+            problems.append(f"加桥前分量应 == 事实源现算（{ref['count']}，实测 {r['components_before']}）")
+        if r["largest_before"] != ref["largest"]:
+            problems.append(f"加桥前最大分量应 == 事实源现算（{ref['largest']}，实测 {r['largest_before']}）")
+        if r["isolated_before"] != ref["isolated"]:
+            problems.append(f"加桥前孤立节点应 == 事实源现算（{ref['isolated']}，实测 {r['isolated_before']}）")
+    # what-if 投影：只锁**改善方向**（补桥的语义就是减少碎片化）
+    if r["components_after"] > r["components_before"]:
+        problems.append(f"加桥后分量不应增加（{r['components_before']} → {r['components_after']}）")
+    if r["largest_after"] < r["largest_before"]:
+        problems.append(f"加桥后最大分量不应变小（{r['largest_before']} → {r['largest_after']}）")
+    if r["coverage_after"] < r["coverage_before"]:
+        problems.append(f"加桥后最大分量覆盖率不应下降（{r['coverage_before']} → {r['coverage_after']}）")
     if r["verdict_changed"] != 0:
         problems.append(f"判决变化节点应为 0（实测 {r['verdict_changed']}）——候选不应改变胜负")
     return problems

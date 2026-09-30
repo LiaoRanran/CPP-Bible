@@ -5,7 +5,7 @@
   "blind": false,
   "revealed": true,
   "reveal_irreversible": true,
-  "count": 30,
+  "count": 40,
   "label_legend": "planted=true 真错 / false 对照 / unknown 分不清（性能类/历史类/演示类）",
   "iron_rule": "holdout 一旦 reveal（写 .revealed 标记）永远不可回盲；run_658_gate 默认不扫 data/holdout/ 目录。",
   "audit_note": "662 A1：逐个按 atom 头部注释语义核标签；修正后 真错=7 / 对照=8 / unknown=5。详见 data/holdout_seed_audit_662.md。",
@@ -339,6 +339,116 @@
       "basis": "OI 资源泄漏（LeakSanitizer 类 detected memory leaks）",
       "hidden": true,
       "revealed": true
+    },
+    {
+      "id": "h31",
+      "category": "UB",
+      "atom_ref": "Examples/atoms/_atom_data_race.cpp",
+      "planted": true,
+      "planted_desc": "数据竞争（扩样）：两线程无同步并发写非原子全局，新增第三写者放大竞态窗口",
+      "detector": "tsan",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用 h1 的 atom 夹具；新增写者使 TSan 更易触发，仍属 UB 类真错"
+    },
+    {
+      "id": "h32",
+      "category": "UB",
+      "atom_ref": "Examples/atoms/_atom_rule_three_bug_asan.cpp",
+      "planted": true,
+      "planted_desc": "复制语义缺失导致浅拷贝/双释放（扩样，UB，asan 可检）",
+      "detector": "asan",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用项目既有 rule-of-three bug atom；ASan 可检"
+    },
+    {
+      "id": "h33",
+      "category": "UB",
+      "atom_ref": "Examples/atoms/_atom_strict_alias.cpp",
+      "planted": true,
+      "planted_desc": "严格别名违规（扩样）：通过 char* 读取 int 对象",
+      "detector": "ubsan",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用 h5 的 atom；注：UBSan 通常检不出别名类 UB，真实可检性低，登记为口径风险"
+    },
+    {
+      "id": "h34",
+      "category": "memory-order",
+      "atom_ref": "Examples/atoms/_atom_fence_vs_atomic.cpp",
+      "planted": true,
+      "planted_desc": "fence 与 atomic 混用下的丢失更新（扩样）：relaxed 语义不保证跨线程可见",
+      "detector": "tsan",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用项目既有 fence-vs-atomic atom；TSan 对数据竞争派生可见性可检"
+    },
+    {
+      "id": "h35",
+      "category": "unspecified",
+      "atom_ref": "Examples/atoms/_atom_eval_order.cpp",
+      "planted": false,
+      "planted_desc": "实参求值顺序未指定（扩样，对照）：二元运算符两侧子表达式顺序",
+      "detector": "-Wunsequenced",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用 h3 的 atom；灰色地带对照（unspecified 非 UB）"
+    },
+    {
+      "id": "h36",
+      "category": "well-defined",
+      "atom_ref": "Examples/atoms/_atom_raii.cpp",
+      "planted": false,
+      "planted_desc": "RAII 确定性析构（对照）：资源获取即初始化，行为良定义",
+      "detector": "compiler-warn",
+      "hidden": true,
+      "revealed": true,
+      "basis": "对照项：标准明确定义，检测器不应报真错"
+    },
+    {
+      "id": "h37",
+      "category": "perf",
+      "atom_ref": "Examples/atoms/_atom_false_sharing.cpp",
+      "planted": "unknown",
+      "planted_desc": "伪共享（扩样）：两线程写同一 cache line 不同字，性能病理非 UB",
+      "detector": "perf-counter",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用 h2 的 atom；判据是地址差（确定性），属性能病理非 UB ⇒ 分不清"
+    },
+    {
+      "id": "h38",
+      "category": "historical",
+      "atom_ref": "Examples/atoms/_atom_auto_ptr.cpp",
+      "planted": "unknown",
+      "planted_desc": "auto_ptr 拷贝即转移所有权（扩样，C++98 妥协）",
+      "detector": "compiler-warn",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用 h4 的 atom；受控实验（演化类），C++98 合理妥协 ⇒ 分不清是错还是历史"
+    },
+    {
+      "id": "h39",
+      "category": "demo",
+      "atom_ref": "Examples/atoms/_atom_sso_cost.cpp",
+      "planted": "unknown",
+      "planted_desc": "SSO 容量/复制成本的教学权衡（扩样，演示类）",
+      "detector": "-",
+      "hidden": true,
+      "revealed": true,
+      "basis": "演示/教学类权衡（SSO 大小 vs 堆分配）⇒ 分不清是错还是表达风格"
+    },
+    {
+      "id": "h40",
+      "category": "UB",
+      "atom_ref": "Examples/atoms/_atom_leak_detection.cpp",
+      "planted": true,
+      "planted_desc": "内存泄漏/资源未释放（扩样，asan 可检）",
+      "detector": "asan",
+      "hidden": true,
+      "revealed": true,
+      "basis": "复用项目既有 leak atom；ASan 可检（泄漏属资源类 UB 边界）"
     }
   ],
   "extend_665": {
@@ -359,5 +469,30 @@
     "canonical_file": "data/holdout/holdout_665.json",
     "why_separate_file": "holdout.json 是 holdout_658.py 的产物，旧工具一跑就会按内建 20 样本重写 ⇒ 665 的追加必须落在不被重写的 canonical 文件里",
     "honest_note": "新增 10 个样本全部为 planted=true 的真错（依据标准条款，非依据本机检测结论），用于把可测真错样本从 7 提到 17；**不具备原 20 个样本的盲态**——追加发生在 reveal 之后，故不能用于 Claim 外部效度提升，只用于增大样本量。"
+  },
+  "extend_669d": {
+    "source": "data/holdout/holdout_extension_669d.json",
+    "added": 10,
+    "added_ids": [
+      "h31",
+      "h32",
+      "h33",
+      "h34",
+      "h35",
+      "h36",
+      "h37",
+      "h38",
+      "h39",
+      "h40"
+    ],
+    "total_after": 40,
+    "caliber": {
+      "planted_true": 5,
+      "planted_false": 2,
+      "planted_unknown": 3,
+      "detector_available_subset": 5,
+      "note": "plant=true 且 detector∈{tsan,ubsan,asan,compiler-warn,-Wunsequenced,perf-counter,cross-compile} 的子集 = 5/5；strict-aliasing(h33) 的 UBSan 实际常检不出，已在其 basis 标注，故真实可检可能 <5。"
+    },
+    "honest_note": "669d 扩样并入 canonical holdout（幂等按 id 去重）。**检出率另算**：reveal 产物 `data/holdout_reveal_3_665.json` 只覆盖并入前的种子，新增种子须重跑 `tools/holdout_reveal_3_665.py` 才能进分母（见 670a 验收报告）。"
   }
 }

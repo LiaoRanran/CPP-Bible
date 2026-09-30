@@ -18,14 +18,15 @@ def test_whatif_generates():
 
 
 def test_zero_completion_keeps_baseline():
+    """670a 去写死：warn 基线不再冻结 60；取事实源现算（audit 的 observation_status 路径）。"""
     r = b3.analyze(0)
     assert r["addressed"] == 0
-    assert r["warn_after"] == r["warn_before"] == 60
+    assert r["warn_after"] == r["warn_before"] == b3.current_warn_count()
 
 
 def test_full_completion_clears_all():
     r = b3.analyze(None)
-    assert r["addressed"] == 60
+    assert r["addressed"] == r["total_props"] == b3.current_warn_count()
     assert r["warn_after"] == 0
 
 

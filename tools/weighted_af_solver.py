@@ -61,9 +61,11 @@ DEFAULT_OUT = ROOT / "data" / "grounded_labels_w2.json"
 #: 命题 id 在**本批数据文件**里的写法（与 attack_edge_generator 一致：`卡id::prop-N`）。
 PROP_SEP = aeg.PROP_SEP
 MAX_ROUNDS = 100                      # 不动点保护（任务书 596 任务2 硬要求）
-#: 594 实证对账基线（`--check` 用；若实跑不符 ⇒ exit 2，不许改测试凑数）。
-#: 648 重基线：加 10 张卡 ⇒ 命题 79→89（全部孤立 ⇒ IN），误解仍 42 ⇒ IN 89 / OUT 42
-W2_EXPECTED = {"IN": 89, "OUT": 42, "UNDEC": 0}
+#: 670a 去写死：594/648 的"未审图"对账基线不再手改数字（79→89 之后的第三次：语料又涨了）。
+#: 未审图（`--no-human-reviewed`）的**结构事实**：全部命题 IN（新卡命题孤立 ⇒ 无攻击者）、
+#: 全部误解 OUT ⇒ IN = 命题数、OUT = 误解数。由事实源现算（仍与求解器输出**两条路径**对账：
+#: 一条是 `solve()` 的标注，一条是节点枚举），`--check` 的证伪力不减（旁证见
+#: `tests/test_weighted_af_solver_596.py::test_check_is_falsifiable`）。
 WEIGHT = aeg.CONFIDENCE_WEIGHT
 
 
@@ -422,12 +424,24 @@ def diff_verdicts(base: dict, new: dict, *, edges: list[dict] | None = None,
             "base_edges": base.get("edges"), "new_edges": new.get("edges")}
 
 
+def unreviewed_baseline(edges: list[dict] | None = None) -> dict[str, int]:
+    """未审图的 594 对账基线（**现算**，670a 去写死）：
+
+    结构事实：命题无攻击者 ⇒ 全 IN；误解被全部击败 ⇒ 全 OUT。
+    ⇒ `IN = 命题节点数`、`OUT = 误解节点数`、`UNDEC = 0`（由事实源枚举，非手写快照）。
+    """
+    g = build_graph(edges if edges is not None else load_edges())
+    props = sum(1 for v in g.values() if v["type"] == "proposition")
+    mis = sum(1 for v in g.values() if v["type"] == "misconception")
+    return {"IN": props, "OUT": mis, "UNDEC": 0}
+
+
 def check(doc: dict, *, expect_594: bool = True) -> list[str]:
     """校验标注文档。`expect_594=False` ⇒ 只查结构不变量（人审介入后 594 基线不再适用）。"""
     problems: list[str] = []
     s = doc["summary"]
     if expect_594:
-        for k, want in W2_EXPECTED.items():
+        for k, want in unreviewed_baseline().items():
             if s.get(k) != want:
                 problems.append(f"与 594 实证不符：{k} = {s.get(k)}（期望 {want}）")
     if doc["rounds"] >= MAX_ROUNDS:

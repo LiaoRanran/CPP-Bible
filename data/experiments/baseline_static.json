@@ -1,0 +1,270 @@
+{
+  "schema": "queyi-baseline-experiment/670a",
+  "arm": "static（rule-only / 无运行时证据）",
+  "caliber_definition": "只认编译期仪器；sanitizer 样本记 miss；unknown 不计入可测分母",
+  "holdout": {
+    "catch": 1,
+    "miss": 15,
+    "unknown": 1,
+    "not_error": 0,
+    "total": 17,
+    "all_samples": {
+      "k": 1,
+      "n": 17,
+      "numerator": 1,
+      "denominator": 17,
+      "point": 0.058823529411764705,
+      "cp_low": 0.0014881743912666264,
+      "cp_high": 0.2868893966672207,
+      "conf": 0.95
+    },
+    "measurable": {
+      "k": 1,
+      "n": 16,
+      "numerator": 1,
+      "denominator": 16,
+      "point": 0.0625,
+      "cp_low": 0.0015811117227658832,
+      "cp_high": 0.30232073843453156,
+      "conf": 0.95
+    },
+    "no_unknown": {
+      "k": 1,
+      "n": 16,
+      "numerator": 1,
+      "denominator": 16,
+      "point": 0.0625,
+      "cp_low": 0.0015811117227658832,
+      "cp_high": 0.30232073843453156,
+      "conf": 0.95
+    },
+    "delta_pp": {
+      "measurable_minus_all": 0.2999999999999998,
+      "measurable_minus_no_unknown": 0.0
+    }
+  },
+  "corpus": {
+    "catch": 4,
+    "miss": 28,
+    "unknown": 5,
+    "not_error": 3,
+    "total": 40,
+    "all_samples": {
+      "k": 4,
+      "n": 40,
+      "numerator": 4,
+      "denominator": 40,
+      "point": 0.1,
+      "cp_low": 0.02792541529421947,
+      "cp_high": 0.23663739987609916,
+      "conf": 0.95
+    },
+    "measurable": {
+      "k": 4,
+      "n": 32,
+      "numerator": 4,
+      "denominator": 32,
+      "point": 0.125,
+      "cp_low": 0.03513065310331144,
+      "cp_high": 0.28994842019075506,
+      "conf": 0.95
+    },
+    "no_unknown": {
+      "k": 4,
+      "n": 35,
+      "numerator": 4,
+      "denominator": 35,
+      "point": 0.11428571428571428,
+      "cp_low": 0.03203116902909797,
+      "cp_high": 0.2673780437192447,
+      "conf": 0.95
+    },
+    "delta_pp": {
+      "measurable_minus_all": 2.5,
+      "measurable_minus_no_unknown": 1.0999999999999996
+    }
+  },
+  "corpus_by_layer": {
+    "A_local": {
+      "catch": 3,
+      "miss": 21,
+      "unknown": 1,
+      "not_error": 0,
+      "total": 25,
+      "all_samples": {
+        "k": 3,
+        "n": 25,
+        "numerator": 3,
+        "denominator": 25,
+        "point": 0.12,
+        "cp_low": 0.025465396647733084,
+        "cp_high": 0.3121903072862352,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 3,
+        "n": 24,
+        "numerator": 3,
+        "denominator": 24,
+        "point": 0.125,
+        "cp_low": 0.026559314986248854,
+        "cp_high": 0.3236113581888328,
+        "conf": 0.95
+      },
+      "no_unknown": {
+        "k": 3,
+        "n": 24,
+        "numerator": 3,
+        "denominator": 24,
+        "point": 0.125,
+        "cp_low": 0.026559314986248854,
+        "cp_high": 0.3236113581888328,
+        "conf": 0.95
+      },
+      "delta_pp": {
+        "measurable_minus_all": 0.5,
+        "measurable_minus_no_unknown": 0.0
+      }
+    },
+    "B_cross_or_measure": {
+      "catch": 1,
+      "miss": 7,
+      "unknown": 0,
+      "not_error": 3,
+      "total": 11,
+      "all_samples": {
+        "k": 1,
+        "n": 11,
+        "numerator": 1,
+        "denominator": 11,
+        "point": 0.09090909090909091,
+        "cp_low": 0.002298972213814258,
+        "cp_high": 0.4127799169883827,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 1,
+        "n": 8,
+        "numerator": 1,
+        "denominator": 8,
+        "point": 0.125,
+        "cp_low": 0.0031597235312519085,
+        "cp_high": 0.5265096708752062,
+        "conf": 0.95
+      },
+      "no_unknown": {
+        "k": 1,
+        "n": 11,
+        "numerator": 1,
+        "denominator": 11,
+        "point": 0.09090909090909091,
+        "cp_low": 0.002298972213814258,
+        "cp_high": 0.4127799169883827,
+        "conf": 0.95
+      },
+      "delta_pp": {
+        "measurable_minus_all": 3.4000000000000004,
+        "measurable_minus_no_unknown": 3.4000000000000004
+      }
+    },
+    "C_no_local_detector": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 4,
+      "not_error": 0,
+      "total": 4,
+      "all_samples": {
+        "k": 0,
+        "n": 4,
+        "numerator": 0,
+        "denominator": 4,
+        "point": 0.0,
+        "cp_low": 0.0,
+        "cp_high": 0.6023646356164742,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 0,
+        "n": 0,
+        "point": null,
+        "cp_low": null,
+        "cp_high": null,
+        "note": "n=0 ⇒ 无可测样本，拒绝给率（fail-loud）"
+      },
+      "no_unknown": {
+        "k": 0,
+        "n": 0,
+        "point": null,
+        "cp_low": null,
+        "cp_high": null,
+        "note": "n=0 ⇒ 无可测样本，拒绝给率（fail-loud）"
+      },
+      "delta_pp": {
+        "measurable_minus_all": 0.0,
+        "measurable_minus_no_unknown": 0.0
+      }
+    }
+  },
+  "defect_reinjection": {
+    "k": 6,
+    "n": 6,
+    "numerator": 6,
+    "denominator": 6,
+    "point": 1.0,
+    "cp_low": 0.5407418735600995,
+    "cp_high": 1.0,
+    "conf": 0.95,
+    "rows": [
+      {
+        "id": "656-self-4",
+        "caught": true,
+        "gate": "frontmatter 数据契约(date 直序列化)"
+      },
+      {
+        "id": "656-self-6",
+        "caught": true,
+        "gate": "WCAG 对比度现算(≥4.5:1)"
+      },
+      {
+        "id": "657-manifest-drift",
+        "caught": true,
+        "gate": "web_logic_check_655(sha256 台账)"
+      },
+      {
+        "id": "657-license-header",
+        "caught": true,
+        "gate": "license/governance_doc_guard(SPDX)"
+      },
+      {
+        "id": "ch41-truncation",
+        "caught": true,
+        "gate": "真机编译门禁(截断/未闭合围栏)"
+      },
+      {
+        "id": "ch28-unanchored",
+        "caught": true,
+        "gate": "data_sanity_audit(UNANCHORED_EVIDENCE)"
+      }
+    ],
+    "reinjectable": 6,
+    "defects_total": 15,
+    "covered_by_gate_declared": 12,
+    "arms_note": "FD == Static（重注入器本身即静态判定）⇒ Δ=0；random 臂 N/A（资产=规则，主仓无 select_assets 接口）。",
+    "note": "静态门禁在**可机械重注入子集**上的检出；不可重注入的缺陷缺原错误版本，只能登记历史 gate_caught 覆盖（软指标）。"
+  },
+  "blocked": [
+    {
+      "baseline": "B3 budget-matched random（**验证资产**口径，论文 §5.2）",
+      "why": "资产选择接口在拆仓验证器 queyi-verifier 里（主仓不可见）；主仓无 select_assets(pool, n, strategy, seed)",
+      "status": "BLOCKED",
+      "need": "queyi-verifier 暴露 select_assets(pool, n, strategy, seed) -> [asset] + 分配表"
+    },
+    {
+      "baseline": "B1 rule-only（真·静态规则判定器）",
+      "why": "主仓 holdout/corpus 判定走外部 sanitizer 仪器，无 detect_static(sample) 可执行路径",
+      "status": "PROXY（本文件 static 臂 = 口径重分箱，不是重跑）",
+      "need": "queyi-verifier 暴露 detect_static(sample) -> verdict"
+    }
+  ],
+  "honest_note": "FD 与 Static 是**同一批样本**的口径重分箱（配对可比）；random_proxy 是仪器级代理，**不是**论文 B3，结论不得进论文。所有率由逐样本现算，区间用 tools/stat_bounds.py 的 Clopper–Pearson 95%。"
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "queyi-known-gap/v1",
+  "batch": "670a",
+  "kind": "pck_certificate_gap",
+  "generated_by": "670a 去写死：把「证书集 vs 事实源卡集」的差集从测试里的写死数字改成本登记表（known-gap 惯例，同 data/669d_known_gaps.json）",
+  "reason": "669 P0-2 / 668 新增的 5 张原子卡 + 5 张证据卡尚无 PCK 证书。证书含 verdict / authorized / status / uncertainty 等**语义字段**，凭人签，620 B1 的机械迁移不生成 ⇒ 属交人项，本批不得机械生成（红线：不编造）。差集一旦变化（扩大=新卡漏证；缩小=已补证未更新本表）即红。",
+  "cards_total": 113,
+  "certs_total": 103,
+  "gap_count": 10,
+  "gap_cards": [
+    "ATOM-MEM-NEWARR-001",
+    "ATOM-UB-DIVZERO-001",
+    "ATOM-UB-NULLDEREF-001",
+    "ATOM-UB-OOB-001",
+    "ATOM-UB-WRAP-001",
+    "EV-MEM-NEWARR-669",
+    "EV-UB-DIVZERO-669",
+    "EV-UB-NULLDEREF-669",
+    "EV-UB-OOB-669",
+    "EV-UB-WRAP-669"
+  ]
+}

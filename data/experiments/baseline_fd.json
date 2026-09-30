@@ -1,0 +1,213 @@
+{
+  "schema": "queyi-baseline-experiment/670a",
+  "arm": "failure-driven（现状）",
+  "holdout": {
+    "catch": 14,
+    "miss": 2,
+    "unknown": 1,
+    "not_error": 0,
+    "total": 17,
+    "all_samples": {
+      "k": 14,
+      "n": 17,
+      "numerator": 14,
+      "denominator": 17,
+      "point": 0.8235294117647058,
+      "cp_low": 0.5656821271557158,
+      "cp_high": 0.9620149319293743,
+      "conf": 0.95
+    },
+    "measurable": {
+      "k": 14,
+      "n": 16,
+      "numerator": 14,
+      "denominator": 16,
+      "point": 0.875,
+      "cp_low": 0.6165237631507363,
+      "cp_high": 0.984486396184586,
+      "conf": 0.95
+    },
+    "no_unknown": {
+      "k": 14,
+      "n": 16,
+      "numerator": 14,
+      "denominator": 16,
+      "point": 0.875,
+      "cp_low": 0.6165237631507363,
+      "cp_high": 0.984486396184586,
+      "conf": 0.95
+    },
+    "delta_pp": {
+      "measurable_minus_all": 5.099999999999994,
+      "measurable_minus_no_unknown": 0.0
+    }
+  },
+  "corpus": {
+    "catch": 14,
+    "miss": 18,
+    "unknown": 5,
+    "not_error": 3,
+    "total": 40,
+    "all_samples": {
+      "k": 14,
+      "n": 40,
+      "numerator": 14,
+      "denominator": 40,
+      "point": 0.35,
+      "cp_low": 0.20628249087076744,
+      "cp_high": 0.51684445364899,
+      "conf": 0.95
+    },
+    "measurable": {
+      "k": 14,
+      "n": 32,
+      "numerator": 14,
+      "denominator": 32,
+      "point": 0.4375,
+      "cp_low": 0.26363812441098466,
+      "cp_high": 0.6233742684099057,
+      "conf": 0.95
+    },
+    "no_unknown": {
+      "k": 14,
+      "n": 35,
+      "numerator": 14,
+      "denominator": 35,
+      "point": 0.4,
+      "cp_low": 0.2387081104533415,
+      "cp_high": 0.578882278117901,
+      "conf": 0.95
+    },
+    "delta_pp": {
+      "measurable_minus_all": 8.799999999999997,
+      "measurable_minus_no_unknown": 3.799999999999997
+    }
+  },
+  "corpus_by_layer": {
+    "A_local": {
+      "catch": 13,
+      "miss": 11,
+      "unknown": 1,
+      "not_error": 0,
+      "total": 25,
+      "all_samples": {
+        "k": 13,
+        "n": 25,
+        "numerator": 13,
+        "denominator": 25,
+        "point": 0.52,
+        "cp_low": 0.31305704445703286,
+        "cp_high": 0.7220319903300532,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 13,
+        "n": 24,
+        "numerator": 13,
+        "denominator": 24,
+        "point": 0.5416666666666666,
+        "cp_low": 0.3282080756951785,
+        "cp_high": 0.7444697980052535,
+        "conf": 0.95
+      },
+      "no_unknown": {
+        "k": 13,
+        "n": 24,
+        "numerator": 13,
+        "denominator": 24,
+        "point": 0.5416666666666666,
+        "cp_low": 0.3282080756951785,
+        "cp_high": 0.7444697980052535,
+        "conf": 0.95
+      },
+      "delta_pp": {
+        "measurable_minus_all": 2.200000000000003,
+        "measurable_minus_no_unknown": 0.0
+      }
+    },
+    "B_cross_or_measure": {
+      "catch": 1,
+      "miss": 7,
+      "unknown": 0,
+      "not_error": 3,
+      "total": 11,
+      "all_samples": {
+        "k": 1,
+        "n": 11,
+        "numerator": 1,
+        "denominator": 11,
+        "point": 0.09090909090909091,
+        "cp_low": 0.002298972213814258,
+        "cp_high": 0.4127799169883827,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 1,
+        "n": 8,
+        "numerator": 1,
+        "denominator": 8,
+        "point": 0.125,
+        "cp_low": 0.0031597235312519085,
+        "cp_high": 0.5265096708752062,
+        "conf": 0.95
+      },
+      "no_unknown": {
+        "k": 1,
+        "n": 11,
+        "numerator": 1,
+        "denominator": 11,
+        "point": 0.09090909090909091,
+        "cp_low": 0.002298972213814258,
+        "cp_high": 0.4127799169883827,
+        "conf": 0.95
+      },
+      "delta_pp": {
+        "measurable_minus_all": 3.4000000000000004,
+        "measurable_minus_no_unknown": 3.4000000000000004
+      }
+    },
+    "C_no_local_detector": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 4,
+      "not_error": 0,
+      "total": 4,
+      "all_samples": {
+        "k": 0,
+        "n": 4,
+        "numerator": 0,
+        "denominator": 4,
+        "point": 0.0,
+        "cp_low": 0.0,
+        "cp_high": 0.6023646356164742,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 0,
+        "n": 0,
+        "point": null,
+        "cp_low": null,
+        "cp_high": null,
+        "note": "n=0 ⇒ 无可测样本，拒绝给率（fail-loud）"
+      },
+      "no_unknown": {
+        "k": 0,
+        "n": 0,
+        "point": null,
+        "cp_low": null,
+        "cp_high": null,
+        "note": "n=0 ⇒ 无可测样本，拒绝给率（fail-loud）"
+      },
+      "delta_pp": {
+        "measurable_minus_all": 0.0,
+        "measurable_minus_no_unknown": 0.0
+      }
+    }
+  },
+  "mutation_core": {
+    "status": "not_applicable",
+    "why": "变异 kill 是**内部指标**（data/656_mutation_report_core.json），不是缺陷检出率 ⇒ 没有「检测集」可与 baseline 臂配对",
+    "raw_source": "data/656_mutation_report_core.json"
+  },
+  "honest_note": "FD 与 Static 是**同一批样本**的口径重分箱（配对可比）；random_proxy 是仪器级代理，**不是**论文 B3，结论不得进论文。所有率由逐样本现算，区间用 tools/stat_bounds.py 的 Clopper–Pearson 95%。"
+}

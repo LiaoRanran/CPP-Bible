@@ -40,7 +40,8 @@ REPORT_OUT = ROOT / "data" / "bridge_edge_impact_612.md"
 def _known_base() -> dict:
     """640b A1：基线取**单一权威源**（曾写死 611 的 114/7、121/0 = 签署前快照）。
 
-    两种模式的基线都用权威现算值（640 A1 后双模式已趋同：79/42）。
+    670a 去写死：`components_before` 也不再冻结 21，改取断言图**现算**分量数
+    （`w2_derived_640c.components()`）。两种模式的基线都用权威现算值（640 A1 后已趋同）。
     """
     try:
         import w2_authority_640b as _auth
@@ -48,8 +49,13 @@ def _known_base() -> dict:
         base = {"IN": c["IN"], "OUT": c["OUT"], "UNDEC": c["UNDEC"]}
     except Exception:  # noqa: BLE001
         base = {"IN": 114, "OUT": 7, "UNDEC": 0}          # 回退：历史登记口径
+    try:
+        import w2_derived_640c as _wd
+        comp_before = int(_wd.components()["count"])
+    except Exception:  # noqa: BLE001
+        comp_before = None                                # 权威源不可用 ⇒ 不臆造锚
     return {"keep-low": dict(base), "upgrade-medium": dict(base),
-            "components_before": 21}
+            "components_before": comp_before}
 
 
 KNOWN_BASE = _known_base()
@@ -205,13 +211,17 @@ def check(results: list[dict]) -> list[str]:
                 if got.get(k) != v:
                     problems.append(f"0 批准基线 {r['modify_mode']} {k} 应为 {v}（实测 {got.get(k)}）")
     for r in results:
-        if r["components_before"] != KNOWN_BASE["components_before"]:
-            problems.append(f"加桥前分量数应为 {KNOWN_BASE['components_before']}"
-                            f"（实测 {r['components_before']}）")
+        want_cb = KNOWN_BASE["components_before"]
+        if want_cb is not None and r["components_before"] != want_cb:
+            problems.append(f"加桥前分量数应 == 事实源现算（{want_cb}"
+                            f"，实测 {r['components_before']}）")
             break
     for r in results:
-        if r["what_if"] in ("all-medium", "all-high") and r["components_after"] != 17:
-            problems.append(f"全量加桥后分量数应为 17（实测 {r['components_after']}）")
+        # 670a 去写死：加桥后分量不冻结 17；改为锁**改善方向**（加桥不应增加碎片化）
+        if r["what_if"] in ("all-medium", "all-high") and \
+                r["components_after"] > r["components_before"]:
+            problems.append(f"全量加桥后分量不应增加"
+                            f"（{r['components_before']} → {r['components_after']}）")
             break
     for r in results:
         for f in r["flips"]:

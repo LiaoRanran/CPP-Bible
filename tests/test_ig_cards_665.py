@@ -125,14 +125,22 @@ def test_merge_view_survives_product_rewrite():
 
 
 # ── 4. 外部 corpus：40 条 + 分层口径 ─────────────────────────────────────────
-def test_external_corpus_is_40_and_layered():
-    # 同样读 canonical 合并视图（理由同 holdout）
+def test_external_corpus_merged_and_layered():
+    """670a：canonical corpus 已并入 669d 扩样（40 → 60）；reveal 产物仍只覆盖并入前的样本。
+
+    667 起 canonical 视图 = 665 的 40 + 669d 的 20（幂等按 id 去重）；
+    669d 新增样本**待 reveal** ⇒ 不进 `external_corpus_reveal_665.json`，其分层率另见
+    `data/experiments/corpus_layered_670a.json`（按 expected_detector 五类分层）。
+    """
     c = _load(ROOT / "data" / "external_corpus" / "external_corpus_665.json")
-    assert c["count"] == len(c["samples"]) == 40
+    assert c["count"] == len(c["samples"]) >= 40
     layers = c["extend_665"]["layers"]
     assert sum(layers.values()) == 20
+    ext = c.get("extend_669d")
+    assert ext, "669d 扩样的并入记录必须留在文件里（只增不减）"
+    assert c["count"] == 40 + ext["added"], (c["count"], ext["added"])
     rep = _load(ROOT / "data" / "external_corpus_reveal_665.json")
-    assert rep["total"] == 40
+    assert rep["total"] <= c["count"], "reveal 覆盖不得超过样本数"
     for layer in ("A_local", "B_cross_or_measure", "C_no_local_detector"):
         assert layer in rep["by_layer"]
 

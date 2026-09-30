@@ -26,9 +26,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 VERSION = "1.0"
 REPORT_OUT = ROOT / "data" / "argument_graph_connectivity_611.md"
 
-# 611 C1 锁定的已知事实（与 610 C 线 `--check` 同源；论证图未重构前不可变）
-KNOWN = {"components": 21, "isolated": 14, "largest": 80, "nodes": 131,
-         "edges": 388, "coverage": 0.6107}
+# 670a 去写死：611 C1 的"已知事实"不再冻结（21 分量 / 孤立 14 / 最大 80 / 131 节点 /
+# 388 边 / 覆盖 61.1% 都是 611 时点快照，语料一扩容就假红）。改由**单一权威源现算**：
+#   分量/孤立/最大 ← `w2_derived_640c.components()`（同一 `argument_audit` BFS 口径）
+#   节点/边        ← `w2_authority_640b.current()`
+def known_facts() -> dict:
+    """611 C1 的已知事实（**现算**，单一权威源）。"""
+    import w2_authority_640b as auth  # noqa: E402
+    import w2_derived_640c as wd  # noqa: E402
+    c = auth.current()
+    comp = wd.components()
+    return {"components": comp["count"], "isolated": comp["isolated"],
+            "largest": comp["largest"], "nodes": c["nodes"], "edges": c["edges"],
+            "coverage": round(comp["largest"] / max(c["nodes"], 1), 4)}
 
 
 def analyze(edges_path: Path | str | None = None,
@@ -57,7 +67,7 @@ def render_report(c: dict) -> str:
     lines = [
         "# 611 C1 · 论证图连通分量分析（碎片化定量化）", "",
         "> 纯读生成，复用 610 `argument_audit.detect_isolated_subgraphs`（BFS，忽略方向），"
-        "同一真源 = 候选边 388 + 用户授权人审 388 + W2 辩护链。", "",
+        f"同一真源 = 候选边 {c['edges']}（含用户授权人审）+ W2 辩护链。", "",
         "## 一、总览", "",
         f"- 节点 **{c['nodes']}** · 边 **{c['edges']}**",
         f"- 连通分量 **{c['components']}** 个 · 孤立节点（仅 1 节点分量）**{len(c['isolated'])}** 个",
@@ -85,19 +95,20 @@ def render_report(c: dict) -> str:
 
 def check() -> list[str]:
     c = analyze()
+    k = known_facts()
     problems: list[str] = []
-    if c["components"] != KNOWN["components"]:
-        problems.append(f"components 应为 {KNOWN['components']}（实测 {c['components']}）")
-    if len(c["isolated"]) != KNOWN["isolated"]:
-        problems.append(f"孤立节点应为 {KNOWN['isolated']}（实测 {len(c['isolated'])}）")
-    if c["largest_size"] != KNOWN["largest"]:
-        problems.append(f"最大分量应为 {KNOWN['largest']}（实测 {c['largest_size']}）")
-    if c["nodes"] != KNOWN["nodes"]:
-        problems.append(f"节点数应为 {KNOWN['nodes']}（实测 {c['nodes']}）")
-    if c["edges"] != KNOWN["edges"]:
-        problems.append(f"边数应为 {KNOWN['edges']}（实测 {c['edges']}）")
-    if abs(c["coverage"] - KNOWN["coverage"]) > 0.002:
-        problems.append(f"coverage 应为≈{KNOWN['coverage']}（实测 {c['coverage']}）")
+    if c["components"] != k["components"]:
+        problems.append(f"components 应为 {k['components']}（实测 {c['components']}）")
+    if len(c["isolated"]) != k["isolated"]:
+        problems.append(f"孤立节点应为 {k['isolated']}（实测 {len(c['isolated'])}）")
+    if c["largest_size"] != k["largest"]:
+        problems.append(f"最大分量应为 {k['largest']}（实测 {c['largest_size']}）")
+    if c["nodes"] != k["nodes"]:
+        problems.append(f"节点数应为 {k['nodes']}（实测 {c['nodes']}）")
+    if c["edges"] != k["edges"]:
+        problems.append(f"边数应为 {k['edges']}（实测 {c['edges']}）")
+    if abs(c["coverage"] - k["coverage"]) > 0.002:
+        problems.append(f"coverage 应为≈{k['coverage']}（实测 {c['coverage']}）")
     return problems
 
 
@@ -119,8 +130,8 @@ def main(argv: list[str] | None = None) -> int:
             for p in problems:
                 print(f"[C1] ❌ {p}", file=sys.stderr)
             return 2
-        print(f"[C1] ✓ 论证图结构锁定（{KNOWN['components']} 分量 / 孤立 {KNOWN['isolated']} / "
-              f"最大 {KNOWN['largest']} / 覆盖 {KNOWN['coverage']:.1%}）")
+        print(f"[C1] ✓ 论证图结构锁定（{c['components']} 分量 / 孤立 {len(c['isolated'])} / "
+              f"最大 {c['largest_size']} / 覆盖 {c['coverage']:.1%}）")
         return 0
     if a.write:
         REPORT_OUT.write_text(render_report(c), encoding="utf-8", newline="\n")

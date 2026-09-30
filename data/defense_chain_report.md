@@ -5,7 +5,7 @@
 - 节点 **141**（命题 99 + 误解 42)
 - 判决 **IN 99 / OUT 42 / UNDEC 0**
 - 边 388 条 · 击败边 **194** · 3 轮收敛
-- 可信度分布 {'high': 79, 'medium': 45, 'low': 17}
+- 可信度分布 {'high': 79, 'medium': 55, 'low': 7}
 
 ## 2. OUT 节点（42 个）
 
@@ -135,18 +135,18 @@
 - `ATOM-LANG-SETJMP-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
 - `ATOM-LANG-VOLATILE-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
 - `ATOM-MEM-MALLOC-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
-- `ATOM-MEM-NEWARR-001::prop-1`（cred low ⇒ 无攻击者即 IN）
-- `ATOM-MEM-NEWARR-001::prop-2`（cred low ⇒ 无攻击者即 IN）
+- `ATOM-MEM-NEWARR-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-MEM-NEWARR-001::prop-2`（cred medium ⇒ 无攻击者即 IN）
 - `ATOM-MEM-STRBOUND-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
-- `ATOM-UB-DIVZERO-001::prop-1`（cred low ⇒ 无攻击者即 IN）
-- `ATOM-UB-DIVZERO-001::prop-2`（cred low ⇒ 无攻击者即 IN）
-- `ATOM-UB-NULLDEREF-001::prop-1`（cred low ⇒ 无攻击者即 IN）
-- `ATOM-UB-NULLDEREF-001::prop-2`（cred low ⇒ 无攻击者即 IN）
-- `ATOM-UB-OOB-001::prop-1`（cred low ⇒ 无攻击者即 IN）
-- `ATOM-UB-OOB-001::prop-2`（cred low ⇒ 无攻击者即 IN）
+- `ATOM-UB-DIVZERO-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-UB-DIVZERO-001::prop-2`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-UB-NULLDEREF-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-UB-NULLDEREF-001::prop-2`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-UB-OOB-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-UB-OOB-001::prop-2`（cred medium ⇒ 无攻击者即 IN）
 - `ATOM-UB-SIGNEDOVF-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
-- `ATOM-UB-WRAP-001::prop-1`（cred low ⇒ 无攻击者即 IN）
-- `ATOM-UB-WRAP-001::prop-2`（cred low ⇒ 无攻击者即 IN）
+- `ATOM-UB-WRAP-001::prop-1`（cred medium ⇒ 无攻击者即 IN）
+- `ATOM-UB-WRAP-001::prop-2`（cred medium ⇒ 无攻击者即 IN）
 
 ## 5. 逐节点辩护链（IN 命题抽样 5 个）
 
