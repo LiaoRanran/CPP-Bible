@@ -1,0 +1,74 @@
+% =====================================================================
+%  Response to Reviewers — template (NeurIPS / E&D style)
+%  Compile: pdflatex response_template.tex
+%  Convention: quote the reviewer comment, then respond; cite line numbers.
+% =====================================================================
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{parskip}
+\usepackage{enumitem}
+
+\newcommand{\rev}[1]{\textbf{\color{blue}Reviewer:} \emph{``#1''}}
+\newcommand{\resp}{\textbf{\color{red}Response:}}
+\newcommand{\chg}[1]{\textbf{Change:} #1}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Response to Reviewers}\\[2pt]
+{\large Queyi: Making Verification Capability Independently Auditable}\\[2pt]
+\textbf{Paper \#XXXX} \quad (Anonymous submission)
+\end{center}
+
+\noindent
+We thank all reviewers for their careful reading. We address every point below; reviewer comments
+are in \emph{italic}, our responses follow. Section/line numbers refer to the revised manuscript.
+
+\section*{Summary of changes}
+\begin{itemize}[leftmargin=1.4em]
+  \item Added the budget-matched baseline results (B1/B2/B3) and the A--F ablation in \S6.
+  \item Expanded the holdout/corpus sample sizes (holdout $\ge$30 measurable; corpus $\ge$60).
+  \item Added Clopper--Pearson CIs to all headline numbers.
+  \item Clarified the environment dependency (WSL) and the \texttt{UNVERIFIED} protocol.
+\end{itemize}
+
+\section*{Reviewer 1}
+
+\rev{The paper claims a new evaluation paradigm, but the empirical support is thin.}
+\resp We agree that the initial submission was thin on baselines. We have now run the three
+budget-matched baselines (B1 static, B2 static$+$mutation, B3 random-budget) and report them in
+Table~\ref{tab:e1}. We also state explicitly in \S9 which claims remain unsupported. See
+\chg{\S6.1 (Table~\ref{tab:e1}), \S9 (Table~\ref{tab:claim}).}
+
+\rev{Why is mutation score not treated as defect detection?}
+\resp Because the two measure different things; we cite Just et al.\ (FSE 2014) and show the gap
+empirically (internal mutation core 97.3\% vs.\ external corpus 35.0\%). See \chg{\S7 item 4.}
+
+\section*{Reviewer 2}
+
+\rev{Reproducibility is unclear; the numbers depend on an undeclared environment.}
+\resp We now declare the WSL + \texttt{g++} + \texttt{setarch} dependency in the abstract, \S9, and
+Appendix~\ref{app:repro}, and require a verdict of \texttt{UNVERIFIED} (not a low score) when a
+dependency is missing. See \chg{Abstract; \S9; Appendix~\ref{app:repro}.}
+
+\rev{How does this differ from benchmark-evolution work?}
+\resp Benchmark evolution changes the \emph{items}; we change the \emph{measuring stick} and require
+the change to be externally measurable. See \chg{Table~\ref{tab:positioning}, \S2.}
+
+\section*{Reviewer 3}
+
+\rev{Small sample sizes undermine the statistical claims.}
+\resp We agree; we report Clopper--Pearson CIs everywhere, mark $n<20$ rows as exploratory, and
+state that $\Delta{=}15$pp needs $n\approx102$--172. See \chg{\S6, Appendix~\ref{app:stats}.}
+
+\rev{Minor: terminology (detector/probe) is inconsistent.}
+\resp Fixed; we use ``detector'' throughout. See \chg{whole manuscript.}
+
+\bigskip
+\noindent
+We hope the revised version addresses all concerns.
+
+\end{document}

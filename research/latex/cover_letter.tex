@@ -1,0 +1,79 @@
+% =====================================================================
+%  Cover letter — Queyi, NeurIPS Datasets & Benchmarks submission
+%  Compile: pdflatex cover_letter.tex   (standalone; no bib needed)
+% =====================================================================
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{parskip}
+
+\begin{document}
+
+\begin{flushright}
+  \today
+\end{flushright}
+
+\noindent
+To the NeurIPS Datasets \& Benchmarks Chairs and Reviewers,
+
+\bigskip
+\noindent
+We submit \textbf{``Queyi: Making Verification Capability Independently Auditable''} for
+consideration in the \textbf{Datasets \& Benchmarks} track.
+
+\paragraph{Why this fits E\&D.}
+Our contribution is an \emph{evaluation methodology} with a fully reproducible artifact and an
+explicit \emph{critical / negative} analysis---the three things E\&D asks for. We do not claim a new
+model or a new benchmark. We claim a way to make the question ``how well can we verify
+LLM-generated technical knowledge?'' an \emph{externally checkable} one.
+
+\paragraph{Core contributions.}
+\begin{enumerate}
+  \item \textbf{A verification system} built on four-state verdicts
+        (\texttt{pass}/\texttt{fail}/\texttt{unknown}/\texttt{contradict}, with \texttt{unknown} a
+        first-class citizen), a forced split of provenance vs.\ semantic scope, and a
+        \emph{kernel-independent} meta-state reconciler (anti-self-justification).
+  \item \textbf{An evaluation protocol}: a five-layer dataset (D0--D4), budget-matched baselines, a
+        six-group ablation with pre-registered hypotheses, and a \emph{frozen} statistical caliber
+        (Clopper--Pearson primary; Fisher/Boschloo; exact McNemar; BH/Holm).
+  \item \textbf{An open artifact}: a Merkle-anchored supply chain, a 452-event authority ledger,
+        per-sample detail artifacts, and single-command recomputation entry points.
+\end{enumerate}
+
+\paragraph{Relation to prior work.}
+Benchmark-evolution lines (Benchmark Self-Evolving, ArenaBencher, LiveBench) evolve the
+\emph{items}; mutation-guided testing (Meta ACH, MUTGEN) evolves \emph{tests}; formal verification
+(seL4, CompCert) provides \emph{proofs}. \textbf{None evolves the measuring stick itself while
+proving the change is externally measurable.} That is our position.
+
+\paragraph{Honest limitations (stated up front).}
+Two headline numbers depend on a specific WSL sanitizer environment and \textbf{fail silently} when
+it is absent (35.0\% $\to$ 10.0\%); sample sizes are small ($n=16/40$); and \textbf{budget-matched
+baseline experiments are in progress and will be included in the camera-ready version}. We
+therefore claim \textbf{auditability of the mechanism}, \textbf{not} superiority over existing
+methods. We include this analysis as part of the contribution rather than hiding it.
+
+\paragraph{Data and code availability.}
+The repository is public (Apache-2.0) with DCO sign-off. Datasets D2/D3/D4 and the recomputation
+commands are described in \texttt{REPLICATION.md}; Croissant metadata will be provided in the
+supplementary material. Every reported number is recomputed from landed artifacts, and the paper
+marks any not-yet-landed value explicitly rather than filling in estimates.
+
+\paragraph{Reproducibility.}
+All headline numbers are reproducible via single commands; the paper documents the exact
+environment dependencies (WSL, \texttt{g++}, \texttt{setarch}) and reports \texttt{UNVERIFIED}
+rather than a misleading low score when a dependency is missing.
+
+\bigskip
+\noindent
+We believe this work matches E\&D's stated interest in rigorous evaluation practices and
+transparent, auditable artifacts. We thank you for your consideration.
+
+\bigskip
+\noindent
+Sincerely,\\
+The Authors
+
+\end{document}
