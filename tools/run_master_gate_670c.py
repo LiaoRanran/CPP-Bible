@@ -369,6 +369,31 @@ def gates_drift(root: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# 670g：论文管线五工具（md↔tex 数字 / bib / 图表溯源 / 匿名化 / 质量门禁）
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAPER_PIPELINE: list[tuple[str, str, str]] = [
+    ("paper-sync", "tools/paper_sync_check_670c2.py", "论文 md↔tex 数字一致性"),
+    ("paper-bib", "tools/bib_audit_670c2.py", "BibTeX 完整性审计"),
+    ("paper-figdata", "tools/figure_data_check_670c2.py", "图表数据溯源"),
+    ("paper-anon", "tools/anonymity_check_670c2.py", "投稿匿名化检查"),
+    ("paper-quality", "tools/paper_quality_gate_670c2.py", "论文质量门禁"),
+]
+
+
+def paper_pipeline_gate(root: Path) -> list[dict[str, Any]]:
+    """670g：把论文管线五工具挂进门禁（L1；工具缺失则跳过而非崩）。"""
+    out: list[dict[str, Any]] = []
+    for tid, rel, name in PAPER_PIPELINE:
+        if not (root / rel).is_file():
+            out.append(gate(f"670g/{tid}", name, L1, True, 0, rel, "工具不存在 ⇒ 跳过"))
+            continue
+        code, tail = run_stage([rel], root, 300)
+        out.append(gate(f"670g/{tid}", name, L1, code == 0, code, rel, tail[-300:]))
+    return out
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # 汇总
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -386,6 +411,7 @@ def collect(root: Path = ROOT, check_mode: bool = False, timeout: int | None = N
     gates += gguard
     gdrift, drift_res = gates_drift(root)
     gates += gdrift
+    gates += paper_pipeline_gate(root)
 
     controlled: dict[str, Any] = {
         "checked": bool(check_mode), "files": len(before or {}),

@@ -67,6 +67,36 @@ state that $\Delta{=}15$pp needs $n\approx102$--172. See \chg{\S6, Appendix~\ref
 \rev{Minor: terminology (detector/probe) is inconsistent.}
 \resp Fixed; we use ``detector'' throughout. See \chg{whole manuscript.}
 
+\section*{Standard replies (reusable blocks)}
+
+\paragraph{On ``sample size is too small''.}
+We agree, and we now say so in the abstract and \S9 rather than only in a limitations footnote.
+Our holdout is $n{=}16$ measurable and the corpus $n{=}32$; $\pm$10pp of CI half-width would need
+$n\approx96$. We therefore report \emph{direction} (the $\Delta$ lower bound is $\ge31.5$pp; exact
+McNemar $p\le0.002$) and explicitly refuse to report magnitude. Sample expansion to $n\ge100$ is
+listed as the first item of future work, with a written sampling plan.
+
+\paragraph{On ``the baseline is not strong enough''.}
+Correct, and we label it as such. The static arm is a \textbf{caliber re-binning}, not a re-run of a
+real static detector; the random arm is an \textbf{instrument-level proxy}, not the paper's
+budget-matched B3. Both are marked and excluded from the conclusion. The true B1/B3 require a
+\texttt{detect\_static}/\texttt{select\_assets} interface that currently lives in a split
+repository and is \textbf{blocked} for us; we register this as a blocked item rather than
+substituting a convenient approximation.
+
+\paragraph{On ``why not evaluate on SWE-bench''.}
+Because our object of study is not code repair but \emph{verification of knowledge claims}. SWE-bench
+measures whether a model can patch an issue; we measure whether a claim is true under an explicit
+boundary triple. Adapting SWE-bench would change the construct (see \S8.1). We do cite the
+SWE-bench contamination line as \emph{motivation} for external-sample-first design.
+
+\paragraph{On ``reproducibility''.}
+Every headline number is recomputed from landed artifacts by a single command; the environment
+dependency (WSL + g++ + \texttt{setarch}) is declared, and a missing dependency yields
+\texttt{UNVERIFIED} rather than a misleading low score. A five-tool paper pipeline (number sync,
+BibTeX audit, figure-data provenance, anonymization, quality gate) runs in CI. Code is Apache-2.0
+with DCO sign-off; Croissant metadata ships with the supplement.
+
 \bigskip
 \noindent
 We hope the revised version addresses all concerns.

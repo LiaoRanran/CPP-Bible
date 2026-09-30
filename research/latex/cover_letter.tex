@@ -48,12 +48,21 @@ Benchmark-evolution lines (Benchmark Self-Evolving, ArenaBencher, LiveBench) evo
 (seL4, CompCert) provides \emph{proofs}. \textbf{None evolves the measuring stick itself while
 proving the change is externally measurable.} That is our position.
 
+\paragraph{Headline result.}
+On the \emph{same} samples, failure-driven verification reaches \textbf{87.5\%} holdout recall
+(14/16) and \textbf{43.8\%} corpus measurable recall (14/32), versus a \emph{static caliber arm} at
+\textbf{6.2\%} and \textbf{12.5\%} ($\Delta$ \textbf{+81.3pp} / \textbf{+31.3pp}; exact McNemar
+$p\le0.002$, Cohen's $h\ge0.72$).
+
 \paragraph{Honest limitations (stated up front).}
 Two headline numbers depend on a specific WSL sanitizer environment and \textbf{fail silently} when
-it is absent (35.0\% $\to$ 10.0\%); sample sizes are small ($n=16/40$); and \textbf{budget-matched
-baseline experiments are in progress and will be included in the camera-ready version}. We
-therefore claim \textbf{auditability of the mechanism}, \textbf{not} superiority over existing
-methods. We include this analysis as part of the contribution rather than hiding it.
+it is absent (35.0\% $\to$ 10.0\%); sample sizes are small ($n=16/32$ --- we report \emph{direction},
+not magnitude; $\pm$10pp needs $n\approx96$); the static arm is a \textbf{caliber re-binning} (not a
+re-run) and the random arm is an \textbf{instrument-level proxy} (not the paper's budget-matched B3,
+whose interface is currently blocked in a split repository). We therefore claim
+\textbf{auditability of the mechanism} plus \textbf{a significant same-sample advantage over the
+static/proxy arms} --- \textbf{not} superiority over a true static detector or the real B3. We
+include this analysis as part of the contribution rather than hiding it.
 
 \paragraph{Data and code availability.}
 The repository is public (Apache-2.0) with DCO sign-off. Datasets D2/D3/D4 and the recomputation

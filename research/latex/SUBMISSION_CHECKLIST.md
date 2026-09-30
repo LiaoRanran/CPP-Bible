@@ -62,6 +62,21 @@
 - [x] `UNVERIFIED` protocol for missing dependencies (instead of a misleading low score).
 - [ ] **TODO:** one independent reproduction (external party) before camera-ready.
 
+## 9. v0.8 新增检查项（670g）
+
+- [x] §6.1 三臂表填入**真实** baseline 数字（`data/experiments/baseline_*.json`）。
+- [x] §6.4 统计检验：配对精确 McNemar + Cohen's h；**写明 c=0 的极端结构**。
+- [x] §6.5 缺陷重注入 6/6 与变异 kill 97.3%，并声明**变异是内部指标**。
+- [x] Fig.3 三条柱（FD / Static / Random†），Random† 标注为**代理**。
+- [x] 摘要/结论含 baseline 数字 + 样本量局限（n=16/32，±10pp 需 n≈96）。
+- [x] §7.2 baseline 启示、§7.3 样本量与统计效力。
+- [x] §8 更新 Construct/External/Statistical 三行（口径重分箱 / 代理 / 样本量）。
+- [x] §9 新增"能支撑"第 5 条；"不能支撑"第 3 条改为"优于**真正的**静态检测器 / 真 B3"。
+- [x] 参考文献 47/48（LLM 代码错误分类）与 §2(5) 相连。
+- [ ] **VERIFY**：`python tools/paper_sync_check_670c2.py` / `bib_audit` / `figure_data_check` / `anonymity_check` / `paper_quality_gate` 全 PASS（当前 ✅）。
+- [ ] **VERIFY**：`python tools/gate_rules_670g.py --check` 0 BLOCK（当前 ✅）。
+- [ ] **VERIFY**：主文 ≤9 页、0 未定义引用（编译后读 `.aux`/`.log`）。
+
 ## Compile commands
 ```bash
 # Option A — classic TeX Live / MiKTeX

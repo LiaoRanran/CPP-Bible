@@ -340,3 +340,30 @@ python tools/perf_audit_670c5.py --write        # 性能：首页 gzip ≤120KB
 **依赖说明**：上述 4 个前端命令**不需要 WSL / g++**（与 §6 的检测器复现不同）；只有 `holdout_reveal_*` / `external_corpus_reveal_*` 才需要 WSL。
 
 **常见问题**：`file://` 打开时 `fetch` 被浏览器拦截 ⇒ 数据加载失败卡会提示改用 `python -m http.server`（这是 670c3 的预期行为，不是 bug）。
+
+---
+
+## 16. baseline 三臂 + 论文管线 + 门禁（670a / 670g 追加）
+
+```bash
+# 1) baseline 三臂（现算落盘 data/experiments/baseline_{static,random,fd}.json）
+.\.venv\Scripts\python.exe tools\baseline_670a.py --run
+.\.venv\Scripts\python.exe tools\baseline_670a.py --check     # 只读自检
+#    预期：holdout FD 87.5%(14/16) vs Static 6.2%(1/16)；corpus FD 43.8%(14/32) vs Static 12.5%(4/32)
+
+# 2) 论文管线五工具（全 PASS 才算过）
+python tools/paper_sync_check_670c2.py       # md(v0.8) ↔ tex 数字一致性
+python tools/bib_audit_670c2.py              # 48 条 BibTeX，0 error
+python tools/figure_data_check_670c2.py      # Fig.3/4 数字可溯源
+python tools/anonymity_check_670c2.py        # 主文 0 仓库路径
+python tools/paper_quality_gate_670c2.py     # 主文 ≤9 页 / 0 未定义引用 / 摘要 ≤250 词
+
+# 3) 670g 六条 P0 门禁（论文/baseline 维度）
+python tools/gate_rules_670g.py --check      # 0 BLOCK
+
+# 4) 主门禁（含 L1 的 670g/paper-* 五阶段）
+.\.venv\Scripts\python.exe tools\run_master_gate_670c.py --check
+```
+
+**依赖**：上述命令**不需要 WSL / g++**（与 §6 的检测器复现不同）。
+**注意**：主门禁的 `670c/controlled-dirs` 阶段在**有并行批次改仓库时可能偶发报 1 处写入**（快照期间文件被并发修改）；重跑即可确认（本仓实测：首跑 1 处、复跑 0 处）。

@@ -21,7 +21,7 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MD = os.path.join(ROOT, "research", "paper_v0.7.md")
+MD = os.path.join(ROOT, "research", "paper_v0.8.md")
 TEX = os.path.join(ROOT, "research", "latex", "queyi_neurips2027.tex")
 
 # (name, [tokens]) —— 每个 token 必须在两边都出现（token 已做规范化后的字面量）
@@ -51,6 +51,14 @@ FACTS: list[tuple[str, list[str]]] = [
     ("演化 666 未落盘", ["81.2"]),
     ("semantic scope 完整度", ["0/26"]),
     ("边界卡数", ["26"]),
+    # ── 670g：baseline 三臂（来自 data/experiments/baseline_*.json）──
+    ("Static holdout", ["6.2", "1/16"]),
+    ("Static corpus", ["12.5", "4/32"]),
+    ("Random† corpus", ["3.1", "1/32"]),
+    ("Δ static→FD holdout", ["81.3"]),
+    ("Δ static→FD corpus", ["31.3"]),
+    ("Δ random†→FD corpus", ["40.7"]),
+    ("缺陷重注入", ["6/6"]),
 ]
 
 

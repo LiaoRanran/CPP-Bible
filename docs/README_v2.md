@@ -113,6 +113,24 @@ python tools/reproduce_all_670c.py --skip-slow
 - **性能**（670c5）：首页 **gzip 76.3KB**（预算 120KB）；无外部 CDN 依赖；全部 `<script type="module">`；DOM 标签每页 ≤238。
 - **构建**：`node web/build.mjs` 重建 `dist/`；`python tools/dist_verify_670c2.py` 验证（8 HTML / 引用 0 缺失）。
 
+## Baseline 三臂对比（670a 现算 · `data/experiments/baseline_*.json`）
+
+| 指标 | Static（rule-only，**口径重分箱**） | Random†（**仪器级代理**） | **Failure-driven** | Δ(static→FD) |
+|---|---|---|---|---|
+| holdout 检出 | 6.2% (1/16) [0.2, 30.2] | 6.2% (1/16) | **87.5% (14/16) [61.7, 98.4]** | **+81.3pp** |
+| corpus 可测 | 12.5% (4/32) [3.5, 29.0] | 3.1% (1/32) | **43.8% (14/32) [26.4, 62.3]** | **+31.3pp** |
+| defect 重注入 | 100% (6/6) | N/A | 100% (6/6) | 0 |
+
+- 配对精确 **McNemar p ≤ 0.002**，**Cohen's h ≥ 0.72**；Δ 下界 **≥31.5pp**。
+- **诚实边界**：Static 是**口径重分箱**（非重跑）、Random† 是**代理**（非真 B3）；真 B3/`detect_static` 需拆仓接口，**BLOCKED**。样本量 n=16/32 ⇒ 只读**方向**，不读幅度。
+- 复算：`.\.venv\Scripts\python.exe tools\baseline_670a.py --run`（详见 `docs/670a_实验结果.md`）。
+
+## 论文与投稿（v0.8）
+
+- 中文稿 `research/paper_v0.8.md`；LaTeX 投稿版 `research/latex/queyi_neurips2027.tex`（NeurIPS D&B 匿名格式，主文 ≤9 页）。
+- 论文管线 5 工具（数字同步 / BibTeX 审计 / 图表溯源 / 匿名化 / 质量门禁）已挂进 `run_master_gate_670c.py`（L1 阶段 `670g/paper-*`）。
+- 新增 6 条 P0 门禁 `tools/gate_rules_670g.py`（论文/baseline 维度）。
+
 ---
 
 ## 贡献指南（DCO）

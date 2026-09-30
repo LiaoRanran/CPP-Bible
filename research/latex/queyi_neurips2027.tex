@@ -49,9 +49,11 @@ external party can interrupt. Its objects are \emph{executable C++ assertions}; 
 provenance vs.\ semantic scope, a \emph{kernel-independent} meta-state reconciler, and a
 \emph{failure-driven} loop that turns each miss into new verification capability. The current
 system has \textbf{67} verdict rules, \textbf{42} real cards, a \textbf{452}-event authority
-ledger, and Merkle roots over \textbf{5} controlled directories; the blind holdout recall is
-\textbf{87.5\% (14/16, 95\% CI [61.7, 98.4])} and the external-corpus recall is
-\textbf{35.0\% (14/40, [20.6, 51.7])}. \textbf{Limitations:} two headline numbers depend on a
+ledger, and Merkle roots over \textbf{5} controlled directories. \textbf{On the same samples}, blind
+holdout recall is \textbf{87.5\% (14/16, 95\% CI [61.7, 98.4])} and corpus measurable recall is
+\textbf{43.8\% (14/32, [26.4, 62.3])}, versus a \emph{static caliber arm} at \textbf{6.2\%} and
+\textbf{12.5\%} ($\Delta$ \textbf{+81.3pp} / \textbf{+31.3pp}; exact McNemar $p\le0.002$, Cohen's
+$h\ge0.72$). \textbf{Limitations:} two headline numbers depend on a
 specific WSL sanitizer environment (they fail silently elsewhere); sample sizes are small
 ($n{=}16/40$); and budget-matched baselines are not yet run---so we claim
 \emph{auditability of the mechanism}, \emph{not} superiority over existing methods.
@@ -437,47 +439,54 @@ rate must carry a \texttt{denominator}}.
 \label{sec:exp}
 % =====================================================================
 All numbers are \emph{recomputed from artifacts}; intervals are \textbf{Clopper--Pearson 95\%},
-Wilson shown as sensitivity. Anything not landed is marked \TODO{670a} rather than invented.
+Wilson shown as sensitivity. Baseline arms are recomputed by a single script (see Appendix~\ref{app:repro}).
 
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-  width=8.4cm, height=5.2cm,
-  ybar, bar width=14pt,
+  width=9.2cm, height=5.6cm,
+  ybar, bar width=7pt,
   ymin=0, ymax=100,
   ylabel={Recall (\%)},
-  symbolic x coords={holdout, external, defect},
+  symbolic x coords={holdout, corpus, defect},
   xtick=data,
   x tick label style={font=\small},
-  nodes near coords, nodes near coords style={font=\scriptsize},
-  enlarge x limits=0.28,
+  legend style={font=\scriptsize, at={(0.5,-0.20)}, anchor=north, legend columns=3, draw=none},
+  enlarge x limits=0.26,
   title style={font=\small},
 ]
-\addplot[fill=green!45, draw=green!50!black] coordinates {(holdout,87.5) (external,35.0) (defect,100)};
+\addplot[fill=green!45, draw=green!50!black] coordinates {(holdout,87.5) (corpus,43.8) (defect,100)};
+\addplot[fill=gray!35, draw=gray!60!black] coordinates {(holdout,6.2) (corpus,12.5) (defect,100)};
+\addplot[fill=orange!40, draw=orange!70!black] coordinates {(holdout,6.2) (corpus,3.1) (defect,0)};
+\legend{FD, Static, Random$\dagger$}
 \end{axis}
 \end{tikzpicture}
-\caption{Core recall for the failure-driven system (real values): holdout
-87.5\% [61.7, 98.4], external 35.0\% [20.6, 51.7], defect (placeholder). The \textbf{static} (B1)
-and \textbf{random-budget} (B3) columns are pending the baseline batch and are shown as dashed
-placeholders \TODO{670a baseline}; no estimated values are plotted.}
+\caption{Core recall across three arms. \textbf{FD} (failure-driven) holdout
+87.5\% [61.7, 98.4] and corpus 43.8\% [26.4, 62.3]; \textbf{Static} (rule-only, a
+\emph{caliber re-binning}, not a re-run) 6.2\% [0.2, 30.2] / 12.5\% [3.5, 29.0];
+\textbf{Random$\dagger$} (an instrument-level \emph{proxy}, not the paper's B3) 6.2\% / 3.1\%.
+Bars show point estimates; Clopper--Pearson 95\% CIs are in Table~\ref{tab:e1}. $n=16/32$ is
+small, so read \emph{direction}, not magnitude.}
 \label{fig:core}
 \end{figure}
 
 \paragraph{E1 --- Main experiment: static vs.\ random vs.\ failure-driven.}
 \begin{table}[t]
-\caption{E1. Full (failure-driven) side is real; B1/B3 pending.}
+\caption{E1. Three arms on the same samples. Static is a caliber re-binning; Random$\dagger$ is a
+proxy (the real B3 needs the split-repo \texttt{select\_assets}).}
 \label{tab:e1}
 \centering
 \small
-\begin{tabular}{@{}lp{2.5cm}p{2.4cm}p{2.4cm}p{1.8cm}@{}}
+\begin{tabular}{@{}lp{2.7cm}p{2.4cm}p{1.7cm}p{1.5cm}@{}}
 \toprule
-System & Blind holdout (CP 95\%) & External (all) & External (measurable) & Control FPR \\
+System & Blind holdout (CP 95\%) & Corpus meas.\ (CP 95\%) & Defect & Control FPR \\
 \midrule
-B1 static gate & \TODO{670a} & \TODO{670a} & \TODO{670a} & \TODO{670a} \\
-B3 random-budget & \TODO{670a} & \TODO{670a} & \TODO{670a} & \TODO{670a} \\
-\textbf{Full (failure-driven)} & \textbf{87.5\% (14/16) [61.7, 98.4]} & \textbf{35.0\% (14/40) [20.6, 51.7]} & \textbf{43.8\% (14/32) [26.4, 62.3]} & 11.1\% (1/9) \\
-Difference (Full$-$B1) & \TODO{670a: Fisher/Boschloo} & \TODO{670a} & \TODO{670a} & --- \\
+Static (caliber re-bin) & 6.2\% (1/16) [0.2, 30.2] & 12.5\% (4/32) [3.5, 29.0] & 100\% (6/6) & --- \\
+Random$\dagger$ (proxy) & 6.2\% (1/16) [0.2, 30.2] & 3.1\% (1/32) [0.1, 16.2] & N/A & --- \\
+\textbf{FD (failure-driven)} & \textbf{87.5\% (14/16) [61.7, 98.4]} & \textbf{43.8\% (14/32) [26.4, 62.3]} & 100\% (6/6) & 11.1\% (1/9) \\
+$\Delta$(static$\to$FD) & \textbf{+81.3pp} & \textbf{+31.3pp} & 0 & --- \\
+$\Delta$(random$\dagger\to$FD) & \textbf{+81.3pp} & \textbf{+40.7pp} & N/A & --- \\
 \bottomrule
 \end{tabular}
 \end{table}

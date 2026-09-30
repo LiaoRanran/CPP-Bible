@@ -64,3 +64,20 @@ python tools/reproduce_all_670c.py --skip-slow  # 跳过慢测试
 
 **Q14：我怎么确认数据文件没被换过？**
 用 `data/dataset_hashes_670c.json`：里面是所有数据文件的 SHA256、大小、生成时间与 commit SHA。逐文件核对即可。数据集的结构化元数据（含每个文件的字段定义）见 `data/croissant_670c.json`（Croissant 格式，NeurIPS E&D 赛道要求）。
+
+---
+
+**Q15：为什么 Static 臂只有 6.2%（holdout）？是静态规则很差吗？**
+不是。holdout / corpus 两个检测集的真错**绝大多数只有 sanitizer（运行时证据）能看见**；Static 臂是"**口径重分箱**"（把运行时证据判定的样本记为 miss），**不是重跑一个真正的静态规则检测器**。这一行说明的是**检测集对仪器的依赖结构**，不是静态规则的检出能力。
+
+**Q16：Random† 和论文里的真 B3 有什么区别？**
+Random† 是"**随机选检测仪器**"的代理；真 B3 是"**同等预算下随机扩充验证资产**"。两者"资产"定义不同，**不可互相替代**。真 B3 需要拆仓验证器暴露 `select_assets()`，主仓不可见 ⇒ **BLOCKED**，论文里明确标 † 且不进结论。
+
+**Q17：样本量够吗？**
+不够。holdout 可测 **n=16**、corpus **n=32**；**±10pp 的 CI 半宽需 n≈96**，检出 10pp 差异需 n≈392/组。所以论文只报**方向**（Δ 下界 **≥31.5pp**，配对 McNemar **p≤0.002**，Cohen's h≥0.72），**不报幅度的精确值**。扩样到 n≥100 是第一项未来工作。
+
+**Q18：怎么复现 baseline 实验？**
+`.\.venv\Scripts\python.exe tools\baseline_670a.py --run`（现算并落盘 `data/experiments/baseline_*.json`）；`--check` 做只读自检。三臂定义、口径与读法见 `docs/670a_实验结果.md`。
+
+**Q19：论文投哪里？**
+NeurIPS **Datasets & Benchmarks** 赛道（2027 CFP 尚未发布；按 2026 时间线规划，目标 2027 上半年投出）。LaTeX 投稿版在 `research/latex/queyi_neurips2027.tex`，中文稿 `research/paper_v0.8.md`。
