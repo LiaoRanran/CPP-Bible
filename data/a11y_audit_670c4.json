@@ -42,5 +42,12 @@
     }
   ],
   "total": {},
-  "critical_total": 0
+  "critical_total": 0,
+  "coverage": "static_html_only",
+  "js_rendered_dom_audited": false,
+  "limitations": [
+    "仅审计静态HTML源码",
+    "JS渲染的DOM（首页表格/卡库网格/实验页图表）未覆盖",
+    "焦点环颜色需contrast_check辅助验证"
+  ]
 }

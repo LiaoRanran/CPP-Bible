@@ -1,14 +1,17 @@
 /* 670c4 · 可访问性样式：焦点环 / 屏幕阅读器专用 / 帮助弹窗
-   目标：所有可交互元素 :focus-visible 统一 2px solid #d97757 + 2px offset。 */
+   目标：所有可交互元素 :focus-visible 统一 var(--focus-ring) + var(--focus-ring-offset)。
+   672a：焦点环颜色不再硬编码（原暖橙是 666 时代的遗留色，它在 style.css 之后加载、
+         特异性同为 (0,1,0) ⇒ 后加载者赢，把 design-tokens 的 --focus-ring 整体覆盖，
+         同一页出现两种焦点色）。现在只消费令牌，色值由令牌源定。 */
 
 /* 统一焦点样式（B4）。高对比度模式下 outline 仍可见。 */
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
-  outline: 2px solid #d97757;
-  outline-offset: 2px;
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
   border-radius: 4px;
 }
 /* 已有自定义焦点样式的元素（如 .skip-link）保留其行为，但确保可见 */
-.skip-link:focus { outline: 2px solid #d97757; outline-offset: 2px; }
+.skip-link:focus { outline: var(--focus-ring); outline-offset: var(--focus-ring-offset); }
 
 /* 屏幕阅读器专用（视觉隐藏、可被朗读） */
 .qy-sr-only {
@@ -18,21 +21,21 @@
 
 /* 帮助弹窗 */
 .qy-dialog {
-  position: fixed; inset: 0; z-index: 10000;
+  position: fixed; inset: 0; z-index: var(--z-modal);
   display: flex; align-items: center; justify-content: center;
   background: rgba(0, 0, 0, .6);
 }
 .qy-dialog[hidden] { display: none; }
 .qy-dialog-box {
-  background: var(--bg-1, #1a1a1a); color: var(--fg, #e8e6e3);
-  border: 1px solid var(--line, #3a3a3a); border-radius: 12px;
+  background: var(--panel, #1a1a1a); color: var(--fg, #e8e6e3);
+  border: 1px solid var(--line, #3a3a3a); border-radius: 8px;
   padding: 24px; max-width: 520px; width: calc(100% - 32px);
   max-height: 80vh; overflow: auto;
 }
 .qy-dialog-box h2 { margin: 0 0 12px; font-size: 18px; }
 .qy-help-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
 .qy-help-table th { text-align: left; padding: 4px 12px 4px 0; white-space: nowrap; font-weight: 600; }
-.qy-help-table td { padding: 4px 0; color: var(--fg-muted, #a8a8a8); }
+.qy-help-table td { padding: 4px 0; color: var(--fg-mute, #a8a8a8); }
 .qy-help-table kbd {
   display: inline-block; padding: 1px 6px; border: 1px solid var(--line, #3a3a3a);
   border-radius: 4px; font-family: ui-monospace, monospace; font-size: 12px;

@@ -10,6 +10,12 @@
 
 严重度：critical（缺 alt/label/名称，直接影响可用）> moderate（heading/结构）> minor（语义建议）。
 只读 HTML，写 JSON。退出码：0 = 0 critical；1 = 有 critical。
+
+672a E · 口径诚实化（**只加元数据，不改审计逻辑**）：
+    本工具只 parse **静态 HTML 源码**；首页表格、卡库网格、实验页图表等由 JS 渲染的
+    DOM 全在盲区。旧验收写"8 页 0 问题"是越界表述 —— 现在把覆盖率写进 JSON 与 stdout，
+    让"0 问题"始终带着"覆盖了什么"一起读。
+    升级到 jsdom 审计（真渲染后再扫）成本高，归后续批次。
 """
 from __future__ import annotations
 
@@ -29,6 +35,15 @@ PAGES = ["index", "cards", "learn", "experiments", "verdicts", "starmap", "verif
 VOID = {"img", "input", "br", "hr", "meta", "link", "source", "area", "base", "col", "embed", "track", "wbr"}
 # 需要无障碍名称的可交互元素
 INTERACTIVE = {"button", "a", "qy-button", "qy-panel", "input", "select", "textarea"}
+
+# ── 672a E · 覆盖率声明（写进 JSON 与 stdout，防止"0 问题"被读成"全站无问题"）──
+COVERAGE = "static_html_only"
+COVERAGE_STDOUT = "[a11y audit] coverage: static HTML only (JS-rendered DOM not audited)"
+LIMITATIONS = [
+    "仅审计静态HTML源码",
+    "JS渲染的DOM（首页表格/卡库网格/实验页图表）未覆盖",
+    "焦点环颜色需contrast_check辅助验证",
+]
 
 
 class Collector(HTMLParser):
@@ -197,8 +212,12 @@ def audit_all() -> dict:
     for p in pages:
         for k, v in p["counts"].items():
             total[k] += v
+    # 672a E：审计逻辑一字未改，只补元数据（覆盖率 / 局限）
     return {"pages": pages, "total": dict(total),
-            "critical_total": total.get("critical", 0)}
+            "critical_total": total.get("critical", 0),
+            "coverage": COVERAGE,
+            "js_rendered_dom_audited": False,
+            "limitations": list(LIMITATIONS)}
 
 
 def main() -> int:
@@ -213,6 +232,8 @@ def main() -> int:
     if args.json:
         print(json.dumps(res, ensure_ascii=False, indent=2))
     else:
+        # 672a E：覆盖率声明必须和"0 问题"一起被读到
+        print(COVERAGE_STDOUT)
         print(f"[a11y] {len(res['pages'])} 页， 合计 {res['total']}， critical={res['critical_total']}")
         for p in res["pages"]:
             sev = p["counts"]

@@ -2,7 +2,7 @@
    目标 ≤2KB。全部使用项目设计令牌的兜底值，不新增硬编码色（除 noscript 内联要求）。 */
 
 /* ---- 骨架屏 ---- */
-.qy-skeleton { background: var(--bg-2, #232323); border-radius: 8px; position: relative; overflow: hidden; }
+.qy-skeleton { background: var(--panel-2, #232323); border-radius: 8px; position: relative; overflow: hidden; }
 .qy-skeleton::after {
   content: ""; position: absolute; inset: 0;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
@@ -20,6 +20,9 @@
 .qy-banner {
   position: sticky; top: 0; z-index: 9999;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  /* 错误色待令牌化：design-tokens.css 里**没有** --color-error；--color-fail 的契约是
+     "只用于小圆点 / 小标签 / 关键数字，禁止大面积铺色"，横幅是整条铺色 ⇒ 不能用它。
+     令牌源本批只消费不修改 ⇒ 保留硬编码，等 672c 与令牌源一起决议。 */
   padding: 8px 16px; background: #7f1d1d; color: #fff; font-size: 14px;
 }
 .qy-banner[hidden] { display: none; }
@@ -28,22 +31,22 @@
 /* ---- 错误卡 ---- */
 .qy-error-card {
   max-width: 600px; margin: 24px auto; padding: 24px; text-align: center;
-  border: 1px solid var(--border, #3a3a3a); border-radius: 12px;
+  border: 1px solid var(--line, #3a3a3a); border-radius: 8px;
 }
 .qy-err-icon { font-size: 32px; }
 .qy-err-title { font-size: 18px; font-weight: 600; margin: 8px 0; }
-.qy-err-hint { color: var(--fg-muted, #a8a8a8); margin-bottom: 8px; }
-.qy-err-final { color: var(--fg-muted, #a8a8a8); font-size: 13px; margin-bottom: 16px; }
+.qy-err-hint { color: var(--fg-mute, #a8a8a8); margin-bottom: 8px; }
+.qy-err-final { color: var(--fg-mute, #a8a8a8); font-size: 13px; margin-bottom: 16px; }
 
 /* ---- 空状态 ---- */
 .qy-empty { max-width: 600px; margin: 24px auto; padding: 24px; text-align: center; }
 .qy-empty-icon { font-size: 28px; opacity: .7; }
-.qy-empty-text { margin: 8px 0 12px; color: var(--fg-muted, #a8a8a8); }
+.qy-empty-text { margin: 8px 0 12px; color: var(--fg-mute, #a8a8a8); }
 
 /* ---- 按钮 ---- */
 .qy-btn {
   padding: 8px 16px; border-radius: 8px; cursor: pointer;
-  border: 1px solid var(--border, #3a3a3a); background: var(--bg-2, #232323); color: inherit;
+  border: 1px solid var(--line, #3a3a3a); background: var(--panel-2, #232323); color: inherit;
 }
 .qy-btn:hover { border-color: var(--accent, #6ea8fe); }
 .qy-btn:focus-visible { outline: 2px solid var(--accent, #6ea8fe); outline-offset: 2px; }
@@ -51,11 +54,15 @@
 /* ---- noscript 降级（深色兜底，不依赖外部 CSS） ---- */
 .ns-fallback {
   max-width: 600px; margin: 48px auto; padding: 24px;
-  background: #1a1a1a; color: #e8e6e3; border-radius: 12px; line-height: 1.7;
+  background: var(--panel, #1a1a1a); color: var(--fg, #e8e6e3); border-radius: 8px; line-height: 1.7;
 }
 .ns-fallback h1 { font-size: 20px; margin-bottom: 12px; }
-.ns-fallback a { color: #8ab4f8; }
-.ns-note { margin-top: 16px; color: #b0aeab; font-size: 13px; }
+/* 672a 追加（超出任务书行号表，理由写在验收报告）：第 54 行把 .ns-fallback 的面色改为
+   var(--panel) 后，它开始跟随主题 —— 浅色主题下面色变白，而这两行还是 666 时代的硬编码
+   旧色，实测 2.11:1 / 2.12:1，不过 AA。不改就是**本批自己引入的浅色主题回归**，
+   故一并令牌化（保留旧色作 fallback，noscript 场景不依赖 CSS 时仍可读）。 */
+.ns-fallback a { color: var(--color-accent, #8ab4f8); }
+.ns-note { margin-top: 16px; color: var(--fg-dim, #b0aeab); font-size: 13px; }
 
 /* ---- 无障碍：尊重 reduced motion ---- */
 @media (prefers-reduced-motion: reduce) {
