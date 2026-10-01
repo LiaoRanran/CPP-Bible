@@ -25,6 +25,8 @@ function setText(id, v) {
   const el = $(id);
   if (el) el.textContent = (v == null || v === '') ? '--' : String(v);
 }
+/** 渲染完成 ⇒ 清掉初始的 aria-busy="true"（672e 修：setState 只切状态机，不碰 aria-busy）。 */
+function clearBusy(el) { if (el) el.setAttribute('aria-busy', 'false'); }
 
 /* ── ① 现状表：行定义（字段全部来自 metrics_666.json，不在这里写死数字） ── */
 function metricRows(M) {
@@ -121,14 +123,17 @@ export async function renderMetrics() {
     if (!M || Object.keys(M).length === 0) {
       setState(box, 'empty');
       renderEmpty(box, 'no-data', renderMetrics);
+      clearBusy(box);
       return;
     }
   } catch (e) {
     setState(box, 'error');
     renderErrorCard(box, e.kind || 'unknown', renderMetrics);
+    clearBusy(box);
     return;
   }
   setState(box, 'ready');
+  clearBusy(box);
   const rows = metricRows(M);
   box.innerHTML = `<table class="state-table">
   <caption>表 1　核心指标。数据源 web/data/metrics_666.json（tools/web_metrics_666.py 现算）；<span class="mono">--</span> 表示该字段取不到值。</caption>
@@ -158,15 +163,17 @@ export async function renderTimeline() {
     const all = D.timeline || [];
     // 账本按时间正序；取**最近** TIMELINE_MAX 条，再按时间倒序展示（新的在上）
     const rows = all.slice(-TIMELINE_MAX).reverse();
-    if (!rows.length) { renderEmpty(box, 'no-data', renderTimeline); return; }
+    if (!rows.length) { renderEmpty(box, 'no-data', renderTimeline); clearBusy(box); return; }
     box.innerHTML = rows.map((m) => `
       <li data-state="${esc(m.state)}">
         <div class="t-when">${esc(m.batch)} · ${esc(m.date)}</div>
         <div class="t-what">${esc(m.what)}</div>
         <div class="t-why">${esc(m.why)}</div>
       </li>`).join('');
+    clearBusy(box);
   } catch (e) {
     box.innerHTML = `<li><div class="t-why">时间线不可用：${esc(e.message)}</div></li>`;
+    clearBusy(box);
   }
 }
 

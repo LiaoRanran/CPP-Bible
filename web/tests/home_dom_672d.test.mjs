@@ -148,9 +148,9 @@ async function runHome(payload, { status = 200, settleMs = 120 } = {}) {
   ok(urls.length >= 1 && urls.every((u) => u === 'data/metrics_666.json'),
     '全部取数都来自唯一数据源（不写死其它路径）');
 
-  // ⑦ 已知问题锁（672d-C 发现，归 672e 修；修了请同步改这条断言）
-  eq($('#metrics').getAttribute('aria-busy'), 'true',
-    '【已知问题锁】渲染完成后 aria-busy="true" 残留（setState 未清，672e 修）');
+  // ⑦ aria-busy 清理（672d-C 发现，672e 修：renderMetrics 渲染完成清掉初始 aria-busy="true"）
+  eq($('#metrics').getAttribute('aria-busy'), 'false',
+    '渲染完成后 aria-busy 已清（home.js 在 ready/empty/error 分支调 clearBusy，672e 修）');
 
   eq(consoleErrors.length, 0, '正常渲染全程无 console.error');
 }

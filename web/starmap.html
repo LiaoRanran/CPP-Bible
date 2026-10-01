@@ -17,7 +17,7 @@
 <noscript><div style="max-width:640px;margin:2rem auto;padding:1.5rem">
 <p style="font-size:18px;font-weight:600;margin:0 0 6px">知识星图 · 需要 JavaScript</p>
 <p>星图（真实台账节点与边）需要 JavaScript 才能渲染。</p>
-<p style="color:#666;font-size:13px">请启用 JavaScript 后查看。</p>
+<p style="color:var(--color-text-mute);font-size:13px">请启用 JavaScript 后查看。</p>
 </div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="starmap.html"></qy-nav>
@@ -48,7 +48,7 @@
         <span class="dot st-fail"></span>fail　
         <span class="dot st-unknown"></span>unknown
       </div>
-      <div class="chan"><b>形</b> 大圆描边=卡　小圆=命题　方块=误解（攻击者）</div>
+      <div class="chan"><b>形</b> 卡/命题=圆，误解=方块（攻击者）；<b>大小</b>=连接数（hub 最大，孤立点最小）</div>
       <div class="chan"><b>光</b> 不透明=cred3　0.72=cred2　0.5=cred1</div>
     </div>
 
@@ -81,7 +81,7 @@
     <div class="stage-wrap">
       <div class="canvas-wrap" id="stage">
         <canvas id="graph" tabindex="0" role="img"
-          aria-label="知识接地星图：可用方向键平移、滚轮缩放、悬停看摘要、点击固定详情；搜索框输入卡名会高亮并居中。"
+          aria-label="知识接地星图（2.5D 伪3D，透视投影）：拖拽旋转模型、滚轮缩放、双击复位、悬停看摘要、点击固定详情；搜索框输入卡名会高亮并居中。"
           style="height:clamp(420px, 62vh, 660px)"></canvas>
         <svg id="cluster-labels" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none"></svg>
         <div class="canvas-tip" id="tip" hidden></div>
@@ -93,11 +93,11 @@
       <span><kbd>悬停</kbd>节点看卡数与证据强度</span>
       <span><kbd>悬停</kbd>聚类标签看该域卡数 / 平均证据强度</span>
       <span><kbd>点击</kbd>固定右侧详情</span>
-      <span><kbd>拖拽</kbd>平移 · <kbd>滚轮</kbd>缩放 · <kbd>方向键</kbd>平移 · <kbd>0</kbd>复位 · <kbd>Esc</kbd>取消固定</span>
+      <span><kbd>拖拽</kbd>旋转模型 · <kbd>滚轮</kbd>缩放 · <kbd>双击</kbd>复位视角 · <kbd>方向键</kbd>平移 · <kbd>0</kbd>复位 · <kbd>Esc</kbd>取消固定</span>
     </div>
 
     <p class="section-sub" style="margin-top:var(--space-2)">
-      渲染：<b>自写力导向 + Canvas 2D</b>（不引 d3、不依赖 GPU / CDN）：布局在加载时<b>一次求解</b>
+      渲染：<b>自写力导向 + Canvas 2D（2.5D 伪3D：透视投影，不引 Three.js）</b>（不引 d3、不依赖 GPU / CDN）：布局在加载时<b>一次求解</b>
       （迭代步数、耗时与最近点对距离都写在右上角，不假装很快），之后<b>按需重绘</b>，没有每帧物理循环。
       <b>prefers-reduced-motion</b> 下关闭入场动画与悬停发光。数据由
       <span class="mono">tools/web_data_653.py</span> 从 <span class="mono">data/grounded_labels_w2.json</span>

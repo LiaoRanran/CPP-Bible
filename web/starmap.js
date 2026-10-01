@@ -541,6 +541,90 @@ export function invertTransform(s, view, viewport = {}) {
   return { x: (num(s && s.x) - cx) / k - vx, y: (num(s && s.y) - cy) / k - vy };
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   2.5D 伪 3D 投影（672e）：不引入 Three.js，纯手算透视
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/** 透视投影：把世界坐标 {x,y,z} 投到屏幕。
+ *  · 旋转：先绕 Y 轴（水平拖拽），再绕 X 轴（俯仰拖拽）；
+ *  · 透视：相机在 z = -cam 处朝 +z 看，z 越大离相机越远 ⇒
+ *    **近大远小**（scale 随深度递减）+ **远节点更暗**（alpha 随深度递减）；
+ *  · 本函数不接触任何颜色，渲染层颜色一律走 design-tokens（STATE_COLORS /
+ *    clusterPalette / LINK_STYLE），不写死 green/red/yellow。 */
+export function projectPoint(world, view) {
+  const v = opt(view);
+  const rotX = num(v.rotX, 0), rotY = num(v.rotY, 0);
+  const k = Math.max(0.01, num(v.k, 1));
+  const x = num(world && world.x), y = num(world && world.y), z = num(world && world.z);
+  // 绕 Y 轴
+  const cY = Math.cos(rotY), sY = Math.sin(rotY);
+  const x1 = x * cY + z * sY;
+  const z1 = -x * sY + z * cY;
+  // 绕 X 轴
+  const cX = Math.cos(rotX), sX = Math.sin(rotX);
+  const y1 = y * cX - z1 * sX;
+  const z2 = y * sX + z1 * cX;
+  const cam = Math.max(1, num(v.cam, 900));
+  const focal = Math.max(1, num(v.focal, 900));
+  const depth = cam + z2;                 // 相机到点（有符号）距离，>0
+  const safe = depth < 1 ? 1 : depth;
+  const persp = focal / safe;             // 近大远小
+  const cx = num(v.cx, 0), cy = num(v.cy, 0);
+  const panX = num(v.x, 0), panY = num(v.y, 0);
+  return {
+    sx: cx + x1 * persp * k + panX,
+    sy: cy + y1 * persp * k + panY,
+    scale: persp * k,                              // 屏幕缩放（含透视 + 用户缩放）
+    depth: z2,                                     // 旋转后的深度（仅供调用方做明暗）
+    alpha: round(clamp(focal * k / safe, 0.45, 1), 4),  // 远节点更暗
+  };
+}
+
+/** 深度分配（确定性）：每个节点一个 z ∈ [-range, range]，种子由下标决定 ⇒
+ *  布局可复现、测试可断言真值。纯视觉层（不影响 2D 力导向布局，不写死 178/1093）。 */
+export function depthFor(nodes, positions, params = {}) {
+  const P = opt(params);
+  const range = num(P.range, 220);
+  const rndSeed = num(P.rngSeed, 0x246e2a17);
+  const list = Array.isArray(nodes) ? nodes : [];
+  const out = new Float64Array(list.length);
+  for (let i = 0; i < list.length; i++) {
+    const r = mulberry32((rndSeed ^ (i * 0x9e3779b1)) >>> 0)();
+    out[i] = (r * 2 - 1) * range;
+  }
+  return out;
+}
+
+/** 节点大小分级：按连接数（degree）分级（hub 最大，孤立点最小）。
+ *  对数归一 ⇒ 度数从 0 到 hub 平滑映射到 [min, max]。形状仍由 kind 决定。 */
+export const DEGREE_TIERS = { min: 2.4, max: 13, hub: 51 };
+export function nodeRadiusFor(degree, params = {}) {
+  const P = opt(params);
+  const minR = num(P.min, DEGREE_TIERS.min), maxR = num(P.max, DEGREE_TIERS.max);
+  const hub = Math.max(1, num(P.hub, DEGREE_TIERS.hub));
+  const d = Math.max(0, num(degree, 0));
+  const t = clamp(Math.log2(1 + d) / Math.log2(1 + hub), 0, 1);
+  return round(minR + (maxR - minR) * t, 3);
+}
+
+/** hover 高亮邻居（纯函数）：返回某节点的绘制 alpha。
+ *  · 悬停/选中某节点时，非邻居压暗（dimNeighbor），邻居保持；
+ *  · 搜索未命中（searchHits 不含 i）压暗（dimSearch）；
+ *  · baseAlpha 通常是 credibility 不透明度，由调用方传入。 */
+export function nodeAlpha(i, ctx = {}) {
+  const c = opt(ctx);
+  const hovered = num(c.hovered, -1), selected = num(c.selected, -1);
+  const neighbors = c.neighbors instanceof Set ? c.neighbors : null;
+  const searchHits = c.searchHits instanceof Set ? c.searchHits : null;
+  let a = clamp(num(c.baseAlpha, 1), 0, 1);
+  if (neighbors && (hovered >= 0 || selected >= 0)) {
+    const focus = selected >= 0 ? selected : hovered;
+    if (focus >= 0 && focus !== i && !neighbors.has(i)) a *= clamp(num(c.dimNeighbor, 0.2), 0, 1);
+  }
+  if (searchHits && !searchHits.has(i)) a *= clamp(num(c.dimSearch, 0.18), 0, 1);
+  return round(a, 4);
+}
+
 /** 把某个节点移到视口中心所需的**平移/缩放**（搜索命中后居中用它）。 */
 export function screenTransform(node, viewport = {}) {
   const vp = opt(viewport);
@@ -789,9 +873,11 @@ async function boot() {
   let G = null;                       // parseGraph 结果
   let state = null;                   // { positions, edges, cluster }
   let idxById = new Map();
-  let view = { x: 0, y: 0, k: 1 };
+  let view = { x: 0, y: 0, k: 1, rotX: 0, rotY: 0 };
   let viewInit = false;
   let hovered = -1, selected = -1, hoverEdge = -1, hoverCluster = -1;
+  let SP = [];                 // 投影后的屏幕坐标缓存（每帧重算）
+  let rafPending = false;      // scheduleDraw 的 rAF 去重
   let hits = [], hitAt = -1, searchHits = null;
   let layoutInfo = { iterations: 0, ms: 0, minDistance: 0, converged: false, separationIterations: 0 };
   const reveal = 1;   // 671d：固定 1（入场动画已删，节点首帧即最终尺寸）
@@ -847,6 +933,12 @@ async function boot() {
     view = fitTransform(boundsOf(state.positions), { width: vp.width, height: vp.height, padding: 48, maxK: 1.6, minK: 0.2 });
     if (redraw) draw();
   }
+  /** 复位视图：清空选中/悬停 + 旋转归零 + 自适应。拖拽旋转后双击画布即回到正视角。 */
+  function resetView() {
+    selected = -1; hovered = -1; hoverEdge = -1; hoverCluster = -1;
+    hitAt = hits.length ? 0 : -1;
+    renderDetail(-1); view.rotX = 0; view.rotY = 0; fitView();
+  }
   function zoomBy(f, around = null) {
     const vp = viewport();
     const before = around ? toWorld(around.x, around.y) : null;
@@ -869,36 +961,56 @@ async function boot() {
     return { x: view.x, y: view.y, k: view.k };
   }
 
-  // ── Canvas 绘制（按需重绘；没有每帧物理循环）────────────────────────────
+  // ── Canvas 绘制（2.5D 伪3D：透视投影 + 按需重绘；无每帧物理循环）─────────
+  /** 投影一个世界点（带当前视口中心）。 */
+  function proj(p, vp) { return projectPoint(p, Object.assign({}, view, { cx: vp.width / 2, cy: vp.height / 2 })); }
+  /** 聚类成员的平均深度（光晕/标签跟着 2.5D 走）。 */
+  function avgZ(members) {
+    let s = 0, n = 0;
+    const z = state && state.z;
+    for (const i of (members || [])) { if (z && z[i] != null) { s += z[i]; n++; } }
+    return n ? s / n : 0;
+  }
+  /** rAF 去重：连续交互只排一帧（≈60fps），避免 mousemove 风暴掉帧。 */
+  function scheduleDraw() {
+    if (rafPending) return;
+    rafPending = true;
+    const run = () => { rafPending = false; draw(); };
+    if (typeof requestAnimationFrame === 'function') requestAnimationFrame(run);
+    else setTimeout(run, 16);
+  }
+
   function draw() {
     if (!ctx || !G || !state) return;
     const vp = viewport();
-    const screen = state.positions.map((p) => applyTransform(p, view, vp));
+    SP = new Array(state.positions.length);
+    for (let i = 0; i < state.positions.length; i++) {
+      SP[i] = proj({ x: state.positions[i].x, y: state.positions[i].y, z: state.z[i] }, vp);
+    }
     if (typeof ctx.clearRect === 'function') ctx.clearRect(0, 0, vp.width, vp.height);
-    drawClusterHalo(screen, vp);
-    drawEdges(screen, vp);
-    drawNodes(screen, vp);
-    drawFocus(screen, vp);
-    drawLabels(screen, vp);
+    drawClusterHalo(SP, vp);
+    drawEdges(SP, vp);
+    drawNodes(SP, vp);
+    drawFocus(SP, vp);
+    drawLabels(SP, vp);
   }
 
   function cull(A, B, vp) {
     const m = 40;
-    if (A.x < -m && B.x < -m) return true;
-    if (A.x > vp.width + m && B.x > vp.width + m) return true;
-    if (A.y < -m && B.y < -m) return true;
-    if (A.y > vp.height + m && B.y > vp.height + m) return true;
+    if (A.sx < -m && B.sx < -m) return true;
+    if (A.sx > vp.width + m && B.sx > vp.width + m) return true;
+    if (A.sy < -m && B.sy < -m) return true;
+    if (A.sy > vp.height + m && B.sy > vp.height + m) return true;
     return false;
   }
 
-  function drawEdges(screen, vp) {
-    // 按（样式类 × 权重档）分桶：每桶一次 beginPath/stroke ⇒ 1093 条边只有 ~16 次状态切换
+  function drawEdges(SP, vp) {
     const buckets = new Map();
     const nc = 4;                                    // 权重档数（量化后分桶，减少状态切换）
     for (let i = 0; i < G.edges.length; i++) {
       if (!edgeVisible(i)) continue;
       const e = G.edges[i];
-      const A = screen[e.a], B = screen[e.b];
+      const A = SP[e.a], B = SP[e.b];
       if (!A || !B || cull(A, B, vp)) continue;
       const cls = e.kind === 'attack' ? (e.defeated ? 3 : 2) : (e.kind === 'defend' ? 1 : 0);
       const t = filters.weight ? Math.min(1, e.weight / weightMax) : 0.5;
@@ -906,7 +1018,7 @@ async function boot() {
       const key = cls * nc + wc;
       let arr = buckets.get(key);
       if (!arr) { arr = []; buckets.set(key, arr); }
-      arr.push(A, B);
+      arr.push(A.sx, A.sy, B.sx, B.sy);
     }
     for (const [key, pts] of buckets) {
       const cls = Math.floor(key / nc), wc = key % nc;
@@ -915,109 +1027,130 @@ async function boot() {
         : 0.5 * view.k;
       if (typeof ctx.beginPath !== 'function') break;
       ctx.beginPath();
-      for (let k = 0; k < pts.length; k += 2) { ctx.moveTo(pts[k].x, pts[k].y); ctx.lineTo(pts[k + 1].x, pts[k + 1].y); }
+      for (let k = 0; k < pts.length; k += 4) { ctx.moveTo(pts[k], pts[k + 1]); ctx.lineTo(pts[k + 2], pts[k + 3]); }
       ctx.lineWidth = Math.max(0.2, w);
       ctx.strokeStyle = EDGE_STROKE[cls];
       ctx.stroke();
     }
     if (hoverEdge >= 0 && G.edges[hoverEdge]) {
       const e = G.edges[hoverEdge];
-      const A = screen[e.a], B = screen[e.b];
+      const A = SP[e.a], B = SP[e.b];
       if (A && B) {
-        ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y);
+        ctx.beginPath(); ctx.moveTo(A.sx, A.sy); ctx.lineTo(B.sx, B.sy);
         ctx.lineWidth = Math.max(1.4, 2.2 * view.k);
-        ctx.strokeStyle = e.kind === 'attack' && e.defeated ? 'rgba(224,122,114,.95)' : 'rgba(232,230,227,.85)';
+        // 高亮色走 design-token（accent / text），不写死 red/green
+        ctx.strokeStyle = (e.kind === 'attack' && e.defeated) ? C.accent : C.text;
         ctx.stroke();
       }
     }
   }
 
-  function drawNodes(screen, vp) {
+  function drawNodes(SP, vp) {
     const neigh = neighborSet();
+    const search = searchHits;
     for (let i = 0; i < G.nodes.length; i++) {
       if (!nodeVisible(i)) continue;
-      const n = G.nodes[i], p = screen[i];
-      if (!p || p.x < -60 || p.y < -60 || p.x > vp.width + 60 || p.y > vp.height + 60) continue;
-      const r = Math.max(1.2, (KIND_RADIUS[n.kind] || 4) * view.k * (0.35 + 0.65 * reveal));
-      let a = num(CRED_ALPHA[n.credibility], 0.6);           // 光通道
-      if (dimBySearch(i)) a *= 0.18;                          // 搜索未命中 ⇒ 压暗不隐藏
-      if (neigh && !neigh.has(i)) a *= 0.2;
-      ctx.globalAlpha = a;
+      const n = G.nodes[i], p = SP[i];
+      if (!p || p.sx < -80 || p.sy < -80 || p.sx > vp.width + 80 || p.sy > vp.height + 80) continue;
+      const r = Math.max(1.2, nodeRadiusFor(n.degree) * p.scale);   // 大小按 degree；近大远小来自 p.scale
+      const a = nodeAlpha(i, { hovered, selected, neighbors: neigh, searchHits: search,
+        baseAlpha: num(CRED_ALPHA[n.credibility], 0.6) }) * num(p.alpha, 1);
+      ctx.globalAlpha = clamp(a, 0, 1);
       ctx.beginPath();
-      if (n.kind === 'misconception') ctx.rect(p.x - r, p.y - r, r * 2, r * 2);   // 形通道：误解=方
-      else ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = STATE_COLORS[n.state] || STATE_COLORS.unknown;              // 色通道：四态
+      if (n.kind === 'misconception') ctx.rect(p.sx - r, p.sy - r, r * 2, r * 2);   // 形通道：误解=方
+      else ctx.arc(p.sx, p.sy, r, 0, Math.PI * 2);
+      ctx.fillStyle = STATE_COLORS[n.state] || STATE_COLORS.unknown;              // 色通道：四态（design-token 镜像）
       ctx.fill();
       if (n.kind === 'card' || i === hovered || i === selected || isHit(i)) {
-        ctx.lineWidth = i === hovered || isHit(i) ? 1.6 : 1;
-        ctx.strokeStyle = i === hovered || isHit(i) ? C.text : 'rgba(232,230,227,.55)';
+        ctx.lineWidth = (i === hovered || isHit(i)) ? 1.6 : 1;
+        ctx.strokeStyle = (i === hovered || isHit(i)) ? C.text : 'rgba(232,230,227,.55)';
         ctx.stroke();
       }
       ctx.globalAlpha = 1;
     }
   }
 
-  function drawClusterHalo(screen, vp) {
+  function drawClusterHalo(SP, vp) {
     if (!G.clusters) return;
     G.clusters.forEach((c, ci) => {
       if (filters.domain !== 'all' && c.domain !== filters.domain) return;
       const sp = clusterSpread(c.members, state.positions, 0.9);
-      const ctr = toScreen({ x: c.cx, y: c.cy });
-      const r = Math.max(10, sp.r * view.k);
-      if (ctr.x < -r || ctr.y < -r || ctr.x > vp.width + r || ctr.y > vp.height + r) return;
-      ctx.globalAlpha = 0.055;
-      ctx.beginPath();
-      ctx.arc(ctr.x, ctr.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = PALETTE[ci % PALETTE.length];
-      ctx.fill();
+      const ctr = proj({ x: c.cx, y: c.cy, z: avgZ(c.members) }, vp);
+      const r = Math.max(12, sp.r * ctr.scale);
+      if (ctr.sx < -r || ctr.sy < -r || ctr.sx > vp.width + r || ctr.sy > vp.height + r) return;
+      const col = hexToRgb(PALETTE[ci % PALETTE.length]) || [139, 146, 153];
+      // 渐变光晕（替代实心大圆）：中心 token 色 0.20 → 边缘透明
+      if (typeof ctx.createRadialGradient !== 'function') {
+        ctx.globalAlpha = 0.06; ctx.beginPath(); ctx.arc(ctr.sx, ctr.sy, r, 0, Math.PI * 2);
+        ctx.fillStyle = PALETTE[ci % PALETTE.length]; ctx.fill(); ctx.globalAlpha = 1; return;
+      }
+      const g = ctx.createRadialGradient(ctr.sx, ctr.sy, r * 0.1, ctr.sx, ctr.sy, r);
+      g.addColorStop(0, 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',0.20)');
+      g.addColorStop(1, 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',0)');
       ctx.globalAlpha = 1;
+      ctx.beginPath(); ctx.arc(ctr.sx, ctr.sy, r, 0, Math.PI * 2);
+      ctx.fillStyle = g; ctx.fill();
     });
   }
 
-  function drawFocus(screen, vp) {
+  function drawFocus(SP, vp) {
     const idx = [hovered, selected].filter((i) => i >= 0);
     if (hitAt >= 0 && hits[hitAt] != null) idx.push(idxById.get(hits[hitAt]));
     const shown = new Set();
     for (const i of idx) {
-      if (i == null || shown.has(i) || !G.nodes[i] || !screen[i]) continue;
+      if (i == null || shown.has(i) || !G.nodes[i] || !SP[i]) continue;
       shown.add(i);
-      const p = screen[i], r = Math.max(4, (KIND_RADIUS[G.nodes[i].kind] || 4) * view.k);
+      const p = SP[i], r = Math.max(4, nodeRadiusFor(G.nodes[i].degree) * p.scale);
       ctx.beginPath();
-      ctx.arc(p.x, p.y, r + 5, 0, Math.PI * 2);
+      ctx.arc(p.sx, p.sy, r + 5, 0, Math.PI * 2);
       ctx.lineWidth = isHit(i) ? 2 : 1.5;
       ctx.strokeStyle = isHit(i) ? C.accent : C.dim;
       ctx.stroke();
     }
   }
 
-  function drawLabels(screen, vp) {
+  function drawLabels(SP, vp) {
     if (!labelGroup) return;
     labelBoxes.length = 0;
     G.clusters.forEach((c, ci) => {
       const el = labelEls.get(c.domain);
       if (!el) return;
       const visible = c.members.some((i) => nodeVisible(i));
-      const ctr = toScreen({ x: c.cx, y: c.cy });
-      const onScreen = ctr.x > 20 && ctr.y > 20 && ctr.x < vp.width - 20 && ctr.y < vp.height - 20;
+      const ctr = proj({ x: c.cx, y: c.cy, z: avgZ(c.members) }, vp);
+      const onScreen = ctr.sx > 20 && ctr.sy > 20 && ctr.sx < vp.width - 20 && ctr.sy < vp.height - 20;
       if (!visible || !onScreen) { el.setAttribute('opacity', '0'); return; }
-      const r = Math.max(10, clusterSpread(c.members, state.positions, 0.9).r * view.k);
+      const r = Math.max(10, clusterSpread(c.members, state.positions, 0.9).r * ctr.scale);
       const w = String(c.label || c.domain).length * 6.6 + 14;
       el.setAttribute('opacity', filters.domain === 'all' || filters.domain === c.domain ? '0.95' : '0.15');
-      el.setAttribute('x', ctr.x.toFixed(1));
-      el.setAttribute('y', (ctr.y - 6).toFixed(1));
-      labelBoxes.push({ domain: c.domain, x: ctr.x, y: ctr.y - 6, w, h: 16, index: ci, r });
+      el.setAttribute('x', ctr.sx.toFixed(1));
+      el.setAttribute('y', (ctr.sy - 6).toFixed(1));
+      labelBoxes.push({ domain: c.domain, x: ctr.sx, y: ctr.sy - 6, w, h: 16, index: ci, r });
     });
   }
 
   // ── 拾取 ─────────────────────────────────────────────────────────────────
   function pickNode(sx, sy) {
-    const w = toWorld(sx, sy);
-    return pickNodeAt(state.positions, G.nodes, w, 15 / view.k, nodeVisible);
+    let best = -1, bd = Infinity;
+    for (let i = 0; i < G.nodes.length; i++) {
+      if (!nodeVisible(i)) continue;
+      const p = SP[i]; if (!p) continue;
+      const r = Math.max(6, nodeRadiusFor(G.nodes[i].degree) * p.scale) + 6 / view.k;
+      const d = Math.hypot(p.sx - sx, p.sy - sy);
+      if (d <= r && d < bd) { bd = d; best = i; }
+    }
+    return best;
   }
   function pickEdge(sx, sy) {
-    const vp = viewport();
-    const screen = state.positions.map((p) => applyTransform(p, view, vp));
-    return pickEdgeAt(screen, G.edges, { x: sx, y: sy }, 7, edgeVisible);
+    let best = -1, bd = 7;
+    for (let i = 0; i < G.edges.length; i++) {
+      if (!edgeVisible(i)) continue;
+      const e = G.edges[i];
+      const A = SP[e.a], B = SP[e.b];
+      if (!A || !B) continue;
+      const d = distToSegment(sx, sy, A.sx, A.sy, B.sx, B.sy);
+      if (d < bd) { bd = d; best = i; }
+    }
+    return best;
   }
   function pickCluster(sx, sy) {
     for (const b of labelBoxes) {
@@ -1232,10 +1365,11 @@ async function boot() {
       canvas.addEventListener('mousemove', (e) => {
         if (!G || !state) return;
         if (dragging) {
-          view.x += (e.clientX - last.x) / view.k;
-          view.y += (e.clientY - last.y) / view.k;
+          // 2.5D：拖拽旋转模型（水平→绕 Y，垂直→绕 X 俯仰），不再平移
+          view.rotY += (e.clientX - last.x) * 0.006;
+          view.rotX = clamp(view.rotX + (e.clientY - last.y) * 0.006, -1.3, 1.3);
           last = { x: e.clientX, y: e.clientY };
-          moved = true; hideTip(); draw(); return;
+          moved = true; hideTip(); scheduleDraw(); return;
         }
         const s = localPos(e);
         hovered = pickNode(s.x, s.y);
@@ -1261,7 +1395,7 @@ async function boot() {
         } else {
           hideTip(); canvas.style.cursor = 'grab';
         }
-        draw();
+        scheduleDraw();
       });
       canvas.addEventListener('mouseleave', () => {
         hovered = -1; hoverEdge = -1; hoverCluster = -1; hideTip(); draw();
@@ -1270,7 +1404,7 @@ async function boot() {
         if (moved) return;
         selected = hovered;
         renderDetail(selected);
-        draw();
+        scheduleDraw();
       });
       canvas.addEventListener('wheel', (e) => {
         e.preventDefault();
@@ -1322,10 +1456,9 @@ async function boot() {
     const zout = byId('zout');
     if (zout) zout.addEventListener('click', () => zoomBy(1 / 1.25));
     const reset = byId('reset');
-    if (reset) reset.addEventListener('click', () => {
-      selected = -1; hovered = -1; hitAt = hits.length ? 0 : -1;
-      renderDetail(-1); fitView();
-    });
+    if (reset) reset.addEventListener('click', resetView);
+    // 2.5D：双击画布复位（旋转归零 + 自适应），与右上角"复位视图"按钮同效
+    canvas.addEventListener('dblclick', resetView);
   }
 
   // ── 启动 ─────────────────────────────────────────────────────────────────
@@ -1347,7 +1480,7 @@ async function boot() {
 
   // —— 自动化验证钩子（tools/web_smoke_655.mjs 等按 id 探测；语义只读）——
   window.__starmap_hooks = {
-    select(i) { selected = i; renderDetail(i); draw(); return i >= 0 && G.nodes[i] ? G.nodes[i].id : null; },
+    select(i) { selected = i; renderDetail(i); scheduleDraw(); return i >= 0 && G.nodes[i] ? G.nodes[i].id : null; },
     detailText() { return detail ? detail.textContent : ''; },
     nodeCount() { return G ? G.nodes.length : 0; },
     linkCount() { return G ? G.edges.length : 0; },
@@ -1377,7 +1510,8 @@ async function boot() {
   layoutInfo = { iterations: solved.iterations, ms: Math.round(now() - t0),
     minDistance: solved.minDistance, converged: solved.converged, maxMove: solved.maxMove,
     separationIterations: solved.separationIterations };
-  state = { positions: solved.positions, edges: G.edges.map((e) => ({ a: e.a, b: e.b, weight: e.weight })),
+  state = { positions: solved.positions, z: depthFor(G.nodes, solved.positions, {}),
+    edges: G.edges.map((e) => ({ a: e.a, b: e.b, weight: e.weight })),
     cluster: clusterIndexOf(G.nodes) };
   G.clusters = clusterByDomain(G.nodes, state.positions);
 

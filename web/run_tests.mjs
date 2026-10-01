@@ -21,6 +21,7 @@ const TESTS = [
   'tests/cards.test.mjs',
   'tests/verdicts.test.mjs',
   'tests/starmap.test.mjs',
+  'tests/starmap_672e.test.mjs',
   'tests/contrast.test.mjs',
   'tests/robustness_670c3.test.mjs',
   'tests/a11y_670c4.test.mjs',
