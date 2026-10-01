@@ -35,6 +35,7 @@
 from __future__ import annotations
 
 import argparse
+import datetime as _dt
 import json
 import os
 import subprocess
@@ -189,6 +190,8 @@ def collect() -> dict:
     return {
         "schema": "queyi-web-metrics/666",
         "generated_by": "tools/web_metrics_666.py",
+        # 672b：落盘时间，便于前端/验收报告核对数据新鲜度
+        "generated_at": _dt.datetime.now().isoformat(timespec="seconds"),
         "metrics": m,
         "timeline": MILESTONES,
         "commits": recent_commits(5),

@@ -9,7 +9,8 @@ const SRC = dirname(fileURLToPath(import.meta.url));
 const DIST = join(SRC, 'dist');
 
 // 运行期资源（白名单：不含 tests/ node_modules/ dist/ 自身）
-const DIRS = ['css', 'js', 'components', 'vendor', 'data'];
+// 672b：移除 'vendor'（死代码，39 文件 1.34MB，已整目录删除）
+const DIRS = ['css', 'js', 'components', 'data'];
 const GLOBS = ['.html', '.js', '.css', '.json'];
 
 rmSync(DIST, { recursive: true, force: true });

@@ -58,36 +58,7 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 a:focus-visible { outline-offset: 3px; }
 code, .mono, .kbd { font-family: var(--font-mono); font-size: .92em; }
 
-/* ── 顶栏 ─────────────────────────────────────────────
- * 671d：去掉毛玻璃（对比度不可算 + 模板感），改为**不透明底 + 1px 底线**；
- *       当前页不再给背景块，改为强调色文字 + 2px 下划（更克制，也更像文档站）。 */
-.nav {
-  display: flex; align-items: center; gap: var(--space-3);
-  padding: var(--space-1h) var(--space-3);
-  border-bottom: var(--border-width) solid var(--color-line);
-  position: sticky; top: 0; background: var(--color-bg);
-  z-index: var(--z-nav);
-}
-.nav .brand {
-  font-weight: 600; font-size: var(--font-size-base); color: var(--color-text);
-  letter-spacing: var(--letter-tight);
-}
-.nav a {
-  color: var(--color-text-dim); font-size: var(--font-size-sm); line-height: 1;
-  padding: var(--space-1) 2px; border-radius: 0;
-  border-bottom: 2px solid transparent; text-decoration: none;
-}
-.nav a:hover { color: var(--color-text); text-decoration: none; }
-.nav a[aria-current="page"] {
-  color: var(--color-accent); background: none;
-  border-bottom-color: var(--color-accent); box-shadow: none;
-}
-.nav .spacer { flex: 1; }
-.nav .pill {
-  font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--color-text-mute);
-  border: var(--border-width) solid var(--color-line);
-  padding: 2px var(--space-1); border-radius: var(--radius-md);
-}
+/* ── 顶栏元素：主题切换按钮（由 <qy-nav> 渲染）────────────── */
 .theme-toggle {
   font: inherit; font-size: var(--font-size-xs); color: var(--color-text-dim);
   background: transparent; border: var(--border-width) solid var(--color-line);
@@ -139,19 +110,9 @@ p:last-child { margin-bottom: 0; }
 .page-head h1 { margin: 0 0 var(--space-1); font-size: var(--font-size-2xl); letter-spacing: var(--letter-tight); }
 .page-head .lede { margin: 0; color: var(--color-text-mute); font-size: var(--font-size-base); max-width: 46em; }
 
-/* ── 指标（671d C1：纯数字 + 标签，**不用卡片框** —— 更高级）────── */
-.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
-.metric { padding: 0; }
-.metric .num {
-  font-family: var(--font-mono); font-size: var(--font-size-metric); line-height: 1.1;
-  color: var(--color-text); font-variant-numeric: tabular-nums; letter-spacing: -.02em;
-}
-.metric .unit { font-size: var(--font-size-lg); color: var(--color-text-mute); margin-left: 4px; }
-.metric .cap {
-  font-size: var(--font-size-xs); color: var(--color-text-mute);
-  letter-spacing: var(--letter-wide); margin-top: var(--space-1); text-transform: none;
-}
-.metric .sub { font-size: var(--font-size-sm); color: var(--color-text-mute); margin-top: var(--space-half); line-height: 1.5; }
+/* ── 指标：671d2 已把首页的"4 张大数字横排"（.metrics / .metric）**整块删除** ──
+ * 理由：大数字横排是 dashboard 版式，读数靠"值 + 口径 + 复算命令"的表更省地方。
+ * 现在的实现是 .state-table（见本文件末尾的首页段落），CSS 与文案都在那一处。 */
 
 /* ── 时间线（1px 竖线 + 小圆点 + 日期/标题/一句）────────────── */
 .timeline { list-style: none; margin: 0; padding: 0 0 0 var(--space-3); position: relative; }
@@ -378,17 +339,6 @@ footer a { color: var(--color-text-dim); }
 .state-text.st-fail { color: var(--color-fail); }
 .state-text.st-unknown { color: var(--color-unknown); }
 
-/* ── landing "系统现状" 面板（兼容旧标记）────────────────── */
-.status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
-.status-grid .cell {
-  background: var(--color-surface); border: var(--border-width) solid var(--color-line);
-  border-radius: var(--radius-lg); padding: var(--space-3);
-}
-.status-grid .num { font-family: var(--font-mono); font-size: var(--font-size-xl); line-height: 1.1; color: var(--color-text); font-variant-numeric: tabular-nums; }
-.status-grid .num .unit { font-size: var(--font-size-sm); color: var(--color-text-mute); margin-left: 4px; }
-.status-grid .cap { font-size: var(--font-size-xs); color: var(--color-text-mute); letter-spacing: var(--letter-wide); margin-top: var(--space-1); }
-.status-grid .sub { font-size: var(--font-size-sm); color: var(--color-text-mute); margin-top: var(--space-half); }
-
 /* ── 批量验哈希 ─────────────────────────────────────── */
 .btnrow { display: flex; gap: var(--space-1); align-items: center; flex-wrap: wrap; margin: var(--space-1) 0 var(--space-half); }
 .batch-summary { font-family: var(--font-mono); font-size: var(--font-size-sm); color: var(--color-text-dim); }
@@ -407,9 +357,6 @@ footer a { color: var(--color-text-dim); }
   border-radius: var(--radius-lg);
 }
 .glass-tint { background-image: none; }
-.glass-hover { transition: border-color var(--motion-fast) var(--motion-ease); }
-.glass-hover:hover, .glass-hover:focus-within { border-color: var(--color-accent); box-shadow: none; }
-.glow-pass, .glow-fail, .glow-unknown, .glow-accent { box-shadow: none; }
 
 /* ── 表格（数据页）：可排序表头 + 状态色标 + 淡 hover 行 + 空状态 ── */
 .table-wrap { overflow-x: auto; }
@@ -537,18 +484,56 @@ table.data td.cmp-right { font-family: var(--font-mono); color: var(--color-text
 .commit-list .c-sub { font-size: var(--font-size-sm); color: var(--color-text-dim); }
 .commit-list .kbd { font-size: var(--font-size-xs); }
 
-/* ── 首屏 hero（首页 C1）：大量上下留白，无图标 / 无渐变 / 无装饰 ── */
-.hero { padding: var(--space-12) 0 var(--space-8); }
-.hero h1 { font-size: var(--font-size-hero); line-height: 1.1; font-weight: 600; letter-spacing: -.02em; margin: 0 0 var(--space-2); }
-.hero .lede { font-size: var(--font-size-lg); color: var(--color-text-dim); max-width: 34em; line-height: 1.6; margin: 0 0 var(--space-3); }
-.hero-actions { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
-/* 项目名底下的拼音副题：等宽 + 字间距，不抢标题 */
-.hero-sub {
-  font-family: var(--font-mono); font-size: var(--font-size-sm);
-  color: var(--color-text-mute); letter-spacing: var(--letter-wide);
-  margin: 0 0 var(--space-2);
+/* ═══════════════════════════════════════════════════════════════════
+   首页（671d2：从 landing page 改为**学术 / 技术首页**）
+   ───────────────────────────────────────────────────────────────────
+   671d 的 .hero（48px 品牌大字 + 拼音副题 + 两个 CTA 按钮）与 .metrics
+   （4 张大数字横排 + 每格小字）属于产品官网版式，671d2 全部删除。
+   现在首页只回答三件事：**这是什么 / 在哪 / 怎么跑**，其余交给表格与实跑输出。
+   ═══════════════════════════════════════════════════════════════════ */
+
+.home-head { padding: var(--space-8) 0 var(--space-6); border-bottom: var(--border-width) solid var(--color-divider); }
+.home-head h1 { font-size: var(--font-size-2xl); margin: 0 0 var(--space-1h); }
+.home-head .lede { font-size: var(--font-size-base); color: var(--color-text-dim); max-width: 62ch; margin: 0; }
+
+/* 定义列表（口径 / 事实）：左列等宽术语，右列说明 —— 与 man page 的 .TP 同一思路 */
+.spec { display: grid; grid-template-columns: max-content 1fr; gap: var(--space-1) var(--space-3);
+  margin: var(--space-3) 0 0; max-width: 76em; }
+.spec dt { font-family: var(--font-mono); font-size: var(--font-size-xs); color: var(--color-text-mute);
+  letter-spacing: var(--letter-wide); padding-top: 3px; white-space: nowrap; }
+.spec dd { margin: 0; font-size: var(--font-size-sm); color: var(--color-text-dim); }
+
+/* 现状表：沿用本文件的三线表基线，只补 caption 与两列的收束（口径主读、复算命令次要） */
+.state-table caption { caption-side: top; text-align: left; padding-bottom: var(--space-1);
+  font-size: var(--font-size-xs); color: var(--color-text-mute); }
+.state-table td.nowrap { white-space: nowrap; }
+.state-table td:nth-child(4) { font-size: var(--font-size-xs); color: var(--color-text-mute); }
+
+/* 复现：命令与实跑输出（横向可滚、不折行 —— 折行会改变"原样输出"这个前提） */
+pre.cmd { margin: var(--space-2) 0 0; padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-2); border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-md); overflow-x: auto;
+  font-family: var(--font-mono); font-size: var(--font-size-xs); line-height: 1.7;
+  color: var(--color-text-dim); white-space: pre; }
+
+/* 图 1 判决流程：取 token 色（671d 版写死 #666 / #ededed，浅色主题下文字读不出来） */
+.flow-fig { margin: var(--space-3) 0 0; }
+.flow-boxes rect, .flow-boxes line, .flow-boxes path { fill: none; stroke: var(--color-line-strong); stroke-width: 1; }
+.flow .flow-ar { fill: none; stroke: var(--color-text-mute); }
+.flow-label text { fill: var(--color-text-dim); font-size: 12px; font-family: var(--font-sans); text-anchor: middle; }
+.flow .flow-note { fill: var(--color-text-mute); font-size: 11px; font-family: var(--font-sans); text-anchor: middle; }
+
+/* 首页段落间距收一档：信息密度优先（其它页保持 64–96px 的呼吸感） */
+main.home > section { padding: var(--space-6) 0; }
+@media (min-width: 1100px) { main.home > section { padding: var(--space-8) 0; } }
+
+@media (max-width: 620px) {
+  .spec { grid-template-columns: 1fr; gap: 2px 0; }
+  .spec dd { margin-bottom: var(--space-1); }
+  .home-head { padding: var(--space-6) 0 var(--space-4); }
 }
-/* 按钮形态的链接（hero 入口用）：与 <button> 同一套视觉，hover 不加下划线 */
+
+/* 按钮形态的链接：与 <button> 同一套视觉，hover 不加下划线（其余页的"查看/重试"类入口仍用） */
 a.btn { display: inline-flex; align-items: center; min-height: 36px; text-decoration: none; }
 a.btn:hover { text-decoration: none; }
 
@@ -558,18 +543,16 @@ a.btn:hover { text-decoration: none; }
   .theme-toggle, summary, table.data th .th-btn {
     min-height: var(--touch-min);
   }
-  .nav a { min-height: var(--touch-min); display: inline-flex; align-items: center; }
   .chip { padding: var(--space-half) 10px; }
-  .dash .d-num, .metric .num { font-size: var(--font-size-2xl); }
+  .dash .d-num { font-size: var(--font-size-2xl); }
   table.data { min-width: 560px; }
-  .hero { padding: var(--space-8) 0 var(--space-6); }
-  .hero h1 { font-size: var(--font-size-2xl); }
+  /* 首页现状表：窄屏不压列，交给 .table-wrap 横向滚动 */
+  .state-table { min-width: 560px; }
 }
 
 /* ── 响应式（B3：320–1440px 无横向滚动）─────────────────── */
 @media (max-width: 1080px) {
   .stage-wrap { grid-template-columns: 1fr; }
-  .status-grid, .metrics { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 900px) {
   .grid.c3, .grid.c2 { grid-template-columns: 1fr; }
@@ -578,10 +561,6 @@ a.btn:hover { text-decoration: none; }
   .card-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 620px) {
-  .status-grid, .metrics { grid-template-columns: 1fr; }
   h1 { font-size: var(--font-size-xl); }
   .wrap, .wrap-prose { padding: 0 var(--space-2); }
-}
-@media (max-width: 360px) {
-  .status-grid, .metrics { gap: var(--space-3); }
 }

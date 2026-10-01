@@ -67,11 +67,9 @@ export function onThemeChange(fn) {
   return () => (mq.removeEventListener ? mq.removeEventListener('change', handler) : mq.removeListener(handler));
 }
 
-export async function fetchJSON(url) {
-  const r = await fetch(url, { cache: 'no-store' });
-  if (!r.ok) throw new Error(`${url} → HTTP ${r.status}`);
-  return r.json();
-}
+// 672b：fetchJSON 统一到数据层单点 web/js/data.js（带重试 / 超时 / 页内缓存）。
+// 这里仅做 re-export，保证旧调用方（card.js / cards.js / starmap.js / verdicts.js / verify.js …）零改动。
+export { fetchJSON } from './js/data.js';
 
 export function fmtInt(n) {
   return (n ?? 0).toLocaleString('en-US');
@@ -79,17 +77,6 @@ export function fmtInt(n) {
 
 export function shortHash(h, n = 16) {
   return h ? h.slice(0, n) + '…' : '—';
-}
-
-/** 生成顶栏（避免每页重复） */
-export function mountNav(current) {
-  const items = [['index.html', '总览'], ['starmap.html', '星图'], ['verify.html', '现场验哈希']];
-  const nav = document.createElement('nav');
-  nav.className = 'nav';
-  nav.innerHTML = `<span class="brand">QueYi · CPP-Bible</span>` +
-    items.map(([h, t]) => `<a href="${h}"${h === current ? ' aria-current="page"' : ''}>${t}</a>`).join('') +
-    `<span class="spacer"></span><span class="pill">静态站 · 无后端</span>`;
-  document.body.prepend(nav);
 }
 
 export function el(tag, attrs = {}, html = '') {

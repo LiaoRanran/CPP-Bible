@@ -152,13 +152,6 @@ kbd { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-di
  * 671d：原来的 3px 红色左边条属于"卡片彩色边条"（去 AI 味 D1 明令禁止），
  *   改为 1px 淡描边；"这是错例"由标题文字和小圆点承担，不靠色块。 */
 .err-card { border-left: 0; }
-.err-step { display: grid; grid-template-columns: 96px 1fr; gap: 4px var(--space-2); align-items: start;
-  padding: var(--space-1) 0; border-top: var(--border-width) dashed var(--color-line); }
-.err-step:first-of-type { border-top: 0; }
-.err-step > dt { font-size: 12px; color: var(--color-text-mute); }
-.err-step > dd { margin: 0; min-width: 0; }
-.err-step .bad { color: var(--color-fail); }
-.err-step .good { color: var(--color-pass); }
 .sanitizer-out { font-family: var(--font-mono); font-size: 12px; color: var(--color-text-dim);
   background: var(--color-surface-2); border-radius: var(--radius-sm); padding: 6px 8px; white-space: pre-wrap; }
 
@@ -319,7 +312,6 @@ kbd { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-di
   .chart svg .bar, .chart svg .seg, .heat-cell, .grade, .deck-tab { transition: none; }
 }
 @media (max-width: 900px) {
-  .err-step { grid-template-columns: 1fr; gap: 2px; }
   .compare-bar { flex-wrap: wrap; }
   .drift-bar { grid-template-columns: 1fr max-content; }
   .drift-track { grid-column: 1 / -1; }

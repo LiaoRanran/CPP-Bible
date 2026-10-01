@@ -1,6 +1,7 @@
 {
   "schema": "queyi-web-metrics/666",
   "generated_by": "tools/web_metrics_666.py",
+  "generated_at": "2026-10-01T15:40:36",
   "metrics": {
     "cards_real": 42,
     "cards_draft": 10,
@@ -60,7 +61,7 @@
       "evidence",
       "mutation_baselines"
     ],
-    "merkle_files": 1882
+    "merkle_files": 1902
   },
   "timeline": [
     {
@@ -108,29 +109,29 @@
   ],
   "commits": [
     {
-      "hash": "4ae457d2",
-      "date": "2026-09-29",
-      "subject": "666 E：验收报告终稿（串行/并行口径警告 + asm 以卡为准的更正 + 生成器 vs 手工追加通则）"
+      "hash": "cf172376",
+      "date": "2026-10-01",
+      "subject": "671g: 问题清零+工程反哺（19工具/162测试/14门禁/17文档）+ 接手修复跨测试污染"
     },
     {
-      "hash": "e64aca75",
-      "date": "2026-09-29",
-      "subject": "666 收尾：串行 fast 0 红（修掉最后两条）+ 两处\"生成器 vs 手工追加\"的根因修复"
+      "hash": "4b66707e",
+      "date": "2026-10-01",
+      "subject": "671b Phase2: 数字更新到671a扩样口径 + 论文首创性增强"
     },
     {
-      "hash": "d6c4fab0",
-      "date": "2026-09-29",
-      "subject": "666 E：验收报告补齐（解封命令 + 三个自污染缺陷 + 诚实登记更新）"
+      "hash": "48a05be2",
+      "date": "2026-10-01",
+      "subject": "671d: 前端重制收口（学术化/去AI味）+ 8页核验 + 验收报告"
     },
     {
-      "hash": "d1cda280",
-      "date": "2026-09-29",
-      "subject": "666 B2：web_metrics_666 抽出 selftest()（按仓库约定）+ 7 例回归测试 + mypy 注解"
+      "hash": "06abea14",
+      "date": "2026-10-01",
+      "subject": "671b: ablation框架A0-A5(只写脚本和设计,不跑实验) + 真B3接口select_assets + 论文v0.9(§6.2/§7.6/§7.7) + 统计口径深化"
     },
     {
-      "hash": "49dcb85d",
-      "date": "2026-09-29",
-      "subject": "666 A3：slow 收尾（充分性缺口显形 / 641 旗标追 canonical / status.json 按流程更新）+ r3 逐条 triage"
+      "hash": "a657ab4f",
+      "date": "2026-10-01",
+      "subject": "671a 收尾: 重建被截断的 669d 状态产物 + 复跑补记（含 671b ci_check 现红的登记）"
     }
   ],
   "unavailable": [],
