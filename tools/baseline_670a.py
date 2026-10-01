@@ -57,11 +57,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import stat_bounds as sb  # noqa: E402
 
-VERSION = "1.1"                                  # 672f：切到 671a 扩样分母（holdout 21 / corpus 48）
+VERSION = "1.2"                                  # 672h：切到 672h 扩样分母（holdout 41 / corpus 64）
 SEED = 20260930                                  # 670d 设计 §3.1 指定的随机种子
 random.seed(SEED)                                # 672f：模块级固定种子（G-SEED-FIXED，两跑必一致）
-HOLDOUT_DETAIL = ROOT / "data" / "holdout" / "reveal_3_detail_671a.json"
-CORPUS_REVEAL = ROOT / "data" / "external_corpus" / "reveal_detail_671a.json"
+HOLDOUT_DETAIL = ROOT / "data" / "holdout" / "reveal_5_detail_672h.json"      # 672h 第 5 轮
+CORPUS_REVEAL = ROOT / "data" / "external_corpus" / "reveal_detail_672h.json"  # 672h 第 4 轮
 OUT_DIR = ROOT / "data" / "experiments"
 
 #: **静态/编译期**仪器（不产生运行时证据）

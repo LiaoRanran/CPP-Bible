@@ -1,0 +1,78 @@
+{
+  "schema": "queyi-reveal-update/672h",
+  "generated_by": "672h W3 扩样（holdout 21→41 / corpus 48→64）",
+  "generated_at": "2026-10-01",
+  "prereg": "data/experiments/prereg_672h.json（先于任何 reveal 运行落盘并单独 commit 02f652ef）",
+  "numbers": {
+    "holdout": {
+      "before": {"k": 17, "n": 21, "rate_pct": 81.0, "cp95": [58.1, 94.6]},
+      "after": {"k": 34, "n": 41, "rate_pct": 82.9, "cp95": [67.9, 92.8]},
+      "cp95_halfwidth_pp": {"before": 18.3, "after": 12.4},
+      "source_after": "data/holdout_reveal_5_672h.json"
+    },
+    "corpus": {
+      "before": {"k": 26, "n": 48, "rate_pct": 54.2, "cp95": [39.2, 68.6], "all_samples_pct": 43.3},
+      "after": {"k": 40, "n": 64, "rate_pct": 62.5, "cp95": [49.5, 74.3], "all_samples_pct": 52.6},
+      "source_after": "data/external_corpus_reveal_672h.json"
+    },
+    "arms": {
+      "holdout": {
+        "fd": {"k": 34, "n": 41, "rate_pct": 82.9, "cp95": [67.9, 92.8]},
+        "static": {"k": 1, "n": 41, "rate_pct": 2.4, "cp95": [0.1, 12.9]},
+        "random_proxy": {"k": 4, "n": 41, "rate_pct": 9.8, "cp95": [2.7, 23.1]}
+      },
+      "corpus": {
+        "fd": {"k": 40, "n": 64, "rate_pct": 62.5, "cp95": [49.5, 74.3]},
+        "static": {"k": 11, "n": 64, "rate_pct": 17.2, "cp95": [8.9, 28.7]},
+        "random_proxy": {"k": 14, "n": 64, "rate_pct": 21.9, "cp95": [12.5, 34.0]}
+      },
+      "source": "data/experiments/baseline_{fd,static,random}.json（baseline_670a v1.2）"
+    },
+    "paired_tests": {
+      "holdout_fd_vs_static": {"delta_pp": 80.49, "ci_pp": [68.4, 92.6], "mcnemar_p": 2.33e-10, "cohens_h": 1.976, "discordant": [33, 0]},
+      "corpus_fd_vs_static": {"delta_pp": 45.31, "ci_pp": [33.1, 57.5], "mcnemar_p": 3.73e-09, "cohens_h": 0.969, "discordant": [29, 0]},
+      "source": "data/experiments/verify_expand_672h.json（独立重实现；与 ablation_stats 逐位一致）"
+    },
+    "by_layer": {
+      "holdout": {"sanitizer": {"k": 33, "n": 39, "rate_pct": 84.6}, "cross-compile": {"k": 0, "n": 1, "rate_pct": 0.0}, "linker": {"k": 1, "n": 1, "rate_pct": 100.0}},
+      "corpus": {"sanitizer": {"k": 29, "n": 34, "rate_pct": 85.3}, "compiler-warn": {"k": 9, "n": 18, "rate_pct": 50.0}, "cross-compile": {"k": 2, "n": 12, "rate_pct": 16.7}},
+      "note": "669d 纪律：六层禁合并；上表只列有分母的层"
+    }
+  },
+  "hypothesis_verdicts": {
+    "H1_holdout_fd_gt_static_delta20_p05": "成立（Δ+80.49pp，p=2.33e-10）",
+    "H2_corpus_fd_gt_static_delta15_p05": "成立（Δ+45.31pp，p=3.73e-09）",
+    "H3_ci_halfwidth_le_15pp": "成立（18.3pp → 12.4pp）",
+    "H4_new_vs_history_subset_lt_20pp": "holdout 成立（+4.0pp）；**corpus 超出（+33.3pp）** ⇒ 新样本子集检出率显著更高，构成偏移已如实登记（见 H4_exploratory.caveat）",
+    "honesty": "扩样后 holdout 率 81.0→82.9（新样本 17/20=85.0% vs 历史 17/21=81.0%）；corpus 率 54.2→62.5（新样本 14/16=87.5% vs 历史 54.2%）。两处上升都被拆成『构成变化』与『分层内变化』两部分报告，不当作能力提升。"
+  },
+  "pending_for_other_lines": {
+    "paper_research": {
+      "files": ["research/paper_v0.9.md（或当前稿）", "research/paper_draft_v0.5.md", "research/669d_统计口径.md（若引用三臂表）"],
+      "why": "672h 只改数字不改措辞；research/ 归论文线（本批红线不碰）。守卫三方一致性在论文同步前会红。",
+      "what_to_change": [
+        "§6.1 三臂表：holdout FD 81.0% (17/21) → 82.9% (34/41)，CP95 [67.9, 92.8]；Static 4.8% (1/21) → 2.4% (1/41)；Random† 9.5% (2/21) → 9.8% (4/41)",
+        "§6.1 三臂表：corpus FD 54.2% (26/48) → 62.5% (40/64)，CP95 [49.5, 74.3]；Static 14.6% (7/48) → 17.2% (11/64)；Random† 16.7% (8/48) → 21.9% (14/64)",
+        "Δ/检验：holdout Δ +76.2pp → +80.49pp CI [68.4, 92.6] p=3.05e-5 → 2.33e-10 h=1.80 → 1.98",
+        "Δ/检验：corpus Δ +39.6pp → +45.31pp CI [25.7, 53.4] → [33.1, 57.5] p=3.81e-6 → 3.73e-9 h=0.87 → 0.97",
+        "任何『n=21 / n=48』的分母描述 → n=41 / n=64；corpus 全样本 43.3% → 52.6%",
+        "若引用分层：sanitizer 84.6%(33/39)、compiler-warn 50.0%(9/18)、cross-compile 16.7%(2/12)"
+      ]
+    },
+    "frontend": {"status": "已同步（metrics_666 / verdicts_667 / experiments.json 由工具重生成）"},
+    "guard": {"status": "artifact 指针与论文侧 k/n 已更新为 34/41、40/64；论文正文同步后三方全绿"}
+  },
+  "files_written": [
+    "data/holdout/holdout_extension_672h.json",
+    "data/holdout/holdout.json（幂等合并，count=60）",
+    "data/holdout_reveal_5_672h.json",
+    "data/holdout/reveal_5_detail_672h.json",
+    "data/external_corpus/external_corpus_672h.json",
+    "data/external_corpus_reveal_672h.json",
+    "data/external_corpus/reveal_detail_672h.json",
+    "data/experiments/baseline_{fd,static,random}.json（v1.2 重跑）",
+    "data/experiments/verify_expand_672h.json",
+    "data/current_numbers.json（权威源，已更新）",
+    "web/data/metrics_666.json、web/data/verdicts_667.json、web/data/experiments.json（前端同步）"
+  ]
+}

@@ -1,123 +1,123 @@
 {
-  "schema": "queyi-guard-artifacts/671a",
-  "generated_by": "671a A3（三方数字一致性：产物 ↔ 论文 ↔ 前端）",
-  "tolerance_pp": 0.5,
-  "note": "每个指标把三处的值**声明式**绑在一起：artifact（现算 k/n）↔ paper（正文里的 k/n 三元组或计数正则）↔ web（前端 JSON 的指针）。判据：|差| > tolerance_pp ⇒ 红。计数类（kind=count）要求**完全相等**。newer_artifact 是「更新的那一轮 reveal」：它与被引用的数字不同时只 WARN（论文/前端更新归 671b），绝不假装一致。论文路径写**通配** research/paper_v*.md 并取版本号最大的当前稿（v0.8→v0.9 这类升级不该把门禁变成「论文不存在」；历史稿本来就与今天的产物不同，不判红）。",
-  "metrics": [
+ "schema": "queyi-guard-artifacts/671a",
+ "generated_by": "671a A3（三方数字一致性：产物 ↔ 论文 ↔ 前端）",
+ "tolerance_pp": 0.5,
+ "note": "每个指标把三处的值**声明式**绑在一起：artifact（现算 k/n）↔ paper（正文里的 k/n 三元组或计数正则）↔ web（前端 JSON 的指针）。判据：|差| > tolerance_pp ⇒ 红。计数类（kind=count）要求**完全相等**。newer_artifact 是「更新的那一轮 reveal」：它与被引用的数字不同时只 WARN（论文/前端更新归 671b），绝不假装一致。论文路径写**通配** research/paper_v*.md 并取版本号最大的当前稿（v0.8→v0.9 这类升级不该把门禁变成「论文不存在」；历史稿本来就与今天的产物不同，不判红）。 ｜672h W3：artifact 指针切到第 5 轮/第 4 轮扩样产物，论文侧 k/n 同步为 34/41、40/64（论文正文更新归论文线）。",
+ "metrics": [
+  {
+   "key": "holdout_rate_pct",
+   "label": "holdout 检出率（可测口径）",
+   "kind": "rate",
+   "unit": "%",
+   "artifact": {
+    "path": "data/holdout_reveal_5_672h.json",
+    "k": "cumulative.error_subset.catch",
+    "n_sum": [
+     "cumulative.error_subset.catch",
+     "cumulative.error_subset.miss"
+    ],
+    "stored": "cumulative.error_subset.detect_rate_pct"
+   },
+   "paper": {
+    "path": "research/paper_v*.md",
+    "k": 34,
+    "n": 41
+   },
+   "web": [
     {
-      "key": "holdout_rate_pct",
-      "label": "holdout 检出率（可测口径）",
-      "kind": "rate",
-      "unit": "%",
-      "artifact": {
-        "path": "data/holdout_reveal_4_671a.json",
-        "k": "cumulative.error_subset.catch",
-        "n_sum": [
-          "cumulative.error_subset.catch",
-          "cumulative.error_subset.miss"
-        ],
-        "stored": "cumulative.error_subset.detect_rate_pct"
-      },
-      "paper": {
-        "path": "research/paper_v*.md",
-        "k": 17,
-        "n": 21
-      },
-      "web": [
-        {
-          "path": "web/data/metrics_666.json",
-          "pointer": "metrics.holdout.rate_pct"
-        },
-        {
-          "path": "web/data/verdicts_667.json",
-          "pointer": "dashboard.holdout.rate_pct"
-        }
-      ]
+     "path": "web/data/metrics_666.json",
+     "pointer": "metrics.holdout.rate_pct"
     },
     {
-      "key": "corpus_rate_pct",
-      "label": "外部 corpus 检出率（可测口径）",
-      "kind": "rate",
-      "unit": "%",
-      "artifact": {
-        "path": "data/external_corpus_reveal_671a.json",
-        "k": "cumulative.catch",
-        "n_sum": [
-          "cumulative.catch",
-          "cumulative.miss"
-        ],
-        "stored": "cumulative.detect_rate_pct"
-      },
-      "paper": {
-        "path": "research/paper_v*.md",
-        "k": 26,
-        "n": 48
-      },
-      "web": [
-        {
-          "path": "web/data/metrics_666.json",
-          "pointer": "metrics.external.rate_pct"
-        },
-        {
-          "path": "web/data/verdicts_667.json",
-          "pointer": "dashboard.external.rate_pct"
-        }
-      ]
-    },
-    {
-      "key": "mutation_core_pct",
-      "label": "变异击杀率（core，内部指标）",
-      "kind": "rate",
-      "unit": "%",
-      "artifact": {
-        "path": "data/656_mutation_report_core.json",
-        "k": "killed",
-        "n_sum": [
-          "killed",
-          "survived"
-        ],
-        "stored": "kill_rate_on_scored"
-      },
-      "paper": {
-        "path": "research/paper_v*.md",
-        "k": 110,
-        "n": 114
-      },
-      "web": [
-        {
-          "path": "web/data/verdicts_667.json",
-          "pointer": "dashboard.mutation.core"
-        }
-      ]
-    },
-    {
-      "key": "rules_total",
-      "label": "判决规则数（条）",
-      "kind": "count",
-      "unit": "条",
-      "artifact": {
-        "path": "data/_gate_rules.json",
-        "len": true
-      },
-      "paper": {
-        "path": "research/paper_v*.md",
-        "pattern": "(\\d+)\\*\\*\\s*条判决规则"
-      },
-      "web": [
-        {
-          "path": "web/data/status.json",
-          "pointer": "rules.rules_total"
-        },
-        {
-          "path": "web/data/verdicts_667.json",
-          "pointer": "dashboard.rules_total"
-        }
-      ]
+     "path": "web/data/verdicts_667.json",
+     "pointer": "dashboard.holdout.rate_pct"
     }
-  ],
-  "known_limitations": [
-    "只覆盖**口径无歧义**的数字：卡数（42 实卡/52 合计）在 42/47/52 三种口径下并存，未纳入（要纳入必须先裁定口径，见 docs/669_独立审计.md）。",
-    "论文侧用「pct（k/n」三元组 + 计数正则定位，不做自然语言理解：论文改写句式时需同步更新本配置（指针失配会红，不静默）。",
-    "前端只查被声明的指针：前端新增一个未被声明的数字，本门禁看不见。"
-  ]
+   ]
+  },
+  {
+   "key": "corpus_rate_pct",
+   "label": "外部 corpus 检出率（可测口径）",
+   "kind": "rate",
+   "unit": "%",
+   "artifact": {
+    "path": "data/external_corpus_reveal_672h.json",
+    "k": "cumulative.catch",
+    "n_sum": [
+     "cumulative.catch",
+     "cumulative.miss"
+    ],
+    "stored": "cumulative.detect_rate_pct"
+   },
+   "paper": {
+    "path": "research/paper_v*.md",
+    "k": 40,
+    "n": 64
+   },
+   "web": [
+    {
+     "path": "web/data/metrics_666.json",
+     "pointer": "metrics.external.rate_pct"
+    },
+    {
+     "path": "web/data/verdicts_667.json",
+     "pointer": "dashboard.external.rate_pct"
+    }
+   ]
+  },
+  {
+   "key": "mutation_core_pct",
+   "label": "变异击杀率（core，内部指标）",
+   "kind": "rate",
+   "unit": "%",
+   "artifact": {
+    "path": "data/656_mutation_report_core.json",
+    "k": "killed",
+    "n_sum": [
+     "killed",
+     "survived"
+    ],
+    "stored": "kill_rate_on_scored"
+   },
+   "paper": {
+    "path": "research/paper_v*.md",
+    "k": 110,
+    "n": 114
+   },
+   "web": [
+    {
+     "path": "web/data/verdicts_667.json",
+     "pointer": "dashboard.mutation.core"
+    }
+   ]
+  },
+  {
+   "key": "rules_total",
+   "label": "判决规则数（条）",
+   "kind": "count",
+   "unit": "条",
+   "artifact": {
+    "path": "data/_gate_rules.json",
+    "len": true
+   },
+   "paper": {
+    "path": "research/paper_v*.md",
+    "pattern": "(\\d+)\\*\\*\\s*条判决规则"
+   },
+   "web": [
+    {
+     "path": "web/data/status.json",
+     "pointer": "rules.rules_total"
+    },
+    {
+     "path": "web/data/verdicts_667.json",
+     "pointer": "dashboard.rules_total"
+    }
+   ]
+  }
+ ],
+ "known_limitations": [
+  "只覆盖**口径无歧义**的数字：卡数（42 实卡/52 合计）在 42/47/52 三种口径下并存，未纳入（要纳入必须先裁定口径，见 docs/669_独立审计.md）。",
+  "论文侧用「pct（k/n」三元组 + 计数正则定位，不做自然语言理解：论文改写句式时需同步更新本配置（指针失配会红，不静默）。",
+  "前端只查被声明的指针：前端新增一个未被声明的数字，本门禁看不见。"
+ ]
 }

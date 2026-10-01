@@ -1,0 +1,41 @@
+{
+  "schema": "queyi-holdout-extension/672h",
+  "generated_by": "672h W3 扩样（holdout 可测真错 21 → 41）",
+  "generated_at": "2026-10-01",
+  "caliber": {
+    "new_samples": 20,
+    "planted_true": 20,
+    "planted_false": 0,
+    "source_policy": "全部取自本仓**已存在**的故意缺陷夹具（Appendix/ub/ 15 个 → 用 9 个；Examples/_ch14_* 4 个 → 用 4 个；Examples/_ch147_* 4 个 → 用 4 个；Examples/atoms/_atom_leak_* 2 个 → 用 2 个；ub_strict_aliasing 走 cross-compile）。均为先前批次为教材取证写的夹具，**不是本批为指标新写**。",
+    "detector_mix_caveat": "新增子集 14/20 为 asan 类（存量夹具的天然分布），与历史子集的检测器构成不同 ⇒ 汇总率是加权平均，可能被构成变化推动；因此本批强制按层报告（见六层纪律）并把『新增 vs 历史』子集对比登记为 H4（探索性）。",
+    "not_included": [
+      "Appendix/ub/ub_lock_order_inversion.cpp：TSan 需等死锁成立才报，单次运行要撞满 120s 超时（3 回合 × 双档 ⇒ 最坏 ~12min），本批为时限跳过，登记为 W3.1 待办。",
+      "Appendix/ub/ub_false_sharing.cpp / perf 类：本机无 perf 检测器 ⇒ 必然 unknown，不进分母（口径见预注册）。",
+      "Appendix/ub/ub_odr_violation.cpp：源码是单 TU 简化版，真实 ODR 违反不在本文件里 ⇒ 若标 planted=true 属**标签不实**，故排除。",
+      "Examples/atoms/_atom_inline_odr_static_*：文件头自述是**内部链接对照**（预期不报错）⇒ 不是缺陷样本，不作 planted=true。"
+    ]
+  },
+  "iron_rule": "扩样样本一旦 reveal 不可回盲；本文件只登记定义，判决一律由 tools/holdout_reveal_5_672h.py 实测产生。",
+  "seeds": [
+    {"id": "h41", "category": "UB", "atom_ref": "Appendix/ub/ub_use_after_free.cpp", "planted": true, "planted_desc": "use-after-free：free 后写/读堆内存（UB-01）", "detector": "asan", "hidden": true, "revealed": true, "basis": "文件头自述 UB-01，期望 ASan 报 heap-use-after-free"},
+    {"id": "h42", "category": "UB", "atom_ref": "Appendix/ub/ub_double_free.cpp", "planted": true, "planted_desc": "double-free：同一指针释放两次（UB-02）", "detector": "asan", "hidden": true, "revealed": true, "basis": "文件头自述 UB-02，期望 ASan 报 double-free"},
+    {"id": "h43", "category": "UB", "atom_ref": "Appendix/ub/ub_stack_after_scope.cpp", "planted": true, "planted_desc": "stack-use-after-scope：作用域外写栈内存（UB-03）", "detector": "asan", "hidden": true, "revealed": true, "basis": "文件头自述 UB-03；ASan 是否报取决于 stack-use-after-return 检测开关 ⇒ 可能 miss，属真实不确定性"},
+    {"id": "h44", "category": "UB", "atom_ref": "Appendix/ub/ub_dangling_reference.cpp", "planted": true, "planted_desc": "悬垂指针：返回局部变量地址后写（UB-L1）", "detector": "asan", "hidden": true, "revealed": true, "basis": "文件头自述 UB-L1；同 h43 的不确定性"},
+    {"id": "h45", "category": "UB", "atom_ref": "Appendix/ub/ub_iterator_invalidation.cpp", "planted": true, "planted_desc": "迭代器失效：遍历中 push_back 触发扩容后继续解引用（UB-L2）", "detector": "asan", "hidden": true, "revealed": true, "basis": "文件头自述 UB-L2；扩容后解引用 ⇒ 期望 ASan 报 UAF"},
+    {"id": "h46", "category": "UB", "atom_ref": "Appendix/ub/ub_vptr_corruption.cpp", "planted": true, "planted_desc": "vptr 破坏：把对象首字写空后虚调用（UB-L3）", "detector": "asan", "hidden": true, "revealed": true, "basis": "文件头自述 UB-L3，期望 SEGV（ASan 报 SEGV on unknown address）"},
+    {"id": "h47", "category": "UB", "atom_ref": "Appendix/ub/ub_const_cast_mutation.cpp", "planted": true, "planted_desc": "const_cast 修改真 const 对象（UB-L5）", "detector": "asan", "hidden": true, "revealed": true, "basis": "文件头自述 UB-L5；写只读段 ⇒ SEGV 或优化后静默，两种都如实记"},
+    {"id": "h48", "category": "MEM", "atom_ref": "Examples/_ch14_double_free.cpp", "planted": true, "planted_desc": "故意双重释放（ch14 取证）", "detector": "asan", "hidden": true, "revealed": true, "basis": "文件头自述『故意双重释放（ASan 取证）』"},
+    {"id": "h49", "category": "MEM", "atom_ref": "Examples/_ch14_heap_overflow.cpp", "planted": true, "planted_desc": "故意堆缓冲区溢出写（ch14 取证）", "detector": "asan", "hidden": true, "revealed": true, "basis": "文件头自述『故意堆缓冲区溢出（ASan 取证）』"},
+    {"id": "h50", "category": "MEM", "atom_ref": "Examples/_ch14_leak.cpp", "planted": true, "planted_desc": "故意内存泄漏（ch14 取证）", "detector": "asan", "hidden": true, "revealed": true, "basis": "文件头自述『故意内存泄漏（ASan 取证）』"},
+    {"id": "h51", "category": "MEM", "atom_ref": "Examples/_ch147_leak.cpp", "planted": true, "planted_desc": "工厂函数返回 new 指针、调用方漏 delete", "detector": "asan", "hidden": true, "revealed": true, "basis": "ch147 泄漏示例（注释明写『漏 delete』）"},
+    {"id": "h52", "category": "UB", "atom_ref": "Examples/_ch147_oob.cpp", "planted": true, "planted_desc": "栈数组越界读 a[5]（ch147 示例）", "detector": "asan", "hidden": true, "revealed": true, "basis": "ch147 越界读示例（注释明写『越界读取』）"},
+    {"id": "h53", "category": "MEM", "atom_ref": "Examples/atoms/_atom_leak_tree_bug.cpp", "planted": true, "planted_desc": "树形三节点环（shared 强引用成环）⇒ LSan 泄漏（ATOM-MEM-LEAK-001 缺陷侧）", "detector": "asan", "hidden": true, "revealed": true, "basis": "文件头自述『缺陷侧…ASan/LSan 命中属于预期内反向证据』；实测踩坑：需 noinline + 擦栈，本夹具已按此设计"},
+    {"id": "h54", "category": "MEM", "atom_ref": "Examples/atoms/_atom_leak_two_node.cpp", "planted": true, "planted_desc": "极简两节点环 ⇒ LSan 泄漏（LSan 检测标定对）", "detector": "asan", "hidden": true, "revealed": true, "basis": "文件头自述『预期：LSan 报 Indirect/Direct leak』"},
+    {"id": "h55", "category": "UB", "atom_ref": "Appendix/ub/ub_alignment_violation.cpp", "planted": true, "planted_desc": "对齐违规：对 buffer+1 做 int 写（UB-04）", "detector": "ubsan", "hidden": true, "revealed": true, "basis": "文件头自述 UB-04，期望 UBSan 报 misaligned address"},
+    {"id": "h56", "category": "UB", "atom_ref": "Examples/_ch14_ubsan.cpp", "planted": true, "planted_desc": "有符号整数溢出（ch14 取证）", "detector": "ubsan", "hidden": true, "revealed": true, "basis": "文件头自述『故意有符号整数溢出（UBSan 取证）』"},
+    {"id": "h57", "category": "CONC", "atom_ref": "Appendix/ub/ub_data_race.cpp", "planted": true, "planted_desc": "数据竞争：两线程无同步 ++g（UB-C1）", "detector": "tsan", "hidden": true, "revealed": true, "basis": "文件头自述 UB-C1，期望 TSan 报 data race"},
+    {"id": "h58", "category": "CONC", "atom_ref": "Examples/_ch147_race.cpp", "planted": true, "planted_desc": "非原子非加锁的并发自增（ch147 示例）", "detector": "tsan", "hidden": true, "revealed": true, "basis": "ch147 race 示例（注释明写『非原子、非加锁』）"},
+    {"id": "h59", "category": "CONC", "atom_ref": "Appendix/ub/ub_signal_handler.cpp", "planted": true, "planted_desc": "信号处理函数中改非原子全局（UB-C3）", "detector": "tsan", "hidden": true, "revealed": true, "basis": "文件头自述 UB-C3；TSan 对 signal 交互覆盖有限 ⇒ 可能 miss，属真实不确定性"},
+    {"id": "h60", "category": "UB", "atom_ref": "Appendix/ub/ub_strict_aliasing.cpp", "planted": true, "planted_desc": "严格别名违规：int*/float* 写同一内存（UB-05）", "detector": "cross-compile", "hidden": true, "revealed": true, "basis": "文件头自述『UBSan 不会捕获此类 UB，证据来自输出差异』⇒ 用 g++/clang++ 双编译器输出比对判据"}
+  ]
+}

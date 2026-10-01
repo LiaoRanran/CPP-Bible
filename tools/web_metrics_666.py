@@ -117,8 +117,8 @@ def collect() -> dict:
 
     detect = None
     try:
-        # 672f：切到 671a 扩样后的权威产物（h31–h40 已 reveal，holdout 可测 21）
-        r3 = _json("data/holdout_reveal_4_671a.json")
+        # 672h（W3 扩样）：切到第 5 轮产物（h41–h60 已 reveal，holdout 可测 41）
+        r3 = _json("data/holdout_reveal_5_672h.json")
         cum = r3.get("cumulative", {})
         sub = cum.get("error_subset", {})
         # 668：**口径与分母从产物读**，不许在工具里写死 —— 666 的 81.2% 就是
@@ -137,16 +137,16 @@ def collect() -> dict:
                   "caliber": caliber,
                   "opt_levels": opts,
                   "env": (r3.get("env") or {}).get("wsl_gpp"),
-                  "detail": "data/holdout/reveal_3_detail_671a.json",
-                  "cmd": "python tools/holdout_reveal_4_671a.py"}
+                  "detail": "data/holdout/reveal_5_detail_672h.json",
+                  "cmd": "python tools/holdout_reveal_5_672h.py"}
     except Exception as e:  # noqa: BLE001
-        unavailable.append(f"holdout_reveal_4_671a.json: {e}")
+        unavailable.append(f"holdout_reveal_5_672h.json: {e}")
     m["holdout"] = detect
 
     ext = None
     try:
-        # 672f：切到 671a 扩样后的权威产物（d3e-* 已 reveal，corpus 可测 48）
-        r = _json("data/external_corpus_reveal_671a.json")
+        # 672h（W3 扩样）：切到 corpus 第 4 轮产物（d3f-* 已 reveal，可测 64）
+        r = _json("data/external_corpus_reveal_672h.json")
         cum = r.get("cumulative", {})
         catch, miss = cum.get("catch") or 0, cum.get("miss") or 0
         total = cum.get("total") or 0

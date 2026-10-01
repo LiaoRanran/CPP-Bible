@@ -1,0 +1,357 @@
+{
+ "schema": "queyi-external-corpus-reveal/672h",
+ "reveal_index": 4,
+ "generated_by": "tools/external_corpus_reveal_672h.py（W3 扩样：可测 48 → 64）",
+ "generated_at": "2026-10-01 23:01:29",
+ "round_label": "第 4 轮（672h）：扩样 d3f-01..d3f-16 + 历史 60 条复用",
+ "runs": 3,
+ "prereg": "data/experiments/prereg_672h.json",
+ "detector_reuse": "sanitizer 双档 + setarch -R（671a 实现）；其余委托 external_corpus_662.detect",
+ "caliber": "可测 = catch+miss（非测量类）；unknown / not_error 不进分母；六层禁合并",
+ "historical_reuse": {
+  "n": 60,
+  "ids": [
+   "d3e-01",
+   "d3e-02",
+   "d3e-03",
+   "d3e-04",
+   "d3e-05",
+   "d3e-06",
+   "d3e-07",
+   "d3e-08",
+   "d3e-09",
+   "d3e-10",
+   "d3e-11",
+   "d3e-12",
+   "d3e-13",
+   "d3e-14",
+   "d3e-15",
+   "d3e-16",
+   "d3e-17",
+   "d3e-18",
+   "d3e-19",
+   "d3e-20",
+   "d3-01",
+   "d3-02",
+   "d3-03",
+   "d3-04",
+   "d3-05",
+   "d3-06",
+   "d3-07",
+   "d3-08",
+   "d3-09",
+   "d3-10",
+   "d3-11",
+   "d3-12",
+   "d3-13",
+   "d3-14",
+   "d3-15",
+   "d3-16",
+   "d3-17",
+   "d3-18",
+   "d3-19",
+   "d3-20",
+   "d3-21",
+   "d3-22",
+   "d3-23",
+   "d3-24",
+   "d3-25",
+   "d3-26",
+   "d3-27",
+   "d3-28",
+   "d3-29",
+   "d3-30",
+   "d3-31",
+   "d3-32",
+   "d3-33",
+   "d3-34",
+   "d3-35",
+   "d3-36",
+   "d3-37",
+   "d3-38",
+   "d3-39",
+   "d3-40"
+  ],
+  "source": "data/external_corpus/reveal_detail_671a.json"
+ },
+ "env": {
+  "wsl_available": true,
+  "wsl_gpp": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "local_gpp": "g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+  "local_clang": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+  "host": "win32",
+  "python": "3.14.5",
+  "setarch": "setarch -R",
+  "caliber_warning": ""
+ },
+ "round_new": {
+  "total": 16,
+  "catch": 14,
+  "miss": 2,
+  "unknown": 0,
+  "not_error": 0,
+  "denominator": {
+   "value": 16,
+   "meaning": "catch+miss（可测且非测量类）",
+   "excluded": {
+    "unknown": 0,
+    "not_error": 0
+   },
+   "all_samples": 16
+  },
+  "detect_rate_pct": 87.5,
+  "cp95": {
+   "k": 14,
+   "n": 16,
+   "point": 0.875,
+   "cp_low": 0.6165237631507363,
+   "cp_high": 0.984486396184586,
+   "conf": 0.95
+  }
+ },
+ "cumulative": {
+  "total": 76,
+  "catch": 40,
+  "miss": 24,
+  "unknown": 9,
+  "not_error": 3,
+  "denominator": {
+   "value": 64,
+   "meaning": "catch+miss（可测且非测量类）",
+   "excluded": {
+    "unknown": 9,
+    "not_error": 3
+   },
+   "all_samples": 76
+  },
+  "detect_rate_pct": 62.5,
+  "cp95": {
+   "k": 40,
+   "n": 64,
+   "point": 0.625,
+   "cp_low": 0.4950764600526629,
+   "cp_high": 0.742951077551933,
+   "conf": 0.95
+  },
+  "by_layer": {
+   "sanitizer": {
+    "total": 35,
+    "catch": 29,
+    "miss": 5,
+    "unknown": 1,
+    "not_error": 0,
+    "denominator": {
+     "value": 34,
+     "meaning": "catch+miss（可测且非测量类）",
+     "excluded": {
+      "unknown": 1,
+      "not_error": 0
+     },
+     "all_samples": 35
+    },
+    "detect_rate_pct": 85.3,
+    "cp95": {
+     "k": 29,
+     "n": 34,
+     "point": 0.8529411764705882,
+     "cp_low": 0.6894342696048745,
+     "cp_high": 0.9504715447438223,
+     "conf": 0.95
+    },
+    "detectors": [
+     "asan",
+     "tsan",
+     "ubsan"
+    ]
+   },
+   "compiler-warn": {
+    "total": 18,
+    "catch": 9,
+    "miss": 9,
+    "unknown": 0,
+    "not_error": 0,
+    "denominator": {
+     "value": 18,
+     "meaning": "catch+miss（可测且非测量类）",
+     "excluded": {
+      "unknown": 0,
+      "not_error": 0
+     },
+     "all_samples": 18
+    },
+    "detect_rate_pct": 50.0,
+    "cp95": {
+     "k": 9,
+     "n": 18,
+     "point": 0.5,
+     "cp_low": 0.2601905828950961,
+     "cp_high": 0.7398094171049037,
+     "conf": 0.95
+    },
+    "detectors": [
+     "compiler-warn",
+     "wunsequenced"
+    ]
+   },
+   "cross-compile": {
+    "total": 12,
+    "catch": 2,
+    "miss": 10,
+    "unknown": 0,
+    "not_error": 0,
+    "denominator": {
+     "value": 12,
+     "meaning": "catch+miss（可测且非测量类）",
+     "excluded": {
+      "unknown": 0,
+      "not_error": 0
+     },
+     "all_samples": 12
+    },
+    "detect_rate_pct": 16.7,
+    "cp95": {
+     "k": 2,
+     "n": 12,
+     "point": 0.16666666666666666,
+     "cp_low": 0.020862525460092388,
+     "cp_high": 0.48413774868596715,
+     "conf": 0.95
+    },
+    "detectors": [
+     "cross-compile"
+    ]
+   },
+   "perf": {
+    "total": 2,
+    "catch": 0,
+    "miss": 0,
+    "unknown": 2,
+    "not_error": 0,
+    "denominator": {
+     "value": 0,
+     "meaning": "catch+miss（可测且非测量类）",
+     "excluded": {
+      "unknown": 2,
+      "not_error": 0
+     },
+     "all_samples": 2
+    },
+    "detect_rate_pct": null,
+    "cp95": {
+     "k": 0,
+     "n": 0,
+     "point": null,
+     "cp_low": null,
+     "cp_high": null,
+     "conf": 0.95,
+     "note": "n=0 ⇒ 拒绝给率（fail-loud）"
+    },
+    "detectors": [
+     "perf-counter"
+    ]
+   },
+   "compile-time": {
+    "total": 2,
+    "catch": 0,
+    "miss": 0,
+    "unknown": 2,
+    "not_error": 0,
+    "denominator": {
+     "value": 0,
+     "meaning": "catch+miss（可测且非测量类）",
+     "excluded": {
+      "unknown": 2,
+      "not_error": 0
+     },
+     "all_samples": 2
+    },
+    "detect_rate_pct": null,
+    "cp95": {
+     "k": 0,
+     "n": 0,
+     "point": null,
+     "cp_low": null,
+     "cp_high": null,
+     "conf": 0.95,
+     "note": "n=0 ⇒ 拒绝给率（fail-loud）"
+    },
+    "detectors": [
+     "compile-time"
+    ]
+   },
+   "other": {
+    "total": 7,
+    "catch": 0,
+    "miss": 0,
+    "unknown": 4,
+    "not_error": 3,
+    "denominator": {
+     "value": 0,
+     "meaning": "catch+miss（可测且非测量类）",
+     "excluded": {
+      "unknown": 4,
+      "not_error": 3
+     },
+     "all_samples": 7
+    },
+    "detect_rate_pct": null,
+    "cp95": {
+     "k": 0,
+     "n": 0,
+     "point": null,
+     "cp_low": null,
+     "cp_high": null,
+     "conf": 0.95,
+     "note": "n=0 ⇒ 拒绝给率（fail-loud）"
+    },
+    "detectors": [
+     "measure",
+     "unknown"
+    ]
+   }
+  }
+ },
+ "compare_reveal_671a": {
+  "before": {
+   "denominator": 48,
+   "k": 26,
+   "detect_rate_pct": 54.2,
+   "cp95": [
+    39.2,
+    68.6
+   ]
+  },
+  "after": {
+   "denominator": 64,
+   "k": 40,
+   "detect_rate_pct": 62.5,
+   "cp95": [
+    49.5,
+    74.3
+   ]
+  },
+  "why_changed": "分母 48 → 64（新增 d3f-* 16 条，全部本机有判据）"
+ },
+ "H4_exploratory": {
+  "question": "新增子集（d3f-*）与历史子集检出率差是否 <20pp",
+  "new_subset": {
+   "k": 14,
+   "n": 16,
+   "rate_pct": 87.5
+  },
+  "historical_subset": {
+   "k": 26,
+   "n": 48,
+   "rate_pct": 54.2
+  },
+  "delta_pp": 33.3,
+  "verdict": "超出预注册范围（≥20pp）⇒ 子集构成差异显著，如实登记"
+ },
+ "reproducibility": {
+  "runs_per_new_sample": 3,
+  "unstable": []
+ },
+ "new_sample_unknown": [],
+ "honest_note": "d3f-* 是本仓自撰的可编译片段（缺陷类别据公开清单），verified_source=false；cross-compile 两条依赖 g++/clang++ 差异，实测可能 miss——如实记录。",
+ "detail": "data/external_corpus/reveal_detail_672h.json"
+}

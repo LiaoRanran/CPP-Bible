@@ -1,0 +1,1489 @@
+{
+ "schema": "queyi-external-corpus-reveal-detail/672h",
+ "generated_by": "tools/external_corpus_reveal_672h.py",
+ "generated_at": "2026-10-01 23:01:29",
+ "summary_for": "data/external_corpus_reveal_672h.json",
+ "runs": 3,
+ "verdict_rule": "任一回合 catch ⇒ catch（预注册 672h）；first_run_verdict 一并落盘",
+ "env": {
+  "wsl_available": true,
+  "wsl_gpp": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "local_gpp": "g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+  "local_clang": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+  "host": "win32",
+  "python": "3.14.5",
+  "setarch": "setarch -R",
+  "caliber_warning": ""
+ },
+ "per_sample": [
+  {
+   "id": "d3f-01",
+   "category": "MEM",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "asan 命中[-O0(rc=1) =================================================================\n==36==ERROR: A; -O2(rc=1) =================================================================\n==62==ERROR: A]（档位 -O0,-",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3f-02",
+   "category": "MEM",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "asan 命中[-O0(rc=1) =================================================================\n==88==ERROR: A]（档位 -O0,-O2）",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3f-03",
+   "category": "MEM",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "asan 命中[-O0(rc=1) =================================================================\n==141==ERROR: ; -O2(rc=1) =================================================================\n==167==ERROR: ]（档位 -O0,-",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3f-04",
+   "category": "UB",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "asan 命中[-O0(rc=1) =================================================================\n==193==ERROR: ; -O2(rc=1) =================================================================\n==219==ERROR: ]（档位 -O0,-",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3f-05",
+   "category": "MEM",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "asan 命中[-O0(rc=1) =================================================================\n==245==ERROR: ; -O2(rc=1) =================================================================\n==271==ERROR: ]（档位 -O0,-",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3f-06",
+   "category": "UB",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "ubsan 命中[-O0(rc=0) -2147483648\n/mnt/c/Users/ASUS/AppData/Local/Temp/d3e_nwaso9xz/s.cpp:2:42: runtim; -O2(rc=0) -2147483648\n/mnt/c/Users/ASUS/AppData/Local/Temp/d3e_nwaso9xz/s.cpp:2:42: runtim]（档位 -O0,",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3f-07",
+   "category": "UB",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "ubsan 命中[-O0(rc=0) 0\n/mnt/c/Users/ASUS/AppData/Local/Temp/d3e_us2yacn2/s.cpp:2:32: runtime error: s; -O2(rc=0) 0\n/mnt/c/Users/ASUS/AppData/Local/Temp/d3e_us2yacn2/s.cpp:2:32: runtime error: s]（档位 -O0,",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3f-08",
+   "category": "UB",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "ubsan 命中[-O0(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/d3e_5si1z620/s.cpp:2:58: runtime error: div; -O2(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/d3e_5si1z620/s.cpp:2:58: runtime error: div]（档位 ",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3f-09",
+   "category": "CONC",
+   "detector": "tsan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "tsan 命中[-O0(rc=66) 400000\n==================\nWARNING: ThreadSanitizer: data race (pid=453)\n  Read o; -O2(rc=66) 400000\n==================\nWARNING: ThreadSanitizer: data race (pid=482)\n  Read o]（档位 -O0",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3f-10",
+   "category": "CONC",
+   "detector": "tsan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "tsan 命中[-O0(rc=66) 9096\n==================\nWARNING: ThreadSanitizer: data race (pid=511)\n  Read of ; -O2(rc=66) 9096\n==================\nWARNING: ThreadSanitizer: data race (pid=540)\n  Read of ]（档位 -O0",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3f-11",
+   "category": "API",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "verdict": "catch",
+   "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_mgaw2t99\\s.cpp:2:43: warning: form",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3f-12",
+   "category": "API",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "verdict": "miss",
+   "note": "无告警",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3f-13",
+   "category": "API",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "verdict": "catch",
+   "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_vrf9fnfg\\s.cpp:2:31: warning: comp",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3f-14",
+   "category": "API",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "verdict": "catch",
+   "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_qr39vwg0\\s.cpp:2:30: warning: sugg",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3f-15",
+   "category": "UB",
+   "detector": "cross-compile",
+   "layer": "cross-compile",
+   "verdict": "miss",
+   "note": "两编译器一致",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3f-16",
+   "category": "UB",
+   "detector": "cross-compile",
+   "layer": "cross-compile",
+   "verdict": "catch",
+   "note": "g++/clang++ 结果不同",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "source": "measured_672h"
+  },
+  {
+   "id": "d3e-01",
+   "category": "UB",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "ubsan 命中[-O0(rc=0) /mnt/c/Users/ASUS/AppData/Local/Temp/d3e_yk5rtw4l/s.cpp:1:30: runtime error: sig; -O2(rc=0) /mnt/c/Users/ASUS/AppData/Local/Temp/d3e_yk5rtw4l/s.cpp:1:30: runtime error: sig]（档位 -O0,",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3e-02",
+   "category": "UB",
+   "detector": "tsan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "tsan 命中[-O0(rc=66) ==================\nWARNING: ThreadSanitizer: data race (pid=1125)\n  Read of size; -O2(rc=66) ==================\nWARNING: ThreadSanitizer: data race (pid=1154)\n  Read of size]（档位 -O0",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3e-03",
+   "category": "UB",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "asan 命中[-O0(rc=1) =================================================================\n==1183==ERROR:; -O2(rc=1) =================================================================\n==1209==ERROR:]（档位 -O0,-",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3e-04",
+   "category": "UB",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL\n==================================================; -O2(rc=1) AddressSanitizer:DEADLYSIGNAL\n==================================================]（档位 -O0,-",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3e-05",
+   "category": "UB",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "ubsan 命中[-O0(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/d3e_uxtuavsm/s.cpp:1:54: runtime error: div; -O2(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/d3e_uxtuavsm/s.cpp:1:54: runtime error: div]（档位 ",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3e-06",
+   "category": "UB",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "verdict": "miss",
+   "note": "无告警",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3e-07",
+   "category": "UB",
+   "detector": "cross-compile",
+   "layer": "cross-compile",
+   "verdict": "miss",
+   "note": "两编译器一致",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3e-08",
+   "category": "UB",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "asan 命中[-O0(rc=1) =================================================================\n==1339==ERROR:]（档位 -O0,-O2）",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3e-09",
+   "category": "UB",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "asan 命中[-O0(rc=1) =================================================================\n==1392==ERROR:; -O2(rc=1) =================================================================\n==1418==ERROR:]（档位 -O0,-",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3e-10",
+   "category": "UB",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "ubsan 命中[-O0(rc=0) /mnt/c/Users/ASUS/AppData/Local/Temp/d3e_vdbvrb_y/s.cpp:1:28: runtime error: shi; -O2(rc=0) /mnt/c/Users/ASUS/AppData/Local/Temp/d3e_vdbvrb_y/s.cpp:1:28: runtime error: shi]（档位 -O0,",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3e-11",
+   "category": "UB",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "verdict": "catch",
+   "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_b7kac8dm\\s.cpp:1:25: warning: refe",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3e-12",
+   "category": "UB",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "asan 命中[-O0(rc=1) =================================================================\n==1496==ERROR:; -O2(rc=1) =================================================================\n==1522==ERROR:]（档位 -O0,-",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3e-13",
+   "category": "unspecified",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "verdict": "catch",
+   "note": "告警 2: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_9a_yrqw7\\s.cpp:2:34: warning: oper",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3e-14",
+   "category": "unspecified",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "verdict": "catch",
+   "note": "告警 4: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_v7dlltra\\s.cpp:1:21: warning: oper",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3e-15",
+   "category": "well-defined",
+   "detector": "compile-time",
+   "layer": "compile-time",
+   "verdict": "unknown",
+   "note": "未支持",
+   "verdicts_per_run": [
+    "unknown"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "unknown"
+  },
+  {
+   "id": "d3e-16",
+   "category": "well-defined",
+   "detector": "compile-time",
+   "layer": "compile-time",
+   "verdict": "unknown",
+   "note": "未支持",
+   "verdicts_per_run": [
+    "unknown"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "unknown"
+  },
+  {
+   "id": "d3e-17",
+   "category": "perf",
+   "detector": "perf-counter",
+   "layer": "perf",
+   "verdict": "unknown",
+   "note": "未支持",
+   "verdicts_per_run": [
+    "unknown"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "unknown"
+  },
+  {
+   "id": "d3e-18",
+   "category": "perf",
+   "detector": "perf-counter",
+   "layer": "perf",
+   "verdict": "unknown",
+   "note": "未支持",
+   "verdicts_per_run": [
+    "unknown"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": false,
+   "first_run_verdict": "unknown"
+  },
+  {
+   "id": "d3e-19",
+   "category": "memory-order",
+   "detector": "tsan",
+   "layer": "sanitizer",
+   "verdict": "miss",
+   "note": "tsan 两档均无报告[-O0(rc=2); -O2(rc=2)]",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3e-20",
+   "category": "historical",
+   "detector": "cross-compile",
+   "layer": "cross-compile",
+   "verdict": "miss",
+   "note": "两编译器一致",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": true,
+   "source": "reused_reveal_671a",
+   "is_669d_new": true,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-01",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "ubsan 命中(rc=0)",
+   "category": "UB",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3-02",
+   "detector": "tsan",
+   "layer": "sanitizer",
+   "verdict": "unknown",
+   "note": "TSan 无法初始化（WSL 不兼容）",
+   "category": "UB",
+   "verdicts_per_run": [
+    "unknown"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "unknown"
+  },
+  {
+   "id": "d3-03",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "asan 命中(rc=1)",
+   "category": "UB",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3-04",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "asan 命中(rc=1)",
+   "category": "UB",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3-05",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "ubsan 命中(rc=136)",
+   "category": "UB",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3-06",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "verdict": "miss",
+   "note": "无告警",
+   "category": "UB",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-07",
+   "detector": "cross-compile",
+   "layer": "cross-compile",
+   "verdict": "miss",
+   "note": "两编译器一致",
+   "category": "UB",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-08",
+   "detector": "wunsequenced",
+   "layer": "compiler-warn",
+   "verdict": "miss",
+   "note": "无告警",
+   "category": "unspecified",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-09",
+   "detector": "wunsequenced",
+   "layer": "compiler-warn",
+   "verdict": "miss",
+   "note": "无告警",
+   "category": "unspecified",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-10",
+   "detector": "cross-compile",
+   "layer": "cross-compile",
+   "verdict": "miss",
+   "note": "两编译器一致",
+   "category": "unspecified",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-11",
+   "detector": "cross-compile",
+   "layer": "cross-compile",
+   "verdict": "miss",
+   "note": "两编译器一致",
+   "category": "unspecified",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-12",
+   "detector": "cross-compile",
+   "layer": "cross-compile",
+   "verdict": "catch",
+   "note": "g++/clang++ 结果不同",
+   "category": "unspecified",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3-13",
+   "detector": "measure",
+   "layer": "other",
+   "verdict": "not_error",
+   "note": "测量类，非错误",
+   "category": "compiler-diff",
+   "verdicts_per_run": [
+    "not_error"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "not_error"
+  },
+  {
+   "id": "d3-14",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "verdict": "miss",
+   "note": "无告警",
+   "category": "compiler-diff",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-15",
+   "detector": "cross-compile",
+   "layer": "cross-compile",
+   "verdict": "miss",
+   "note": "两编译器一致",
+   "category": "compiler-diff",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-16",
+   "detector": "unknown",
+   "layer": "other",
+   "verdict": "unknown",
+   "note": "无本地检测器/无片段",
+   "category": "compiler-diff",
+   "verdicts_per_run": [
+    "unknown"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": false,
+   "first_run_verdict": "unknown"
+  },
+  {
+   "id": "d3-17",
+   "detector": "measure",
+   "layer": "other",
+   "verdict": "not_error",
+   "note": "测量类，非错误",
+   "category": "ambiguity",
+   "verdicts_per_run": [
+    "not_error"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "not_error"
+  },
+  {
+   "id": "d3-18",
+   "detector": "cross-compile",
+   "layer": "cross-compile",
+   "verdict": "miss",
+   "note": "两编译器一致",
+   "category": "ambiguity",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-19",
+   "detector": "cross-compile",
+   "layer": "cross-compile",
+   "verdict": "miss",
+   "note": "两编译器一致",
+   "category": "compiler-bug",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": false,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-20",
+   "detector": "unknown",
+   "layer": "other",
+   "verdict": "unknown",
+   "note": "无本地检测器/无片段",
+   "category": "compiler-bug",
+   "verdicts_per_run": [
+    "unknown"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": false,
+   "first_run_verdict": "unknown"
+  },
+  {
+   "id": "d3-21",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "miss",
+   "note": "asan 无报告(rc=0)",
+   "category": "UB",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-22",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "miss",
+   "note": "asan 无报告(rc=0)",
+   "category": "UB",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-23",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "asan 命中(rc=1)",
+   "category": "UB",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3-24",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "asan 命中(rc=1)",
+   "category": "UB",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3-25",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "miss",
+   "note": "asan 无报告(rc=0)",
+   "category": "UB",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-26",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "ubsan 命中(rc=0)",
+   "category": "UB",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3-27",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "ubsan 命中(rc=0)",
+   "category": "UB",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3-28",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "ubsan 命中(rc=0)",
+   "category": "UB",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3-29",
+   "detector": "wunsequenced",
+   "layer": "compiler-warn",
+   "verdict": "miss",
+   "note": "无告警",
+   "category": "UB",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-30",
+   "detector": "wunsequenced",
+   "layer": "compiler-warn",
+   "verdict": "miss",
+   "note": "无告警",
+   "category": "UB",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-31",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "verdict": "catch",
+   "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_mcpeow7f\\s.cpp:1:25: warning: addr",
+   "category": "UB",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3-32",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "verdict": "miss",
+   "note": "无告警",
+   "category": "UB",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-33",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "verdict": "catch",
+   "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_bgxwgggi\\s.cpp:2:55: warning: comp",
+   "category": "UB",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3-34",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "verdict": "catch",
+   "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_1cjwifp_\\s.cpp:1:20: warning: ISO ",
+   "category": "UB",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3-35",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "verdict": "catch",
+   "note": "asan 命中(rc=1)",
+   "category": "UB",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "catch"
+  },
+  {
+   "id": "d3-36",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "verdict": "miss",
+   "note": "ubsan 无报告(rc=0)",
+   "category": "UB",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-37",
+   "detector": "cross-compile",
+   "layer": "cross-compile",
+   "verdict": "miss",
+   "note": "两编译器一致",
+   "category": "unspecified",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "miss"
+  },
+  {
+   "id": "d3-38",
+   "detector": "measure",
+   "layer": "other",
+   "verdict": "not_error",
+   "note": "测量类，非错误",
+   "category": "unspecified",
+   "verdicts_per_run": [
+    "not_error"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": true,
+   "first_run_verdict": "not_error"
+  },
+  {
+   "id": "d3-39",
+   "detector": "unknown",
+   "layer": "other",
+   "verdict": "unknown",
+   "note": "无本地检测器/无片段",
+   "category": "compiler-diff",
+   "verdicts_per_run": [
+    "unknown"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": false,
+   "first_run_verdict": "unknown"
+  },
+  {
+   "id": "d3-40",
+   "detector": "unknown",
+   "layer": "other",
+   "verdict": "unknown",
+   "note": "无本地检测器/无片段",
+   "category": "UB",
+   "verdicts_per_run": [
+    "unknown"
+   ],
+   "reproducible": false,
+   "source": "reused_reveal_671a",
+   "is_669d_new": false,
+   "verified_source": false,
+   "first_run_verdict": "unknown"
+  }
+ ],
+ "round_new_summary": {
+  "total": 16,
+  "catch": 14,
+  "miss": 2,
+  "unknown": 0,
+  "not_error": 0,
+  "denominator": {
+   "value": 16,
+   "meaning": "catch+miss（可测且非测量类）",
+   "excluded": {
+    "unknown": 0,
+    "not_error": 0
+   },
+   "all_samples": 16
+  },
+  "detect_rate_pct": 87.5,
+  "cp95": {
+   "k": 14,
+   "n": 16,
+   "point": 0.875,
+   "cp_low": 0.6165237631507363,
+   "cp_high": 0.984486396184586,
+   "conf": 0.95
+  }
+ },
+ "cumulative_summary": {
+  "total": 76,
+  "catch": 40,
+  "miss": 24,
+  "unknown": 9,
+  "not_error": 3,
+  "denominator": {
+   "value": 64,
+   "meaning": "catch+miss（可测且非测量类）",
+   "excluded": {
+    "unknown": 9,
+    "not_error": 3
+   },
+   "all_samples": 76
+  },
+  "detect_rate_pct": 62.5,
+  "cp95": {
+   "k": 40,
+   "n": 64,
+   "point": 0.625,
+   "cp_low": 0.4950764600526629,
+   "cp_high": 0.742951077551933,
+   "conf": 0.95
+  },
+  "by_layer": {
+   "sanitizer": {
+    "total": 35,
+    "catch": 29,
+    "miss": 5,
+    "unknown": 1,
+    "not_error": 0,
+    "denominator": {
+     "value": 34,
+     "meaning": "catch+miss（可测且非测量类）",
+     "excluded": {
+      "unknown": 1,
+      "not_error": 0
+     },
+     "all_samples": 35
+    },
+    "detect_rate_pct": 85.3,
+    "cp95": {
+     "k": 29,
+     "n": 34,
+     "point": 0.8529411764705882,
+     "cp_low": 0.6894342696048745,
+     "cp_high": 0.9504715447438223,
+     "conf": 0.95
+    },
+    "detectors": [
+     "asan",
+     "tsan",
+     "ubsan"
+    ]
+   },
+   "compiler-warn": {
+    "total": 18,
+    "catch": 9,
+    "miss": 9,
+    "unknown": 0,
+    "not_error": 0,
+    "denominator": {
+     "value": 18,
+     "meaning": "catch+miss（可测且非测量类）",
+     "excluded": {
+      "unknown": 0,
+      "not_error": 0
+     },
+     "all_samples": 18
+    },
+    "detect_rate_pct": 50.0,
+    "cp95": {
+     "k": 9,
+     "n": 18,
+     "point": 0.5,
+     "cp_low": 0.2601905828950961,
+     "cp_high": 0.7398094171049037,
+     "conf": 0.95
+    },
+    "detectors": [
+     "compiler-warn",
+     "wunsequenced"
+    ]
+   },
+   "cross-compile": {
+    "total": 12,
+    "catch": 2,
+    "miss": 10,
+    "unknown": 0,
+    "not_error": 0,
+    "denominator": {
+     "value": 12,
+     "meaning": "catch+miss（可测且非测量类）",
+     "excluded": {
+      "unknown": 0,
+      "not_error": 0
+     },
+     "all_samples": 12
+    },
+    "detect_rate_pct": 16.7,
+    "cp95": {
+     "k": 2,
+     "n": 12,
+     "point": 0.16666666666666666,
+     "cp_low": 0.020862525460092388,
+     "cp_high": 0.48413774868596715,
+     "conf": 0.95
+    },
+    "detectors": [
+     "cross-compile"
+    ]
+   },
+   "perf": {
+    "total": 2,
+    "catch": 0,
+    "miss": 0,
+    "unknown": 2,
+    "not_error": 0,
+    "denominator": {
+     "value": 0,
+     "meaning": "catch+miss（可测且非测量类）",
+     "excluded": {
+      "unknown": 2,
+      "not_error": 0
+     },
+     "all_samples": 2
+    },
+    "detect_rate_pct": null,
+    "cp95": {
+     "k": 0,
+     "n": 0,
+     "point": null,
+     "cp_low": null,
+     "cp_high": null,
+     "conf": 0.95,
+     "note": "n=0 ⇒ 拒绝给率（fail-loud）"
+    },
+    "detectors": [
+     "perf-counter"
+    ]
+   },
+   "compile-time": {
+    "total": 2,
+    "catch": 0,
+    "miss": 0,
+    "unknown": 2,
+    "not_error": 0,
+    "denominator": {
+     "value": 0,
+     "meaning": "catch+miss（可测且非测量类）",
+     "excluded": {
+      "unknown": 2,
+      "not_error": 0
+     },
+     "all_samples": 2
+    },
+    "detect_rate_pct": null,
+    "cp95": {
+     "k": 0,
+     "n": 0,
+     "point": null,
+     "cp_low": null,
+     "cp_high": null,
+     "conf": 0.95,
+     "note": "n=0 ⇒ 拒绝给率（fail-loud）"
+    },
+    "detectors": [
+     "compile-time"
+    ]
+   },
+   "other": {
+    "total": 7,
+    "catch": 0,
+    "miss": 0,
+    "unknown": 4,
+    "not_error": 3,
+    "denominator": {
+     "value": 0,
+     "meaning": "catch+miss（可测且非测量类）",
+     "excluded": {
+      "unknown": 4,
+      "not_error": 3
+     },
+     "all_samples": 7
+    },
+    "detect_rate_pct": null,
+    "cp95": {
+     "k": 0,
+     "n": 0,
+     "point": null,
+     "cp_low": null,
+     "cp_high": null,
+     "conf": 0.95,
+     "note": "n=0 ⇒ 拒绝给率（fail-loud）"
+    },
+    "detectors": [
+     "measure",
+     "unknown"
+    ]
+   }
+  }
+ },
+ "sensitivity_first_run_rule": {
+  "total": 76,
+  "catch": 40,
+  "miss": 24,
+  "unknown": 9,
+  "not_error": 3,
+  "denominator": {
+   "value": 64,
+   "meaning": "catch+miss（可测且非测量类）",
+   "excluded": {
+    "unknown": 9,
+    "not_error": 3
+   },
+   "all_samples": 76
+  },
+  "detect_rate_pct": 62.5,
+  "cp95": {
+   "k": 40,
+   "n": 64,
+   "point": 0.625,
+   "cp_low": 0.4950764600526629,
+   "cp_high": 0.742951077551933,
+   "conf": 0.95
+  }
+ },
+ "note": "历史 60 条为 671a 落盘值（首回合口径）；d3f-* 为 3 回合『任一 catch』口径。"
+}

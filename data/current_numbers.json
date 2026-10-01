@@ -1,169 +1,180 @@
 {
-  "schema": "queyi-current-numbers/672f",
-  "generated_by": "672f W1（baseline 重跑后建立唯一权威数字源）",
-  "generated_at": "2026-10-01",
-  "note": "本文件只放当前最新核心数字。历史轨迹与口径说明见 data/experiments/reveal_update_672f.json 与 data/experiments/reveal_update_671a.json。",
-  "seed": 20260930,
+ "schema": "queyi-current-numbers/672h",
+ "generated_by": "672h W3（扩样后重算：holdout 41 / corpus 64；三路复现一致）",
+ "generated_at": "2026-10-01",
+ "note": "本文件只放当前最新核心数字（672h 扩样后）。历史轨迹见 data/experiments/reveal_update_672f.json 与 reveal_update_671a.json；扩样登记见 data/holdout_reveal_5_672h.json 与 data/external_corpus_reveal_672h.json。",
+ "seed": 20260930,
+ "holdout": {
+  "rate_pct": 82.9,
+  "k": 34,
+  "n": 41,
+  "denominator": "catch+miss（可测真错样本；planted=true，unknown 不计）",
+  "cp95": [
+   67.9,
+   92.8
+  ],
+  "cp95_halfwidth_pp": 12.5,
+  "source": "data/holdout_reveal_5_672h.json（第 5 轮 reveal，seed 20260930）"
+ },
+ "corpus": {
+  "rate_pct": 62.5,
+  "k": 40,
+  "n": 64,
+  "denominator": "catch+miss（可测且非测量类；unknown 与 not_error 不计）",
+  "cp95": [
+   49.5,
+   74.3
+  ],
+  "all_samples_pct": 52.6,
+  "source": "data/external_corpus_reveal_672h.json（第 4 轮 reveal）"
+ },
+ "baseline_arms": {
   "holdout": {
-    "rate_pct": 81.0,
-    "k": 17,
-    "n": 21,
-    "denominator": "catch+miss（可测真错样本；planted=true，unknown 不计）",
+   "fd": {
+    "k": 34,
+    "n": 41,
+    "rate_pct": 82.9,
     "cp95": [
-      58.1,
-      94.6
-    ],
-    "source": "data/experiments/baseline_fd.json（tools/baseline_670a.py --run，672f 重跑）"
+     67.9,
+     92.8
+    ]
+   },
+   "static": {
+    "k": 1,
+    "n": 41,
+    "rate_pct": 2.4,
+    "cp95": [
+     0.1,
+     12.9
+    ]
+   },
+   "random_proxy": {
+    "k": 4,
+    "n": 41,
+    "rate_pct": 9.8,
+    "cp95": [
+     2.7,
+     23.1
+    ]
+   }
   },
   "corpus": {
-    "rate_pct": 54.2,
-    "k": 26,
-    "n": 48,
-    "denominator": "catch+miss（可测且非测量类；unknown 与 not_error 不计）",
+   "fd": {
+    "k": 40,
+    "n": 64,
+    "rate_pct": 62.5,
     "cp95": [
-      39.2,
-      68.6
-    ],
-    "source": "data/experiments/baseline_fd.json（tools/baseline_670a.py --run，672f 重跑）"
-  },
-  "baseline_arms": {
-    "holdout": {
-      "fd": {
-        "k": 17,
-        "n": 21,
-        "rate_pct": 81.0,
-        "cp95": [
-          58.1,
-          94.6
-        ]
-      },
-      "static": {
-        "k": 1,
-        "n": 21,
-        "rate_pct": 4.8,
-        "cp95": [
-          0.1,
-          23.8
-        ]
-      },
-      "random": {
-        "k": 2,
-        "n": 21,
-        "rate_pct": 9.5,
-        "cp95": [
-          1.2,
-          30.4
-        ]
-      }
-    },
-    "corpus": {
-      "fd": {
-        "k": 26,
-        "n": 48,
-        "rate_pct": 54.2,
-        "cp95": [
-          39.2,
-          68.6
-        ]
-      },
-      "static": {
-        "k": 7,
-        "n": 48,
-        "rate_pct": 14.6,
-        "cp95": [
-          6.1,
-          27.8
-        ]
-      },
-      "random": {
-        "k": 8,
-        "n": 48,
-        "rate_pct": 16.7,
-        "cp95": [
-          7.5,
-          30.2
-        ]
-      }
-    },
-    "caveat": "Static=口径重分箱（非重跑）；Random=真 B3（672g：拆仓 queyi-verifier 的 select_assets，验证资产池 8 项，不含测量仪器），Δ 可作确认性判读（预注册 H3）。数值与 670a 仪器级代理一致（代理忠实）。"
-  },
-  "b3_random_672g": {
-    "status": "RESOLVED（670a 的 BLOCKED 已解阻）",
-    "interface": "queyi-verifier/tools/select_assets_672g.py::select_assets(pool, n, strategy, seed)",
-    "pool": [
-      "asan",
-      "compile-time",
-      "compiler-warn",
-      "cross-compile",
-      "linker",
-      "tsan",
-      "ubsan",
-      "wunsequenced"
-    ],
-    "pool_size": 8,
-    "seed": 20260930,
-    "source": "data/experiments/b3_real_672g.json（tools/baseline_672g.py --run）",
-    "dual_path": "data/experiments/baseline_verify_672g.json（PASS，差 < 0.1pp）"
-  },
-  "comparisons": {
-    "holdout_fd_vs_static": {
-      "delta_pp": 76.2,
-      "ci_pp": [
-        58.0,
-        94.4
-      ],
-      "mcnemar_p": 3.05e-05,
-      "cohens_h": 1.8
-    },
-    "holdout_fd_vs_random": {
-      "delta_pp": 71.4,
-      "ci_pp": [
-        52.1,
-        90.8
-      ],
-      "mcnemar_p": 6.1e-05,
-      "cohens_h": 1.61
-    },
-    "corpus_fd_vs_static": {
-      "delta_pp": 39.6,
-      "ci_pp": [
-        25.7,
-        53.4
-      ],
-      "mcnemar_p": 3.81e-06,
-      "cohens_h": 0.87
-    },
-    "corpus_fd_vs_random": {
-      "delta_pp": 37.5,
-      "ci_pp": [
-        23.8,
-        51.2
-      ],
-      "mcnemar_p": 7.63e-06,
-      "cohens_h": 0.81
-    }
-  },
-  "control_false_positive": {
-    "fp": 2,
-    "total": 11,
-    "rate_pct": 18.2
-  },
-  "defect_reinjection": {
-    "k": 6,
-    "n": 6,
-    "rate_pct": 100.0
-  },
-  "mutation_core": {
-    "killed": 110,
-    "n": 114,
-    "rate_pct": 96.5,
+     49.5,
+     74.3
+    ]
+   },
+   "static": {
+    "k": 11,
+    "n": 64,
+    "rate_pct": 17.2,
     "cp95": [
-      91.3,
-      99.0
-    ],
-    "note": "内部指标，与检出率不同口径；672f 重跑（seed 20260928，全量 147 变异体）"
+     8.9,
+     28.7
+    ]
+   },
+   "random_proxy": {
+    "k": 14,
+    "n": 64,
+    "rate_pct": 21.9,
+    "cp95": [
+     12.5,
+     34.0
+    ]
+   }
   },
-  "rules_total": 67,
-  "cards_real": 42,
-  "ledger_events": 452
+  "caveat": "Static=口径重分箱（非重跑）；Random†=仪器级代理（非真 B3），Δ 只作方向性读法"
+ },
+ "comparisons": {
+  "holdout_fd_vs_static": {
+   "delta_pp": 80.49,
+   "ci_pp": [
+    68.4,
+    92.6
+   ],
+   "mcnemar_p": 2.328306436538702e-10,
+   "cohens_h": 1.976,
+   "n_paired": 41,
+   "discordant": {
+    "b_fd_only": 33,
+    "c_static_only": 0
+   }
+  },
+  "corpus_fd_vs_static": {
+   "delta_pp": 45.31,
+   "ci_pp": [
+    33.1,
+    57.5
+   ],
+   "mcnemar_p": 3.725290298461911e-09,
+   "cohens_h": 0.9685,
+   "n_paired": 64,
+   "discordant": {
+    "b_fd_only": 29,
+    "c_static_only": 0
+   }
+  },
+  "holdout_fd_vs_random": {
+   "status": "待 672k 重算（本批未重跑 random 臂的配对检验）"
+  },
+  "corpus_fd_vs_random": {
+   "status": "待 672k 重算（同上）"
+  },
+  "source": "data/experiments/verify_expand_672h.json（独立重实现；与 ablation_stats 逐位一致）"
+ },
+ "control_false_positive": {
+  "fp": 2,
+  "total": 11,
+  "rate_pct": 18.2
+ },
+ "defect_reinjection": {
+  "k": 6,
+  "n": 6,
+  "rate_pct": 100.0
+ },
+ "mutation_core": {
+  "killed": 110,
+  "n": 114,
+  "rate_pct": 96.5,
+  "cp95": [
+   91.3,
+   99.0
+  ],
+  "note": "内部指标，与检出率不同口径；672f 重跑（seed 20260928，全量 147 变异体）"
+ },
+ "rules_total": 67,
+ "cards_real": 42,
+ "ledger_events": 452,
+ "expansion_672h": {
+  "holdout_new_samples": 20,
+  "corpus_new_samples": 16,
+  "holdout_before": {
+   "k": 17,
+   "n": 21,
+   "rate_pct": 81.0
+  },
+  "corpus_before": {
+   "k": 26,
+   "n": 48,
+   "rate_pct": 54.2
+  },
+  "H1_holdout": "成立（Δ+80.49pp > 20pp 且 p=2.33e-10 < 0.05）",
+  "H2_corpus": "成立（Δ+45.31pp > 15pp 且 p=3.73e-09 < 0.05）",
+  "H3_ci_halfwidth": "成立（holdout CP95 半宽 12.5pp ≤ 15pp）",
+  "H4_subset_delta": {
+   "holdout_pp": 4.0,
+   "holdout_verdict": "与预注册一致（<20pp）",
+   "corpus_pp": 33.3,
+   "corpus_verdict": "超出预注册范围（≥20pp）⇒ 子集构成差异显著，如实登记"
+  },
+  "honest_caveats": [
+   "holdout 新样本全部取存量缺陷夹具（未新写代码），但 14/20 是 asan 类 ⇒ 构成偏移已按层报告",
+   "corpus 新样本为自撰片段（缺陷类别据公开清单，verified_source=false）⇒ 新子集检出率显著更高（H4 超范围，已登记）",
+   "未知/不可用样本一律不进分母（holdout 1 / corpus 12）"
+  ]
+ }
 }

@@ -1,0 +1,1406 @@
+{
+ "schema": "queyi-holdout-reveal-detail/v3",
+ "reveal_index": 5,
+ "generated_by": "tools/holdout_reveal_5_672h.py",
+ "generated_at": "2026-10-01 23:04:30",
+ "summary_for": "data/holdout_reveal_5_672h.json",
+ "naming_note": "672h 第 5 轮：h41-h60 实测；h1-h40 复用第 4 轮（not 重跑）",
+ "samples_requested": [
+  "h41",
+  "h42",
+  "h43",
+  "h44",
+  "h45",
+  "h46",
+  "h47",
+  "h48",
+  "h49",
+  "h50",
+  "h51",
+  "h52",
+  "h53",
+  "h54",
+  "h55",
+  "h56",
+  "h57",
+  "h58",
+  "h59",
+  "h60"
+ ],
+ "runs": 3,
+ "detector_reuse": "tools/holdout_reveal_661.py::detect（唯一判据；-O0/-O2 双档 + setarch -R）",
+ "verdict_rule": "任一回合任一档报出 ⇒ catch（预注册 672h 口径）；first_run_verdict 一并落盘",
+ "caliber": "可测真错 = catch+miss；unknown（检测器不可用/编译失败）不进分母；对照单列",
+ "env": {
+  "wsl_gpp": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "local_gpp": "g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+  "local_clang": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+  "host": "win32",
+  "python": "3.14.5",
+  "roll": "asan/ubsan/tsan 走 WSL（-O0/-O2 双档 + setarch -R）；wunsequenced/compiler-warn/cross-compile/linker 走本机编译器"
+ },
+ "per_sample": [
+  {
+   "id": "h41",
+   "detector": "asan",
+   "dir": "Appendix/ub",
+   "files": [
+    "ub_use_after_free.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "asan 命中[-O0(rc=1) ================================================================= ==36==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x5555555552e3 bp 0x7fffffffe4f0 sp 0x7fffffffe4e0 ]（档位 -O0,-O2）",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h42",
+   "detector": "asan",
+   "dir": "Appendix/ub",
+   "files": [
+    "ub_double_free.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "asan 命中[-O0(rc=1) ================================================================= ==89==ERROR: AddressSanitizer: attempting double-free on 0x502000000010 in thread T0:     #0 0x7ffff78fc4d8 in free ../../../../src/li]（档位 -O0,-O2）",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h43",
+   "detector": "asan",
+   "dir": "Appendix/ub",
+   "files": [
+    "ub_stack_after_scope.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "asan 命中[-O0(rc=1) ================================================================= ==142==ERROR: AddressSanitizer: stack-use-after-return on address 0x7ffff4f00020 at pc 0x5555555553a6 bp 0x7fffffffe500 sp 0x7fffffffe; -O2(rc=1) ================================================================= ==16",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h44",
+   "detector": "asan",
+   "dir": "Appendix/ub",
+   "files": [
+    "ub_dangling_reference.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==194==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x555555555387 bp 0x7fffffffe; -O2(rc=1) AddressSanitizer:DEADLYSIGNAL ========================================",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h45",
+   "detector": "asan",
+   "dir": "Appendix/ub",
+   "files": [
+    "ub_iterator_invalidation.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "asan 命中[-O0(rc=1) ================================================================= ==246==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000014 at pc 0x555555555f84 bp 0x7fffffffe350 sp 0x7fffffffe340; -O2(rc=1) ================================================================= ==27",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h46",
+   "detector": "asan",
+   "dir": "Appendix/ub",
+   "files": [
+    "ub_vptr_corruption.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": true,
+   "note": "asan 两档均无报告[-O0(rc=1) calling virtual...; -O2(rc=1) calling virtual...]",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h47",
+   "detector": "asan",
+   "dir": "Appendix/ub",
+   "files": [
+    "ub_const_cast_mutation.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==352==ERROR: AddressSanitizer: SEGV on unknown address 0x555555556020 (pc 0x55555555522f bp 0x7fffffffe]（档位 -O0,-O2）",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h48",
+   "detector": "asan",
+   "dir": "Examples",
+   "files": [
+    "_ch14_double_free.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "asan 命中[-O0(rc=1) ================================================================= ==405==ERROR: AddressSanitizer: attempting double-free on 0x502000000010 in thread T0:     #0 0x7ffff78ff5e8 in operator delete(void*,]（档位 -O0,-O2）",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h49",
+   "detector": "asan",
+   "dir": "Examples",
+   "files": [
+    "_ch14_heap_overflow.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "asan 命中[-O0(rc=1) ================================================================= ==458==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x504000000038 at pc 0x555555555222 bp 0x7fffffffe4f0 sp 0x7fffffffe4e]（档位 -O0,-O2）",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h50",
+   "detector": "asan",
+   "dir": "Examples",
+   "files": [
+    "_ch14_leak.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "asan 命中[-O0(rc=1) ================================================================= ==511==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 400 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fe6c8 in]（档位 -O0,-O2）",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h51",
+   "detector": "asan",
+   "dir": "Examples",
+   "files": [
+    "_ch147_leak.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "asan 命中[-O0(rc=1) ================================================================= ==565==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 4 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fe548 in o]（档位 -O0,-O2）",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h52",
+   "detector": "asan",
+   "dir": "Examples",
+   "files": [
+    "_ch147_oob.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "asan 命中[-O0(rc=1) ================================================================= ==619==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff4f00034 at pc 0x5555555553c0 bp 0x7fffffffe480 sp 0x7fffffffe4; -O2(rc=1) ================================================================= ==64",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h53",
+   "detector": "asan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_leak_tree_bug.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "asan 命中[-O2(rc=1) ================================================================= ==698==ERROR: LeakSanitizer: detected memory leaks  Indirect leak of 128 byte(s) in 2 object(s) allocated from:     #0 0x7ffff78fe548 ]（档位 -O0,-O2）",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h54",
+   "detector": "asan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_leak_two_node.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "asan 命中[-O0(rc=1) ================================================================= ==725==ERROR: LeakSanitizer: detected memory leaks  Indirect leak of 40 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fe548 i; -O2(rc=1) ================================================================= ==75",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h55",
+   "detector": "ubsan",
+   "dir": "Appendix/ub",
+   "files": [
+    "ub_alignment_violation.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "ubsan 命中[-O0(rc=0) written via misaligned ptr /mnt/c/Users/ASUS/AppData/Local/Temp/tmp72t9oudx/ub_alignment_violation.cpp:12:8: runtime error: store to misaligned address 0x7fffffffe501 for type 'int', which requires 4 ; -O2(rc=0) written via misaligned ptr /mnt/c/Users/ASUS/AppData/Local/Temp/tmp72",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h56",
+   "detector": "ubsan",
+   "dir": "Examples",
+   "files": [
+    "_ch14_ubsan.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "ubsan 命中[-O0(rc=0) -2147483648 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp6fc0tvh4/_ch14_ubsan.cpp:6:7: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'; -O2(rc=0) -2147483648 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp6fc0tvh4/_ch14_ubsan.cpp:6:7: runtime error: ",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h57",
+   "detector": "tsan",
+   "dir": "Appendix/ub",
+   "files": [
+    "ub_data_race.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "tsan 命中[-O0(rc=66) g = 2000000  (期望 2000000，但可能更少) ================== WARNING: ThreadSanitizer: data race (pid=883)   Read of size 4 at 0x55555555901c by thread T2:     #0 worker() /mnt/c/Users/ASUS/AppData/Local/Temp/t; -O2(rc=66) g = 2000000  (期望 2000000，但可能更少) ================== WARNING: ThreadSa",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h58",
+   "detector": "tsan",
+   "dir": "Examples",
+   "files": [
+    "_ch147_race.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "tsan 命中[-O0(rc=66) ================== WARNING: ThreadSanitizer: data race (pid=941)   Read of size 4 at 0x55555555901c by thread T2:     #0 inc() /mnt/c/Users/ASUS/AppData/Local/Temp/tmpuc8klkyr/_ch147_race.cpp:3 (rv_bi; -O2(rc=66) ================== WARNING: ThreadSanitizer: data race (pid=970)   R",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h59",
+   "detector": "tsan",
+   "dir": "Appendix/ub",
+   "files": [
+    "ub_signal_handler.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": true,
+   "note": "tsan 两档均无报告[-O0(rc=0) counter = 5; -O2(rc=0) counter = 5]",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h60",
+   "detector": "cross-compile",
+   "dir": "Appendix/ub",
+   "files": [
+    "ub_strict_aliasing.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": true,
+   "note": "两编译器输出一致",
+   "source": "measured_672h",
+   "planted": true,
+   "layer": "cross-compile"
+  },
+  {
+   "id": "h1",
+   "detector": "tsan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_data_race.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：tsan 命中[-O0(rc=66) single_total=100000 race_ops_total=200000 safe_ops_total=200000 safe_final=200000 ================== WARNING: ThreadSanitizer: data race (pid=1122)   Read of size 4 at 0x55555555d01",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h2",
+   "detector": "unknown",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_false_sharing.cpp"
+   ],
+   "verdict": "unknown",
+   "verdicts_per_run": [
+    "unknown"
+   ],
+   "first_run_verdict": "unknown",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：无本地检测器",
+   "source": "reused_reveal_4",
+   "planted": "unknown",
+   "layer": "other"
+  },
+  {
+   "id": "h3",
+   "detector": "wunsequenced",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_eval_order.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：g++ -Wunsequenced 告警",
+   "source": "reused_reveal_4",
+   "planted": false,
+   "layer": "compiler-warn"
+  },
+  {
+   "id": "h4",
+   "detector": "compiler-warn",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_auto_ptr.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：警告 8 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpwmgf2c05\\_atom_auto_ptr.cpp:32:52:",
+   "source": "reused_reveal_4",
+   "planted": "unknown",
+   "layer": "compiler-warn"
+  },
+  {
+   "id": "h5",
+   "detector": "ubsan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_strict_alias.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：ubsan 两档均无报告[-O0(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是; -O2(rc=0) A 函数返回=1 内存实际=1073741824 自洽=否 B UB路径=1073741824 合规路径=1073741824 一致=是]",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h6",
+   "detector": "cross-compile",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_fence_vs_atomic.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：两编译器输出一致",
+   "source": "reused_reveal_4",
+   "planted": "unknown",
+   "layer": "cross-compile"
+  },
+  {
+   "id": "h7",
+   "detector": "asan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_leak_detection.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：asan 命中[-O0(rc=1) ================================================================= ==1236==ERROR: LeakSanitizer: detected memory leaks  Indirect leak of 32 byte(s) in 1 object(s) allocated from:     ",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h8",
+   "detector": "asan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_rule_three_bug.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：asan 命中[-O0(rc=1) ================================================================= ==1290==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 4 byte(s) in 1 object(s) allocated from:     #0 ",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h9",
+   "detector": "compiler-warn",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_rule_five_noexcept.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：无告警",
+   "source": "reused_reveal_4",
+   "planted": "unknown",
+   "layer": "compiler-warn"
+  },
+  {
+   "id": "h10",
+   "detector": "unknown",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_shared_cycle.cpp"
+   ],
+   "verdict": "unknown",
+   "verdicts_per_run": [
+    "unknown"
+   ],
+   "first_run_verdict": "unknown",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：无本地检测器",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "other"
+  },
+  {
+   "id": "h11",
+   "detector": "unknown",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_weak_cycle.cpp"
+   ],
+   "verdict": "unknown",
+   "verdicts_per_run": [
+    "unknown"
+   ],
+   "first_run_verdict": "unknown",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：无本地检测器",
+   "source": "reused_reveal_4",
+   "planted": false,
+   "layer": "other"
+  },
+  {
+   "id": "h12",
+   "detector": "unknown",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_unique_size.cpp"
+   ],
+   "verdict": "unknown",
+   "verdicts_per_run": [
+    "unknown"
+   ],
+   "first_run_verdict": "unknown",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：无本地检测器",
+   "source": "reused_reveal_4",
+   "planted": false,
+   "layer": "other"
+  },
+  {
+   "id": "h13",
+   "detector": "compiler-warn",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_move_no_gain.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：无告警",
+   "source": "reused_reveal_4",
+   "planted": false,
+   "layer": "compiler-warn"
+  },
+  {
+   "id": "h14",
+   "detector": "linker",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_inline_odr_a.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：链接失败(多定义/缺符号)",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "linker"
+  },
+  {
+   "id": "h15",
+   "detector": "asan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_new_array.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：asan 命中[-O0(rc=1) ================================================================= ==1344==ERROR: AddressSanitizer: out of memory: allocator is trying to allocate 0x5d21dba000 bytes     #0 0x7ffff78f",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h16",
+   "detector": "ubsan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_rvref_return.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：ubsan 两档均无报告[-O0(rc=0) ret_plain copy=1 move=0 / ret_moved copy=0 move=1; -O2(rc=0) ret_plain copy=1 move=0 / ret_moved copy=0 move=1]",
+   "source": "reused_reveal_4",
+   "planted": false,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h17",
+   "detector": "asan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_sso_size.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：asan 两档均无报告[-O0(rc=0) sizeof(std::string)=32 empty capacity=15 (SSO buffer chars) len=15 allocs=0 len=16 allocs=1; -O2(rc=0) sizeof(std::string)=32 empty capacity=15 (SSO buffer chars) len=15 allocs=0",
+   "source": "reused_reveal_4",
+   "planted": false,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h18",
+   "detector": "ubsan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_align_ctrl.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：ubsan 两档均无报告[-O0(rc=0) alignof(Aligned)=16 sizeof(Aligned)=16 memcpy roundtrip x=7; -O2(rc=0) alignof(Aligned)=16 sizeof(Aligned)=16 memcpy roundtrip x=7]",
+   "source": "reused_reveal_4",
+   "planted": false,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h19",
+   "detector": "asan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_alloc_arena.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：asan 两档均无报告[-O0(rc=0) arena: calls=5 bytes=124 heap_new=0 std  : heap_new=5 (growth reallocations); -O2(rc=0) arena: calls=5 bytes=124 heap_new=0 std  : heap_new=5 (growth reallocations)]",
+   "source": "reused_reveal_4",
+   "planted": false,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h20",
+   "detector": "compiler-warn",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_named_rvalue.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：无告警",
+   "source": "reused_reveal_4",
+   "planted": false,
+   "layer": "compiler-warn"
+  },
+  {
+   "id": "h21",
+   "detector": "ubsan",
+   "dir": "data/cards_665/fixtures",
+   "files": [
+    "ig-01.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：ubsan 命中[-O0(rc=1) /mnt/c/Users/ASUS/AppData/Local/Temp/tmphi4vjnu7/ig-01.cpp:1:31: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'; -O2(rc=1) /mnt/c/Users/A",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h22",
+   "detector": "asan",
+   "dir": "data/cards_665/fixtures",
+   "files": [
+    "ig-02.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：asan 命中[-O0(rc=1) ================================================================= ==1660==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff4f00034 at pc 0x5555555552e7 bp 0x7fffffffe",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h23",
+   "detector": "asan",
+   "dir": "data/cards_665/fixtures",
+   "files": [
+    "ig-07.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==1712==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x55555555",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h24",
+   "detector": "ubsan",
+   "dir": "data/cards_665/fixtures",
+   "files": [
+    "ig-08.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：ubsan 命中[-O0(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpcvbtmpri/ig-08.cpp:1:42: runtime error: division by zero; -O2(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpcvbtmpri/ig-08.cpp:1:42: runt",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h25",
+   "detector": "asan",
+   "dir": "data/cards_665/fixtures",
+   "files": [
+    "ig-14.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：asan 命中[-O0(rc=1) ================================================================= ==1816==ERROR: AddressSanitizer: alloc-dealloc-mismatch (operator new [] vs operator delete) on 0x502000000010     #",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h26",
+   "detector": "asan",
+   "dir": "data/cards_665/fixtures",
+   "files": [
+    "h26.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：asan 命中[-O0(rc=1) ================================================================= ==1868==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x55555555526d bp 0x7fffffffe4f",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h27",
+   "detector": "asan",
+   "dir": "data/cards_665/fixtures",
+   "files": [
+    "h27.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：asan 命中[-O0(rc=1) ================================================================= ==1921==ERROR: AddressSanitizer: attempting double-free on 0x502000000010 in thread T0:     #0 0x7ffff78ff5e8 in ope",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h28",
+   "detector": "asan",
+   "dir": "data/cards_665/fixtures",
+   "files": [
+    "h28.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==1974==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x55555555",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h29",
+   "detector": "ubsan",
+   "dir": "data/cards_665/fixtures",
+   "files": [
+    "h29.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h30",
+   "detector": "asan",
+   "dir": "data/cards_665/fixtures",
+   "files": [
+    "h30.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": false,
+   "note": "复用第 4 轮（671a）：asan 命中[-O0(rc=1) ================================================================= ==2078==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 256 byte(s) in 1 object(s) allocated from:     #",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h31",
+   "detector": "tsan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_data_race.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "复用第 4 轮（671a）：tsan 命中[-O0(rc=66) single_total=100000 race_ops_total=200000 safe_ops_total=200000 safe_final=200000 ================== WARNING: ThreadSanitizer: data race (pid=49)   Read of size 4 at 0x55555555d01c ",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h32",
+   "detector": "asan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_rule_three_bug_asan.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "复用第 4 轮（671a）：asan 命中[-O0(rc=1) ================================================================= ==111==ERROR: AddressSanitizer: attempting double-free on 0x502000000030 in thread T0:     #0 0x7ffff78ff5e8 in oper",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h33",
+   "detector": "ubsan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_strict_alias.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": true,
+   "note": "复用第 4 轮（671a）：ubsan 两档均无报告[-O0(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是; -O2(rc=0) A 函数返回=1 内存实际=1073741824 自洽=否 B UB路径=1073741824 合规路径=1073741824 一致=是]",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h34",
+   "detector": "tsan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_fence_vs_atomic.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": true,
+   "note": "复用第 4 轮（671a）：tsan 两档均无报告[-O0(rc=0) spin_plain_ret=7|spin_signal_fence_ret=8|spin_with_fence_ret=9|spin_volatile_ret=10 spin_fence_outside_ret=11|writer_signal_fence_ret=3|writer_thread_fence_ret=3 functions_presen",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  },
+  {
+   "id": "h35",
+   "detector": "wunsequenced",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_eval_order.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "复用第 4 轮（671a）：g++ -Wunsequenced 告警",
+   "source": "reused_reveal_4",
+   "planted": false,
+   "layer": "compiler-warn"
+  },
+  {
+   "id": "h36",
+   "detector": "compiler-warn",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_raii.cpp"
+   ],
+   "verdict": "miss",
+   "verdicts_per_run": [
+    "miss"
+   ],
+   "first_run_verdict": "miss",
+   "reproducible": true,
+   "note": "复用第 4 轮（671a）：无告警",
+   "source": "reused_reveal_4",
+   "planted": false,
+   "layer": "compiler-warn"
+  },
+  {
+   "id": "h37",
+   "detector": "unknown",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_false_sharing.cpp"
+   ],
+   "verdict": "unknown",
+   "verdicts_per_run": [
+    "unknown"
+   ],
+   "first_run_verdict": "unknown",
+   "reproducible": true,
+   "note": "复用第 4 轮（671a）：无本地检测器",
+   "source": "reused_reveal_4",
+   "planted": "unknown",
+   "layer": "other"
+  },
+  {
+   "id": "h38",
+   "detector": "compiler-warn",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_auto_ptr.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "复用第 4 轮（671a）：警告 8 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpjomely98\\_atom_auto_ptr.cpp:32:52:",
+   "source": "reused_reveal_4",
+   "planted": "unknown",
+   "layer": "compiler-warn"
+  },
+  {
+   "id": "h39",
+   "detector": "unknown",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_sso_cost.cpp"
+   ],
+   "verdict": "unknown",
+   "verdicts_per_run": [
+    "unknown"
+   ],
+   "first_run_verdict": "unknown",
+   "reproducible": true,
+   "note": "复用第 4 轮（671a）：无本地检测器",
+   "source": "reused_reveal_4",
+   "planted": "unknown",
+   "layer": "other"
+  },
+  {
+   "id": "h40",
+   "detector": "asan",
+   "dir": "Examples/atoms",
+   "files": [
+    "_atom_leak_detection.cpp"
+   ],
+   "verdict": "catch",
+   "verdicts_per_run": [
+    "catch"
+   ],
+   "first_run_verdict": "catch",
+   "reproducible": true,
+   "note": "复用第 4 轮（671a）：asan 命中[-O0(rc=1) ================================================================= ==267==ERROR: LeakSanitizer: detected memory leaks  Indirect leak of 32 byte(s) in 1 object(s) allocated from:     #",
+   "source": "reused_reveal_4",
+   "planted": true,
+   "layer": "sanitizer"
+  }
+ ],
+ "round5_summary": {
+  "labels": {
+   "error": 20,
+   "control": 0,
+   "unknown": 0
+  },
+  "error_subset": {
+   "total": 20,
+   "catch": 17,
+   "miss": 3,
+   "unknown": 0,
+   "detect_rate_pct": 85.0
+  },
+  "control_subset": {
+   "total": 0,
+   "false_positive": 0
+  },
+  "denominator": {
+   "value": 20,
+   "meaning": "catch+miss（可测真错样本）",
+   "excluded": {
+    "detector_unknown": 0,
+    "label_unknown": 0
+   }
+  },
+  "cp95": {
+   "k": 17,
+   "n": 20,
+   "point": 0.85,
+   "cp_low": 0.6210731734546859,
+   "cp_high": 0.9679290628145363,
+   "conf": 0.95
+  }
+ },
+ "historical_reuse": {
+  "n": 40,
+  "ids": [
+   "h1",
+   "h2",
+   "h3",
+   "h4",
+   "h5",
+   "h6",
+   "h7",
+   "h8",
+   "h9",
+   "h10",
+   "h11",
+   "h12",
+   "h13",
+   "h14",
+   "h15",
+   "h16",
+   "h17",
+   "h18",
+   "h19",
+   "h20",
+   "h21",
+   "h22",
+   "h23",
+   "h24",
+   "h25",
+   "h26",
+   "h27",
+   "h28",
+   "h29",
+   "h30",
+   "h31",
+   "h32",
+   "h33",
+   "h34",
+   "h35",
+   "h36",
+   "h37",
+   "h38",
+   "h39",
+   "h40"
+  ],
+  "source": "data/holdout/reveal_3_detail_671a.json"
+ },
+ "cumulative_summary": {
+  "labels": {
+   "error": 42,
+   "control": 11,
+   "unknown": 7
+  },
+  "error_subset": {
+   "total": 42,
+   "catch": 34,
+   "miss": 7,
+   "unknown": 1,
+   "detect_rate_pct": 82.9
+  },
+  "control_subset": {
+   "total": 11,
+   "false_positive": 2
+  },
+  "denominator": {
+   "value": 41,
+   "meaning": "catch+miss（可测真错样本）",
+   "excluded": {
+    "detector_unknown": 1,
+    "label_unknown": 7
+   }
+  },
+  "cp95": {
+   "k": 34,
+   "n": 41,
+   "point": 0.8292682926829268,
+   "cp_low": 0.6794391205510908,
+   "cp_high": 0.9284847118477053,
+   "conf": 0.95
+  },
+  "by_layer": {
+   "sanitizer": {
+    "total": 39,
+    "catch": 33,
+    "miss": 6,
+    "unknown": 0,
+    "detectors": [
+     "asan",
+     "tsan",
+     "ubsan"
+    ],
+    "denominator": {
+     "value": 39,
+     "meaning": "catch+miss（可测且非测量类）"
+    },
+    "detect_rate_pct": 84.6,
+    "cp95": {
+     "k": 33,
+     "n": 39,
+     "point": 0.8461538461538461,
+     "cp_low": 0.6947200755632872,
+     "cp_high": 0.9413757371392106,
+     "conf": 0.95
+    }
+   },
+   "cross-compile": {
+    "total": 1,
+    "catch": 0,
+    "miss": 1,
+    "unknown": 0,
+    "detectors": [
+     "cross-compile"
+    ],
+    "denominator": {
+     "value": 1,
+     "meaning": "catch+miss（可测且非测量类）"
+    },
+    "detect_rate_pct": 0.0,
+    "cp95": {
+     "k": 0,
+     "n": 1,
+     "point": 0.0,
+     "cp_low": 0.0,
+     "cp_high": 0.9749999999999999,
+     "conf": 0.95
+    }
+   },
+   "other": {
+    "total": 1,
+    "catch": 0,
+    "miss": 0,
+    "unknown": 1,
+    "detectors": [
+     "unknown"
+    ],
+    "denominator": {
+     "value": 0,
+     "meaning": "catch+miss（可测且非测量类）"
+    },
+    "detect_rate_pct": null,
+    "cp95": {
+     "k": 0,
+     "n": 0,
+     "point": null,
+     "cp_low": null,
+     "cp_high": null,
+     "conf": 0.95,
+     "note": "n=0 ⇒ 拒绝给率（fail-loud）"
+    }
+   },
+   "linker": {
+    "total": 1,
+    "catch": 1,
+    "miss": 0,
+    "unknown": 0,
+    "detectors": [
+     "linker"
+    ],
+    "denominator": {
+     "value": 1,
+     "meaning": "catch+miss（可测且非测量类）"
+    },
+    "detect_rate_pct": 100.0,
+    "cp95": {
+     "k": 1,
+     "n": 1,
+     "point": 1.0,
+     "cp_low": 0.025000000000000022,
+     "cp_high": 1.0,
+     "conf": 0.95
+    }
+   }
+  }
+ },
+ "sensitivity_first_run_rule": {
+  "labels": {
+   "error": 42,
+   "control": 11,
+   "unknown": 7
+  },
+  "error_subset": {
+   "total": 42,
+   "catch": 34,
+   "miss": 7,
+   "unknown": 1,
+   "detect_rate_pct": 82.9
+  },
+  "control_subset": {
+   "total": 11,
+   "false_positive": 2
+  },
+  "denominator": {
+   "value": 41,
+   "meaning": "catch+miss（可测真错样本）",
+   "excluded": {
+    "detector_unknown": 1,
+    "label_unknown": 7
+   }
+  },
+  "cp95": {
+   "k": 34,
+   "n": 41,
+   "point": 0.8292682926829268,
+   "cp_low": 0.6794391205510908,
+   "cp_high": 0.9284847118477053,
+   "conf": 0.95
+  }
+ },
+ "note": "h1-h40 的 verdict 为 671a 第 4 轮落盘值（首回合口径，单回合）；h41-h60 为 3 回合『任一 catch』口径。两种口径的差别见 sensitivity_first_run_rule。"
+}

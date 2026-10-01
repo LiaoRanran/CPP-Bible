@@ -262,20 +262,22 @@ def collect() -> dict[str, Any]:
     # holdout：**现算** + 与落盘比对（漂移可见 —— 666 的 --check 没查这两个字段）
     hold: dict[str, Any] = {}
     try:
-        r3 = _json("data/holdout_reveal_3_665.json")
-        sub = r3.get("error_subset", {})
+        # 672h（W3 扩样）：切到第 5 轮产物（可测 41）；旧 3_665（16）只作历史
+        r5 = _json("data/holdout_reveal_5_672h.json")
+        cum5 = r5.get("cumulative", {})
+        sub = cum5.get("error_subset", {})
         catch, miss, unknown = int(sub.get("catch", 0)), int(sub.get("miss", 0)), int(sub.get("unknown", 0))
         hold = {
             "rate_pct": sub.get("detect_rate_pct"),
             "catch": catch, "miss": miss, "unknown": unknown,
             "den": catch + miss,
-            "samples": int(r3.get("labels", {}).get("error", 0)),
+            "samples": int(cum5.get("labels", {}).get("error", 0)),
             "denominator": "catch+miss（可测；unknown 不计）",
-            "caliber": str(r3.get("honest_addendum") or "产物未声明口径"),
-            "source": "data/holdout_reveal_3_665.json",
+            "caliber": str(r5.get("honest_note") or r5.get("caliber") or "产物未声明口径"),
+            "source": "data/holdout_reveal_5_672h.json",
         }
     except Exception as e:  # noqa: BLE001
-        unavailable.append(f"holdout_reveal_3_665.json：{e}")
+        unavailable.append(f"holdout_reveal_5_672h.json：{e}")
     try:
         m6 = _json("web/data/metrics_666.json")
         s = (m6.get("metrics") or {}).get("holdout") or {}
@@ -290,7 +292,8 @@ def collect() -> dict[str, Any]:
     # external：**分母算两遍**
     ext: dict[str, Any] = {}
     try:
-        r = _json("data/external_corpus_reveal_665.json")
+        # 672h（W3 扩样）：切到 corpus 第 4 轮产物（可测 64）
+        r = _json("data/external_corpus_reveal_672h.json").get("cumulative", {})
         catch, miss = int(r.get("catch", 0)), int(r.get("miss", 0))
         ext = {
             "rate_pct": r.get("detect_rate_pct"),
@@ -300,10 +303,10 @@ def collect() -> dict[str, Any]:
             "total": int(r.get("total", 0)),
             "den": catch + miss,
             "denominator": "catch+miss（unknown 与 not_error 都排除）",
-            "source": "data/external_corpus_reveal_665.json",
+            "source": "data/external_corpus_reveal_672h.json",
         }
     except Exception as e:  # noqa: BLE001
-        unavailable.append(f"external_corpus_reveal_665.json：{e}")
+        unavailable.append(f"external_corpus_reveal_672h.json：{e}")
     dash["external"] = ext
 
     # 逃逸率 / 保护器 / W2（镜像自 web/data/status.json）

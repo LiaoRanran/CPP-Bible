@@ -1,0 +1,205 @@
+{
+ "schema": "queyi-verify-expand/672h",
+ "generated_by": "tools/verify_expand_672h.py（独立重实现；不 import 判据/统计库）",
+ "tolerance_pp": 0.1,
+ "sources": {
+  "holdout_detail": "data/holdout/reveal_5_detail_672h.json",
+  "corpus_detail": "data/external_corpus/reveal_detail_672h.json"
+ },
+ "holdout_fd": {
+  "k": 34,
+  "n": 41,
+  "point": 0.8292682926829268,
+  "cp_low": 0.6794391205510908,
+  "cp_high": 0.9284847118477049,
+  "rate_pct": 82.9268
+ },
+ "corpus_fd": {
+  "k": 40,
+  "n": 64,
+  "point": 0.625,
+  "cp_low": 0.49507646005266404,
+  "cp_high": 0.7429510775519348,
+  "rate_pct": 62.5
+ },
+ "paired_fd_vs_static": {
+  "holdout": {
+   "n": 41,
+   "fd_k": 34,
+   "static_k": 1,
+   "fd_rate_pct": 82.9268,
+   "static_rate_pct": 2.439,
+   "delta_pp": 80.4878,
+   "discordant": {
+    "b_fd_only": 33,
+    "c_static_only": 0
+   },
+   "mcnemar_p": 2.328306436538702e-10,
+   "cohens_h": 1.976,
+   "delta_ci95_pct": [
+    68.3574,
+    92.6182
+   ],
+   "cp95_fd": [
+    67.9439,
+    92.8485
+   ]
+  },
+  "corpus": {
+   "n": 64,
+   "fd_k": 40,
+   "static_k": 11,
+   "fd_rate_pct": 62.5,
+   "static_rate_pct": 17.1875,
+   "delta_pp": 45.3125,
+   "discordant": {
+    "b_fd_only": 29,
+    "c_static_only": 0
+   },
+   "mcnemar_p": 3.725290298461911e-09,
+   "cohens_h": 0.9685,
+   "delta_ci95_pct": [
+    33.1167,
+    57.5083
+   ],
+   "cp95_fd": [
+    49.5076,
+    74.2951
+   ]
+  }
+ },
+ "third_path_ablation_stats": {
+  "holdout": {
+   "method": "paired-wald-on-difference",
+   "ablation_stats_delta_ci_pct": [
+    68.3574,
+    92.6182
+   ],
+   "mine_delta_ci_pct": [
+    68.3574,
+    92.6182
+   ],
+   "ablation_stats_h": 1.976,
+   "mine_h": 1.976,
+   "ablation_stats_p": 2.3283064365386963e-10,
+   "mine_p": 2.328306436538702e-10
+  },
+  "corpus": {
+   "method": "paired-wald-on-difference",
+   "ablation_stats_delta_ci_pct": [
+    33.1167,
+    57.5083
+   ],
+   "mine_delta_ci_pct": [
+    33.1167,
+    57.5083
+   ],
+   "ablation_stats_h": 0.9685,
+   "mine_h": 0.9685,
+   "ablation_stats_p": 3.725290298461914e-09,
+   "mine_p": 3.725290298461911e-09
+  }
+ },
+ "cross_path": {
+  "holdout_vs_reveal5": {
+   "k": [
+    34,
+    34
+   ],
+   "n": [
+    41,
+    41
+   ],
+   "point": [
+    82.92682926829268,
+    82.92682926829268
+   ],
+   "cp_low": [
+    67.94391205510908,
+    67.94391205510908
+   ],
+   "cp_high": [
+    92.84847118477049,
+    92.84847118477053
+   ],
+   "rate_pct": [
+    82.9268,
+    82.9
+   ]
+  },
+  "corpus_vs_reveal672h": {
+   "k": [
+    40,
+    40
+   ],
+   "n": [
+    64,
+    64
+   ],
+   "point": [
+    62.5,
+    62.5
+   ],
+   "cp_low": [
+    49.5076460052664,
+    49.507646005266295
+   ],
+   "cp_high": [
+    74.29510775519348,
+    74.2951077551933
+   ],
+   "rate_pct": [
+    62.5,
+    62.5
+   ]
+  },
+  "holdout_vs_baseline670a": {
+   "k": [
+    34,
+    34
+   ],
+   "n": [
+    41,
+    41
+   ],
+   "point": [
+    82.92682926829268,
+    82.92682926829268
+   ],
+   "cp_low": [
+    67.94391205510908,
+    67.94391205510908
+   ],
+   "cp_high": [
+    92.84847118477049,
+    92.84847118477053
+   ],
+   "rate_pct": "（对方产物无此键，跳过）"
+  },
+  "corpus_vs_baseline670a": {
+   "k": [
+    40,
+    40
+   ],
+   "n": [
+    64,
+    64
+   ],
+   "point": [
+    62.5,
+    62.5
+   ],
+   "cp_low": [
+    49.5076460052664,
+    49.507646005266295
+   ],
+   "cp_high": [
+    74.29510775519348,
+    74.2951077551933
+   ],
+   "rate_pct": "（对方产物无此键，跳过）"
+  }
+ },
+ "problems": [],
+ "verdict": "PASS"
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "queyi-external-corpus-extension/672h",
+  "generated_by": "672h W3：external corpus 扩样（可测 48 → 64）",
+  "generated_at": "2026-10-01",
+  "source_policy": "自撰单文件片段；缺陷**类别**取自公开清单（cppreference『未定义行为』条目、C++ Core Guidelines 的 R.10/P.4/ES.20 等、以及公开面试/教学里反复出现的陷阱）。**不是**任何网页的逐字复制 ⇒ verified_source=false（诚实体现在这里：类别有公开出处，代码是本仓自写的可编译复现）。",
+  "env_dependency": {
+    "declared": "禁止把六层合并成一个数；perf/compile-time 层本机无检测器 ⇒ unknown（不进分母）",
+    "note": "本批新增全部为 asan/ubsan/tsan/compiler-warn/cross-compile 五类（本机有判据），无 perf/compile-time 新增。"
+  },
+  "count": 16,
+  "samples": [
+    {
+      "id": "d3f-01", "category": "MEM", "source": "C++ Core Guidelines R.11（避免显式 new/delete 混配）；new[]/delete 不配对是经典 UB",
+      "verified_source": false, "description": "new[] 配 delete（非 delete[]）⇒ 分配/释放函数不匹配（ASan alloc-dealloc-mismatch）",
+      "expected_detector": "asan",
+      "code": "#include <cstdio>\nint main(){ int* a = new int[4]; a[0]=1; std::printf(\"%d\\n\", a[0]); delete a; return 0; }\n"
+    },
+    {
+      "id": "d3f-02", "category": "MEM", "source": "cppreference『未定义行为』：访问已释放内存；ASan 手册 HeapBufferOverflow 例型",
+      "verified_source": false, "description": "memcpy 长度写错一字节 ⇒ 堆缓冲区越界写（ASan heap-buffer-overflow）",
+      "expected_detector": "asan",
+      "code": "#include <cstring>\n#include <cstdio>\nint main(){ char* p = new char[4]; std::memcpy(p, \"abcd\", 5); std::printf(\"%c\\n\", p[0]); delete[] p; return 0; }\n"
+    },
+    {
+      "id": "d3f-03", "category": "MEM", "source": "cppreference『未定义行为』：栈缓冲区越界；ASan StackBufferOverflow 例型",
+      "verified_source": false, "description": "strcpy 写入比目标缓冲区长的串 ⇒ 栈缓冲区越界写（ASan stack-buffer-overflow）",
+      "expected_detector": "asan",
+      "code": "#include <cstring>\n#include <cstdio>\nint main(){ char buf[4]; std::strcpy(buf, \"0123456789\"); std::printf(\"%s\\n\", buf); return 0; }\n"
+    },
+    {
+      "id": "d3f-04", "category": "UB", "source": "C++ Core Guidelines F.43（不可返回/保存已销毁对象的地址）",
+      "verified_source": false, "description": "lambda 捕获局部变量的引用并在其作用域外调用 ⇒ 悬垂引用读（ASan）",
+      "expected_detector": "asan",
+      "code": "#include <functional>\n#include <cstdio>\nstd::function<int()> g;\nvoid setup(){ int x = 7; g = [&x]{ return x; }; }\nint main(){ setup(); std::printf(\"%d\\n\", g()); return 0; }\n"
+    },
+    {
+      "id": "d3f-05", "category": "MEM", "source": "公开教学陷阱：容器析构后仍用迭代器/指针",
+      "verified_source": false, "description": "vector 作用域结束后继续解引用其元素的指针 ⇒ use-after-free（ASan）",
+      "expected_detector": "asan",
+      "code": "#include <vector>\n#include <cstdio>\nint main(){ int* p=nullptr; { std::vector<int> v{1,2,3}; p = &v[1]; } std::printf(\"%d\\n\", *p); return 0; }\n"
+    },
+    {
+      "id": "d3f-06", "category": "UB", "source": "cppreference『未定义行为』：有符号整数溢出",
+      "verified_source": false, "description": "累加超过 INT_MAX ⇒ 有符号整数溢出（UBSan runtime error）",
+      "expected_detector": "ubsan",
+      "code": "#include <cstdio>\nint main(){ int s=0; int v=2147483647; s = v + 1; std::printf(\"%d\\n\", s); return 0; }\n"
+    },
+    {
+      "id": "d3f-07", "category": "UB", "source": "cppreference『未定义行为』：负移位计数",
+      "verified_source": false, "description": "左移负位数 ⇒ UB（UBSan shift exponent is negative）",
+      "expected_detector": "ubsan",
+      "code": "#include <cstdio>\nint main(){ int n=2; int x = n << -1; std::printf(\"%d\\n\", x); return 0; }\n"
+    },
+    {
+      "id": "d3f-08", "category": "UB", "source": "cppreference『未定义行为』：除零（运行期除零 UB）",
+      "verified_source": false, "description": "运行期整数除零 ⇒ UB（UBSan division by zero）",
+      "expected_detector": "ubsan",
+      "code": "#include <cstdio>\nint main(int argc, char**){ int z = argc - 1; int y = 10 / z; std::printf(\"%d\\n\", y); return 0; }\n"
+    },
+    {
+      "id": "d3f-09", "category": "CONC", "source": "cppreference『未定义行为』：数据竞争；TSan 手册 data-race 例型",
+      "verified_source": false, "description": "两线程无同步自增同一全局 ⇒ 数据竞争（TSan）",
+      "expected_detector": "tsan",
+      "code": "#include <thread>\n#include <cstdio>\nint g=0;\nvoid w(){ for(int i=0;i<200000;++i) ++g; }\nint main(){ std::thread a(w), b(w); a.join(); b.join(); std::printf(\"%d\\n\", g); return 0; }\n"
+    },
+    {
+      "id": "d3f-10", "category": "CONC", "source": "cppreference 容器线程安全条目：同一容器并发写不安全",
+      "verified_source": false, "description": "两线程并发 push_back 同一 vector ⇒ 数据竞争（TSan）",
+      "expected_detector": "tsan",
+      "code": "#include <thread>\n#include <vector>\n#include <cstdio>\nstd::vector<int> v;\nvoid w(){ for(int i=0;i<5000;++i) v.push_back(i); }\nint main(){ std::thread a(w), b(w); a.join(); b.join(); std::printf(\"%zu\\n\", v.size()); return 0; }\n"
+    },
+    {
+      "id": "d3f-11", "category": "API", "source": "C++ Core Guidelines ES.20 / 公开教学：stdio 格式串与实参类型不匹配",
+      "verified_source": false, "description": "printf 用 %d 打印 double ⇒ 格式串类型不匹配（-Wformat 告警）",
+      "expected_detector": "compiler-warn",
+      "code": "#include <cstdio>\nint main(){ double d = 1.5; std::printf(\"%d\\n\", d); return 0; }\n"
+    },
+    {
+      "id": "d3f-12", "category": "API", "source": "C++ Core Guidelines F.44 / 公开教学：控制流存在不返回值路径",
+      "verified_source": false, "description": "非 void 函数有无 return 的分支 ⇒ -Wreturn-type 告警（读取返回值是 UB）",
+      "expected_detector": "compiler-warn",
+      "code": "#include <cstdio>\nint f(int x){ if (x > 0) return x; }\nint main(){ std::printf(\"%d\\n\", f(1)); return 0; }\n"
+    },
+    {
+      "id": "d3f-13", "category": "API", "source": "C++ Core Guidelines ES.100 / 公开教学：有符号/无符号比较陷阱",
+      "verified_source": false, "description": "负数与 sizeof 结果比较 ⇒ 隐式转换为无符号 ⇒ 逻辑永假（-Wsign-compare 告警）",
+      "expected_detector": "compiler-warn",
+      "code": "#include <cstdio>\nint main(){ int n = -1; if (n < sizeof(int)) std::printf(\"less\\n\"); else std::printf(\"not-less\\n\"); return 0; }\n"
+    },
+    {
+      "id": "d3f-14", "category": "API", "source": "C++ Core Guidelines ES.42 / 公开教学：条件里写赋值（= 与 == 混淆）",
+      "verified_source": false, "description": "if 条件里写成赋值 ⇒ -Wparentheses 告警（经典 = / == 混淆）",
+      "expected_detector": "compiler-warn",
+      "code": "#include <cstdio>\nint main(){ int x = 0; if (x = 1) std::printf(\"truthy\\n\"); return 0; }\n"
+    },
+    {
+      "id": "d3f-15", "category": "UB", "source": "cppreference『求值顺序』条目：同一表达式内对同一标量多次无中间序列点的修改是 UB",
+      "verified_source": false, "description": "数组初始化里对同一变量两次自增 ⇒ 求值顺序未定（g++/clang++ 可能给出不同数组内容）",
+      "expected_detector": "cross-compile",
+      "code": "#include <cstdio>\nint main(){ int i = 0; int a[2] = { i++, i++ }; std::printf(\"%d %d\\n\", a[0], a[1]); return 0; }\n"
+    },
+    {
+      "id": "d3f-16", "category": "UB", "source": "cppreference『求值顺序』条目：函数实参求值顺序未指定",
+      "verified_source": false, "description": "函数实参中含对同一变量的副作用 ⇒ 实参求值顺序未指定（不同编译器可能不同输出）",
+      "expected_detector": "cross-compile",
+      "code": "#include <cstdio>\nint bump(int& x){ return ++x; }\nint show(int a, int b){ return a * 10 + b; }\nint main(){ int i = 0; std::printf(\"%d\\n\", show(bump(i), bump(i))); return 0; }\n"
+    }
+  ]
+}

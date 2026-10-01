@@ -1,0 +1,294 @@
+{
+ "schema": "queyi-holdout-reveal/v5",
+ "reveal_index": 5,
+ "generated_by": "tools/holdout_reveal_5_672h.py（W3 扩样：holdout 可测 21 → 41）",
+ "generated_at": "2026-10-01 23:04:30",
+ "round_label": "第 5 轮（672h）：扩样 h41-h60（存量缺陷夹具）+ h1-h40 复用",
+ "runs": 3,
+ "samples_requested": [
+  "h41",
+  "h42",
+  "h43",
+  "h44",
+  "h45",
+  "h46",
+  "h47",
+  "h48",
+  "h49",
+  "h50",
+  "h51",
+  "h52",
+  "h53",
+  "h54",
+  "h55",
+  "h56",
+  "h57",
+  "h58",
+  "h59",
+  "h60"
+ ],
+ "prereg": "data/experiments/prereg_672h.json",
+ "detector_reuse": "tools/holdout_reveal_661.py::detect（唯一判据；-O0/-O2 双档 + setarch -R）",
+ "caliber": "可测真错 = catch+miss；unknown（检测器不可用/编译失败）不进分母；对照单列",
+ "historical_reuse": {
+  "n": 40,
+  "ids": [
+   "h1",
+   "h2",
+   "h3",
+   "h4",
+   "h5",
+   "h6",
+   "h7",
+   "h8",
+   "h9",
+   "h10",
+   "h11",
+   "h12",
+   "h13",
+   "h14",
+   "h15",
+   "h16",
+   "h17",
+   "h18",
+   "h19",
+   "h20",
+   "h21",
+   "h22",
+   "h23",
+   "h24",
+   "h25",
+   "h26",
+   "h27",
+   "h28",
+   "h29",
+   "h30",
+   "h31",
+   "h32",
+   "h33",
+   "h34",
+   "h35",
+   "h36",
+   "h37",
+   "h38",
+   "h39",
+   "h40"
+  ],
+  "source": "data/holdout/reveal_3_detail_671a.json"
+ },
+ "env": {
+  "wsl_gpp": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "local_gpp": "g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+  "local_clang": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+  "host": "win32",
+  "python": "3.14.5",
+  "roll": "asan/ubsan/tsan 走 WSL（-O0/-O2 双档 + setarch -R）；wunsequenced/compiler-warn/cross-compile/linker 走本机编译器"
+ },
+ "round5": {
+  "labels": {
+   "error": 20,
+   "control": 0,
+   "unknown": 0
+  },
+  "error_subset": {
+   "total": 20,
+   "catch": 17,
+   "miss": 3,
+   "unknown": 0,
+   "detect_rate_pct": 85.0
+  },
+  "control_subset": {
+   "total": 0,
+   "false_positive": 0
+  },
+  "denominator": {
+   "value": 20,
+   "meaning": "catch+miss（可测真错样本）",
+   "excluded": {
+    "detector_unknown": 0,
+    "label_unknown": 0
+   }
+  },
+  "cp95": {
+   "k": 17,
+   "n": 20,
+   "point": 0.85,
+   "cp_low": 0.6210731734546859,
+   "cp_high": 0.9679290628145363,
+   "conf": 0.95
+  }
+ },
+ "cumulative": {
+  "labels": {
+   "error": 42,
+   "control": 11,
+   "unknown": 7
+  },
+  "error_subset": {
+   "total": 42,
+   "catch": 34,
+   "miss": 7,
+   "unknown": 1,
+   "detect_rate_pct": 82.9
+  },
+  "control_subset": {
+   "total": 11,
+   "false_positive": 2
+  },
+  "denominator": {
+   "value": 41,
+   "meaning": "catch+miss（可测真错样本）",
+   "excluded": {
+    "detector_unknown": 1,
+    "label_unknown": 7
+   }
+  },
+  "cp95": {
+   "k": 34,
+   "n": 41,
+   "point": 0.8292682926829268,
+   "cp_low": 0.6794391205510908,
+   "cp_high": 0.9284847118477053,
+   "conf": 0.95
+  },
+  "by_layer": {
+   "sanitizer": {
+    "total": 39,
+    "catch": 33,
+    "miss": 6,
+    "unknown": 0,
+    "detectors": [
+     "asan",
+     "tsan",
+     "ubsan"
+    ],
+    "denominator": {
+     "value": 39,
+     "meaning": "catch+miss（可测且非测量类）"
+    },
+    "detect_rate_pct": 84.6,
+    "cp95": {
+     "k": 33,
+     "n": 39,
+     "point": 0.8461538461538461,
+     "cp_low": 0.6947200755632872,
+     "cp_high": 0.9413757371392106,
+     "conf": 0.95
+    }
+   },
+   "cross-compile": {
+    "total": 1,
+    "catch": 0,
+    "miss": 1,
+    "unknown": 0,
+    "detectors": [
+     "cross-compile"
+    ],
+    "denominator": {
+     "value": 1,
+     "meaning": "catch+miss（可测且非测量类）"
+    },
+    "detect_rate_pct": 0.0,
+    "cp95": {
+     "k": 0,
+     "n": 1,
+     "point": 0.0,
+     "cp_low": 0.0,
+     "cp_high": 0.9749999999999999,
+     "conf": 0.95
+    }
+   },
+   "other": {
+    "total": 1,
+    "catch": 0,
+    "miss": 0,
+    "unknown": 1,
+    "detectors": [
+     "unknown"
+    ],
+    "denominator": {
+     "value": 0,
+     "meaning": "catch+miss（可测且非测量类）"
+    },
+    "detect_rate_pct": null,
+    "cp95": {
+     "k": 0,
+     "n": 0,
+     "point": null,
+     "cp_low": null,
+     "cp_high": null,
+     "conf": 0.95,
+     "note": "n=0 ⇒ 拒绝给率（fail-loud）"
+    }
+   },
+   "linker": {
+    "total": 1,
+    "catch": 1,
+    "miss": 0,
+    "unknown": 0,
+    "detectors": [
+     "linker"
+    ],
+    "denominator": {
+     "value": 1,
+     "meaning": "catch+miss（可测且非测量类）"
+    },
+    "detect_rate_pct": 100.0,
+    "cp95": {
+     "k": 1,
+     "n": 1,
+     "point": 1.0,
+     "cp_low": 0.025000000000000022,
+     "cp_high": 1.0,
+     "conf": 0.95
+    }
+   }
+  }
+ },
+ "compare_reveal_4": {
+  "before": {
+   "denominator": 21,
+   "k": 17,
+   "detect_rate_pct": 81.0,
+   "cp95": [
+    58.1,
+    94.6
+   ]
+  },
+  "after": {
+   "denominator": 41,
+   "k": 34,
+   "detect_rate_pct": 82.9,
+   "cp95": [
+    67.9,
+    92.8
+   ]
+  },
+  "why_changed": "分母 21 → 41（新增 h41-h60 全部为 planted=true 的存量缺陷夹具）"
+ },
+ "H4_exploratory": {
+  "question": "新增子集（h41-h60）与历史子集（h1-h40）的检出率差是否 <20pp",
+  "new_subset": {
+   "k": 17,
+   "n": 20,
+   "rate_pct": 85.0
+  },
+  "historical_subset": {
+   "k": 17,
+   "n": 21,
+   "rate_pct": 81.0
+  },
+  "delta_pp": 4.0,
+  "verdict": "与预注册一致（<20pp）",
+  "caveat": "新子集 14/20 为 asan 类，检测器构成与历史子集不同；该对比是**构成差异**的显式承认，不是检测能力差异的因果证据。"
+ },
+ "reproducibility": {
+  "runs_per_new_sample": 3,
+  "unstable": []
+ },
+ "new_sample_unknown": [],
+ "honest_note": "扩样样本全部取自本仓既有故意缺陷夹具（不新写代码）；新增子集 asan 占比高 ⇒ 汇总率为加权平均，必须与 by_layer 一起读；双口径（任一回合 / 首回合）结果并列落盘。",
+ "detail": "data/holdout/reveal_5_detail_672h.json",
+ "detect_rate_pct": 82.9,
+ "denominator": 41
+}

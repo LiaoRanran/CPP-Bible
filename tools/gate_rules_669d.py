@@ -33,9 +33,7 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
-import sys
 from pathlib import Path
 from typing import Any, Callable
 
@@ -108,22 +106,46 @@ def _close(a: float, b: float, tol: float = TOL_PCT) -> bool:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def canonical_rates(root: Path) -> dict[str, float]:
-    """从**原始计数**现算规范率表（百分比标度）。禁止从别处抄。"""
+    """从**原始计数**现算规范率表（百分比标度）。禁止从别处抄。
+
+    672h（W3 扩样）：holdout/corpus 的事实源切到当前一轮 reveal 产物
+    （`holdout_reveal_5_672h.json` / `external_corpus_reveal_672h.json`）；
+    旧产物（3_665 / 665）只在前者缺失时兜底（部分检出场景不假装有值）。
+    """
     out: dict[str, float] = {}
-    d = _load_json(root / "data" / "holdout_reveal_3_665.json")
+
+    d = _load_json(root / "data" / "holdout_reveal_5_672h.json")
     if isinstance(d, dict):
-        es = d.get("error_subset") or {}
+        es = ((d.get("cumulative") or {}).get("error_subset") or {})
         if es.get("catch") is not None:
             n = es.get("catch", 0) + es.get("miss", 0)
             if n:
                 out["holdout.valid"] = round(es["catch"] / n * 100, 4)
-    d = _load_json(root / "data" / "external_corpus_reveal_665.json")
-    if isinstance(d, dict):
-        c, m = d.get("catch"), d.get("miss")
+    if "holdout.valid" not in out:
+        d = _load_json(root / "data" / "holdout_reveal_3_665.json")
+        if isinstance(d, dict):
+            es = d.get("error_subset") or {}
+            if es.get("catch") is not None:
+                n = es.get("catch", 0) + es.get("miss", 0)
+                if n:
+                    out["holdout.valid"] = round(es["catch"] / n * 100, 4)
+
+    r = _load_json(root / "data" / "external_corpus_reveal_672h.json")
+    if isinstance(r, dict):
+        cum = r.get("cumulative") or {}
+        c, m = cum.get("catch"), cum.get("miss")
         if c is not None and m is not None and (c + m):
             out["external.valid"] = round(c / (c + m) * 100, 4)
-        if c is not None and d.get("total"):
-            out["external.all"] = round(c / d["total"] * 100, 4)
+        if c is not None and cum.get("total"):
+            out["external.all"] = round(c / cum["total"] * 100, 4)
+    if "external.valid" not in out:
+        d = _load_json(root / "data" / "external_corpus_reveal_665.json")
+        if isinstance(d, dict):
+            c, m = d.get("catch"), d.get("miss")
+            if c is not None and m is not None and (c + m):
+                out["external.valid"] = round(c / (c + m) * 100, 4)
+            if c is not None and d.get("total"):
+                out["external.all"] = round(c / d["total"] * 100, 4)
     d = _load_json(root / "data" / "counterfactual_cases_665.json")
     if isinstance(d, dict):
         sc = d.get("scores") or {}
