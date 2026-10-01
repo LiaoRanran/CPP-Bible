@@ -83,9 +83,9 @@
   ],
   "ci_halfwidth": [
     {
-      "n": 16,
+      "n": 21,
       "p_assumed": 0.5,
-      "halfwidth_pp": 25.3
+      "halfwidth_pp": 22.3
     },
     {
       "n": 30,
@@ -98,9 +98,14 @@
       "halfwidth_pp": 16.2
     },
     {
-      "n": 90,
+      "n": 48,
       "p_assumed": 0.5,
-      "halfwidth_pp": 10.7
+      "halfwidth_pp": 14.8
+    },
+    {
+      "n": 60,
+      "p_assumed": 0.5,
+      "halfwidth_pp": 13.2
     },
     {
       "n": 93,
@@ -127,25 +132,25 @@
     "target_halfwidth_pp": 10.0,
     "n_needed_for_target": 104,
     "current": {
-      "holdout_measurable": 16,
-      "corpus_measurable": 32,
-      "corpus_all": 40
+      "holdout_measurable": 21,
+      "corpus_measurable": 48,
+      "corpus_all": 60
     },
     "gap": {
-      "holdout_measurable": 88,
-      "corpus_measurable": 72,
-      "corpus_all": 64
+      "holdout_measurable": 83,
+      "corpus_measurable": 56,
+      "corpus_all": 44
     },
-    "verdict": "当前可测 n=16 ⇒ 远不足以支撑 ±10.0pp 结论"
+    "verdict": "当前可测 n=21 ⇒ 远不足以支撑 ±10.0pp 结论"
   },
   "power_curve": [
     {
-      "n_per_group": 16,
-      "min_detectable_delta_pp": 47.0
+      "n_per_group": 21,
+      "min_detectable_delta_pp": 41.7
     },
     {
-      "n_per_group": 32,
-      "min_detectable_delta_pp": 34.3
+      "n_per_group": 48,
+      "min_detectable_delta_pp": 28.2
     },
     {
       "n_per_group": 64,
@@ -175,6 +180,6 @@
   "note": "所有数字**现算**（原语复用 tools/ablation_stats_671b.py + tools/stat_bounds.py）；doc_value 只是 670b §2.3 表里的登记值，用于登记漂移，**不是信源**。",
   "red_lines": [
     "样本量达标前，ablation 结果只能作**方向性读法**，不得写『显著优于』（670b §2.3）",
-    "当前可测 n=16/32 远低于 ±10pp 所需 n ⇒ 本批不作任何幅度 Claim"
+    "当前可测 n=21/48 仍远低于 ±10pp 所需 n ⇒ 本批仍不作任何幅度 Claim"
   ]
 }

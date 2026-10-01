@@ -50,8 +50,9 @@ DOC = "research/670b_ablation设计.md"
 DOC_TWO_PROP = {(0.35, 0.50): 167, (0.35, 0.55): 93, (0.35, 0.45): 373, (0.50, 0.65): 167}
 DOC_MCNEMAR = {(0.35, 0.50, 0.30): 102, (0.35, 0.50, 0.40): 137, (0.35, 0.50, 0.50): 172}
 
-#: 论文主指标当前的可测 n（来自 670a 产物，用于"当前 vs 目标"的差距登记）
-CURRENT_N = {"holdout_measurable": 16, "corpus_measurable": 32, "corpus_all": 40}
+#: 论文主指标当前的可测 n（671a 扩样后，来自 reveal_update_671a.json；
+#: 用于"当前 vs 目标"的差距登记。16/32/40 是扩样前旧值，已作废）
+CURRENT_N = {"holdout_measurable": 21, "corpus_measurable": 48, "corpus_all": 60}
 
 
 def two_proportion_table() -> list[dict]:
@@ -85,7 +86,7 @@ def mcnemar_table() -> list[dict]:
 def ci_halfwidth_table() -> list[dict]:
     """③ 单比例 CI 半宽 → n（与 669d §4 同口径，用 stat_bounds 现算，作交叉核对）。"""
     rows = []
-    for n in (16, 30, 40, 90, 93, 104, 150, 200):
+    for n in (21, 30, 40, 48, 60, 93, 104, 150, 200):
         lo, hi = sb.cp_interval(n // 2, n)          # p=0.5 最坏情形
         rows.append({"n": abs(n), "p_assumed": 0.5,
                      "halfwidth_pp": round((hi - lo) / 2 * 100, 1)})
@@ -114,7 +115,7 @@ def current_gap(target_halfwidth_pp: float = 10.0) -> dict:
 def power_curve() -> list[dict]:
     """⑤ 效力曲线：给定 n，能检出的最小 Δ（两比例，power=0.80）。"""
     rows = []
-    for n in (16, 32, 64, 96, 128, 172, 256, 392):
+    for n in (21, 48, 64, 96, 128, 172, 256, 392):
         # 二分反解：找最小 Δ 使 sample_size ≤ n
         lo, hi = 0.005, 0.5
         for _ in range(60):
@@ -146,7 +147,7 @@ def run() -> dict:
                 "doc_value 只是 670b §2.3 表里的登记值，用于登记漂移，**不是信源**。",
         "red_lines": [
             "样本量达标前，ablation 结果只能作**方向性读法**，不得写『显著优于』（670b §2.3）",
-            "当前可测 n=16/32 远低于 ±10pp 所需 n ⇒ 本批不作任何幅度 Claim",
+            "当前可测 n=21/48 仍远低于 ±10pp 所需 n ⇒ 本批仍不作任何幅度 Claim",
         ],
     }
 

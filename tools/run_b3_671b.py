@@ -216,8 +216,8 @@ def selftest() -> int:
     chk("红线条目含『代理』", any("代理" in x for x in p["red_lines"]))
     # 与 ablation plan 的 A5 联动
     chk("关联 A5 状态为 BLOCKED", p["related_ablation"]["A5_status"] == "BLOCKED")
-    # 与样本量表联动
-    chk("样本量现实核查有值", p["sample_size_reality"]["current_holdout"] == 16)
+    # 与样本量表联动（671a 扩样后 holdout 可测 21）
+    chk("样本量现实核查有值", p["sample_size_reality"]["current_holdout"] == 21)
     chk("schema 正确", p["schema"] == "queyi-b3-plan/671b")
     print(f"run_b3_671b selftest: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1

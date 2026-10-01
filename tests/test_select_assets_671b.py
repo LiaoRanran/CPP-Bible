@@ -219,8 +219,9 @@ class TestB3Plan:
 
     def test_sample_size_reality_current_n(self):
         r = B3.build_plan()["sample_size_reality"]
-        assert r["current_holdout"] == 16
-        assert r["current_corpus"] == 32
+        # 671a 扩样后：holdout 21 可测 / corpus 48 可测
+        assert r["current_holdout"] == 21
+        assert r["current_corpus"] == 48
 
     def test_red_lines_recorded(self):
         rl = B3.build_plan()["red_lines"]

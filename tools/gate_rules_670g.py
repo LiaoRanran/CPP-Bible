@@ -73,8 +73,8 @@ def check_rate_consistency(root: Path) -> list[dict]:
     if fd is None or st is None:
         return [finding("G-RATE-CONSISTENCY", "warn", BASELINE_DIR,
                         "baseline 产物缺失（670a 未跑？）", "跑 tools/baseline_670a.py --run")]
-    # 论文必须出现三臂的关键 k/n 组合
-    for need in ("14/16", "1/16", "4/32", "14/32"):
+    # 论文必须出现三臂的关键 k/n 组合（671a 扩样后：holdout 21 可测 / corpus 48 可测）
+    for need in ("17/21", "1/21", "7/48", "26/48"):
         if need not in paper:
             out.append(finding("G-RATE-CONSISTENCY", "block", PAPER,
                                f"论文未出现关键计数 {need}（baseline 三臂）",

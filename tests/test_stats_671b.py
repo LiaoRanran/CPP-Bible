@@ -83,8 +83,9 @@ class TestSampleSizeTables:
     def test_current_gap_positive(self):
         g = SS.current_gap()
         assert all(v > 0 for v in g["gap"].values())
-        assert g["current"]["holdout_measurable"] == 16
-        assert g["current"]["corpus_measurable"] == 32
+        # 671a 扩样后：holdout 21 可测 / corpus 48 可测（reveal_update_671a.json）
+        assert g["current"]["holdout_measurable"] == 21
+        assert g["current"]["corpus_measurable"] == 48
 
     def test_power_curve_monotone(self):
         md = [r["min_detectable_delta_pp"] for r in SS.power_curve()]
@@ -92,7 +93,7 @@ class TestSampleSizeTables:
 
     def test_power_curve_endpoints(self):
         rows = {r["n_per_group"]: r["min_detectable_delta_pp"] for r in SS.power_curve()}
-        assert rows[16] > 40          # n=16 只能检出巨大差异
+        assert rows[21] > 40          # n=21 只能检出巨大差异（671a 扩样后最小档）
         assert rows[392] < 11         # n=392 可检出 ~10pp
 
     def test_power_curve_consistent_with_sample_size(self):

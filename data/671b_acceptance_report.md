@@ -148,3 +148,53 @@
 `tests/test_gate_rules_670g.py`（+ablation 规则测试）
 
 > **未碰**：671a 的 `tools/guard_rerun_*.py`/`tools/drift_watch_*.py`/`tests/test_*_671a.py`/`data/*_671a.json`；`data/holdout/`/`data/external_corpus/`；`atoms/`/`evidence/`/`Examples/`/`Book/`/`data/authority/`；452 账本 / `gate_engine.py` / `counts_659.py`；`research/latex/*.pdf`。
+
+---
+
+# Phase 2 · 数字更新（671a 扩样口径）+ 首创性增强
+
+权威数字源：`data/experiments/reveal_update_671a.json`（671a 扩样后的真实结果——**holdout 降了、corpus 升了，如实呈现，不"修正"成好看的数字**）。
+
+## P2-1 · 数字更新（全部完成）
+
+| 指标 | 旧值（670a n=16/32/9） | 新值（671a 扩样） | 落点 |
+|---|---|---|---|
+| holdout 盲测召回 | 87.5% (14/16) [61.7, 98.4] | **81.0% (17/21) [58.1, 94.5]** | md/tex 摘要、§5.1、§6.1 Fig.3、§7 |
+| corpus 可测召回 | 43.8% (14/32) | **54.2% (26/48)** | 同上 |
+| holdout FPR | 11.1% (1/9) | **18.2% (2/11)**（h35 登记） | §6.1、§9 |
+| Static 臂 | 6.2% (1/16) / 12.5% (4/32) | **4.8% (1/21) / 14.6% (7/48)** | Fig.3、§6.5 |
+| Random† 臂 | — | 9.5% / 4.2%（catch=0） | Fig.3、§6.5 |
+| 口径消融 E3 | 670a 旧表 | B 77.3% (17/22) / C 43.3% (26/60)，Δ(A−C)=+3.7/+10.8pp；669d 原表**作废注记** | §6.3、tex E2 |
+| 四组配对统计 | 单组 | McNemar p=3.1×10⁻⁵ / 3.8×10⁻⁶ / 6.1×10⁻⁵ / 1.2×10⁻⁷；h=1.80/0.87/1.61/1.24（全 ≥0.8 大档）；Δ Wald-on-diff CI 最低下界 **25.7pp** | §6.5、tex E5（新表 `tab:e5`） |
+| 样本量现算 | 缺口 77/49 | CURRENT_N 21/48/60；±10pp 需 n≈104，缺口 holdout 83 / corpus 56 / corpus_all 44；效力曲线 n=21→MDE 41.7pp … n=392→9.8pp | `sample_size_671b.py` 重跑落盘 |
+
+无盲态诚实标注：扩样新增样本（h31–h40 十条 + corpus 二十条）reveal 后并入，只增分母不给外部效度——md §5.1/§6.1、tex E1 Expanded-sample honesty 段均登记。
+
+## P2-2 · 首创性增强（5 项全部完成）
+
+1. **标题范式化**：`Evolving Verifiers: Failure-Driven Evidence Acquisition with Auditable Provenance`（不含 "C++"/"System"）；§1 开头 3 句范式主张（生成廉价 ⇒ 瓶颈移到验证器的自我演化）。
+2. **6×5 定位表**：Benchmark Self-Evolving / ArenaBencher / LiveBench / SWE-bench Verified / MiniCheck / 本文 × 演化对象/演化策略/可审计/失败驱动/四态判决（tex `tab:positioning`、md §2）；MiniCheck 引用 [49]（arXiv:2404.10774，EMNLP 2024，经 WebSearch 核实）。
+3. **三个形式化贡献**：§1.3 + §4.0 定义 1–5（验证器状态 𝒞ₜ、失败集合 Fₜ、演化算子三性质：单调性/最小性/可审计性；四态信息结构 (y,d)；可审计三条件 origin traceable / state reproducible / tamper detectable）。
+4. **两个新指标（真实计算值）**：Verifier Coverage **73.8% (31/42) [58.0, 86.1]**（分子 31 = verified 23 + red-team-verified 3 + machine-verified 5；域级 lang 0/8）；Evolution Efficiency **1.9pp/规则**（变异变体口径 8.7pp/规则；双口径警示）。复算命令入附录 D。
+5. **纪律**：摘要开头=新颖性；正文无"首次"；§9 未来工作收紧为具体方向；摘要精简 **316 → 249 词**（≤250 门禁内）。
+
+## P2-3 · 工具与测试同步
+
+- `tools/paper_sync_check_670c2.py`：FACTS 全量重写（671a 主数字/分层/口径消融/四组 McNemar/VC/EE/无盲态），作废 token 删除 ⇒ PASS。
+- `tools/figure_data_check_670c2.py`：Fig.3 溯源切到 `reveal_update_671a.json`；Fig.4 七点（含 671a=81.0）全部有出处 ⇒ PASS。
+- `tools/gate_rules_670g.py`：G-RATE-CONSISTENCY 关键计数 → `17/21, 1/21, 7/48, 26/48`。
+- `tools/sample_size_671b.py`：CURRENT_N=21/48/60，重跑落盘 JSON，selftest PASS。
+- `tools/run_b3_671b.py`：selftest 联动断言 16→21 ⇒ PASS。
+- 测试同步：`tests/test_gate_rules_670g.py`（GOOD_PAPER 换新 k/n + fixture token 清理）、`tests/test_stats_671b.py`（current 21/48；效力曲线端点 rows[21]>40，rows[392]=9.8<11 现算复核）、`tests/test_select_assets_671b.py`（current 21/48）、`tests/test_paper_sync_670c2.py`（bib 49 条；Fig.3 溯源断言切 reveal_update）。
+
+## P2-4 · 验证记录（全绿）
+
+- 五工具：paper_sync_check / bib_audit（49 条 0 错）/ figure_data_check / anonymity / paper_quality_gate（摘要 249 词）全 PASS。
+- 测试：`test_gate_rules_670g + test_stats_671b + test_select_assets_671b + test_ablation_671b + test_paper_sync_670c2` 共 **148 用例 0 failed**。
+- selftest：`sample_size_671b` / `run_b3_671b` PASS。
+
+## P2-5 · 边界与不动项登记
+
+- **`data/experiments/baseline_fd.json` 仍为旧值（14/16）**：baseline 产物重跑归 671a；`tests/test_ablation_671b.py::TestConsistencyWithBaselineArtifacts` 的三个断言动态读该产物、与旧值自洽（0.0625/1.9135/0.000244 硬编码期望与产物**联动**）——671a 重跑 baseline 时需同步这三处，本批不抢改。
+- **`web/` 归 671d**（其提交已在 main 可见），本批未碰。
+- 671a/671g 的测试与数据文件一行未动；未跑任何实验（红线）；**未 push**。

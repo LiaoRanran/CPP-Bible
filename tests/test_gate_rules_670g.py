@@ -47,7 +47,7 @@ def mk(tmp_path, paper_text=None, baseline=True, caliber=True, ablation=None):
 
 
 GOOD_PAPER = (
-    "holdout 87.5% (14/16) [61.7, 98.4]；Static 6.2% (1/16)；corpus 43.8% (14/32) / 12.5% (4/32)。"
+    "holdout 81.0% (17/21) [58.0, 94.5]；Static 4.8% (1/21)；corpus 54.2% (26/48) / 14.6% (7/48)。"
     "统计口径见 research/669d_统计口径.md，区间为 Clopper–Pearson。"
     "semantic scope 完整度 0/26。**优于**静态口径臂。IRR：第二标注者 0 人（缺口）。"
 )
@@ -83,7 +83,7 @@ def test_rate_consistency_pass(tmp_path):
 
 
 def test_rate_consistency_missing_kn(tmp_path):
-    r = g.check_rate_consistency(mk(tmp_path, "holdout 87.5% 但没有计数"))
+    r = g.check_rate_consistency(mk(tmp_path, "holdout 81.0% 但没有计数"))
     assert any(f["rule"] == "G-RATE-CONSISTENCY" for f in r)
 
 
@@ -94,13 +94,13 @@ def test_rate_consistency_warn_without_baseline(tmp_path):
 
 # ── G-DENOMINATOR ──
 def test_denominator_pass(tmp_path):
-    assert g.check_denominator(mk(tmp_path, "holdout 87.5% (14/16)")) == []
+    assert g.check_denominator(mk(tmp_path, "holdout 81.0% (17/21)")) == []
 
 
 def test_denominator_flags_bare_pct(tmp_path):
-    r = g.check_denominator(mk(tmp_path, "corpus 检出 43.8 个百分点，没有分母"))
+    r = g.check_denominator(mk(tmp_path, "corpus 检出 54.2 个百分点，没有分母"))
     assert isinstance(r, list)   # 结构正确
-    r2 = g.check_denominator(mk(tmp_path, "检出率 43.8%，未给分母"))
+    r2 = g.check_denominator(mk(tmp_path, "检出率 54.2%，未给分母"))
     assert any(f["rule"] == "G-DENOMINATOR" for f in r2)
 
 
@@ -109,7 +109,7 @@ def test_denominator_skips_ci_context(tmp_path):
 
 
 def test_denominator_skips_code_fence(tmp_path):
-    assert g.check_denominator(mk(tmp_path, "```\n# 87.5% 注释\n```")) == []
+    assert g.check_denominator(mk(tmp_path, "```\n# 81.0% 注释\n```")) == []
 
 
 # ── G-STATS-FROZEN ──

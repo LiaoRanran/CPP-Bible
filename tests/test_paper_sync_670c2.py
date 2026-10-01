@@ -68,7 +68,7 @@ def test_sync_checks_holdout_ci():
 def test_bib_parse_counts():
     text = open(os.path.join(ROOT, "research", "latex", "queyi_refs.bib"), encoding="utf-8").read()
     entries = bib.parse_bib(text)
-    assert len(entries) == 48
+    assert len(entries) == 49   # 671b：新增 tang2024minicheck（[49]）
 
 
 def test_bib_all_have_title():
@@ -112,7 +112,8 @@ def test_figure_data_passes():
 
 def test_figure_fig3_matches_holdout_product():
     res = fig.check()
-    assert any("holdout_reveal_3_665.json" in s for s in res["ok"])
+    # 671b：Fig.3 的 holdout/corpus 权威值溯源已切到 reveal_update_671a.json（671a 扩样后）
+    assert any("reveal_update_671a.json" in s for s in res["ok"])
 
 
 def test_figure_fig4_values_sourced():

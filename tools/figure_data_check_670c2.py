@@ -22,6 +22,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEX = os.path.join(ROOT, "research", "latex", "queyi_neurips2027.tex")
 HOLDOUT = os.path.join(ROOT, "data", "holdout_reveal_3_665.json")
 EXTERNAL = os.path.join(ROOT, "data", "external_corpus_reveal_665.json")
+# 671a 扩样后的权威源（reveal_update_671a.json::holdout.after / corpus.after）；
+# 自 671b 起 Fig.3 的期望值以此为准，665 旧产物仅作 Fig.4 历史出处。
+REVEAL_UPDATE = os.path.join(ROOT, "data", "experiments", "reveal_update_671a.json")
 RETRO = os.path.join(ROOT, "docs", "667_回溯反思.md")
 
 COORD_RE = re.compile(r"coordinates\s*\{([^}]*)\}")
@@ -48,8 +51,10 @@ def check() -> dict:
 
     holdout = load_json(HOLDOUT)
     external = load_json(EXTERNAL)
+    reveal_update = load_json(REVEAL_UPDATE)
     retro = open(RETRO, encoding="utf-8").read() if os.path.isfile(RETRO) else ""
-    hist_text = retro + "\n" + json.dumps(holdout, ensure_ascii=False)
+    hist_text = (retro + "\n" + json.dumps(holdout, ensure_ascii=False) + "\n"
+                 + json.dumps(reveal_update, ensure_ascii=False))
 
     errors, ok = [], []
 
@@ -59,17 +64,20 @@ def check() -> dict:
         errors.append("未找到 Fig.3 的坐标块（含 holdout 标签）")
     else:
         d = {lbl.lower(): v for lbl, v in fig3}
-        exp_h = holdout["error_subset"]["detect_rate_pct"]
-        exp_c = external["detect_rate_pct"]   # 可测口径 43.8（与 §6.1 FD 的 corpus 可测列一致）
+        # 671a 扩样后的权威值（81.0 / 54.2）；665 旧值 87.5/43.8 已作废，仅留档历史
+        exp_h = reveal_update["holdout"]["after"]["rate_pct"]
+        exp_c = reveal_update["corpus"]["after"]["rate_pct"]   # 可测口径（26/48 = 54.2）
         if abs(d.get("holdout", -1) - exp_h) > 1e-9:
-            errors.append(f"Fig.3 holdout={d.get('holdout')} != 产物 {exp_h}")
+            errors.append(f"Fig.3 holdout={d.get('holdout')} != 671a 权威值 {exp_h}"
+                          f"（reveal_update_671a.json::holdout.after）")
         else:
-            ok.append(f"Fig.3 holdout={exp_h} == holdout_reveal_3_665.json")
+            ok.append(f"Fig.3 holdout={exp_h} == reveal_update_671a.json::holdout.after")
         corpus_val = d.get("corpus", d.get("external", -1))
         if abs(corpus_val - exp_c) > 1e-9:
-            errors.append(f"Fig.3 corpus={corpus_val} != 产物(可测) {exp_c}")
+            errors.append(f"Fig.3 corpus={corpus_val} != 671a 权威值(可测) {exp_c}"
+                          f"（reveal_update_671a.json::corpus.after）")
         else:
-            ok.append(f"Fig.3 corpus={exp_c} == external_corpus_reveal_665.json (measurable)")
+            ok.append(f"Fig.3 corpus={exp_c} == reveal_update_671a.json::corpus.after (measurable)")
 
     # Fig.4 —— 找含批次标签(660/665/...)的坐标块
     fig4 = next((p for p in plots if any(re.fullmatch(r"\d{3}", lbl) for lbl, _ in p)), None)
