@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="祈易学习页：用间隔重复（SM-2）+ 主动回忆 + 错例驱动，把知识卡和机器卡反例变成可复习的牌组。进度存本机，可导出/导入。">
+<meta name="description" content="阙疑学习页：用间隔重复（SM-2）+ 主动回忆 + 错例驱动，把知识卡和机器卡反例变成可复习的牌组。进度存本机，可导出/导入。">
 <meta name="color-scheme" content="dark light">
-<title>学习 · QueYi</title>
+<title>学习 · 阙疑 QueYi</title>
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="css/669c.css">
@@ -15,17 +15,16 @@
 <script type="module" src="components/index.js"></script>
 </head>
 <body>
-<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3">
-<p style="font-size:20px;font-weight:700;margin:0 0 12px">学习台 · 需要 JavaScript</p>
-<p>学习台需要 JavaScript 才能运行（间隔重复 + 主动回忆 + 错例驱动）。</p>
-<p>学习路径：卡库 → 按域筛选 → 逐张读断言/边界/证据 → 复习错例。</p>
-<p style="color:#b0aeab;font-size:13px">请启用 JavaScript。</p>
+<noscript><div style="max-width:640px;margin:2rem auto;padding:1.5rem">
+<p style="font-size:18px;font-weight:600;margin:0 0 6px">学习台 · 需要 JavaScript</p>
+<p>间隔重复（SM-2）+ 主动回忆 + 错例驱动，需要 JavaScript 才能运行。</p>
+<p style="color:#666;font-size:13px">请启用 JavaScript 后查看。</p>
 </div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="learn.html" badge="学习 · 本机进度"></qy-nav>
 
 <main id="main" class="wrap">
-  <header class="page-head" style="padding-top:var(--space-5)">
+  <header class="page-head">
     <div>
       <h1>学习台</h1>
       <p class="lede">基于学习科学（<span class="mono">_arch_v38</span>）：
@@ -44,11 +43,11 @@
     <h2 id="path-h">学习路径</h2>
     <p class="section-sub">三阶段：先把<b>前置关系</b>走通，再做<b>断言 / 四态 / 证据</b>的主动回忆，最后<b>自测</b>评分。
       当前阶段高亮，已达成的阶段显示完成色。</p>
-    <div class="path-flow glass glass-tint" id="path-flow"></div>
+    <div class="path-flow card" id="path-flow"></div>
   </section>
 
   <!-- 仪表盘 -->
-  <section aria-labelledby="dash-h" style="margin-top:var(--space-4)">
+  <section aria-labelledby="dash-h">
     <h2 id="dash-h">学习统计</h2>
     <div class="stat-grid" id="dash"></div>
     <div class="progress" style="margin-top:var(--space-2); max-width:520px">
@@ -59,16 +58,16 @@
   </section>
 
   <!-- SM-2 可视化 -->
-  <section aria-labelledby="viz-h" style="margin-top:var(--space-4)">
+  <section aria-labelledby="viz-h">
     <h2 id="viz-h">掌握度曲线与薄弱点</h2>
     <div class="stack" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:var(--space-3)">
-      <div class="glass glass-tint" style="padding:var(--space-3)">
+      <div class="card">
         <div class="row-between"><span class="section-title">掌握度曲线</span>
           <span class="section-sub" id="curve-note"></span></div>
         <div class="spark" id="spark"></div>
         <p class="section-sub">按历史事件重放 SM-2 状态：实线为"已掌握"张数随时间的变化。</p>
       </div>
-      <div class="glass glass-tint" style="padding:var(--space-3)">
+      <div class="card">
         <div class="row-between"><span class="section-title">薄弱知识点热力图</span>
           <span class="section-sub">按域聚合</span></div>
         <div class="heat" id="heat" style="margin-top:var(--space-2)"></div>
@@ -78,7 +77,7 @@
   </section>
 
   <!-- 牌组切换 + 过滤 -->
-  <section aria-labelledby="deck-h" style="margin-top:var(--space-4)">
+  <section aria-labelledby="deck-h">
     <h2 id="deck-h">牌组</h2>
     <div class="deck-tabs" role="tablist" aria-label="选择牌组">
       <button class="deck-tab" role="tab" aria-selected="true" data-deck="atom">知识卡（主动回忆）</button>
@@ -106,20 +105,20 @@
   </section>
 
   <!-- 学习区 -->
-  <section aria-labelledby="study-h" style="margin-top:var(--space-3)">
+  <section aria-labelledby="study-h">
     <h2 id="study-h">现在学这张</h2>
-    <div id="study" class="study-card glass glass-tint" aria-live="polite"></div>
+    <div id="study" class="card" aria-live="polite"></div>
     <p class="section-sub" id="pos-note"></p>
   </section>
 
   <!-- 今日队列 -->
-  <section aria-labelledby="queue-h" style="margin-top:var(--space-3)">
+  <section aria-labelledby="queue-h">
     <h2 id="queue-h">今日队列</h2>
     <ul class="queue-list" id="queue" role="list"></ul>
   </section>
 
   <!-- 导入导出 -->
-  <section aria-labelledby="io-h" style="margin-top:var(--space-3)">
+  <section aria-labelledby="io-h">
     <h2 id="io-h">进度备份</h2>
     <div class="toolbar">
       <button id="export" type="button" class="primary">导出进度（JSON）</button>
@@ -131,8 +130,11 @@
   </section>
 </main>
 
-<footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="cards.html">卡库</a>
-  · <a href="experiments.html">实验结果</a> · <a href="verify.html">验哈希</a></footer>
+<footer class="wrap">
+  阙疑 QueYi — 受评估完整性约束的知识验证系统。<br>
+  <a href="index.html">总览</a> · <a href="cards.html">卡库</a>
+  · <a href="experiments.html">实验结果</a> · <a href="verify.html">验哈希</a>
+</footer>
 
 <script type="module">
 // 670c A1 · 学习页控制器（DOM 接线；纯逻辑在 ./js/learn_engine.js）
@@ -288,7 +290,7 @@ function renderPath(p) {
     const x = 12 + i * (NW + GAP);
     const label = s.name + '：' + s.done + '/' + s.total;
     parts.push('<g class="pf-node is-' + s.status + '" transform="translate(' + x + ',' + Y + ')" role="listitem" aria-label="' + esc(label) + '">');
-    parts.push('<rect width="' + NW + '" height="' + NH + '" rx="10"></rect>');
+    parts.push('<rect width="' + NW + '" height="' + NH + '" rx="6"></rect>');
     parts.push('<text class="pf-name" x="12" y="26">' + esc(s.name) + '</text>');
     parts.push('<text class="pf-count" x="12" y="46">' + s.done + '/' + s.total + ' · ' + Math.round(s.ratio * 100) + '%</text>');
     parts.push('<text x="12" y="60" style="font-size:10px">' + esc(s.status === 'done' ? '已完成' : s.status === 'current' ? '进行中' : '待开始') + '</text>');
@@ -403,11 +405,11 @@ function atomView(c, st) {
       + '<p class="muted" style="margin-top:8px">边界三元组（input_domain / precondition / failure_mode）见 '
       + '<a class="chip link" href="card.html?card=' + encodeURIComponent(c.id) + '">卡详情 →</a></p></div>';
   return '<div class="stages">'
-      + '<div class="stage"><span class="st-num">1</span><div><b>前置关系</b><div class="ci-tags" style="margin-top:6px">' + prereqs + '</div></div></div>'
-      + '<div class="stage"><span class="st-num">2</span><div><b>断言 / 四态 / 证据</b>'
+      + '<div class="ls-stage"><span class="st-num">1</span><div><b>前置关系</b><div class="ci-tags" style="margin-top:6px">' + prereqs + '</div></div></div>'
+      + '<div class="ls-stage"><span class="st-num">2</span><div><b>断言 / 四态 / 证据</b>'
       + '<p class="muted" style="margin:6px 0 0">先盖住答案，在脑子里回想这条卡讲什么，再按"揭晓"（或空格）。</p>'
       + (revealed ? answer : '<button id="flip" class="primary" type="button">揭晓断言</button>') + '</div></div>'
-      + '<div class="stage"><span class="st-num">3</span><div><b>自测</b>'
+      + '<div class="ls-stage"><span class="st-num">3</span><div><b>自测</b>'
       + (revealed ? gradeRow(st) : '<p class="muted">揭晓后在此评分（或按 1–4）。</p>') + '</div></div>'
     + '</div>';
 }
@@ -417,7 +419,7 @@ function errorView(c, st) {
   const complete = errorCardCompleteness(c);
   const badge = c.needs_review
     ? '<span class="chip" title="机器生成、无人签，不作为已核准知识">机器生成 · 未签</span>' : '';
-  const step1 = '<div class="claim-line bad">✗ ' + esc(c.wrong_assertion || '（无错误断言文本）') + '</div>'
+  const step1 = '<div class="claim-line bad">' + esc(c.wrong_assertion || '（无错误断言文本）') + '</div>'
     + (c.refuted ? '<p class="section-sub">该主张已被反例证伪（b_refuted=true）。</p>' : '');
   const step2 = c.fixture_code
     ? '<pre class="code">' + esc(c.fixture_code) + '</pre>'
@@ -427,7 +429,7 @@ function errorView(c, st) {
     ? '<pre class="sanitizer-out">' + esc(c.sanitizer_output) + '</pre>'
     : '<p class="muted">本卡无 sanitizer 输出（' + esc(c.verdict || 'verdict 未知') + '：检测器未命中）。</p>';
   const step4 = revealed
-    ? '<div class="answer"><div class="claim-line ok">✓ ' + esc(c.correct_assertion || '（无正确断言文本）') + '</div>'
+    ? '<div class="answer"><div class="claim-line ok">' + esc(c.correct_assertion || '（无正确断言文本）') + '</div>'
       + '<div class="ci-tags" style="margin-top:8px">' + badge
       + (c.detector ? ' <span class="chip">检测器 ' + esc(c.detector) + '</span>' : '')
       + (c.four_state ? ' <span class="state-pill" data-state="' + esc(c.four_state) + '"><i></i>' + esc(c.four_state) + '</span>' : '')
@@ -438,11 +440,11 @@ function errorView(c, st) {
     ? '<p class="section-sub">这批错例来自机器卡（' + esc(c.source_id || c.id) + '），'
       + '<b>无人签</b>，不进 cards.json 台账；"正确断言"由反例文字派生，见上来源标注。</p>' : '';
   return '<div class="stages err-card">'
-      + '<div class="stage"><span class="st-num">1</span><div><b>错误断言</b>' + step1 + '</div></div>'
-      + '<div class="stage"><span class="st-num">2</span><div><b>反例代码</b>' + step2 + '</div></div>'
-      + '<div class="stage"><span class="st-num">3</span><div><b>sanitizer 输出</b>' + step3 + '</div></div>'
-      + '<div class="stage"><span class="st-num">4</span><div><b>正确断言</b>' + step4 + note + '</div></div>'
-      + '<div class="stage"><span class="st-num">5</span><div><b>自测</b>'
+      + '<div class="ls-stage"><span class="st-num">1</span><div><b>错误断言</b>' + step1 + '</div></div>'
+      + '<div class="ls-stage"><span class="st-num">2</span><div><b>反例代码</b>' + step2 + '</div></div>'
+      + '<div class="ls-stage"><span class="st-num">3</span><div><b>sanitizer 输出</b>' + step3 + '</div></div>'
+      + '<div class="ls-stage"><span class="st-num">4</span><div><b>正确断言</b>' + step4 + note + '</div></div>'
+      + '<div class="ls-stage"><span class="st-num">5</span><div><b>自测</b>'
       + (revealed ? gradeRow(st) : '<p class="muted">揭晓后在此评分（或按 1–4）。</p>') + '</div></div>'
     + '</div>';
 }

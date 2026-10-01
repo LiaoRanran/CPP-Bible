@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>学一张卡 · QueYi</title>
+<title>学一张卡 · 阙疑 QueYi</title>
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="css/robustness.css">
@@ -12,68 +12,66 @@
 <script type="module" src="components/index.js"></script>
 </head>
 <body>
-<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3">
-<p style="font-size:20px;font-weight:700;margin:0 0 12px">知识卡 · 需要 JavaScript</p>
-<p>卡片详情需要 JavaScript 才能加载（断言 + 边界三元组 + 证据 + 四态判决）。</p>
+<noscript><div style="max-width:640px;margin:2rem auto;padding:1.5rem">
+<p style="font-size:18px;font-weight:600;margin:0 0 6px">学一张卡 · 需要 JavaScript</p>
+<p>卡片详情需要 JavaScript 才能加载（断言 / 边界三元组 / 证据 / 四态判决）。</p>
 <p>示例：ATOM-UB-WRAP-001「有符号整数溢出是 UB」——证据：UBSan 双档命中。</p>
-<p style="color:#b0aeab;font-size:13px">请启用 JavaScript。</p>
+<p style="color:#666;font-size:13px">请启用 JavaScript 后查看。</p>
 </div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="card.html"></qy-nav>
 <main id="main" class="wrap">
-  <header style="padding:34px 0 14px">
-    <h1 style="font-size:26px">学一张卡</h1>
-    <p class="lead" style="font-size:15px">三段式：<b>前置</b>（本仓声明的先修）→ <b>学习</b>（断言 / 边界 / 证据 / 反例）→
+  <header class="page-head">
+    <h1>学一张卡</h1>
+    <p class="lede">三段式：<b>前置</b>（本仓声明的先修）→ <b>学习</b>（断言 / 边界 / 证据 / 反例）→
       <b>自测</b>（题目由台账字段机械生成，每题带出处）。全部内容来自真实台账
-      <span class="kbd">web/data/cards.json</span>，由 <span class="kbd">tools/teach_card_656.py</span> 现算。</p>
-    <p class="muted" style="font-size:13px;margin-top:8px">另有一批 <b>机器卡</b>（665 B1 从 664 独立生成批次拆出，
-      真机复跑取证，<b>无人签</b>，见 <span class="kbd">web/data/ig_cards_665.json</span>）：
+      <span class="mono">web/data/cards.json</span>，由 <span class="mono">tools/teach_card_656.py</span> 现算。</p>
+    <p class="muted" style="margin-top:var(--space-2)">另有一批 <b>机器卡</b>（665 B1 从 664 独立生成批次拆出，真机复跑取证，
+      <b>无人签</b>，见 <span class="mono">web/data/ig_cards_665.json</span>）：
       它们<b>不进</b>本页台账，因为 verified 唯人签，机器不得自置。</p>
-    <div class="toolbar" style="margin-top:14px">
-      <label class="toggle" for="pick">选卡</label>
-      <select id="pick"
-              style="font:inherit;font-size:13px;background:var(--color-surface-2);color:var(--color-text);
-                     border:1px solid var(--color-line-strong);border-radius:7px;padding:7px 10px;min-width:320px"></select>
+    <div class="toolbar" style="margin-top:var(--space-3)">
+      <label for="pick">选卡</label>
+      <select id="pick" aria-label="选择要学习的知识卡"></select>
       <qy-button id="prev" label="← 上一张"></qy-button>
       <qy-button id="next" label="下一张 →"></qy-button>
       <qy-button id="learned" label="标记已学"></qy-button>
       <span class="muted" id="progress">进度加载中…</span>
     </div>
     <!-- 666 B4：进度条（可视化 + 屏幕阅读器播报；进度只存本机 localStorage） -->
-    <div class="progress" style="margin-top:var(--space-1)">
+    <div class="progress" style="margin-top:var(--space-2)">
       <span class="muted" id="progress-label">本机进度</span>
       <span class="bar" role="progressbar" aria-labelledby="progress-label"
             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
         <i id="progress-fill"></i>
       </span>
-      <span class="pct" id="progress-pct">0%</span>
+      <span class="pct num" id="progress-pct">0%</span>
     </div>
     <p class="muted" id="ledger-note"></p>
   </header>
 
   <!-- ① 前置 -->
-  <section id="sec-prereq" style="padding:8px 0 22px">
+  <section id="sec-prereq">
     <h2>① 前置 · 本仓声明的先修</h2>
     <div id="prereq" class="grid c2"></div>
-    <div id="related" style="margin-top:12px"></div>
+    <div id="related" style="margin-top:var(--space-2)"></div>
   </section>
 
   <!-- ② 学习 -->
-  <section id="sec-learn" style="padding:8px 0 22px">
+  <section id="sec-learn">
     <h2>② 学习</h2>
     <div id="card-head"></div>
-    <div id="claim" style="margin-top:12px"></div>
-    <div class="grid c2" style="margin-top:12px">
+    <div id="claim" style="margin-top:var(--space-2)"></div>
+    <div class="grid c2" style="margin-top:var(--space-2)">
       <div id="boundary"></div>
       <div id="verdict"></div>
     </div>
-    <div id="props" style="margin-top:14px"></div>
-    <div id="evidence" style="margin-top:14px"></div>
-    <div id="misconceptions" style="margin-top:14px"></div>
+    <div id="props" style="margin-top:var(--space-3)"></div>
+    <div id="evidence" style="margin-top:var(--space-3)"></div>
+    <div id="misconceptions" style="margin-top:var(--space-3)"></div>
   </section>
 
   <!-- ③ 自测 -->
-  <section id="sec-check" style="padding:8px 0 34px; border-bottom:0">
+  <section id="sec-check">
     <h2>③ 自测 · 每题由台账字段生成</h2>
     <div class="toolbar">
       <qy-button id="reveal-all" label="全部显示答案"></qy-button>
@@ -83,8 +81,11 @@
     <div id="selfcheck"></div>
   </section>
 </main>
-<footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="starmap.html">星图</a>
-  · <a href="verify.html">验哈希</a></footer>
+<footer class="wrap">
+  阙疑 QueYi — 受评估完整性约束的知识验证系统。<br>
+  <a href="index.html">总览</a> · <a href="starmap.html">星图</a>
+  · <a href="verify.html">验哈希</a>
+</footer>
 <script type="module" src="card.js"></script>
 <script type="module">import { initRobustness } from './js/robustness.js'; initRobustness();</script>
 <script type="module">import { initA11y } from './js/a11y.js'; initA11y();</script>

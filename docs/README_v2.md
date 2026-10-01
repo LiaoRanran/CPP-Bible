@@ -1,4 +1,4 @@
-# 祈易 QueYi · 可被独立验收的 C++ 知识验证器
+# 阙疑 QueYi · 可被独立验收的 C++ 知识验证器
 
 > 一句话定位：**每条 C++ 知识结论都绑定「证据 + 复现命令 + 四态判决」，任何人可以重算、可以指出哪一环不成立 —— 而不需要先信任我们。**
 
@@ -55,7 +55,7 @@
 
 **拆分边界（670c 实测登记）**：内核层（`queyi_core_*.py` ×7 + `queyi_data_models_645.py`）在 CPP-Bible 侧是约 2.7KB 的**薄 wrapper**，运行期解析到 `queyi-verifier/tools/` 的 canonical（单一实现、两处入口）；判决/变异层（`gate_engine.py` / `verifier_closure_*.py` / `mutation_*.py` 共 10 个文件）**两侧都是完整实现且逐字节相同** —— 这是 647 方案 §六 明确**留交人裁决**的已知债务，`tools/check_split_670c.py` 会检查它**是否漂移**（两侧同名字节不一致即 FAIL）。
 
-设计准则（见 `web/css/design-tokens.css`）：暖中性底 + 单一橙强调色、深/浅双主题、8px 基数、WCAG 2.2 AA 对比度**现算**、移动端 44px 触控、尊重 `prefers-reduced-motion`。
+设计准则（见 `web/css/design-tokens.css`）：**纯中性灰阶底 + 单一沉静蓝强调色**（671d 起；此前暖中性底 + 橙强调色已弃）、深/浅双主题、8px 基数、圆角只 4/6/8 三档、**无渐变 / 无毛玻璃 / 无辉光 / 无多阴影**、WCAG 2.2 AA 对比度**现算**、移动端 44px 触控、尊重 `prefers-reduced-motion`。
 670c 起对比度审计工具化：`web/js/contrast_check.js` 覆盖 27 组配对 × 深/浅两主题，全部 ≥ 4.5:1（`npm run test:contrast`）。
 
 ---

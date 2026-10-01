@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="祈易卡库：全文搜索 + 高级筛选（四态 / 证据强度 / 域 / 标准）+ 批量对比 + 证据链 + 卡关系图；机器卡单独标注，不进教学台账。">
+<meta name="description" content="阙疑卡库：全文搜索 + 高级筛选（四态 / 证据强度 / 域 / 标准）+ 批量对比 + 证据链 + 卡关系图；机器卡单独标注，不进教学台账。">
 <meta name="color-scheme" content="dark light">
-<title>卡库 · QueYi</title>
+<title>卡库 · 阙疑 QueYi</title>
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="css/669c.css">
@@ -16,27 +16,29 @@
 <script type="module" src="cards.js"></script>
 </head>
 <body>
-<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3">
-<p style="font-size:20px;font-weight:700;margin:0 0 12px">卡库 · 需要 JavaScript</p>
-<p>卡库需要 JavaScript 才能浏览（42 张知识卡 + 机器卡，可按四态/域/类型筛选）。</p>
-<p><a href="index.html" style="color:#8ab4f8">返回首页</a></p>
-<p style="color:#b0aeab;font-size:13px">请启用 JavaScript。</p>
+<noscript><div style="max-width:640px;margin:2rem auto;padding:1.5rem">
+<p style="font-size:18px;font-weight:600;margin:0 0 6px">卡库 · 需要 JavaScript</p>
+<p>全部知识卡与机器卡，按四态 / 域 / 类型筛选。</p>
+<p><a href="index.html">返回首页</a></p>
+<p style="color:#666;font-size:13px">请启用 JavaScript 后查看。</p>
 </div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="cards.html" badge="静态站 · 无后端"></qy-nav>
 
 <main id="main" class="wrap">
   <header class="page-head">
-    <div>
-      <h1>卡库</h1>
-      <p class="lede">全部知识卡（含草稿）与独立的<b>机器卡</b>区。数据来自
-        <span class="kbd">web/data/cards_index.json</span>（台账索引）、
-        <span class="kbd">web/data/cards.json</span>（全卡：claim / 命题 / 边界 / 证据明细）、
-        <span class="kbd">web/data/ig_cards_665.json</span>（机器卡）。
-        口径提醒：<b>verified 唯人签</b>；机器卡（665 B1 独立生成批次）一律
-        <span class="kbd">needs_review</span>，<b>不混入</b>教学台账。</p>
+    <div class="row-between">
+      <div>
+        <h1>卡库</h1>
+        <p class="lede">全部知识卡（含草稿）与独立的<b>机器卡</b>区。数据来自
+          <span class="kbd">web/data/cards_index.json</span>（台账索引）、
+          <span class="kbd">web/data/cards.json</span>（全卡：claim / 命题 / 边界 / 证据明细）、
+          <span class="kbd">web/data/ig_cards_665.json</span>（机器卡）。</p>
+      </div>
+      <span class="chip mono" id="data-stamp">加载中…</span>
     </div>
-    <span class="chip mono" id="data-stamp">加载中…</span>
+    <p class="lede" style="margin-top:var(--space-2)">口径提醒：<b>verified 唯人签</b>；机器卡（665 B1 独立生成批次）一律
+      <span class="kbd">needs_review</span>，<b>不混入</b>教学台账。</p>
   </header>
 
   <!-- 670c A3 · 搜索 + 高级筛选：多选维度内 OR、维度间 AND；全文多词 AND -->
@@ -116,8 +118,8 @@
         <p class="section-sub">每一层只照抄台账字段：<b>没记</b>就是「未记录」、<b>未入库</b>就是「无输出可查」——
           不推断、不补写、不代替它背书。</p>
       </div>
-      <label class="mono" for="chain-card" style="font-size:12px">选卡
-        <select id="chain-card" class="search-input" style="flex:0 0 auto;min-width:260px"></select>
+      <label class="mono field-inline" for="chain-card" style="font-size:12px">选卡
+        <select id="chain-card" class="search-input"></select>
       </label>
     </div>
     <div id="chain-out" style="margin-top:var(--space-2);overflow:auto"></div>
@@ -149,15 +151,18 @@
   <!-- 详情弹窗（669c A2 + 670c A3 证据链）：完整证据 + 复现说明 + 四态理由 + 证据链树 -->
   <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
     <div class="modal-backdrop" data-close></div>
-    <div class="modal-box glass glass-tint">
+    <div class="modal-box">
       <button class="modal-x" id="modal-close" type="button" aria-label="关闭">×</button>
       <div id="modal-body"></div>
     </div>
   </div>
 </main>
 
-<footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="card.html">学一张卡</a>
-  · <a href="starmap.html">星图</a> · <a href="verify.html">验哈希</a></footer>
+<footer class="wrap">
+  阙疑 QueYi — 受评估完整性约束的知识验证系统。<br>
+  <a href="index.html">总览</a> · <a href="card.html">学一张卡</a>
+  · <a href="starmap.html">星图</a> · <a href="verify.html">验哈希</a>
+</footer>
 <script type="module">import { initRobustness } from './js/robustness.js'; initRobustness();</script>
 <script type="module">import { initA11y } from './js/a11y.js'; initA11y();</script>
 <script type="module">import { initKeybinds } from './js/keybind.js'; initKeybinds();</script>

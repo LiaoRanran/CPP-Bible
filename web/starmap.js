@@ -761,10 +761,9 @@ async function boot() {
   const detail = byId('detail');
   const labelsSvg = byId('cluster-labels');
   const ctx = canvas && canvas.getContext ? canvas.getContext('2d') : null;   // jsdom 下为 null/桩
-  const raf = (typeof window.requestAnimationFrame === 'function')
-    ? window.requestAnimationFrame.bind(window) : (cb) => setTimeout(() => cb(Date.now()), 16);
+  /* 671d：`raf` 与 `REDUCED_MOTION` 只服务于已删除的入场动画，一并移除
+   *   （保留 `now`：力导向求解耗时统计仍在用）。 */
   const now = () => (window.performance && window.performance.now ? window.performance.now() : Date.now());
-  const REDUCED_MOTION = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
   const cssVar = (name) => {
@@ -795,7 +794,7 @@ async function boot() {
   let hovered = -1, selected = -1, hoverEdge = -1, hoverCluster = -1;
   let hits = [], hitAt = -1, searchHits = null;
   let layoutInfo = { iterations: 0, ms: 0, minDistance: 0, converged: false, separationIterations: 0 };
-  let reveal = 1, revealStart = 0;
+  const reveal = 1;   // 671d：固定 1（入场动画已删，节点首帧即最终尺寸）
   const filters = { states: new Set(['pass', 'pass_with_exception', 'fail', 'unknown']),
     domain: 'all', defeatedOnly: false, weight: true };
   const labelEls = new Map();        // domain → <text class="cluster-label">
@@ -1217,8 +1216,7 @@ async function boot() {
     el.textContent = 'Canvas 2D（自写力导向）· ' + G.counts.nodes + ' 节点 / ' + G.counts.links
       + ' 边 / ' + G.counts.clusters + ' 聚类 · 布局 ' + layoutInfo.iterations + ' 迭代 ' + layoutInfo.ms + 'ms · 防重叠 '
       + layoutInfo.separationIterations + ' 迭代（最近点对 ' + layoutInfo.minDistance.toFixed(1) + 'px）'
-      + ' · 无每帧物理 · 收敛 ' + (layoutInfo.converged ? '是' : 'maxMove ' + layoutInfo.maxMove.toFixed(2) + 'px（视觉已稳定）')
-      + (REDUCED_MOTION ? ' · 已按 prefers-reduced-motion 关动画' : '');
+      + ' · 无每帧物理 · 无入场动画 · 收敛 ' + (layoutInfo.converged ? '是' : 'maxMove ' + layoutInfo.maxMove.toFixed(2) + 'px（视觉已稳定）');
   }
 
   // ── 交互 ─────────────────────────────────────────────────────────────────
@@ -1331,16 +1329,13 @@ async function boot() {
   }
 
   // ── 启动 ─────────────────────────────────────────────────────────────────
+  /* 671d：删掉 420ms 的"节点尺寸入场动画"（easeOutCubic）。
+   *   理由：① 420ms > 本批次规定的 200ms 上限；② 首次渲染时节点从小变大，
+   *   在数据图上属于装饰而非信息；③ 力导向图本身已经是"一次性求解后按需重绘"，
+   *   多这一层动画只会让首屏看起来更"模板"。改为直接绘制最终尺寸。 */
   function startReveal() {
-    if (REDUCED_MOTION) { reveal = 1; draw(); return; }
-    revealStart = now();
-    const tick = () => {
-      const t = Math.min(1, (now() - revealStart) / 420);
-      reveal = 1 - Math.pow(1 - t, 3);
-      draw();
-      if (t < 1) raf(tick); else { reveal = 1; draw(); }
-    };
-    raf(tick);
+    reveal = 1;
+    draw();
   }
 
   const raw = await fetchJSON('data/graph.json');

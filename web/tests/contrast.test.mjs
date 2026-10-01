@@ -79,9 +79,15 @@ ok('真实 tokens：亮色主题无失败', real.themes.light.every((r) => r.pas
 ok('真实 tokens：两主题都算到全部配对', real.themes.dark.length === PAIRS_670C.length
   && real.themes.light.length === PAIRS_670C.length);
 ok('真实 tokens：overall ok 且 failures=0', real.ok === true && real.failures.length === 0);
-ok('真实 tokens：正文/底 暗色 = 13.97:1（与 tokens 注释一致）', (() => {
+// 671d：配色换了（暖中性+橙 → 中性灰阶+沉静蓝），锁定的数值随之更新。
+// 仍锁"正文/底"这一对，是为了防止有人把正文色改淡 —— 断言的意义不变。
+ok('真实 tokens：正文/底 暗色 = 16.91:1（与 tokens 注释一致）', (() => {
   const row = real.themes.dark.find((r) => r.name === '正文 / 底');
-  return row && Math.abs(row.ratio - 13.97) < 0.05;
+  return row && Math.abs(row.ratio - 16.91) < 0.05;
+})());
+ok('真实 tokens：正文/底 亮色 ≥ 15:1（浅底也要足够黑）', (() => {
+  const row = real.themes.light.find((r) => r.name === '正文 / 底');
+  return row && row.pass && row.ratio >= 15;
 })());
 ok('真实 tokens：热力图标签对比度已修复(≥4.5)', (() => {
   const d = real.themes.dark.find((r) => r.name === '热力图标签 / 选中底');

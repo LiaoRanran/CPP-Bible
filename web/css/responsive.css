@@ -18,6 +18,18 @@ nav a, .toolbar a { display: inline-flex; align-items: center; }
 /* 表格窄屏横向滚动（给表格套 .table-scroll 或 .qy-table-wrap 即可） */
 .table-scroll, .qy-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 table { max-width: 100%; }
+/* 671d：内联 <select>/.search-input 在窄屏会被 min-width / size=4 撑破容器 */
+@media (max-width: 480px) {
+  select, .search-input, input[type="search"] { max-width: 100%; min-width: 0; }
+  .filter-bar { grid-template-columns: 1fr; }
+  .toolbar > label { flex: 1 1 100%; }
+}
+/* 671d：页签组是 inline-flex，窄屏要允许换行 + 自身可滚，否则撑破 320px */
+.deck-tabs { flex-wrap: wrap; max-width: 100%; }
+@media (max-width: 640px) {
+  .deck-tabs { display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .deck-tab { flex: 0 0 auto; }
+}
 
 /* 长文本不溢出 */
 .lead, p, td, th, li { overflow-wrap: anywhere; }

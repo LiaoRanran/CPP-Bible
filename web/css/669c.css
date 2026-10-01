@@ -12,20 +12,26 @@
   box-shadow: inset 0 -2px 0 var(--color-accent); }
 .deck-tab:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
 
-/* ── 学习区：三阶段路径 ── */
+/* ── 学习区：三阶段路径 ──
+ * 671d：原类名 `.stage` 与 style.css 的"canvas 舞台"撞名（同一份 CSS 在两页各表一义）。
+ *   重命名为 `.ls-stage`（learning step），消除歧义；
+ *   序号圆块（26px 强调色底圆）→ 8px 小圆点 + 12px 等宽序号，去掉"彩色徽章"感。 */
 .study-card { padding: var(--space-3); }
 .stages { display: flex; flex-direction: column; gap: var(--space-3); }
-.stage { display: flex; gap: var(--space-2); align-items: flex-start; }
-.st-num { flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%;
-  background: var(--color-accent-soft); color: var(--color-accent); font-weight: 600;
-  display: grid; place-items: center; font-size: 13px; }
-.stage > div:last-child { flex: 1; }
+.ls-stage { display: flex; gap: var(--space-2); align-items: flex-start; }
+/* 671d：不再用"彩色圆点 + 圆块里塞序号"（8px 圆里放数字会溢出）；
+ *       直接给一个淡色等宽序号 —— 学术论文的步骤编号就是这个样子。 */
+.st-num { flex: 0 0 auto; margin-top: 3px; min-width: 1.4em;
+  font-family: var(--font-mono); font-size: 12px; color: var(--color-text-faint); }
+.ls-stage > div:last-child { flex: 1; }
 .answer { margin-top: var(--space-1); }
-.claim-line { font-size: 16px; color: var(--color-text); font-weight: 600; line-height: 1.5; }
+.claim-line { font-size: var(--font-size-lg); color: var(--color-text); font-weight: 500; line-height: 1.5; }
+/* 671d：去掉 ✓ / ✗ 装饰符号（渲染不一致 + 装饰性），靠文字与颜色承载语义 */
 .claim-line.ok { color: var(--color-pass); }
-pre.code { background: var(--color-surface-2); border: var(--border-width) solid var(--color-line-strong);
+.claim-line.bad { color: var(--color-fail); }
+pre.code { background: var(--color-surface-2); border: var(--border-width) solid var(--color-line);
   border-radius: var(--radius-md); padding: var(--space-2); overflow: auto; max-height: 280px;
-  font-family: var(--font-mono); font-size: 12px; color: var(--color-text-dim); white-space: pre; }
+  font-family: var(--font-mono); font-size: var(--font-size-sm); line-height: 1.6; color: var(--color-text-dim); white-space: pre; }
 
 /* ── 评分行 ── */
 .grade-row { display: flex; gap: var(--space-1); align-items: center; flex-wrap: wrap; margin-top: var(--space-2); }
@@ -33,14 +39,18 @@ pre.code { background: var(--color-surface-2); border: var(--border-width) solid
   border-radius: var(--radius-md); padding: 8px 14px; color: var(--color-text); cursor: pointer;
   font-size: 13px; min-height: var(--touch-min); transition: border-color var(--motion-fast) var(--motion-ease); }
 .grade:hover { border-color: var(--color-accent); }
-button.primary { background: var(--color-accent); color: #1a1a1a; border-color: var(--color-accent);
-  font-weight: 600; padding: 10px 18px; border-radius: var(--radius-md); cursor: pointer;
-  font-size: 14px; min-height: var(--touch-min); }
-button.primary:hover { filter: brightness(1.06); }
-button.ghost { background: transparent; border: var(--border-width) dashed var(--color-line-strong);
-  color: var(--color-text-mute); padding: 8px 14px; border-radius: var(--radius-md); cursor: pointer;
+/* 671d：主按钮填充用 --color-accent-strong（#2563eb），白字才过 AA 4.5:1；
+ *   直接用 --color-accent（#5b8def）时白字只有 3.23:1 —— 别改回去。 */
+button.primary { background: var(--color-accent-strong); color: var(--color-on-accent);
+  border-color: var(--color-accent-strong);
+  font-weight: 500; padding: var(--space-1) var(--space-3); border-radius: var(--radius-md); cursor: pointer;
+  font-size: var(--font-size-sm); min-height: var(--touch-min); }
+button.primary:hover { filter: brightness(.92); }
+/* 671d：次按钮不再用虚线边框（模板感），hover 也不再变成红色（语义错配：重置 ≠ 失败） */
+button.ghost { background: transparent; border: var(--border-width) solid var(--color-line);
+  color: var(--color-text-dim); padding: 8px 14px; border-radius: var(--radius-md); cursor: pointer;
   font-size: 13px; min-height: var(--touch-min); }
-button.ghost:hover { color: var(--color-text); border-color: var(--color-fail); }
+button.ghost:hover { color: var(--color-text); border-color: var(--color-accent); }
 
 /* ── 今日队列 ── */
 .queue-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
@@ -79,8 +89,12 @@ button.ghost:hover { color: var(--color-text); border-color: var(--color-fail); 
 .modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: var(--space-3); }
 .modal[hidden] { display: none; }
 .modal-backdrop { position: absolute; inset: 0; background: var(--color-overlay); }
+/* 671d：不再依赖 .glass（毛玻璃已删），弹窗自己声明纯色底 + 1px 边框；
+ *       阴影只保留在弹窗（规格允许：除弹窗外无阴影）。 */
 .modal-box { position: relative; width: min(640px, 100%); max-height: 84vh; overflow: auto;
-  padding: var(--space-4); box-shadow: var(--shadow-pop); }
+  padding: var(--space-4); background: var(--color-surface);
+  border: var(--border-width) solid var(--color-line-strong); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop); }
 .modal-x { position: absolute; top: 8px; right: 10px; all: unset; cursor: pointer;
   font-size: 22px; line-height: 1; color: var(--color-text-dim); padding: 4px 10px; }
 .modal-x:hover { color: var(--color-text); }
@@ -102,12 +116,10 @@ button.ghost:hover { color: var(--color-text); border-color: var(--color-fail); 
 /* ── 通用工具 ── */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-.row-between { display: flex; align-items: center; justify-content: space-between;
-  gap: var(--space-2); flex-wrap: wrap; }
+/* .row-between / .toolbar 已收敛到 style.css，此处不再重复定义（避免同行为两类） */
 .section-title { font-size: var(--font-size-base); font-weight: 600; color: var(--color-text); margin: 0; }
 .section-sub { font-size: 12px; color: var(--color-text-mute); margin: 4px 0 0; }
 .stack { display: flex; flex-direction: column; gap: var(--space-2); }
-.toolbar { display: flex; gap: var(--space-1); flex-wrap: wrap; align-items: center; }
 .spacer { flex: 1 1 auto; }
 .mono { font-family: var(--font-mono); }
 .muted { color: var(--color-text-mute); }
@@ -136,8 +148,10 @@ kbd { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-di
 .pf-edge.is-current { stroke: var(--color-accent); stroke-dasharray: 5 4; }
 .pf-badge { fill: var(--color-accent); }
 
-/* ── A1 · 错例牌 ── */
-.err-card { border-left: 3px solid var(--color-fail); }
+/* ── A1 · 错例牌 ──
+ * 671d：原来的 3px 红色左边条属于"卡片彩色边条"（去 AI 味 D1 明令禁止），
+ *   改为 1px 淡描边；"这是错例"由标题文字和小圆点承担，不靠色块。 */
+.err-card { border-left: 0; }
 .err-step { display: grid; grid-template-columns: 96px 1fr; gap: 4px var(--space-2); align-items: start;
   padding: var(--space-1) 0; border-top: var(--border-width) dashed var(--color-line); }
 .err-step:first-of-type { border-top: 0; }
@@ -152,9 +166,10 @@ kbd { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-di
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); gap: var(--space-2); }
 .stat-tile { background: var(--color-surface-2); border: var(--border-width) solid var(--color-line);
   border-radius: var(--radius-md); padding: var(--space-2); text-align: center; }
-.stat-tile .st-n { font-size: var(--font-size-xl); font-weight: 700; color: var(--color-text);
-  font-family: var(--font-mono); line-height: 1.1; }
-.stat-tile .st-l { font-size: 11px; color: var(--color-text-mute); margin-top: 2px; }
+.stat-tile .st-n { font-size: var(--font-size-xl); font-weight: 600; color: var(--color-text);
+  font-family: var(--font-mono); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stat-tile .st-l { font-size: var(--font-size-xs); color: var(--color-text-mute); margin-top: 2px;
+  letter-spacing: var(--letter-wide); }
 .stat-tile.is-weak .st-n { color: var(--color-fail); }
 .stat-tile.is-good .st-n { color: var(--color-pass); }
 
@@ -230,6 +245,10 @@ kbd { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-di
 .ev-tree .ev-node { font-family: var(--font-mono); color: var(--color-text); }
 .ev-tree .ev-kind { color: var(--color-text-mute); }
 .ev-tree .ev-out { color: var(--color-pass); }
+/* 671d：标签 + 控件的行内组合，桌面上给一个舒适宽度，窄屏自动占满（不再硬写 min-width:260px） */
+.field-inline { display: inline-flex; align-items: center; gap: var(--space-1); flex-wrap: wrap; }
+.field-inline select { flex: 0 0 auto; min-width: 260px; }
+@media (max-width: 640px) { .field-inline, .field-inline select { width: 100%; min-width: 0; } }
 .search-input { flex: 1 1 220px; min-height: var(--touch-min); background: var(--color-surface-2);
   border: var(--border-width) solid var(--color-line-strong); border-radius: var(--radius-md);
   color: var(--color-text); padding: 8px 12px; font-size: 13px; font-family: var(--font-sans); }
@@ -250,10 +269,10 @@ kbd { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-di
 
 /* ── A4 · 判决时间线 / 漂移 / 对比表 ── */
 .timeline { position: relative; margin: 0; padding: 0 0 0 var(--space-3); list-style: none;
-  border-left: 2px solid var(--color-line-strong); }
-.tl-item { position: relative; padding: 0 0 var(--space-2) var(--space-2); }
-.tl-item::before { content: ''; position: absolute; left: calc(-1 * var(--space-3) - 5px); top: 6px;
-  width: 9px; height: 9px; border-radius: 50%; background: var(--color-line-strong); }
+  border-left: var(--border-width) solid var(--color-line); }
+.tl-item { position: relative; padding: 0 0 var(--space-3) var(--space-2); }
+.tl-item::before { content: ''; position: absolute; left: calc(-1 * var(--space-3) - 4px); top: 7px;
+  width: 7px; height: 7px; border-radius: 50%; background: var(--color-unknown); }
 .tl-item[data-state="pass"]::before { background: var(--color-pass); }
 .tl-item[data-state="fail"]::before { background: var(--color-fail); }
 .tl-item[data-state="unknown"]::before { background: var(--color-unknown); }
@@ -267,7 +286,7 @@ kbd { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-di
 /* 670c A6 对比度修复：accent-soft 底 + --color-fail 文字实测 4.43:1(dark) < 4.5。
    改为不加底色、用左侧红条标"不一致"，红字回到面板底（5.6:1 量级）。 */
 .diff-table tr.is-mismatch { background: transparent; }
-.diff-table tr.is-mismatch td:first-child { box-shadow: inset 3px 0 0 var(--color-fail); }
+.diff-table tr.is-mismatch td:first-child { box-shadow: inset 2px 0 0 var(--color-fail); }
 .diff-table tr.is-mismatch td.diff-delta { color: var(--color-fail); font-weight: 600; }
 .diff-table tr.is-match td.diff-delta { color: var(--color-pass); }
 .drift-bar { display: grid; grid-template-columns: minmax(120px, 1fr) 2fr max-content; gap: var(--space-2);

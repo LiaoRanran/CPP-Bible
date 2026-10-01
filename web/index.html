@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="祈易（QueYi）：一个可被独立验收的 C++ 知识验证器 —— 判决、证据、复算三者绑定，任何人都能打断这条链。">
+<meta name="description" content="阙疑（QueYi）：一个受评估完整性约束的 C++ 知识验证系统 —— 每个断言都经过真机编译与可审计判决。">
 <meta name="color-scheme" content="dark light">
-<title>祈易 QueYi · 可被独立验收的 C++ 知识</title>
+<title>阙疑 QueYi · C++ 知识验证系统</title>
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="css/robustness.css">
@@ -15,40 +15,30 @@
 <script type="module" src="home.js"></script>
 </head>
 <body>
-<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3">
-<p style="font-size:20px;font-weight:700;margin:0 0 12px">祈易 QueYi</p>
-<p>一个<b>可被独立验收</b>的 C++ 知识验证器：结论绑定证据与复现命令。</p>
-<p>现算：判决规则 67 · 实卡 42 · 账本 452 · holdout 87.5%（14/16）· 外部 corpus 35.0%（14/40）。</p>
-<p style="color:#b0aeab;font-size:13px">请启用 JavaScript。</p>
+<noscript><div style="max-width:640px;margin:2rem auto;padding:1.5rem">
+<p style="font-size:20px;font-weight:600;margin:0 0 8px">阙疑 QueYi</p>
+<p>受评估完整性约束的 C++ 知识验证系统：每条结论绑定证据与复现命令。</p>
+<p style="color:#666;font-size:13px">请启用 JavaScript 后查看全部内容。</p>
 </div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="index.html" badge="静态站 · 无后端"></qy-nav>
 
 <main id="main">
-  <!-- ① 顶部：项目名 + 一句话定位 -->
-  <header class="wrap" style="padding-top:var(--space-6)">
-    <h1>祈易 QueYi</h1>
-    <p class="lead">一个<b>可被独立验收</b>的 C++ 知识验证器：每条结论都绑定证据与复现命令，
-      任何人可以重算、可以指出哪一环不成立 —— 而不需要先信任我们。</p>
-    <div class="toolbar">
-      <qy-button href="cards.html" variant="primary" label="浏览卡库"></qy-button>
-      <qy-button href="learn.html" label="学习台"></qy-button>
-      <qy-button href="experiments.html" label="实验结果"></qy-button>
-      <qy-button href="card.html" label="学一张卡"></qy-button>
-      <qy-button href="starmap.html" label="打开星图" id="starmap-btn"></qy-button>
-      <qy-button href="verify.html" label="现场验哈希"></qy-button>
-      <span class="muted" id="mode-chip">—</span>
+
+  <!-- ① Hero：项目名 + 一句话定位 + 两个入口。无图标、无渐变、无装饰图形 -->
+  <header class="wrap hero">
+    <h1>阙疑</h1>
+    <p class="lede">一个受评估完整性约束的 C++ 知识验证系统 —— 每个断言都经过真机编译与可审计判决。</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="experiments.html">查看实验</a>
+      <a class="btn" href="cards.html">查看卡库</a>
     </div>
+    <p class="muted" style="margin-top:var(--space-3)">论文稿件：<span class="mono">research/paper_v0.9.md</span>（仓库内，随批次更新）</p>
   </header>
 
-  <!-- ② 首屏：真数据渲染的接地图（会动，不是截图） -->
-  <section class="wrap wrap-wide" style="padding-top:0">
-    <div class="stage" id="stage"><canvas id="mini" aria-label="知识接地网络示意图（真实数据渲染；完整交互见星图页）" role="img"></canvas></div>
-  </section>
-
-  <!-- ③ 核心指标（数字由 tools/web_metrics_666.py 现算，前端只渲染） -->
+  <!-- ② 核心指标：纯数字 + 标签，不用卡片框 -->
   <section class="wrap">
-    <h2>核心指标 · 现算（非目标值）</h2>
+    <h2>核心指标</h2>
     <div class="metrics" id="metrics" data-qy-state="loading" aria-busy="true">
       <div class="metric qy-skeleton qy-skel-card" aria-hidden="true"></div>
       <div class="metric qy-skeleton qy-skel-card" aria-hidden="true"></div>
@@ -57,101 +47,81 @@
     <p class="muted" id="metrics-note" style="margin-top:var(--space-2)">加载中…</p>
   </section>
 
-  <!-- ④ 系统状态时间线 -->
+  <!-- ③ 系统简介：720px 正文宽（65–75 字符），三段 + 极简架构图 -->
   <section class="wrap">
-    <h2>系统状态时间线</h2>
+    <h2>系统简介</h2>
+    <div class="prose">
+      <p>阙疑把一条 C++ 知识断言拆成三件可分别核对的东西：<b>断言本身</b>、<b>支撑它的证据</b>（真机编译与运行的原始输出）、
+        以及<b>据以作出判决的规则集</b>。三者中任何一环不成立，结论即不成立。</p>
+      <p>判决是<b>四态</b>的：<span class="state-text st-pass">pass</span>、
+        <span class="state-text st-pass_with_exception">pass_with_exception</span>、
+        <span class="state-text st-fail">fail</span>、
+        <span class="state-text st-unknown">unknown</span>。
+        <span class="mono">unknown</span> 是一等公民 —— 证据不足时不允许降级为通过，
+        这条约束是"评估完整性"的核心，也是本系统区别于普通题库的地方。</p>
+      <p>当一条断言失败或判不出来时，系统不是记一笔了事，而是把它转成一份待办：
+        补证据、改规则、或显式登记为已知缺口。这套<b>失败驱动的资产更新机制</b>产生的每一次变更都进账本，
+        可回溯、可复算。</p>
+    </div>
+
+    <figure style="margin:var(--space-4) 0 0">
+      <svg viewBox="0 0 720 96" width="100%" height="96" role="img"
+           aria-label="判决流程：断言候选 → 四态判决 → 证据链 → 可审计复算；失败与 unknown 回流为待办">
+        <defs>
+          <marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,1 L7,4 L0,7" fill="none" stroke="#8a8a8a" stroke-width="1"/>
+          </marker>
+        </defs>
+        <g fill="none" stroke="#666666" stroke-width="1">
+          <rect x="0"   y="30" width="150" height="36" rx="6"/>
+          <rect x="190" y="30" width="150" height="36" rx="6"/>
+          <rect x="380" y="30" width="150" height="36" rx="6"/>
+          <rect x="570" y="30" width="150" height="36" rx="6"/>
+          <line x1="152" y1="48" x2="186" y2="48" marker-end="url(#ar)"/>
+          <line x1="342" y1="48" x2="376" y2="48" marker-end="url(#ar)"/>
+          <line x1="532" y1="48" x2="566" y2="48" marker-end="url(#ar)"/>
+          <!-- 失败 / unknown 回流 -->
+          <path d="M265,68 L265,88 L95,88 L95,70" marker-end="url(#ar)" stroke-dasharray="3 3"/>
+        </g>
+        <g fill="#ededed" font-size="12" font-family="inherit" text-anchor="middle">
+          <text x="75"  y="52">断言候选</text>
+          <text x="265" y="52">四态判决</text>
+          <text x="455" y="52">证据链</text>
+          <text x="645" y="52">可审计复算</text>
+        </g>
+        <text x="182" y="84" fill="#8a8a8a" font-size="11" font-family="inherit" text-anchor="middle">fail / unknown → 待办</text>
+      </svg>
+      <figcaption class="figure-src">图 1　判决流程。虚线为失败与 unknown 的回流路径。</figcaption>
+    </figure>
+  </section>
+
+  <!-- ④ 演化时间线：1px 竖线 + 小圆点，只显示最近节点 -->
+  <section class="wrap">
+    <h2>演化时间线</h2>
+    <p class="muted" style="margin-bottom:var(--space-3)">最近 8 个关键节点；完整记录在账本中。</p>
     <ul class="timeline" id="timeline" data-qy-state="loading" aria-busy="true">
       <li class="qy-skeleton qy-skel-line" aria-hidden="true"></li>
       <li class="qy-skeleton qy-skel-line" aria-hidden="true"></li>
     </ul>
   </section>
 
-  <!-- ⑤ 系统现状面板（保护器 / 逃逸率；655 D 既有） -->
+  <!-- ⑤ 最近提交：等宽 hash + 描述 + 时间 -->
   <section class="wrap">
-    <h2>系统现状（现算，非目标值）</h2>
-    <div class="status-grid" id="status-grid">
-      <qy-panel id="s-cards" caption="知识卡" num="—" sub="加载中…"></qy-panel>
-      <qy-panel id="s-prot" caption="保护器" num="—" sub="—"></qy-panel>
-      <qy-panel id="s-escape" caption="逃逸率" num="—" sub="—"></qy-panel>
-      <qy-panel id="s-unknown" caption="unknown 口径" num="—" sub="未知不降级为通过"></qy-panel>
-    </div>
-    <p class="muted" style="margin-top:var(--space-2)" id="status-note"></p>
-  </section>
-
-  <!-- ⑥ 星图统计 -->
-  <section class="wrap">
-    <div class="grid c3" id="stats"></div>
-    <p class="muted" style="margin-top:var(--space-2)" id="src-note"></p>
-  </section>
-
-  <!-- ⑦ 三通道编码 -->
-  <section class="wrap">
-    <h2>三通道编码</h2>
-    <div class="legend">
-      <div class="chan"><b>色 · 四态</b>
-        <div><span class="dot st-pass"></span>pass</div>
-        <div><span class="dot st-pass_with_exception"></span>pass_with_exception</div>
-        <div><span class="dot st-fail"></span>fail</div>
-        <div><span class="dot st-unknown"></span>unknown</div>
-      </div>
-      <div class="chan"><b>形 · 类型</b>
-        <div><span class="dot st-unknown" style="width:11px;height:11px"></span>卡（大圆 · 描边）</div>
-        <div><span class="dot st-unknown" style="width:6px;height:6px"></span>命题（小圆）</div>
-        <div><span class="sq st-fail"></span>误解（方 · 攻击者）</div>
-      </div>
-      <div class="chan"><b>光 · credibility</b>
-        <div>高 = 不透明（1.0）</div>
-        <div>中 = 0.72</div>
-        <div>低 = 0.5</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ⑧ 三个入口 -->
-  <section class="wrap">
-    <h2>怎么用</h2>
-    <div class="grid c3">
-      <div class="card"><h3>卡库</h3><p>按状态 / 四态 / 域 / 类型筛选，按证据强度排序，搜全部知识卡；
-        每张可展开看断言、边界与证据，点「详情」看四态判决理由；<b>机器卡单独标注、不进教学台账</b>。</p></div>
-      <div class="card"><h3>学习台</h3><p>把 42 张知识卡与机器卡反例变成<b>可复习的牌组</b>：间隔重复（SM-2）+ 主动回忆 + 错例驱动。
-        进度存本机，可导出/导入。</p></div>
-      <div class="card"><h3>现场验哈希</h3><p>用浏览器 Web Crypto 对工件重算 sha256，与台账逐字节比对：<b>可一次拖入多个文件批量验证</b>，
-        结果可导出 CSV。<b>离线可用</b>，文件不出本机。</p></div>
-    </div>
-    <div class="grid c3" style="margin-top:var(--space-2)">
-      <div class="card"><h3>实验结果</h3><p>检出率（holdout / external / counterfactual）、变异杀死率、结果分布与系统演化 ——
-        <b>现算自真实台账</b>，分母与口径一并给出。</p></div>
-      <div class="card"><h3>星图</h3><p>178 节点 / 1093 边的知识接地网络（真实数据渲染），可缩放、可点选看详情。</p></div>
-      <div class="card"><h3>复现清单</h3><p>每条证据带版本串 + 命令 + 输入哈希 + 期望输出：
-        一条命令即可重跑验收（见 <span class="kbd">replay_probe_651</span>）。</p></div>
-    </div>
-  </section>
-
-  <!-- ⑨ 底部：最新提交 + 链接 -->
-  <section class="wrap">
-    <h2>最新提交</h2>
+    <h2>最近提交</h2>
     <div id="commits" class="subtle">加载中…</div>
-    <h2 style="margin-top:var(--space-4)">链接</h2>
-    <p class="muted">
-      <a href="cards.html">卡库</a> ·
-      <a href="learn.html">学习台</a> ·
-      <a href="experiments.html">实验结果</a> ·
-      <a href="card.html">学一张卡</a> ·
-      <a href="starmap.html">星图</a> ·
-      <a href="verify.html">验哈希</a> ·
+    <p class="muted" style="margin-top:var(--space-3)">
       <a href="data/metrics_666.json">指标原始数据（JSON）</a> ·
       <a href="data/manifest.json">工件哈希清单</a>
-    </p>
-    <p class="muted" style="margin-top:var(--space-2)">
-      期望值：<span class="kbd">data/metrics_666.json</span> 的 <span class="kbd">ledger_redline</span>
-      字段写着账本红线（452 事件零改）—— 本页只渲染它，不替它背书。
     </p>
   </section>
 </main>
 
-<footer class="wrap">静态站 · 无后端 · 无追踪 · 数据由 <span class="mono">tools/web_metrics_666.py</span>、
+<footer class="wrap">
+  阙疑 QueYi — 受评估完整性约束的知识验证系统。<br>
+  静态站 · 无后端 · 无追踪 · 数据由 <span class="mono">tools/web_metrics_666.py</span>、
   <span class="mono">tools/web_data_pipeline_656.py</span> 与 <span class="mono">tools/web_status_655.py</span>
-  从真实台账生成（不造演示数据）。</footer>
+  从真实台账生成（不造演示数据）。
+</footer>
 <script type="module">import { initRobustness } from './js/robustness.js'; initRobustness();</script>
 <script type="module">import { initA11y } from './js/a11y.js'; initA11y();</script>
 </body>

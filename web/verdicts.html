@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>判决与数字 · 祈易 QueYi</title>
+<title>判决与数字 · 阙疑 QueYi</title>
 <meta name="description" content="判决历史（时间倒序、状态色标、筛选排序）、状态仪表盘与数据对比表；数字全部由 tools/web_verdicts_667.py 现算。">
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
@@ -14,24 +14,21 @@
 <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
-<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3">
-<p style="font-size:20px;font-weight:700;margin:0 0 12px">判决历史 · 需要 JavaScript</p>
-<p>判决历史需要 JavaScript 才能查看（四态：pass/fail/unknown/contradict）。</p>
-<p><a href="index.html" style="color:#8ab4f8">返回首页</a></p>
-<p style="color:#b0aeab;font-size:13px">请启用 JavaScript。</p>
+<noscript><div style="max-width:640px;margin:2rem auto;padding:1.5rem">
+<p style="font-size:18px;font-weight:600;margin:0 0 6px">判决与数字 · 需要 JavaScript</p>
+<p>四态判决历史与漂移表需要 JavaScript 才能查看。</p>
+<p><a href="index.html">返回首页</a></p>
+<p style="color:#666;font-size:13px">请启用 JavaScript 后查看。</p>
 </div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="verdicts.html"></qy-nav>
 
 <main id="main" class="wrap">
 
-  <header>
-    <div class="section-head">
-      <div class="eyebrow">667 · 状态仪表盘</div>
-      <h1>判决与数字</h1>
-      <p class="lead">这一页的每一个数字都由 <span class="kbd">tools/web_verdicts_667.py</span>
-        现场复算后落盘，前端只渲染。<b>对不上的数字会自己标红</b>，不会静默替换。</p>
-    </div>
+  <header class="page-head">
+    <h1>判决与数字</h1>
+    <p class="lede">这一页的每一个数字都由 <span class="mono">tools/web_verdicts_667.py</span>
+      现场复算后落盘，前端只渲染。<b>对不上的数字会自己标红</b>，不会静默替换。</p>
 
     <div class="dash" id="dash"></div>
     <p class="note-faint" id="dash-note"></p>
@@ -40,7 +37,6 @@
 
   <section>
     <div class="section-head">
-      <div class="eyebrow">逐条 · 可筛选可排序</div>
       <h2>判决历史</h2>
       <p>按时间倒序。<b>只有真正落了逐条结果的产物才进这张表</b>——
         只有聚合数的样本集不进表，理由登记在下方「为什么只有这些条目」。</p>
@@ -108,7 +104,6 @@
 
   <section>
     <div class="section-head">
-      <div class="eyebrow">670c A4 · 时间线</div>
       <h2>判决历史时间线</h2>
       <p>按 <b>when</b> 排，不是按落盘顺序排 —— 落盘按 seq，夹具（2026-09-28）其实比机器卡
         （2026-09-29）更早。表格里看不出来，这条时间线看得出来。四态用左侧色点标出。</p>
@@ -136,13 +131,12 @@
 
   <section>
     <div class="section-head">
-      <div class="eyebrow">670c A4 · 分布变化</div>
       <h2>四态随时间怎么变</h2>
       <p>堆叠柱 = 每个桶里四态各占多少；折线 = 该桶 <span class="mono">pass</span> 占比。
         <b>桶是按时间序切的</b>，所以"变化"是真的随时间变化，不是随落盘顺序变化。</p>
     </div>
 
-    <div class="card glass chart-card">
+    <div class="card chart-card">
       <div class="chart-toolbar">
         <div class="field">
           <label for="fs-bucket">分桶方式</label>
@@ -168,15 +162,14 @@
 
   <section>
     <div class="section-head">
-      <div class="eyebrow">670c A4 · 漂移检测</div>
       <h2>漂移幅度</h2>
       <p>零点在中线：<b>向右 = 现算比声明大，向左 = 现算比声明小</b>；量程按本页最大 |Δ| 归一。
         只有文字、没有数值的登记项<b>照样列出但不画长度</b> —— 不拿"看起来很短"冒充"确实没漂移"。</p>
     </div>
-    <div class="card glass" id="drift-bars"></div>
+    <div class="card" id="drift-bars"></div>
     <p class="note-faint" id="drift-note"></p>
 
-    <div class="section-head" style="margin-top:var(--space-4)">
+    <div class="section-head">
       <h2>数据对比表：声明值 vs 现算值</h2>
       <p>容差只按<b>有依据</b>的精度设（整数计数 0；率值按落盘小数位）。
         <b>恰好等于容差不算不一致</b>。口径差（caliber / frozen）只登记、<b>不判红绿</b> ——
@@ -211,7 +204,6 @@
 
   <section>
     <div class="section-head">
-      <div class="eyebrow">口径差 · 漂移</div>
       <h2>数据对比表</h2>
       <p>同一个量有两种算法时，<b>两个都列</b>。漂移项单独标红，并把"该信哪个"交给人。</p>
     </div>
@@ -235,15 +227,12 @@
 
 </main>
 
-<footer>
-  <div class="wrap">
-    <p>数据来源：<span class="kbd">web/data/verdicts_667.json</span>（<span class="kbd">python tools/web_verdicts_667.py --write</span> 现算）、
-      <span class="kbd">web/data/status.json</span>、<span class="kbd">web/data/metrics_666.json</span>、
-      漂移登记 <span class="kbd">data/baseline.json</span>（在<b>仓库根</b>，详见页内说明）。
-      复算：<span class="kbd">--selftest</span> / <span class="kbd">--check</span>；
-      纯逻辑测试：<span class="kbd">cd web &amp;&amp; node tests/verdicts.test.mjs</span>。
-      静态站，无后端；请用本地服务器打开（<span class="kbd">python -m http.server 8765 --directory web</span>）。</p>
-  </div>
+<footer class="wrap">
+  阙疑 QueYi — 受评估完整性约束的知识验证系统。<br>
+  数据来源：<span class="kbd">web/data/verdicts_667.json</span>（<span class="kbd">tools/web_verdicts_667.py --write</span> 现算）、
+  <span class="kbd">web/data/status.json</span>、<span class="kbd">web/data/metrics_666.json</span>。
+  复算：<span class="kbd">--selftest</span> / <span class="kbd">--check</span>；
+  纯逻辑测试：<span class="kbd">cd web && node tests/verdicts.test.mjs</span>。
 </footer>
 
 <script type="module" src="./verdicts.js"></script>

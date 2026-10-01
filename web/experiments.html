@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="祈易实验结果（670c A2）：baseline 对比（Static / Random / Failure-driven × holdout / corpus / defect）、口径消融、系统演化、检测器构成、能力构成。全部数字现算自真实产物；baseline 未生成时显式标注「待670a生成」，不编造数字。">
+<meta name="description" content="阙疑实验结果（670c A2）：baseline 对比（Static / Random / Failure-driven × holdout / corpus / defect）、口径消融、系统演化、检测器构成、能力构成。全部数字现算自真实产物；baseline 未生成时显式标注「待670a生成」，不编造数字。">
 <meta name="color-scheme" content="dark light">
-<title>实验结果 · QueYi</title>
+<title>实验结果 · 阙疑 QueYi</title>
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="css/669c.css">
@@ -15,18 +15,18 @@
 <script type="module" src="components/index.js"></script>
 </head>
 <body>
-<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3">
-<p style="font-size:20px;font-weight:700;margin:0 0 12px">实验结果（纯文字）</p>
+<noscript><div style="max-width:640px;margin:2rem auto;padding:1.5rem">
+<p style="font-size:18px;font-weight:600;margin:0 0 6px">实验结果（纯文字）</p>
 <p>holdout 87.5%（14/16，95% CI 61.7–98.4）</p>
 <p>外部 corpus 35.0%（14/40，20.6–51.7）；可测 43.8%（14/32）</p>
 <p>变异 core 97.3%（110/113）；反事实 F1 1.0（上界）</p>
-<p style="color:#b0aeab;font-size:13px">请启用 JavaScript 查看图表。</p>
+<p style="color:#666;font-size:13px">请启用 JavaScript 查看完整图表。</p>
 </div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="experiments.html" badge="实验 · 真实现算"></qy-nav>
 
 <main id="main" class="wrap">
-  <header class="page-head" style="padding-top:var(--space-5)">
+  <header class="page-head">
     <div>
       <h1>实验结果</h1>
       <p class="lede">五张图全部<b>现算自真实产物</b>（metrics_666 / status / experiments / graph / 669_experiments）。
@@ -36,7 +36,7 @@
   </header>
 
   <!-- 数据源状态（诚实登记：哪条路径 200、哪条 404） -->
-  <section class="chart-card glass glass-tint stack" aria-labelledby="src-h">
+  <section class="chart-card card stack" aria-labelledby="src-h">
     <div class="row-between">
       <h2 class="section-title" id="src-h">数据源</h2>
       <span class="section-sub" id="src-note">加载中…</span>
@@ -52,7 +52,7 @@
         <p class="section-sub">Static / Random / Failure-driven × holdout / corpus / defect；误差线 = Wilson 95% CI，柱上数字 = 点估计</p>
       </div>
     </div>
-    <div class="chart-card glass glass-tint">
+    <div class="chart-card card">
       <div class="chart-toolbar" role="group" aria-label="数据集切换">
         <span class="dim">数据集</span>
         <div class="deck-tabs" id="ds-tabs" role="tablist" aria-label="选择数据集">
@@ -65,6 +65,8 @@
         <span class="dim" id="base-note"></span>
       </div>
       <div class="chart" id="c-baseline"></div>
+      <div class="figure-cap">图 1 · baseline 三臂 × 三语料检出率（%）†</div>
+      <div class="figure-src">来源：data/experiments/baseline_static.json / baseline_random.json / 669_experiments.json（按顺序尝试）· 误差线 = Wilson 95% CI</div>
       <div class="detail-panel" id="d-baseline" hidden></div>
       <p class="section-sub">口径提醒：holdout 是<b>双档（-O0/-O2 任一报出即 catch）</b>；corpus 给的是<b>可测口径</b>（unknown 剔除），全样本口径见下方面板与口径消融图。</p>
     </div>
@@ -78,7 +80,7 @@
         <p class="section-sub">全样本 / 可测 / 排除 unknown：同一份原始计数，只变分母 —— 差异全是口径效应，不是检测能力变化</p>
       </div>
     </div>
-    <div class="chart-card glass glass-tint">
+    <div class="chart-card card">
       <div class="chart-toolbar" role="group" aria-label="口径切换">
         <span class="dim">口径</span>
         <div class="deck-tabs" id="cal-tabs" role="tablist" aria-label="选择口径">
@@ -91,6 +93,8 @@
         <span class="dim" id="cal-note"></span>
       </div>
       <div class="chart" id="c-caliber"></div>
+      <div class="figure-cap">图 2 · 口径消融：同一份分子、三种分母†</div>
+      <div class="figure-src">来源：caliber_ablation.arms · 差异全部来自分母口径，不代表检测能力变化</div>
       <div class="detail-panel" id="d-caliber" hidden></div>
     </div>
   </section>
@@ -103,7 +107,7 @@
         <p class="section-sub">批次骨架取自 timeline；<b>只有能追溯到批次的真实值才落点</b>，无值批次画空心点（不插值、不推测）</p>
       </div>
     </div>
-    <div class="chart-card glass glass-tint">
+    <div class="chart-card card">
       <div class="chart-toolbar">
         <span class="dim">批次</span>
         <span class="mono dim" id="evo-batches">—</span>
@@ -111,6 +115,8 @@
         <span class="dim" id="evo-note"></span>
       </div>
       <div class="chart" id="c-evolution"></div>
+      <div class="figure-cap">图 3 · 系统演化：各批次变异杀死率 / holdout 检出率</div>
+      <div class="figure-src">来源：timeline 批次骨架 + 可追溯的真实率值；无值批次画空心点，不插值</div>
       <div class="detail-panel" id="d-evolution" hidden></div>
     </div>
   </section>
@@ -120,18 +126,22 @@
     <div>
       <h2 class="section-title" id="c4-h">④ 检测器构成</h2>
       <p class="section-sub">sanitizer / compiler-warn / cross-compile / perf / compile-time</p>
-      <div class="chart-card glass glass-tint">
+      <div class="chart-card card">
         <div class="chart-toolbar"><span class="dim" id="det-note">—</span></div>
         <div class="chart" id="c-detectors"></div>
+      <div class="figure-cap">图 4 · 检测器构成</div>
+      <div class="figure-src">来源：experiments.detectors 真实计数；字段未就绪时回退到已登记口径并在图下标注</div>
         <div class="detail-panel" id="d-detectors" hidden></div>
       </div>
     </div>
     <div>
       <h2 class="section-title">⑤ 能力构成</h2>
       <p class="section-sub">67 规则 / 9 保护器 / 452 账本 / 42 卡 / 178 节点 / 变异 97.3%</p>
-      <div class="chart-card glass glass-tint">
+      <div class="chart-card card">
         <div class="chart-toolbar"><span class="dim" id="abi-note">—</span></div>
         <div class="chart" id="c-ability"></div>
+      <div class="figure-cap">图 5 · 能力构成（实际 / 目标）</div>
+      <div class="figure-src">来源：metrics_666.json / status.json / graph.json 现算；缺真实值的轴在图上标注</div>
         <div class="detail-panel" id="d-ability" hidden></div>
       </div>
     </div>
@@ -149,10 +159,23 @@
       <span class="mono">data/experiments/669_experiments.json</span>（按此顺序尝试）
     </p>
   </section>
+
+  <!-- 脚注：口径与方法，避免"看到一个百分数就当成结论" -->
+  <section aria-labelledby="fn-h">
+    <h2 class="section-title" id="fn-h">注释</h2>
+    <ol class="prose" style="font-size:var(--font-size-sm); color:var(--color-text-dim); padding-left:var(--space-3); margin:var(--space-2) 0 0">
+      <li style="margin-bottom:var(--space-1)"><b>† 区间估计</b>：误差线与明细里的区间均为 Wilson score 95%（与 <span class="mono">tools/stat_bounds.py::wilson</span> 同式）。n=16 这类小样本上它比 Wald 正态近似保守，且不会出现负下界。</li>
+      <li style="margin-bottom:var(--space-1)"><b>口径</b>：holdout 采<b>双档</b>口径（-O0 / -O2 任一报出即计为 catch）；corpus 默认给<b>可测口径</b>（unknown 剔除）。全样本口径见图 2 —— 同一个分子换分母，数字会差十几个百分点，这不是检测能力变化。</li>
+      <li><b>缺失值</b>：任一数据源未就绪时，对应图显示「待生成」而不是 0。缺的臂不补、不插值、不推测。</li>
+    </ol>
+  </section>
 </main>
 
-<footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="learn.html">学习台</a>
-  · <a href="cards.html">卡库</a> · <a href="verify.html">验哈希</a></footer>
+<footer class="wrap">
+  阙疑 QueYi — 受评估完整性约束的知识验证系统。<br>
+  <a href="index.html">总览</a> · <a href="learn.html">学习台</a>
+  · <a href="cards.html">卡库</a> · <a href="verify.html">验哈希</a>
+</footer>
 
 <script type="module">
 import { fetchJSON } from './app.js';
@@ -300,7 +323,7 @@ function renderSources() {
   const items = [];
   (state.base.tried || []).forEach((t) => items.push({ path: t.path, ok: t.ok, error: t.error }));
   (state.sup.tried || []).forEach((t) => items.push({ path: t.path, ok: t.ok, error: t.error }));
-  $('src-list').innerHTML = items.map((t) => '<li>' + (t.ok ? '✓' : '×') + ' <span class="mono">' + esc(t.path)
+  $('src-list').innerHTML = items.map((t) => '<li>' + (t.ok ? '<span class="dim">命中</span>' : '<span class="dim">未命中</span>') + ' <span class="mono">' + esc(t.path)
     + '</span>' + (t.ok ? '' : ' <span class="dim">' + esc(t.error || '失败') + '</span>') + '</li>').join('');
   const okBase = state.base.sources.length;
   $('src-note').textContent = okBase

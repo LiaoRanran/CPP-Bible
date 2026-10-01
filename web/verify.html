@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>现场验哈希 · QueYi</title>
+<title>现场验哈希 · 阙疑 QueYi</title>
 <link rel="stylesheet" href="css/design-tokens.css">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="css/robustness.css">
@@ -12,32 +12,35 @@
 <script type="module" src="components/index.js"></script>
 </head>
 <body>
-<noscript><div style="max-width:600px;margin:2rem auto;padding:1.5rem;background:#1a1a1a;color:#e8e6e3">
-<p style="font-size:20px;font-weight:700;margin:0 0 12px">现场验哈希 · 需要 JavaScript</p>
-<p>哈希校验用浏览器 Web Crypto 重算 sha256，需要 JavaScript（文件不出本机）。</p>
-<p style="color:#b0aeab;font-size:13px">请启用 JavaScript。</p>
+<noscript><div style="max-width:640px;margin:2rem auto;padding:1.5rem">
+<p style="font-size:18px;font-weight:600;margin:0 0 6px">现场验哈希 · 需要 JavaScript</p>
+<p>用浏览器 Web Crypto 重算 sha256，与台账逐字节比对（文件不出本机）。</p>
+<p style="color:#666;font-size:13px">请启用 JavaScript 后查看。</p>
 </div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="verify.html"></qy-nav>
 <main id="main" class="wrap">
-  <header style="padding:34px 0 16px">
-    <h1 style="font-size:26px">现场验哈希</h1>
-    <p class="lead" style="font-size:15px">用浏览器 <b>Web Crypto</b> 在这里现算 sha256，与台账里的哈希逐字节比对。
-      <b>支持一次拖入多个文件批量验证</b>，结果可导出 CSV。<b>文件不出本机、不联网、无后端</b>；
-      台账（manifest）由 <span class="kbd">tools/web_data_653.py</span> 从真实文件现算生成。</p>
-    <p class="muted"><span id="crypto">检测中…</span>　·　<span id="note"></span></p>
+  <header class="page-head">
+    <h1>现场验哈希</h1>
+    <p class="lede">用浏览器 <span class="mono">Web Crypto</span> 在这里现算 sha256，与台账里的哈希逐字节比对。
+      支持一次拖入多个文件批量验证，结果可导出 CSV。文件不出本机、不联网、无后端；台账（manifest）由
+      <span class="mono">tools/web_data_653.py</span> 从真实文件现算生成。</p>
+    <p class="muted" style="margin-top:var(--space-2)"><span id="crypto">检测中…</span>　·　<span id="note"></span></p>
   </header>
 
-  <section style="padding:0 0 20px; border-bottom:0">
+  <section>
+    <h2>现场比对</h2>
+    <p class="section-sub">可选地从台账里挑一条作比对基准，或直接把文件拖进来现算 sha256；批量模式（≥2 个文件）按文件名自动匹配台账。</p>
     <div class="grid c2">
-      <qy-card title="① 选一个台账条目（可选）">
-        <p class="muted">点「用这个比对」会把该台账哈希填入下方比对框；留空时站点按 <b>文件名</b> 自动匹配台账。
-          批量模式（≥2 个文件）下忽略此框。</p>
-        <input type="text" id="expected" aria-label="期望的 sha256 哈希（可选）" placeholder="（可选）粘贴/选择期望的 sha256" style="width:100%;margin:8px 0 6px">
-        <div class="muted">当前比对对象：<span id="expect-name">（未指定）</span></div>
-      </qy-card>
-      <qy-card title="② 把文件拖进来 / 选择文件（可多选）">
-        <div id="drop" style="border:1px dashed var(--line-2); border-radius:10px; padding:22px; text-align:center; color:var(--fg-dim); margin:8px 0 10px">
+      <div class="card">
+        <h3>① 选一个台账条目（可选）</h3>
+        <p>点「用这个比对」会把该台账哈希填入下方比对框；留空时站点按文件名自动匹配台账。批量模式（≥2 个文件）下忽略此框。</p>
+        <input type="text" id="expected" aria-label="期望的 sha256 哈希（可选）" placeholder="（可选）粘贴/选择期望的 sha256" style="width:100%;margin:var(--space-1) 0 var(--space-half)">
+        <p class="muted">当前比对对象：<span id="expect-name">（未指定）</span></p>
+      </div>
+      <div class="card">
+        <h3>② 把文件拖进来 / 选择文件（可多选）</h3>
+        <div id="drop" style="border:1px dashed var(--color-line); border-radius:8px; padding:var(--space-3); text-align:center; color:var(--color-text-mute); margin:var(--space-1) 0 var(--space-1h)">
           拖拽一个或多个文件到此处
         </div>
         <input type="file" id="file" multiple aria-label="选择要校验的文件（可多选）">
@@ -46,28 +49,34 @@
           <button id="clear" disabled>清空结果</button>
           <span class="batch-summary" id="batch-summary">尚未验证</span>
         </div>
-      </qy-card>
+      </div>
     </div>
 
-    <table aria-label="批量校验结果">
-      <thead><tr><th scope="col">文件</th><th scope="col">字节</th><th scope="col">实算 sha256（前 16）</th><th scope="col">台账</th><th scope="col">结论</th></tr></thead>
-      <tbody id="batch-tbody"><tr><td colspan="5" class="muted">未验证</td></tr></tbody>
-    </table>
+    <div class="table-scroll" style="margin-top:var(--space-3)">
+      <table aria-label="批量校验结果">
+        <thead><tr><th scope="col">文件</th><th scope="col" class="num">字节</th><th scope="col">实算 sha256（前 16）</th><th scope="col">台账</th><th scope="col">结论</th></tr></thead>
+        <tbody id="batch-tbody"><tr><td colspan="5" class="muted">未验证</td></tr></tbody>
+      </table>
+    </div>
     <div class="result" id="result"></div>
   </section>
 
-  <section style="padding:8px 0 40px">
+  <section>
     <h2>台账（真实工件 · sha256 本机现算）</h2>
-    <table aria-label="工件台账与哈希">
-      <thead><tr><th scope="col">路径</th><th scope="col">字节</th><th scope="col">sha256（前 16）</th><th scope="col">操作</th></tr></thead>
-      <tbody id="tbody"><tr><td colspan="4" class="muted">加载中…</td></tr></tbody>
-    </table>
-    <p class="muted" style="margin-top:12px">提示：<span class="kbd">file://</span> 打开时浏览器会拦截 <span class="kbd">fetch</span>，
-      台账可能加载不到；但<b>拖文件重算</b>仍可用（Web Crypto 在 file:// 下可用，此时结论列为"仅实算"）。要完整体验请用本地静态服务器，
-      例如 <span class="kbd">python -m http.server -d web 8080</span>。</p>
+    <div class="table-scroll">
+      <table aria-label="工件台账与哈希">
+        <thead><tr><th scope="col">路径</th><th scope="col" class="num">字节</th><th scope="col">sha256（前 16）</th><th scope="col">操作</th></tr></thead>
+        <tbody id="tbody"><tr><td colspan="4" class="muted">加载中…</td></tr></tbody>
+      </table>
+    </div>
+    <p class="muted" style="margin-top:var(--space-1h)">提示：<span class="kbd">file://</span> 打开时浏览器会拦截 <span class="kbd">fetch</span>，
+      台账可能加载不到；但拖文件重算仍可用（Web Crypto 在 file:// 下可用）。要完整体验请用本地静态服务器。</p>
   </section>
 </main>
-<footer class="wrap">静态站 · 无后端 · <a href="index.html">总览</a> · <a href="starmap.html">星图</a></footer>
+<footer class="wrap">
+  阙疑 QueYi — 受评估完整性约束的知识验证系统。<br>
+  <a href="index.html">总览</a> · <a href="starmap.html">星图</a>
+</footer>
 <script type="module" src="verify.js"></script>
 <script type="module">import { initRobustness } from './js/robustness.js'; initRobustness();</script>
 <script type="module">import { initA11y } from './js/a11y.js'; initA11y();</script>
