@@ -1,0 +1,328 @@
+{
+  "schema": "queyi-reveal-update/671a",
+  "generated_by": "tools/reveal_update_671a.py",
+  "generated_at": "2026-10-01 08:21:18",
+  "sources": {
+    "holdout_new": "data/holdout_reveal_4_671a.json",
+    "holdout_old": "data/holdout_reveal_3_665.json",
+    "holdout_detail_new": "data/holdout/reveal_3_detail_671a.json",
+    "corpus_new": "data/external_corpus_reveal_671a.json",
+    "corpus_old": "data/external_corpus_reveal_665.json",
+    "corpus_detail_new": "data/external_corpus/reveal_detail_671a.json"
+  },
+  "caliber": "真错分母 = catch+miss（可测）；unknown（检测器不可用）不进分母；planted=False 的对照单列（catch ⇒ false_positive）",
+  "holdout": {
+    "label": "holdout 检出率（可测口径，真错子集）",
+    "before": {
+      "k": 14,
+      "n": 16,
+      "rate_pct": 87.5,
+      "point": 0.875,
+      "cp_low": 0.6165237631507363,
+      "cp_high": 0.984486396184586,
+      "conf": 0.95
+    },
+    "after": {
+      "k": 17,
+      "n": 21,
+      "rate_pct": 81.0,
+      "point": 0.8095238095238095,
+      "cp_low": 0.5809339588164719,
+      "cp_high": 0.9455364318215931,
+      "conf": 0.95
+    },
+    "delta_pp": -6.5,
+    "interpretation": "分母与样本构成同时变了 ⇒ 差值是**测量对象**的变化，不是验证器变强/变弱",
+    "interval_width": {
+      "before_pp": 36.8,
+      "after_pp": 36.5,
+      "narrowed_pp": 0.3
+    },
+    "false_positive": {
+      "before": {
+        "fp": 1,
+        "total": 9,
+        "rate_pct": 11.1
+      },
+      "after": {
+        "fp": 2,
+        "total": 11,
+        "rate_pct": 18.2
+      }
+    },
+    "added_samples": [
+      "h31",
+      "h32",
+      "h33",
+      "h34",
+      "h35",
+      "h36",
+      "h37",
+      "h38",
+      "h39",
+      "h40"
+    ],
+    "reproducible": true,
+    "round4_only": {
+      "total": 5,
+      "catch": 3,
+      "miss": 2,
+      "unknown": 0,
+      "detect_rate_pct": 60.0
+    }
+  },
+  "corpus": {
+    "label": "外部 corpus 检出率（可测口径）",
+    "before": {
+      "k": 14,
+      "n": 32,
+      "rate_pct": 43.8,
+      "point": 0.4375,
+      "cp_low": 0.26363812441098466,
+      "cp_high": 0.6233742684099057,
+      "conf": 0.95
+    },
+    "after": {
+      "k": 26,
+      "n": 48,
+      "rate_pct": 54.2,
+      "point": 0.5416666666666666,
+      "cp_low": 0.3917219975989088,
+      "cp_high": 0.6862845779278237,
+      "conf": 0.95
+    },
+    "delta_pp": 10.4,
+    "interpretation": "分母与样本构成同时变了 ⇒ 差值是**测量对象**的变化，不是验证器变强/变弱",
+    "interval_width": {
+      "before_pp": 36.0,
+      "after_pp": 29.5,
+      "narrowed_pp": 6.5
+    },
+    "layers": {
+      "sanitizer": {
+        "total": 25,
+        "measurable": 24,
+        "catch": 19,
+        "miss": 5,
+        "unknown": 1,
+        "rate_pct": 79.2,
+        "cp95": {
+          "k": 19,
+          "n": 24,
+          "point": 0.7916666666666666,
+          "cp_low": 0.5784871563627474,
+          "cp_high": 0.9286813828019447,
+          "conf": 0.95
+        }
+      },
+      "compiler-warn": {
+        "total": 14,
+        "measurable": 14,
+        "catch": 6,
+        "miss": 8,
+        "unknown": 0,
+        "rate_pct": 42.9,
+        "cp95": {
+          "k": 6,
+          "n": 14,
+          "point": 0.42857142857142855,
+          "cp_low": 0.17661108998211777,
+          "cp_high": 0.7113905999616925,
+          "conf": 0.95
+        }
+      },
+      "cross-compile": {
+        "total": 10,
+        "measurable": 10,
+        "catch": 1,
+        "miss": 9,
+        "unknown": 0,
+        "rate_pct": 10.0,
+        "cp95": {
+          "k": 1,
+          "n": 10,
+          "point": 0.1,
+          "cp_low": 0.002528578544461776,
+          "cp_high": 0.4450161170281951,
+          "conf": 0.95
+        }
+      },
+      "perf": {
+        "total": 2,
+        "measurable": 0,
+        "catch": 0,
+        "miss": 0,
+        "unknown": 2,
+        "rate_pct": null,
+        "cp95": {
+          "k": 0,
+          "n": 0,
+          "point": null,
+          "cp_low": null,
+          "cp_high": null,
+          "conf": 0.95,
+          "note": "n=0 ⇒ 拒绝给率（fail-loud）"
+        },
+        "note": "该层本机无检测器 ⇒ 拒绝给率"
+      },
+      "compile-time": {
+        "total": 2,
+        "measurable": 0,
+        "catch": 0,
+        "miss": 0,
+        "unknown": 2,
+        "rate_pct": null,
+        "cp95": {
+          "k": 0,
+          "n": 0,
+          "point": null,
+          "cp_low": null,
+          "cp_high": null,
+          "conf": 0.95,
+          "note": "n=0 ⇒ 拒绝给率（fail-loud）"
+        },
+        "note": "该层本机无检测器 ⇒ 拒绝给率"
+      },
+      "other": {
+        "total": 7,
+        "measurable": 0,
+        "catch": 0,
+        "miss": 0,
+        "unknown": 4,
+        "rate_pct": null,
+        "cp95": {
+          "k": 0,
+          "n": 0,
+          "point": null,
+          "cp_low": null,
+          "cp_high": null,
+          "conf": 0.95,
+          "note": "n=0 ⇒ 拒绝给率（fail-loud）"
+        },
+        "note": "该层本机无检测器 ⇒ 拒绝给率"
+      }
+    },
+    "added_samples": [
+      "d3e-01",
+      "d3e-02",
+      "d3e-03",
+      "d3e-04",
+      "d3e-05",
+      "d3e-06",
+      "d3e-07",
+      "d3e-08",
+      "d3e-09",
+      "d3e-10",
+      "d3e-11",
+      "d3e-12",
+      "d3e-13",
+      "d3e-14",
+      "d3e-15",
+      "d3e-16",
+      "d3e-17",
+      "d3e-18",
+      "d3e-19",
+      "d3e-20"
+    ],
+    "reproducible": true,
+    "caliber_change": {
+      "what": "665 的 sanitizer 判据是**单档 -O1 且未关 ASLR**；本轮新样本改用-O0/-O2 双档 + setarch -R（与 holdout rv661 对齐）",
+      "why": "单档会把『被优化掉整段内存操作』的夹具记成假 miss；ASLR 抖动会把同一夹具记成 unknown",
+      "consequence": "本轮与 665 的数字**不可直接比大小**（口径变了），只能描样本构成"
+    },
+    "new_only": {
+      "total": 20,
+      "catch": 12,
+      "miss": 4,
+      "unknown": 4,
+      "not_error": 0,
+      "denominator": {
+        "value": 16,
+        "meaning": "catch+miss（可测且非测量类）",
+        "excluded": {
+          "unknown": 4,
+          "not_error": 0
+        },
+        "all_samples": 20
+      },
+      "detect_rate_pct": 75.0,
+      "cp95": {
+        "k": 12,
+        "n": 16,
+        "point": 0.75,
+        "cp_low": 0.4762291801038725,
+        "cp_high": 0.9273379617471178,
+        "conf": 0.95
+      }
+    }
+  },
+  "pending_for_671b": [
+    {
+      "key": "holdout_rate_pct",
+      "from": {
+        "k": 14,
+        "n": 16,
+        "rate_pct": 87.5
+      },
+      "to": {
+        "k": 17,
+        "n": 21,
+        "rate_pct": 81.0
+      },
+      "cited_by": {
+        "paper_v0_8": 87.5,
+        "web_metrics_666": 87.5,
+        "artifact": "data/holdout_reveal_3_665.json"
+      },
+      "action": "论文 §6.1 三臂表 / 摘要 / §7.3 样本量表 / Fig.2/3 与前端 metrics / verdicts 里的 holdout 率需按新分母（含 h31–h40）重算；**由 671b 执行**"
+    },
+    {
+      "key": "corpus_rate_pct",
+      "from": {
+        "k": 14,
+        "n": 32,
+        "rate_pct": 43.8
+      },
+      "to": {
+        "k": 26,
+        "n": 48,
+        "rate_pct": 54.2
+      },
+      "cited_by": {
+        "paper_v0_8": 43.8,
+        "web_metrics_666": 43.8,
+        "artifact": "data/external_corpus_reveal_665.json"
+      },
+      "action": "corpus 率**必须分层引用**（669d declared）：六层数字见本文件 `corpus.layers`；由 671b 决定哪几层进论文表"
+    },
+    {
+      "key": "holdout_false_positive",
+      "from": {
+        "fp": 1,
+        "total": 9,
+        "rate_pct": 11.1
+      },
+      "to": {
+        "fp": 2,
+        "total": 11,
+        "rate_pct": 18.2
+      },
+      "who_added": [
+        "h35"
+      ],
+      "action": "对照样本增加 ⇒ 论文里 FPR（11.1% = 1/9）需同步；['h35'] 属「未指定/历史类对照被判为检出」⇒ 要么改口径说明，要么登记为假阳性；由 671b 裁定"
+    }
+  ],
+  "not_modified": [
+    "research/paper_v0.8.md",
+    "research/latex/*",
+    "web/data/*.json"
+  ],
+  "recompute": {
+    "holdout": "python tools/holdout_reveal_4_671a.py --runs 3",
+    "corpus": "python tools/external_corpus_reveal_671a.py --runs 3",
+    "update": "python tools/reveal_update_671a.py",
+    "note": "三次结果必须逐样本一致（reveal 产物里的 reproducibility 字段）"
+  },
+  "honest_note": "扩样样本（h31–h40 / d3e-*）在 reveal 之后并入 ⇒ **无盲态**，只用于增大样本量；本文件不给「外部效度」结论，只给可复算的新数字与「待更新清单」。"
+}

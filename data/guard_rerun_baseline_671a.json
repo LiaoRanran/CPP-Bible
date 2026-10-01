@@ -1,0 +1,356 @@
+{
+  "schema": "queyi-guard-rerun/671a",
+  "generated_by": "tools/guard_rerun_671a.py",
+  "generated_at": "2026-10-01 08:23:30",
+  "note": "基线 = 一次「判据指纹 + 产物指纹/mtime + 三方数字」快照。判据变了而产物没变 ⇒ STALE。刷新基线请在**确认产物已重跑**之后执行 --init。基线时即不新鲜的产物会被记成 fresh=false ⇒ 之后只 WARN（存量缺口，不变成噪音）。",
+  "freshness_tolerance_s": 1.0,
+  "detectors": {
+    "baseline_arms_670a": {
+      "src": "tools/baseline_670a.py",
+      "deps": [
+        "tools/stat_bounds.py",
+        "tools/merge_670a.py"
+      ],
+      "why": "baseline 三臂 + corpus 分层产物的唯一落盘源（论文 §6.1 表；改臂定义必须重跑）",
+      "judgment_sha256": "22ebc262dec84e467bce92f5ad5f467eb4b927461181fa82dc27f0b0def32c19",
+      "component_judgment_sha256": {
+        "tools\\baseline_670a.py": "eff7ba74c8ed4dbbf9f1f967eaa33e70dcfb0b7093792314e4091aa239af4f15",
+        "tools\\stat_bounds.py": "83fce1b2518d40c473869f6bcab804655a0a61724be0f9f6cc0f999a1bd6b3e7",
+        "tools\\merge_670a.py": "ca00aaf5aa4855eb28ef56b99225f4e35b35efd117dbbf57c918a8ef0e5d0cdd"
+      },
+      "src_sha256": "af6f766bdfbcd056313cf2ab5f27bc4f55685b150e885137ea6a0fcee019062f",
+      "src_ast_sha256": "2c90870771cdd38277e81ba8315031a820184290dfc07fbfdbc8ae4eefd76154",
+      "src_mtime": 1790778358.5517306,
+      "judgment_mtime": 1790779665.4183161,
+      "products": {
+        "data/experiments/baseline_fd.json": {
+          "sha256": "e3c0ffb2baaf0bac066c41dec4552fb3dd807066d1e2410970e9f6082b3a960b",
+          "mtime": 1790778360.0768611,
+          "strict": true,
+          "fresh": false
+        },
+        "data/experiments/baseline_static.json": {
+          "sha256": "ab9883faf943fc333608b5da52ca536191a81c5639e6ea387c95e42403a4443b",
+          "mtime": 1790778360.0752237,
+          "strict": true,
+          "fresh": false
+        },
+        "data/experiments/baseline_random.json": {
+          "sha256": "efdfbe9688ec36e4c05079e267b59fe65d6292af53d7cae4867cc10fbc808ef5",
+          "mtime": 1790778360.076313,
+          "strict": true,
+          "fresh": false
+        },
+        "data/experiments/corpus_layered_670a.json": {
+          "sha256": "b780061c72a82b99fc5b6fdc7c820737e0a7c28583d8d30d181af15c27ae0254",
+          "mtime": 1790779448.1587505,
+          "strict": true,
+          "fresh": false
+        }
+      },
+      "declared_products": [
+        "data/experiments/baseline_fd.json",
+        "data/experiments/baseline_static.json",
+        "data/experiments/baseline_random.json",
+        "data/experiments/corpus_layered_670a.json"
+      ]
+    },
+    "corpus_reveal_665": {
+      "src": "tools/external_corpus_reveal_665.py",
+      "deps": [
+        "tools/external_corpus_662.py",
+        "tools/external_corpus_extend_665.py"
+      ],
+      "why": "外部 corpus 检出率唯一落盘源（论文 §6.1）",
+      "judgment_sha256": "1dee1eec5d267f75bd9debd347b458f88fb80e452382bba3b6f421e627b02556",
+      "component_judgment_sha256": {
+        "tools\\external_corpus_reveal_665.py": "8b4d7cfb55fdc0803d781f4d7653ea8d450df0e1406941b54bce683747b9019b",
+        "tools\\external_corpus_662.py": "458ff62974b63d4dc736dc911550ea7204e395b7f2f5cc94ba52d3812bd2ed2c",
+        "tools\\external_corpus_extend_665.py": "4b56d01a956ceadc860b4ced9d052017081d27e519da3bc91bc35081cab623ff"
+      },
+      "src_sha256": "ac6688a8c26403ccbfda97c7cecaad1003840a7441c11be3500c28d5324c174d",
+      "src_ast_sha256": "7918962312439cc8daf5c94045f21fe9fbce7999550dd89435ce1ce1f340c558",
+      "src_mtime": 1790729857.24931,
+      "judgment_mtime": 1790779518.7812507,
+      "products": {
+        "data/external_corpus_reveal_665.json": {
+          "sha256": "e7185b6b0997182db345b45efe5df6e68a23076d8a34a4117a806c52322baeb8",
+          "mtime": 1790772753.3821044,
+          "strict": true,
+          "fresh": false
+        }
+      },
+      "declared_products": [
+        "data/external_corpus_reveal_665.json"
+      ]
+    },
+    "corpus_reveal_671a": {
+      "src": "tools/external_corpus_reveal_671a.py",
+      "deps": [
+        "tools/external_corpus_662.py"
+      ],
+      "why": "d3e-* 扩样 reveal（671a C2）；sanitizer 类升为双档 -O0/-O2 + setarch -R",
+      "judgment_sha256": "748f4635b7a2407afe5b3a7553fc59e97fe2bec612bcb8927885cae9c604adef",
+      "component_judgment_sha256": {
+        "tools\\external_corpus_reveal_671a.py": "828f9b4ef7bef5c2256c13603711bc9fb6e71b50e3591ca7e703b8e0d07ae1ff",
+        "tools\\external_corpus_662.py": "458ff62974b63d4dc736dc911550ea7204e395b7f2f5cc94ba52d3812bd2ed2c"
+      },
+      "src_sha256": "20ff834416f756d9e76e7a13f571c8af858e14561a6b5f16f6f10da96f2b1da3",
+      "src_ast_sha256": "3537a7ceeb172c31d644d461c1eb9e180512bfe9b177d3aecaa590a0229f6729",
+      "src_mtime": 1790813923.1521058,
+      "judgment_mtime": 1790813923.1521058,
+      "products": {
+        "data/external_corpus_reveal_671a.json": {
+          "sha256": "d0fd45f38a74aed6c3fad6c08d8ae6c3dca24eb80a0039cfb879d816cf7dff49",
+          "mtime": 1790814032.8039548,
+          "strict": true,
+          "fresh": true
+        },
+        "data/external_corpus/reveal_detail_671a.json": {
+          "sha256": "0ec056da1d7adb839396900343c2802f57cec06f2b2061db5a7d55b24732d333",
+          "mtime": 1790814032.8052626,
+          "strict": true,
+          "fresh": true
+        }
+      },
+      "declared_products": [
+        "data/external_corpus_reveal_671a.json",
+        "data/external_corpus/reveal_detail_671a.json"
+      ]
+    },
+    "counterfactual_665": {
+      "src": "tools/counterfactual_extend_665.py",
+      "deps": [
+        "tools/counterfactual_citation_658.py",
+        "tools/counterfactual_calibration_662.py"
+      ],
+      "why": "反事实 P/R/F1 的落盘源（前端 metrics_666.metrics.counterfactual）；引文算子 658 以 dep 形式进射程",
+      "judgment_sha256": "5f3f1acc00fde10dc5a1d378ef90268ff6ec142649aaa282043441421f55763b",
+      "component_judgment_sha256": {
+        "tools\\counterfactual_extend_665.py": "b5b3facc1277a55f611d93137b0da3e209109b8043c7a0a357dfe11885209116",
+        "tools\\counterfactual_citation_658.py": "68efac132b8e9adb72c965847de565c17b4d2c95150ad2ee863f98ece090b27a",
+        "tools\\counterfactual_calibration_662.py": "d6ce6385f3ed116c324f921c5cfc77ba4fed7dfcf0652344933c6fde40dd1626"
+      },
+      "src_sha256": "435489fbb201456f28a0aac5193361202e6e91c527c7622f32e313ea457a7a68",
+      "src_ast_sha256": "0b9b9020256770911b6613c0181b731663f686aad6745f51f3d6a5dfa45e3e24",
+      "src_mtime": 1790729796.59877,
+      "judgment_mtime": 1790729796.59877,
+      "products": {
+        "data/counterfactual_cases_665.json": {
+          "sha256": "57448bb9e83e3c38e29e2f13f30fa5bc321c7ba36c682edc6cc979cba796605d",
+          "mtime": 1790773257.1813157,
+          "strict": true,
+          "fresh": true
+        }
+      },
+      "declared_products": [
+        "data/counterfactual_cases_665.json"
+      ]
+    },
+    "holdout_reveal_665": {
+      "src": "tools/holdout_reveal_3_665.py",
+      "deps": [
+        "tools/holdout_reveal_661.py",
+        "tools/holdout_extend_665.py"
+      ],
+      "why": "holdout 检出率的唯一落盘源（论文 §6.1 / 前端 metrics_666 引用的就是它）",
+      "judgment_sha256": "bb92ff43a8f2f0361ea3c69c9976b8590f77ab10ad292bf05b7b3183bb63b236",
+      "component_judgment_sha256": {
+        "tools\\holdout_reveal_3_665.py": "fea5075cd7cae9b361fde3743059ce9ecb3f8ad51f24d4189646f3c14190c48e",
+        "tools\\holdout_reveal_661.py": "9f0e1bcf04c8b053db0387afb329262d1d056f01881e5e21667158e52832f109",
+        "tools\\holdout_extend_665.py": "10f277567186ee3b2551bc6a97360c12dec7720a91e8ebb5ffddf5c136b7c067"
+      },
+      "src_sha256": "d31e01d2df1a61744d7a8ed103a21f5608919fc87dc10ee57ef09a6d06d3ac3e",
+      "src_ast_sha256": "58d1d3f68279e803130bd667404060fd07f1752e3129429766f4e12e1e47e434",
+      "src_mtime": 1790729636.6954317,
+      "judgment_mtime": 1790779516.9028897,
+      "products": {
+        "data/holdout_reveal_3_665.json": {
+          "sha256": "5d1a26fbfcbc179f8c22692998442a6907277fdc4ac499af7687414ff742ea4f",
+          "mtime": 1790772725.9520633,
+          "strict": true,
+          "fresh": false
+        },
+        "data/holdout/reveal_3_detail_668.json": {
+          "sha256": "faa93448a480b4e28b8b8d9fc01431e1a790bc132dd4afd7ae7fecc8ca25f96f",
+          "mtime": 1790772726.1328979,
+          "strict": true,
+          "fresh": false
+        }
+      },
+      "declared_products": [
+        "data/holdout_reveal_3_665.json",
+        "data/holdout/reveal_3_detail_668.json"
+      ]
+    },
+    "holdout_reveal_671a": {
+      "src": "tools/holdout_reveal_4_671a.py",
+      "deps": [
+        "tools/holdout_reveal_661.py"
+      ],
+      "why": "h31–h40 扩样 reveal（671a C1）；与上一轮共用同一 detect 判据",
+      "judgment_sha256": "821d4d9609c4ad0cbe079619fe21bb1cdef9ebddab4881f121768575a4b33ea3",
+      "component_judgment_sha256": {
+        "tools\\holdout_reveal_4_671a.py": "94e982bb9ac3e942450095ab86532186f5a5bc3f72ba57d1d4400de1587beaaf",
+        "tools\\holdout_reveal_661.py": "9f0e1bcf04c8b053db0387afb329262d1d056f01881e5e21667158e52832f109"
+      },
+      "src_sha256": "198915f17102a76426cb0410126037c2b05080af3ff6cf87fbe41814be22dc75",
+      "src_ast_sha256": "c89c9ade3df467c3a9b3eb4714672bbb56f7ed9a29d67a7dd22825aa7faa0ade",
+      "src_mtime": 1790813918.8196886,
+      "judgment_mtime": 1790813918.8196886,
+      "products": {
+        "data/holdout_reveal_4_671a.json": {
+          "sha256": "8efc00bd5752adccc4bdb4739cfb7655eada7a0c5965b1b9796b28c551ac60c3",
+          "mtime": 1790813977.1507423,
+          "strict": true,
+          "fresh": true
+        },
+        "data/holdout/reveal_3_detail_671a.json": {
+          "sha256": "0baf4303dc4c22d5258385b2aa4adad0b8a2b14b061d10d357be9e330766d8cc",
+          "mtime": 1790813977.1527462,
+          "strict": true,
+          "fresh": true
+        }
+      },
+      "declared_products": [
+        "data/holdout_reveal_4_671a.json",
+        "data/holdout/reveal_3_detail_671a.json"
+      ]
+    },
+    "mutation_656": {
+      "src": "tools/mutation_test_656.py",
+      "deps": [],
+      "why": "变异击杀率（内部指标）；core 报告要 --scope core 才能复跑 ⇒ 只 WARN（不假装覆盖）",
+      "judgment_sha256": "f08f66aca9966dbbc739488c214658322c7f7dbb9f311ae2d9d68f2026399a6f",
+      "component_judgment_sha256": {
+        "tools\\mutation_test_656.py": "d697258505491cc6357d5aafa047bd8dccc30949f57b99fa96ae6af182b64538"
+      },
+      "src_sha256": "f93d5b922071c6f4974e833a831483910d882027f8a05ff13c29bdc8fc245c73",
+      "src_ast_sha256": "c7f6d198c6af36848edb90ac770c61bc4b7fe75fff0dd9d41bf275f5e1603c3f",
+      "src_mtime": 1790569435.6954744,
+      "judgment_mtime": 1790569435.6954744,
+      "products": {
+        "data/656_mutation_report.json": {
+          "sha256": "5fdb5a63f864a13f6d6e19afad84b998bc8a09deada1dcf048ae2f3a37f554c2",
+          "mtime": 1790569252.2892666,
+          "strict": true,
+          "fresh": false
+        },
+        "data/656_mutation_report_core.json": {
+          "sha256": "f96dab3e467c36e35ecc64719601c958c30a6da114cc217bf655c135e2ca1ca0",
+          "mtime": 1790568899.1548486,
+          "strict": false,
+          "fresh": false
+        }
+      },
+      "declared_products": [
+        "data/656_mutation_report.json",
+        "data/656_mutation_report_core.json"
+      ]
+    },
+    "reveal_update_671a": {
+      "src": "tools/reveal_update_671a.py",
+      "deps": [
+        "tools/stat_bounds.py"
+      ],
+      "why": "671a C3：扩样后的检出率 + CP 区间（「待更新清单」给 671b）",
+      "judgment_sha256": "f452118fe9a249e55b515bd4f23fe94320769e2efdf29088edbf121ebac85bad",
+      "component_judgment_sha256": {
+        "tools\\reveal_update_671a.py": "59eec33ea01b923ead56faf75fc8971d7f6480d3eda55f003a270bf59ac37d1a",
+        "tools\\stat_bounds.py": "83fce1b2518d40c473869f6bcab804655a0a61724be0f9f6cc0f999a1bd6b3e7"
+      },
+      "src_sha256": "46356b4972de9559db411a32569bde9102f3a18c988190f4db0e2010eff0e22d",
+      "src_ast_sha256": "f1067bf275c69c06b531f8dbd7f640e91316cdaa080e9eccfa81160877c09553",
+      "src_mtime": 1790814074.250042,
+      "judgment_mtime": 1790814074.250042,
+      "products": {
+        "data/experiments/reveal_update_671a.json": {
+          "sha256": "d46b76d44daf70c7427652f667c6b35a1012d816be18c76ece23d719b881720e",
+          "mtime": 1790814078.4901514,
+          "strict": true,
+          "fresh": true
+        }
+      },
+      "declared_products": [
+        "data/experiments/reveal_update_671a.json"
+      ]
+    },
+    "web_metrics_666": {
+      "src": "tools/web_metrics_666.py",
+      "deps": [],
+      "why": "前端指标唯一落盘源 —— 前端只渲染，数字改了必须重跑这里（否则前端显示旧值）",
+      "judgment_sha256": "42e1c80771cf53be8f4eaeb5181b9abecc413f21ba7daf6e9e3a25f2b9fbbe53",
+      "component_judgment_sha256": {
+        "tools\\web_metrics_666.py": "d6be12efe290d5767de28b53c0b2a8af3cb7589c5a4548834d375a79ff3eb713"
+      },
+      "src_sha256": "3ef64db4fbd2dd5f66737d8a0f94ccb29b540f46c68e5df67956ae8b35352ccd",
+      "src_ast_sha256": "1758d3ae8621b524c7fe47268173a4a381ba2bd5583c82e5d4e978013b9f5947",
+      "src_mtime": 1790730396.1811502,
+      "judgment_mtime": 1790730396.1811502,
+      "products": {
+        "web/data/metrics_666.json": {
+          "sha256": "72b4129119407583132e88dcae4a769c95b12273be761b43f20f2194581832ba",
+          "mtime": 1790730401.7314513,
+          "strict": true,
+          "fresh": true
+        }
+      },
+      "declared_products": [
+        "web/data/metrics_666.json"
+      ]
+    },
+    "web_verdicts_667": {
+      "src": "tools/web_verdicts_667.py",
+      "deps": [],
+      "why": "前端裁决台账落盘源（dashboard.holdout/external/mutation 都在这里）",
+      "judgment_sha256": "b48b700283a81c8dbfcb6744c665812d7ee746b85b57206c3d75d60c874e5cd7",
+      "component_judgment_sha256": {
+        "tools\\web_verdicts_667.py": "d385088883697b723fface4d59707254df083cd4016952bea9a7a9f2a2826f1b"
+      },
+      "src_sha256": "9934fa5af4be4fd7c0e1ea081cd4c3b9142d94dcdede1e17516f5920f3f19759",
+      "src_ast_sha256": "e9f8ba82026fa749945e4aa2851e2b62085bab64c0719eb4d3f9fe56b0195dde",
+      "src_mtime": 1790730505.6755083,
+      "judgment_mtime": 1790730505.6755083,
+      "products": {
+        "web/data/verdicts_667.json": {
+          "sha256": "36a256c44a4a837fbd794effdcbbc99d3c2daf9dcc5409f792a6e5a4483c7869",
+          "mtime": 1790730452.530399,
+          "strict": true,
+          "fresh": false
+        }
+      },
+      "declared_products": [
+        "web/data/verdicts_667.json"
+      ]
+    }
+  },
+  "three_way": {
+    "holdout_rate_pct": {
+      "ok": true,
+      "value": 87.5,
+      "k": 14,
+      "n": 16,
+      "stored": 87.5
+    },
+    "corpus_rate_pct": {
+      "ok": true,
+      "value": 43.75,
+      "k": 14,
+      "n": 32,
+      "stored": 43.8
+    },
+    "mutation_core_pct": {
+      "ok": true,
+      "value": 97.3451,
+      "k": 110,
+      "n": 113,
+      "stored": 97.3
+    },
+    "rules_total": {
+      "ok": true,
+      "value": 67,
+      "k": null,
+      "n": null
+    }
+  }
+}

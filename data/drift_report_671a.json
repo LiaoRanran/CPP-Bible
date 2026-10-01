@@ -1,0 +1,1369 @@
+{
+  "schema": "queyi-drift-report/671a",
+  "tool": "drift_watch_671a",
+  "generated_at": "2026-10-01 10:12:23",
+  "generated_at_epoch": 1790820743.354,
+  "threshold": 0.1,
+  "threshold_pct": 10.0,
+  "tolerance_pp": 0.5,
+  "output": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\drift_report_671a.json",
+  "overall": "PASS",
+  "baseline_found": true,
+  "metrics": [
+    {
+      "key": "cards_total",
+      "label": "卡数（全量口径）",
+      "value": 123,
+      "unit": "张",
+      "source": "tools/counts_659.py",
+      "formula": "原子卡全量 + 证据卡（counts_659 现算）",
+      "available": true
+    },
+    {
+      "key": "rules_total",
+      "label": "规则数",
+      "value": 67,
+      "unit": "条",
+      "source": "tools/gate_engine.py",
+      "formula": "len(RULES)",
+      "cross_check": {
+        "data/_gate_rules.json": 67,
+        "consistent": true
+      },
+      "available": true
+    },
+    {
+      "key": "ledger_events",
+      "label": "账本数（452 账本）",
+      "value": 452,
+      "unit": "条",
+      "source": "data/authority/decision_event_v2_ledger.jsonl",
+      "formula": "非空行数",
+      "available": true
+    },
+    {
+      "key": "holdout_rate_pct",
+      "label": "holdout 检出率（可测口径）",
+      "value": 87.5,
+      "unit": "%",
+      "source": "data/holdout_reveal_3_665.json",
+      "formula": "catch/(catch+miss) = 14/16",
+      "available": true
+    },
+    {
+      "key": "corpus_rate_pct",
+      "label": "corpus 检出率（可测口径）",
+      "value": 43.75,
+      "unit": "%",
+      "source": "data/external_corpus_reveal_665.json",
+      "formula": "catch/(catch+miss) = 14/32",
+      "available": true
+    },
+    {
+      "key": "mutation_core_pct",
+      "label": "变异率（core 击杀率）",
+      "value": 97.3451,
+      "unit": "%",
+      "source": "data/656_mutation_report_core.json",
+      "formula": "killed/(killed+survived) = 110/113",
+      "available": true
+    }
+  ],
+  "values": {
+    "cards_total": 123,
+    "rules_total": 67,
+    "ledger_events": 452,
+    "holdout_rate_pct": 87.5,
+    "corpus_rate_pct": 43.75,
+    "mutation_core_pct": 97.3451
+  },
+  "unavailable": [],
+  "checks": {
+    "paper": {
+      "status": "PASS",
+      "files": [
+        "research/paper_v0.9.md"
+      ],
+      "ignored_versions": [
+        "paper_v0.1.md",
+        "paper_v0.2.md",
+        "paper_v0.3.md",
+        "paper_v0.4.md",
+        "paper_v0.5.md",
+        "paper_v0.6.md",
+        "paper_v0.7.md",
+        "paper_v0.8.md"
+      ],
+      "ignored_note": "历史稿（v0.1–v0.n-1）是冻结留痕，其数字本就与今天的产物不同 ⇒ 只列出不判红；要全版本扫描用 --all-papers",
+      "candidates": 12,
+      "matched": [
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/holdout_reveal_3_665.json#holdout_rate_pct",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/experiments/baseline_fd.json::holdout.measurable",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/external_corpus_reveal_665.json#corpus_rate_pct",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/experiments/baseline_fd.json::corpus.measurable",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 16,
+          "paper_pct": 6.2,
+          "product": "data/experiments/baseline_static.json::holdout.measurable",
+          "product_pct": 6.25,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 16,
+          "paper_pct": 6.2,
+          "product": "data/experiments/baseline_random.json::holdout.measurable",
+          "product_pct": 6.25,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 16,
+          "paper_pct": 6.2,
+          "product": "data/experiments/baseline_static.json::holdout.measurable",
+          "product_pct": 6.25,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 16,
+          "paper_pct": 6.2,
+          "product": "data/experiments/baseline_random.json::holdout.measurable",
+          "product_pct": 6.25,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 4,
+          "n": 32,
+          "paper_pct": 12.5,
+          "product": "data/experiments/baseline_static.json::corpus.measurable",
+          "product_pct": 12.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 16,
+          "paper_pct": 6.2,
+          "product": "data/experiments/baseline_static.json::holdout.measurable",
+          "product_pct": 6.25,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 16,
+          "paper_pct": 6.2,
+          "product": "data/experiments/baseline_random.json::holdout.measurable",
+          "product_pct": 6.25,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 32,
+          "paper_pct": 3.1,
+          "product": "data/experiments/baseline_random.json::corpus.measurable",
+          "product_pct": 3.125,
+          "diff": 0.025,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/holdout_reveal_3_665.json#holdout_rate_pct",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/experiments/baseline_fd.json::holdout.measurable",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/external_corpus_reveal_665.json#corpus_rate_pct",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/experiments/baseline_fd.json::corpus.measurable",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/holdout_reveal_3_665.json#holdout_rate_pct",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/experiments/baseline_fd.json::holdout.measurable",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/external_corpus_reveal_665.json#corpus_rate_pct",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/experiments/baseline_fd.json::corpus.measurable",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 110,
+          "n": 113,
+          "paper_pct": 97.3,
+          "product": "data/656_mutation_report_core.json#mutation_core_pct",
+          "product_pct": 97.3451,
+          "diff": 0.0451,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/holdout_reveal_3_665.json#holdout_rate_pct",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/experiments/baseline_fd.json::holdout.measurable",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/external_corpus_reveal_665.json#corpus_rate_pct",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/experiments/baseline_fd.json::corpus.measurable",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        }
+      ],
+      "unmatched": [
+        {
+          "file": "paper_v0.9.md",
+          "k": 13,
+          "n": 16,
+          "pct": 81.2,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 6,
+          "n": 6,
+          "pct": 100.0,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 6,
+          "n": 6,
+          "pct": 100.0,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 9,
+          "pct": 11.1,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 17,
+          "pct": 82.4,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 37,
+          "pct": 37.8,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 17,
+          "pct": 82.4,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 40,
+          "pct": 35.0,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 6,
+          "n": 6,
+          "pct": 100.0,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        }
+      ],
+      "drifts": [],
+      "problems": []
+    },
+    "web": {
+      "status": "PASS",
+      "declared": [
+        {
+          "where": "web/data/metrics_666.json::metrics.holdout.rate_pct",
+          "value": 87.5,
+          "expected": 87.5,
+          "ok": true
+        },
+        {
+          "where": "web/data/verdicts_667.json::dashboard.holdout.rate_pct",
+          "value": 87.5,
+          "expected": 87.5,
+          "ok": true
+        },
+        {
+          "where": "web/data/metrics_666.json::metrics.external.rate_pct",
+          "value": 43.8,
+          "expected": 43.75,
+          "ok": true
+        },
+        {
+          "where": "web/data/verdicts_667.json::dashboard.external.rate_pct",
+          "value": 43.8,
+          "expected": 43.75,
+          "ok": true
+        },
+        {
+          "where": "web/data/verdicts_667.json::dashboard.mutation.core",
+          "value": 97.3,
+          "expected": 97.3451,
+          "ok": true
+        },
+        {
+          "where": "web/data/status.json::rules.rules_total",
+          "value": 67,
+          "expected": 67,
+          "ok": true
+        },
+        {
+          "where": "web/data/verdicts_667.json::dashboard.rules_total",
+          "value": 67,
+          "expected": 67,
+          "ok": true
+        }
+      ],
+      "drifts": [],
+      "scan": {
+        "count": 74,
+        "values": {
+          "web/data/baseline.json.mutation.core_kill_rate_pct": 97.3,
+          "web/data/baseline.json.mutation.all_kill_rate_pct": 81.5,
+          "web/data/experiments.json.escape.rate_pct": 0.0711,
+          "web/data/metrics_666.json.metrics.holdout.rate_pct": 87.5,
+          "web/data/metrics_666.json.metrics.external.rate_pct": 43.8,
+          "web/data/status.json.escape.rate_pct": 0.0711,
+          "web/data/verdicts_667.json.dashboard.holdout.rate_pct": 87.5,
+          "web/data/verdicts_667.json.dashboard.holdout.stored_rate_pct": 87.5,
+          "web/data/verdicts_667.json.dashboard.external.rate_pct": 43.8,
+          "web/data/verdicts_667.json.dashboard.escape.rate_pct": 0.0711,
+          "web/data/experiments/669_experiments.json.baselines.0.rate_pct": 87.5,
+          "web/data/experiments/669_experiments.json.baselines.0.cp_lo_pct": 61.7,
+          "web/data/experiments/669_experiments.json.baselines.0.cp_hi_pct": 98.4,
+          "web/data/experiments/669_experiments.json.baselines.0.wilson_lo_pct": 64.0,
+          "web/data/experiments/669_experiments.json.baselines.0.wilson_hi_pct": 96.5,
+          "web/data/experiments/669_experiments.json.baselines.1.rate_pct": 11.1,
+          "web/data/experiments/669_experiments.json.baselines.1.cp_lo_pct": 0.3,
+          "web/data/experiments/669_experiments.json.baselines.1.cp_hi_pct": 48.2,
+          "web/data/experiments/669_experiments.json.baselines.1.wilson_lo_pct": 2.0,
+          "web/data/experiments/669_experiments.json.baselines.1.wilson_hi_pct": 43.5,
+          "web/data/experiments/669_experiments.json.baselines.2.rate_pct": 43.8,
+          "web/data/experiments/669_experiments.json.baselines.2.cp_lo_pct": 26.4,
+          "web/data/experiments/669_experiments.json.baselines.2.cp_hi_pct": 62.3,
+          "web/data/experiments/669_experiments.json.baselines.2.wilson_lo_pct": 28.2,
+          "web/data/experiments/669_experiments.json.baselines.2.wilson_hi_pct": 60.7,
+          "web/data/experiments/669_experiments.json.baselines.3.rate_pct": 35.0,
+          "web/data/experiments/669_experiments.json.baselines.3.cp_lo_pct": 20.6,
+          "web/data/experiments/669_experiments.json.baselines.3.cp_hi_pct": 51.7,
+          "web/data/experiments/669_experiments.json.baselines.3.wilson_lo_pct": 22.1,
+          "web/data/experiments/669_experiments.json.baselines.3.wilson_hi_pct": 50.5,
+          "web/data/experiments/669_experiments.json.baselines.4.rate_pct": 54.2,
+          "web/data/experiments/669_experiments.json.baselines.4.cp_lo_pct": 32.8,
+          "web/data/experiments/669_experiments.json.baselines.4.cp_hi_pct": 74.4,
+          "web/data/experiments/669_experiments.json.baselines.4.wilson_lo_pct": 35.1,
+          "web/data/experiments/669_experiments.json.baselines.4.wilson_hi_pct": 72.1,
+          "web/data/experiments/669_experiments.json.baselines.5.rate_pct": 12.5,
+          "web/data/experiments/669_experiments.json.baselines.5.cp_lo_pct": 0.3,
+          "web/data/experiments/669_experiments.json.baselines.5.cp_hi_pct": 52.7,
+          "web/data/experiments/669_experiments.json.baselines.5.wilson_lo_pct": 2.2,
+          "web/data/experiments/669_experiments.json.baselines.5.wilson_hi_pct": 47.1,
+          "web/data/experiments/669_experiments.json.baselines.6.cp_lo_pct": 0.0,
+          "web/data/experiments/669_experiments.json.baselines.6.cp_hi_pct": 100.0,
+          "web/data/experiments/669_experiments.json.baselines.6.wilson_lo_pct": 0.0,
+          "web/data/experiments/669_experiments.json.baselines.6.wilson_hi_pct": 100.0,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.holdout.rate_pct": 87.5,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.holdout.cp_lo_pct": 61.7,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.holdout.cp_hi_pct": 98.4,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.holdout.wilson_lo_pct": 64.0,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.holdout.wilson_hi_pct": 96.5,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.external.rate_pct": 43.8,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.external.cp_lo_pct": 26.4,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.external.cp_hi_pct": 62.3,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.external.wilson_lo_pct": 28.2,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.external.wilson_hi_pct": 60.7,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.holdout.rate_pct": 82.4,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.holdout.cp_lo_pct": 56.6,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.holdout.cp_hi_pct": 96.2,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.holdout.wilson_lo_pct": 59.0,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.holdout.wilson_hi_pct": 93.8,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.external.rate_pct": 37.8,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.external.cp_lo_pct": 22.5,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.external.cp_hi_pct": 55.2,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.external.wilson_lo_pct": 24.1,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.external.wilson_hi_pct": 53.9,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.holdout.rate_pct": 82.4,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.holdout.cp_lo_pct": 56.6,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.holdout.cp_hi_pct": 96.2,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.holdout.wilson_lo_pct": 59.0,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.holdout.wilson_hi_pct": 93.8,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.external.rate_pct": 35.0,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.external.cp_lo_pct": 20.6,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.external.cp_hi_pct": 51.7,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.external.wilson_lo_pct": 22.1,
+          "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.external.wilson_hi_pct": 50.5
+        }
+      },
+      "changed": [],
+      "justified": []
+    },
+    "baseline_arms": {
+      "status": "PASS",
+      "arms": {
+        "fd": {
+          "available": true,
+          "path": "data/experiments/baseline_fd.json",
+          "arm": "failure-driven（现状）",
+          "holdout": {
+            "k": 14,
+            "n": 16,
+            "point": 0.875,
+            "catch": 14,
+            "miss": 2,
+            "unknown": 1,
+            "not_error": 0,
+            "total": 17,
+            "all_n": 17
+          },
+          "corpus": {
+            "k": 14,
+            "n": 32,
+            "point": 0.4375,
+            "catch": 14,
+            "miss": 18,
+            "unknown": 5,
+            "not_error": 3,
+            "total": 40,
+            "all_n": 40
+          }
+        },
+        "static": {
+          "available": true,
+          "path": "data/experiments/baseline_static.json",
+          "arm": "static（rule-only / 无运行时证据）",
+          "holdout": {
+            "k": 1,
+            "n": 16,
+            "point": 0.0625,
+            "catch": 1,
+            "miss": 15,
+            "unknown": 1,
+            "not_error": 0,
+            "total": 17,
+            "all_n": 17
+          },
+          "corpus": {
+            "k": 4,
+            "n": 32,
+            "point": 0.125,
+            "catch": 4,
+            "miss": 28,
+            "unknown": 5,
+            "not_error": 3,
+            "total": 40,
+            "all_n": 40
+          }
+        },
+        "random": {
+          "available": true,
+          "path": "data/experiments/baseline_random.json",
+          "arm": "random_proxy†（仪器级预算对齐；**非论文 B3**）",
+          "holdout": {
+            "k": 1,
+            "n": 16,
+            "point": 0.0625,
+            "catch": 1,
+            "miss": 15,
+            "unknown": 1,
+            "not_error": 0,
+            "total": 17,
+            "all_n": 17
+          },
+          "corpus": {
+            "k": 1,
+            "n": 32,
+            "point": 0.03125,
+            "catch": 1,
+            "miss": 31,
+            "unknown": 5,
+            "not_error": 3,
+            "total": 40,
+            "all_n": 40
+          }
+        }
+      },
+      "drifts": []
+    },
+    "gate_rules": {
+      "status": "PASS",
+      "engine_rules": 67,
+      "dump_rules": 67,
+      "severity": {
+        "block": 44,
+        "warn": 16,
+        "advice": 7
+      },
+      "severity_engine": {
+        "block": 44,
+        "warn": 16,
+        "advice": 7
+      },
+      "claimed": {
+        "rules_total": 67,
+        "rules_block": 44
+      },
+      "drifts": []
+    }
+  },
+  "deterministic": {
+    "paper": {
+      "status": "PASS",
+      "files": [
+        "research/paper_v0.9.md"
+      ],
+      "ignored_versions": [
+        "paper_v0.1.md",
+        "paper_v0.2.md",
+        "paper_v0.3.md",
+        "paper_v0.4.md",
+        "paper_v0.5.md",
+        "paper_v0.6.md",
+        "paper_v0.7.md",
+        "paper_v0.8.md"
+      ],
+      "ignored_note": "历史稿（v0.1–v0.n-1）是冻结留痕，其数字本就与今天的产物不同 ⇒ 只列出不判红；要全版本扫描用 --all-papers",
+      "candidates": 12,
+      "matched": [
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/holdout_reveal_3_665.json#holdout_rate_pct",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/experiments/baseline_fd.json::holdout.measurable",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/external_corpus_reveal_665.json#corpus_rate_pct",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/experiments/baseline_fd.json::corpus.measurable",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 16,
+          "paper_pct": 6.2,
+          "product": "data/experiments/baseline_static.json::holdout.measurable",
+          "product_pct": 6.25,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 16,
+          "paper_pct": 6.2,
+          "product": "data/experiments/baseline_random.json::holdout.measurable",
+          "product_pct": 6.25,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 16,
+          "paper_pct": 6.2,
+          "product": "data/experiments/baseline_static.json::holdout.measurable",
+          "product_pct": 6.25,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 16,
+          "paper_pct": 6.2,
+          "product": "data/experiments/baseline_random.json::holdout.measurable",
+          "product_pct": 6.25,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 4,
+          "n": 32,
+          "paper_pct": 12.5,
+          "product": "data/experiments/baseline_static.json::corpus.measurable",
+          "product_pct": 12.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 16,
+          "paper_pct": 6.2,
+          "product": "data/experiments/baseline_static.json::holdout.measurable",
+          "product_pct": 6.25,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 16,
+          "paper_pct": 6.2,
+          "product": "data/experiments/baseline_random.json::holdout.measurable",
+          "product_pct": 6.25,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 32,
+          "paper_pct": 3.1,
+          "product": "data/experiments/baseline_random.json::corpus.measurable",
+          "product_pct": 3.125,
+          "diff": 0.025,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/holdout_reveal_3_665.json#holdout_rate_pct",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/experiments/baseline_fd.json::holdout.measurable",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/external_corpus_reveal_665.json#corpus_rate_pct",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/experiments/baseline_fd.json::corpus.measurable",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/holdout_reveal_3_665.json#holdout_rate_pct",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/experiments/baseline_fd.json::holdout.measurable",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/external_corpus_reveal_665.json#corpus_rate_pct",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/experiments/baseline_fd.json::corpus.measurable",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 110,
+          "n": 113,
+          "paper_pct": 97.3,
+          "product": "data/656_mutation_report_core.json#mutation_core_pct",
+          "product_pct": 97.3451,
+          "diff": 0.0451,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/holdout_reveal_3_665.json#holdout_rate_pct",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 16,
+          "paper_pct": 87.5,
+          "product": "data/experiments/baseline_fd.json::holdout.measurable",
+          "product_pct": 87.5,
+          "diff": 0.0,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/external_corpus_reveal_665.json#corpus_rate_pct",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 32,
+          "paper_pct": 43.8,
+          "product": "data/experiments/baseline_fd.json::corpus.measurable",
+          "product_pct": 43.75,
+          "diff": 0.05,
+          "ok": true
+        }
+      ],
+      "unmatched": [
+        {
+          "file": "paper_v0.9.md",
+          "k": 13,
+          "n": 16,
+          "pct": 81.2,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 6,
+          "n": 6,
+          "pct": 100.0,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 6,
+          "n": 6,
+          "pct": 100.0,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 1,
+          "n": 9,
+          "pct": 11.1,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 17,
+          "pct": 82.4,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 37,
+          "pct": 37.8,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 17,
+          "pct": 82.4,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 14,
+          "n": 40,
+          "pct": 35.0,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        },
+        {
+          "file": "paper_v0.9.md",
+          "k": 6,
+          "n": 6,
+          "pct": 100.0,
+          "why": "没有声明产物的 (k,n) 与之对应 ⇒ 只登记不判红"
+        }
+      ],
+      "drifts": [],
+      "problems": []
+    },
+    "web_declared": [
+      {
+        "where": "web/data/metrics_666.json::metrics.holdout.rate_pct",
+        "value": 87.5,
+        "expected": 87.5,
+        "ok": true
+      },
+      {
+        "where": "web/data/verdicts_667.json::dashboard.holdout.rate_pct",
+        "value": 87.5,
+        "expected": 87.5,
+        "ok": true
+      },
+      {
+        "where": "web/data/metrics_666.json::metrics.external.rate_pct",
+        "value": 43.8,
+        "expected": 43.75,
+        "ok": true
+      },
+      {
+        "where": "web/data/verdicts_667.json::dashboard.external.rate_pct",
+        "value": 43.8,
+        "expected": 43.75,
+        "ok": true
+      },
+      {
+        "where": "web/data/verdicts_667.json::dashboard.mutation.core",
+        "value": 97.3,
+        "expected": 97.3451,
+        "ok": true
+      },
+      {
+        "where": "web/data/status.json::rules.rules_total",
+        "value": 67,
+        "expected": 67,
+        "ok": true
+      },
+      {
+        "where": "web/data/verdicts_667.json::dashboard.rules_total",
+        "value": 67,
+        "expected": 67,
+        "ok": true
+      }
+    ],
+    "baseline_arms": {
+      "status": "PASS",
+      "arms": {
+        "fd": {
+          "available": true,
+          "path": "data/experiments/baseline_fd.json",
+          "arm": "failure-driven（现状）",
+          "holdout": {
+            "k": 14,
+            "n": 16,
+            "point": 0.875,
+            "catch": 14,
+            "miss": 2,
+            "unknown": 1,
+            "not_error": 0,
+            "total": 17,
+            "all_n": 17
+          },
+          "corpus": {
+            "k": 14,
+            "n": 32,
+            "point": 0.4375,
+            "catch": 14,
+            "miss": 18,
+            "unknown": 5,
+            "not_error": 3,
+            "total": 40,
+            "all_n": 40
+          }
+        },
+        "static": {
+          "available": true,
+          "path": "data/experiments/baseline_static.json",
+          "arm": "static（rule-only / 无运行时证据）",
+          "holdout": {
+            "k": 1,
+            "n": 16,
+            "point": 0.0625,
+            "catch": 1,
+            "miss": 15,
+            "unknown": 1,
+            "not_error": 0,
+            "total": 17,
+            "all_n": 17
+          },
+          "corpus": {
+            "k": 4,
+            "n": 32,
+            "point": 0.125,
+            "catch": 4,
+            "miss": 28,
+            "unknown": 5,
+            "not_error": 3,
+            "total": 40,
+            "all_n": 40
+          }
+        },
+        "random": {
+          "available": true,
+          "path": "data/experiments/baseline_random.json",
+          "arm": "random_proxy†（仪器级预算对齐；**非论文 B3**）",
+          "holdout": {
+            "k": 1,
+            "n": 16,
+            "point": 0.0625,
+            "catch": 1,
+            "miss": 15,
+            "unknown": 1,
+            "not_error": 0,
+            "total": 17,
+            "all_n": 17
+          },
+          "corpus": {
+            "k": 1,
+            "n": 32,
+            "point": 0.03125,
+            "catch": 1,
+            "miss": 31,
+            "unknown": 5,
+            "not_error": 3,
+            "total": 40,
+            "all_n": 40
+          }
+        }
+      },
+      "drifts": []
+    },
+    "gate_rules": {
+      "status": "PASS",
+      "engine_rules": 67,
+      "dump_rules": 67,
+      "severity": {
+        "block": 44,
+        "warn": 16,
+        "advice": 7
+      },
+      "severity_engine": {
+        "block": 44,
+        "warn": 16,
+        "advice": 7
+      },
+      "claimed": {
+        "rules_total": 67,
+        "rules_block": 44
+      },
+      "drifts": []
+    }
+  },
+  "deterministic_drifts": [],
+  "ok": [
+    {
+      "key": "cards_total",
+      "label": "卡数（全量口径）",
+      "baseline": 123,
+      "current": 123,
+      "pct_change_pct": 0.0,
+      "source": "tools/counts_659.py"
+    },
+    {
+      "key": "rules_total",
+      "label": "规则数",
+      "baseline": 67,
+      "current": 67,
+      "pct_change_pct": 0.0,
+      "source": "tools/gate_engine.py"
+    },
+    {
+      "key": "ledger_events",
+      "label": "账本数（452 账本）",
+      "baseline": 452,
+      "current": 452,
+      "pct_change_pct": 0.0,
+      "source": "data/authority/decision_event_v2_ledger.jsonl"
+    },
+    {
+      "key": "holdout_rate_pct",
+      "label": "holdout 检出率（可测口径）",
+      "baseline": 87.5,
+      "current": 87.5,
+      "pct_change_pct": 0.0,
+      "source": "data/holdout_reveal_3_665.json"
+    },
+    {
+      "key": "corpus_rate_pct",
+      "label": "corpus 检出率（可测口径）",
+      "baseline": 43.75,
+      "current": 43.75,
+      "pct_change_pct": 0.0,
+      "source": "data/external_corpus_reveal_665.json"
+    },
+    {
+      "key": "mutation_core_pct",
+      "label": "变异率（core 击杀率）",
+      "baseline": 97.3451,
+      "current": 97.3451,
+      "pct_change_pct": 0.0,
+      "source": "data/656_mutation_report_core.json"
+    }
+  ],
+  "drifted_unjustified": [],
+  "drifted_justified": [],
+  "experiments": {
+    "dir": "data/experiments",
+    "fresh": [],
+    "considered_since_epoch": 1790815364.222
+  },
+  "pending_owner_671b": [],
+  "notes": [
+    "data/experiments/ 下无更新的实验记录 ⇒ 跨时间漂移一律判红。",
+    "论文/前端的数字更新不在本工具射程内；它只把不一致变成显式 DRIFT。"
+  ],
+  "baseline_values_for_next_run": {
+    "cards_total": 123,
+    "rules_total": 67,
+    "ledger_events": 452,
+    "holdout_rate_pct": 87.5,
+    "corpus_rate_pct": 43.75,
+    "mutation_core_pct": 97.3451
+  },
+  "web_rates_for_next_run": {
+    "web/data/baseline.json.mutation.core_kill_rate_pct": 97.3,
+    "web/data/baseline.json.mutation.all_kill_rate_pct": 81.5,
+    "web/data/experiments.json.escape.rate_pct": 0.0711,
+    "web/data/metrics_666.json.metrics.holdout.rate_pct": 87.5,
+    "web/data/metrics_666.json.metrics.external.rate_pct": 43.8,
+    "web/data/status.json.escape.rate_pct": 0.0711,
+    "web/data/verdicts_667.json.dashboard.holdout.rate_pct": 87.5,
+    "web/data/verdicts_667.json.dashboard.holdout.stored_rate_pct": 87.5,
+    "web/data/verdicts_667.json.dashboard.external.rate_pct": 43.8,
+    "web/data/verdicts_667.json.dashboard.escape.rate_pct": 0.0711,
+    "web/data/experiments/669_experiments.json.baselines.0.rate_pct": 87.5,
+    "web/data/experiments/669_experiments.json.baselines.0.cp_lo_pct": 61.7,
+    "web/data/experiments/669_experiments.json.baselines.0.cp_hi_pct": 98.4,
+    "web/data/experiments/669_experiments.json.baselines.0.wilson_lo_pct": 64.0,
+    "web/data/experiments/669_experiments.json.baselines.0.wilson_hi_pct": 96.5,
+    "web/data/experiments/669_experiments.json.baselines.1.rate_pct": 11.1,
+    "web/data/experiments/669_experiments.json.baselines.1.cp_lo_pct": 0.3,
+    "web/data/experiments/669_experiments.json.baselines.1.cp_hi_pct": 48.2,
+    "web/data/experiments/669_experiments.json.baselines.1.wilson_lo_pct": 2.0,
+    "web/data/experiments/669_experiments.json.baselines.1.wilson_hi_pct": 43.5,
+    "web/data/experiments/669_experiments.json.baselines.2.rate_pct": 43.8,
+    "web/data/experiments/669_experiments.json.baselines.2.cp_lo_pct": 26.4,
+    "web/data/experiments/669_experiments.json.baselines.2.cp_hi_pct": 62.3,
+    "web/data/experiments/669_experiments.json.baselines.2.wilson_lo_pct": 28.2,
+    "web/data/experiments/669_experiments.json.baselines.2.wilson_hi_pct": 60.7,
+    "web/data/experiments/669_experiments.json.baselines.3.rate_pct": 35.0,
+    "web/data/experiments/669_experiments.json.baselines.3.cp_lo_pct": 20.6,
+    "web/data/experiments/669_experiments.json.baselines.3.cp_hi_pct": 51.7,
+    "web/data/experiments/669_experiments.json.baselines.3.wilson_lo_pct": 22.1,
+    "web/data/experiments/669_experiments.json.baselines.3.wilson_hi_pct": 50.5,
+    "web/data/experiments/669_experiments.json.baselines.4.rate_pct": 54.2,
+    "web/data/experiments/669_experiments.json.baselines.4.cp_lo_pct": 32.8,
+    "web/data/experiments/669_experiments.json.baselines.4.cp_hi_pct": 74.4,
+    "web/data/experiments/669_experiments.json.baselines.4.wilson_lo_pct": 35.1,
+    "web/data/experiments/669_experiments.json.baselines.4.wilson_hi_pct": 72.1,
+    "web/data/experiments/669_experiments.json.baselines.5.rate_pct": 12.5,
+    "web/data/experiments/669_experiments.json.baselines.5.cp_lo_pct": 0.3,
+    "web/data/experiments/669_experiments.json.baselines.5.cp_hi_pct": 52.7,
+    "web/data/experiments/669_experiments.json.baselines.5.wilson_lo_pct": 2.2,
+    "web/data/experiments/669_experiments.json.baselines.5.wilson_hi_pct": 47.1,
+    "web/data/experiments/669_experiments.json.baselines.6.cp_lo_pct": 0.0,
+    "web/data/experiments/669_experiments.json.baselines.6.cp_hi_pct": 100.0,
+    "web/data/experiments/669_experiments.json.baselines.6.wilson_lo_pct": 0.0,
+    "web/data/experiments/669_experiments.json.baselines.6.wilson_hi_pct": 100.0,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.holdout.rate_pct": 87.5,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.holdout.cp_lo_pct": 61.7,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.holdout.cp_hi_pct": 98.4,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.holdout.wilson_lo_pct": 64.0,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.holdout.wilson_hi_pct": 96.5,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.external.rate_pct": 43.8,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.external.cp_lo_pct": 26.4,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.external.cp_hi_pct": 62.3,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.external.wilson_lo_pct": 28.2,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.external.wilson_hi_pct": 60.7,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.holdout.rate_pct": 82.4,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.holdout.cp_lo_pct": 56.6,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.holdout.cp_hi_pct": 96.2,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.holdout.wilson_lo_pct": 59.0,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.holdout.wilson_hi_pct": 93.8,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.external.rate_pct": 37.8,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.external.cp_lo_pct": 22.5,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.external.cp_hi_pct": 55.2,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.external.wilson_lo_pct": 24.1,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.external.wilson_hi_pct": 53.9,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.holdout.rate_pct": 82.4,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.holdout.cp_lo_pct": 56.6,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.holdout.cp_hi_pct": 96.2,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.holdout.wilson_lo_pct": 59.0,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.holdout.wilson_hi_pct": 93.8,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.external.rate_pct": 35.0,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.external.cp_lo_pct": 20.6,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.external.cp_hi_pct": 51.7,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.external.wilson_lo_pct": 22.1,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.external.wilson_hi_pct": 50.5
+  },
+  "web_rates": {
+    "web/data/baseline.json.mutation.core_kill_rate_pct": 97.3,
+    "web/data/baseline.json.mutation.all_kill_rate_pct": 81.5,
+    "web/data/experiments.json.escape.rate_pct": 0.0711,
+    "web/data/metrics_666.json.metrics.holdout.rate_pct": 87.5,
+    "web/data/metrics_666.json.metrics.external.rate_pct": 43.8,
+    "web/data/status.json.escape.rate_pct": 0.0711,
+    "web/data/verdicts_667.json.dashboard.holdout.rate_pct": 87.5,
+    "web/data/verdicts_667.json.dashboard.holdout.stored_rate_pct": 87.5,
+    "web/data/verdicts_667.json.dashboard.external.rate_pct": 43.8,
+    "web/data/verdicts_667.json.dashboard.escape.rate_pct": 0.0711,
+    "web/data/experiments/669_experiments.json.baselines.0.rate_pct": 87.5,
+    "web/data/experiments/669_experiments.json.baselines.0.cp_lo_pct": 61.7,
+    "web/data/experiments/669_experiments.json.baselines.0.cp_hi_pct": 98.4,
+    "web/data/experiments/669_experiments.json.baselines.0.wilson_lo_pct": 64.0,
+    "web/data/experiments/669_experiments.json.baselines.0.wilson_hi_pct": 96.5,
+    "web/data/experiments/669_experiments.json.baselines.1.rate_pct": 11.1,
+    "web/data/experiments/669_experiments.json.baselines.1.cp_lo_pct": 0.3,
+    "web/data/experiments/669_experiments.json.baselines.1.cp_hi_pct": 48.2,
+    "web/data/experiments/669_experiments.json.baselines.1.wilson_lo_pct": 2.0,
+    "web/data/experiments/669_experiments.json.baselines.1.wilson_hi_pct": 43.5,
+    "web/data/experiments/669_experiments.json.baselines.2.rate_pct": 43.8,
+    "web/data/experiments/669_experiments.json.baselines.2.cp_lo_pct": 26.4,
+    "web/data/experiments/669_experiments.json.baselines.2.cp_hi_pct": 62.3,
+    "web/data/experiments/669_experiments.json.baselines.2.wilson_lo_pct": 28.2,
+    "web/data/experiments/669_experiments.json.baselines.2.wilson_hi_pct": 60.7,
+    "web/data/experiments/669_experiments.json.baselines.3.rate_pct": 35.0,
+    "web/data/experiments/669_experiments.json.baselines.3.cp_lo_pct": 20.6,
+    "web/data/experiments/669_experiments.json.baselines.3.cp_hi_pct": 51.7,
+    "web/data/experiments/669_experiments.json.baselines.3.wilson_lo_pct": 22.1,
+    "web/data/experiments/669_experiments.json.baselines.3.wilson_hi_pct": 50.5,
+    "web/data/experiments/669_experiments.json.baselines.4.rate_pct": 54.2,
+    "web/data/experiments/669_experiments.json.baselines.4.cp_lo_pct": 32.8,
+    "web/data/experiments/669_experiments.json.baselines.4.cp_hi_pct": 74.4,
+    "web/data/experiments/669_experiments.json.baselines.4.wilson_lo_pct": 35.1,
+    "web/data/experiments/669_experiments.json.baselines.4.wilson_hi_pct": 72.1,
+    "web/data/experiments/669_experiments.json.baselines.5.rate_pct": 12.5,
+    "web/data/experiments/669_experiments.json.baselines.5.cp_lo_pct": 0.3,
+    "web/data/experiments/669_experiments.json.baselines.5.cp_hi_pct": 52.7,
+    "web/data/experiments/669_experiments.json.baselines.5.wilson_lo_pct": 2.2,
+    "web/data/experiments/669_experiments.json.baselines.5.wilson_hi_pct": 47.1,
+    "web/data/experiments/669_experiments.json.baselines.6.cp_lo_pct": 0.0,
+    "web/data/experiments/669_experiments.json.baselines.6.cp_hi_pct": 100.0,
+    "web/data/experiments/669_experiments.json.baselines.6.wilson_lo_pct": 0.0,
+    "web/data/experiments/669_experiments.json.baselines.6.wilson_hi_pct": 100.0,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.holdout.rate_pct": 87.5,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.holdout.cp_lo_pct": 61.7,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.holdout.cp_hi_pct": 98.4,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.holdout.wilson_lo_pct": 64.0,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.holdout.wilson_hi_pct": 96.5,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.external.rate_pct": 43.8,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.external.cp_lo_pct": 26.4,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.external.cp_hi_pct": 62.3,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.external.wilson_lo_pct": 28.2,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.A_valid_only（本批主口径：unknown 剔除）.external.wilson_hi_pct": 60.7,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.holdout.rate_pct": 82.4,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.holdout.cp_lo_pct": 56.6,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.holdout.cp_hi_pct": 96.2,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.holdout.wilson_lo_pct": 59.0,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.holdout.wilson_hi_pct": 93.8,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.external.rate_pct": 37.8,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.external.cp_lo_pct": 22.5,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.external.cp_hi_pct": 55.2,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.external.wilson_lo_pct": 24.1,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.B_unknown_as_miss（保守：unknown 记 miss）.external.wilson_hi_pct": 53.9,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.holdout.rate_pct": 82.4,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.holdout.cp_lo_pct": 56.6,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.holdout.cp_hi_pct": 96.2,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.holdout.wilson_lo_pct": 59.0,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.holdout.wilson_hi_pct": 93.8,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.external.rate_pct": 35.0,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.external.cp_lo_pct": 20.6,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.external.cp_hi_pct": 51.7,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.external.wilson_lo_pct": 22.1,
+    "web/data/experiments/669_experiments.json.caliber_ablation.arms.C_all_samples（最保守：unknown + not_error 都进分母）.external.wilson_hi_pct": 50.5
+  }
+}

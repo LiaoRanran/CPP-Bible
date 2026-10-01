@@ -1,0 +1,153 @@
+{
+  "schema": "queyi-holdout-reveal/v4",
+  "reveal_index": 4,
+  "generated_by": "tools/holdout_reveal_4_671a.py",
+  "generated_at": "2026-10-01 08:19:37",
+  "round_label": "h31–h40（10 条，669d 扩样补充种子）",
+  "runs": 3,
+  "samples_requested": [
+    "h31",
+    "h32",
+    "h33",
+    "h34",
+    "h35",
+    "h36",
+    "h37",
+    "h38",
+    "h39",
+    "h40"
+  ],
+  "detector_reuse": "复用 tools/holdout_reveal_661.py::detect（唯一判据；含 -O0/-O2 双档 + setarch -R 关 ASLR）；新样本的 (detector, 夹具) 由 data/holdout/holdout_extension_669d.json 现推导，不手抄",
+  "caliber": "真错分母 = catch+miss（可测）；unknown（检测器不可用）与标签 unknown 均不进分母；planted=False 的对照样本单列（catch ⇒ false_positive）",
+  "historical_reuse": {
+    "from": "data/holdout_reveal_3_665.json",
+    "ids": [
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "h7",
+      "h8",
+      "h9",
+      "h10",
+      "h11",
+      "h12",
+      "h13",
+      "h14",
+      "h15",
+      "h16",
+      "h17",
+      "h18",
+      "h19",
+      "h20",
+      "h21",
+      "h22",
+      "h23",
+      "h24",
+      "h25",
+      "h26",
+      "h27",
+      "h28",
+      "h29",
+      "h30"
+    ],
+    "why": "判据未变 ⇒ 历史结论可复用；本轮不重跑、不覆盖 reveal_3 的落盘（668 逐样本留痕必须保留）"
+  },
+  "env": {
+    "wsl_available": true,
+    "wsl_gpp": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "local_gpp": "g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+    "local_clang": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+    "host": "win32",
+    "python": "3.14.5",
+    "local_gpp_present": true,
+    "caliber_warning": ""
+  },
+  "round4": {
+    "labels": {
+      "error": 5,
+      "control": 2,
+      "unknown": 3
+    },
+    "error_subset": {
+      "total": 5,
+      "catch": 3,
+      "miss": 2,
+      "unknown": 0,
+      "detect_rate_pct": 60.0
+    },
+    "control_subset": {
+      "total": 2,
+      "false_positive": 1
+    },
+    "denominator": {
+      "value": 5,
+      "meaning": "catch+miss（可测真错样本）",
+      "excluded": {
+        "detector_unknown": 0,
+        "label_unknown": 3
+      }
+    },
+    "cp95": {
+      "k": 3,
+      "n": 5,
+      "point": 0.6,
+      "cp_low": 0.14663279963467307,
+      "cp_high": 0.9472550494736831,
+      "conf": 0.95
+    }
+  },
+  "cumulative": {
+    "labels": {
+      "error": 22,
+      "control": 11,
+      "unknown": 7
+    },
+    "error_subset": {
+      "total": 22,
+      "catch": 17,
+      "miss": 4,
+      "unknown": 1,
+      "detect_rate_pct": 81.0
+    },
+    "control_subset": {
+      "total": 11,
+      "false_positive": 2
+    },
+    "denominator": {
+      "value": 21,
+      "meaning": "catch+miss（可测真错样本）",
+      "excluded": {
+        "detector_unknown": 1,
+        "label_unknown": 7
+      }
+    },
+    "cp95": {
+      "k": 17,
+      "n": 21,
+      "point": 0.8095238095238095,
+      "cp_low": 0.5809339588164719,
+      "cp_high": 0.9455364318215931,
+      "conf": 0.95
+    }
+  },
+  "compare_reveal_3": {
+    "before_denominator": 16,
+    "before_catch": 14,
+    "before_rate_pct": 87.5,
+    "after_denominator": 21,
+    "after_catch": 17,
+    "after_rate_pct": 81.0,
+    "note": "分母扩大 ⇒ 率的差异只说明**样本构成变了**，不说明验证器变好/变差；两轮都把 unknown 留在分母之外。"
+  },
+  "reproducibility": {
+    "runs": 3,
+    "unstable_samples": [],
+    "all_reproducible": true
+  },
+  "new_sample_unknown": [],
+  "honest_note": "h31–h40 是 669d 在 holdout reveal **之后**并入的补充种子 ⇒ **不具备盲态**；本轮只用于增大样本量，不得据此 Claim 外部效度提升。累计口径里 h1–h30 复用 reveal_3 的落盘结论（本轮未重测）。",
+  "detail": "data/holdout/reveal_3_detail_671a.json"
+}

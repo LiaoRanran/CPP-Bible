@@ -1,0 +1,704 @@
+{
+  "schema": "queyi-holdout-reveal-detail/v2",
+  "reveal_index": 4,
+  "generated_by": "tools/holdout_reveal_4_671a.py",
+  "generated_at": "2026-10-01 08:19:37",
+  "summary_for": "data/holdout_reveal_4_671a.json",
+  "naming_note": "文件名 `reveal_3_detail_671a.json` 沿用 671a 受理单的指定路径与 668 的「批次后缀」命名约定；内容为**第 4 轮** reveal（h31–h40）⇒ 以本文件的 `reveal_index` 字段为准，不覆盖 reveal_3_detail_668.json",
+  "samples_requested": [
+    "h31",
+    "h32",
+    "h33",
+    "h34",
+    "h35",
+    "h36",
+    "h37",
+    "h38",
+    "h39",
+    "h40"
+  ],
+  "runs": 3,
+  "caliber": "真错分母 = catch+miss（可测）；unknown（检测器不可用）与标签 unknown 均不进分母；planted=False 的对照样本单列（catch ⇒ false_positive）",
+  "env": {
+    "wsl_available": true,
+    "wsl_gpp": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "local_gpp": "g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+    "local_clang": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+    "host": "win32",
+    "python": "3.14.5",
+    "local_gpp_present": true,
+    "caliber_warning": ""
+  },
+  "per_sample": [
+    {
+      "id": "h31",
+      "detector": "tsan",
+      "files": [
+        "_atom_data_race.cpp"
+      ],
+      "verdict": "catch",
+      "verdicts_per_run": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "reproducible": true,
+      "note": "tsan 命中[-O0(rc=66) single_total=100000 race_ops_total=200000 safe_ops_total=200000 safe_final=200000 ================== WARNING: ThreadSanitizer: data race (pid=211)   Read of size 4 at 0x55555555d01c by thread T2:     ; -O2(rc=66) single_t",
+      "source": "measured_671a",
+      "is_669d_new": true,
+      "planted": true
+    },
+    {
+      "id": "h32",
+      "detector": "asan",
+      "files": [
+        "_atom_rule_three_bug_asan.cpp"
+      ],
+      "verdict": "catch",
+      "verdicts_per_run": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "reproducible": true,
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==273==ERROR: AddressSanitizer: attempting double-free on 0x502000000030 in thread T0:     #0 0x7ffff78ff5e8 in operator delete(void*,; -O2(rc=1) ==========",
+      "source": "measured_671a",
+      "is_669d_new": true,
+      "planted": true
+    },
+    {
+      "id": "h33",
+      "detector": "ubsan",
+      "files": [
+        "_atom_strict_alias.cpp"
+      ],
+      "verdict": "miss",
+      "verdicts_per_run": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "reproducible": true,
+      "note": "ubsan 两档均无报告[-O0(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是; -O2(rc=0) A 函数返回=1 内存实际=1073741824 自洽=否 B UB路径=1073741824 合规路径=1073741824 一致=是]",
+      "source": "measured_671a",
+      "is_669d_new": true,
+      "planted": true
+    },
+    {
+      "id": "h34",
+      "detector": "tsan",
+      "files": [
+        "_atom_fence_vs_atomic.cpp"
+      ],
+      "verdict": "miss",
+      "verdicts_per_run": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "reproducible": true,
+      "note": "tsan 两档均无报告[-O0(rc=0) spin_plain_ret=7|spin_signal_fence_ret=8|spin_with_fence_ret=9|spin_volatile_ret=10 spin_fence_outside_ret=11|writer_signal_fence_ret=3|writer_thread_fence_ret=3 functions_present=7|spin_volatile_enga; -O2(rc=0) spin_p",
+      "source": "measured_671a",
+      "is_669d_new": true,
+      "planted": true
+    },
+    {
+      "id": "h35",
+      "detector": "wunsequenced",
+      "files": [
+        "_atom_eval_order.cpp"
+      ],
+      "verdict": "catch",
+      "verdicts_per_run": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "reproducible": true,
+      "note": "g++ -Wunsequenced 告警",
+      "source": "measured_671a",
+      "is_669d_new": true,
+      "planted": false
+    },
+    {
+      "id": "h36",
+      "detector": "compiler-warn",
+      "files": [
+        "_atom_raii.cpp"
+      ],
+      "verdict": "miss",
+      "verdicts_per_run": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "reproducible": true,
+      "note": "无告警",
+      "source": "measured_671a",
+      "is_669d_new": true,
+      "planted": false
+    },
+    {
+      "id": "h37",
+      "detector": "unknown",
+      "files": [
+        "_atom_false_sharing.cpp"
+      ],
+      "verdict": "unknown",
+      "verdicts_per_run": [
+        "unknown",
+        "unknown",
+        "unknown"
+      ],
+      "reproducible": true,
+      "note": "无本地检测器",
+      "source": "measured_671a",
+      "is_669d_new": true,
+      "planted": "unknown"
+    },
+    {
+      "id": "h38",
+      "detector": "compiler-warn",
+      "files": [
+        "_atom_auto_ptr.cpp"
+      ],
+      "verdict": "catch",
+      "verdicts_per_run": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "reproducible": true,
+      "note": "警告 8 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmppddqpylo\\_atom_auto_ptr.cpp:32:52:",
+      "source": "measured_671a",
+      "is_669d_new": true,
+      "planted": "unknown"
+    },
+    {
+      "id": "h39",
+      "detector": "unknown",
+      "files": [
+        "_atom_sso_cost.cpp"
+      ],
+      "verdict": "unknown",
+      "verdicts_per_run": [
+        "unknown",
+        "unknown",
+        "unknown"
+      ],
+      "reproducible": true,
+      "note": "无本地检测器",
+      "source": "measured_671a",
+      "is_669d_new": true,
+      "planted": "unknown"
+    },
+    {
+      "id": "h40",
+      "detector": "asan",
+      "files": [
+        "_atom_leak_detection.cpp"
+      ],
+      "verdict": "catch",
+      "verdicts_per_run": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "reproducible": true,
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==429==ERROR: LeakSanitizer: detected memory leaks  Indirect leak of 32 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fe548 i; -O2(rc=1) ==========",
+      "source": "measured_671a",
+      "is_669d_new": true,
+      "planted": true
+    },
+    {
+      "id": "h1",
+      "detector": "tsan",
+      "verdict": "catch",
+      "note": "tsan 命中[-O0(rc=66) single_total=100000 race_ops_total=200000 safe_ops_total=200000 safe_final=200000 ================== WARNING: ThreadSanitizer: data race (pid=1122)   Read of size 4 at 0x55555555d01c by thread T2:    ; -O2(rc=66) single_t",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h2",
+      "detector": "unknown",
+      "verdict": "unknown",
+      "note": "无本地检测器",
+      "files": [],
+      "verdicts_per_run": [
+        "unknown"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": "unknown"
+    },
+    {
+      "id": "h3",
+      "detector": "wunsequenced",
+      "verdict": "catch",
+      "note": "g++ -Wunsequenced 告警",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": false
+    },
+    {
+      "id": "h4",
+      "detector": "compiler-warn",
+      "verdict": "catch",
+      "note": "警告 8 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpwmgf2c05\\_atom_auto_ptr.cpp:32:52:",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": "unknown"
+    },
+    {
+      "id": "h5",
+      "detector": "ubsan",
+      "verdict": "miss",
+      "note": "ubsan 两档均无报告[-O0(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是; -O2(rc=0) A 函数返回=1 内存实际=1073741824 自洽=否 B UB路径=1073741824 合规路径=1073741824 一致=是]",
+      "files": [],
+      "verdicts_per_run": [
+        "miss"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h6",
+      "detector": "cross-compile",
+      "verdict": "miss",
+      "note": "两编译器输出一致",
+      "files": [],
+      "verdicts_per_run": [
+        "miss"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": "unknown"
+    },
+    {
+      "id": "h7",
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==1236==ERROR: LeakSanitizer: detected memory leaks  Indirect leak of 32 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fe548 ; -O2(rc=1) ==========",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h8",
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==1290==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 4 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fd9c7 in ; -O2(rc=1) ==========",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h9",
+      "detector": "compiler-warn",
+      "verdict": "miss",
+      "note": "无告警",
+      "files": [],
+      "verdicts_per_run": [
+        "miss"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": "unknown"
+    },
+    {
+      "id": "h10",
+      "detector": "unknown",
+      "verdict": "unknown",
+      "note": "无本地检测器",
+      "files": [],
+      "verdicts_per_run": [
+        "unknown"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h11",
+      "detector": "unknown",
+      "verdict": "unknown",
+      "note": "无本地检测器",
+      "files": [],
+      "verdicts_per_run": [
+        "unknown"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": false
+    },
+    {
+      "id": "h12",
+      "detector": "unknown",
+      "verdict": "unknown",
+      "note": "无本地检测器",
+      "files": [],
+      "verdicts_per_run": [
+        "unknown"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": false
+    },
+    {
+      "id": "h13",
+      "detector": "compiler-warn",
+      "verdict": "miss",
+      "note": "无告警",
+      "files": [],
+      "verdicts_per_run": [
+        "miss"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": false
+    },
+    {
+      "id": "h14",
+      "detector": "linker",
+      "verdict": "catch",
+      "note": "链接失败(多定义/缺符号)",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h15",
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==1344==ERROR: AddressSanitizer: out of memory: allocator is trying to allocate 0x5d21dba000 bytes     #0 0x7ffff78fe990 in operator n; -O2(rc=1) ==========",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h16",
+      "detector": "ubsan",
+      "verdict": "miss",
+      "note": "ubsan 两档均无报告[-O0(rc=0) ret_plain copy=1 move=0 / ret_moved copy=0 move=1; -O2(rc=0) ret_plain copy=1 move=0 / ret_moved copy=0 move=1]",
+      "files": [],
+      "verdicts_per_run": [
+        "miss"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": false
+    },
+    {
+      "id": "h17",
+      "detector": "asan",
+      "verdict": "miss",
+      "note": "asan 两档均无报告[-O0(rc=0) sizeof(std::string)=32 empty capacity=15 (SSO buffer chars) len=15 allocs=0 len=16 allocs=1; -O2(rc=0) sizeof(std::string)=32 empty capacity=15 (SSO buffer chars) len=15 allocs=0 len=16 allocs=1]",
+      "files": [],
+      "verdicts_per_run": [
+        "miss"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": false
+    },
+    {
+      "id": "h18",
+      "detector": "ubsan",
+      "verdict": "miss",
+      "note": "ubsan 两档均无报告[-O0(rc=0) alignof(Aligned)=16 sizeof(Aligned)=16 memcpy roundtrip x=7; -O2(rc=0) alignof(Aligned)=16 sizeof(Aligned)=16 memcpy roundtrip x=7]",
+      "files": [],
+      "verdicts_per_run": [
+        "miss"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": false
+    },
+    {
+      "id": "h19",
+      "detector": "asan",
+      "verdict": "miss",
+      "note": "asan 两档均无报告[-O0(rc=0) arena: calls=5 bytes=124 heap_new=0 std  : heap_new=5 (growth reallocations); -O2(rc=0) arena: calls=5 bytes=124 heap_new=0 std  : heap_new=5 (growth reallocations)]",
+      "files": [],
+      "verdicts_per_run": [
+        "miss"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": false
+    },
+    {
+      "id": "h20",
+      "detector": "compiler-warn",
+      "verdict": "miss",
+      "note": "无告警",
+      "files": [],
+      "verdicts_per_run": [
+        "miss"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": false
+    },
+    {
+      "id": "h21",
+      "detector": "ubsan",
+      "verdict": "catch",
+      "note": "ubsan 命中[-O0(rc=1) /mnt/c/Users/ASUS/AppData/Local/Temp/tmphi4vjnu7/ig-01.cpp:1:31: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'; -O2(rc=1) /mnt/c/Users/ASUS/AppData/Local/Temp/tmphi4vjnu7/ig-01",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h22",
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==1660==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff4f00034 at pc 0x5555555552e7 bp 0x7fffffffe480 sp 0x7fffffffe; -O2(rc=1) ==========",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h23",
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==1712==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x5555555551d8 bp 0x7fffffff; -O2(rc=1) AddressSan",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h24",
+      "detector": "ubsan",
+      "verdict": "catch",
+      "note": "ubsan 命中[-O0(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpcvbtmpri/ig-08.cpp:1:42: runtime error: division by zero; -O2(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpcvbtmpri/ig-08.cpp:1:42: runtime error: division by zero]（档位 -O0,-O2）",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h25",
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==1816==ERROR: AddressSanitizer: alloc-dealloc-mismatch (operator new [] vs operator delete) on 0x502000000010     #0 0x7ffff78ff5e8 i; -O2(rc=1) ==========",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h26",
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==1868==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x55555555526d bp 0x7fffffffe4f0 sp 0x7fffffffe4e]（档位 -O0,-O2）",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h27",
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==1921==ERROR: AddressSanitizer: attempting double-free on 0x502000000010 in thread T0:     #0 0x7ffff78ff5e8 in operator delete(void*]（档位 -O0,-O2）",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h28",
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==1974==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x555555555347 bp 0x7fffffff; -O2(rc=1) AddressSan",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h29",
+      "detector": "ubsan",
+      "verdict": "miss",
+      "note": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "files": [],
+      "verdicts_per_run": [
+        "miss"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    },
+    {
+      "id": "h30",
+      "detector": "asan",
+      "verdict": "catch",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==2078==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 256 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fe6c8 i]（档位 -O0,-O2）",
+      "files": [],
+      "verdicts_per_run": [
+        "catch"
+      ],
+      "reproducible": null,
+      "source": "reused_reveal_3",
+      "is_669d_new": false,
+      "planted": true
+    }
+  ],
+  "round4_summary": {
+    "labels": {
+      "error": 5,
+      "control": 2,
+      "unknown": 3
+    },
+    "error_subset": {
+      "total": 5,
+      "catch": 3,
+      "miss": 2,
+      "unknown": 0,
+      "detect_rate_pct": 60.0
+    },
+    "control_subset": {
+      "total": 2,
+      "false_positive": 1
+    },
+    "denominator": {
+      "value": 5,
+      "meaning": "catch+miss（可测真错样本）",
+      "excluded": {
+        "detector_unknown": 0,
+        "label_unknown": 3
+      }
+    },
+    "cp95": {
+      "k": 3,
+      "n": 5,
+      "point": 0.6,
+      "cp_low": 0.14663279963467307,
+      "cp_high": 0.9472550494736831,
+      "conf": 0.95
+    }
+  },
+  "cumulative_summary": {
+    "labels": {
+      "error": 22,
+      "control": 11,
+      "unknown": 7
+    },
+    "error_subset": {
+      "total": 22,
+      "catch": 17,
+      "miss": 4,
+      "unknown": 1,
+      "detect_rate_pct": 81.0
+    },
+    "control_subset": {
+      "total": 11,
+      "false_positive": 2
+    },
+    "denominator": {
+      "value": 21,
+      "meaning": "catch+miss（可测真错样本）",
+      "excluded": {
+        "detector_unknown": 1,
+        "label_unknown": 7
+      }
+    },
+    "cp95": {
+      "k": 17,
+      "n": 21,
+      "point": 0.8095238095238095,
+      "cp_low": 0.5809339588164719,
+      "cp_high": 0.9455364318215931,
+      "conf": 0.95
+    }
+  },
+  "unstable_samples": [],
+  "note": "`verdicts_per_run` 是每一轮的原始结论；`reproducible=false` 的样本说明结论随环境抖动，引用前必须复核。`source` 标明该行是**本轮实测**还是**复用 reveal_3**。"
+}

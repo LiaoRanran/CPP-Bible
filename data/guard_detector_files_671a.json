@@ -1,0 +1,100 @@
+{
+  "schema": "queyi-guard-detectors/671a",
+  "generated_by": "671a A3（B3 防复发：改了检测器代码就必须重跑它声明的产物）",
+  "note": "检测器 = 会**现算数字并落盘**的代码。detectors[].src 的 AST 语义指纹 + deps（它 import 的判据库）一起构成「判据指纹」：判据变了而产物没变 ⇒ STALE（红）。deps 是必须的——661 的 detect 被 3_665 复用，只盯 src 会漏掉换判据这种改动。products 里 {path, strict:false} 的条目降级为 WARN（如 656 core 报告需 --scope core 复跑，属于慢操作）。",
+  "detectors": [
+    {
+      "id": "holdout_reveal_665",
+      "src": "tools/holdout_reveal_3_665.py",
+      "deps": ["tools/holdout_reveal_661.py", "tools/holdout_extend_665.py"],
+      "products": [
+        "data/holdout_reveal_3_665.json",
+        "data/holdout/reveal_3_detail_668.json"
+      ],
+      "why": "holdout 检出率的唯一落盘源（论文 §6.1 / 前端 metrics_666 引用的就是它）"
+    },
+    {
+      "id": "holdout_reveal_671a",
+      "src": "tools/holdout_reveal_4_671a.py",
+      "deps": ["tools/holdout_reveal_661.py"],
+      "products": [
+        "data/holdout_reveal_4_671a.json",
+        "data/holdout/reveal_3_detail_671a.json"
+      ],
+      "why": "h31–h40 扩样 reveal（671a C1）；与上一轮共用同一 detect 判据"
+    },
+    {
+      "id": "corpus_reveal_665",
+      "src": "tools/external_corpus_reveal_665.py",
+      "deps": ["tools/external_corpus_662.py", "tools/external_corpus_extend_665.py"],
+      "products": ["data/external_corpus_reveal_665.json"],
+      "why": "外部 corpus 检出率唯一落盘源（论文 §6.1）"
+    },
+    {
+      "id": "corpus_reveal_671a",
+      "src": "tools/external_corpus_reveal_671a.py",
+      "deps": ["tools/external_corpus_662.py"],
+      "products": [
+        "data/external_corpus_reveal_671a.json",
+        "data/external_corpus/reveal_detail_671a.json"
+      ],
+      "why": "d3e-* 扩样 reveal（671a C2）；sanitizer 类升为双档 -O0/-O2 + setarch -R"
+    },
+    {
+      "id": "baseline_arms_670a",
+      "src": "tools/baseline_670a.py",
+      "deps": ["tools/stat_bounds.py", "tools/merge_670a.py"],
+      "products": [
+        "data/experiments/baseline_fd.json",
+        "data/experiments/baseline_static.json",
+        "data/experiments/baseline_random.json",
+        "data/experiments/corpus_layered_670a.json"
+      ],
+      "why": "baseline 三臂 + corpus 分层产物的唯一落盘源（论文 §6.1 表；改臂定义必须重跑）"
+    },
+    {
+      "id": "reveal_update_671a",
+      "src": "tools/reveal_update_671a.py",
+      "deps": ["tools/stat_bounds.py"],
+      "products": ["data/experiments/reveal_update_671a.json"],
+      "why": "671a C3：扩样后的检出率 + CP 区间（「待更新清单」给 671b）"
+    },
+    {
+      "id": "mutation_656",
+      "src": "tools/mutation_test_656.py",
+      "deps": [],
+      "products": [
+        "data/656_mutation_report.json",
+        {
+          "path": "data/656_mutation_report_core.json",
+          "strict": false
+        }
+      ],
+      "why": "变异击杀率（内部指标）；core 报告要 --scope core 才能复跑 ⇒ 只 WARN（不假装覆盖）"
+    },
+    {
+      "id": "counterfactual_665",
+      "src": "tools/counterfactual_extend_665.py",
+      "deps": [
+        "tools/counterfactual_citation_658.py",
+        "tools/counterfactual_calibration_662.py"
+      ],
+      "products": ["data/counterfactual_cases_665.json"],
+      "why": "反事实 P/R/F1 的落盘源（前端 metrics_666.metrics.counterfactual）；引文算子 658 以 dep 形式进射程"
+    },
+    {
+      "id": "web_metrics_666",
+      "src": "tools/web_metrics_666.py",
+      "deps": [],
+      "products": ["web/data/metrics_666.json"],
+      "why": "前端指标唯一落盘源 —— 前端只渲染，数字改了必须重跑这里（否则前端显示旧值）"
+    },
+    {
+      "id": "web_verdicts_667",
+      "src": "tools/web_verdicts_667.py",
+      "deps": [],
+      "products": ["web/data/verdicts_667.json"],
+      "why": "前端裁决台账落盘源（dashboard.holdout/external/mutation 都在这里）"
+    }
+  ]
+}

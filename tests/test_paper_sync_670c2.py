@@ -56,7 +56,10 @@ def test_sync_detects_injected_mismatch(tmp_path, monkeypatch):
 
 
 def test_sync_checks_holdout_ci():
-    names = [n for n, _ in sync.FACTS]
+    # 671a 修复：FACTS 的条目在后续批次里从 2 元组变成 3 元组（登记的事实变多），
+    # 用例只关心**事实名**，所以按第 0 位取，不再写死解包宽度。
+    names = [str(f[0]) for f in sync.FACTS]
+    assert names, "FACTS 不该为空"
     assert any("CI" in n for n in names)
 
 

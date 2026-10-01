@@ -20,18 +20,29 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 import gate_rules_670g as g  # noqa: E402
 
 
-def mk(tmp_path, paper_text=None, baseline=True, caliber=True):
-    """构造一个最小仓库根。"""
+def mk(tmp_path, paper_text=None, baseline=True, caliber=True, ablation=None):
+    """构造一个最小仓库根。
+
+    671a 修复：论文文件名**从被测模块读**（`g.PAPER`），不再写死 `paper_v0.8.md`。
+    671b 并发把当前稿推进到 v0.9 时，写死名字的夹具会一次性让 13 条用例变成
+    「论文不存在，跳过」——那不是判据坏了，是夹具比模块多背了一份事实。
+    """
     (tmp_path / "research").mkdir(parents=True, exist_ok=True)
     (tmp_path / "data" / "experiments").mkdir(parents=True, exist_ok=True)
     if paper_text is not None:
-        (tmp_path / "research" / "paper_v0.8.md").write_text(paper_text, encoding="utf-8")
+        paper_rel = str(getattr(g, "PAPER", "research/paper_v0.8.md"))
+        p = tmp_path / paper_rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(paper_text, encoding="utf-8")
     if caliber:
         (tmp_path / "research" / "669d_统计口径.md").write_text("CP 口径", encoding="utf-8")
     if baseline:
         for name in ("baseline_fd", "baseline_static", "baseline_random"):
             (tmp_path / "data" / "experiments" / f"{name}.json").write_text(
                 json.dumps({"schema": "queyi-baseline/v1"}), encoding="utf-8")
+    if ablation is not None:
+        (tmp_path / "data" / "experiments" / "ablation_plan_671b.json").write_text(
+            json.dumps(ablation, ensure_ascii=False), encoding="utf-8")
     return tmp_path
 
 
@@ -50,8 +61,20 @@ def test_real_repo_no_block():
     assert blocks == [], blocks
 
 
-def test_real_repo_has_six_rules():
-    assert len(g.RULES) == 6
+#: 670g 交付的六条 P0（顺序即注册顺序）。后续批次可以在此表**追加**规则，
+#: 但六条原规则一条都不许消失 —— 写死 `len(RULES) == 6` 会在追加时把「表长了」
+#: 误报成「门禁坏了」（671b 追加 G-ABLATION-CONSISTENCY 时实测踩到）。
+P0_RULES_670G = ("G-RATE-CONSISTENCY", "G-DENOMINATOR", "G-STATS-FROZEN",
+                 "G-BOUNDARY-REQUIRED", "G-BASELINE-EXISTS", "G-IRR")
+
+
+def test_real_repo_p0_rules_present():
+    names = [str(n) for n, _fn in g.RULES]
+    assert len(names) == len(set(names)), "规则名不得重复"
+    missing = [n for n in P0_RULES_670G if n not in names]
+    assert missing == [], f"670g 六条 P0 规则缺失：{missing}"
+    later = [n for n in names if n not in P0_RULES_670G]
+    assert all(n and isinstance(n, str) for n in later), f"追加规则必须具名：{later}"
 
 
 # ── G-RATE-CONSISTENCY ──
@@ -135,6 +158,38 @@ def test_irr_pass_with_gap_registered(tmp_path):
 
 def test_irr_warns_without_registration(tmp_path):
     r = g.check_irr(mk(tmp_path, "本文报告了所有指标。"))
+    assert any(f["severity"] == "warn" for f in r)
+
+
+# ── G-ABLATION-CONSISTENCY（671b 新增）──
+GOOD_ABLATION = {
+    "groups": [{"id": "A0", "result_placeholder": "{{TODO_ablation_A0}}"},
+               {"id": "A5", "result_placeholder": "{{TODO_ablation_A5}}"}],
+}
+
+
+def test_ablation_pass_with_plan(tmp_path):
+    assert g.check_ablation_consistency(mk(tmp_path, "关键对照 A0 - A5。", ablation=GOOD_ABLATION)) == []
+
+
+def test_ablation_blocks_without_plan(tmp_path):
+    r = g.check_ablation_consistency(mk(tmp_path, "关键对照 A0 - A5。", ablation=None))
+    assert any(f["severity"] == "block" for f in r)
+
+
+def test_ablation_blocks_when_contrast_missing(tmp_path):
+    r = g.check_ablation_consistency(mk(tmp_path, "本文不涉及对照。", ablation=GOOD_ABLATION))
+    assert any(f["severity"] == "block" and "A0 - A5" in f["message"] for f in r)
+
+
+def test_ablation_blocks_fabricated_results(tmp_path):
+    bad = {"groups": [{"id": "A0", "result_placeholder": "{{TODO_ablation_A0}}", "p_value": 0.01}]}
+    r = g.check_ablation_consistency(mk(tmp_path, "关键对照 A0 - A5。", ablation=bad))
+    assert any(f["severity"] == "block" for f in r)
+
+
+def test_ablation_warns_missing_placeholder(tmp_path):
+    r = g.check_ablation_consistency(mk(tmp_path, "关键对照 A0 - A5。", ablation={"groups": []}))
     assert any(f["severity"] == "warn" for f in r)
 
 
