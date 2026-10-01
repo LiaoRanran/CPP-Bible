@@ -1,0 +1,87 @@
+{
+  "schema": "queyi-prereg/672i",
+  "prereg_id": "672i-W4-llm-judge-arm",
+  "registered_at": "2026-10-01",
+  "registrant": "LiaoRanran",
+  "status": "locked_before_experiment",
+  "immutability": "本文件在**任何 LLM 调用之前**落盘并单独 commit。事后不得回改假设/阈值/抽样规则/prompt 版本；结果与假设不符按 mismatch 如实报告。",
+  "research_question": "把一个**没有仪器化证据**的第三方 LLM 裁判放到同一批 holdout 样本上：它能不能看出真缺陷？它和 FD（规则 + 双档 sanitizer 管线）差多少？误报如何？",
+  "context": {
+    "why": "前途评估报告指出缺 LLM-as-verifier 第四臂（A0 之外的关键缺口）。W4 补这一臂：给 LLM 只看源码（无编译、无 sanitizer 输出），做成对读法。",
+    "model_availability": {
+      "gpt4_claude": "不可用（环境无 OPENAI_API_KEY / ANTHROPIC_API_KEY）⇒ 按任务书『如实登记，不编造』处理",
+      "deepseek": "DEEPSEEK_API_KEY 存在但 API 返回 401（密钥失效）⇒ 不可用（已实测，见报告 §可用性）",
+      "zhipu_glm": "`.env` 提供 ZHIPU_API_KEY + ZHIPU_BASE_URL（开机实测 PONG 通过）⇒ **本批实际使用的裁判模型**：`glm-4`（temperature 0.01）",
+      "honest_note": "任务书指定的 GPT-4/Claude 不可用；用 GLM-4 代跑并如实标注模型名。结论只声称『该模型在该 prompt 下的表现』。"
+    }
+  },
+  "hypotheses": {
+    "H1": "在同一批真错样本上，LLM 检出率显著低于 FD：Δ = FD − LLM > 20pp（配对，样本级）。",
+    "H2": "LLM 在对照样本（planted=false）上的假阳性率 < 25%。",
+    "H3": "LLM 与 FD 的整体一致率 ≥ 0.6（20 样本；探索性）。",
+    "H4_exploratory": "LLM 对『编译器层可见』缺陷（compiler-warn/cross-compile）与『运行时 sanitizer 层可见』缺陷（asan/ubsan/tsan）的检出率差 > 20pp（即它更擅长读代码、更弱于时序/内存误用）。",
+    "H0": "无上述差异。"
+  },
+  "methods": {
+    "sampling": {
+      "frame": "data/holdout/reveal_5_detail_672h.json（60 条：42 真错 / 11 对照 / 7 unknown 标签）",
+      "rule": "分层固定抽样（可复算、非随机数）：真错 12 条 = 6 条 FD-catch + 6 条 FD-miss（miss 只有 7 条，取 6）+ 对照 8 条 = 前 8 条 id 序。全部取 id 升序前若干，**不用随机数** ⇒ 任何人可复现同一抽样。",
+      "sample_size": 20,
+      "why_12_8": "真错给检出率、对照给假阳性率；6 catch/6 miss 平衡避免『只测容易的』。"
+    },
+    "arms": {
+      "LLM": "只看源码文本（注释已剥离，见下），输出 JSON 判决",
+      "FD": "本仓管线判决（data/holdout/reveal_5_detail_672h.json 的 verdict）",
+      "truth": "planted 标签（真错/对照），机器在 reveal 阶段已定"
+    },
+    "prompt": {
+      "version": "v1",
+      "language": "英文（降低 token 与歧义）",
+      "content": "角色=C++ 代码审查者；任务=判断这段代码是否含**会造成未定义行为/内存错误/并发错误/明显 API 误用**的缺陷；只输出 JSON：{\"has_defect\": bool, \"category\": str, \"confidence\": 0-1, \"reason\": str}；不允许猜测文件名/来源。",
+      "answer_leak_control": [
+        "**剥离全部注释**（夹具头注释会直接写明『故意双重释放（ASan 取证）』⇒ 不剥离就是喂答案）",
+        "不提供文件名、不提供 detector、不提供 planted 标签、不提供 sanitizer 输出",
+        "样本顺序固定（id 升序），温度 0.01、seed 不设（API 不支持时如实登记）"
+      ]
+    },
+    "api_protocol": {
+      "endpoint": "ZHIPU_BASE_URL + /chat/completions（OpenAI 兼容）",
+      "model": "glm-4",
+      "temperature": 0.01,
+      "max_tokens": 600,
+      "retries": 1,
+      "caching": "响应逐条落盘 data/experiments/llm_arm_672i_raw.jsonl（重跑命中缓存，不重复计费）",
+      "accounting": "记录每次调用的 prompt_tokens/completion_tokens/total_tokens 与延迟；汇总进产物"
+    },
+    "metrics": [
+      "LLM 检出率 = LLM(has_defect=true) / 真错样本数（可测口径同 FD：验证为真错且 FD 有可测判决）",
+      "LLM 假阳性率 = LLM(has_defect=true) / 对照样本数",
+      "FD 检出率（同一样本子集）",
+      "一致率 = 判决相同 / 总样本；配对 McNemar（FD vs LLM，精确）",
+      "分层（H4）：compiler-warn/cross-compile（静态层）vs asan/ubsan/tsan（运行时层）"
+    ],
+    "seed": 20260930
+  },
+  "decision_thresholds": {
+    "H1": "Δ>20pp 且配对 McNemar p<0.05（FD 优）",
+    "H2": "FP < 25%",
+    "H3": "一致率 ≥ 0.6",
+    "H4": "|Δ层间| > 20pp（探索性）",
+    "not_significant": "达不到阈值就照实写『不成立』；不允许挑样本、挑 prompt 重跑后只报好看的一次",
+    "api_unavailable": "任一必需调用失败且重试后仍失败 ⇒ 该样本记 unknown、从该指标分母剔除并逐条列出；若整体不可用则跳过本臂并如实登记"
+  },
+  "exclusion_criteria": [
+    "API 错误/拒答/无法解析 JSON 的样本：记 unknown 并列出原因（不进分母）",
+    "注释剥离后仍含答案字样（如文件名里出现 leak/double_free）时：登记为『泄漏风险样本』但不改判",
+    "同一模型同一 prompt 版本只跑一次（缓存命中复用）",
+    "不把 LLM 判决与 sanitizer 报告混成一种『证据』（本臂只作对照读法）"
+  ],
+  "post_registration": {
+    "results_files": [
+      "data/experiments/llm_arm_672i.json",
+      "data/experiments/llm_arm_672i_raw.jsonl"
+    ],
+    "report": "data/672i_验收报告.md",
+    "honesty_rule": "模型名、温度、prompt 版本、token 消耗、失败样本全部落盘；模型不可用时不得用『模拟的 LLM 结果』充数（mock 只用于单测）。"
+  }
+}
