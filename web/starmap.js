@@ -546,31 +546,45 @@ export function invertTransform(s, view, viewport = {}) {
    ══════════════════════════════════════════════════════════════════════════ */
 
 /** 透视投影：把世界坐标 {x,y,z} 投到屏幕。
+ *  · 世界偏移（view.x/y，由 fitTransform / screenTransform 给出）**在旋转之前**加 ⇒
+ *    旋转是绕"已经居中的模型"转，不会把图甩出视口；
+ *  · 屏幕平移（view.panX/panY，由左键拖拽 / 方向键给出）**在缩放之后**加 ⇒
+ *    量纲是屏幕像素，拖多少像素就走多少像素，与 k 无关；
  *  · 旋转：先绕 Y 轴（水平拖拽），再绕 X 轴（俯仰拖拽）；
  *  · 透视：相机在 z = -cam 处朝 +z 看，z 越大离相机越远 ⇒
  *    **近大远小**（scale 随深度递减）+ **远节点更暗**（alpha 随深度递减）；
  *  · 本函数不接触任何颜色，渲染层颜色一律走 design-tokens（STATE_COLORS /
- *    clusterPalette / LINK_STYLE），不写死 green/red/yellow。 */
+ *    clusterPalette / LINK_STYLE），不写死 green/red/yellow。
+ *
+ *  672g 修正：672e 把 view.x/y 当成"缩放之后的屏幕平移"用（sx = cx + x1·persp·k + v.x），
+ *  但 fitTransform 给的 v.x 是**世界坐标量纲**的居中偏移 ⇒ 两者量纲不同，导致
+ *  "自适应居中"与"搜索定位居中"只在 k·persp≈1 时才碰巧对：实测 k=0.30 时包围盒中心
+ *  落在 533.9px（视口中心是 450px），偏离 84px；centerOnIndex 对 x≈1184 的节点会直接
+ *  把目标送出视口。拆成"世界偏移 × persp × k + 屏幕平移"后，居中与缩放各归其位。 */
 export function projectPoint(world, view) {
   const v = opt(view);
   const rotX = num(v.rotX, 0), rotY = num(v.rotY, 0);
   const k = Math.max(0.01, num(v.k, 1));
   const x = num(world && world.x), y = num(world && world.y), z = num(world && world.z);
+  // 世界偏移（居中）：先平移再旋转 ⇒ 旋转绕模型中心，而不是绕世界原点
+  const offX = num(v.x, 0), offY = num(v.y, 0);
+  const wx = x + offX, wy = y + offY;
   // 绕 Y 轴
   const cY = Math.cos(rotY), sY = Math.sin(rotY);
-  const x1 = x * cY + z * sY;
-  const z1 = -x * sY + z * cY;
+  const x1 = wx * cY + z * sY;
+  const z1 = -wx * sY + z * cY;
   // 绕 X 轴
   const cX = Math.cos(rotX), sX = Math.sin(rotX);
-  const y1 = y * cX - z1 * sX;
-  const z2 = y * sX + z1 * cX;
+  const y1 = wy * cX - z1 * sX;
+  const z2 = wy * sX + z1 * cX;
   const cam = Math.max(1, num(v.cam, 900));
   const focal = Math.max(1, num(v.focal, 900));
   const depth = cam + z2;                 // 相机到点（有符号）距离，>0
   const safe = depth < 1 ? 1 : depth;
   const persp = focal / safe;             // 近大远小
   const cx = num(v.cx, 0), cy = num(v.cy, 0);
-  const panX = num(v.x, 0), panY = num(v.y, 0);
+  // 屏幕平移（拖拽 / 方向键）：像素量纲，不受 k 影响
+  const panX = num(v.panX, 0), panY = num(v.panY, 0);
   return {
     sx: cx + x1 * persp * k + panX,
     sy: cy + y1 * persp * k + panY,
@@ -578,6 +592,104 @@ export function projectPoint(world, view) {
     depth: z2,                                     // 旋转后的深度（仅供调用方做明暗）
     alpha: round(clamp(focal * k / safe, 0.45, 1), 4),  // 远节点更暗
   };
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   672g · 星图交互模型：左键平移 / 右键旋转 / 滚轮缩放 / 双击复位
+   ══════════════════════════════════════════════════════════════════════════
+   病（用户原话"操作起来好奇怪"）：672e 把**左键拖拽做成旋转视角**。图谱 / 地图类
+   应用的共识是"拖拽 = 平移画布"，而 672e 的键盘方向键又仍然是平移 ⇒ 同一张图上
+   两套互相打架的拖拽语义。672g 按**用户直觉优先**重排，并把全部判定与增量计算
+   下沉成纯函数（Node 直测见 tests/starmap_interaction_672g.test.mjs）：
+     · 左键拖拽            ⇒ 平移（panX/panY，屏幕像素）
+     · 右键拖拽 / Shift+左键 ⇒ 旋转（rotY 绕竖轴 / rotX 俯仰）
+     · 滚轮                ⇒ 以光标为不动点缩放
+     · 双击                ⇒ 复位（旋转归零 + 平移归零 + 自适应）
+     · 方向键              ⇒ 平移（与左键同一套语义、同一量纲）
+   旋转灵敏度 0.006 → 0.003（672e 实测"一拖就转过头"）。 */
+
+/** 旋转灵敏度（rad / px）。672e 是 0.006 ⇒ 减半。 */
+export const ROTATE_SENSITIVITY = 0.003;
+/** 俯仰角上限（±1.3 rad ≈ ±74°，再大就翻面了）。 */
+export const ROT_X_LIMIT = 1.3;
+/** 缩放区间（与 fitTransform / screenTransform 的口径一致）。 */
+export const ZOOM_RANGE = { min: 0.25, max: 6 };
+/** 方向键一次平移的屏幕像素（与左键拖拽同量纲：屏幕 px，不随 k 变）。 */
+export const PAN_STEP_PX = 60;
+/** 画布角落的操作提示。**唯一真源**：starmap.html 的 #map-hint 由本常量写入，
+ *  避免"HTML 写一份、JS 写一份"的文案漂移（测试同时扫两边）。 */
+export const INTERACTION_HINTS = '左键平移 / 右键旋转 / 滚轮缩放 / 双击复位';
+
+/** 初始视图（世界偏移 + 旋转 + 屏幕平移，六个分量全部显式声明）。 */
+export function defaultView() {
+  return { x: 0, y: 0, k: 1, rotX: 0, rotY: 0, panX: 0, panY: 0 };
+}
+
+/** 指针事件 → 交互模式（纯函数）：右键（button=2）或 Shift+左键 ⇒ 旋转；
+ *  其余主键（button=0 / 1）⇒ 平移。jsdom / 合成事件缺 button 时按左键处理。 */
+export function interactionMode(ev) {
+  const e = opt(ev);
+  const button = num(e.button, 0);
+  if (button === 2) return 'rotate';
+  return e.shiftKey ? 'rotate' : 'pan';
+}
+
+/** 平移增量（纯函数，返回新 view）：屏幕像素，拖多少走多少，与 k 无关。 */
+export function panBy(view, dx, dy) {
+  const v = opt(view);
+  return Object.assign({}, v, {
+    panX: num(v.panX, 0) + num(dx, 0),
+    panY: num(v.panY, 0) + num(dy, 0),
+  });
+}
+
+/** 旋转增量（纯函数，返回新 view）：水平 dx → 绕 Y 轴；垂直 dy → 俯仰（带 clamp）。 */
+export function rotateBy(view, dx, dy, params = {}) {
+  const v = opt(view);
+  const P = opt(params);
+  const sens = num(P.sensitivity, ROTATE_SENSITIVITY);
+  const limit = Math.abs(num(P.limit, ROT_X_LIMIT));
+  return Object.assign({}, v, {
+    rotY: num(v.rotY, 0) + num(dx, 0) * sens,
+    rotX: clamp(num(v.rotX, 0) + num(dy, 0) * sens, -limit, limit),
+  });
+}
+
+/** 以屏幕锚点为不动点缩放（纯函数，返回新 view）。
+ *  由 projectPoint：screen = c + (rot(world)+off)·persp·k + pan，persp 与 k 无关 ⇒
+ *  锚点不动要求 pan' = pan + (anchor − c − pan)·(1 − k'/k)。 */
+export function zoomAt(view, factor, anchor = null, viewport = {}) {
+  const v = opt(view);
+  const vp = opt(viewport);
+  const k0 = Math.max(0.01, num(v.k, 1));
+  const k1 = clamp(k0 * num(factor, 1), num(vp.minK, ZOOM_RANGE.min), num(vp.maxK, ZOOM_RANGE.max));
+  const out = Object.assign({}, v, { k: k1 });
+  const a = anchor && typeof anchor === 'object' ? anchor : null;
+  if (!a) return out;
+  const cx = num(vp.centerX, num(vp.width, 0) / 2);
+  const cy = num(vp.centerY, num(vp.height, 0) / 2);
+  const px = num(v.panX, 0), py = num(v.panY, 0);
+  const r = 1 - k1 / k0;
+  out.panX = px + (num(a.x, cx) - cx - px) * r;
+  out.panY = py + (num(a.y, cy) - cy - py) * r;
+  return out;
+}
+
+/** 复位（纯函数，返回新 view）：旋转归零 + 平移归零。世界偏移与 k 交给 fitView 重算。 */
+export function resetViewTransform(view) {
+  const v = opt(view);
+  return Object.assign({}, v, { rotX: 0, rotY: 0, panX: 0, panY: 0 });
+}
+
+/** 方向键 → 平移增量（纯函数，返回 {dx,dy} 或 null）。
+ *  语义与"视口朝哪个方向走"一致：← 视口左移 ⇒ 内容右移 ⇒ panX 增大。 */
+export function panStepForKey(key, step = PAN_STEP_PX) {
+  const s = num(step, PAN_STEP_PX);
+  if (key === 'ArrowLeft') return { dx: s, dy: 0 };
+  if (key === 'ArrowRight') return { dx: -s, dy: 0 };
+  if (key === 'ArrowUp') return { dx: 0, dy: s };
+  if (key === 'ArrowDown') return { dx: 0, dy: -s };
+  return null;
 }
 
 /** 深度分配（确定性）：每个节点一个 z ∈ [-range, range]，种子由下标决定 ⇒
@@ -873,7 +985,8 @@ async function boot() {
   let G = null;                       // parseGraph 结果
   let state = null;                   // { positions, edges, cluster }
   let idxById = new Map();
-  let view = { x: 0, y: 0, k: 1, rotX: 0, rotY: 0 };
+  // 672g：视图六分量 —— x/y 世界偏移（居中）· k 缩放 · rotX/rotY 旋转 · panX/panY 屏幕平移
+  let view = defaultView();
   let viewInit = false;
   let hovered = -1, selected = -1, hoverEdge = -1, hoverCluster = -1;
   let SP = [];                 // 投影后的屏幕坐标缓存（每帧重算）
@@ -894,8 +1007,11 @@ async function boot() {
     const h = (canvas && canvas.clientHeight) || (wrap && wrap.clientHeight) || 620;
     return { width: Math.max(1, Math.round(w)), height: Math.max(1, Math.round(h)) };
   }
-  const toScreen = (p) => applyTransform(p, view, viewport());
-  const toWorld = (sx, sy) => invertTransform({ x: sx, y: sy }, view, viewport());
+  /* 672g：删掉 toScreen / toWorld 两个局部别名。
+   *   它们走的是 2D 口径（screen = (world + view)·k + center），与 2.5D 投影
+   *   （projectPoint：世界偏移在缩放前、屏幕平移在缩放后）量纲不一致 —— 672e 的
+   *   zoomBy 正是拿 toWorld 做"以光标为中心缩放"，在 k≠1/persp 时锚点会漂。
+   *   现在缩放走纯函数 zoomAt（直接按 panX/panY 解锚点方程），这两个别名即成死代码。 */
 
   function resize() {
     if (!canvas) return;
@@ -927,36 +1043,43 @@ async function boot() {
   }
 
   // ── 布局 / 视图 ──────────────────────────────────────────────────────────
+  /** 自适应：让包围盒铺满视口。
+   *  672g：平移**必须一并归零** —— 否则"自适应"出来的中心会被上一次拖拽的平移带走，
+   *  用户双击复位后图还在老位置（看起来像"复位没生效"）。旋转单独由 resetView 归零。 */
   function fitView(redraw = true) {
     if (!state) return;
     const vp = viewport();
-    view = fitTransform(boundsOf(state.positions), { width: vp.width, height: vp.height, padding: 48, maxK: 1.6, minK: 0.2 });
+    const fit = fitTransform(boundsOf(state.positions), { width: vp.width, height: vp.height, padding: 48, maxK: 1.6, minK: 0.2 });
+    view = { x: fit.x, y: fit.y, k: fit.k,
+      rotX: num(view.rotX, 0), rotY: num(view.rotY, 0), panX: 0, panY: 0 };
     if (redraw) draw();
   }
-  /** 复位视图：清空选中/悬停 + 旋转归零 + 自适应。拖拽旋转后双击画布即回到正视角。 */
+  /** 复位视图：清空选中/悬停 + 旋转归零（纯函数 resetViewTransform）+ 平移归零 + 自适应。
+   *  拖拽平移/旋转之后双击画布即回到初始正视角，与右上角"复位视图"按钮同效。 */
   function resetView() {
     selected = -1; hovered = -1; hoverEdge = -1; hoverCluster = -1;
     hitAt = hits.length ? 0 : -1;
-    renderDetail(-1); view.rotX = 0; view.rotY = 0; fitView();
+    renderDetail(-1);
+    view = resetViewTransform(view);
+    fitView();
   }
+  /** 缩放：around（画布内坐标）为不动点；不给锚点时以视口中心缩放。 */
   function zoomBy(f, around = null) {
     const vp = viewport();
-    const before = around ? toWorld(around.x, around.y) : null;
-    view.k = clamp(view.k * f, 0.25, 6);
-    if (before) {
-      const after = toWorld(around.x, around.y);
-      view.x += after.x - before.x;
-      view.y += after.y - before.y;
-    }
+    view = zoomAt(view, f, around, { width: vp.width, height: vp.height,
+      centerX: vp.width / 2, centerY: vp.height / 2, minK: 0.25, maxK: 6 });
     draw();
     return view.k;
   }
   function centerOnIndex(i, minK = 1.4) {
     if (!(i >= 0) || !state || !state.positions[i]) return null;
     const vp = viewport();
-    view = screenTransform(state.positions[i], {
+    const t = screenTransform(state.positions[i], {
       width: vp.width, height: vp.height, k: Math.max(view.k, minK), minK: 0.25, maxK: 6,
     });
+    // 672g：定位居中同样要清掉拖拽平移，否则"搜索命中自动居中"会被上一次的平移抵消。
+    view = { x: t.x, y: t.y, k: t.k,
+      rotX: num(view.rotX, 0), rotY: num(view.rotY, 0), panX: 0, panY: 0 };
     draw();
     return { x: view.x, y: view.y, k: view.k };
   }
@@ -1354,20 +1477,32 @@ async function boot() {
 
   // ── 交互 ─────────────────────────────────────────────────────────────────
   function wire() {
-    let dragging = false, moved = false, last = { x: 0, y: 0 };
+    let dragging = false, moved = false, last = { x: 0, y: 0 }, mode = 'pan';
     const localPos = (e) => {
       const r = canvas && canvas.getBoundingClientRect ? canvas.getBoundingClientRect() : { left: 0, top: 0 };
       return { x: (e.clientX || 0) - r.left, y: (e.clientY || 0) - r.top };
     };
     if (canvas) {
-      canvas.addEventListener('mousedown', (e) => { dragging = true; moved = false; last = { x: e.clientX, y: e.clientY }; });
-      window.addEventListener('mouseup', () => { dragging = false; });
+      // 672g：右键要用来旋转 ⇒ 必须先掐掉浏览器右键菜单（否则一按右键就弹菜单、拖拽中断）。
+      canvas.addEventListener('contextmenu', (e) => { if (e && e.preventDefault) e.preventDefault(); });
+      canvas.addEventListener('mousedown', (e) => {
+        // 左键=平移，右键 / Shift+左键=旋转（判定是纯函数 interactionMode，可 Node 直测）
+        mode = interactionMode(e);
+        dragging = true; moved = false; last = { x: e.clientX, y: e.clientY };
+        if (e && e.preventDefault && e.button === 2) e.preventDefault();
+        canvas.style.cursor = mode === 'rotate' ? 'move' : 'grabbing';
+      });
+      window.addEventListener('mouseup', () => {
+        dragging = false;
+        if (canvas) canvas.style.cursor = 'grab';
+      });
       canvas.addEventListener('mousemove', (e) => {
         if (!G || !state) return;
         if (dragging) {
-          // 2.5D：拖拽旋转模型（水平→绕 Y，垂直→绕 X 俯仰），不再平移
-          view.rotY += (e.clientX - last.x) * 0.006;
-          view.rotX = clamp(view.rotX + (e.clientY - last.y) * 0.006, -1.3, 1.3);
+          // 672g：按 mousedown 时定下的模式分派 —— 平移走 panX/panY，旋转走 rotY/rotX，
+          // 两者互不干扰（改一个分量绝不会动另一个），灵敏度由 ROTATE_SENSITIVITY 统一给。
+          const dx = e.clientX - last.x, dy = e.clientY - last.y;
+          view = (mode === 'rotate') ? rotateBy(view, dx, dy) : panBy(view, dx, dy);
           last = { x: e.clientX, y: e.clientY };
           moved = true; hideTip(); scheduleDraw(); return;
         }
@@ -1411,14 +1546,13 @@ async function boot() {
         zoomBy(e.deltaY < 0 ? 1.12 : 1 / 1.12, localPos(e));
       }, { passive: false });
       canvas.addEventListener('keydown', (e) => {
-        const step = 60 / view.k;
-        if (e.key === 'ArrowLeft') view.x += step;
-        else if (e.key === 'ArrowRight') view.x -= step;
-        else if (e.key === 'ArrowUp') view.y += step;
-        else if (e.key === 'ArrowDown') view.y -= step;
-        else if (e.key === '+' || e.key === '=') { zoomBy(1.25); return; }
+        // 672g：方向键 = 平移，与**左键拖拽同一套语义、同一量纲**（屏幕 px，不随 k 变）。
+        //   672e 是"步长按 60/k 折算成世界偏移"，和鼠标那套"拖多少像素走多少像素"对不上。
+        const step = panStepForKey(e.key);
+        if (step) { view = panBy(view, step.dx, step.dy); e.preventDefault(); draw(); return; }
+        if (e.key === '+' || e.key === '=') { zoomBy(1.25); return; }
         else if (e.key === '-' || e.key === '_') { zoomBy(1 / 1.25); return; }
-        else if (e.key === '0') { fitView(); return; }
+        else if (e.key === '0') { resetView(); return; }
         else if (e.key === 'Escape') { selected = -1; renderDetail(-1); draw(); return; }
         else return;
         e.preventDefault(); draw();
@@ -1457,8 +1591,17 @@ async function boot() {
     if (zout) zout.addEventListener('click', () => zoomBy(1 / 1.25));
     const reset = byId('reset');
     if (reset) reset.addEventListener('click', resetView);
-    // 2.5D：双击画布复位（旋转归零 + 自适应），与右上角"复位视图"按钮同效
+    // 672g：双击画布复位（旋转归零 + 平移归零 + 自适应），与右上角"复位视图"按钮同效
     canvas.addEventListener('dblclick', resetView);
+  }
+
+  /** 672g：画布角落的操作提示。
+   *  672e 把"左键拖拽=旋转"这条和用户直觉相反的映射**只在页脚 kbd 提示里提了一句**，
+   *  画布上看不到 ⇒ 用户只能靠试。这里把映射写在画布上（常量 INTERACTION_HINTS 是唯一
+   *  真源，HTML 里 #map-hint 的静态文案由 JS 覆写，杜绝两处文案漂移）。 */
+  function renderHints() {
+    const el = byId('map-hint');
+    if (el) el.textContent = INTERACTION_HINTS;
   }
 
   // ── 启动 ─────────────────────────────────────────────────────────────────
@@ -1500,6 +1643,11 @@ async function boot() {
     locate(query) { return locateNode(G.nodes, query); },
     centerOn(i) { return centerOnIndex(i); },
     counts() { return { ...G.counts }; },
+    // 672g：交互模型的自动化钩子（平移 / 旋转 / 复位 / 提示），语义与页面上的鼠标键盘一致
+    pan(dx, dy) { view = panBy(view, dx, dy); draw(); return { panX: view.panX, panY: view.panY }; },
+    rotate(dx, dy) { view = rotateBy(view, dx, dy); draw(); return { rotX: view.rotX, rotY: view.rotY }; },
+    reset() { resetView(); return { ...view }; },
+    hints() { return INTERACTION_HINTS; },
   };
 
   // 布局：**只在加载时算一次**（实测毫秒数写进 #mode，不假装很快）
@@ -1531,7 +1679,7 @@ async function boot() {
     });
   }
 
-  renderLead(); renderStats(); renderDetail(-1); renderClusters(); setModeText();
+  renderLead(); renderStats(); renderDetail(-1); renderClusters(); setModeText(); renderHints();
   wire();
   resize();
   startReveal();

@@ -81,10 +81,12 @@
     <div class="stage-wrap">
       <div class="canvas-wrap" id="stage">
         <canvas id="graph" tabindex="0" role="img"
-          aria-label="知识接地星图（2.5D 伪3D，透视投影）：拖拽旋转模型、滚轮缩放、双击复位、悬停看摘要、点击固定详情；搜索框输入卡名会高亮并居中。"
+          aria-label="知识接地星图（2.5D 伪3D，透视投影）：左键拖拽平移、右键（或 Shift+左键）拖拽旋转、滚轮以光标为中心缩放、双击复位、方向键平移、悬停看摘要、点击固定详情；搜索框输入卡名会高亮并居中。"
           style="height:clamp(420px, 62vh, 660px)"></canvas>
         <svg id="cluster-labels" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none"></svg>
         <div class="canvas-tip" id="tip" hidden></div>
+        <!-- 672g：操作提示直接画在画布角落（JS 用常量 INTERACTION_HINTS 覆写，杜绝文案漂移） -->
+        <p class="canvas-hint" id="map-hint">左键平移 / 右键旋转 / 滚轮缩放 / 双击复位</p>
       </div>
       <aside class="detail" id="detail"></aside>
     </div>
@@ -93,7 +95,8 @@
       <span><kbd>悬停</kbd>节点看卡数与证据强度</span>
       <span><kbd>悬停</kbd>聚类标签看该域卡数 / 平均证据强度</span>
       <span><kbd>点击</kbd>固定右侧详情</span>
-      <span><kbd>拖拽</kbd>旋转模型 · <kbd>滚轮</kbd>缩放 · <kbd>双击</kbd>复位视角 · <kbd>方向键</kbd>平移 · <kbd>0</kbd>复位 · <kbd>Esc</kbd>取消固定</span>
+      <span><kbd>左键拖拽</kbd>平移画布 · <kbd>右键拖拽</kbd>（或 <kbd>Shift</kbd>+左键）旋转视角 · <kbd>滚轮</kbd>缩放（以光标为中心）</span>
+      <span><kbd>双击</kbd>复位视角（旋转+平移归零并自适应）· <kbd>方向键</kbd>平移 · <kbd>0</kbd>复位 · <kbd>Esc</kbd>取消固定</span>
     </div>
 
     <p class="section-sub" style="margin-top:var(--space-2)">
