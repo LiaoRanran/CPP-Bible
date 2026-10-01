@@ -1,0 +1,93 @@
+{
+  "schema": "queyi-prereg/672h",
+  "prereg_id": "672h-W3-holdout-expansion",
+  "registered_at": "2026-10-01",
+  "registrant": "LiaoRanran",
+  "status": "locked_before_experiment",
+  "immutability": "本文件在**任何 672h reveal 运行之前**落盘并单独 commit（见提交历史）。事后不得回改假设、阈值、纳入/排除标准；结果与假设不符时按 mismatch 如实报告。",
+  "research_question": "把 holdout 可测真错样本从 21 扩到 ≥40（corpus 48 扩到 60-80）后，失败驱动（FD）检测器的检出率估计会不会发生实质变化？原有的『FD ≫ Static』结论在更大分母上是否仍然成立？",
+  "context": {
+    "before": {
+      "holdout": {"k": 17, "n": 21, "rate_pct": 81.0, "cp95": [58.1, 94.6]},
+      "corpus": {"k": 26, "n": 48, "rate_pct": 54.2, "cp95": [39.2, 68.6]},
+      "source": "data/current_numbers.json（672f 重跑后）"
+    },
+    "why_expand": "n=21 的 CP95 CI 宽约 36.5pp（58.1-94.6），审稿人无法据此判断效应大小；扩样是第一优先（前途评估报告 P0）。"
+  },
+  "hypotheses": {
+    "H1": "扩样后 holdout：FD 检出率 > Static，Δ>20pp 且配对精确 McNemar p<0.05。",
+    "H2": "扩样后 corpus：FD 检出率 > Static，Δ>15pp 且 p<0.05。",
+    "H3": "扩样后 holdout 的 CP95 CI 半宽 ≤ 15pp（扩样前约 18.3pp）。",
+    "H4_exploratory": "新增样本子集（h41 起）的检出率与历史子集（h1-h40）差 <20pp——用于检查『扩样是否把率推向极端』。此项为探索性，不参与通过/不通过判定。",
+    "H0": "扩样前后上述量无实质差异。"
+  },
+  "methods": {
+    "datasets": {
+      "holdout": {
+        "n_measurable_before": 21,
+        "n_measurable_target": 40,
+        "definition": "planted=true 且 detector 在本机有判据的样本；可测口径 = catch+miss（unknown 不进分母）",
+        "new_samples_source": "data/holdout/holdout_extension_672h.json（h41 起）",
+        "new_samples_policy": "**全部来自本仓库已存在的缺陷夹具**（Appendix/ub/、Examples/_ch14_*、Examples/_ch147_*、Examples/atoms/_atom_leak_*、_atom_inline_odr_static_*），不是本批为指标新写的代码——避免『自己出题自己考』的循环偏置。每个样本的文件头都自述是故意缺陷（ASan/UBSan/TSan 取证夹具）。",
+        "source_of_record": "data/holdout_reveal_5_672h.json + data/holdout/reveal_5_detail_672h.json"
+      },
+      "corpus": {
+        "n_measurable_before": 48,
+        "n_measurable_target": 60,
+        "definition": "catch+miss（可测且非测量类）；unknown 与 not_error 不进分母；六层分层禁合并",
+        "new_samples_source": "data/external_corpus/external_corpus_672h.json（d3f-* 起）",
+        "new_samples_policy": "自撰单文件片段，缺陷类别取自 cppreference/C++ Core Guidelines 的公开 UB 清单（每条注明来源），与既有 d3e-* 同一政策；不合并六层、不跨口径比大小。",
+        "source_of_record": "data/external_corpus_reveal_672h.json + data/external_corpus/reveal_detail_672h.json"
+      }
+    },
+    "arms": {
+      "FD": "失败驱动检测器（= 本仓管线：规则层 67 条 + 仪器层双档编译运行）",
+      "Static": "静态口径臂（口径重分箱，沿用 672f/672g 口径）",
+      "note": "本批不重跑 Static/Random 臂的**样本级**结果（那需要把新样本重跑三臂）；W3 只扩 FD 侧样本量并重算 FD 率与配对检验。三臂对比若需同步扩样，登记为后续批次。"
+    },
+    "metric": "检出率 k/n（可测口径）+ Clopper-Pearson 95% 精确区间（tools/stat_bounds.py，唯一实现）",
+    "statistical_tests": [
+      "配对精确 McNemar（FD vs Static 的逐样本配对；同批样本）",
+      "Cohen's h（效应量）",
+      "Clopper-Pearson 95% CI",
+      "Newcombe 差值的 CI（沿用 672f/672g 的 paired-wald-on-difference 实现）"
+    ],
+    "detection_protocol": {
+      "engine": "tools/holdout_reveal_661.py::detect（唯一判据，不许为新样本另写一套命中定义）",
+      "runs_per_sample": 3,
+      "sanitizer_opts": ["-O0", "-O2"],
+      "sanitizer_runner": "WSL g++ -std=c++17 <opt> -g -fsanitize=<address|undefined|thread> -pthread + setarch -R（关 ASLR）",
+      "local_compilers": "wunsequenced / compiler-warn / cross-compile / linker 类走本机 g++ 13.1.0 / clang++ 22.1.8",
+      "judgement": "任一档任一回合报出 ⇒ catch；两档都可用但都不报 ⇒ miss；两档都不可用（编译失败/TSan 无法初始化）⇒ unknown"
+    },
+    "seed": 20260930,
+    "seed_note": "沿用项目约定种子；sanitizer 判定本身不含随机抽样，种子只用于任何抽样/顺序扰动。",
+    "cross_repro": "独立于 reveal 工具的重实现 tools/verify_expand_672h.py：直接读 per_sample 明细重算 k/n、CP CI（二分法）、McNemar（精确二项）、Cohen's h，与 reveal 产物差 <0.1pp 才 PASS。"
+  },
+  "decision_thresholds": {
+    "holdout": "p<0.05 且 Δ(FD-Static)>20pp",
+    "corpus": "p<0.05 且 Δ>15pp",
+    "ci_halfwidth": "holdout CP95 半宽 ≤ 15pp",
+    "not_significant": "p≥0.05 或 Δ 低于阈值 ⇒ 如实报『不显著』，不改假设",
+    "ci_crosses_zero": "Δ 的 95% CI 跨 0 ⇒ 报『方向不明确』",
+    "no_goal_seeking": "本批不以『数字变好看』为目标；扩样后率下降同样是有价值的结果（真实覆盖率下降是 W1 预言的）。"
+  },
+  "exclusion_criteria": [
+    "planted≠true 不进检出率分母（对照/unknown 标签单列）",
+    "unknown 判定（检测器本机不可用/编译失败）不进分母，但必须在产物里逐条列出原因",
+    "perf / compile-time 层本机无检测器 ⇒ 记 unknown，拒绝给率（fail-loud）",
+    "同一样本同一批次只计一次；重跑取『任一回合一档报出即 catch』",
+    "样本文件必须能编译（编译失败 ⇒ 该样本记 unknown 并从分母剔除，理由落盘）"
+  ],
+  "post_registration": {
+    "results_files": [
+      "data/holdout_reveal_5_672h.json",
+      "data/holdout/reveal_5_detail_672h.json",
+      "data/external_corpus_reveal_672h.json",
+      "data/external_corpus/reveal_detail_672h.json",
+      "data/experiments/reveal_update_672h.json"
+    ],
+    "report": "data/672h_验收报告.md",
+    "honesty_rule": "预注册后若发现方法缺陷，不改本文件，在验收报告里显式登记『方法学偏差』并给出缓解措施；数字一律现算。"
+  }
+}
