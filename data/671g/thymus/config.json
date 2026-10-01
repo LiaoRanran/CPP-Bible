@@ -1,0 +1,8 @@
+{
+  "schema": "queyi-thymus/671g",
+  "clean_dir": "data/671g/thymus/clean",
+  "threshold_pct": 5.0,
+  "min_samples": 10,
+  "rules": {},
+  "note": "67 条现行规则是卡内容/治理规则，无 .cpp 检查器 ⇒ rules 为空（G-FP-THYMUS 当前 unarmed，只登记不判红）；今后新增会对 .cpp 判错的规则，必须在此注册 checker（tools/<mod>.py::fn），否则发布不受胸腺约束。当前正确代码库样本数 < min_samples，注册检查器时需先扩到 10 条。"
+}

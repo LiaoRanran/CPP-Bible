@@ -1,0 +1,3355 @@
+{
+  "schema": "queyi-per-sample-audit/671g",
+  "generated_by": "tools/numbers_671g.py::per_sample_export",
+  "generated_at": "2026-10-01 10:09:38",
+  "caliber": "真错分母=catch+miss；unknown/not_error 不进分母；率的口径见各数据集说明",
+  "env": {
+    "schema": "queyi-env-probe/671g",
+    "generated_at": "2026-10-01 10:09:38",
+    "host_os": {
+      "system": "Windows",
+      "release": "11",
+      "version": "10.0.26200",
+      "machine": "AMD64"
+    },
+    "python": "3.13.13",
+    "wsl": {
+      "available": true,
+      "wsl_gpp": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+      "setarch": "setarch -R 可用",
+      "aslr_sysctl": 2,
+      "error": ""
+    },
+    "wsl_gpp": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "local_gpp": "g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+    "local_clang": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+    "aslr_control": {
+      "method": "实验子进程前缀 `setarch -R`（地址空间随机化在该进程内关闭）",
+      "wsl_kernel_randomize_va_space": 2,
+      "setarch_available": true,
+      "note": "setarch -R 是 per-run 关闭，不存在持久全局状态；逐样本 run 必须带此前缀"
+    },
+    "opt_levels": [
+      "-O0",
+      "-O2"
+    ]
+  },
+  "datasets": {
+    "holdout": {
+      "n": 40,
+      "rows": [
+        {
+          "id": "h31",
+          "detector": "tsan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "h32",
+          "detector": "asan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "h33",
+          "detector": "ubsan",
+          "verdict": "miss",
+          "planted": true,
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "h34",
+          "detector": "tsan",
+          "verdict": "miss",
+          "planted": true,
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "h35",
+          "detector": "wunsequenced",
+          "verdict": "catch",
+          "planted": false,
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "h36",
+          "detector": "compiler-warn",
+          "verdict": "miss",
+          "planted": false,
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "h37",
+          "detector": "unknown",
+          "verdict": "unknown",
+          "planted": "unknown",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "h38",
+          "detector": "compiler-warn",
+          "verdict": "catch",
+          "planted": "unknown",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "h39",
+          "detector": "unknown",
+          "verdict": "unknown",
+          "planted": "unknown",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "h40",
+          "detector": "asan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "h1",
+          "detector": "tsan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h2",
+          "detector": "unknown",
+          "verdict": "unknown",
+          "planted": "unknown",
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h3",
+          "detector": "wunsequenced",
+          "verdict": "catch",
+          "planted": false,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h4",
+          "detector": "compiler-warn",
+          "verdict": "catch",
+          "planted": "unknown",
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h5",
+          "detector": "ubsan",
+          "verdict": "miss",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h6",
+          "detector": "cross-compile",
+          "verdict": "miss",
+          "planted": "unknown",
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h7",
+          "detector": "asan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h8",
+          "detector": "asan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h9",
+          "detector": "compiler-warn",
+          "verdict": "miss",
+          "planted": "unknown",
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h10",
+          "detector": "unknown",
+          "verdict": "unknown",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h11",
+          "detector": "unknown",
+          "verdict": "unknown",
+          "planted": false,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h12",
+          "detector": "unknown",
+          "verdict": "unknown",
+          "planted": false,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h13",
+          "detector": "compiler-warn",
+          "verdict": "miss",
+          "planted": false,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h14",
+          "detector": "linker",
+          "verdict": "catch",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h15",
+          "detector": "asan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h16",
+          "detector": "ubsan",
+          "verdict": "miss",
+          "planted": false,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h17",
+          "detector": "asan",
+          "verdict": "miss",
+          "planted": false,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h18",
+          "detector": "ubsan",
+          "verdict": "miss",
+          "planted": false,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h19",
+          "detector": "asan",
+          "verdict": "miss",
+          "planted": false,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h20",
+          "detector": "compiler-warn",
+          "verdict": "miss",
+          "planted": false,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h21",
+          "detector": "ubsan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h22",
+          "detector": "asan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h23",
+          "detector": "asan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h24",
+          "detector": "ubsan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h25",
+          "detector": "asan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h26",
+          "detector": "asan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h27",
+          "detector": "asan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h28",
+          "detector": "asan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h29",
+          "detector": "ubsan",
+          "verdict": "miss",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        },
+        {
+          "id": "h30",
+          "detector": "asan",
+          "verdict": "catch",
+          "planted": true,
+          "source": "reused_reveal_3",
+          "reproducible": null
+        }
+      ],
+      "source": "data/holdout/reveal_3_detail_671a.json",
+      "note": "h1–h30 盲测复用 reveal_3；h31–h40 非盲（669d 扩样）"
+    },
+    "corpus": {
+      "n": 60,
+      "rows": [
+        {
+          "id": "d3e-01",
+          "layer": "sanitizer",
+          "detector": "ubsan",
+          "verdict": "catch",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-02",
+          "layer": "sanitizer",
+          "detector": "tsan",
+          "verdict": "catch",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-03",
+          "layer": "sanitizer",
+          "detector": "asan",
+          "verdict": "catch",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-04",
+          "layer": "sanitizer",
+          "detector": "asan",
+          "verdict": "catch",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-05",
+          "layer": "sanitizer",
+          "detector": "ubsan",
+          "verdict": "catch",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-06",
+          "layer": "compiler-warn",
+          "detector": "compiler-warn",
+          "verdict": "miss",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-07",
+          "layer": "cross-compile",
+          "detector": "cross-compile",
+          "verdict": "miss",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-08",
+          "layer": "sanitizer",
+          "detector": "asan",
+          "verdict": "catch",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-09",
+          "layer": "sanitizer",
+          "detector": "asan",
+          "verdict": "catch",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-10",
+          "layer": "sanitizer",
+          "detector": "ubsan",
+          "verdict": "catch",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-11",
+          "layer": "compiler-warn",
+          "detector": "compiler-warn",
+          "verdict": "catch",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-12",
+          "layer": "sanitizer",
+          "detector": "asan",
+          "verdict": "catch",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-13",
+          "layer": "compiler-warn",
+          "detector": "compiler-warn",
+          "verdict": "catch",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-14",
+          "layer": "compiler-warn",
+          "detector": "compiler-warn",
+          "verdict": "catch",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-15",
+          "layer": "compile-time",
+          "detector": "compile-time",
+          "verdict": "unknown",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-16",
+          "layer": "compile-time",
+          "detector": "compile-time",
+          "verdict": "unknown",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-17",
+          "layer": "perf",
+          "detector": "perf-counter",
+          "verdict": "unknown",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-18",
+          "layer": "perf",
+          "detector": "perf-counter",
+          "verdict": "unknown",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-19",
+          "layer": "sanitizer",
+          "detector": "tsan",
+          "verdict": "miss",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3e-20",
+          "layer": "cross-compile",
+          "detector": "cross-compile",
+          "verdict": "miss",
+          "source": "measured_671a",
+          "reproducible": true
+        },
+        {
+          "id": "d3-01",
+          "layer": "sanitizer",
+          "detector": "ubsan",
+          "verdict": "catch",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-02",
+          "layer": "sanitizer",
+          "detector": "tsan",
+          "verdict": "unknown",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-03",
+          "layer": "sanitizer",
+          "detector": "asan",
+          "verdict": "catch",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-04",
+          "layer": "sanitizer",
+          "detector": "asan",
+          "verdict": "catch",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-05",
+          "layer": "sanitizer",
+          "detector": "ubsan",
+          "verdict": "catch",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-06",
+          "layer": "compiler-warn",
+          "detector": "compiler-warn",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-07",
+          "layer": "cross-compile",
+          "detector": "cross-compile",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-08",
+          "layer": "compiler-warn",
+          "detector": "wunsequenced",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-09",
+          "layer": "compiler-warn",
+          "detector": "wunsequenced",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-10",
+          "layer": "cross-compile",
+          "detector": "cross-compile",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-11",
+          "layer": "cross-compile",
+          "detector": "cross-compile",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-12",
+          "layer": "cross-compile",
+          "detector": "cross-compile",
+          "verdict": "catch",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-13",
+          "layer": "other",
+          "detector": "measure",
+          "verdict": "not_error",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-14",
+          "layer": "compiler-warn",
+          "detector": "compiler-warn",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-15",
+          "layer": "cross-compile",
+          "detector": "cross-compile",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-16",
+          "layer": "other",
+          "detector": "unknown",
+          "verdict": "unknown",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-17",
+          "layer": "other",
+          "detector": "measure",
+          "verdict": "not_error",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-18",
+          "layer": "cross-compile",
+          "detector": "cross-compile",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-19",
+          "layer": "cross-compile",
+          "detector": "cross-compile",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-20",
+          "layer": "other",
+          "detector": "unknown",
+          "verdict": "unknown",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-21",
+          "layer": "sanitizer",
+          "detector": "asan",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-22",
+          "layer": "sanitizer",
+          "detector": "asan",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-23",
+          "layer": "sanitizer",
+          "detector": "asan",
+          "verdict": "catch",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-24",
+          "layer": "sanitizer",
+          "detector": "asan",
+          "verdict": "catch",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-25",
+          "layer": "sanitizer",
+          "detector": "asan",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-26",
+          "layer": "sanitizer",
+          "detector": "ubsan",
+          "verdict": "catch",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-27",
+          "layer": "sanitizer",
+          "detector": "ubsan",
+          "verdict": "catch",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-28",
+          "layer": "sanitizer",
+          "detector": "ubsan",
+          "verdict": "catch",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-29",
+          "layer": "compiler-warn",
+          "detector": "wunsequenced",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-30",
+          "layer": "compiler-warn",
+          "detector": "wunsequenced",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-31",
+          "layer": "compiler-warn",
+          "detector": "compiler-warn",
+          "verdict": "catch",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-32",
+          "layer": "compiler-warn",
+          "detector": "compiler-warn",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-33",
+          "layer": "compiler-warn",
+          "detector": "compiler-warn",
+          "verdict": "catch",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-34",
+          "layer": "compiler-warn",
+          "detector": "compiler-warn",
+          "verdict": "catch",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-35",
+          "layer": "sanitizer",
+          "detector": "asan",
+          "verdict": "catch",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-36",
+          "layer": "sanitizer",
+          "detector": "ubsan",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-37",
+          "layer": "cross-compile",
+          "detector": "cross-compile",
+          "verdict": "miss",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-38",
+          "layer": "other",
+          "detector": "measure",
+          "verdict": "not_error",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-39",
+          "layer": "other",
+          "detector": "unknown",
+          "verdict": "unknown",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        },
+        {
+          "id": "d3-40",
+          "layer": "other",
+          "detector": "unknown",
+          "verdict": "unknown",
+          "source": "reused_reveal_665",
+          "reproducible": null
+        }
+      ],
+      "source": "data/external_corpus/reveal_detail_671a.json",
+      "note": "d3-01–40 盲测（665，单档 -O1）；d3e-* 非盲（双档 setarch -R，口径变更）"
+    },
+    "counterfactual_cases_665": {
+      "confusion": {
+        "tp": 2,
+        "fp": 0,
+        "tn": 8,
+        "fn": 0
+      },
+      "scores": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "denominator": {
+        "value": 10,
+        "meaning": "本文件里**带 ground_truth 标签**的案例数（P/R/F1 的分母）",
+        "scored": 10,
+        "unscored_sibling": {
+          "file": "data/counterfactual_cases_660.json",
+          "cases": 10,
+          "why": "660 只记录算子输出，**没有真值标签** ⇒ 不能进 P/R/F1（登记，不计入）"
+        },
+        "why_it_matters": "对外说'20 条'而实际打分 10 条 = 分母未声明（667 已记过一次同类问题）"
+      },
+      "source": "data/counterfactual_cases_665.json"
+    },
+    "counterfactual_cases_669d": {
+      "confusion": {
+        "tp": 7,
+        "fp": 0,
+        "tn": 13,
+        "fn": 0
+      },
+      "scores": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "denominator": {
+        "value": 20,
+        "meaning": "本文件里**带 ground_truth 标签**的案例数（P/R/F1 的分母）",
+        "scored": 20,
+        "unscored_sibling": null,
+        "why_it_matters": "分母必须显式声明：本文件 20 条**全部**带真值标签，故 20 全进 P/R/F1；与 665 的 10 条互不重叠、不可合并计算（不同样本集）。"
+      },
+      "source": "data/counterfactual_cases_669d.json"
+    },
+    "counterfactual_cases": {
+      "n": 30,
+      "rows": [
+        {
+          "id": "cf11",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_665.json"
+        },
+        {
+          "id": "cf12",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_665.json"
+        },
+        {
+          "id": "cf13",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_665.json"
+        },
+        {
+          "id": "cf14",
+          "ground_truth": "dependent",
+          "operator_prediction": "dependent",
+          "agree": true,
+          "source": "data/counterfactual_cases_665.json"
+        },
+        {
+          "id": "cf15",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_665.json"
+        },
+        {
+          "id": "cf16",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_665.json"
+        },
+        {
+          "id": "cf17",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_665.json"
+        },
+        {
+          "id": "cf18",
+          "ground_truth": "dependent",
+          "operator_prediction": "dependent",
+          "agree": true,
+          "source": "data/counterfactual_cases_665.json"
+        },
+        {
+          "id": "cf19",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_665.json"
+        },
+        {
+          "id": "cf20",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_665.json"
+        },
+        {
+          "id": "cf21",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf22",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf23",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf24",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf25",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf26",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf27",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf28",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf29",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf30",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf31",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf32",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf33",
+          "ground_truth": "independent",
+          "operator_prediction": "independent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf34",
+          "ground_truth": "dependent",
+          "operator_prediction": "dependent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf35",
+          "ground_truth": "dependent",
+          "operator_prediction": "dependent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf36",
+          "ground_truth": "dependent",
+          "operator_prediction": "dependent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf37",
+          "ground_truth": "dependent",
+          "operator_prediction": "dependent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf38",
+          "ground_truth": "dependent",
+          "operator_prediction": "dependent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf39",
+          "ground_truth": "dependent",
+          "operator_prediction": "dependent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        },
+        {
+          "id": "cf40",
+          "ground_truth": "dependent",
+          "operator_prediction": "dependent",
+          "agree": true,
+          "source": "data/counterfactual_cases_669d.json"
+        }
+      ]
+    },
+    "mutation_core": {
+      "n": 147,
+      "killed": 110,
+      "survived": 3,
+      "seed": 20260928,
+      "generated_at": "2026-09-28T12:14:59",
+      "source": "data/656_mutation_report_core.json"
+    },
+    "mutation_all": {
+      "n": 223,
+      "killed": 128,
+      "survived": 29,
+      "seed": 20260928,
+      "generated_at": "2026-09-28T12:20:52",
+      "source": "data/656_mutation_report_all.json"
+    },
+    "mutation_cases": {
+      "n": 370,
+      "rows": [
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "survived"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "timeout"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "const",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "timeout"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "timeout"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "const",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "timeout"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "core",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "const",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "const",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "const",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "const",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "const",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "four_state_verdict_638",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "const",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "timeout"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "const",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "timeout"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "const",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "const",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "timeout"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "timeout"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "timeout"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "const",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "ledger_checkpoint_651",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "survived"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "bool",
+          "status": "killed"
+        },
+        {
+          "arm": "all",
+          "target": "decision_event_v2_626",
+          "op": "cmp",
+          "status": "import_error"
+        }
+      ]
+    }
+  }
+}

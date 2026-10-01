@@ -1,0 +1,21 @@
+{
+  "schema": "queyi-pap/671g",
+  "batch_id": "corpus-reveal",
+  "registration_type": "posthoc",
+  "research_question": "外部 corpus 分层检出率",
+  "hypothesis": "检测器对外部来源样本有检出能力",
+  "sample_size": "40 盲（665）+20 非盲扩样=60",
+  "statistical_method": "分层率，catch/(catch+miss)，CP95；禁止合并成一个数",
+  "alpha": "不适用（区间/描述统计）",
+  "exclusion_criteria": "unknown（无检测器）/not_error（测量类）剔除",
+  "variable_definitions": "六层(sanitizer/compiler-warn/cross-compile/perf/compile-time/other)",
+  "analysis_pipeline": "reveal 逐样本判决，3 轮",
+  "expected_results": "分层率差异大（事后补注册）",
+  "data_source": "data/external_corpus*/",
+  "code_version": "tools/external_corpus*reveal*.py",
+  "rules_version": "同左",
+  "environment": "WSL g++13.3.0(-O0/-O2,setarch -R)+MinGW g++13.1/clang22(Win11); 详见 data/env_671g.json（历史产物env缺失，标 UNVERIFIED）",
+  "registered_at": "2026-10-01",
+  "experiment_start": "2026-09-28",
+  "posthoc_note": "事后补注册：实验已完成；本PAP按各批次冻结协议回填方案字段，不回填/不修改结果数字，不享受预注册可信度，仅供口径追溯。"
+}

@@ -112,7 +112,7 @@ if kind in SAN:                                   # asan / ubsan / tsan
 
 - `tools/tool_integrity.py --check` 校验的是**工具与数据文件的哈希**，不校验"检测器运行环境是否齐备"。
 - `web_metrics_666 --check` 比对的是**产物自算一致性**（产物内部 k/n 对不对），
-  它**不会重跑探测器**，因此无法发现"这次其实没真跑"。
+  它**不会重跑检测器**，因此无法发现"这次其实没真跑"。
 - 665 reveal 脚本的 `honest_note` 只提示"若 A 层检出率也不高，说明问题不在缺检测器"，
   是一条**供人解读的提示**，不是可执行的硬校验。
 
@@ -125,7 +125,7 @@ if kind in SAN:                                   # asan / ubsan / tsan
 | ① 检测器版本变了 | 665 reveal `import` 662 的 `detect()`，本审计重跑用的也是它，同一函数 | ❌ 排除 |
 | ② WSL 环境缺失 | 实验 2 精确复现 10.0%；被改判的 15 条**全部**是 sanitizer 类 | ✅ **确认** |
 | ③ 产物手工改过 | 真机重跑 14 条 catch 与产物**逐条完全一致**（id、detector、verdict 全同） | ❌ 排除 |
-| ④ `collect()` 根本没跑探测器 | `detect()` 确实编译并运行了样本（实验 1 耗时 23s，含真实编译运行） | ❌ 排除 |
+| ④ `collect()` 根本没跑检测器 | `detect()` 确实编译并运行了样本（实验 1 耗时 23s，含真实编译运行） | ❌ 排除 |
 
 ---
 
@@ -146,7 +146,7 @@ if kind in SAN:                                   # asan / ubsan / tsan
    产物同时给 `catch/total` 与 `catch/(catch+miss)`，文档引用时必须写明用哪一轨。
    （667 已记过一次同类问题，668 补了字段，但未堵住文档侧引用。）
 
-4. **P1 · 探测器能力指纹入产物**
+4. **P1 · 检测器能力指纹入产物**
    把 `wsl_gpp` / `local_gpp` / `local_clang` 版本与"本次是否真跑"写入产物 `env`。
    holdout 的 `reveal_3_detail_668.json` 已有 `env` 字段，corpus 产物应对齐。
 

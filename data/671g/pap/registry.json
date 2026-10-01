@@ -1,0 +1,18 @@
+{
+  "schema": "queyi-pap-registry/671g",
+  "require": [
+    "holdout-reveal",
+    "corpus-reveal",
+    "mutation-656",
+    "counterfactual",
+    "defect-injection-661"
+  ],
+  "pap_files": {
+    "holdout-reveal": "holdout-reveal",
+    "corpus-reveal": "corpus-reveal",
+    "mutation-656": "mutation-656",
+    "counterfactual": "counterfactual",
+    "defect-injection-661": "defect-injection-661"
+  },
+  "note": "require 列出必须有 PAP 的实验批次；均为事后补注册（posthoc），新实验必须预注册（registered_at < experiment_start）"
+}

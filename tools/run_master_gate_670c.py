@@ -400,7 +400,7 @@ def gates_discipline_670g(root: Path) -> tuple[list[dict[str, Any]], list[dict],
     写死"六条"会在规则表扩张时静默少挂一条，那正是本工具存在的理由。
     """
     try:
-        import gate_rules_670g as G670G            # noqa: PLC0415
+        import gate_rules_670g as G670G  # noqa: PLC0415
     except Exception as e:                         # noqa: BLE001
         return ([gate("670g/discipline-import", "670g P0 纪律门禁（导入）", L0, False, 1,
                       "import gate_rules_670g", f"{type(e).__name__}: {e}")], [], [])
@@ -428,6 +428,52 @@ def gates_discipline_670g(root: Path) -> tuple[list[dict[str, Any]], list[dict],
 # 671a D2：防复发守卫（guard_rerun_671a）+ 漂移增强（drift_watch_671a）
 # ─────────────────────────────────────────────────────────────────────────────
 
+G671G_TIERS: dict[str, str] = {
+    "G-NUMBER-CONSISTENCY": "L0",       # 率三元组算术自洽
+    "G-DENOMINATOR-COMPLETE": "L0",    # 结果率带分母+口径
+    "G-VERIFIED-NUMBERS": "L0",        # 全部实验数字从事实源自洽复现
+    "G-TERMINOLOGY": "L0",             # 工程术语统一
+    "G-RULES-PINNED": "L0",           # 判决规则版本钉扎（D1）
+    "G-FP-THYMUS": "L0",              # 误报率胸腺阴性选择（D3；当前 unarmed 只 warn）
+    "G-PAP-REGISTERED": "L0",          # PAP 预注册（D4）
+    "G-LLM-CHANNEL": "L0",             # LLM 通道防御（D8；无批次时只 warn）
+    "G-POISON-DETECT": "L0",          # canary/配对探针（D9）
+    "G-TRAJECTORY-FLOOR": "L0",       # 标注地板（D10；无批次时只 warn）
+    "G-LEDGER-INVARIANTS": "L0",       # 账本 10 不变式（D6）
+    "G-ITT-DISCIPLINE": "L0",          # ITT 口径纪律（E2）
+    "G-NO-OVERFITTING": "L0",         # 三分离/调参登记（E3）
+    "G-EVIDENCE-CHAIN": "L0",         # 证据链/毒树之果（E4）
+}
+
+
+def gates_671g(root: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """D/E：方法学 + 跨学科纪律门禁（671g 问题清零批次）。
+
+    14 条规则全部 L0（新纪律核心）；但工具对"未进射程"（无 LLM/标注批次、胸腺无
+    C++ 检查器、三集合未映射）只吐 warn，不阻断当前主仓——armed 后（出现对应产物）自动变 block。
+    """
+    try:
+        import gate_rules_671g as G671
+    except Exception as e:                      # noqa: BLE001
+        return [gate("671g/discipline", "D/E 方法学纪律门禁（14 条）", "L0", False, 1,
+                      "python tools/gate_rules_671g.py --check",
+                      f"671g 规则模块导入失败，D/E 纪律未生效：{e}")], {"L0": 14}
+    findings = G671.run_all(root)
+    blocks = [f for f in findings if f.get("severity") == "block"]
+    warns = [f for f in findings if f.get("severity") == "warn"]
+    out: list[dict[str, Any]] = []
+    for name, _fn in G671.RULES:
+        rbs = [f for f in blocks if f["rule"] == name]
+        rws = [f for f in warns if f["rule"] == name]
+        detail = "; ".join(str(f.get("target", "")) for f in (rbs + rws)[:6]) or \
+                 ("0 block" + (f"，{len(rws)} warn（未进射程，仍登记）" if rws else ""))
+        out.append(gate(f"671g/{name}", name, G671G_TIERS.get(name, "L0"),
+                        not rbs, 0 if not rbs else 1,
+                        "python tools/gate_rules_671g.py --rule " + name, detail,
+                        "见 docs/discipline/ 对应文档"))
+    return out, {"L0": len(G671.RULES)}
+
+
 def gates_guard_671a(root: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """D2：671a 防复发（改检测器必重跑 + 产物新鲜度 + 三方数字一致）。
 
@@ -436,7 +482,7 @@ def gates_guard_671a(root: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
       —— "没进射程"必须显形，不能假装覆盖。
     """
     try:
-        import guard_rerun_671a as G671          # noqa: PLC0415
+        import guard_rerun_671a as G671  # noqa: PLC0415
     except Exception as e:                        # noqa: BLE001
         return ([gate("671a/guard-import", "671a 守卫导入", L0, False, 1,
                       "import guard_rerun_671a", f"{type(e).__name__}: {e}")], {})
@@ -468,7 +514,7 @@ def gates_drift_671a(root: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     FIRST_RUN（无上期报告）不算红，但 L1 的 `-armed` 会亮。
     """
     try:
-        import drift_watch_671a as D671          # noqa: PLC0415
+        import drift_watch_671a as D671  # noqa: PLC0415
     except Exception as e:                        # noqa: BLE001
         return ([gate("671a/drift-import", "671a 漂移监控导入", L0, False, 1,
                       "import drift_watch_671a", f"{type(e).__name__}: {e}")], {})
@@ -539,6 +585,9 @@ def collect(root: Path = ROOT, check_mode: bool = False, timeout: int | None = N
     gdrift671, drift671_res = gates_drift_671a(root)
     gates += gdrift671
     gates += paper_pipeline_gate(root)
+    # 671g：数字真实性/口径 + D/E 方法学纪律（14 条 L0）
+    g671g, _ = gates_671g(root)
+    gates += g671g
 
     controlled: dict[str, Any] = {
         "checked": bool(check_mode), "files": len(before or {}),
@@ -637,7 +686,7 @@ def selftest() -> int:
         chk(f"669d 规则注册表可导入（{e}）", False)
     # 671a：新挂的两层必须真的在「纪律规则 + 守卫 + 漂移」的位置上（不是只在文档里）
     try:
-        import gate_rules_670g as G670G           # noqa: PLC0415
+        import gate_rules_670g as G670G  # noqa: PLC0415
         names = [str(n) for n, _ in G670G.RULES]
         chk("670g 已分层规则都真实存在（不写死条数，规则表可扩张）",
             set(G670G_TIERS) <= set(names))
@@ -647,7 +696,7 @@ def selftest() -> int:
         chk(f"670g 规则注册表可导入（{e}）", False)
     disc, _, _ = gates_discipline_670g(ROOT)
     try:
-        import gate_rules_670g as G670G2          # noqa: PLC0415
+        import gate_rules_670g as G670G2  # noqa: PLC0415
         chk("670g 每条规则各成一条门禁阶段",
             len(disc) == len(G670G2.RULES)
             and all(g["tier"] in (L0, L1) for g in disc))

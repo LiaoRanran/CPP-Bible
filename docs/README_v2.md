@@ -24,6 +24,11 @@
 
 > 数字**全部现算自真实台账**，前端只渲染、不写死。口径与分母一并给出，避免"43.8% 误读"类问题。
 > 670c 起由 `tools/drift_watch_670c.py` 监控上述关键数字：**变化超 ±10% 且无实验记录就标红**（输出 `data/drift_report_670c.json`）。
+>
+> **671g 双口径声明（数字真实性）**：表中 87.5%（14/16）/ 43.75%（14/32）是**盲测冻结值**（支撑外部效度 claim）。
+> 671a 扩样后的**累计值**（新样本非盲、corpus 检测口径变更，**不得用于外部效度 claim**）：holdout 81.0%（17/21）、
+> corpus 54.2%（26/48，分层 19/24、6/14、1/10）。两者并列、逐样本可独立重数，复算与口径见
+> `data/671g_数字真实性核查.md` + `tools/numbers_671g.py --check`。
 
 ---
 
@@ -155,6 +160,12 @@ python tools/reproduce_all_670c.py --skip-slow
 | `python tools/check_split_670c.py` | 拆分完整性（wrapper 是否真解析到 canonical / 复制层是否漂移） |
 | `python tools/drift_watch_670c.py` | 关键数字漂移监控 |
 | `python tools/guard_rerun_670c.py` | 「改了代码没重跑产物」护栏 |
+| `python tools/gate_rules_671g.py` | **671g 14 条纪律门禁**：数字真实性/口径 4 + 方法学 D1/D3/D4/D6/D8/D9/D10 + 跨学科 E2/E3/E4（已并入主门禁 L0；清单见 `docs/discipline/门禁清单.md`） |
+| `python tools/numbers_671g.py --check` | 全量实验数字单一复算源（盲测/累计双口径，逐样本独立重数） |
+| `python tools/env_probe_671g.py --check` | 实验环境探测（编译器/WSL/ASLR/优化档），缺关键环境的产物标 UNVERIFIED |
+
+**671g 工程纪律文档**：`docs/discipline/`（术语表、规则钉扎、序贯检验、PAP、胸腺、LLM 通道/投毒、
+账本不变式、ITT、过拟合、证据链、不确定度、单人 DSMB/IRR/floor-check；门禁与工具清单各一篇）。
 
 ---
 

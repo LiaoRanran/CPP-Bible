@@ -1,0 +1,31 @@
+{
+  "schema": "queyi-env-probe/671g",
+  "generated_at": "2026-10-01 10:07:44",
+  "host_os": {
+    "system": "Windows",
+    "release": "11",
+    "version": "10.0.26200",
+    "machine": "AMD64"
+  },
+  "python": "3.13.13",
+  "wsl": {
+    "available": true,
+    "wsl_gpp": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "setarch": "setarch -R 可用",
+    "aslr_sysctl": 2,
+    "error": ""
+  },
+  "wsl_gpp": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "local_gpp": "g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+  "local_clang": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+  "aslr_control": {
+    "method": "实验子进程前缀 `setarch -R`（地址空间随机化在该进程内关闭）",
+    "wsl_kernel_randomize_va_space": 2,
+    "setarch_available": true,
+    "note": "setarch -R 是 per-run 关闭，不存在持久全局状态；逐样本 run 必须带此前缀"
+  },
+  "opt_levels": [
+    "-O0",
+    "-O2"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "queyi-poison/671g",
+  "canaries": [
+    {
+      "id": "h21",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "why": "有符号溢出，ubsan 3 轮 catch（CP 明确）"
+    },
+    {
+      "id": "h24",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "why": "除零，ubsan 3 轮 catch"
+    },
+    {
+      "id": "h26",
+      "expected_verdict": "catch",
+      "detector": "asan",
+      "why": "heap-use-after-free，asan catch"
+    },
+    {
+      "id": "h32",
+      "expected_verdict": "catch",
+      "detector": "asan",
+      "why": "double-free（新样本，3 轮稳定）"
+    },
+    {
+      "id": "h33",
+      "expected_verdict": "miss",
+      "detector": "ubsan",
+      "why": "strict-alias，ubsan 两档不报（稳定 miss，双向 canary）"
+    }
+  ],
+  "pairs": [
+    {
+      "a": "h22",
+      "b": "h23",
+      "expect": "same",
+      "why": "同为 asan SEGV 空指针解引用"
+    },
+    {
+      "a": "h27",
+      "b": "h32",
+      "expect": "same",
+      "why": "同为 asan double-free"
+    },
+    {
+      "a": "h25",
+      "b": "h30",
+      "expect": "same",
+      "why": "同为 asan 内存类命中（mismatch / leak）⇒ catch/catch"
+    }
+  ]
+}

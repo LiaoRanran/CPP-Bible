@@ -1,0 +1,21 @@
+{
+  "schema": "queyi-pap/671g",
+  "batch_id": "holdout-reveal",
+  "registration_type": "posthoc",
+  "research_question": "holdout 盲测检出率能否复现",
+  "hypothesis": "检测器对已植入真错样本有检出能力",
+  "sample_size": "30 盲（reveal_3）+10 非盲扩样=40",
+  "statistical_method": "catch/(catch+miss) 可测口径，Clopper-Pearson 95%",
+  "alpha": "不适用（区间/描述统计）",
+  "exclusion_criteria": "unknown（无检测器）与标签 unknown 剔除；planted=false 对照单列误报",
+  "variable_definitions": "catch/miss/unknown/not_error 四态判决",
+  "analysis_pipeline": "reveal 后逐样本判决，3 轮，双档+setarch -R",
+  "expected_results": "检出率高（事后补注册，不回填具体值）",
+  "data_source": "data/holdout/reveal_*",
+  "code_version": "tools/holdout_reveal_*.py（661判据）",
+  "rules_version": "67 条规则集（现代manifest钉扎，历史批次未钉扎）",
+  "environment": "WSL g++13.3.0(-O0/-O2,setarch -R)+MinGW g++13.1/clang22(Win11); 详见 data/env_671g.json（历史产物env缺失，标 UNVERIFIED）",
+  "registered_at": "2026-10-01",
+  "experiment_start": "2026-09-28",
+  "posthoc_note": "事后补注册：实验已完成；本PAP按各批次冻结协议回填方案字段，不回填/不修改结果数字，不享受预注册可信度，仅供口径追溯。"
+}

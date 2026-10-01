@@ -1,0 +1,27 @@
+{
+  "schema": "queyi-itt/671g",
+  "experiments": {
+    "holdout-reveal": {
+      "pap_id": "holdout-reveal",
+      "note": "可测主口径 catch+miss；unknown 不进主分母，但全样本保守口径同时报告（见 671g 数字核查）",
+      "exclusions": [
+        {"id": "h2", "reason": "detector_unavailable", "preregistered": true},
+        {"id": "h10", "reason": "detector_unavailable", "preregistered": true},
+        {"id": "h11", "reason": "detector_unavailable", "preregistered": true},
+        {"id": "h12", "reason": "detector_unavailable", "preregistered": true},
+        {"id": "h37", "reason": "detector_unavailable", "preregistered": true},
+        {"id": "h39", "reason": "detector_unavailable", "preregistered": true}
+      ]
+    },
+    "corpus-reveal": {
+      "pap_id": "corpus-reveal",
+      "note": "unknown（本机无检测器）+ not_error（测量类）不进可测分母，全样本口径同时报告",
+      "exclusions": [
+        {"id": "AGG-corpus-unknown-n9", "reason": "detector_unavailable", "preregistered": true,
+         "note": "聚合登记：60 条中 9 条 unknown（perf/compile-time/other 本机无检测器）；逐 id 见 reveal 明细"},
+        {"id": "AGG-corpus-not_error-n3", "reason": "measure_class_not_error", "preregistered": true,
+         "note": "聚合登记：3 条测量类样本本就不是缺陷；逐 id 见 reveal 明细"}
+      ]
+    }
+  }
+}

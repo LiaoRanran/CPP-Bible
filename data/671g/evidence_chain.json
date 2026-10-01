@@ -1,0 +1,72 @@
+{
+  "schema": "queyi-evidence-chain/671g",
+  "artifacts": {
+    "data/671g_verified_numbers.json": {
+      "parents": [
+        {
+          "path": "data/holdout_reveal_4_671a.json",
+          "sha256": "8efc00bd5752adccc4bdb4739cfb7655eada7a0c5965b1b9796b28c551ac60c3"
+        },
+        {
+          "path": "data/external_corpus_reveal_671a.json",
+          "sha256": "d0fd45f38a74aed6c3fad6c08d8ae6c3dca24eb80a0039cfb879d816cf7dff49"
+        },
+        {
+          "path": "data/656_mutation_report_core.json",
+          "sha256": "f96dab3e467c36e35ecc64719601c958c30a6da114cc217bf655c135e2ca1ca0"
+        },
+        {
+          "path": "data/656_mutation_report_all.json",
+          "sha256": "5fdb5a63f864a13f6d6e19afad84b998bc8a09deada1dcf048ae2f3a37f554c2"
+        },
+        {
+          "path": "data/counterfactual_cases_665.json",
+          "sha256": "57448bb9e83e3c38e29e2f13f30fa5bc321c7ba36c682edc6cc979cba796605d"
+        },
+        {
+          "path": "data/counterfactual_cases_669d.json",
+          "sha256": "81dc75607690873454f621100999b26445c3b5623696c1bff37afb304563c26e"
+        },
+        {
+          "path": "data/defect_injection_661.json",
+          "sha256": "b97a1faf34befa025acf50f220cce4ee6f361dff698e465ef0b7b8e8bcd7a7df"
+        }
+      ],
+      "self_sha256": "6392ff6221945e3740c9adbb619ef726e4b9fbf06d83046bd9ddffccf541541d"
+    },
+    "data/671g_per_sample_audit.json": {
+      "parents": [
+        {
+          "path": "data/holdout/reveal_3_detail_671a.json",
+          "sha256": "0baf4303dc4c22d5258385b2aa4adad0b8a2b14b061d10d357be9e330766d8cc"
+        },
+        {
+          "path": "data/external_corpus/reveal_detail_671a.json",
+          "sha256": "0ec056da1d7adb839396900343c2802f57cec06f2b2061db5a7d55b24732d333"
+        },
+        {
+          "path": "data/656_mutation_report_core.json",
+          "sha256": "f96dab3e467c36e35ecc64719601c958c30a6da114cc217bf655c135e2ca1ca0"
+        },
+        {
+          "path": "data/656_mutation_report_all.json",
+          "sha256": "5fdb5a63f864a13f6d6e19afad84b998bc8a09deada1dcf048ae2f3a37f554c2"
+        },
+        {
+          "path": "data/counterfactual_cases_665.json",
+          "sha256": "57448bb9e83e3c38e29e2f13f30fa5bc321c7ba36c682edc6cc979cba796605d"
+        },
+        {
+          "path": "data/counterfactual_cases_669d.json",
+          "sha256": "81dc75607690873454f621100999b26445c3b5623696c1bff37afb304563c26e"
+        }
+      ],
+      "self_sha256": "2bddb44c98bb7a05258b0ec74d504552980443924f2595d013d8308f7a4adc76"
+    },
+    "data/env_671g.json": {
+      "parents": [],
+      "self_sha256": "d0edcd0e370f6608b9fbc0e23af8ca67ab81e61eaf1b8ac6c080eccaf71803a4"
+    }
+  },
+  "poisoned": []
+}
