@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="阙疑（QueYi）：一个受评估完整性约束的 C++ 知识验证系统 —— 每个断言都经过真机编译与可审计判决。">
+<meta name="description" content="阙疑 QueYi：C++ 知识验证系统。一条断言 = 断言本身 + 真机编译与运行的原始输出 + 判它的规则集；判决四态 pass / pass_with_exception / fail / unknown，证据不足判 unknown。静态站，无后端；数字现算自 web/data/*.json。">
 <meta name="color-scheme" content="dark light">
 <title>阙疑 QueYi · C++ 知识验证系统</title>
 <link rel="stylesheet" href="css/design-tokens.css">
@@ -15,114 +15,113 @@
 <script type="module" src="home.js"></script>
 </head>
 <body>
-<noscript><div style="max-width:640px;margin:2rem auto;padding:1.5rem">
-<p style="font-size:20px;font-weight:600;margin:0 0 8px">阙疑 QueYi</p>
-<p>受评估完整性约束的 C++ 知识验证系统：每条结论绑定证据与复现命令。</p>
-<p style="color:#666;font-size:13px">请启用 JavaScript 后查看全部内容。</p>
+<noscript><div style="max-width:720px;margin:2rem auto;padding:1.5rem">
+<p style="font-size:18px;font-weight:600;margin:0 0 6px">阙疑 QueYi</p>
+<p>C++ 知识验证系统：断言 + 真机编译证据 + 判决规则集；证据不足判 unknown，不降级为 pass。</p>
+<p style="color:#666;font-size:13px">请启用 JavaScript 查看摘要、现状表、演化与提交记录。</p>
 </div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
 <qy-nav current="index.html" badge="静态站 · 无后端"></qy-nav>
 
-<main id="main">
+<main id="main" class="home">
 
-  <!-- ① Hero：项目名 + 一句话定位 + 两个入口。无图标、无渐变、无装饰图形 -->
-  <header class="wrap hero">
-    <h1>阙疑</h1>
-    <p class="lede">一个受评估完整性约束的 C++ 知识验证系统 —— 每个断言都经过真机编译与可审计判决。</p>
-    <div class="hero-actions">
-      <a class="btn primary" href="experiments.html">查看实验</a>
-      <a class="btn" href="cards.html">查看卡库</a>
-    </div>
-    <p class="muted" style="margin-top:var(--space-3)">论文稿件：<span class="mono">research/paper_v0.9.md</span>（仓库内，随批次更新）</p>
+  <!-- ① 顶部：项目名 + 一句话定位（无 slogan、无副标题、无 CTA） -->
+  <header class="wrap home-head">
+    <h1>阙疑 <span class="home-en">QueYi</span></h1>
+    <p class="lede">C++ 知识验证系统 · 失败驱动演化</p>
   </header>
 
-  <!-- ② 核心指标：纯数字 + 标签，不用卡片框 -->
+  <!-- ② 摘要：arXiv abstract 风格，左对齐；数字由 home.js 从 metrics_666.json 现算注入 -->
   <section class="wrap">
-    <h2>核心指标</h2>
-    <div class="metrics" id="metrics" data-qy-state="loading" aria-busy="true">
-      <div class="metric qy-skeleton qy-skel-card" aria-hidden="true"></div>
-      <div class="metric qy-skeleton qy-skel-card" aria-hidden="true"></div>
-      <div class="metric qy-skeleton qy-skel-card" aria-hidden="true"></div>
-    </div>
-    <p class="muted" id="metrics-note" style="margin-top:var(--space-2)">加载中…</p>
+    <h2>摘要</h2>
+    <p class="abstract">阙疑（QueYi）把每条 C++ 技术主张拆成三件可分别核对的东西：断言本身、真机编译与运行的原始证据、判它的规则集；三者任一不成立，结论即不成立。它在盲集上捕获 <b class="num mono" id="ab-holdout">--</b>（<span class="muted" id="ab-holdout-n">--</span>），在外部语料可测口径上捕获 <b class="num mono" id="ab-corpus">--</b>（<span class="muted" id="ab-corpus-n">--</span>）；已沉淀 <b class="num mono" id="ab-cards">--</b> 张真机验证卡、<b class="num mono" id="ab-rules">--</b> 条门禁规则、<b class="num mono" id="ab-ledger">--</b> 条账本事件。全部数字由工具从台账现算，可复算、可审计。</p>
   </section>
 
-  <!-- ③ 系统简介：720px 正文宽（65–75 字符），三段 + 极简架构图 -->
+  <!-- ③ 核心指标：三线表（指标 / 值 / 口径 / 复算命令），home.js 现算 -->
   <section class="wrap">
-    <h2>系统简介</h2>
-    <div class="prose">
-      <p>阙疑把一条 C++ 知识断言拆成三件可分别核对的东西：<b>断言本身</b>、<b>支撑它的证据</b>（真机编译与运行的原始输出）、
-        以及<b>据以作出判决的规则集</b>。三者中任何一环不成立，结论即不成立。</p>
-      <p>判决是<b>四态</b>的：<span class="state-text st-pass">pass</span>、
-        <span class="state-text st-pass_with_exception">pass_with_exception</span>、
-        <span class="state-text st-fail">fail</span>、
-        <span class="state-text st-unknown">unknown</span>。
-        <span class="mono">unknown</span> 是一等公民 —— 证据不足时不允许降级为通过，
-        这条约束是"评估完整性"的核心，也是本系统区别于普通题库的地方。</p>
-      <p>当一条断言失败或判不出来时，系统不是记一笔了事，而是把它转成一份待办：
-        补证据、改规则、或显式登记为已知缺口。这套<b>失败驱动的资产更新机制</b>产生的每一次变更都进账本，
-        可回溯、可复算。</p>
+    <h2>核心指标</h2>
+    <p class="muted">数字现算自 <span class="mono">web/data/metrics_666.json</span>；逐行给出分子/分母、口径与复算命令，取不到值的行记 <span class="mono">--</span>，不用占位值冒充。</p>
+    <div class="table-wrap">
+      <div id="metrics" data-qy-state="loading" aria-busy="true" class="muted qy-skeleton">加载中…</div>
     </div>
+    <p class="muted" id="metrics-note"></p>
+    <p class="muted">原始数据：<a href="data/metrics_666.json">metrics_666.json</a> ·
+      <a href="data/manifest.json">manifest.json</a>（工件哈希清单）</p>
+  </section>
 
-    <figure style="margin:var(--space-4) 0 0">
-      <svg viewBox="0 0 720 96" width="100%" height="96" role="img"
-           aria-label="判决流程：断言候选 → 四态判决 → 证据链 → 可审计复算；失败与 unknown 回流为待办">
+  <!-- ④ 系统架构：纯 SVG 流程图（断言 → 证据 → 判决 → 账本 → 演化），色取 --accent / --line -->
+  <section class="wrap">
+    <h2>系统架构</h2>
+    <figure class="flow-fig">
+      <svg class="flow" viewBox="0 0 720 92" width="100%" height="92" role="img"
+           aria-label="系统架构：断言 → 证据 → 判决 → 账本 → 演化，形成可审计闭环">
         <defs>
           <marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M0,1 L7,4 L0,7" fill="none" stroke="#8a8a8a" stroke-width="1"/>
+            <path d="M0,1 L7,4 L0,7" class="flow-ar"/>
           </marker>
         </defs>
-        <g fill="none" stroke="#666666" stroke-width="1">
-          <rect x="0"   y="30" width="150" height="36" rx="6"/>
-          <rect x="190" y="30" width="150" height="36" rx="6"/>
-          <rect x="380" y="30" width="150" height="36" rx="6"/>
-          <rect x="570" y="30" width="150" height="36" rx="6"/>
-          <line x1="152" y1="48" x2="186" y2="48" marker-end="url(#ar)"/>
-          <line x1="342" y1="48" x2="376" y2="48" marker-end="url(#ar)"/>
-          <line x1="532" y1="48" x2="566" y2="48" marker-end="url(#ar)"/>
-          <!-- 失败 / unknown 回流 -->
-          <path d="M265,68 L265,88 L95,88 L95,70" marker-end="url(#ar)" stroke-dasharray="3 3"/>
+        <g class="flow-boxes">
+          <rect x="0"   y="28" width="132" height="36" rx="6"/>
+          <rect x="148" y="28" width="132" height="36" rx="6"/>
+          <rect x="296" y="28" width="132" height="36" rx="6"/>
+          <rect x="444" y="28" width="132" height="36" rx="6"/>
+          <rect x="592" y="28" width="128" height="36" rx="6"/>
+          <line x1="134" y1="46" x2="144" y2="46" marker-end="url(#ar)"/>
+          <line x1="282" y1="46" x2="292" y2="46" marker-end="url(#ar)"/>
+          <line x1="430" y1="46" x2="440" y2="46" marker-end="url(#ar)"/>
+          <line x1="578" y1="46" x2="588" y2="46" marker-end="url(#ar)"/>
         </g>
-        <g fill="#ededed" font-size="12" font-family="inherit" text-anchor="middle">
-          <text x="75"  y="52">断言候选</text>
-          <text x="265" y="52">四态判决</text>
-          <text x="455" y="52">证据链</text>
-          <text x="645" y="52">可审计复算</text>
+        <g class="flow-label">
+          <text x="66"  y="51">断言</text>
+          <text x="214" y="51">证据</text>
+          <text x="362" y="51">判决</text>
+          <text x="510" y="51">账本</text>
+          <text x="656" y="51">演化</text>
         </g>
-        <text x="182" y="84" fill="#8a8a8a" font-size="11" font-family="inherit" text-anchor="middle">fail / unknown → 待办</text>
       </svg>
-      <figcaption class="figure-src">图 1　判决流程。虚线为失败与 unknown 的回流路径。</figcaption>
+      <figcaption class="figure-src">图 1　从一条断言到可审计账本的闭环：证据不足判 unknown，不降级为 pass；fail / unknown 回流补证据、改规则或登记缺口。</figcaption>
     </figure>
   </section>
 
-  <!-- ④ 演化时间线：1px 竖线 + 小圆点，只显示最近节点 -->
+  <!-- ⑤ 最近演化：时间线，最近 5 条（全量在账本里，不在页面铺开），home.js 现算 -->
   <section class="wrap">
-    <h2>演化时间线</h2>
-    <p class="muted" style="margin-bottom:var(--space-3)">最近 8 个关键节点；完整记录在账本中。</p>
-    <ul class="timeline" id="timeline" data-qy-state="loading" aria-busy="true">
-      <li class="qy-skeleton qy-skel-line" aria-hidden="true"></li>
-      <li class="qy-skeleton qy-skel-line" aria-hidden="true"></li>
-    </ul>
+    <h2>最近演化</h2>
+    <p class="muted">最近 5 个节点；带日期的完整记录在
+      <span class="mono">data/646_authority_rule_annotation.jsonl</span> 与其派生账本里。</p>
+    <ul class="timeline muted qy-skeleton" id="timeline" data-qy-state="loading" aria-busy="true">加载中…</ul>
   </section>
 
-  <!-- ⑤ 最近提交：等宽 hash + 描述 + 时间 -->
+  <!-- ⑥ 复现：命令以台账为准，不内联输出（输出会随台账漂移，硬编码会立即过期） -->
+  <section class="wrap">
+    <h2>复现</h2>
+    <p class="muted">命令在仓库根目录执行，前置只有 Node 与 Python 虚拟环境。下列输出逐字取自台账，<b>以台账为准</b>——运行命令查看最新结果：</p>
+    <pre class="cmd">python tools/web_metrics_666.py --write   # 重算现状 → metrics_666.json
+python tools/contrast_check.js           # 对比度门禁（failures=0 为通过）
+node web/build.mjs                        # 重建静态站 dist</pre>
+    <p class="muted">其余命令见各页脚与 <span class="mono">tools/</span>；所有数字来自台账，非演示数据。</p>
+  </section>
+
+  <!-- ⑦ 最近提交：等宽 hash + 描述 + 时间 -->
   <section class="wrap">
     <h2>最近提交</h2>
     <div id="commits" class="subtle">加载中…</div>
-    <p class="muted" style="margin-top:var(--space-3)">
-      <a href="data/metrics_666.json">指标原始数据（JSON）</a> ·
-      <a href="data/manifest.json">工件哈希清单</a>
-    </p>
   </section>
 </main>
 
 <footer class="wrap">
-  阙疑 QueYi — 受评估完整性约束的知识验证系统。<br>
-  静态站 · 无后端 · 无追踪 · 数据由 <span class="mono">tools/web_metrics_666.py</span>、
+  阙疑 QueYi · 静态站（无后端、无追踪）· 数据由 <span class="mono">tools/web_metrics_666.py</span>、
   <span class="mono">tools/web_data_pipeline_656.py</span> 与 <span class="mono">tools/web_status_655.py</span>
-  从真实台账生成（不造演示数据）。
+  从台账现算（不造演示数据）。<br>
+  github.com/LiaoRanran/CPP-Bible · 许可证 Apache-2.0<br>
+  最后更新：<span class="mono" id="last-updated">--</span><br>
+  <a href="cards.html">卡库</a> · <a href="card.html">学一张卡</a> · <a href="learn.html">学习</a> ·
+  <a href="starmap.html">星图</a> · <a href="experiments.html">实验</a> ·
+  <a href="verdicts.html">判决与数字</a> · <a href="verify.html">验哈希</a><br>
+  键位：<span class="mono">g</span> + <span class="mono">h/c/l/e/v/s</span> 跳转，<span class="mono">?</span> 看全部键位。
 </footer>
 <script type="module">import { initRobustness } from './js/robustness.js'; initRobustness();</script>
 <script type="module">import { initA11y } from './js/a11y.js'; initA11y();</script>
+<script type="module">import { initKeybinds } from './js/keybind.js'; initKeybinds();</script>
+
 </body>
 </html>

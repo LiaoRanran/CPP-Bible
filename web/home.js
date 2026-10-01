@@ -1,15 +1,12 @@
-// 666 B2 → 671d C1 → 671d2 D · 首页逻辑（从 index.html 内联脚本抽出：可缓存、可审、可单测）
+// 666 B2 → 671d C1 → 671d2 D → 672c · 首页逻辑（从 index.html 内联脚本抽出：可缓存、可审、可单测）
 //
 // 数据纪律：**只渲染，不写死**。所有数字来自
 //   · web/data/metrics_666.json（tools/web_metrics_666.py 现算：卡数/规则数/检出率/账本/时间线/提交）
-// 拿不到就写 `--`（formatMetric），绝不猜、绝不填 0 充当真实值（见 docs/discipline/error_handling.md）。
+// 拿不到就写 `--`（formatMetric / 占位），绝不猜、绝不填 0 充当真实值（见 docs/discipline/error_handling.md）。
 //
-// 671d2 改动（首页去 landing 味 → 学术/技术首页）：
-//   · 核心指标由"4 张大数字横排 + 每格小字"改为**三线表**：指标 / 值 / 口径 / 复算命令，
-//     分子分母与口径逐行给出——数字是事实，不需要大字展示；
-//   · 删掉 countUp()：671d 已停用数字滚动，留一个只会"写一次"的同名导出等于假接口；
-//   · 行内一律走 formatMetric 空值保护：字段缺失时该格显示 `--`，不抛异常、不吞行。
 // 672b：数据层单点（fetchJSON / esc / formatMetric / pct）统一收口到 ./js/data.js
+// 672c：首页彻底重制（学术克制版式）—— 摘要/核心指标/架构/演化/复现/提交全部现算，无硬编码数字、
+//       无数字滚动、无骨架屏、无渐变/毛玻璃/辉光。
 import { fmtInt } from './app.js';
 import {
   initRobustness, fetchJSON as robustFetch, renderErrorCard, renderEmpty,
@@ -23,6 +20,11 @@ const $ = (id) => document.getElementById(id);
 const nz = (v, suffix = '') => (v == null ? '--' : fmtInt(v) + suffix);
 /** P / R / F1 这类 [0,1] 值固定一位小数：`1` 与 `1.0` 在读数语境里不是一回事。 */
 const dec1 = (v) => (v == null ? '--' : Number(v).toFixed(1));
+
+function setText(id, v) {
+  const el = $(id);
+  if (el) el.textContent = (v == null || v === '') ? '--' : String(v);
+}
 
 /* ── ① 现状表：行定义（字段全部来自 metrics_666.json，不在这里写死数字） ── */
 function metricRows(M) {
@@ -87,6 +89,27 @@ function metricRows(M) {
   ];
 }
 
+/* ── ② 摘要 + 页脚更新时间：数字现算，取不到留占位 ── */
+export async function renderAbstract() {
+  if (!$('ab-holdout')) return;
+  try {
+    const D = await fetchJSON('data/metrics_666.json');
+    const M = (D && D.metrics) || {};
+    const h = M.holdout || {};
+    const ext = M.external || {};
+    setText('ab-holdout', pct(h.rate_pct));
+    setText('ab-holdout-n', `${nz(h.catch)}/${nz(h.den)}`);
+    setText('ab-corpus', pct(ext.rate_pct));
+    setText('ab-corpus-n', `${nz(ext.catch)}/${nz(ext.den)}`);
+    setText('ab-cards', nz(M.cards_real));
+    setText('ab-rules', nz(M.rules_total));
+    setText('ab-ledger', nz(M.ledger_events));
+    setText('last-updated', (D && D.generated_at) || '--');
+  } catch (e) {
+    /* 留 -- 占位，不抛、不影响其余区块 */
+  }
+}
+
 export async function renderMetrics() {
   const box = $('metrics');
   if (!box) return;
@@ -108,7 +131,7 @@ export async function renderMetrics() {
   setState(box, 'ready');
   const rows = metricRows(M);
   box.innerHTML = `<table class="state-table">
-  <caption>表 1　现状。数据源 web/data/metrics_666.json（tools/web_metrics_666.py 现算）；<span class="mono">--</span> 表示该字段取不到值。</caption>
+  <caption>表 1　核心指标。数据源 web/data/metrics_666.json（tools/web_metrics_666.py 现算）；<span class="mono">--</span> 表示该字段取不到值。</caption>
   <thead><tr><th>指标</th><th>值</th><th>口径</th><th>复算命令</th></tr></thead>
   <tbody>${rows.map((r) => `<tr>
     <td>${esc(r.name)}</td>
@@ -124,8 +147,8 @@ export async function renderMetrics() {
   }
 }
 
-/* ── ② 演化：只取最近 8 个节点 ──────────────────────────────── */
-const TIMELINE_MAX = 8;
+/* ── ③ 演化：只取最近 5 个节点 ──────────────────────────────── */
+const TIMELINE_MAX = 5;
 
 export async function renderTimeline() {
   const box = $('timeline');
@@ -147,7 +170,7 @@ export async function renderTimeline() {
   }
 }
 
-/* ── ③ 最近提交 ──────────────────────────────────────────────── */
+/* ── ④ 最近提交 ──────────────────────────────────────────────── */
 export async function renderCommits() {
   const box = $('commits');
   if (!box) return;
@@ -165,6 +188,7 @@ export async function renderCommits() {
 
 export function boot() {
   initRobustness();
+  renderAbstract();
   renderMetrics();
   renderTimeline();
   renderCommits();

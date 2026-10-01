@@ -76,7 +76,7 @@ button.ghost:hover { color: var(--color-text); border-color: var(--color-accent)
 @media (prefers-reduced-motion: reduce) {
   .chart svg .bar, .chart svg .seg { transition: none; }
 }
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .grade, .deck-tab, .queue-item, button.primary, button.ghost { min-height: var(--touch-min); }
 }
 
@@ -104,7 +104,7 @@ button.ghost:hover { color: var(--color-text); border-color: var(--color-accent)
 .modal-kv dd { margin: 0; color: var(--color-text-dim); }
 .modal-box .ci-tags { margin-top: var(--space-2); }
 .modal-note { margin-top: var(--space-2); font-size: 12px; color: var(--color-text-mute); }
-@media (max-width: 900px) { .modal-kv { grid-template-columns: 1fr; gap: 2px 0; } }
+@media (max-width: 768px) { .modal-kv { grid-template-columns: 1fr; gap: 2px 0; } }
 
 /* ══════════════════════════════════════════════════════════════════
    670c · 深化组件层
@@ -311,7 +311,7 @@ kbd { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-di
 @media (prefers-reduced-motion: reduce) {
   .chart svg .bar, .chart svg .seg, .heat-cell, .grade, .deck-tab { transition: none; }
 }
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .compare-bar { flex-wrap: wrap; }
   .drift-bar { grid-template-columns: 1fr max-content; }
   .drift-track { grid-column: 1 / -1; }

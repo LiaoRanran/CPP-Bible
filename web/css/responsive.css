@@ -11,9 +11,12 @@
 /* 媒体与画布不溢出容器 */
 img, canvas, svg, video { max-width: 100%; height: auto; }
 
-/* 触控目标 ≥44×44（WCAG 2.5.5 建议）：对主要控件生效，不强行改小图标 */
-button, .qy-btn, qy-button, .toolbar a, nav a, .skip-link { min-height: 44px; }
+/* 触控目标 ≥44×44（WCAG 2.5.5 建议）：仅在窄屏强制。
+   桌面端按钮按设计尺度（学术克制），不全局放大到 44px（否则首页按钮偏大偏笨）。 */
 nav a, .toolbar a { display: inline-flex; align-items: center; }
+@media (max-width: 768px) {
+  button, .qy-btn, qy-button, .toolbar a, nav a, .skip-link { min-height: 44px; }
+}
 
 /* 表格窄屏横向滚动（给表格套 .table-scroll 或 .qy-table-wrap 即可） */
 .table-scroll, .qy-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }

@@ -14,6 +14,7 @@ button:focus-visible, a.btn:focus-visible { outline: 2px solid var(--color-accen
 button:disabled { opacity: .45; cursor: not-allowed; }
 :host([variant="primary"]) button, :host([variant="primary"]) a.btn {
   border-color: var(--color-accent, #8ab4f8); color: #fff;
+  background: var(--color-accent, #8ab4f8);
 }
 `;
 

@@ -18,7 +18,7 @@
 
 /* ---- 全局错误横幅 ---- */
 .qy-banner {
-  position: sticky; top: 0; z-index: 9999;
+  position: sticky; top: 0; z-index: calc(var(--z-modal) + 1);
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   /* 错误色待令牌化：design-tokens.css 里**没有** --color-error；--color-fail 的契约是
      "只用于小圆点 / 小标签 / 关键数字，禁止大面积铺色"，横幅是整条铺色 ⇒ 不能用它。
