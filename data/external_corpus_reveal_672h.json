@@ -2,7 +2,7 @@
  "schema": "queyi-external-corpus-reveal/672h",
  "reveal_index": 4,
  "generated_by": "tools/external_corpus_reveal_672h.py（W3 扩样：可测 48 → 64）",
- "generated_at": "2026-10-01 23:01:29",
+ "generated_at": "2026-10-02 00:23:20",
  "round_label": "第 4 轮（672h）：扩样 d3f-01..d3f-16 + 历史 60 条复用",
  "runs": 3,
  "prereg": "data/experiments/prereg_672h.json",

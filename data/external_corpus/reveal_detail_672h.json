@@ -1,7 +1,7 @@
 {
  "schema": "queyi-external-corpus-reveal-detail/672h",
  "generated_by": "tools/external_corpus_reveal_672h.py",
- "generated_at": "2026-10-01 23:01:29",
+ "generated_at": "2026-10-02 00:23:20",
  "summary_for": "data/external_corpus_reveal_672h.json",
  "runs": 3,
  "verdict_rule": "任一回合 catch ⇒ catch（预注册 672h）；first_run_verdict 一并落盘",
@@ -22,7 +22,7 @@
    "detector": "asan",
    "layer": "sanitizer",
    "verdict": "catch",
-   "note": "asan 命中[-O0(rc=1) =================================================================\n==36==ERROR: A; -O2(rc=1) =================================================================\n==62==ERROR: A]（档位 -O0,-",
+   "note": "asan 命中[-O0(rc=1) =================================================================\n==3105==ERROR:; -O2(rc=1) =================================================================\n==3131==ERROR:]（档位 -O0,-",
    "verdicts_per_run": [
     "catch",
     "catch",
@@ -38,7 +38,7 @@
    "detector": "asan",
    "layer": "sanitizer",
    "verdict": "catch",
-   "note": "asan 命中[-O0(rc=1) =================================================================\n==88==ERROR: A]（档位 -O0,-O2）",
+   "note": "asan 命中[-O0(rc=1) =================================================================\n==3157==ERROR:]（档位 -O0,-O2）",
    "verdicts_per_run": [
     "catch",
     "catch",
@@ -54,7 +54,7 @@
    "detector": "asan",
    "layer": "sanitizer",
    "verdict": "catch",
-   "note": "asan 命中[-O0(rc=1) =================================================================\n==141==ERROR: ; -O2(rc=1) =================================================================\n==167==ERROR: ]（档位 -O0,-",
+   "note": "asan 命中[-O0(rc=1) =================================================================\n==3210==ERROR:; -O2(rc=1) =================================================================\n==3236==ERROR:]（档位 -O0,-",
    "verdicts_per_run": [
     "catch",
     "catch",
@@ -70,7 +70,7 @@
    "detector": "asan",
    "layer": "sanitizer",
    "verdict": "catch",
-   "note": "asan 命中[-O0(rc=1) =================================================================\n==193==ERROR: ; -O2(rc=1) =================================================================\n==219==ERROR: ]（档位 -O0,-",
+   "note": "asan 命中[-O0(rc=1) =================================================================\n==3262==ERROR:; -O2(rc=1) =================================================================\n==3288==ERROR:]（档位 -O0,-",
    "verdicts_per_run": [
     "catch",
     "catch",
@@ -86,7 +86,7 @@
    "detector": "asan",
    "layer": "sanitizer",
    "verdict": "catch",
-   "note": "asan 命中[-O0(rc=1) =================================================================\n==245==ERROR: ; -O2(rc=1) =================================================================\n==271==ERROR: ]（档位 -O0,-",
+   "note": "asan 命中[-O0(rc=1) =================================================================\n==3314==ERROR:; -O2(rc=1) =================================================================\n==3340==ERROR:]（档位 -O0,-",
    "verdicts_per_run": [
     "catch",
     "catch",
@@ -102,7 +102,7 @@
    "detector": "ubsan",
    "layer": "sanitizer",
    "verdict": "catch",
-   "note": "ubsan 命中[-O0(rc=0) -2147483648\n/mnt/c/Users/ASUS/AppData/Local/Temp/d3e_nwaso9xz/s.cpp:2:42: runtim; -O2(rc=0) -2147483648\n/mnt/c/Users/ASUS/AppData/Local/Temp/d3e_nwaso9xz/s.cpp:2:42: runtim]（档位 -O0,",
+   "note": "ubsan 命中[-O0(rc=0) -2147483648\n/mnt/c/Users/ASUS/AppData/Local/Temp/d3e_9tlk7rpy/s.cpp:2:42: runtim; -O2(rc=0) -2147483648\n/mnt/c/Users/ASUS/AppData/Local/Temp/d3e_9tlk7rpy/s.cpp:2:42: runtim]（档位 -O0,",
    "verdicts_per_run": [
     "catch",
     "catch",
@@ -118,7 +118,7 @@
    "detector": "ubsan",
    "layer": "sanitizer",
    "verdict": "catch",
-   "note": "ubsan 命中[-O0(rc=0) 0\n/mnt/c/Users/ASUS/AppData/Local/Temp/d3e_us2yacn2/s.cpp:2:32: runtime error: s; -O2(rc=0) 0\n/mnt/c/Users/ASUS/AppData/Local/Temp/d3e_us2yacn2/s.cpp:2:32: runtime error: s]（档位 -O0,",
+   "note": "ubsan 命中[-O0(rc=0) 0\n/mnt/c/Users/ASUS/AppData/Local/Temp/d3e_pylf0kqo/s.cpp:2:32: runtime error: s; -O2(rc=0) 0\n/mnt/c/Users/ASUS/AppData/Local/Temp/d3e_pylf0kqo/s.cpp:2:32: runtime error: s]（档位 -O0,",
    "verdicts_per_run": [
     "catch",
     "catch",
@@ -134,7 +134,7 @@
    "detector": "ubsan",
    "layer": "sanitizer",
    "verdict": "catch",
-   "note": "ubsan 命中[-O0(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/d3e_5si1z620/s.cpp:2:58: runtime error: div; -O2(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/d3e_5si1z620/s.cpp:2:58: runtime error: div]（档位 ",
+   "note": "ubsan 命中[-O0(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/d3e_b2wrwjn4/s.cpp:2:58: runtime error: div; -O2(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/d3e_b2wrwjn4/s.cpp:2:58: runtime error: div]（档位 ",
    "verdicts_per_run": [
     "catch",
     "catch",
@@ -150,7 +150,7 @@
    "detector": "tsan",
    "layer": "sanitizer",
    "verdict": "catch",
-   "note": "tsan 命中[-O0(rc=66) 400000\n==================\nWARNING: ThreadSanitizer: data race (pid=453)\n  Read o; -O2(rc=66) 400000\n==================\nWARNING: ThreadSanitizer: data race (pid=482)\n  Read o]（档位 -O0",
+   "note": "tsan 命中[-O0(rc=66) 400000\n==================\nWARNING: ThreadSanitizer: data race (pid=3522)\n  Read ; -O2(rc=66) 400000\n==================\nWARNING: ThreadSanitizer: data race (pid=3551)\n  Read ]（档位 -O0",
    "verdicts_per_run": [
     "catch",
     "catch",
@@ -166,7 +166,7 @@
    "detector": "tsan",
    "layer": "sanitizer",
    "verdict": "catch",
-   "note": "tsan 命中[-O0(rc=66) 9096\n==================\nWARNING: ThreadSanitizer: data race (pid=511)\n  Read of ; -O2(rc=66) 9096\n==================\nWARNING: ThreadSanitizer: data race (pid=540)\n  Read of ]（档位 -O0",
+   "note": "tsan 命中[-O0(rc=66) 10000\n==================\nWARNING: ThreadSanitizer: data race (pid=3580)\n  Read o; -O2(rc=66) 10000\n==================\nWARNING: ThreadSanitizer: data race (pid=3609)\n  Read o]（档位 -O0",
    "verdicts_per_run": [
     "catch",
     "catch",
@@ -182,7 +182,7 @@
    "detector": "compiler-warn",
    "layer": "compiler-warn",
    "verdict": "catch",
-   "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_mgaw2t99\\s.cpp:2:43: warning: form",
+   "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_8w1zpqa1\\s.cpp:2:43: warning: form",
    "verdicts_per_run": [
     "catch",
     "catch",
@@ -214,7 +214,7 @@
    "detector": "compiler-warn",
    "layer": "compiler-warn",
    "verdict": "catch",
-   "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_vrf9fnfg\\s.cpp:2:31: warning: comp",
+   "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_9brvrsr9\\s.cpp:2:31: warning: comp",
    "verdicts_per_run": [
     "catch",
     "catch",
@@ -230,7 +230,7 @@
    "detector": "compiler-warn",
    "layer": "compiler-warn",
    "verdict": "catch",
-   "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_qr39vwg0\\s.cpp:2:30: warning: sugg",
+   "note": "告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_qfkvqr8x\\s.cpp:2:30: warning: sugg",
    "verdicts_per_run": [
     "catch",
     "catch",

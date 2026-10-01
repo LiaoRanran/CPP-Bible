@@ -2,7 +2,7 @@
  "schema": "queyi-holdout-reveal-detail/v3",
  "reveal_index": 5,
  "generated_by": "tools/holdout_reveal_5_672h.py",
- "generated_at": "2026-10-01 23:04:30",
+ "generated_at": "2026-10-02 00:22:21",
  "summary_for": "data/holdout_reveal_5_672h.json",
  "naming_note": "672h 第 5 轮：h41-h60 实测；h1-h40 复用第 4 轮（not 重跑）",
  "samples_requested": [
@@ -335,7 +335,7 @@
    ],
    "first_run_verdict": "catch",
    "reproducible": true,
-   "note": "ubsan 命中[-O0(rc=0) written via misaligned ptr /mnt/c/Users/ASUS/AppData/Local/Temp/tmp72t9oudx/ub_alignment_violation.cpp:12:8: runtime error: store to misaligned address 0x7fffffffe501 for type 'int', which requires 4 ; -O2(rc=0) written via misaligned ptr /mnt/c/Users/ASUS/AppData/Local/Temp/tmp72",
+   "note": "ubsan 命中[-O0(rc=0) written via misaligned ptr /mnt/c/Users/ASUS/AppData/Local/Temp/tmp170nkthw/ub_alignment_violation.cpp:12:8: runtime error: store to misaligned address 0x7fffffffe501 for type 'int', which requires 4 ; -O2(rc=0) written via misaligned ptr /mnt/c/Users/ASUS/AppData/Local/Temp/tmp17",
    "source": "measured_672h",
    "planted": true,
    "layer": "sanitizer"
@@ -355,7 +355,7 @@
    ],
    "first_run_verdict": "catch",
    "reproducible": true,
-   "note": "ubsan 命中[-O0(rc=0) -2147483648 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp6fc0tvh4/_ch14_ubsan.cpp:6:7: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'; -O2(rc=0) -2147483648 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp6fc0tvh4/_ch14_ubsan.cpp:6:7: runtime error: ",
+   "note": "ubsan 命中[-O0(rc=0) -2147483648 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp84la2_od/_ch14_ubsan.cpp:6:7: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'; -O2(rc=0) -2147483648 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp84la2_od/_ch14_ubsan.cpp:6:7: runtime error: ",
    "source": "measured_672h",
    "planted": true,
    "layer": "sanitizer"
@@ -395,7 +395,7 @@
    ],
    "first_run_verdict": "catch",
    "reproducible": true,
-   "note": "tsan 命中[-O0(rc=66) ================== WARNING: ThreadSanitizer: data race (pid=941)   Read of size 4 at 0x55555555901c by thread T2:     #0 inc() /mnt/c/Users/ASUS/AppData/Local/Temp/tmpuc8klkyr/_ch147_race.cpp:3 (rv_bi; -O2(rc=66) ================== WARNING: ThreadSanitizer: data race (pid=970)   R",
+   "note": "tsan 命中[-O0(rc=66) ================== WARNING: ThreadSanitizer: data race (pid=941)   Read of size 4 at 0x55555555901c by thread T2:     #0 inc() /mnt/c/Users/ASUS/AppData/Local/Temp/tmp3mfgoaev/_ch147_race.cpp:3 (rv_bi; -O2(rc=66) ================== WARNING: ThreadSanitizer: data race (pid=970)   R",
    "source": "measured_672h",
    "planted": true,
    "layer": "sanitizer"

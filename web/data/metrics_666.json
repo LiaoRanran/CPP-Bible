@@ -1,7 +1,7 @@
 {
   "schema": "queyi-web-metrics/666",
   "generated_by": "tools/web_metrics_666.py",
-  "generated_at": "2026-10-01T23:07:09",
+  "generated_at": "2026-10-02T00:22:22",
   "metrics": {
     "cards_real": 42,
     "cards_draft": 10,
@@ -109,29 +109,29 @@
   ],
   "commits": [
     {
-      "hash": "02f652ef",
-      "date": "2026-10-01",
-      "subject": "672h W3: 预注册（holdout 21→40 扩样协议，先于任何 reveal 运行落盘）"
+      "hash": "64a61247",
+      "date": "2026-10-02",
+      "subject": "672h-F 前端收尾：charts/verdicts 两条预存失败修复（22/22 全绿 1433 断言）+ dist 校验 + 浏览器验证登记"
     },
     {
-      "hash": "88ff505d",
-      "date": "2026-10-01",
-      "subject": "672h(效率·续): slow标记35处 + fast_gate终版(worksteal 294s全量快档) + 端到端实测"
+      "hash": "db479ac1",
+      "date": "2026-10-02",
+      "subject": "672h-E 系统硬化：mypy 从 Bail 修复到 39 处已登记（本批文件清零）+ drift_watch 空值隐患修复"
     },
     {
-      "hash": "f9ca9fb4",
+      "hash": "45e741a8",
       "date": "2026-10-01",
-      "subject": "672g 收尾(前端): 操作提示样式 + 测试注册 + jsdom 冒烟 + 跨批次数字同步 + 验收报告"
+      "subject": "672k W6: 统计检验重做（扩样后全量重算 + post-hoc power + e-value + 样本量）"
     },
     {
-      "hash": "4ba2ef43",
+      "hash": "2caa51a0",
       "date": "2026-10-01",
-      "subject": "672g(前端): 星图交互修复 + experiments/learn内联脚本外抽"
+      "subject": "672j W5: 外部锚定 50 条（Core Guidelines verbatim 35 + 重建 UB 15）"
     },
     {
-      "hash": "c5baff7f",
+      "hash": "65cfe0cd",
       "date": "2026-10-01",
-      "subject": "672g(效率): 快速门禁 fast_gate.py + pytest slow 标记"
+      "subject": "672j W5: 预注册（外部锚定协议：C++ Core Guidelines verbatim 反例 + 公开 UB 类别重建）"
     }
   ],
   "unavailable": [],
