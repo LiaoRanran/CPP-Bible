@@ -283,8 +283,8 @@ def run(use_mock: bool, write: bool = True) -> dict:
     def rate(k: int, n: int) -> float | None:
         return round(k / n * 100, 1) if n else None
 
-    def by_layer(kind: str) -> dict:
-        sub = [r for r in err if r["detector"] in kind]
+    def by_layer(kinds: set[str]) -> dict:
+        sub = [r for r in err if r["detector"] in kinds]
         return {"n": len(sub), "llm_catch": sum(1 for r in sub if r["llm"] is True),
                 "fd_catch": sum(1 for r in sub if r["fd"] == "catch"),
                 "llm_rate_pct": rate(sum(1 for r in sub if r["llm"] is True), len(sub)),
@@ -295,10 +295,10 @@ def run(use_mock: bool, write: bool = True) -> dict:
     h4_delta = (None if (runtime["llm_rate_pct"] is None or static["llm_rate_pct"] is None)
                 else round(runtime["llm_rate_pct"] - static["llm_rate_pct"], 1))
 
-    usage = {}
+    usage: dict[str, int] = {}
     for r in new_rows:
         for k, v in (r.get("usage") or {}).items():
-            usage[k] = usage.get(k, 0) + int(v or 0)
+            usage[str(k)] = usage.get(str(k), 0) + int(v or 0)
 
     rep = {
         "schema": "queyi-llm-arm/672i",

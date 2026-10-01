@@ -157,6 +157,26 @@ ignore_missing_imports = true
 module = "opentimestamps.*"
 ignore_missing_imports = true
 
+# 672h 系统硬化：`numpy` 的 stub 缺口（**环境性**，不是本仓代码债）。
+# 病根：numpy 2.5.x 的 `__init__.pyi` 用 Python 3.12+ 的 `type` 语句，而本仓 mypy pin
+# `python_version = "3.11"` ⇒ mypy 在解析该 stub 时直接 `[syntax]` 报错并 **Bail**，
+# 整个 `mypy tools/` 检查被阻断（0 个真实错误被看到）。触发链：tools/result_cache_655.py
+# 与 tools/test_fast_gate.py 顶层 `import pytest` ⇒ mypy 跟进 pytest ⇒ pytest 的断言重写
+# 模块连带 import numpy ⇒ 撞上 stub 语法。
+# 处置与 yaml.* / opentimestamps.* 同款（集中声明环境缺口，不在代码里散写 ignore）：
+# `follow_imports = "skip"` ⇒ numpy 子树完全不解析（本仓无一行 numpy 代码，跳过它不损失检查力）。
+[[tool.mypy.overrides]]
+module = ["numpy", "numpy.*"]
+follow_imports = "skip"
+
+# 同上：真正的触发链是 **pytest**（tools/result_cache_655.py 与 tools/test_fast_gate.py 顶层
+# `import pytest`）。本仓不需要对 pytest 内部做类型检查 ⇒ 不跟进它的子树（连带掐断
+# pytest→numpy 的解析），比逐库打补丁更稳。@pytest.mark / fixture 等**用法**检查不受影响
+# （那些由 pytest 的 .pyi 提供，仍在解析面内；只有 pytest 内部的实现模块被跳过）。
+[[tool.mypy.overrides]]
+module = ["pytest", "pytest.*", "_pytest", "_pytest.*"]
+follow_imports = "skip"
+
 # 666 A1 备注：660 B6 把协议内核 canonical 迁到 queyi-verifier 后，本仓
 # `tools/queyi_core_*.py` / `tools/queyi_data_models_645.py` 是**薄 wrapper**
 # （importlib 动态装载 → 转发符号）⇒ mypy 在**使用方**报一串

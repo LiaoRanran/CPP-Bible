@@ -65,8 +65,10 @@ def load_checker(root: Path, spec: str) -> Callable[[Path], bool]:
     path = root / mod_s
     specm = importlib.util.spec_from_file_location(
         f"_thymus_{path.stem}_{abs(hash(str(path))) & 0xffffff:x}", path)
+    if specm is None or specm.loader is None:
+        raise ImportError(f"无法装载检查器：{mod_s}")
     mod = importlib.util.module_from_spec(specm)
-    specm.loader.exec_module(mod)           # type: ignore[union-attr]
+    specm.loader.exec_module(mod)
     fn_obj = getattr(mod, fn)
     return lambda p: bool(fn_obj(str(p)))
 

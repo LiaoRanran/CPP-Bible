@@ -39,6 +39,8 @@ N_RUNS = 3
 
 def _load_mod(name: str, path: Path):
     spec = importlib.util.spec_from_file_location(name, str(path))
+    if spec is None or spec.loader is None:
+        raise ImportError(f"无法从 {path} 构造模块规格（{name}）")
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
     return m

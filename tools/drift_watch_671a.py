@@ -80,7 +80,7 @@ ARM_FILES = {a: f"data/experiments/baseline_{a}.json" for a in ARMS}
 #: 论文里的 `87.5%（14/16` / `87.5% (14/16)` 两种写法
 CITE_RE = re.compile(r"(\d+(?:\.\d+)?)\s*%\s*[（(]\s*(\d+)\s*/\s*(\d+)(?!\d)")
 #: 前端里"像率"的键名
-RATE_KEY_RE = re.compile(r"(rate_pct|_pct|pct)$", re.I)
+RATE_KEY_RE = re.compile(r"(rate_pct|_pct|pct)$", re.IGNORECASE)
 
 
 def load_json(p: Path) -> Any | None:
@@ -105,6 +105,37 @@ def over_threshold(pct: float | None, threshold: float) -> bool:
     if math.isinf(pct):
         return True
     return pct > threshold + EPS
+
+
+def finite_or_none(x: Any) -> Any:
+    """672h：把 inf/nan 收敛成 None —— 报告要能被**严格 JSON 解析器**读。
+
+    病根：`base=0 且 cur≠0` 时相对变化是 inf，直接 round 后写进 JSON 会序列化成
+    `Infinity`（Python 方言，`JSON.parse` 直接抛错）⇒ 下游前端/审计工具会静默拿不到报告。
+    """
+    if isinstance(x, float) and not math.isfinite(x):
+        return None
+    return x
+
+
+def pct_display(pct: float | None) -> str:
+    """人类可读的相对变化（不写进 JSON 数值字段）。"""
+    if pct is None:
+        return "n/a（基线值缺失）"
+    if math.isinf(pct):
+        return "∞（基线为 0，相对变化不可定义）"
+    if math.isnan(pct):
+        return "n/a（0/0）"
+    return f"{round(pct * 100, 4)}%"
+
+
+def sanitize_json(obj: Any) -> Any:
+    """递归把非有限浮点收敛成 None（含 dict/list）。"""
+    if isinstance(obj, dict):
+        return {k: sanitize_json(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [sanitize_json(v) for v in obj]
+    return finite_or_none(obj)
 
 
 def resolve_pointer(obj: Any, pointer: str) -> tuple[bool, Any]:
@@ -175,8 +206,11 @@ def paper_candidates(root: Path) -> tuple[list[dict[str, Any]], list[str]]:
         for name in ("holdout", "corpus"):
             blk = d.get(name) or {}
             meas = blk.get("measurable") or {}
-            k, n = meas.get("numerator", meas.get("k")), meas.get("denominator", meas.get("n"))
-            if isinstance(k, int) and isinstance(n, int) and n > 0:
+            k_raw = meas.get("numerator", meas.get("k"))
+            n_raw = meas.get("denominator", meas.get("n"))
+            # 672h：显式收窄类型（Any|None ⇒ int），避免裸 Any 传播进门禁判定
+            if isinstance(k_raw, int) and isinstance(n_raw, int) and n_raw > 0:
+                k, n = int(k_raw), int(n_raw)
                 cands.append({"product": f"{rel}::{name}.measurable", "k": k, "n": n,
                               "pct": round(k / n * 100, 4), "group": "baseline_arm"})
 
@@ -185,8 +219,9 @@ def paper_candidates(root: Path) -> tuple[list[dict[str, Any]], list[str]]:
         for name, blk in (lay.get("layers") or {}).items():
             if not isinstance(blk, dict):
                 continue
-            k, n = blk.get("numerator"), blk.get("denominator")
-            if isinstance(k, int) and isinstance(n, int) and n > 0:
+            k_raw, n_raw = blk.get("numerator"), blk.get("denominator")
+            if isinstance(k_raw, int) and isinstance(n_raw, int) and n_raw > 0:
+                k, n = int(k_raw), int(n_raw)
                 cands.append({"product": f"corpus_layered_670a.json::layers.{name}", "k": k,
                               "n": n, "pct": round(k / n * 100, 4), "group": "corpus_layer"})
     return cands, problems
@@ -349,8 +384,10 @@ def check_web(root: Path, tol: float, prev_values: dict[str, Any] | None,
             continue
         pct = rel_change(prev_flat.get(key), val)
         if over_threshold(pct, threshold):
+            # 672h：数值字段只允许有限浮点（inf/nan → None），人话放 display（防 Infinity 进 JSON）
             rec = {"key": key, "baseline": prev_flat.get(key), "current": val,
-                   "pct_change_pct": (None if math.isinf(pct) else round(pct * 100, 4)),
+                   "pct_change_pct": finite_or_none(None if pct is None else round(pct * 100, 4)),
+                   "pct_change_display": pct_display(pct),
                    "source": "web/data 扫描"}
             if fresh:
                 rec["evidence"] = fresh
@@ -359,7 +396,7 @@ def check_web(root: Path, tol: float, prev_values: dict[str, Any] | None,
                 out["changed"].append(rec)
                 out["drifts"].append({
                     "kind": "web_rate_changed", "level": "block", "where": key,
-                    "message": f"前端率 {prev_flat.get(key)} → {val}（{round(pct * 100, 4)}% > "
+                    "message": f"前端率 {prev_flat.get(key)} → {val}（{pct_display(pct)} > "
                                f"±{round(threshold * 100, 2)}%）且无实验记录",
                 })
     if out["drifts"]:
@@ -554,7 +591,7 @@ def unpoison_engine_cache(root: Path) -> str | None:
 
 def core_metrics(root: Path) -> list[dict[str, Any]]:
     try:
-        import drift_watch_670c as D670      # noqa: PLC0415
+        import drift_watch_670c as D670  # noqa: PLC0415
     except Exception as e:                   # noqa: BLE001
         return [{"key": "core_metrics", "label": "670c 采集器不可用", "value": None, "unit": "?",
                  "source": "?", "formula": "?", "available": False,
@@ -697,6 +734,8 @@ def evaluate(root: Path = ROOT, out_path: Path | None = None,
     _ = report["pending_owner_671b"]
     if write:
         op.parent.mkdir(parents=True, exist_ok=True)
+        # 672h：落盘前统一收敛非有限浮点（inf/nan ⇒ None），保证严格 JSON 可解析
+        report = sanitize_json(report)
         op.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return report
 
@@ -744,6 +783,12 @@ def selftest() -> int:
     chk("相对变化：+10.01% 判漂移", over_threshold(rel_change(100, 110.01), 0.10) is True)
     chk("相对变化：缺一侧 ⇒ 不判", rel_change(None, 5) is None)
     chk("相对变化：0 → 非 0 ⇒ inf 判漂移", over_threshold(rel_change(0, 3), 0.10) is True)
+    # 672h：非有限浮点不得进 JSON（Python 的 Infinity/NaN 不是合法 JSON）
+    chk("inf ⇒ 数值字段落 None", finite_or_none(math.inf) is None)
+    chk("nan ⇒ 数值字段落 None", finite_or_none(math.nan) is None)
+    chk("显示值：inf 说人话", "∞" in pct_display(math.inf) and "基线为 0" in pct_display(math.inf))
+    _j = json.dumps(sanitize_json({"a": math.inf, "b": [math.nan, 1.0]}), ensure_ascii=False)
+    chk("sanitize 后 json.dumps 无 Infinity/NaN", "Infinity" not in _j and "NaN" not in _j)
     triples = CITE_RE.findall("**87.5%（14/16）** 与 43.8% (14/32)")
     chk("论文三元组：全角/半角都认",
         triples == [("87.5", "14", "16"), ("43.8", "14", "32")] or len(triples) == 2)

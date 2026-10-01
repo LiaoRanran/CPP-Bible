@@ -63,6 +63,8 @@ DETECTOR_LAYER = {
 
 def _load_mod(name: str, path: Path):
     spec = importlib.util.spec_from_file_location(name, str(path))
+    if spec is None or spec.loader is None:
+        raise ImportError(f"无法从 {path} 构造模块规格（{name}）")
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
     return m
@@ -82,7 +84,8 @@ def norm_kind(kind: str | None) -> str:
 
 
 def _load(p: Path) -> dict:
-    return json.loads(p.read_text(encoding="utf-8"))
+    data: dict = json.loads(p.read_text(encoding="utf-8"))
+    return data
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -285,10 +288,6 @@ def build_report(new_rows: list[dict], hist_rows: list[dict], labels: dict[str, 
     hist = tally(hist_rows, labels)
     hist["cp95"] = cp_interval(hist["error_subset"]["catch"], hist["denominator"]["value"])
 
-    def _d(blk: dict) -> float | None:
-        a, b = blk["error_subset"]["detect_rate_pct"], None
-        return a
-
     new_rate = r5["error_subset"]["detect_rate_pct"]
     old_rate = hist["error_subset"]["detect_rate_pct"]
     h4_delta = (None if (new_rate is None or old_rate is None)
@@ -408,7 +407,7 @@ def main(argv: list[str] | None = None) -> int:
     ids = parse_ids(a.samples, sorted(plan))
     print(f"[reveal5] 新样本 {len(ids)} 条 × {a.runs} 回合；判据 rv661.detect")
 
-    runs = [measure_round(rv, plan, ids) for _ in range(a.runs)]
+    runs: list[list[dict]] = [measure_round(rv, plan, ids) for _ in range(a.runs)]
     new_rows = aggregate_runs(ids, runs)
 
     # 历史复用
@@ -479,8 +478,9 @@ def selftest() -> int:
     assert ids == ["h41", "h42", "h43", "h60"], ids
     ok += 1
     # 多回合聚合：任一 catch ⇒ catch；全 unknown ⇒ unknown；否则 miss
-    runs = [[{"id": "x", "detector": "asan", "dir": "", "files": [], "verdict": v, "note": ""}]
-            for v in ("miss", "catch", "miss")]
+    runs: list[list[dict]] = [
+        [{"id": "x", "detector": "asan", "dir": "", "files": [], "verdict": v, "note": ""}]
+        for v in ("miss", "catch", "miss")]
     agg = aggregate_runs(["x"], runs)[0]
     assert agg["verdict"] == "catch" and agg["first_run_verdict"] == "miss"
     assert agg["verdicts_per_run"] == ["miss", "catch", "miss"] and not agg["reproducible"]

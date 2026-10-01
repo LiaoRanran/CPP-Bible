@@ -249,8 +249,9 @@ def _den_value(obj: dict) -> int | None:
     d = obj.get("denominator")
     if isinstance(d, dict):
         for k in ("value", "total", "n"):
-            if isinstance(d.get(k), int):
-                return d[k]
+            v = d.get(k)
+            if isinstance(v, int) and not isinstance(v, bool):
+                return int(v)
         return None
     for k in _DEN_KEYS:
         v = obj.get(k)

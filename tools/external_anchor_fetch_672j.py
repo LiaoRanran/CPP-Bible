@@ -151,7 +151,9 @@ def assemble(pool: dict, n_verbatim: int = N_VERBATIM_TARGET,
     import tempfile
 
     cands = pool["candidates"]
-    picked, skipped_uncompilable, rules_seen = [], [], set()
+    picked: list[dict] = []
+    skipped_uncompilable: list[str] = []
+    rules_seen: set[str] = set()
     scanned = 0
     for c in cands:
         if c["rule_id"] in ("N/A",) or c["rule_id"] in rules_seen:

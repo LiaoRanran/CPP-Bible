@@ -219,7 +219,7 @@ def _near(a: float | None, b: float | None, tol: float = TOL_PP) -> bool:
 def cross_check(label: str, mine: dict[str, Any], theirs: dict[str, Any],
                 problems: list[str]) -> dict[str, Any]:
     """对账：k/n 必须全等；三个比例（point/cp_low/cp_high）与 rate_pct 差 <0.1pp。"""
-    diffs = {}
+    diffs: dict[str, Any] = {}
     for key in ("k", "n"):
         a, b = mine.get(key), theirs.get(key)
         if a != b:
@@ -379,19 +379,21 @@ def selftest() -> int:
     ok = 0
     # CP 区间：与已知值对齐（17/21 → 58.1/94.6；110/114 → 91.3/99.0）
     lo, hi = cp_interval(17, 21)
+    assert lo is not None and hi is not None
     assert abs(lo * 100 - 58.1) < 0.2 and abs(hi * 100 - 94.6) < 0.2, (lo, hi)
     ok += 1
     lo, hi = cp_interval(110, 114)
+    assert lo is not None and hi is not None
     assert abs(lo * 100 - 91.3) < 0.2 and abs(hi * 100 - 99.0) < 0.2, (lo, hi)
     ok += 1
     assert cp_interval(0, 0) == (None, None)
     ok += 1
     # 端点：0/n 与 n/n
     lo, hi = cp_interval(0, 20)
-    assert lo == 0.0 and 16.0 < hi * 100 < 17.5, (lo, hi)
+    assert lo == 0.0 and hi is not None and 16.0 < hi * 100 < 17.5, (lo, hi)
     ok += 1
     lo, hi = cp_interval(20, 20)
-    assert hi == 1.0 and 82.5 < lo * 100 < 84.5, (lo, hi)
+    assert hi == 1.0 and lo is not None and 82.5 < lo * 100 < 84.5, (lo, hi)
     ok += 1
     # McNemar 精确：b=13,c=0 → 2/2^13
     assert abs(mcnemar_exact_p(13, 0) - 2 / 2 ** 13) < 1e-12

@@ -238,7 +238,7 @@ def selftest() -> int:
     chk("外部语料两个分母都在", e.get("rate_pct") is not None and e.get("rate_pct_all") is not None,
         f"({e.get('rate_pct')} / {e.get('rate_pct_all')})")
     c = fresh["metrics"].get("counterfactual") or {}
-    chk("反事实有 F1 与分母", c.get("f1") is not None and c.get("cases"),
+    chk("反事实有 F1 与分母", bool(c.get("f1") is not None and c.get("cases")),
         f"(F1={c.get('f1')} n={c.get('cases')})")
     chk("账本事件 > 0", bool(fresh["metrics"]["ledger_events"]), "")
     chk("时间线非空", len(fresh["timeline"]) >= 5, f"({len(fresh['timeline'])})")

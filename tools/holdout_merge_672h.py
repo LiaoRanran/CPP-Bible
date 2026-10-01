@@ -34,7 +34,8 @@ SECTION = "extend_672h"
 
 
 def _load(p: Path) -> dict:
-    return json.loads(p.read_text(encoding="utf-8"))
+    data: dict = json.loads(p.read_text(encoding="utf-8"))
+    return data
 
 
 def merge(write: bool) -> int:
