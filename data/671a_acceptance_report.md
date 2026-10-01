@@ -211,3 +211,19 @@ python -m pytest tests/test_gate_rules_670g.py tests/test_master_gate_670c.py \
                 tests/test_paper_sync_670c2.py tests/test_dist_perf_670c2.py -q
 cd web && npm test                              # 888 断言 + 8 页冒烟
 ```
+
+---
+
+## 9. 收尾复跑补记（提交后再验一轮发现的三件事）
+
+1. **非本批进程把 `data/669d_gate_status.json` 截成 0 字节**（mtime 09:50:14；本批没有任何命令写该文件）
+   ⇒ `tests/test_reproduce_670c.py::test_shipped_artifacts_match_expected_table` 因 `JSONDecodeError` 红。
+   **处置**：用它的**属主工具**重建 —— `python tools/run_669d_gate.py`
+   （`overall=PASS 未登记BLOCK=0 已登记=19`），再复跑该文件 **11/11 绿**。
+   刻意**没有**用 `--accept-gaps`（那会顺带改 `known_gaps`，不是"修坏文件"的正确手段）。
+2. **`tests/test_caliber_check_669.py::test_research_ci_gate_is_green` 现红**：`ci_check` 报
+   `research/paper_v0.9.md` 三处（L216/L521/L629）百分比缺 CI（116/163 条带 CI）。
+   该稿是 **671b 在改**的当前稿，不在本批可改范围 ⇒ **登记不修**（改它等于越界改他人论文）。
+3. **上一提交的标题带一个 UTF-8 BOM**（PowerShell `Out-File -Encoding utf8` 的副作用，
+   显示为 `671a: …`）。正文与 `Signed-off-by` 不受影响；按"非必要不改写已提交历史"**未** amend，
+   留给用户定夺（如要修：`git commit --amend -F <无 BOM 的消息文件>`）。
