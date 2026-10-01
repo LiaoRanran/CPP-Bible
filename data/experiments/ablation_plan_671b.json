@@ -1,0 +1,282 @@
+{
+  "schema": "queyi-ablation-plan/671b",
+  "version": "1.0",
+  "design_doc": "research/670b_ablation设计.md",
+  "executed": false,
+  "executed_note": "本批（671b）**只写脚本和设计，不跑实验**——plan 里所有结果字段均为占位符（{{TODO_ablation_*}}），不得当作实验结果引用。",
+  "groups": [
+    {
+      "id": "A0",
+      "name": "Full（参照系）",
+      "removed": "无",
+      "hypothesis": "—（基线）",
+      "expected": "最佳",
+      "primary_metric": "detect_rate_measurable",
+      "metrics": [
+        "检出率",
+        "unknown 率",
+        "假 pass 率",
+        "成本"
+      ],
+      "detectors": [
+        "D2 holdout",
+        "D3 corpus"
+      ],
+      "test": "参照系",
+      "implementation": "现状系统（照实读逐样本判决）",
+      "git_revert": false,
+      "command": "python tools/baseline_670a.py --run",
+      "stat_tool": "tools/ablation_stats_671b.py",
+      "feasible": true,
+      "blockers": [],
+      "prereq": [
+        "data/experiments/baseline_fd.json"
+      ],
+      "prereq_present": [
+        "data/experiments/baseline_fd.json"
+      ],
+      "prereq_missing": [],
+      "fallback": "",
+      "result_placeholder": "{{TODO_ablation_A0}}",
+      "status": "READY"
+    },
+    {
+      "id": "A1",
+      "name": "−failure-derived",
+      "removed": "657 之后新增的规则集",
+      "hypothesis": "H3：检测率下降",
+      "expected": "holdout/corpus 下降",
+      "primary_metric": "detect_rate_measurable",
+      "metrics": [
+        "Δ检出率 vs A0",
+        "unknown 率"
+      ],
+      "detectors": [
+        "D2 holdout",
+        "D3 corpus"
+      ],
+      "test": "精确 McNemar（vs A0，同批配对）",
+      "implementation": "把规则集回退到 657 时点的快照",
+      "git_revert": true,
+      "command": "python tools/ablation_671b.py --run --only A1   # 需 657 规则集快照",
+      "stat_tool": "tools/ablation_stats_671b.py",
+      "feasible": true,
+      "blockers": [],
+      "prereq": [
+        "data/experiments/baseline_fd.json"
+      ],
+      "prereq_present": [
+        "data/experiments/baseline_fd.json"
+      ],
+      "prereq_missing": [],
+      "fallback": "",
+      "result_placeholder": "{{TODO_ablation_A1}}",
+      "status": "READY"
+    },
+    {
+      "id": "A2",
+      "name": "−holdout 隔离",
+      "removed": "holdout 的盲态（改为 dev 集）",
+      "hypothesis": "过拟合：dev 升、blind 不升",
+      "expected": "dev↑ / blind→",
+      "primary_metric": "blind_detect_rate",
+      "metrics": [
+        "dev 检出率",
+        "blind 检出率",
+        "dev−blind 差"
+      ],
+      "detectors": [
+        "D2（新建 dev 划分）",
+        "D2 blind 复测"
+      ],
+      "test": "Fisher 精确（独立）或 Δ 的 CI",
+      "implementation": "把 holdout 从盲态改为开发集，用同批样本调规则后复测",
+      "git_revert": false,
+      "command": "python tools/ablation_671b.py --run --only A2   # 需先新建 dev/blind 划分",
+      "stat_tool": "tools/ablation_stats_671b.py",
+      "feasible": true,
+      "blockers": [],
+      "prereq": [
+        "data/experiments/baseline_fd.json"
+      ],
+      "prereq_present": [
+        "data/experiments/baseline_fd.json"
+      ],
+      "prereq_missing": [],
+      "fallback": "",
+      "result_placeholder": "{{TODO_ablation_A2}}",
+      "status": "READY"
+    },
+    {
+      "id": "A3",
+      "name": "−provenance",
+      "removed": "边界三元组校验",
+      "hypothesis": "证据不可追溯 ⇒ 误报↑",
+      "expected": "假 pass 率↑",
+      "primary_metric": "false_pass_rate",
+      "metrics": [
+        "假 pass 率",
+        "unknown 率"
+      ],
+      "detectors": [
+        "D2 holdout",
+        "D3 corpus"
+      ],
+      "test": "Fisher（假 pass 是稀有事件，McNemar 不稳）",
+      "implementation": "关闭 mutation_set_hash / mutation_count / generator_version 校验",
+      "git_revert": false,
+      "command": "python tools/ablation_671b.py --run --only A3",
+      "stat_tool": "tools/ablation_stats_671b.py",
+      "feasible": true,
+      "blockers": [],
+      "prereq": [
+        "data/experiments/baseline_fd.json"
+      ],
+      "prereq_present": [
+        "data/experiments/baseline_fd.json"
+      ],
+      "prereq_missing": [],
+      "fallback": "",
+      "result_placeholder": "{{TODO_ablation_A3}}",
+      "status": "READY"
+    },
+    {
+      "id": "A4",
+      "name": "−mutation",
+      "removed": "变异测试（L1 自证层）",
+      "hypothesis": "内部测试强度下降",
+      "expected": "存活变异↑",
+      "primary_metric": "mutation_kill_rate",
+      "metrics": [
+        "变异 kill rate（**仅内部指标，不是检测率**）"
+      ],
+      "detectors": [
+        "变异集 core/all"
+      ],
+      "test": "描述性；**不作缺陷检测率 Claim**",
+      "implementation": "关闭 mutation_test_656 的 kill 判定",
+      "git_revert": false,
+      "command": "python tools/ablation_671b.py --run --only A4",
+      "stat_tool": "tools/ablation_stats_671b.py",
+      "feasible": true,
+      "blockers": [],
+      "prereq": [
+        "data/656_mutation_report_core.json"
+      ],
+      "prereq_present": [
+        "data/656_mutation_report_core.json"
+      ],
+      "prereq_missing": [],
+      "fallback": "",
+      "result_placeholder": "{{TODO_ablation_A4}}",
+      "status": "READY"
+    },
+    {
+      "id": "A5",
+      "name": "random-budget（**关键对照**）",
+      "removed": "失败驱动选资产 → 随机选同数量资产",
+      "hypothesis": "H3：不如 failure-driven",
+      "expected": "低于 A0",
+      "primary_metric": "detect_rate_measurable",
+      "metrics": [
+        "Δ检出率 vs A0",
+        "分配表（种子 + 选中资产）"
+      ],
+      "detectors": [
+        "D2 holdout",
+        "D3 corpus"
+      ],
+      "test": "精确 McNemar（vs A0，同批配对）",
+      "implementation": "同预算随机选同数量资产（必须带种子 + 分配表）",
+      "git_revert": false,
+      "command": "python tools/run_b3_671b.py --strategy random --seed 20260930  # 需拆仓接口",
+      "stat_tool": "tools/ablation_stats_671b.py",
+      "feasible": false,
+      "blockers": [
+        "资产选择接口 select_assets(pool,n,strategy,seed) 在拆仓验证器 queyi-verifier，主仓不可见（670a 已登记 BLOCKED）"
+      ],
+      "prereq": [
+        "data/experiments/baseline_fd.json"
+      ],
+      "prereq_present": [
+        "data/experiments/baseline_fd.json"
+      ],
+      "prereq_missing": [],
+      "fallback": "tools/select_assets_671b.py（主仓仪器级实现；明确标为近似，非真 B3）",
+      "result_placeholder": "{{TODO_ablation_A5}}",
+      "status": "BLOCKED"
+    }
+  ],
+  "contrasts": [
+    {
+      "contrast": "A0 − A1",
+      "design": "paired",
+      "test": "精确 McNemar（同批配对）",
+      "both_ready": true,
+      "delta_placeholder": "{{TODO_delta_A0_A1}}",
+      "ci_crosses_zero": null,
+      "note": ""
+    },
+    {
+      "contrast": "A0 − A2",
+      "design": "unpaired",
+      "test": "Fisher 精确（独立样本）",
+      "both_ready": true,
+      "delta_placeholder": "{{TODO_delta_A0_A2}}",
+      "ci_crosses_zero": null,
+      "note": ""
+    },
+    {
+      "contrast": "A0 − A3",
+      "design": "paired",
+      "test": "精确 McNemar（同批配对）",
+      "both_ready": true,
+      "delta_placeholder": "{{TODO_delta_A0_A3}}",
+      "ci_crosses_zero": null,
+      "note": ""
+    },
+    {
+      "contrast": "A0 − A4",
+      "design": "paired",
+      "test": "精确 McNemar（同批配对）",
+      "both_ready": true,
+      "delta_placeholder": "{{TODO_delta_A0_A4}}",
+      "ci_crosses_zero": null,
+      "note": ""
+    },
+    {
+      "contrast": "A0 − A5",
+      "design": "paired",
+      "test": "精确 McNemar（同批配对）",
+      "both_ready": false,
+      "delta_placeholder": "{{TODO_delta_A0_A5}}",
+      "ci_crosses_zero": null,
+      "note": "**关键对照**：CI 跨 0 ⇒『失败驱动优于随机预算』不成立，必须原样报告（670b 设计 §1/§4）"
+    }
+  ],
+  "summary": {
+    "n_groups": 6,
+    "n_ready": 5,
+    "n_blocked": 1,
+    "blocked_ids": [
+      "A5"
+    ]
+  },
+  "stat_primitives": [
+    "mcnemar_exact",
+    "cohens_h",
+    "fisher_exact",
+    "bh_fdr",
+    "holm",
+    "delta_ci_paired",
+    "paired_delta_ci",
+    "comparison",
+    "sample_size_two_proportions",
+    "sample_size_paired_mcnemar"
+  ],
+  "red_lines": [
+    "本批不跑实验（671b 任务书）",
+    "所有数字必须来自已有产物，不编造实验结果",
+    "A5/A1/A2 的结构性阻塞如实登记（不因『想跑』而降级为近似冒充真实验）"
+  ]
+}

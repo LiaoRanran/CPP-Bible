@@ -11,7 +11,8 @@
   4. 所有 `\\section` 都有 `\\label`
   5. 所有 `\\ref` 都有对应 `\\label`
   6. 摘要 ≤ 250 词
-  7. 无 TODO/FIXME/HACK 残留（`\\TODO{670a}` 为已知占位，放行）
+  7. 无 TODO/FIXME/HACK 残留（已知占位放行：`\\TODO{670a}` 宏，以及**已登记的** `{{TODO_ablation_*}}`
+     占位——登记来源 `data/experiments/ablation_plan_671b.json`；未登记的 `{{TODO_*}}` 仍判失败）
 
 只读。退出码：0 = 全通过；1 = 有失败项。
 """
@@ -28,9 +29,33 @@ LATEX = os.path.join(ROOT, "research", "latex")
 TEX = os.path.join(LATEX, "queyi_neurips2027.tex")
 AUX = os.path.join(LATEX, "queyi_neurips2027.aux")
 LOG = os.path.join(LATEX, "queyi_neurips2027.log")
+ABLATION_PLAN = os.path.join(ROOT, "data", "experiments", "ablation_plan_671b.json")
 
 MAIN_PAGE_LIMIT = 9
 ABSTRACT_WORD_LIMIT = 250
+
+
+def registered_placeholders() -> set[str]:
+    """从 ablation 计划产物读出**已登记**的占位符；读不到则返回空集（更严格）。"""
+    try:
+        with open(ABLATION_PLAN, encoding="utf-8") as fh:
+            plan = json.load(fh)
+    except (OSError, ValueError):
+        return set()
+    names: set[str] = set()
+
+    def walk(node):
+        if isinstance(node, dict):
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v)
+        elif isinstance(node, str) and node.startswith("{{TODO_") and node.endswith("}}"):
+            names.add(node)
+
+    walk(plan)
+    return names
 
 
 def run() -> dict:
@@ -85,12 +110,24 @@ def run() -> dict:
     else:
         add("摘要≤250词", False, "未找到 abstract 环境")
 
-    # 7. TODO/FIXME/HACK（放行 \TODO{670a}）
+    # 7. TODO/FIXME/HACK（放行 \TODO{670a} 宏 与 已登记的 {{TODO_ablation_*}} 占位）
     stripped = re.sub(r"\\newcommand\{\\TODO\}\[1\]\{[^\n]*\}", "", tex)  # 去掉宏定义本身
     stripped = re.sub(r"\\TODO\{[^}]*\}", "", stripped)                   # 去掉已知占位 \TODO{670a}
+    # LaTeX 里占位写成 \{\{TODO\_ablation\_A0\}\}：先反解义，再与登记表比对
+    stripped = stripped.replace("\\{", "{").replace("\\}", "}").replace("\\_", "_")
+    registered = registered_placeholders()
+    seen_placeholders = set(re.findall(r"\{\{TODO_[A-Za-z0-9_]*\}\}", stripped))
+    unregistered = sorted(seen_placeholders - registered) if registered else sorted(seen_placeholders)
+    for ph in registered:                                                 # 只放行已登记的
+        stripped = stripped.replace(ph, "")
     todos = re.findall(r"\b(TODO|FIXME|HACK)\b", stripped)
-    add("无 TODO/FIXME/HACK 残留", not todos,
-        f"发现 {len(todos)} 处: {sorted(set(todos))}" if todos else "仅 \\TODO{670a} 占位（已放行）")
+    ok7 = not todos and not unregistered
+    detail = f"仅已登记占位（TODO{{670a}} 宏 + {len(registered & seen_placeholders)} 个 ablation 占位）"
+    if unregistered:
+        detail = f"发现未登记占位: {unregistered}"
+    elif todos:
+        detail = f"发现 {len(todos)} 处: {sorted(set(todos))}"
+    add("无 TODO/FIXME/HACK 残留", ok7, detail)
 
     failed = [c for c in checks if not c["ok"]]
     return {"checks": checks, "failed": len(failed),

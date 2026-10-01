@@ -1,0 +1,130 @@
+{
+  "schema": "queyi-b3-plan/671b",
+  "version": "1.0",
+  "executed": false,
+  "executed_note": "本批（671b）**只写脚本和设计，不跑实验** ⇒ 所有结果字段为占位符，不得当作实验结果引用。",
+  "prereq": {
+    "checks": {
+      "select_assets_shim": true,
+      "b3_design": true,
+      "ablation_plan": true,
+      "sample_size": true,
+      "baseline_random_670a": true
+    },
+    "missing": [],
+    "ok": true
+  },
+  "arms": {
+    "FD": {
+      "strategy": "failure_driven",
+      "definition": "照实读逐样本判决（sanitizer + 本机编译器全用）",
+      "source": "data/experiments/baseline_fd.json",
+      "detect_rate_holdout": "{{TODO_b3_fd_holdout}}",
+      "detect_rate_corpus": "{{TODO_b3_fd_corpus}}"
+    },
+    "B3_random": {
+      "strategy": "random",
+      "definition": "同预算（同资产数）随机选资产；**主仓为仪器级代理**",
+      "seed": 20260930,
+      "picked": [
+        "tsan",
+        "perf-counter",
+        "cross-compile",
+        "measure"
+      ],
+      "allocation_table": [
+        {
+          "asset": "tsan",
+          "rank": 1
+        },
+        {
+          "asset": "perf-counter",
+          "rank": 2
+        },
+        {
+          "asset": "cross-compile",
+          "rank": 3
+        },
+        {
+          "asset": "measure",
+          "rank": 4
+        }
+      ],
+      "detect_rate_holdout": "{{TODO_b3_random_holdout}}",
+      "detect_rate_corpus": "{{TODO_b3_random_corpus}}",
+      "caveat": "主仓池=仪器池（非拆仓真资产池）⇒ Δ 只作方向性读法"
+    }
+  },
+  "budget_alignment": {
+    "required": true,
+    "rule": "|selected(FD)| == |selected(B3_random)|",
+    "matched_dims": [
+      "资产数",
+      "语料",
+      "编译档 -O0/-O2",
+      "判定器版本"
+    ],
+    "verified": true
+  },
+  "comparison": {
+    "design": "paired",
+    "test": "精确 McNemar（FD vs B3，同批样本）",
+    "effect_size": "Cohen's h（必报差值 + CI）",
+    "multiplicity": "B3 是预先指定的确认性对照 ⇒ Holm",
+    "delta_placeholder": "{{TODO_b3_delta}}",
+    "mcnemar_p_placeholder": "{{TODO_b3_p}}",
+    "cohens_h_placeholder": "{{TODO_b3_h}}",
+    "ci_placeholder": "{{TODO_b3_ci}}",
+    "decision_rule": "Δ 的 CI 跨 0 ⇒ 『失败驱动优于随机预算』不成立，原样报告"
+  },
+  "proxy_consistency": {
+    "ok": true,
+    "seed": 20260930,
+    "n": 4,
+    "shim": [
+      "tsan",
+      "perf-counter",
+      "cross-compile",
+      "measure"
+    ],
+    "ref_670a": [
+      "cross-compile",
+      "measure",
+      "perf-counter",
+      "tsan"
+    ],
+    "same_set": true,
+    "same_order": false,
+    "note": "B3 的『选中集合』语义与次序无关；分配表按 rank 记录次序"
+  },
+  "sample_size_reality": {
+    "delta_target_pp": 15,
+    "n_pairs_needed": 173,
+    "current_holdout": 16,
+    "current_corpus": 32,
+    "verdict": "当前可测 n=16 ⇒ 远不足以支撑 ±10.0pp 结论"
+  },
+  "related_ablation": {
+    "A5_status": "BLOCKED",
+    "A5_blockers": [
+      "资产选择接口 select_assets(pool,n,strategy,seed) 在拆仓验证器 queyi-verifier，主仓不可见（670a 已登记 BLOCKED）"
+    ]
+  },
+  "blocked": [
+    {
+      "item": "真 B3（拆仓验证资产池）",
+      "status": "BLOCKED",
+      "need": "queyi-verifier 暴露 select_assets(pool, n, strategy, seed) -> [asset] + 分配表"
+    },
+    {
+      "item": "主仓代理 B3（仪器级）",
+      "status": "READY（接口已建，**本批不跑**）"
+    }
+  ],
+  "red_lines": [
+    "本批不跑实验（671b 任务书）",
+    "主仓 shim 是**代理**，Δ 只作方向性读法，不进确认性 Claim",
+    "预算必须对齐（两臂同资产数）",
+    "分配表必须落盘（含 seed + 选中资产）"
+  ]
+}

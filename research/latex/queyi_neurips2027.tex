@@ -557,6 +557,39 @@ Batch & New capability & holdout (true/caliber) & mutation core & Nature \\
 The holdout column is \emph{not the same $X$}, so it must not be read as evolution. The only
 same-sample re-measurement is 668 vs.\ 665, and it changed the \emph{flag}, not the capability.
 
+\paragraph{E4 --- Ablation framework (A0--A5; design frozen, experiments \emph{not} run).}
+We re-express the pre-registered ablations as six \emph{same-batch-executable} groups A0--A5, each
+with a written hypothesis (H) and a decision rule. Results are \emph{registered} as
+\texttt{\{\{TODO\_ablation\_A0\}\}} \dots{} \texttt{\{\{TODO\_ablation\_A5\}\}}: this batch froze the
+design and the scripts, it did \textbf{not} run the groups.
+\begin{table}[t]
+\caption{E4. Ablation groups A0--A5. Each row writes its hypothesis \emph{before} results.}
+\label{tab:e4}
+\centering
+\small
+\begin{tabular}{@{}clp{3.3cm}p{3.6cm}l@{}}
+\toprule
+ID & Remove/change & Hypothesis & Primary metric & Result \\
+\midrule
+A0 & Full system (baseline) & --- & detection rate & \texttt{\{\{TODO\_ablation\_A0\}\}} \\
+A1 & $-$failure-derived rules & H: detection drops & $\Delta$ detection vs.\ A0 & \texttt{\{\{TODO\_ablation\_A1\}\}} \\
+A2 & new blind split & H: recall stable & $\Delta$ recall vs.\ A0 & \texttt{\{\{TODO\_ablation\_A2\}\}} \\
+A3 & $-$evidence layer & H: \texttt{unknown} rises & \texttt{unknown} rate & \texttt{\{\{TODO\_ablation\_A3\}\}} \\
+A4 & $-$boundary enforcement & H: false-pass rises & false-pass rate & \texttt{\{\{TODO\_ablation\_A4\}\}} \\
+A5 & random-budget control & H: below A0 & $\Delta$ detection vs.\ A0 & \texttt{\{\{TODO\_ablation\_A5\}\}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+\textbf{The key contrast is A0 - A5} (failure-driven vs.\ same-budget random asset selection): it is
+the paper's core-mechanism falsifier. \textbf{If the CI of $\Delta(\text{A0} - \text{A5})$ crosses
+0, then ``failure-driven beats same-budget random'' does \emph{not} hold.} A5 is \textbf{BLOCKED}
+(the split-repo \texttt{select\_assets} is missing); A1 needs a git-history ruleset snapshot; A2
+hits the \emph{irreversible-blindness} barrier (once the holdout is revealed it cannot be re-blinded,
+so a \emph{new} split is required). \textbf{Reality check:} at the current measurable $n=16/32$,
+detecting $\Delta=15$pp needs $n\approx138$ (paired) / $\approx170$ per group (independent); the
+$\pm10$pp half-width target needs $n\approx104$. \textbf{Today the contrast cannot yield an
+interpretable $\Delta$.}
+
 % =====================================================================
 \section{Analysis}
 \label{sec:analysis}
@@ -700,6 +733,37 @@ binomial tail on discordant pairs. Red lines: no ``significantly better''; do no
 same-criterion $F_1{=}1.0$ ``calibrated''. All criteria are recomputed, never copied from
 artifacts. Residual-risk-to-gate mapping: Construct$\to$boundary gate; Internal$\to$caliber-consistency
 gate; Statistical$\to$frozen-stats gate; External$\to$baseline gate; Temporal$\to$time anchor (placeholder).
+
+\paragraph{Effect-size labels (\textbf{medium}, not ``large'').} Cohen's $h$ thresholds are
+negligible $<$0.2 / small 0.2 / medium 0.5 / large $\ge$0.8. The headline FD-vs-Static effect
+on the corpus is $h=\textbf{0.72}$, which is \textbf{medium} (\emph{not} ``large''): an earlier draft
+labelled it ``large''. Labels must follow thresholds---a mislabelled magnitude misleads as much as a
+wrong number (the other $h=1.91$ is genuinely large; reading 0.72 and 1.91 as one magnitude is the error).
+
+\paragraph{Sample size (recomputed, Cohen 1988; paired via Connor 1987/Lachin).}
+\begin{table}[h]
+\caption{Recomputed sample size (power $1-\beta=0.8$, two-sided $\alpha=0.05$).}
+\label{tab:samplesize}
+\centering
+\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Design & Difference & $n$ (per group) \\
+\midrule
+Two independent proportions & 0.35$\to$0.50 & 170 \\
+Two independent proportions & 0.35$\to$0.55 & 96 \\
+Two independent proportions & 0.35$\to$0.45 & 376 \\
+Paired (exact McNemar, $\psi{=}0.3$) & 0.35$\to$0.50 & 103 \\
+Paired (exact McNemar, $\psi{=}0.4$) & 0.35$\to$0.50 & 138 \\
+Paired (exact McNemar, $\psi{=}0.5$) & 0.35$\to$0.50 & 173 \\
+\midrule
+CI half-width target & $\pm10$pp & 104 \\
+\bottomrule
+\end{tabular}
+\end{table}
+At the current measurable $n=16/32$ the $\pm10$pp half-width needs $n\approx104$; a $\Delta=15$pp
+paired contrast needs $n\approx138$, an independent one $\approx170$ per group. These are why the
+key ablation contrast A0 - A5 is reported as a design, not a result.
 
 \section{Per-sample Detail}
 \label{app:persample}

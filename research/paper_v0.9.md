@@ -1,0 +1,686 @@
+# 阙疑（Queyi）：让**验证能力**可被独立验收
+## —— 面向 LLM 生成技术知识的失败驱动验证系统（v0.9 · 671b · 含 baseline 三臂 + ablation 框架）
+
+> **本稿说明**：基于 v0.8 深化而成——保留 9 页主文结构（参考文献与附录不计），
+> **新增 §6.2 ablation 框架（A0–A5，设计已冻结、实验未跑）**、**§6.5 统计检验深化**、
+> **§7.6/§7.7 新增分析**；术语统一为"**检测器**"；仓库路径匿名化为**通用描述**。
+> 所有数字**现算自仓库产物**；**未跑的实验一律标 `{{TODO_ablation_*}}`，绝不编造**。
+>
+> **本稿的诚实边界（先写在最前）**：ablation 六组**设计已完成、实验一组未跑**
+> （671b 任务书红线：只写脚本和设计）；真 B3 与真 `detect_static` 仍 **BLOCKED**。
+> 因此凡是依赖 ablation 结果的 Claim，本稿**一律不给结论**，只给**预写假设 + 判读规则**。
+
+---
+
+## 摘要
+
+LLM 让技术知识的**生成**成本趋近于零，**验证**成本却不变。已有的两条路都不解决问题：**用模型评模型**把验证者与被验证者放进同一失效域；**检测文本是否 AI 生成**则答错了问题——来源与断言真假无关。
+
+本文提出**阙疑（Queyi）**：把"结论—证据—复算"绑成一条**可被外部打断**的链。对象是**可执行的 C++ 断言**；判决是**四态 `pass/fail/unknown/contradict`**（`unknown` 与 `miss` 严格分离）；可信度来自 **provenance 与 semantic scope 强制拆分**、**不依赖内核的元状态对账**、以及**失败驱动的验证能力演化闭环**。
+
+系统现有 **67** 条判决规则、**42** 张实卡、**452** 事件权威账本、Merkle 覆盖 **5** 个受控目录；盲 holdout 检出率 **87.5%（14/16，95% CI [61.7, 98.4]）**，外部 corpus 可测 **43.8%（14/32，[26.4, 62.3]）**。
+
+**在同一批样本上的对照（新增）**：失败驱动（FD）的 holdout 检出 **87.5%** 显著高于**静态口径臂 6.2%（1/16）**（Δ **+81.3pp**；配对精确 McNemar **p=0.0002**，Cohen's h **1.91**）与**随机仪器代理 6.2%**；corpus 上 **43.8% vs 12.5%**（Δ +31.3pp，p=0.002）。**Δ 的下界 ≥31.5pp**。
+
+**局限**：两个核心数字**依赖特定 WSL 检测环境（换环境即失败）**；样本量小（holdout n=16 / corpus n=32；±10pp 半宽需 **n≈104**）；**Static 臂是口径重分箱（非重跑）、随机臂是仪器级代理（非真 B3）**，真 `detect_static` / `select_assets` 因拆仓接口缺失而 **BLOCKED**。故本文主张"**机制可审计 + 在同批样本上显著优于静态/随机口径**"，**不主张**优于真正的静态检测器或真 B3。
+
+**新增（v0.9）· ablation 框架已冻结、实验未跑**：本文把核心机制的可否证条件写成 **六组 ablation（A0–A5）**，每组**预写假设**（H）与**判读规则**，其中 **A0 − A5（失败驱动 vs 同预算随机选资产）是唯一能证伪核心主张的对照**——若其 Δ 的 CI **跨 0**，则"失败驱动优于随机预算"**不成立**。**但当前可测 n=16/32，检出 Δ=15pp 需 n≈103–173（配对）/≈170/组（独立）** ⇒ **该对照今天跑不出可判读的 Δ**，这是投稿前的**硬缺口**。六组中 **A5 因缺 `select_assets` 而 BLOCKED**；**A1 需回退 git 历史取规则集快照**；**A2 遇到"盲态不可逆"结构性障碍**（holdout reveal 后不可回盲，只能用新建划分）。
+
+**关键词**：知识验证 · 四态判决 · 失败驱动演化 · provenance 审计 · 可复现评估 · LLM 生成内容
+
+---
+
+## 1. 引言（Introduction）
+
+### 1.1 问题：生成容易，验证困难
+
+LLM 可在几分钟内写出上千条 C++ 技术断言（"这个写法是未定义行为""这个优化在 -O2 下成立"）。这些断言**量大**（人工核不动）、**似真**（语法术语语气都对）、**错误隐蔽**（只在特定编译档/编译器/平台暴露）。于是产生不对称：**生成成本趋近于零，验证成本不变**。这是本工作的起点。
+
+### 1.2 三条动机（为什么现有办法不够）
+
+**动机一 · 分数高不等于能力强。** SWE-bench 把"修真实 issue"变成编码能力标准标尺 [1]，但后续工作给出系统性反证：SWE-bench-Verified 上的提升**部分来自记忆而非推理**——模型在该仓库定位准确率最高 76%，仓库外同类任务只有 53% [2]；模型在 SWE-bench-Verified 上的表现是另外两个同类基准的 3 倍 [3]；SWE-MERA 报告 32.67% 的成功补丁涉及解法泄漏、31.08% 因测试不充分误通过 [4]。**意义**：验证系统若用自己的数据测自己，会复现同样失败 ⇒ 我们选择**外部样本优先、盲态不可逆、分层报告**。
+
+**动机二 · AI 文本检测答错了问题。** DetectGPT [5] 与水印 [6] 都在回答"文本是不是 AI 写的"，但该判据本身随长度/领域急剧退化且对改写脆弱 [7]；更根本的是——**"文本来源"与"断言真假"是两个独立问题**。**意义**：我们不检测来源，只**检验断言**（编译/告警/sanitizer/跨编译器/跨档差分）。
+
+**动机三 · provenance 从"好习惯"变成"义务"。** 欧盟《人工智能法》Regulation (EU) 2024/1689 第 50 条对生成式 AI 输出规定透明度义务 [8]。这与本系统的 provenance 设计同向：**每条知识须携带"谁生成/谁验/证据在哪/在何条件成立"**。
+
+### 1.3 贡献（三段式）
+
+1. **一个验证系统（§4）**：`artifact → verifier → verdict → ledger` 四层结构；四态判决；L0/L1 门禁分层；**provenance 与 semantic scope 强制拆分**；**不依赖内核的元状态对账器**（反自证）；核心机制——**失败驱动的验证能力演化闭环**。
+2. **一套评估协议（§5）**：五层数据集 D0–D4；三类 budget-matched baseline；六组 ablation（每组预写假设）；七项指标；**先冻结后执行**的统计口径。
+3. **一份开放 artifact（§5、§9）**：Merkle 目录根 + 透明日志 + 452 事件账本 + 逐样本明细 + 单命令复算。任何人可**不信任我们而验证我们**：（a）复跑一致性检查，（b）用给定命令重跑检测，（c）在不服时指出**哪一环**证据不足。
+
+### 1.4 我们不主张什么
+
+**不**主张更好的 C++ 教材，**不**主张更强的检测器，**不**提供形式化证明。**不**声称"验证器变强了"——除非这个"变强"是在**同一批外部样本、同一口径**下被度量的（§6.3 专门测这件事）。
+
+---
+
+## 2. 相关工作（Related Work）
+
+> 本章按**四条线**压缩陈述；**七个方向的详细文献表**见**附录 F**。所有对比均为**定位性/定性**，不是对各自系统的实测结论。
+
+**（1）自演化 / 抗污染 benchmark（演化的是题目）。** Benchmark Self-Evolving [9]、ArenaBencher [10]、SWE-bench-Live [11]、DynaBench [12]、LiveBench [13] 都在对抗"模型记住了题目"，但它们演化的是**被测对象**，"谁来判、判得对不对"仍由固定测试/裁判承担。
+
+**（2）LLM 变异引导的测试生成（最接近的工程形态）。** ACH [14] 与 MUTGEN [15] 用变异反馈驱动测试生成，把变异测试从**评估手段**变成**生成手段**；Cleverest [16] 做即时回归测试生成。我们**复用**这一思路（内部自证层），但**拒绝**把变异得分当缺陷检测率（§3.3 T7、§8）。
+
+**（3）自我验证 / LLM-as-a-Judge / 形式化（部分采用、部分拒绝）。** LLM-as-a-judge [17] 是实用的可扩展评审手段，我们**只在"生成候选"环节用 LLM，判决环节全部程序化**（judge 与被 judge 共享失效域）；seL4 [18]、CompCert [19] 证明"证明力可极强"，但人力成本高、覆盖面窄、难外部复核——我们**不追形式化证明**，只追"**证据可被第三方逐条复算**"；变异测试综述 [20] 采用其框架，但只用于自证层。
+
+**（4）度量治理 / 可复现性 / 溯源审计（方法学来源）。** Goodhart/Strathern [21]、reward hacking [22]、奖励过优化 [23]；Datasheets [24] 与 Model Cards [25] 是"文档化即治理"；可复现性报告 [26]；统计口径 [27]–[32]；Merkle [35] 与溯源审计 [43][44]。这些构成本文的**方法学与工程治理来源**。
+
+**（5）LLM 代码错误分类（与 §7.1 直接相连）。** 近期实证研究给出 LLM 生成代码的**错误分类法**：一类从"生成失败发生在哪"出发 [47]，一类从"bug pattern 及其分布"出发 [48]。**与本文的关系**：本文 §7.1 的 A/B/C 三层**不是**错误难度分类，而是**按检测器可用性**分类——两者**不可互换**；这两篇提供的是"错误类型本身如何分类"的对手方口径，正好用来说明**为什么我们的层不能读作"难易"**（§8.1 construct 威胁）。
+
+**定位（对比表）**：
+
+| 维度 | Benchmark 演化 | 变异引导测试 | 形式化验证 | **阙疑（本工作）** |
+|---|---|---|---|---|
+| 演化的对象 | 题目/样本 | 测试与变异体 | 证明（静态） | **判决能力与证据获取能力** |
+| 谁判对错 | 固定测试/裁判 | 固定测试 oracle | 证明检查器 | **程序化规则 + 四态 + 元状态对账** |
+| 能否表达"不知道" | 通常不能 | 通常不能 | 不适用 | **能（`unknown` 是一等公民）** |
+| 分数提升的含义 | 模型变强 | 测试套件变强 | 无分数 | **验证能力变强**（需外部样本度量） |
+| 防"刷分"机制 | 换新题 | 换变异体 | 不适用 | **失败驱动 + 盲态 + 预算匹配对照** |
+
+**我们不是什么**：**不是** benchmark evolution（我们演化尺子，不是题目）；**不是** mutation testing（变异只是内部自证组件）；**不是** self-verification（判决全部程序化，元状态由独立对账器核对）；**不是** RAG/文本相似度（我们验证**可执行断言**，不是文本像不像）。
+
+---
+
+## 3. 问题定义与威胁模型（Problem & Threat Model）
+
+### 3.1 形式化
+
+- **知识断言** $a$：可判定陈述 + **边界三元组** $\langle$ 输入域 $D$、前提 $P$、失效条件 $F \rangle$。
+- **证据** $e$：一次可重放观测（编译器版本 + 命令 + 优化档 + 输出 + 内容寻址哈希）。
+- **判决** $v \in \{\texttt{pass},\texttt{fail},\texttt{unknown},\texttt{contradict}\}$；**验证能力** $\mathcal{C}$ = 可用证据获取手段集合（检测器/编译器/档位/平台）。
+
+**目标不是最大化 $\Pr[v=\texttt{pass}]$，而是最大化"判决与真值的一致率"，且不许把 `unknown` 伪装成 `pass`。**
+
+### 3.2 为什么必须是四态
+
+`unknown` 是一等公民：**"检测器不可用"与"检测器说没问题"是两种不同的知识状态**。把 `unknown` 记成 `miss` ⇒ 低估能力且污染分母；记成 `pass` ⇒ **假 pass**（最危险）；把 `miss` 记成 `unknown` ⇒ 掩盖能力缺口。故规定：**分母 = catch + miss（可测样本）**，`unknown` 单独报告、不计入分母，`not_error` 单列。口径写进产物（`denominator` 字段），不写在正文里。
+
+### 3.3 十二类威胁（T1–T12）
+
+| # | 威胁 | 缓解机制 | 残余风险 |
+|---|---|---|---|
+| T1 | 自证（工具链证明自己） | 元状态对账器**不依赖内核**（§4.5） | 对账器仍需人核；`--check` ≠ 独立实现 |
+| T2 | 自造分布偏差（变异算子是我们设计的） | 盲 holdout + 外部 corpus（D2/D3） | 外部样本量小（§8） |
+| T3 | holdout 泄漏 | reveal **不可逆**；默认不扫 holdout 目录 | 追加的 10 条**无盲态** |
+| T4 | 开发者知情偏差 | 独立生成（A/B/C 三方） | 同进程上下文，**非真正独立** |
+| T5 | 口径漂移（文档与仓库不符） | 元状态对账 `--check` | 只覆盖已登记字段 |
+| T6 | semantic scope 误用 | provenance / scope 强制拆分（§4.4） | 存量 scope 完整度 **0/26** |
+| T7 | 度量混淆（变异得分当检测率） | 指标分层；变异率**只作自证** | 外部读者仍可能误读 |
+| T8 | 选择偏差（预算） | budget-matched random 对照（§5.2） | **未跑**（§8） |
+| T9 | 过拟合历史缺陷 | 盲态 D2 + 外部 D3 | 扩样样本**无盲态** |
+| T10 | 复现危机 | Merkle 根 + 版本落盘 + 时间锚 | **OTS 是占位**；**WSL 依赖未声明** |
+| T11 | Authority 操纵 | 452 账本**零改红线** | 红线是纪律，非密码学强制 |
+| T12 | AI 署名不清 | AI 使用登记 | 贡献度划分仍是**约定** |
+
+### 3.4 三个重点威胁
+
+**（a）Construct：机器判"执行通过" ≠ "知识正确"。** 检测器报 `catch` 只意味着"这条夹具、这个编译档、这个编译器下出现了特定信号"，**不**等于断言成立或不成立。实证：同一批 ASan 样本在 `-O1` 下被优化掉整段内存操作而报不出，`-O0` 下立刻报出；把 pipeline 从单档改为 `-O0`+`-O2` 双档后检出率 **66.7% → 87.5%，检测器一行未改**——**变的是口径，不是能力**。缓解：所有检出率带 `caliber`+`denominator`；版本/命令随证据落盘；双档都跑。
+
+**（b）Meta-Goodhart：验证器优化它自己定义的度量。** 二阶形态更危险：当"验证能力的度量"由验证系统产出时，系统可**改口径/改分母/把红灯修绿**而**无外部参照**。真实事故：某批修改检测器档位但**未重跑生成器**，产物停在旧口径，论文却写上新估计 **81.2%（13/16）**——该数字**从未出现在任何产物里**，且当时的 `--check` **不比对这两个字段** ⇒ 一路绿。缓解：口径变更三步（改⇒重跑⇒**作废旧值**）；射程自检（改一个数必红，实测 5/5）；旧值交代下场。**残余**：现有检查只比"产物↔前端"，**不重跑检测器** ⇒ 该事故形态**今天仍能重演**。
+
+**（c）Evaluation contamination：验证器见过被验证的样本。** 三种形态：① 样本泄漏（T3）；② **判据同源**——真值标签与判据按同一标准生成 ⇒ 分数是**上界**（反事实算子 F1=1.0 即此类）；③ **无盲态扩样**——追加样本在原 reveal 之后 ⇒ 只能增大分母。缓解：reveal 不可逆；上界声明**写进产物与论文**；无盲态样本显式标注；分层报告不得合并。**残余**：标签效度独立复核（IRR）未做（第二标注者 0 人）。
+
+---
+
+## 4. 方法（Method）
+
+### 4.1 系统架构
+
+**Fig.1 · 系统闭环（failure-driven verification loop）**
+
+```mermaid
+flowchart LR
+    A["artifact<br/>LLM 生成断言<br/>(知识卡 + 边界三元组)"] --> B["verifier<br/>规则引擎 · 67 规则<br/>四态判决"]
+    B --> C["failure<br/>miss 集合 M_t / unknown 集合 U_t"]
+    C --> D["new verification asset<br/>新增检测器 / 档位 / 平台"]
+    D --> E["verifier evolution<br/>能力 C_t → C_t+1"]
+    E --> F["blind holdout<br/>外部样本度量"]
+    F -. 反馈：回到同一批 X 重测 .-> B
+    C -. 归因：测量配置错 ⇒ 改配置 + 作废旧值（非能力提升） .-> G["(口径修正)"]
+```
+
+> **图注**：节点工具名——规则引擎（67 规则 / 四态）、元状态对账器（不依赖内核）、反事实算子。实线=主循环，虚线=回测与口径修正。数据来源：方法章 §4.1/§4.6。
+
+- **artifact**：知识卡，每条断言带**边界三元组**；缺三元组的卡**不得**预写判决（应为 `unknown`，这是**正确输出**）。
+- **verifier**：**67** 条规则引擎产出四态判决（两源一致：引擎规则 == 规则清单）。
+- **evidence**：每次编译/运行落**内容寻址**证据（版本+命令+档位+输出+sha256）。现状 **28** 张卡有 L1 证据、**28** 张双编译器确认、**147** 次真实编译。
+- **ledger**：权威账本 **452** 事件，append-only，**零改动红线**。
+
+### 4.2 四态判决
+
+| 态 | 含义 | 处置 |
+|---|---|---|
+| `pass` | 证据支持断言，边界三元组完备 | 可进入教学台账 |
+| `fail` | 证据与断言矛盾 | counterexample 入教学反例集 |
+| `unknown` | **证据不足或检测器不可用** | 不得记为 pass/miss；单独报告 |
+| `contradict` | 两条证据互相矛盾（如跨编译器差分） | 升级人核，机器不裁决 |
+
+**关键设计**：`contradict` 是为了**不让机器在证据冲突时选边**——冲突本身是信息。**机器卡一律 `needs_review=true` 且不混入"已验证卡"计数**；`verified` **唯人签**。
+
+### 4.3 门禁分层 L0 / L1
+
+- **L0（阻断）**：元状态对账、门禁分层合法、真实缺陷检出、盲化 holdout 状态、单元测试。现状 **7** 个 L0 gate；编排器 5 阶段**本次审计逐阶段单跑全部 PASS**。
+- **L1（建议）**：变异得分、边界 provenance 报告、供应链完整性。现状 **10** 个 L1 gate；红**不阻断**但必须登记。
+
+> **为什么分层**：全设阻断 ⇒ 人会为"变绿"而放宽断言（meta-Goodhart 温床）；全设建议 ⇒ 红线失去意义。分层把"必须守的"与"可讨论的"分开。
+
+### 4.4 provenance 与 semantic scope 的强制拆分
+
+| 字段 | 回答的问题 | 例子 |
+|---|---|---|
+| **provenance** | 这条断言**从哪来、谁生成** | generator 版本、变异集哈希、证据 sha256、编译器版本 |
+| **semantic scope** | 这条断言**在什么范围内成立** | 标准条款 / 编译器 / 平台 / 优化档 |
+
+**为什么必须拆**：provenance 完备的断言**仍可能**被误用于不适用的范围（T6）；两者写在一起，读者会默认"来源清楚 ⇒ 到处成立"。**现状（审计实测）**：边界卡 **26**，provenance 完整 **26/26**、**semantic scope 完整 0/26** ⇒ 机制已落地，但语义作用域回填基本为空——这是**最大方法学缺口**之一，直接限制外部效度。
+
+### 4.5 元状态对账器（反自证）
+
+`status_reconciler` 是一个**不依赖内核**的独立对账器：重新扫描事实源（扫卡面字段、扫目录、读规则引擎），与基线对账，**不一致即 `META-STATE-CONFLICT`，exit 1**。**去写死三原则**：断言只能写死"口径"，不许写死"测量值"——① 事实源对齐（现算）；② 可加性/划分性（`block+warn+advice == total`）；③ 结构不变量。**残余**：对账器"不依赖内核"只意味着它不 import 内核，**不意味着它由第三方实现**（`--check` ≠ 独立复现）。
+
+### 4.6 核心机制：失败驱动的验证能力演化闭环
+
+对 **miss ∪ unknown** 逐条归因：**"测量配置错"**（⇒ 改配置 + 作废旧数字，**不是能力提升**）还是 **"能力缺口"**（⇒ 新增证据获取手段 ⇒ $C_{t+1}$）；然后**回到同一批 X 重测** ⇒ 度量 Δ + CI；若 Δ 不显著，该能力扩充**不进 Claim 表**。
+
+**为什么必须回到同一批 X**：否则"能力提升"与"换了一批更简单的样本"无法区分——这正是口径漂移事故的认识论根源。**为什么必须与 budget-matched random 对照**：失败驱动看起来有效，可能只是因为它**投入更多预算**；同等预算下随机扩充若也能追平，则"失败驱动"机制本身不成立。
+
+---
+
+## 5. 评估协议（Evaluation Protocol）
+
+> 本协议**在看到结果之前冻结**；此后任何修改必须记录并说明对已出数字的影响。统计口径细节见**附录 B**。
+
+### 5.1 数据集五层（D0–D4）
+
+**Fig.2 · 数据集分层（颜色=能否 Claim 外部效度：红=不能 / 黄=有限 / 绿=可以）**
+
+```mermaid
+flowchart TD
+    D0["D0 开发集<br/>core 变异 97.3%<br/>绝不 Claim"]:::red
+    D1["D1 历史缺陷<br/>重注入 100%<br/>有限"]:::yellow
+    D2["D2 盲 holdout<br/>30 样本 / 可测 16 / 87.5%"]:::green
+    D3["D3 外部 corpus<br/>40 条 / 35.0%"]:::green
+    D4["D4 独立生成<br/>16 机器卡 needs_review"]:::green
+    classDef red fill:#f8d7da,stroke:#c00,color:#000
+    classDef yellow fill:#fff3cd,stroke:#b80,color:#000
+    classDef green fill:#d4edda,stroke:#080,color:#000
+```
+
+> **图注**：数据来源——holdout reveal 报告、external corpus reveal 报告、变异报告。D0 的数**只作自证**，永不进 Claim 表；D2 含**非盲态 10 条**（只增分母）；D3 再分 A/B/C 三层，**不许合并成一个数**。
+
+| 层 | 内容 | 用途 | 能否 Claim 外部效度 | 现状 |
+|---|---|---|---|---|
+| D0 开发集 | 内部变异样本 | 调参/自证 | ❌ **绝不** | core 变异 97.3%（**仅自证**） |
+| D1 历史缺陷 | 已知已修缺陷（重注入） | 真实缺陷召回 | ⚠ 有限（已见过） | 重注入子集 1/1；覆盖登记 12/15 |
+| D2 盲 holdout | reveal 前不可见的 planted 缺陷 | **盲态召回（主）** | ✅ | 30 样本；可测真错 16；**87.5%** |
+| D3 外部 corpus | 仓库之外的真实技术陈述 | **外部召回（主）** | ✅ | 40 条；**35.0%** 全样本 |
+| D4 独立生成 | 独立生成流程产出的断言 | 独立生成召回 | ✅ | 16 机器卡（无人签） |
+
+### 5.2 Baseline（三类，全部 budget-matched）
+
+| Baseline | 定义 | 对齐条件 |
+|---|---|---|
+| B1 静态门禁 | 只跑静态规则（不获取运行时证据） | 同语料、同判定粒度 |
+| B2 静态 + 变异 | 静态规则 + 变异测试（自证层全开） | 同上 + 同变异预算 |
+| **B3 budget-matched random** | **同等预算下随机**扩充证据（不按失败驱动选） | 同预算（时间/调用次数）、同语料、同档位 |
+
+**B3 是最关键的**：它把"失败驱动"从"因为投入多所以看起来好"里分离出来（T8 / ablation F）。**现状：0 个 baseline 已跑** ⇒ 当前最大实验缺口。
+
+### 5.3 Ablation（A0–A5，每组预写假设）
+
+> **v0.9 更新**：原 v0.8 的 A–F 六组（去掉/改变维度）已在 671b 重构为**同批可执行的 A0–A5**
+> （A0 Full 参照系 + 五组消融），**完整设计见 §6.2**。此处只给总览：
+
+| 组 | 去掉/改变 | 预写假设 | 主指标 | 现状 |
+|---|---|---|---|---|
+| **A0** Full | 无（参照系） | — | 检出率（holdout + corpus） | ✅ 可跑 |
+| **A1** −failure-derived | 657 之后新增规则集 | **H3**：检测率下降 | Δ检出率 vs A0 | ⚠ 需回退 git 历史 |
+| **A2** −holdout 隔离 | 盲态 → dev 集 | 过拟合：dev↑ blind→ | dev vs blind 检出率 | ⚠ 需**新建划分** |
+| **A3** −provenance | 边界三元组校验 | 假 pass 率↑ | 假 pass 率 | ✅ 可跑 |
+| **A4** −mutation | 变异 L1 自证层 | 内部强度↓ | 变异 kill（**仅内部**） | ✅ 可跑 |
+| **A5** random-budget | 失败驱动 → 随机选资产 | **H3**：低于 A0 | Δ检出率 vs A0 | **⛔ BLOCKED** |
+
+**纪律**：每组先写假设再看结果；**结果与假设不符时原样报告**。
+**现状：设计已冻结、实验 0 组已跑**（671b **只写脚本和设计**）。**A0 − A5 是关键对照**。
+
+### 5.4 指标（七项）
+
+真实缺陷召回 / 盲 holdout 召回 / 外部召回 / FPR / 变异得分（**仅自证**）/ 回归保留率 / 成本。**每个率必须带 `denominator`**（谁除以谁、谁被排除）。
+
+---
+
+## 6. 实验（Experiments）
+
+> 数字**全部现算自仓库产物**（每表给来源）；区间一律 **Clopper–Pearson 95%**，Wilson 作敏感性。**未跑的实验一律标 `{{TODO_ablation_*}}`，不编造。**
+
+### 6.1 E1 · 主实验：Static vs Random† vs Failure-driven
+
+**Fig.3 · 核心检出率（三臂；FD/Static 为同批配对，Random† 为仪器级代理）**
+
+```mermaid
+xychart-beta
+    title "Fig.3 检出率（%）— FD / Static / Random†"
+    x-axis ["holdout", "corpus(可测)", "defect"]
+    y-axis "recall %" 0 --> 100
+    bar [87.5, 43.8, 100]
+    bar [6.2, 12.5, 100]
+    bar [6.2, 3.1, 0]
+```
+
+> **图注**：三条柱依次为 **FD（失败驱动）/ Static（rule-only）/ Random†（仪器级代理）**。数据来源 `data/experiments/baseline_{fd,static,random}.json`（`tools/baseline_670a.py --run` 现算）。**误差线**（Clopper–Pearson 95%）：holdout FD [61.7, 98.4] vs Static [0.2, 30.2]；corpus FD [26.4, 62.3] vs Static [3.5, 29.0]。**Random† 是"随机选仪器"的代理，不是 §5.2 的 B3**（真 B3 需拆仓 `select_assets`，主仓不可见）；defect 列 Random† 记 N/A。**n=16/32，区间宽 ⇒ 只读方向，不读幅度。**
+
+| 系统 | 盲 holdout 召回 (k/n, CP 95%) | corpus 可测 (k/n, CP 95%) | defect 重注入 | 对照 FPR |
+|---|---|---|---|---|
+| **Static**（rule-only，**口径重分箱**） | 6.2% (1/16) [0.2, 30.2] | 12.5% (4/32) [3.5, 29.0] | 100% (6/6) [54.1, 100] | — |
+| **Random†**（仪器级**代理**，非 B3） | 6.2% (1/16) [0.2, 30.2] | 3.1% (1/32) [0.1, 16.2] | N/A | — |
+| **FD**（失败驱动，现状） | **87.5% (14/16) [61.7, 98.4]** | **43.8% (14/32) [26.4, 62.3]** | 100% (6/6) [54.1, 100] | 11.1% (1/9) |
+| **Δ(static→FD)** | **+81.3pp** | **+31.3pp** | 0 | — |
+| **Δ(random†→FD)** | **+81.3pp** | **+40.7pp** | N/A | — |
+
+- **Static 臂低分是必然，不是"静态规则差"**：这两个检测集的真错**绝大多数只有 sanitizer（运行时证据）能看见**；去掉运行时证据后"看不见"是该**检测集对仪器的依赖结构**，不是静态规则的检出能力。defect 行 FD==Static（Δ=0），因为 661 的 6 个重注入器本身就是静态判定。
+- **Random† 不进结论**：`†` = 代理；它的数只读作"把运行时仪器换成随机仪器会怎样"，**不能**读作"失败驱动优于随机预算"。真 B3 见 §6.2 与 §8。
+- **判读规则（预写）**：若 Δ 的 CI **跨 0** ⇒ "失败驱动"机制**不成立**，必须原样报告。此处 **Δ 下界 ≥ 31.5pp**（61.7 − 30.2），方向稳健。
+
+### 6.2 E2 · ablation 框架（A0–A5，**设计已冻结、实验未跑**）
+
+> **本节性质**：**框架 + 预写假设 + 判读规则**，**不含任何实验结果**。
+> 671b 任务书红线：本批**只写脚本和设计，不跑实验** ⇒ 下表 `结果` 列**全部是占位符**，
+> 且**不得**被当作实验结论引用。可执行框架见 `tools/ablation_671b.py`（六组 run plan）、
+> `tools/ablation_stats_671b.py`（统计原语）、`tools/sample_size_671b.py`（样本量）。
+
+| 组 | 去掉/改变 | **预写假设 H** | 预期 | 主指标 | 检验（vs A0） | 结果 |
+|---|---|---|---|---|---|---|
+| **A0** Full | 无 | —（参照系） | 最佳 | 检出率（可测） | — | `{{TODO_ablation_A0}}` |
+| **A1** −failure-derived | 657 后新增规则集 | **H3**：检测率下降 | holdout/corpus ↓ | Δ检出率 | 精确 McNemar（配对） | `{{TODO_ablation_A1}}` |
+| **A2** −holdout 隔离 | 盲态 → dev | 过拟合：dev↑、blind→ | dev↑/blind→ | blind 检出率 | **Fisher**（独立） | `{{TODO_ablation_A2}}` |
+| **A3** −provenance | 边界三元组校验 | 证据不可追溯 ⇒ 误报↑ | 假 pass↑ | 假 pass 率 | **Fisher**（稀有事件） | `{{TODO_ablation_A3}}` |
+| **A4** −mutation | 变异 L1 自证层 | 内部强度↓ | 存活变异↑ | 变异 kill（**仅内部**） | 描述性（**非检测率**） | `{{TODO_ablation_A4}}` |
+| **A5** random-budget | 失败驱动 → 随机选资产 | **H3**：低于 A0 | 低于 A0 | Δ检出率 | 精确 McNemar（配对） | `{{TODO_ablation_A5}}` |
+
+**关键对照 A0 − A5**（**本文核心机制的证伪条件**）：
+
+> 若 **Δ(A0 − A5) 的 CI 跨 0** ⇒ "**失败驱动优于同预算随机选资产**"**不成立**，
+> 必须**原样报告**。这是唯一能证伪核心主张的对照 —— 见 §7.6。
+
+**判读规则（预写，跑完不得改；`tools/ablation_stats_671b.py::comparison`）**：
+
+| CI 位置 | verdict | 允许的表述 |
+|---|---|---|
+| `ci_low > 0` | `A > B` | "A 显著高于 B" |
+| `ci_high < 0` | `B > A` | "B 显著高于 A" |
+| 区间退化为一点（Δ=0） | `tie` | "未观察到差异" |
+| **其余（CI 含 0）** | **`undetermined`** | **只能**写"未观察到**可检出的**差异"；**不得**写"无差异" |
+
+**三组结构性限制（如实登记，非借口）**：
+
+- **A5 ⛔ BLOCKED**：`select_assets(pool, n, strategy, seed)` 在拆仓验证器，主仓不可见
+  （670a §3 已登记）。671b 已把该接口的**形状**在主仓实现出来
+  （`tools/select_assets_671b.py`，仪器级代理），但**池定义不同** ⇒ 主仓结果**只作方向性读法**。
+- **A1 ⚠ 需回退 git 历史**：只读历史取 657 时点规则集快照，**不 checkout**（避免污染工作树）。
+- **A2 ⚠ 盲态不可逆**：`data/holdout/holdout.json::iron_rule` 规定 reveal 后永不回盲
+  ⇒ A2 **只能**构造**新的** dev/blind 划分，**不能**用现 holdout。这本身是"盲态不可逆"的**诚实代价**。
+
+**统计口径**：同批配对用**精确 McNemar**、跨集用**Fisher**、效应量**必报 Cohen's h**，
+六组 ⇒ C(6,2)=**15 对** ⇒ 探索性 **BH-FDR** / 确认性 **Holm**（详见 §6.5 与
+`research/671b_统计口径_ablation.md`）。
+
+### 6.3 E3 · 口径消融（caliber ablation）
+
+三条臂**共用同一份原始计数**（catch=14），只变"谁进分母"：
+
+| 臂 | 口径 | holdout 真错 (k/n, CP 95%) | external (k/n, CP 95%) |
+|---|---|---|---|
+| **A（主口径：unknown 剔除）** | 分母 = catch+miss | **87.5% (14/16) [61.7, 98.4]** | **43.8% (14/32) [26.4, 62.3]** |
+| B（unknown 记 miss） | 分母含 detector-unknown | 82.4% (14/17) [56.6, 96.2] | 37.8% (14/37) [22.5, 55.2] |
+| C（unknown + not_error 进分母） | 分母 = 全样本 | 82.4% (14/17) | 35.0% (14/40) [20.6, 51.7] |
+| **Δ(A − C)** | | +5.1pp | **+8.8pp** |
+
+**读法**：口径对 external 的影响（最多 **8.8pp**）**大于**层间部分差异 ⇒ "报率不报口径"等于让读者在 35.0%–43.8% 间自由发挥。
+
+### 6.4 E4 · 演化曲线
+
+**Fig.4 · 演化（660→669）；红色=口径变更，蓝色=真实演化**
+
+```mermaid
+xychart-beta
+    title "Fig.4 holdout 检出率（%）— 660→669"
+    x-axis ["660", "665", "666", "668", "669"]
+    y-axis "holdout recall %" 0 --> 100
+    line [80.0, 66.7, 81.2, 87.5, 87.5]
+```
+
+> **图注**：数据来源——各批次 reveal 报告与回溯反思。**80.0%→66.7%→87.5% 不是能力提升**：660 是"20 样本/真错 7"的小分母，665 是"30 样本/真错 17"的单档口径，668 是双档口径——**检测器零改动**。666 的 **81.2% 从未落盘**（改代码没重跑），图中以空心点标注。656/662 只有变异指标（core 62.5%→97.3%），无 holdout 值。
+
+| 批次 | 新增能力 | holdout（真错/口径） | 变异 core | 性质 |
+|---|---|---|---|---|
+| 656 | 核心 PBT/变异 | — | **62.5%** (30/48) | 变异体未进射程 |
+| 660 | 轨迹层+拆仓 | 真错 **7**，**80.0%**（小分母） | — | 标签过度声称 |
+| 665 | 扩样 20→30 | 真错 **17**，**66.7%**（单档） | — | 分母构成变 |
+| 666 | 声称双档 | ~~81.2%~~ **未落盘** | — | 改代码没重跑 |
+| 668 | 双档重跑 | **87.5%** (14/16) | — | **口径变更** |
+| 669 | 口径消融 + CI | 87.5% [61.7, 98.4] | **97.3%** (110/113) | 变异仍为内部指标 |
+
+**⚠ 红线**：holdout 一列**不是同一批 X** ⇒ 不得读作演化。**唯一"同批重测"**是 668 相对 665 的逐样本变化，但它改的是**编译档**，不是能力。**诚实预判**：目前只有 656/669 两点同口径可比。
+
+### 6.5 E5 · baseline 对比的统计检验（深化）
+
+FD 与 Static 是**同一批样本上的配对**（holdout 16 对、corpus 32 对）⇒ 用**精确 McNemar**；效应量用 **Cohen's h**。
+
+| 对比 | 检测集 | 不一致对 (b, c) | 精确 McNemar p | Cohen's h | 判读 |
+|---|---|---|---|---|---|
+| FD vs Static | holdout (n=16) | (13, 0) | **0.00024** | **1.91**（极大） | 方向稳健 |
+| FD vs Static | corpus (n=32) | (10, 0) | **0.00195** | **0.72**（中） | 方向稳健 |
+| FD vs Random† | corpus (n=32) | (13, 0) | **0.00024** | **1.09**（极大） | 方向稳健（但 Random† 是**代理**） |
+
+**b** = FD catch 且 Static miss 的对数；**c** = Static catch 且 FD miss 的对数。此处 **c = 0**（Static 的 catch 是 FD 的子集）⇒ 差异**完全来自 FD 多抓到的样本**，不存在"FD 漏而 Static 抓到"的反向对。
+
+> **措辞修正（v0.9）**：Cohen's h 的阈值是 |h| < 0.2 可忽略 / 0.2 小 / 0.5 中 / **≥ 0.8 大**。
+> v0.8 把 corpus 的 **h = 0.72** 写作"（大）"，**按阈值应为"中"**。本稿改为"中"——
+> 这不是数字错，是**标签口径不严**，但这类"宽松措辞"会让读者高估效应（登记于
+> `research/671b_统计口径_ablation.md` §2）。
+
+**统计口径（v0.9 深化，见 §6.2 与本表）**：
+
+| 项 | 口径 | 实现 |
+|---|---|---|
+| 配对比较 | **精确 McNemar**（不用 χ² 近似） | `ablation_stats_671b.mcnemar_exact(b, c)` |
+| 独立比较 | **Fisher 精确**（条件于边际） | `ablation_stats_671b.fisher_exact(a, b, c, d)` |
+| 效应量 | **Cohen's h**（必报差值 + CI） | `ablation_stats_671b.cohens_h(p1, p2)` |
+| 差值 CI | 配对 **Wald-on-difference** / 独立 **Newcombe 混合** | `delta_ci_paired` / `paired_delta_ci` |
+| 多重比较 | 探索 **BH-FDR** / 确认 **Holm** | `bh_fdr` / `holm` |
+| 裁决 | `verdict` ∈ {`A>B`, `B>A`, `tie`, `undetermined`} | `comparison(...)` |
+
+**样本量不足的诚实说明（v0.9 现算）**：n=16/32 极小 ⇒ ① 率区间极宽（holdout FD [61.7, 98.4]，Static [0.2, 30.2]）；② McNemar 虽显著，但**建立在 c=0 的极端结构上**——一旦出现少量反向对，p 会迅速变大。
+
+| 目标 | 现算所需 n | 当前 n | 缺口 |
+|---|---|---|---|
+| ±10pp CI 半宽 | **104** | 16 / 32 | **88 / 72** |
+| 检出 Δ=15pp（配对，ψ=0.40） | **138** | 16 / 32 | **122 / 106** |
+| 检出 Δ=15pp（独立两臂） | **170/组** | — | — |
+| 检出 Δ=10pp（独立两臂） | **376/组** | — | — |
+
+⇒ **方向可信，幅度不可当精确值**（详见 §7.5）；ablation **只能作方向性读法**。
+
+### 6.6 E6 · 缺陷重注入与变异测试
+
+| 指标 | 值 (CP 95%) | 来源 | 口径 |
+|---|---|---|---|
+| 缺陷重注入检出 | **100%（6/6）** [54.1, 100] | 661 的 6 个重注入器现跑 | **静态判定**（哈希/SPDX/对比度/序列化/锚/围栏） |
+| 变异 kill（core） | **97.3%（110/113）** [92.4, 99.4] | `data/656_mutation_report_core.json` | **内部指标** |
+
+**诚实说明**：变异 kill 是**内部指标**（"我设计的变异体被我的测试杀死多少"），**不是缺陷检出率**——它没有对应的检测集，因此**无法与 baseline 臂配对**，在 §6.1 三臂表里只能登记 **N/A**（对应规则 R5 与 §7.4）。缺陷重注入 6/6 的区间 [54.1, 100] 同样**极宽**（n=6），只能读"目前未漏"。
+
+---
+
+## 7. 分析（Analysis）
+
+### 7.1 五点分析（全部基于真实发现）
+
+1. **标签是最大的误差源。** 660 对外称"holdout 20 个样本"，其中**真错只有 7 个**；按 20 当分母得 35%，按真错口径得 80.0%——分母一换数字就跳。不是验证器变好，是**测量对象变对了**。
+2. **环境依赖是静默掉分的根因。** sanitizer 分支走特定 WSL 环境；缺 WSL 时 15 条样本**不报错、直接降级 `unknown`**，external 从 **35.0% 掉到 10.0%**，而护栏**仍绿**（只比"产物↔前端"）。
+3. **"改了代码没重跑"是系统性失败模式（三次同形）。** 666 声称 81.2%**从未落盘**；反事实 F1 曾为 0（判据已写进代码但产物没重跑）；corpus 真机重跑与产物差 10 条 catch。
+4. **mutation score ≠ real defect detection。** 内部变异 core **97.3%**，外部 corpus 只有 **35.0%**——两者测的不是同一个东西。Just 等（FSE 2014）[46] 系统检验了"变异体能否替代真实缺陷"，结论是**相关但不等价**。
+5. **failure-driven 的提升是否真实——baseline 已跑（§6.1/§6.5）。** FD vs Static 在 holdout 上 **+81.3pp**、corpus **+31.3pp**，精确 McNemar p≤0.002、Cohen's h≥0.72；**但真 B3（随机选验证资产）仍 BLOCKED**（拆仓无 `select_assets`），故"优于随机预算"**尚不能下结论**。
+6. **效应量标签必须按阈值读（v0.9 新增）。** v0.8 把 h=0.72 写"大"，按 Cohen 阈值为**中**。同一篇里"极大/大/中"若口径不一，读者会把 0.72 与 1.91 读成同一量级——**标签错误与数字错误一样会误导**。
+
+### 7.2 baseline 对比的启示
+
+- **Static 臂低分是必然，不是"静态规则差"**：holdout/corpus 两个检测集的真错**绝大多数只有 sanitizer（运行时证据）能看见**；去掉运行时证据后"看不见"，说明的是**检测集对仪器的依赖结构**（T2/T7），而不是静态规则的检出能力。这条**必须随数字一起读**，否则会把"口径重分箱"误读成"静态方法不行"。
+- **FD 的优势来自两处**：① **运行时证据**（sanitizer 在 WSL 里真编译真运行）；② **失败驱动演化**（把漏检转成新增检测能力）。本实验只能分离出①（Static vs FD 的差就是"有/无运行时证据"），② 需要 ablation（§6.2，**已设计、未跑**）。
+- **Random† 代理说明**：把"运行时仪器"换成"随机仪器"后 corpus 掉到 3.1% ⇒ **随机选仪器不如按失败驱动选仪器**；但这**仍不是**论文 §5.2 的 B3（随机选**验证资产**）——两者的"资产"定义不同，**不可互相替代**。
+- **真 B3 与真 `detect_static` 待拆仓**：两者都需要 `queyi-verifier` 暴露接口（`select_assets` / `detect_static`），主仓不可见（§8 登记为 blocked）。
+
+### 7.3 样本量与统计效力（v0.9 现算）
+
+| 检测集 | 可测 n | 当前率 (CP 95%) | ±10pp CI 半宽所需 n | 检出 10pp 差异所需 n/组 |
+|---|---|---|---|---|
+| holdout | **16** | 87.5% [61.7, 98.4] | **104** | **376** |
+| corpus | **32** | 43.8% [26.4, 62.3] | **104** | **376** |
+
+**ablation 视角的样本量（v0.9 新增）**：
+
+| 目标 | 设计 | 现算 n | 当前 n | 缺口 |
+|---|---|---|---|---|
+| Δ=15pp | 配对 McNemar（ψ=0.30/0.40/0.50） | **103 / 138 / 173** | 16 | 87–157 |
+| Δ=15pp | 独立两臂（p₁=0.35→0.50） | **170/组** | — | — |
+| Δ=20pp | 独立两臂 | **96/组** | — | — |
+
+- **方向稳健**：Δ(static→FD) 的下界 ≥ **31.5pp**（61.7 − 30.2），远超噪声；McNemar p≤0.002。
+- **幅度不可当精确值**：n=16/32 ⇒ 区间极宽；报告**只能报区间 + 效应量**，不能报"精确提升了 81.3pp"。
+- **效力曲线（现算）**：n=16/组 只能检出 **≥47pp** 的差异；n=32 → ≥34pp；要检出 **15pp 需 n≈172/组**。
+- **未来工作**：扩样到 **n ≥ 100**（holdout 可测 ≥30、corpus ≥60，见 `research/670d_数据扩样方案.md`）后再谈幅度。
+
+### 7.6 ablation 能否证伪核心机制（**预写，未跑**）
+
+本节把 §6.2 的判读规则**落实到本文最重要的一个数**：**A0 − A5**。
+
+| 情形 | Δ(A0 − A5) 的 CI | 结论 |
+|---|---|---|
+| a | `ci_low > 0` | "失败驱动**优于**同预算随机选资产"成立（仍需样本量达标） |
+| b | CI 含 0 | **不能**声称优于随机 ⇒ 核心机制**未被证实**，原样报告 |
+| c | `ci_high < 0` | 随机**反而更好** ⇒ 失败驱动机制**有害**，必须公开 |
+
+> **红线**：在 n≥103–173（配对）达标前，**任何情形都只能写"方向性观察"**，
+> 不得写"显著优于"（`research/671b_统计口径_ablation.md` §3）。
+> **本条的价值**：它把"我们更好"变成**可以被一次实验否证**的命题 —— 若 CI 跨 0，机制就不成立。
+
+### 7.7 结构性限制的方法学含义（**新增**）
+
+三组阻塞不是"没时间跑"，而是**口径纪律的必然代价**，各自有独立的方法学含义：
+
+1. **A5 的 `select_assets` 缺失** ⇒ 本文**至今没有一个真的 budget-matched random 对照**。
+   670a 的 `Random†` 是**仪器级代理**、671b 的 shim 也是**仪器级**（池定义不同）。
+   ⇒ 我们**只能**说"随机选**仪器**不如失败驱动"，**不能**说"随机选**资产**不如失败驱动"。
+   **含义**：核心机制的最强对照**尚缺**，这是本文最大的 External validity 缺口。
+2. **A2 的"盲态不可逆"** ⇒ 一旦 holdout 被 reveal，**过拟合检验就只能用新建划分**。
+   这是**诚实的代价**：我们**放弃**了"用现 holdout 测泄漏"的便利，因为回盲会让所有历史数字失效。
+   **含义**：盲态是**一次性的稀缺资源**，其设计必须前置到数据划分阶段。
+3. **A1 的 git 历史回退** ⇒ 我们**必须**从历史取"657 时点的规则集快照"才能构造 A1，
+   且**只读、不 checkout**（污染工作树会破坏可复现性）。
+   **含义**：规则集的**版本化**是 ablation 可执行性的前提——**没有规则集快照，就没有 −failure-derived 消融**。
+
+**一句话**：ablation 的价值不在"证明我们更好"，而在"**如果去掉某个机制结果没变差，那个机制就是多余的**"。
+
+---
+
+## 8. Threats to Validity
+
+| 层 | 威胁 | 缓解 | 残余 |
+|---|---|---|---|
+| **Construct** | `catch` ≠ 断言为真；A/B/C 按检测器可用性分非难度分；mutation score 非检测率代理 [46]；**Static 臂是"口径重分箱"而非重跑、Random† 与 671b shim 都是"仪器级代理"而非真 B3**；**效应量标签口径不严**（v0.8 把 h=0.72 写"大"） | caliber/denominator/opt_levels/env 随产物落盘；双档都跑；三态分离；代理臂**标 † 且不进结论**；**v0.9 按 Cohen 阈值统一"极大/大/中/小"** | 跨环境复现未验证（**已从"残余"升级为"已发生失败"**：缺 WSL 掉分）；标签独立复核未做；**"有/无运行时证据"与"失败驱动"两个因素在本实验中未分离**（后者需 ablation，**已设计、未跑**） |
+| **Internal** | meta-Goodhart（改口径提分）；预算选择偏差；改代码没重跑 | 口径三步纪律；射程自检（5/5 变红）；budget-matched random 对照（**框架已建、实验未跑**） | **护栏不重跑检测器** ⇒ 666 事故形态仍可重演；**ablation 六组设计已冻结但 0 组已跑** |
+| **External** | 样本量小（holdout n=16 / corpus n=32 可测）；同源聚类；semantic scope 0/26；领域单一（C++）；**A5 缺 `select_assets` ⇒ 至今无真 budget-matched random 对照** | 分层报告；明示"两轮样本不可比"；三臂同批配对；ablation 判读规则**预写** | baseline：Static（口径重分箱）+ Random†（代理）**已跑**，**真 B3 仍 BLOCKED**（671b shim 仍是仪器级）；ablation 0 组已跑；对账器仍是本方实现；第三方复现 0 人 |
+| **Statistical** | **样本量小（n=16/32）⇒ 区间宽、McNemar 建立在 c=0 的极端结构上**；多重比较（六组 ⇒ 15 对）；小样本 Wald 失效；聚类相关；只报 p | 统计计划先冻结；CP 主报、Wilson 敏感性；**Fisher/Boschloo + 精确 McNemar 已工具化**（`ablation_stats_671b.py`）；**BH/Holm 已实现**；**必报差值 + CI + 效应量** | **±10pp CI 半宽需 n≈104、检出 10pp 差异需 n≈376/组、检出 Δ=15pp 需 n≈103–173（配对）**（当前远不足）；幅度不可当精确值；IRR 未做 |
+| **Temporal** | OTS 锚过期；样本老化；环境漂移（TSan 在 WSL 高熵 ASLR 下间歇失败）；**盲态不可逆（A2 的结构性障碍）** | Merkle 根 + 哈希链；版本随证据落盘；**盲态一次性 ⇒ 设计前置到划分阶段** | OTS 真锚定未做；Merkle 每次重钉使锚失效；WSL 硬依赖未声明 |
+
+> **残余风险 ↔ 门禁映射表**见**附录 B**。
+
+---
+
+## 9. Claim 边界
+
+### 9.1 能支撑
+
+| # | Claim | 证据 |
+|---|---|---|
+| 1 | 验证器在**已见错误类型**上检出率高 | holdout 87.5%（14/16）[61.7, 98.4]；external 可测 43.8%（14/32） |
+| 2 | 门禁能捕获**已知缺陷**（改数必红） | 射程自检 5/5 变红；门禁 `overall=PASS` |
+| 3 | provenance 链**完整可审计** | Merkle 5 目录根一致；452 账本零改；provenance 三元组落盘 |
+| 4 | 口径可声明、可复算 | 三条臂口径消融（§6.3）；每个率带 `denominator` |
+| 5 | **在同批样本上 FD 显著高于 Static 与 Random†** | 配对精确 McNemar p≤0.002、Cohen's h≥0.72（§6.5）；Δ 下界 ≥31.5pp |
+| 6 | **ablation 的证伪条件已被明确定义** | 六组预写假设 + 判读规则（§6.2/§7.6）；统计原语已工具化（`ablation_stats_671b.py`）；**A0 − A5 的 CI 跨 0 即否决核心机制** |
+| 7 | **真实 B3 的接口形状已可执行** | `select_assets(pool, n, strategy, seed)` 已实现（`select_assets_671b.py`），与 670a 代理臂**同 seed 同集合**（§6.2 / `b3_design_671b.json`） |
+
+### 9.2 不能支撑
+
+| # | 不能支撑的 Claim | 为什么 |
+|---|---|---|
+| 1 | **泛化到未见错误类型** | 样本全部同源；semantic scope 回填 0/26 |
+| 2 | "检测率 **X%**" 的绝对 claim | n=16/32，CI 宽（±15–18pp）；±10pp 半宽需 n≈104（§7.3） |
+| 3 | **优于真正的静态检测器 / 真 B3** | Static 臂是**口径重分箱**（非重跑）、Random† 与 671b shim 都是**仪器级代理**（非真 B3）；真 `detect_static`/`select_assets` 在拆仓、**BLOCKED**；ablation **0 组已跑** |
+| 4 | "F1=1.0 已校准" | 判据与真值同源 ⇒ 只是**上界** |
+| 5 | 把 mutation score 当检测率 | core 97.3% ≠ 缺陷检测率 [46] |
+| 6 | 演化趋势 | 只有单点可比重测 |
+| 7 | **任何 ablation 结论（v0.9 新增）** | **本批只写脚本和设计、不跑实验** ⇒ §6.2/§7.6 的 `{{TODO_ablation_*}}` **全是占位符**；A5 还额外 BLOCKED |
+| 8 | **"失败驱动优于同预算随机"** | 最强对照 A0 − A5 **未跑**；以现有 n=16/32 也**跑不出可判读的 Δ**（需 n≈103–173） |
+
+### 9.3 不可复现
+
+| # | 项 | 依赖 |
+|---|---|---|
+| 1 | holdout / external 检出率 | **WSL + g++ + `setarch`**；缺 WSL 静默掉分（35.0%→10.0%） |
+| 2 | TSan 类结果 | WSL 高熵 ASLR 下**间歇性**无法初始化 |
+| 3 | OTS 锚 | 零 attestation 占位符，"已上链"**不成立** |
+
+**一句话**：本稿能支撑"**机制可审计 + 在已见错误上有效**"；不能支撑"**泛化 / 绝对率 / 优于基线**"；且 **WSL 依赖使两个核心数字在无 WSL 环境不可复现**。
+
+---
+
+## 10. 结论（Conclusion）
+
+LLM 让技术知识的**生成**成本趋近于零，但**验证**成本没有变。本文主张：验证问题不能靠"用模型评模型"（共享失效域）或"检测文本是否 AI 生成"（答错问题）来解决，而必须把**判决—证据—复算**绑成一条**可被外部打断**的链。阙疑把它拆成四个可验收的机制：**四态判决**（`unknown` 是一等公民）、**provenance 与 semantic scope 强制拆分**、**不依赖内核的元状态对账器**、以及**失败驱动的验证能力演化闭环**。
+
+我们也把**自己的失败**写成了方法的一部分：66.7% → 87.5% 不是能力提升而是口径变更，旧值必须作废；81.2% 从未出现在任何产物里，"改了代码没重跑"必须被护栏抓住（而它**今天还没被抓住**）。第三方只读审计给出总体可信度 **6/10**：基础设施可信，**数字脆弱**。
+
+**证据边界（对应 §9）**：当前证据**支持**"验证能力可被外部度量、失败驱动可追溯"，以及"**在同批样本上 FD 显著优于静态口径臂与随机仪器代理**"（Δ ≥ +31.3pp，精确 McNemar p ≤ 0.002，Cohen's h ≥ 0.72）；**不支持**"优于**真正的**静态检测器 / 真 B3"（两者需拆仓 `detect_static`/`select_assets`，**BLOCKED**）、"泛化到其他语言"（仅 C++）、"**幅度的精确值**"（n=16/32 太小，±10pp 半宽需 n≈104），以及**任何 ablation 结论**（v0.9 只冻结设计与脚本、**未跑实验**）。**未来工作**：① 扩样到 **n ≥ 100**（ablation 需 **n≈103–173/组**）；② 拆仓暴露接口后补**真 B1/B3**；③ **跑 A0–A5**，以**分离"有/无运行时证据"与"失败驱动"两个因素**、并用 **A0 − A5 证伪核心机制**；④ 独立复现 ≥ 1 次。
+
+> **立场**：本文**不**主张"我们的方法比别的好"。我们主张的是：**这套机制让"好不好"变成一个可以被外部度量、被第三方打断、被自己否证的问题**——而在同一批样本上，它确实比"去掉运行时证据"与"随机选仪器"两种口径**显著**更好（方向稳健；幅度待扩样）。
+> **v0.9 补充**：我们进一步把"**能否被否证**"写成可执行的六组 ablation，并**明确给出否证条件**（A0 − A5 的 CI 跨 0）——**尽管我们还没跑它**，且**当前样本量跑不出可判读的 Δ**。**把"自己最可能被推翻的地方"先写下来，比多报一个显著数更有价值。**
+
+---
+
+## 参考文献
+
+> 标注：**[API 核验]** arXiv API 当场核对 · **[已核]** Crossref/web/DOI 复核 · **📗 [经典]** 教材/文集 · **⛔ [非引用型]** 协议/依赖（建议移出）。
+
+1. [API 核验] Jimenez, C. E., et al. SWE-bench: Can Language Models Resolve Real-World GitHub Issues? ICLR 2024. arXiv:2310.06770.
+2. [API 核验] Liang, S., et al. The SWE-Bench Illusion. arXiv:2506.12286.
+3. [API 核验] Prathifkumar, T., et al. Does SWE-Bench-Verified Test Agent Ability or Model Memory? arXiv:2512.10218.
+4. [API 核验] Adamenko, P., et al. SWE-MERA. EMNLP 2025 (Demos). arXiv:2507.11059.
+5. [API 核验] Mitchell, E., et al. DetectGPT. ICML 2023. arXiv:2301.11305.
+6. [API 核验] Kirchenbauer, J., et al. A Watermark for Large Language Models. ICML 2023. arXiv:2301.10226.
+7. [API 核验] Sadasivan, V. S., et al. Can AI-Generated Text be Reliably Detected? TMLR. arXiv:2303.11156.
+8. [已核] Regulation (EU) 2024/1689（欧盟《人工智能法》）, Art 50.
+9. [API 核验] Wang, S., et al. Benchmark Self-Evolving. COLING 2025. arXiv:2402.11443.
+10. [API 核验] Liu, Q., et al. ArenaBencher. arXiv:2510.08569.
+11. [API 核验] Zhang, L., et al. SWE-bench Goes Live! arXiv:2505.23419.
+12. [API 核验] Kiela, D., et al. Dynabench. NAACL 2021. arXiv:2104.14337.
+13. [API 核验] White, C., et al. LiveBench. ICLR 2025. arXiv:2406.19314.
+14. [API 核验] Foster, C., et al. Mutation-Guided LLM-based Test Generation at Meta (ACH). arXiv:2501.12862.
+15. [API 核验] Wang, G., et al. Mutation-Guided Unit Test Generation with a LLM (MUTGEN). arXiv:2506.02954.
+16. [API 核验] Liu, J., et al. Evaluating LLM-Based Regression Test Generation (Cleverest). arXiv:2501.11086.
+17. [API 核验] Zheng, L., et al. Judging LLM-as-a-Judge. NeurIPS 2023 D&B. arXiv:2306.05685.
+18. [已核] Klein, G., et al. seL4. SOSP 2009. DOI 10.1145/1629575.1629596.
+19. [已核] Leroy, X. Formal Verification of a Realistic Compiler. CACM 52(7), 2009. DOI 10.1145/1538788.1538814.
+20. [已核] Jia, Y., Harman, M. An Analysis and Survey of the Development of Mutation Testing. IEEE TSE 37(5), 2011. DOI 10.1109/TSE.2010.62.
+21. [已核] Strathern, M. "Improving ratings". European Review 5(3):305–321, 1997；Goodhart 1975（经典文集）.
+22. [API 核验] Skalse, J., et al. Defining and Characterizing Reward Hacking. arXiv:2209.13085.
+23. [API 核验] Gao, L., et al. Scaling Laws for Reward Model Overoptimization. ICML 2023. arXiv:2210.10760.
+24. [API 核验] Gebru, T., et al. Datasheets for Datasets. CACM 2021. arXiv:1803.09010.
+25. [API 核验] Mitchell, M., et al. Model Cards for Model Reporting. FAT* 2019. arXiv:1810.03993.
+26. [已核] Pineau, J., et al. Improving Reproducibility in ML Research. JMLR 22(164):1–20, 2021.
+27. [已核] Clopper, C. J., Pearson, E. S. Biometrika 26(4), 1934. DOI 10.1093/biomet/26.4.404.
+28. 📗 [经典] Fisher, R. A. The Design of Experiments. 1935.
+29. [已核] McNemar, Q. Psychometrika 12(2), 1947. DOI 10.1007/BF02295996.
+30. [已核] Benjamini, Y., Hochberg, Y. JRSS B 57(1), 1995. DOI 10.1111/j.2517-6161.1995.tb02031.x.
+31. [已核] Holm, S. Scand. J. Statist. 6(2):65–70, 1979. DOI 10.2307/4615733.
+32. [已核] Cohen, J. Educ. Psychol. Meas. 20(1), 1960；📗 Krippendorff, K. Content Analysis. 1980.
+33. [已核] Shadish, W. R., Cook, T. D., Campbell, D. T. Experimental and Quasi-Experimental Designs… 2002. ISBN 0395615569.
+34. [API 核验] Chen, M., et al. Evaluating LLMs Trained on Code (HumanEval). arXiv:2107.03374.
+35. [已核] Merkle, R. C. A Digital Signature Based on a Conventional Encryption Function. CRYPTO'87 / LNCS 293, 1988. DOI 10.1007/3-540-48184-2_32.
+36. ⛔ [非引用型] OpenTimestamps（协议/依赖；见附录 D 的占位说明）.
+37. [API 核验] Liao, C., et al. LLVM Translation Validation Automated with LLMs and Lean. arXiv:2609.19583.
+38. [API 核验] Shefer, A., et al. Can LLMs Enable Verification in Mainstream Programming? arXiv:2503.14183.
+39. [API 核验] Poesia, G., et al. Formal Disco. arXiv:2607.04631.
+40. [API 核验] Banik, D., et al. All Smoke, No Alarm. arXiv:2606.18168.
+41. [API 核验] Lian, X., et al. Uncovering Weaknesses in Neural Code Generation. arXiv:2407.09793.
+42. [API 核验] Lyu, W., et al. Will Your Next Pair Programming Partner Be Human? arXiv:2505.08119.
+43. [API 核验] Kao, L. Constant-Size Cryptographic Evidence Structures for Regulated AI Workflows. arXiv:2511.17118.
+44. [API 核验] Wang, Z. Who Audits the Auditor? arXiv:2604.22096.
+45. [API 核验] Wu, Y., et al. A Systematic Review of NeurIPS Dataset Management Practices. arXiv:2411.00266.
+46. [已核] Just, R., et al. Are Mutants a Valid Substitute for Real Faults in Software Testing? FSE 2014. DOI 10.1145/2635868.2635929.
+47. [API 核验] Wang 等. **Where Do Large Language Models Fail When Generating Code?** arXiv:2406.08731.（用于 §2(5)/§7.1 的错误分类对手方口径）
+48. [API 核验] **Bugs in Large Language Models Generated Code: An Empirical Study.** EMSE 2025. arXiv:2403.08937.（作者见 arXiv；用于 §2(5)）
+
+---
+
+## 附录 A · 67 条判决规则清单
+
+全部规则由规则引擎现算（`len(RULES)=67`）。**按 severity 分布**：**block 44 / warn 16 / advice 7**（合计 67）；**按 kind**：fact 61 / pedagogy 5 / meta 1。每条字段：`id / title / severity / kind / quadrant / scope / automated / basis / fix_hint / check`。
+
+> **数字修正说明**：v0.6（旧 §6.4）曾写"67（block 0 / warn 176 / advice 55）"。经复核，规则表现算的 **severity 分布为 44/16/7**（合计 67），而旧值 0/176/55 **无法从规则表复现**，疑为笔误或指别的量（未确证）。**本稿以 44/16/7 为准。**
+>
+> 完整 67 条（id + title + severity）由附录 D 的命令生成，投稿时随补充材料给出。
+
+## 附录 B · 统计口径（冻结）
+
+| 场景 | 方法 |
+|---|---|
+| 单比例 CI | **Clopper–Pearson 精确 95%**（主报）；Wilson 敏感性；**禁用小样本 Wald** |
+| 独立样本比较 | **Fisher 精确 / Boschloo** |
+| 同批前后比较 | **精确 McNemar** |
+| 多重比较 | 探索性 **BH-FDR**；确认性 **Holm**；检验族预定义 |
+| 效应量 | 必报**差值 + CI** |
+| 聚类相关 | 估 ICC/DEFF/n_eff；同源卡 ≠ 独立观测 |
+| IRR | Cohen's κ / Krippendorff's α；**≥0.67** 才作 tentative |
+
+**红线**：不声称"显著优化"；不把 0/8 写"无效"；不把变异 kill rate 称检测率；不把同源判据下的 F1=1.0 称"已校准"。
+
+**残余风险 ↔ 门禁映射**：Construct→边界门禁；Internal→口径一致性门禁；Statistical→统计冻结门禁；External→基线门禁；Temporal→时间锚（占位）。**判据一律现算，禁止从产物抄数。**
+
+## 附录 C · 逐样本明细
+
+每个主指标对应逐样本 `id → verdict` 表（"可被第三方逐条复算"的关键）：holdout（`planted/detector/verdict/opts_seen`）、external（`verdict/layer`）、反事实（`ground_truth/operator_prediction/agree`）、变异（`killed/survived`）。每表附 `env`（WSL/g++/setarch）+ `caliber`（opt_levels）+ `denominator`。
+
+## 附录 D · 复现命令
+
+```bash
+# 环境自检（后两条决定能否复现 holdout/external）
+python --version; node --version; g++ --version; wsl --status
+# 核心数字
+python tools/holdout_reveal_3_665.py        # 87.5%（需 WSL）
+python tools/external_corpus_reveal_665.py  # 35.0%（需 WSL）
+python tools/mutation_test_656.py           # 97.3%
+python tools/counterfactual_extend_665.py   # F1=1.0
+python tools/run_658_gate.py                # L0 5/5
+# 一致性
+python -c "import sys;sys.path.insert(0,'tools');import gate_engine;print(len(gate_engine.RULES))"  # 67
+wc -l data/authority/decision_event_v2_ledger.jsonl  # 452
+```
+
+**v0.9 新增（ablation 框架，均为**只读/自检**，不跑实验）**：
+
+```bash
+python tools/ablation_stats_671b.py selftest    # 统计原语自检（45 项）
+python tools/ablation_671b.py --dry-run         # 六组 A0–A5 可行性体检（只读）
+python tools/ablation_671b.py --run             # 登记 run plan（**不跑实验**）
+python tools/sample_size_671b.py --run          # 样本量现算并落盘
+python tools/select_assets_671b.py --check      # 资产选择接口自检
+python tools/run_b3_671b.py --run               # 登记 B3 plan（**不跑实验**）
+python -m pytest tests/test_ablation_671b.py tests/test_select_assets_671b.py tests/test_stats_671b.py
+```
+
+> **红线**：`--run` 只**登记 plan**（结果全为 `{{TODO_ablation_*}}`），**不产生任何实验数字**——
+> 671b 任务书要求"只写脚本和设计，不跑实验"。
+
+> 路径相对于 **artifact 根**（非匿名版本提供完整布局）；`reveal` 类命令的 `OUT` 必须重定向到**仓库外临时目录**。
+
+## 附录 E · AI 使用声明
+
+本稿由 LLM **辅助起草**（人类作者负责选题、结构、claim 边界、最终裁决）。逐条登记见 artifact 的 AI 使用登记文件。**本批（671b）的边界**：LLM 只做**ablation 框架设计、统计原语实现、样本量现算、口径文档撰写**，**未新增任何未落盘数字、未跑任何实验**。凡未经登记的 AI 贡献，按项目纪律视为**未声明作者**。
+
+## 附录 F · 相关工作详表（七方向）
+
+| 方向 | 代表工作 |
+|---|---|
+| 1 自演化/抗污染 benchmark | Benchmark Self-Evolving [9] / ArenaBencher [10] / SWE-bench-Live [11] / DynaBench [12] / LiveBench [13] |
+| 2 LLM 变异引导测试 | ACH [14] / MUTGEN [15] / Cleverest [16] |
+| 3 自我验证 / LLM-judge | LLM-as-a-judge [17] / 自我纠错（见 artifact 登记） |
+| 4 度量治理 / 可复现 | Datasheets [24] / Model Cards [25] / 可复现性报告 [26] / Goodhart [21] |
+| 5 形式化验证 + LLM | seL4 [18] / CompCert [19] / LLVM+Lean [37] / Can LLMs Enable Verification [38] / Formal Disco [39] |
+| 6 LLM 代码错误分类 | All Smoke No Alarm [40] / Uncovering Weaknesses [41] / Pair Programming [42] |
+| 7 溯源审计 | Merkle [35] / Constant-Size Crypto Evidence [43] / Who Audits the Auditor [44] / NeurIPS Dataset Review [45] |
+
+> 建议补充（见 670d 引用补充建议）：LLM 代码错误分类 ×2（arXiv:2406.08731 / 2403.08937）、污染综述 ×2（arXiv:2406.04244 / 2502.17521）。

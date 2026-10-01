@@ -36,9 +36,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
-PAPER = "research/paper_v0.8.md"
+PAPER = "research/paper_v0.9.md"
 TEX = "research/latex/queyi_neurips2027.tex"
 CALIBER_DOC = "research/669d_统计口径.md"
+ABLATION_CALIBER_DOC = "research/671b_统计口径_ablation.md"
 BASELINE_DIR = "data/experiments"
 
 
@@ -168,6 +169,42 @@ def check_irr(root: Path) -> list[dict]:
     return []
 
 
+# ── G-ABLATION-CONSISTENCY（论文 ablation 主张 ↔ ablation 计划产物）──
+ABLATION_PLAN = "data/experiments/ablation_plan_671b.json"
+ABLATION_RESULT_KEYS = ("detection_rate", "recall", "result", "delta", "verdict")  # 禁止的"实验结果"键
+
+
+def check_ablation_consistency(root: Path) -> list[dict]:
+    """论文里的 A0--A5 必须与 ablation 计划产物一致，且**不得出现编造的实验结果**。"""
+    out: list[dict] = []
+    paper = _read(root, PAPER)
+    plan = _load_json(root, ABLATION_PLAN)
+    if not paper:
+        return [finding("G-ABLATION-CONSISTENCY", "warn", PAPER, "论文不存在，跳过")]
+    if plan is None:
+        return [finding("G-ABLATION-CONSISTENCY", "block", ABLATION_PLAN,
+                        "论文写了 ablation 框架但无计划产物",
+                        "先跑 tools/ablation_671b.py --dry-run")]
+    # 论文必须出现关键对照字面量
+    if "A0 - A5" not in paper.replace("−", "-"):
+        out.append(finding("G-ABLATION-CONSISTENCY", "block", PAPER,
+                           "论文未出现关键对照 A0 - A5",
+                           "在 §6.2/§7.6 明确写出 A0 - A5 的证伪条件"))
+    # ablation 计划里不得有实验结果字段（本批只写设计，不跑实验）
+    text = json.dumps(plan, ensure_ascii=False)
+    for key in ("\"p_value\"", "\"ci_low\"", "\"ci_high\""):
+        if key in text:
+            out.append(finding("G-ABLATION-CONSISTENCY", "block", ABLATION_PLAN,
+                               f"ablation 计划含实验结果字段 {key}（本批不得跑实验）",
+                               "把结果清空为 {{TODO_ablation_*}} 占位"))
+    # 计划里必须有占位符
+    if "{{TODO_ablation_A0}}" not in text:
+        out.append(finding("G-ABLATION-CONSISTENCY", "warn", ABLATION_PLAN,
+                           "ablation 计划缺少 {{TODO_ablation_A0}} 占位",
+                           "为每组登记 result_placeholder"))
+    return out
+
+
 RULES: list[tuple[str, Any]] = [
     ("G-RATE-CONSISTENCY", check_rate_consistency),
     ("G-DENOMINATOR", check_denominator),
@@ -175,6 +212,7 @@ RULES: list[tuple[str, Any]] = [
     ("G-BOUNDARY-REQUIRED", check_boundary_required),
     ("G-BASELINE-EXISTS", check_baseline_exists),
     ("G-IRR", check_irr),
+    ("G-ABLATION-CONSISTENCY", check_ablation_consistency),
 ]
 
 

@@ -1,0 +1,124 @@
+{
+  "schema": "queyi-b3-design/671b",
+  "version": "1.0",
+  "generated_by": "tools/run_b3_671b.py",
+  "executed": false,
+  "executed_note": "本批（671b）**只写脚本和设计，不跑实验** ⇒ 本文件只登记 B3 的接口形状、预算对齐口径、分配表格式与判读规则；任何结果字段均为占位符。",
+
+  "what_is_b3": {
+    "one_line": "B3 = 同等预算下**随机扩充验证资产**（不按失败驱动挑选），与 FD 对照。",
+    "why_it_matters": "把『失败驱动』从『因为投入多所以看起来好』里分离出来（论文 §5.2 / T8 / ablation A5）。",
+    "paper_ref": "research/paper_v0.8.md §5.2；research/670b_ablation设计.md §1（A5 行）",
+    "key_contrast": "A0 − A5：Δ 的 CI 跨 0 ⇒ 『失败驱动优于随机预算』不成立，必须原样报告。"
+  },
+
+  "interface": {
+    "signature": "select_assets(pool, n, strategy, seed) -> [asset]",
+    "implementations": {
+      "authoritative": {
+        "where": "拆仓验证器 queyi-verifier（**主仓不可见**）",
+        "status": "BLOCKED",
+        "blocker": "主仓没有资产选择接口（docs/670a_实验结果.md §3 / docs/669_实验结果.md §3）"
+      },
+      "main_repo_shim": {
+        "where": "tools/select_assets_671b.py",
+        "status": "PROXY（形状正确、口径对齐；池定义不同）",
+        "caveat": "主仓的 pool = 检测仪器池（10 项），**不是**拆仓的验证资产池 ⇒ 主仓跑出的 Δ 只能作**方向性读法**，不得写成确认性结论（docs/670a_实验结果.md §0 红线）"
+      }
+    },
+    "strategies": {
+      "failure_driven": "按历史失败归因排序（fail_hits 降序，同分按 id 升序）—— FD 臂",
+      "random": "均匀随机抽 n 个，带种子（random.Random(seed).sample）—— B3 臂",
+      "oracle": "按 true_catch 降序 —— **上界参照**，不得用于任何 Claim"
+    },
+    "fail_loud": [
+      "n > len(pool) ⇒ ValueError（不静默截断，否则预算对齐失效）",
+      "未知 strategy ⇒ ValueError",
+      "oracle/failure_driven 缺计数字段 ⇒ ValueError"
+    ]
+  },
+
+  "budget_alignment": {
+    "definition": "两臂必须用**同一数量**的资产：|selected(FD)| == |selected(random)|。",
+    "how": "先算 FD 在 catch 样本上实际用到的资产集合（tools/select_assets_671b.py::budget），random 抽同数量。",
+    "why": "否则『随机不如失败驱动』可能只是『随机用得更少』——这正是 B3 要排除的混淆（T8）。",
+    "matched_dims": ["资产数", "语料（D2 holdout + D3 corpus）", "编译档（-O0/-O2 双档）", "判定器版本"]
+  },
+
+  "allocation_table": {
+    "required": true,
+    "why": "预算对齐必须**可核验**：第三方要能用分配表重放『随机抽了哪 n 个资产』。",
+    "schema": {
+      "arm": "failure_driven | random",
+      "strategy": "failure_driven | random",
+      "n_assets": "int",
+      "seed": "int | null（failure_driven 无随机性）",
+      "picked": "[asset]",
+      "allocation_table": "[{asset, rank}]"
+    },
+    "seed": 20260930,
+    "seed_rationale": "与 tools/baseline_670a.py 的 Random† 同种子 ⇒ 两套数可直接对照（口径可比）。"
+  },
+
+  "main_repo_proxy_check": {
+    "note": "把主仓 shim 的 seed=20260930 抽取结果与 670a 的 Random† 逐项对照，确认接口形状一致。",
+    "seed": 20260930,
+    "random_picked_main_repo": ["tsan", "perf-counter", "cross-compile", "measure"],
+    "random_picked_670a": ["cross-compile", "measure", "perf-counter", "tsan"],
+    "same_set": true,
+    "order_note": "670a 用 sorted(rng.sample(...)) 落盘（有序），shim 按抽样顺序返回 ⇒ **集合相同、次序不同**。B3 的『选中集合』语义与次序无关；分配表按 rank 记录次序，故两处都可重放。",
+    "matches_670a_random_picked": true,
+    "source": "data/experiments/baseline_random.json::selection.holdout.picked",
+    "verdict": "主仓 shim 与 670a 代理臂**同 seed 同集合** ⇒ 接口可替换（拆仓真接口就绪后只需换实现）"
+  },
+
+  "measurement_plan": {
+    "detectors": ["D2 holdout（可测 n=16）", "D3 corpus（可测 n=32）"],
+    "primary_metric": "detect_rate_measurable = catch / (catch + miss)",
+    "secondary": ["unknown 率", "假 pass 率", "资产数（必须两臂相同）"],
+    "test": {
+      "paired": "精确 McNemar（FD vs B3，同批样本配对）",
+      "effect_size": "Cohen's h（必报差值 + CI）",
+      "multiplicity": "B3 是**预先指定的确认性对照** ⇒ 用 Holm（见 research/671b_统计口径_ablation.md §5）"
+    },
+    "decision_rule": "Δ 的 CI 跨 0 ⇒ 『失败驱动优于随机预算』**不成立**，原样报告（670b §1）"
+  },
+
+  "sample_size_reality_check": {
+    "source": "data/experiments/sample_size_671b.json",
+    "delta_target_pp": 15,
+    "n_pairs_needed_psi_0.40": 138,
+    "current_measurable": {"holdout": 16, "corpus": 32},
+    "verdict": "当前 n=16/32 ⇒ 远不足 138 ⇒ B3 的 Δ **只能作方向性读法**，不得写『显著优于』（670b §2.3 红线）"
+  },
+
+  "blocked": [
+    {
+      "item": "真 B3（拆仓验证资产池）",
+      "status": "BLOCKED",
+      "need": "queyi-verifier 暴露 select_assets(pool, n, strategy, seed) -> [asset] + 分配表",
+      "note": "本文件登记接口形状与口径，待拆仓就绪后替换实现即可跑真 B3"
+    },
+    {
+      "item": "主仓代理 B3（仪器级）",
+      "status": "READY（接口已建，**本批不跑**）",
+      "note": "tools/select_assets_671b.py + tools/run_b3_671b.py 已就绪；结果留 {{TODO_b3_*}}"
+    }
+  ],
+
+  "result_placeholders": {
+    "fd_detect_rate": "{{TODO_b3_fd}}",
+    "random_detect_rate": "{{TODO_b3_random}}",
+    "delta_pp": "{{TODO_b3_delta}}",
+    "mcnemar_p": "{{TODO_b3_p}}",
+    "cohens_h": "{{TODO_b3_h}}",
+    "ci": "{{TODO_b3_ci}}"
+  },
+
+  "red_lines": [
+    "本批不跑实验（671b 任务书）",
+    "主仓 shim 是**代理**（池=仪器池），Δ 只作方向性读法，不进确认性 Claim",
+    "预算必须对齐（两臂同资产数）；不对齐 ⇒ 结果作废",
+    "分配表必须落盘（含 seed + 选中资产），否则第三方无法重放"
+  ]
+}

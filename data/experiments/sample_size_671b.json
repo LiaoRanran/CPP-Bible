@@ -1,0 +1,180 @@
+{
+  "schema": "queyi-sample-size/671b",
+  "version": "1.0",
+  "design_doc": "research/670b_ablation设计.md",
+  "params": {
+    "power": 0.8,
+    "alpha": 0.05,
+    "sided": "two-sided"
+  },
+  "two_proportions": [
+    {
+      "p1": 0.35,
+      "p2": 0.45,
+      "delta_pp": 10.0,
+      "n_per_group": 376,
+      "n_total": 752,
+      "doc_value": 373,
+      "drift_vs_doc": 3,
+      "formula": "two-proportions-normal-approx"
+    },
+    {
+      "p1": 0.35,
+      "p2": 0.5,
+      "delta_pp": 15.0,
+      "n_per_group": 170,
+      "n_total": 340,
+      "doc_value": 167,
+      "drift_vs_doc": 3,
+      "formula": "two-proportions-normal-approx"
+    },
+    {
+      "p1": 0.35,
+      "p2": 0.55,
+      "delta_pp": 20.0,
+      "n_per_group": 96,
+      "n_total": 192,
+      "doc_value": 93,
+      "drift_vs_doc": 3,
+      "formula": "two-proportions-normal-approx"
+    },
+    {
+      "p1": 0.5,
+      "p2": 0.65,
+      "delta_pp": 15.0,
+      "n_per_group": 170,
+      "n_total": 340,
+      "doc_value": 167,
+      "drift_vs_doc": 3,
+      "formula": "two-proportions-normal-approx"
+    }
+  ],
+  "paired_mcnemar": [
+    {
+      "p1": 0.35,
+      "p2": 0.5,
+      "psi": 0.3,
+      "delta_pp": 15.0,
+      "n_pairs": 103,
+      "doc_value": 102,
+      "drift_vs_doc": 1,
+      "formula": "paired-mcnemar-connor"
+    },
+    {
+      "p1": 0.35,
+      "p2": 0.5,
+      "psi": 0.4,
+      "delta_pp": 15.0,
+      "n_pairs": 138,
+      "doc_value": 137,
+      "drift_vs_doc": 1,
+      "formula": "paired-mcnemar-connor"
+    },
+    {
+      "p1": 0.35,
+      "p2": 0.5,
+      "psi": 0.5,
+      "delta_pp": 15.0,
+      "n_pairs": 173,
+      "doc_value": 172,
+      "drift_vs_doc": 1,
+      "formula": "paired-mcnemar-connor"
+    }
+  ],
+  "ci_halfwidth": [
+    {
+      "n": 16,
+      "p_assumed": 0.5,
+      "halfwidth_pp": 25.3
+    },
+    {
+      "n": 30,
+      "p_assumed": 0.5,
+      "halfwidth_pp": 18.7
+    },
+    {
+      "n": 40,
+      "p_assumed": 0.5,
+      "halfwidth_pp": 16.2
+    },
+    {
+      "n": 90,
+      "p_assumed": 0.5,
+      "halfwidth_pp": 10.7
+    },
+    {
+      "n": 93,
+      "p_assumed": 0.5,
+      "halfwidth_pp": 10.6
+    },
+    {
+      "n": 104,
+      "p_assumed": 0.5,
+      "halfwidth_pp": 10.0
+    },
+    {
+      "n": 150,
+      "p_assumed": 0.5,
+      "halfwidth_pp": 8.3
+    },
+    {
+      "n": 200,
+      "p_assumed": 0.5,
+      "halfwidth_pp": 7.1
+    }
+  ],
+  "current_gap": {
+    "target_halfwidth_pp": 10.0,
+    "n_needed_for_target": 104,
+    "current": {
+      "holdout_measurable": 16,
+      "corpus_measurable": 32,
+      "corpus_all": 40
+    },
+    "gap": {
+      "holdout_measurable": 88,
+      "corpus_measurable": 72,
+      "corpus_all": 64
+    },
+    "verdict": "当前可测 n=16 ⇒ 远不足以支撑 ±10.0pp 结论"
+  },
+  "power_curve": [
+    {
+      "n_per_group": 16,
+      "min_detectable_delta_pp": 47.0
+    },
+    {
+      "n_per_group": 32,
+      "min_detectable_delta_pp": 34.3
+    },
+    {
+      "n_per_group": 64,
+      "min_detectable_delta_pp": 24.5
+    },
+    {
+      "n_per_group": 96,
+      "min_detectable_delta_pp": 20.0
+    },
+    {
+      "n_per_group": 128,
+      "min_detectable_delta_pp": 17.3
+    },
+    {
+      "n_per_group": 172,
+      "min_detectable_delta_pp": 14.9
+    },
+    {
+      "n_per_group": 256,
+      "min_detectable_delta_pp": 12.2
+    },
+    {
+      "n_per_group": 392,
+      "min_detectable_delta_pp": 9.8
+    }
+  ],
+  "note": "所有数字**现算**（原语复用 tools/ablation_stats_671b.py + tools/stat_bounds.py）；doc_value 只是 670b §2.3 表里的登记值，用于登记漂移，**不是信源**。",
+  "red_lines": [
+    "样本量达标前，ablation 结果只能作**方向性读法**，不得写『显著优于』（670b §2.3）",
+    "当前可测 n=16/32 远低于 ±10pp 所需 n ⇒ 本批不作任何幅度 Claim"
+  ]
+}

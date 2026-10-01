@@ -21,11 +21,12 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MD = os.path.join(ROOT, "research", "paper_v0.8.md")
+MD = os.path.join(ROOT, "research", "paper_v0.9.md")
 TEX = os.path.join(ROOT, "research", "latex", "queyi_neurips2027.tex")
 
 # (name, [tokens]) —— 每个 token 必须在两边都出现（token 已做规范化后的字面量）
-FACTS: list[tuple[str, list[str]]] = [
+# 语言分叉项用 (name, tokens_md, tokens_tex) 三元组：中文稿与英文稿用不同写法表达同一事实。
+FACTS: list = [
     ("holdout 检出率", ["87.5", "14/16"]),
     ("holdout 95% CI", ["[61.7, 98.4]"]),
     ("external 全样本", ["35.0", "14/40"]),
@@ -59,12 +60,23 @@ FACTS: list[tuple[str, list[str]]] = [
     ("Δ static→FD corpus", ["31.3"]),
     ("Δ random†→FD corpus", ["40.7"]),
     ("缺陷重注入", ["6/6"]),
+    # ── 671b：ablation 框架 + 样本量（来自 tools/sample_size_671b.py 现算）──
+    ("ablation A0 占位", ["{{TODO_ablation_A0}}"]),
+    ("ablation A5 占位", ["{{TODO_ablation_A5}}"]),
+    ("ablation 关键对照 A0-A5", ["A0 - A5"]),
+    ("样本量 ±10pp", ["104"]),
+    ("样本量 Δ=15pp 配对", ["138"]),
+    ("样本量 Δ=15pp 独立", ["170"]),
+    # 语言分叉：中文稿写"中"，英文稿写 medium（同一事实）
+    ("效应量 corpus 中", ["0.72", "中"], ["0.72", "medium"]),
 ]
 
 
 def normalize(text: str) -> str:
     """把两种排版归一，便于字面量比对。"""
     t = text.replace("\\%", "%")          # LaTeX 转义百分号
+    t = t.replace("\\{", "{").replace("\\}", "}")   # 转义花括号（占位符）
+    t = t.replace("\\_", "_")             # 转义下划线（占位符）
     t = t.replace("\\,", "").replace("~", " ")
     t = re.sub(r"\s+", " ", t)
     t = t.replace("（", "(").replace("）", ")")   # 全角括号
@@ -80,12 +92,17 @@ def load(path: str) -> str:
 def check() -> dict:
     md, tex = load(MD), load(TEX)
     rows = []
-    for name, tokens in FACTS:
-        miss_md = [t for t in tokens if t not in md]
-        miss_tex = [t for t in tokens if t not in tex]
+    for fact in FACTS:
+        if len(fact) == 2:
+            name, tokens = fact
+            t_md, t_tex = tokens, tokens
+        else:
+            name, t_md, t_tex = fact
+        miss_md = [t for t in t_md if t not in md]
+        miss_tex = [t for t in t_tex if t not in tex]
         rows.append({
             "fact": name,
-            "tokens": tokens,
+            "tokens": [t_md, t_tex] if t_md != t_tex else t_md,
             "in_md": not miss_md,
             "in_tex": not miss_tex,
             "missing_in_md": miss_md,
