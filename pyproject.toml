@@ -199,3 +199,9 @@ pythonpath = ["tools"]   # 与 tests/conftest.py 的 sys.path 注入等效（pyt
 #   万一有人显式传 --basetemp 走回编号目录模式，也不留一堆历史会话 tmp（默认 all 会累积）。
 tmp_path_retention_policy = "none"
 addopts = "-q"
+# 672h：slow 标记正式登记（此前 pytest 对 @pytest.mark.slow 报 PytestUnknownMarkWarning）。
+# 语义：单测耗时 >10s 的测试（WSL 编译 / 全量变异 / 全量重跑 / 大数据生成类）。
+# 本地快档 `pytest -m "not slow"`（tools/fast_gate.py 默认）跳过它们；CI 的 `-m slow` 档覆盖。
+markers = [
+    "slow: 耗时>10s 的测试（WSL 编译/全量重跑类）；本地默认跳过，CI 慢档覆盖",
+]

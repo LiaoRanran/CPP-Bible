@@ -76,6 +76,9 @@ HANDOVER.md          ← 快照（较旧，可略）
 - **每完成一批**：跑门禁 → git commit + push → 更新 STATE.json → 追加记忆日志
 - **不中断**：完成一批后立即读 state.json 取下一个任务，不问用户
 - **额度燃尽**：先 commit+push 当前进度 → 更新 STATE.json → 停下来
+- **回归测试（672h 起）**：默认跑 `python tools/fast_gate.py --tests tests/test_<本批>.py`
+  （658+669d+671a guard+本批测试，<5 分钟）；不带参数想跑全量快档用 `--all`。
+  **本地不跑全量 pytest**——全量回归（含 `@pytest.mark.slow` 慢档）只在 CI 跑。
 
 ## 🏁 接续模型行动指南（精简版）
 
