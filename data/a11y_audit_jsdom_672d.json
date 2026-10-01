@@ -1,0 +1,363 @@
+{
+  "coverage": "jsdom_rendered",
+  "js_rendered_dom_audited": true,
+  "static_only_tool": "tools/a11y_audit_670c4.py",
+  "pages": [
+    {
+      "page": "index.html",
+      "issues": [
+        {
+          "severity": "moderate",
+          "rule": "stale-aria-busy",
+          "detail": "<div> 渲染完成后 aria-busy=\"true\" 仍残留（state=ready，内容已渲染）—— 屏幕阅读器会认为仍在更新；setState 应同步清 aria-busy",
+          "line": 43
+        },
+        {
+          "severity": "moderate",
+          "rule": "stale-aria-busy",
+          "detail": "<ul> 渲染完成后 aria-busy=\"true\" 仍残留（state=loading，内容已渲染）—— 屏幕阅读器会认为仍在更新；setState 应同步清 aria-busy",
+          "line": 127
+        }
+      ],
+      "counts": {
+        "critical": 0,
+        "moderate": 2,
+        "minor": 0
+      },
+      "nodes_static": 109,
+      "nodes_rendered": 203,
+      "nodes_added_by_js": 94,
+      "modules": [
+        {
+          "src": "components/index.js",
+          "kind": "external",
+          "ok": true
+        },
+        {
+          "src": "home.js",
+          "kind": "external",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initRobustness ",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initA11y } from",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initKeybinds } ",
+          "kind": "inline",
+          "ok": true
+        }
+      ],
+      "modules_failed": []
+    },
+    {
+      "page": "cards.html",
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      },
+      "nodes_static": 145,
+      "nodes_rendered": 1538,
+      "nodes_added_by_js": 1393,
+      "modules": [
+        {
+          "src": "components/index.js",
+          "kind": "external",
+          "ok": true
+        },
+        {
+          "src": "cards.js",
+          "kind": "external",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initRobustness ",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initA11y } from",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initKeybinds } ",
+          "kind": "inline",
+          "ok": true
+        }
+      ],
+      "modules_failed": []
+    },
+    {
+      "page": "learn.html",
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      },
+      "nodes_static": 120,
+      "nodes_rendered": 234,
+      "nodes_added_by_js": 114,
+      "modules": [
+        {
+          "src": "components/index.js",
+          "kind": "external",
+          "ok": true
+        },
+        {
+          "src": "inline# // 670c A1 · 学习页控制器（DOM",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initRobustness ",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initA11y } from",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initKeybinds } ",
+          "kind": "inline",
+          "ok": true
+        }
+      ],
+      "modules_failed": []
+    },
+    {
+      "page": "experiments.html",
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      },
+      "nodes_static": 148,
+      "nodes_rendered": 390,
+      "nodes_added_by_js": 242,
+      "modules": [
+        {
+          "src": "components/index.js",
+          "kind": "external",
+          "ok": true
+        },
+        {
+          "src": "inline# import { fetchJSON } fr",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initRobustness ",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initA11y } from",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initKeybinds } ",
+          "kind": "inline",
+          "ok": true
+        }
+      ],
+      "modules_failed": []
+    },
+    {
+      "page": "verdicts.html",
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      },
+      "nodes_static": 194,
+      "nodes_rendered": 1321,
+      "nodes_added_by_js": 1127,
+      "modules": [
+        {
+          "src": "./verdicts.js",
+          "kind": "external",
+          "ok": true
+        },
+        {
+          "src": "./components/index.js",
+          "kind": "external",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initRobustness ",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initA11y } from",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initKeybinds } ",
+          "kind": "inline",
+          "ok": true
+        }
+      ],
+      "modules_failed": []
+    },
+    {
+      "page": "starmap.html",
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      },
+      "nodes_static": 114,
+      "nodes_rendered": 154,
+      "nodes_added_by_js": 40,
+      "modules": [
+        {
+          "src": "components/index.js",
+          "kind": "external",
+          "ok": true
+        },
+        {
+          "src": "starmap.js",
+          "kind": "external",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initRobustness ",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initA11y } from",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initKeybinds } ",
+          "kind": "inline",
+          "ok": true
+        }
+      ],
+      "modules_failed": []
+    },
+    {
+      "page": "verify.html",
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      },
+      "nodes_static": 83,
+      "nodes_rendered": 177,
+      "nodes_added_by_js": 94,
+      "modules": [
+        {
+          "src": "components/index.js",
+          "kind": "external",
+          "ok": true
+        },
+        {
+          "src": "verify.js",
+          "kind": "external",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initRobustness ",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initA11y } from",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initKeybinds } ",
+          "kind": "inline",
+          "ok": true
+        }
+      ],
+      "modules_failed": []
+    },
+    {
+      "page": "card.html",
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      },
+      "nodes_static": 77,
+      "nodes_rendered": 297,
+      "nodes_added_by_js": 220,
+      "modules": [
+        {
+          "src": "components/index.js",
+          "kind": "external",
+          "ok": true
+        },
+        {
+          "src": "card.js",
+          "kind": "external",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initRobustness ",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initA11y } from",
+          "kind": "inline",
+          "ok": true
+        },
+        {
+          "src": "inline#import { initKeybinds } ",
+          "kind": "inline",
+          "ok": true
+        }
+      ],
+      "modules_failed": []
+    }
+  ],
+  "focus_ring": {
+    "css_files": [
+      "css/a11y.css",
+      "css/design-tokens.css"
+    ],
+    "issues": [],
+    "ok": true
+  },
+  "uncaught": [],
+  "total": {
+    "critical": 0,
+    "moderate": 2,
+    "minor": 0
+  },
+  "critical_total": 0,
+  "limitations": [
+    "jsdom 不是真实浏览器：无布局、无真实 canvas/WebGL 绘制、无 CSS 计算",
+    "焦点环颜色靠 CSS 文本检查（jsdom 不执行 CSS），真实可见性仍需 contrast_check.js 与人工确认",
+    "内联 module 脚本以 data: URL 方式执行（相对 import 已重写为绝对 URL），与浏览器加载顺序不完全等价",
+    "数据来自本地文件 mock 的 fetch，不是真实 HTTP（404/超时等真实故障模式未覆盖）",
+    "672d 第一阶段：**只报告不修**；修复与双工具合并归 672e"
+  ],
+  "nodes_added_by_js_total": 3324
+}

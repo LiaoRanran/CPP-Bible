@@ -26,6 +26,8 @@ const TESTS = [
   'tests/a11y_670c4.test.mjs',
   'tests/keybind_670c5.test.mjs',
   'tests/perf_670c5.test.mjs',
+  'tests/home_dom_672d.test.mjs',
+  'tests/perf_fix_672d.test.mjs',
   'tests/smoke.mjs',
   'tests/data_672b.test.mjs',
   'tests/prune_672b.test.mjs',

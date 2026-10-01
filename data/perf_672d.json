@@ -1,0 +1,252 @@
+{
+  "pages": [
+    {
+      "page": "index.html",
+      "html_kb": 7.6,
+      "dom_nodes": 110,
+      "assets_gzip_kb": 24.0,
+      "assets_gzip_kb_legacy": 57.2,
+      "load_refs": [
+        "css/design-tokens.css",
+        "style.css",
+        "css/robustness.css",
+        "css/a11y.css",
+        "css/responsive.css",
+        "components/index.js",
+        "home.js"
+      ],
+      "nav_refs": [
+        "data/metrics_666.json",
+        "data/manifest.json",
+        "cards.html",
+        "card.html",
+        "learn.html",
+        "starmap.html",
+        "experiments.html",
+        "verdicts.html",
+        "verify.html"
+      ],
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "cards.html",
+      "html_kb": 9.2,
+      "dom_nodes": 145,
+      "assets_gzip_kb": 35.9,
+      "assets_gzip_kb_legacy": 49.4,
+      "load_refs": [
+        "css/design-tokens.css",
+        "style.css",
+        "css/669c.css",
+        "css/robustness.css",
+        "css/a11y.css",
+        "css/responsive.css",
+        "components/index.js",
+        "cards.js"
+      ],
+      "nav_refs": [
+        "index.html",
+        "index.html",
+        "card.html",
+        "starmap.html",
+        "verify.html"
+      ],
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "learn.html",
+      "html_kb": 25.2,
+      "dom_nodes": 239,
+      "assets_gzip_kb": 32.1,
+      "assets_gzip_kb_legacy": 51.6,
+      "load_refs": [
+        "css/design-tokens.css",
+        "style.css",
+        "css/669c.css",
+        "css/robustness.css",
+        "css/a11y.css",
+        "css/responsive.css",
+        "components/index.js"
+      ],
+      "nav_refs": [
+        "index.html",
+        "cards.html",
+        "experiments.html",
+        "verify.html",
+        "card.html?card=' + encodeURIComponent(p) + '",
+        "card.html?card=' + encodeURIComponent(c.id) + '"
+      ],
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "experiments.html",
+      "html_kb": 20.2,
+      "dom_nodes": 153,
+      "assets_gzip_kb": 29.8,
+      "assets_gzip_kb_legacy": 61.4,
+      "load_refs": [
+        "css/design-tokens.css",
+        "style.css",
+        "css/669c.css",
+        "css/robustness.css",
+        "css/a11y.css",
+        "css/responsive.css",
+        "components/index.js"
+      ],
+      "nav_refs": [
+        "data/experiments.json",
+        "data/metrics_666.json",
+        "data/status.json",
+        "data/graph.json",
+        "index.html",
+        "learn.html",
+        "cards.html",
+        "verify.html"
+      ],
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "verdicts.html",
+      "html_kb": 10.0,
+      "dom_nodes": 194,
+      "assets_gzip_kb": 36.5,
+      "assets_gzip_kb_legacy": 39.7,
+      "load_refs": [
+        "css/design-tokens.css",
+        "style.css",
+        "css/669c.css",
+        "css/robustness.css",
+        "css/a11y.css",
+        "css/responsive.css",
+        "./verdicts.js",
+        "./components/index.js"
+      ],
+      "nav_refs": [
+        "index.html"
+      ],
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "starmap.html",
+      "html_kb": 6.7,
+      "dom_nodes": 114,
+      "assets_gzip_kb": 47.8,
+      "assets_gzip_kb_legacy": 60.0,
+      "load_refs": [
+        "css/design-tokens.css",
+        "css/669c.css",
+        "style.css",
+        "css/robustness.css",
+        "css/a11y.css",
+        "css/responsive.css",
+        "components/index.js",
+        "starmap.js"
+      ],
+      "nav_refs": [
+        "index.html",
+        "verdicts.html",
+        "cards.html",
+        "verify.html"
+      ],
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "verify.html",
+      "html_kb": 4.8,
+      "dom_nodes": 83,
+      "assets_gzip_kb": 22.5,
+      "assets_gzip_kb_legacy": 28.6,
+      "load_refs": [
+        "css/design-tokens.css",
+        "style.css",
+        "css/robustness.css",
+        "css/a11y.css",
+        "css/responsive.css",
+        "components/index.js",
+        "verify.js"
+      ],
+      "nav_refs": [
+        "index.html",
+        "starmap.html"
+      ],
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    },
+    {
+      "page": "card.html",
+      "html_kb": 4.5,
+      "dom_nodes": 77,
+      "assets_gzip_kb": 24.8,
+      "assets_gzip_kb_legacy": 33.1,
+      "load_refs": [
+        "css/design-tokens.css",
+        "style.css",
+        "css/robustness.css",
+        "css/a11y.css",
+        "css/responsive.css",
+        "components/index.js",
+        "card.js"
+      ],
+      "nav_refs": [
+        "index.html",
+        "starmap.html",
+        "verify.html"
+      ],
+      "issues": [],
+      "counts": {
+        "critical": 0,
+        "moderate": 0,
+        "minor": 0
+      }
+    }
+  ],
+  "js_debug_residue": [],
+  "home_assets_gzip_kb": 24.0,
+  "home_assets_gzip_kb_legacy": 57.2,
+  "budget": {
+    "html_kb": 60,
+    "dom_nodes": 1500,
+    "home_gzip_kb": 120
+  },
+  "gzip_scope": "load-time only（link/script/img；<a href> 导航链接不计入）",
+  "total": {
+    "critical": 0,
+    "moderate": 0,
+    "minor": 0
+  },
+  "critical_total": 0
+}
