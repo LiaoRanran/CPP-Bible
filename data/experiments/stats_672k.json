@@ -1,0 +1,356 @@
+{
+ "schema": "queyi-stats/672k",
+ "generated_by": "tools/stats_672k.py（W6：扩样后统计检验重做）",
+ "generated_at": "2026-10-01 23:26:05",
+ "prereg_refs": [
+  "data/experiments/prereg_672h.json",
+  "data/experiments/prereg_672g.json",
+  "data/experiments/prereg_672i.json"
+ ],
+ "alpha": 0.05,
+ "sets": {
+  "holdout": {
+   "fd_vs_static": {
+    "n": 41,
+    "arm_a_k": 34,
+    "arm_b_k": 1,
+    "arm_a_rate_pct": 82.93,
+    "arm_b_rate_pct": 2.44,
+    "delta_pp": 80.49,
+    "discordant": {
+     "b_a_only": 33,
+     "c_b_only": 0,
+     "n_discordant": 33
+    },
+    "mcnemar_p": 2.3283064365386963e-10,
+    "mcnemar_method": "exact-mcnemar",
+    "cohens_h": 1.976,
+    "delta_ci95_pct": [
+     68.36,
+     92.62
+    ]
+   },
+   "fd_vs_random_proxy": {
+    "n": 41,
+    "arm_a_k": 34,
+    "arm_b_k": 4,
+    "arm_a_rate_pct": 82.93,
+    "arm_b_rate_pct": 9.76,
+    "delta_pp": 73.17,
+    "discordant": {
+     "b_a_only": 30,
+     "c_b_only": 0,
+     "n_discordant": 30
+    },
+    "mcnemar_p": 1.862645149230957e-09,
+    "mcnemar_method": "exact-mcnemar",
+    "cohens_h": 1.6543,
+    "delta_ci95_pct": [
+     59.61,
+     86.73
+    ]
+   },
+   "posthoc_power_static": {
+    "n_discordant": 33,
+    "p_hat": 1.0,
+    "power": 1.0,
+    "alpha": 0.05,
+    "note": "post-hoc：p̂ 取自观测；不得当作设计期功效，也不得用来反推『证据不足』"
+   },
+   "posthoc_power_random": {
+    "n_discordant": 30,
+    "p_hat": 1.0,
+    "power": 1.0,
+    "alpha": 0.05,
+    "note": "post-hoc：p̂ 取自观测；不得当作设计期功效，也不得用来反推『证据不足』"
+   },
+   "e_value_static": {
+    "n": 33,
+    "x": 33,
+    "p0": 0.5,
+    "e_value": 252645135.0588,
+    "log10_e": 8.4025,
+    "reject_at_alpha": true,
+    "ville_threshold": 20.0,
+    "anytime_p": 0.0,
+    "cs95_anytime": [
+     0.8207,
+     1.0
+    ],
+    "note": "e-process 任意时刻有效；区间比固定样本 CP 宽——这是防『偷看』的代价"
+   },
+   "e_value_random": {
+    "n": 30,
+    "x": 30,
+    "p0": 0.5,
+    "e_value": 34636833.0323,
+    "log10_e": 7.5395,
+    "reject_at_alpha": true,
+    "ville_threshold": 20.0,
+    "anytime_p": 0.0,
+    "cs95_anytime": [
+     0.8071,
+     1.0
+    ],
+    "note": "e-process 任意时刻有效；区间比固定样本 CP 宽——这是防『偷看』的代价"
+   },
+   "random_selection": {
+    "picked": [
+     "cross-compile",
+     "measure",
+     "perf-counter",
+     "tsan"
+    ],
+    "seed": 20260930
+   },
+   "random_caveat": "Random†=仪器级代理（非真 B3）；配对按 670a 口径重建"
+  },
+  "corpus": {
+   "fd_vs_static": {
+    "n": 64,
+    "arm_a_k": 40,
+    "arm_b_k": 11,
+    "arm_a_rate_pct": 62.5,
+    "arm_b_rate_pct": 17.19,
+    "delta_pp": 45.31,
+    "discordant": {
+     "b_a_only": 29,
+     "c_b_only": 0,
+     "n_discordant": 29
+    },
+    "mcnemar_p": 3.725290298461914e-09,
+    "mcnemar_method": "exact-mcnemar",
+    "cohens_h": 0.9685,
+    "delta_ci95_pct": [
+     33.12,
+     57.51
+    ]
+   },
+   "fd_vs_random_proxy": {
+    "n": 64,
+    "arm_a_k": 40,
+    "arm_b_k": 14,
+    "arm_a_rate_pct": 62.5,
+    "arm_b_rate_pct": 21.88,
+    "delta_pp": 40.62,
+    "discordant": {
+     "b_a_only": 26,
+     "c_b_only": 0,
+     "n_discordant": 26
+    },
+    "mcnemar_p": 2.9802322387695312e-08,
+    "mcnemar_method": "exact-mcnemar",
+    "cohens_h": 0.8501,
+    "delta_ci95_pct": [
+     28.59,
+     52.66
+    ]
+   },
+   "posthoc_power_static": {
+    "n_discordant": 29,
+    "p_hat": 1.0,
+    "power": 1.0,
+    "alpha": 0.05,
+    "note": "post-hoc：p̂ 取自观测；不得当作设计期功效，也不得用来反推『证据不足』"
+   },
+   "posthoc_power_random": {
+    "n_discordant": 26,
+    "p_hat": 1.0,
+    "power": 1.0,
+    "alpha": 0.05,
+    "note": "post-hoc：p̂ 取自观测；不得当作设计期功效，也不得用来反推『证据不足』"
+   },
+   "e_value_static": {
+    "n": 29,
+    "x": 29,
+    "p0": 0.5,
+    "e_value": 17895697.0667,
+    "log10_e": 7.2527,
+    "reject_at_alpha": true,
+    "ville_threshold": 20.0,
+    "anytime_p": 0.0,
+    "cs95_anytime": [
+     0.8021,
+     1.0
+    ],
+    "note": "e-process 任意时刻有效；区间比固定样本 CP 宽——这是防『偷看』的代价"
+   },
+   "e_value_random": {
+    "n": 26,
+    "x": 26,
+    "p0": 0.5,
+    "e_value": 2485513.4815,
+    "log10_e": 6.3954,
+    "reject_at_alpha": true,
+    "ville_threshold": 20.0,
+    "anytime_p": 0.0,
+    "cs95_anytime": [
+     0.7851,
+     1.0
+    ],
+    "note": "e-process 任意时刻有效；区间比固定样本 CP 宽——这是防『偷看』的代价"
+   },
+   "random_selection": {
+    "picked": [
+     "compiler-warn",
+     "cross-compile",
+     "measure",
+     "perf-counter",
+     "tsan"
+    ],
+    "seed": 20260930
+   },
+   "random_caveat": "Random†=仪器级代理（非真 B3）；配对按 670a 口径重建"
+  }
+ },
+ "llm_arm": {
+  "b_a_only_fd": 0,
+  "c_b_only_llm": 6,
+  "mcnemar_p": 0.03125,
+  "e_value_llm_better": {
+   "n": 6,
+   "x": 6,
+   "p0": 0.5,
+   "e_value": 9.1429,
+   "log10_e": 0.9611,
+   "reject_at_alpha": false,
+   "ville_threshold": 20.0,
+   "anytime_p": 0.109375,
+   "cs95_anytime": [
+    0.4388,
+    1.0
+   ],
+   "note": "e-process 任意时刻有效；区间比固定样本 CP 宽——这是防『偷看』的代价"
+  },
+  "posthoc_power": {
+   "n_discordant": 6,
+   "p_hat": 1.0,
+   "power": 1.0,
+   "alpha": 0.05,
+   "note": "post-hoc：p̂ 取自观测；不得当作设计期功效，也不得用来反推『证据不足』"
+  },
+  "n": 12,
+  "note": "方向取『LLM 更好』（c 为 LLM 独有）；实测 c=6,b=0 ⇒ 固定样本 p=0.031 显著，但任意时刻 e-process 未过 20（见 e_value_llm_better）——两种口径**都要报**"
+ },
+ "sample_size": {
+  "holdout_fd_p_hat": 0.8293,
+  "corpus_fd_p_hat": 0.625,
+  "precision": {
+   "holdout": {
+    "±3pp": {
+     "p_hat": 0.8293,
+     "halfwidth_pp": 3,
+     "n": 635,
+     "cp95_at_n": [
+      79.84,
+      85.83
+     ]
+    },
+    "±5pp": {
+     "p_hat": 0.8293,
+     "halfwidth_pp": 5,
+     "n": 236,
+     "cp95_at_n": [
+      77.64,
+      87.61
+     ]
+    },
+    "±10pp": {
+     "p_hat": 0.8293,
+     "halfwidth_pp": 10,
+     "n": 61,
+     "cp95_at_n": [
+      71.91,
+      91.85
+     ]
+    }
+   },
+   "corpus": {
+    "±3pp": {
+     "p_hat": 0.625,
+     "halfwidth_pp": 3,
+     "n": 1032,
+     "cp95_at_n": [
+      59.47,
+      65.46
+     ]
+    },
+    "±5pp": {
+     "p_hat": 0.625,
+     "halfwidth_pp": 5,
+     "n": 378,
+     "cp95_at_n": [
+      57.34,
+      67.33
+     ]
+    },
+    "±10pp": {
+     "p_hat": 0.625,
+     "halfwidth_pp": 10,
+     "n": 97,
+     "cp95_at_n": [
+      52.48,
+      72.48
+     ]
+    }
+   }
+  },
+  "power_0.8_for_observed_delta": {
+   "holdout": {
+    "vs_static": {
+     "p1": 0.8293,
+     "p2": 0.0244,
+     "psi_discordant_rate": 0.8049,
+     "power": 0.8,
+     "n_pairs": null,
+     "method": "paired-mcnemar-connor",
+     "note": "Connor(1987)/Lachin 式；psi = 不一致对比例 (b+c)/n"
+    },
+    "vs_random": {
+     "p1": 0.8293,
+     "p2": 0.0976,
+     "psi_discordant_rate": 0.7317,
+     "power": 0.8,
+     "n_pairs": null,
+     "method": "paired-mcnemar-connor",
+     "note": "Connor(1987)/Lachin 式；psi = 不一致对比例 (b+c)/n"
+    }
+   },
+   "corpus": {
+    "vs_static": {
+     "p1": 0.625,
+     "p2": 0.1719,
+     "psi_discordant_rate": 0.4531,
+     "power": 0.8,
+     "n_pairs": null,
+     "method": "paired-mcnemar-connor",
+     "note": "Connor(1987)/Lachin 式；psi = 不一致对比例 (b+c)/n"
+    },
+    "vs_random": {
+     "p1": 0.625,
+     "p2": 0.2188,
+     "psi_discordant_rate": 0.4062,
+     "power": 0.8,
+     "n_pairs": null,
+     "method": "paired-mcnemar-connor",
+     "note": "Connor(1987)/Lachin 式；psi = 不一致对比例 (b+c)/n"
+    }
+   }
+  },
+  "note": "Δ 与 ψ（不一致率）都取自本批观测；作为**后续设计**的输入，不是本批结论"
+ },
+ "implementation_reuse": {
+  "mcnemar": "ablation_stats_671b.mcnemar_exact（精确二项）",
+  "cohens_h": "ablation_stats_671b.cohens_h",
+  "delta_ci": "ablation_stats_671b.delta_ci_paired（paired-wald-on-difference）",
+  "cp95": "stat_bounds.proportion（Clopper-Pearson beta）",
+  "e_process": "confidence_sequence.eprocess / cs_interval（Beta 混合，Ville）",
+  "new_in_672k": "posthoc_power / sample_size_for_precision / e_value 封装"
+ },
+ "honest_notes": [
+  "post-hoc power 是观测数据的函数，不是设计期功效；与 p 值一一对应，不得用来论证『研究不足』",
+  "Random† 是仪器级代理（非真 B3）；真 B3 见 data/experiments/b3_real_672g.json",
+  "任意时刻 e-value 与固定样本 McNemar 是两种口径：都要报，不许挑好看的",
+  "样本量计算里的 Δ/ψ 取自本批观测（对后续设计有参考价值，但不是本批结论）"
+ ]
+}

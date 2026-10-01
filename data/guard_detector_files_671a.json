@@ -158,6 +158,19 @@
     "data/experiments/verify_expand_672h.json"
    ],
    "why": "672h 交叉复现产物（独立重实现；率/CI/检验三路对账）"
+  },
+  {
+   "id": "stats_672k",
+   "src": "tools/stats_672k.py",
+   "deps": [
+    "tools/ablation_stats_671b.py",
+    "tools/stat_bounds.py",
+    "tools/confidence_sequence.py"
+   ],
+   "products": [
+    "data/experiments/stats_672k.json"
+   ],
+   "why": "672k W6 统计重做产物（McNemar/h/CP/power/e-value/样本量）"
   }
  ]
 }

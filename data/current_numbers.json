@@ -1,6 +1,6 @@
 {
  "schema": "queyi-current-numbers/672h",
- "generated_by": "672h W3（扩样后重算：holdout 41 / corpus 64；三路复现一致）",
+ "generated_by": "672h W3（扩样后重算：holdout 41 / corpus 64；三路复现一致） ｜ 672k W6 统计重做已并入",
  "generated_at": "2026-10-01",
  "note": "本文件只放当前最新核心数字（672h 扩样后）。历史轨迹见 data/experiments/reveal_update_672f.json 与 reveal_update_671a.json；扩样登记见 data/holdout_reveal_5_672h.json 与 data/external_corpus_reveal_672h.json。",
  "seed": 20260930,
@@ -93,38 +93,81 @@
   "holdout_fd_vs_static": {
    "delta_pp": 80.49,
    "ci_pp": [
-    68.4,
-    92.6
+    68.36,
+    92.62
    ],
-   "mcnemar_p": 2.328306436538702e-10,
+   "mcnemar_p": 2.3283064365386963e-10,
    "cohens_h": 1.976,
    "n_paired": 41,
    "discordant": {
-    "b_fd_only": 33,
-    "c_static_only": 0
-   }
+    "b_a_only": 33,
+    "c_b_only": 0,
+    "n_discordant": 33
+   },
+   "posthoc_power": 1.0,
+   "e_value": 252645135.0588
+  },
+  "holdout_fd_vs_random": {
+   "delta_pp": 73.17,
+   "ci_pp": [
+    59.61,
+    86.73
+   ],
+   "mcnemar_p": 1.862645149230957e-09,
+   "cohens_h": 1.6543,
+   "n_paired": 41,
+   "discordant": {
+    "b_a_only": 30,
+    "c_b_only": 0,
+    "n_discordant": 30
+   },
+   "posthoc_power": 1.0,
+   "e_value": 34636833.0323,
+   "caveat": "Random†=仪器级代理（非真 B3）；配对按 670a 口径重建"
   },
   "corpus_fd_vs_static": {
    "delta_pp": 45.31,
    "ci_pp": [
-    33.1,
-    57.5
+    33.12,
+    57.51
    ],
-   "mcnemar_p": 3.725290298461911e-09,
+   "mcnemar_p": 3.725290298461914e-09,
    "cohens_h": 0.9685,
    "n_paired": 64,
    "discordant": {
-    "b_fd_only": 29,
-    "c_static_only": 0
-   }
-  },
-  "holdout_fd_vs_random": {
-   "status": "待 672k 重算（本批未重跑 random 臂的配对检验）"
+    "b_a_only": 29,
+    "c_b_only": 0,
+    "n_discordant": 29
+   },
+   "posthoc_power": 1.0,
+   "e_value": 17895697.0667
   },
   "corpus_fd_vs_random": {
-   "status": "待 672k 重算（同上）"
+   "delta_pp": 40.62,
+   "ci_pp": [
+    28.59,
+    52.66
+   ],
+   "mcnemar_p": 2.9802322387695312e-08,
+   "cohens_h": 0.8501,
+   "n_paired": 64,
+   "discordant": {
+    "b_a_only": 26,
+    "c_b_only": 0,
+    "n_discordant": 26
+   },
+   "posthoc_power": 1.0,
+   "e_value": 2485513.4815,
+   "caveat": "Random†=仪器级代理（非真 B3）；配对按 670a 口径重建"
   },
-  "source": "data/experiments/verify_expand_672h.json（独立重实现；与 ablation_stats 逐位一致）"
+  "llm_arm_glm4": {
+   "direction": "LLM 更好（c=6, b=0）",
+   "mcnemar_p_fixed_sample": 0.03125,
+   "e_value_anytime": 9.1429,
+   "reject_anytime": false,
+   "note": "固定样本显著（p=0.031）但任意时刻 e-process 未过 20 ⇒ 两种口径并列报"
+  },
+  "source": "data/experiments/stats_672k.json（W6 重做：规范库 + e-process + post-hoc power）"
  },
  "control_false_positive": {
   "fp": 2,
@@ -176,5 +219,70 @@
    "corpus 新样本为自撰片段（缺陷类别据公开清单，verified_source=false）⇒ 新子集检出率显著更高（H4 超范围，已登记）",
    "未知/不可用样本一律不进分母（holdout 1 / corpus 12）"
   ]
+ },
+ "sample_size_672k": {
+  "holdout": {
+   "±3pp": {
+    "p_hat": 0.8293,
+    "halfwidth_pp": 3,
+    "n": 635,
+    "cp95_at_n": [
+     79.84,
+     85.83
+    ]
+   },
+   "±5pp": {
+    "p_hat": 0.8293,
+    "halfwidth_pp": 5,
+    "n": 236,
+    "cp95_at_n": [
+     77.64,
+     87.61
+    ]
+   },
+   "±10pp": {
+    "p_hat": 0.8293,
+    "halfwidth_pp": 10,
+    "n": 61,
+    "cp95_at_n": [
+     71.91,
+     91.85
+    ]
+   }
+  },
+  "corpus": {
+   "±3pp": {
+    "p_hat": 0.625,
+    "halfwidth_pp": 3,
+    "n": 1032,
+    "cp95_at_n": [
+     59.47,
+     65.46
+    ]
+   },
+   "±5pp": {
+    "p_hat": 0.625,
+    "halfwidth_pp": 5,
+    "n": 378,
+    "cp95_at_n": [
+     57.34,
+     67.33
+    ]
+   },
+   "±10pp": {
+    "p_hat": 0.625,
+    "halfwidth_pp": 10,
+    "n": 97,
+    "cp95_at_n": [
+     52.48,
+     72.48
+    ]
+   }
+  }
+ },
+ "stats_672k_note": {
+  "posthoc_power": "FD 两个对照的观测功效都是 1.0（效应极大）；post-hoc power 不得当设计期功效",
+  "e_process": "FD 对比的 e-value 达 1.7e7~2.5e8（远超 Ville 阈值 20）⇒ 任意时刻也可拒绝",
+  "delta_for_planned_study": "±5pp 精度需 holdout 236 / corpus 378 样本（在观测 p̂ 处现算）"
  }
 }

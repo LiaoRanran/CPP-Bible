@@ -1,7 +1,7 @@
 {
   "schema": "queyi-guard-rerun/671a",
   "generated_by": "tools/guard_rerun_671a.py",
-  "generated_at": "2026-10-01 23:09:27",
+  "generated_at": "2026-10-01 23:28:16",
   "note": "基线 = 一次「判据指纹 + 产物指纹/mtime + 三方数字」快照。判据变了而产物没变 ⇒ STALE。刷新基线请在**确认产物已重跑**之后执行 --init。基线时即不新鲜的产物会被记成 fresh=false ⇒ 之后只 WARN（存量缺口，不变成噪音）。",
   "freshness_tolerance_s": 1.0,
   "detectors": {
@@ -347,6 +347,37 @@
       },
       "declared_products": [
         "data/experiments/reveal_update_671a.json"
+      ]
+    },
+    "stats_672k": {
+      "src": "tools/stats_672k.py",
+      "deps": [
+        "tools/ablation_stats_671b.py",
+        "tools/stat_bounds.py",
+        "tools/confidence_sequence.py"
+      ],
+      "why": "672k W6 统计重做产物（McNemar/h/CP/power/e-value/样本量）",
+      "judgment_sha256": "5c9db7987e73b4b671577f19023bc16690e9a6f69b629bbdacb872139613a912",
+      "component_judgment_sha256": {
+        "tools\\stats_672k.py": "33bc340c86bda8ca1b381fbf7a0e8db905ef8f5fc658d2e813e5ea693468f065",
+        "tools\\ablation_stats_671b.py": "717b16cef76db212f00e7c195a9bc4dae7e5ee07305a0f98f76d6307d9e862b1",
+        "tools\\stat_bounds.py": "83fce1b2518d40c473869f6bcab804655a0a61724be0f9f6cc0f999a1bd6b3e7",
+        "tools\\confidence_sequence.py": "2e78aa6eeca3cb485ebca66df89af6eac32fae40cdafbe44ef4e3193952fd4e8"
+      },
+      "src_sha256": "fd0d1bfd5d18a0369a8a83e6cb64f24d93f7c3d7bad8b198a1eee8f618747d6c",
+      "src_ast_sha256": "f6ae1e5b525902f19133c9f9d1a09ca6468a3c7daf0bd6a7453b80cbec3a4dac",
+      "src_mtime": 1790868417.0870545,
+      "judgment_mtime": 1790868417.0870545,
+      "products": {
+        "data/experiments/stats_672k.json": {
+          "sha256": "d1b8e808fe46054a4f2ecbfa6d77e7db013a3482e00451e14ebb6748e782daa8",
+          "mtime": 1790868365.3490052,
+          "strict": true,
+          "fresh": false
+        }
+      },
+      "declared_products": [
+        "data/experiments/stats_672k.json"
       ]
     },
     "verify_expand_672h": {
