@@ -1,0 +1,1548 @@
+{
+ "schema": "queyi-anchor-pool/672j",
+ "source": {
+  "url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+  "fetched_at": "2026-10-01 23:18:02",
+  "bytes": 841419,
+  "sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7"
+ },
+ "n_candidates": 192,
+ "candidates": [
+  {
+   "rule_id": "P.1",
+   "rule_title": "Express ideas directly in code",
+   "anchor_line": 504,
+   "code": "void f(vector<string>& v)\n{\n    string val;\n    cin >> val;\n    // ...\n    int index = -1;                    // bad, plus should use gsl::index\n    for (int i = 0; i < v.size(); ++i) {\n        if (v[i] == val) {\n            index = i;\n            break;\n        }\n    }\n    // ...\n}",
+   "code_sha256": "3700d32d1caa4862928b4683af6a4eb93a00902ed24a7a0b43fed809a4d4c182",
+   "verbatim": true
+  },
+  {
+   "rule_id": "P.1",
+   "rule_title": "Express ideas directly in code",
+   "anchor_line": 544,
+   "code": "// ...\nchange_speed(2.3);",
+   "code_sha256": "7f9683df17bee32ceb160976b0ff2322427005c0f5d0961fd04e1abaa029cb60",
+   "verbatim": true
+  },
+  {
+   "rule_id": "P.6",
+   "rule_title": "What cannot be checked at compile time should be checkable at run time",
+   "anchor_line": 748,
+   "code": "// separately compiled, possibly dynamically loaded\nextern void f(int* p);\n\nvoid g(int n)\n{\n    // bad: the number of elements is not passed to f()\n    f(new int[n]);\n}",
+   "code_sha256": "d0524edce86b9a163a35e55aeed8be657df4656fc5f3c595295ccd3400e337d1",
+   "verbatim": true
+  },
+  {
+   "rule_id": "P.6",
+   "rule_title": "What cannot be checked at compile time should be checkable at run time",
+   "anchor_line": 761,
+   "code": "// separately compiled, possibly dynamically loaded\nextern void f2(int* p, int n);\n\nvoid g2(int n)\n{\n    // bad: the wrong number of elements can be passed to f2()\n    f2(new int[n], n);\n}",
+   "code_sha256": "90cdfb6ce1f927121a7595f94075a090b7b28361262fc1135c1104def8ae2cf9",
+   "verbatim": true
+  },
+  {
+   "rule_id": "P.6",
+   "rule_title": "What cannot be checked at compile time should be checkable at run time",
+   "anchor_line": 778,
+   "code": "// separately compiled, possibly dynamically loaded\n// NB: this assumes the calling code is ABI-compatible, using a\n// compatible C++ compiler and the same stdlib implementation\nextern void f3(unique_ptr<int[]>, int n);\n\nvoid g3(int n)\n{\n    f3(make_unique<int[]>(n), m);    // bad: pass ownership and size separately\n}",
+   "code_sha256": "a62e86ccfc8e5e82b319aa0a47e0e3585ee45d95e95e45bbe6dd888e1cfd7729",
+   "verbatim": true
+  },
+  {
+   "rule_id": "P.6",
+   "rule_title": "What cannot be checked at compile time should be checkable at run time",
+   "anchor_line": 821,
+   "code": "{\n    auto p = make_unique<int[]>(n);\n    // ... initialize *p ...\n    return p;\n}\n\nowner<int*> f7(int n)    // bad: loses n and we might forget to delete\n{\n    owner<int*> p = new int[n];\n    // ... initialize *p ...\n    return p;\n}",
+   "code_sha256": "7bda6a3ffd8251604d3d6d5e2b1cf15ee24157603390f48dcac267d90b9c9366",
+   "verbatim": true
+  },
+  {
+   "rule_id": "P.7",
+   "rule_title": "Catch run-time errors early",
+   "anchor_line": 855,
+   "code": "{\n    for (int i = 0; i < n; ++i) ++p[i];\n}\n\nvoid use1(int m)\n{\n    const int n = 10;\n    int a[n] = {};\n    // ...\n    increment1(a, m);   // maybe typo, maybe m <= n is supposed\n                        // but assume that m == 20\n    // ...\n}",
+   "code_sha256": "3b8056bd8d87bedab5cbfbbe5d0fdf24a7b6ba9166782f3df522b181fe094271",
+   "verbatim": true
+  },
+  {
+   "rule_id": "P.7",
+   "rule_title": "Catch run-time errors early",
+   "anchor_line": 901,
+   "code": "Date read_date(istream& is);    // read date from istream\n\nDate extract_date(const string& s);    // extract date from string\n\nvoid user1(const string& date)    // manipulate date\n{\n    auto d = extract_date(date);\n    // ...\n}\n\nvoid user2()\n{\n    Date d = read_date(cin);\n    // ...\n    user1(d.to_string());\n    // ...\n}",
+   "code_sha256": "770d19bab187b5991bb0f6a6e7a49b437aed3c595417aa94c25012333d275e1d",
+   "verbatim": true
+  },
+  {
+   "rule_id": "P.8",
+   "rule_title": "Don't leak any resources",
+   "anchor_line": 970,
+   "code": "void f(const char* name)\n{\n    FILE* input = fopen(name, \"r\");\n    // ...\n    if (something) return;   // bad: if something == true, a file handle is leaked\n    // ...\n    fclose(input);\n}",
+   "code_sha256": "bf80a026c3900a2cfc189cc2315b206fe7862650947caa6390c33aeeb186fd92",
+   "verbatim": true
+  },
+  {
+   "rule_id": "P.9",
+   "rule_title": "Don't waste time or space",
+   "anchor_line": 1027,
+   "code": "struct X {\n    char ch;\n    int i;\n    string s;\n    char ch2;\n\n    X& operator=(const X& a);\n    X(const X&);\n};\n\nX waste(const char* p)\n{\n    if (!p) throw Nullptr_error{};\n    int n = strlen(p);\n    auto buf = new char[n];\n    if (!buf) throw Allocation_error{};\n    for (int i = 0; i < n; ++i) buf[i] = p[i];\n    // ... manipulate buffer ...\n    X x;\n    x.ch = 'a';\n    x.s = string(n);    // give x.s space for *p\n    for (gsl::index i = 0; i < x.s.size(); ++i) x.s[i] = buf[i];  // copy buf into x.s\n    delete[] buf;\n    return x;\n}\n\nvoid driver()\n{\n    X x = waste(\"Typical argument\");\n    // ...\n}",
+   "code_sha256": "4701ab6e98a45ce0e15bf47bb93c115f152c9e7c9c97c1346ae8fa93ca104db9",
+   "verbatim": true
+  },
+  {
+   "rule_id": "P.9",
+   "rule_title": "Don't waste time or space",
+   "anchor_line": 1068,
+   "code": "void lower(zstring s)\n{\n    for (int i = 0; i < strlen(s); ++i) s[i] = tolower(s[i]);\n}",
+   "code_sha256": "753c53207f7064ed4c6b0b984bda36d2a4667546f5acb6d8ee836104822e1a6c",
+   "verbatim": true
+  },
+  {
+   "rule_id": "I.1",
+   "rule_title": "Make interfaces explicit",
+   "anchor_line": 1259,
+   "code": "int round(double d)\n{\n    return (round_up) ? ceil(d) : d;    // don't: \"invisible\" dependency\n}",
+   "code_sha256": "ec5202b7c01732aea1e0f5b13918074bf93090e4474193ab38fbf35e16da75d6",
+   "verbatim": true
+  },
+  {
+   "rule_id": "I.1",
+   "rule_title": "Make interfaces explicit",
+   "anchor_line": 1275,
+   "code": "// don't: no test of fprintf's return value\nfprintf(connection, \"logging: %d %d %d\\n\", x, y, s);",
+   "code_sha256": "1fdc64fd498d00ff70ea7dc31e7107e2b1d59245641c794f7db4211986031dd2",
+   "verbatim": true
+  },
+  {
+   "rule_id": "I.4",
+   "rule_title": "Make interfaces precisely and strongly typed",
+   "anchor_line": 1447,
+   "code": "draw_rect(100, 200, 100, 500); // what do the numbers specify?\n\ndraw_rect(p.x, p.y, 10, 20); // what units are 10 and 20 in?",
+   "code_sha256": "9da2f576b2c1f3acbce4e808e4da507ee30efbf33113f8cfe397b80896c75705",
+   "verbatim": true
+  },
+  {
+   "rule_id": "I.4",
+   "rule_title": "Make interfaces precisely and strongly typed",
+   "anchor_line": 1468,
+   "code": "set_settings(true, false, 42); // what do the numbers specify?",
+   "code_sha256": "2e33064c7393a950488e77a9163ddbc4a3779f3f665b08619806d434d21d95c5",
+   "verbatim": true
+  },
+  {
+   "rule_id": "I.4",
+   "rule_title": "Make interfaces precisely and strongly typed",
+   "anchor_line": 1488,
+   "code": "void blink_led(int time_to_blink) // bad -- the unit is ambiguous\n{\n    // ...\n    // do something with time_to_blink\n    // ...\n}\n\nvoid use()\n{\n    blink_led(2);\n}",
+   "code_sha256": "20ae8a8daaa79ae4ea35ea1826fc1c23a798003935848253ab367262aaec075a",
+   "verbatim": true
+  },
+  {
+   "rule_id": "I.7",
+   "rule_title": "State postconditions",
+   "anchor_line": 1629,
+   "code": "int area(int height, int width) { return height * width; }  // bad",
+   "code_sha256": "1c3252d036dd9cd015d69377abfddf31d018cdd0d65c166c9e371f1b5fed3b80",
+   "verbatim": true
+  },
+  {
+   "rule_id": "I.7",
+   "rule_title": "State postconditions",
+   "anchor_line": 1647,
+   "code": "void f()    // problematic\n{\n    char buffer[MAX];\n    // ...\n    memset(buffer, 0, sizeof(buffer));\n}",
+   "code_sha256": "feef92775de1cfedc7e452169fa6b5fe402cc3e1e25ce8233456b6d450766f8b",
+   "verbatim": true
+  },
+  {
+   "rule_id": "I.10",
+   "rule_title": "Use exceptions to signal a failure to perform a required task",
+   "anchor_line": 1784,
+   "code": "template<class F, class ...Args>\n// good: throw system_error if unable to start the new thread\nexplicit thread(F&& f, Args&&... args);",
+   "code_sha256": "d15c0ab180e3aa0cc7966d87655af23a403f2778c8ca5e4f9313dcae4e313aaf",
+   "verbatim": true
+  },
+  {
+   "rule_id": "I.13",
+   "rule_title": "Do not pass an array as a single pointer",
+   "anchor_line": 1963,
+   "code": "void draw(Shape* p, int n);  // poor interface; poor code\nCircle arr[10];\n// ...\ndraw(arr, 10);",
+   "code_sha256": "3e4eb08a398ffb3c3523d5d2f4ea96bd15374f2e497835baf857ee4c36571c3f",
+   "verbatim": true
+  },
+  {
+   "rule_id": "I.23",
+   "rule_title": "Keep the number of function arguments low",
+   "anchor_line": 2087,
+   "code": "void f(gsl::span<int> some_ints);              // GOOD: safe, bounds-checked",
+   "code_sha256": "80d0df160894d7da9a4b1e2c6791d2def064dad3ab1372df018c2db1cd8cc273",
+   "verbatim": true
+  },
+  {
+   "rule_id": "I.24",
+   "rule_title": "Avoid adjacent parameters that can be invoked by the same arguments in either order with d",
+   "anchor_line": 2115,
+   "code": "void copy_n(T* p, T* q, int n);  // copy from [p:p + n) to [q:q + n)",
+   "code_sha256": "5487582e8f47ca683be7767603ced5e03a44ced83b380ade5f0606035037b5e7",
+   "verbatim": true
+  },
+  {
+   "rule_id": "I.25",
+   "rule_title": "Prefer empty abstract classes as interfaces to class hierarchies",
+   "anchor_line": 2169,
+   "code": "class Shape {  // bad: interface class loaded with data\npublic:\n    Point center() const { return c; }\n    virtual void draw() const;\n    virtual void rotate(int);\n    // ...\nprivate:\n    Point c;\n    vector<Point> outline;\n    Color col;\n};",
+   "code_sha256": "7d11db9ec0a6aa99ab45e954d54ccc12463eaf7a5c10b860588682d9e8cd684a",
+   "verbatim": true
+  },
+  {
+   "rule_id": "F.7",
+   "rule_title": "For general use, take `T*` or `T&` arguments rather than smart pointers",
+   "anchor_line": 2782,
+   "code": "// callee\nvoid f(shared_ptr<widget>& w)\n{\n    // ...\n    use(*w); // only use of w -- the lifetime is not used at all\n    // ...\n};\n\n// caller\nshared_ptr<widget> my_widget = /* ... */;\nf(my_widget);\n\nwidget stack_widget;\nf(stack_widget); // error",
+   "code_sha256": "7e8ae250e342b740894c8e13074d26c0b9e38287a492ebdd26d1d3764618d5f3",
+   "verbatim": true
+  },
+  {
+   "rule_id": "F.16",
+   "rule_title": "For \"in\" parameters, pass cheaply-copied types by value and others by reference to `const`",
+   "anchor_line": 3006,
+   "code": "void f3(int x);            // OK: Unbeatable\n\nvoid f4(const int& x);     // bad: overhead on access in f4()",
+   "code_sha256": "9d84a81e876049f23ee59981b0f5f6931a951dbc5b2743d264a772c10c43808e",
+   "verbatim": true
+  },
+  {
+   "rule_id": "F.20",
+   "rule_title": "For \"out\" output values, prefer return values to output parameters",
+   "anchor_line": 3188,
+   "code": "void find_all(const vector<int>&, vector<const int*>& out, int x);",
+   "code_sha256": "454bec298005b9591e9fd978b24308cb65230d08c76436d6947d383df22f93ac",
+   "verbatim": true
+  },
+  {
+   "rule_id": "F.20",
+   "rule_title": "For \"out\" output values, prefer return values to output parameters",
+   "anchor_line": 3228,
+   "code": "void fill(Package&);  // OK\n\nint val();            // OK\nvoid val(int&);       // Bad: Is val reading its argument",
+   "code_sha256": "9b8e25e4ef065466164ede301edb47510104fe60e8eb089abaff8c5443e44316",
+   "verbatim": true
+  },
+  {
+   "rule_id": "F.21",
+   "rule_title": "To return multiple \"out\" values, prefer returning a struct",
+   "anchor_line": 3250,
+   "code": "int f(const string& input, /*output only*/ string& output_data)\n{\n    // ...\n    output_data = something();\n    return status;\n}\n\n// GOOD: self-documenting\nstruct f_result { int status; string data; };\n\nf_result f(const string& input)\n{\n    // ...\n    return {status, something()};\n}",
+   "code_sha256": "cf90ef9eda5175e6e06314405d1f3b2caf007e6a4faf38d93183dbd518783116",
+   "verbatim": true
+  },
+  {
+   "rule_id": "F.43",
+   "rule_title": "Never (directly or indirectly) return a pointer or a reference to a local object",
+   "anchor_line": 3694,
+   "code": "int* f()\n{\n    int fx = 9;\n    return &fx;  // BAD\n}\n\nvoid g(int* p)   // looks innocent enough\n{\n    int gx;\n    cout << \"*p == \" << *p << '\\n';\n    *p = 999;\n    cout << \"gx == \" << gx << '\\n';\n}\n\nvoid h()\n{\n    int* p = f();\n    int z = *p;  // read from abandoned stack frame (bad)\n    g(p);        // pass pointer to abandoned stack frame to function (bad)\n}",
+   "code_sha256": "99b06939c8de4754e39e7b771a9f8c3dfca7f9e90a579739da5ee6b1f158b613",
+   "verbatim": true
+  },
+  {
+   "rule_id": "F.43",
+   "rule_title": "Never (directly or indirectly) return a pointer or a reference to a local object",
+   "anchor_line": 3749,
+   "code": "int* glob;       // global variables are bad in so many ways\n\ntemplate<class T>\nvoid steal(T x)\n{\n    glob = x();  // BAD\n}\n\nvoid f()\n{\n    int i = 99;\n    steal([&] { return &i; });\n}\n\nint main()\n{\n    f();\n    cout << *glob << '\\n';\n}",
+   "code_sha256": "f4d13596b05401819d3a01200fed4fa3071faba45e34a3397715262e94d3c4ea",
+   "verbatim": true
+  },
+  {
+   "rule_id": "F.48",
+   "rule_title": "Don't `return std::move(local)`",
+   "anchor_line": 3946,
+   "code": "S bad()\n{\n  S result;\n  return std::move(result);\n}",
+   "code_sha256": "620dd0a9e92a080c079ecaeacb51fad8743f079d400efde9c29b9df30a3ac0c3",
+   "verbatim": true
+  },
+  {
+   "rule_id": "F.49",
+   "rule_title": "Don't return `const T`",
+   "anchor_line": 3976,
+   "code": "void g(vector<int>& vx)\n{\n    // ...\n    fct() = vx;   // prevented by the \"const\"\n    // ...\n    vx = fct(); // expensive copy: move semantics suppressed by the \"const\"\n    // ...\n}",
+   "code_sha256": "f00eb0520909325abae1d75270bd2f444cd0a2052fc75b6f799258bb62c00a25",
+   "verbatim": true
+  },
+  {
+   "rule_id": "F.53",
+   "rule_title": "Avoid capturing by reference in lambdas that will be used non-locally, including returned,",
+   "anchor_line": 4114,
+   "code": "int local = 42;\n\n// Want a reference to local.\n// Note that after program exits this scope,\n// local no longer exists, therefore\n// process() call will have undefined behavior!\nthread_pool.queue_work([&] { process(local); });",
+   "code_sha256": "262cd432494781694b8daada41fda3bc62e684b28a66386c96d6a7656ff48ac5",
+   "verbatim": true
+  },
+  {
+   "rule_id": "F.56",
+   "rule_title": "Avoid unnecessary condition nesting",
+   "anchor_line": 4241,
+   "code": "void foo() {\n    ...\n    if (x) {\n        computeImportantThings(x);\n    }\n}\n\n// Bad: Still a redundant else.\nvoid foo() {\n    ...\n    if (!x) {\n        return;\n    }\n    else {\n        computeImportantThings(x);\n    }\n}\n\n// Good: Early return, no redundant else\nvoid foo() {\n    ...\n    if (!x)\n        return;\n\n    computeImportantThings(x);\n}",
+   "code_sha256": "564b8c01d844cf5a6daf8ddcc0014cc088baa8ea5d40bdb719c98b74c77bede0",
+   "verbatim": true
+  },
+  {
+   "rule_id": "F.56",
+   "rule_title": "Avoid unnecessary condition nesting",
+   "anchor_line": 4271,
+   "code": "void foo() {\n    ...\n    if (x) {\n        if (y) {\n            computeImportantThings(x);\n        }\n    }\n}\n\n// Good: Merge conditions + return early\nvoid foo() {\n    ...\n    if (!(x && y))\n        return;\n\n    computeImportantThings(x);\n}",
+   "code_sha256": "edaa2a2d67f914e92c907741624e4eaf72fc692ac59c129497dcd3b23d2693ce",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.1",
+   "rule_title": "Organize related data into structures (`struct`s or `class`es)",
+   "anchor_line": 4331,
+   "code": "void draw(Point from, Point to);          // better",
+   "code_sha256": "6846573219a51bd16e3cc657f9cc7c8209ba6a8d2c1ef5d9109f8a8ce80ed529",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.7",
+   "rule_title": "Don't define a class or enum and declare a variable of its type in the same statement",
+   "anchor_line": 4530,
+   "code": "struct Data { /*...*/ } data{ /*...*/ };",
+   "code_sha256": "040f5f2a47162e2e520a2e66408f57eb4ab9489d665693e2b098cd680ff9cfad",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.8",
+   "rule_title": "Use `class` rather than `struct` if any member is non-public",
+   "anchor_line": 4551,
+   "code": "struct Date {\n    int d, m;\n\n    Date(int i, Month m);\n    // ... lots of functions ...\nprivate:\n    int y;  // year\n};",
+   "code_sha256": "61a41ac803843dc9d3968e2900466f545d732a20c7949f2d693fce3374c1bbe0",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.13",
+   "rule_title": "If data member `B` uses another data member `A`, declare `A` before `B`",
+   "anchor_line": 4809,
+   "code": "//      Construction order is b then a; destruction order is a then b.\n//      So b touches a outside the lifetime of a.\n\nclass X {\n    struct B {\n        string* p;\n        explicit B(string& a) : p{&a} {}\n        ~B() { cout << *p; }                       // uses a (via p)\n    };\n\n    B      b;                                      // constructed first\n    string a = \"some heap allocated string value\"; // constructed after b; destroyed before b\n\npublic:\n    X() : b{a} {}   // uses a before it is constructed -> use-before-alloc UB\n    ~X() = default; // accesses a after it is destroyed -> use-after-free UB\n};",
+   "code_sha256": "92056ac45c63e5a2ac1c3175ad571a9a96c023bafe1d94a0da2e499b23356b3a",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.21",
+   "rule_title": "If you define or `=delete` any copy, move, or destructor function, define or `=delete` the",
+   "anchor_line": 5023,
+   "code": "struct M2 {   // bad: incomplete set of copy/move/destructor operations\npublic:\n    // ...\n    // ... no copy or move operations ...\n    ~M2() { delete[] rep; }\nprivate:\n    pair<int, int>* rep;  // zero-terminated set of pairs\n};\n\nvoid use()\n{\n    M2 x;\n    M2 y;\n    // ...\n    x = y;   // the default assignment\n    // ...\n}",
+   "code_sha256": "44d4c1904546785c448ab58e4a76db716b8c0c3da761f44ffc553800418b6687",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.22",
+   "rule_title": "Make default operations consistent",
+   "anchor_line": 5122,
+   "code": "class Silly {   // BAD: Inconsistent copy operations\n    class Impl {\n        // ...\n    };\n    shared_ptr<Impl> p;\npublic:\n    Silly(const Silly& a) : p(make_shared<Impl>()) { *p = *a.p; }   // deep copy\n    Silly& operator=(const Silly& a) { p = a.p; return *this; }   // shallow copy\n    // ...\n};",
+   "code_sha256": "c7acdd1974f059737b2948d75336d8c9f6d3614a02d99d91dfd3abb641c10d31",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.30",
+   "rule_title": "Define a destructor if a class needs an explicit action at object destruction",
+   "anchor_line": 5191,
+   "code": "class Foo {   // bad; use the default destructor\npublic:\n    // ...\n    ~Foo() { s = \"\"; i = 0; vi.clear(); }  // clean up\nprivate:\n    string s;\n    int i;\n    vector<int> vi;\n};",
+   "code_sha256": "a6c5633224b1848b8e4c1a535b46ec3fdde95b2a25018712e61368aa97cc39c6",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.31",
+   "rule_title": "All resources acquired by a class must be released by the class's destructor",
+   "anchor_line": 5228,
+   "code": "class X2 {     // bad\n    FILE* f;   // might own a file\n    // ... no default operations defined or =deleted ...\n};",
+   "code_sha256": "f1c69b244b1ea183e4d908b094529708b1261f328cd62db4d04dfb7559f7d819",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.33",
+   "rule_title": "If a class has an owning pointer member, define a destructor",
+   "anchor_line": 5305,
+   "code": "public:\n    // ... no user-defined default operations ...\n};\n\nvoid use(Smart_ptr<int> p1)\n{\n    // error: p2.p leaked (if not nullptr and not owned by some other code)\n    auto p2 = p1;\n}",
+   "code_sha256": "e411904e2d8530e11819e6762d48f99feb620c109359917844865759c7acd5eb",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.33",
+   "rule_title": "If a class has an owning pointer member, define a destructor",
+   "anchor_line": 5321,
+   "code": "public:\n    // ... no user-defined copy operations ...\n    ~Smart_ptr2() { delete p; }  // p is an owner!\n};\n\nvoid use(Smart_ptr2<int> p1)\n{\n    auto p2 = p1;   // error: double deletion\n}",
+   "code_sha256": "6b532d9328b3929862daecce648a45478748388b7370f60fd4fdec5f432972c6",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.35",
+   "rule_title": "A base class destructor should be either public and virtual, or protected and non-virtual",
+   "anchor_line": 5378,
+   "code": "struct Base {  // BAD: implicitly has a public non-virtual destructor\n    virtual void f();\n};\n\nstruct D : Base {\n    string s {\"a resource needing cleanup\"};\n    ~D() { /* ... do some cleanup ... */ }\n    // ...\n};\n\nvoid use()\n{\n    unique_ptr<Base> p = make_unique<D>();\n    // ...\n} // p's destruction calls ~Base(), not ~D(), which leaks D::s and possibly more",
+   "code_sha256": "0afa365d67fc44f91700af7fa8919c75dba2da62bb23ba6ab01fb8cb6050b610",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.41",
+   "rule_title": "A constructor should create a fully initialized object",
+   "anchor_line": 5579,
+   "code": "class X1 {\n    FILE* f;   // call init() before any other function\n    // ...\npublic:\n    X1() {}\n    void init();   // initialize f\n    void read();   // read from f\n    // ...\n};\n\nvoid f()\n{\n    X1 file;\n    file.read();   // crash or bad read!\n    // ...\n    file.init();   // too late\n    // ...\n}",
+   "code_sha256": "0b353185108ce29fd563c13492c369469f73dffb83adf0d842909de4a98d6f74",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.42",
+   "rule_title": "If a constructor cannot construct a valid object, throw an exception",
+   "anchor_line": 5646,
+   "code": "class X3 {     // bad: the constructor leaves a non-valid object behind\n    FILE* f;   // call is_valid() before any other function\n    bool valid;\n    // ...\npublic:\n    X3(const string& name)\n        :f{fopen(name.c_str(), \"r\")}, valid{false}\n    {\n        if (f) valid = true;\n        // ...\n    }\n\n    bool is_valid() { return valid; }\n    void read();   // read from f\n    // ...\n};\n\nvoid f()\n{\n    X3 file {\"Heraclides\"};\n    file.read();   // crash or bad read!\n    // ...\n    if (file.is_valid()) {\n        file.read();\n        // ...\n    }\n    else {\n        // ... handle error ...\n    }\n    // ...\n}",
+   "code_sha256": "39a29faa4aed83f5b0d1604ac7a97b8fe10aa0ac28c73ba1d53b5d4c0990137e",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.43",
+   "rule_title": "Ensure that a copyable class has a default constructor",
+   "anchor_line": 5716,
+   "code": "public:\n    Date(int dd, int mm, int yyyy);\n    // ...\n};\n\nvector<Date> vd1(1000);   // default Date needed here\nvector<Date> vd2(1000, Date{7, Month::October, 1885});   // alternative",
+   "code_sha256": "e8504586f8bd051668556300118c87402901a502d6593663423075389c46707d",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.45",
+   "rule_title": "Don't define a default constructor that only initializes data members; use default member ",
+   "anchor_line": 5879,
+   "code": "class X1 { // BAD: doesn't use member initializers\n    string s;\n    int i;\npublic:\n    X1() :s{\"default\"}, i{1} { }\n    // ...\n};",
+   "code_sha256": "742d8e011534fd4e715f94e331b05578b2fb0ddb28ed31c95bc4263cce03907b",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.46",
+   "rule_title": "By default, declare single-argument constructors explicit",
+   "anchor_line": 5909,
+   "code": "class String {\npublic:\n    String(int);   // BAD\n    // ...\n};\n\nString s = 10;   // surprise: string of size 10",
+   "code_sha256": "de28f90bbd4a3ddbd5270e01f9399b134c1f34e75779fc86c1141b3f220869e5",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.47",
+   "rule_title": "Define and initialize data members in the order of member declaration",
+   "anchor_line": 5947,
+   "code": "class Foo {\n    int m1;\n    int m2;\npublic:\n    Foo(int x) :m2{x}, m1{++x} { }   // BAD: misleading initializer order\n    // ...\n};\n\nFoo x(1); // surprise: x.m1 == x.m2 == 2",
+   "code_sha256": "6e73f82bfa0548aeb302e840503221f7e8951ca0940e3d0a50e79b2b7f2cad0e",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.48",
+   "rule_title": "Prefer default member initializers to member initializers in constructors for constant ini",
+   "anchor_line": 5971,
+   "code": "class X {   // BAD\n    int i;\n    string s;\n    int j;\npublic:\n    X() :i{666}, s{\"qqq\"} { }   // j is uninitialized\n    X(int ii) :i{ii} {}         // s is \"\" and j is uninitialized\n    // ...\n};",
+   "code_sha256": "79ea0dcbcb2df414b7c1b12a25030ccea8dde55428df9f5c8592e725ff4a2b71",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.48",
+   "rule_title": "Prefer default member initializers to member initializers in constructors for constant ini",
+   "anchor_line": 5999,
+   "code": "public:\n    X3(int ii = 666, const string& ss = \"qqq\", int jj = numeric_limits<int>::min())\n        :i{ii}, s{ss}, j{jj} { }   // all members are initialized to their defaults\n    // ...\n};",
+   "code_sha256": "50c96b817244586943e8b7872257ca79b5c44ae2dc9fe48bc2490a94b3aefbe3",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.49",
+   "rule_title": "Prefer initialization to assignment in constructors",
+   "anchor_line": 6029,
+   "code": "class B {   // BAD\n    string s1;\npublic:\n    B(const char* p) { s1 = p; }   // BAD: default constructor followed by assignment\n    // ...\n};\n\nclass C {   // UGLY, aka very bad\n    int* p;\npublic:\n    C() { cout << *p; p = new int{10}; }   // accidental use before initialized\n    // ...\n};",
+   "code_sha256": "2a7db2abbdb9677769e9fa204a114f6789edd7fd41ec90fc64172336d953b615",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.50",
+   "rule_title": "Use a factory function if you need \"virtual behavior\" during initialization",
+   "anchor_line": 6067,
+   "code": "class B {\npublic:\n    B()\n    {\n        /* ... */\n        f(); // BAD: C.82: Don't call virtual functions in constructors and destructors\n        /* ... */\n    }\n\n    virtual void f() = 0;\n};",
+   "code_sha256": "81e50b2baf59f503f69255c870a0e9062046b7c0a187019be9b61fb4ed2fc03a",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.51",
+   "rule_title": "Use delegating constructors to represent common actions for all constructors of a class",
+   "anchor_line": 6134,
+   "code": "class Date {   // BAD: repetitive\n    int d;\n    Month m;\n    int y;\npublic:\n    Date(int dd, Month mm, year yy)\n        :d{dd}, m{mm}, y{yy}\n        { if (!valid(d, m, y)) throw Bad_date{}; }\n\n    Date(int dd, Month mm)\n        :d{dd}, m{mm} y{current_year()}\n        { if (!valid(d, m, y)) throw Bad_date{}; }\n    // ...\n};",
+   "code_sha256": "6e5455ccd66be6a53d5dd9e85e314d1e8092e87e56576c764ef9dd600e832269",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.52",
+   "rule_title": "Use inheriting constructors to import constructors into a derived class that does not need",
+   "anchor_line": 6195,
+   "code": "struct Rec2 : public Rec {\n    int x;\n    using Rec::Rec;\n};\n\nRec2 r {\"foo\", 7};\nint val = r.x;   // uninitialized",
+   "code_sha256": "aaf332bd70f7d178e764c901d53ff4e40bc9a705f28267cc7c2fd703ed788262",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.66",
+   "rule_title": "Make move operations `noexcept`",
+   "anchor_line": 6570,
+   "code": "template<typename T>\nclass Vector2 {\npublic:\n    Vector2(Vector2&& a) noexcept { *this = a; }             // just use the copy\n    Vector2& operator=(Vector2&& a) noexcept { *this = a; }  // just use the copy\n    // ...\nprivate:\n    T* elem;\n    int sz;\n};",
+   "code_sha256": "e50fd5f540acf370b4e7557f7145bd9f3848dbb39f43101410b6756de2b64f40",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.67",
+   "rule_title": "A polymorphic class should suppress public copy/move",
+   "anchor_line": 6597,
+   "code": "class B { // BAD: polymorphic base class doesn't suppress copying\npublic:\n    virtual char m() { return 'B'; }\n    // ... nothing about copy operations, so uses default ...\n};\n\nclass D : public B {\npublic:\n    char m() override { return 'D'; }\n    // ...\n};\n\nvoid f(B& b)\n{\n    auto b2 = b; // oops, slices the object; b2.m() will return 'B'\n}\n\nD d;\nf(d);",
+   "code_sha256": "1fa275d2dbec1af32e0454d28e47a54c4fd2117ffa07dadbb702cc0e3e039349",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.80",
+   "rule_title": "Use `=default` if you have to be explicit about using the default semantics",
+   "anchor_line": 6685,
+   "code": "class Tracer2 {\n    string message;\npublic:\n    Tracer2(const string& m) : message{m} { cerr << \"entering \" << message << '\\n'; }\n    ~Tracer2() { cerr << \"exiting \" << message << '\\n'; }\n\n    Tracer2(const Tracer2& a) : message{a.message} {}\n    Tracer2& operator=(const Tracer2& a) { message = a.message; return *this; }\n    Tracer2(Tracer2&& a) noexcept :message{a.message} {}\n    Tracer2& operator=(Tracer2&& a) noexcept { message = a.message; return *this; }\n};",
+   "code_sha256": "5d00eddcd95b2192baa5e096826bff87d80a4741f9f73d35c046d17f25cf6b28",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.82",
+   "rule_title": "Don't call virtual functions in constructors and destructors",
+   "anchor_line": 6765,
+   "code": "class Base {\npublic:\n    virtual void f() = 0;   // not implemented\n    virtual void g();       // implemented with Base version\n    virtual void h();       // implemented with Base version\n    virtual ~Base();        // implemented with Base version\n};\n\nclass Derived : public Base {\npublic:\n    void g() override;   // provide Derived implementation\n    void h() final;      // provide Derived implementation\n\n    Derived()\n    {\n        // BAD: attempt to call an unimplemented virtual function\n        f();\n\n        // BAD: will call Derived::g, not dispatch further virtually\n        g();\n\n        // GOOD: explicitly state intent to call only the visible version\n        Derived::g();\n\n        // ok, no qualification needed, h is final\n        h();\n    }\n};",
+   "code_sha256": "6f022af8d40d9354d264af1b207d5bbc6c6105b19cc52b484a9a648fbbc5a972",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.84",
+   "rule_title": "A `swap` function must not fail",
+   "anchor_line": 6848,
+   "code": "void swap(My_vector& x, My_vector& y)\n{\n    auto tmp = x;   // copy elements\n    x = y;\n    y = tmp;\n}",
+   "code_sha256": "25653d2aed24cded3a5a9fe3df8709123931f2a440c289ff1ebac10a43900017",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.86",
+   "rule_title": "Make `==` symmetric with respect to operand types and `noexcept`",
+   "anchor_line": 6892,
+   "code": "class B {\n    string name;\n    int number;\n    bool operator==(const B& a) const {\n        return name == a.name && number == a.number;\n    }\n    // ...\n};",
+   "code_sha256": "ae0bae4539f22c7dc1ca0038178b361d75a8aca9363cb5bf42e22c8742115505",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.87",
+   "rule_title": "Beware of `==` on base classes",
+   "anchor_line": 6925,
+   "code": "class B {\n    string name;\n    int number;\npublic:\n    virtual bool operator==(const B& a) const\n    {\n         return name == a.name && number == a.number;\n    }\n    // ...\n};",
+   "code_sha256": "18ac1c7d087a0e37bdbae1150f4ec7c6e84a4097a899202bb3bb44a09916a915",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.89",
+   "rule_title": "Make a `hash` `noexcept`",
+   "anchor_line": 6976,
+   "code": "template<>\nstruct hash<My_type> {  // thoroughly bad hash specialization\n    using result_type = size_t;\n    using argument_type = My_type;\n\n    size_t operator()(const My_type & x) const\n    {\n        size_t xs = x.s.size();\n        if (xs < 4) throw Bad_My_type{};    // \"Nobody expects the Spanish inquisition!\"\n        return hash<size_t>()(x.s.size()) ^ trim(x.s);\n    }\n};\n\nint main()\n{\n    unordered_map<My_type, int> m;\n    My_type mt{ \"asdfg\" };\n    m[mt] = 7;\n    cout << m[My_type{ \"asdfg\" }] << '\\n';\n}",
+   "code_sha256": "d5593e45f7d32a5c12d760dfbded565b6a68bbefd6c39d85b1b05ad878998ecb",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.90",
+   "rule_title": "Rely on constructors and assignment operators, not `memset` and `memcpy`",
+   "anchor_line": 7024,
+   "code": "void init(derived& a)\n{\n    memset(&a, 0, sizeof(derived));\n}",
+   "code_sha256": "a84932d92ae9e4ef45f7d0a0f18e4111dc3335e7b3c96d07e9cbc9e87ecb0afe",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.90",
+   "rule_title": "Rely on constructors and assignment operators, not `memset` and `memcpy`",
+   "anchor_line": 7033,
+   "code": "void copy(derived& a, derived& b)\n{\n    memcpy(&a, &b, sizeof(derived));\n}",
+   "code_sha256": "8e3918f2a0873b9e63a59752d3c183ae4c15645ebf882d97eed5c5ea3120912e",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.120",
+   "rule_title": "Use class hierarchies to represent concepts with inherent hierarchical structure (only)",
+   "anchor_line": 7308,
+   "code": "template<typename T>\nclass Container {\npublic:\n    // list operations:\n    virtual T& get() = 0;\n    virtual void put(T&) = 0;\n    virtual void insert(Position) = 0;\n    // ...\n    // vector operations:\n    virtual T& operator[](int) = 0;\n    virtual void sort() = 0;\n    // ...\n    // tree operations:\n    virtual void balance() = 0;\n    // ...\n};",
+   "code_sha256": "d1f85607ffb61717ead8521934da26548080a0ceba9372daf2a7b4465e448fb7",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.121",
+   "rule_title": "If a base class is used as an interface, make it a pure abstract class",
+   "anchor_line": 7356,
+   "code": "class Goof {\npublic:\n    // ... only pure virtual functions here ...\n    // no virtual destructor\n};\n\nclass Derived : public Goof {\n    string s;\n    // ...\n};\n\nvoid use()\n{\n    unique_ptr<Goof> p {new Derived{\"here we go\"}};\n    f(p.get()); // use Derived through the Goof interface\n    g(p.get()); // use Derived through the Goof interface\n} // leak",
+   "code_sha256": "2668d164fb5cd0fb72d25232cede67046180c3f70e94aabd3be4e7375c5319d3",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.127",
+   "rule_title": "A class with a virtual function should have a virtual or protected destructor",
+   "anchor_line": 7460,
+   "code": "struct B {\n    virtual int f() = 0;\n    // ... no user-written destructor, defaults to public non-virtual ...\n};\n\n// bad: derived from a class without a virtual destructor\nstruct D : B {\n    string s {\"default\"};\n    // ...\n};\n\nvoid use()\n{\n    unique_ptr<B> p = make_unique<D>();\n    // ...\n} // undefined behavior, might call B::~B only and leak the string",
+   "code_sha256": "d4bb3fa08c524ef0cb93a995145199c9a5a33d0b35e3fccbfa936a757af263d3",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.128",
+   "rule_title": "Virtual functions should specify exactly one of `virtual`, `override`, or `final`",
+   "anchor_line": 7502,
+   "code": "struct B {\n    void f1(int);\n    virtual void f2(int) const;\n    virtual void f3(int);\n    // ...\n};\n\nstruct D : B {\n    void f1(int);        // bad (hope for a warning): D::f1() hides B::f1()\n    void f2(int) const;  // bad (but conventional and valid): no explicit override\n    void f3(double);     // bad (hope for a warning): D::f3() hides B::f3()\n    // ...\n};",
+   "code_sha256": "8214ea53910da414ce56cee363d41cc25d4b7b2a1dd2c7d50297548d1000c2e8",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.129",
+   "rule_title": "When designing a class hierarchy, distinguish between implementation inheritance and inter",
+   "anchor_line": 7575,
+   "code": "class Shape {   // BAD, mixed interface and implementation\npublic:\n    Shape();\n    Shape(Point ce = {0, 0}, Color co = none): cent{ce}, col {co} { /* ... */}\n\n    Point center() const { return cent; }\n    Color color() const { return col; }\n\n    virtual void rotate(int) = 0;\n    virtual void move(Point p) { cent = p; redraw(); }\n\n    virtual void redraw();\n\n    // ...\nprivate:\n    Point cent;\n    Color col;\n};\n\nclass Circle : public Shape {\npublic:\n    Circle(Point c, int r) : Shape{c}, rad{r} { /* ... */ }\n\n    // ...\nprivate:\n    int rad;\n};\n\nclass Triangle : public Shape {\npublic:\n    Triangle(Point p1, Point p2, Point p3); // calculate center\n    // ...\n};",
+   "code_sha256": "54ade6bbb3fb613b1ca6b61176a3cb981c767c1a2437ec68d7f75415ddd8c456",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.131",
+   "rule_title": "Avoid trivial getters and setters",
+   "anchor_line": 7817,
+   "code": "public:\n    Point(int xx, int yy) : x{xx}, y{yy} { }\n    int get_x() const { return x; }\n    void set_x(int xx) { x = xx; }\n    int get_y() const { return y; }\n    void set_y(int yy) { y = yy; }\n    // no behavioral member functions\n};",
+   "code_sha256": "bc9dc2c38364645b4baea2a8493b1b20d6db1245bc3609bc0703c4ec911db9ad",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.132",
+   "rule_title": "Don't make a function `virtual` without reason",
+   "anchor_line": 7854,
+   "code": "template<class T>\nclass Vector {\npublic:\n    // ...\n    virtual int size() const { return sz; }   // bad: what good could a derived class do?\nprivate:\n    T* elem;   // the elements\n    int sz;    // number of elements\n};",
+   "code_sha256": "cfce4a1d357a3d6c967750500343580d07a7b461c337042605c92b5a6925d021",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.133",
+   "rule_title": "Avoid `protected` data",
+   "anchor_line": 7883,
+   "code": "class Shape {\npublic:\n    // ... interface functions ...\nprotected:\n    // data for use in derived classes:\n    Color fill_color;\n    Color edge_color;\n    Style st;\n};",
+   "code_sha256": "07c9bde6afbea980d75d71208365baebe39ec436aaf6949ec6c47d01b81e3347",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.138",
+   "rule_title": "Create an overload set for a derived class and its bases with `using`",
+   "anchor_line": 8073,
+   "code": "#include <iostream>\nclass B {\npublic:\n    virtual int f(int i) { std::cout << \"f(int): \"; return i; }\n    virtual double f(double d) { std::cout << \"f(double): \"; return d; }\n    virtual ~B() = default;\n};\nclass D: public B {\npublic:\n    int f(int i) override { std::cout << \"f(int): \"; return i + 1; }\n};\nint main()\n{\n    D d;\n    std::cout << d.f(2) << '\\n';   // prints \"f(int): 3\"\n    std::cout << d.f(2.3) << '\\n'; // prints \"f(int): 3\"\n}",
+   "code_sha256": "dad8ca02391546644fb161e483ee6cbc2b2f397a6f18f4d907864de70e3a1ac5",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.139",
+   "rule_title": "Use `final` on classes sparingly",
+   "anchor_line": 8122,
+   "code": "class Widget { /* ... */ };\n\n// nobody will ever want to improve My_widget (or so you thought)\nclass My_widget final : public Widget { /* ... */ };\n\nclass My_improved_widget : public My_widget { /* ... */ };  // error: can't do that",
+   "code_sha256": "bb2af2d475a6c8bba5324557639067dbe94ec046e38d42c6de69668775c42623",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.140",
+   "rule_title": "Do not provide different default arguments for a virtual function and an overrider",
+   "anchor_line": 8158,
+   "code": "class Base {\npublic:\n    virtual int multiply(int value, int factor = 2) = 0;\n    virtual ~Base() = default;\n};\n\nclass Derived : public Base {\npublic:\n    int multiply(int value, int factor = 10) override;\n};\n\nDerived d;\nBase& b = d;\n\nb.multiply(10);  // these two calls will call the same function but\nd.multiply(10);  // with different arguments and so different results",
+   "code_sha256": "d3cca602cf6340e8dda496d79dc27dfaabf6707bc0b79615a577c8a46808df75",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.152",
+   "rule_title": "Never assign a pointer to an array of derived class objects to a pointer to its base",
+   "anchor_line": 8464,
+   "code": "p[1].x = 7;   // overwrite a[0].y\n\nuse(a);       // bad: a decays to &a[0] which is converted to a B*",
+   "code_sha256": "9e5a99c13975c6fe2c5c343a834952f66d8cd7b503150c67fc70630dcf5025c0",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.160",
+   "rule_title": "Define operators primarily to mimic conventional usage",
+   "anchor_line": 8528,
+   "code": "X operator+(X a, X b) { return a.v - b.v; }   // bad: makes + subtract",
+   "code_sha256": "a1dccd92c75599d120d47fb9ecba963c6e88f864d8d6586a62c4cd8cc725c4b0",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.168",
+   "rule_title": "Define overloaded operators in the namespace of their operands",
+   "anchor_line": 8807,
+   "code": "struct S { };\nS s;\n\nnamespace N {\n    bool operator!(S a) { return true; }\n    bool not_s = !s;\n}\n\nnamespace M {\n    bool operator!(S a) { return false; }\n    bool not_s = !s;\n}",
+   "code_sha256": "2a9e34277077f341e420630901171de5f5842cefc0bfb271b5f98d8bea5fd79b",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.181",
+   "rule_title": "Avoid \"naked\" `union`s",
+   "anchor_line": 8954,
+   "code": "union Value {\n    int x;\n    double d;\n};\n\nValue v;\nv.d = 987.654;  // v holds a double",
+   "code_sha256": "fe75bb78fa6f8af8665a4e3cb558611e3a1cb6268ffe532a40fe447abcf0bdc2",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.181",
+   "rule_title": "Avoid \"naked\" `union`s",
+   "anchor_line": 8975,
+   "code": "variant<int, double> v;\nv = 123;        // v holds an int\nint x = get<int>(v);\nv = 123.456;    // v holds a double\ndouble w = get<double>(v);",
+   "code_sha256": "2e0e88a71fc7439402d0f65f7a378366274c773b01e3249bd01d2a59126709d8",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.183",
+   "rule_title": "Don't use a `union` for type punning",
+   "anchor_line": 9102,
+   "code": "union Pun {\n    int x;\n    unsigned char c[sizeof(int)];\n};",
+   "code_sha256": "46e6b21647c05508f0e6b07eb7127fb7194c9b3e66e89834453487f22254c2b8",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.183",
+   "rule_title": "Don't use a `union` for type punning",
+   "anchor_line": 9310,
+   "code": "#define RED   0xFF0000\n#define GREEN 0x00FF00\n#define BLUE  0x0000FF\n\n// productinfo.h\n// The following define product subtypes based on color\n\nenum class Product_info { RED, PURPLE, BLUE };   // syntax error",
+   "code_sha256": "144214c84386544159f7b2eed06bcffbd4c0573aeade5751581bba079650f297",
+   "verbatim": true
+  },
+  {
+   "rule_id": "C.183",
+   "rule_title": "Don't use a `union` for type punning",
+   "anchor_line": 9332,
+   "code": "enum { red = 0xFF0000, scale = 4, is_signed = 1 };",
+   "code_sha256": "000f0e03fc5d4d1cff83052d41c081502ea5c6c20dfc089e776209cd842b0703",
+   "verbatim": true
+  },
+  {
+   "rule_id": "R.1",
+   "rule_title": "Manage resources automatically using resource handles and RAII (Resource Acquisition Is In",
+   "anchor_line": 9469,
+   "code": "void send(X* x, string_view destination)\n{\n    auto port = open_port(destination);\n    my_mutex.lock();\n    // ...\n    send(port, x);\n    // ...\n    my_mutex.unlock();\n    close_port(port);\n    delete x;\n}",
+   "code_sha256": "baa39c93dd05aeb812b56b69540a3a19ab010694adf38b0c48c3182b68bc66fe",
+   "verbatim": true
+  },
+  {
+   "rule_id": "R.2",
+   "rule_title": "In interfaces, use raw pointers to denote individual objects (only)",
+   "anchor_line": 9530,
+   "code": "void f(int* p, int n)   // n is the number of elements in p[]\n{\n    // ...\n    p[2] = 7;   // bad: subscript raw pointer\n    // ...\n}",
+   "code_sha256": "12fa09068d9a6abeeef17761ffefe39b57a09ae375f52ab84ecd63a8ed822cf1",
+   "verbatim": true
+  },
+  {
+   "rule_id": "R.3",
+   "rule_title": "A raw pointer (a `T*`) is non-owning",
+   "anchor_line": 9627,
+   "code": "Gadget* make_gadget(int n)\n{\n    auto p = new Gadget{n};\n    // ...\n    return p;\n}\n\nvoid caller(int n)\n{\n    auto p = make_gadget(n);   // remember to delete p\n    // ...\n    delete p;\n}",
+   "code_sha256": "c265beaee0ee30d72e8699ed432ec6bbcea249df5b3d954aba500ec366dece41",
+   "verbatim": true
+  },
+  {
+   "rule_id": "R.12",
+   "rule_title": "Immediately give the result of an explicit resource allocation to a manager object",
+   "anchor_line": 9806,
+   "code": "void func(const string& name)\n{\n    FILE* f = fopen(name, \"r\");            // open the file\n    vector<char> buf(1024);\n    auto _ = finally([f] { fclose(f); });  // remember to close the file\n    // ...\n}",
+   "code_sha256": "7c3b083b2301f57d323262dccc2bb48b10f0f0cb359e219ff8295cef92156e4e",
+   "verbatim": true
+  },
+  {
+   "rule_id": "R.13",
+   "rule_title": "Perform at most one explicit resource allocation in a single expression statement",
+   "anchor_line": 9845,
+   "code": "fun(shared_ptr<Widget>(new Widget(a, b)), shared_ptr<Widget>(new Widget(c, d)));",
+   "code_sha256": "0d533a624849b63226ea96df526164ca2272627026e626462e12ac197a58b94a",
+   "verbatim": true
+  },
+  {
+   "rule_id": "R.21",
+   "rule_title": "Prefer `unique_ptr` over `shared_ptr` unless you need to share ownership",
+   "anchor_line": 9945,
+   "code": "void f()\n{\n    shared_ptr<Base> base = make_shared<Derived>();\n    // use base locally, without copying it -- refcount never exceeds 1\n} // destroy base",
+   "code_sha256": "ba95819b5b809b360d6a98febe2b54128c22f42dbf181883299f33fe1403c8b8",
+   "verbatim": true
+  },
+  {
+   "rule_id": "R.31",
+   "rule_title": "If you have non-`std` smart pointers, follow the basic pattern from `std`",
+   "anchor_line": 10070,
+   "code": "// use Boost's intrusive_ptr\n#include <boost/intrusive_ptr.hpp>\nvoid f(boost::intrusive_ptr<widget> p)  // error under rule 'sharedptrparam'\n{\n    p->foo();\n}\n\n// use Microsoft's CComPtr\n#include <atlbase.h>\nvoid f(CComPtr<widget> p)               // error under rule 'sharedptrparam'\n{\n    p->foo();\n}",
+   "code_sha256": "21ce8d1744c624f3bafb32c0411724685239943f8e348498dccb1d1df729fe1c",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.1",
+   "rule_title": "Prefer the standard library to other libraries and to \"handcrafted code\"",
+   "anchor_line": 10360,
+   "code": "double sum = 0.0;\nfor (int i = 0; i < max; ++i)\n    sum = sum + v[i];",
+   "code_sha256": "b4f0840902f1fbdde9fbeab62be14e2ea68271bde348e36b88de991115acecff",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.2",
+   "rule_title": "Prefer suitable abstractions to direct use of language features",
+   "anchor_line": 10391,
+   "code": "{\n    auto res = new char*[maxelem];\n    int elemcount = 0;\n    while (is && elemcount < maxelem) {\n        auto s = new char[maxstring];\n        is.read(s, maxstring);\n        res[elemcount++] = s;\n    }\n    *nread = elemcount;\n    return res;\n}",
+   "code_sha256": "49c5ab1903c0bdf70b8c8c4c82d9b14a5d8b69a6b12fef8b49397312c1981920",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.5",
+   "rule_title": "Keep scopes small",
+   "anchor_line": 10477,
+   "code": "void use(const string& name)\n{\n    string fn = name + \".txt\";\n    ifstream is {fn};\n    Record r;\n    is >> r;\n    // ... 200 lines of code without intended use of fn or is ...\n}",
+   "code_sha256": "539d0afff31bdd9a6aa0a6ed8fc814f8eab729502a09714121065059240fcb20",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.6",
+   "rule_title": "Declare names in for-statement initializers and conditions to limit scope",
+   "anchor_line": 10542,
+   "code": "for (j = 0; j < 100; ++j) {\n    // ...\n}\n// j is still visible here and isn't needed",
+   "code_sha256": "d199933e47390ca0a2a17f004a98f4d48f625889a931b854052adc29617d401e",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.7",
+   "rule_title": "Keep common and local names short, and keep uncommon and non-local names longer",
+   "anchor_line": 10594,
+   "code": "void print(ostream& target_stream, const vector<Element_type>& current_vector)\n{\n    for (gsl::index current_element_index = 0;\n         current_element_index < current_vector.size();\n         ++current_element_index\n    )\n    target_stream << current_vector[current_element_index] << '\\n';\n}",
+   "code_sha256": "808e53330d6ee6fd05849b1b56c5502f9c19cc655b48a95da4644ec0d3126eb6",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.7",
+   "rule_title": "Keep common and local names short, and keep uncommon and non-local names longer",
+   "anchor_line": 10628,
+   "code": "void complicated_algorithm(vector<Record>& vr, const vector<int>& vi, map<string, int>& out)\n// read from events in vr (marking used Records) for the indices in\n// vi placing (name, index) pairs into out\n{\n    // ... 500 lines of code using vr, vi, and out ...\n}",
+   "code_sha256": "fc07e8040ae485b9b994592847d93481d48e28c28c509bf632b893749ef02044",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.8",
+   "rule_title": "Avoid similar-looking names",
+   "anchor_line": 10651,
+   "code": "if (readable(i1 + l1 + ol + o1 + o0 + ol + o1 + I0 + l0)) surprise();",
+   "code_sha256": "2ba2fe68872ec0e6e77ba3418451407de63983d7c074f7ea5c18ff72e259c9fe",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.8",
+   "rule_title": "Avoid similar-looking names",
+   "anchor_line": 10655,
+   "code": "struct foo { int n; };\nstruct foo foo();       // BAD, foo is a type already in scope\nstruct foo x = foo();   // requires disambiguation",
+   "code_sha256": "51038eea5451f2387afd80ff8930e4f175f7b839545164b6d393068b5f42d093",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.10",
+   "rule_title": "Declare one name (only) per declaration",
+   "anchor_line": 10711,
+   "code": "char *p, c, a[7], *pp[7], **aa[10];   // yuck!",
+   "code_sha256": "f10fca7ce0c2cbdae119b49dfc9ed929a028b5bc6a5834e708e9708504750b6c",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.12",
+   "rule_title": "Do not reuse names in nested scopes",
+   "anchor_line": 10821,
+   "code": "int d = 0;\n// ...\nif (cond) {\n    // ...\n    d = 9;\n    // ...\n}\nelse {\n    // ...\n    int d = 7;\n    // ...\n    d = value_to_be_returned;\n    // ...\n}\n\nreturn d;",
+   "code_sha256": "a743d87ffc963c8128bcb143d4d0f36de6ad4f75588196b676902d76892f03d1",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.12",
+   "rule_title": "Do not reuse names in nested scopes",
+   "anchor_line": 10862,
+   "code": "struct S {\n    int m;\n    void f(int x);\n};\n\nvoid S::f(int x)\n{\n    m = 7;    // assign to member\n    if (x) {\n        int m = 9;\n        // ...\n        m = 99; // assign to local variable\n        // ...\n    }\n}",
+   "code_sha256": "f34544b87010548415f663c6626498e55d3db915f8ad55eb4a911f69dcc3cf1f",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.20",
+   "rule_title": "Always initialize an object",
+   "anchor_line": 10953,
+   "code": "}\nelse {\n    i = f3();\n    j = f4();\n}",
+   "code_sha256": "5d8e19c893e90c4370599bdeccc61a45334d640d1efd3a7dc8b4a87194c3314a",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.22",
+   "rule_title": "Don't declare a variable until you have a value to initialize it with",
+   "anchor_line": 11117,
+   "code": "string s;\n// ... no use of s here ...\ns = \"what a waste\";",
+   "code_sha256": "4cd5d0973a9716a46ee0ea3fd3162658a3fb94fa2ede1e418f0c3e15d23510c2",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.22",
+   "rule_title": "Don't declare a variable until you have a value to initialize it with",
+   "anchor_line": 11123,
+   "code": "SomeLargeType var;  // Hard-to-read CaMeLcAsEvArIaBlE\n\nif (cond)   // some non-trivial condition\n    Set(&var);\nelse if (cond2 || !cond3) {\n    var = Set2(3.14);\n}\nelse {\n    var = 0;\n    for (auto& e : something)\n        var += e;\n}\n\n// use var; that this isn't done too early can be enforced statically with only control flow",
+   "code_sha256": "e2dc37abb64936f4652f3a8104df55d63b97467c775d879bff06209e916e958a",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.26",
+   "rule_title": "Don't use a variable for two unrelated purposes",
+   "anchor_line": 11310,
+   "code": "void use()\n{\n    int i;\n    for (i = 0; i < 20; ++i) { /* ... */ }\n    for (i = 0; i < 200; ++i) { /* ... */ } // bad: i recycled\n}",
+   "code_sha256": "a889bac31cb595447725cd905c17cd2803a20e5d82b6c94b1210182d0760a904",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.27",
+   "rule_title": "Use `std::array` or `stack_array` for arrays on the stack",
+   "anchor_line": 11350,
+   "code": "const int n = 7;\nint m = 9;\n\nvoid f()\n{\n    int a1[n];\n    int a2[m];   // error: not ISO C++\n    // ...\n}",
+   "code_sha256": "30c0b2cd93b222c16fa101be5eefdb4671fe5e0c164ed6baa4f96a49a2d876c7",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.28",
+   "rule_title": "Use lambdas for complex initialization, especially of `const` variables",
+   "anchor_line": 11393,
+   "code": "widget x;   // should be const, but:\nfor (auto i = 2; i <= N; ++i) {          // this could be some\n    x += some_obj.do_something_with(i);  // arbitrarily long code\n}                                        // needed to initialize x\n// from here, x should be const, but we can't say so in code in this style",
+   "code_sha256": "051a5058d987d3581466845ba382707daf93565d539f22a2290548f4f5c3e3dc",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.30",
+   "rule_title": "Don't use macros for program text manipulation",
+   "anchor_line": 11426,
+   "code": "#define Case break; case   /* BAD */",
+   "code_sha256": "fc7ec2c773526ae042a1ee7d7e4dcc281fcc8a98d9272df40e85c008ad4f8798",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.31",
+   "rule_title": "Don't use macros for constants or \"functions\"",
+   "anchor_line": 11494,
+   "code": "#define PI 3.14\n#define SQUARE(a, b) (a * b)",
+   "code_sha256": "0ed38f84021fb12e16ebd93c21bd0c10ca0219aac17a3972360735ced54ddb8b",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.40",
+   "rule_title": "Avoid complicated expressions",
+   "anchor_line": 11637,
+   "code": "while ((c = getc()) != -1)\n\n// bad: two non-local variables assigned in sub-expressions\nwhile ((cin >> c1, cin >> c2), c1 == c2)\n\n// better, but possibly still too complicated\nfor (char c1, c2; cin >> c1 >> c2 && c1 == c2;)\n\n// OK: if i and j are not aliased\nint x = ++i + ++j;\n\n// OK: if i != j and i != k\nv[i] = v[j] + v[k];\n\n// bad: multiple assignments \"hidden\" in subexpressions\nx = a + (b = f()) + (c = g()) * 7;\n\n// bad: relies on commonly misunderstood precedence rules\nx = a & b + c * d && e ^ f == 7;\n\n// bad: undefined behavior\nx = x++ + x++ + ++x;",
+   "code_sha256": "ecd8a7500833f379e436ba09dbb2d30141722ed3a1ad7d21c581e9e5562835ac",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.40",
+   "rule_title": "Avoid complicated expressions",
+   "anchor_line": 11677,
+   "code": "x = t1 + z;\n\nif (0 <= x && x < max)   // OK\n\nauto t1 = 0 <= x;        // bad: unnecessarily verbose\nauto t2 = x < max;\nif (t1 && t2)            // ...",
+   "code_sha256": "12e39c8b63f28a5fd9355ea1315a42b5baa665a899f17f262bb003e67f3f4e89",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.41",
+   "rule_title": "If in doubt about operator precedence, parenthesize",
+   "anchor_line": 11709,
+   "code": "if ((a & flag) != 0)  // OK: works as intended",
+   "code_sha256": "d27b666bf7a706f625d567d1d0959c4cc6f5bfc4c6ffd605377ca4149e50c909",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.42",
+   "rule_title": "Keep use of pointers simple and straightforward",
+   "anchor_line": 11743,
+   "code": "void f(int* p, int count)\n{\n    if (count < 2) return;\n\n    int* q = p + 1;    // BAD\n\n    ptrdiff_t d;\n    int n;\n    d = (p - &n);      // OK\n    d = (q - p);       // OK\n\n    int n = *p++;      // BAD\n\n    if (count < 6) return;\n\n    p[4] = 1;          // BAD\n\n    p[count - 1] = 2;  // BAD\n\n    use(&p[0], 3);     // BAD\n}",
+   "code_sha256": "cd3109a892a7c72db539ef1036fe58919703493ad8e2e104dc99235188e698e4",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.42",
+   "rule_title": "Keep use of pointers simple and straightforward",
+   "anchor_line": 11793,
+   "code": "void f(array<int, 10> a, int pos)\n{\n    a[pos / 2] = 1; // BAD\n    a[pos - 1] = 2; // BAD\n    a[-1] = 3;    // BAD (but easily caught by tools) -- no replacement, just don't do this\n    a[10] = 4;    // BAD (but easily caught by tools) -- no replacement, just don't do this\n}",
+   "code_sha256": "a7e5eff7b605d99f3b925f666d7acd3a5bb15d9f6afd715f7dbb0049b1a8b1dd",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.42",
+   "rule_title": "Keep use of pointers simple and straightforward",
+   "anchor_line": 11828,
+   "code": "void f()\n{\n    int arr[COUNT];\n    for (int i = 0; i < COUNT; ++i)\n        arr[i] = i; // BAD, cannot use non-constant indexer\n}",
+   "code_sha256": "5d7decdf6926e626c210c2d4c50f792be97eb9bdcf0a6263436f478898c55ce4",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.46",
+   "rule_title": "Avoid lossy (narrowing, truncating) arithmetic conversions",
+   "anchor_line": 12020,
+   "code": "double d = 7.9;\nint i = d;    // bad: narrowing: i becomes 7\ni = (int) d;  // bad: we're going to claim this is still not explicit enough\n\nvoid f(int x, long y, double d)\n{\n    char c1 = x;   // bad: narrowing\n    char c2 = y;   // bad: narrowing\n    char c3 = d;   // bad: narrowing\n}",
+   "code_sha256": "d8b4643489b85dded4aeb6bddc7969c1954d9a43af11f0d2547382d1fdcaae13",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.46",
+   "rule_title": "Avoid lossy (narrowing, truncating) arithmetic conversions",
+   "anchor_line": 12047,
+   "code": "u = gsl::narrow_cast<unsigned>(d);   // OK (you asked for it): u becomes 4294967289\nu = gsl::narrow<unsigned>(d);        // OK: throws narrowing_error",
+   "code_sha256": "4b40252eecf9ca4232e8a455605833740dc64c8e3d8a09aadf0c6d7aa3106380",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.48",
+   "rule_title": "Avoid casts",
+   "anchor_line": 12094,
+   "code": "double d = 2;\nauto p = (long*)&d;\nauto q = (long long*)&d;\ncout << d << ' ' << *p << ' ' << *q << '\\n';",
+   "code_sha256": "a9ea3dd4192d11305ce531afcf62f6348ae037c257cd6bae5ea2fb81582beea0",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.50",
+   "rule_title": "Don't cast away `const`",
+   "anchor_line": 12224,
+   "code": "void f(const int& x)\n{\n    const_cast<int&>(x) = 42;   // BAD\n}\n\nstatic int i = 0;\nstatic const int j = 0;\n\nf(i); // silent side effect\nf(j); // undefined behavior",
+   "code_sha256": "141937373d7b73159c2bf2dfb24589ded6f1daa0dd961139cc6e3a22970e4106",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.56",
+   "rule_title": "Write `std::move()` only when you need to explicitly move an object to another scope",
+   "anchor_line": 12429,
+   "code": "void sink(X&& x);   // sink takes ownership of x\n\nvoid user()\n{\n    X x;\n    // error: cannot bind an lvalue to a rvalue reference\n    sink(x);\n    // OK: sink takes the contents of x, x must now be assumed to be empty\n    sink(std::move(x));\n\n    // ...\n\n    // probably a mistake\n    use(x);\n}",
+   "code_sha256": "254d94594d27ce37db951b451de07d878218f569802d8ea27ed36a59718dfab5",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.56",
+   "rule_title": "Write `std::move()` only when you need to explicitly move an object to another scope",
+   "anchor_line": 12487,
+   "code": "vector<int> make_vector()\n{\n    vector<int> result;\n    // ... load result with data\n    return std::move(result);       // bad; just write \"return result;\"\n}",
+   "code_sha256": "f834fbf705e225adf50c31303fae7986c5425d7c55205c4fe3c293f8542fd3b6",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.56",
+   "rule_title": "Write `std::move()` only when you need to explicitly move an object to another scope",
+   "anchor_line": 12500,
+   "code": "vector<int> v = std::move(make_vector());   // bad; the std::move is entirely redundant",
+   "code_sha256": "c1cae4b232ca0abe7a62d521dd0b1e5682fb477f0f64ea28373b46f5ccf01809",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.60",
+   "rule_title": "Avoid `new` and `delete` outside resource management functions",
+   "anchor_line": 12545,
+   "code": "void f(int n)\n{\n    auto p = new X[n];   // n default constructed Xs\n    // ...\n    delete[] p;\n}",
+   "code_sha256": "80565365da55eb85cbfcfbbc51ec01afe4b856a00d2178b0a7b2e97b83170374",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.61",
+   "rule_title": "Delete arrays using `delete[]` and non-arrays using `delete`",
+   "anchor_line": 12568,
+   "code": "void f(int n)\n{\n    auto p = new X[n];   // n default constructed Xs\n    // ...\n    delete p;   // error: just delete the object p, rather than delete the array p[]\n}",
+   "code_sha256": "db5c4c2b0e14190295bdec853fe89fc8867662ef4e61311dedd8ca95b30aacee",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.62",
+   "rule_title": "Don't compare pointers into different arrays",
+   "anchor_line": 12592,
+   "code": "void f()\n{\n    int a1[7];\n    int a2[9];\n    if (&a1[5] < &a2[7]) {}       // bad: undefined\n    if (0 < &a1[5] - &a2[7]) {}   // bad: undefined\n}",
+   "code_sha256": "dcfe2f5e9f0c8159615fe96f85df08de8028fb3f136a902b5f96c98fafedf215",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.72",
+   "rule_title": "Prefer a `for`-statement to a `while`-statement when there is an obvious loop variable",
+   "anchor_line": 13005,
+   "code": "int i = 0;\nwhile (i < vec.size()) {\n    // do work\n    i++;\n}",
+   "code_sha256": "b76c6e826a6ae00d42632e9e5f2df532765ed0e9a33996780dd6f98447b55083",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.76",
+   "rule_title": "Avoid `goto`",
+   "anchor_line": 13089,
+   "code": "void f()\n{\n    // ...\n        goto exit;\n    // ...\n        goto exit;\n    // ...\nexit:\n    // ... common cleanup code ...\n}",
+   "code_sha256": "7450052b84a6b4acf8e855f6e17b703d8b6329996ba9a145fb8d2eefe688e46f",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.84",
+   "rule_title": "Don't try to declare a local variable with no name",
+   "anchor_line": 13338,
+   "code": "void f()\n{\n    lock_guard<mutex>{mx};   // Bad\n    // ...\n}",
+   "code_sha256": "a4d174a628934c5392e243f181be011eef19a12079e528ad8d87eab3fa59f840",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.85",
+   "rule_title": "Make empty statements visible",
+   "anchor_line": 13366,
+   "code": "v[i] = f(v[i]);\n\nfor (auto x : v) {           // better\n    // nothing\n}\nv[i] = f(v[i]);",
+   "code_sha256": "1ce3c0384b20254ecf9b654312aa50b6e868c36390ba6d7da080265fa02e0bcd",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.87",
+   "rule_title": "Don't add redundant `==` or `!=` to conditions",
+   "anchor_line": 13423,
+   "code": "if (p != nullptr) { ... } // redundant !=nullptr, not recommended",
+   "code_sha256": "d8bad411787218df2f125aaad67457d5f9957394966ab2b8e68bef118664de85",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.87",
+   "rule_title": "Don't add redundant `==` or `!=` to conditions",
+   "anchor_line": 13463,
+   "code": "if(strcmp(p1, p2)) { ... }   // are the two C-style strings equal? (mistake!)",
+   "code_sha256": "bffaf6bcf47db8c9fb0cf895686e7a93ce797ef33586867a9df03d1aed05bc21",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.87",
+   "rule_title": "Don't add redundant `==` or `!=` to conditions",
+   "anchor_line": 13483,
+   "code": "if (p == nullptr) { ... } // redundant == nullptr, not recommended",
+   "code_sha256": "78ee3c11757464f509da2fb4875716a781890f808c6d1f87f30d32b60a884a58",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.103",
+   "rule_title": "Don't overflow",
+   "anchor_line": 13618,
+   "code": "int a[10];\na[10] = 7;   // bad, array bounds overflow\n\nfor (int n = 0; n <= 10; ++n)\n    a[n] = 9;   // bad, array bounds overflow",
+   "code_sha256": "0afbe867aa70f09881503d9e46d72b9a29bdd02f3985fd0fb2e208bff31c3d7d",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.103",
+   "rule_title": "Don't overflow",
+   "anchor_line": 13626,
+   "code": "int n = numeric_limits<int>::max();\nint m = n + 1;   // bad, numeric overflow",
+   "code_sha256": "6385f8107b517587b60c8f911c0e49d947e0bf61bbfb996a81eec9d95d1ed1d7",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.103",
+   "rule_title": "Don't overflow",
+   "anchor_line": 13631,
+   "code": "int area(int h, int w) { return h * w; }\n\nauto a = area(10'000'000, 100'000'000);   // bad, numeric overflow",
+   "code_sha256": "721b99977f9b5c9d9efaeca1283a3a2f6c87170892dc75999d8e9658310714bb",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.104",
+   "rule_title": "Don't underflow",
+   "anchor_line": 13653,
+   "code": "int a[10];\na[-2] = 7;   // bad\n\nint n = 101;\nwhile (n--)\n    a[n - 1] = 9;   // bad (twice)",
+   "code_sha256": "408f3330627c2bbeac8be00a3d4f1c7f6fe0055922ed19854e5835ed6110b987",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.105",
+   "rule_title": "Don't divide by integer zero",
+   "anchor_line": 13680,
+   "code": "int divide(int a, int b)\n{\n    // BAD, should be checked (e.g., in a precondition)\n    return a / b;\n}",
+   "code_sha256": "016bf91965d3790a6410649d3aa836b6e5a6b3cae2dedfded9ee6e6e5b2d7ba6",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.107",
+   "rule_title": "Don't use `unsigned` for subscripts, prefer `gsl::index`",
+   "anchor_line": 13784,
+   "code": "vector<int> vec = /*...*/;\n\nfor (int i = 0; i < vec.size(); i += 2)                    // might not be big enough\n    cout << vec[i] << '\\n';\nfor (unsigned i = 0; i < vec.size(); i += 2)               // risk wraparound\n    cout << vec[i] << '\\n';\nfor (auto i = 0; i < vec.size(); i += 2)                   // might not be big enough\n    cout << vec[i] << '\\n';\nfor (vector<int>::size_type i = 0; i < vec.size(); i += 2) // verbose\n    cout << vec[i] << '\\n';\nfor (auto i = vec.size()-1; i >= 0; i -= 2)                // bug\n    cout << vec[i] << '\\n';\nfor (int i = vec.size()-1; i >= 0; i -= 2)                 // might not be big enough\n    cout << vec[i] << '\\n';",
+   "code_sha256": "b5ae2b7e405fe1de2bcaa1f33d16ac7bbb371fdaeb4fb43a05cd6a74cc747f05",
+   "verbatim": true
+  },
+  {
+   "rule_id": "ES.107",
+   "rule_title": "Don't use `unsigned` for subscripts, prefer `gsl::index`",
+   "anchor_line": 13928,
+   "code": "// intended to be faster, but is often slower\n\nvector<uint8_t> v(100000);\n\nfor (size_t i = 0; i < v.size(); i += sizeof(uint64_t)) {\n    uint64_t& quad_word = *reinterpret_cast<uint64_t*>(&v[i]);\n    quad_word = ~quad_word;\n}",
+   "code_sha256": "08a172f52f5e51a2570467618709fd1a1aa7b30ffb5d99a9959834e108032675",
+   "verbatim": true
+  },
+  {
+   "rule_id": "CP.1",
+   "rule_title": "Assume that your code will run as part of a multi-threaded program",
+   "anchor_line": 14356,
+   "code": "double cached_computation(int x)\n{\n    // bad: these statics cause data races in multi-threaded usage\n    static int cached_x = 0.0;\n    static double cached_result = COMPUTATION_OF_ZERO;\n\n    if (cached_x != x) {\n        cached_x = x;\n        cached_result = computation(x);\n    }\n    return cached_result;\n}",
+   "code_sha256": "34064e12df3ef4ba6f3f909c1984a714b2af1fe1ddf482fd918d0aa656b433d7",
+   "verbatim": true
+  },
+  {
+   "rule_id": "CP.2",
+   "rule_title": "Avoid data races",
+   "anchor_line": 14427,
+   "code": "int get_id()\n{\n  static int id = 1;\n  return id++;\n}",
+   "code_sha256": "98ff4ea6927f5240c2f11340c963f8494723b9a94c9a888968e8a0b5bbe30f18",
+   "verbatim": true
+  },
+  {
+   "rule_id": "CP.2",
+   "rule_title": "Avoid data races",
+   "anchor_line": 14450,
+   "code": "void f(fstream& fs, regex pattern)\n{\n    array<double, max> buf;\n    int sz = read_vec(fs, buf, max);            // read from fs into buf\n    gsl::span<double> s {buf};\n    // ...\n    auto h1 = async([&] { sort(std::execution::par, s); });     // spawn a task to sort\n    // ...\n    auto h2 = async([&] { return find_all(buf, sz, pattern); });   // spawn a task to find matches\n    // ...\n}",
+   "code_sha256": "dff6e9d5f2e5dbef0ab6e075ae4977ad3066ba88f121328635663e2591def26e",
+   "verbatim": true
+  },
+  {
+   "rule_id": "CP.2",
+   "rule_title": "Avoid data races",
+   "anchor_line": 14469,
+   "code": "// code not controlled by a lock\n\nunsigned val;\n\nif (val < 5) {\n    // ... other thread can change val here ...\n    switch (val) {\n    case 0: // ...\n    case 1: // ...\n    case 2: // ...\n    case 3: // ...\n    case 4: // ...\n    }\n}",
+   "code_sha256": "5ff1c986d4020e6adc1ce6320f64920dbadc4a777803a92b412b6a72273ca077",
+   "verbatim": true
+  },
+  {
+   "rule_id": "CP.8",
+   "rule_title": "Don't try to use `volatile` for synchronization",
+   "anchor_line": 14586,
+   "code": "int free_slots = max_slots; // current source of memory for objects\n\nPool* use()\n{\n    if (int n = free_slots--) return &pool[n];\n}",
+   "code_sha256": "2d6f2dbf96e1b9554ba5e478c9b8e3c4c3bf29f6c34cd3fc601b0f79ce38601f",
+   "verbatim": true
+  },
+  {
+   "rule_id": "CP.20",
+   "rule_title": "Use RAII, never plain `lock()`/`unlock()`",
+   "anchor_line": 14706,
+   "code": "mutex mtx;\n\nvoid do_stuff()\n{\n    mtx.lock();\n    // ... do stuff ...\n    mtx.unlock();\n}",
+   "code_sha256": "3768a9ef365cd376443d0f747275810ecadd242807a470b19e8c40b623e51762",
+   "verbatim": true
+  },
+  {
+   "rule_id": "CP.25",
+   "rule_title": "Prefer `gsl::joining_thread` over `std::thread`",
+   "anchor_line": 14941,
+   "code": "void f() { std::cout << \"Hello \"; }\n\nstruct F {\n    void operator()() const { std::cout << \"parallel world \"; }\n};\n\nint main()\n{\n    std::thread t1{f};      // f() executes in separate thread\n    std::thread t2{F()};    // F()() executes in separate thread\n}  // spot the bugs",
+   "code_sha256": "b5aaab4e39123330b1e8558f961abe96aaeb18307446a8568c17566b34f312a0",
+   "verbatim": true
+  },
+  {
+   "rule_id": "CP.42",
+   "rule_title": "Don't `wait` without a condition",
+   "anchor_line": 15179,
+   "code": "std::condition_variable cv;\nstd::mutex mx;\n\nvoid thread1()\n{\n    while (true) {\n        // do some work ...\n        std::unique_lock<std::mutex> lock(mx);\n        cv.notify_one();    // wake other thread\n    }\n}\n\nvoid thread2()\n{\n    while (true) {\n        std::unique_lock<std::mutex> lock(mx);\n        cv.wait(lock);    // might block forever\n        // do work ...\n    }\n}",
+   "code_sha256": "a2a0def105e3fe4aaa66ead5c6268aa5aaed2c6be84e3edc581a0ef50828e529",
+   "verbatim": true
+  },
+  {
+   "rule_id": "CP.51",
+   "rule_title": "Do not use capturing lambdas that are coroutines",
+   "anchor_line": 15369,
+   "code": "int value = get_value();\nstd::shared_ptr<Foo> sharedFoo = get_foo();\n{\n  const auto lambda = [value, sharedFoo]() -> std::future<void>\n  {\n    co_await something();\n    // \"sharedFoo\" and \"value\" have already been destroyed\n    // the \"shared\" pointer didn't accomplish anything\n  };\n  lambda();\n} // the lambda closure object has now gone out of scope",
+   "code_sha256": "1364c1f561dc42276d007ba0639ee0c27bbdaf1e07e1b761d514ac5ab5d5d0fa",
+   "verbatim": true
+  },
+  {
+   "rule_id": "CP.52",
+   "rule_title": "Do not hold locks or other synchronization primitives across suspension points",
+   "anchor_line": 15427,
+   "code": "std::mutex g_lock;\n\nstd::future<void> Class::do_something()\n{\n    std::lock_guard<std::mutex> guard(g_lock);\n    co_await something(); // DANGER: coroutine has suspended execution while holding a lock\n    co_await somethingElse();\n}",
+   "code_sha256": "e62f3b9e2b1b4498208eb136ec07ea359b9b09e3c8be86a6437d1fd1f05c678d",
+   "verbatim": true
+  },
+  {
+   "rule_id": "CP.53",
+   "rule_title": "Parameters to coroutines should not be passed by reference",
+   "anchor_line": 15467,
+   "code": "std::future<int> Class::do_something(const std::shared_ptr<int>& input)\n{\n    co_await something();\n\n    // DANGER: the reference to input may no longer be valid and may be freed memory\n    co_return *input + 1;\n}",
+   "code_sha256": "ae32354f4c9d7343f0d78fcbb236749efb78382365694032c29a095bbaad531d",
+   "verbatim": true
+  },
+  {
+   "rule_id": "CP.100",
+   "rule_title": "Don't use lock-free programming unless you absolutely have to",
+   "anchor_line": 15671,
+   "code": "extern atomic<Link*> head;        // the shared head of a linked list\n\nLink* nh = new Link(data, nullptr);    // make a link ready for insertion\nLink* h = head.load();                 // read the shared head of the list\n\ndo {\n    if (h->data <= data) break;        // if so, insert elsewhere\n    nh->next = h;                      // next element is the previous head\n} while (!head.compare_exchange_weak(h, nh));    // write nh to head or to h",
+   "code_sha256": "a015d37c2a91527fd9357244a53c976f07fe334e0c6e6ff7a08a96fa0e06eb81",
+   "verbatim": true
+  },
+  {
+   "rule_id": "CP.111",
+   "rule_title": "Use a conventional pattern if you really need double-checked locking",
+   "anchor_line": 15789,
+   "code": "mutex action_mutex;\nvolatile bool action_needed;\n\nif (action_needed) {\n    std::lock_guard<std::mutex> lock(action_mutex);\n    if (action_needed) {\n        take_action();\n        action_needed = false;\n    }\n}",
+   "code_sha256": "b12028a896e1e46f787759bd76c9389a17e7f67965b6acce3d2bd30a13174531",
+   "verbatim": true
+  },
+  {
+   "rule_id": "CP.200",
+   "rule_title": "Use `volatile` only to talk to non-C++ memory",
+   "anchor_line": 15879,
+   "code": "void f()\n{\n    volatile int i = 0; // bad, volatile local variable\n    // etc.\n}\n\nclass My_type {\n    volatile int i = 0; // suspicious, volatile data member\n    // etc.\n};",
+   "code_sha256": "4c6cd23e55aa0104c89bc32dbed12ce2a478c371251567cf687870b9f19016cc",
+   "verbatim": true
+  },
+  {
+   "rule_id": "E.6",
+   "rule_title": "Use RAII to prevent leaks",
+   "anchor_line": 16116,
+   "code": "{\n    int* p = new int[12];\n    // ...\n    if (i < 17) throw Bad{\"in f()\", i};\n    // ...\n}",
+   "code_sha256": "139c3b1a64e7a71d5a0dbf4e70c98dfc72a28d5889e6957f46a059dc8851942f",
+   "verbatim": true
+  },
+  {
+   "rule_id": "E.18",
+   "rule_title": "Minimize the use of explicit `try`/`catch`",
+   "anchor_line": 16491,
+   "code": "void f(zstring s)\n{\n    Gadget* p;\n    try {\n        p = new Gadget(s);\n        // ...\n        delete p;\n    }\n    catch (Gadget_construction_failure) {\n        delete p;\n        throw;\n    }\n}",
+   "code_sha256": "821aca78acdf4c8ea10100f354f219519e1f47a94d6f13ff3cd3205a618f93bf",
+   "verbatim": true
+  },
+  {
+   "rule_id": "E.28",
+   "rule_title": "Avoid error handling based on global state (e.g. `errno`)",
+   "anchor_line": 16836,
+   "code": "int last_err;\n\nvoid f(int n)\n{\n    // ...\n    p = static_cast<X*>(malloc(n * sizeof(X)));\n    if (!p) last_err = -1;     // error if memory is exhausted\n    // ...\n}",
+   "code_sha256": "8d8a441640911852cf79818e1d2341cf5f9571b3a7226c27483fe47ba0ed7f1c",
+   "verbatim": true
+  },
+  {
+   "rule_id": "E.31",
+   "rule_title": "Properly order your `catch`-clauses",
+   "anchor_line": 16908,
+   "code": "void f()\n{\n    // ...\n    try {\n            // ...\n    }\n    catch (Base& b) { /* ... */ }\n    catch (Derived& d) { /* ... */ }\n    catch (...) { /* ... */ }\n    catch (std::exception& e) { /* ... */ }\n}",
+   "code_sha256": "e53d992fe21acba29e00a24c0ae89cd7a320c6a18b85893c36c87841f2c70294",
+   "verbatim": true
+  },
+  {
+   "rule_id": "E.31",
+   "rule_title": "Properly order your `catch`-clauses",
+   "anchor_line": 16954,
+   "code": "std::vector<int> f(int i)\n{\n    std::vector<int> v{ i, i, i };  // const not needed\n    return v;\n}",
+   "code_sha256": "62167ab2a2886bc33720d9535b02b4b5bfbfde4a9ba8faaf23e10d275febb3ee",
+   "verbatim": true
+  },
+  {
+   "rule_id": "E.31",
+   "rule_title": "Properly order your `catch`-clauses",
+   "anchor_line": 16986,
+   "code": "class Point {\n    int x, y;\npublic:\n    int getx() { return x; }    // BAD, should be const as it doesn't modify the object's state\n    // ...\n};\n\nvoid f(const Point& pt)\n{\n    int x = pt.getx();          // ERROR, doesn't compile because getx was not marked const\n}",
+   "code_sha256": "591862fbf07a2111ca59305150812d1ff72c354432df8ce5cac88e7026cab0a4",
+   "verbatim": true
+  },
+  {
+   "rule_id": "T.1",
+   "rule_title": "Use templates to raise the level of abstraction of code",
+   "anchor_line": 17242,
+   "code": "template<typename T>\n    requires Incrementable<T>\nT sum1(vector<T>& v, T s)\n{\n    for (auto x : v) s += x;\n    return s;\n}\n\ntemplate<typename T>\n    requires Simple_number<T>\nT sum2(vector<T>& v, T s)\n{\n    for (auto x : v) s = s + x;\n    return s;\n}",
+   "code_sha256": "130bdd15e73373eb1533418daf4b1909c024b2e45b93845b218b54b5261e463f",
+   "verbatim": true
+  },
+  {
+   "rule_id": "T.3",
+   "rule_title": "Use templates to express containers and ranges",
+   "anchor_line": 17344,
+   "code": "class Container {\n    // ...\n    void* elem;   // points to size elements of some type\n    int sz;\n};\n\nContainer c(10, sizeof(double));\n((double*) c.elem)[7] = 9.9;",
+   "code_sha256": "f0a53e06e8ccf2354153dc871c9ff503259a3c8454bcbb9f3095b124af6419ca",
+   "verbatim": true
+  },
+  {
+   "rule_id": "T.20",
+   "rule_title": "Avoid \"concepts\" without meaningful semantics",
+   "anchor_line": 17629,
+   "code": "template<typename T>\n// bad; insufficient\nconcept Addable = requires(T a, T b) { a + b; };\n\ntemplate<Addable N>\nauto algo(const N& a, const N& b) // use two numbers\n{\n    // ...\n    return a + b;\n}\n\nint x = 7;\nint y = 9;\nauto z = algo(x, y);   // z = 16\n\nstring xx = \"7\";\nstring yy = \"9\";\nauto zz = algo(xx, yy);   // zz = \"79\"",
+   "code_sha256": "607198bd8ff4bf6e97706905ee920e78392097d0ccc37113f7573b71ae187023",
+   "verbatim": true
+  },
+  {
+   "rule_id": "T.21",
+   "rule_title": "Require a complete set of operations for a concept",
+   "anchor_line": 17700,
+   "code": "template<typename T> concept Subtractable = requires(T a, T b) { a - b; };",
+   "code_sha256": "3deab5873abb69df91ede17cc61159a169bbe1feea4fee86d344ab096bc74863",
+   "verbatim": true
+  },
+  {
+   "rule_id": "T.61",
+   "rule_title": "Do not over-parameterize members (SCARY)",
+   "anchor_line": 18379,
+   "code": "template<typename T, typename A = std::allocator<T>>\n    // requires Regular<T> && Allocator<A>\nclass List {\npublic:\n    struct Link {   // does not depend on A\n        T elem;\n        Link* pre;\n        Link* suc;\n    };\n\n    using iterator = Link*;\n\n    iterator first() const { return head; }\n\n    // ...\nprivate:\n    Link* head;\n};\n\nList<int> lst1;\nList<int, My_allocator> lst2;",
+   "code_sha256": "95ec5bf3b43b9faed4831bd0b46ea4c9f0af04aea333b807cfc52bdbdb3171bd",
+   "verbatim": true
+  },
+  {
+   "rule_id": "T.80",
+   "rule_title": "Do not naively templatize a class hierarchy",
+   "anchor_line": 18673,
+   "code": "template<typename T>\nstruct Container {         // an interface\n    virtual T* get(int i);\n    virtual T* first();\n    virtual T* next();\n    virtual void sort();\n};\n\ntemplate<typename T>\nclass Vector : public Container<T> {\npublic:\n    // ...\n};\n\nVector<int> vi;\nVector<string> vs;",
+   "code_sha256": "43b6631674ddbde5dc54e92289368f587eb2646c38282afed4fc5af8cf9c067d",
+   "verbatim": true
+  },
+  {
+   "rule_id": "SF.3",
+   "rule_title": "Use header files for all declarations used in multiple source files",
+   "anchor_line": 19346,
+   "code": "// bar.cpp:\nvoid bar() { cout << \"bar\\n\"; }\n\n// foo.cpp:\nextern void bar();\nvoid foo() { bar(); }",
+   "code_sha256": "7205ee3200555b846600938131450c6ddb19565835516b5de9c94d33bdb5f94a",
+   "verbatim": true
+  },
+  {
+   "rule_id": "SF.4",
+   "rule_title": "Include header files before other declarations in a file",
+   "anchor_line": 19376,
+   "code": "#include <vector>\n\n// ... my code here ...\n\n#include <algorithm>\n#include <string>",
+   "code_sha256": "bb310e6823f74886e2f5d43cd8cd23068c14dd51f9b770398aeaa2d9bb596309",
+   "verbatim": true
+  },
+  {
+   "rule_id": "SF.5",
+   "rule_title": "A `.cpp` file must include the header file(s) that defines its interface",
+   "anchor_line": 19414,
+   "code": "// foo.h:\nvoid foo(int);\nint bar(long);\nint foobar(int);\n\n// foo.cpp:\nvoid foo(int) { /* ... */ }\nint bar(double) { /* ... */ }\ndouble foobar(int);",
+   "code_sha256": "69db531d472eae9c3a089242c8b6ccb08c5a7975e41e8e5f1952739307f27155",
+   "verbatim": true
+  },
+  {
+   "rule_id": "SF.9",
+   "rule_title": "Avoid cyclic dependencies among source files",
+   "anchor_line": 19573,
+   "code": "// file1.h:\n#include \"file2.h\"\n\n// file2.h:\n#include \"file3.h\"\n\n// file3.h:\n#include \"file1.h\"",
+   "code_sha256": "b81631e32dd33b59a5b9b5b5eeba880252e112ed9dc3648d3d9a12d313cf64a7",
+   "verbatim": true
+  },
+  {
+   "rule_id": "SF.10",
+   "rule_title": "Avoid dependencies on implicitly `#include`d names",
+   "anchor_line": 19597,
+   "code": "#include <iostream>\nusing namespace std;\n\nvoid use()\n{\n    string s;\n    cin >> s;               // fine\n    getline(cin, s);        // error: getline() not defined\n    if (s == \"surprise\") {  // error == not defined\n        // ...\n    }\n}",
+   "code_sha256": "72d0ba7e654f81b989b2c35fce5892430dc6c70f551c9934a9b3afe66c5367af",
+   "verbatim": true
+  },
+  {
+   "rule_id": "SF.13",
+   "rule_title": "Use portable header identifiers in `#include` statements",
+   "anchor_line": 19731,
+   "code": "#include <VECTOR>        // bad: the standard library defines a header identified as <vector>, not <VECTOR>\n#include <String>        // bad: the standard library defines a header identified as <string>, not <String>\n#include \"Util/Util.H\"   // bad: the header file exists on the file system as \"util/util.h\"\n#include \"util\\util.h\"   // bad: may not work if the implementation interprets `\\u` as an escape sequence, or where '\\' is not a valid path separator",
+   "code_sha256": "dc1c28998c23cd909efee305eeed323e1b52bc2479389dbf9796196767b34ccc",
+   "verbatim": true
+  },
+  {
+   "rule_id": "SL.3",
+   "rule_title": "Do not add non-standard entities to namespace `std`",
+   "anchor_line": 19875,
+   "code": "class My_vector {\n    //     . . .\n};\n\n}\n\nnamespace Foo { // GOOD: user namespace is allowed\n\nclass My_vector {\n    //     . . .\n};\n\n}",
+   "code_sha256": "3b149f8eaa8de7c9435b9bd3da1d25f22840685e3f2988eda8278af6b98c640d",
+   "verbatim": true
+  },
+  {
+   "rule_id": "SL.4",
+   "rule_title": "Use the standard library in a type-safe manner",
+   "anchor_line": 20025,
+   "code": "void f()\n{\n    array<int, 10> a, b;\n    memset(a.data(), 0, 10);         // BAD, and contains a length error (length = 10 * sizeof(int))\n    memcmp(a.data(), b.data(), 10);  // BAD, and contains a length error (length = 10 * sizeof(int))\n}",
+   "code_sha256": "8a947da5ff55bbfadd8ddd8f929c9aec42b2346792d6b4803ed0870cf46e6456",
+   "verbatim": true
+  },
+  {
+   "rule_id": "SL.4",
+   "rule_title": "Use the standard library in a type-safe manner",
+   "anchor_line": 20181,
+   "code": "char* cat(const char* s1, const char* s2)   // beware!\n    // return s1 + '.' + s2\n{\n    int l1 = strlen(s1);\n    int l2 = strlen(s2);\n    char* p = (char*) malloc(l1 + l2 + 2);\n    strcpy(p, s1, l1);\n    p[l1] = '.';\n    strcpy(p + l1 + 1, s2, l2);\n    p[l1 + l2 + 1] = 0;\n    return p;\n}",
+   "code_sha256": "2fc1ccc14d6168685aced400015b39452b471ee7829a966c3a2a58ee68825230",
+   "verbatim": true
+  },
+  {
+   "rule_id": "SL.4",
+   "rule_title": "Use the standard library in a type-safe manner",
+   "anchor_line": 20284,
+   "code": "char arr[] = {'a', 'b', 'c'};\n\nvoid print(const char* p)\n{\n    cout << p << '\\n';\n}\n\nvoid use()\n{\n    print(arr);   // run-time error; potentially very bad\n}",
+   "code_sha256": "9d5b3eadf8f13dbbae0c2b39b719f47ca91c048db2cfdb1dd8e91f9c6ea823ee",
+   "verbatim": true
+  },
+  {
+   "rule_id": "NR.1",
+   "rule_title": "Don't insist that all declarations should be at the top of a function",
+   "anchor_line": 20651,
+   "code": "int use(int x)\n{\n    int i;\n    char c;\n    double d;\n\n    // ... some stuff ...\n\n    if (x < i) {\n        // ...\n        i = f(x, d);\n    }\n    if (i < x) {\n        // ...\n        i = g(x, c);\n    }\n    return i;\n}",
+   "code_sha256": "ff9c6dd45d91c87155b9f9a4614da944bd63c4ee6158321b955e54984765c4cd",
+   "verbatim": true
+  },
+  {
+   "rule_id": "NR.5",
+   "rule_title": "Don't use two-phase initialization",
+   "anchor_line": 20853,
+   "code": "// Old conventional style: many problems\n\nclass Picture\n{\n    int mx;\n    int my;\n    int * data;\npublic:\n    // main problem: constructor does not fully construct\n    Picture(int x, int y)\n    {\n        mx = x;         // also bad: assignment in constructor body\n                        // rather than in member initializer\n        my = y;\n        data = nullptr; // also bad: constant initialization in constructor\n                        // rather than in member initializer\n    }\n\n    ~Picture()\n    {\n        Cleanup();\n    }\n\n    // ...\n\n    // bad: two-phase initialization\n    bool Init()\n    {\n        // invariant checks\n        if (mx <= 0 || my <= 0) {\n            return false;\n        }\n        if (data) {\n            return false;\n        }\n        data = (int*) malloc(mx*my*sizeof(int));   // also bad: owning raw * and malloc\n        return data != nullptr;\n    }\n\n    // also bad: no reason to make cleanup a separate function\n    void Cleanup()\n    {\n        if (data) free(data);\n        data = nullptr;\n    }\n};\n\nPicture picture(100, 0); // not ready-to-use picture here\n// this will fail..\nif (!picture.Init()) {\n    puts(\"Error, invalid picture\");\n}\n// now have an invalid picture object instance.",
+   "code_sha256": "3834d2c8ace955e6bea53bfd15d19a20d6a3c69c458b72735ccfcddc399981a6",
+   "verbatim": true
+  },
+  {
+   "rule_id": "NR.6",
+   "rule_title": "Don't place all cleanup actions at the end of a function and `goto exit`",
+   "anchor_line": 20960,
+   "code": "void do_something(int n)\n{\n    if (n < 100) goto exit;\n    // ...\n    int* p = (int*) malloc(n);\n    // ...\n    if (some_error) goto exit;\n    // ...\nexit:\n    free(p);\n}",
+   "code_sha256": "55ce6322b34aa5a14a9f13f465a561664094ca8506a555c3c4180a120e2af532",
+   "verbatim": true
+  },
+  {
+   "rule_id": "NL.1",
+   "rule_title": "Don't say in comments what can be clearly stated in code",
+   "anchor_line": 21526,
+   "code": "auto x = m * v1 + vv;   // multiply m with v1 and add the result to vv",
+   "code_sha256": "e21c21877b2760645e0e9c3f5af43360e21df2bb60c837ca3092ca43a3136a4e",
+   "verbatim": true
+  },
+  {
+   "rule_id": "NL.4",
+   "rule_title": "Maintain a consistent indentation style",
+   "anchor_line": 21576,
+   "code": "int i;\nfor (i = 0; i < max; ++i); // bug waiting to happen\nif (i == j)\n    return i;",
+   "code_sha256": "bd62cd339575dce37f5643b61957ee2c50e41f38f9ebb7416712eaf7f5ca41cd",
+   "verbatim": true
+  },
+  {
+   "rule_id": "NL.5",
+   "rule_title": "Avoid encoding type information in names",
+   "anchor_line": 21604,
+   "code": "void print_int(int i);\nvoid print_string(const char*);\n\nprint_int(1);          // repetitive, manual type matching\nprint_string(\"xyzzy\"); // repetitive, manual type matching",
+   "code_sha256": "cfe482caefec77249ac8846b78c3ca9389d252558a83494bb3b67c63bca863a5",
+   "verbatim": true
+  },
+  {
+   "rule_id": "NL.7",
+   "rule_title": "Make the length of a name roughly proportional to the length of its scope",
+   "anchor_line": 21680,
+   "code": "int g;      // bad: global variable with a cryptic name\n\nint open;   // bad: global variable with a short, popular name",
+   "code_sha256": "d6de22e3af4710b1099fec95dd9634a1bace6c0b9d296534fcf3c523c05cf450",
+   "verbatim": true
+  },
+  {
+   "rule_id": "NL.15",
+   "rule_title": "Use spaces sparingly",
+   "anchor_line": 21834,
+   "code": "#include < map >\n\nint main(int argc, char * argv [ ])\n{\n    // ...\n}",
+   "code_sha256": "b5dc871ad77381a8694f1b058a8aeeefb7a4cfe25b8f23e5d75b9f927364cfd7",
+   "verbatim": true
+  },
+  {
+   "rule_id": "NL.16",
+   "rule_title": "Use a conventional class member declaration order",
+   "anchor_line": 21906,
+   "code": "class X {   // bad\npublic:\n    void f();\npublic:\n    int g();\n    // ...\n};",
+   "code_sha256": "48d6bfb14d04a1b5b5efc8d6c9785cfc30cc76466fe906996fa4b795257a431b",
+   "verbatim": true
+  },
+  {
+   "rule_id": "NL.27",
+   "rule_title": "Use a `.cpp` suffix for code files and `.h` for interface files",
+   "anchor_line": 22151,
+   "code": "// foo.h:\nint a;   // a definition\nvoid foo() { ++a; }",
+   "code_sha256": "b9aa67f2f9dc4ac25e316be6f7086e4d6c88f09b90ff2abd0a60380022d17c9f",
+   "verbatim": true
+  },
+  {
+   "rule_id": "FAQ.60",
+   "rule_title": "Is `Ensures` the same as `assert`?",
+   "anchor_line": 22364,
+   "code": "};\n\nclass B {\nprotected:\n    class Token {};\n\npublic:\n    // constructor needs to be public so that make_shared can access it.\n    // protected access level is gained by requiring a Token.\n    explicit B(Token) { /* ... */ }  // create an imperfectly initialized object\n    virtual void f() = 0;\n\n    template<class T>\n    static shared_ptr<T> create()    // interface for creating shared objects\n    {\n        auto p = make_shared<T>(typename T::Token{});\n        p->post_initialize();\n        return p;\n    }\n\nprotected:\n    virtual void post_initialize()   // called right after construction\n        { /* ... */ f(); /* ... */ } // GOOD: virtual dispatch is safe\n    }\n};\n\n\nclass D : public B {                 // some derived class\nprotected:\n    class Token {};\n\npublic:\n    // constructor needs to be public so that make_shared can access it.\n    // protected access level is gained by requiring a Token.\n    explicit D(Token) : B{ B::Token{} } {}\n    void f() override { /* ...  */ };\n\nprotected:\n    template<class T>\n    friend shared_ptr<T> B::create();\n};\n\nshared_ptr<D> p = D::create<D>();    // creating a D object",
+   "code_sha256": "dc69b728e0e1fdffa98686bcdac1514c9d2cfd9260c559f58faa579b0284a1db",
+   "verbatim": true
+  },
+  {
+   "rule_id": "FAQ.60",
+   "rule_title": "Is `Ensures` the same as `assert`?",
+   "anchor_line": 22610,
+   "code": "};\n\nX x1;\nX x2 = x1; // ok\nx2 = x1;   // pitfall: either fails to compile, or does something suspicious",
+   "code_sha256": "8d57a279d4d7bf16328a1a3e90e62ff3c27aa23378f642e7aadf2261ac12190c",
+   "verbatim": true
+  },
+  {
+   "rule_id": "FAQ.60",
+   "rule_title": "Is `Ensures` the same as `assert`?",
+   "anchor_line": 22646,
+   "code": "};\n\nX test()\n{\n    X local;\n    // ...\n    return local;  // pitfall: will be inefficient and/or do the wrong thing\n}",
+   "code_sha256": "5fa843d5a054ae6365ffc369f3ea23d0b0bbd542be19c210ba29fec0493efe73",
+   "verbatim": true
+  }
+ ]
+}

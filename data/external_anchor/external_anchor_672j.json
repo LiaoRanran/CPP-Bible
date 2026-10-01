@@ -1,0 +1,972 @@
+{
+ "schema": "queyi-external-anchor/672j",
+ "generated_by": "tools/external_anchor_fetch_672j.py",
+ "generated_at": "2026-10-01 23:20:25",
+ "prereg": "data/experiments/prereg_672j.json",
+ "source": {
+  "url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+  "fetched_at": "2026-10-01 23:18:02",
+  "bytes": 841419,
+  "sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7"
+ },
+ "extraction": "机械抽取：规则编号 + 'Example, bad' + 紧随 ```cpp；同规则只取一条；不改写",
+ "counts": {
+  "total": 50,
+  "guideline_bad_verbatim": 35,
+  "ub_reconstructed": 15
+ },
+ "rules_covered": [
+  "P.1",
+  "P.6",
+  "I.7",
+  "F.16",
+  "F.20",
+  "F.43",
+  "C.7",
+  "C.13",
+  "C.21",
+  "C.22",
+  "C.30",
+  "C.31",
+  "C.35",
+  "C.41",
+  "C.42",
+  "C.45",
+  "C.46",
+  "C.47",
+  "C.48",
+  "C.49",
+  "C.50",
+  "C.66",
+  "C.80",
+  "C.82",
+  "C.86",
+  "C.87",
+  "C.128",
+  "C.132",
+  "C.138",
+  "C.168",
+  "C.183",
+  "R.2",
+  "ES.10",
+  "ES.26",
+  "ES.27"
+ ],
+ "harness": {
+  "subset_a": "prelude_v1（统一标准头 + using namespace std；片段主体不改）",
+  "why": "原样可编译率 11/60 ⇒ 不补 harness 分母失去意义；补法统一施加、逐条记录",
+  "deviation_from_prereg": "预注册未写 harness ⇒ 作为方法补充登记（不改假设/阈值/抽样顺序）"
+ },
+ "compilability_filter": {
+  "scanned_unique_rules": 87,
+  "skipped_uncompilable_rules": [
+   "P.7",
+   "P.8",
+   "P.9",
+   "I.1",
+   "I.4",
+   "I.10",
+   "I.13",
+   "I.23",
+   "I.24",
+   "I.25",
+   "F.7",
+   "F.21",
+   "F.48",
+   "F.49",
+   "F.53",
+   "F.56",
+   "C.1",
+   "C.8",
+   "C.33",
+   "C.43",
+   "C.51",
+   "C.52",
+   "C.67",
+   "C.84",
+   "C.89",
+   "C.90",
+   "C.120",
+   "C.121",
+   "C.127",
+   "C.129",
+   "C.131",
+   "C.133",
+   "C.139",
+   "C.140",
+   "C.152",
+   "C.160",
+   "C.181",
+   "R.1",
+   "R.3",
+   "R.12",
+   "R.13",
+   "R.21",
+   "R.31",
+   "ES.1",
+   "ES.2",
+   "ES.5",
+   "ES.6",
+   "ES.7",
+   "ES.8",
+   "ES.12",
+   "ES.20",
+   "ES.22"
+  ],
+  "rule": "文档顺序扫描；同一规则只取一条；加 harness 后 -fsyntax-only 编译失败 ⇒ 跳过并登记（预注册『编译不可行 ⇒ 排除』条款）"
+ },
+ "caliber": "两部分目标类不同（准则违规 vs UB）⇒ 率必须分列；verbatim 部分可凭 code_sha256 复核",
+ "samples": [
+  {
+   "id": "g-01",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "P.1",
+   "rule_title": "Express ideas directly in code",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "3700d32d1caa4862928b4683af6a4eb93a00902ed24a7a0b43fed809a4d4c182",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "void f(vector<string>& v)\n{\n    string val;\n    cin >> val;\n    // ...\n    int index = -1;                    // bad, plus should use gsl::index\n    for (int i = 0; i < v.size(); ++i) {\n        if (v[i] == val) {\n            index = i;\n            break;\n        }\n    }\n    // ...\n}"
+  },
+  {
+   "id": "g-02",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "P.6",
+   "rule_title": "What cannot be checked at compile time should be checkable at run time",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "d0524edce86b9a163a35e55aeed8be657df4656fc5f3c595295ccd3400e337d1",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "// separately compiled, possibly dynamically loaded\nextern void f(int* p);\n\nvoid g(int n)\n{\n    // bad: the number of elements is not passed to f()\n    f(new int[n]);\n}"
+  },
+  {
+   "id": "g-03",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "I.7",
+   "rule_title": "State postconditions",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "1c3252d036dd9cd015d69377abfddf31d018cdd0d65c166c9e371f1b5fed3b80",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "int area(int height, int width) { return height * width; }  // bad"
+  },
+  {
+   "id": "g-04",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "F.16",
+   "rule_title": "For \"in\" parameters, pass cheaply-copied types by value and others by reference to `const`",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "9d84a81e876049f23ee59981b0f5f6931a951dbc5b2743d264a772c10c43808e",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "void f3(int x);            // OK: Unbeatable\n\nvoid f4(const int& x);     // bad: overhead on access in f4()"
+  },
+  {
+   "id": "g-05",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "F.20",
+   "rule_title": "For \"out\" output values, prefer return values to output parameters",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "454bec298005b9591e9fd978b24308cb65230d08c76436d6947d383df22f93ac",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "void find_all(const vector<int>&, vector<const int*>& out, int x);"
+  },
+  {
+   "id": "g-06",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "F.43",
+   "rule_title": "Never (directly or indirectly) return a pointer or a reference to a local object",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "99b06939c8de4754e39e7b771a9f8c3dfca7f9e90a579739da5ee6b1f158b613",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "int* f()\n{\n    int fx = 9;\n    return &fx;  // BAD\n}\n\nvoid g(int* p)   // looks innocent enough\n{\n    int gx;\n    cout << \"*p == \" << *p << '\\n';\n    *p = 999;\n    cout << \"gx == \" << gx << '\\n';\n}\n\nvoid h()\n{\n    int* p = f();\n    int z = *p;  // read from abandoned stack frame (bad)\n    g(p);        // pass pointer to abandoned stack frame to function (bad)\n}"
+  },
+  {
+   "id": "g-07",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.7",
+   "rule_title": "Don't define a class or enum and declare a variable of its type in the same statement",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "040f5f2a47162e2e520a2e66408f57eb4ab9489d665693e2b098cd680ff9cfad",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "struct Data { /*...*/ } data{ /*...*/ };"
+  },
+  {
+   "id": "g-08",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.13",
+   "rule_title": "If data member `B` uses another data member `A`, declare `A` before `B`",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "92056ac45c63e5a2ac1c3175ad571a9a96c023bafe1d94a0da2e499b23356b3a",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "//      Construction order is b then a; destruction order is a then b.\n//      So b touches a outside the lifetime of a.\n\nclass X {\n    struct B {\n        string* p;\n        explicit B(string& a) : p{&a} {}\n        ~B() { cout << *p; }                       // uses a (via p)\n    };\n\n    B      b;                                      // constructed first\n    string a = \"some heap allocated string value\"; // constructed after b; destroyed before b\n\npublic:\n    X() : b{a} {}   // uses a before it is constructed -> use-before-alloc UB\n    ~X() = default; // accesses a after it is destroyed -> use-after-free UB\n};"
+  },
+  {
+   "id": "g-09",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.21",
+   "rule_title": "If you define or `=delete` any copy, move, or destructor function, define or `=delete` the",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "44d4c1904546785c448ab58e4a76db716b8c0c3da761f44ffc553800418b6687",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "struct M2 {   // bad: incomplete set of copy/move/destructor operations\npublic:\n    // ...\n    // ... no copy or move operations ...\n    ~M2() { delete[] rep; }\nprivate:\n    pair<int, int>* rep;  // zero-terminated set of pairs\n};\n\nvoid use()\n{\n    M2 x;\n    M2 y;\n    // ...\n    x = y;   // the default assignment\n    // ...\n}"
+  },
+  {
+   "id": "g-10",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.22",
+   "rule_title": "Make default operations consistent",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "c7acdd1974f059737b2948d75336d8c9f6d3614a02d99d91dfd3abb641c10d31",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "class Silly {   // BAD: Inconsistent copy operations\n    class Impl {\n        // ...\n    };\n    shared_ptr<Impl> p;\npublic:\n    Silly(const Silly& a) : p(make_shared<Impl>()) { *p = *a.p; }   // deep copy\n    Silly& operator=(const Silly& a) { p = a.p; return *this; }   // shallow copy\n    // ...\n};"
+  },
+  {
+   "id": "g-11",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.30",
+   "rule_title": "Define a destructor if a class needs an explicit action at object destruction",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "a6c5633224b1848b8e4c1a535b46ec3fdde95b2a25018712e61368aa97cc39c6",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "class Foo {   // bad; use the default destructor\npublic:\n    // ...\n    ~Foo() { s = \"\"; i = 0; vi.clear(); }  // clean up\nprivate:\n    string s;\n    int i;\n    vector<int> vi;\n};"
+  },
+  {
+   "id": "g-12",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.31",
+   "rule_title": "All resources acquired by a class must be released by the class's destructor",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "f1c69b244b1ea183e4d908b094529708b1261f328cd62db4d04dfb7559f7d819",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "class X2 {     // bad\n    FILE* f;   // might own a file\n    // ... no default operations defined or =deleted ...\n};"
+  },
+  {
+   "id": "g-13",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.35",
+   "rule_title": "A base class destructor should be either public and virtual, or protected and non-virtual",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "0afa365d67fc44f91700af7fa8919c75dba2da62bb23ba6ab01fb8cb6050b610",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "struct Base {  // BAD: implicitly has a public non-virtual destructor\n    virtual void f();\n};\n\nstruct D : Base {\n    string s {\"a resource needing cleanup\"};\n    ~D() { /* ... do some cleanup ... */ }\n    // ...\n};\n\nvoid use()\n{\n    unique_ptr<Base> p = make_unique<D>();\n    // ...\n} // p's destruction calls ~Base(), not ~D(), which leaks D::s and possibly more"
+  },
+  {
+   "id": "g-14",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.41",
+   "rule_title": "A constructor should create a fully initialized object",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "0b353185108ce29fd563c13492c369469f73dffb83adf0d842909de4a98d6f74",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "class X1 {\n    FILE* f;   // call init() before any other function\n    // ...\npublic:\n    X1() {}\n    void init();   // initialize f\n    void read();   // read from f\n    // ...\n};\n\nvoid f()\n{\n    X1 file;\n    file.read();   // crash or bad read!\n    // ...\n    file.init();   // too late\n    // ...\n}"
+  },
+  {
+   "id": "g-15",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.42",
+   "rule_title": "If a constructor cannot construct a valid object, throw an exception",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "39a29faa4aed83f5b0d1604ac7a97b8fe10aa0ac28c73ba1d53b5d4c0990137e",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "class X3 {     // bad: the constructor leaves a non-valid object behind\n    FILE* f;   // call is_valid() before any other function\n    bool valid;\n    // ...\npublic:\n    X3(const string& name)\n        :f{fopen(name.c_str(), \"r\")}, valid{false}\n    {\n        if (f) valid = true;\n        // ...\n    }\n\n    bool is_valid() { return valid; }\n    void read();   // read from f\n    // ...\n};\n\nvoid f()\n{\n    X3 file {\"Heraclides\"};\n    file.read();   // crash or bad read!\n    // ...\n    if (file.is_valid()) {\n        file.read();\n        // ...\n    }\n    else {\n        // ... handle error ...\n    }\n    // ...\n}"
+  },
+  {
+   "id": "g-16",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.45",
+   "rule_title": "Don't define a default constructor that only initializes data members; use default member ",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "742d8e011534fd4e715f94e331b05578b2fb0ddb28ed31c95bc4263cce03907b",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "class X1 { // BAD: doesn't use member initializers\n    string s;\n    int i;\npublic:\n    X1() :s{\"default\"}, i{1} { }\n    // ...\n};"
+  },
+  {
+   "id": "g-17",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.46",
+   "rule_title": "By default, declare single-argument constructors explicit",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "de28f90bbd4a3ddbd5270e01f9399b134c1f34e75779fc86c1141b3f220869e5",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "class String {\npublic:\n    String(int);   // BAD\n    // ...\n};\n\nString s = 10;   // surprise: string of size 10"
+  },
+  {
+   "id": "g-18",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.47",
+   "rule_title": "Define and initialize data members in the order of member declaration",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "6e73f82bfa0548aeb302e840503221f7e8951ca0940e3d0a50e79b2b7f2cad0e",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "class Foo {\n    int m1;\n    int m2;\npublic:\n    Foo(int x) :m2{x}, m1{++x} { }   // BAD: misleading initializer order\n    // ...\n};\n\nFoo x(1); // surprise: x.m1 == x.m2 == 2"
+  },
+  {
+   "id": "g-19",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.48",
+   "rule_title": "Prefer default member initializers to member initializers in constructors for constant ini",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "79ea0dcbcb2df414b7c1b12a25030ccea8dde55428df9f5c8592e725ff4a2b71",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "class X {   // BAD\n    int i;\n    string s;\n    int j;\npublic:\n    X() :i{666}, s{\"qqq\"} { }   // j is uninitialized\n    X(int ii) :i{ii} {}         // s is \"\" and j is uninitialized\n    // ...\n};"
+  },
+  {
+   "id": "g-20",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.49",
+   "rule_title": "Prefer initialization to assignment in constructors",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "2a7db2abbdb9677769e9fa204a114f6789edd7fd41ec90fc64172336d953b615",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "class B {   // BAD\n    string s1;\npublic:\n    B(const char* p) { s1 = p; }   // BAD: default constructor followed by assignment\n    // ...\n};\n\nclass C {   // UGLY, aka very bad\n    int* p;\npublic:\n    C() { cout << *p; p = new int{10}; }   // accidental use before initialized\n    // ...\n};"
+  },
+  {
+   "id": "g-21",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.50",
+   "rule_title": "Use a factory function if you need \"virtual behavior\" during initialization",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "81e50b2baf59f503f69255c870a0e9062046b7c0a187019be9b61fb4ed2fc03a",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "class B {\npublic:\n    B()\n    {\n        /* ... */\n        f(); // BAD: C.82: Don't call virtual functions in constructors and destructors\n        /* ... */\n    }\n\n    virtual void f() = 0;\n};"
+  },
+  {
+   "id": "g-22",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.66",
+   "rule_title": "Make move operations `noexcept`",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "e50fd5f540acf370b4e7557f7145bd9f3848dbb39f43101410b6756de2b64f40",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "template<typename T>\nclass Vector2 {\npublic:\n    Vector2(Vector2&& a) noexcept { *this = a; }             // just use the copy\n    Vector2& operator=(Vector2&& a) noexcept { *this = a; }  // just use the copy\n    // ...\nprivate:\n    T* elem;\n    int sz;\n};"
+  },
+  {
+   "id": "g-23",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.80",
+   "rule_title": "Use `=default` if you have to be explicit about using the default semantics",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "5d00eddcd95b2192baa5e096826bff87d80a4741f9f73d35c046d17f25cf6b28",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "class Tracer2 {\n    string message;\npublic:\n    Tracer2(const string& m) : message{m} { cerr << \"entering \" << message << '\\n'; }\n    ~Tracer2() { cerr << \"exiting \" << message << '\\n'; }\n\n    Tracer2(const Tracer2& a) : message{a.message} {}\n    Tracer2& operator=(const Tracer2& a) { message = a.message; return *this; }\n    Tracer2(Tracer2&& a) noexcept :message{a.message} {}\n    Tracer2& operator=(Tracer2&& a) noexcept { message = a.message; return *this; }\n};"
+  },
+  {
+   "id": "g-24",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.82",
+   "rule_title": "Don't call virtual functions in constructors and destructors",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "6f022af8d40d9354d264af1b207d5bbc6c6105b19cc52b484a9a648fbbc5a972",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "class Base {\npublic:\n    virtual void f() = 0;   // not implemented\n    virtual void g();       // implemented with Base version\n    virtual void h();       // implemented with Base version\n    virtual ~Base();        // implemented with Base version\n};\n\nclass Derived : public Base {\npublic:\n    void g() override;   // provide Derived implementation\n    void h() final;      // provide Derived implementation\n\n    Derived()\n    {\n        // BAD: attempt to call an unimplemented virtual function\n        f();\n\n        // BAD: will call Derived::g, not dispatch further virtually\n        g();\n\n        // GOOD: explicitly state intent to call only the visible version\n        Derived::g();\n\n        // ok, no qualification needed, h is final\n        h();\n    }\n};"
+  },
+  {
+   "id": "g-25",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.86",
+   "rule_title": "Make `==` symmetric with respect to operand types and `noexcept`",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "ae0bae4539f22c7dc1ca0038178b361d75a8aca9363cb5bf42e22c8742115505",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "class B {\n    string name;\n    int number;\n    bool operator==(const B& a) const {\n        return name == a.name && number == a.number;\n    }\n    // ...\n};"
+  },
+  {
+   "id": "g-26",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.87",
+   "rule_title": "Beware of `==` on base classes",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "18ac1c7d087a0e37bdbae1150f4ec7c6e84a4097a899202bb3bb44a09916a915",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "class B {\n    string name;\n    int number;\npublic:\n    virtual bool operator==(const B& a) const\n    {\n         return name == a.name && number == a.number;\n    }\n    // ...\n};"
+  },
+  {
+   "id": "g-27",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.128",
+   "rule_title": "Virtual functions should specify exactly one of `virtual`, `override`, or `final`",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "8214ea53910da414ce56cee363d41cc25d4b7b2a1dd2c7d50297548d1000c2e8",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "struct B {\n    void f1(int);\n    virtual void f2(int) const;\n    virtual void f3(int);\n    // ...\n};\n\nstruct D : B {\n    void f1(int);        // bad (hope for a warning): D::f1() hides B::f1()\n    void f2(int) const;  // bad (but conventional and valid): no explicit override\n    void f3(double);     // bad (hope for a warning): D::f3() hides B::f3()\n    // ...\n};"
+  },
+  {
+   "id": "g-28",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.132",
+   "rule_title": "Don't make a function `virtual` without reason",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "cfce4a1d357a3d6c967750500343580d07a7b461c337042605c92b5a6925d021",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "template<class T>\nclass Vector {\npublic:\n    // ...\n    virtual int size() const { return sz; }   // bad: what good could a derived class do?\nprivate:\n    T* elem;   // the elements\n    int sz;    // number of elements\n};"
+  },
+  {
+   "id": "g-29",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.138",
+   "rule_title": "Create an overload set for a derived class and its bases with `using`",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "dad8ca02391546644fb161e483ee6cbc2b2f397a6f18f4d907864de70e3a1ac5",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "asan",
+    "ubsan"
+   ],
+   "detector_note": "含 main ⇒ ASan+UBSan 双跑（任一报出即 catch）",
+   "code": "#include <iostream>\nclass B {\npublic:\n    virtual int f(int i) { std::cout << \"f(int): \"; return i; }\n    virtual double f(double d) { std::cout << \"f(double): \"; return d; }\n    virtual ~B() = default;\n};\nclass D: public B {\npublic:\n    int f(int i) override { std::cout << \"f(int): \"; return i + 1; }\n};\nint main()\n{\n    D d;\n    std::cout << d.f(2) << '\\n';   // prints \"f(int): 3\"\n    std::cout << d.f(2.3) << '\\n'; // prints \"f(int): 3\"\n}"
+  },
+  {
+   "id": "g-30",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.168",
+   "rule_title": "Define overloaded operators in the namespace of their operands",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "2a9e34277077f341e420630901171de5f5842cefc0bfb271b5f98d8bea5fd79b",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "struct S { };\nS s;\n\nnamespace N {\n    bool operator!(S a) { return true; }\n    bool not_s = !s;\n}\n\nnamespace M {\n    bool operator!(S a) { return false; }\n    bool not_s = !s;\n}"
+  },
+  {
+   "id": "g-31",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.183",
+   "rule_title": "Don't use a `union` for type punning",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "46e6b21647c05508f0e6b07eb7127fb7194c9b3e66e89834453487f22254c2b8",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "union Pun {\n    int x;\n    unsigned char c[sizeof(int)];\n};"
+  },
+  {
+   "id": "g-32",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "R.2",
+   "rule_title": "In interfaces, use raw pointers to denote individual objects (only)",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "12fa09068d9a6abeeef17761ffefe39b57a09ae375f52ab84ecd63a8ed822cf1",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "void f(int* p, int n)   // n is the number of elements in p[]\n{\n    // ...\n    p[2] = 7;   // bad: subscript raw pointer\n    // ...\n}"
+  },
+  {
+   "id": "g-33",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "ES.10",
+   "rule_title": "Declare one name (only) per declaration",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "f10fca7ce0c2cbdae119b49dfc9ed929a028b5bc6a5834e708e9708504750b6c",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "char *p, c, a[7], *pp[7], **aa[10];   // yuck!"
+  },
+  {
+   "id": "g-34",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "ES.26",
+   "rule_title": "Don't use a variable for two unrelated purposes",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "a889bac31cb595447725cd905c17cd2803a20e5d82b6c94b1210182d0760a904",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "void use()\n{\n    int i;\n    for (i = 0; i < 20; ++i) { /* ... */ }\n    for (i = 0; i < 200; ++i) { /* ... */ } // bad: i recycled\n}"
+  },
+  {
+   "id": "g-35",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "ES.27",
+   "rule_title": "Use `std::array` or `stack_array` for arrays on the stack",
+   "source_url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+   "source_doc_sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7",
+   "code_sha256": "30c0b2cd93b222c16fa101be5eefdb4671fe5e0c164ed6baa4f96a49a2d876c7",
+   "verbatim": true,
+   "harness": "prelude_v1（统一加标准头 + using namespace std；片段主体不改）",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "片段（无 main）⇒ -fsyntax-only 告警判据",
+   "code": "const int n = 7;\nint m = 9;\n\nvoid f()\n{\n    int a1[n];\n    int a2[m];   // error: not ISO C++\n    // ...\n}"
+  },
+  {
+   "id": "u-01",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "rule_title": "有符号整数溢出",
+   "source_url": null,
+   "verbatim": false,
+   "verified_source": false,
+   "citation": "cppreference『未定义行为』：signed integer overflow",
+   "code_sha256": "7c7b1cc953db16b121563c03a87ae0d52525b62ffebea0af3d486b108db9c7e0",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "detector_note": "类别 → ubsan",
+   "code": "#include <cstdio>\nint main(){int a=2147483647;int b=a+1;std::printf(\"%d\\n\",b);return 0;}\n"
+  },
+  {
+   "id": "u-02",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "rule_title": "左移负/超宽",
+   "source_url": null,
+   "verbatim": false,
+   "verified_source": false,
+   "citation": "cppreference『未定义行为』：shift exponent negative",
+   "code_sha256": "f240babba1e2d3b78156bec660da58884f7ae33a0202387efb8bee7b9c27d887",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "detector_note": "类别 → ubsan",
+   "code": "#include <cstdio>\nint main(){int n=-1;int x=1<<n;std::printf(\"%d\\n\",x);return 0;}\n"
+  },
+  {
+   "id": "u-03",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "rule_title": "除零（运行期）",
+   "source_url": null,
+   "verbatim": false,
+   "verified_source": false,
+   "citation": "cppreference『未定义行为』：division by zero",
+   "code_sha256": "a5a25ce9422d9ca998fd6084e06f853274e614b36b2d7b94df3051cd203f3a27",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "detector_note": "类别 → ubsan",
+   "code": "#include <cstdio>\nint main(int c,char**){int z=c-1;int y=7/z;std::printf(\"%d\\n\",y);return 0;}\n"
+  },
+  {
+   "id": "u-04",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "rule_title": "空指针解引用",
+   "source_url": null,
+   "verbatim": false,
+   "verified_source": false,
+   "citation": "cppreference『未定义行为』：null pointer dereference",
+   "code_sha256": "0602f5d886c2306dbf456a4094dbc59ce519bcd8bd2316d104c0af6909a2eebd",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "detector_note": "类别 → ubsan",
+   "code": "#include <cstdio>\nint main(){int* p=nullptr;*p=3;std::printf(\"%d\\n\",*p);return 0;}\n"
+  },
+  {
+   "id": "u-05",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "rule_title": "越界读栈数组",
+   "source_url": null,
+   "verbatim": false,
+   "verified_source": false,
+   "citation": "cppreference『未定义行为』：out-of-bounds access",
+   "code_sha256": "4088aae9729c21fd1a5d4e127d9f2c763e9f53f8252e93c57aea1349e0c212c9",
+   "expected_detectors": [
+    "asan"
+   ],
+   "detector_note": "类别 → asan",
+   "code": "#include <cstdio>\nint main(){int a[3]={1,2,3};int s=0;for(int i=0;i<5;++i)s+=a[i];std::printf(\"%d\\n\",s);return 0;}\n"
+  },
+  {
+   "id": "u-06",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "rule_title": "释放后使用",
+   "source_url": null,
+   "verbatim": false,
+   "verified_source": false,
+   "citation": "cppreference『未定义行为』：use after free",
+   "code_sha256": "f14e6ac62e3ca2eb608d612f2f1a81fb68057716da883649dd574766a55d5bb5",
+   "expected_detectors": [
+    "asan"
+   ],
+   "detector_note": "类别 → asan",
+   "code": "#include <cstdlib>\n#include <cstdio>\nint main(){int* p=(int*)std::malloc(4);std::free(p);*p=4;std::printf(\"%d\\n\",*p);return 0;}\n"
+  },
+  {
+   "id": "u-07",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "rule_title": "双重释放",
+   "source_url": null,
+   "verbatim": false,
+   "verified_source": false,
+   "citation": "cppreference『未定义行为』：double free",
+   "code_sha256": "777b2a2e90e0a57a58fc0a1fc718d8ca3e40e887f4241ab0f0764ef118f7e078",
+   "expected_detectors": [
+    "asan"
+   ],
+   "detector_note": "类别 → asan",
+   "code": "#include <cstdlib>\nint main(){void* p=std::malloc(8);std::free(p);std::free(p);return 0;}\n"
+  },
+  {
+   "id": "u-08",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "rule_title": "new[]/delete 不配对",
+   "source_url": null,
+   "verbatim": false,
+   "verified_source": false,
+   "citation": "C++ Core Guidelines R.11（显式 new/delete 的配对）",
+   "code_sha256": "a65a6e6f4887fa2da8d9f364d2a2e3413a726dcbd019e0c06d2c75b86c42401a",
+   "expected_detectors": [
+    "asan"
+   ],
+   "detector_note": "类别 → asan",
+   "code": "#include <cstdio>\nint main(){int* a=new int[4];a[1]=2;std::printf(\"%d\\n\",a[1]);delete a;return 0;}\n"
+  },
+  {
+   "id": "u-09",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "rule_title": "对齐违规",
+   "source_url": null,
+   "verbatim": false,
+   "verified_source": false,
+   "citation": "cppreference『未定义行为』：misaligned access",
+   "code_sha256": "84328863bda89d572e25097441200545b25fcc6e3fed51e31d3de3b670f57345",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "detector_note": "类别 → ubsan",
+   "code": "#include <cstdio>\n#include <cstdint>\nint main(){char b[8]={0};int* p=(int*)(b+1);*p=7;std::printf(\"%d\\n\",*p);return 0;}\n"
+  },
+  {
+   "id": "u-10",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "rule_title": "严格别名违规",
+   "source_url": null,
+   "verbatim": false,
+   "verified_source": false,
+   "citation": "C++ Core Guidelines ES.42 / 别名词条",
+   "code_sha256": "3b79b94e3a14c174bb8358e8aef170389407f4e5d2e4b2f0521359b2a8ffb74d",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "detector_note": "类别 → ubsan",
+   "code": "#include <cstdio>\nint main(){int x=1;float* f=(float*)&x;*f=2.0f;std::printf(\"%d\\n\",x);return 0;}\n"
+  },
+  {
+   "id": "u-11",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "rule_title": "数据竞争",
+   "source_url": null,
+   "verbatim": false,
+   "verified_source": false,
+   "citation": "cppreference『未定义行为』：data race",
+   "code_sha256": "3f8ee3eb8990254749eb43d0d3bc5ace3fa3e744dd24550050036791069cf60d",
+   "expected_detectors": [
+    "tsan"
+   ],
+   "detector_note": "类别 → tsan",
+   "code": "#include <thread>\n#include <cstdio>\nint g=0;\nint main(){std::thread a([]{for(int i=0;i<100000;++i)++g;}),b([]{for(int i=0;i<100000;++i)++g;});a.join();b.join();std::printf(\"%d\\n\",g);return 0;}\n"
+  },
+  {
+   "id": "u-12",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "rule_title": "泄漏",
+   "source_url": null,
+   "verbatim": false,
+   "verified_source": false,
+   "citation": "C++ Core Guidelines R.11（资源必须释放）",
+   "code_sha256": "a5d0e33a46418a2ee10ddd0020b24973c551fe1d107519f9d96e8bcbdf8ad273",
+   "expected_detectors": [
+    "asan"
+   ],
+   "detector_note": "类别 → asan",
+   "code": "#include <cstdio>\nint main(){int* p=new int[8];p[0]=1;std::printf(\"%d\\n\",p[0]);return 0;}\n"
+  },
+  {
+   "id": "u-13",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "rule_title": "未初始化读",
+   "source_url": null,
+   "verbatim": false,
+   "verified_source": false,
+   "citation": "cppreference『未定义行为』：indeterminate value",
+   "code_sha256": "d040d8a83d2c111741bd18a86f6b4950bb131adbd8441ab12a82374cd877bb8d",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "类别 → compiler-warn（-fsyntax-only）",
+   "code": "#include <cstdio>\nint main(){int x;std::printf(\"%d\\n\",x);return 0;}\n"
+  },
+  {
+   "id": "u-14",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "rule_title": "printf 格式不匹配",
+   "source_url": null,
+   "verbatim": false,
+   "verified_source": false,
+   "citation": "C++ Core Guidelines / POSIX printf 契约",
+   "code_sha256": "09e1aee538104ae7bc396fab1ed5780d9b2d8a3a0377adb242a8cd610fe9cc07",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "类别 → compiler-warn（-fsyntax-only）",
+   "code": "#include <cstdio>\nint main(){double d=1.0;std::printf(\"%d\\n\",d);return 0;}\n"
+  },
+  {
+   "id": "u-15",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "rule_title": "有返回值路径缺失",
+   "source_url": null,
+   "verbatim": false,
+   "verified_source": false,
+   "citation": "C++ Core Guidelines F.44",
+   "code_sha256": "ec19f41a30e334a4e9f17d867d42aa4f4cb78b819d2453b76f636e8e5b1107f9",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "detector_note": "类别 → compiler-warn（-fsyntax-only）",
+   "code": "#include <cstdio>\nint f(int x){if(x>0)return x;}\nint main(){std::printf(\"%d\\n\",f(2));return 0;}\n"
+  }
+ ]
+}

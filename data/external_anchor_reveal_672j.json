@@ -1,0 +1,1177 @@
+{
+ "schema": "queyi-external-anchor-reveal/672j",
+ "generated_by": "tools/external_anchor_672j.py（W5 外部锚定）",
+ "generated_at": "2026-10-01 23:23:08",
+ "prereg": "data/experiments/prereg_672j.json",
+ "dataset": "data/external_anchor/external_anchor_672j.json",
+ "source": {
+  "url": "https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md",
+  "fetched_at": "2026-10-01 23:18:02",
+  "bytes": 841419,
+  "sha256": "27b53e7de83994ffe5c4e4c302a97a2fe83e48eccc7b09a0d734906609079ca7"
+ },
+ "harness": {
+  "subset_a": "prelude_v1（统一标准头 + using namespace std；片段主体不改）",
+  "why": "原样可编译率 11/60 ⇒ 不补 harness 分母失去意义；补法统一施加、逐条记录",
+  "deviation_from_prereg": "预注册未写 harness ⇒ 作为方法补充登记（不改假设/阈值/抽样顺序）"
+ },
+ "compilability_filter": {
+  "scanned_unique_rules": 87,
+  "skipped_uncompilable_rules": [
+   "P.7",
+   "P.8",
+   "P.9",
+   "I.1",
+   "I.4",
+   "I.10",
+   "I.13",
+   "I.23",
+   "I.24",
+   "I.25",
+   "F.7",
+   "F.21",
+   "F.48",
+   "F.49",
+   "F.53",
+   "F.56",
+   "C.1",
+   "C.8",
+   "C.33",
+   "C.43",
+   "C.51",
+   "C.52",
+   "C.67",
+   "C.84",
+   "C.89",
+   "C.90",
+   "C.120",
+   "C.121",
+   "C.127",
+   "C.129",
+   "C.131",
+   "C.133",
+   "C.139",
+   "C.140",
+   "C.152",
+   "C.160",
+   "C.181",
+   "R.1",
+   "R.3",
+   "R.12",
+   "R.13",
+   "R.21",
+   "R.31",
+   "ES.1",
+   "ES.2",
+   "ES.5",
+   "ES.6",
+   "ES.7",
+   "ES.8",
+   "ES.12",
+   "ES.20",
+   "ES.22"
+  ],
+  "rule": "文档顺序扫描；同一规则只取一条；加 harness 后 -fsyntax-only 编译失败 ⇒ 跳过并登记（预注册『编译不可行 ⇒ 排除』条款）"
+ },
+ "runs": 3,
+ "caliber": "可测 = catch+miss；unknown 不进分母；**两部分子集分列**（目标类不同）",
+ "subset_a_guideline_verbatim": {
+  "total": 35,
+  "catch": 10,
+  "miss": 25,
+  "unknown": 0,
+  "denominator": {
+   "value": 35,
+   "meaning": "catch+miss（可测）",
+   "excluded": {
+    "unknown": 0
+   }
+  },
+  "rate_pct": 28.6,
+  "cp95": {
+   "k": 10,
+   "n": 35,
+   "point": 0.2857142857142857,
+   "cp_low": 0.14635474527905923,
+   "cp_high": 0.4630446445544206,
+   "conf": 0.95
+  }
+ },
+ "subset_b_ub_reconstructed": {
+  "total": 15,
+  "catch": 12,
+  "miss": 3,
+  "unknown": 0,
+  "denominator": {
+   "value": 15,
+   "meaning": "catch+miss（可测）",
+   "excluded": {
+    "unknown": 0
+   }
+  },
+  "rate_pct": 80.0,
+  "cp95": {
+   "k": 12,
+   "n": 15,
+   "point": 0.8,
+   "cp_low": 0.5191088661931471,
+   "cp_high": 0.9566879948941636,
+   "conf": 0.95
+  }
+ },
+ "total": {
+  "total": 50,
+  "catch": 22,
+  "miss": 28,
+  "unknown": 0,
+  "denominator": {
+   "value": 50,
+   "meaning": "catch+miss（可测）",
+   "excluded": {
+    "unknown": 0
+   }
+  },
+  "rate_pct": 44.0,
+  "cp95": {
+   "k": 22,
+   "n": 50,
+   "point": 0.44,
+   "cp_low": 0.2999072209275434,
+   "cp_high": 0.5874558770583251,
+   "conf": 0.95
+  }
+ },
+ "compare": {
+  "corpus_672h": {
+   "k": 40,
+   "n": 64,
+   "rate_pct": 62.5
+  },
+  "holdout_5_672h": {
+   "k": 34,
+   "n": 41,
+   "rate_pct": 82.9
+  },
+  "corpus_hist_reference_pct": 54.2,
+  "diff_vs_corpus_pp": 33.9,
+  "diff_vs_corpus_ci95_pp": [
+   11.9,
+   52.2
+  ],
+  "diff_vs_holdout_pp": 38.9
+ },
+ "hypothesis_verdicts": {
+  "H1_corpus_minus_guideline_gt_10pp": "成立",
+  "H2_recon_ub_vs_corpus_hist_lt_25pp": "不成立（Δ=25.8pp）",
+  "H3_total_rate_ge_30pct": "成立"
+ },
+ "per_sample": [
+  {
+   "id": "g-01",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "P.1",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "compiler-warn:catch(告警 2: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_z100amox\\s.cpp:19:23: warnin)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-02",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "P.6",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-03",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "I.7",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-04",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "F.16",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-05",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "F.20",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-06",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "F.43",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "compiler-warn:catch(告警 2: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_sa6fgwbk\\s.cpp:16:12: warnin)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-07",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.7",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-08",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.13",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "compiler-warn:catch(告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_lt8alikk\\s.cpp:27:13: warnin)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-09",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.21",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-10",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.22",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-11",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.30",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-12",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.31",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-13",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.35",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-14",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.41",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-15",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.42",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-16",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.45",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-17",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.46",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-18",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.47",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "compiler-warn:catch(告警 3: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_2z5q2403\\s.cpp:15:9: warning)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-19",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.48",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-20",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.49",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-21",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.50",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "compiler-warn:catch(告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_u62kc4rm\\s.cpp:18:10: warnin)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-22",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.66",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-23",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.80",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-24",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.82",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "compiler-warn:catch(告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_6qskgoew\\s.cpp:29:10: warnin)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-25",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.86",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-26",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.87",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-27",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.128",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "compiler-warn:catch(告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_3yyjtvpx\\s.cpp:16:18: warnin)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-28",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.132",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-29",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.138",
+   "detectors": [
+    "asan",
+    "ubsan"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss",
+    "miss"
+   ],
+   "note": "asan:miss(asan 两档均无报告[-O0(rc=0); -O2(rc=0)]) | ubsan:miss(ubsan 两档均无报告[-O0(rc=0); -O2(rc=0)])",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-30",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.168",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "compiler-warn:catch(告警 2: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_wbp_9ays\\s.cpp:17:22: warnin)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-31",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "C.183",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-32",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "R.2",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "compiler-warn:catch(告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_qaiymn5_\\s.cpp:13:20: warnin)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-33",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "ES.10",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-34",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "ES.26",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "g-35",
+   "subset": "guideline_bad_verbatim",
+   "label": "guideline_violation",
+   "rule_id": "ES.27",
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "compiler-warn:catch(告警 2: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_ev6rf3k1\\s.cpp:18:9: warning)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "u-01",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "detectors": [
+    "ubsan"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "ubsan:catch(ubsan 命中[-O0(rc=0) -2147483648\n/mnt/c/Users/ASUS/AppData/Local/Temp/d3)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "u-02",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "detectors": [
+    "ubsan"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "ubsan:catch(ubsan 命中[-O0(rc=0) -2147483648\n/mnt/c/Users/ASUS/AppData/Local/Temp/d3)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "u-03",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "detectors": [
+    "ubsan"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "ubsan:catch(ubsan 命中[-O0(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/d3e_ajvd52hg)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "u-04",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "detectors": [
+    "ubsan"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "ubsan:catch(ubsan 命中[-O0(rc=139) /mnt/c/Users/ASUS/AppData/Local/Temp/d3e_j37ectnk)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "u-05",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "detectors": [
+    "asan"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "asan:catch(asan 命中[-O0(rc=1) ====================================================)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "u-06",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "detectors": [
+    "asan"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "asan:catch(asan 命中[-O0(rc=1) ====================================================)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "u-07",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "detectors": [
+    "asan"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "asan:catch(asan 命中[-O0(rc=1) ====================================================)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "u-08",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "detectors": [
+    "asan"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "asan:catch(asan 命中[-O0(rc=1) ====================================================)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "u-09",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "detectors": [
+    "ubsan"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "ubsan:catch(ubsan 命中[-O0(rc=0) 7\n/mnt/c/Users/ASUS/AppData/Local/Temp/d3e_702yecmk)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "u-10",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "detectors": [
+    "ubsan"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "ubsan:miss(ubsan 两档均无报告[-O0(rc=0); -O2(rc=0)])",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "u-11",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "detectors": [
+    "tsan"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "tsan:catch(tsan 命中[-O0(rc=66) 200000\n==================\nWARNING: ThreadSanitizer:)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "u-12",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "detectors": [
+    "asan"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "asan:catch(asan 命中[-O0(rc=1) ====================================================)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "u-13",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "u-14",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "catch",
+   "per_detector": [
+    "catch"
+   ],
+   "note": "compiler-warn:catch(告警 1: C:\\Users\\ASUS\\AppData\\Local\\Temp\\d3_b6vdjshz\\s.cpp:2:39: warning)",
+   "verdicts_per_run": [
+    "catch",
+    "catch",
+    "catch"
+   ],
+   "reproducible": true
+  },
+  {
+   "id": "u-15",
+   "subset": "ub_reconstructed",
+   "label": "ub_reconstructed",
+   "rule_id": null,
+   "detectors": [
+    "compiler-warn"
+   ],
+   "verdict": "miss",
+   "per_detector": [
+    "miss"
+   ],
+   "note": "compiler-warn:miss(无告警)",
+   "verdicts_per_run": [
+    "miss",
+    "miss",
+    "miss"
+   ],
+   "reproducible": true
+  }
+ ],
+ "unknown_samples": [],
+ "reproducibility": {
+  "unstable": []
+ },
+ "honest_note": "外部锚定唯一 verbatim 源是 C++ Core Guidelines（cppref/SO 403）；subset A 的目标类是『准则违规』而不是 UB ⇒ 其率低不代表检测器坏，代表『仪器测不到规范问题』；subset B 才是与 corpus 可比的目标类。"
+}
