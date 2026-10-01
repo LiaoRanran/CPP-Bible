@@ -1,0 +1,69 @@
+{
+  "schema": "queyi-prereg/672f",
+  "prereg_id": "prereg_672f_w1_baseline",
+  "registered_at": "2026-10-01",
+  "registrant": "LiaoRanran",
+  "status": "locked_before_experiment",
+  "immutability": "本文件在 baseline 三臂重跑**之前**写好并单独 commit（先预注册、后实验）。commit 后不得修改假设、方法与判定阈值；若结果与假设不符，只能在结果文件（data/experiments/reveal_update_672f.json 与 data/672f_验收报告.md）中如实报告，不得回改本文件。",
+  "research_question": "失败驱动演化（FD，failure-driven）在同批 holdout / 外部 corpus 样本上的缺陷检出率，是否显著高于 Static（rule-only 口径重分箱）与 Random†（仪器级预算对齐随机代理）两臂？",
+  "hypotheses": {
+    "H1": "FD 的 holdout 检出率 > Static：Δ > 20pp 且配对精确 McNemar p < 0.05",
+    "H2": "FD 的 corpus 检出率 > Static：Δ > 15pp 且配对精确 McNemar p < 0.05",
+    "H0": "FD 与 Static 无显著差异（p >= 0.05 或 Δ 低于阈值）⇒ 原样报告，不修饰",
+    "exploratory": "FD vs Random†（仪器级代理）同口径比较仅作方向性读法，不作为确认性结论（代理臂，非论文 §5.2 的真 B3）"
+  },
+  "methods": {
+    "datasets": {
+      "holdout": {
+        "n_measurable": 21,
+        "definition": "planted=true 真错子集，可测口径 = catch + miss；unknown（检测器不可用）不进分母",
+        "source": "data/holdout/reveal_3_detail_671a.json（671a 扩样后，h31–h40 已 reveal）",
+        "control_subset": 11,
+        "control_source": "data/holdout_reveal_4_671a.json::cumulative.control_subset"
+      },
+      "corpus": {
+        "n_measurable": 48,
+        "definition": "catch + miss（可测且非测量类）；unknown 与 not_error（对照）不进分母",
+        "source": "data/external_corpus/reveal_detail_671a.json（671a 扩样后，d3e-* 已 reveal）"
+      }
+    },
+    "arms": {
+      "FD": "failure-driven（现状）：照实读逐样本判决（sanitizer + 本机编译器全用）",
+      "Static": "rule-only 口径重分箱：只认编译期仪器（compiler-warn/wunsequenced/cross-compile/linker），sanitizer 样本记 miss（非重跑，口径重分箱）",
+      "Random dagger": "仪器级预算对齐随机代理：从仪器池按固定种子随机抽与 FD 同数量的仪器；†=代理，不是真 B3，结论不得进论文正文"
+    },
+    "metric": "检出率 = k/n（可测口径）+ Clopper-Pearson 95% CI（tools/stat_bounds.py 单一来源）",
+    "statistical_tests": [
+      "配对精确 McNemar（FD vs Static，同批样本配对）",
+      "Cohen's h 效应量（必报）",
+      "Δ 的 95% 区间（Newcombe/Wald 配对近似，报告用）"
+    ],
+    "seed": 20260930,
+    "seed_note": "项目约定种子（670d §3.1 指定，670a/671b 产物沿用同一值）；任务书示例值 42 未采用，取项目已有约定以保证与历史产物可对照。所有实验脚本模块级固定 random.seed(SEED)。",
+    "implementation": "tools/baseline_670a.py --run（路径 A）；tools/verify_baseline_672f.py（路径 B，独立复算，不调用 baseline_670a.py）"
+  },
+  "decision_thresholds": {
+    "holdout": "显著当且仅当 p < 0.05 且 Δ > 20pp",
+    "corpus": "显著当且仅当 p < 0.05 且 Δ > 15pp",
+    "not_significant": "p >= 0.05 或 Δ 低于阈值 ⇒ 判 not_significant，如实报告",
+    "ci_crosses_zero": "Δ 的 CI 跨 0 ⇒ 「失败驱动优于」不成立，原样报告（tools/ablation_stats_671b.py::comparison 判读规则同源）"
+  },
+  "exclusion_criteria": [
+    "verdict == unknown（本机无检测器）不进任何分母，单独计数",
+    "corpus not_error（对照，本不是缺陷）不进可测分母；对照判 catch 记 false_positive 单列",
+    "perf / compile-time 类本机无检测器 ⇒ 记 unknown，拒绝给率（fail-loud）",
+    "Random† 代理臂结论不进论文正文；真 B3（验证资产口径）需拆仓 select_assets 接口，归 672g"
+  ],
+  "scope_note": "本预注册只覆盖 W1（baseline 三臂重跑）；A0–A5 ablation 与 LLM-as-verifier 第四臂属 W2–W8，另行预注册。Random† 为仪器级代理，检验效力有限（仪器池仅 10 个），如实登记。",
+  "post_registration": {
+    "results_files": [
+      "data/experiments/baseline_fd.json",
+      "data/experiments/baseline_static.json",
+      "data/experiments/baseline_random.json",
+      "data/experiments/baseline_verify_672f.json",
+      "data/experiments/reveal_update_672f.json"
+    ],
+    "report": "data/672f_验收报告.md",
+    "honesty_rule": "结果与假设不符时：不改假设、不改阈值、不取平均、不挑口径；原样报告并在验收报告登记根因分析"
+  }
+}
