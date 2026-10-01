@@ -9,6 +9,7 @@ from __future__ import annotations
 import os
 
 import tools.debt_inventory_633 as d
+import pytest  # noqa: E402  672h：slow 标记
 
 
 # T0-1：ID 自增唯一
@@ -51,6 +52,7 @@ def test_snapshot():
 
 
 # T0-6：7 维度齐全且分级不越界
+@pytest.mark.slow
 def test_scan_all_dimensions():
     data = d.scan_all()
     assert set(data["sections"]) == {"CI/测试债", "工具债", "数据债", "安全债",

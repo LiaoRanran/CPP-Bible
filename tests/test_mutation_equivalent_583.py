@@ -115,6 +115,7 @@ def test_583_same_text_and_broken_yaml_are_not_equivalent():
 
 
 # ── ④ 不改判决 + 自检可证伪 ───────────────────────────────────────────────────
+@pytest.mark.slow
 def test_583_equivalent_records_are_escaped_with_no_new_findings():
     """跑一小批：所有 equivalent 记录必须是 escaped 且 new_* 为空（= classify 语意自洽）。"""
     cards = [_CARD, ROOT / "evidence/ub/EV-UB-002.md"]
@@ -130,6 +131,7 @@ def test_583_equivalent_records_are_escaped_with_no_new_findings():
     assert ok and bad == [], bad
 
 
+@pytest.mark.slow
 def test_583_equivalent_flag_does_not_change_blocked_set(monkeypatch):
     """586：equivalent 字段**只**把等价变体从 `escaped` 挪到 `equivalent_invalid`（不进可判分母），
     **不影响**任何变体的 blocked 判定。A/B 同输入：开/关 `equivalent_variant`，blocked 与 n_a 相等，
@@ -162,6 +164,7 @@ def test_583_selfcheck_detects_false_positive():
     assert not ok and bad and "EV-MATRIX" in bad[0], bad
 
 
+@pytest.mark.slow
 def test_583_variant_index_carries_no_equivalent_field():
     """**只加不改（单元面）**：`_variant_index()` 的 5 字段里**不含** equivalent ⇒ 加字段不影响它。
 

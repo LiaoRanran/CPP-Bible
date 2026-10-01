@@ -8,6 +8,7 @@ from datetime import date, timedelta
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "tools"))
 
 import replay_manifest_fix_628 as R
+import pytest  # noqa: E402  672h：slow 标记
 
 
 def test_debt_001_fixture_dynamized():
@@ -19,6 +20,7 @@ def test_debt_001_fixture_dynamized():
     assert (date.today() + timedelta(days=30)) > date.today()
 
 
+@pytest.mark.slow
 def test_clean_ledger_test_passes():
     import subprocess
     here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

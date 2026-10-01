@@ -8,6 +8,7 @@ import tempfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import control_char_cleaner as C  # noqa: E402
+import pytest  # noqa: E402  672h：slow 标记
 
 
 def test_selftest_passes():
@@ -50,6 +51,7 @@ def test_fix_idempotent():
         assert C.clean_file(p) == 0
 
 
+@pytest.mark.slow
 def test_repo_data_has_no_control_chars_now():
     # 626 A2 已清洗：data/ 应无残留
     found = C.scan(os.path.join(ROOT, "data"))

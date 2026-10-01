@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import whitelist_expand_decision_643 as E4
+import pytest  # noqa: E402  672h：slow 标记
 
 
 # E4-1：低于门槛 ⇒ 不扩展且登记原因
@@ -40,6 +41,7 @@ def test_plan_sorted_by_score():
 
 
 # E4-6：边界（恰好 0.60 达标；None 不拍板）
+@pytest.mark.slow
 def test_threshold_edges():
     assert E4.THRESHOLD == 0.60
     assert E4.decide(0.60)["expanded"] is True
@@ -54,6 +56,7 @@ def test_no_expansion_gives_path():
 
 
 # E4-8：**即使达标也不代执行** + 只读自检
+@pytest.mark.slow
 def test_never_executes():
     assert E4.decide(0.99)["executed"] is False
     assert E4.decide(0.10)["executed"] is False

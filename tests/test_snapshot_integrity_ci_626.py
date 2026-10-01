@@ -10,12 +10,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import decision_event_v2_626 as D  # noqa: E402
 import snapshot_integrity_ci_626 as SI  # noqa: E402
+import pytest  # noqa: E402  672h：slow 标记
 
 
 def _c() -> SI.SnapshotIntegrityChecker:
     return SI.SnapshotIntegrityChecker()
 
 
+@pytest.mark.slow
 def test_selftest_passes():
     assert SI.selftest() == 0
 
@@ -24,6 +26,7 @@ def test_ten_checks_registered():
     assert len(SI.CHECKS) == 10
 
 
+@pytest.mark.slow
 def test_run_all_returns_ten():
     r = _c().run_all()
     assert r["total"] == 10
@@ -48,6 +51,7 @@ def test_hash_chain_pass_and_broken_detected():
     assert not led.verify_chain()
 
 
+@pytest.mark.slow
 def test_control_chars_clean():
     assert _c().run_check("control_chars")["status"] == "pass"
 
@@ -90,6 +94,7 @@ def test_bad_zip_fails_integrity():
             assert any("\\" in n for n in names)
 
 
+@pytest.mark.slow
 def test_report_export():
     _c().export_report()
     assert os.path.exists(SI.OUT_JSON)

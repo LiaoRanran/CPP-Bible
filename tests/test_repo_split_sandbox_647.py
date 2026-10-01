@@ -34,6 +34,7 @@ def test_c1_1_core_file_list():
 
 
 # ── C1-2：拆分成功且保留历史（提交数 > 0）───────────────────────────────────────
+@pytest.mark.slow
 def test_c1_2_split_succeeds(sandbox):
     s = sandbox.get("split", {})
     assert s.get("ok") is True, sandbox.get("why")

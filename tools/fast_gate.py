@@ -114,12 +114,13 @@ def run_tests(test_files: list[str], all_fast: bool,
                 "skipped": True}
     jobs = jobs or ("auto" if all_fast else "0")
     cmd = [sys.executable, "-m", "pytest", *base, "-q", "-m", "not slow",
-           "-p", "no:cacheprovider"]
+           "-p", "no:cacheprovider", "--tb=line"]
     note = ""
     if jobs != "0":
         if _xdist_available():
-            cmd += ["-n", jobs]
-            name += f"（xdist -n {jobs}）"
+            # 672h 实测：默认 load 调度 343s，worksteal 270s（-n auto，win32 32 核）
+            cmd += ["-n", jobs, "--dist", "worksteal"]
+            name += f"（xdist -n {jobs} worksteal）"
         else:
             note = "xdist 不可用 ⇒ 落回串行（显形，不静默）"
     item = _run(name, cmd, timeout)
@@ -177,9 +178,25 @@ def main(argv: list[str] | None = None) -> int:
     tg = a.timeout or DEFAULT_TIMEOUT_GATE
     tt = a.timeout or DEFAULT_TIMEOUT_TESTS
     items: list[dict] = []
-    items += run_gates(tg)
-    items.append(run_tests(a.tests, a.all, tt, jobs=a.jobs))
-    items.append(run_frontend(a.skip_frontend, tg, web_has_changes()))
+
+    def _emit(item: dict) -> None:
+        """672h：逐项**完成即打印**（长跑时可看到进度；--json 时仍只在最后输出）。"""
+        if a.json:
+            return
+        tag = "SKIP" if item.get("skipped") else ("PASS" if item["rc"] == 0 else "FAIL")
+        print(f"  [{tag:4}] {item['name']}  {item['seconds']:.1f}s", flush=True)
+
+    if not a.json:
+        print("[fast-gate] 快速门禁", flush=True)
+    for item in run_gates(tg):
+        items.append(item)
+        _emit(item)
+    item = run_tests(a.tests, a.all, tt, jobs=a.jobs)
+    items.append(item)
+    _emit(item)
+    item = run_frontend(a.skip_frontend, tg, web_has_changes())
+    items.append(item)
+    _emit(item)
     total = round(time.monotonic() - t0, 2)
 
     failed = [i for i in items if i["rc"] != 0]
@@ -190,14 +207,11 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps({"ok": ok, "total_seconds": total, "over_budget": over,
                           "items": items}, ensure_ascii=False, indent=2))
     else:
-        print("[fast-gate] 快速门禁")
-        for i in items:
-            tag = "SKIP" if i.get("skipped") else ("PASS" if i["rc"] == 0 else "FAIL")
-            print(f"  [{tag:4}] {i['name']}  {i['seconds']:.1f}s")
-            if i["rc"] != 0:
-                print(f"          cmd: {i['cmd']}")
-                print(_fail_summary(i))
-                print(f"          rc={i['rc']}")
+        for i in failed:                    # 通过项已在跑的过程中逐项打印过
+            print(f"  [FAIL] {i['name']}  {i['seconds']:.1f}s")
+            print(f"          cmd: {i['cmd']}")
+            print(_fail_summary(i))
+            print(f"          rc={i['rc']}")
         print(f"[fast-gate] overall={'PASS' if ok else 'FAIL'}  总耗时 {total:.1f}s"
               f"（预算 {BUDGET_S:.0f}s{ '，超预算 ⚠️' if over else '' }）")
         if ok and over:

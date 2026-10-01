@@ -11,6 +11,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 import run_621_gate as G  # noqa: E402
+import pytest  # noqa: E402  672h：slow 标记
 
 
 def test_six_checks_registered():
@@ -56,6 +57,7 @@ def test_ruff_passes():
     assert ok, msg
 
 
+@pytest.mark.slow
 def test_pytest_passes():
     ok, msg = G.check_pytest()
     assert ok, msg

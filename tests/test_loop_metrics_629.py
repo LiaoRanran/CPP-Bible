@@ -27,6 +27,7 @@ def test_escape_dimension():
     assert abs(e["pct"] - 0.0711) < 0.001 and e["cs_upper"] == 0.9062
 
 
+@pytest.mark.slow
 def test_autoimmune_dimension_matches_a1(dims):
     import autoimmune_rate_framework as A
 
@@ -59,6 +60,7 @@ def test_asymmetry_is_computed(dims):
     assert a["symmetric"] is False, "两向错误严重不对称，必须显式判定为不对称"
 
 
+@pytest.mark.slow
 def test_report_and_selftest():
     p = L.write_report()
     md = open(p, encoding="utf-8").read()

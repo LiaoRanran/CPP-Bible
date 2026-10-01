@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import four_questions_635 as F
+import pytest  # noqa: E402  672h：slow 标记
 
 
 # 1.3-1：Q1 返回布尔 blind
@@ -21,6 +22,7 @@ def test_q2():
 
 
 # 1.3-3：Q3 返回 records 列表
+@pytest.mark.slow
 def test_q3():
     r = F.q3_calibration()
     assert isinstance(r["records"], list)
@@ -40,5 +42,6 @@ def test_q4_single():
 
 
 # 1.3-6：--check 自检通过
+@pytest.mark.slow
 def test_selftest():
     assert F.selftest() == 0

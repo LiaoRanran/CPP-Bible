@@ -5,6 +5,8 @@
 """
 from __future__ import annotations
 
+import pytest  # noqa: E402  672h：slow 标记
+
 import new_rule_error_tracker_643 as E1
 
 
@@ -69,6 +71,7 @@ def test_overturn_marks_log(tmp_path):
 
 
 # E1-6：重复 init 不覆盖已有样本（幂等 + 保历史）
+@pytest.mark.slow
 def test_reinit_keeps_samples(tmp_path):
     def go():
         E1.init_ledger()

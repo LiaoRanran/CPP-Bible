@@ -9,6 +9,7 @@ import os
 
 import protector_mode_647 as M
 import protector_rollout_647 as R
+import pytest  # noqa: E402  672h：slow 标记
 
 
 def test_br1_zero_drift_on_production(monkeypatch):
@@ -74,6 +75,7 @@ def test_br7_protectors_touch_no_production_files(monkeypatch):
     assert [hashlib.sha256(open(p, "rb").read()).hexdigest() for p in targets] == before
 
 
+@pytest.mark.slow
 def test_br8_report_and_selftest():
     assert R.selftest() == 0
     assert R.main(["--report"]) == 0

@@ -7,6 +7,7 @@ from dataclasses import replace
 
 import evidence_base_644 as base
 import evidence_integrity_644 as c3
+import pytest  # noqa: E402  672h：slow 标记
 
 
 # I3-1：已知漂移必检出（错误 id → is_valid False）
@@ -53,5 +54,6 @@ def test_network_degradation():
 
 
 # I3-5：selftest 通过
+@pytest.mark.slow
 def test_selftest():
     assert c3.selftest() == 0

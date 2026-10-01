@@ -9,6 +9,7 @@ import hashlib
 import os
 
 import fail_closed_audit_642 as F
+import pytest  # noqa: E402  672h：slow 标记
 
 _AUDITED = (os.path.join(F.HERE, "tool_integrity.py"),
             os.path.join(F.HERE, "decision_event_v2_626.py"))
@@ -50,6 +51,7 @@ def test_fo_b_unknown_keys_silently_dropped():
 
 
 # B3-5：全量扫描覆盖广度 + 四条规则齐备 + 命中可复现
+@pytest.mark.slow
 def test_scan_coverage_and_reproducibility():
     sc = F.scan_all()
     assert sc["scanned_files"] > 400
@@ -59,6 +61,7 @@ def test_scan_coverage_and_reproducibility():
 
 
 # B3-6：只审计不改（被审计文件字节不变）
+@pytest.mark.slow
 def test_audit_does_not_modify_audited_code():
     before = [_digest(p) for p in _AUDITED]
     F.known_points()
@@ -68,6 +71,7 @@ def test_audit_does_not_modify_audited_code():
 
 
 # B3-7：严重度汇总含两处已知点 + --check 自检
+@pytest.mark.slow
 def test_severity_summary_and_selftest():
     t = F.severity_table()
     assert t["高"] >= 1 and t["中"] >= 1

@@ -110,6 +110,7 @@ def test_check_catches_machine_reviewer(ann: Path, capsys):
     assert "第 1 行" in err and "reviewer" in err
 
 
+@pytest.mark.slow
 def test_default_channel_rows_are_provable_human(ann: Path):
     """真实 596/609 人审通道上的每一行都必须是**可证明的真人**手写。
 

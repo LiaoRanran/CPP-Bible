@@ -12,6 +12,7 @@ import os
 import sys
 
 import run_643_gate as G
+import pytest  # noqa: E402  672h：slow 标记
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -36,6 +37,7 @@ def test_new_tools_have_check_entry():
 
 
 # F1-3：643 新工具 --check 全绿（轻量子进程）
+@pytest.mark.slow
 def test_new_tools_check_green():
     r = G.check_new_tools()
     assert r["ok"], r["detail"]
@@ -44,6 +46,7 @@ def test_new_tools_check_green():
 
 
 # F1-4：642 收尾确认（status + 642 工具 --check）
+@pytest.mark.slow
 def test_642_closure():
     r = G.check_642_closure()
     assert r["ok"], r["detail"]

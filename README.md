@@ -61,6 +61,17 @@
 | 结构审计 | `python tools/structure_audit.py --check` | 标题大纲缺陷（stray H1 / 跳级）+ 参差表格：0 命中 |
 | 星级格 / H2 | `python tools/star_h2_audit.py check --star` | 示例头星级格 100% 统一（span 5 格制）+ H2 基线防恶化 |
 
+**批次回归用快速门禁（672h 起，默认）**：
+
+```bash
+python tools/fast_gate.py --tests tests/test_<本批>.py   # 658+669d+671a guard+本批测试，<5 分钟
+python tools/fast_gate.py --all                          # 门禁 + 全部非 slow 测试（xdist 并行）
+python tools/fast_gate.py --all --skip-frontend          # 只动后端时
+```
+
+慢档（`@pytest.mark.slow`：WSL 编译 / 全量变异 / 全量重跑，单测 >10s）本地默认跳过，
+**全量回归只在 CI 跑**（CI 为 `-m "not slow" -n 16` + `-m slow -n0` 两阶段）。
+
 > **豁免说明**：`tools/compile_exempt.json` 中的 66 个失败块均为**设计性不可单编**内容
 > （多文件示例、C++20 Modules、POSIX / Windows 专用 API、外部库、故意展示的错误 / UB、
 > 跨块依赖），**非**内容 bug。真实语法 / 类型错误一旦出现，CI 编译门禁立即变红。

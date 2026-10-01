@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 import counts_659 as counts  # noqa: E402
 import pck_batch_migrator_620 as M  # noqa: E402
 import pck_certificate_verifier_619 as B2  # noqa: E402
+import pytest  # noqa: E402  672h：slow 标记
 
 CARDS = M.discover_cards()
 CERT_DIR = M.DEFAULT_OUT_DIR
@@ -27,6 +28,7 @@ def test_全量83张全部通过验证():
     assert prev["fail"] == 0
 
 
+@pytest.mark.slow
 def test_迁移可复现_两次输出内容一致():
     with tempfile.TemporaryDirectory() as d1, tempfile.TemporaryDirectory() as d2:
         M.migrate(CARDS, d1)

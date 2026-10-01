@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import evidence_base_644 as base
 import evidence_seeker_trigger_644 as e2
+import pytest  # noqa: E402  672h：slow 标记
 
 
 def _stub_orch(topic, snippet=None, max_rounds=3):
@@ -21,6 +22,7 @@ def _stub_orch_with_pkg(topic, snippet=None, max_rounds=3):
 
 
 # S2-1：触发正确（结构完整）
+@pytest.mark.slow
 def test_trigger_structure():
     r = e2.seek(orchestrate_fn=_stub_orch)
     assert "n_triggered" in r and "still_insufficient" in r and "new_evidence_total" in r
@@ -28,6 +30,7 @@ def test_trigger_structure():
 
 
 # S2-2：求索后充分性变化可追踪（未关联 → 判定不变）
+@pytest.mark.slow
 def test_no_change_unlinked():
     r = e2.seek(orchestrate_fn=_stub_orch)
     for row in r["rows"]:
@@ -36,12 +39,14 @@ def test_no_change_unlinked():
 
 
 # S2-3：新证据体量被记录
+@pytest.mark.slow
 def test_new_evidence_recorded():
     r = e2.seek(orchestrate_fn=_stub_orch_with_pkg)
     assert r["new_evidence_total"] >= 0
 
 
 # S2-4：不修改卡片 + selftest
+@pytest.mark.slow
 def test_no_card_modify_and_selftest():
     atom = base.list_atoms()[0]
     with open(atom["path"], encoding="utf-8") as fh:

@@ -8,6 +8,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import gate_engine as ge  # noqa: E402
 import poison_drill as pd  # noqa: E402
+import pytest  # noqa: E402  672h：slow 标记
 
 HC_IDS = {"EV-SERVES-EXIST-HC", "ATOM-REL-TARGET-HC",
           "ATOM-REL-UNKNOWN-HC", "CARD-PATH-NOT-CANONICAL-HC"}
@@ -33,6 +34,7 @@ def test_gate_baseline_block_zero_no_false_positive(monkeypatch):
     assert all(f.rule_id not in HC_IDS for f in findings if f.severity == "block")
 
 
+@pytest.mark.slow
 def test_poison_coverage_total_now_67():
     _covered, total, _uncovered = pd.rule_coverage()
     assert total == 67

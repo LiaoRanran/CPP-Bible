@@ -12,6 +12,7 @@ import json
 import os
 
 import soft_baseline_634 as SB  # 634 A3
+import pytest  # noqa: E402  672h：slow 标记
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RESULT = os.path.join(ROOT, "data", "high_complexity_sandbox_run_623.json")
@@ -58,6 +59,7 @@ def test_escaped_are_content_removal_artifacts():
         assert e.get("new_block_rules") == []  # 无新增 block（非真实安全逃逸）
 
 
+@pytest.mark.slow
 def test_sandbox_reproducibility():
     # 取一条 blocked mutation，连跑两次，verdict 应一致（确定性）
     target = next(r for r in res["rows"] if r["verdict"] == "blocked")

@@ -23,6 +23,7 @@ import gate_rules_669d as G669D  # noqa: E402
 import guard_rerun_670c as Guard670  # noqa: E402
 import guard_rerun_671a as Guard671  # noqa: E402
 import run_master_gate_670c as MG  # noqa: E402
+import pytest  # noqa: E402  672h：slow 标记
 
 REAL_658_SRC = (ROOT / "tools" / "run_658_gate.py").read_text(encoding="utf-8")
 RESEARCH_FILES = ("PROTOCOL_v0.1.md", "00_problem.md", "01_research_questions.md",
@@ -393,6 +394,7 @@ def test_selftest_mentions_new_stages(capsys):
 # ⑤ 真实仓库：交付态必须真绿
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.slow
 def test_real_repo_master_gate_passes():
     st = MG.collect(ROOT)
     assert st["overall"] == "PASS", \
