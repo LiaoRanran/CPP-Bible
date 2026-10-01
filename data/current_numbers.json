@@ -1,0 +1,151 @@
+{
+  "schema": "queyi-current-numbers/672f",
+  "generated_by": "672f W1（baseline 重跑后建立唯一权威数字源）",
+  "generated_at": "2026-10-01",
+  "note": "本文件只放当前最新核心数字。历史轨迹与口径说明见 data/experiments/reveal_update_672f.json 与 data/experiments/reveal_update_671a.json。",
+  "seed": 20260930,
+  "holdout": {
+    "rate_pct": 81.0,
+    "k": 17,
+    "n": 21,
+    "denominator": "catch+miss（可测真错样本；planted=true，unknown 不计）",
+    "cp95": [
+      58.1,
+      94.6
+    ],
+    "source": "data/experiments/baseline_fd.json（tools/baseline_670a.py --run，672f 重跑）"
+  },
+  "corpus": {
+    "rate_pct": 54.2,
+    "k": 26,
+    "n": 48,
+    "denominator": "catch+miss（可测且非测量类；unknown 与 not_error 不计）",
+    "cp95": [
+      39.2,
+      68.6
+    ],
+    "source": "data/experiments/baseline_fd.json（tools/baseline_670a.py --run，672f 重跑）"
+  },
+  "baseline_arms": {
+    "holdout": {
+      "fd": {
+        "k": 17,
+        "n": 21,
+        "rate_pct": 81.0,
+        "cp95": [
+          58.1,
+          94.6
+        ]
+      },
+      "static": {
+        "k": 1,
+        "n": 21,
+        "rate_pct": 4.8,
+        "cp95": [
+          0.1,
+          23.8
+        ]
+      },
+      "random_proxy": {
+        "k": 2,
+        "n": 21,
+        "rate_pct": 9.5,
+        "cp95": [
+          1.2,
+          30.4
+        ]
+      }
+    },
+    "corpus": {
+      "fd": {
+        "k": 26,
+        "n": 48,
+        "rate_pct": 54.2,
+        "cp95": [
+          39.2,
+          68.6
+        ]
+      },
+      "static": {
+        "k": 7,
+        "n": 48,
+        "rate_pct": 14.6,
+        "cp95": [
+          6.1,
+          27.8
+        ]
+      },
+      "random_proxy": {
+        "k": 8,
+        "n": 48,
+        "rate_pct": 16.7,
+        "cp95": [
+          7.5,
+          30.2
+        ]
+      }
+    },
+    "caveat": "Static=口径重分箱（非重跑）；Random†=仪器级代理（非真 B3），Δ 只作方向性读法"
+  },
+  "comparisons": {
+    "holdout_fd_vs_static": {
+      "delta_pp": 76.2,
+      "ci_pp": [
+        58.0,
+        94.4
+      ],
+      "mcnemar_p": 3.05e-05,
+      "cohens_h": 1.8
+    },
+    "holdout_fd_vs_random": {
+      "delta_pp": 71.4,
+      "ci_pp": [
+        52.1,
+        90.8
+      ],
+      "mcnemar_p": 6.1e-05,
+      "cohens_h": 1.61
+    },
+    "corpus_fd_vs_static": {
+      "delta_pp": 39.6,
+      "ci_pp": [
+        25.7,
+        53.4
+      ],
+      "mcnemar_p": 3.81e-06,
+      "cohens_h": 0.87
+    },
+    "corpus_fd_vs_random": {
+      "delta_pp": 37.5,
+      "ci_pp": [
+        23.8,
+        51.2
+      ],
+      "mcnemar_p": 7.63e-06,
+      "cohens_h": 0.81
+    }
+  },
+  "control_false_positive": {
+    "fp": 2,
+    "total": 11,
+    "rate_pct": 18.2
+  },
+  "defect_reinjection": {
+    "k": 6,
+    "n": 6,
+    "rate_pct": 100.0
+  },
+  "mutation_core": {
+    "killed": 110,
+    "n": 114,
+    "rate_pct": 96.5,
+    "cp95": [
+      91.3,
+      99.0
+    ],
+    "note": "内部指标，与检出率不同口径；672f 重跑（seed 20260928，全量 147 变异体）"
+  },
+  "rules_total": 67,
+  "cards_real": 42,
+  "ledger_events": 452
+}

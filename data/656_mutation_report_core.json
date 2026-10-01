@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T12:14:59",
+  "generated_at": "2026-10-01T19:01:46",
   "seed": 20260928,
   "kill_suite": "tests/test_core_pbt_656.py",
   "scope": "core",
@@ -85,10 +85,10 @@
   ],
   "mutants": 147,
   "killed": 110,
-  "survived": 3,
-  "import_error": 30,
+  "survived": 4,
+  "import_error": 29,
   "timeout": 4,
-  "kill_rate_on_scored": 97.3,
+  "kill_rate_on_scored": 96.5,
   "kill_rate_all": 74.8,
   "by_file": {
     "four_state_verdict_638": {
@@ -101,8 +101,8 @@
     "ledger_checkpoint_651": {
       "total": 69,
       "killed": 48,
-      "survived": 0,
-      "import_error": 17,
+      "survived": 1,
+      "import_error": 16,
       "timeout": 4
     },
     "decision_event_v2_626": {
@@ -123,7 +123,7 @@
       "text": "return {\"state\": \"unknown\", \"requested\": requested, \"downgraded\": True,",
       "status": "killed",
       "detail": "test_p13_illegal_boundary_format_reason_is_distinct: AssertionError: ",
-      "seconds": 0.9
+      "seconds": 0.84
     },
     {
       "target": "four_state_verdict_638",
@@ -134,7 +134,7 @@
       "text": "if not expl:",
       "status": "killed",
       "detail": "test_p13_exception_without_explanation_is_downgraded: AssertionError: ",
-      "seconds": 0.92
+      "seconds": 0.93
     },
     {
       "target": "four_state_verdict_638",
@@ -145,7 +145,7 @@
       "text": "if not isinstance(h, str) or not _HASH_RE.match(h.strip()):",
       "status": "killed",
       "detail": "test_p13_already_unknown_is_not_marked_downgraded: AttributeError: 'NoneType' object has no attribute 'strip'",
-      "seconds": 0.91
+      "seconds": 0.94
     },
     {
       "target": "four_state_verdict_638",
@@ -156,7 +156,7 @@
       "text": "exc = rec.get(\"exception\") or rec.get(\"has_exception\") or rec.get(\"exception_clause\")",
       "status": "killed",
       "detail": "test_p13_exception_without_explanation_is_downgraded: AssertionError: ",
-      "seconds": 0.9
+      "seconds": 0.93
     },
     {
       "target": "four_state_verdict_638",
@@ -167,7 +167,7 @@
       "text": "return {\"file\": str(path), \"state\": \"unknown\", \"downgraded\": True, \"boundary_ok\": False,",
       "status": "killed",
       "detail": "test_p13_classify_card_empty_or_bad_path: AssertionError: ",
-      "seconds": 0.91
+      "seconds": 0.92
     },
     {
       "target": "four_state_verdict_638",
@@ -178,7 +178,7 @@
       "text": "if st and st.group(1).lower() == \"verified\" and not m:",
       "status": "killed",
       "detail": "test_p13_explicit_falsification_wins_over_verified_status: AssertionError: ",
-      "seconds": 0.92
+      "seconds": 0.91
     },
     {
       "target": "four_state_verdict_638",
@@ -189,7 +189,7 @@
       "text": "\"verdict\": (m.group(1) if m else \"\"),",
       "status": "killed",
       "detail": "test_p13_classify_card_draft_is_not_verified: AttributeError: 'NoneType' object has no attribute 'group'",
-      "seconds": 0.89
+      "seconds": 0.92
     },
     {
       "target": "four_state_verdict_638",
@@ -200,7 +200,7 @@
       "text": "if w in _PASS_WORDS or w == \"\":",
       "status": "killed",
       "detail": "test_p13_classify_card_reads_boundary_from_disk: AssertionError: ",
-      "seconds": 0.91
+      "seconds": 0.9
     },
     {
       "target": "four_state_verdict_638",
@@ -211,7 +211,7 @@
       "text": "if mm:",
       "status": "killed",
       "detail": "test_p13_classify_card_draft_is_not_verified: AttributeError: 'NoneType' object has no attribute 'group'",
-      "seconds": 0.89
+      "seconds": 0.88
     },
     {
       "target": "four_state_verdict_638",
@@ -222,7 +222,7 @@
       "text": "def _raw_state(rec: dict[str, Any]) -> str:",
       "status": "import_error",
       "detail": "SyntaxError: expected ':' (four_state_verdict_638.py, line 111)",
-      "seconds": 0.22
+      "seconds": 0.21
     },
     {
       "target": "four_state_verdict_638",
@@ -233,7 +233,7 @@
       "text": "return \"pass_with_exception\" if (exc or explanation) else \"pass\"",
       "status": "killed",
       "detail": "test_p13_exception_without_explanation_is_downgraded: AssertionError: ",
-      "seconds": 0.89
+      "seconds": 0.87
     },
     {
       "target": "four_state_verdict_638",
@@ -244,7 +244,7 @@
       "text": "if st and st.group(1).lower() == \"verified\" and not m:",
       "status": "survived",
       "detail": "",
-      "seconds": 1.3
+      "seconds": 1.28
     },
     {
       "target": "four_state_verdict_638",
@@ -255,7 +255,7 @@
       "text": "return {\"state\": \"unknown\", \"requested\": requested, \"downgraded\": True,",
       "status": "killed",
       "detail": "test_p13_exception_without_explanation_is_downgraded: AssertionError: ",
-      "seconds": 0.9
+      "seconds": 0.84
     },
     {
       "target": "four_state_verdict_638",
@@ -266,7 +266,7 @@
       "text": "if requested == \"pass_with_exception\":",
       "status": "killed",
       "detail": "test_p13_classify_card_reads_boundary_from_disk: AssertionError: ",
-      "seconds": 0.93
+      "seconds": 0.91
     },
     {
       "target": "four_state_verdict_638",
@@ -277,7 +277,7 @@
       "text": "explanation = str(rec.get(\"explanation\") or \"\").strip()",
       "status": "killed",
       "detail": "test_p13_empty_and_pass_words_both_pass: AssertionError: ",
-      "seconds": 0.88
+      "seconds": 0.91
     },
     {
       "target": "four_state_verdict_638",
@@ -288,7 +288,7 @@
       "text": "if requested == \"unknown\":",
       "status": "killed",
       "detail": "test_p13_already_unknown_is_not_marked_downgraded: AssertionError: ",
-      "seconds": 0.89
+      "seconds": 0.81
     },
     {
       "target": "four_state_verdict_638",
@@ -299,7 +299,7 @@
       "text": "missing = [k for k in BOUNDARY_FIELDS if not rec.get(k)]",
       "status": "killed",
       "detail": "test_p13_illegal_boundary_format_reason_is_distinct: AssertionError: ",
-      "seconds": 0.89
+      "seconds": 0.92
     },
     {
       "target": "four_state_verdict_638",
@@ -310,7 +310,7 @@
       "text": "return False",
       "status": "killed",
       "detail": "test_p13_has_boundary_rejects_bad_count_and_missing_hash: AssertionError: ",
-      "seconds": 0.94
+      "seconds": 0.93
     },
     {
       "target": "four_state_verdict_638",
@@ -321,7 +321,7 @@
       "text": "\"boundary_ok\": False,",
       "status": "killed",
       "detail": "test_p13_classify_non_dict_is_unknown_and_not_downgraded: AssertionError: ",
-      "seconds": 0.94
+      "seconds": 0.89
     },
     {
       "target": "four_state_verdict_638",
@@ -332,7 +332,7 @@
       "text": "if w in _PASS_WORDS or w == \"\":",
       "status": "killed",
       "detail": "test_p13_already_unknown_is_not_marked_downgraded: AssertionError: ",
-      "seconds": 0.94
+      "seconds": 0.88
     },
     {
       "target": "four_state_verdict_638",
@@ -343,7 +343,7 @@
       "text": "def classify_card(path: str) -> dict[str, Any]:",
       "status": "import_error",
       "detail": "SyntaxError: expected ':' (four_state_verdict_638.py, line 169)",
-      "seconds": 0.24
+      "seconds": 0.22
     },
     {
       "target": "four_state_verdict_638",
@@ -365,7 +365,7 @@
       "text": "if int(c) <= 0:",
       "status": "killed",
       "detail": "test_p13_classify_card_reads_boundary_from_disk: AssertionError: ",
-      "seconds": 0.93
+      "seconds": 0.88
     },
     {
       "target": "four_state_verdict_638",
@@ -376,7 +376,7 @@
       "text": "return False",
       "status": "killed",
       "detail": "test_p13_has_boundary_rejects_bad_count_and_missing_hash: AssertionError: ",
-      "seconds": 0.81
+      "seconds": 0.88
     },
     {
       "target": "four_state_verdict_638",
@@ -387,7 +387,7 @@
       "text": "return False",
       "status": "killed",
       "detail": "test_p13_has_boundary_rejects_bad_count_and_missing_hash: AssertionError: ",
-      "seconds": 0.91
+      "seconds": 0.9
     },
     {
       "target": "four_state_verdict_638",
@@ -398,7 +398,7 @@
       "text": "if requested == \"unknown\":",
       "status": "killed",
       "detail": "test_p13_already_unknown_is_not_marked_downgraded: AssertionError: ",
-      "seconds": 0.89
+      "seconds": 0.98
     },
     {
       "target": "four_state_verdict_638",
@@ -409,7 +409,7 @@
       "text": "def boundary_of(rec: dict[str, Any]) -> dict[str, Any]:",
       "status": "import_error",
       "detail": "SyntaxError: expected ':' (four_state_verdict_638.py, line 82)",
-      "seconds": 0.23
+      "seconds": 0.22
     },
     {
       "target": "four_state_verdict_638",
@@ -420,7 +420,7 @@
       "text": "\"explanation\": (ex.group(1) if ex else \"\"),",
       "status": "killed",
       "detail": "test_p13_classify_card_draft_is_not_verified: AttributeError: 'NoneType' object has no attribute 'group'",
-      "seconds": 0.91
+      "seconds": 0.92
     },
     {
       "target": "four_state_verdict_638",
@@ -431,7 +431,7 @@
       "text": "if requested == \"pass_with_exception\":",
       "status": "killed",
       "detail": "test_p13_classify_card_reads_boundary_from_disk: AssertionError: ",
-      "seconds": 0.92
+      "seconds": 0.89
     },
     {
       "target": "four_state_verdict_638",
@@ -442,7 +442,7 @@
       "text": "\"boundary_ok\": True, \"reasons\": reasons}",
       "status": "killed",
       "detail": "test_p13_exception_without_explanation_is_downgraded: AssertionError: ",
-      "seconds": 0.79
+      "seconds": 0.9
     },
     {
       "target": "four_state_verdict_638",
@@ -453,7 +453,7 @@
       "text": "\"boundary_ok\": False, \"reasons\": reasons}",
       "status": "killed",
       "detail": "test_p13_missing_boundary_names_the_absent_fields_only: AssertionError: ",
-      "seconds": 0.78
+      "seconds": 0.77
     },
     {
       "target": "four_state_verdict_638",
@@ -464,7 +464,7 @@
       "text": "if int(c) <= 0:",
       "status": "killed",
       "detail": "test_p13_has_boundary_rejects_bad_count_and_missing_hash: AssertionError: ",
-      "seconds": 0.8
+      "seconds": 0.9
     },
     {
       "target": "four_state_verdict_638",
@@ -475,7 +475,7 @@
       "text": "if not isinstance(path, str) or not path.strip():",
       "status": "killed",
       "detail": "test_p13_classify_card_empty_or_bad_path: AttributeError: 'NoneType' object has no attribute 'strip'",
-      "seconds": 0.92
+      "seconds": 0.88
     },
     {
       "target": "four_state_verdict_638",
@@ -486,7 +486,7 @@
       "text": "if not bo:",
       "status": "killed",
       "detail": "test_p13_classify_card_reads_boundary_from_disk: AssertionError: ",
-      "seconds": 0.94
+      "seconds": 0.89
     },
     {
       "target": "four_state_verdict_638",
@@ -497,7 +497,7 @@
       "text": "if w in _FAIL_WORDS:",
       "status": "killed",
       "detail": "test_p13_already_unknown_is_not_marked_downgraded: AssertionError: ",
-      "seconds": 0.91
+      "seconds": 0.87
     },
     {
       "target": "four_state_verdict_638",
@@ -519,7 +519,7 @@
       "text": "def has_boundary(rec: dict[str, Any]) -> bool:",
       "status": "import_error",
       "detail": "SyntaxError: expected ':' (four_state_verdict_638.py, line 87)",
-      "seconds": 0.22
+      "seconds": 0.23
     },
     {
       "target": "four_state_verdict_638",
@@ -530,7 +530,7 @@
       "text": "return {\"state\": \"unknown\", \"requested\": \"unknown\", \"downgraded\": False,",
       "status": "killed",
       "detail": "test_p13_classify_non_dict_is_unknown_and_not_downgraded: AssertionError: ",
-      "seconds": 0.91
+      "seconds": 0.88
     },
     {
       "target": "four_state_verdict_638",
@@ -541,7 +541,7 @@
       "text": "return {\"file\": path, \"state\": \"unknown\", \"downgraded\": True, \"boundary_ok\": False,",
       "status": "killed",
       "detail": "test_p13_classify_card_missing_file: AssertionError: ",
-      "seconds": 0.9
+      "seconds": 0.89
     },
     {
       "target": "four_state_verdict_638",
@@ -552,7 +552,7 @@
       "text": "return {\"state\": \"unknown\", \"requested\": requested, \"downgraded\": False,",
       "status": "killed",
       "detail": "test_p13_already_unknown_is_not_marked_downgraded: AssertionError: ",
-      "seconds": 0.92
+      "seconds": 0.91
     },
     {
       "target": "four_state_verdict_638",
@@ -563,7 +563,7 @@
       "text": "return bool(isinstance(v, str) and v.strip())",
       "status": "killed",
       "detail": "test_p13_missing_boundary_names_the_absent_fields_only: AttributeError: 'NoneType' object has no attribute 'strip'",
-      "seconds": 0.86
+      "seconds": 0.89
     },
     {
       "target": "four_state_verdict_638",
@@ -574,7 +574,7 @@
       "text": "if not isinstance(rec, dict):",
       "status": "killed",
       "detail": "test_p13_classify_card_reads_boundary_from_disk: AssertionError: ",
-      "seconds": 0.92
+      "seconds": 0.91
     },
     {
       "target": "four_state_verdict_638",
@@ -585,7 +585,7 @@
       "text": "expl = str(rec.get(\"explanation\") or \"\").strip()",
       "status": "killed",
       "detail": "test_p13_exception_without_explanation_is_downgraded: AssertionError: ",
-      "seconds": 0.9
+      "seconds": 0.89
     },
     {
       "target": "four_state_verdict_638",
@@ -596,7 +596,7 @@
       "text": "w = str(rec.get(\"verdict\") or rec.get(\"result\") or \"\").strip().lower()",
       "status": "killed",
       "detail": "test_p13_already_unknown_is_not_marked_downgraded: AssertionError: ",
-      "seconds": 0.78
+      "seconds": 0.91
     },
     {
       "target": "four_state_verdict_638",
@@ -607,7 +607,7 @@
       "text": "if not isinstance(rec, dict):",
       "status": "killed",
       "detail": "test_p13_classify_card_reads_boundary_from_disk: AssertionError: ",
-      "seconds": 0.91
+      "seconds": 0.89
     },
     {
       "target": "four_state_verdict_638",
@@ -629,7 +629,7 @@
       "text": "return False",
       "status": "killed",
       "detail": "test_p13_has_boundary_rejects_non_dict: AssertionError: ",
-      "seconds": 0.8
+      "seconds": 0.87
     },
     {
       "target": "four_state_verdict_638",
@@ -651,7 +651,7 @@
       "text": "\"boundary_ok\": True, \"reasons\": reasons or [\"有边界，按原始判决定态\"]}",
       "status": "killed",
       "detail": "test_p13_ok_path_reports_reasons_and_flags: AssertionError: 通过路径也必须给出理由（空理由 = 无法审计）",
-      "seconds": 0.78
+      "seconds": 0.92
     },
     {
       "target": "four_state_verdict_638",
@@ -662,7 +662,7 @@
       "text": "return False",
       "status": "killed",
       "detail": "test_p13_has_boundary_rejects_bad_count_and_missing_hash: AssertionError: ",
-      "seconds": 0.9
+      "seconds": 0.91
     },
     {
       "target": "four_state_verdict_638",
@@ -673,7 +673,7 @@
       "text": "if missing:",
       "status": "killed",
       "detail": "test_p13_illegal_boundary_format_reason_is_distinct: AssertionError: ",
-      "seconds": 0.91
+      "seconds": 0.92
     },
     {
       "target": "four_state_verdict_638",
@@ -684,62 +684,62 @@
       "text": "return {\"state\": requested, \"requested\": requested, \"downgraded\": False,",
       "status": "killed",
       "detail": "test_p13_ok_path_reports_reasons_and_flags: AssertionError: ",
-      "seconds": 0.9
+      "seconds": 0.92
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 89,
+      "line": 103,
       "op": "cmp",
       "from": "<",
       "to": "<=",
       "text": "if n == 0 or m < 0 or m >= n:",
       "status": "killed",
       "detail": "test_p4_consistency_and_inclusion: AssertionError: ",
-      "seconds": 3.78
+      "seconds": 1.96
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 103,
+      "line": 117,
       "op": "cmp",
       "from": "==",
       "to": "!=",
       "text": "if sn == 0:",
       "status": "killed",
       "detail": "test_p13_verify_inclusion_rejects_over_long_proof: AssertionError: ",
-      "seconds": 0.95
+      "seconds": 0.91
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 107,
+      "line": 121,
       "op": "bool",
       "from": "and",
       "to": "or",
       "text": "while (fn & 1) == 0 and fn != 0:",
       "status": "timeout",
       "detail": "超过 25.0s（已强杀子进程）",
-      "seconds": 25.02
+      "seconds": 25.04
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 99,
+      "line": 113,
       "op": "cmp",
       "from": ">",
       "to": ">=",
       "text": "def verify_inclusion(m: int, n: int, leaf: bytes, proof: list[bytes], root: bytes) -> bool",
       "status": "import_error",
-      "detail": "SyntaxError: expected ':' (ledger_checkpoint_651.py, line 99)",
+      "detail": "SyntaxError: expected ':' (ledger_checkpoint_651.py, line 113)",
       "seconds": 0.23
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 89,
+      "line": 103,
       "op": "bool",
       "from": "or",
       "to": "and",
       "text": "if n == 0 or m < 0 or m >= n:",
       "status": "killed",
       "detail": "test_p13_inclusion_path_out_of_range_is_empty: AssertionError: ",
-      "seconds": 0.93
+      "seconds": 0.87
     },
     {
       "target": "ledger_checkpoint_651",
@@ -750,51 +750,95 @@
       "text": "while k * 2 < n:",
       "status": "killed",
       "detail": "test_p4_consistency_and_inclusion: AssertionError: consistency m=2",
-      "seconds": 2.67
+      "seconds": 5.61
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 108,
+      "line": 122,
       "op": "cmp",
       "from": ">",
       "to": ">=",
       "text": "fn >>= 1",
       "status": "import_error",
-      "detail": "SyntaxError: invalid syntax (ledger_checkpoint_651.py, line 108)",
-      "seconds": 0.25
+      "detail": "SyntaxError: invalid syntax (ledger_checkpoint_651.py, line 122)",
+      "seconds": 0.23
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 105,
+      "line": 119,
       "op": "bool",
       "from": "or",
       "to": "and",
       "text": "if (fn & 1) or (fn == sn):",
       "status": "killed",
       "detail": "test_p4_consistency_and_inclusion: AssertionError: ",
-      "seconds": 1.14
+      "seconds": 1.13
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 103,
+      "line": 117,
       "op": "bool",
       "from": "if",
       "to": "if not",
       "text": "if sn == 0:",
       "status": "killed",
       "detail": "test_p13_verify_inclusion_rejects_over_long_proof: AssertionError: ",
-      "seconds": 0.95
+      "seconds": 0.89
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 151,
+      "line": 170,
       "op": "bool",
       "from": "False",
       "to": "True",
       "text": "return False",
       "status": "killed",
       "detail": "test_p13_consistency_proof_too_long_is_rejected: AssertionError: ",
-      "seconds": 0.92
+      "seconds": 0.89
+    },
+    {
+      "target": "ledger_checkpoint_651",
+      "line": 119,
+      "op": "cmp",
+      "from": "==",
+      "to": "!=",
+      "text": "if (fn & 1) or (fn == sn):",
+      "status": "killed",
+      "detail": "test_p4_consistency_and_inclusion: AssertionError: ",
+      "seconds": 1.02
+    },
+    {
+      "target": "ledger_checkpoint_651",
+      "line": 128,
+      "op": "bool",
+      "from": "and",
+      "to": "or",
+      "text": "return h == root and sn == 0",
+      "status": "killed",
+      "detail": "test_p4_tampered_leaf_must_fail_verification: AssertionError: ",
+      "seconds": 1.85
+    },
+    {
+      "target": "ledger_checkpoint_651",
+      "line": 127,
+      "op": "cmp",
+      "from": ">=",
+      "to": ">",
+      "text": "sn >>= 1",
+      "status": "killed",
+      "detail": "test_p4_consistency_and_inclusion: AssertionError: ",
+      "seconds": 2.4
+    },
+    {
+      "target": "ledger_checkpoint_651",
+      "line": 181,
+      "op": "bool",
+      "from": "and",
+      "to": "or",
+      "text": "return fr == old_root and sr == new_root",
+      "status": "killed",
+      "detail": "test_p13_verify_consistency_requires_both_roots: AssertionError: ",
+      "seconds": 0.9
     },
     {
       "target": "ledger_checkpoint_651",
@@ -802,175 +846,131 @@
       "op": "cmp",
       "from": "==",
       "to": "!=",
-      "text": "if (fn & 1) or (fn == sn):",
-      "status": "killed",
-      "detail": "test_p4_consistency_and_inclusion: AssertionError: ",
-      "seconds": 1.07
-    },
-    {
-      "target": "ledger_checkpoint_651",
-      "line": 114,
-      "op": "bool",
-      "from": "and",
-      "to": "or",
-      "text": "return h == root and sn == 0",
-      "status": "killed",
-      "detail": "test_p4_tampered_leaf_must_fail_verification: AssertionError: ",
-      "seconds": 1.96
-    },
-    {
-      "target": "ledger_checkpoint_651",
-      "line": 113,
-      "op": "cmp",
-      "from": ">=",
-      "to": ">",
-      "text": "sn >>= 1",
-      "status": "killed",
-      "detail": "test_p4_consistency_and_inclusion: AssertionError: ",
-      "seconds": 2.97
-    },
-    {
-      "target": "ledger_checkpoint_651",
-      "line": 162,
-      "op": "bool",
-      "from": "and",
-      "to": "or",
-      "text": "return fr == old_root and sr == new_root",
-      "status": "killed",
-      "detail": "test_p13_verify_consistency_requires_both_roots: AssertionError: ",
-      "seconds": 0.98
-    },
-    {
-      "target": "ledger_checkpoint_651",
-      "line": 91,
-      "op": "cmp",
-      "from": "==",
-      "to": "!=",
       "text": "if n == 1:",
       "status": "killed",
       "detail": "test_p4_consistency_and_inclusion: AssertionError: ",
-      "seconds": 1.09
+      "seconds": 1.1
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 81,
+      "line": 95,
       "op": "cmp",
       "from": ">",
       "to": ">=",
       "text": "def inclusion_path(m: int, leaves: list[bytes]) -> list[bytes]:",
       "status": "import_error",
-      "detail": "SyntaxError: expected ':' (ledger_checkpoint_651.py, line 81)",
-      "seconds": 0.23
+      "detail": "SyntaxError: expected ':' (ledger_checkpoint_651.py, line 95)",
+      "seconds": 0.22
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 127,
+      "line": 143,
       "op": "cmp",
-      "from": "<",
-      "to": "<=",
-      "text": "if m <= k:",
-      "status": "import_error",
-      "detail": "SyntaxError: invalid syntax (ledger_checkpoint_651.py, line 127)",
-      "seconds": 0.25
+      "from": ">",
+      "to": ">=",
+      "text": "assert m > 0, \"size-0 树没有 consistency proof\"",
+      "status": "survived",
+      "detail": "",
+      "seconds": 1.92
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 112,
+      "line": 126,
       "op": "cmp",
       "from": ">=",
       "to": ">",
       "text": "fn >>= 1",
       "status": "killed",
       "detail": "test_p4_consistency_and_inclusion: AssertionError: ",
-      "seconds": 2.64
+      "seconds": 2.09
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 139,
+      "line": 158,
       "op": "cmp",
-      "from": ">=",
-      "to": ">",
+      "from": ">",
+      "to": ">=",
       "text": "fn >>= 1",
-      "status": "timeout",
-      "detail": "超过 25.0s（已强杀子进程）",
-      "seconds": 25.03
+      "status": "import_error",
+      "detail": "SyntaxError: invalid syntax (ledger_checkpoint_651.py, line 158)",
+      "seconds": 0.23
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 155,
+      "line": 174,
       "op": "bool",
       "from": "and",
       "to": "or",
       "text": "while (fn & 1) == 0 and fn != 0:",
       "status": "timeout",
       "detail": "超过 25.0s（已强杀子进程）",
-      "seconds": 25.02
+      "seconds": 25.03
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 146,
+      "line": 165,
       "op": "bool",
       "from": "False",
       "to": "True",
       "text": "return False",
       "status": "killed",
       "detail": "test_p13_consistency_proof_required_when_fn_nonzero: AssertionError: ",
-      "seconds": 0.92
+      "seconds": 0.9
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 113,
+      "line": 127,
       "op": "cmp",
       "from": ">",
       "to": ">=",
       "text": "sn >>= 1",
       "status": "import_error",
-      "detail": "SyntaxError: invalid syntax (ledger_checkpoint_651.py, line 113)",
-      "seconds": 0.21
-    },
-    {
-      "target": "ledger_checkpoint_651",
-      "line": 135,
-      "op": "cmp",
-      "from": "==",
-      "to": "!=",
-      "text": "if m == 0:",
-      "status": "killed",
-      "detail": "test_p13_consistency_proof_required_when_fn_nonzero: AssertionError: ",
-      "seconds": 0.89
-    },
-    {
-      "target": "ledger_checkpoint_651",
-      "line": 132,
-      "op": "cmp",
-      "from": ">",
-      "to": ">=",
-      "text": "def verify_consistency(m: int, n: int, proof: list[bytes], old_root: bytes, new_root: byte",
-      "status": "import_error",
-      "detail": "SyntaxError: expected ':' (ledger_checkpoint_651.py, line 132)",
+      "detail": "SyntaxError: invalid syntax (ledger_checkpoint_651.py, line 127)",
       "seconds": 0.22
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 117,
+      "line": 153,
+      "op": "cmp",
+      "from": "==",
+      "to": "!=",
+      "text": "return proof == [] and old_root == new_root",
+      "status": "killed",
+      "detail": "test_p13_verify_consistency_same_size_requires_equal_roots: AssertionError: ",
+      "seconds": 0.86
+    },
+    {
+      "target": "ledger_checkpoint_651",
+      "line": 146,
+      "op": "cmp",
+      "from": "<=",
+      "to": "<",
+      "text": "if m <= k:",
+      "status": "killed",
+      "detail": "test_p13_verify_consistency_requires_both_roots: RecursionError: maximum recursion depth exceeded",
+      "seconds": 0.76
+    },
+    {
+      "target": "ledger_checkpoint_651",
+      "line": 131,
       "op": "cmp",
       "from": ">",
       "to": ">=",
       "text": "def consistency_proof(m: int, leaves: list[bytes]) -> list[bytes]:",
       "status": "import_error",
-      "detail": "SyntaxError: expected ':' (ledger_checkpoint_651.py, line 117)",
+      "detail": "SyntaxError: expected ':' (ledger_checkpoint_651.py, line 131)",
       "seconds": 0.22
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 124,
+      "line": 138,
       "op": "cmp",
       "from": "==",
       "to": "!=",
       "text": "if m == n:",
       "status": "killed",
       "detail": "test_p13_verify_consistency_requires_both_roots: AssertionError: ",
-      "seconds": 0.94
+      "seconds": 0.86
     },
     {
       "target": "ledger_checkpoint_651",
@@ -981,33 +981,33 @@
       "text": "while k * 2 < n:",
       "status": "killed",
       "detail": "test_p13_verify_consistency_requires_both_roots: RecursionError: maximum recursion depth exceeded",
-      "seconds": 0.95
+      "seconds": 0.86
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 114,
+      "line": 128,
       "op": "cmp",
       "from": "==",
       "to": "!=",
       "text": "return h == root and sn == 0",
       "status": "killed",
       "detail": "test_p13_verify_inclusion_rejects_over_long_proof: AssertionError: ",
-      "seconds": 0.92
+      "seconds": 0.88
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 107,
+      "line": 121,
       "op": "cmp",
       "from": "!=",
       "to": "==",
       "text": "while (fn & 1) == 0 and fn != 0:",
       "status": "killed",
       "detail": "test_p4_consistency_and_inclusion: AssertionError: ",
-      "seconds": 2.91
+      "seconds": 2.34
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 135,
+      "line": 154,
       "op": "bool",
       "from": "if",
       "to": "if not",
@@ -1018,113 +1018,113 @@
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 91,
+      "line": 105,
       "op": "bool",
       "from": "if",
       "to": "if not",
       "text": "if n == 1:",
       "status": "killed",
       "detail": "test_p4_consistency_and_inclusion: AssertionError: ",
-      "seconds": 1.11
+      "seconds": 1.06
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 139,
+      "line": 154,
       "op": "cmp",
-      "from": ">",
-      "to": ">=",
-      "text": "fn >>= 1",
-      "status": "import_error",
-      "detail": "SyntaxError: invalid syntax (ledger_checkpoint_651.py, line 139)",
-      "seconds": 0.22
+      "from": "==",
+      "to": "!=",
+      "text": "if m == 0:",
+      "status": "killed",
+      "detail": "test_p13_consistency_proof_required_when_fn_nonzero: AssertionError: ",
+      "seconds": 0.87
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 109,
+      "line": 123,
       "op": "cmp",
       "from": ">",
       "to": ">=",
       "text": "sn >>= 1",
       "status": "import_error",
-      "detail": "SyntaxError: invalid syntax (ledger_checkpoint_651.py, line 109)",
-      "seconds": 0.22
+      "detail": "SyntaxError: invalid syntax (ledger_checkpoint_651.py, line 123)",
+      "seconds": 0.21
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 136,
+      "line": 155,
       "op": "bool",
       "from": "True",
       "to": "False",
       "text": "return True  # 空树天然一致（无根）",
       "status": "killed",
       "detail": "test_p13_verify_consistency_from_empty_tree_is_true: AssertionError: ",
-      "seconds": 0.88
+      "seconds": 0.87
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 150,
+      "line": 169,
       "op": "bool",
       "from": "if",
       "to": "if not",
       "text": "if sn == 0:",
       "status": "killed",
       "detail": "test_p13_verify_consistency_requires_both_roots: AssertionError: ",
-      "seconds": 0.85
+      "seconds": 0.86
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 122,
+      "line": 136,
       "op": "cmp",
       "from": ">",
       "to": ">=",
       "text": "def _subproof(m: int, leaves: list[bytes], b: bool) -> list[bytes]:",
       "status": "import_error",
-      "detail": "SyntaxError: expected ':' (ledger_checkpoint_651.py, line 122)",
+      "detail": "SyntaxError: expected ':' (ledger_checkpoint_651.py, line 136)",
       "seconds": 0.21
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 124,
+      "line": 138,
       "op": "bool",
       "from": "if",
       "to": "if not",
       "text": "if m == n:",
       "status": "killed",
       "detail": "test_p13_verify_consistency_requires_both_roots: AssertionError: ",
-      "seconds": 0.88
+      "seconds": 0.87
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 94,
+      "line": 108,
       "op": "bool",
       "from": "if",
       "to": "if not",
       "text": "if m < k:",
       "status": "killed",
       "detail": "test_p4_consistency_and_inclusion: AssertionError: ",
-      "seconds": 1.05
+      "seconds": 1.04
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 134,
+      "line": 153,
       "op": "bool",
       "from": "and",
       "to": "or",
       "text": "return proof == [] and old_root == new_root",
       "status": "killed",
       "detail": "test_p13_verify_consistency_same_size_requires_equal_roots: AssertionError: ",
-      "seconds": 0.87
+      "seconds": 0.9
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 107,
+      "line": 121,
       "op": "cmp",
       "from": "==",
       "to": "!=",
       "text": "while (fn & 1) == 0 and fn != 0:",
       "status": "killed",
       "detail": "test_p4_consistency_and_inclusion: AssertionError: ",
-      "seconds": 1.02
+      "seconds": 1.03
     },
     {
       "target": "ledger_checkpoint_651",
@@ -1139,58 +1139,58 @@
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 104,
+      "line": 118,
       "op": "bool",
       "from": "False",
       "to": "True",
       "text": "return False",
       "status": "killed",
       "detail": "test_p13_verify_inclusion_rejects_over_long_proof: AssertionError: ",
-      "seconds": 0.87
+      "seconds": 0.86
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 94,
+      "line": 108,
       "op": "cmp",
       "from": "<",
       "to": "<=",
       "text": "if m < k:",
       "status": "killed",
       "detail": "test_p4_consistency_and_inclusion: AssertionError: ",
-      "seconds": 1.05
+      "seconds": 1.03
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 133,
+      "line": 151,
       "op": "cmp",
-      "from": "==",
-      "to": "!=",
-      "text": "if m == n:",
-      "status": "killed",
-      "detail": "test_p13_verify_consistency_from_empty_tree_is_true: AssertionError: ",
-      "seconds": 0.88
+      "from": ">",
+      "to": ">=",
+      "text": "def verify_consistency(m: int, n: int, proof: list[bytes], old_root: bytes, new_root: byte",
+      "status": "import_error",
+      "detail": "SyntaxError: expected ':' (ledger_checkpoint_651.py, line 151)",
+      "seconds": 0.21
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 129,
+      "line": 148,
       "op": "bool",
       "from": "False",
       "to": "True",
-      "text": "return _subproof(m - k, leaves[k:], False) + [mth(leaves[:k])]  # type: ignore[list-item]",
+      "text": "return _subproof(m - k, leaves[k:], False) + [_mth_nonempty(leaves[:k])]",
       "status": "killed",
       "detail": "test_p4_consistency_and_inclusion: AssertionError: consistency m=3",
-      "seconds": 4.49
+      "seconds": 4.1
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 133,
+      "line": 152,
       "op": "bool",
       "from": "if",
       "to": "if not",
       "text": "if m == n:",
       "status": "killed",
       "detail": "test_p13_verify_consistency_from_empty_tree_is_true: AssertionError: ",
-      "seconds": 0.89
+      "seconds": 0.92
     },
     {
       "target": "ledger_checkpoint_651",
@@ -1201,7 +1201,7 @@
       "text": "if n == 1:",
       "status": "killed",
       "detail": "test_p13_verify_consistency_requires_both_roots: AssertionError: ",
-      "seconds": 0.88
+      "seconds": 0.94
     },
     {
       "target": "ledger_checkpoint_651",
@@ -1211,8 +1211,8 @@
       "to": "if not",
       "text": "if n == 0:",
       "status": "killed",
-      "detail": "test_p13_verify_consistency_requires_both_roots: TypeError: can't concat NoneType to bytes",
-      "seconds": 0.86
+      "detail": "test_p13_verify_consistency_requires_both_roots: AssertionError: 内部契约破坏：非空切片不应得到 None",
+      "seconds": 0.89
     },
     {
       "target": "ledger_checkpoint_651",
@@ -1223,51 +1223,51 @@
       "text": "if n == 1:",
       "status": "killed",
       "detail": "test_p13_verify_consistency_requires_both_roots: AssertionError: ",
-      "seconds": 0.86
+      "seconds": 0.88
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 145,
+      "line": 164,
       "op": "bool",
       "from": "not",
       "to": "''",
       "text": "if not proof:",
       "status": "killed",
       "detail": "test_p13_consistency_proof_required_when_fn_nonzero: IndexError: list index out of range",
-      "seconds": 0.85
+      "seconds": 0.77
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 109,
+      "line": 123,
       "op": "cmp",
       "from": ">=",
       "to": ">",
       "text": "sn >>= 1",
       "status": "killed",
       "detail": "test_p4_consistency_and_inclusion: AssertionError: ",
-      "seconds": 4.09
+      "seconds": 4.99
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 134,
+      "line": 152,
       "op": "cmp",
       "from": "==",
       "to": "!=",
-      "text": "return proof == [] and old_root == new_root",
+      "text": "if m == n:",
       "status": "killed",
-      "detail": "test_p13_verify_consistency_same_size_requires_equal_roots: AssertionError: ",
-      "seconds": 0.88
+      "detail": "test_p13_verify_consistency_from_empty_tree_is_true: AssertionError: ",
+      "seconds": 0.94
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 127,
+      "line": 146,
       "op": "cmp",
-      "from": "<=",
-      "to": "<",
+      "from": "<",
+      "to": "<=",
       "text": "if m <= k:",
-      "status": "killed",
-      "detail": "test_p13_verify_consistency_requires_both_roots: RecursionError: maximum recursion depth exceeded",
-      "seconds": 0.85
+      "status": "import_error",
+      "detail": "SyntaxError: invalid syntax (ledger_checkpoint_651.py, line 146)",
+      "seconds": 0.22
     },
     {
       "target": "ledger_checkpoint_651",
@@ -1278,7 +1278,7 @@
       "text": "k *= 2",
       "status": "killed",
       "detail": "test_p13_verify_consistency_requires_both_roots: RecursionError: maximum recursion depth exceeded",
-      "seconds": 0.89
+      "seconds": 0.88
     },
     {
       "target": "ledger_checkpoint_651",
@@ -1293,25 +1293,25 @@
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 127,
+      "line": 146,
       "op": "bool",
       "from": "if",
       "to": "if not",
       "text": "if m <= k:",
       "status": "killed",
       "detail": "test_p13_verify_consistency_requires_both_roots: RecursionError: maximum recursion depth exceeded",
-      "seconds": 0.86
+      "seconds": 0.9
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 119,
+      "line": 133,
       "op": "bool",
       "from": "True",
       "to": "False",
       "text": "return _subproof(m, leaves, True)",
       "status": "killed",
       "detail": "test_p13_verify_consistency_requires_both_roots: AssertionError: ",
-      "seconds": 0.84
+      "seconds": 0.87
     },
     {
       "target": "ledger_checkpoint_651",
@@ -1321,45 +1321,23 @@
       "to": "!=",
       "text": "if n == 0:",
       "status": "killed",
-      "detail": "test_p13_verify_consistency_requires_both_roots: TypeError: can't concat NoneType to bytes",
-      "seconds": 0.84
+      "detail": "test_p13_verify_consistency_requires_both_roots: AssertionError: 内部契约破坏：非空切片不应得到 None",
+      "seconds": 0.86
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 89,
+      "line": 103,
       "op": "cmp",
       "from": "==",
       "to": "!=",
       "text": "if n == 0 or m < 0 or m >= n:",
       "status": "killed",
       "detail": "test_p4_consistency_and_inclusion: AssertionError: ",
-      "seconds": 1.04
+      "seconds": 1.08
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 140,
-      "op": "cmp",
-      "from": ">",
-      "to": ">=",
-      "text": "sn >>= 1",
-      "status": "import_error",
-      "detail": "SyntaxError: invalid syntax (ledger_checkpoint_651.py, line 140)",
-      "seconds": 0.21
-    },
-    {
-      "target": "ledger_checkpoint_651",
-      "line": 89,
-      "op": "cmp",
-      "from": ">",
-      "to": ">=",
-      "text": "if n == 0 or m < 0 or m >= n:",
-      "status": "import_error",
-      "detail": "SyntaxError: invalid syntax (ledger_checkpoint_651.py, line 89)",
-      "seconds": 0.21
-    },
-    {
-      "target": "ledger_checkpoint_651",
-      "line": 108,
+      "line": 158,
       "op": "cmp",
       "from": ">=",
       "to": ">",
@@ -1370,25 +1348,47 @@
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 112,
+      "line": 103,
+      "op": "cmp",
+      "from": ">",
+      "to": ">=",
+      "text": "if n == 0 or m < 0 or m >= n:",
+      "status": "import_error",
+      "detail": "SyntaxError: invalid syntax (ledger_checkpoint_651.py, line 103)",
+      "seconds": 0.21
+    },
+    {
+      "target": "ledger_checkpoint_651",
+      "line": 122,
+      "op": "cmp",
+      "from": ">=",
+      "to": ">",
+      "text": "fn >>= 1",
+      "status": "timeout",
+      "detail": "超过 25.0s（已强杀子进程）",
+      "seconds": 25.03
+    },
+    {
+      "target": "ledger_checkpoint_651",
+      "line": 126,
       "op": "cmp",
       "from": ">",
       "to": ">=",
       "text": "fn >>= 1",
       "status": "import_error",
-      "detail": "SyntaxError: invalid syntax (ledger_checkpoint_651.py, line 112)",
+      "detail": "SyntaxError: invalid syntax (ledger_checkpoint_651.py, line 126)",
       "seconds": 0.22
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 89,
+      "line": 103,
       "op": "cmp",
       "from": ">=",
       "to": ">",
       "text": "if n == 0 or m < 0 or m >= n:",
       "status": "killed",
       "detail": "test_p13_inclusion_path_out_of_range_is_empty: AssertionError: ",
-      "seconds": 0.86
+      "seconds": 0.76
     },
     {
       "target": "ledger_checkpoint_651",
@@ -1403,36 +1403,36 @@
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 152,
+      "line": 171,
       "op": "bool",
       "from": "or",
       "to": "and",
       "text": "if (fn & 1) or (fn == sn):",
       "status": "killed",
       "detail": "test_p4_consistency_and_inclusion: AssertionError: consistency m=3",
-      "seconds": 9.59
+      "seconds": 3.51
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 125,
+      "line": 139,
       "op": "bool",
       "from": "if",
       "to": "if not",
-      "text": "return [] if b else [mth(leaves)]  # type: ignore[list-item]",
+      "text": "if b:",
       "status": "killed",
       "detail": "test_p13_verify_consistency_requires_both_roots: AssertionError: ",
-      "seconds": 0.93
+      "seconds": 0.89
     },
     {
       "target": "ledger_checkpoint_651",
-      "line": 142,
+      "line": 161,
       "op": "bool",
       "from": "if",
       "to": "if not",
       "text": "if fn == 0:",
       "status": "killed",
       "detail": "test_p13_verify_consistency_requires_both_roots: AssertionError: ",
-      "seconds": 0.93
+      "seconds": 0.88
     },
     {
       "target": "ledger_checkpoint_651",
@@ -1443,7 +1443,7 @@
       "text": "def leaf_hash(data: bytes) -> bytes:",
       "status": "import_error",
       "detail": "SyntaxError: expected ':' (ledger_checkpoint_651.py, line 55)",
-      "seconds": 0.23
+      "seconds": 0.21
     },
     {
       "target": "decision_event_v2_626",
@@ -1454,7 +1454,7 @@
       "text": "return False",
       "status": "killed",
       "detail": "test_p13_verify_chain_detects_deleted_middle_event: AssertionError: ",
-      "seconds": 0.94
+      "seconds": 0.9
     },
     {
       "target": "decision_event_v2_626",
@@ -1465,7 +1465,7 @@
       "text": "def finalize(self, prev_hash: str, seq: int) -> \"DecisionEvent\":",
       "status": "import_error",
       "detail": "SyntaxError: expected ':' (decision_event_v2_626.py, line 116)",
-      "seconds": 0.23
+      "seconds": 0.22
     },
     {
       "target": "decision_event_v2_626",
@@ -1476,7 +1476,7 @@
       "text": "alive = [e for e in evs if e.event_id not in superseded]",
       "status": "killed",
       "detail": "test_p13_get_current_follows_supersede_relation: AssertionError: ",
-      "seconds": 0.93
+      "seconds": 0.89
     },
     {
       "target": "decision_event_v2_626",
@@ -1487,7 +1487,7 @@
       "text": "if self.operation == \"REPLACE\" and not self.supersedes:",
       "status": "killed",
       "detail": "test_p11_concurrent_append_under_lock: AssertionError: 并发追加抛错：['T0-0: ValueError: 事件非法：operation=REPLACE 时 supersedes 必填（P0-D）', 'T0-1: ValueError: 事件非法：operation=RE",
-      "seconds": 0.89
+      "seconds": 0.85
     },
     {
       "target": "decision_event_v2_626",
@@ -1498,7 +1498,7 @@
       "text": "def get_current(self, target_type: str, target_id: str) -> Optional[DecisionEvent]:",
       "status": "import_error",
       "detail": "SyntaxError: expected ':' (decision_event_v2_626.py, line 237)",
-      "seconds": 0.23
+      "seconds": 0.22
     },
     {
       "target": "decision_event_v2_626",
@@ -1509,7 +1509,7 @@
       "text": "if self.result == \"MODIFY\" and not self.modification:",
       "status": "killed",
       "detail": "test_p11_concurrent_append_under_lock: AssertionError: 并发追加抛错：['T0-0: ValueError: 事件非法：result=MODIFY 时 modification 必填', 'T0-1: ValueError: 事件非法：result=MODIFY 时 modi",
-      "seconds": 0.93
+      "seconds": 0.78
     },
     {
       "target": "decision_event_v2_626",
@@ -1520,7 +1520,7 @@
       "text": "superseded.update(e.supersedes or [])",
       "status": "survived",
       "detail": "",
-      "seconds": 2.17
+      "seconds": 2.07
     },
     {
       "target": "decision_event_v2_626",
@@ -1531,7 +1531,7 @@
       "text": "prev = self._events[-1].self_hash if self._events else GENESIS",
       "status": "killed",
       "detail": "test_p11_concurrent_append_under_lock: AssertionError: 并发追加抛错：['T0-0: IndexError: list index out of range', 'T0-1: IndexError: list index out of range', 'T0-2: Index",
-      "seconds": 0.8
+      "seconds": 0.93
     },
     {
       "target": "decision_event_v2_626",
@@ -1542,7 +1542,7 @@
       "text": "if self.operation == \"REPLACE\" and not self.supersedes:",
       "status": "killed",
       "detail": "test_p11_concurrent_append_under_lock: AssertionError: 并发追加抛错：['T0-0: ValueError: 事件非法：operation=REPLACE 时 supersedes 必填（P0-D）', 'T0-1: ValueError: 事件非法：operation=RE",
-      "seconds": 0.92
+      "seconds": 0.89
     },
     {
       "target": "decision_event_v2_626",
@@ -1564,7 +1564,7 @@
       "text": "def verify_chain(self) -> bool:",
       "status": "import_error",
       "detail": "SyntaxError: expected ':' (decision_event_v2_626.py, line 252)",
-      "seconds": 0.23
+      "seconds": 0.22
     },
     {
       "target": "decision_event_v2_626",
@@ -1575,7 +1575,7 @@
       "text": "if self.result == \"MODIFY\" and not self.modification:",
       "status": "killed",
       "detail": "test_p11_concurrent_append_under_lock: AssertionError: 并发追加抛错：['T0-0: ValueError: 事件非法：result=MODIFY 时 modification 必填', 'T0-1: ValueError: 事件非法：result=MODIFY 时 modi",
-      "seconds": 0.92
+      "seconds": 0.88
     },
     {
       "target": "decision_event_v2_626",
@@ -1586,7 +1586,7 @@
       "text": "if e.compute_self_hash() != e.self_hash:",
       "status": "killed",
       "detail": "test_p11_concurrent_append_under_lock: AssertionError: ",
-      "seconds": 0.9
+      "seconds": 0.91
     },
     {
       "target": "decision_event_v2_626",
@@ -1608,7 +1608,7 @@
       "text": "return alive[-1] if alive else evs[-1]",
       "status": "survived",
       "detail": "",
-      "seconds": 1.64
+      "seconds": 1.6
     },
     {
       "target": "decision_event_v2_626",
@@ -1619,7 +1619,7 @@
       "text": "return False",
       "status": "killed",
       "detail": "test_p9_chain_broken_if_first_event_replaced: AssertionError: ",
-      "seconds": 1.61
+      "seconds": 1.97
     },
     {
       "target": "decision_event_v2_626",
@@ -1630,7 +1630,7 @@
       "text": "return True",
       "status": "killed",
       "detail": "test_p11_concurrent_append_under_lock: AssertionError: ",
-      "seconds": 0.96
+      "seconds": 0.93
     },
     {
       "target": "decision_event_v2_626",
@@ -1641,7 +1641,7 @@
       "text": "if self.result == \"ABSTAIN\" and not self.abstain_reason:",
       "status": "killed",
       "detail": "test_p11_concurrent_append_under_lock: AssertionError: 并发追加抛错：['T0-0: ValueError: 事件非法：result=ABSTAIN 时 abstain_reason 必填', 'T0-1: ValueError: 事件非法：result=ABSTAIN 时 ",
-      "seconds": 0.94
+      "seconds": 0.79
     },
     {
       "target": "decision_event_v2_626",
@@ -1663,7 +1663,7 @@
       "text": "if not evs:",
       "status": "killed",
       "detail": "test_p13_get_current_follows_supersede_relation: AssertionError: ",
-      "seconds": 0.79
+      "seconds": 0.87
     },
     {
       "target": "decision_event_v2_626",
@@ -1674,7 +1674,7 @@
       "text": "if e.prev_hash != prev:",
       "status": "killed",
       "detail": "test_p11_concurrent_append_under_lock: AssertionError: ",
-      "seconds": 0.89
+      "seconds": 0.91
     },
     {
       "target": "decision_event_v2_626",
@@ -1685,7 +1685,7 @@
       "text": "if e.prev_hash != prev:",
       "status": "killed",
       "detail": "test_p11_concurrent_append_under_lock: AssertionError: ",
-      "seconds": 0.91
+      "seconds": 0.89
     },
     {
       "target": "decision_event_v2_626",
@@ -1696,7 +1696,7 @@
       "text": "def validate(self) -> list[str]:",
       "status": "import_error",
       "detail": "SyntaxError: expected ':' (decision_event_v2_626.py, line 124)",
-      "seconds": 0.23
+      "seconds": 0.21
     },
     {
       "target": "decision_event_v2_626",
@@ -1707,7 +1707,7 @@
       "text": "if not self.target_id:",
       "status": "killed",
       "detail": "test_p11_concurrent_append_under_lock: AssertionError: 并发追加抛错：['T0-0: ValueError: 事件非法：target_id 必填', 'T0-1: ValueError: 事件非法：target_id 必填', 'T0-2: ValueError: 事件非法：",
-      "seconds": 0.93
+      "seconds": 0.75
     },
     {
       "target": "decision_event_v2_626",
@@ -1718,7 +1718,7 @@
       "text": "if self.result == \"ABSTAIN\" and not self.abstain_reason:",
       "status": "killed",
       "detail": "test_p11_concurrent_append_under_lock: AssertionError: 并发追加抛错：['T0-0: ValueError: 事件非法：result=ABSTAIN 时 abstain_reason 必填', 'T0-1: ValueError: 事件非法：result=ABSTAIN 时 ",
-      "seconds": 0.9
+      "seconds": 0.89
     },
     {
       "target": "decision_event_v2_626",
@@ -1729,7 +1729,7 @@
       "text": "if errs:",
       "status": "killed",
       "detail": "test_p11_concurrent_append_under_lock: AssertionError: 并发追加抛错：['T0-0: ValueError: 事件非法：', 'T0-1: ValueError: 事件非法：', 'T0-2: ValueError: 事件非法：']",
-      "seconds": 0.93
+      "seconds": 0.89
     }
   ]
 }

@@ -117,37 +117,47 @@ def collect() -> dict:
 
     detect = None
     try:
-        r3 = _json("data/holdout_reveal_3_665.json")
-        sub = r3.get("error_subset", {})
+        # 672f：切到 671a 扩样后的权威产物（h31–h40 已 reveal，holdout 可测 21）
+        r3 = _json("data/holdout_reveal_4_671a.json")
+        cum = r3.get("cumulative", {})
+        sub = cum.get("error_subset", {})
         # 668：**口径与分母从产物读**，不许在工具里写死 —— 666 的 81.2% 就是
         # "口径字符串写在工具里、数字写在文档里、两边没人对过"造成的。
+        # 672f：671a 产物不带 opt_levels ⇒ 档位从检测判据单一来源读（holdout_reveal_661.OPT_LEVELS）
+        import holdout_reveal_661 as rv661  # noqa: PLC0415
+        opts = list(getattr(rv661, "OPT_LEVELS", ()) or [])
+        caliber = r3.get("caliber") or "产物未声明口径（旧产物）"
+        if opts:
+            caliber = f"{caliber}；检测档位 {'/'.join(opts)} 任一档报出即 catch"
         detect = {"rate_pct": sub.get("detect_rate_pct"), "catch": sub.get("catch"),
                   "miss": sub.get("miss"), "unknown": sub.get("unknown"),
                   "den": (sub.get("catch") or 0) + (sub.get("miss") or 0),
-                  "denominator": (r3.get("denominator") or {}).get("meaning")
+                  "denominator": (cum.get("denominator") or {}).get("meaning")
                   or "产物未声明分母（旧产物）",
-                  "caliber": r3.get("caliber") or "产物未声明口径（旧产物）",
-                  "opt_levels": r3.get("opt_levels") or [],
+                  "caliber": caliber,
+                  "opt_levels": opts,
                   "env": (r3.get("env") or {}).get("wsl_gpp"),
-                  "detail": r3.get("per_sample_detail"),
-                  "cmd": "python tools/holdout_reveal_3_665.py"}
+                  "detail": "data/holdout/reveal_3_detail_671a.json",
+                  "cmd": "python tools/holdout_reveal_4_671a.py"}
     except Exception as e:  # noqa: BLE001
-        unavailable.append(f"holdout_reveal_3_665.json: {e}")
+        unavailable.append(f"holdout_reveal_4_671a.json: {e}")
     m["holdout"] = detect
 
     ext = None
     try:
-        r = _json("data/external_corpus_reveal_665.json")
-        catch, miss = r.get("catch") or 0, r.get("miss") or 0
-        total = r.get("total") or 0
-        ext = {"rate_pct": r.get("detect_rate_pct"),
+        # 672f：切到 671a 扩样后的权威产物（d3e-* 已 reveal，corpus 可测 48）
+        r = _json("data/external_corpus_reveal_671a.json")
+        cum = r.get("cumulative", {})
+        catch, miss = cum.get("catch") or 0, cum.get("miss") or 0
+        total = cum.get("total") or 0
+        ext = {"rate_pct": cum.get("detect_rate_pct"),
                "rate_pct_all": (round(catch / total * 100, 1) if total else None),
                "total": total, "catch": catch, "miss": miss,
-               "unknown": r.get("unknown"), "den": catch + miss,
-               "denominator": r.get("denominator") or "catch+miss（产物未声明 ⇒ 这里按口径推算）",
-               "cmd": "python tools/external_corpus_reveal_665.py"}
+               "unknown": cum.get("unknown"), "den": catch + miss,
+               "denominator": cum.get("denominator") or "catch+miss（产物未声明 ⇒ 这里按口径推算）",
+               "cmd": "python tools/external_corpus_reveal_671a.py"}
     except Exception as e:  # noqa: BLE001
-        unavailable.append(f"external_corpus_reveal_665.json: {e}")
+        unavailable.append(f"external_corpus_reveal_671a.json: {e}")
     m["external"] = ext
 
     cf = None

@@ -1,0 +1,61 @@
+{
+  "schema": "queyi-reveal-update/672f",
+  "generated_by": "672f W1（baseline 三臂用 671a 新分母重跑）",
+  "generated_at": "2026-10-01",
+  "prereg": "data/experiments/prereg_672f.json（先于本重跑单独 commit：8da9c601）",
+  "sources": {
+    "holdout_detail": "data/holdout/reveal_3_detail_671a.json（planted=true 真错 22 条，可测 21）",
+    "corpus_detail": "data/external_corpus/reveal_detail_671a.json（60 条，可测 48）",
+    "path_a": "tools/baseline_670a.py --run（标准脚本，重跑落盘）",
+    "path_b": "tools/verify_baseline_672f.py（独立复算，不调用路径 A 代码）",
+    "cross_check": "data/experiments/baseline_verify_672f.json（双路径对账 PASS，全部差 < 0.1pp）"
+  },
+  "seed": 20260930,
+  "caliber": "可测口径 = catch + miss；unknown（本机无检测器）与 not_error（对照）不进分母",
+  "holdout": {
+    "label": "holdout 检出率（可测口径，真错子集）",
+    "before": { "k": 14, "n": 16, "rate_pct": 87.5, "source": "data/experiments/baseline_fd.json（旧值，665/668 分母）" },
+    "after": {
+      "k": 17, "n": 21, "rate_pct": 81.0,
+      "cp": [58.1, 94.6],
+      "source": "data/experiments/baseline_fd.json（672f 重跑，671a 扩样分母）"
+    },
+    "static": {
+      "before": { "k": 1, "n": 16, "rate_pct": 6.2 },
+      "after": { "k": 1, "n": 21, "rate_pct": 4.8, "cp": [0.1, 23.8] }
+    },
+    "random_proxy": {
+      "before": { "k": 1, "n": 16, "rate_pct": 6.2 },
+      "after": { "k": 2, "n": 21, "rate_pct": 9.5, "cp": [1.2, 30.4] }
+    },
+    "fd_vs_static": { "delta_pp": 76.2, "ci_paired_wald_pp": [58.0, 94.4], "mcnemar_p": 3.05e-05, "cohens_h": 1.80 },
+    "fd_vs_random": { "delta_pp": 71.4, "ci_paired_wald_pp": [52.1, 90.8], "mcnemar_p": 6.10e-05, "cohens_h": 1.61 },
+    "interpretation": "分母 16→21（h31–h40 扩样后 planted 真错可测子集）；FD 检出率 87.5%→81.0% 是测量对象变化（分母扩），不是验证器变弱；预注册 H1（Δ>20pp 且 p<0.05）成立"
+  },
+  "corpus": {
+    "label": "外部 corpus 检出率（可测口径）",
+    "before": { "k": 14, "n": 32, "rate_pct": 43.8, "source": "data/experiments/baseline_fd.json（旧值，665 分母）" },
+    "after": {
+      "k": 26, "n": 48, "rate_pct": 54.2,
+      "cp": [39.2, 68.6],
+      "source": "data/experiments/baseline_fd.json（672f 重跑，671a 扩样分母）"
+    },
+    "static": {
+      "before": { "k": 4, "n": 32, "rate_pct": 12.5 },
+      "after": { "k": 7, "n": 48, "rate_pct": 14.6, "cp": [6.1, 27.8] }
+    },
+    "random_proxy": {
+      "before": { "k": 1, "n": 32, "rate_pct": 3.1 },
+      "after": { "k": 8, "n": 48, "rate_pct": 16.7, "cp": [7.5, 30.2] }
+    },
+    "fd_vs_static": { "delta_pp": 39.6, "ci_paired_wald_pp": [25.7, 53.4], "mcnemar_p": 3.81e-06, "cohens_h": 0.87 },
+    "fd_vs_random": { "delta_pp": 37.5, "ci_paired_wald_pp": [23.8, 51.2], "mcnemar_p": 7.63e-06, "cohens_h": 0.81 },
+    "interpretation": "分母 32→48（d3e-* 扩样后）；FD 43.8%→54.2%；预注册 H2（Δ>15pp 且 p<0.05）成立"
+  },
+  "discrepancy_found_and_fixed": {
+    "what": "论文 v0.9 §6.1 原记载 Random† corpus = 4.2%（2/48）[0.5, 14.3]，与本次可执行重跑 16.7%（8/48）不符",
+    "root_cause": "671b 手算该值时沿用了旧 40 条 corpus 的 FD 仪器预算（fd_used=4 个），而扩样后 FD 实际使用 5 个仪器（asan/ubsan/compiler-warn/cross-compile/tsan）；Random† 是预算对齐臂，预算变了抽取数随之变化",
+    "resolution": "以可执行、同种子（20260930）可复现的脚本重跑值为权威；论文只改数字不改措辞，双路径复算一致（差 < 0.1pp）"
+  },
+  "honest_note": "Random† 是仪器级代理，不是论文 §5.2 的真 B3，其 Δ 只作方向性读法，不进论文确认性结论；真 B3 需拆仓 select_assets 接口（归 672g）。本批为 8 周实验抢救的 W1，W2–W8（LLM-as-verifier 第四臂、A0–A5 ablation、外部锚定、arXiv 等）未做。"
+}

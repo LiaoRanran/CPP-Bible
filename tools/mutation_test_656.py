@@ -56,6 +56,10 @@ import re
 import subprocess
 import sys
 import tempfile
+
+#: 672f：统一项目随机种子（670d §3.1 约定值）——变异体抽样可复现（G-SEED-FIXED）
+SEED = 20260930
+random.seed(SEED)
 import time
 from pathlib import Path
 from typing import Any, Callable

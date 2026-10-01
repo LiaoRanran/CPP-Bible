@@ -16,8 +16,8 @@
     "statement": "657 收工实测全量 compile PASS（52 卡真编译，见 657_acceptance_report.md）"
   },
   "mutation": {
-    "core_kill_rate_pct": 97.3,
-    "all_kill_rate_pct": 81.5
+    "core_kill_rate_pct": 96.5,
+    "all_kill_rate_pct": 81.8
   },
   "cards": {
     "atoms_total": 53,

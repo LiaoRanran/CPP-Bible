@@ -276,8 +276,8 @@ def metric_corpus(root: Path) -> dict[str, Any]:
 
 def metric_mutation(root: Path) -> dict[str, Any]:
     out = {"key": "mutation", "label": "变异击杀率（core / all）", "available": False, "checks": []}
-    for name, rel, claim in (("core", "data/656_mutation_report_core.json", 97.3),
-                                ("all", "data/656_mutation_report_all.json", 81.5)):
+    for name, rel, claim in (("core", "data/656_mutation_report_core.json", 96.5),
+                                ("all", "data/656_mutation_report_all.json", 81.8)):
         d = _load(root, rel)
         if not isinstance(d, dict):
             continue

@@ -2,184 +2,102 @@
   "schema": "queyi-baseline-experiment/670a",
   "arm": "failure-driven（现状）",
   "holdout": {
-    "catch": 14,
-    "miss": 2,
+    "catch": 17,
+    "miss": 4,
     "unknown": 1,
     "not_error": 0,
-    "total": 17,
+    "total": 22,
     "all_samples": {
-      "k": 14,
-      "n": 17,
-      "numerator": 14,
-      "denominator": 17,
-      "point": 0.8235294117647058,
-      "cp_low": 0.5656821271557158,
-      "cp_high": 0.9620149319293743,
+      "k": 17,
+      "n": 22,
+      "numerator": 17,
+      "denominator": 22,
+      "point": 0.7727272727272727,
+      "cp_low": 0.5462963763378781,
+      "cp_high": 0.9217937396481068,
       "conf": 0.95
     },
     "measurable": {
-      "k": 14,
-      "n": 16,
-      "numerator": 14,
-      "denominator": 16,
-      "point": 0.875,
-      "cp_low": 0.6165237631507363,
-      "cp_high": 0.984486396184586,
+      "k": 17,
+      "n": 21,
+      "numerator": 17,
+      "denominator": 21,
+      "point": 0.8095238095238095,
+      "cp_low": 0.5809339588164719,
+      "cp_high": 0.9455364318215931,
       "conf": 0.95
     },
     "no_unknown": {
-      "k": 14,
-      "n": 16,
-      "numerator": 14,
-      "denominator": 16,
-      "point": 0.875,
-      "cp_low": 0.6165237631507363,
-      "cp_high": 0.984486396184586,
+      "k": 17,
+      "n": 21,
+      "numerator": 17,
+      "denominator": 21,
+      "point": 0.8095238095238095,
+      "cp_low": 0.5809339588164719,
+      "cp_high": 0.9455364318215931,
       "conf": 0.95
     },
     "delta_pp": {
-      "measurable_minus_all": 5.099999999999994,
+      "measurable_minus_all": 3.700000000000003,
       "measurable_minus_no_unknown": 0.0
     }
   },
   "corpus": {
-    "catch": 14,
-    "miss": 18,
-    "unknown": 5,
+    "catch": 26,
+    "miss": 22,
+    "unknown": 9,
     "not_error": 3,
-    "total": 40,
+    "total": 60,
     "all_samples": {
-      "k": 14,
-      "n": 40,
-      "numerator": 14,
-      "denominator": 40,
-      "point": 0.35,
-      "cp_low": 0.20628249087076744,
-      "cp_high": 0.51684445364899,
+      "k": 26,
+      "n": 60,
+      "numerator": 26,
+      "denominator": 60,
+      "point": 0.43333333333333335,
+      "cp_low": 0.30588142684217434,
+      "cp_high": 0.5675903464453858,
       "conf": 0.95
     },
     "measurable": {
-      "k": 14,
-      "n": 32,
-      "numerator": 14,
-      "denominator": 32,
-      "point": 0.4375,
-      "cp_low": 0.26363812441098466,
-      "cp_high": 0.6233742684099057,
+      "k": 26,
+      "n": 48,
+      "numerator": 26,
+      "denominator": 48,
+      "point": 0.5416666666666666,
+      "cp_low": 0.3917219975989088,
+      "cp_high": 0.6862845779278237,
       "conf": 0.95
     },
     "no_unknown": {
-      "k": 14,
-      "n": 35,
-      "numerator": 14,
-      "denominator": 35,
-      "point": 0.4,
-      "cp_low": 0.2387081104533415,
-      "cp_high": 0.578882278117901,
+      "k": 26,
+      "n": 51,
+      "numerator": 26,
+      "denominator": 51,
+      "point": 0.5098039215686274,
+      "cp_low": 0.36595713967096644,
+      "cp_high": 0.6524720370048835,
       "conf": 0.95
     },
     "delta_pp": {
-      "measurable_minus_all": 8.799999999999997,
-      "measurable_minus_no_unknown": 3.799999999999997
+      "measurable_minus_all": 10.900000000000006,
+      "measurable_minus_no_unknown": 3.200000000000003
     }
   },
   "corpus_by_layer": {
-    "A_local": {
-      "catch": 13,
-      "miss": 11,
-      "unknown": 1,
-      "not_error": 0,
-      "total": 25,
-      "all_samples": {
-        "k": 13,
-        "n": 25,
-        "numerator": 13,
-        "denominator": 25,
-        "point": 0.52,
-        "cp_low": 0.31305704445703286,
-        "cp_high": 0.7220319903300532,
-        "conf": 0.95
-      },
-      "measurable": {
-        "k": 13,
-        "n": 24,
-        "numerator": 13,
-        "denominator": 24,
-        "point": 0.5416666666666666,
-        "cp_low": 0.3282080756951785,
-        "cp_high": 0.7444697980052535,
-        "conf": 0.95
-      },
-      "no_unknown": {
-        "k": 13,
-        "n": 24,
-        "numerator": 13,
-        "denominator": 24,
-        "point": 0.5416666666666666,
-        "cp_low": 0.3282080756951785,
-        "cp_high": 0.7444697980052535,
-        "conf": 0.95
-      },
-      "delta_pp": {
-        "measurable_minus_all": 2.200000000000003,
-        "measurable_minus_no_unknown": 0.0
-      }
-    },
-    "B_cross_or_measure": {
-      "catch": 1,
-      "miss": 7,
-      "unknown": 0,
-      "not_error": 3,
-      "total": 11,
-      "all_samples": {
-        "k": 1,
-        "n": 11,
-        "numerator": 1,
-        "denominator": 11,
-        "point": 0.09090909090909091,
-        "cp_low": 0.002298972213814258,
-        "cp_high": 0.4127799169883827,
-        "conf": 0.95
-      },
-      "measurable": {
-        "k": 1,
-        "n": 8,
-        "numerator": 1,
-        "denominator": 8,
-        "point": 0.125,
-        "cp_low": 0.0031597235312519085,
-        "cp_high": 0.5265096708752062,
-        "conf": 0.95
-      },
-      "no_unknown": {
-        "k": 1,
-        "n": 11,
-        "numerator": 1,
-        "denominator": 11,
-        "point": 0.09090909090909091,
-        "cp_low": 0.002298972213814258,
-        "cp_high": 0.4127799169883827,
-        "conf": 0.95
-      },
-      "delta_pp": {
-        "measurable_minus_all": 3.4000000000000004,
-        "measurable_minus_no_unknown": 3.4000000000000004
-      }
-    },
-    "C_no_local_detector": {
+    "compile-time": {
       "catch": 0,
       "miss": 0,
-      "unknown": 4,
+      "unknown": 2,
       "not_error": 0,
-      "total": 4,
+      "total": 2,
       "all_samples": {
         "k": 0,
-        "n": 4,
+        "n": 2,
         "numerator": 0,
-        "denominator": 4,
+        "denominator": 2,
         "point": 0.0,
         "cp_low": 0.0,
-        "cp_high": 0.6023646356164742,
+        "cp_high": 0.8418861169915808,
         "conf": 0.95
       },
       "measurable": {
@@ -200,6 +118,205 @@
       },
       "delta_pp": {
         "measurable_minus_all": 0.0,
+        "measurable_minus_no_unknown": 0.0
+      }
+    },
+    "compiler-warn": {
+      "catch": 6,
+      "miss": 8,
+      "unknown": 0,
+      "not_error": 0,
+      "total": 14,
+      "all_samples": {
+        "k": 6,
+        "n": 14,
+        "numerator": 6,
+        "denominator": 14,
+        "point": 0.42857142857142855,
+        "cp_low": 0.17661108998211777,
+        "cp_high": 0.7113905999616925,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 6,
+        "n": 14,
+        "numerator": 6,
+        "denominator": 14,
+        "point": 0.42857142857142855,
+        "cp_low": 0.17661108998211777,
+        "cp_high": 0.7113905999616925,
+        "conf": 0.95
+      },
+      "no_unknown": {
+        "k": 6,
+        "n": 14,
+        "numerator": 6,
+        "denominator": 14,
+        "point": 0.42857142857142855,
+        "cp_low": 0.17661108998211777,
+        "cp_high": 0.7113905999616925,
+        "conf": 0.95
+      },
+      "delta_pp": {
+        "measurable_minus_all": 0.0,
+        "measurable_minus_no_unknown": 0.0
+      }
+    },
+    "cross-compile": {
+      "catch": 1,
+      "miss": 9,
+      "unknown": 0,
+      "not_error": 0,
+      "total": 10,
+      "all_samples": {
+        "k": 1,
+        "n": 10,
+        "numerator": 1,
+        "denominator": 10,
+        "point": 0.1,
+        "cp_low": 0.002528578544461776,
+        "cp_high": 0.4450161170281951,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 1,
+        "n": 10,
+        "numerator": 1,
+        "denominator": 10,
+        "point": 0.1,
+        "cp_low": 0.002528578544461776,
+        "cp_high": 0.4450161170281951,
+        "conf": 0.95
+      },
+      "no_unknown": {
+        "k": 1,
+        "n": 10,
+        "numerator": 1,
+        "denominator": 10,
+        "point": 0.1,
+        "cp_low": 0.002528578544461776,
+        "cp_high": 0.4450161170281951,
+        "conf": 0.95
+      },
+      "delta_pp": {
+        "measurable_minus_all": 0.0,
+        "measurable_minus_no_unknown": 0.0
+      }
+    },
+    "other": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 4,
+      "not_error": 3,
+      "total": 7,
+      "all_samples": {
+        "k": 0,
+        "n": 7,
+        "numerator": 0,
+        "denominator": 7,
+        "point": 0.0,
+        "cp_low": 0.0,
+        "cp_high": 0.4096163972250032,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 0,
+        "n": 0,
+        "point": null,
+        "cp_low": null,
+        "cp_high": null,
+        "note": "n=0 ⇒ 无可测样本，拒绝给率（fail-loud）"
+      },
+      "no_unknown": {
+        "k": 0,
+        "n": 3,
+        "numerator": 0,
+        "denominator": 3,
+        "point": 0.0,
+        "cp_low": 0.0,
+        "cp_high": 0.7075982261787133,
+        "conf": 0.95
+      },
+      "delta_pp": {
+        "measurable_minus_all": 0.0,
+        "measurable_minus_no_unknown": 0.0
+      }
+    },
+    "perf": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 2,
+      "not_error": 0,
+      "total": 2,
+      "all_samples": {
+        "k": 0,
+        "n": 2,
+        "numerator": 0,
+        "denominator": 2,
+        "point": 0.0,
+        "cp_low": 0.0,
+        "cp_high": 0.8418861169915808,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 0,
+        "n": 0,
+        "point": null,
+        "cp_low": null,
+        "cp_high": null,
+        "note": "n=0 ⇒ 无可测样本，拒绝给率（fail-loud）"
+      },
+      "no_unknown": {
+        "k": 0,
+        "n": 0,
+        "point": null,
+        "cp_low": null,
+        "cp_high": null,
+        "note": "n=0 ⇒ 无可测样本，拒绝给率（fail-loud）"
+      },
+      "delta_pp": {
+        "measurable_minus_all": 0.0,
+        "measurable_minus_no_unknown": 0.0
+      }
+    },
+    "sanitizer": {
+      "catch": 19,
+      "miss": 5,
+      "unknown": 1,
+      "not_error": 0,
+      "total": 25,
+      "all_samples": {
+        "k": 19,
+        "n": 25,
+        "numerator": 19,
+        "denominator": 25,
+        "point": 0.76,
+        "cp_low": 0.5487119821833135,
+        "cp_high": 0.906435560668257,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 19,
+        "n": 24,
+        "numerator": 19,
+        "denominator": 24,
+        "point": 0.7916666666666666,
+        "cp_low": 0.5784871563627474,
+        "cp_high": 0.9286813828019447,
+        "conf": 0.95
+      },
+      "no_unknown": {
+        "k": 19,
+        "n": 24,
+        "numerator": 19,
+        "denominator": 24,
+        "point": 0.7916666666666666,
+        "cp_low": 0.5784871563627474,
+        "cp_high": 0.9286813828019447,
+        "conf": 0.95
+      },
+      "delta_pp": {
+        "measurable_minus_all": 3.200000000000003,
         "measurable_minus_no_unknown": 0.0
       }
     }

@@ -492,11 +492,17 @@ class TestConsistencyWithBaselineArtifacts:
         assert r["p1"] == pytest.approx(m["point"], abs=1e-12)
 
     def test_recompute_effect_size_from_artifact_rates(self, fd):
-        h = S.cohens_h(fd["holdout"]["measurable"]["point"], 0.0625)
-        assert abs(h["h"]) == pytest.approx(1.9135, abs=0.005)
+        # 672f：Static 臂从产物读（不硬编码旧分母的 0.0625）
+        st = json.loads((ROOT / "data" / "experiments" / "baseline_static.json")
+                        .read_text(encoding="utf-8"))
+        h = S.cohens_h(fd["holdout"]["measurable"]["point"],
+                       st["holdout"]["measurable"]["point"])
+        assert abs(h["h"]) == pytest.approx(1.7983, abs=0.005)
 
     def test_recompute_holdout_mcnemar_from_artifact(self, fd):
-        # 670a 报告：holdout 14/16 vs 1/16 ⇒ 不一致对 (13, 0)
-        b = fd["holdout"]["measurable"]["k"] - 1
+        # 670a 报告：holdout FD(17/21) vs Static(1/21) ⇒ 不一致对 (16, 0)
+        st = json.loads((ROOT / "data" / "experiments" / "baseline_static.json")
+                        .read_text(encoding="utf-8"))
+        b = fd["holdout"]["measurable"]["k"] - st["holdout"]["measurable"]["k"]
         c = 0
-        assert S.mcnemar_exact(b, c)["p_value"] == pytest.approx(0.000244, abs=1e-6)
+        assert S.mcnemar_exact(b, c)["p_value"] == pytest.approx(3.0518e-05, abs=1e-6)

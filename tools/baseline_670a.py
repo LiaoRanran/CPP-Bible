@@ -10,8 +10,8 @@
 
 | 检测集 | 事实源 | 逐样本口径 |
 |---|---|---|
-| holdout | `data/holdout/reveal_3_detail_668.json` | `planted is True` 且 `planted_desc` 非空 = 真错 |
-| external corpus | `data/external_corpus_reveal_665.json`.`results[]` | `verdict ∈ {catch,miss}` = 可测 |
+| holdout | `data/holdout/reveal_3_detail_671a.json`（671a 扩样后） | `planted is True` 且 `planted_desc` 非空 = 真错 |
+| external corpus | `data/external_corpus/reveal_detail_671a.json`.`per_sample[]`（671a 扩样后） | `verdict ∈ {catch,miss}` = 可测 |
 | 真实缺陷重注入 | `data/defect_fixtures/defects.json`（经 658 的最小重注入） | `caught` |
 
 三条臂（**同一批样本配对**，只变"用不用运行时证据 / 用多少资产"）：
@@ -57,10 +57,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import stat_bounds as sb  # noqa: E402
 
-VERSION = "1.0"
+VERSION = "1.1"                                  # 672f：切到 671a 扩样分母（holdout 21 / corpus 48）
 SEED = 20260930                                  # 670d 设计 §3.1 指定的随机种子
-HOLDOUT_DETAIL = ROOT / "data" / "holdout" / "reveal_3_detail_668.json"
-CORPUS_REVEAL = ROOT / "data" / "external_corpus_reveal_665.json"
+random.seed(SEED)                                # 672f：模块级固定种子（G-SEED-FIXED，两跑必一致）
+HOLDOUT_DETAIL = ROOT / "data" / "holdout" / "reveal_3_detail_671a.json"
+CORPUS_REVEAL = ROOT / "data" / "external_corpus" / "reveal_detail_671a.json"
 OUT_DIR = ROOT / "data" / "experiments"
 
 #: **静态/编译期**仪器（不产生运行时证据）
@@ -89,11 +90,11 @@ def load_holdout_samples() -> list[dict]:
 
 
 def load_corpus_samples() -> list[dict]:
-    """external corpus 逐样本（`results[]` 现读；含 not_error 对照）。"""
+    """external corpus 逐样本（671a 明细 `per_sample[]` 现读；含 not_error 对照）。"""
     d = json.loads(CORPUS_REVEAL.read_text(encoding="utf-8"))
     return [{"id": r["id"], "detector": str(r.get("detector") or "unknown"),
              "verdict": str(r.get("verdict")), "layer": str(r.get("layer") or "?"),
-             "set": "corpus"} for r in d["results"]]
+             "set": "corpus"} for r in d["per_sample"]]
 
 
 # ── 三臂 ──────────────────────────────────────────────────────────────────────
@@ -317,7 +318,7 @@ def selftest() -> int:
         _random_proxy(load_holdout_samples(), _fd(load_holdout_samples()))[1]["picked"]
         == h["random_proxy_selection"]["picked"])
     c = r["corpus"]
-    chk("corpus 样本数 == 40（现读 reveal 逐样本）", c["n_samples"] == 40, f"({c['n_samples']})")
+    chk("corpus 样本数 == 60（671a 扩样后，现读 reveal 逐样本）", c["n_samples"] == 60, f"({c['n_samples']})")
     chk("defect 重注入全部命中（静态夹具）",
         r["defect_reinjection"]["k"] == r["defect_reinjection"]["n"])
     chk("blocked 恰 2 条（真 B3 + 真 detect_static）", len(r["blocked"]) == 2)

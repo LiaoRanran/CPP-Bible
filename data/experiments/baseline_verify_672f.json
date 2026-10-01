@@ -1,0 +1,156 @@
+{
+  "schema": "queyi-baseline-verify/672f",
+  "version": "1.0",
+  "seed": 20260930,
+  "independence": "不 import baseline_670a / stat_bounds / ablation_stats；CP=二分法独立实现；McNemar/h/Newcombe 独立实现",
+  "holdout": {
+    "n_samples": 22,
+    "fd": {
+      "k": 17,
+      "n": 21,
+      "rate_pct": 80.9524,
+      "cp_low": 0.580934,
+      "cp_high": 0.945536,
+      "catch": 17,
+      "miss": 4,
+      "unknown": 1,
+      "not_error": 0
+    },
+    "static": {
+      "k": 1,
+      "n": 21,
+      "rate_pct": 4.7619,
+      "cp_low": 0.001205,
+      "cp_high": 0.23816,
+      "catch": 1,
+      "miss": 20,
+      "unknown": 1,
+      "not_error": 0
+    },
+    "random": {
+      "k": 2,
+      "n": 21,
+      "rate_pct": 9.5238,
+      "cp_low": 0.011749,
+      "cp_high": 0.303774,
+      "catch": 2,
+      "miss": 19,
+      "unknown": 1,
+      "not_error": 0
+    },
+    "fd_vs_static": {
+      "n_pairs": 21,
+      "fd_catch": 17,
+      "other_catch": 1,
+      "discordant_fd_catch": 16,
+      "discordant_other_catch": 0,
+      "delta_pp": 76.1905,
+      "delta_ci_newcombe_pp": [
+        48.6278,
+        88.2256
+      ],
+      "delta_ci_paired_wald_pp": [
+        57.974,
+        94.4069
+      ],
+      "mcnemar_p": 3.0517578125000014e-05,
+      "cohens_h": 1.7983
+    },
+    "fd_vs_random": {
+      "n_pairs": 21,
+      "fd_catch": 17,
+      "other_catch": 2,
+      "discordant_fd_catch": 15,
+      "discordant_other_catch": 0,
+      "delta_pp": 71.4286,
+      "delta_ci_newcombe_pp": [
+        42.8802,
+        84.7225
+      ],
+      "delta_ci_paired_wald_pp": [
+        52.1071,
+        90.7501
+      ],
+      "mcnemar_p": 6.103515625000003e-05,
+      "cohens_h": 1.6109
+    }
+  },
+  "corpus": {
+    "n_samples": 60,
+    "fd": {
+      "k": 26,
+      "n": 48,
+      "rate_pct": 54.1667,
+      "cp_low": 0.391722,
+      "cp_high": 0.686285,
+      "catch": 26,
+      "miss": 22,
+      "unknown": 9,
+      "not_error": 3
+    },
+    "static": {
+      "k": 7,
+      "n": 48,
+      "rate_pct": 14.5833,
+      "cp_low": 0.060704,
+      "cp_high": 0.277638,
+      "catch": 7,
+      "miss": 41,
+      "unknown": 9,
+      "not_error": 3
+    },
+    "random": {
+      "k": 8,
+      "n": 48,
+      "rate_pct": 16.6667,
+      "cp_low": 0.074811,
+      "cp_high": 0.302222,
+      "catch": 8,
+      "miss": 40,
+      "unknown": 9,
+      "not_error": 3
+    },
+    "fd_vs_static": {
+      "n_pairs": 48,
+      "fd_catch": 26,
+      "other_catch": 7,
+      "discordant_fd_catch": 19,
+      "discordant_other_catch": 0,
+      "delta_pp": 39.5833,
+      "delta_ci_newcombe_pp": [
+        20.8514,
+        54.7352
+      ],
+      "delta_ci_paired_wald_pp": [
+        25.7489,
+        53.4178
+      ],
+      "mcnemar_p": 3.814697265625e-06,
+      "cohens_h": 0.8706
+    },
+    "fd_vs_random": {
+      "n_pairs": 48,
+      "fd_catch": 26,
+      "other_catch": 8,
+      "discordant_fd_catch": 18,
+      "discordant_other_catch": 0,
+      "delta_pp": 37.5,
+      "delta_ci_newcombe_pp": [
+        18.5466,
+        52.9699
+      ],
+      "delta_ci_paired_wald_pp": [
+        23.8043,
+        51.1957
+      ],
+      "mcnemar_p": 7.629394531250002e-06,
+      "cohens_h": 0.8132
+    }
+  },
+  "path_a_vs_b": {
+    "ok": true,
+    "tolerance_pp": 0.1,
+    "problems": []
+  },
+  "verdict": "PASS"
+}

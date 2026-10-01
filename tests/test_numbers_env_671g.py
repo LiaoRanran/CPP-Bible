@@ -83,10 +83,12 @@ def test_corpus_cumulative_from_per_sample_54_2():
 
 def test_mutation_core_and_all():
     m = N.metric_mutation(N.ROOT)
-    assert (m["core"]["k"], m["core"]["n"]) == (110, 113)
-    assert abs(m["core"]["rate_pct"] - 97.3) < 0.05
-    assert (m["all"]["k"], m["all"]["n"]) == (128, 157)
-    assert abs(m["all"]["rate_pct"] - 81.5) < 0.05
+    # 672f：变异套件全量重跑后（seed=20260928），core 110/114、all 130/159
+    #（1 个导入崩/超时类别的运行间漂移，见 data/672f_验收报告.md §5）
+    assert (m["core"]["k"], m["core"]["n"]) == (110, 114)
+    assert abs(m["core"]["rate_pct"] - 96.5) < 0.05
+    assert (m["all"]["k"], m["all"]["n"]) == (130, 159)
+    assert abs(m["all"]["rate_pct"] - 81.8) < 0.05
 
 
 def test_counterfactual_two_disjoint_sets_f1_one():

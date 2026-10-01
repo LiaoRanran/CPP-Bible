@@ -2,7 +2,7 @@
   "schema": "queyi-holdout-reveal-detail/v2",
   "reveal_index": 4,
   "generated_by": "tools/holdout_reveal_4_671a.py",
-  "generated_at": "2026-10-01 08:19:37",
+  "generated_at": "2026-10-01 18:43:09",
   "summary_for": "data/holdout_reveal_4_671a.json",
   "naming_note": "文件名 `reveal_3_detail_671a.json` 沿用 671a 受理单的指定路径与 668 的「批次后缀」命名约定；内容为**第 4 轮** reveal（h31–h40）⇒ 以本文件的 `reveal_index` 字段为准，不覆盖 reveal_3_detail_668.json",
   "samples_requested": [
@@ -43,7 +43,7 @@
         "catch"
       ],
       "reproducible": true,
-      "note": "tsan 命中[-O0(rc=66) single_total=100000 race_ops_total=200000 safe_ops_total=200000 safe_final=200000 ================== WARNING: ThreadSanitizer: data race (pid=211)   Read of size 4 at 0x55555555d01c by thread T2:     ; -O2(rc=66) single_t",
+      "note": "tsan 命中[-O0(rc=66) single_total=100000 race_ops_total=200000 safe_ops_total=200000 safe_final=200000 ================== WARNING: ThreadSanitizer: data race (pid=49)   Read of size 4 at 0x55555555d01c by thread T2:     #; -O2(rc=66) single_t",
       "source": "measured_671a",
       "is_669d_new": true,
       "planted": true
@@ -61,7 +61,7 @@
         "catch"
       ],
       "reproducible": true,
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==273==ERROR: AddressSanitizer: attempting double-free on 0x502000000030 in thread T0:     #0 0x7ffff78ff5e8 in operator delete(void*,; -O2(rc=1) ==========",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==111==ERROR: AddressSanitizer: attempting double-free on 0x502000000030 in thread T0:     #0 0x7ffff78ff5e8 in operator delete(void*,; -O2(rc=1) ==========",
       "source": "measured_671a",
       "is_669d_new": true,
       "planted": true
@@ -169,7 +169,7 @@
         "catch"
       ],
       "reproducible": true,
-      "note": "警告 8 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmppddqpylo\\_atom_auto_ptr.cpp:32:52:",
+      "note": "警告 8 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpjomely98\\_atom_auto_ptr.cpp:32:52:",
       "source": "measured_671a",
       "is_669d_new": true,
       "planted": "unknown"
@@ -205,7 +205,7 @@
         "catch"
       ],
       "reproducible": true,
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==429==ERROR: LeakSanitizer: detected memory leaks  Indirect leak of 32 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fe548 i; -O2(rc=1) ==========",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==267==ERROR: LeakSanitizer: detected memory leaks  Indirect leak of 32 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fe548 i; -O2(rc=1) ==========",
       "source": "measured_671a",
       "is_669d_new": true,
       "planted": true

@@ -1,45 +1,45 @@
 {
   "schema": "queyi-web-metrics/666",
   "generated_by": "tools/web_metrics_666.py",
-  "generated_at": "2026-10-01T15:40:36",
+  "generated_at": "2026-10-01T20:23:34",
   "metrics": {
     "cards_real": 42,
     "cards_draft": 10,
     "rules_total": 67,
     "holdout": {
-      "rate_pct": 87.5,
-      "catch": 14,
-      "miss": 2,
+      "rate_pct": 81.0,
+      "catch": 17,
+      "miss": 4,
       "unknown": 1,
-      "den": 16,
+      "den": 21,
       "denominator": "catch+miss（可测真错样本）",
-      "caliber": "sanitizer 类：-O0 + -O2 两档都跑，任一档报出即 catch；warn/cross/link 类：单次本机编译；unknown = 检测器不可用（不计入分母）",
+      "caliber": "真错分母 = catch+miss（可测）；unknown（检测器不可用）与标签 unknown 均不进分母；planted=False 的对照样本单列（catch ⇒ false_positive）；检测档位 -O0/-O2 任一档报出即 catch",
       "opt_levels": [
         "-O0",
         "-O2"
       ],
       "env": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
-      "detail": "data/holdout/reveal_3_detail_668.json",
-      "cmd": "python tools/holdout_reveal_3_665.py"
+      "detail": "data/holdout/reveal_3_detail_671a.json",
+      "cmd": "python tools/holdout_reveal_4_671a.py"
     },
     "external": {
-      "rate_pct": 43.8,
-      "rate_pct_all": 35.0,
-      "total": 40,
-      "catch": 14,
-      "miss": 18,
-      "unknown": 5,
-      "den": 32,
+      "rate_pct": 54.2,
+      "rate_pct_all": 43.3,
+      "total": 60,
+      "catch": 26,
+      "miss": 22,
+      "unknown": 9,
+      "den": 48,
       "denominator": {
-        "value": 32,
-        "meaning": "catch+miss（可测且非测量类的样本）",
+        "value": 48,
+        "meaning": "catch+miss（可测且非测量类）",
         "excluded": {
-          "unknown（本机无检测器）": 5,
-          "not_error（对照，本不是缺陷）": 3
+          "unknown": 9,
+          "not_error": 3
         },
-        "all_samples": 40
+        "all_samples": 60
       },
-      "cmd": "python tools/external_corpus_reveal_665.py"
+      "cmd": "python tools/external_corpus_reveal_671a.py"
     },
     "counterfactual": {
       "p": 1.0,
@@ -109,29 +109,29 @@
   ],
   "commits": [
     {
-      "hash": "cf172376",
+      "hash": "1f9b0833",
       "date": "2026-10-01",
-      "subject": "671g: 问题清零+工程反哺（19工具/162测试/14门禁/17文档）+ 接手修复跨测试污染"
+      "subject": "672e: 星图 2.5D 重制 + stale-aria-busy 修复 + 全局风格统一"
     },
     {
-      "hash": "4b66707e",
+      "hash": "8da9c601",
       "date": "2026-10-01",
-      "subject": "671b Phase2: 数字更新到671a扩样口径 + 论文首创性增强"
+      "subject": "672f: 预注册实验协议（先于 baseline 重跑落盘，锁死假设/方法/判定阈值）"
     },
     {
-      "hash": "48a05be2",
+      "hash": "b8b53540",
       "date": "2026-10-01",
-      "subject": "671d: 前端重制收口（学术化/去AI味）+ 8页核验 + 验收报告"
+      "subject": "672d: 测试补真（npm test前置build + perf口径修正 + a11y jsdom审计 + 首页DOM测试）"
     },
     {
-      "hash": "06abea14",
+      "hash": "cd067337",
       "date": "2026-10-01",
-      "subject": "671b: ablation框架A0-A5(只写脚本和设计,不跑实验) + 真B3接口select_assets + 论文v0.9(§6.2/§7.6/§7.7) + 统计口径深化"
+      "subject": "672c: 首页彻底重制 + 收3处旧债 + 断点统一 + 键盘导航全站接线"
     },
     {
-      "hash": "a657ab4f",
+      "hash": "649fa65b",
       "date": "2026-10-01",
-      "subject": "671a 收尾: 重建被截断的 669d 状态产物 + 复跑补记（含 671b ci_check 现红的登记）"
+      "subject": "672a: P0设计系统补漏（焦点环+僵尸变量+圆角z-index+审计口径修正）"
     }
   ],
   "unavailable": [],

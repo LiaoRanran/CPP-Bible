@@ -29,6 +29,10 @@ import sys
 from dataclasses import dataclass
 from typing import Callable, Optional
 
+#: 672f：统一项目随机种子（670d §3.1 约定值）——攻击逃逸抽样可复现（G-SEED-FIXED）
+SEED = 20260930
+random.seed(SEED)
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import evidence_base_644 as base  # 复用 frontmatter 解析（list_atoms）
 

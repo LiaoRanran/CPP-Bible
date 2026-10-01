@@ -22,6 +22,10 @@ import re
 import sys
 from typing import Any, Optional
 
+#: 672f：统一项目随机种子（670d §3.1 约定值）——盲测分组可复现（G-SEED-FIXED）
+SEED = 20260930
+random.seed(SEED)
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 OUT_MD = os.path.join(ROOT, "data", "636_blind_protocol_design.md")

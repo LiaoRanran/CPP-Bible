@@ -10,18 +10,18 @@
       "kind": "rate",
       "unit": "%",
       "artifact": {
-        "path": "data/holdout_reveal_3_665.json",
-        "k": "error_subset.catch",
+        "path": "data/holdout_reveal_4_671a.json",
+        "k": "cumulative.error_subset.catch",
         "n_sum": [
-          "error_subset.catch",
-          "error_subset.miss"
+          "cumulative.error_subset.catch",
+          "cumulative.error_subset.miss"
         ],
-        "stored": "error_subset.detect_rate_pct"
+        "stored": "cumulative.error_subset.detect_rate_pct"
       },
       "paper": {
         "path": "research/paper_v*.md",
-        "k": 14,
-        "n": 16
+        "k": 17,
+        "n": 21
       },
       "web": [
         {
@@ -32,17 +32,7 @@
           "path": "web/data/verdicts_667.json",
           "pointer": "dashboard.holdout.rate_pct"
         }
-      ],
-      "newer_artifact": {
-        "path": "data/holdout_reveal_4_671a.json",
-        "k": "cumulative.error_subset.catch",
-        "n_sum": [
-          "cumulative.error_subset.catch",
-          "cumulative.error_subset.miss"
-        ],
-        "owner": "671b",
-        "note": "h31–h40 已 reveal：新分母见 data/experiments/reveal_update_671a.json"
-      }
+      ]
     },
     {
       "key": "corpus_rate_pct",
@@ -50,18 +40,18 @@
       "kind": "rate",
       "unit": "%",
       "artifact": {
-        "path": "data/external_corpus_reveal_665.json",
-        "k": "catch",
+        "path": "data/external_corpus_reveal_671a.json",
+        "k": "cumulative.catch",
         "n_sum": [
-          "catch",
-          "miss"
+          "cumulative.catch",
+          "cumulative.miss"
         ],
-        "stored": "detect_rate_pct"
+        "stored": "cumulative.detect_rate_pct"
       },
       "paper": {
         "path": "research/paper_v*.md",
-        "k": 14,
-        "n": 32
+        "k": 26,
+        "n": 48
       },
       "web": [
         {
@@ -72,17 +62,7 @@
           "path": "web/data/verdicts_667.json",
           "pointer": "dashboard.external.rate_pct"
         }
-      ],
-      "newer_artifact": {
-        "path": "data/external_corpus_reveal_671a.json",
-        "k": "cumulative.catch",
-        "n_sum": [
-          "cumulative.catch",
-          "cumulative.miss"
-        ],
-        "owner": "671b",
-        "note": "d3e-* 已 reveal：注意口径变更（双档 + setarch -R），分层率见 reveal_update_671a.json"
-      }
+      ]
     },
     {
       "key": "mutation_core_pct",
@@ -101,7 +81,7 @@
       "paper": {
         "path": "research/paper_v*.md",
         "k": 110,
-        "n": 113
+        "n": 114
       },
       "web": [
         {

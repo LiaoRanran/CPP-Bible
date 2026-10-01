@@ -1,7 +1,7 @@
 {
   "schema": "queyi-reveal-update/671a",
   "generated_by": "tools/reveal_update_671a.py",
-  "generated_at": "2026-10-01 08:21:18",
+  "generated_at": "2026-10-01 18:43:18",
   "sources": {
     "holdout_new": "data/holdout_reveal_4_671a.json",
     "holdout_old": "data/holdout_reveal_3_665.json",
@@ -271,7 +271,7 @@
       },
       "cited_by": {
         "paper_v0_8": 87.5,
-        "web_metrics_666": 87.5,
+        "web_metrics_666": 81.0,
         "artifact": "data/holdout_reveal_3_665.json"
       },
       "action": "论文 §6.1 三臂表 / 摘要 / §7.3 样本量表 / Fig.2/3 与前端 metrics / verdicts 里的 holdout 率需按新分母（含 h31–h40）重算；**由 671b 执行**"
@@ -290,7 +290,7 @@
       },
       "cited_by": {
         "paper_v0_8": 43.8,
-        "web_metrics_666": 43.8,
+        "web_metrics_666": 54.2,
         "artifact": "data/external_corpus_reveal_665.json"
       },
       "action": "corpus 率**必须分层引用**（669d declared）：六层数字见本文件 `corpus.layers`；由 671b 决定哪几层进论文表"

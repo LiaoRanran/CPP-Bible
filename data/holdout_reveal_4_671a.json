@@ -2,7 +2,7 @@
   "schema": "queyi-holdout-reveal/v4",
   "reveal_index": 4,
   "generated_by": "tools/holdout_reveal_4_671a.py",
-  "generated_at": "2026-10-01 08:19:37",
+  "generated_at": "2026-10-01 18:43:09",
   "round_label": "h31–h40（10 条，669d 扩样补充种子）",
   "runs": 3,
   "samples_requested": [

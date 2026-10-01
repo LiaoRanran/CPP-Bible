@@ -58,6 +58,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 VERSION = "1.0"
 DEFAULT_SEED = 20260930           # 与 670a 的 Random† 同种子（口径可对照）
+random.seed(DEFAULT_SEED)         # 672f：模块级固定种子（G-SEED-FIXED，同 seed 两跑必一致）
 STRATEGIES = ("failure_driven", "random", "oracle")
 
 #: 主仓仪器池（与 tools/baseline_670a.py::INSTRUMENT_POOL 同源，**不是**真资产池）
