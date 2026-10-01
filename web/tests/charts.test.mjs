@@ -259,8 +259,9 @@ ok('演化：656 用 evolution 契约值 61.2', evo.rows.filter((r) => r.batch =
 // 672g 数字同步：同上一处，672f 新分母重跑后 97.3 → 96.5（真值源 656_mutation_report_core.json）
 ok('演化：666 变异率 96.5（experiments.json 真实值）', evo.rows.filter((r) => r.batch === '666')[0].mutation_pct === 96.5);
 // 672g 数字同步：holdout 在 672f「W1 实验抢救」后由 16 样本扩到 22（catch 14→17、miss 2→4、
-//   den 16→21）⇒ 检出率 87.5 → 81.0。真值源 web/data/metrics_666.json::metrics.holdout.rate_pct。
-ok('演化：666 holdout 81（metrics_666.json 真实值）', evo.rows.filter((r) => r.batch === '666')[0].holdout_pct === 81);
+//   den 16→21）⇒ 检出率 87.5 → 81.0；672h「W3 扩样」再扩到 41（catch 34、miss 7）⇒ 81.0 → 82.9。
+//   真值源 web/data/metrics_666.json::metrics.holdout.rate_pct（工具重生成，非手改）。
+ok('演化：666 holdout 82.9（metrics_666.json 真实值）', evo.rows.filter((r) => r.batch === '666')[0].holdout_pct === 82.9);
 ok('演化：641 无真实值 ⇒ 显式 null 不插值', evo.rows.filter((r) => r.batch === '641')[0].mutation_pct === null);
 ok('演化：两条序列（变异 / holdout）', evo.series.length === 2 && evo.series[0].key === 'mutation' && evo.series[1].key === 'holdout');
 ok('演化：折线可渲染', buildLineChart({ series: evo.series, xLabels: evo.batches, unit: '%', yMax: 100 }).indexOf('class="line-path"') > 0);
@@ -269,7 +270,8 @@ const dets = buildDetectorSlices({ detectors: { 'perf': 1, sanitizer: 8, 'compil
 ok('检测器构成：固定口径顺序', dets.slices.map((d) => d.key).join(',') === 'sanitizer,compiler-warn,cross-compile,perf,compile-time');
 ok('检测器构成：pending=false（有真 detectors 字段）', dets.pending === false);
 const detsFb = buildDetectorSlices({ experiments });
-ok('检测器构成：缺字段回退 holdout 结果分布并标 pending', detsFb.pending === true && detsFb.slices.length === 3 && detsFb.slices[0].value === 14);
+// 672h：holdout 扩样到 41 后回退分布 = catch 34 / miss 7 / unknown 1（真值源 experiments.json::holdout_outcomes）
+ok('检测器构成：缺字段回退 holdout 结果分布并标 pending', detsFb.pending === true && detsFb.slices.length === 3 && detsFb.slices[0].value === 34);
 ok('检测器构成：两处都缺 ⇒ 空 slices', buildDetectorSlices({}).slices.length === 0);
 
 /* ════════════ 7 · 空状态 / 分派 ════════════ */

@@ -115,10 +115,13 @@ const cmpDrift = parseDrift(V, { source: 'web/data/verdicts_667.json' });
 ok('compare 抽出 6 条口径差登记', cmpDrift.total === 6 && cmpDrift.sources.includes('compare[]'));
 ok('其中 3 条两侧数值个数相同 ⇒ 可配对', cmpDrift.numeric === 3 && cmpDrift.text_only === 3);
 const ext = cmpDrift.items.find((d) => d.field === '外部语料检出率');
-ok('外部语料：43.8% → 35.0% ⇒ delta = −8.8（负漂移）',
-  ext.numeric === true && near(ext.delta, -8.8) && ext.neg === true && ext.dir === 'down' && ext.kind === 'caliber');
+// 672h 数字同步：corpus 扩样（可测 48→64）+ 口径行随之更新 ⇒ 62.5%（可测） vs 52.6%（全样本），
+//   delta = −9.9。真值源 web/data/verdicts_667.json（由 tools/web_verdicts_667.py 重生成）。
+ok('外部语料：62.5% → 52.6% ⇒ delta = −9.9（负漂移）',
+  ext.numeric === true && near(ext.delta, -9.9) && ext.neg === true && ext.dir === 'down' && ext.kind === 'caliber');
 const mut = cmpDrift.items.find((d) => d.field === '内部变异率');
-ok('内部变异率：97.3% → 74.8% ⇒ delta = −22.5（与登记文本的 22.5pp 一致）', near(mut.delta, -22.5));
+// 672h 数字同步：变异 core 重跑后 97.3 → 96.5 ⇒ delta = 96.5 − 74.8 = −21.7（登记文本同步更新）
+ok('内部变异率：96.5% → 74.8% ⇒ delta = −21.7（与登记文本的 21.7pp 一致）', near(mut.delta, -21.7));
 const counter = cmpDrift.items.find((d) => d.field === '反事实算子 P/R/F1');
 ok('反事实行两侧数值个数不同 ⇒ 拒绝硬配对（不造 +9 这种假漂移）',
   counter.numeric === false && counter.delta === null && /个数不同/.test(counter.skip_reason));
@@ -128,12 +131,12 @@ ok('pairNumbers：个数相同才配对', pairNumbers('a 1 b 2', 'c 3 d 4').nume
 const bars = driftBars(cmpDrift);
 ok('幅度条条数 = 登记条数', bars.total === 6 && bars.bars.length === 6);
 ok('负向 2 条（外部语料 / 内部变异率）、零漂移 1 条', bars.negative === 2 && bars.flat_count === 1 && bars.positive === 0);
-ok('量程 = 最大 |delta| = 22.5', near(bars.max, 22.5) && near(bars.scale, 22.5));
+ok('量程 = 最大 |delta| = 21.7', near(bars.max, 21.7) && near(bars.scale, 21.7));
 const extBar = bars.bars.find((b) => b.field === '外部语料检出率');
 ok('负向条：贴在中线左侧（left + width = 50%）',
   extBar.cls === 'is-neg' && extBar.left_pct < 50 && near(extBar.left_pct + extBar.width_pct, 50));
-ok('负向条宽 = |−8.8| / 22.5 × 50', near(extBar.width_pct, 8.8 / 22.5 * 50));
-ok('负向条文本带负号', extBar.val_text === '-8.80' && extBar.rel_text === '-20.1%');
+ok('负向条宽 = |−9.9| / 21.7 × 50', near(extBar.width_pct, 9.9 / 21.7 * 50));
+ok('负向条文本带负号', extBar.val_text === '-9.90' && extBar.rel_text === '-15.8%');
 ok('零漂移条：left=50、width=0、flat', bars.bars.find((b) => b.field === 'holdout 检出率').flat === true);
 const posBars = driftBars([{ field: 'x', stored: 100, fresh: 150 }, { field: 'y', stored: 100, fresh: 75 }]);
 ok('正向 +50（量程最大）⇒ 从中线向右占满半轨', posBars.bars[0].left_pct === 50 && near(posBars.bars[0].width_pct, 50));
@@ -188,8 +191,10 @@ ok('缺口 4 条（反事实 / 图谱 / 总条数 / 夹具条数）', model.part
 //   两侧真值：data/baseline.json::holdout.count = 20（声明侧）；
 //            web/data/verdicts_667.json::dashboard.holdout.samples = 22（现算侧）。
 //   仍是"口径差"（不判红绿）—— 两个数都对，只是量的不是同一件事。
-ok('口径差 1 条（holdout 池 20 vs 已跑 22，diff = +2）',
-  model.caliber === 1 && model.rows.find((r) => r.key === 'holdout_pool').diff === 2);
+// 672h 数字同步：holdout 已跑样本 22 → 42（第 5 轮扩样 h41-h60），盲态池仍是 20
+//   ⇒ 口径差由 +2 变 +22（仍然是"口径差"，不判红绿：两个数都对，只是量的不是同一件事）。
+ok('口径差 1 条（holdout 池 20 vs 已跑 42，diff = +22）',
+  model.caliber === 1 && model.rows.find((r) => r.key === 'holdout_pool').diff === 22);
 ok('冻结契约 3 条（逃逸率族）不借 is-match 的绿', model.frozen === 3
   && model.rows.filter((r) => r.kind === 'frozen').every((r) => r.rowClass === 'is-frozen' && r.isMismatch === false));
 ok('一致 22 条（32 = 22 一致 + 2 不一致 + 4 缺口 + 1 口径差 + 3 冻结）',
