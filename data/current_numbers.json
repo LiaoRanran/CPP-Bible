@@ -46,7 +46,7 @@
           23.8
         ]
       },
-      "random_proxy": {
+      "random": {
         "k": 2,
         "n": 21,
         "rate_pct": 9.5,
@@ -75,7 +75,7 @@
           27.8
         ]
       },
-      "random_proxy": {
+      "random": {
         "k": 8,
         "n": 48,
         "rate_pct": 16.7,
@@ -85,7 +85,25 @@
         ]
       }
     },
-    "caveat": "Static=口径重分箱（非重跑）；Random†=仪器级代理（非真 B3），Δ 只作方向性读法"
+    "caveat": "Static=口径重分箱（非重跑）；Random=真 B3（672g：拆仓 queyi-verifier 的 select_assets，验证资产池 8 项，不含测量仪器），Δ 可作确认性判读（预注册 H3）。数值与 670a 仪器级代理一致（代理忠实）。"
+  },
+  "b3_random_672g": {
+    "status": "RESOLVED（670a 的 BLOCKED 已解阻）",
+    "interface": "queyi-verifier/tools/select_assets_672g.py::select_assets(pool, n, strategy, seed)",
+    "pool": [
+      "asan",
+      "compile-time",
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "tsan",
+      "ubsan",
+      "wunsequenced"
+    ],
+    "pool_size": 8,
+    "seed": 20260930,
+    "source": "data/experiments/b3_real_672g.json（tools/baseline_672g.py --run）",
+    "dual_path": "data/experiments/baseline_verify_672g.json（PASS，差 < 0.1pp）"
   },
   "comparisons": {
     "holdout_fd_vs_static": {

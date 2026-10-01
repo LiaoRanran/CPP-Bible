@@ -1,7 +1,8 @@
 {
   "schema": "queyi-baseline-experiment/670a",
-  "arm": "random_proxy†（仪器级预算对齐；**非论文 B3**）",
+  "arm": "random（真 B3 · 拆仓 select_assets 验证资产口径；672g 替换 670a 的 Random† 代理）",
   "seed": 20260930,
+  "pool_owner": "queyi-verifier::tools/select_assets_672g.py::ASSET_POOL",
   "selection": {
     "holdout": {
       "pool": [
@@ -10,8 +11,6 @@
         "compiler-warn",
         "cross-compile",
         "linker",
-        "measure",
-        "perf-counter",
         "tsan",
         "ubsan",
         "wunsequenced"
@@ -23,14 +22,32 @@
         "ubsan"
       ],
       "picked": [
+        "wunsequenced",
         "cross-compile",
-        "measure",
-        "perf-counter",
-        "tsan"
+        "tsan",
+        "compile-time"
       ],
       "seed": 20260930,
       "shared_by_fd_and_random": [
         "tsan"
+      ],
+      "allocation_table": [
+        {
+          "asset": "wunsequenced",
+          "rank": 1
+        },
+        {
+          "asset": "cross-compile",
+          "rank": 2
+        },
+        {
+          "asset": "tsan",
+          "rank": 3
+        },
+        {
+          "asset": "compile-time",
+          "rank": 4
+        }
       ]
     },
     "corpus": {
@@ -40,8 +57,6 @@
         "compiler-warn",
         "cross-compile",
         "linker",
-        "measure",
-        "perf-counter",
         "tsan",
         "ubsan",
         "wunsequenced"
@@ -54,17 +69,39 @@
         "ubsan"
       ],
       "picked": [
-        "compiler-warn",
+        "wunsequenced",
         "cross-compile",
-        "measure",
-        "perf-counter",
-        "tsan"
+        "tsan",
+        "compile-time",
+        "compiler-warn"
       ],
       "seed": 20260930,
       "shared_by_fd_and_random": [
         "compiler-warn",
         "cross-compile",
         "tsan"
+      ],
+      "allocation_table": [
+        {
+          "asset": "wunsequenced",
+          "rank": 1
+        },
+        {
+          "asset": "cross-compile",
+          "rank": 2
+        },
+        {
+          "asset": "tsan",
+          "rank": 3
+        },
+        {
+          "asset": "compile-time",
+          "rank": 4
+        },
+        {
+          "asset": "compiler-warn",
+          "rank": 5
+        }
       ]
     }
   },
@@ -152,17 +189,9 @@
   },
   "blocked": [
     {
-      "baseline": "B3 budget-matched random（**验证资产**口径，论文 §5.2）",
-      "why": "资产选择接口在拆仓验证器 queyi-verifier 里（主仓不可见）；主仓无 select_assets(pool, n, strategy, seed)",
-      "status": "BLOCKED",
-      "need": "queyi-verifier 暴露 select_assets(pool, n, strategy, seed) -> [asset] + 分配表"
-    },
-    {
-      "baseline": "B1 rule-only（真·静态规则判定器）",
-      "why": "主仓 holdout/corpus 判定走外部 sanitizer 仪器，无 detect_static(sample) 可执行路径",
-      "status": "PROXY（本文件 static 臂 = 口径重分箱，不是重跑）",
-      "need": "queyi-verifier 暴露 detect_static(sample) -> verdict"
+      "baseline": "B3 budget-matched random（验证资产口径，论文 §5.2）",
+      "status": "RESOLVED（672g：拆仓 queyi-verifier 已暴露 select_assets）"
     }
   ],
-  "honest_note": "FD 与 Static 是**同一批样本**的口径重分箱（配对可比）；random_proxy 是仪器级代理，**不是**论文 B3，结论不得进论文。所有率由逐样本现算，区间用 tools/stat_bounds.py 的 Clopper–Pearson 95%。"
+  "honest_note": "真 B3：随机臂由拆仓验证器 queyi-verifier 的 select_assets 选出（池=验证资产，非测量仪器）。样本量 n=21/48 ⇒ 只读方向 + CI，幅度不写成确认性点估计。"
 }

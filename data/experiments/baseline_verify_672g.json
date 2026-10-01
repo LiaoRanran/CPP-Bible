@@ -1,0 +1,136 @@
+{
+  "schema": "queyi-baseline-verify/672g",
+  "version": "1.0",
+  "seed": 20260930,
+  "asset_pool": [
+    "asan",
+    "compile-time",
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "tsan",
+    "ubsan",
+    "wunsequenced"
+  ],
+  "independence": "不 import baseline_672g / stat_bounds / ablation_stats；CP=二分法；McNemar/h/Wald 独立实现；random 直接 sample",
+  "holdout": {
+    "n_samples": 22,
+    "fd": {
+      "k": 17,
+      "n": 21,
+      "rate_pct": 80.9524,
+      "cp_low": 58.093396,
+      "cp_high": 94.553643
+    },
+    "static": {
+      "k": 1,
+      "n": 21,
+      "rate_pct": 4.7619,
+      "cp_low": 0.120488,
+      "cp_high": 23.815991
+    },
+    "random": {
+      "k": 2,
+      "n": 21,
+      "rate_pct": 9.5238,
+      "cp_low": 1.174932,
+      "cp_high": 30.377441
+    },
+    "random_picked": [
+      "compile-time",
+      "cross-compile",
+      "tsan",
+      "wunsequenced"
+    ],
+    "random_fd_used": [
+      "asan",
+      "linker",
+      "tsan",
+      "ubsan"
+    ],
+    "fd_vs_static": {
+      "n_pairs": 21,
+      "delta_pp": 76.1905,
+      "ci_paired_wald_pp": [
+        57.974,
+        94.4069
+      ],
+      "mcnemar_p": 3.0517578125000014e-05,
+      "cohens_h": 1.7983
+    },
+    "fd_vs_random": {
+      "n_pairs": 21,
+      "delta_pp": 71.4286,
+      "ci_paired_wald_pp": [
+        52.1071,
+        90.7501
+      ],
+      "mcnemar_p": 6.103515625000003e-05,
+      "cohens_h": 1.6109
+    }
+  },
+  "corpus": {
+    "n_samples": 60,
+    "fd": {
+      "k": 26,
+      "n": 48,
+      "rate_pct": 54.1667,
+      "cp_low": 39.1722,
+      "cp_high": 68.628458
+    },
+    "static": {
+      "k": 7,
+      "n": 48,
+      "rate_pct": 14.5833,
+      "cp_low": 6.070447,
+      "cp_high": 27.763834
+    },
+    "random": {
+      "k": 8,
+      "n": 48,
+      "rate_pct": 16.6667,
+      "cp_low": 7.481086,
+      "cp_high": 30.222241
+    },
+    "random_picked": [
+      "compile-time",
+      "compiler-warn",
+      "cross-compile",
+      "tsan",
+      "wunsequenced"
+    ],
+    "random_fd_used": [
+      "asan",
+      "compiler-warn",
+      "cross-compile",
+      "tsan",
+      "ubsan"
+    ],
+    "fd_vs_static": {
+      "n_pairs": 48,
+      "delta_pp": 39.5833,
+      "ci_paired_wald_pp": [
+        25.7489,
+        53.4178
+      ],
+      "mcnemar_p": 3.814697265625e-06,
+      "cohens_h": 0.8706
+    },
+    "fd_vs_random": {
+      "n_pairs": 48,
+      "delta_pp": 37.5,
+      "ci_paired_wald_pp": [
+        23.8043,
+        51.1957
+      ],
+      "mcnemar_p": 7.629394531250002e-06,
+      "cohens_h": 0.8132
+    }
+  },
+  "path_a_vs_b": {
+    "ok": true,
+    "tolerance_pp": 0.1,
+    "problems": []
+  },
+  "verdict": "PASS"
+}

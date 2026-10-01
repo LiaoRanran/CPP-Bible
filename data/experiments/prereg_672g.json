@@ -1,0 +1,81 @@
+{
+  "schema": "queyi-prereg/672g",
+  "prereg_id": "prereg_672g_w2_real_b3",
+  "registered_at": "2026-10-01",
+  "registrant": "LiaoRanran",
+  "status": "locked_before_experiment",
+  "immutability": "本文件在真 B3 三臂**跑批之前**写好并单独落盘（先预注册、后实验）。落盘后不得修改假设、方法与判定阈值；若结果与假设不符，只能在结果文件（data/experiments/b3_real_672g.json 与 data/672g_验收报告.md）中如实报告，不得回改本文件。",
+  "research_question": "把 Random†（仪器级代理）替换为**真 B3**（拆仓验证器 queyi-verifier 暴露的 select_assets 验证资产口径）后，失败驱动演化（FD）在同批 holdout / 外部 corpus 样本上的缺陷检出率，是否仍显著高于 Static（rule-only 口径重分箱）与 Random（真随机验证资产）两臂？",
+  "hypotheses": {
+    "H1": "FD 的 holdout 检出率 > Static：Δ > 20pp 且配对精确 McNemar p < 0.05",
+    "H2": "FD 的 corpus 检出率 > Static：Δ > 15pp 且配对精确 McNemar p < 0.05",
+    "H3": "FD 的检出率 > Random（真 B3）：Δ > 0 且配对精确 McNemar p < 0.05（**本轮首次可作确认性判读**，因随机臂不再是代理）",
+    "H0": "FD 与对照臂无显著差异（p >= 0.05 或 Δ 低于阈值）⇒ 原样报告，不修饰",
+    "exploratory": "真 Random 与 Random†（仪器级代理）的**逐样本差异**作探索性登记（若数值一致，如实登记『代理在本数据上数值忠实』）"
+  },
+  "methods": {
+    "datasets": {
+      "holdout": {
+        "n_measurable": 21,
+        "definition": "planted=true 真错子集，可测口径 = catch + miss；unknown（检测器不可用）不进分母",
+        "source": "data/holdout/reveal_3_detail_671a.json（671a 扩样后，h31–h40 已 reveal）"
+      },
+      "corpus": {
+        "n_measurable": 48,
+        "definition": "catch + miss（可测且非测量类）；unknown 与 not_error（对照）不进分母",
+        "source": "data/external_corpus/reveal_detail_671a.json（671a 扩样后，d3e-* 已 reveal）"
+      }
+    },
+    "arms": {
+      "FD": "failure-driven（现状）：照实读逐样本判决（sanitizer + 本机编译器全用）",
+      "Static": "rule-only 口径重分箱：只认编译期/静态资产（compiler-warn/wunsequenced/cross-compile/linker），sanitizer 样本记 miss（非重跑，口径重分箱）",
+      "Random": "**真 B3**：调用拆仓验证器 queyi-verifier 的 select_assets(pool, n, 'random', seed) 从**验证资产池**随机抽与 FD 同数量的资产；不再使用主仓仪器级代理"
+    },
+    "asset_pool": {
+      "owner": "拆仓验证器 queyi-verifier（tools/select_assets_672g.py::ASSET_POOL）",
+      "members": ["asan", "compile-time", "compiler-warn", "cross-compile", "linker", "tsan", "ubsan", "wunsequenced"],
+      "size": 8,
+      "order": "字典序（钉死 random.sample 的抽样次序，跨实现可复现）",
+      "rationale": "验证资产 = 能产出 catch/miss **缺陷判决**的检测资产。刻意**不含** measure / perf-counter —— 它们是**性能测量**仪器，不是验证资产；把它们塞进『资产池』正是主仓 Random† 代理臂的『仪器级』退化（670a §3 红线）。",
+      "pool_note": "池定义与次序在跑批**之前**钉死；池大小敏感性（剔除 compile-time ⇒ 7 项）另在验收报告登记为敏感性分析，不改主口径。"
+    },
+    "budget_alignment": {
+      "rule": "|selected(FD)| == |selected(Random)|",
+      "how": "先算 FD 在 catch 样本上实际用到的**池内**资产集合，random 抽同数量",
+      "why": "否则『随机不如失败驱动』可能只是『随机用得更少』——B3 要排除的混淆"
+    },
+    "metric": "检出率 = k/n（可测口径）+ Clopper-Pearson 95% CI（tools/stat_bounds.py 单一来源）",
+    "statistical_tests": [
+      "配对精确 McNemar（FD vs 各对照臂，同批样本配对）",
+      "Cohen's h 效应量（必报）",
+      "Δ 的 95% 区间（Newcombe 混合法 + Wald-on-difference 配对近似）"
+    ],
+    "seed": 20260930,
+    "seed_note": "项目约定种子（670d §3.1 指定，与 670a Random† 同值 ⇒ 口径可对照）。random 臂连跑 2 次须哈希一致。",
+    "implementation": "tools/baseline_672g.py（路径 A，经 subprocess 调用拆仓 select_assets）；tools/verify_baseline_672g.py（路径 B，独立重实现，不 import baseline_672g）"
+  },
+  "decision_thresholds": {
+    "holdout": "显著当且仅当 p < 0.05 且 Δ > 20pp",
+    "corpus": "显著当且仅当 p < 0.05 且 Δ > 15pp",
+    "random_arm": "FD vs Random：Δ 的 CI 下界 > 0 且 p < 0.05 ⇒ 方向可判读（真 B3，首次可作确认性判读）",
+    "not_significant": "p >= 0.05 或 Δ 低于阈值 ⇒ 判 not_significant，如实报告",
+    "ci_crosses_zero": "Δ 的 CI 跨 0 ⇒ 「失败驱动优于随机」不成立，原样报告"
+  },
+  "exclusion_criteria": [
+    "verdict == unknown（本机无检测器）不进任何分母，单独计数",
+    "corpus not_error（对照，本不是缺陷）不进可测分母",
+    "perf / compile-time 类本机无检测器 ⇒ 记 unknown，拒绝给率（fail-loud）",
+    "池外资产（measure / perf-counter）不进随机臂的抽取池（非验证资产）"
+  ],
+  "scope_note": "本预注册只覆盖 W2（真 B3 三臂）。样本量仍受 n=21/48 限制（配对 McNemar 目标 138 对远未达到）⇒ 主结论仍以『方向 + CI』表述，幅度不写成确认性点估计。A0–A5 ablation、LLM-as-verifier 第四臂属 W3–W8，另行预注册。",
+  "post_registration": {
+    "results_files": [
+      "data/experiments/baseline_random.json",
+      "data/experiments/b3_real_672g.json",
+      "data/experiments/baseline_verify_672g.json",
+      "data/current_numbers.json"
+    ],
+    "report": "data/672g_验收报告.md",
+    "honesty_rule": "结果与假设不符时：不改假设、不改阈值、不取平均、不挑口径；原样报告并在验收报告登记根因分析"
+  }
+}

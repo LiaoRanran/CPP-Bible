@@ -1,0 +1,455 @@
+{
+  "schema": "queyi-baseline-experiment/672g",
+  "version": "1.0",
+  "seed": 20260930,
+  "asset_pool": [
+    "asan",
+    "compile-time",
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "tsan",
+    "ubsan",
+    "wunsequenced"
+  ],
+  "pool_owner": "queyi-verifier::tools/select_assets_672g.py::ASSET_POOL",
+  "random_arm": "真 B3（拆仓 select_assets 验证资产口径，非仪器级代理）",
+  "holdout": {
+    "n_samples": 22,
+    "fd": {
+      "catch": 17,
+      "miss": 4,
+      "unknown": 1,
+      "not_error": 0,
+      "total": 22,
+      "all_samples": {
+        "k": 17,
+        "n": 22,
+        "numerator": 17,
+        "denominator": 22,
+        "point": 0.7727272727272727,
+        "cp_low": 0.5462963763378781,
+        "cp_high": 0.9217937396481068,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 17,
+        "n": 21,
+        "numerator": 17,
+        "denominator": 21,
+        "point": 0.8095238095238095,
+        "cp_low": 0.5809339588164719,
+        "cp_high": 0.9455364318215931,
+        "conf": 0.95
+      },
+      "no_unknown": {
+        "k": 17,
+        "n": 21,
+        "numerator": 17,
+        "denominator": 21,
+        "point": 0.8095238095238095,
+        "cp_low": 0.5809339588164719,
+        "cp_high": 0.9455364318215931,
+        "conf": 0.95
+      },
+      "delta_pp": {
+        "measurable_minus_all": 3.700000000000003,
+        "measurable_minus_no_unknown": 0.0
+      }
+    },
+    "static": {
+      "catch": 1,
+      "miss": 20,
+      "unknown": 1,
+      "not_error": 0,
+      "total": 22,
+      "all_samples": {
+        "k": 1,
+        "n": 22,
+        "numerator": 1,
+        "denominator": 22,
+        "point": 0.045454545454545456,
+        "cp_low": 0.001150147526573578,
+        "cp_high": 0.2284443976676332,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 1,
+        "n": 21,
+        "numerator": 1,
+        "denominator": 21,
+        "point": 0.047619047619047616,
+        "cp_low": 0.001204883448363512,
+        "cp_high": 0.23815990993682096,
+        "conf": 0.95
+      },
+      "no_unknown": {
+        "k": 1,
+        "n": 21,
+        "numerator": 1,
+        "denominator": 21,
+        "point": 0.047619047619047616,
+        "cp_low": 0.001204883448363512,
+        "cp_high": 0.23815990993682096,
+        "conf": 0.95
+      },
+      "delta_pp": {
+        "measurable_minus_all": 0.2999999999999998,
+        "measurable_minus_no_unknown": 0.0
+      }
+    },
+    "random": {
+      "catch": 2,
+      "miss": 19,
+      "unknown": 1,
+      "not_error": 0,
+      "total": 22,
+      "all_samples": {
+        "k": 2,
+        "n": 22,
+        "numerator": 2,
+        "denominator": 22,
+        "point": 0.09090909090909091,
+        "cp_low": 0.011205586024151018,
+        "cp_high": 0.291612741553933,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 2,
+        "n": 21,
+        "numerator": 2,
+        "denominator": 21,
+        "point": 0.09523809523809523,
+        "cp_low": 0.011749317884445814,
+        "cp_high": 0.303774406913924,
+        "conf": 0.95
+      },
+      "no_unknown": {
+        "k": 2,
+        "n": 21,
+        "numerator": 2,
+        "denominator": 21,
+        "point": 0.09523809523809523,
+        "cp_low": 0.011749317884445814,
+        "cp_high": 0.303774406913924,
+        "conf": 0.95
+      },
+      "delta_pp": {
+        "measurable_minus_all": 0.40000000000000036,
+        "measurable_minus_no_unknown": 0.0
+      }
+    },
+    "random_selection": {
+      "pool": [
+        "asan",
+        "compile-time",
+        "compiler-warn",
+        "cross-compile",
+        "linker",
+        "tsan",
+        "ubsan",
+        "wunsequenced"
+      ],
+      "fd_used": [
+        "asan",
+        "linker",
+        "tsan",
+        "ubsan"
+      ],
+      "picked": [
+        "wunsequenced",
+        "cross-compile",
+        "tsan",
+        "compile-time"
+      ],
+      "seed": 20260930,
+      "shared_by_fd_and_random": [
+        "tsan"
+      ],
+      "allocation_table": [
+        {
+          "asset": "wunsequenced",
+          "rank": 1
+        },
+        {
+          "asset": "cross-compile",
+          "rank": 2
+        },
+        {
+          "asset": "tsan",
+          "rank": 3
+        },
+        {
+          "asset": "compile-time",
+          "rank": 4
+        }
+      ]
+    },
+    "fd_vs_static": {
+      "n_pairs": 21,
+      "fd_catch": 17,
+      "other_catch": 1,
+      "discordant_fd_catch": 16,
+      "discordant_other_catch": 0,
+      "delta_pp": 76.1905,
+      "ci_paired_wald_pp": [
+        57.974,
+        94.4069
+      ],
+      "ci_crosses_zero": false,
+      "mcnemar_p": 3.0517578125e-05,
+      "cohens_h": 1.7983,
+      "cohens_h_magnitude": "large"
+    },
+    "fd_vs_random": {
+      "n_pairs": 21,
+      "fd_catch": 17,
+      "other_catch": 2,
+      "discordant_fd_catch": 15,
+      "discordant_other_catch": 0,
+      "delta_pp": 71.4286,
+      "ci_paired_wald_pp": [
+        52.1071,
+        90.7501
+      ],
+      "ci_crosses_zero": false,
+      "mcnemar_p": 6.103515625e-05,
+      "cohens_h": 1.6109,
+      "cohens_h_magnitude": "large"
+    }
+  },
+  "corpus": {
+    "n_samples": 60,
+    "fd": {
+      "catch": 26,
+      "miss": 22,
+      "unknown": 9,
+      "not_error": 3,
+      "total": 60,
+      "all_samples": {
+        "k": 26,
+        "n": 60,
+        "numerator": 26,
+        "denominator": 60,
+        "point": 0.43333333333333335,
+        "cp_low": 0.30588142684217434,
+        "cp_high": 0.5675903464453858,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 26,
+        "n": 48,
+        "numerator": 26,
+        "denominator": 48,
+        "point": 0.5416666666666666,
+        "cp_low": 0.3917219975989088,
+        "cp_high": 0.6862845779278237,
+        "conf": 0.95
+      },
+      "no_unknown": {
+        "k": 26,
+        "n": 51,
+        "numerator": 26,
+        "denominator": 51,
+        "point": 0.5098039215686274,
+        "cp_low": 0.36595713967096644,
+        "cp_high": 0.6524720370048835,
+        "conf": 0.95
+      },
+      "delta_pp": {
+        "measurable_minus_all": 10.900000000000006,
+        "measurable_minus_no_unknown": 3.200000000000003
+      }
+    },
+    "static": {
+      "catch": 7,
+      "miss": 41,
+      "unknown": 9,
+      "not_error": 3,
+      "total": 60,
+      "all_samples": {
+        "k": 7,
+        "n": 60,
+        "numerator": 7,
+        "denominator": 60,
+        "point": 0.11666666666666667,
+        "cp_low": 0.04821484187134127,
+        "cp_high": 0.2257161531456488,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 7,
+        "n": 48,
+        "numerator": 7,
+        "denominator": 48,
+        "point": 0.14583333333333334,
+        "cp_low": 0.06070446936663686,
+        "cp_high": 0.27763834002202825,
+        "conf": 0.95
+      },
+      "no_unknown": {
+        "k": 7,
+        "n": 51,
+        "numerator": 7,
+        "denominator": 51,
+        "point": 0.13725490196078433,
+        "cp_low": 0.057011813463369226,
+        "cp_high": 0.262551543304545,
+        "conf": 0.95
+      },
+      "delta_pp": {
+        "measurable_minus_all": 2.9000000000000004,
+        "measurable_minus_no_unknown": 0.9000000000000004
+      }
+    },
+    "random": {
+      "catch": 8,
+      "miss": 40,
+      "unknown": 9,
+      "not_error": 3,
+      "total": 60,
+      "all_samples": {
+        "k": 8,
+        "n": 60,
+        "numerator": 8,
+        "denominator": 60,
+        "point": 0.13333333333333333,
+        "cp_low": 0.05936442270535616,
+        "cp_high": 0.24592222113042145,
+        "conf": 0.95
+      },
+      "measurable": {
+        "k": 8,
+        "n": 48,
+        "numerator": 8,
+        "denominator": 48,
+        "point": 0.16666666666666666,
+        "cp_low": 0.07481086039959203,
+        "cp_high": 0.3022224135298798,
+        "conf": 0.95
+      },
+      "no_unknown": {
+        "k": 8,
+        "n": 51,
+        "numerator": 8,
+        "denominator": 51,
+        "point": 0.1568627450980392,
+        "cp_low": 0.07024083345730833,
+        "cp_high": 0.28587628673155796,
+        "conf": 0.95
+      },
+      "delta_pp": {
+        "measurable_minus_all": 3.3999999999999986,
+        "measurable_minus_no_unknown": 1.0
+      }
+    },
+    "random_selection": {
+      "pool": [
+        "asan",
+        "compile-time",
+        "compiler-warn",
+        "cross-compile",
+        "linker",
+        "tsan",
+        "ubsan",
+        "wunsequenced"
+      ],
+      "fd_used": [
+        "asan",
+        "compiler-warn",
+        "cross-compile",
+        "tsan",
+        "ubsan"
+      ],
+      "picked": [
+        "wunsequenced",
+        "cross-compile",
+        "tsan",
+        "compile-time",
+        "compiler-warn"
+      ],
+      "seed": 20260930,
+      "shared_by_fd_and_random": [
+        "compiler-warn",
+        "cross-compile",
+        "tsan"
+      ],
+      "allocation_table": [
+        {
+          "asset": "wunsequenced",
+          "rank": 1
+        },
+        {
+          "asset": "cross-compile",
+          "rank": 2
+        },
+        {
+          "asset": "tsan",
+          "rank": 3
+        },
+        {
+          "asset": "compile-time",
+          "rank": 4
+        },
+        {
+          "asset": "compiler-warn",
+          "rank": 5
+        }
+      ]
+    },
+    "fd_vs_static": {
+      "n_pairs": 48,
+      "fd_catch": 26,
+      "other_catch": 7,
+      "discordant_fd_catch": 19,
+      "discordant_other_catch": 0,
+      "delta_pp": 39.5833,
+      "ci_paired_wald_pp": [
+        25.7489,
+        53.4178
+      ],
+      "ci_crosses_zero": false,
+      "mcnemar_p": 3.814697265625e-06,
+      "cohens_h": 0.8706,
+      "cohens_h_magnitude": "large"
+    },
+    "fd_vs_random": {
+      "n_pairs": 48,
+      "fd_catch": 26,
+      "other_catch": 8,
+      "discordant_fd_catch": 18,
+      "discordant_other_catch": 0,
+      "delta_pp": 37.5,
+      "ci_paired_wald_pp": [
+        23.8043,
+        51.1957
+      ],
+      "ci_crosses_zero": false,
+      "mcnemar_p": 7.62939453125e-06,
+      "cohens_h": 0.8132,
+      "cohens_h_magnitude": "large"
+    }
+  },
+  "reproducibility": {
+    "run1_sha256": "2f5d29925253edf20ad0b56d5990d15b9eee1feb489cb727cc03de5336f4dfee",
+    "run2_sha256": "2f5d29925253edf20ad0b56d5990d15b9eee1feb489cb727cc03de5336f4dfee",
+    "identical": true,
+    "picks_identical": true,
+    "picks": {
+      "holdout": [
+        "wunsequenced",
+        "cross-compile",
+        "tsan",
+        "compile-time"
+      ],
+      "corpus": [
+        "wunsequenced",
+        "cross-compile",
+        "tsan",
+        "compile-time",
+        "compiler-warn"
+      ]
+    }
+  },
+  "honest_note": "真 B3：随机臂由拆仓验证器 queyi-verifier 的 select_assets 选出（池=验证资产，非测量仪器）。样本量 n=21/48 ⇒ 只读方向 + CI，幅度不写成确认性点估计。"
+}
