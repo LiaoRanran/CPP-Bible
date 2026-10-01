@@ -1,0 +1,319 @@
+{
+ "schema": "queyi-llm-arm/672i",
+ "generated_by": "tools/llm_arm_672i.py（W4 第三方裁判臂）",
+ "generated_at": "2026-10-01 23:13:17",
+ "prereg": "data/experiments/prereg_672i.json",
+ "mode": "live_api",
+ "model": {
+  "name": "glm-4",
+  "temperature": 0.01,
+  "prompt_version": "v1",
+  "availability_note": "GPT-4/Claude 无 key；DeepSeek key 401；GLM-4 实测可用 ⇒ 本臂用 GLM-4，结论只声称该模型在该 prompt 下的表现"
+ },
+ "sampling": {
+  "n_error": 12,
+  "n_control": 8,
+  "rule": "6 catch + 6 miss + 8 control（id 升序，非随机）",
+  "detail": "data/holdout/reveal_5_detail_672h.json"
+ },
+ "metrics": {
+  "llm_detect_rate_pct": 100.0,
+  "llm_k": 12,
+  "llm_n": 12,
+  "fd_detect_rate_pct": 50.0,
+  "fd_k": 6,
+  "delta_fd_minus_llm_pp": -50.0,
+  "llm_false_positive": {
+   "fp": 4,
+   "n": 8,
+   "rate_pct": 50.0
+  },
+  "agreement": {
+   "agree": 10,
+   "n": 20,
+   "rate": 0.5
+  },
+  "paired_mcnemar_fd_vs_llm": {
+   "b_fd_only": 0,
+   "c_llm_only": 6,
+   "p_value": 0.03125,
+   "method": "exact-mcnemar"
+  },
+  "by_layer": {
+   "runtime_sanitizer": {
+    "n": 11,
+    "llm_catch": 11,
+    "fd_catch": 5,
+    "llm_rate_pct": 100.0,
+    "fd_rate_pct": 45.5
+   },
+   "static_compiler": {
+    "n": 1,
+    "llm_catch": 1,
+    "fd_catch": 1,
+    "llm_rate_pct": 100.0,
+    "fd_rate_pct": 100.0
+   },
+   "h4_layer_delta_pp": 0.0
+  }
+ },
+ "hypothesis_verdicts": {
+  "H1_fd_minus_llm_gt_20pp": "不成立",
+  "H2_llm_fp_lt_25pct": "不成立",
+  "H3_agreement_ge_0.6": "不成立",
+  "H4_layer_delta_gt_20pp": "不成立（探索性）"
+ },
+ "per_sample": [
+  {
+   "id": "h1",
+   "fd": "catch",
+   "llm": true,
+   "llm_category": "concurrency error",
+   "llm_confidence": 1.0,
+   "truth": "error",
+   "detector": "tsan",
+   "layer": "sanitizer",
+   "note": "api",
+   "answer_leak_risk": true
+  },
+  {
+   "id": "h11",
+   "fd": "unknown",
+   "llm": true,
+   "llm_category": "memory error",
+   "llm_confidence": 1.0,
+   "truth": "control",
+   "detector": "unknown",
+   "layer": "other",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h12",
+   "fd": "unknown",
+   "llm": false,
+   "llm_category": "none",
+   "llm_confidence": 1.0,
+   "truth": "control",
+   "detector": "unknown",
+   "layer": "other",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h13",
+   "fd": "miss",
+   "llm": true,
+   "llm_category": "memory error",
+   "llm_confidence": 1.0,
+   "truth": "control",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h14",
+   "fd": "catch",
+   "llm": true,
+   "llm_category": "API misuse",
+   "llm_confidence": 1.0,
+   "truth": "error",
+   "detector": "linker",
+   "layer": "linker",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h15",
+   "fd": "catch",
+   "llm": true,
+   "llm_category": "memory error",
+   "llm_confidence": 1.0,
+   "truth": "error",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h16",
+   "fd": "miss",
+   "llm": false,
+   "llm_category": "none",
+   "llm_confidence": 1.0,
+   "truth": "control",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h17",
+   "fd": "miss",
+   "llm": false,
+   "llm_category": "none",
+   "llm_confidence": 1.0,
+   "truth": "control",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h18",
+   "fd": "miss",
+   "llm": false,
+   "llm_category": "none",
+   "llm_confidence": 1.0,
+   "truth": "control",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h19",
+   "fd": "miss",
+   "llm": true,
+   "llm_category": "memory error",
+   "llm_confidence": 1.0,
+   "truth": "control",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h20",
+   "fd": "miss",
+   "llm": true,
+   "llm_category": "API misuse",
+   "llm_confidence": 1.0,
+   "truth": "control",
+   "detector": "compiler-warn",
+   "layer": "compiler-warn",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h21",
+   "fd": "catch",
+   "llm": true,
+   "llm_category": "undefined behavior",
+   "llm_confidence": 1.0,
+   "truth": "error",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h22",
+   "fd": "catch",
+   "llm": true,
+   "llm_category": "undefined behavior",
+   "llm_confidence": 1.0,
+   "truth": "error",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h23",
+   "fd": "catch",
+   "llm": true,
+   "llm_category": "undefined behavior",
+   "llm_confidence": 1.0,
+   "truth": "error",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h29",
+   "fd": "miss",
+   "llm": true,
+   "llm_category": "undefined behavior",
+   "llm_confidence": 1.0,
+   "truth": "error",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h33",
+   "fd": "miss",
+   "llm": true,
+   "llm_category": "undefined behavior",
+   "llm_confidence": 1.0,
+   "truth": "error",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h34",
+   "fd": "miss",
+   "llm": true,
+   "llm_category": "concurrency error",
+   "llm_confidence": 1.0,
+   "truth": "error",
+   "detector": "tsan",
+   "layer": "sanitizer",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h46",
+   "fd": "miss",
+   "llm": true,
+   "llm_category": "undefined behavior",
+   "llm_confidence": 1.0,
+   "truth": "error",
+   "detector": "asan",
+   "layer": "sanitizer",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h5",
+   "fd": "miss",
+   "llm": true,
+   "llm_category": "undefined behavior",
+   "llm_confidence": 1.0,
+   "truth": "error",
+   "detector": "ubsan",
+   "layer": "sanitizer",
+   "note": "api",
+   "answer_leak_risk": false
+  },
+  {
+   "id": "h59",
+   "fd": "miss",
+   "llm": true,
+   "llm_category": "concurrency error",
+   "llm_confidence": 1.0,
+   "truth": "error",
+   "detector": "tsan",
+   "layer": "sanitizer",
+   "note": "api",
+   "answer_leak_risk": false
+  }
+ ],
+ "unknown_samples": [],
+ "usage_total": {
+  "completion_tokens": 1741,
+  "prompt_tokens": 7425,
+  "total_tokens": 9166
+ },
+ "answer_leak_risk_samples": [
+  "h1"
+ ],
+ "honest_note": "LLM 只看**剥注释**的源码，无编译/无 sanitizer 证据；本臂是第三方对照读法，不得与 FD 混成同一类证据。",
+ "raw_log": "data/experiments/llm_arm_672i_raw.jsonl"
+}
