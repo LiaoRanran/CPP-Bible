@@ -1,0 +1,75 @@
+{
+  "schema": "queyi-prereg/672j",
+  "prereg_id": "672j-W5-external-anchor",
+  "registered_at": "2026-10-01",
+  "registrant": "LiaoRanran",
+  "status": "locked_before_experiment",
+  "immutability": "本文件在**任何外部锚定检测运行之前**落盘并单独 commit。事后不得回改假设/阈值/来源清单/映射规则。",
+  "research_question": "把 FD 管线放到**公开来源的真实缺陷/反例**上：它覆盖多少？与仓内 holdout / corpus 的检出率相比如何？",
+  "context": {
+    "why": "前途评估报告：外部可见性为零、缺外部锚定。W5 用公开 C++ 来源做锚定，检验泛化。",
+    "source_availability": {
+      "cppcoreguidelines": "✅ `https://raw.githubusercontent.com/isocpp/CppCoreGuidelines/master/CppCoreGuidelines.md`（841 KB，含大量 'Example, bad' 反例，带规则编号）——**仅此一源抓取成功**",
+      "cppreference": "❌ HTTP 403（网页反爬）",
+      "stackoverflow": "❌ HTTP 403",
+      "leetcode_codeforces": "❌ 未尝试（同类反爬 + 许可问题）",
+      "honest_note": "任务书列的四个候选源里只有 C++ Core Guidelines 可取 ⇒ 外部锚定以它为**唯一 verbatim 源**，另一部分用『公开 UB 类别重建』补齐（明确标注非 verbatim）。"
+    }
+  },
+  "hypotheses": {
+    "H1": "FD 在『verbatim 准则反例』子集上的检出率 **低于** FD 在 corpus 上的检出率（差 > 10pp）——因为准则反例多数是**规范/风格/接口**问题，不是 UB，双档 sanitizer 看不见。",
+    "H2": "FD 在『重建 UB』子集（n≥15）上的检出率与 corpus **历史子集**（54.2%，n=48）差 < 25pp（同类可比性检查，探索性）。",
+    "H3": "FD 在外部锚定总集（≥50 条）上的可测检出率 ≥ 30%（最低覆盖声明）。",
+    "H0": "无上述差异。"
+  },
+  "methods": {
+    "dataset": {
+      "file": "data/external_anchor/external_anchor_672j.json",
+      "subset_a_verbatim": {
+        "n_target": 35,
+        "source": "C++ Core Guidelines（raw markdown，抓取时间与 sha256 落盘）",
+        "extraction": "只做**机械抽取**：规则编号 + 'Example, bad' 标记 + 紧随其后的 ```cpp 代码块；不改写代码（verbatim=true）。",
+        "label": "guideline_violation（来源文档自述的 bad 例）",
+        "target_class_caveat": "『准则违规』≠『UB / 可检测缺陷』——这正是 H1 要量化的差距。"
+      },
+      "subset_b_reconstructed": {
+        "n_target": 15,
+        "source": "公开 UB 类别清单（cppreference『未定义行为』条目 / Core Guidelines 的 UB 相关规则）的**重建片段**",
+        "label": "ub_reconstructed（verified_source=false，逐条注明类别出处）"
+      }
+    },
+    "detector_assignment": {
+      "rule": "每条样本按**其缺陷类别**映射到本机可用检测器（asan/ubsan/tsan/compiler-warn/cross-compile）；映射表随样本落盘（字段 detector + detector_reason），可逐条复核；判不出就 unknown。",
+      "fragments": "无 main / 只是片段的样本：只走 `compiler-warn`（-fsyntax-only，本机 g++）——不伪造运行证据。",
+      "runnable": "可独立编译运行的样本：按缺陷类别走 asan/ubsan/tsan（双档 + setarch -R）或 cross-compile。"
+    },
+    "arms": {"FD": "本仓管线判决（同 671a/672h reveal 原语）"},
+    "metric": "检出率 k/n（可测 = catch+miss；unknown 与『不可编译』不进分母，逐条列出）+ Clopper-Pearson 95%",
+    "statistical_tests": ["CP95 区间", "与 corpus/holdout 的**非配对**率差（Newcombe 混合区间，新实现）"],
+    "seed": 20260930,
+    "reuse": "判据原语复用 `tools/external_corpus_662.py::detect`（warn/cross）与 `tools/external_corpus_reveal_671a.py::detect_san_double_opt`（sanitizer 双档），不另写命中定义。"
+  },
+  "decision_thresholds": {
+    "H1": "Δ = corpus率 − 准则例率 > 10pp",
+    "H2": "|重建UB率 − corpus历史率| < 25pp",
+    "H3": "外部锚定总检出率 ≥ 30%",
+    "not_significant": "达不到阈值照实写『不成立』；不得事后挑样本",
+    "unavailable": "抓取失败/编译不可行的样本：记 unknown 并列出，不编造判决"
+  },
+  "exclusion_criteria": [
+    "verbatim 子集：抽取失败（无代码块/代码块为空/纯伪代码）的不入集",
+    "重复代码（同一代码块在文档里出现多次）只保留首条",
+    "需要第三方库/GSL/标准库新特性导致本机编译失败的：记 unknown 并列出",
+    "perf/compile-time 类（本机无检测器）记 unknown，不进分母",
+    "『目标类不同』不得混算：准则例与 UB 例的率必须**分列**，只在总集给汇总并标注口径"
+  ],
+  "post_registration": {
+    "results_files": [
+      "data/external_anchor/external_anchor_672j.json",
+      "data/external_anchor_reveal_672j.json",
+      "data/external_anchor/guideline_raw_extract_672j.json"
+    ],
+    "report": "data/672j_验收报告.md",
+    "honesty_rule": "verbatim 部分必须能凭 URL + sha256 复核到原文；License/署名要求（MIT 字体许可见仓库）在报告里写明引用方式。"
+  }
+}
