@@ -73,7 +73,7 @@ eq(CORE.caliberNoteText('A_valid_only', 2), '1 臂 · 分母不同、分子同�
 has(CORE.caliberNoteText('all', 2), '分母不同、分子同源', '口径提示必须提醒"差异来自分母"');
 
 /* ══ ⑤ 演化折线：只有真实值才落点 ═══════════════════════════════════════ */
-const rows = [{ mutation_pct: 97.3, holdout_pct: null }, { mutation_pct: null, holdout_pct: 87.5 },
+const rows = [{ mutation_pct: 96.5, holdout_pct: null }, { mutation_pct: null, holdout_pct: 81 },
   { mutation_pct: null, holdout_pct: null }];
 eq(CORE.realValueBatches(rows), 2, '有真实值的批次 = 2（两列任一非 null）');
 eq(CORE.realValueBatches([]), 0, '空 ⇒ 0');

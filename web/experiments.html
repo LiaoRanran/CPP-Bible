@@ -17,9 +17,9 @@
 <body>
 <noscript><div style="max-width:640px;margin:2rem auto;padding:1.5rem">
 <p style="font-size:18px;font-weight:600;margin:0 0 6px">实验结果（纯文字）</p>
-<p>holdout 87.5%（14/16，95% CI 61.7–98.4）</p>
-<p>外部 corpus 35.0%（14/40，20.6–51.7）；可测 43.8%（14/32）</p>
-<p>变异 core 97.3%（110/113）；反事实 F1 1.0（上界）</p>
+<p>holdout 81.0%（17/21，95% CI 58.1–94.6）</p>
+<p>外部 corpus 43.3%（26/60，30.6–56.8）；可测 54.2%（26/48）</p>
+<p>变异 core 96.5%（on_scored 110/114）；反事实 F1 1.0（上界）</p>
 <p style="color:var(--color-text-mute);font-size:13px">请启用 JavaScript 查看完整图表。</p>
 </div></noscript>
 <a class="skip-link" href="#main">跳到主要内容</a>
@@ -31,7 +31,7 @@
       <h1>实验结果</h1>
       <p class="lede">五张图全部<b>现算自真实产物</b>（metrics_666 / status / experiments / graph / 669_experiments）。
         前端只渲染、不写死；每根柱都带 <b>Wilson 95% 置信区间</b>与 k/n，点开即见样本明细。
-        baseline 三源未就绪时显式标注「<b>待670a生成</b>」——分母与口径一并给出，避免「43.8% 误读」。</p>
+        baseline 三源未就绪时显式标注「<b>待670a生成</b>」——分母与口径一并给出，避免「可测口径 54.2% 当成全样本」这类误读。</p>
     </div>
   </header>
 
@@ -136,7 +136,7 @@
     </div>
     <div>
       <h2 class="section-title">⑤ 能力构成</h2>
-      <p class="section-sub">67 规则 / 9 保护器 / 452 账本 / 42 卡 / 178 节点 / 变异 97.3%</p>
+      <p class="section-sub">67 规则 / 9 保护器 / 452 账本 / 42 卡 / 178 节点 / 变异 96.5%</p>
       <div class="chart-card card">
         <div class="chart-toolbar"><span class="dim" id="abi-note">—</span></div>
         <div class="chart" id="c-ability"></div>

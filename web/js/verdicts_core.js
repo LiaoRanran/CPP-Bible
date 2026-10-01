@@ -740,7 +740,9 @@ export const COMPARE_SPECS = [
   { key: 'holdout_miss', label: 'holdout 漏检数', digits: 0, note: '现算 miss', d: 'metrics.metrics.holdout.miss', c: 'verdicts.dashboard.holdout.miss' },
   { key: 'holdout_unknown', label: 'holdout 未知数', digits: 0, note: '检测器不可用 ⇒ 不进分母', d: 'metrics.metrics.holdout.unknown', c: 'verdicts.dashboard.holdout.unknown' },
   { key: 'holdout_den', label: 'holdout 分母', digits: 0, note: 'catch+miss', d: 'metrics.metrics.holdout.den', c: 'verdicts.dashboard.holdout.den' },
-  { key: 'holdout_pool', label: 'holdout 池规模', digits: 0, kind: 'caliber', note: 'baseline 记的是**盲态池 20**；判决页的 samples 是**已 reveal 并跑过的 17**。两个都对，不是漂移。', d: 'baseline.holdout.count', c: 'verdicts.dashboard.holdout.samples' },
+  // 672g：说明文字**不再写死数字** —— 672f 扩样后"已跑 17"变成 22，而这行 note 是给用户看的
+  //   静态串，写死就会静默过期（左边一列显示新值、说明还念旧值）。数字以左右两列为准。
+  { key: 'holdout_pool', label: 'holdout 池规模', digits: 0, kind: 'caliber', note: 'baseline 记的是**盲态池规模**；判决页的 samples 是**已 reveal 并跑过的条数**。两个都对，不是漂移 —— 具体数字见左右两列。', d: 'baseline.holdout.count', c: 'verdicts.dashboard.holdout.samples' },
   { key: 'external_rate_pct', label: '外部语料检出率', unit: '%', digits: 1, tol: { abs: 0.05 }, note: 'catch+miss 口径', d: 'metrics.metrics.external.rate_pct', c: 'verdicts.dashboard.external.rate_pct' },
   { key: 'external_rate_all_pct', label: '外部语料检出率（全样本）', unit: '%', digits: 1, tol: { abs: 0.05 }, note: '分母 = 全部 40 条；与上一行**必须一起看**', d: 'metrics.metrics.external.rate_pct_all', c: 'verdicts.dashboard.external.rate_pct_all' },
   { key: 'external_den', label: '外部语料分母', digits: 0, note: 'catch+miss', d: 'metrics.metrics.external.den', c: 'verdicts.dashboard.external.den' },

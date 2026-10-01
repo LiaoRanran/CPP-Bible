@@ -300,6 +300,14 @@ kbd { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-di
   border-radius: var(--radius-sm); padding: 6px 9px; font-size: 12px; color: var(--color-text-dim);
   box-shadow: var(--shadow-pop); max-width: 260px; }
 .canvas-tip[hidden] { display: none; }
+/* 672g · 星图操作提示（画布角落常驻）：告诉用户"左键平移 / 右键旋转"，
+   免得把 2.5D 的视角映射留给用户去试。配色沿用 .canvas-tip 的令牌对
+   （surface 底 + text-dim 字），不新增 design-token 配对。 */
+.canvas-hint { position: absolute; right: 8px; bottom: 8px; z-index: var(--z-tooltip);
+  pointer-events: none; margin: 0;
+  background: var(--color-surface); border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-sm); padding: 4px 8px; font-size: 11px;
+  color: var(--color-text-dim); opacity: .92; }
 .sm-node-hit { fill: transparent; cursor: pointer; }
 
 /* ── A7 · 页面骨架一致性 ── */

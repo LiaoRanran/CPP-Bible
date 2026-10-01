@@ -183,8 +183,13 @@ const redRow = model.rows.find((r) => r.key === 'cards_real_status');
 ok('不一致行：37 → 42，差异 +5，相对 +13.5%',
   redRow.declared === 37 && redRow.computed === 42 && redRow.diff === 5 && redRow.rel_text === '+13.5%');
 ok('缺口 4 条（反事实 / 图谱 / 总条数 / 夹具条数）', model.partial === 4);
-ok('口径差 1 条（holdout 池 20 vs 已跑 17，diff = −3）',
-  model.caliber === 1 && model.rows.find((r) => r.key === 'holdout_pool').diff === -3);
+// 672g 数字同步：672f「W1 实验抢救」把 holdout 从 16 样本扩到 22（已 reveal 并跑过）
+//   ⇒ 判决页 samples 17 → 22，盲态池仍是 20 ⇒ 口径差由 −3 变 +2。
+//   两侧真值：data/baseline.json::holdout.count = 20（声明侧）；
+//            web/data/verdicts_667.json::dashboard.holdout.samples = 22（现算侧）。
+//   仍是"口径差"（不判红绿）—— 两个数都对，只是量的不是同一件事。
+ok('口径差 1 条（holdout 池 20 vs 已跑 22，diff = +2）',
+  model.caliber === 1 && model.rows.find((r) => r.key === 'holdout_pool').diff === 2);
 ok('冻结契约 3 条（逃逸率族）不借 is-match 的绿', model.frozen === 3
   && model.rows.filter((r) => r.kind === 'frozen').every((r) => r.rowClass === 'is-frozen' && r.isMismatch === false));
 ok('一致 22 条（32 = 22 一致 + 2 不一致 + 4 缺口 + 1 口径差 + 3 冻结）',
