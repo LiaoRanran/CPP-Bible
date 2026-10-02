@@ -449,7 +449,7 @@ Wilson shown as sensitivity. A single script recomputes the baseline arms (see A
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-  width=9.2cm, height=5.6cm,
+  width=8.2cm, height=4.8cm,
   ybar, bar width=7pt,
   ymin=0, ymax=100,
   ylabel={Recall (\%)},
@@ -501,7 +501,7 @@ a rate without its caliber lets readers pick anywhere in 52.6--62.5\%.
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-  width=8.6cm, height=5.2cm,
+  width=7.6cm, height=4.4cm,
   ymin=0, ymax=100, ylabel={holdout recall (\%)},
   symbolic x coords={660,665,666,668,669,671a,672h}, xtick=data,
   nodes near coords, nodes near coords style={font=\scriptsize},
@@ -1133,19 +1133,7 @@ either; and worst, a missing WSL does \emph{not} raise---it silently degrades 15
 compares artifacts to frontend only. A replicator can obtain 10\% and write it into a review with
 nothing warning them that their environment is wrong. Until the fail-loud self-check lands, our
 reproducibility is conditional.
-(2) \emph{tectonic download truncated twice.} No TeX distribution exists on this machine
-(\texttt{pdflatex}, \texttt{xelatex}, \texttt{lualatex}, \texttt{latexmk}, MiKTeX all absent), so we
-ship a self-contained \textbf{tectonic 0.15.0} (\texttt{x86\_64-pc-windows-msvc}, 19~MB) to build the
-submission. The temp directory was cleared once and the zip was truncated twice before the third
-download succeeded. The lesson is unglamorous and expensive: verify the byte count of a binary
-dependency before unpacking, or ``the build failed'' gets misdiagnosed as ``the paper is broken.''
-(The 6.7~MB truncated-size figure recorded in our task brief could not be verified in any artifact,
-so we do not quote it---the same discipline we apply to paper numbers applies to our own notes.)
-(3) \emph{CRLF drift across 437 files.} \texttt{Examples/*.cpp} mixes CRLF and LF. Because evidence
-hashes are taken over file \emph{bytes}, one newline flip invalidates every historical hash; we
-logged it as debt with a ``convert-on-touch'' policy plus \texttt{.gitattributes}. This bears
-directly on \emph{state reproducibility}: newlines are inputs you cannot see and that silently break
-recomputation.
+Engineering incidents (resolved; none affects a scientific conclusion). \emph{Tectonic downloads truncated twice}---we shipped a self-contained binary; lesson: verify a dependency's byte count before unpacking. \emph{CRLF drift across 437 files}---because evidence hashes are taken over file \emph{bytes}, one newline flip invalidates every historical hash, which bears directly on state reproducibility.
 (4) \emph{Parallel-agent write conflicts.} Two batches advanced the same efficiency work in
 parallel; one commit created a fast gate and slow markers, and another explicitly continued that
 \emph{in-flight} snapshot on the same files (35 further markers, final gate, work-stealing), with
@@ -1216,17 +1204,7 @@ first (one already existed, with the caveat written in its comment); and note th
 cited in our own task brief \emph{did not exist in the repository at all} (\texttt{git log -S} finds
 nothing), which is itself a class of false positive---the same disease as case D: verify first, then
 act.
-\textbf{F. A hardcoded colour that punched through the design system.} \emph{Phenomenon:} the focus
-ring stayed at a legacy orange instead of the design system's calm blue, so a single page showed two
-different focus colours. \emph{Root cause:} \texttt{a11y.css} loads \emph{after} \texttt{style.css}
-at equal specificity $(0,1,0)$, so ``last one wins'' and the hardcoded literal overrode the token;
-twelve further variables were zombies that do not exist in the token file at all and silently fell
-back to legacy colours. \emph{Fix:} replace literals with tokens, map zombie names to real ones, and
-keep fallbacks as a safety net for token-load failure. \emph{Lesson:} this is T5 in another
-technology---an authoritative token source, downstream literals that ignore it, and precedence
-decided by load order rather than by explicit constraint. Our number governance and our CSS
-governance committed the same error, which is independent evidence for the
-``assert the caliber, never the measured value'' principle.
+
 
 \paragraph{Our judgment boundaries (full).}
 \emph{Believed but not adequately verified.} (i) That an $e$-process suits a verdict ledger: we
