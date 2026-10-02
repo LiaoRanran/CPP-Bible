@@ -21,7 +21,26 @@ artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_intpromo.c 
 artifact_sha256: 8294058c9ff42b04e033aba984fae1c6b51c017e014d0a5d4a896ca58bcff08c
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
-  - {kind: contains, text: "intpromo_probe"}
+  # 673q：原断言写的是夹具里的 **static C 函数名**（`- {kind: contains, text: "intpromo_probe"}`）。该函数在本卡 -O2
+  # 档位下必然被内联进 main ⇒ 符号名在任何编译器/任何优化档的 .asm 里都不出现
+  # （实测卡自己归属的 gcc 13.1.0 工件里也没有）⇒ 属**原理上不可满足**的坏断言。
+  # 之所以此前不红：toolchain 长期等于卡归属的 13.1.0 ⇒ artifact_sha 命中、
+  # 结构断言从不被评估；650 批把工具链切到 mingw1530 GCC 15.3.0 后 sha 走不通、
+  # 回落到结构断言，这条断言才第一次被真正执行 ⇒ quality 红。
+  # 改为断言工件里真实存在、且承载本卡 claim 的两类证据：
+  #   ① 读数键的 printf 格式串（.rdata，跨编译器稳定，绑定期望输出的 key）
+  #   ② 承载 claim 的关键立即数：200 = 100+100（整型提升后不溢出 char）、
+  #      4 = sizeof(c+d)（提升到 int 的直接证据）、-1 = (unsigned)-1 的传出形态
+  # 文本里的制表符是**真实 TAB**（YAML 双引号转义，仓内既有约定见
+  # EV-UB-NULLDEREF-669）：check_artifact_assert 两侧都归一空白故可匹配，而
+  # gate_engine EV-ASSERT-SYMBOL-MAPPED 的 haystack **不归一**、要求与产物逐字
+  # 相同 ⇒ 必须写真实 TAB，不能写字面反斜杠 t。
+  # 673q 五路实测全部命中：仓库已提交工件(13.1.0) / GCC 15.3.0 MinGW /
+  # GCC 13.1.0 MinGW / clang 22.1.8(MSYS2) / Ubuntu gcc 13.3.0（CI 侧等价物）。
+  - {kind: contains_any, texts: ["cmp_signed_unsigned=%d", "minus1_as_unsigned=%u", "char_promoted_sum=%d", "char_sum_type_size=%zu"]}
+  - {kind: contains, text: "mov	edx, 200"}
+  - {kind: contains, text: "mov	edx, 4"}
+  - {kind: contains, text: "mov	edx, -1"}
 expected:
   run: char_promoted_sum=200 char_sum_type_size=4 cmp_signed_unsigned=0 minus1_as_unsigned=4294967295
 actual:

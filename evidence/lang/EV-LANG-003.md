@@ -21,7 +21,26 @@ artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_decay.c -o 
 artifact_sha256: 97509b8f4bf442598807454e49eff591c65e4e8dd0917537e2fac8371d2a6e2f
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
-  - {kind: contains, text: "decay_param_sizeof"}
+  # 673q：原断言写的是夹具里的 **static C 函数名**（`- {kind: contains, text: "decay_param_sizeof"}`）。该函数在本卡 -O2
+  # 档位下必然被内联进 main ⇒ 符号名在任何编译器/任何优化档的 .asm 里都不出现
+  # （实测卡自己归属的 gcc 13.1.0 工件里也没有）⇒ 属**原理上不可满足**的坏断言。
+  # 之所以此前不红：toolchain 长期等于卡归属的 13.1.0 ⇒ artifact_sha 命中、
+  # 结构断言从不被评估；650 批把工具链切到 mingw1530 GCC 15.3.0 后 sha 走不通、
+  # 回落到结构断言，这条断言才第一次被真正执行 ⇒ quality 红。
+  # 改为断言工件里真实存在、且承载本卡 claim 的两类证据：
+  #   ① 读数键的 printf 格式串（.rdata，跨编译器稳定，绑定期望输出的 key）
+  #   ② 承载 claim 的关键立即数：sizeof 数组 40 != sizeof 形参 8（x86-64 SysV
+  #      第二整数实参走 edx）—— 这正是本卡 hypothesis 的直接产物
+  # 文本里的制表符是**真实 TAB**（YAML 双引号转义，仓内既有约定见
+  # EV-UB-NULLDEREF-669）：check_artifact_assert 两侧都归一空白故可匹配，而
+  # gate_engine EV-ASSERT-SYMBOL-MAPPED 的 haystack **不归一**、要求与产物逐字
+  # 相同 ⇒ 必须写真实 TAB，不能写字面反斜杠 t。
+  # 673q 五路实测全部命中：仓库已提交工件(13.1.0) / GCC 15.3.0 MinGW /
+  # GCC 13.1.0 MinGW / clang 22.1.8(MSYS2) / Ubuntu gcc 13.3.0（CI 侧等价物）。
+  - {kind: contains_any, texts: ["decay_sizeof_array=%zu", "decay_sizeof_param=%zu", "decay_len_true=%zu", "decay_len_wrong_inside=%zu"]}
+  - {kind: contains, text: "mov	edx, 40"}
+  - {kind: contains, text: "mov	edx, 8"}
+  - {kind: contains, text: "mov	edx, 2"}
 expected:
   run: decay_len_true=10 decay_len_wrong_inside=2 decay_sizeof_array=40 decay_sizeof_param=8
 actual:

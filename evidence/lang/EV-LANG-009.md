@@ -21,7 +21,22 @@ artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_macro.c -o 
 artifact_sha256: eca0a33e9d346dd6bcc18b2aef8418646cfe1b4f8a54705cc6ef97e9c33856a5
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
-  - {kind: contains, text: "macro_probe"}
+  # 673q：原断言 `{kind: contains, text: "macro_probe"}` 写的是夹具里的 **static C
+  # 函数名**——-O2 下被内联进 main，符号名在任何编译器产物里都不出现（连卡归属的 13.1.0
+  # 工件里也没有）⇒ 原理上不可满足的坏断言。此前不红是因为 toolchain 长期等于卡归属的
+  # 13.1.0 ⇒ artifact_sha 命中、断言从不被评估；650 批切到 mingw1530 GCC 15.3.0 后
+  # sha 走不通、回落到结构断言，才第一次被执行 ⇒ 红。
+  # 改为断言真实存在且承载 claim 的证据：① 读数键格式串（跨编译器稳定）② 关键立即数——
+  # 7 = 缺括号的 SQ_BAD(3+1)（优先级错）、16 = 带括号的 SQ_GOOD、2 = MAX_BAD 的 i++
+  # 被求值两次后的 i_after。这三个立即数正是本卡 hypothesis 的三条断言。
+  # "mov\tedx, N" 用真实制表符（YAML 双引号 \t，参照 EV-UB-NULLDEREF-669）：断言匹配侧
+  # 两侧都归一空白，而 gate_engine EV-ASSERT-SYMBOL-MAPPED 的 haystack 不归一、须逐字相同。
+  # 673q 五路实测全部命中：仓库工件(13.1.0) / GCC 15.3.0 / GCC 13.1.0 / clang 22.1.8 /
+  # Ubuntu gcc 13.3.0（CI 侧等价物）。
+  - {kind: contains_any, texts: ["sq_bad=%d", "sq_good=%d", "max_bad_result=%d", "i_after=%d"]}
+  - {kind: contains, text: "mov	edx, 7"}
+  - {kind: contains, text: "mov	edx, 16"}
+  - {kind: contains, text: "mov	edx, 2"}
 expected:
   run: i_after=2 max_bad_result=1 sq_bad=7 sq_good=16
 actual:

@@ -21,7 +21,21 @@ artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_volatile.c 
 artifact_sha256: 9ae63e9da91970ac6f5e16a7aaadde9b50d6ca77f056ed934f6f9cffbbe3c493
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
-  - {kind: contains, text: "volatile_probe"}
+  # 673q：原断言 `{kind: contains, text: "volatile_probe"}` 写的是夹具里的 **static C
+  # 函数名**——本卡 -O2 档位下它被内联进 main（仓库工件里连 `volatile_probe` 这个名字都
+  # 不存在，只有 `printf.constprop.0` 与 `main`），符号名在任何编译器产物里都不出现
+  # ⇒ 原理上不可满足的坏断言。之所以此前不红：toolchain 长期等于卡归属的 13.1.0 ⇒
+  # artifact_sha 命中、断言从不被评估；650 批切到 mingw1530 GCC 15.3.0 后 sha 走不通、
+  # 回落到结构断言，才第一次被执行 ⇒ 红。
+  # 本卡的 hypothesis 就是「-O2 下普通变量的多次读取可被折叠，volatile 变量必须逐次访问」，
+  # 故直接断言这一对文件级静态变量的出场/缺席——这正是该假设在汇编层面的判据：
+  #   contains vol_flag   ⇒ volatile 变量逐次被访问，编译器不能折叠掉它，符号必现
+  #   absent  plain_flag  ⇒ 普通变量的三次读取被整体折叠，变量连 .comm/.lcomm 都不生成
+  # 两条文本在夹具里逐字可寻（gate_engine EV-ASSERT-SYMBOL-MAPPED 的 haystack 判据）。
+  # 673q 五路实测：vol_flag 全部出现、plain_flag 全部不现——仓库工件(13.1.0) /
+  # GCC 15.3.0 / GCC 13.1.0 / clang 22.1.8 / Ubuntu gcc 13.3.0（CI 侧等价物）。
+  - {kind: contains, text: "vol_flag"}
+  - {kind: absent, text: "plain_flag"}
 expected:
   run: sink=0
 actual:

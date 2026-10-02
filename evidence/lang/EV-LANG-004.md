@@ -21,7 +21,21 @@ artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_fnptr.c -o 
 artifact_sha256: a013afa520d2be26bd3639c8d93dcb7099a79bb7d6777b1506031fa62028f28f
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
-  - {kind: contains, text: "fnptr_probe"}
+  # 673q：原断言 `{kind: contains, text: "fnptr_probe"}` 写的是夹具里的 **static C
+  # 函数名**——它在本卡 -O2 档位下必然被内联进 main，符号名在任何编译器的 .asm 里都
+  # 不出现（连卡归属的 13.1.0 工件里也没有）⇒ 原理上不可满足的坏断言。之所以此前不红：
+  # toolchain 长期等于卡归属的 13.1.0 ⇒ artifact_sha 命中、断言从不被评估；650 批把
+  # 工具链切到 mingw1530 GCC 15.3.0 后 sha 走不通、回落到结构断言，才第一次被执行 ⇒ 红。
+  # 改为断言真实存在且承载 claim（函数指针 sizeof == 对象指针 8；经函数指针调用得 5）的证据：
+  #   ① 读数键的 printf 格式串（.rdata，跨编译器稳定）
+  #   ② 承载 claim 的关键立即数（x86-64 SysV 第二整数实参走 edx）
+  # "mov\tedx, N" 用真实制表符（YAML 双引号 \t，参照 EV-UB-NULLDEREF-669）：断言匹配侧
+  # 两侧都归一空白，而 gate_engine EV-ASSERT-SYMBOL-MAPPED 的 haystack 不归一、须逐字相同。
+  # 673q 五路实测全部命中：仓库工件(13.1.0) / GCC 15.3.0 / GCC 13.1.0 / clang 22.1.8 /
+  # Ubuntu gcc 13.3.0（CI 侧等价物）。
+  - {kind: contains_any, texts: ["fnptr_sizeof=%zu", "good_call=%d", "bad_addr_nonzero=%d"]}
+  - {kind: contains, text: "mov	edx, 8"}
+  - {kind: contains, text: "mov	edx, 5"}
 expected:
   run: bad_addr_nonzero=1 fnptr_sizeof=8 good_call=5
 actual:

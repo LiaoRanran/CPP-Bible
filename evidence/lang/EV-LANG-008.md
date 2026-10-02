@@ -21,7 +21,22 @@ artifact_producer: gcc -std=c11 -O2 -S -masm=intel Examples/atoms/_c_bitfield.c 
 artifact_sha256: 9610238ae891e83c4f7b917dbe72e0d679a9b02a2b7e975d7541d630dbe8112b
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
-  - {kind: contains, text: "bitfield_probe"}
+  # 673q：原断言 `{kind: contains, text: "bitfield_probe"}` 写的是夹具里的 **static C
+  # 函数名**——-O2 下被内联进 main，符号名在任何编译器产物里都不出现（连卡归属的 13.1.0
+  # 工件里也没有）⇒ 原理上不可满足的坏断言。此前不红是因为 toolchain 长期等于卡归属的
+  # 13.1.0 ⇒ artifact_sha 命中、断言从不被评估；650 批切到 mingw1530 GCC 15.3.0 后
+  # sha 走不通、回落到结构断言，才第一次被执行 ⇒ 红。
+  # 改为断言真实存在且承载 claim 的证据：① 读数键格式串（跨编译器稳定）② 关键立即数。
+  # 其中 `mov\tedx, 173` 一条就锚住了整张卡的位布局 claim：173 = 0xAD = 101|10101|1
+  #   （a:3=5、b:5=21、c:4 的有符号位读回 -1），`mov\tedx, -1` 另锚符号扩展。
+  # "mov\tedx, N" 用真实制表符（YAML 双引号 \t，参照 EV-UB-NULLDEREF-669）：断言匹配侧
+  # 两侧都归一空白，而 gate_engine EV-ASSERT-SYMBOL-MAPPED 的 haystack 不归一、须逐字相同。
+  # 673q 五路实测全部命中：仓库工件(13.1.0) / GCC 15.3.0 / GCC 13.1.0 / clang 22.1.8 /
+  # Ubuntu gcc 13.3.0（CI 侧等价物）。
+  - {kind: contains_any, texts: ["bf_sizeof=%zu", "bf_a=%u", "bf_b=%u", "bf_c_signed_readback=%d", "bf_byte0=%u", "bf_byte1=%u"]}
+  - {kind: contains, text: "mov	edx, 173"}
+  - {kind: contains, text: "mov	edx, -1"}
+  - {kind: contains, text: "mov	edx, 4"}
 expected:
   run: bf_a=5 bf_b=21 bf_byte0=173 bf_byte1=15 bf_c_signed_readback=-1 bf_sizeof=4
 actual:

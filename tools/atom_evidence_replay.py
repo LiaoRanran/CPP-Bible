@@ -364,6 +364,38 @@ def _split_argv(cmd: str) -> list[list[str]] | None:
     return out or None
 
 
+_CXX_DRIVERS = ("g++", "c++", "g++.exe", "c++.exe")
+_C_DRIVERS = ("gcc", "cc", "gcc.exe", "cc.exe")
+
+
+def _resolve_driver(base: str, resolve_gpp: Any) -> str:
+    """C 驱动与 C++ 驱动**分开**解析（673q 修）。
+
+    病：`gcc` 与 `g++` 一起被钉到 `resolve_gpp()`，于是卡里写
+    `gcc ... file.c` 的 C 夹具实际由 **C++ 驱动**编译——cc1plus 忽略
+    `-std=c11`（只 warn "'-std=c11' is valid for C/ObjC but not for C++"），
+    造成两个可观测后果：
+      ① **保真度缺陷**：卡声明 `-std=c11`、实跑却是 C++17/23。本地如此，
+         而 CI（ubuntu-latest 的 `gcc` 本就是 C 驱动）编的是另一种语言
+         ⇒ 同一张卡的工件在本地与 CI 上语义不同，跨编译器替代校验也跟着
+         校验了不同的东西。
+      ② **硬失败**：EV-MEM-046 的夹具用了 C11 专有语法
+         （`_Alignof(max_align_t)`，C++ 下该名字在 `std::` 里），
+         被 C++ 驱动编译即报 `max_align_t is not a member of std`
+         ⇒ `refute:compile_error`（3/3 条命令失败）。
+    修：C 驱动取「与 g++ 同目录的 gcc」（MinGW-w64 与 GCC 官方布局都保证
+    同目录有 gcc）；PATH 上也找一次。**都找不到就返回空串 = 不替换**——
+    宁可让调用者的 PATH 决定，也不静默把 C 换成 C++（那会伪造"跑过了"）。
+    """
+    if base not in _C_DRIVERS:
+        return resolve_gpp()
+    stem = base[:-4] if base.endswith(".exe") else base
+    cand = Path(resolve_gpp()).with_name(stem + ".exe")
+    if cand.is_file():
+        return str(cand)
+    return shutil.which(stem) or shutil.which(stem + ".exe") or ""
+
+
 def _pin_compiler(argv: list[str]) -> list[str]:
     """把 argv[0] 的**裸编译器名**钉到 `toolchain` 解析出的完整路径。
 
@@ -375,11 +407,11 @@ def _pin_compiler(argv: list[str]) -> list[str]:
     if not argv:
         return argv
     base = Path(argv[0]).name.lower()
-    if base in ("g++", "gcc", "c++", "cc", "g++.exe", "gcc.exe"):
+    if base in _C_DRIVERS or base in _CXX_DRIVERS:
         try:
             sys.path.insert(0, str(Path(__file__).resolve().parent))
             from toolchain import resolve_gpp
-            resolved = resolve_gpp()
+            resolved = _resolve_driver(base, resolve_gpp)
             # 判据是"解析结果与命令行**字面量**不同"，不是"basename 不同"（2026-09-10 CI 修）：
             # Linux 上 resolve_gpp() 回退 PATH 得 `/usr/bin/g++`，其 basename 恰为 `g++`，
             # 旧判据据此认为"无需替换"而保留裸名——该环境恰好可用，但**行为随平台漂移**
