@@ -1,0 +1,575 @@
+{
+ "schema": "queyi-673e/comparison-stats",
+ "calibers": {
+  "clang_tidy_primary": "任意 error/warning 级诊断，检查族 = clang-analyzer, bugprone, cert, cppcoreguidelines",
+  "clang_tidy_strictA": "仅 clang-analyzer-*",
+  "clang_tidy_strictB": "clang-analyzer-* + bugprone-* + cert-*",
+  "cppcheck_primary": "severity ∈ {error, warning}",
+  "cppcheck_loose": "任意 severity",
+  "unknown_policy": "工具不可用/编译致命错误 ⇒ unknown，不进分母（与 FD 口径对称）"
+ },
+ "comparisons": [
+  {
+   "dataset": "holdout",
+   "tool": "clang-tidy 主口径(4族)",
+   "n_measurable": 41,
+   "n_unknown": 0,
+   "unknown_ids": [],
+   "n_labeled_error": 41,
+   "fd_catch": 34,
+   "fd_rate": 82.9,
+   "tool_catch": 41,
+   "tool_rate": 100.0,
+   "b_fd_only": 0,
+   "c_tool_only": 7,
+   "mcnemar_p": 0.015625,
+   "cohens_h": -0.85,
+   "delta_pp": -17.1,
+   "delta_ci": [
+    -28.6,
+    -5.6
+   ],
+   "overlap_with_fd": 100.0,
+   "tool_catch_not_in_fd": 7,
+   "control_n": 11,
+   "control_fp": 11,
+   "control_fpr": 100.0
+  },
+  {
+   "dataset": "holdout",
+   "tool": "clang-tidy StrictB",
+   "n_measurable": 41,
+   "n_unknown": 0,
+   "unknown_ids": [],
+   "n_labeled_error": 41,
+   "fd_catch": 34,
+   "fd_rate": 82.9,
+   "tool_catch": 21,
+   "tool_rate": 51.2,
+   "b_fd_only": 14,
+   "c_tool_only": 1,
+   "mcnemar_p": 0.0009765625,
+   "cohens_h": 0.69,
+   "delta_pp": 31.7,
+   "delta_ci": [
+    15.9,
+    47.5
+   ],
+   "overlap_with_fd": 58.8,
+   "tool_catch_not_in_fd": 1,
+   "control_n": 11,
+   "control_fp": 3,
+   "control_fpr": 27.3
+  },
+  {
+   "dataset": "holdout",
+   "tool": "clang-tidy StrictA(analyzer)",
+   "n_measurable": 41,
+   "n_unknown": 0,
+   "unknown_ids": [],
+   "n_labeled_error": 41,
+   "fd_catch": 34,
+   "fd_rate": 82.9,
+   "tool_catch": 20,
+   "tool_rate": 48.8,
+   "b_fd_only": 14,
+   "c_tool_only": 0,
+   "mcnemar_p": 0.0001220703125,
+   "cohens_h": 0.74,
+   "delta_pp": 34.1,
+   "delta_ci": [
+    19.6,
+    48.7
+   ],
+   "overlap_with_fd": 58.8,
+   "tool_catch_not_in_fd": 0,
+   "control_n": 11,
+   "control_fp": 1,
+   "control_fpr": 9.1
+  },
+  {
+   "dataset": "holdout",
+   "tool": "cppcheck 主口径(error+warning)",
+   "n_measurable": 41,
+   "n_unknown": 0,
+   "unknown_ids": [],
+   "n_labeled_error": 41,
+   "fd_catch": 34,
+   "fd_rate": 82.9,
+   "tool_catch": 17,
+   "tool_rate": 41.5,
+   "b_fd_only": 17,
+   "c_tool_only": 0,
+   "mcnemar_p": 1.52587890625e-05,
+   "cohens_h": 0.89,
+   "delta_pp": 41.5,
+   "delta_ci": [
+    26.4,
+    56.5
+   ],
+   "overlap_with_fd": 50.0,
+   "tool_catch_not_in_fd": 0,
+   "control_n": 11,
+   "control_fp": 1,
+   "control_fpr": 9.1
+  },
+  {
+   "dataset": "holdout",
+   "tool": "cppcheck 宽松(任意severity)",
+   "n_measurable": 41,
+   "n_unknown": 0,
+   "unknown_ids": [],
+   "n_labeled_error": 41,
+   "fd_catch": 34,
+   "fd_rate": 82.9,
+   "tool_catch": 23,
+   "tool_rate": 56.1,
+   "b_fd_only": 15,
+   "c_tool_only": 4,
+   "mcnemar_p": 0.0192108154296875,
+   "cohens_h": 0.6,
+   "delta_pp": 26.8,
+   "delta_ci": [
+    7.7,
+    46.0
+   ],
+   "overlap_with_fd": 55.9,
+   "tool_catch_not_in_fd": 4,
+   "control_n": 11,
+   "control_fp": 3,
+   "control_fpr": 27.3
+  },
+  {
+   "dataset": "corpus",
+   "tool": "clang-tidy 主口径(4族)",
+   "n_measurable": 64,
+   "n_unknown": 0,
+   "unknown_ids": [],
+   "n_labeled_error": 64,
+   "fd_catch": 40,
+   "fd_rate": 62.5,
+   "tool_catch": 58,
+   "tool_rate": 90.6,
+   "b_fd_only": 2,
+   "c_tool_only": 20,
+   "mcnemar_p": 0.00012111663818359375,
+   "cohens_h": -0.7,
+   "delta_pp": -28.1,
+   "delta_ci": [
+    -40.7,
+    -15.5
+   ],
+   "overlap_with_fd": 95.0,
+   "tool_catch_not_in_fd": 20,
+   "control_n": 3,
+   "control_fp": 0,
+   "control_fpr": 0.0
+  },
+  {
+   "dataset": "corpus",
+   "tool": "clang-tidy StrictB",
+   "n_measurable": 64,
+   "n_unknown": 0,
+   "unknown_ids": [],
+   "n_labeled_error": 64,
+   "fd_catch": 40,
+   "fd_rate": 62.5,
+   "tool_catch": 22,
+   "tool_rate": 34.4,
+   "b_fd_only": 23,
+   "c_tool_only": 5,
+   "mcnemar_p": 0.0009122341871261597,
+   "cohens_h": 0.57,
+   "delta_pp": 28.1,
+   "delta_ci": [
+    13.5,
+    42.8
+   ],
+   "overlap_with_fd": 42.5,
+   "tool_catch_not_in_fd": 5,
+   "control_n": 3,
+   "control_fp": 0,
+   "control_fpr": 0.0
+  },
+  {
+   "dataset": "corpus",
+   "tool": "clang-tidy StrictA(analyzer)",
+   "n_measurable": 64,
+   "n_unknown": 0,
+   "unknown_ids": [],
+   "n_labeled_error": 64,
+   "fd_catch": 40,
+   "fd_rate": 62.5,
+   "tool_catch": 22,
+   "tool_rate": 34.4,
+   "b_fd_only": 23,
+   "c_tool_only": 5,
+   "mcnemar_p": 0.0009122341871261597,
+   "cohens_h": 0.57,
+   "delta_pp": 28.1,
+   "delta_ci": [
+    13.5,
+    42.8
+   ],
+   "overlap_with_fd": 42.5,
+   "tool_catch_not_in_fd": 5,
+   "control_n": 3,
+   "control_fp": 0,
+   "control_fpr": 0.0
+  },
+  {
+   "dataset": "corpus",
+   "tool": "cppcheck 主口径(error+warning)",
+   "n_measurable": 64,
+   "n_unknown": 0,
+   "unknown_ids": [],
+   "n_labeled_error": 64,
+   "fd_catch": 40,
+   "fd_rate": 62.5,
+   "tool_catch": 35,
+   "tool_rate": 54.7,
+   "b_fd_only": 13,
+   "c_tool_only": 8,
+   "mcnemar_p": 0.38331031799316406,
+   "cohens_h": 0.16,
+   "delta_pp": 7.8,
+   "delta_ci": [
+    -6.1,
+    21.7
+   ],
+   "overlap_with_fd": 67.5,
+   "tool_catch_not_in_fd": 8,
+   "control_n": 3,
+   "control_fp": 0,
+   "control_fpr": 0.0
+  },
+  {
+   "dataset": "corpus",
+   "tool": "cppcheck 宽松(任意severity)",
+   "n_measurable": 64,
+   "n_unknown": 0,
+   "unknown_ids": [],
+   "n_labeled_error": 64,
+   "fd_catch": 40,
+   "fd_rate": 62.5,
+   "tool_catch": 43,
+   "tool_rate": 67.2,
+   "b_fd_only": 11,
+   "c_tool_only": 14,
+   "mcnemar_p": 0.6900379657745361,
+   "cohens_h": -0.1,
+   "delta_pp": -4.7,
+   "delta_ci": [
+    -20.0,
+    10.6
+   ],
+   "overlap_with_fd": 72.5,
+   "tool_catch_not_in_fd": 14,
+   "control_n": 3,
+   "control_fp": 0,
+   "control_fpr": 0.0
+  }
+ ],
+ "layers": [
+  {
+   "dataset": "holdout",
+   "layer": "sanitizer",
+   "n": 39,
+   "fd": 33,
+   "ct": 20,
+   "cp": 17
+  },
+  {
+   "dataset": "holdout",
+   "layer": "cross-compile",
+   "n": 1,
+   "fd": 0,
+   "ct": 0,
+   "cp": 0
+  },
+  {
+   "dataset": "holdout",
+   "layer": "other",
+   "n": 1,
+   "fd": 0,
+   "ct": 0,
+   "cp": 0
+  },
+  {
+   "dataset": "holdout",
+   "layer": "linker",
+   "n": 1,
+   "fd": 1,
+   "ct": 0,
+   "cp": 0
+  },
+  {
+   "dataset": "corpus",
+   "layer": "sanitizer",
+   "n": 34,
+   "fd": 29,
+   "ct": 17,
+   "cp": 26
+  },
+  {
+   "dataset": "corpus",
+   "layer": "compiler-warn",
+   "n": 18,
+   "fd": 9,
+   "ct": 5,
+   "cp": 8
+  },
+  {
+   "dataset": "corpus",
+   "layer": "cross-compile",
+   "n": 12,
+   "fd": 2,
+   "ct": 0,
+   "cp": 1
+  }
+ ],
+ "reverse_pairs": [
+  {
+   "dataset": "corpus",
+   "id": "d3f-12",
+   "layer": "compiler-warn",
+   "detector": "compiler-warn",
+   "clang_analyzer": [],
+   "cppcheck": [
+    "error/missingReturn"
+   ]
+  },
+  {
+   "dataset": "corpus",
+   "id": "d3e-06",
+   "layer": "compiler-warn",
+   "detector": "compiler-warn",
+   "clang_analyzer": [
+    "clang-analyzer-core.UndefinedBinaryOperatorResult"
+   ],
+   "cppcheck": [
+    "error/uninitvar"
+   ]
+  },
+  {
+   "dataset": "corpus",
+   "id": "d3-06",
+   "layer": "compiler-warn",
+   "detector": "compiler-warn",
+   "clang_analyzer": [
+    "clang-analyzer-core.UndefinedBinaryOperatorResult"
+   ],
+   "cppcheck": [
+    "error/uninitvar"
+   ]
+  },
+  {
+   "dataset": "corpus",
+   "id": "d3-11",
+   "layer": "cross-compile",
+   "detector": "cross-compile",
+   "clang_analyzer": [],
+   "cppcheck": [
+    "warning/wrongPrintfScanfArgNum"
+   ]
+  },
+  {
+   "dataset": "corpus",
+   "id": "d3-21",
+   "layer": "sanitizer",
+   "detector": "asan",
+   "clang_analyzer": [
+    "clang-analyzer-cplusplus.NewDelete"
+   ],
+   "cppcheck": [
+    "error/deallocuse"
+   ]
+  },
+  {
+   "dataset": "corpus",
+   "id": "d3-22",
+   "layer": "sanitizer",
+   "detector": "asan",
+   "clang_analyzer": [
+    "clang-analyzer-cplusplus.NewDelete"
+   ],
+   "cppcheck": [
+    "error/doubleFree"
+   ]
+  },
+  {
+   "dataset": "corpus",
+   "id": "d3-25",
+   "layer": "sanitizer",
+   "detector": "asan",
+   "clang_analyzer": [
+    "clang-analyzer-security.ArrayBound"
+   ],
+   "cppcheck": [
+    "error/arrayIndexOutOfBounds"
+   ]
+  },
+  {
+   "dataset": "corpus",
+   "id": "d3-32",
+   "layer": "compiler-warn",
+   "detector": "compiler-warn",
+   "clang_analyzer": [],
+   "cppcheck": [
+    "error/missingReturn"
+   ]
+  }
+ ],
+ "clang_tidy_family_top": [
+  [
+   "cppcoreguidelines-pro",
+   200
+  ],
+  [
+   "cppcoreguidelines-avoid",
+   198
+  ],
+  [
+   "cppcoreguidelines-owning",
+   65
+  ],
+  [
+   "clang",
+   48
+  ],
+  [
+   "clang-diagnostic",
+   42
+  ],
+  [
+   "cppcoreguidelines-no",
+   25
+  ],
+  [
+   "cppcoreguidelines-special",
+   20
+  ],
+  [
+   "bugprone-unused",
+   5
+  ],
+  [
+   "bugprone-use",
+   3
+  ],
+  [
+   "cppcoreguidelines-init",
+   3
+  ],
+  [
+   "cert-err33",
+   2
+  ],
+  [
+   "bugprone-easily",
+   2
+  ],
+  [
+   "cppcoreguidelines-rvalue",
+   2
+  ],
+  [
+   "bugprone-empty",
+   2
+  ],
+  [
+   "cppcoreguidelines-noexcept",
+   1
+  ],
+  [
+   "cppcoreguidelines-macro",
+   1
+  ],
+  [
+   "bugprone-assignment",
+   1
+  ]
+ ],
+ "cppcheck_top": [
+  [
+   "portability/invalidPointerCast",
+   8
+  ],
+  [
+   "style/unreadVariable",
+   8
+  ],
+  [
+   "style/unusedAllocatedMemory",
+   7
+  ],
+  [
+   "error/arrayIndexOutOfBounds",
+   7
+  ],
+  [
+   "style/constVariablePointer",
+   7
+  ],
+  [
+   "error/comparePointers",
+   6
+  ],
+  [
+   "style/duplicateExpression",
+   5
+  ],
+  [
+   "error/integerOverflow",
+   5
+  ],
+  [
+   "error/doubleFree",
+   4
+  ],
+  [
+   "warning/accessMoved",
+   4
+  ],
+  [
+   "style/knownConditionTrueFalse",
+   4
+  ],
+  [
+   "error/returnDanglingLifetime",
+   3
+  ],
+  [
+   "error/invalidContainer",
+   3
+  ],
+  [
+   "warning/noOperatorEq",
+   3
+  ],
+  [
+   "error/uninitdata",
+   3
+  ],
+  [
+   "error/nullPointer",
+   3
+  ],
+  [
+   "error/zerodiv",
+   3
+  ],
+  [
+   "error/mismatchAllocDealloc",
+   3
+  ],
+  [
+   "error/uninitvar",
+   3
+  ],
+  [
+   "style/cstyleCast",
+   3
+  ]
+ ]
+}

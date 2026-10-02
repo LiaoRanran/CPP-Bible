@@ -1,0 +1,73 @@
+{
+  "schema": "queyi-prereg/673e-clang-tidy-cppcheck",
+  "batch": "673e",
+  "generated_by": "673e 任务 F-J（clang-tidy / cppcheck 基线对比）",
+  "generated_at": "2026-10-02",
+  "status": "FROZEN_BEFORE_RUN",
+  "note": "本文件在**任何一次工具调用之前**写定。跑完不得回改假设、阈值、抽样顺序。结果与假设不符时原样报告。",
+
+  "motivation": "673c 红队批判（docs/673c_红队批判报告.md，实验设计 4/10）指出最致命的一枪是：本文从未与任何工业级静态分析器对比。本实验补这一枪。",
+
+  "research_question": "在同一批 holdout（可测真错 41 + 对照 11）与 corpus（可测 64）样本上，工业级静态分析器（clang-tidy / cppcheck）的检出率与 FD（阙疑失败驱动）相比如何？FD 的优势是否只来自『有运行时证据』？",
+
+  "hypotheses": {
+    "H1": "clang-tidy（clang-analyzer + bugprone + cert + cppcoreguidelines，仅计 error/warning 级）在 holdout 可测真错上的检出率 **显著低于 FD 的 82.9%（34/41）**；配对精确 McNemar p < 0.05。",
+    "H2": "cppcheck（--enable=warning,style,performance,portability，仅计 error/warning 级）在 holdout 可测真错上的检出率 **显著低于 FD**；配对精确 McNemar p < 0.05。",
+    "H3": "**FD 的检出与静态工具的检出重叠率低**：FD 抓到而静态工具抓不到的样本占 FD 检出的多数（预期 > 60%）。",
+    "H4": "**存在反向对**：至少有一条样本被静态工具抓到而 FD 记 miss（即 c > 0）。若 c = 0，则 FD 的检出集是静态工具的**超集**。",
+    "H5（诚实预期）": "静态工具在**编译期可见**的缺陷类别（compiler-warn 层、cross-compile 层）上可能优于 FD；在 sanitizer 层（运行时 UB）上预期大幅落后。分层报告必须分列，不得合并成一个数。"
+  },
+
+  "methods": {
+    "datasets": {
+      "holdout": "data/holdout/reveal_5_detail_672h.json::per_sample（60 条）。可测真错 = planted=true 且 verdict ∈ {catch, miss} ⇒ 41 条；对照 = planted=false ⇒ 11 条。planted='unknown' 的 7 条**不进分母**（与论文 §6.3 主口径一致）。",
+      "corpus": "data/external_corpus/reveal_detail_672h.json::per_sample（76 条）+ data/external_corpus/external_corpus_672h.json::samples（含 code）。可测 = verdict ∈ {catch, miss} ⇒ 64 条。"
+    },
+    "caliber": {
+      "denominator": "可测样本 = 工具有输出的样本（编译通过且工具完成）。工具**无法处理**（编译失败/超时/不支持）的样本记 `unknown`，**不进分母**，单独报告 —— 与论文对 FD 的口径对称。",
+      "detect_definition_primary": "该样本上工具产生 ≥1 条 **error 或 warning** 级诊断（style/readability/performance-only 不计）。",
+      "detect_definition_secondary": "该样本上工具产生 ≥1 条**任何**诊断（宽松口径，仅作敏感性分析）。",
+      "why_two_calibers": "宽松口径会把任何风格提示都算检出 ⇒ 检出率虚高到无意义。主口径必须限定严重级，宽松口径只用于说明『口径选择本身有多重要』（呼应论文 §6.3 口径消融）。"
+    },
+    "tools": {
+      "clang-tidy": {
+        "binary": "clang-tidy（LLVM 22.1.8，MSYS2/MinGW 构建，x86_64-w64-windows-gnu）",
+        "checks": "clang-analyzer-*,bugprone-*,cert-*,cppcoreguidelines-*",
+        "invocation": "clang-tidy <file> --checks=<above> -- -std=c++17 -fsyntax-only",
+        "severity_mapping": "clang-tidy 的 `warning:` 行计 warning；`error:` 行计 error。二者都算『检出』。"
+      },
+      "cppcheck": {
+        "binary": "cppcheck 2.13.0（WSL Ubuntu 24.04 apt）",
+        "options": "--enable=warning,style,performance,portability --language=c++ --std=c++17 --inline-suppr --template={file}:{line}:{severity}:{id}:{message} --quiet",
+        "severity_mapping": "severity ∈ {error, warning} 计『检出』；style/performance/portability 不计入主口径。"
+      }
+    },
+    "statistics": {
+      "paired_test": "精确 McNemar（FD vs 工具，同批配对）",
+      "effect_size": "Cohen's h",
+      "interval": "配对 Wald-on-difference Δ CI（与论文 §6.5 同口径）",
+      "overlap": "FD 检出 ∩ 工具检出 / FD 检出；反向对 c = 工具检出且 FD miss",
+      "no_multiple_comparison_correction": "本实验为**探索性补充**（2 工具 × 2 数据集 = 4 组），报原始 p 并注明未校正；若用于论文主表须补 Holm。"
+    },
+    "exclusions": [
+      "planted='unknown' 的 7 条 holdout 样本（无真值标签）",
+      "corpus 中 verdict='not_error' 的 3 条（非错误）",
+      "verdict='unknown' 的样本（FD 侧无判决）"
+    ],
+    "environment_note": "**clang-tidy 与 FD 不在同一编译器环境**：FD 的核心检出依赖 WSL g++ + sanitizer（运行时），clang-tidy 是 Windows 原生语法级分析。这本身就是对比的一部分（静态 vs 动态），但必须在报告里显式声明，不得读作『同环境下的能力差』。"
+  },
+
+  "honesty_rules": [
+    "结果与假设不符 ⇒ 原样报告，不改假设、不挑口径、不取平均。",
+    "工具无法处理的样本 ⇒ 记 unknown 并单列，不静默丢弃、不算作 miss。",
+    "分层（sanitizer / compiler-warn / cross-compile / 其他）必须分列，不得合并成一个数。",
+    "若 c > 0（工具抓到而 FD 漏），必须在报告中点名具体样本与缺陷类型 —— 这是 FD 的真实短板。",
+    "本实验不修改任何现有实验脚本与产物（只读 data/，只写 data/673e_*）。"
+  ],
+
+  "expected_risks": [
+    "clang-tidy 需要可编译的输入；holdout 的 planted 夹具多为完整程序（预期可编译），corpus 片段可能不可编译 ⇒ corpus 侧 unknown 可能偏高。",
+    "cppcheck 在 WSL 里跑，路径需转换为 /mnt/c/...；若转换失败则该侧整体不可用，须如实登记。",
+    "两工具的默认检查集差异很大，『检出率』对检查集高度敏感 ⇒ 必须在报告中给出所用检查集原文。"
+  ]
+}

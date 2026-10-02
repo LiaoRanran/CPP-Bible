@@ -82,8 +82,53 @@ def schema_state(db: Path | str) -> tuple[str, list[str]]:
         conn.close()
 
 
+def user_version(db: Path | str) -> int:
+    """读 SQLite **标准**版本号 `PRAGMA user_version`（0 = 从未设置）。
+
+    673e 任务 D：566 把 `schema_version` 记进了自建 `meta` 表，但**没同步进 SQLite 标准机制**
+    `PRAGMA user_version`（671e 实测该值为 0）⇒ `sqlite3` CLI / ORM 等标准工具看不到版本，
+    只有本项目自己的读路径能判兼容。这里补一个只读访问器，供 build 写入、供自检与测试读取。
+    """
+    p = Path(db)
+    if not p.is_file():
+        return 0
+    conn = sqlite3.connect(str(p))
+    try:
+        return int(conn.execute("PRAGMA user_version").fetchone()[0])
+    except (sqlite3.Error, TypeError, ValueError):
+        return 0
+    finally:
+        conn.close()
+
+
+def sync_user_version(db: Path | str) -> int:
+    """把 `meta.schema_version` 回填进 `PRAGMA user_version`（**纯元数据写**，不重建、不碰数据）。
+
+    673e 任务 D 的关键设计取舍：`PRAGMA user_version` 是 `meta.schema_version` 的**镜像**，
+    不是权威源。镜像过期**不代表数据损坏** ⇒ **不应**触发整库重建（那会白跑一次全量抽取）。
+    因此这里给一条**就地、幂等、只写 4 字节元数据**的同步路径；`build()` 也会调它。
+    返回写入后的版本号。
+    """
+    p = Path(db)
+    if not p.is_file():
+        return 0
+    conn = sqlite3.connect(str(p))
+    try:
+        ver = int(SCHEMA_VERSION)
+        conn.execute(f"PRAGMA user_version = {ver}")
+        conn.commit()
+        return ver
+    finally:
+        conn.close()
+
+
 def _needs_rebuild(db: Path | str) -> tuple[bool, str]:
-    """是否需要整库重建 + 一句人读理由（build 打印用，让"自愈"这件事**可见**）。"""
+    """是否需要整库重建 + 一句人读理由（build 打印用，让"自愈"这件事**可见**）。
+
+    **只由权威源（`meta.schema_version`）与结构（列）决定**。`PRAGMA user_version` 是镜像，
+    过期只报不建 —— 否则每次镜像落后都要白跑一次全量抽取（673e 实测：把镜像不符当重建条件
+    会让 `test_needs_rebuild_returns_false_for_current_real_db` 等 3 条既有测试变红）。
+    """
     ver, missing = schema_state(db)
     if ver == "missing":
         return False, "库不存在或表缺失（首次构建）"
@@ -91,6 +136,10 @@ def _needs_rebuild(db: Path | str) -> tuple[bool, str]:
         return True, f"schema_version {ver} ≠ 当前 {SCHEMA_VERSION}"
     if missing:
         return True, f"props 表缺列 {missing}"
+    uv = user_version(db)
+    if uv != int(SCHEMA_VERSION):
+        return False, (f"schema 已是最新（镜像 PRAGMA user_version={uv} 落后，"
+                        f"build 时会就地回填为 {SCHEMA_VERSION}；不触发重建）")
     return False, "schema 已是最新"
 
 SCHEMA = """
@@ -235,9 +284,14 @@ def build(db_path: Path | str | None = None) -> Path:
             for e in r["_ev"]:
                 conn.execute("INSERT OR IGNORE INTO prop_evidence(prop_key,evidence_id) "
                              "VALUES(?,?)", (r["prop_key"], e))
+        # 673e 任务 D：把版本同步进 SQLite **标准**机制，让 sqlite3 CLI / ORM 也能看到
+        # （PRAGMA 不支持参数占位符 ⇒ 用 int() 强转后再拼，杜绝注入面）。
+        conn.execute(f"PRAGMA user_version = {int(SCHEMA_VERSION)}")
         conn.commit()
     finally:
         conn.close()
+    # 非重建路径（库已最新）也要把镜像补上 —— 幂等、纯元数据写。
+    sync_user_version(db)
     return db
 
 
