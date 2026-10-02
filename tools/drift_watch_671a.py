@@ -55,6 +55,7 @@ import json
 import math
 import re
 import sys
+import tempfile
 import time
 from pathlib import Path
 from typing import Any
@@ -116,6 +117,20 @@ def finite_or_none(x: Any) -> Any:
     if isinstance(x, float) and not math.isfinite(x):
         return None
     return x
+
+
+def num_or_none(x: Any) -> float | None:
+    """673b A2：把「JSON 里取到的值」收敛成**有限浮点**；None / 字符串 / 布尔 / 非有限 ⇒ None。
+
+    病根：`int(k)` / `float(val)` 直接作用在 `resolve_pointer` 的结果上——
+    JSON 里写 `null`、或键名对了但类型写成字符串时，会抛 TypeError/ValueError，
+    于是**漂移报告变成工具崩溃**（门禁只看退出码 ⇒ 崩溃既可能假红也可能假绿，最危险）。
+    这里统一收口：取不到数就是 None，由调用方显式登记为缺口。
+    """
+    if isinstance(x, bool) or not isinstance(x, (int, float)):
+        return None
+    v = float(x)
+    return v if math.isfinite(v) else None
 
 
 def pct_display(pct: float | None) -> str:
@@ -181,20 +196,22 @@ def paper_candidates(root: Path) -> tuple[list[dict[str, Any]], list[str]]:
             if d is None:
                 problems.append(f"产物缺失：{spec.get('path')}")
                 continue
-            fk, k = resolve_pointer(d, str(spec.get("k", "")))
+            fk, k_raw = resolve_pointer(d, str(spec.get("k", "")))
+            k_val = num_or_none(k_raw) if fk else None       # 673b A2：非数值/None 不再抛异常
             n = 0
-            ok = True
+            ok = k_val is not None
             for p in (spec.get("n_sum") or []):
                 f, v = resolve_pointer(d, str(p))
-                if not f:
+                vv = num_or_none(v) if f else None
+                if vv is None:
                     ok = False
                     break
-                n += int(v)
-            if not (fk and ok) or n <= 0:
-                problems.append(f"{m.get('key')}：k/n 取不到或分母为 0")
+                n += int(vv)
+            if not ok or k_val is None or n <= 0:
+                problems.append(f"{m.get('key')}：k/n 取不到（缺失 / 非数值 / 分母为 0）")
                 continue
-            cands.append({"product": f"{spec['path']}#{m.get('key')}", "k": int(k), "n": n,
-                          "pct": round(int(k) / n * 100, 4), "group": "guard_artifacts"})
+            cands.append({"product": f"{spec['path']}#{m.get('key')}", "k": int(k_val), "n": n,
+                          "pct": round(k_val / n * 100, 4), "group": "guard_artifacts"})
     else:
         problems.append(f"三方配置缺失：{ARTIFACT_CFG}")
 
@@ -344,12 +361,15 @@ def check_web(root: Path, tol: float, prev_values: dict[str, Any] | None,
                     f, v = resolve_pointer(d, str(spec.get("pointer", "")))
                     expect = v if f else None
             else:
-                fk, k = resolve_pointer(d, str(spec.get("k", "")))
+                # 673b A2：k/n 一律先收敛成有限浮点（JSON 里写 null / 字符串不再抛 TypeError）
+                fk, k_raw = resolve_pointer(d, str(spec.get("k", "")))
+                k_val = num_or_none(k_raw) if fk else None
                 n = 0
                 for p in (spec.get("n_sum") or []):
                     f, v = resolve_pointer(d, str(p))
-                    n += int(v) if f else 0
-                expect = round(int(k) / n * 100, 4) if (fk and n) else None
+                    vv = num_or_none(v) if f else None
+                    n += int(vv) if vv is not None else 0
+                expect = round(k_val / n * 100, 4) if (k_val is not None and n) else None
             for w in (m.get("web") or []):
                 wd = load_json(root / str(w.get("path", "")))
                 if wd is None:
@@ -363,11 +383,19 @@ def check_web(root: Path, tol: float, prev_values: dict[str, Any] | None,
                                           "where": f"{w.get('path')}::{w.get('pointer')}",
                                           "message": "前端指针取不到（键名改了或被删）"})
                     continue
-                if expect is None:
+                # 673b A2：前端值可能是 null / 字符串 ⇒ 显式登记为缺口，不崩
+                val_num, exp_num = num_or_none(val), num_or_none(expect)
+                if exp_num is None or val_num is None:
                     out["declared"].append({"where": f"{w.get('path')}::{w.get('pointer')}",
-                                            "value": val, "expected": None, "ok": None})
+                                            "value": val, "expected": expect, "ok": None})
+                    if val_num is None and exp_num is not None:
+                        out["drifts"].append({
+                            "kind": "web_non_numeric", "level": "warn",
+                            "where": f"{w.get('path')}::{w.get('pointer')}={val!r}",
+                            "message": "前端该键不是数值（null/字符串）⇒ 无从对账，登记为缺口",
+                        })
                     continue
-                ok = abs(float(val) - float(expect)) <= tol + EPS
+                ok = abs(val_num - exp_num) <= tol + EPS
                 out["declared"].append({"where": f"{w.get('path')}::{w.get('pointer')}",
                                         "value": val, "expected": expect, "ok": ok})
                 if not ok:
@@ -486,7 +514,7 @@ def load_engine_rules(root: Path) -> tuple[Any, str]:
         m = importlib.util.module_from_spec(spec)     # type: ignore[arg-type]
         # 必须先登记进 sys.modules：gate_engine 用 @dataclass，dataclass 解析注解时会
         # 反查 sys.modules[cls.__module__]（不登记就会拿到 None ⇒ AttributeError）
-        sys.modules[name] = m                         # type: ignore[assignment]
+        sys.modules[name] = m
         spec.loader.exec_module(m)                    # type: ignore[union-attr]
         return list(getattr(m, "RULES", [])), ""
     except Exception as e:                      # noqa: BLE001
@@ -797,6 +825,37 @@ def selftest() -> int:
         and not RATE_KEY_RE.search("rate_count"))
     chk("指针解析", resolve_pointer({"a": {"b": [1, 2]}}, "a.b.1") == (True, 2))
     chk("指针缺失", resolve_pointer({"a": 1}, "a.b") == (False, None))
+    # 673b A2：空值 / 非数值**不得**把报告变成崩溃（崩溃 ⇒ 门禁只看退出码，假红假绿都危险）
+    chk("num_or_none：null ⇒ None", num_or_none(None) is None)
+    chk("num_or_none：字符串 ⇒ None（不猜）", num_or_none("81.2") is None)
+    chk("num_or_none：bool ⇒ None（True 不是 1）", num_or_none(True) is None)
+    chk("num_or_none：inf/nan ⇒ None",
+        num_or_none(math.inf) is None and num_or_none(math.nan) is None)
+    chk("num_or_none：正常数 ⇒ float", num_or_none(17) == 17.0 and num_or_none(0.0) == 0.0)
+    with tempfile.TemporaryDirectory() as td:
+        t = Path(td)
+        (t / "data").mkdir(parents=True, exist_ok=True)
+        (t / "web" / "data").mkdir(parents=True, exist_ok=True)
+        (t / ARTIFACT_CFG).write_text(json.dumps({"metrics": [
+            {"key": "holdout_rate_pct", "kind": "rate",
+             "artifact": {"path": "data/prod.json", "k": "k", "n_sum": ["n"]},
+             "web": [{"path": "web/data/m.json", "pointer": "rate"}]}]}), encoding="utf-8")
+        # ① 产物 k=null、前端 rate=null ⇒ 不抛异常，且登记缺口
+        (t / "data" / "prod.json").write_text(json.dumps({"k": None, "n": 41}), encoding="utf-8")
+        (t / "web" / "data" / "m.json").write_text(json.dumps({"rate": None}), encoding="utf-8")
+        r1 = check_web(t, DEFAULT_TOL_PP, None, DEFAULT_THRESHOLD, [])
+        chk("产物 k=null：不崩且给出 declared 记录", isinstance(r1, dict) and bool(r1["declared"]))
+        # ② 产物正常、前端写成字符串 ⇒ 登记 web_non_numeric（warn），不崩
+        (t / "data" / "prod.json").write_text(json.dumps({"k": 34, "n": 41}), encoding="utf-8")
+        (t / "web" / "data" / "m.json").write_text(json.dumps({"rate": "82.9"}), encoding="utf-8")
+        r2 = check_web(t, DEFAULT_TOL_PP, None, DEFAULT_THRESHOLD, [])
+        kinds = [d["kind"] for d in r2["drifts"]]
+        chk("前端写成字符串 ⇒ web_non_numeric 缺口", "web_non_numeric" in kinds)
+        # ③ 正常数值 ⇒ 一致（不得因加固而误报）
+        (t / "web" / "data" / "m.json").write_text(json.dumps({"rate": 82.9}), encoding="utf-8")
+        r3 = check_web(t, DEFAULT_TOL_PP, None, DEFAULT_THRESHOLD, [])
+        chk("正常数值仍判一致（加固未误报）",
+            r3["status"] == PASS and all(d["ok"] for d in r3["declared"]))
     cands, probs = paper_candidates(ROOT)
     chk("本仓论文候选非空", len(cands) >= 8)
     chk("候选都带 k/n/pct", all(c["k"] and c["n"] and c["pct"] is not None for c in cands))

@@ -157,7 +157,7 @@ def metric_rules(root: Path) -> dict[str, Any]:
     sev: dict[str, int] = {}
     for r in engine.RULES:
         s = getattr(r, "severity", None)
-        sev[s] = sev.get(s, 0) + 1
+        sev[str(s)] = sev.get(str(s), 0) + 1      # 673b A1：键统一成 str（mypy 需要；原键即字符串字面量）
     return {"key": "rules_total", "label": "判决规则数", "available": True, "value": _n,
             "unit": "条", "source": "tools/gate_engine.py::RULES", "formula": "len(RULES)",
             "severity": sev, "claimed": 67, "match": _n == 67 and sev.get("block") == 44}
@@ -275,7 +275,8 @@ def metric_corpus(root: Path) -> dict[str, Any]:
 # ─────────────────────────────────────────────────────────────────────────────────────
 
 def metric_mutation(root: Path) -> dict[str, Any]:
-    out = {"key": "mutation", "label": "变异击杀率（core / all）", "available": False, "checks": []}
+    out: dict[str, Any] = {"key": "mutation", "label": "变异击杀率（core / all）",
+                           "available": False, "checks": []}
     for name, rel, claim in (("core", "data/656_mutation_report_core.json", 96.5),
                                 ("all", "data/656_mutation_report_all.json", 81.8)):
         d = _load(root, rel)
@@ -300,8 +301,8 @@ def _f1(tp: int, fp: int, fn: int) -> dict[str, float]:
 
 
 def metric_counterfactual(root: Path) -> dict[str, Any]:
-    out = {"key": "counterfactual", "label": "反事实算子 P/R/F1（两套不重叠样本）",
-           "available": False, "checks": []}
+    out: dict[str, Any] = {"key": "counterfactual", "label": "反事实算子 P/R/F1（两套不重叠样本）",
+                           "available": False, "checks": []}
     for name, rel in (("cf_665_10", "data/counterfactual_cases_665.json"),
                         ("cf_669d_20", "data/counterfactual_cases_669d.json")):
         d = _load(root, rel)
@@ -310,7 +311,7 @@ def metric_counterfactual(root: Path) -> dict[str, Any]:
         cm = d.get("confusion") or {}
         tp, fp, fn = cm.get("tp"), cm.get("fp"), cm.get("fn")
         if isinstance(tp, int) and isinstance(fp, int) and isinstance(fn, int):
-            scores = _f1(tp, fp, fn)
+            scores: dict[str, Any] = dict(_f1(tp, fp, fn))    # 673b A1：改成可放异构值的 dict
             scores.update(source=rel, confusion=cm, match=scores["f1"] == 1.0)
             out[name] = scores
             out["checks"].append(scores["match"])

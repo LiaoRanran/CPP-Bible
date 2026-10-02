@@ -56,13 +56,14 @@ import re
 import subprocess
 import sys
 import tempfile
-
-#: 672f：统一项目随机种子（670d §3.1 约定值）——变异体抽样可复现（G-SEED-FIXED）
-SEED = 20260930
-random.seed(SEED)
 import time
 from pathlib import Path
 from typing import Any, Callable
+
+#: 672f：统一项目随机种子（670d §3.1 约定值）——变异体抽样可复现（G-SEED-FIXED）
+# 673b A1：种子块移到**全部 import 之后**（此前夹在 import 中间 ⇒ ruff E402）。
+SEED = 20260930
+random.seed(SEED)
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent

@@ -43,7 +43,7 @@ N_RECONSTRUCTED_TARGET = 15
 #: 规则编号（如 ES.20 / R.11 / CP.2 / SL.7 / I.11 / F.43 …）
 RULE_RE = re.compile(r"^#{2,5} <a name=\"?([^\">]+)\"?></a>\s*([A-Z]{1,3}\.[0-9]+)\s*:?\s*(.*)$")
 RULE_RE2 = re.compile(r"^#{2,5}\s*([A-Z]{1,3}\.[0-9]+)\s*:?\s*(.*)$")
-BAD_RE = re.compile(r"(example,?\s*bad|bad\s+example|\bbad\b\s*[:：]|消极|反面)", re.I)
+BAD_RE = re.compile(r"(example,?\s*bad|bad\s+example|\bbad\b\s*[:：]|消极|反面)", re.IGNORECASE)
 
 
 def sha256(txt: str) -> str:

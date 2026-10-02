@@ -28,6 +28,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from typing import Any
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WEB = os.path.join(ROOT, "web")
@@ -248,7 +249,7 @@ def stale_aria_busy_issues(rendered_path: str) -> list:
 
 def focus_ring_check() -> dict:
     """焦点环可见性：jsdom 不执行 CSS ⇒ 这里做 CSS 文本检查（672a 已令牌化，本批只验证）。"""
-    res = {"css_files": [], "issues": []}
+    res: dict[str, Any] = {"css_files": [], "issues": []}
     a11y = os.path.join(WEB, "css", "a11y.css")
     tokens = os.path.join(WEB, "css", "design-tokens.css")
     if not os.path.isfile(a11y):

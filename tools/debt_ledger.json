@@ -8,7 +8,8 @@
    "compensation": "G5 迁移波次逐条转正式票据或修复",
    "owner": "human:liaoranran",
    "opened": "2026-09-10",
-   "due": "2026-10-10"
+   "due": "2026-10-10",
+   "progress": "2026-10-02 673b E1 逐条审查（tools/exempt_audit.py，同基线命令逐块重编 gcc 15.3.0）：58/58 条豁免全部仍有效，无 DRIFT（INTENTIONAL_ERROR 变 PASS）/STALE（豁免失效可清理）。两条登记：① 票面写 63、实测 58 ⇒ 差额 5 条为此前批次已清理，无失踪；② 结构债仍在——28/58 条缺 note 字段、全部无逐条 expiry，`compensation` 的「逐条转正式票据」未完成。审查证据可复现：python tools/exempt_audit.py（exit 0）。转票据/延期/清票属 owner 职权，Agent 不代批。"
   },
   {
    "id": "DEBT-002",
@@ -17,7 +18,8 @@
    "compensation": "监工裁决：暂不批量 renormalize；策略=碰到即转（谁改谁顺手转 LF），新文件一律 LF（.gitattributes 已声明）。进度随本票跟踪",
    "owner": "human:liaoranran",
    "opened": "2026-09-13",
-   "due": "2026-11-12"
+   "due": "2026-11-12",
+   "progress": "2026-10-02 673b E2 复核：.gitattributes 配置正确（`* text=auto eol=lf` + bat/cmd/ps1 CRLF 例外 + 二进制标注），配置侧无欠账；工作树 M 计数 131（混合本批/673a 真实改动与假 M）。按监工裁决维持「碰到即转」，不批量 renormalize。"
   },
   {
    "id": "DEBT-003",
@@ -35,7 +37,8 @@
    "compensation": "666 A2 处置：暂存卡对三条标准规则降 warn（可见、可数、不 block），并在 gate_engine 里以 STAGING_CARD_DIRS 显式登记；到期前必须二选一：① 定稿（补内容 + 正式 ID + claim_structured）② 清退出 atoms/ 受控树。两条路都属内容改动，需人执行（Agent 不代做）",
    "owner": "human:liaoranran",
    "opened": "2026-09-29",
-   "due": "2026-12-12"
+   "due": "2026-12-12",
+   "progress": "2026-10-02 673b E3 复核：10/10 卡仍为空壳（status=draft，claim/evidence/sources 全空）。定稿或清退均属内容改动，按台账裁决需 owner 执行；距 due 尚余 71 天，warn 降级机制运行正常（未混入卡数统计）。"
   }
  ]
 }

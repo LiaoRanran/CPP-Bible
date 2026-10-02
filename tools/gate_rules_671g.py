@@ -109,7 +109,8 @@ def check_denominator(root: Path) -> list[dict[str, Any]]:
     except Exception as e:                      # noqa: BLE001
         return [finding("G-DENOMINATOR-COMPLETE", "block", "number_consistency_scan_671g",
                        f"导入失败：{e}")]
-    return S.check_denominator_complete(root)
+    out: list[dict[str, Any]] = S.check_denominator_complete(root)
+    return out
 
 
 # ── A2：全部实验数字自洽复现 ─────────────────────────────────────────────────

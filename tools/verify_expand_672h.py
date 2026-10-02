@@ -308,7 +308,7 @@ def main(argv: list[str] | None = None) -> int:
     third: dict[str, Any] = {}
     try:
         sys.path.insert(0, str(ROOT / "tools"))
-        import ablation_stats_671b as A  # type: ignore  # noqa: PLC0415
+        import ablation_stats_671b as A
 
         for name, pair, fd, st in (("holdout", pair_h, fd_h, st_h),
                                    ("corpus", pair_c, fd_c, st_c)):

@@ -81,15 +81,15 @@ def test_leaf_hash_uses_0x00_prefix_behaviorally():
 
 
 def test_internal_node_hash_uses_0x01_prefix_behaviorally():
-    l, r = ("aa" * 32, 1), ("bb" * 32, 1)
-    got, _ = mi._node_hash(l, r)
-    assert got == _node_manual(l, r, b"\x01")
-    assert got != _node_manual(l, r, b"\x00")
+    left, right = ("aa" * 32, 1), ("bb" * 32, 1)
+    got, _ = mi._node_hash(left, right)
+    assert got == _node_manual(left, right, b"\x01")
+    assert got != _node_manual(left, right, b"\x00")
 
 
 def _bytes_file(content: bytes):
-    import tempfile
     import pathlib
+    import tempfile
     p = pathlib.Path(tempfile.gettempdir()) / f"_cf_671e_leaf_{hashlib.sha256(content).hexdigest()[:8]}.bin"
     p.write_bytes(content)
     return p

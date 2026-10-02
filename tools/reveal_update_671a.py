@@ -34,7 +34,6 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
-import math
 import re
 import time
 from pathlib import Path
@@ -107,9 +106,10 @@ def interval_width_pp(block: dict[str, Any]) -> dict[str, Any]:
     """CP 区间宽度（pp）：样本量的收益看这里，不看点估计。"""
     def w(side: str) -> float | None:
         b = block[side]
-        if b.get("cp_low") is None or b.get("cp_high") is None:
+        lo, hi = b.get("cp_low"), b.get("cp_high")
+        if lo is None or hi is None:
             return None
-        return round((b["cp_high"] - b["cp_low"]) * 100, 1)
+        return round((float(hi) - float(lo)) * 100, 1)
     bw, aw = w("before"), w("after")
     return {"before_pp": bw, "after_pp": aw,
             "narrowed_pp": (None if (bw is None or aw is None) else round(bw - aw, 1))}
@@ -128,7 +128,8 @@ def cited_kn(text: str, k: int, n: int) -> float | None:
     """论文里有没有 `k/n` 的率；有则返回该率（用于"论文是否引用了旧分母"）。"""
     for c in extract_citations(text):
         if c["k"] == k and c["n"] == n:
-            return c["pct"]
+            pct: float | None = c["pct"]
+            return pct
     return None
 
 

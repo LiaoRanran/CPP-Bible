@@ -139,8 +139,9 @@ def main(argv: list[str] | None = None) -> int:
         print("⚠ 请把每条的 reason 从 TODO 改成真实原因（否则等于无理由豁免）")
         return 0
 
-    gaps = load_gaps()
-    new_blocks, accepted, warns = classify(findings, gaps)
+    # 673b A1：改名避免与上面 --accept-gaps 分支的 list 型 gaps 撞类型
+    gaps_map = load_gaps()
+    new_blocks, accepted, warns = classify(findings, gaps_map)
     overall = "PASS" if not new_blocks else "FAIL"
 
     if a.json:

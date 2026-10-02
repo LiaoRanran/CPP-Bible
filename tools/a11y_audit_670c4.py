@@ -99,8 +99,8 @@ def accessible_name(el: dict) -> str:
     a = el["attrs"]
     for k in ("aria-label", "aria-labelledby", "title", "label", "alt"):
         if a.get(k):
-            return a[k]
-    return el.get("text", "").strip()
+            return str(a[k])
+    return str(el.get("text", "")).strip()
 
 
 def audit_page(path: str) -> dict:
@@ -208,7 +208,7 @@ def audit_all() -> dict:
         f = os.path.join(WEB, pg + ".html")
         if os.path.isfile(f):
             pages.append(audit_page(f))
-    total = Counter()
+    total: Counter[str] = Counter()
     for p in pages:
         for k, v in p["counts"].items():
             total[k] += v

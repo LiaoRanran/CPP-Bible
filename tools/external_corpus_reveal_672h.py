@@ -23,7 +23,6 @@ import argparse
 import datetime as _dt
 import importlib.util
 import json
-import sys
 from pathlib import Path
 from typing import Any
 

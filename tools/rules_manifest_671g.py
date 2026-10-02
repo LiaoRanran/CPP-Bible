@@ -90,7 +90,8 @@ def load_manifest(root: Path = ROOT) -> dict[str, Any] | None:
     if not p.is_file():
         return None
     try:
-        return json.loads(p.read_text(encoding="utf-8"))
+        data: dict[str, Any] = json.loads(p.read_text(encoding="utf-8"))
+        return data
     except (OSError, ValueError):
         return None
 
@@ -191,11 +192,11 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  - {p}")
         return 1 if probs else 0
     # 默认：打印 manifest + 校验判决目录
-    man = load_manifest(root)
-    if man:
-        print(f"[rules-manifest] {man['rules_version']} count={man['count']} "
-              f"sha={man['rules_sha256'][:12]}")
-    f = verify_verdicts(root, a.verify_verdicts, man)
+    man_cur = load_manifest(root)          # 673b A1：改名（避免与 --emit 分支的 man 撞类型）
+    if man_cur:
+        print(f"[rules-manifest] {man_cur['rules_version']} count={man_cur['count']} "
+              f"sha={man_cur['rules_sha256'][:12]}")
+        f = verify_verdicts(root, a.verify_verdicts, man_cur)
     print(f"[rules-manifest] verdicts={a.verify_verdicts} findings={len(f)}")
     for x in f:
         print(f"  [{x['severity']}] {x['target']}: {x['message']}")

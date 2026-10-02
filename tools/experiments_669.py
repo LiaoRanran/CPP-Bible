@@ -35,6 +35,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
@@ -47,7 +48,9 @@ SEED = None          # 本批实验是**全量复算**（无随机抽样）⇒ �
 
 
 def _j(rel: str) -> dict:
-    return json.loads((ROOT / rel).read_text(encoding="utf-8"))
+    # 673b A1：显式收窄（json.loads 返回 Any）
+    data: dict[str, Any] = json.loads((ROOT / rel).read_text(encoding="utf-8"))
+    return data
 
 
 def _commit() -> str:
@@ -162,14 +165,15 @@ def registry() -> dict:
 
 
 def run() -> int:
-    payload = {"schema": "queyi-experiments/v1", "registry": registry(),
-               "baselines": baseline_table(), "caliber_ablation": caliber_ablation()}
+    payload: dict[str, Any] = {"schema": "queyi-experiments/v1", "registry": registry(),
+                               "baselines": baseline_table(),
+                               "caliber_ablation": caliber_ablation()}
     OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
     OUT_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + "\n",
                         encoding="utf-8")
     print(f"[exp669] 已写 {OUT_JSON.relative_to(ROOT).as_posix()}"
           f"（基线 {len(payload['baselines'])} 行 / 消融 3 臂）")
-    r = payload["registry"]
+    r: dict[str, Any] = payload["registry"]
     print(f"[exp669] 协议 {r['protocol_version']} · commit {r['commit']} · seed {r['seed']} · "
           f"仪器 {r['instrument'][:40]}…")
     return 0

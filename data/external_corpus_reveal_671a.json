@@ -1,7 +1,7 @@
 {
   "schema": "queyi-external-corpus-reveal/671a",
   "generated_by": "tools/external_corpus_reveal_671a.py",
-  "generated_at": "2026-10-01 08:20:32",
+  "generated_at": "2026-10-02 10:28:05",
   "round_label": "d3e-01–d3e-20（20 条，669d 扩样补充样本）",
   "runs": 3,
   "samples_requested": [

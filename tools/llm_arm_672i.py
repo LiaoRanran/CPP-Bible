@@ -179,7 +179,7 @@ def mock_judge(code: str, sid: str) -> dict:
 
 def parse_verdict(text: str) -> dict | None:
     """从模型输出里抽 JSON（容忍围栏/前后缀）。"""
-    m = re.search(r"\{.*\}", text, re.S)
+    m = re.search(r"\{.*\}", text, re.DOTALL)
     if not m:
         return None
     try:
@@ -220,7 +220,7 @@ def run(use_mock: bool, write: bool = True) -> dict:
     for s in samples:
         src = ROOT / s["src"]
         code = strip_comments(src.read_text(encoding="utf-8", errors="replace"))
-        leaked = bool(re.search(r"leak|double_free|race|oob|use_after|bug", s["src"], re.I))
+        leaked = bool(re.search(r"leak|double_free|race|oob|use_after|bug", s["src"], re.IGNORECASE))
         cached = cache.get(s["id"])
         if cached and cached.get("prompt_version") == PROMPT_VERSION \
                 and cached.get("model") == ("mock" if use_mock else MODEL):
@@ -238,7 +238,7 @@ def run(use_mock: bool, write: bool = True) -> dict:
                        "mock": bool(resp.get("mock"))}
                 new_rows.append(row)
                 note = "mock" if use_mock else "api"
-            except Exception as e:  # noqa: BLE001
+            except Exception:  # noqa: BLE001
                 time.sleep(1.0)
                 try:
                     resp = mock_judge(code, s["id"]) if use_mock else call_glm(prompt, env)

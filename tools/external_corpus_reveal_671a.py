@@ -179,7 +179,8 @@ def detect_671a(kind: str, code: str | None) -> tuple[str, str]:
         if not code:
             return ("unknown", "无代码片段")
         return detect_san_double_opt(kind, code)
-    return load_ex662().detect(kind, code)
+    verdict: tuple[str, str] = load_ex662().detect(kind, code)
+    return verdict
 
 
 def layer_of(kind: str | None) -> str:

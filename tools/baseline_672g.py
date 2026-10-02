@@ -41,12 +41,13 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import ablation_stats_671b as AS  # noqa: E402
-import baseline_670a as B         # noqa: E402  复用 FD/Static 臂定义与口径
+import baseline_670a as B  # noqa: E402  复用 FD/Static 臂定义与口径
 
 VERSION = "1.0"
 SEED = 20260930
@@ -67,7 +68,8 @@ def _call_selector(args: list[str]) -> dict:
                           capture_output=True, text=True)
     if proc.returncode != 0:
         raise RuntimeError(f"拆仓 select_assets 调用失败（rc={proc.returncode}）：{proc.stderr.strip()}")
-    return json.loads(proc.stdout)
+    out: dict[str, Any] = json.loads(proc.stdout)      # 673b A1：显式收窄（json.loads ⇒ Any）
+    return out
 
 
 def verifier_pool() -> list[str]:
@@ -258,7 +260,7 @@ def main(argv: list[str] | None = None) -> int:
         }
         (OUT_DIR / "baseline_random.json").write_text(
             json.dumps(random_doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
-        print(f"[672g] 已写 b3_real_672g.json + baseline_random.json（真 B3）")
+        print("[672g] 已写 b3_real_672g.json + baseline_random.json（真 B3）")
     return 0
 
 

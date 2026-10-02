@@ -30,12 +30,12 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import select_assets_671b as SA      # noqa: E402
-import ablation_stats_671b as AS     # noqa: E402
+import select_assets_671b as SA  # noqa: E402
 
 VERSION = "1.0"
 OUT = ROOT / "data" / "experiments" / "b3_plan_671b.json"
@@ -90,7 +90,7 @@ def build_plan() -> dict:
     pc = proxy_consistency()
     ss = _load(SSIZE) or {}
     abl = _load(PLAN_ABL) or {}
-    a5 = next((g for g in abl.get("groups", []) if g["id"] == "A5"), {})
+    a5: dict[str, Any] = next((g for g in abl.get("groups", []) if g["id"] == "A5"), {})
 
     # 分配表（种子 + 选中资产）——这是 B3 的"可核验预算对齐"凭据
     picked = [_key(a) for a in SA.select_assets(list(SA.INSTRUMENT_POOL), 4, "random", SEED)]
@@ -200,7 +200,6 @@ def selftest() -> int:
             (p["arms"]["FD"]["detect_rate_holdout"], b3["detect_rate_corpus"],
              p["comparison"]["delta_placeholder"], p["comparison"]["cohens_h_placeholder"])))
     # 无伪造数字
-    flat = json.dumps(p, ensure_ascii=False)
     chk("无伪造结果键", "detect_rate" not in json.dumps(
         {k: v for k, v in p.items() if k != "arms"}, ensure_ascii=False)
         or True)

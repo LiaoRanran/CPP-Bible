@@ -34,6 +34,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
@@ -68,7 +69,9 @@ TOL = 0.051
 
 
 def _j(rel: str) -> dict:
-    return json.loads((ROOT / rel).read_text(encoding="utf-8"))
+    # 673b A1：显式收窄（json.loads 返回 Any）
+    data: dict[str, Any] = json.loads((ROOT / rel).read_text(encoding="utf-8"))
+    return data
 
 
 def compute_rates() -> list[dict]:

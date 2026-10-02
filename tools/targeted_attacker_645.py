@@ -29,12 +29,13 @@ import sys
 from dataclasses import dataclass
 from typing import Callable, Optional
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import evidence_base_644 as base  # noqa: E402  复用 frontmatter 解析（list_atoms）
+
 #: 672f：统一项目随机种子（670d §3.1 约定值）——攻击逃逸抽样可复现（G-SEED-FIXED）
+# 673b A1：种子块移到 import 之后（此前位于 sys.path 之前 ⇒ ruff E402）。
 SEED = 20260930
 random.seed(SEED)
-
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import evidence_base_644 as base  # 复用 frontmatter 解析（list_atoms）
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REPORT_MD = os.path.join(ROOT, "data", "645_attack_report.md")

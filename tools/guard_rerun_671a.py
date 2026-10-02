@@ -156,7 +156,15 @@ def sha256_file(p: Path) -> str | None:
         return None
 
 
-def _strip_docstrings(tree: ast.AST) -> ast.AST:
+def _as_dict(x: Any) -> dict[str, Any]:
+    """673b A1：把 Any 收窄成 dict（mypy 需要；运行时等价于 `x if isinstance(x, dict) else {}`）。"""
+    if isinstance(x, dict):
+        out: dict[str, Any] = x
+        return out
+    return {}
+
+
+def _strip_docstrings(tree: ast.Module) -> ast.Module:
     """就地剥掉模块/类/函数的文档字符串（注释本来就不进 AST）。"""
     for node in ast.walk(tree):
         if isinstance(node, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -401,7 +409,7 @@ def probe_detectors(root: Path, reg: dict[str, Any]) -> dict[str, Any]:
 def compare_detectors(base: dict[str, Any], cur: dict[str, Any],
                       tol: float = DEFAULT_FRESHNESS_TOL) -> list[dict[str, Any]]:
     """逐检测器对账（判据指纹 × 产物指纹 × 新鲜度）。不抛异常。"""
-    base_d: dict[str, Any] = base.get("detectors") if isinstance(base.get("detectors"), dict) else {}
+    base_d: dict[str, Any] = _as_dict(base.get("detectors"))
     out: list[dict[str, Any]] = []
     for did, c in sorted(cur.items()):
         b = base_d.get(did)
@@ -433,7 +441,7 @@ def compare_detectors(base: dict[str, Any], cur: dict[str, Any],
         fresh_now: list[str] = []
         legacy_fresh: list[str] = []
         stale_fresh: list[str] = []
-        b_prods = b.get("products") if isinstance(b.get("products"), dict) else {}
+        b_prods: dict[str, Any] = _as_dict(b.get("products"))
         jm = c.get("judgment_mtime")
         for rel in c["declared_products"]:
             cp_ = c["products"].get(rel) or {}
@@ -759,7 +767,7 @@ def check_three_way(root: Path, acfg: dict[str, Any], tol: float) -> list[dict[s
 def core_670c(root: Path) -> dict[str, Any]:
     """复用 670c 的 5 个核心工具对账（import 它的纯函数，不重写一份）。"""
     try:
-        import guard_rerun_670c as G670           # noqa: PLC0415
+        import guard_rerun_670c as G670  # noqa: PLC0415
     except Exception as e:                        # noqa: BLE001
         return {"available": False, "overall": "UNKNOWN",
                 "message": f"670c 守卫不可用（{type(e).__name__}: {e}）⇒ 核心工具层未进射程",
@@ -984,6 +992,9 @@ def selftest() -> int:
 
     reg, _ = load_detectors(ROOT, DEFAULT_DETECTORS)
     chk("本仓检测器配置可载入", reg is not None and len(reg["detectors"]) >= 8)
+    if reg is None:                      # 673b A1：显式收窄（配置载不进就没什么可自检的）
+        print("guard_rerun_671a selftest: FAIL（检测器配置缺失）")
+        return 1
     acfg = load_json(ROOT / DEFAULT_ARTIFACTS)
     chk("本仓产物配置可载入", isinstance(acfg, dict) and len(acfg.get("metrics", [])) >= 3)
     chk("每个检测器都有 src + 产物声明",
@@ -1044,16 +1055,16 @@ def main(argv: list[str] | None = None) -> int:
                               a.freshness_tol)
         bp.parent.mkdir(parents=True, exist_ok=True)
         bp.write_text(json.dumps(base, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        msg = {"schema": SCHEMA, "updated": True, "baseline": str(bp),
+        init_msg: dict[str, Any] = {"schema": SCHEMA, "updated": True, "baseline": str(bp),
                "detectors": sorted(base["detectors"]),
                "legacy_unfresh": {d: [k for k, v in dd["products"].items() if not v["fresh"]]
                                   for d, dd in base["detectors"].items()
                                   if any(not v["fresh"] for v in dd["products"].values())}}
         if a.json:
-            print(json.dumps(msg, ensure_ascii=False, indent=2))
+            print(json.dumps(init_msg, ensure_ascii=False, indent=2))
         else:
             print(f"[guard-rerun-671a] 基线已写入 {bp}（{len(base['detectors'])} 个检测器）")
-            for d, prods in msg["legacy_unfresh"].items():
+            for d, prods in init_msg["legacy_unfresh"].items():
                 print(f"  [存量] {d}: {prods} 在基线时刻即早于判据代码（记 fresh=false ⇒ 之后只 WARN）")
         return 0
 

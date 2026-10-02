@@ -48,7 +48,7 @@ def load_registry(root: Path) -> dict[str, Any]:
     p = root / REGISTRY
     if not p.is_file():
         return default_registry()
-    d = json.loads(p.read_text(encoding="utf-8"))
+    d: dict[str, Any] = json.loads(p.read_text(encoding="utf-8"))
     d.setdefault("artifacts", {})
     d.setdefault("poisoned", [])
     return d
@@ -60,7 +60,8 @@ def add_artifact(root: Path, artifact: str, parents: list[str]) -> dict[str, Any
         "parents": [{"path": q, "sha256": sha256_file(root, q)} for q in parents],
         "self_sha256": sha256_file(root, artifact)}
     save(root, reg)
-    return reg["artifacts"][artifact]
+    entry: dict[str, Any] = reg["artifacts"][artifact]
+    return entry
 
 
 def save(root: Path, reg: dict[str, Any]) -> None:

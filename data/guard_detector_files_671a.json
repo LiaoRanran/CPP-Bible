@@ -1,7 +1,7 @@
 {
  "schema": "queyi-guard-detectors/671a",
  "generated_by": "671a A3（B3 防复发：改了检测器代码就必须重跑它声明的产物）",
- "note": "检测器 = 会**现算数字并落盘**的代码。detectors[].src 的 AST 语义指纹 + deps（它 import 的判据库）一起构成「判据指纹」：判据变了而产物没变 ⇒ STALE（红）。deps 是必须的——661 的 detect 被 3_665 复用，只盯 src 会漏掉换判据这种改动。products 里 {path, strict:false} 的条目降级为 WARN（如 656 core 报告需 --scope core 复跑，属于慢操作）。",
+ "note": "检测器 = 会**现算数字并落盘**的代码。detectors[].src 的 AST 语义指纹 + deps（它 import 的判据库）一起构成「判据指纹」：判据变了而产物没变 ⇒ STALE（红）。deps 是必须的——661 的 detect 被 3_665 复用，只盯 src 会漏掉换判据这种改动。products 里 {path, strict:false} 的条目降级为 WARN（如 656 core 报告需 --scope core 复跑，属于慢操作）。；673b A4：追加 672h/672i/672j 四个新产物检测器（holdout_merge / llm_arm / anchor_fetch / anchor）",
  "detectors": [
   {
    "id": "holdout_reveal_665",
@@ -171,6 +171,53 @@
     "data/experiments/stats_672k.json"
    ],
    "why": "672k W6 统计重做产物（McNemar/h/CP/power/e-value/样本量）"
+  },
+  {
+   "id": "holdout_merge_672h",
+   "src": "tools/holdout_merge_672h.py",
+   "deps": [
+    "data/holdout/holdout_extension_672h.json"
+   ],
+   "products": [
+    "data/holdout/holdout.json"
+   ],
+   "why": "672h W3 扩样合并器：holdout.json 是**分母权威源**（幂等合并 h31–h60），被 reveal/baseline/stats 全线引用 ⇒ 必须受守卫监控"
+  },
+  {
+   "id": "llm_arm_672i",
+   "src": "tools/llm_arm_672i.py",
+   "deps": [
+    "data/experiments/prereg_672i.json",
+    "data/holdout/reveal_5_detail_672h.json"
+   ],
+   "products": [
+    "data/experiments/llm_arm_672i.json"
+   ],
+   "why": "672i W4 LLM 裁判臂产物（检出率 / 假阳 / 与 FD 一致性；H1-H4 全不成立）"
+  },
+  {
+   "id": "external_anchor_fetch_672j",
+   "src": "tools/external_anchor_fetch_672j.py",
+   "deps": [
+    "data/experiments/prereg_672j.json"
+   ],
+   "products": [
+    "data/external_anchor/guideline_raw_extract_672j.json"
+   ],
+   "why": "672j W5 外部锚定的 raw 抓取产物（URL + sha256，可复核性凭据）"
+  },
+  {
+   "id": "external_anchor_672j",
+   "src": "tools/external_anchor_672j.py",
+   "deps": [
+    "tools/external_anchor_fetch_672j.py",
+    "data/external_anchor/guideline_raw_extract_672j.json"
+   ],
+   "products": [
+    "data/external_anchor_reveal_672j.json",
+    "data/external_anchor/external_anchor_672j.json"
+   ],
+   "why": "672j W5 外部锚定判决产物（50 条：准则反例 35 + 重建 UB 15）"
   }
  ]
 }
