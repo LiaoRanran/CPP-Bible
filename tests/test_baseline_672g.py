@@ -173,27 +173,29 @@ def test_dual_path_reproduces_rates_and_picks():
 
 # ── 任务 C：数字同步 ──────────────────────────────────────────────────────────
 def test_baseline_random_upgraded_to_real_b3():
+    # 672h 重分类：random_proxy 为「仪器级预算对齐代理，**非论文 B3**」，不再是 672g 原义的「真 B3」。
+    # 此处同步到 672h 现行权威口径（current_numbers caveat），不再断言「真 B3」。
     rn = _json("data/experiments/baseline_random.json")
-    assert "真 B3" in rn["arm"]
-    assert "代理" in rn["arm"] or "替换" in rn["arm"]      # 明示替换了 670a 代理
+    assert "非论文 B3" in rn["arm"]
+    assert "仪器级" in rn["arm"]                         # 明示为仪器级预算对齐代理
     assert rn["seed"] == SEED
     for set_ in ("holdout", "corpus"):
         sel = rn["selection"][set_]
         assert len(sel["picked"]) == len(sel["fd_used"]) > 0
         assert sel["seed"] == SEED
         assert set(sel["picked"]) <= set(sel["pool"])
-    assert (rn["holdout"]["measurable"]["k"], rn["holdout"]["measurable"]["n"]) == (2, 21)
-    assert (rn["corpus"]["measurable"]["k"], rn["corpus"]["measurable"]["n"]) == (8, 48)
+    assert (rn["holdout"]["measurable"]["k"], rn["holdout"]["measurable"]["n"]) == (4, 41)
+    assert (rn["corpus"]["measurable"]["k"], rn["corpus"]["measurable"]["n"]) == (14, 64)
 
 
 def test_current_numbers_has_real_b3_provenance():
+    # 672h 已移除顶层 b3_random_672g 键，并将 random 重分类为「非真 B3 / 仪器级代理」，
+    # 基线臂键名由 random 改为 random_proxy。此处只校验仍成立的口径与 caveat 表述。
     cn = _json("data/current_numbers.json")
-    assert "b3_random_672g" in cn
-    assert cn["b3_random_672g"]["status"].startswith("RESOLVED")
-    assert len(cn["b3_random_672g"]["pool"]) == 8
-    assert cn["baseline_arms"]["holdout"]["random"]["k"] == 2
-    assert cn["baseline_arms"]["corpus"]["random"]["k"] == 8
-    assert "真 B3" in cn["baseline_arms"]["caveat"]
+    assert cn["baseline_arms"]["holdout"]["random_proxy"]["k"] == 4
+    assert cn["baseline_arms"]["corpus"]["random_proxy"]["k"] == 14
+    cap = cn["baseline_arms"]["caveat"]
+    assert "非真 B3" in cap or "仪器级代理" in cap
 
 
 def test_paper_random_dagger_replaced():

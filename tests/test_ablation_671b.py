@@ -23,8 +23,8 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-import ablation_671b as AB          # noqa: E402
-import ablation_stats_671b as S     # noqa: E402
+import ablation_671b as AB  # noqa: E402
+import ablation_stats_671b as S  # noqa: E402
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -492,17 +492,19 @@ class TestConsistencyWithBaselineArtifacts:
         assert r["p1"] == pytest.approx(m["point"], abs=1e-12)
 
     def test_recompute_effect_size_from_artifact_rates(self, fd):
-        # 672f：Static 臂从产物读（不硬编码旧分母的 0.0625）
+        # 672h 扩样后：holdout FD(34/41) vs Static(1/41) ⇒ Cohen's h ≈ 1.976
+        # （原 1.7983 对应扩样前 17/21 vs 1/21；artifact 已更新，期望值同步）
         st = json.loads((ROOT / "data" / "experiments" / "baseline_static.json")
                         .read_text(encoding="utf-8"))
         h = S.cohens_h(fd["holdout"]["measurable"]["point"],
                        st["holdout"]["measurable"]["point"])
-        assert abs(h["h"]) == pytest.approx(1.7983, abs=0.005)
+        assert abs(h["h"]) == pytest.approx(1.976, abs=0.005)
 
     def test_recompute_holdout_mcnemar_from_artifact(self, fd):
-        # 670a 报告：holdout FD(17/21) vs Static(1/21) ⇒ 不一致对 (16, 0)
+        # 672h 扩样后：holdout FD(34/41) vs Static(1/41) ⇒ 不一致对 (33, 0)
+        # ⇒ McNemar p = 2/2^33 ≈ 2.328e-10（原 3.0518e-05 对应扩样前 b=16）
         st = json.loads((ROOT / "data" / "experiments" / "baseline_static.json")
                         .read_text(encoding="utf-8"))
         b = fd["holdout"]["measurable"]["k"] - st["holdout"]["measurable"]["k"]
         c = 0
-        assert S.mcnemar_exact(b, c)["p_value"] == pytest.approx(3.0518e-05, abs=1e-6)
+        assert S.mcnemar_exact(b, c)["p_value"] == pytest.approx(2.3283e-10, abs=1e-6)

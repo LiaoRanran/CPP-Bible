@@ -73,11 +73,11 @@ def test_a4_out_keys_match_declared_run_match_keys():
         ev = os.path.join(T.ROOT, "evidence", fx["dir"],
                           f"EV-{fx['domain']}-{T.EV_NO[fx['key']]:03d}.md")
         d = _frontmatter(ev)
-        outp = os.path.join(T.ROOT, d["run_match_file"])
+        outp = os.path.join(T.ROOT, d["actual"]["run_match_file"])
         assert os.path.isfile(outp)
         keys = re.findall(r"^([A-Za-z0-9_]+)=", open(outp, encoding="utf-8").read(), re.MULTILINE)
         assert keys, outp
-        assert set(keys) == set(d["run_match_keys"]), (d["id"], keys, d["run_match_keys"])
+        assert set(keys) == set(d["actual"]["run_match_keys"]), (d["id"], keys, d["actual"]["run_match_keys"])
         # 夹具源码必须存在，且断言符号真实出现在源码里
         src = open(os.path.join(T.ROOT, d["fixture"]), encoding="utf-8").read()
         for a in d["artifact_assert"]:

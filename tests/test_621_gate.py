@@ -10,8 +10,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
-import run_621_gate as G  # noqa: E402
 import pytest  # noqa: E402  672h：slow 标记
+import run_621_gate as G  # noqa: E402
 
 
 def test_six_checks_registered():

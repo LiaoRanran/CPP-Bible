@@ -209,17 +209,17 @@ def test_a_both_focus_ring_sites_tokenized():
     """:focus-visible 与 .skip-link:focus 两处都要令牌化（只改一处等于没改）。"""
     css = read(A11Y_CSS)
     assert re.search(r":where\([^)]*\):focus-visible\s*\{[^}]*outline:\s*var\(--focus-ring\)",
-                     css, re.S), "统一焦点样式未令牌化"
-    assert re.search(r"\.skip-link:focus\s*\{[^}]*var\(--focus-ring\)", css, re.S), \
+                     css, re.DOTALL), "统一焦点样式未令牌化"
+    assert re.search(r"\.skip-link:focus\s*\{[^}]*var\(--focus-ring\)", css, re.DOTALL), \
         ".skip-link 焦点未令牌化"
 
 
 def test_b_positive_radius_values():
     """正向锁：改后的圆角必须是 8px（新档位），不是随手填的数。"""
-    assert re.search(r"\.qy-dialog-box\s*\{[^}]*border-radius:\s*8px", read(A11Y_CSS), re.S), \
+    assert re.search(r"\.qy-dialog-box\s*\{[^}]*border-radius:\s*8px", read(A11Y_CSS), re.DOTALL), \
         "帮助弹窗圆角不是 8px"
     rob = read(ROBUST_CSS)
-    assert re.search(r"\.qy-error-card\s*\{[^}]*border-radius:\s*8px", rob, re.S), \
+    assert re.search(r"\.qy-error-card\s*\{[^}]*border-radius:\s*8px", rob, re.DOTALL), \
         "错误卡圆角不是 8px"
-    assert re.search(r"\.ns-fallback\s*\{[^}]*border-radius:\s*8px", rob, re.S), \
+    assert re.search(r"\.ns-fallback\s*\{[^}]*border-radius:\s*8px", rob, re.DOTALL), \
         "noscript 降级块圆角不是 8px"
