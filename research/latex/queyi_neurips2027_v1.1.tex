@@ -63,18 +63,14 @@ rules and \textbf{42} real cards, \textbf{31} with evidence anchors (\textbf{Ver
 versus a \emph{static caliber arm} at \textbf{2.4\%}/\textbf{17.2\%} ($\Delta$ \textbf{+80.5pp} /
 \textbf{+45.3pp}) and an instrument-level random proxy at \textbf{9.8\%}/\textbf{21.9\%} ($\Delta$
 \textbf{+73.2pp} / \textbf{+40.6pp}); exact McNemar $p\le3.0\times10^{-8}$ and $\Delta$ lower bound
-$\ge$28.6pp. \textbf{Limitations:} the headline numbers depend on one WSL sanitizer environment;
-samples remain few ($n{=}41/64$); newly added samples were merged \emph{after} reveal, so only the
-21-sample subset is strictly blind; the static arm is a caliber re-binning and the random arm an
-instrument-level proxy---so we claim \emph{auditability plus on-sample significance}, \emph{not}
-superiority over real static detectors or a budget-matched random baseline. Three qualifiers: the
-$\Delta$ separates \emph{having runtime evidence from not having it}, not failure-driven selection;
-the one experiment that could test that (ablation A0$-$A5) is \emph{unrun}, because it requires the
-split-repo verifier to expose a true asset pool and this repository only admits an instrument-level
-proxy, which our own protocol forbids reading as confirmatory; our static-analyzer comparison is a
-\emph{cross-regime stress test} (FD leads on runtime-visible defects, ties cppcheck on
-compile-time-visible ones), not evidence of general superiority; and the 41 holdout labels have zero
-second annotators (T17).
+$\ge$28.6pp. \textbf{Limitations:} headline numbers depend on one WSL sanitizer environment; $n{=}41/64$ is small;
+post-reveal additions mean only the 21-sample subset is strictly blind; the static arm is a caliber
+re-binning and the random arm an instrument-level proxy---so we claim \emph{auditability plus
+on-sample significance}, \emph{not} superiority over real static detectors or a budget-matched random
+baseline. Three qualifiers: the $\Delta$ separates \emph{having runtime evidence from not having it},
+not failure-driven selection (A0$-$A5 is the only test, \emph{unrun} pending the split-repo verifier's
+true asset pool); our static-analyzer comparison is a \emph{cross-regime stress test}, not evidence of
+general superiority; and the 41 holdout labels have zero second annotators (T17).
 \end{abstract}
 
 % =====================================================================
@@ -193,17 +189,15 @@ they evolve properties, paths or abstract domains, whereas we evolve the verifie
 evidence-acquisition capability $\mathcal{C}$ and require each step to leave a recomputable
 \emph{failure}~$\to$~\emph{rule}~$\to$~\emph{re-test} chain.
 \paragraph{(7) Closest 2026 work (metric evolution and self-evolving verification).}
-Two 2026 preprints sit closest. \emph{Who Grades the Grader?}~\cite{zhang2026whogrades} makes the
-evaluation \emph{metric} itself the evolving object, defended by anchors and external audits against
-Goodhart drift---the closest analogue to our anti-Goodhart discipline, but its evolved object is the
-metric, not a verifier's evidence-acquisition capability. \emph{Self-Evolving Agents with Anytime-Valid
-Certificates}~\cite{sengupta2026anytimevalid} pairs a versioned harness with an anytime-valid,
-auditable gate---overlapping our ``every step must be externally gateable'' requirement, but it is an
-agent framework, whereas we specify a concrete C++ assertion protocol with a forced provenance/scope
-split. \textbf{We do not claim to be the first to evolve an evaluator}: our claim concerns a specific
-evolved object---failure-driven evidence acquisition---where each change leaves a recomputable
-\emph{failure}~$\to$~\emph{rule}~$\to$~\emph{re-test} chain and where detector availability, semantic
-scope and provenance stay explicitly separate.
+Two 2026 preprints sit closest. \emph{Who Grades the Grader?}~\cite{zhang2026whogrades} evolves the
+evaluation \emph{metric} itself against Goodhart drift via anchors and external audits---the closest
+analogue to our anti-Goodhart discipline, but its evolved object is the metric, not a verifier's
+evidence-acquisition capability. \emph{Self-Evolving Agents with Anytime-Valid
+Certificates}~\cite{sengupta2026anytimevalid} pairs a versioned harness with an anytime-valid auditable
+gate, but is an agent framework rather than a concrete C++ assertion protocol. \textbf{We do not claim to
+be the first to evolve an evaluator}: our claim concerns the specific evolved object---failure-driven
+evidence acquisition---with a recomputable \emph{failure}~$\to$~\emph{rule}~$\to$~\emph{re-test} chain and
+detector availability, semantic scope and provenance kept explicitly separate.
 Table~\ref{tab:positioning} (Appendix~\ref{app:tables}) positions eight works along five
 dimensions; the one-line version is that prior lines evolve the \emph{items}, the \emph{tests}, the
 \emph{proofs}, the \emph{judge}, or the \emph{metric}, whereas we evolve the verifier's
@@ -414,7 +408,8 @@ are the experiments that would test the mechanism.
 \section{Evaluation Protocol}
 \label{sec:protocol}
 % =====================================================================
-We \emph{freeze the protocol before seeing results}; later changes must be logged with their effect on existing numbers. Statistical details are in Appendix~\ref{app:stats}.
+We \emph{freeze the protocol before seeing results}; later changes must be logged with their effect on
+existing numbers (statistical details: Appendix~\ref{app:stats}).
 
 
 \paragraph{Dataset layers (D0--D4).}
@@ -567,37 +562,31 @@ Appendix~\ref{app:extra} details both experiments; we report both without ``corr
 and therefore an upper bound.}
 
 \paragraph{E9 --- Cross-regime external stress test (clang-tidy / cppcheck).}
-We answer our red-team critique that we had not compared against an off-the-shelf
-static analyzer. On the \emph{same} 41/64 samples we ran clang-tidy (LLVM 22.1.8) and cppcheck
-(2.13.0, WSL). Under the only defensible caliber (\texttt{clang-analyzer-*}, StrictA---chosen
-\emph{after} results, hence exploratory; our pre-registered main caliber is a \emph{failed} control
-with 100\% recall \emph{and} 100\% FPR), FD \textbf{82.9\% (34/41)} beats clang-analyzer
-\textbf{48.8\% (20/41)} on holdout (exact McNemar $p{=}1.2\times10^{-4}$, $(b,c){=}(14,0)$,
-$\Delta{+34.1}$pp [19.6, 48.7]) but only \emph{ties} cppcheck \textbf{54.7\% (35/64)} on corpus
-($p{=}0.383$); all 8 reverse pairs sit in corpus and are compile-time-visible or path-not-executed
-defects. \textbf{The two families cover complementary defect regimes}: FD is strong where runtime
-evidence exists and weak where it does not. This is a cross-regime stress test, \emph{not} evidence
-that FD generally outperforms static analysis. Tables and caveats: Appendix~\ref{app:clangtidy}.
+On the \emph{same} 41/64 samples we ran clang-tidy and cppcheck to answer our red-team critique.
+Under the only defensible caliber (StrictA, chosen \emph{after} results, hence exploratory), FD
+\textbf{82.9\% (34/41)} beats clang-analyzer \textbf{48.8\% (20/41)} and cppcheck \textbf{41.5\% (17/41)} on
+holdout ($p{=}1.2\times10^{-4}$ / $1.5\times10^{-5}$), while on corpus FD \textbf{62.5\% (40/64)} only
+\emph{ties} cppcheck \textbf{54.7\% (35/64)} ($p{=}0.383$); all 8 reverse pairs are compile-time-visible or
+path-not-executed defects. \textbf{The two families cover complementary defect regimes}---a cross-regime
+stress test, not evidence that FD generally outperforms static analysis (details: Appendix~\ref{app:clangtidy}).
 
 % =====================================================================
 \section{Analysis}
 \label{sec:analysis}
 % =====================================================================
-\textbf{(1) Labels are the largest error source.} A batch reported ``20 holdout samples'' of which
-only \textbf{7} were true errors: the same data reads 35\% or 80.0\% by denominator---the measured
-object was corrected, not the verifier. \textbf{(2) Environment dependence causes silent drops.}
-Sanitizer branches need a specific WSL environment; without it 15 samples degrade to \texttt{unknown}
-and external recall falls \textbf{35.0\% $\to$ 10.0\%} while the guard stays green. \textbf{(3) ``Changed code
-without rerunning'' is systematic (three times):} a reported 81.2\% never landed; counterfactual $F_1$
-was once 0 (criterion coded, artifact not rerun); a real-machine rerun differed by 10 catches.
-\textbf{(4) Mutation score $\neq$ real defect detection.} Internal core \textbf{96.5\%} (110/114;
-all-scope \textbf{81.8\%}, 130/159) vs external \textbf{62.5\%} measurable (40/64; 52.6\% all-sample);
-Just et al.~\cite{just2014mutants} show mutants correlate with, but do not equal, real faults.
-\textbf{(5) Whether FD gains are real.} FD beats the static re-binning and random-proxy arms with
-exact McNemar $p\le3.0\times10^{-8}$; the random arm is an \emph{instrument-level proxy} (true B3 ran
-only once, on an older $n{=}21/48$ denominator), so ``FD beats same-budget random'' stays
-\emph{directional}---exactly what A0--A5 tests, which remains unrun and blocked on the true asset
-pool (\S\ref{sec:exp}).
+\textbf{(1) Labels are the largest error source.} A batch reported ``20 holdout samples'' of which only
+\textbf{7} were true errors: the same data reads 35\% or 80.0\% by denominator---the measured object was
+corrected, not the verifier. \textbf{(2) Environment dependence causes silent drops.} Without the
+specific WSL environment, 15 samples degrade to \texttt{unknown} and external recall falls
+\textbf{35.0\% $\to$ 10.0\%} while the guard stays green. \textbf{(3) ``Changed code without rerunning'' is
+systematic (three times):} a reported 81.2\% never landed; counterfactual $F_1$ was once 0; a real-machine
+rerun differed by 10 catches. \textbf{(4) Mutation score $\neq$ real defect detection.} Internal core
+\textbf{96.5\%} (110/114; all-scope \textbf{81.8\%}, 130/159) vs external \textbf{62.5\%} (40/64; 52.6\%
+all-sample); mutants correlate with, but do not equal, real faults~\cite{just2014mutants}.
+\textbf{(5) Whether FD gains are real.} FD beats the static and random-proxy arms (exact McNemar
+$p\le3.0\times10^{-8}$), but the random arm is an \emph{instrument-level proxy} (true B3 ran once, on an older
+$n{=}21/48$ denominator), so ``FD beats same-budget random'' stays \emph{directional}---exactly what the
+unrun, blocked A0--A5 tests (\S\ref{sec:exp}).
 
 % =====================================================================
 \section{Threats to Validity}
@@ -617,9 +606,8 @@ are single-annotator with no IRR---the largest threat to the recall numbers, sin
 moves a rate silently in either direction. We pre-registered a two-annotator re-label of a random 25\%
 subsample ($10/41$, $16/64$), original annotator blinded, with $\kappa<0.6$ escalating to a $100\%$
 third-party re-review; it runs before any ``verified'' claim. Historical state pinning is separately
-\emph{incomplete}: ledger events carry no ruleset hash (replay assumes an unchanged ruleset) and the
-guard does not re-run detectors, so a \emph{current-state} verdict is fully reproducible while a
-\emph{historical} one is reproducible only under that assumption.
+\emph{incomplete}: a \emph{current-state} verdict is fully reproducible, a \emph{historical} one only
+under an unchanged-ruleset assumption, and the guard does not re-run detectors (Appendix~\ref{app:pinning}).
 
 % =====================================================================
 \section{Claim Boundary}
@@ -642,39 +630,24 @@ Queyi realizes this as four auditable mechanisms: four-state verdicts (\texttt{u
 class), a forced provenance/semantic-scope split, a kernel-independent meta-state reconciler, and
 a failure-driven verification loop.
 
-We also made our own failures part of the method: 66.7\%$\to$87.5\% is a caliber change, not a
-capability gain, and the old value must be voided; \textbf{81.0\%$\to$82.9\% and
-54.2\%$\to$62.5\% are expanded-sample re-estimates, not capability gains}---both rose, and we
-report them as measured, without ``correction''; 81.2\% never appeared in any artifact, and ``code
-changed without rerun'' must be caught by the guard (and is \emph{not} caught today). A third-party
-read-only audit rates overall credibility \textbf{6/10}: the infrastructure is trustworthy, the
-\emph{numbers are fragile}.
+We also made our own failures part of the method: 66.7\%$\to$87.5\% is a caliber change (the old value must be
+voided), and \textbf{81.0\%$\to$82.9\% and 54.2\%$\to$62.5\% are expanded-sample re-estimates, not capability
+gains}---reported as measured; 81.2\% never landed, and ``code changed without rerun'' must be caught by the
+guard (and is \emph{not} caught today). A third-party audit rates overall credibility \textbf{6/10}:
+infrastructure trustworthy, \emph{numbers fragile}.
 
-\textbf{Evidence boundary.} The current evidence \emph{supports} ``verification capability can be
-measured externally and failure-driven progress is traceable,'' and ``\emph{on the same samples}
-FD beats the static re-binning arm and the random-instrument proxy'' ($\Delta$
-lower bound $\ge$28.6pp, exact McNemar $p\le3.0\times10^{-8}$); it does
-\emph{not} support ``better than a \emph{real} static detector or a true B3'' (split-repo
-interfaces BLOCKED), ``generalizes to other languages'' (C++ only), ``exact magnitudes''
-($n{=}41/64$ still small; $\pm$5pp half-width needs $n{=}236/378$), or \emph{any} ablation
-conclusion (design frozen, experiments not run). \textbf{Three qualifiers travel with it:} the
-$\Delta$ separates having runtime evidence from not having it rather than failure-driven selection
-(only A0$-$A5 could test the latter, and it remains unrun---see the two blocking conditions in
-\S\ref{sec:exp}); our static-analyzer comparison (E9) is a \emph{cross-regime stress test}---FD leads
-where runtime evidence exists but ties cppcheck where the defect is compile-time-visible; and
-the holdout labels have zero second annotators (T17). Our failure cases, design
-trade-offs, engineering realities and judgment boundaries are in Appendix~\ref{app:humanize}.
-\textbf{Future work:} The single highest-priority item remains ablation \textbf{A5}
-(random-budget control)---the only experiment that can falsify the central ``failure-driven beats
-same-budget random'' claim. It is \emph{blocked}, not merely undone: it requires the split-repo
-verifier to expose a true asset pool, and this repository only admits an instrument-level proxy that
-our own protocol forbids reading as confirmatory (\S\ref{sec:exp}). Until it runs, that claim stays
-directional only. The next two priorities are (iv) obtaining at least one
-independent reproduction, and (vi) label reliability (one second annotator on 15 random holdout
-items, report $\kappa$, T17). The remaining seven items---sample expansion toward $n\ge100$, exposing
-the split-repo interfaces and rerunning true B1/B3, running A0--A5, making the guard rerun detectors,
-a fail-loud environment self-check, backfilling semantic scope, and the E9/clang-tidy wrap-up---are
-listed in Appendix~\ref{app:future}.
+\textbf{Evidence boundary.} The evidence \emph{supports} ``verification capability can be measured externally''
+and ``FD beats the static re-binning and random-instrument proxy arms'' ($\Delta$ lower bound $\ge$28.6pp,
+exact McNemar $p\le3.0\times10^{-8}$); it does \emph{not} support ``better than a \emph{real} static detector or a
+true B3'' (split-repo BLOCKED), other languages, ``exact magnitudes'' ($n{=}41/64$), or \emph{any} ablation
+conclusion (design frozen, unrun). \textbf{Three qualifiers:} the $\Delta$ separates having runtime evidence from not, not failure-driven selection
+(A0$-$A5 unrun, \S\ref{sec:exp}); E9 is a \emph{cross-regime stress test}; labels have zero second annotators
+(T17). Appendix~\ref{app:humanize}. \textbf{Future work:} top priority remains ablation \textbf{A5} (random-budget
+control), the only experiment that can falsify ``failure-driven beats same-budget random''; it is
+\emph{blocked} (needs the split-repo verifier's true asset pool; this repository only admits an
+instrument-level proxy our protocol forbids reading as confirmatory). Until it runs the claim stays
+directional. Next: independent reproduction, label reliability ($\kappa$, T17), then
+Appendix~\ref{app:future}.
 
 \clearpage
 \label{page:endmain}% records the page where the main text ends (for the 9-page check)
