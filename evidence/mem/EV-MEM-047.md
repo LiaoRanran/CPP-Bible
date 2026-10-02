@@ -22,11 +22,11 @@ artifact_sha256: 1ba9f95a9314d6ddb22bcbdb05751ce0343fb17a32262dc36b19e9a2bed2376
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
   - {kind: contains, text: "strbound_probe"}
-run_match_file: Examples/atoms/_c_strbound.out
-run_match_keys: [snprintf_ret, snprintf_truncated, snprintf_written, strncpy_last_byte, strncpy_nul_terminated]
 expected:
   run: snprintf_ret=10 snprintf_truncated=1 snprintf_written=7 strncpy_last_byte=56 strncpy_nul_terminated=0
 actual:
+  run_match_file: Examples/atoms/_c_strbound.out
+  run_match_keys: [snprintf_ret, snprintf_truncated, snprintf_written, strncpy_last_byte, strncpy_nul_terminated]
   run_gcc_c11_O2: "snprintf_ret=10 snprintf_truncated=1 snprintf_written=7 strncpy_last_byte=56 strncpy_nul_terminated=0"
   run_gcc_c17_O2: "snprintf_ret=10 snprintf_truncated=1 snprintf_written=7 strncpy_last_byte=56 strncpy_nul_terminated=0"
   run_gcc_c2x_O2: "snprintf_ret=10 snprintf_truncated=1 snprintf_written=7 strncpy_last_byte=56 strncpy_nul_terminated=0"

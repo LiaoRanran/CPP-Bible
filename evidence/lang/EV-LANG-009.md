@@ -22,11 +22,11 @@ artifact_sha256: eca0a33e9d346dd6bcc18b2aef8418646cfe1b4f8a54705cc6ef97e9c33856a
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
   - {kind: contains, text: "macro_probe"}
-run_match_file: Examples/atoms/_c_macro.out
-run_match_keys: [i_after, max_bad_result, sq_bad, sq_good]
 expected:
   run: i_after=2 max_bad_result=1 sq_bad=7 sq_good=16
 actual:
+  run_match_file: Examples/atoms/_c_macro.out
+  run_match_keys: [i_after, max_bad_result, sq_bad, sq_good]
   run_gcc_c11_O2: "i_after=2 max_bad_result=1 sq_bad=7 sq_good=16"
   run_gcc_c17_O2: "i_after=2 max_bad_result=1 sq_bad=7 sq_good=16"
   run_gcc_c2x_O2: "i_after=2 max_bad_result=1 sq_bad=7 sq_good=16"

@@ -22,11 +22,11 @@ artifact_sha256: 9610238ae891e83c4f7b917dbe72e0d679a9b02a2b7e975d7541d630dbe8112
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
   - {kind: contains, text: "bitfield_probe"}
-run_match_file: Examples/atoms/_c_bitfield.out
-run_match_keys: [bf_a, bf_b, bf_byte0, bf_byte1, bf_c_signed_readback, bf_sizeof]
 expected:
   run: bf_a=5 bf_b=21 bf_byte0=173 bf_byte1=15 bf_c_signed_readback=-1 bf_sizeof=4
 actual:
+  run_match_file: Examples/atoms/_c_bitfield.out
+  run_match_keys: [bf_a, bf_b, bf_byte0, bf_byte1, bf_c_signed_readback, bf_sizeof]
   run_gcc_c11_O2: "bf_a=5 bf_b=21 bf_byte0=173 bf_byte1=15 bf_c_signed_readback=-1 bf_sizeof=4"
   run_gcc_c17_O2: "bf_a=5 bf_b=21 bf_byte0=173 bf_byte1=15 bf_c_signed_readback=-1 bf_sizeof=4"
   run_gcc_c2x_O2: "bf_a=5 bf_b=21 bf_byte0=173 bf_byte1=15 bf_c_signed_readback=-1 bf_sizeof=4"

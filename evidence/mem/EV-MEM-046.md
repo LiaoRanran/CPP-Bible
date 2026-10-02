@@ -22,11 +22,11 @@ artifact_sha256: b375bd2a05cd1a6737e185ea2f9767883b9ecbf3efad20b99e18d7c4696d72f
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
   - {kind: contains, text: "malloc_lifecycle_probe"}
-run_match_file: Examples/atoms/_c_malloc.out
-run_match_keys: [alloc_aligned, dangling_value_nonzero, malloc0_null, reached_after_free_null]
 expected:
   run: alloc_aligned=1 dangling_value_nonzero=1 malloc0_null=0 reached_after_free_null=1
 actual:
+  run_match_file: Examples/atoms/_c_malloc.out
+  run_match_keys: [alloc_aligned, dangling_value_nonzero, malloc0_null, reached_after_free_null]
   run_gcc_c11_O2: "alloc_aligned=1 dangling_value_nonzero=1 malloc0_null=0 reached_after_free_null=1"
   run_gcc_c17_O2: "alloc_aligned=1 dangling_value_nonzero=1 malloc0_null=0 reached_after_free_null=1"
   run_gcc_c2x_O2: "alloc_aligned=1 dangling_value_nonzero=1 malloc0_null=0 reached_after_free_null=1"

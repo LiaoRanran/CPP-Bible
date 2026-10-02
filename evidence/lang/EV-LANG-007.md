@@ -22,11 +22,11 @@ artifact_sha256: 8294058c9ff42b04e033aba984fae1c6b51c017e014d0a5d4a896ca58bcff08
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
   - {kind: contains, text: "intpromo_probe"}
-run_match_file: Examples/atoms/_c_intpromo.out
-run_match_keys: [char_promoted_sum, char_sum_type_size, cmp_signed_unsigned, minus1_as_unsigned]
 expected:
   run: char_promoted_sum=200 char_sum_type_size=4 cmp_signed_unsigned=0 minus1_as_unsigned=4294967295
 actual:
+  run_match_file: Examples/atoms/_c_intpromo.out
+  run_match_keys: [char_promoted_sum, char_sum_type_size, cmp_signed_unsigned, minus1_as_unsigned]
   run_gcc_c11_O2: "char_promoted_sum=200 char_sum_type_size=4 cmp_signed_unsigned=0 minus1_as_unsigned=4294967295"
   run_gcc_c17_O2: "char_promoted_sum=200 char_sum_type_size=4 cmp_signed_unsigned=0 minus1_as_unsigned=4294967295"
   run_gcc_c2x_O2: "char_promoted_sum=200 char_sum_type_size=4 cmp_signed_unsigned=0 minus1_as_unsigned=4294967295"

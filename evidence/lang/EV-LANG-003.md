@@ -22,11 +22,11 @@ artifact_sha256: 97509b8f4bf442598807454e49eff591c65e4e8dd0917537e2fac8371d2a6e2
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
   - {kind: contains, text: "decay_param_sizeof"}
-run_match_file: Examples/atoms/_c_decay.out
-run_match_keys: [decay_len_true, decay_len_wrong_inside, decay_sizeof_array, decay_sizeof_param]
 expected:
   run: decay_len_true=10 decay_len_wrong_inside=2 decay_sizeof_array=40 decay_sizeof_param=8
 actual:
+  run_match_file: Examples/atoms/_c_decay.out
+  run_match_keys: [decay_len_true, decay_len_wrong_inside, decay_sizeof_array, decay_sizeof_param]
   run_gcc_c11_O2: "decay_len_true=10 decay_len_wrong_inside=2 decay_sizeof_array=40 decay_sizeof_param=8"
   run_gcc_c17_O2: "decay_len_true=10 decay_len_wrong_inside=2 decay_sizeof_array=40 decay_sizeof_param=8"
   run_gcc_c2x_O2: "decay_len_true=10 decay_len_wrong_inside=2 decay_sizeof_array=40 decay_sizeof_param=8"

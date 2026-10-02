@@ -22,11 +22,11 @@ artifact_sha256: 685393cbc5fe1961d2c28e312b7479ad26e6472fd916d5c6638332a58e67106
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
   - {kind: contains, text: "signedovf_probe"}
-run_match_file: Examples/atoms/_c_signedovf.out
-run_match_keys: [signed_plus1_gt, unsigned_plus1_gt, unsigned_wrapped]
 expected:
   run: signed_plus1_gt=1 unsigned_plus1_gt=0 unsigned_wrapped=0
 actual:
+  run_match_file: Examples/atoms/_c_signedovf.out
+  run_match_keys: [signed_plus1_gt, unsigned_plus1_gt, unsigned_wrapped]
   run_gcc_c11_O2: "signed_plus1_gt=1 unsigned_plus1_gt=0 unsigned_wrapped=0"
   run_gcc_c17_O2: "signed_plus1_gt=1 unsigned_plus1_gt=0 unsigned_wrapped=0"
   run_gcc_c2x_O2: "signed_plus1_gt=1 unsigned_plus1_gt=0 unsigned_wrapped=0"

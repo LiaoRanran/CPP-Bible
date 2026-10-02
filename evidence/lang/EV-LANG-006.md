@@ -22,11 +22,11 @@ artifact_sha256: e6a7ed718fa902689d16f4d98906a8b982cc523588984680451718bada51487
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
   - {kind: contains, text: "setjmp_probe"}
-run_match_file: Examples/atoms/_c_setjmp.out
-run_match_keys: [after_longjmp_plain, after_longjmp_volatile]
 expected:
   run: after_longjmp_plain=0 after_longjmp_volatile=5
 actual:
+  run_match_file: Examples/atoms/_c_setjmp.out
+  run_match_keys: [after_longjmp_plain, after_longjmp_volatile]
   run_gcc_c11_O2: "after_longjmp_plain=0 after_longjmp_volatile=5"
   run_gcc_c17_O2: "after_longjmp_plain=0 after_longjmp_volatile=5"
   run_gcc_c2x_O2: "after_longjmp_plain=0 after_longjmp_volatile=5"

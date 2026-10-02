@@ -22,11 +22,11 @@ artifact_sha256: 9ae63e9da91970ac6f5e16a7aaadde9b50d6ca77f056ed934f6f9cffbbe3c49
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
   - {kind: contains, text: "volatile_probe"}
-run_match_file: Examples/atoms/_c_volatile.out
-run_match_keys: [sink]
 expected:
   run: sink=0
 actual:
+  run_match_file: Examples/atoms/_c_volatile.out
+  run_match_keys: [sink]
   run_gcc_c11_O2: "sink=0"
   run_gcc_c17_O2: "sink=0"
   run_gcc_c2x_O2: "sink=0"

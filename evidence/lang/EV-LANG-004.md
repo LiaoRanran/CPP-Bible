@@ -22,11 +22,11 @@ artifact_sha256: a013afa520d2be26bd3639c8d93dcb7099a79bb7d6777b1506031fa62028f28
 artifact_compiler: "gcc 13.1.0 / clang 22.1.8"
 artifact_assert:
   - {kind: contains, text: "fnptr_probe"}
-run_match_file: Examples/atoms/_c_fnptr.out
-run_match_keys: [bad_addr_nonzero, fnptr_sizeof, good_call]
 expected:
   run: bad_addr_nonzero=1 fnptr_sizeof=8 good_call=5
 actual:
+  run_match_file: Examples/atoms/_c_fnptr.out
+  run_match_keys: [bad_addr_nonzero, fnptr_sizeof, good_call]
   run_gcc_c11_O2: "bad_addr_nonzero=1 fnptr_sizeof=8 good_call=5"
   run_gcc_c17_O2: "bad_addr_nonzero=1 fnptr_sizeof=8 good_call=5"
   run_gcc_c2x_O2: "bad_addr_nonzero=1 fnptr_sizeof=8 good_call=5"
