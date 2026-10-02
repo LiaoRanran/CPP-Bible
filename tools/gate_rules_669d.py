@@ -206,7 +206,13 @@ def check_rate_consistency(root: Path) -> list[dict]:
         for p in sorted(wd.glob("*.json")):
             _collect_json_rates(_load_json(p), front)
 
-    paper = root / "research" / "paper_draft_v0.5.md"
+    # 673a：门禁必须校验**当前**论文，而非已废弃的并行草稿（paper_draft_v0.5.md）。
+    # 取 research/paper_v*.md 中版本号最高者；找不到再退回旧草稿路径。
+    _cands = sorted(
+        (root / "research").glob("paper_v*.md"),
+        key=lambda p: [int(x) for x in re.findall(r"\d+", p.stem)] or [0],
+    )
+    paper = _cands[-1] if _cands else (root / "research" / "paper_draft_v0.5.md")
     doc_rates: set[float] = set()
     if paper.is_file():
         doc_rates = _collect_text_rates(paper.read_text(encoding="utf-8", errors="replace"))
@@ -223,7 +229,7 @@ def check_rate_consistency(root: Path) -> list[dict]:
         if paper.is_file():
             if not any(_close(v, val) for v in doc_rates):
                 f.append(finding(
-                    "G-RATE-CONSISTENCY", BLOCK, f"research/paper_draft_v0.5.md ← {rid}",
+                    "G-RATE-CONSISTENCY", BLOCK, f"research/{paper.name} ← {rid}",
                     f"{rid} 现算 {val:.4g}% 在论文中找不到一致值",
                     "论文引用的率必须与产物现算值同源"))
     return f

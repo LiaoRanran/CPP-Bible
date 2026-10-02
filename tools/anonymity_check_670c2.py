@@ -18,9 +18,10 @@ import json
 import os
 import re
 import sys
+from typing import Any
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEX = os.path.join(ROOT, "research", "latex", "queyi_neurips2027.tex")
+TEX = os.path.join(ROOT, "research", "latex", "queyi_neurips2027_v1.0.tex")
 
 # 全文禁止
 STRICT = [
@@ -52,7 +53,8 @@ def split_main(tex: str) -> str:
 def scan() -> dict:
     tex = open(TEX, encoding="utf-8").read()
     main = split_main(tex)
-    hits = []
+    # 673b A1：显式注解（无注解时 mypy 把值 join 成 object ⇒ scope.startswith 报错）
+    hits: list[dict[str, Any]] = []
 
     for pat in STRICT:
         for m in re.finditer(pat, tex):

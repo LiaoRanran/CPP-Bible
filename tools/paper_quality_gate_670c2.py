@@ -26,9 +26,9 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LATEX = os.path.join(ROOT, "research", "latex")
-TEX = os.path.join(LATEX, "queyi_neurips2027.tex")
-AUX = os.path.join(LATEX, "queyi_neurips2027.aux")
-LOG = os.path.join(LATEX, "queyi_neurips2027.log")
+TEX = os.path.join(LATEX, "queyi_neurips2027_v1.0.tex")
+AUX = os.path.join(LATEX, "queyi_neurips2027_v1.0.aux")
+LOG = os.path.join(LATEX, "queyi_neurips2027_v1.0.log")
 ABLATION_PLAN = os.path.join(ROOT, "data", "experiments", "ablation_plan_671b.json")
 
 MAIN_PAGE_LIMIT = 9
@@ -87,7 +87,7 @@ def run() -> dict:
 
     # 4. 所有 \section 有 \label（只对主文，即 \appendix 前）
     main_tex = tex.split("\\appendix")[0]
-    main_sections = re.findall(r"\\section\*?\{([^}]*)\}(.{0,140})", main_tex, flags=re.S)
+    main_sections = re.findall(r"\\section\*?\{([^}]*)\}(.{0,140})", main_tex, flags=re.DOTALL)
     missing_label = []
     for name, tail in main_sections:
         if "\\label{" not in tail.split("\\section")[0]:
@@ -103,7 +103,7 @@ def run() -> dict:
         f"悬空 ref: {dangling}" if dangling else f"{len(refs)} 个 ref 全部有 label")
 
     # 6. 摘要词数
-    am = re.search(r"\\begin\{abstract\}(.*?)\\end\{abstract\}", tex, flags=re.S)
+    am = re.search(r"\\begin\{abstract\}(.*?)\\end\{abstract\}", tex, flags=re.DOTALL)
     if am:
         words = len(re.findall(r"[A-Za-z][A-Za-z\-']*", am.group(1)))
         add("摘要≤250词", words <= ABSTRACT_WORD_LIMIT, f"摘要英文词数 = {words}")

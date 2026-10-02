@@ -24,7 +24,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BIB = os.path.join(ROOT, "research", "latex", "queyi_refs.bib")
-TEX = os.path.join(ROOT, "research", "latex", "queyi_neurips2027.tex")
+TEX = os.path.join(ROOT, "research", "latex", "queyi_neurips2027_v1.0.tex")
 REPORT = os.path.join(ROOT, "research", "670b_引用核验_终稿.md")
 OUT = os.path.join(ROOT, "data", "bib_audit_670c2.json")
 
