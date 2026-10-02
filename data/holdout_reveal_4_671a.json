@@ -2,7 +2,7 @@
   "schema": "queyi-holdout-reveal/v4",
   "reveal_index": 4,
   "generated_by": "tools/holdout_reveal_4_671a.py",
-  "generated_at": "2026-10-01 18:43:09",
+  "generated_at": "2026-10-02 12:29:51",
   "round_label": "h31–h40（10 条，669d 扩样补充种子）",
   "runs": 3,
   "samples_requested": [
@@ -61,7 +61,7 @@
     "local_gpp": "g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
     "local_clang": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
     "host": "win32",
-    "python": "3.14.5",
+    "python": "3.13.13",
     "local_gpp_present": true,
     "caliber_warning": ""
   },

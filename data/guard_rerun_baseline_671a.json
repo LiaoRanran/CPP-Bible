@@ -1,7 +1,7 @@
 {
   "schema": "queyi-guard-rerun/671a",
   "generated_by": "tools/guard_rerun_671a.py",
-  "generated_at": "2026-10-02 10:40:19",
+  "generated_at": "2026-10-02 12:30:34",
   "note": "基线 = 一次「判据指纹 + 产物指纹/mtime + 三方数字」快照。判据变了而产物没变 ⇒ STALE。刷新基线请在**确认产物已重跑**之后执行 --init。基线时即不新鲜的产物会被记成 fresh=false ⇒ 之后只 WARN（存量缺口，不变成噪音）。",
   "freshness_tolerance_s": 1.0,
   "detectors": {
@@ -107,8 +107,8 @@
           "fresh": true
         },
         "data/external_corpus/reveal_detail_671a.json": {
-          "sha256": "261f2ec593881ecb2a1ee7a0a28b517ca819966dbd3c44a985b597e8d97a8d85",
-          "mtime": 1790908085.4349334,
+          "sha256": "11cc9c45b352bd17379518f6fefb4b45feadb03f240573ec9f731ffdcbe44ed8",
+          "mtime": 1790914085.4867773,
           "strict": true,
           "fresh": true
         }
@@ -317,25 +317,25 @@
         "tools/holdout_reveal_661.py"
       ],
       "why": "h31–h40 扩样 reveal（671a C1）；与上一轮共用同一 detect 判据",
-      "judgment_sha256": "a6deeb2c03e6f7c0e26836044586d2393bf0b476d943050fab6bc73a49a2efc6",
+      "judgment_sha256": "821d4d9609c4ad0cbe079619fe21bb1cdef9ebddab4881f121768575a4b33ea3",
       "component_judgment_sha256": {
-        "tools\\holdout_reveal_4_671a.py": "0349ad2f05a242d63638366c6d1c3188ff1a0c7ca440d0615c92547b890a31ee",
+        "tools\\holdout_reveal_4_671a.py": "94e982bb9ac3e942450095ab86532186f5a5bc3f72ba57d1d4400de1587beaaf",
         "tools\\holdout_reveal_661.py": "9f0e1bcf04c8b053db0387afb329262d1d056f01881e5e21667158e52832f109"
       },
-      "src_sha256": "fad1bcfd26422bd898aa63ac52bf6818be4b20027c5028cc5e5351930ac4a754",
-      "src_ast_sha256": "9135b06f6e97c37d5e66f163a5e4aebe203c8c5403e48cc73d518485629a2d94",
-      "src_mtime": 1790826948.969615,
-      "judgment_mtime": 1790826948.969615,
+      "src_sha256": "de82ee3fa54a7e5b82c7c19c29149daf2a099d935061d321e4bf4102ec7d7cae",
+      "src_ast_sha256": "c89c9ade3df467c3a9b3eb4714672bbb56f7ed9a29d67a7dd22825aa7faa0ade",
+      "src_mtime": 1790914085.5297854,
+      "judgment_mtime": 1790914085.5297854,
       "products": {
         "data/holdout_reveal_4_671a.json": {
-          "sha256": "305ca19d318e1b53285ff52ddc071a592b34ab0286d3361578fc0f21cfe5f1a4",
-          "mtime": 1790851389.995031,
+          "sha256": "fbb980620d5a550a3f834bcc1c4ecbcb743f98be1ee724e17b86b7566577defc",
+          "mtime": 1790915391.8763382,
           "strict": true,
           "fresh": true
         },
         "data/holdout/reveal_3_detail_671a.json": {
-          "sha256": "d8f8de20787f688f81cf619953337c30e6d6b8d70da75246faae24f757f6fe5e",
-          "mtime": 1790851389.9970317,
+          "sha256": "67a303f9ebb97e694d9d661b555b2259a5c0ecba7a00f91bbe5e4028ed073621",
+          "mtime": 1790915391.8773386,
           "strict": true,
           "fresh": true
         }

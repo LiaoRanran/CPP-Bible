@@ -2,7 +2,7 @@
   "schema": "queyi-holdout-reveal-detail/v2",
   "reveal_index": 4,
   "generated_by": "tools/holdout_reveal_4_671a.py",
-  "generated_at": "2026-10-01 18:43:09",
+  "generated_at": "2026-10-02 12:29:51",
   "summary_for": "data/holdout_reveal_4_671a.json",
   "naming_note": "文件名 `reveal_3_detail_671a.json` 沿用 671a 受理单的指定路径与 668 的「批次后缀」命名约定；内容为**第 4 轮** reveal（h31–h40）⇒ 以本文件的 `reveal_index` 字段为准，不覆盖 reveal_3_detail_668.json",
   "samples_requested": [
@@ -25,7 +25,7 @@
     "local_gpp": "g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
     "local_clang": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
     "host": "win32",
-    "python": "3.14.5",
+    "python": "3.13.13",
     "local_gpp_present": true,
     "caliber_warning": ""
   },
@@ -169,7 +169,7 @@
         "catch"
       ],
       "reproducible": true,
-      "note": "警告 8 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpjomely98\\_atom_auto_ptr.cpp:32:52:",
+      "note": "警告 8 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpqn2lz4gu\\_atom_auto_ptr.cpp:32:52:",
       "source": "measured_671a",
       "is_669d_new": true,
       "planted": "unknown"
