@@ -65,7 +65,7 @@ queyi_neurips2027_v1.1.pdf      # 编译产物（必备）
 
 1. 注册 / 登录 arXiv 账号（若无）。
 2. 准备源码包（见 §3），上传 `.tar.gz` 或单 `.tex`（arXiv 自动处理 bib）。
-3. 选分类（category）：主类建议 **cs.LG**（机器学习）/ **cs.AI** / **cs.SE**（软件工程）；交叉可加 **stat.ML**。NeurIPS E&D 偏 D&B，cs.LG / cs.AI 最常见。
+3. 选分类（category）：主类 **cs.SE**（Software Engineering）；副类 **cs.PL**（Programming Languages）。理由：本稿核心是 C++ 知识验证系统 + 静态/动态分析工具链，cs.SE 最贴切；cs.PL 覆盖编程语言与工具方向。**不建议 cs.LG / cs.AI**（本稿不是机器学习论文，LLM 裁判臂仅为探索性对比）。
 4. 填标题（保持与投稿一致）、摘要（**注意**：arXiv 摘要为公开且永久，确认不含未公开数据或身份）、comments（**仅在被接收或 under review 时**才可写 "under review / accepted at NeurIPS 2027 D&B"；纯预印本不要谎称接收）。
 5. 提交 → 自动 + 偶发人工审核 → 获得 arXiv ID（通常数小时至 1 天）。
 
@@ -75,7 +75,7 @@ queyi_neurips2027_v1.1.pdf      # 编译产物（必备）
 
 - **是否需要 endorser**：若你的 arXiv 账号在该 category **无自动提交权限**（新账号或该领域首次提交），需一位**已在该 category 发过论文的 endorser** 背书。
 - **如何找**：
-  - 在合作者 / 导师 / 同行中找**已在 cs.LG / cs.AI / cs.SE / stat.ML 发过 ≥1 篇**的人，请其在 arXiv「Endorsement」页面为你背书。
+  - 在合作者 / 导师 / 同行中找**已在 cs.SE / cs.PL 发过 ≥1 篇**的人，请其在 arXiv「Endorsement」页面为你背书。
   - 若无合适人选：arXiv 提供 "request endorsement" 链接，填一段研究说明，系统可能自动匹配或要求等待。
   - 注意：**endorser 不审内容**，只确认你确实做相关研究。
 - **备选**：若账号已有该 category 提交权限（如既往发过），直接提交，无需 endorser。

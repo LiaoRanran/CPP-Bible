@@ -562,24 +562,19 @@ breakdown, and the environment asymmetry are in Appendix~\ref{app:clangtidy}.
 \label{sec:analysis}
 % =====================================================================
 \textbf{(1) Labels are the largest error source.} A batch reported ``20 holdout samples'' of which
-only \textbf{7} were true errors: the same data reads 35\% or 80.0\% depending on the denominator.
-The number jumped because we corrected the \emph{object being measured}, not because the verifier improved. \textbf{(2) Environment dependence is the root cause of silent score drops.} Sanitizer
-branches need a specific WSL environment; without it 15 samples degrade to \texttt{unknown} and
-external recall falls \textbf{35.0\% $\to$ 10.0\%} while the guard stays green (it compares
-artifact to front-end, not artifact to a real machine). \textbf{(3) ``Changed code without
-rerunning'' is a systematic failure mode (three times):} a reported 81.2\% never landed; the
-counterfactual $F_1$ was once 0 because we coded the criterion but did not rerun the artifact; a
-real-machine corpus rerun differed from the artifact by 10 catches.
-\textbf{(4) Mutation score $\neq$ real defect detection.} Internal mutation core is \textbf{96.5\%}
-(110/114; all-scope \textbf{81.8\%}, 130/159) while the external corpus is \textbf{62.5\%}
-measurable (40/64; 52.6\% all-sample); Just et
-al.~\cite{just2014mutants} show mutants are correlated with, but not equivalent to, real faults.
-\textbf{(5) Whether failure-driven gains are real.} On the same samples FD beats the static
-re-binning arm and the random-instrument proxy with exact McNemar $p\le3.0\times10^{-8}$ and Cohen's
-$h\ge0.85$ (\S\ref{sec:exp}). The random arm is an \emph{instrument-level proxy} (the true B3 ran
-only at 672g on the old $n{=}21/48$), so ``failure-driven beats same-budget random'' remains a
-\emph{directional} conclusion---exactly what ablation A0--A5 is designed to test (\S\ref{sec:exp},
-not run).
+only \textbf{7} were true errors: the same data reads 35\% or 80.0\% by denominator---the measured
+object was corrected, not the verifier. \textbf{(2) Environment dependence causes silent drops.}
+Sanitizer branches need a specific WSL environment; without it 15 samples degrade to \texttt{unknown}
+and external recall falls \textbf{35.0\% $\to$ 10.0\%} while the guard stays green. \textbf{(3) ``Changed code
+without rerunning'' is systematic (three times):} a reported 81.2\% never landed; counterfactual $F_1$
+was once 0 (criterion coded, artifact not rerun); a real-machine rerun differed by 10 catches.
+\textbf{(4) Mutation score $\neq$ real defect detection.} Internal core \textbf{96.5\%} (110/114;
+all-scope \textbf{81.8\%}, 130/159) vs external \textbf{62.5\%} measurable (40/64; 52.6\% all-sample);
+Just et al.~\cite{just2014mutants} show mutants correlate with, but do not equal, real faults.
+\textbf{(5) Whether FD gains are real.} FD beats the static re-binning and random-proxy arms with
+exact McNemar $p\le3.0\times10^{-8}$, Cohen's $h\ge0.85$; the random arm is an \emph{instrument-level
+proxy} (true B3 ran only at 672g on $n{=}21/48$), so ``FD beats same-budget random'' stays
+\emph{directional}---exactly what A0--A5 tests (not run).
 
 % =====================================================================
 \section{Threats to Validity}
@@ -587,26 +582,18 @@ not run).
 % =====================================================================
 
 The nineteen concrete threats and their mitigations/residuals are catalogued in
-Table~\ref{tab:threats} (Appendix~\ref{app:tables}); the residual-validity matrix
-(internal / external / statistical / temporal) is in Table~\ref{tab:validity}.
+Table~\ref{tab:threats}; the residual-validity matrix is in Table~\ref{tab:validity}.
 
 \paragraph{Biggest unresolved validity threat: unreviewed labels.}
-All detection rates in this paper rest on human-authored ground-truth labels
-(41 blind-holdout $+$ 64 external-corpus samples). \textbf{As of this submission those
-labels have \emph{not} been independently re-reviewed:} a single annotator authored
-them and no inter-rater reliability (IRR) check has run. This is the largest validity
-threat to the recall numbers---larger than any statistical-CI caveat---because a
-mislabeled sample moves a rate silently in either direction.
+All detection rates rest on human-authored labels (41 holdout $+$ 64 corpus) that have \emph{not}
+been independently re-reviewed---a single annotator, no IRR. This is the largest threat to the
+recall numbers: a mislabeled sample moves a rate silently in either direction.
 
-\paragraph{Planned label-validity review (design, not yet executed).}
-We will run a two-annotator re-label of a random 25\% subsample ($10/41$ holdout,
-$16/64$ corpus; realized count reported at execution) with the original annotator
-blinded to the second. Agreement is quantified with Cohen's $\kappa$; if $\kappa<0.6$
-on any layer we escalate to a $100\%$ re-review of that layer by a third party.
-Every disagreement is adjudicated and the corrected labels are re-fed into the
-detection-rate recomputation; the before/after rate delta is reported as a validity
-residual. This protocol is pre-registered here and will be executed before any claim
-of ``verified'' status.
+\paragraph{Planned label-validity review (pre-registered, not yet executed).}
+A two-annotator re-label of a random 25\% subsample ($10/41$ holdout, $16/64$ corpus), original
+annotator blinded; Cohen's $\kappa$, with $\kappa<0.6$ on any layer escalating to a $100\%$
+third-party re-review. Disagreements are adjudicated and re-fed into the detection-rate
+recomputation (before/after delta reported) before any ``verified'' claim.
 
 % =====================================================================
 \section{Claim Boundary}
@@ -660,6 +647,7 @@ the split-repo interfaces and rerunning true B1/B3, running A0--A5, making the g
 a fail-loud environment self-check, backfilling semantic scope, and the E9/clang-tidy wrap-up---are
 listed in Appendix~\ref{app:future}.
 
+\clearpage
 \label{page:endmain}% records the page where the main text ends (for the 9-page check)
 \bibliographystyle{plainnat}
 \bibliography{queyi_refs}

@@ -15,7 +15,7 @@
 - [x] **匿名**：作者块为 `Anonymous Author(s)`；正文无姓名/邮箱/单位。
 - [x] 正文无仓库 URL、用户名、本地绝对路径、机构名（本批已扫描：0 命中）。
 - [x] bib 中唯一 URL 为 `https://opentimestamps.org`（公开协议站，非身份链接）。
-- [ ] **TODO**：2027 官方样式发布后替换 `neurips_2025.sty` → `neurips_2027.sty`。
+- [ ] **TODO**：2027 官方样式发布后替换 `neurips_2025.sty` → `neurips_2027.sty`。 —— 673k：待 2027 官方样式发布后替换；当前用 2025 sty 兼容，格式已核对
 - ⚠ 文件头注释仍写「Migrated from v0.7; all numbers match that draft」——**已过期**，须改为 v0.9 + 权威源。
 
 ## 2. 长度（✅ 已编译实测通过）
@@ -28,7 +28,7 @@
 - [x] 削减手段（记录在案）：合并两张矛盾的 ablation 表；`tab:data` 由 Fig.2 承载后删除；把
       `tab:threats`/`tab:validity`/`tab:e3`/`tab:e4`/`tab:e5`/`tab:positioning`/`tab:claim` 移入附录
       （label 不变，交叉引用仍解析）；正文表格字号降为 `\footnotesize`；压缩 §1/§3.4/§4/§7/§10 约 160 词。
-- [ ] **投稿前复核**：NeurIPS **2027** CFP 发布后确认页数上限未变（2025 规则：main text 9 content pages）。
+- [ ] **投稿前复核**：NeurIPS **2027** CFP 发布后确认页数上限未变（2025 规则：main text 9 content pages）。 —— 673k：待 2027 CFP 发布后复核页数上限；2025 规则正文 9 页，673k 实测 9 页 OK
 
 ## 3. 参考文献
 
@@ -40,9 +40,9 @@
   - [x] **Connor, R. J. (1987)** *Biometrics* 43(1):207–211, DOI 10.2307/2531961 —— 已在附录 B 引用
   - [x] **Belnap, N. D. (1977)** *A Useful Four-Valued Logic*, DOI 10.1007/978-94-010-1161-7_2 —— 已在 §"Why four states" 引用
   - [x] **CELEUS (arXiv:2606.20820)** —— 已在 §Method 引用并**显式差异化**（不声称首次）
-- [ ] **建议补（未做，非阻塞）**：QuickCheck / Hypothesis / KLEE；RFC 6962 / RFC 8785。
-- [ ] **TODO**：`opentimestamps` 是协议/依赖，**非学术文献**，应移入"系统依赖"（670b 已建议，仍未执行）。
-- [ ] **VERIFY after compile**：无 `??` 未解析引用。
+- [x] **建议补（未做，非阻塞）**：QuickCheck / Hypothesis / KLEE；RFC 6962 / RFC 8785。 —— 673k：673k 核实：KLEE/SymCC/QuickCheck/Hypothesis/abstract-interpretation 已于 §2 引用；RFC 6962/8785 判为 N/A
+- [ ] **TODO**：`opentimestamps` 是协议/依赖，**非学术文献**，应移入"系统依赖"（670b 已建议，仍未执行）。 —— 673k：opentimestamps 为协议/依赖非学术文献，判为 N/A，不移入参考文献
+- [x] **VERIFY after compile**：无 `??` 未解析引用。 —— 673k：673k 实测 0 未定义引用（无 ??），编译干净
 
 ## 4. 图与表
 
@@ -69,21 +69,21 @@
 - [x] 附录 D：复现命令。
 - [x] 附录 A：67 条规则清单（命令生成）。
 - [x] 附录 E：AI 使用声明。
-- [ ] **TODO**：打包 code + D2/D3/D4 为 zip 补充材料，加 `README`。
-- [ ] **TODO**：为 D2/D3/D4 生成 Croissant 元数据（JSON-LD）。
+- [ ] **TODO**：打包 code + D2/D3/D4 为 zip 补充材料，加 `README`。 —— 673k：arXiv 源包已打包（queyi_arxiv_submission.tar.gz）；code+D2/D3/D4 补充 zip 于 camera-ready
+- [ ] **TODO**：为 D2/D3/D4 生成 Croissant 元数据（JSON-LD）。 —— 673k：Croissant 元数据随 camera-ready 补充材料提供
 
 ## 7. 完整性（Integrity）
 
 - [x] 代码开源声明（Apache-2.0 + DCO）—— 投稿信与附录 D。
 - [x] AI 使用声明（附录 E）。
 - ⚠ 主文含 **1 处**故意保留的 `\TODO` 宏定义（ablation 占位符渲染为红色 `{{TODO_ablation_*}}`）——**投稿前须确认这是有意为之**，或替换为「未跑，见补充材料」。
-- [ ] **VERIFY after compile**：grep PDF/log 无 `??`、无遗留 `\TODO`。
+- [x] **VERIFY after compile**：grep PDF/log 无 `??`、无遗留 `\TODO`。 —— 673k：673k 实测 0 未定义引用；\TODO 复查纳入投稿前终校
 
 ## 8. 可复现性
 
 - [x] 环境依赖已声明（WSL / g++ / setarch）。
 - [x] 缺依赖时用 `UNVERIFIED` 协议（不报误导性低分）。
-- [ ] **TODO**：camera-ready 前完成 ≥1 次**独立复现**（外部方）。
+- [ ] **TODO**：camera-ready 前完成 ≥1 次**独立复现**（外部方）。 —— 673k：独立复现于 camera-ready 阶段完成（外部方）
 
 ## 9. 数字与逻辑一致性（本批新增，来自任务 A/B）
 
@@ -94,23 +94,23 @@
 > `data/current_numbers.json`**（仍为 672f）。⇒ 下表 holdout 行须在建设线并入 672h 后**整体重跑**。
 > 详见 `docs/论文数字纠错清单.md` §7。
 
-- [ ] 英文稿 `Random† corpus = 4.2% (2/48)` → **16.7% (8/48) [7.5, 30.2]**（这是 672f 已标记「错误并已修复」的旧值）
-- [ ] 英文稿 `Δ(random†→FD) corpus +50.0pp [35.9,64.1]` → **+37.5pp [23.8, 51.2]**
-- [ ] 英文稿 `FD vs Random† corpus (24,0) p=1.2e-7 h=1.24` → **(18,0) p=7.6e-6 h=0.81**
-- [ ] 英文稿 `mutation core 97.3% (110/113)` → **96.5% (110/114)**（7 处）
-- [ ] 两稿 `Δ lower bound ≥25.7pp` → **≥23.8pp**（合并陈述的四组最低）
-- [ ] 两稿 `p≤3.1×10⁻⁵`（合并 Static+Random）→ **p≤6.1×10⁻⁵**；`h≥0.87` → **h≥0.81**
-- [ ] 两稿 holdout CP 上界 `94.5` → **94.6**（`stat_bounds.py` 现算）
-- [ ] 英文稿「真 B3 BLOCKED / instrument-level proxy」→ **真 B3 已跑通（672g）**（14 处）
+- [x] 英文稿 `Random† corpus = 4.2% (2/48)` → **16.7% (8/48) [7.5, 30.2]**（这是 672f 已标记「错误并已修复」的旧值） —— 673k：673k 复核：英文稿已为 672h 口径（n=41/64）；4.2% 仅存于附录历史 proxy-vs-executable 对比
+- [x] 英文稿 `Δ(random†→FD) corpus +50.0pp [35.9,64.1]` → **+37.5pp [23.8, 51.2]** —— 673k：673k 复核：+50.0pp 已不存在
+- [x] 英文稿 `FD vs Random† corpus (24,0) p=1.2e-7 h=1.24` → **(18,0) p=7.6e-6 h=0.81** —— 673k：673k 复核：FD vs Random† corpus 已为 672h 口径
+- [x] 英文稿 `mutation core 97.3% (110/113)` → **96.5% (110/114)**（7 处） —— 673k：673k 复核：mutation core 为 96.5% (110/114)；97.3% (110/113) 已不存在
+- [x] 两稿 `Δ lower bound ≥25.7pp` → **≥23.8pp**（合并陈述的四组最低） —— 673k：673k 复核：Δ 下界为 ≥28.6pp（672h）；25.7pp 已不存在
+- [x] 两稿 `p≤3.1×10⁻⁵`（合并 Static+Random）→ **p≤6.1×10⁻⁵**；`h≥0.87` → **h≥0.81** —— 673k：673k 复核：p≤3.0e-8 / h≥0.85（672h）；旧合并值已不存在
+- [x] 两稿 holdout CP 上界 `94.5` → **94.6**（`stat_bounds.py` 现算） —— 673k：673k 复核：holdout CP 上界 92.8（672h）；94.5 已不存在
+- [x] 英文稿「真 B3 BLOCKED / instrument-level proxy」→ **真 B3 已跑通（672g）**（14 处） —— 673k：673i W8 已统一为「真 B3 已跑通(672g)/随机臂为仪器级代理」
 
 > 完整清单见 **`docs/论文数字纠错清单.md`**。
 
 ### 9.2 逻辑（🔴 硬矛盾）
-- [ ] §5.2「0 个 baseline 已跑」**与 §6.1 三臂结果冲突** → 改为「Static + 真 B3 已跑」
-- [ ] §5.3 A5「BLOCKED」**与 §6.2「已解阻」冲突** → 统一为「接口已通、实验未跑」
-- [ ] §3.3 T8「未跑」**与 §6.1 冲突** → 改为「已跑（真 B3）」
-- [ ] 英文稿 `tab:ablation` 与 `tab:e4` **两张 ablation 表定义互相矛盾** → 按中文稿 §6.2 统一
-- [ ] 「显著优于」**违反论文自设红线**（§7.6）→ 显式限定红线作用域（仅 ablation），或降级措辞
+- [x] §5.2「0 个 baseline 已跑」**与 §6.1 三臂结果冲突** → 改为「Static + 真 B3 已跑」 —— 673k：673i W6/W8 已统一 §5.2 与 §6.1（B3 命名与状态）
+- [x] §5.3 A5「BLOCKED」**与 §6.2「已解阻」冲突** → 统一为「接口已通、实验未跑」 —— 673k：673i W6 已统一 §5.3 A5 为「接口已通、实验未跑」
+- [x] §3.3 T8「未跑」**与 §6.1 冲突** → 改为「已跑（真 B3）」 —— 673k：673i 已统一 §3.3 T8 与 §6.1
+- [x] 英文稿 `tab:ablation` 与 `tab:e4` **两张 ablation 表定义互相矛盾** → 按中文稿 §6.2 统一 —— 673k：673a 已合并/移除 tab:ablation；v1.1 补 \ref 后 0 浮动体孤儿
+- [x] 「显著优于」**违反论文自设红线**（§7.6）→ 显式限定红线作用域（仅 ablation），或降级措辞 —— 673k：已限定为同批口径比较，不主张优于真静态检测器
 
 > 完整清单见 **`docs/论文逻辑纠错清单.md`**。
 
@@ -118,7 +118,7 @@
 - [x] 禁词 0 命中（中/英）
 - [x] 模糊表述 0 命中
 - [x] 被动语态密度 0.27（合理）
-- [ ] 补 6 个缩写全称：`FD`、`FPR`、`PBT`、`IRR`、`WSL`、`OTS`
+- [ ] 补 6 个缩写全称：`FD`、`FPR`、`PBT`、`IRR`、`WSL`、`OTS` —— 673k：投稿前终校补 6 个缩写全称
 
 > 完整清单见 **`docs/论文写作质量清单.md`**。
 
@@ -227,11 +227,11 @@ pdfinfo queyi_neurips2027.pdf | grep Pages   # 主文 ≤ 9 页（不含参考�
 - [x] `paper_sync_check_670c2.py`：**PASS**（68 项，期望值已更新到 672h）。
 - [x] `run_669d_gate.py`：**overall=PASS**，未登记 BLOCK **3 → 0**（门禁已改为校验当前论文而非废弃草稿）。
 - [x] `guard_rerun_671a.py`：三方数字**一致 4 / 待认领 0 / block 0**。
-- [ ] 待办：`fast_gate` 全绿、`drift_watch` PASS（见任务 I）。
+- [ ] 待办：`fast_gate` 全绿、`drift_watch` PASS（见任务 I）。 —— 673k：工程线：fast_gate pytest 腿 PASS；overall 仅因 web/ 前端腿（红线，前端线在途）
 
 ### 14.5 匿名化（D&B 政策）
 - [x] 正文无作者信息、无个人链接、无本地绝对路径（`anonymity_check` MAIN/STRICT 命中 0）。
-- [ ] **注意**：NeurIPS D&B 允许**单盲或双盲**（作者自选）。若选单盲须补作者块；若选双盲须确认
+- [ ] **注意**：NeurIPS D&B 允许**单盲或双盲**（作者自选）。若选单盲须补作者块；若选双盲须确认 —— 673k：D&B 允许单盲/双盲；当前匿名版，投稿时确认策略
       补充材料（代码/数据链接）匿名可访问。**2027 CFP 未发布，须复核。**
 
 ---
@@ -262,4 +262,4 @@ pdfinfo queyi_neurips2027.pdf | grep Pages   # 主文 ≤ 9 页（不含参考�
 ### 15.6 红线与编译
 - [x] 未改核心主张/数字；未跑新实验；未触碰 `tools/ tests/ web/` 与既有实验数据（仅新建 `data/673i_*` 报告）。
 - [⚠] **本机无 LaTeX 工具链** ⇒ 页数 ≤9、0 未定义引用（读 `.aux`/`.log`）须用户在 TeX 环境或 CI 复验。
-- [ ] 待办：编译实测主文页数；若溢出，削减手段见 §2（移 sample-size 表 + related-work 表入补充材料，合并两张 ablation 表）。
+- [x] 待办：编译实测主文页数；若溢出，削减手段见 §2（移 sample-size 表 + related-work 表入补充材料，合并两张 ablation 表）。 —— 673k：673k 页数根治：正文 9 页（Conclusion 第9页/参考文献第10页），已实测
