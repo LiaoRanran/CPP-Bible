@@ -12,7 +12,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import ci_pytest_final_clear_632 as clr
 import governance_doc_guard as gd
 import pytest
 
@@ -35,15 +34,8 @@ def test_update_writes_self_hash_and_verify_passes(tmp_path: Path):
     assert gd.verify_manifest(man, docs) == (True, [])
 
 
-# 632 A2：本地未跟踪残留(_arch_v2x/)让清单「多出新增」而红；CI 无残留应通过。
-@pytest.mark.skipif(
-    clr.residue_present(),
-    reason="673s 实测修正：阻塞原因**不是**未跟踪残留 —— _arch_v19..v23/_adv_v80 已全部入库"
-           "（168 文件 tracked）⇒ 守卫恒真、本用例在 CI 也从未跑过。真阻塞是"
-           " data/governance_docs_manifest.json 与真实文档树**漂移 634 处**（这些目录入库时未同步清单）。"
-           "解除条件：owner 重生成/重钉治理清单（治理动作，673s 红线 4 不擅自清票）。"
-           "实测：摘掉守卫后 4 个依赖它的用例 4/4 全红。",
-)
+# 673u：摘除 632 A2 的 `residue_present()` 守卫（恒真 ⇒ 此前从未真跑）。
+# 漂移已修（扫描面在册过滤 + 换行归一），干净检出下 self_hash 与逐条比对均绿。
 def test_real_manifest_has_valid_self_hash():
     """真库：manifest 必须有合法 self_hash 且文档逐条一致。"""
     ok, why = gd.verify_self_hash()

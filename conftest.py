@@ -100,6 +100,62 @@ def _read(path: str):
         return None
 
 
+def _write(path: str, content: bytes) -> None:
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "wb") as fh:
+            fh.write(content)
+    except OSError:
+        pass
+
+
+# ── 673u 性能优化：逐测试隔离的「元数据快路径」──────────────────────────────
+# 病（673u 实测）：`_isolate_merkle_dirs` 每个测试把 4 个受隔离目录的全部内容**读两遍**
+# （快照一遍、还原比对一遍），实测 ~30 MB × 2 / 测试。全量 fast 档（4266 例）因此多耗
+# ~6000 s CPU —— 占 pytest 腿总 CPU（8159 s）的 **73%**；停用该 fixture 后墙钟
+# **377 s → 191 s**。而 walk+stat 只要 0.03 s/次（内容读占 ~0.4 s）⇒ 瓶颈是**读**，不是遍历。
+#
+# 治法：快照时**额外**记一份 `{path: (size, mtime_ns)}` 指纹。
+#   * 还原时：指纹一致的文件直接判定"没被动过"、**不读内容**（省掉还原那一遍读）；
+#   * 跨测试：指纹未变则**连快照内容也复用**（省掉快照那一遍读）。
+#
+# **诚实边界（红线 5：不改变正确性）**：本快路径把"文件是否被改过"的判据从**逐字节比对**
+# 换成 **(size, mtime_ns) 比对**。两者只在"**同长度**且**同 mtime** 的静默改内容"下分歧 ——
+# 这要求测试写完后**显式把 mtime 改回原值**（`os.utime` / `copystat` / `copy2`）。
+# 673u 已全仓核对：所有 `os.utime`/`copystat`/`copy2` 调用都作用于 `tmp_path` / 沙箱 /
+# `data/`，**无一作用于受隔离的 `atoms/ evidence/ Examples/ Book/`** ⇒ 本仓当前用例集下等价。
+# 需要完全回到"逐字节比对"的原始语义时：设环境变量 `CPPBIBLE_ISOLATE_STRICT=1`（整体关闭快路径）。
+_ISOLATE_STRICT = os.environ.get("CPPBIBLE_ISOLATE_STRICT") == "1"
+#: base → (指纹, 内容快照)；仅 `_isolate_merkle_dirs` 用（会话级、每 worker 一份）
+_ISO_SNAP_CACHE: dict[str, tuple[dict, dict]] = {}
+
+
+def _scan_stats(base: str) -> dict[str, tuple[int, int]]:
+    """`{path: (size, mtime_ns)}` —— 只 scandir + stat，**零内容读**（673u）。
+
+    用 `os.scandir` + `entry.stat()`（走 scandir 已缓存的 stat）而不是
+    `os.walk` + `os.path.getsize`，实测 Examples(1597 文件) 0.005 s vs 0.022 s。
+    """
+    out: dict[str, tuple[int, int]] = {}
+    stack = [base]
+    while stack:
+        d = stack.pop()
+        try:
+            with os.scandir(d) as it:
+                for e in it:
+                    try:
+                        if e.is_dir(follow_symlinks=False):
+                            stack.append(e.path)
+                        elif e.is_file(follow_symlinks=False):
+                            st = e.stat()
+                            out[e.path] = (st.st_size, st.st_mtime_ns)
+                    except OSError:
+                        continue
+        except OSError:
+            continue
+    return out
+
+
 def _snapshot(base: str | None = None) -> dict[str, bytes | None]:
     """快照 base 下**全部**文件：小文件存字节，大文件只记存在（None=存在但不还原内容）。"""
     root = base or DATA
@@ -118,44 +174,50 @@ def _snapshot(base: str | None = None) -> dict[str, bytes | None]:
 
 
 def _restore(snap: dict[str, bytes | None], base: str | None = None,
-             tracked: set[str] | None = None) -> tuple[int, int, int]:
+             tracked: set[str] | None = None,
+             stamps: dict[str, tuple[int, int]] | None = None) -> tuple[int, int, int]:
     """还原被改文件 + 按安全策略处置会话新建文件。
 
     返回 (restored, deleted, kept)——kept 即"会话新建但按 640 A5 策略保留"的数量
     （全部留痕于 _auto/cleanup_log.jsonl）。
+
+    `stamps`（673u，可选）：快照时刻的 `{path: (size, mtime_ns)}`。给了它 ⇒ 指纹一致的文件
+    判为"未改动"、**不读内容**；`None` ⇒ 保持 634 的原始语义（逐字节比对）。
     """
     root = base or DATA
     tr = tracked if tracked is not None else _tracked_files()
     restored = deleted = kept = 0
+    cur = _scan_stats(root) if stamps is not None else None
     # 1) 处置期间**新建**的文件（当前有、快照里没有）——640 A5：先分类再动手
-    for r, _dirs, files in os.walk(root):
-        for f in files:
-            p = os.path.join(r, f)
-            if p in snap:
-                continue
-            do_del, reason = _classify_new(p, tr)
-            if do_del:
-                try:
-                    os.remove(p)
-                    deleted += 1
-                    _cleanup_log("deleted", p, reason)
-                except OSError:
-                    pass
-            else:
-                kept += 1
-                _cleanup_log("kept", p, reason)
+    if cur is None:
+        walk = (os.path.join(r, f) for r, _d, files in os.walk(root) for f in files)
+    else:
+        walk = iter(cur)
+    for p in walk:
+        if p in snap:
+            continue
+        do_del, reason = _classify_new(p, tr)
+        if do_del:
+            try:
+                os.remove(p)
+                deleted += 1
+                _cleanup_log("deleted", p, reason)
+            except OSError:
+                pass
+        else:
+            kept += 1
+            _cleanup_log("kept", p, reason)
     # 2) 还原快照里被改动的**文件**
     for p, content in snap.items():
         if content is None:
             continue
+        if cur is not None:
+            st = cur.get(p)
+            if st is not None and st == stamps.get(p):
+                continue                       # 673u：指纹一致 ⇒ 没动过，免读
         if _read(p) != content:
-            os.makedirs(os.path.dirname(p), exist_ok=True)
-            try:
-                with open(p, "wb") as fh:
-                    fh.write(content)
-                restored += 1
-            except OSError:
-                pass
+            _write(p, content)
+            restored += 1
     return restored, deleted, kept
 
 
@@ -163,9 +225,10 @@ def _restore(snap: dict[str, bytes | None], base: str | None = None,
 def _isolate_production_data():
     """会话级：快照 → 跑测试 → 还原被改 + 按 640 A5 安全策略处置新建。"""
     snap = _snapshot()
+    stamps = None if _ISOLATE_STRICT else _scan_stats(DATA)   # 673u：还原时的免读指纹
     tracked = _tracked_files()
     yield
-    restored, deleted, kept = _restore(snap, tracked=tracked)
+    restored, deleted, kept = _restore(snap, tracked=tracked, stamps=stamps)
     if restored or deleted or kept:
         print(f"\n[634 A1/640 A5] 生产 data/ 写隔离：还原被改 {restored} 个、"
               f"删除新建 {deleted} 个、按豁免/保守策略保留 {kept} 个"
@@ -183,31 +246,66 @@ def _isolate_production_data():
 _ISOLATE_DIRS = [os.path.join(ROOT, d) for d in ("atoms", "evidence", "Examples", "Book")]
 
 
-def _restore_strict(snap: dict, base: str) -> None:
-    """逐测试严格还原：删除快照外新建文件（污染），复原被改文件。"""
-    for r, _dirs, files in os.walk(base):
-        for f in files:
-            p = os.path.join(r, f)
-            if p not in snap:
-                try:
-                    os.remove(p)
-                except OSError:
-                    pass
+def _restore_strict(snap: dict, base: str, stamps: dict | None = None) -> None:
+    """逐测试严格还原：删除快照外新建文件（污染），复原被改文件。
+
+    `stamps`（673u，可选）：快照时刻的 `{path: (size, mtime_ns)}`。给了它 ⇒ 指纹一致的文件
+    判为"未改动"、**不读内容**；`None` ⇒ 保持 648 的原始语义（逐字节比对）。
+    """
+    if stamps is None:
+        for r, _dirs, files in os.walk(base):
+            for f in files:
+                p = os.path.join(r, f)
+                if p not in snap:
+                    try:
+                        os.remove(p)
+                    except OSError:
+                        pass
+        for p, content in snap.items():
+            if content is None:
+                continue
+            if _read(p) != content:
+                _write(p, content)
+        return
+    cur = _scan_stats(base)
+    for p in cur:
+        if p not in snap:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
     for p, content in snap.items():
         if content is None:
             continue
-        if _read(p) != content:
-            try:
-                os.makedirs(os.path.dirname(p), exist_ok=True)
-                with open(p, "wb") as fh:
-                    fh.write(content)
-            except OSError:
-                pass
+        st = cur.get(p)
+        if st is not None and st == stamps.get(p):
+            continue                                   # 673u：指纹一致 ⇒ 没动过，免读
+        if st is None or _read(p) != content:
+            _write(p, content)
 
 
 @pytest.fixture(scope="function", autouse=True)
 def _isolate_merkle_dirs():
-    snaps = {d: _snapshot(d) for d in _ISOLATE_DIRS if os.path.isdir(d)}
+    if _ISOLATE_STRICT:                                # 673u：严格档 = 648 原始语义
+        snaps = {d: _snapshot(d) for d in _ISOLATE_DIRS if os.path.isdir(d)}
+        yield
+        for d, snap in snaps.items():
+            _restore_strict(snap, d)
+        return
+    # 673u 快路径：指纹未变 ⇒ 复用上次内容快照（零读）；还原时指纹一致 ⇒ 免读
+    snaps: dict[str, dict] = {}
+    stamps: dict[str, dict] = {}
+    for d in _ISOLATE_DIRS:
+        if not os.path.isdir(d):
+            continue
+        fp = _scan_stats(d)
+        cached = _ISO_SNAP_CACHE.get(d)
+        if cached is not None and cached[0] == fp:
+            snaps[d], stamps[d] = cached[1], fp
+        else:
+            snaps[d] = _snapshot(d)
+            stamps[d] = fp
+            _ISO_SNAP_CACHE[d] = (fp, snaps[d])
     yield
     for d, snap in snaps.items():
-        _restore_strict(snap, d)
+        _restore_strict(snap, d, stamps.get(d))

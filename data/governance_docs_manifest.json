@@ -1,6 +1,6 @@
 {
- "generated_at": "2026-09-22T20:19:01",
- "git_commit": "6b559d10",
+ "generated_at": "2026-10-03T00:54:51",
+ "git_commit": "a412b8ff",
  "files": [
   {
    "path": "References/architecture_架构演进/271_架构批判_阙疑v3十问_判据密度不足与收敛手术.md",
@@ -179,8 +179,8 @@
   },
   {
    "path": "References/architecture_架构演进/306_原子知识图谱与关系网络架构调研_从扁平列表到可导航知识体系.md",
-   "sha256": "8d0587e1d40e4018cd398a513b79acdbbe98cd7e84260c992db77450eb0e7613",
-   "size": 10431
+   "sha256": "6cb06076ce5d5f94943657ee1e69f5e0d3be51f749cde015a757b111cd9453a8",
+   "size": 10479
   },
   {
    "path": "References/architecture_架构演进/307_CONC域前置勘察架构调研_从空白域到首批原子的选题与实验设计.md",
@@ -724,8 +724,8 @@
   },
   {
    "path": "References/architecture_架构演进/415_知识冲突L1结构检查设计_relations矛盾+serves悬空+误解悬空.md",
-   "sha256": "25444404b2a2e6a0b45d88fb2b969d869531d018698ba17ae984a5099f8f1b63",
-   "size": 10506
+   "sha256": "a2e78546f6b8afafde4160c848a5ecea88a328217f6e5171dc485ec0e9db048f",
+   "size": 10362
   },
   {
    "path": "References/architecture_架构演进/416_全量消化_42份调研的元模式转化率与未解决根本问题.md",
@@ -1109,8 +1109,8 @@
   },
   {
    "path": "References/architecture_架构演进/494_苦力提示词_409P0毒样例攻击面分类+健康度仪表盘v0.1.md",
-   "sha256": "2fa1b8861022d6d7e27e7f33686fe9d7769721f946bec62c6a11ccaef2f502ed",
-   "size": 12514
+   "sha256": "fe35b1e958455b6ec58f2eb7adbedbc684945d043feee681e6a62199116541cb",
+   "size": 12321
   },
   {
    "path": "References/architecture_架构演进/495_阙疑知识图谱推理与跨域迁移_从静态relations到可推理知识系统.md",
@@ -1704,8 +1704,8 @@
   },
   {
    "path": "References/architecture_架构演进/README_INDEX.md",
-   "sha256": "5c26f720f4bc9a1aa8f3951e002d09f3740f0420664cae43cde1f78bc0821960",
-   "size": 29338
+   "sha256": "c8e2127a75afa8af356872c82d274f9433e6a1f0e8f05a473b63f24a355f298c",
+   "size": 29097
   },
   {
    "path": "References/architecture_架构演进/archive_312_backup_pre_compress.md",
@@ -1726,51 +1726,6 @@
    "path": "References/architecture_架构演进/grounded论证层从退化到可用的完整路径_593-595综合结论.md",
    "sha256": "186b5dfe1f69aeff7f9742afec7f4c2f8c471b9f669321774a0aecfa5696ba59",
    "size": 13982
-  },
-  {
-   "path": "_arch_v18/00_总览_大突破方向调研.md",
-   "sha256": "cda0918e90263b99fceac0f318737f72599606844c3237a0d7d52b7478b2b4e3",
-   "size": 6014
-  },
-  {
-   "path": "_arch_v18/01_方向1_生成可验证内容.md",
-   "sha256": "c239a34d21238fde9c1e9e50b1de5edc32e173fc3e3edfa09b078f23beb9623b",
-   "size": 8502
-  },
-  {
-   "path": "_arch_v18/02_方向2_动态辩论.md",
-   "sha256": "a6128c0d3efac2aed60e5822c97eaeffad9a3c3e6fbe247e2f553d314937f420",
-   "size": 7958
-  },
-  {
-   "path": "_arch_v18/03_方向3_跨仓可信度网络.md",
-   "sha256": "f3886378e46823d0d74061e02ef58c523f53db6739422acc8e177bef33bc8598",
-   "size": 7484
-  },
-  {
-   "path": "_arch_v18/04_方向4_类智能定义与度量.md",
-   "sha256": "3698a8b9c6c3af059bfecf5da5e01a2e65a57f19d68a3b841ffb3456dbe6bfbd",
-   "size": 7715
-  },
-  {
-   "path": "_arch_v18/05_自由探索_第5方向.md",
-   "sha256": "068f779e598875bec0ff4873f313ae2a9c6952ba4e6a3fb8c1e70e9f70990563",
-   "size": 8561
-  },
-  {
-   "path": "_arch_v18/06_横向对比与最终判断.md",
-   "sha256": "f0fe54ab4bac17220b74c2061aab6399aca76e8fea1c1853ff7197e3f3273a32",
-   "size": 6899
-  },
-  {
-   "path": "_arch_v18/07_旧调研纠偏.md",
-   "sha256": "be712146db7d8296e3e2093b96a5d5eb06192dbc5e0ab332708552dbd29b2ae5",
-   "size": 10582
-  },
-  {
-   "path": "_arch_v18/zero_pollution.md",
-   "sha256": "eb839fae35bc046a36642d6045f35cb2413eb3672832b6a6602dc66a8e95101b",
-   "size": 4365
   },
   {
    "path": "_arch_v19/00_总览_阙疑后续突破质变方向.md",
@@ -1938,9 +1893,24 @@
    "size": 11783
   },
   {
+   "path": "_arch_v21/00_方向地图.md",
+   "sha256": "102309784a04c1c871f9d9a8ed64eb2acdbed4bf9edfc95905f21e15e9278228",
+   "size": 8997
+  },
+  {
    "path": "_arch_v21/01_第一波_10项逐项审查.md",
    "sha256": "4621544927be327fbea2ff87f2e81d8a54a0f055bdff41e595da7a7a69fed4c1",
    "size": 18916
+  },
+  {
+   "path": "_arch_v21/01_验证层.md",
+   "sha256": "8385b45514f9a9dc5bd7adc2fbd06308a78e12875e7e85cf061d7bc893a0083e",
+   "size": 9817
+  },
+  {
+   "path": "_arch_v21/02_治理层.md",
+   "sha256": "8f63eb224da560386067780474b214943b39f758ffd5c5091036e7b72a4da38b",
+   "size": 7732
   },
   {
    "path": "_arch_v21/02_第二波_八条雷霆架构方向.md",
@@ -1953,9 +1923,2939 @@
    "size": 16252
   },
   {
+   "path": "_arch_v21/03_学习层.md",
+   "sha256": "05a37313bdfbca4dc05d5c38f2720760dfe68e16a364be21fe0ccb3bbbcbaefc",
+   "size": 2429
+  },
+  {
+   "path": "_arch_v21/04_生成层.md",
+   "sha256": "3677e0946b5628bdb43379e8f7893ef4a47e048b62d602279373eb5131ccb4c7",
+   "size": 4271
+  },
+  {
+   "path": "_arch_v21/05_基础设施层.md",
+   "sha256": "e182140a39235c7e67044ec41a6163ec2336b41f3b2774df7836838312a8036b",
+   "size": 9694
+  },
+  {
+   "path": "_arch_v21/06_跨层新兴方向.md",
+   "sha256": "ebb6b73d370605e47ab7e84a90d4d5a9cfe25e1ba5baac40b657b7e110bdbfe2",
+   "size": 4894
+  },
+  {
+   "path": "_arch_v21/07_统计分析.md",
+   "sha256": "f7585913c17f2dce402414e93dca265caec8dbd203cdd6a987e5b866581b52de",
+   "size": 7091
+  },
+  {
+   "path": "_arch_v21/08_推荐深挖Top5.md",
+   "sha256": "a7a7c00d3929bda03a309538cfb9e5c2213edc5644b6fb496d2d54d8d223410b",
+   "size": 7872
+  },
+  {
    "path": "_arch_v21/zero_pollution.md",
    "sha256": "5832e26d7e8ea34da6c0cb5b4242f7c088414fe8158c14cda428c0898c0ea7a2",
    "size": 5118
+  },
+  {
+   "path": "_arch_v21/zero_pollution_v21_scan.md",
+   "sha256": "de47601103539abde32cf5dc61a8fd21e17d5ce1eabf88fc74a5c8706ab2cf2a",
+   "size": 5245
+  },
+  {
+   "path": "_arch_v22/00_跨领域概念地图.md",
+   "sha256": "38b8cc051ef85bcfc0cab347eef843d056186ce03f43aba27387d73210a2692b",
+   "size": 11064
+  },
+  {
+   "path": "_arch_v22/01_科学与认知.md",
+   "sha256": "98c264b0b2c06a1efe9f7006125341114cb9481b69250e9cf9275460a411de24",
+   "size": 11342
+  },
+  {
+   "path": "_arch_v22/02_制度与社会.md",
+   "sha256": "5c607cc95a00c80241ad5020cd97682011d291cf4f564c85ec56f44c915e03d3",
+   "size": 10588
+  },
+  {
+   "path": "_arch_v22/03_生物与物理.md",
+   "sha256": "2ab13858d0890b268a9cb2ec6daed257bb7d503dc2c788f28c8d3fa072a9b246",
+   "size": 10578
+  },
+  {
+   "path": "_arch_v22/04_历史与兴衰.md",
+   "sha256": "0b117ec030f2d1f91dcc961ba3eb4c0118d293a7d96803096e0a8df977facb56",
+   "size": 11156
+  },
+  {
+   "path": "_arch_v22/05_自由探索.md",
+   "sha256": "89eb72c3afde0fa4b9ce9b063d8ac7c17355b040da377f3b4d0d024ddf87c6aa",
+   "size": 7025
+  },
+  {
+   "path": "_arch_v22/06_跨领域统计分析.md",
+   "sha256": "0b63e58d2aac222b06757bfa3d0d74b30bff0043c7d65240543c657ed8dc4e30",
+   "size": 13123
+  },
+  {
+   "path": "_arch_v22/zero_pollution.md",
+   "sha256": "878d7fd41b3eda5bd6fe54efe6988c0265ef458d1e9f55eea67bdffd7c7278c6",
+   "size": 4104
+  },
+  {
+   "path": "_arch_v23/00_总览.md",
+   "sha256": "10e64603967825dadfa4665e8a0cce07c7ea7b2ab02fb09d2895831f9fb5c8b8",
+   "size": 6531
+  },
+  {
+   "path": "_arch_v23/01_验证器攻击面分类学.md",
+   "sha256": "d6c546413493cf939913bd7921db6b665f63f836adf4759f4b4ee4b4b326c2b9",
+   "size": 16603
+  },
+  {
+   "path": "_arch_v23/02_自身免疫率度量框架.md",
+   "sha256": "65b96268ab38cf343635607512bd60cc5328e01c68033ba7ebb1ff9b74b12598",
+   "size": 15300
+  },
+  {
+   "path": "_arch_v23/03_Verification_Horizon深化.md",
+   "sha256": "d57d0fe60bbf52d564dbaf52e9148a58ddae35e699a902e341c1b30c376b1548",
+   "size": 14100
+  },
+  {
+   "path": "_arch_v23/04_跨靶位综合.md",
+   "sha256": "2dd2925e38013748d79b30d45c6f08b34b25b058a32bd42b92da820587ee15cb",
+   "size": 11232
+  },
+  {
+   "path": "_arch_v23/zero_pollution.md",
+   "sha256": "40060c9c1cda9c2484da971a75f6e52f5729cb958ab44c824fd98803d24d7f03",
+   "size": 5988
+  },
+  {
+   "path": "_arch_v24/00_综合.md",
+   "sha256": "8076598c66a64e16e717f6094dd79eabbc387ac9bd7d0e7765aa79af04d967c0",
+   "size": 12652
+  },
+  {
+   "path": "_arch_v24/01_数学.md",
+   "sha256": "760ed077e358d44922b4aec7b08a41f0f3c8c6269cdf4b966eaa77b0a0b2a2ce",
+   "size": 19698
+  },
+  {
+   "path": "_arch_v24/02_哲学.md",
+   "sha256": "46e5e71b47fea00086f5a938fb320e65a6e68630d1efb56ef6bad94a88ba0ffa",
+   "size": 19700
+  },
+  {
+   "path": "_arch_v24/03_脑科学.md",
+   "sha256": "86866dc5f33f8dab3ddb3154c67e31bca8f0aac8c0a79ca4c7d35c0ee74de2fd",
+   "size": 17263
+  },
+  {
+   "path": "_arch_v24/04_神经科学.md",
+   "sha256": "1f6cd88d35193af4d6721f3f35d3e94ec9661b3364a74004b9c9768c0507e972",
+   "size": 16915
+  },
+  {
+   "path": "_arch_v24/05_仿生学.md",
+   "sha256": "2ab5f38c0c74679060c81067a62cfced7c496af94b198a6f8793eb8de4af5c3b",
+   "size": 16086
+  },
+  {
+   "path": "_arch_v24/zero_pollution.md",
+   "sha256": "6b99dd9a192288685bb02f055b57c1c99d312ff2d7ac98f8e909cdfe1e100c13",
+   "size": 4547
+  },
+  {
+   "path": "_arch_v25/00_综合与重构蓝图.md",
+   "sha256": "536a4768e74f9624d047def18cf75403e7ada5a9544b8f7eddf485696f508e05",
+   "size": 16790
+  },
+  {
+   "path": "_arch_v25/01_数学深挖.md",
+   "sha256": "e1ed2d19e66e0a5b9ab549f62fbecc9adbe6590468cb89088c706fbdd8439222",
+   "size": 21973
+  },
+  {
+   "path": "_arch_v25/02_哲学深挖.md",
+   "sha256": "8e586badea32320583be28bf611b1ed456bbb84ac4870f5cb4bd1112eee664f3",
+   "size": 20483
+  },
+  {
+   "path": "_arch_v25/03_脑科学深挖.md",
+   "sha256": "de1a69d294a70c600cb553ccb4752c24e9e6ca55e4b2f3a7a60d6e0b4ff317b7",
+   "size": 17974
+  },
+  {
+   "path": "_arch_v25/04_信息论.md",
+   "sha256": "ba16f68c3e9f3a3b972579a8516ebb0f0ad9ee197a32092a12879ae382f9d7c7",
+   "size": 14717
+  },
+  {
+   "path": "_arch_v25/05_控制论.md",
+   "sha256": "b3ec24a46374739f1905236ab47bd4faf63af7110c0bdd2b616be16d0b42708f",
+   "size": 17664
+  },
+  {
+   "path": "_arch_v25/06_认知心理学.md",
+   "sha256": "4b58173e04d947afd6343ab03ae5db232b0d8d5928cf0d61a84dedb677195293",
+   "size": 18806
+  },
+  {
+   "path": "_arch_v25/07_语言学.md",
+   "sha256": "0a853817ce8bcd83a7784a5f62c68005360e52aed783a1a0fa2de85021715440",
+   "size": 16904
+  },
+  {
+   "path": "_arch_v25/zero_pollution.md",
+   "sha256": "fb6daf8cd1ace016bcdd65458e6b7e89d910c78320d173b79b979c8650c8c1e0",
+   "size": 4408
+  },
+  {
+   "path": "_arch_v26/00_综合_跨行业错误控制系统.md",
+   "sha256": "7beba35bc548acd24d9f002545d8c5c059c2740f99fec7ce924adf934a8557ec",
+   "size": 20841
+  },
+  {
+   "path": "_arch_v26/01_临床医学.md",
+   "sha256": "0645a97133dbab9e0ef46b770c4a366c4f51a49c9e6f7a90a684a101ac1a19e2",
+   "size": 15701
+  },
+  {
+   "path": "_arch_v26/02_航空安全.md",
+   "sha256": "48883e705488f8e4359b0e2252b42b5c65b3bab333706bab66ef11bfc5afcd5d",
+   "size": 16535
+  },
+  {
+   "path": "_arch_v26/03_软件工程.md",
+   "sha256": "2cdfbb48386964b27b4e2ec09eb9ad1a0716b5add628163bb3edb43681d445d4",
+   "size": 15221
+  },
+  {
+   "path": "_arch_v26/04_物理实验.md",
+   "sha256": "4df7b23b525d513109d868c319695e11a59b18625c11f039b9ae7eac21b824c8",
+   "size": 21673
+  },
+  {
+   "path": "_arch_v26/05_司法证据.md",
+   "sha256": "b0b5b5b7efb52e22641a8c93fadfebf9809e77a6f34118574f58ea79140a9827",
+   "size": 22997
+  },
+  {
+   "path": "_arch_v26/06_金融审计.md",
+   "sha256": "a22ad1465ee665f735e49340c6f532d199eb5b5fcc4cece4028fc3b9f72cf3ca",
+   "size": 20907
+  },
+  {
+   "path": "_arch_v26/zero_pollution.md",
+   "sha256": "d9595a5cf19a4faabd5e404df85b9c1f50ba27c1b1f6d5c977319fea8d6043e6",
+   "size": 3948
+  },
+  {
+   "path": "_arch_v27/00_综合_智能与人类.md",
+   "sha256": "1ea01a142d0395d65ce11023e4cec99e9ced8ea2138e6f03e18663394ec8cb25",
+   "size": 8626
+  },
+  {
+   "path": "_arch_v27/01_智能定义史.md",
+   "sha256": "50cc955d6c6c38e4122d3c950ef5c113aac01b920902d2002e71201f9097c9bf",
+   "size": 8909
+  },
+  {
+   "path": "_arch_v27/02_人类缺陷.md",
+   "sha256": "1756a70693e68764b5ffbc1b065b97aa4fb4646edbafc778ac0824369e5502e3",
+   "size": 8583
+  },
+  {
+   "path": "_arch_v27/03_机器边界.md",
+   "sha256": "699ec5a823ad192401245c3fef5fdf99d7ecd3cafe11ae27bab18a3849dc9e9f",
+   "size": 8968
+  },
+  {
+   "path": "_arch_v27/04_进化视角.md",
+   "sha256": "64e03e6366711947fec05b60767ce5e67ad22ea09ead5a729002a6e2d27d2998",
+   "size": 8009
+  },
+  {
+   "path": "_arch_v27/05_人机协作.md",
+   "sha256": "95c8cf52ff833baea9f6ee9e6d44c42dfac233b5d37429e39b4251bad21a0534",
+   "size": 6825
+  },
+  {
+   "path": "_arch_v27/06_知识本质.md",
+   "sha256": "6a4cb30f8a36ada9cfd1f86dd9aec3b57fbbf5087d388a2efb82dd8ec38b2394",
+   "size": 7838
+  },
+  {
+   "path": "_arch_v27/zero_pollution.md",
+   "sha256": "9f13f07e23805ad43b3556513476465cc2afc0558da03c64ea3afa4729a8af6a",
+   "size": 2898
+  },
+  {
+   "path": "_arch_v28/00_综合_智能与人类.md",
+   "sha256": "4fd2092800981f042737d7869559dc6292ca330e4010cb0a82f0c636b45c9d9d",
+   "size": 8400
+  },
+  {
+   "path": "_arch_v28/01_复杂系统.md",
+   "sha256": "42b94f2f6d7d012197058679b27aabb220b39e705e55eddbf8a53e4d85003c8b",
+   "size": 8619
+  },
+  {
+   "path": "_arch_v28/02_经济学.md",
+   "sha256": "f0d5281fd41c50e8964b5ad3d834889ee1787018632c25017d6121b6f1dea0a9",
+   "size": 7670
+  },
+  {
+   "path": "_arch_v28/03_教育学.md",
+   "sha256": "817092dd2c565a920d9fbcd06ed494afdf63d0bd72a96cab23477c3ec66eacba",
+   "size": 6751
+  },
+  {
+   "path": "_arch_v28/04_知识社会学.md",
+   "sha256": "ba9fa25ccf1c6ad6d3a4edda70c4a540df4299a074f0eed19e675a743b83773d",
+   "size": 6585
+  },
+  {
+   "path": "_arch_v28/05_生态学.md",
+   "sha256": "62b570958452fe9aa058640edde11b94b494f50ec843bab8f4b9030c75d68a50",
+   "size": 6176
+  },
+  {
+   "path": "_arch_v28/06_认知演化.md",
+   "sha256": "a00541404020fff1be5c8f6ab731c772116f48b5d0a89e231392775aa5686a1c",
+   "size": 6483
+  },
+  {
+   "path": "_arch_v28/07_信息论热力学.md",
+   "sha256": "3435cfed78f2e0decf4f5e8545eebcc4553eb1579d91b3e40a791c50d64138fc",
+   "size": 6338
+  },
+  {
+   "path": "_arch_v28/08_攻防理论.md",
+   "sha256": "bc0e7816aa64e13faabe6e52b1ad0d68796c90d3595d5a36cf3eddac7f9b3001",
+   "size": 6901
+  },
+  {
+   "path": "_arch_v28/zero_pollution.md",
+   "sha256": "c653075ed62cc1c37c1e9c36587a792484a1bf8da8ab040dbe1cd58f0d33c3c8",
+   "size": 2010
+  },
+  {
+   "path": "_arch_v29/00_总览_究极大规模调研.md",
+   "sha256": "0c3d579ae0f4f5f09efb4700ee6227234fe3e433b0c0132fdc6665692ea0193f",
+   "size": 10094
+  },
+  {
+   "path": "_arch_v29/A1_密码学信任协议.md",
+   "sha256": "a14f2f8de44331dec27fcfae92415e7a35aff455090aadd7cc75d8eb107759d8",
+   "size": 11029
+  },
+  {
+   "path": "_arch_v29/A2_形式化方法与程序验证.md",
+   "sha256": "cff54aca5fee68a3bf96dca11eedd6d4498bd6dd1e4829d5e5ef4483380dc64d",
+   "size": 9170
+  },
+  {
+   "path": "_arch_v29/A3_分布式共识与容错.md",
+   "sha256": "bb3ee25160a2b3b428c5830d4a55e3fc0678cc5dc6aa2b1901c6f67a29e8496a",
+   "size": 8172
+  },
+  {
+   "path": "_arch_v29/A4_操作系统安全与可信计算基.md",
+   "sha256": "9191de127b081b9160162c2c82467ca56c74f19867693dac09d4d0f8cbeb7a86",
+   "size": 8652
+  },
+  {
+   "path": "_arch_v29/A_综合.md",
+   "sha256": "87e99b605eab9fb753cc7ff59f0ed90224808fb949c77cd0863cb3bc1b62074e",
+   "size": 4233
+  },
+  {
+   "path": "_arch_v29/B1_计算理论与不可判定.md",
+   "sha256": "6cf76409d31de6933bc69edda39eec703cc8c82ee28fdea71c30eafac681d66c",
+   "size": 8416
+  },
+  {
+   "path": "_arch_v29/B2_算法信息论与归纳.md",
+   "sha256": "735d32ecd7e25e2840556d6510b5b7fa06bc5875efa9ac214dc54b8497bdced2",
+   "size": 8358
+  },
+  {
+   "path": "_arch_v29/B3_类型论与编程语言.md",
+   "sha256": "f331c2c556afd6df863e5d0a2962140aebe3c001784284e65cb1de7c8f22e142",
+   "size": 8230
+  },
+  {
+   "path": "_arch_v29/B4_逻辑学.md",
+   "sha256": "979ccfc89e2e358d60a86ccbacbf2db2b5f2156754ce711d53ac0517092df337",
+   "size": 8883
+  },
+  {
+   "path": "_arch_v29/B_综合.md",
+   "sha256": "87654e02d51c8ac0d170186e67329428f7b29e4688a8de28be2504fdd81605cb",
+   "size": 4375
+  },
+  {
+   "path": "_arch_v29/C1_统计学习理论.md",
+   "sha256": "9a77d3f47a20699b24a56fc26268d5ace14e34d8d96ce56ee41d7733cf4f69b5",
+   "size": 8691
+  },
+  {
+   "path": "_arch_v29/C2_归纳偏置.md",
+   "sha256": "f455ab58ddf679794230a7612e42ec062956b7d49e09273c457205f384813e8c",
+   "size": 8391
+  },
+  {
+   "path": "_arch_v29/C3_决策理论.md",
+   "sha256": "f0c1ebe8dcff3b0d7298e984bd4adebfd4644f55fc8e1eb4127425175a08a00d",
+   "size": 9023
+  },
+  {
+   "path": "_arch_v29/C4_自适应与终身学习.md",
+   "sha256": "950792e92e2550c267792a6e08d1e30752183dc866695fb02998af44a85126c9",
+   "size": 8978
+  },
+  {
+   "path": "_arch_v29/C_综合.md",
+   "sha256": "26a449e474f986f94efb349ce90524f7c7dfad9c215928c68b01eb3b6b0ac475",
+   "size": 4458
+  },
+  {
+   "path": "_arch_v29/D1_知识表示与推理.md",
+   "sha256": "9a525283b8e4362c974f8d725e944eb2fe172e713325dba5f86c3a9232f6c8b8",
+   "size": 8993
+  },
+  {
+   "path": "_arch_v29/D2_科学哲学.md",
+   "sha256": "c89be678c313ffa01ce9178c65671971d0b5f34430a74a2b145715fb3fcad647",
+   "size": 9681
+  },
+  {
+   "path": "_arch_v29/D3_语义学与语言学.md",
+   "sha256": "1836bc8a93770dbb593b60493c94cceea6774a969315af5d2b8f5673bfa1440b",
+   "size": 8884
+  },
+  {
+   "path": "_arch_v29/D4_数学基础.md",
+   "sha256": "670d762a73e4e694c309fdbf2b13fe54f5f42dbee97a0d569d1ebc00269090b9",
+   "size": 9977
+  },
+  {
+   "path": "_arch_v29/D_综合.md",
+   "sha256": "f71119310e3aa9986e979bf89ece0a6eead60341619e128e711c571ee9dc7512",
+   "size": 4637
+  },
+  {
+   "path": "_arch_v29/E1_安全工程与威胁建模.md",
+   "sha256": "1b4fdad1ed5910117846ab8d9d8b987269fa839a7a043b10e5373311bb9ae91d",
+   "size": 9848
+  },
+  {
+   "path": "_arch_v29/E2_可信AI与AI安全.md",
+   "sha256": "5755268494960c6f515065d70a2aea23c7dc59ff82e94aed7bf1d7994b1fec96",
+   "size": 9984
+  },
+  {
+   "path": "_arch_v29/E3_自动化漏洞挖掘.md",
+   "sha256": "9ebe4693041520616a8a515aac32ac6932a589d18698f4d4464db436380ace77",
+   "size": 9181
+  },
+  {
+   "path": "_arch_v29/E4_安全架构.md",
+   "sha256": "7a31663eae2401066a156ae79f97d90bd7fbf1bfe76065623d1f898fc40b4474",
+   "size": 9915
+  },
+  {
+   "path": "_arch_v29/E_综合.md",
+   "sha256": "f913778aab06f45c271deb908969b973dc281b794d3763c040511e1084ab7846",
+   "size": 4880
+  },
+  {
+   "path": "_arch_v29/zero_pollution_v29.md",
+   "sha256": "c7678c444edab5b62342256cef43e54d91d08224eeec200daf84d17913c82a48",
+   "size": 3392
+  },
+  {
+   "path": "_arch_v30/00_synthesis.md",
+   "sha256": "8dba6db272fdd15412c3137a64915f3291ef95351b5b0cd08d525d077e2800ed",
+   "size": 2977
+  },
+  {
+   "path": "_arch_v30/01_evidence_grading.md",
+   "sha256": "aa78ad309a7ce74ca292dc5b80a083d3cd1ea54ff5ba3a0cacc970e77a5cb716",
+   "size": 3787
+  },
+  {
+   "path": "_arch_v30/02_content_addressing.md",
+   "sha256": "0b5e5635744df269f7eedfcb97e982da292960cf14f0ccf01cc062c0ab174aeb",
+   "size": 3180
+  },
+  {
+   "path": "_arch_v30/03_evidence_acquisition.md",
+   "sha256": "14baefd5ad15aac0ead051ea7726a358e7cb7db545b0edf24fd5557b2becc641",
+   "size": 2897
+  },
+  {
+   "path": "_arch_v30/04_evidence_freshness.md",
+   "sha256": "9f52f48d0a1990c35a1252a10ccc1432abf9df2e358e3563e3eb175257ac45b5",
+   "size": 2626
+  },
+  {
+   "path": "_arch_v30/643_auto_layer/00_synthesis.md",
+   "sha256": "48b3b140219d9250f86221f938d42fd67246f4f656ca0c5270da1690ab8839e9",
+   "size": 5435
+  },
+  {
+   "path": "_arch_v30/643_auto_layer/01_auto_rule_generation.md",
+   "sha256": "5a58c9d95f84df3277c3cfacd36da28f3bc90b9c1c81c0fbfeb3b076cbcd5ab6",
+   "size": 5467
+  },
+  {
+   "path": "_arch_v30/643_auto_layer/02_adversarial_generation.md",
+   "sha256": "089abf885421bcf1a199ac0ea43c7efa9b8e6c8caf8fc8b479647bb0ce4c5107",
+   "size": 5517
+  },
+  {
+   "path": "_arch_v30/643_auto_layer/03_anti_goodhart.md",
+   "sha256": "773cfb707169d783697d00146b1c0b3232cec6b273f0a898244af70090b2ebcf",
+   "size": 5140
+  },
+  {
+   "path": "_arch_v31/00_总览_三方向决策与路线.md",
+   "sha256": "44049a5b4a85c53f5c6537c1bdf1f1e846960dce8deeb70dd32b392021fa9cfe",
+   "size": 10368
+  },
+  {
+   "path": "_arch_v31/01_大架构_LLM验证前沿.md",
+   "sha256": "c546600ea788169d26f0c107c49d14c106659e86f62567036b7114948205be5e",
+   "size": 22318
+  },
+  {
+   "path": "_arch_v31/02_前端_开源产品.md",
+   "sha256": "67cc4dc041119ffa26446b306d8e00fad3a942f742b2d347a0f7613e17732b93",
+   "size": 15854
+  },
+  {
+   "path": "_arch_v31/03_可视化与教学视频管线.md",
+   "sha256": "91baee20c04dc828cb15e75dfa1812664f69439faef66233db599d628da45eb9",
+   "size": 15214
+  },
+  {
+   "path": "_arch_v31/99_来源清单.md",
+   "sha256": "829065421e046efecda446c7ad0450894f36d8911be08c793db2e76134dfd7c1",
+   "size": 18434
+  },
+  {
+   "path": "_arch_v32/00_总览.md",
+   "sha256": "80474ed844cd9186f39f204c1cbeed0c33635954624318c6f1d88a7e5133c06a",
+   "size": 8036
+  },
+  {
+   "path": "_arch_v32/01_知识星图_3D可视化.md",
+   "sha256": "b91a26b1b968bf244680d782ebe3580c01ca5bb7086a553b2859b8d173fdf3e3",
+   "size": 11841
+  },
+  {
+   "path": "_arch_v32/02_内存剧场_交互式C++.md",
+   "sha256": "e2f1af0234f4214e7ae9609f390274e379b952aa75429842883a73fa2dd3e53a",
+   "size": 9169
+  },
+  {
+   "path": "_arch_v32/03_验证链展厅_证书可视化.md",
+   "sha256": "374aa81bb23c86b8e6debc74b2138dccf223f420c4d6a6b66158d8f92e5aa5e1",
+   "size": 9454
+  },
+  {
+   "path": "_arch_v32/04_多感官_动效与微交互.md",
+   "sha256": "e882fdb3f8a3096a5788f7fd5807d209815276c540f486a09c0fbfccdcc5ee74",
+   "size": 7351
+  },
+  {
+   "path": "_arch_v32/05_展示站_landing与playground.md",
+   "sha256": "429488fcb646dd639191074845ae7643e1890eee4a51563773cafc33a8dfcb91",
+   "size": 8620
+  },
+  {
+   "path": "_arch_v32/99_来源清单.md",
+   "sha256": "8f436191771bec01ab9552c3b68903add34f95022b459351a15102431fcdbcc6",
+   "size": 16045
+  },
+  {
+   "path": "_arch_v33/00_总览_三层深化与统一路线.md",
+   "sha256": "0c95ed2c4dd8db2d33bbefb0697200496bd239ab4367b2785df594306407e3f7",
+   "size": 17653
+  },
+  {
+   "path": "_arch_v33/01_头部层_证据获取与验证.md",
+   "sha256": "373d3477540132cc433d1b2b9d7d12f8e9b6bbcfc62d5ca82015b4a6d943a6ab",
+   "size": 21162
+  },
+  {
+   "path": "_arch_v33/02_中间层_规则发现与自进化.md",
+   "sha256": "75760afc174f3c46fd4614f7e6464cac481e8e7c6a52733e32657facab74cb42",
+   "size": 17752
+  },
+  {
+   "path": "_arch_v33/03_尾部层_判决信任根与可复现.md",
+   "sha256": "ad7a03193d185fa57abb6a6778d8db08d4cf67732d9418244f4b86c03ce2d9b5",
+   "size": 22320
+  },
+  {
+   "path": "_arch_v33/99_来源清单.md",
+   "sha256": "e08db97bbf71b434a9a135d6f0dba2c63137ea3432bc9514157818022df398bc",
+   "size": 24638
+  },
+  {
+   "path": "_arch_v34/00_总览_战略路线与优先级.md",
+   "sha256": "6bce2ad740e86ec0155380315ef8fba0a5fc82253c65af97fcf7e7f662548472",
+   "size": 17848
+  },
+  {
+   "path": "_arch_v34/01_开源与社区.md",
+   "sha256": "7d570a60e98133e26e0d74ae49e6ff4ccb7d60005a6266bda62cfd0e64dc893c",
+   "size": 22541
+  },
+  {
+   "path": "_arch_v34/02_形式化路径.md",
+   "sha256": "5bd190b7b0c2516bfcc11013a9bf4bad019a3c590e6fdef8b8d38bd8a79ee985",
+   "size": 20364
+  },
+  {
+   "path": "_arch_v34/03_规模化与多语言.md",
+   "sha256": "64ba824ad32852bd57072d422960d8ff5e4b358b3ce3aeb0130b5e94994bab22",
+   "size": 21782
+  },
+  {
+   "path": "_arch_v34/04_多模态教学.md",
+   "sha256": "ee566c70673120cebd578114a36a0f1c395917a0ff4e1a0f865329f52bde719a",
+   "size": 18383
+  },
+  {
+   "path": "_arch_v34/05_Agent外骨骼通用化.md",
+   "sha256": "17c8529c2aaee6da14ab46ab821ad245aea5fa61407e04ed8c7535f38b208026",
+   "size": 19184
+  },
+  {
+   "path": "_arch_v34/06_学术发表.md",
+   "sha256": "dc5c9cc18cc69ef61f8aa437efbda0733e49911f965364d09c52d25d229c072c",
+   "size": 19445
+  },
+  {
+   "path": "_arch_v34/99_来源清单.md",
+   "sha256": "332efc57c2229cc510cdd71e43784d345245e446167237cf28bf7aad032b306d",
+   "size": 35019
+  },
+  {
+   "path": "_arch_v35/00_总览_元验证架构与路线图.md",
+   "sha256": "d088262c519cf58134e18c8a67c200cd4162e46252ccb4574b7dec7f2ec88743",
+   "size": 9566
+  },
+  {
+   "path": "_arch_v35/01_攻击验证器手法全景.md",
+   "sha256": "d9f575ea4596ea6114878202b5f460e16e620258ad4563fa948888a68108ead1",
+   "size": 10177
+  },
+  {
+   "path": "_arch_v35/02_元验证数学基础.md",
+   "sha256": "2e97474c91a83f8184aacd655a5dc1b62a92c6246b1624f1c2dd32bd9a524e0b",
+   "size": 8799
+  },
+  {
+   "path": "_arch_v35/03_现有元审计研究.md",
+   "sha256": "9c0acbfa80d5419c7e5e2e4d8b4d5322e7e8cd2ed31eb9f23284193d6c09f910",
+   "size": 7569
+  },
+  {
+   "path": "_arch_v35/04_形式化验证器的验证.md",
+   "sha256": "66322a22b28a03791be3cf6e3b17ec5e4ad0a41fc10f1e7b53d1c3c49ea69693",
+   "size": 7363
+  },
+  {
+   "path": "_arch_v35/05_红队方法论.md",
+   "sha256": "f7a4758dd3671448efa0234a5de3d947e1a474aa70d8546f6a04caf5a10c8de2",
+   "size": 7153
+  },
+  {
+   "path": "_arch_v35/06_递归信任问题.md",
+   "sha256": "5353c0d77941b0a93ba91142b846819f6d309b918a0362955f98e75da7edd5b7",
+   "size": 6980
+  },
+  {
+   "path": "_arch_v35/07_阙疑元验证架构设计.md",
+   "sha256": "46606a7cddb4770e835921b355b551aa9924a3ffaea258f18b985a48292dac49",
+   "size": 7506
+  },
+  {
+   "path": "_arch_v35/99_来源清单.md",
+   "sha256": "62f2c12626fafc15a3aaf12f7cbd87a724fb9fe6d756f0914595af44aab876bb",
+   "size": 12319
+  },
+  {
+   "path": "_arch_v37/00_总览_发表全链路与抢发时间线.md",
+   "sha256": "fd8a23e1c0012eb0b5241eae688c21faf61610dc889a0398cdd9dff21a00df49",
+   "size": 6646
+  },
+  {
+   "path": "_arch_v37/01_数学框架.md",
+   "sha256": "2068604c02c894b220a2e87eb9d8406920b2a682390359608f35f86bf2a0d51b",
+   "size": 7162
+  },
+  {
+   "path": "_arch_v37/02_相关工作地图.md",
+   "sha256": "0339e79d88ac40f8a68bee1f147036a838416365535d7c0c248bb9d44bc02e97",
+   "size": 5200
+  },
+  {
+   "path": "_arch_v37/03_实验设计与基准.md",
+   "sha256": "ebf1f714d53c78e0765f2f78e7bc34682e15da139723023fcd5b2327997f6e05",
+   "size": 6524
+  },
+  {
+   "path": "_arch_v37/04_论文结构与写作.md",
+   "sha256": "67c1c5ed3972fa50ba04768e99c5abd1d7e69f0c2fcc27c3c402222677e54a8d",
+   "size": 5225
+  },
+  {
+   "path": "_arch_v37/05_venue选择与时机.md",
+   "sha256": "1ba059dfe210cbf18c2eefc266499314ce085cea5ee97f89ffe264d0e7c189b8",
+   "size": 5287
+  },
+  {
+   "path": "_arch_v37/06_竞争态势与差异化.md",
+   "sha256": "de98f85c7c11e5f0fcab3f91a2935cefd98e1e2f0c554395d611d53336af14d0",
+   "size": 5181
+  },
+  {
+   "path": "_arch_v37/07_资源与合作.md",
+   "sha256": "bca702161d94b58f3bd75641e08ec1646597495552c0fb0f6ecade6d54cb574c",
+   "size": 5966
+  },
+  {
+   "path": "_arch_v37/08_抢发策略与时间线.md",
+   "sha256": "70aaae7e7ca8364b1aabfad243a02bcf291a5aad5c9857dd05387100bd773d0d",
+   "size": 6169
+  },
+  {
+   "path": "_arch_v37/99_来源清单.md",
+   "sha256": "56753bfe87e82013d052418de81082d70296a1d7a144f56a80f86598fae6c0e1",
+   "size": 5212
+  },
+  {
+   "path": "_arch_v38/00_总览_教学产品化与16方向优先级.md",
+   "sha256": "54ab20d0ccb67f7b182d03a465d413fa4d64f3cbfc9b96dd28b2e0543f001b89",
+   "size": 7190
+  },
+  {
+   "path": "_arch_v38/01_验证到教学的跃迁.md",
+   "sha256": "06488997e0130192b7c51f5589cc7e1d90a3d0349bd8dcdadf3bd4c49b5c23e9",
+   "size": 6923
+  },
+  {
+   "path": "_arch_v38/02_C加加学习痛点实证.md",
+   "sha256": "80a91472ae8b638f735a36f738e262446784cc28c1cddc5ea0f9957c287f1e86",
+   "size": 6068
+  },
+  {
+   "path": "_arch_v38/03_学习科学强证据与伪科学.md",
+   "sha256": "55386a50112a9a806277c38035ce735b82f6375c0431dc0599adcff1a7784fe7",
+   "size": 6243
+  },
+  {
+   "path": "_arch_v38/04_多模态交互实证边界.md",
+   "sha256": "500440ae559000f02a5f2352375a2ebf2b8983a9cf7140919df413b0495a05b2",
+   "size": 6465
+  },
+  {
+   "path": "_arch_v38/05_知识图谱与学习路径.md",
+   "sha256": "093360e31394c9a8f90c8ae5a5ee348775a324452c8beaf332298cfe28965325",
+   "size": 5398
+  },
+  {
+   "path": "_arch_v38/06_测评与反馈设计.md",
+   "sha256": "1ab6a9d1b292dcc4e6db11e444861535d863dc087ee3611f9699943a662ca154",
+   "size": 4704
+  },
+  {
+   "path": "_arch_v38/07_错误驱动学习.md",
+   "sha256": "11138e7083e3200df12e842317e319a73168dd607c263d197eea32382407b471",
+   "size": 4955
+  },
+  {
+   "path": "_arch_v38/08_编译器与执行可视化.md",
+   "sha256": "1696c987b3fc423383a925577a3dcfb5ce9e32715952c203508ff16629d2ce33",
+   "size": 5262
+  },
+  {
+   "path": "_arch_v38/09_AI辅导的边界.md",
+   "sha256": "3a041fbf4b544d6e3356c36e961d1be65e641e4cf6a79ff617a415805a0deffc",
+   "size": 5018
+  },
+  {
+   "path": "_arch_v38/10_可访问性与包容性.md",
+   "sha256": "33c1a5df34fb38f15b63d662e5c9cb92c74c21450ef20f5104bb8e63196e9bc2",
+   "size": 4575
+  },
+  {
+   "path": "_arch_v38/11_社区与协作学习.md",
+   "sha256": "fa03bf04d4eff51be40f5f0905641d74d7519b6bf33be3c1a2e53f9da17411a7",
+   "size": 4742
+  },
+  {
+   "path": "_arch_v38/12_内容生产流水线.md",
+   "sha256": "cdb6336506033af4ef4951e781b865678c4bc8926f891f08cb022058c2f5cc7e",
+   "size": 4805
+  },
+  {
+   "path": "_arch_v38/13_游戏化与动机.md",
+   "sha256": "07e0d144cc8d58358cd3b70ba6d0f52f73b314bfab29c2a4b66adaf5a96d5305",
+   "size": 4427
+  },
+  {
+   "path": "_arch_v38/14_学习分析与数据驱动.md",
+   "sha256": "9e241bd251a6225da5a732677064ea7213629b9b1f0f9de5208313e4f51831ea",
+   "size": 5028
+  },
+  {
+   "path": "_arch_v38/15_商业模式与可持续性.md",
+   "sha256": "947b290325c8911bda1bad50d32f0e5d9574c2ddbf344c611021ca01301a281a",
+   "size": 5151
+  },
+  {
+   "path": "_arch_v38/16_产品路线图与优先级.md",
+   "sha256": "ba16bddcfe21368bbfb7d60478aa33b3a4d66465f98e81f8671679750a060c05",
+   "size": 5098
+  },
+  {
+   "path": "_arch_v38/99_来源清单.md",
+   "sha256": "ad38dc414fc2d86ded1027e855fa9c6517ddb7f8cc11bdf154498445aa1100df",
+   "size": 37046
+  },
+  {
+   "path": "_arch_v39/00_项目审视摘要.md",
+   "sha256": "e081861c7a0c9a17fd6d63ea43cf36610e19ef13a124fb3f90d745c07b9dc854",
+   "size": 7041
+  },
+  {
+   "path": "_arch_v39/01_总览_可验证性全景与阙疑位置.md",
+   "sha256": "36c117824448b61db4eab6e95f892276d5d4871ba2cecc54c10a8c76869778f3",
+   "size": 3559
+  },
+  {
+   "path": "_arch_v39/02_数学证明与形式化验证.md",
+   "sha256": "6558c692d8627565530b0a42d407f894b64534678823ecb49e2dc6fbc9ed58a1",
+   "size": 2892
+  },
+  {
+   "path": "_arch_v39/03_软件测试与验证理论.md",
+   "sha256": "8e1f5e55d0f0a485bc3d16a3bfb07c229c50aeb01dbffed20b8bb37ae567bf92",
+   "size": 2658
+  },
+  {
+   "path": "_arch_v39/04_AI模型验证.md",
+   "sha256": "db7216243fbfe66257a9074ba5439f817c8f4a1002f5e885634e1de18981840b",
+   "size": 2834
+  },
+  {
+   "path": "_arch_v39/05_知识验证与事实核查.md",
+   "sha256": "a9ef677c0a23dc3560e19b87b27540737e77c975bdf6a6482ccda32243302ad1",
+   "size": 2725
+  },
+  {
+   "path": "_arch_v39/06_硬件验证.md",
+   "sha256": "c159187d52e1238e09af57c6f026e5ddab900dbeb25363ed5814e249f124443c",
+   "size": 2490
+  },
+  {
+   "path": "_arch_v39/07_监管与合规验证.md",
+   "sha256": "cff4541970ab6291082d8794a839f5fed0e2f33b772e9dceb5ae747175d74df9",
+   "size": 3057
+  },
+  {
+   "path": "_arch_v39/08_社会与制度验证.md",
+   "sha256": "28ad630812fd4c6a49f02f30d044ec26cf120d906a41141992b88448871739ee",
+   "size": 2731
+  },
+  {
+   "path": "_arch_v39/09_验证的极限与不可能性.md",
+   "sha256": "f4990d6b7885209718c1591cd4c45d4b674218a603fcc6c1f325afc4889a44e4",
+   "size": 2834
+  },
+  {
+   "path": "_arch_v39/10_验证工具链与生态.md",
+   "sha256": "68bfaf6137fd3ef196d7fa8ea227f18b1be68e839182ec684977b9a5e1f48a2e",
+   "size": 2375
+  },
+  {
+   "path": "_arch_v39/11_阙疑在验证全景中的位置.md",
+   "sha256": "98aeff2e4ad68636bd9675ed97edba75c9ea580f1f40aa61ef48b650c97cf0f2",
+   "size": 3874
+  },
+  {
+   "path": "_arch_v39/12_密码学与信任根验证.md",
+   "sha256": "876d5690878f2425efccd5f263eec6e0298f3f9e04844074bb9da489879f3243",
+   "size": 2451
+  },
+  {
+   "path": "_arch_v39/13_数据验证与数据谱系.md",
+   "sha256": "f5513ebcee72d44f4764efb0fdeca8d401dffbe0a66268027d09534917f3f5c3",
+   "size": 2297
+  },
+  {
+   "path": "_arch_v39/14_分布式系统与共识验证.md",
+   "sha256": "ef4bd86e1a2df59fb7b2b8b5709bd9b9f53ef50b8878ee19e08d255dd081df0a",
+   "size": 2111
+  },
+  {
+   "path": "_arch_v39/15_安全验证与渗透测试.md",
+   "sha256": "c4cedba36f1181343e21d08c93ec55f37fa5d8edbc53291aeda867ca4ba4b8f0",
+   "size": 2137
+  },
+  {
+   "path": "_arch_v39/16_编程语言与类型系统验证.md",
+   "sha256": "0e4256b7b4b2d2d1925e49306f87a87c41f4a01cb1a9acc00b0e2606affc164c",
+   "size": 2126
+  },
+  {
+   "path": "_arch_v39/17_并发与内存模型验证.md",
+   "sha256": "a687a4b354438b10388ff72141ea429991f351d237abbb2d11583ad45eaafe1e",
+   "size": 1857
+  },
+  {
+   "path": "_arch_v39/18_嵌入式与实时系统验证.md",
+   "sha256": "d67e3f52e64e37f01e2c881285786bfa95cd271d42608206543bb95d70f5a006",
+   "size": 1960
+  },
+  {
+   "path": "_arch_v39/19_科学验证与可复现性危机.md",
+   "sha256": "79d426f521f7a8aae3616ade4e401f375f437d9603df24c66f43a3543389286f",
+   "size": 2582
+  },
+  {
+   "path": "_arch_v39/20_医学与循证验证.md",
+   "sha256": "e573859ddb526434c834f4f0c3ec5caf3560095bfa0687cbc5b40200d35c328d",
+   "size": 2446
+  },
+  {
+   "path": "_arch_v39/21_金融与审计验证.md",
+   "sha256": "9c62c5ae0697c4b8f955df47162b8732d33a1db8ec614020575206573f495a63",
+   "size": 2382
+  },
+  {
+   "path": "_arch_v39/22_系统自我进化与自主创新.md",
+   "sha256": "43c5456f99084e8e96848f11b2c99359bdf6a2b97d620ce5ac01e99b8d5bf85b",
+   "size": 4652
+  },
+  {
+   "path": "_arch_v39/99_来源清单.md",
+   "sha256": "f6609417d01f3b9e53f0f8db886c2af06a22ba9cc42e7a4cf8d62e2ec751fc59",
+   "size": 5656
+  },
+  {
+   "path": "_arch_v40/00_现状审视与核心问题.md",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "size": 0
+  },
+  {
+   "path": "_arch_v40/01_总览_影响力路线图与优先级.md",
+   "sha256": "7893f9ae70859d4743d2fde7188ce19c7372c6cfb582f26b88e4cabf2a65cc01",
+   "size": 2834
+  },
+  {
+   "path": "_arch_v40/02_开源项目冷启动.md",
+   "sha256": "488820d512c600f82307f9f065750670a362e3cc1140a540d7347e5d834f5bc1",
+   "size": 2773
+  },
+  {
+   "path": "_arch_v40/03_技术内容创作.md",
+   "sha256": "965ffcfaae344b0975c34b597b62907754cf32ddb3a1727a6341cb4369e61979",
+   "size": 2978
+  },
+  {
+   "path": "_arch_v40/04_学术发表深化.md",
+   "sha256": "372c17014c42c567bcaf876da0ca70bcfd60fb57374ee58ef921bbb214189221",
+   "size": 2823
+  },
+  {
+   "path": "_arch_v40/05_产品设计与MVP验证.md",
+   "sha256": "be3952fab9e38471291979098f8597f31d875a01f6739961480e2216819aa41c",
+   "size": 2617
+  },
+  {
+   "path": "_arch_v40/06_用户增长与留存.md",
+   "sha256": "1979eb6e6a3a4efb4164ad1fdea6674e74e1aa49cde38db4ee73eb3671f3ea7f",
+   "size": 2408
+  },
+  {
+   "path": "_arch_v40/07_商业化与可持续性.md",
+   "sha256": "2b8cf5bea9b8afa50fb09a960a4e28769d9265d799c1e3edf9f72e89cd380a30",
+   "size": 2551
+  },
+  {
+   "path": "_arch_v40/08_社区运营.md",
+   "sha256": "76835112c504504e0de926847b66d013b1def14c47146049e89f81a378a04bc1",
+   "size": 2478
+  },
+  {
+   "path": "_arch_v40/09_嵌入式教育与硬件教学.md",
+   "sha256": "97170af2c6e1fb45281d98a97ce1467f7d7c6d331eb6151b217d4c29932bb4ed",
+   "size": 2163
+  },
+  {
+   "path": "_arch_v40/10_职业发展与个人路线.md",
+   "sha256": "8d70b40878858588f916011ee72f2acf3749fa6c979ef3a24bb91954513168a3",
+   "size": 2360
+  },
+  {
+   "path": "_arch_v40/11_时间管理与项目可持续性.md",
+   "sha256": "3df0c0878a57ac67db5b9aae3f1fa60675f09ceb96c2349ed8706262872be4c1",
+   "size": 2392
+  },
+  {
+   "path": "_arch_v40/12_失败案例与避坑.md",
+   "sha256": "f4c2c2b540198752bb32dbe9daef4f632a645c4633979da8139f3a9b65db7175",
+   "size": 2740
+  },
+  {
+   "path": "_arch_v40/13_影响力路线图综合.md",
+   "sha256": "f77b16e3ec5f7e5b39c623e8234637a5dd15b10ca9600884f90a8deb7a2f16de",
+   "size": 3095
+  },
+  {
+   "path": "_arch_v40/99_来源清单.md",
+   "sha256": "8f8b91ce2473f45f2b23a9191d364e59100a537930f7447a89dedb6e53fdf5f2",
+   "size": 4342
+  },
+  {
+   "path": "_arch_v41/00_总览_LLM侧反向审视.md",
+   "sha256": "5f36089cfb43c0dce734b71e0f572f84b3e9ad005b8810d8f709ee7d067e0dde",
+   "size": 6181
+  },
+  {
+   "path": "_arch_v41/01_LLM错误分类学.md",
+   "sha256": "2b01a387ec9be44fd2da1a54eafbbbc7b8d443492ec071d929d80efb17e760e1",
+   "size": 7241
+  },
+  {
+   "path": "_arch_v41/02_自我验证与自我修正.md",
+   "sha256": "2954e43a89c27e4681fc51b1718616b848b52b73c182558f08230646acc80af4",
+   "size": 6410
+  },
+  {
+   "path": "_arch_v41/03_Benchmark谱系与空白.md",
+   "sha256": "457bde8d71833e2234e06e5a18aa5147f327cd51d6607cf0b4377ca3202452d5",
+   "size": 5863
+  },
+  {
+   "path": "_arch_v41/04_小模型与本地化.md",
+   "sha256": "63b8a01fc23938a588f32a26413702fd28701298fab119c34ee162ef6e1886a1",
+   "size": 5405
+  },
+  {
+   "path": "_arch_v41/05_推理模型与Agentic.md",
+   "sha256": "b877b2a3eaafc660e908e027aeccef40fa5d6f0facd22182961ea68e85b4fa3c",
+   "size": 6696
+  },
+  {
+   "path": "_arch_v41/06_RAG检索增强.md",
+   "sha256": "718be714dd1c00271fc32913a5d7fc7ae20c967d38aee4a2af92d99036368898",
+   "size": 6143
+  },
+  {
+   "path": "_arch_v41/07_形式化方法与LLM.md",
+   "sha256": "1794781a4f67cba6cdfcccc9ba811bdcf5456de883ce50b71b8a47897fc264c4",
+   "size": 6168
+  },
+  {
+   "path": "_arch_v41/08_技术文档与教材实证.md",
+   "sha256": "4d5c0aec5d5e4049a7b4568aabce6d45bb417ec2fb9e9a19fac56b2cd3f69f3d",
+   "size": 5910
+  },
+  {
+   "path": "_arch_v41/09_安全护栏与知识正确性.md",
+   "sha256": "b49eba3c29e2be9ea4ddccb2f404d9b59f74941e8f37771067d0ca0a8037a166",
+   "size": 5954
+  },
+  {
+   "path": "_arch_v41/10_多智能体协作验证.md",
+   "sha256": "9416230e85fe315e1582ed05a639b5e6d7ed8167bb1a4a947870ff68c8b1f367",
+   "size": 5703
+  },
+  {
+   "path": "_arch_v41/11_未来三年能力预测.md",
+   "sha256": "c0ffff7576381067393379f7a78ffc6473b43e083d2efa54d5c72ed86ea0a6ab",
+   "size": 5300
+  },
+  {
+   "path": "_arch_v41/12_LLM视角真痛点.md",
+   "sha256": "baa95440ea29168560c35c10e37f5856c8f6e1096f32d727f81e849ded48f38b",
+   "size": 5429
+  },
+  {
+   "path": "_arch_v41/99_来源清单.md",
+   "sha256": "e73aae04ca4cab934d2e108c260300f96f3b0d96faacbdb2bc844c7ecc203d66",
+   "size": 16201
+  },
+  {
+   "path": "_arch_v42/00_总览.md",
+   "sha256": "42646deb1a4f08e791bed96d1448ca715f4d6debc380f018c5256e83db5e92c2",
+   "size": 4874
+  },
+  {
+   "path": "_arch_v42/01_NeurIPS_ED_投稿经验与审稿标准.md",
+   "sha256": "09886ff2e6fe957aa921f09e493097592eed9e2a40effad3c591fb3e638d4f9c",
+   "size": 4991
+  },
+  {
+   "path": "_arch_v42/02_独立复现_第三方审计.md",
+   "sha256": "4c6f7fffa1c1497b9e6a592fda1d1d2862bdf8f512abf3866603b6bc8dae37e7",
+   "size": 3022
+  },
+  {
+   "path": "_arch_v42/03_单人研究者找合作者.md",
+   "sha256": "1e7c8304295ee61548be2bdcc7b159f5fe79e4cbca695d84147b6ec5293d897f",
+   "size": 1946
+  },
+  {
+   "path": "_arch_v42/04_论文常见拒稿理由.md",
+   "sha256": "310c3d73f7596a70ad349c12446aa8f177912e00419af4e71845e8d83dd42fc2",
+   "size": 2182
+  },
+  {
+   "path": "_arch_v42/05_Ablation_study怎么做才不水.md",
+   "sha256": "9d3111b2a196461420720a954fefedc9747a2c95a8a5327d19b446834214697d",
+   "size": 2088
+  },
+  {
+   "path": "_arch_v42/06_Threats_to_Validity怎么写.md",
+   "sha256": "f0f590373a7034b19616ffae5a162900a1553e65b952e8fd84350a6bee851f17",
+   "size": 2310
+  },
+  {
+   "path": "_arch_v42/07_开源项目冷启动.md",
+   "sha256": "a05ae8fdc47047b08e42a1b052a4779de11e5143558da3170c52773a4aa7e772",
+   "size": 1785
+  },
+  {
+   "path": "_arch_v42/08_AI辅助研究伦理与披露.md",
+   "sha256": "02a7efaa2c47436f14d14ebc593817e78fdc26f25246d045dc76fda618aefc5b",
+   "size": 2330
+  },
+  {
+   "path": "_arch_v42/09_C++标准_编译器差异权威错误源.md",
+   "sha256": "e2767a361a50f86336fce76c85a836565296c6bc01009b43af6b95e93be86508",
+   "size": 2422
+  },
+  {
+   "path": "_arch_v42/10_从系统到论文_转化方法.md",
+   "sha256": "dbe149902133e8b032fab191fe197e02286d64757edafff9007179fdb2755bea",
+   "size": 2174
+  },
+  {
+   "path": "_arch_v42/99_来源清单.md",
+   "sha256": "dc71790893d0a89304e447a19b9baba29f732f703ac3a06484147ca3323ac975",
+   "size": 4936
+  },
+  {
+   "path": "_arch_v44/00_总览.md",
+   "sha256": "ff1b8c7a390d811443337f45666299740b1efac41b6face34ccaef89dbd75d60",
+   "size": 7937
+  },
+  {
+   "path": "_arch_v44/01_NeurIPS_ED_全解析.md",
+   "sha256": "1cd5fc4606a7051eec8a9064da8ce76ef23a0576472e10e5d4033f6a9333aa06",
+   "size": 3455
+  },
+  {
+   "path": "_arch_v44/02_独立复现_第三方审计.md",
+   "sha256": "33b217bb95142c316626e8330dc0c74683b09d7885119c1502e1b6406cb2e53d",
+   "size": 3127
+  },
+  {
+   "path": "_arch_v44/03_单人研究者生存指南.md",
+   "sha256": "9adbb1d39419fca3d8c668eaf25013499b8e3212deaf9c23c9529aa10757d951",
+   "size": 2945
+  },
+  {
+   "path": "_arch_v44/04_论文常见拒稿理由大全.md",
+   "sha256": "9b092cb1a27793d49a2da7e39417e08b42976ff8c8323ab9b8ebd551590d1718",
+   "size": 2696
+  },
+  {
+   "path": "_arch_v44/05_Ablation_study完全指南.md",
+   "sha256": "80beefc5d45c0af16406ce47ec5f51d68ae1b730194c6095231740d1263d6ee2",
+   "size": 2618
+  },
+  {
+   "path": "_arch_v44/06_Threats_to_Validity写作圣经.md",
+   "sha256": "3638ab42ce351c94503b9d10f72d6673b7be1197ba3ba900de9e7b70b7ba0929",
+   "size": 2471
+  },
+  {
+   "path": "_arch_v44/07_统计方法精确指南.md",
+   "sha256": "07654bb61e4016f1b6e54db379ec8f7fb752e89349c7c3bcf52a41b9a15cfcf5",
+   "size": 2534
+  },
+  {
+   "path": "_arch_v44/08_Benchmark设计方法论.md",
+   "sha256": "64749b7386ebaf5200247864057f5b9facde3099143e8a1c6834c1cc0e1f840b",
+   "size": 2225
+  },
+  {
+   "path": "_arch_v44/09_从系统到论文的转化.md",
+   "sha256": "12b5f0e302c9b7e24bf74deff15e1db213824e187a197d4a70fa23c1417979a7",
+   "size": 2199
+  },
+  {
+   "path": "_arch_v44/10_Workshop_vs_Main_Track选择.md",
+   "sha256": "b0867bbf0fee327fc323e6263d7da204c61c41e6765b3a9774d3bb4aa4a2a76e",
+   "size": 1892
+  },
+  {
+   "path": "_arch_v44/11_C++标准_编译器差异权威错误源.md",
+   "sha256": "233ae0227032d52013633c704116b165c9981978c16a1fc249a996b93b10406f",
+   "size": 3947
+  },
+  {
+   "path": "_arch_v44/12_LLM幻觉检测最新进展.md",
+   "sha256": "2e230f2410d1698ea36db48b3c44d7ae9a92845fb2ffed068b4ff49ecce2ce44",
+   "size": 2631
+  },
+  {
+   "path": "_arch_v44/13_形式化验证与LLM结合.md",
+   "sha256": "9d1fd983ed76f6c1db335500ab630fafc74b26fe6fcc8527b200058e91d80939",
+   "size": 2291
+  },
+  {
+   "path": "_arch_v44/14_测试理论与实践.md",
+   "sha256": "f83af37755a2650a25901238b3145fa70a0eb9710ca733f7cdd10ff9fb959ce9",
+   "size": 2103
+  },
+  {
+   "path": "_arch_v44/15_开源工程化最佳实践.md",
+   "sha256": "98172e61158a623dce363b911cdd409a27c933b0d283b38dde3433da0ff26c70",
+   "size": 1949
+  },
+  {
+   "path": "_arch_v44/16_数据标注与质量.md",
+   "sha256": "97faae964569a447bddac85516befc8705ec27e5ce1478f4b6ff5f8a2856bba9",
+   "size": 1861
+  },
+  {
+   "path": "_arch_v44/17_实验可重复性.md",
+   "sha256": "2678969765b67f5f20b1fc050563d1aca1feb98d0cd8d48ef49768d3a9ff6f3f",
+   "size": 1743
+  },
+  {
+   "path": "_arch_v44/18_小模型验证器.md",
+   "sha256": "5bed3b2d218cbf7ab6904fb77d77a7ad1db8c30e853494b5266111d8b97374f7",
+   "size": 1979
+  },
+  {
+   "path": "_arch_v44/19_多智能体验证.md",
+   "sha256": "e7d3786e32f5e906bc17979c619939bdebc77d89501f585238e687a7d5fb28de",
+   "size": 1913
+  },
+  {
+   "path": "_arch_v44/20_轨迹层验证.md",
+   "sha256": "b602ccf8f402886b7f825488c56d519e779350a537999e662fde26ae84dd71af",
+   "size": 1768
+  },
+  {
+   "path": "_arch_v44/21_开源项目冷启动.md",
+   "sha256": "67e782729b8820da909c76f48b950970efc0729efda4a2d9ed3c52e776be9662",
+   "size": 2212
+  },
+  {
+   "path": "_arch_v44/22_AI辅助研究伦理与披露.md",
+   "sha256": "3f2cedc6d570cc768f07b1376b629dcf5a87ff1e3eefbb3fd545ab6d19be6f5a",
+   "size": 2254
+  },
+  {
+   "path": "_arch_v44/23_嵌入式方向职业规划.md",
+   "sha256": "b62b23d560f809aa6529ddf68556b210da24169ba2bcc822d2737ba7cdb8e852",
+   "size": 2438
+  },
+  {
+   "path": "_arch_v44/24_考研与科研并行.md",
+   "sha256": "7fc8c53d91ec98b1d77e88662013cb6789f8c7e40ac262f3cccf976dadafd839",
+   "size": 1962
+  },
+  {
+   "path": "_arch_v44/25_心理与体力管理.md",
+   "sha256": "072b3b315f6ac74cb7b39bc1f8608746dab0b2197555e1729e0332c6460df5be",
+   "size": 1813
+  },
+  {
+   "path": "_arch_v44/26_时间管理精确到小时.md",
+   "sha256": "3da30af77a9690bc0a6d7b22d4e6832dd38559646e0c82c50628fad2755fceef",
+   "size": 1714
+  },
+  {
+   "path": "_arch_v44/27_怎么读论文.md",
+   "sha256": "5b89f79c6b4d9987fdcc1d02679192aee73b8cd53251c7c0dbc3ccf5144ac2e4",
+   "size": 1630
+  },
+  {
+   "path": "_arch_v44/28_怎么写论文.md",
+   "sha256": "0dc7fcaf1be67827c54622ec8f9ec835eaff004200df801b3377c3911d96b7d4",
+   "size": 1586
+  },
+  {
+   "path": "_arch_v44/29_大模型演进与验证需求.md",
+   "sha256": "92200e1d7370632f3521b97e34a03bf3fc30db33d0895bebfeaf114dba3a098f",
+   "size": 1842
+  },
+  {
+   "path": "_arch_v44/30_竞争对手与差异化.md",
+   "sha256": "4fdf9cf8439aa483e338dbd48d2ece01b27c619583ad3babe1e46a8cddc8c2d8",
+   "size": 1977
+  },
+  {
+   "path": "_arch_v44/31_政策与监管.md",
+   "sha256": "8f775750732ede76ad81f7abd34bf5ad078ddb28652fb3c603cdabba7b9de561",
+   "size": 1989
+  },
+  {
+   "path": "_arch_v44/32_开源经济.md",
+   "sha256": "38b1970fc777f080f207de993161b31ef5003cbb00aa83c72fe8ff921aa226f9",
+   "size": 2053
+  },
+  {
+   "path": "_arch_v44/33_论文发表后的路.md",
+   "sha256": "2399b19dfb8b53d737c4b5a37be306a1e03d5fc6a8476bd1ae8b793c28f5efe7",
+   "size": 1615
+  },
+  {
+   "path": "_arch_v44/34_失败预案.md",
+   "sha256": "c50f89b2f335eb2e2c3852315f2176a921368e79239a995f18d6ccdc6de9a1ab",
+   "size": 1717
+  },
+  {
+   "path": "_arch_v44/35_终极问题_这个项目值不值得继续.md",
+   "sha256": "cdf72380574d4de06639eaca9142768c6dd93b2dceb3877fe05b62f939a500ba",
+   "size": 2351
+  },
+  {
+   "path": "_arch_v44/99_来源清单.md",
+   "sha256": "5b6549ca182f67aa35111be528d049abf894122772d7d2c6a679235c48b54adc",
+   "size": 8119
+  },
+  {
+   "path": "_arch_v44/ROADMAP_执行路线图.md",
+   "sha256": "f8cd9f6be48538a7a71edf18efdb3d3325f962a5024aa1653152937afd2232c9",
+   "size": 3928
+  },
+  {
+   "path": "_arch_v45/00_总览.md",
+   "sha256": "9291234c318c617d34de788a9060be6761d47fcabfd4df073e9b78ae88b5d12c",
+   "size": 5438
+  },
+  {
+   "path": "_arch_v45/01_NeurIPS_ED_2024录用论文全列表.md",
+   "sha256": "fd8aaaeaa10c133a91e87b24803b513d5c12184c8723cf0ff7e8b650c3dce0df",
+   "size": 4200
+  },
+  {
+   "path": "_arch_v45/02_NeurIPS_ED_2025录用论文全列表.md",
+   "sha256": "328e16ffe4e645fd8e0a6841df045ea1cd490df0a35c5a6e6d44c9eadcb67cab",
+   "size": 3753
+  },
+  {
+   "path": "_arch_v45/03_NeurIPS_ED审稿标准详解（从OpenReview看）.md",
+   "sha256": "96df64d2bc4686f83f57fffae7cac385fb500ccb6c4ef8a851701572d9b397c0",
+   "size": 3980
+  },
+  {
+   "path": "_arch_v45/04_NeurIPS_rebuttal翻盘案例.md",
+   "sha256": "2af495b38e2e635606ad852aa3868791fe0b423439e356333ae52a6a5d8b238b",
+   "size": 3500
+  },
+  {
+   "path": "_arch_v45/05_ICSE_ASE_FSE的ED_track对比.md",
+   "sha256": "bde74a5ac4dab4dcd6d93cd34850d026e5261c7b564a1010043f61dec95894ff",
+   "size": 3531
+  },
+  {
+   "path": "_arch_v45/06_Workshop论文有用吗.md",
+   "sha256": "380665be139e8996fd56421c5e6bc7f3e35c4f346bcc15a524a7e75aa7aadaea",
+   "size": 2622
+  },
+  {
+   "path": "_arch_v45/07_双投错峰策略.md",
+   "sha256": "0efbab8dfaa346f31d7533349feddc9f6cfaa816f9ba5fa51ea33b052463605f",
+   "size": 2773
+  },
+  {
+   "path": "_arch_v45/08_论文被拒后转投哪里.md",
+   "sha256": "3f4f178dcff005e26b8234d581c112559ace8020ac64dd6396e4bdd0e2ca18d5",
+   "size": 2747
+  },
+  {
+   "path": "_arch_v45/09_arXiv预印本策略.md",
+   "sha256": "732e2660474b31f9f3a86964d0b83b72d8ad46b040dabb799ba29694d718809a",
+   "size": 3334
+  },
+  {
+   "path": "_arch_v45/10_引用怎么涨（真实方法）.md",
+   "sha256": "b936997aedc3f16d2eda4c2c991a451a0e10df557a9005201deb85d4ed3d00ea",
+   "size": 3135
+  },
+  {
+   "path": "_arch_v45/11_论文版本管理（v0.1→camera-ready）.md",
+   "sha256": "acc1f86979feb150ca8cd8a8d6c8aff784bed1b9223f5a204a185be4ec36586f",
+   "size": 2676
+  },
+  {
+   "path": "_arch_v45/12_怎么选target_venue.md",
+   "sha256": "733a58fdf148512559b20492f36584227fac68c0d49e6607844d698346694b90",
+   "size": 2584
+  },
+  {
+   "path": "_arch_v45/13_单人论文写作时间线（精确到周）.md",
+   "sha256": "86c8f84ae81513730fc053e63df28153d6773cda99bc300083c8620e4e888ac6",
+   "size": 2682
+  },
+  {
+   "path": "_arch_v45/14_Abstract写作模板（150词）.md",
+   "sha256": "7434d01b5df2a15f80eb9e91fcfbf205c58e876438ff1d94e6394f02eb876f6f",
+   "size": 2787
+  },
+  {
+   "path": "_arch_v45/15_贡献声明怎么写才不被嫌overclaim.md",
+   "sha256": "027ceab9cffc5d596807b82c6a0f72a8cc75dbe4f97d180f3557dfc8de8a1390",
+   "size": 2722
+  },
+  {
+   "path": "_arch_v45/16_C++_UB完整分类（每类举3个真实例子）.md",
+   "sha256": "f00fe13b7563dd7fcb837752b7e3392735938a879fd988e4817db195c1de6b11",
+   "size": 5276
+  },
+  {
+   "path": "_arch_v45/17_GCC_Clang_MSVC行为差异top30.md",
+   "sha256": "8842237bc8f135b01955a1a8c7ec20594b28c0ffdd6eb6daaa70b32deb5e506b",
+   "size": 4810
+  },
+  {
+   "path": "_arch_v45/18_真实compiler_bug历史top30.md",
+   "sha256": "40c7454251e68aadae4bd411eaebf5538c2ee3a0aa9642de26351c62d92763d5",
+   "size": 4152
+  },
+  {
+   "path": "_arch_v45/19_内存错误检测工具对比（ASan_TSan_MSan_UBSan_Valgrind）.md",
+   "sha256": "43337b0b6b65cb29673daff375d970cfd0dc628e2f052f40f1da06be9ea71b12",
+   "size": 3182
+  },
+  {
+   "path": "_arch_v45/20_变异测试算子设计（具体算子列表）.md",
+   "sha256": "2fa9001cd19eb6ce5e9ae2164e20a62c4d51c999e7b4ee75ba2c5b9ccc7d2e2e",
+   "size": 3514
+  },
+  {
+   "path": "_arch_v45/21_PBT属性测试最佳实践.md",
+   "sha256": "48c12236a03319a6b965be59ee836ff3ffd88cb3314db6d7cbbbb653b6e286cc",
+   "size": 2783
+  },
+  {
+   "path": "_arch_v45/22_Python测试工具链（pytest_hypothesis_coverage_mutmut）.md",
+   "sha256": "7a6bf7a6867ec36e17fc4ca174bb4f6655a28eeef6b0933fd990ef8c7a12beaa",
+   "size": 2657
+  },
+  {
+   "path": "_arch_v45/23_静态分析工具（clang-tidy_cppcheck_coverity）.md",
+   "sha256": "fa52e622ee0e9367148698ec03bf344fb43b23f3031513e15b6616d768f373d8",
+   "size": 2717
+  },
+  {
+   "path": "_arch_v45/24_类型系统与验证（mypy_pyright_Rust_types）.md",
+   "sha256": "5716f52789f1e90fb25a073d02ac5cca2c2a470d3bdfa6dc7973de5652280938",
+   "size": 2793
+  },
+  {
+   "path": "_arch_v45/25_Git工作流（单人项目怎么用branch_release）.md",
+   "sha256": "d603c623a715b1bb11addbe1f75fef6d8e80cee0b6ec91440a2fb98b653538b0",
+   "size": 2660
+  },
+  {
+   "path": "_arch_v45/26_CI_CD最小配置（GitHub_Actions）.md",
+   "sha256": "f6609fccbcd23f6ecf6c6c88b6950cd4d7565ab525144931ea90eb55b9656ecd",
+   "size": 2743
+  },
+  {
+   "path": "_arch_v45/27_日志与可观测性.md",
+   "sha256": "e72f70676492e4e851c11a41ff8d53e2ad20ad59bf9e912ba9b8b0c2ab57114e",
+   "size": 2591
+  },
+  {
+   "path": "_arch_v45/28_错误处理最佳实践.md",
+   "sha256": "70cd156ee7a533a9c21381938e06ba1b6e6e80b15daafbd7912fb753c3da62bc",
+   "size": 2880
+  },
+  {
+   "path": "_arch_v45/29_性能优化profile（cProfile_py-spy）.md",
+   "sha256": "9909b8cb5917305a99e2740b3ff9244b2894bf97b8e3e3a67b618eea9efe6cef",
+   "size": 2772
+  },
+  {
+   "path": "_arch_v45/30_安全（不要泄漏密钥_凭证管理）.md",
+   "sha256": "3534907e9c66fe00ed5742d5e8b69a0c44ecb4b0214d544f23c603b7589889f1",
+   "size": 2776
+  },
+  {
+   "path": "_arch_v45/31_双非本科生怎么找导师.md",
+   "sha256": "5975606aec8f577070e05b0d28d6e40c87ed134ee9e24be0df8cd8b9f3999d1d",
+   "size": 2778
+  },
+  {
+   "path": "_arch_v45/32_冷邮件模板（3个成功案例）.md",
+   "sha256": "62a328e070f549d1b697276a713746c3936b7210c0f023138a867959005bb2b6",
+   "size": 3121
+  },
+  {
+   "path": "_arch_v45/33_怎么在学术界建立存在感.md",
+   "sha256": "5b38400d8f339f2c1a3f0584f801fad0a6987d2f69f881b3d25cace59c86989a",
+   "size": 2538
+  },
+  {
+   "path": "_arch_v45/34_时间管理精确到小时.md",
+   "sha256": "b5bcd30711d4600607f5d0b7c85e48a0bcd9572318f24e95a416e12cbf979077",
+   "size": 2879
+  },
+  {
+   "path": "_arch_v45/35_怎么读论文（三遍法实操）.md",
+   "sha256": "bc922efae39acb127e8fe16c8c20c1c19ba9c1e7a5062ce825509e3baa3b1077",
+   "size": 2912
+  },
+  {
+   "path": "_arch_v45/36_怎么写论文（每个section模板）.md",
+   "sha256": "dcddfb2f0b4b0f65d2268c3084a8c82ed2dcd91231268ace5b766e55db23b74e",
+   "size": 3376
+  },
+  {
+   "path": "_arch_v45/37_英文写作怎么提高.md",
+   "sha256": "eecc5399d981f81c822dfd87af3d226f94144fde92c9bccd0c4093f2b0133d0a",
+   "size": 2558
+  },
+  {
+   "path": "_arch_v45/38_怎么用LLM辅助科研（但不依赖）.md",
+   "sha256": "b0ea28f5ad125c9ae84352d399f36b5da067b64b31df5c3645258932de632d25",
+   "size": 2685
+  },
+  {
+   "path": "_arch_v45/39_怎么写技术博客.md",
+   "sha256": "7f597c7e800f619b777cca56ce6006c9e5f1e5620c207bdee5c41f6d621b4134",
+   "size": 2254
+  },
+  {
+   "path": "_arch_v45/40_怎么做技术演讲.md",
+   "sha256": "026a968c10491ff9b61058b3cc03af15cb3dbf670ac81c591269894d62223d24",
+   "size": 2167
+  },
+  {
+   "path": "_arch_v45/41_怎么建个人品牌（GitHub_Twitter_小红书）.md",
+   "sha256": "68fadce345749461f73a4e2e5388a4bb97d91c0f24b1015174b901344efe1fb2",
+   "size": 2387
+  },
+  {
+   "path": "_arch_v45/42_嵌入式工程师2026就业市场.md",
+   "sha256": "6ccb56af42cb5d243215051192ba1dd380cda7cd56a6e2b9507808b424d10fc4",
+   "size": 3103
+  },
+  {
+   "path": "_arch_v45/43_长鑫存储_华为_大疆嵌入式岗位JD.md",
+   "sha256": "8022cc9f14f2254a3d6cc2eefdc0fb85ea29132b0901ccbf2f81d7dfd54e0df1",
+   "size": 3387
+  },
+  {
+   "path": "_arch_v45/44_考研与科研并行时间分配.md",
+   "sha256": "21ae954f1ae0150fdd762a45b164b9cb33f56b614699b5b7fb6429fdedf55392",
+   "size": 3363
+  },
+  {
+   "path": "_arch_v45/45_怎么准备复试（展示这个项目）.md",
+   "sha256": "b2fc8376a38b8655f1079c019bbc7da432e2ce1b5bafb650a27c3e234590a580",
+   "size": 2974
+  },
+  {
+   "path": "_arch_v45/46_2026-2028模型能力预测.md",
+   "sha256": "f52ccc23b9aa2c72d6097ae6061093c64dffd2ade72cf95ffbd2bd6b897888f9",
+   "size": 2828
+  },
+  {
+   "path": "_arch_v45/47_内置验证会取代外部验证吗.md",
+   "sha256": "daecbb059757c359d54a5aceb43b4b596de9f6a05c12f8ba2a38b642093c4f23",
+   "size": 2741
+  },
+  {
+   "path": "_arch_v45/48_小模型验证器路线图.md",
+   "sha256": "185e13e45b4818503049b3643e0f9e53f2bd2ff70ff5ee50e92083ff1bf88c68",
+   "size": 2690
+  },
+  {
+   "path": "_arch_v45/49_现在有谁在做类似的事（列10个）.md",
+   "sha256": "e9f26ab6abeaef4dc44a03b089230d729a8e9c3e6de891af167520878962c992",
+   "size": 3509
+  },
+  {
+   "path": "_arch_v45/50_大厂在做什么（OpenAI_Anthropic_Google_Meta）.md",
+   "sha256": "5a8f58d8411ad25db348e5519a5e1c3de235fd1c881c87d42ef1bf56d724ef73",
+   "size": 2859
+  },
+  {
+   "path": "_arch_v45/51_阙疑的护城河是什么.md",
+   "sha256": "f4163e898c4459bb19a818dd0f08a3256b0d7eade28aeee0cedc981db0c00dea",
+   "size": 2529
+  },
+  {
+   "path": "_arch_v45/52_12-18个月后会被追上吗.md",
+   "sha256": "60f0ae0aec66e94e80877b17c6d1307fa4238062058884b57461750177db0324",
+   "size": 2586
+  },
+  {
+   "path": "_arch_v45/53_EU_AI_Act对验证系统的影响.md",
+   "sha256": "242754df412887a672d36a4d03575868e2491bd6b9f61c52a0109126bec57001",
+   "size": 3003
+  },
+  {
+   "path": "_arch_v45/54_中国AI监管动向.md",
+   "sha256": "8cfdcf8a8a735f10ff59795a55b0a8888580c93a0d38c308b74fb3bf30774753",
+   "size": 3442
+  },
+  {
+   "path": "_arch_v45/55_grants怎么申请（NLnet_MOSS_NSF）.md",
+   "sha256": "659abad723b093be04a17eb49719363906ed9dee59b70267fbeaed639df4d0dd",
+   "size": 2901
+  },
+  {
+   "path": "_arch_v45/56_单人开源项目收入来源.md",
+   "sha256": "bad76bd7a6b46c2432c99edd7e8774013879dd803464804df86efa049b230bc3",
+   "size": 2392
+  },
+  {
+   "path": "_arch_v45/57_论文中了之后怎么办.md",
+   "sha256": "67bf484f1a5655d9677844c381fba985126f469e1b932191578ae5c033ed1735",
+   "size": 2350
+  },
+  {
+   "path": "_arch_v45/58_论文被拒了怎么办.md",
+   "sha256": "b14ad0592fac1c7f5fc974e27df732adfb81d16ba2f4071fd34296a0bef2878e",
+   "size": 2570
+  },
+  {
+   "path": "_arch_v45/59_项目烂尾了怎么办.md",
+   "sha256": "d7ab444cac375ac2434fb0fcf7a922c5bf20e4aa8a554f30fb98877754ae0736",
+   "size": 2403
+  },
+  {
+   "path": "_arch_v45/60_终极问题：这个项目值不值得继续.md",
+   "sha256": "b30aa6a9ed2829765dbc3f0fc0b39e3863a1b0e364b8423765f53fb52ab93900",
+   "size": 3119
+  },
+  {
+   "path": "_arch_v45/99_来源清单.md",
+   "sha256": "6368657c8dbdd96ce59bf1bb4c7b33c20fa71303293dc5aa016a3c4a823e0e6d",
+   "size": 8550
+  },
+  {
+   "path": "_arch_v45/ROADMAP.md",
+   "sha256": "c9f0d8a189157f7a770cca6e1f538e3dc3235a7de04eeb5f28292105922cd20f",
+   "size": 4292
+  },
+  {
+   "path": "_arch_v46/00_仓库扫描.md",
+   "sha256": "859382c50c95d35ab4f16e8832614990018f1fca9937b55dc92c258fc43261e6",
+   "size": 13144
+  },
+  {
+   "path": "_arch_v46/00_总览.md",
+   "sha256": "4ab668c382e790ec454b2baac352d1d6af1b5d1679f6976467b3ead200d9ea61",
+   "size": 16248
+  },
+  {
+   "path": "_arch_v46/00_校验报告.md",
+   "sha256": "3ca47d7687559fbf4e7d8adcd32d44ae1252cc7dbdc4ae484f8484398ab72a27",
+   "size": 7884
+  },
+  {
+   "path": "_arch_v46/01_NeurIPS_ED_2024录用论文全列表.md",
+   "sha256": "b61e99d553bd94b34ab872aea0abec6a09da02bf6f486096f8eb1bb544f50142",
+   "size": 31280
+  },
+  {
+   "path": "_arch_v46/02_NeurIPS_ED_2025录用论文全列表.md",
+   "sha256": "65e09fe2295e111a2fd528eecbdf5a002c645d95ba003c1153555d8ea6c0be30",
+   "size": 31684
+  },
+  {
+   "path": "_arch_v46/03_NeurIPS_ED_2026录用论文全列表.md",
+   "sha256": "e4e496d3ec6d0fc3d27eb6f12bca46aad98129ab0797a830fb4f012c8b9a055b",
+   "size": 23893
+  },
+  {
+   "path": "_arch_v46/04_NeurIPS_ED录用率投稿数接收数.md",
+   "sha256": "ae0a3d055be67931fd141e7e1124d48f56f7540b2a9025f18d7292a29d3379c4",
+   "size": 24273
+  },
+  {
+   "path": "_arch_v46/05_NeurIPS_ED审稿标准详解.md",
+   "sha256": "c23b712dfbbfdcd0bc9dd1b439d05fa030de2f650813781625fed79bc0ee4a5d",
+   "size": 32717
+  },
+  {
+   "path": "_arch_v46/06_NeurIPS_rebuttal翻盘真实案例.md",
+   "sha256": "a1971f33b2096626df46928a91d928e4ad72d9070a50f5efcb22ed10d2caf787",
+   "size": 20123
+  },
+  {
+   "path": "_arch_v46/07_NeurIPS_desk_reject常见原因.md",
+   "sha256": "db0cca1cddaf9edaf0efa19475b5aa329cfc0fe90f8ff6670337badec1a10046",
+   "size": 30010
+  },
+  {
+   "path": "_arch_v46/08_ICSE_ED_vs_NeurIPS_ED对比.md",
+   "sha256": "0e316b75927fa13be3d2ea1989b15c31fbc729354a18345612fc0025caa24ee9",
+   "size": 26451
+  },
+  {
+   "path": "_arch_v46/09_ASE_FSE的AI验证相关track.md",
+   "sha256": "7caa0fd744be76116e685303a2e463cd556b96fbb053c3e28c249db1c2a8bbd2",
+   "size": 25705
+  },
+  {
+   "path": "_arch_v46/100_终极问题这个项目值不值得继续.md",
+   "sha256": "b7c24fc769442dd9a7fe93c127fc33454f3c3d8a36ea72b4aeb0fd4e75217ee8",
+   "size": 29559
+  },
+  {
+   "path": "_arch_v46/10_Workshop论文对求职申研有用吗.md",
+   "sha256": "0be79a6829419eddca2ae76847d95aa51d7e9aef62bcbaea99faea0d369386f0",
+   "size": 25435
+  },
+  {
+   "path": "_arch_v46/11_双投错峰策略.md",
+   "sha256": "a97da1a559a09eb0546b178362e405fda42083f31a98a9f0279b3327508b6edc",
+   "size": 22570
+  },
+  {
+   "path": "_arch_v46/12_论文被拒后转投哪里.md",
+   "sha256": "748fcb985ef13e136cb3bb3eb4d669ad1af01d263f1c00c4ec8a442ffa6eecff",
+   "size": 21724
+  },
+  {
+   "path": "_arch_v46/13_arXiv预印本策略.md",
+   "sha256": "9883becb4ffb65228d75a0301f182e586ef80d12d26ef4195db8431defa0bd47",
+   "size": 23266
+  },
+  {
+   "path": "_arch_v46/14_引用怎么涨.md",
+   "sha256": "d9a47cf34a811ec85533c8800ebfe2d4acb861d9c7611ca6549d2e2cfd41644e",
+   "size": 21365
+  },
+  {
+   "path": "_arch_v46/15_论文版本管理.md",
+   "sha256": "73b7257c33363083c0c671ea6c17ee6ad0fd1f98aeec40d066991bf66ac26a20",
+   "size": 21219
+  },
+  {
+   "path": "_arch_v46/16_怎么选target_venue.md",
+   "sha256": "691c1e96d50ee1090c9ceb37dc9bf082c0a2a82c312290ceefe576a114fb0fc8",
+   "size": 27999
+  },
+  {
+   "path": "_arch_v46/17_单人论文写作时间线.md",
+   "sha256": "ff92d909a6d82af39a0927422b9bd48e1fee5cd1cedb4d99543de10fcb8954dc",
+   "size": 21747
+  },
+  {
+   "path": "_arch_v46/18_Abstract写作模板.md",
+   "sha256": "3cfe65c081f4779578c48d603d4262a59a049ab6df0ca022c8e1737f4a8409ac",
+   "size": 29824
+  },
+  {
+   "path": "_arch_v46/19_贡献声明怎么写.md",
+   "sha256": "33160dbc2cd293d41771ac18681167e79f94e896405bfa9f380dbffb0ecac5cc",
+   "size": 24209
+  },
+  {
+   "path": "_arch_v46/20_相关工作怎么写.md",
+   "sha256": "163be91546cfab41443948c87b2fb8524310132d257a96ff173545b2a342f247",
+   "size": 25684
+  },
+  {
+   "path": "_arch_v46/21_Method_section怎么写.md",
+   "sha256": "d5cae1484814cf43839818eadfec7c1e3f4423141ff92472e47daac636ba7239",
+   "size": 23396
+  },
+  {
+   "path": "_arch_v46/22_Evaluation_section怎么写.md",
+   "sha256": "3ebb9e4070962af64fc30a21c4662f3aadeff9dd81cee5bda13c0a68b334f4ea",
+   "size": 23551
+  },
+  {
+   "path": "_arch_v46/23_Threats_to_Validity五层写法.md",
+   "sha256": "ad5665e6fceb6aa2bbbfae691d670b20e7393b6851d64fb9cf354accd646a537",
+   "size": 22404
+  },
+  {
+   "path": "_arch_v46/24_统计方法精确指南.md",
+   "sha256": "c2e3487a1c037dcddd5fc039c1bfa7ddc49d2e48f5942a5e8281c1db91ec1fcd",
+   "size": 29543
+  },
+  {
+   "path": "_arch_v46/25_单人项目怎么凑够baseline.md",
+   "sha256": "5881791a7a33e9e6d9ae165ec748f293de870ac8d4cd6ec75b4fe4b9e5263857",
+   "size": 22189
+  },
+  {
+   "path": "_arch_v46/26_C++_UB完整分类.md",
+   "sha256": "01e58f00b13cccf822bab5c02c6791c6b3a89f9971ea7b2a713cd07031846045",
+   "size": 25397
+  },
+  {
+   "path": "_arch_v46/27_GCC_Clang_MSVC行为差异top30.md",
+   "sha256": "c8113e04744f63582e21e4e1ded41054b78b1925133ab3ca24ace37618f06ae2",
+   "size": 25851
+  },
+  {
+   "path": "_arch_v46/28_真实compiler_bug历史top30.md",
+   "sha256": "7f906b70e2f14ed1c7e413f32f3128b7e420db4b72d4e5c920db47ef69382160",
+   "size": 28957
+  },
+  {
+   "path": "_arch_v46/29_内存错误检测工具对比.md",
+   "sha256": "9423c80d001dae603c39db2bc5a52115fdbad20397f5144c6d647f47cdb1705d",
+   "size": 27971
+  },
+  {
+   "path": "_arch_v46/30_编译优化级别对结果的影响.md",
+   "sha256": "d572446cebf3afe0afd742b99aafbdc6e58ee66824410e57308b37f97d67413d",
+   "size": 23508
+  },
+  {
+   "path": "_arch_v46/31_变异测试算子设计.md",
+   "sha256": "3513d8378323021f6614d5a6541bba9e0c28d5244353668870188953bad986e3",
+   "size": 26054
+  },
+  {
+   "path": "_arch_v46/32_PBT属性测试最佳实践.md",
+   "sha256": "3da0f3a735edd10d0f83bc733ec123a568f316d4efdea5d705f9270b0fde5f11",
+   "size": 25472
+  },
+  {
+   "path": "_arch_v46/33_Python测试工具链.md",
+   "sha256": "eeb37c13e3e25a75a5dedc271024f613e6e9cb7140d608d331fc90fafb0b8b9b",
+   "size": 20853
+  },
+  {
+   "path": "_arch_v46/34_静态分析工具.md",
+   "sha256": "a9727a81b324cc57c0a22c4c53bc931fbef833a379dce520ec9c11501af5c45e",
+   "size": 21699
+  },
+  {
+   "path": "_arch_v46/35_类型系统与验证.md",
+   "sha256": "4cb8b034471c41fd08fb9e8f1915260c819a2b5eb7f9ce342042e90fe09d09e0",
+   "size": 21594
+  },
+  {
+   "path": "_arch_v46/36_Git工作流.md",
+   "sha256": "c4f16479516fda95f10a6d3cf6827d3ebaf12519e7555addb75edfaff88d6a8c",
+   "size": 22270
+  },
+  {
+   "path": "_arch_v46/37_CI_CD最小配置.md",
+   "sha256": "b19f5ed9f9d9b256b94bad21b994432dc7926d41375726c85ce8fd15d28101db",
+   "size": 24603
+  },
+  {
+   "path": "_arch_v46/38_日志与可观测性.md",
+   "sha256": "f7b53bf96b99a34c5a0fea729a196ddcf231b3dd25982aae108f8d7b5f8dfe08",
+   "size": 20403
+  },
+  {
+   "path": "_arch_v46/39_错误处理最佳实践.md",
+   "sha256": "1688068c4b0bc7345aa0fa6b9bd9c7cf6c6ab3c56a655056326c4fed22dcb22d",
+   "size": 22665
+  },
+  {
+   "path": "_arch_v46/40_性能优化profile.md",
+   "sha256": "511dcc42f3d73880db1f5b8abc586670c79f294758568ed70480c592a09cd7f0",
+   "size": 25116
+  },
+  {
+   "path": "_arch_v46/41_安全.md",
+   "sha256": "392eb8e10e4fcc1e541ca877dc7c44c47ba659e1062fa1a01fe327f52ae375f6",
+   "size": 22267
+  },
+  {
+   "path": "_arch_v46/42_数据版本管理.md",
+   "sha256": "f5a366caf4dab4c65ed35a43c414c979fa54d82d4af8904f1ebbb01b9058b718",
+   "size": 20777
+  },
+  {
+   "path": "_arch_v46/43_实验可重复性怎么做.md",
+   "sha256": "2143187a0f0c0c9330ac698a45737479ac74b38de9ead114f85c28c74ba47bb0",
+   "size": 23300
+  },
+  {
+   "path": "_arch_v46/44_小模型验证器可行性.md",
+   "sha256": "47bdc5d27fba0346b40b4c82408f912f4436a09f1fedae811ec5095c0c7016eb",
+   "size": 19663
+  },
+  {
+   "path": "_arch_v46/45_多智能体验证真的有用吗.md",
+   "sha256": "7858d05b463d5f72d4c4efbeefcbf1c2886ef6564e91e58927739698a7f58918",
+   "size": 22702
+  },
+  {
+   "path": "_arch_v46/46_轨迹层验证怎么做.md",
+   "sha256": "24cea2c66cb88c39808842ebdbef765ba03211974aeaf2e75ffccb290721772c",
+   "size": 22494
+  },
+  {
+   "path": "_arch_v46/47_知识图谱验证vs文本验证.md",
+   "sha256": "c1c1deccf1715bca482fa32b08f06937c370afb9ddb884fdafc3bffbe83fd378",
+   "size": 19642
+  },
+  {
+   "path": "_arch_v46/48_LLM-as-judge最新方法.md",
+   "sha256": "2b61716faa5eb8d37268d49ec0baae33c8a6e054bf3b40197ff7e8c0492899d9",
+   "size": 22910
+  },
+  {
+   "path": "_arch_v46/49_事实核查模型.md",
+   "sha256": "51b080bba061740fb8795205755f3be74c583332efcb96f03e5ece279ba77816",
+   "size": 22429
+  },
+  {
+   "path": "_arch_v46/50_形式化验证性价比.md",
+   "sha256": "b3e54d0d40d87ad3d90cbb65d5fed3122e4fc1962f65483696d9fe98dcf400d9",
+   "size": 23373
+  },
+  {
+   "path": "_arch_v46/51_双非本科生怎么找导师.md",
+   "sha256": "0d44e6d46b7b1c8a3e214d67911b012d915a3f46d6b8a08d9c63415e341ff7d4",
+   "size": 23739
+  },
+  {
+   "path": "_arch_v46/52_冷邮件模板.md",
+   "sha256": "050c460b29c7dff610f56a6c2e47ee19d0deeda1e22c2d152f8f108d40298433",
+   "size": 28984
+  },
+  {
+   "path": "_arch_v46/53_怎么在学术界建立存在感.md",
+   "sha256": "7869ab8ea25aa237c8ece434b5a8459a64320e1e03a2923e9cfd7b3d3126bcc6",
+   "size": 26225
+  },
+  {
+   "path": "_arch_v46/54_时间管理精确到小时.md",
+   "sha256": "c50258bc6f57693372ecdba7a48a3a304ac3b6e3648af0daa0592a15bb6a824a",
+   "size": 24370
+  },
+  {
+   "path": "_arch_v46/55_怎么读论文.md",
+   "sha256": "1cc8efe965767295b272248d50f2adcfd26abe8b6fac444a8755c9673476f312",
+   "size": 31244
+  },
+  {
+   "path": "_arch_v46/56_怎么写论文.md",
+   "sha256": "f9aa06b832e9b8b890645ca0b66d228dc668c05a52298eeeacf6d8f67e6110db",
+   "size": 19745
+  },
+  {
+   "path": "_arch_v46/57_英文写作怎么提高.md",
+   "sha256": "ef414edcae0d61c0f99f9b3d27dc148f51d208be80fbeb8667e807224a3e8c47",
+   "size": 27283
+  },
+  {
+   "path": "_arch_v46/58_怎么用LLM辅助科研.md",
+   "sha256": "918621bb81cfaa7a380c6ee8264267d2622d17a279cefd36f5e55e1af847a7b4",
+   "size": 19775
+  },
+  {
+   "path": "_arch_v46/59_怎么写技术博客.md",
+   "sha256": "0ca8bfea5a3d125dd135d73cf20bc2fa3b094008a8898c932b7b0014490f09cc",
+   "size": 20667
+  },
+  {
+   "path": "_arch_v46/60_怎么做技术演讲.md",
+   "sha256": "dda72ac5c64af991abad11374bbb57ef56d86595dbc3b678f0c0c292d942469b",
+   "size": 19611
+  },
+  {
+   "path": "_arch_v46/61_怎么建个人品牌.md",
+   "sha256": "46ac93b6dc9026bf66a90205411b837fc76ad891e361c637f179a0e70c2cab56",
+   "size": 16829
+  },
+  {
+   "path": "_arch_v46/62_嵌入式工程师2026就业市场.md",
+   "sha256": "a5707f072fa449a1a2e3a8bad4935b552949b9b2fe51d9ac063075430b9f176c",
+   "size": 16992
+  },
+  {
+   "path": "_arch_v46/63_长鑫存储嵌入式岗位JD.md",
+   "sha256": "4b2d0b6713dfafb6275afde3b6bef70fb51fbf55454956b6823e2338e236a13e",
+   "size": 22098
+  },
+  {
+   "path": "_arch_v46/64_华为嵌入式岗位JD.md",
+   "sha256": "aaca9f4fee95021af6397eceab0275b2bbc28618445a4bc62ed8eea0b310ef7a",
+   "size": 20031
+  },
+  {
+   "path": "_arch_v46/65_大疆嵌入式岗位JD.md",
+   "sha256": "1b24e4e79e9d193a5babd40672d5a1478e65c502df2384c692d046129d77bbcf",
+   "size": 24836
+  },
+  {
+   "path": "_arch_v46/66_嵌入式vs_AI后端.md",
+   "sha256": "039a4d46da1032411ef55e7c99b2a2514295e0e68ec162f26ad951920c76cf6d",
+   "size": 14680
+  },
+  {
+   "path": "_arch_v46/67_考研与科研并行时间分配.md",
+   "sha256": "2a6c1cc020e9ab533803cf6a9d299aff746e38ba876d29afe07008e90dd65542",
+   "size": 14950
+  },
+  {
+   "path": "_arch_v46/68_怎么准备复试.md",
+   "sha256": "c4862578216237aab299b5039d19565cf729799eab0a2f142f3351aa7656ac91",
+   "size": 14632
+  },
+  {
+   "path": "_arch_v46/69_考研没上岸怎么办.md",
+   "sha256": "9327c34fc9d46e386d902689c009ae923f27732d7d07cf83b3adb571be725c25",
+   "size": 14674
+  },
+  {
+   "path": "_arch_v46/70_怎么找实习.md",
+   "sha256": "d705d51d28bb52b3c410acd61ae8922b2a74c4aab48c83aa02c4e3bec5a826a9",
+   "size": 16641
+  },
+  {
+   "path": "_arch_v46/71_怎么写简历.md",
+   "sha256": "0a35b35425cf90a647055450d27b292ffa1e3c194afa8ac0f6db11dc5c089638",
+   "size": 18333
+  },
+  {
+   "path": "_arch_v46/72_怎么准备技术面试.md",
+   "sha256": "70657b280b7d0473120b2613226ea09ffd72392be5e470082c4c1d4d0b002cf5",
+   "size": 22083
+  },
+  {
+   "path": "_arch_v46/73_心理与体力管理.md",
+   "sha256": "a1c5901ad5ea2d4163966dfe15bbb91a753ba683f31624f57c1bca268d8834db",
+   "size": 23101
+  },
+  {
+   "path": "_arch_v46/74_失眠内耗怎么应对.md",
+   "sha256": "74e862f0734a7bb5b80cce9d13425319ee12a6a44065eeb6f6bdbedfdc642510",
+   "size": 22673
+  },
+  {
+   "path": "_arch_v46/75_合肥本地就业情况.md",
+   "sha256": "b589845bc506d50a6c1e743e1284e185acb0ee41d73ff87538ad1ed426f8be80",
+   "size": 31781
+  },
+  {
+   "path": "_arch_v46/76_2026-2028模型能力预测.md",
+   "sha256": "4f6ad2eadb6c303889a32cfd7c975ec39f98c11e0fe85adbce645190062aecdf",
+   "size": 17865
+  },
+  {
+   "path": "_arch_v46/77_内置验证会取代外部验证吗.md",
+   "sha256": "0a9721ab58c52c80192ee3c00f0975e7301bbff2b9b30bcbfb09cac552e0293c",
+   "size": 19518
+  },
+  {
+   "path": "_arch_v46/78_小模型验证器的未来.md",
+   "sha256": "589b250be83598a14636bf124556eae4680eb9a5bfa1f14d2292ad8f0fc3eb7e",
+   "size": 17453
+  },
+  {
+   "path": "_arch_v46/79_现在有谁在做类似的事.md",
+   "sha256": "429b68ec99c44840e2d8e0f06a4509d0da0a2805424d1d4c3ad99d9d77040f40",
+   "size": 19170
+  },
+  {
+   "path": "_arch_v46/80_大厂在做什么.md",
+   "sha256": "3d959d9f4dac8d43dfdca8f84aa17b6cbf9841dc504dc3156051668333f18a65",
+   "size": 23224
+  },
+  {
+   "path": "_arch_v46/81_阙疑的护城河是什么.md",
+   "sha256": "bb54f3779a7cdb2974c015501769a08a25cbc0fe38e6708dc4c3ae2ed6ecdba0",
+   "size": 18835
+  },
+  {
+   "path": "_arch_v46/82_12-18个月后会被追上吗.md",
+   "sha256": "330c4ce23ac5ba218bd6041656e95d77a9fdc650a98113e6194f78a5b386955e",
+   "size": 18552
+  },
+  {
+   "path": "_arch_v46/83_EU_AI_Act对验证系统的影响.md",
+   "sha256": "080483269ad91b82072970967359d0b4ed22a625488135b785e5ac41bac67c89",
+   "size": 18164
+  },
+  {
+   "path": "_arch_v46/84_中国AI监管动向.md",
+   "sha256": "7efa36d42c1394414be0d7b80580255100e49a600771897f3f024def0dce837a",
+   "size": 22393
+  },
+  {
+   "path": "_arch_v46/85_高风险AI系统的验证要求.md",
+   "sha256": "5d01041f5b9c87dc2d84b4498f60deb5754bd5f1260246021ab8a7429db0fe52",
+   "size": 21385
+  },
+  {
+   "path": "_arch_v46/86_grants怎么申请.md",
+   "sha256": "1c8da08b5755e39495bf87831d9c5550658b87bb7c72e0ba6509c63b2802c93a",
+   "size": 25954
+  },
+  {
+   "path": "_arch_v46/87_单人开源项目收入来源.md",
+   "sha256": "15497ca0697062cecd0982ed0a87a1f69af0cabaa569424697a2453d19a26ee2",
+   "size": 22053
+  },
+  {
+   "path": "_arch_v46/88_什么时候该商业化.md",
+   "sha256": "90b1710f515fce3adbf05a812a629e4197ae8f2a506e421aedf8c5c84c7c9463",
+   "size": 19114
+  },
+  {
+   "path": "_arch_v46/89_论文中了之后怎么办.md",
+   "sha256": "bca84638092d25164c5281544f593c64717422abede39540503dc00f8002d9bb",
+   "size": 22087
+  },
+  {
+   "path": "_arch_v46/90_论文被拒了怎么办.md",
+   "sha256": "c949431a243730c335c398bd16e08cf4aff0d1bcedd0aa6465cb3105719c2e2f",
+   "size": 24081
+  },
+  {
+   "path": "_arch_v46/91_项目烂尾了怎么办.md",
+   "sha256": "77a2890e70723e2468d00082bbf9c924c17fd0feddafd7032c3f7ef4af963675",
+   "size": 22160
+  },
+  {
+   "path": "_arch_v46/92_失败了怎么恢复.md",
+   "sha256": "2028c5a75f1758cda73369b3fde8f28d5340299933a40caa5cdb578334477403",
+   "size": 23911
+  },
+  {
+   "path": "_arch_v46/93_怎么用这个项目找工作.md",
+   "sha256": "58b9e78c7a75b00396d69a7f433d3678daad912e917999d20c8e6e69ba77e9ea",
+   "size": 28812
+  },
+  {
+   "path": "_arch_v46/94_怎么用这个项目申学校.md",
+   "sha256": "d2df9f8935b421cf7dd20d1d6f584b73d7613b14a90a3759b3c3802db24bfda7",
+   "size": 27628
+  },
+  {
+   "path": "_arch_v46/95_下一个项目做什么.md",
+   "sha256": "8dd2c9167bc64ce67b1dbd2d5f69b7536096bd360ee30dcd56ad2ff2ef65cf51",
+   "size": 30015
+  },
+  {
+   "path": "_arch_v46/96_技术趋势判断2027-2030.md",
+   "sha256": "486ec6e853e518fdcff18b2aa41efb217da2ad8a451ef74d7248b0a14587dcc8",
+   "size": 25766
+  },
+  {
+   "path": "_arch_v46/97_单人项目的历史成功案例.md",
+   "sha256": "f04b5d0218211355c2dca40b349b0989e877c1a579f1fcf0537a01517e097577",
+   "size": 24539
+  },
+  {
+   "path": "_arch_v46/98_单人项目的历史失败案例.md",
+   "sha256": "573f9f08a857d463df0b6dc0cbf231593076135ad7165b6dc93501ac2c639188",
+   "size": 27843
+  },
+  {
+   "path": "_arch_v46/99_来源清单.md",
+   "sha256": "22074171e810b22654015e5462dd1f45ff472101c1a2050ffc533725a36bd5ec",
+   "size": 305180
+  },
+  {
+   "path": "_arch_v46/99_这个项目的机会成本.md",
+   "sha256": "781d8128c335d826aadc5d547075080458229eedb2a0abbb3db6b4df81599504",
+   "size": 23231
+  },
+  {
+   "path": "_arch_v46/ROADMAP.md",
+   "sha256": "a1e1b1b75b5091ad1cf3aed5c47898e375828a3cf476fd6c3857c7108beefe28",
+   "size": 10279
+  },
+  {
+   "path": "_arch_v47/01_Pangram_AI检测工具原理.md",
+   "sha256": "0a8e611d76bf04dfd2c78088adf574b31536410a2faed160c94a105b5b64b577",
+   "size": 24803
+  },
+  {
+   "path": "_arch_v47/02_NeurIPS_2026_AI检测具体流程.md",
+   "sha256": "62eee84cd8cf93e8762f3a288a2a5156dfa19404beebd85db86bd4c717ebef04",
+   "size": 25944
+  },
+  {
+   "path": "_arch_v47/03_AI文本检测对抗方法.md",
+   "sha256": "aef3dd5bdf87591021836c737b638c6ec77918b57e5f06b44eb644edb189ae5c",
+   "size": 37067
+  },
+  {
+   "path": "_arch_v47/04_哪些写作习惯不会被检测出来.md",
+   "sha256": "eec7964e2abaa929de301050189e344dd7e357ff3dac6fa9f70bdf80dd6817d6",
+   "size": 38276
+  },
+  {
+   "path": "_arch_v47/05_prompt_provenance_log怎么写.md",
+   "sha256": "45547ea1f6a2c598d6b69022538d36b5471538d546da79f5948264fae3aace7c",
+   "size": 43066
+  },
+  {
+   "path": "_arch_v47/06_LLM辅助写作合规边界.md",
+   "sha256": "f7d2f6d7698841de4ca55453e283bb82d36fd2f937341bf33cb510e470ce0ea9",
+   "size": 45042
+  },
+  {
+   "path": "_arch_v47/07_已被desk_reject的论文案例.md",
+   "sha256": "d4382d10c8c8b414fda4b9faef48b5910191f1b9c6d2544fbb8a6b01449a9c41",
+   "size": 43174
+  },
+  {
+   "path": "_arch_v47/08_论文各section人AI分工.md",
+   "sha256": "d444615bc1ba2746d4a93dccdb3509abccc19a03579740e0b66e4401df02e88b",
+   "size": 19815
+  },
+  {
+   "path": "_arch_v47/09_学术英文人类风格特征.md",
+   "sha256": "986b5b2701eddf4d1c249b29ccef72b14c2f5b3d5f7903e85cb495839998d25a",
+   "size": 20305
+  },
+  {
+   "path": "_arch_v47/100_联邦学习攻击.md",
+   "sha256": "65574ea79c1b55d6bc1759f91901a8cb9aa0a163a018e9b451039d3d87b6b2e0",
+   "size": 19411
+  },
+  {
+   "path": "_arch_v47/101_评测污染攻击.md",
+   "sha256": "6f166de49fd67b8338840dc3d1b4460175d5cfe2bffb0df20c8cc449acc4eb0e",
+   "size": 22609
+  },
+  {
+   "path": "_arch_v47/102_刷榜攻击方法.md",
+   "sha256": "b6a886b6ef446797d7ca8e0bfbf5128bce0f6f4ca8f8686b028e689f9402239d",
+   "size": 25093
+  },
+  {
+   "path": "_arch_v47/103_红队方法论.md",
+   "sha256": "1eb3f3ac0a15c56ec659ba914feafb312eb71d993f39eb90c806de4912345c12",
+   "size": 19706
+  },
+  {
+   "path": "_arch_v47/104_攻击检测方法.md",
+   "sha256": "23c20f1d4564e8e3880aafb336f1634a87b78f8fcdefad88bd87332ccefb1bb0",
+   "size": 22378
+  },
+  {
+   "path": "_arch_v47/105_零信任架构.md",
+   "sha256": "0ff98ed311fa58840f1669bab400c9aad88dc96aad8575cd775c3e504637cf37",
+   "size": 24874
+  },
+  {
+   "path": "_arch_v47/106_神经网络仿生原理.md",
+   "sha256": "c31d05d9fe5ae97c23a70af6d46b7f87199d9e39aa27a0b2a98d3fef934e9a2a",
+   "size": 17670
+  },
+  {
+   "path": "_arch_v47/107_进化算法仿生.md",
+   "sha256": "6d9208bfa435d84717879e34d611f585bb8b005a93e2615c189da6b48ce82869",
+   "size": 24455
+  },
+  {
+   "path": "_arch_v47/108_蚁群算法.md",
+   "sha256": "540bd1ff24f7e4779a45e680a11e42b019801160b2fc202d0cf40b4bdbd4968c",
+   "size": 24494
+  },
+  {
+   "path": "_arch_v47/109_粒子群优化.md",
+   "sha256": "151bd1d34649cc2ce0e76de9e8378652ab022f7f5d822cab3a577c4f7c6bd8f1",
+   "size": 20698
+  },
+  {
+   "path": "_arch_v47/10_引用怎么写才不像AI.md",
+   "sha256": "318fc7ff0e3fdc402c5309abcef5f26f9a80b690b3facd9115f36f947453447a",
+   "size": 20991
+  },
+  {
+   "path": "_arch_v47/110_人工免疫系统.md",
+   "sha256": "1774215fafd98e2bfe20940ca7c578d8e3c17377a2249173858753ed8adfd67b",
+   "size": 22114
+  },
+  {
+   "path": "_arch_v47/111_DNA计算.md",
+   "sha256": "662786748ca07ff1da37c7d4e0a0f9fdfd473d8c57c356761c2f67edb0f8e4df",
+   "size": 22740
+  },
+  {
+   "path": "_arch_v47/112_群体智能.md",
+   "sha256": "59acdef9885cf7001bd5ad650a9ad16d36194432c171534d494bf5599f0ae757",
+   "size": 24173
+  },
+  {
+   "path": "_arch_v47/113_脑科学与类脑计算.md",
+   "sha256": "3f77898212d38bd92dc08d39a1a354e6ee3d9a2656eb4ce7e5abfcd19eb42e12",
+   "size": 22668
+  },
+  {
+   "path": "_arch_v47/114_感知系统仿生.md",
+   "sha256": "db39c2fcba943bdf145131a3d384f33b777cb1095c0166cab2e85e1a8c330542",
+   "size": 21973
+  },
+  {
+   "path": "_arch_v47/115_记忆机制仿生.md",
+   "sha256": "a45e5e6a77034c6ebe9ea620c8218a81974ae96fd4c0e5d9af3f5d29bb8e313f",
+   "size": 15447
+  },
+  {
+   "path": "_arch_v47/116_学习机制仿生.md",
+   "sha256": "4d66045f42b55d4dcab736640fdf89992a753aee142198ca06c4bba012e61fb8",
+   "size": 15915
+  },
+  {
+   "path": "_arch_v47/117_免疫系统对验证的启发.md",
+   "sha256": "5be0e75192025e5efee725ec0b1484382e65ff48913d234c15c4438962336d79",
+   "size": 15105
+  },
+  {
+   "path": "_arch_v47/118_生态系统对系统设计的启发.md",
+   "sha256": "3898bf3d3eeb6d65da5c1c57f03e26c90b489c6aff4a2f0b20acf66fa796b187",
+   "size": 14113
+  },
+  {
+   "path": "_arch_v47/119_自组织系统.md",
+   "sha256": "18fc88ab32e86128696bd76af524e8e7c4bece88795a0bbe1a1a5d3687c82054",
+   "size": 12622
+  },
+  {
+   "path": "_arch_v47/11_rebuttal怎么写才不像AI.md",
+   "sha256": "6754fa3104cdcc6cc13828f043612d7bb2266df77fa1cd2289ed581a247a75bf",
+   "size": 29714
+  },
+  {
+   "path": "_arch_v47/120_涌现现象研究.md",
+   "sha256": "69b7fed86aee43b4f0cda18123344356e68b9dbdbfe9d7c909631bf9c9885762",
+   "size": 13416
+  },
+  {
+   "path": "_arch_v47/121_微内核架构.md",
+   "sha256": "5582dc71fdc3ff06edc1cfb6ebd9af6786b87424d5f296cdcf8669f87b64d7c4",
+   "size": 12768
+  },
+  {
+   "path": "_arch_v47/122_分布式系统一致性.md",
+   "sha256": "c138e027bb89999573898bbaa07b048b784f639bf1bd2927cae7c042fbd2fcda",
+   "size": 13337
+  },
+  {
+   "path": "_arch_v47/123_容错系统设计.md",
+   "sha256": "a1dbfb8acb28dd4f6a8778967bacbd7e82837d91f61dc1a2c7a070d5dfcd2fa3",
+   "size": 16620
+  },
+  {
+   "path": "_arch_v47/124_高可用架构.md",
+   "sha256": "8004b3c76bdee770b2245068f15b0f60e106f027c870e76444d41fb24c78ff40",
+   "size": 14972
+  },
+  {
+   "path": "_arch_v47/125_事件驱动架构.md",
+   "sha256": "46608af0b5f977acc150672e713e52b27d5e9b5038f54d2d64467f0acb67d20e",
+   "size": 15575
+  },
+  {
+   "path": "_arch_v47/126_CQRS与事件溯源.md",
+   "sha256": "7e1fa4f371d7c35442ac4e8b140f0fd1e56ede5c5806a33cd1485d1959283643",
+   "size": 15004
+  },
+  {
+   "path": "_arch_v47/127_插件系统设计.md",
+   "sha256": "30a57240783b7a492a80beb251b512229149f54b304b22c61443e9b50e7720f8",
+   "size": 16895
+  },
+  {
+   "path": "_arch_v47/128_沙箱技术.md",
+   "sha256": "997268c21999e1c5698430ae3a1e50b0202009ce1ff58f0d5f83805b09e34894",
+   "size": 17739
+  },
+  {
+   "path": "_arch_v47/129_容器与虚拟化.md",
+   "sha256": "80001e5d3979d77587d85e33b5ec7f7f3dcf87a5a742feff7a8bada9003cef42",
+   "size": 17288
+  },
+  {
+   "path": "_arch_v47/12_AI检测误杀案例.md",
+   "sha256": "09314fd2a99ad44e45bc03c720b7da68e854f947dae4b22437249b7e7ae46501",
+   "size": 23711
+  },
+  {
+   "path": "_arch_v47/130_WebAssembly应用.md",
+   "sha256": "5e4077bac62a7a572296d0d8c08125c56b9a5062d9b7680037c9db1fe2fb729c",
+   "size": 16715
+  },
+  {
+   "path": "_arch_v47/131_编译器设计.md",
+   "sha256": "6c3bc97985c85218d6073201222c6267f7ca8ca917dcf6e921ea3b6eab9d2328",
+   "size": 15856
+  },
+  {
+   "path": "_arch_v47/132_程序分析技术.md",
+   "sha256": "ac563fcf103f706e5a82ad04f899ed4e8343b7216ae7d54d5264e92b70b88dcf",
+   "size": 15665
+  },
+  {
+   "path": "_arch_v47/133_静态分析vs动态分析.md",
+   "sha256": "165888732d13d2c87d9fe86ea118ef9feaabe0d3897d5c519daff363b964e118",
+   "size": 14731
+  },
+  {
+   "path": "_arch_v47/134_符号执行.md",
+   "sha256": "724b4f0bfa4522bfa3861217a1c24f2d0eb970465e26a13fcea82ec33a2880fb",
+   "size": 14798
+  },
+  {
+   "path": "_arch_v47/135_模糊测试最新进展.md",
+   "sha256": "ad7fde61704bf09379877f43a9cc9ddfeb568c2fa8a91f6250090304eadd9cf2",
+   "size": 15519
+  },
+  {
+   "path": "_arch_v47/136_单人项目找合作者.md",
+   "sha256": "81150ef03830d821f3f01161c261c577c9ce702ac192a1c8bbed01d83dc7e70f",
+   "size": 13540
+  },
+  {
+   "path": "_arch_v47/137_找导师要推荐信.md",
+   "sha256": "e707d79ef16efb131be4ae0ad949a395182cb476ba25c71313d55138eefa0a00",
+   "size": 12680
+  },
+  {
+   "path": "_arch_v47/138_用项目申研.md",
+   "sha256": "681c714b2e49203ffc946ed6ae2babfd2696fce9bc3f4e0bb6e944235109eb9c",
+   "size": 13316
+  },
+  {
+   "path": "_arch_v47/139_用项目找工作.md",
+   "sha256": "8ea7aac737b1553c031b8c79513eeb631d664669f96c893b7380a09102edf196",
+   "size": 12830
+  },
+  {
+   "path": "_arch_v47/13_学术写作风格迁移方法.md",
+   "sha256": "4cfc0a9d075a4d179ab07ab2b0d319269bbe05681c5e1adfe002474120d24f33",
+   "size": 21291
+  },
+  {
+   "path": "_arch_v47/140_技术博客写作.md",
+   "sha256": "2cafa8064f50a65e92f2cc23b876f5a2f64c6b77b3020e8c1002fe519aa11047",
+   "size": 12940
+  },
+  {
+   "path": "_arch_v47/141_建立个人品牌.md",
+   "sha256": "d4b53d279edbab4f34197ad2c2f8ec89babb79046b645f442f03de1b85c79f92",
+   "size": 14628
+  },
+  {
+   "path": "_arch_v47/142_开源拿star方法.md",
+   "sha256": "b3cdbb8f6a8395bf5dd37bc9cfd88710e5b220b5c0faa3e2bb1a716a21b27fdd",
+   "size": 15939
+  },
+  {
+   "path": "_arch_v47/143_README怎么写才有人star.md",
+   "sha256": "7918f3b059f295256d218de47372df4b01f126f3fb8a6d74494a59c08a5befea",
+   "size": 14683
+  },
+  {
+   "path": "_arch_v47/144_项目能拆几个论文.md",
+   "sha256": "5ce5e0a2ba6efc807c16a3974737f1fd6ee1746118769a3e06d957b1f21b8983",
+   "size": 14707
+  },
+  {
+   "path": "_arch_v47/145_能申请什么grant.md",
+   "sha256": "8d29d64aea7a5b2b0cb085fa7c715d59eddc4c9cfb3e4f3f7ac2af093d25707f",
+   "size": 14370
+  },
+  {
+   "path": "_arch_v47/146_能参加什么比赛.md",
+   "sha256": "86ed4cb5c15ed93f16be316999276aa9d9d05214c5bde42f4d6c387c310c06c9",
+   "size": 19913
+  },
+  {
+   "path": "_arch_v47/147_项目最大风险.md",
+   "sha256": "f7130a711a459260c513cefd6342027ed5f21114b3df6fdc50d3ed460825f470",
+   "size": 18176
+  },
+  {
+   "path": "_arch_v47/148_技术趋势2027-2030.md",
+   "sha256": "b1dec004239f56c2601c1b30e5af4aca02f7658d33d41384827cfa464ae004a7",
+   "size": 16254
+  },
+  {
+   "path": "_arch_v47/149_单人项目成功案例.md",
+   "sha256": "cd779acb93deda93c9d30162cbbaebf7655cbab3cd2d7f062a2065ee05fe55e5",
+   "size": 13558
+  },
+  {
+   "path": "_arch_v47/14_人类学术写作的独特特征.md",
+   "sha256": "295843a5e82a5768ddb34fa63b7fbf78384b191ffc39e93f4c213648009c7bc9",
+   "size": 23813
+  },
+  {
+   "path": "_arch_v47/150_单人项目失败案例.md",
+   "sha256": "f23d3e5d72941f87079f8d8b87ab5f8685c848133108ba7c11ff03b8ca0fdd70",
+   "size": 17958
+  },
+  {
+   "path": "_arch_v47/15_AI辅助研究的伦理边界.md",
+   "sha256": "f5cc4da25603dad3099f6d4cc3d0085a7419db7de09c5d5345b67711e3f59d52",
+   "size": 28701
+  },
+  {
+   "path": "_arch_v47/16_227项工作树漂移怎么清.md",
+   "sha256": "4137ec6fbe4f459e19245b79c5eab19db9faee1875415d6ba65b6d0b3aa78155",
+   "size": 20902
+  },
+  {
+   "path": "_arch_v47/17_README怎么写.md",
+   "sha256": "55a5faf6a0b48fe28257b603270ec76641d8bc20512958ff5e74a185081dd4a5",
+   "size": 15043
+  },
+  {
+   "path": "_arch_v47/18_Croissant元数据怎么写.md",
+   "sha256": "f10059d81d09d65ec965a73212c4da0e5549bfd7e6085da8383bd2efe90f6dbc",
+   "size": 14207
+  },
+  {
+   "path": "_arch_v47/19_匿名化仓库怎么搞.md",
+   "sha256": "3c441ef23f529b6ed038e1a1eb7af39460b735f079e1471f63771a3c34cff4af",
+   "size": 12414
+  },
+  {
+   "path": "_arch_v47/20_代码可执行开放最小要求.md",
+   "sha256": "12c49b24de29a7a2e40711a843f31507521a897b0003446d0853c8368b50e79e",
+   "size": 22380
+  },
+  {
+   "path": "_arch_v47/21_Docker复现最佳实践.md",
+   "sha256": "e78dcbb2a6aa10f4b43d33380d8c921316fc23fd6d6b07f2bb11f0def43b4c65",
+   "size": 20006
+  },
+  {
+   "path": "_arch_v47/22_Dockerfile怎么写真复现.md",
+   "sha256": "072cfbe9e119be32c52b4d6f4281ac2e6baa42ad2137c3552b4e5173cb1ba033",
+   "size": 23310
+  },
+  {
+   "path": "_arch_v47/23_依赖锁定pip_poetry_uv.md",
+   "sha256": "cfe507d8e4381b7bc36a1a098b9d1c567ddb466e03e6ed6e38907e24b34e9f68",
+   "size": 22161
+  },
+  {
+   "path": "_arch_v47/24_环境变量与密钥管理.md",
+   "sha256": "d05c1a2eaad53a8ccb1f6868b937bac9c23dabbd440c30f22bd706df3b679fc0",
+   "size": 26440
+  },
+  {
+   "path": "_arch_v47/25_CICD最小配置.md",
+   "sha256": "5687867a4bf15404441444ad5808626c4e9e489a4924dc8976c6b44b6189410c",
+   "size": 23176
+  },
+  {
+   "path": "_arch_v47/26_REPLICATION.md怎么写.md",
+   "sha256": "0b4d6e46cf52aa2ef1835cfccdfe4be63c39cfcbca4b73ada7127f24694cb5ca",
+   "size": 24617
+  },
+  {
+   "path": "_arch_v47/27_实验可重复性checklist.md",
+   "sha256": "68b3278abc7a73b4eeb5885f09057a85e5c026a36431525896d6b375761a0354",
+   "size": 29758
+  },
+  {
+   "path": "_arch_v47/28_Git历史清理与敏感信息清除.md",
+   "sha256": "3002b7311022f7ffac7a3f31fc6f79caee46fb83c55504460ae80a6f0b753385",
+   "size": 12451
+  },
+  {
+   "path": "_arch_v47/29_多仓库与单仓库管理.md",
+   "sha256": "c2a5c12cc31d2b1fdf26f45bfceff5b98cf4ab6945a73e022fa7666197f95ebd",
+   "size": 11983
+  },
+  {
+   "path": "_arch_v47/30_DVC数据版本管理.md",
+   "sha256": "13f87cdf02c6f27e92212ed6808cfee5d543466aa6c66116024c84a991531eca",
+   "size": 11810
+  },
+  {
+   "path": "_arch_v47/31_43.8%算术不自洽怎么修.md",
+   "sha256": "642249c6f9e28991e6b2ef6d64e11ce75c42842a5fe63c116b89eeeaf0886121",
+   "size": 19832
+  },
+  {
+   "path": "_arch_v47/32_Clopper-Pearson精确计算.md",
+   "sha256": "f3c700d1990a25103ee68986321ba0dc1476fbe685b9aa166f76ddeb7e46d8ef",
+   "size": 23514
+  },
+  {
+   "path": "_arch_v47/33_小样本检出率置信区间.md",
+   "sha256": "52f663aaeee966b6ce569be7c6ffe585cfec042d2b2bb306008ecf99f752725d",
+   "size": 26536
+  },
+  {
+   "path": "_arch_v47/34_Fisher精确检验vs_McNemar.md",
+   "sha256": "92f73707784a68a1d75844fb2fad1073a3301b525c83b2a8bc7f4a70c6a71e02",
+   "size": 27056
+  },
+  {
+   "path": "_arch_v47/35_效应量怎么算.md",
+   "sha256": "3a31838ac7a8721b116b40174baff0610e6441ed8663c6dfbb77e2eac11f5c74",
+   "size": 24937
+  },
+  {
+   "path": "_arch_v47/36_多组比较校正.md",
+   "sha256": "260ea10d5ed5e87fa699bdd117db0b21b54d58390b8ab8b048e06b15398546b0",
+   "size": 28259
+  },
+  {
+   "path": "_arch_v47/37_聚类相关怎么处理.md",
+   "sha256": "c3cb2d20b7b8bb703131a700908ebd09a31717b6973be482cf9723a2105212ce",
+   "size": 29862
+  },
+  {
+   "path": "_arch_v47/38_测量偏差.md",
+   "sha256": "263f8ef478a174e0b8e19d3693b182fad74d1a203fbf51e952a3c429c1cc189f",
+   "size": 28839
+  },
+  {
+   "path": "_arch_v47/39_评分者一致性.md",
+   "sha256": "d4dbc210a074b7e7c07482173da32b766965c7397f4adb14636d1fd253639400",
+   "size": 26702
+  },
+  {
+   "path": "_arch_v47/40_ground_truth构建.md",
+   "sha256": "f20996a6eacb215045df04c2c0b73e4f8477be289bf579f4c2ee26b7c4c0454a",
+   "size": 21919
+  },
+  {
+   "path": "_arch_v47/41_编译器优化假miss.md",
+   "sha256": "4049a3836975a5ee86124b028aad1dde01899dd0f8148a4cc3954520c457de1d",
+   "size": 18680
+  },
+  {
+   "path": "_arch_v47/42_sanitizer缺失报告.md",
+   "sha256": "f9d903b53ee037ec4dc28f2197dbbae960bf6052b9c84873413a617604d71a6f",
+   "size": 18619
+  },
+  {
+   "path": "_arch_v47/43_贝叶斯vs频率.md",
+   "sha256": "a5d70a13f12e908b52bb6bbb9ec403985edde55a4ef7a7cb3656415de36c8bf1",
+   "size": 25173
+  },
+  {
+   "path": "_arch_v47/44_序贯检验e-process.md",
+   "sha256": "7126caf81fbcc312fd54356bd344287d63800d0954414ac04d3076c34bf96fd9",
+   "size": 20564
+  },
+  {
+   "path": "_arch_v47/45_缺失数据处理方法.md",
+   "sha256": "76ddaf3f5f95ab4435954b6bf17c11d94609f6f3181d3c0e64b813d38b48cab2",
+   "size": 19908
+  },
+  {
+   "path": "_arch_v47/46_形式逻辑在验证中的应用.md",
+   "sha256": "c277ac24e3876dbfbe8ad974f4ef4db5c1477df733ebfb7402bf3a3c881846b4",
+   "size": 19759
+  },
+  {
+   "path": "_arch_v47/47_类型论与证明助手.md",
+   "sha256": "b6cdc98776db79f162f538140e24fa1af09f580386090fd6d85f4e3f20237e06",
+   "size": 20571
+  },
+  {
+   "path": "_arch_v47/48_不动点定理与自指问题.md",
+   "sha256": "8bf16f141310e08c986a222fa375119da2baa809f76072a04e32ac35b6077b29",
+   "size": 22803
+  },
+  {
+   "path": "_arch_v47/49_图论在知识验证中的应用.md",
+   "sha256": "c5b4f66c86e74e55bf1123eaba113e2bbc58b96a1ca722057cf07f40131ca45c",
+   "size": 22573
+  },
+  {
+   "path": "_arch_v47/50_信息论与不确定性量化.md",
+   "sha256": "68e982f3866671aecafb4908b056e059d2586559deba0f5773d4c95682320646",
+   "size": 24681
+  },
+  {
+   "path": "_arch_v47/51_概率论与判决理论.md",
+   "sha256": "cfc3baa61734a66bd22ebfd5e640b31dc3b5a26452fb5edb95ada4718a2e0da4",
+   "size": 25274
+  },
+  {
+   "path": "_arch_v47/52_格论与偏序四态判决.md",
+   "sha256": "f756abe11bbeea1742b7e4c23d669ac0f5bca07fe115cc535b38debff5216716",
+   "size": 26467
+  },
+  {
+   "path": "_arch_v47/53_范畴论对系统设计的启发.md",
+   "sha256": "c6e32a5d4b8367cde23e53e3f32947ef9c2eae454496231e0332322f75aff74d",
+   "size": 25592
+  },
+  {
+   "path": "_arch_v47/54_模型论与形式语义.md",
+   "sha256": "d73fe327bace4c378eeac713377dadd84a02c1d677568f58939561c4174f130c",
+   "size": 27099
+  },
+  {
+   "path": "_arch_v47/55_可计算性与Rice定理.md",
+   "sha256": "a43a71b8c8d65afd19df93df84eae9b3fc396a2c42c587ab862a70f1d6ab7940",
+   "size": 21193
+  },
+  {
+   "path": "_arch_v47/56_数论在哈希密码中的应用.md",
+   "sha256": "a6a4a176c42ca5b6c5d40dc43bba62d56f999fc82fdffd319dfa781cf0a92bab",
+   "size": 25170
+  },
+  {
+   "path": "_arch_v47/57_组合数学在测试中的应用.md",
+   "sha256": "1094ad99961d6fd1b2a2d5024b13df8947568c4e24edbedfff7e9d4070c86a33",
+   "size": 26394
+  },
+  {
+   "path": "_arch_v47/58_拓扑学对系统结构的启发.md",
+   "sha256": "ef70eb37e3d5198d5bcef813f07a2ad4c6e61457c50241f47e32bfd461497521",
+   "size": 30450
+  },
+  {
+   "path": "_arch_v47/59_测度论与概率验证.md",
+   "sha256": "b11078b2f4f05494139b08a6621bfbed46a16f39af41db141a0be12d34067b12",
+   "size": 35598
+  },
+  {
+   "path": "_arch_v47/60_数学证明自动化的历史.md",
+   "sha256": "6bee62611682e549b00407c732d1713ea35285a3f54c47f8eec5d2c8da8dd048",
+   "size": 34996
+  },
+  {
+   "path": "_arch_v47/61_关系型vs文档型vs图数据库.md",
+   "sha256": "c42456dcc4cc143942e76c0581666f028f205d1bad6ad0c1c02111e32aacb831",
+   "size": 29971
+  },
+  {
+   "path": "_arch_v47/62_SQLite在验证系统中的应用.md",
+   "sha256": "51638443809fd7816366880f71510441669a143a79dfd82d425783d249a0cb88",
+   "size": 56628
+  },
+  {
+   "path": "_arch_v47/63_知识图谱存储方案.md",
+   "sha256": "2eacc06643d75346a6c2cbe9cf4f7cc53f8974657faf2a49ac5faff66559fb08",
+   "size": 29999
+  },
+  {
+   "path": "_arch_v47/64_append-only存储设计.md",
+   "sha256": "2f6aa0af26d46e3809b1cbaf466e526f1ee39206dc69437af371417fd90f3c87",
+   "size": 15439
+  },
+  {
+   "path": "_arch_v47/65_Merkle树在数据库中的应用.md",
+   "sha256": "0fc72e9b349a426a192d7a3ee081eee52086ddb81b9593ccd4a9c358cac252e0",
+   "size": 21929
+  },
+  {
+   "path": "_arch_v47/66_数据完整性校验方法.md",
+   "sha256": "5d470114a1ec932646473b0348efa99547e286735e424f543cfa2866f2d99eed",
+   "size": 18500
+  },
+  {
+   "path": "_arch_v47/67_时序数据库.md",
+   "sha256": "ab5413045bba18140f9500a11896bff78437ea95a5d686a714a2f86fd3c345c6",
+   "size": 21357
+  },
+  {
+   "path": "_arch_v47/68_向量数据库embedding检索.md",
+   "sha256": "667117b63230db32fa11e44f448839cba5c98b3ef573a61978765c89835aba5d",
+   "size": 26094
+  },
+  {
+   "path": "_arch_v47/69_数据库事务与一致性.md",
+   "sha256": "df06e9988d18d1c1b8bcfda5be1fd6aa74261bf92065f90409591d0b79d8f195",
+   "size": 34415
+  },
+  {
+   "path": "_arch_v47/70_数据备份与恢复策略.md",
+   "sha256": "2000b501ffe48f352e3ab58ad9f41ae2731560feaa06595a4e5d575d70f4a5cf",
+   "size": 29487
+  },
+  {
+   "path": "_arch_v47/71_嵌入式数据库选型.md",
+   "sha256": "d10a5023093d79c206edf09ab1a00def802099a9119a6f16570473975df227d1",
+   "size": 22742
+  },
+  {
+   "path": "_arch_v47/72_数据仓库vs数据湖.md",
+   "sha256": "f9dcae6005ec87320758d958b6df0784a5bf0681095073eb37c793284b434c9d",
+   "size": 24186
+  },
+  {
+   "path": "_arch_v47/73_数据库索引设计.md",
+   "sha256": "00b154e702a6216a6fed24f08920e30cd8158cf1c5e5ba2bbaceeb9aa7ea2f7c",
+   "size": 21920
+  },
+  {
+   "path": "_arch_v47/74_数据迁移方案.md",
+   "sha256": "9fec88017b13084d0a9e586ba03fbc361c2e5f62dad068f5e2da6b4f67b4d311",
+   "size": 28347
+  },
+  {
+   "path": "_arch_v47/75_存储格式选型JSON_Parquet_Arrow.md",
+   "sha256": "9d0424e3d78c2caa1e3d4d96921efbfc0c92929990778cfd10f3fe27fd36cab2",
+   "size": 27851
+  },
+  {
+   "path": "_arch_v47/76_AI能否自己发现新问题.md",
+   "sha256": "f046d63e4c79bad9651eedf95c9c84fd7d868cd0d95c36a38e644c4699f6b8a6",
+   "size": 37194
+  },
+  {
+   "path": "_arch_v47/77_自动定理证明的历史.md",
+   "sha256": "4cea22edeeb7920f8a2cde42567e74cfea189f0b1912ee5e55dcf3c7dad63548",
+   "size": 34375
+  },
+  {
+   "path": "_arch_v47/78_程序合成program_synthesis.md",
+   "sha256": "099b986297cd9c9fed5184a773c980f671caf0d9466d215739c3eaa13d68b285",
+   "size": 33702
+  },
+  {
+   "path": "_arch_v47/79_遗传算法与进化计算.md",
+   "sha256": "550ec29b0940269971e81af8e5619409488016db581d8aa6686dcdffdaf04943",
+   "size": 33266
+  },
+  {
+   "path": "_arch_v47/80_神经架构搜索NAS.md",
+   "sha256": "3d0054efa50cbde8e53949724f0bee8fb8bc2fc5e36ece62f148a835b325e330",
+   "size": 20203
+  },
+  {
+   "path": "_arch_v47/81_自动机器学习AutoML.md",
+   "sha256": "0322fc9a362380b16d9750f09e0eae42e346d0a5c2eaa3d3bb8f5679b086ae35",
+   "size": 25241
+  },
+  {
+   "path": "_arch_v47/82_强化学习自我改进.md",
+   "sha256": "0db3d62c856be71b458c677f7ce032e36cda4fa7f96472bd7265524181d7b591",
+   "size": 20786
+  },
+  {
+   "path": "_arch_v47/83_好奇心驱动学习.md",
+   "sha256": "9f99e91b2b9ec8dd7aebbd8aba04e6bb33add1ddb023e17748ff2a03b69eb52a",
+   "size": 19211
+  },
+  {
+   "path": "_arch_v47/84_开放式进化.md",
+   "sha256": "2a60abc8f4928babcb2f9631dedfb628f13f3376f7123eeb8fe8e2b4f7053878",
+   "size": 26786
+  },
+  {
+   "path": "_arch_v47/85_新颖性搜索.md",
+   "sha256": "1c1ad2438f2b5d06e0f0162ca1920b88ad6a2c0b562337951fa06e662ec14014",
+   "size": 17808
+  },
+  {
+   "path": "_arch_v47/86_自我修改代码的安全.md",
+   "sha256": "e46f7b325ec124f171dcf0685f0a1558ea0b7695e91803a7f80c4b35eaa4a653",
+   "size": 19162
+  },
+  {
+   "path": "_arch_v47/87_AI发明创造的真实案例.md",
+   "sha256": "c7414d24afdae9f4f7d43aaf11ff098d5e2a897858d48c6cca9ae08aae8427df",
+   "size": 17074
+  },
+  {
+   "path": "_arch_v47/88_元学习.md",
+   "sha256": "48a8bdf33f74b077ab342ee7ebe4afbbc640e239fa3084f504896ec74ecff6ac",
+   "size": 22536
+  },
+  {
+   "path": "_arch_v47/89_终身学习与持续学习.md",
+   "sha256": "aeeff9a74b9c7a297c45ed8bd0539ccaee33b4fe037035b14be6fd1bbdbda576",
+   "size": 18835
+  },
+  {
+   "path": "_arch_v47/90_AI能否提出新科学问题.md",
+   "sha256": "0fb6d074c68e7cba601a37dbe3449100b8853d0b4e4e657d0fc4953285d06adc",
+   "size": 20457
+  },
+  {
+   "path": "_arch_v47/91_数据投毒攻击方法.md",
+   "sha256": "b1bc8ef333211f7cbb86f2575e58b4bbcbd9d10542923aa9ba86f0b416c6d95f",
+   "size": 21442
+  },
+  {
+   "path": "_arch_v47/92_后门攻击与防御.md",
+   "sha256": "f460db089a6c63dd6797802ff0462d4c49088754a18f7732de6ea86cc7741e2c",
+   "size": 19720
+  },
+  {
+   "path": "_arch_v47/93_对抗样本攻击.md",
+   "sha256": "49964e9a2c4d6ae00687fa3f79eed90399d8ff3ae76b553faa62b4e5d70c3b73",
+   "size": 18795
+  },
+  {
+   "path": "_arch_v47/94_prompt_injection攻击.md",
+   "sha256": "07fc9602c40f3af5594f02f32bf25565aa2e69f7e20b623cc93d6b167dab913b",
+   "size": 17076
+  },
+  {
+   "path": "_arch_v47/95_供应链攻击.md",
+   "sha256": "bcbe995b938317fe12e2c8c0540557414f3e5cea5b57ae193b4ecefdad8b9f44",
+   "size": 17290
+  },
+  {
+   "path": "_arch_v47/96_模型窃取攻击.md",
+   "sha256": "9e89f5f41cd8401a68d347c968faeff9cd8ca942501664c9bd2550b8510b67fc",
+   "size": 19827
+  },
+  {
+   "path": "_arch_v47/97_成员推理攻击.md",
+   "sha256": "9e2be75e0459ea33bd0cf9526a44e7c3e7919fc56290d33dc471d314e9b2f6a7",
+   "size": 25086
+  },
+  {
+   "path": "_arch_v47/98_属性推理攻击.md",
+   "sha256": "60fce6642c45e9b063f152e3e7d9c5cf1c302ff3d2e24c5afb3276a90c1274ca",
+   "size": 21441
+  },
+  {
+   "path": "_arch_v47/99_模型逆向攻击.md",
+   "sha256": "8ec114e6154007c152cf393e73076285599b039bbdd46f75a6ec8775fe5f02a9",
+   "size": 21336
+  },
+  {
+   "path": "_arch_v47/extra_AI自我批判.md",
+   "sha256": "7afc9b083077c76f34e125e18ad25098905542d1a34771ff9a21259428130126",
+   "size": 22854
+  },
+  {
+   "path": "_arch_v47/extra_存储选型决策框架.md",
+   "sha256": "ec7fa49ee284dcbffeb6031e36652d15365f6c92d8110c597d4cda6da742848f",
+   "size": 18107
+  },
+  {
+   "path": "_arch_v47/extra_审计取证.md",
+   "sha256": "50323af1cf7279d97efd7de93a6d89266ce904f11e1adf7ed167e174d19f3727",
+   "size": 19265
+  },
+  {
+   "path": "_arch_v47/extra_投毒检测防御.md",
+   "sha256": "a707179cb7cf6efd1507e2e593423c88ac77b051897109c146b02bf6612ce62e",
+   "size": 19884
   },
   {
    "path": "_auto/inbox/604.md",
@@ -1981,112 +4881,7 @@
    "path": "_auto/inbox/608.md",
    "sha256": "3743428d2987b1b71bfd36f6e415d0440e116ac400a24d5e267de18cada35bbb",
    "size": 20693
-  },
-  {
-   "path": "_auto/inbox/609.md",
-   "sha256": "8339d548e6f198601e7a10be54792a4223edb689aef38f2894e5b63c14fb0e73",
-   "size": 41001
-  },
-  {
-   "path": "_auto/inbox/610.md",
-   "sha256": "4a8adeb5bf7ce7407d5301a3da3a8c50f687214f2823e93a8e211d9603dd3f8b",
-   "size": 46936
-  },
-  {
-   "path": "_auto/inbox/611.md",
-   "sha256": "743e8ca567264f07e711fc45b8c832b48bddc67791a4c72f9b7d584004b86d43",
-   "size": 21309
-  },
-  {
-   "path": "_auto/inbox/612.md",
-   "sha256": "db6057545b573164b13889cd19fbb1a5ba762a015e7e2e1ed10ff843c39bd291",
-   "size": 41433
-  },
-  {
-   "path": "_auto/inbox/613.md",
-   "sha256": "fa35256a21fea043b8eb0c848f4eb5ab70c125aa147ebfcb0b305ea848b4f841",
-   "size": 25350
-  },
-  {
-   "path": "_auto/inbox/614.md",
-   "sha256": "c25e0069262d518387d36eaecccd592fc2453ee9b9a17c84526d19601dddbc58",
-   "size": 31104
-  },
-  {
-   "path": "_auto/inbox/614_draft.md",
-   "sha256": "6f3601a18ad3f4492f1caa59e32e93a4405a0592f0ae03b6933e559000199872",
-   "size": 7989
-  },
-  {
-   "path": "_auto/inbox/615.md",
-   "sha256": "d687f3aac5233c5077724b22173a932141d44604f20a72652666d322ef53b746",
-   "size": 32010
-  },
-  {
-   "path": "_auto/inbox/616.md",
-   "sha256": "0a90a82c2e163660fffc7816d24576648cfb1cf4a24260cfe36f5177c8bb8a4d",
-   "size": 35195
-  },
-  {
-   "path": "_auto/inbox/617.md",
-   "sha256": "7068131dec850071c3b98799f3853b39e4b5530026d0e37e008f79be1d110941",
-   "size": 62260
-  },
-  {
-   "path": "_auto/inbox/618.md",
-   "sha256": "9c12708262d4f0a75f2008d748e2556fb1fbdc374343f90d0afc13910e41aa5f",
-   "size": 19813
-  },
-  {
-   "path": "_auto/inbox/619.md",
-   "sha256": "cd470eb4f796423d4e1991e429af2aebb938aee783cac70b5031a52842af7d69",
-   "size": 19004
-  },
-  {
-   "path": "_auto/inbox/619_codebuddy_review_prompt.md",
-   "sha256": "0cb22d64b84de0c7fb1d7e0c483ee391b3bef80849d8c4f2e1b8c629db92d7c0",
-   "size": 6141
-  },
-  {
-   "path": "_auto/inbox/619_independent_review_prompt.md",
-   "sha256": "2d28b7f2fda269d94a0c6f3c26a17fb7700262083650d0b0be7104ca88a42525",
-   "size": 9647
-  },
-  {
-   "path": "_auto/inbox/620.md",
-   "sha256": "9985f84e2a70e0f8bdf881d795041e67775f5d64e0d2367e230105c41b848ec6",
-   "size": 27093
-  },
-  {
-   "path": "_auto/inbox/620_v2.md",
-   "sha256": "2c8ece64cec079299c3a91f5c9eb071ef74eea79f08ad53efbcdd74c150d1db4",
-   "size": 26910
-  },
-  {
-   "path": "_auto/inbox/621.md",
-   "sha256": "ae83509df4f1c109369d407b5f1901b260f2e6c2668c816ef7ac923f9c5b9a38",
-   "size": 22017
-  },
-  {
-   "path": "_auto/inbox/622.md",
-   "sha256": "1e918708bfd2ccfac6ae75a1f207169bef42f360996bca8e9fd1b9ba20ba0b29",
-   "size": 27571
-  },
-  {
-   "path": "_auto/inbox/623.md",
-   "sha256": "2786d27bda69d8942b4b2f6261f97397357325541b3c5d661b36c193f0ce2007",
-   "size": 34183
-  },
-  {
-   "path": "_auto/inbox/624.md",
-   "sha256": "2c9b8e5337b4a03682255b0b3a447dfcdd45d8a10a81f6b5644f7b8ec44e9e21",
-   "size": 31554
-  },
-  {
-   "path": "_auto/inbox/625.md",
-   "sha256": "54db00d76bc62ec291329a652549d98ef42b5c69c2012247257115c1c027206f",
-   "size": 54880
   }
  ],
- "self_hash": "eea1cf8dfa9bc2b687651dc1e26614dad67b931d1f6f0a8d5937fdf48d91116f"
+ "self_hash": "13ff769a6fbaf04b5dd374c65c9ccc0f8bdc187e65172727d759abc37754b764"
 }

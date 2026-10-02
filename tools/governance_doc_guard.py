@@ -34,6 +34,24 @@ self_hash）—— 它的价值是让"改了内容忘了/不想改 hash 的**单
 **边界（诚实）**：`update --force`（全量重签）与 `auto-update`（增量登记）**都不做语义判断**；
 弱化扫描 `scan` 仍只扫 `DOCS_ROOT`（投喂词才是可执行政策，`_arch_*` 是过程文档），扩不扩面是另一个决策。
 
+673u 任务 A（**修"manifest 机器相关"的两个口径 bug** —— 这是"漂移 634 处"的真正根因）
+====================================================================================
+673s 报告 `data/governance_docs_manifest.json` 与真实文档树漂移 **634 处**，并因此 4 处
+`residue_present` 型 skip 无法解除。673u 定位到**不是"忘了重算"，而是生成器有两条口径 bug**：
+
+1. **扫描面把 gitignore 的本机落盘口算进了入库 manifest**：607 把 `_auto/inbox/*.md` 并入扫描面，
+   但 `.gitignore` 有 `_auto/`（124 行）与 `_arch_v18/`（128 行）——这些目录**只存在于开发机**。
+   ⇒ 本地"新增 44 处"、CI 干净检出"删除 30 处"，**同一份 manifest 在两处都不可能一致**。
+   修法：`iter_governed_docs()` 默认面按 `git ls-files` **在册过滤**（`_git_tracked()`）；
+   `docs_root` 显式注入（591 测试）与非 git 假仓（607 测试）**不过滤**，语义向后兼容。
+2. **哈希的是工作区字节（含 CRLF）**：Windows 编辑器回写的 CRLF 让同一文档在开发机与 Linux CI
+   算出不同 hash。修法：`_content_bytes()` 按 `.gitattributes` 的 `* text=auto eol=lf` 归一
+   （CRLF→LF）。实测：976 份在册受治理文档里 236 份工作区含 CRLF，
+   `sha256(归一化) == sha256(git blob)` **逐条成立**（0 处不符）⇒ 归一化等价于"哈希提交内容"。
+
+口径澄清（**不是**放水）：manifest 仍然**逐字节**钉住每份在册文档；改的只是"扫谁、按什么字节算"，
+使它**机器无关**。对"投喂词被篡改"的检出能力**不变**（改内容 ⇒ hash 变 ⇒ `verify` 红）。
+
 用法：
   python tools/governance_doc_guard.py verify            # 校验 self_hash + manifest：exit0=一致 / exit1=不一致
   python tools/governance_doc_guard.py update --force    # 更新 manifest（无 --force 拒绝；重算 self_hash）
@@ -85,10 +103,23 @@ _PATTERNS: list[tuple[str, str, str]] = [
 _COMPILED = [(re.compile(p, re.IGNORECASE), lv, lab) for p, lv, lab in _PATTERNS]
 
 
+def _content_bytes(path: Path) -> bytes:
+    """读取文件内容，并**按 `.gitattributes` 归一换行**（CRLF→LF）。
+
+    673u 修复（换行口径）：manifest 必须在 **Windows 开发机**与 **Linux CI** 上给出同一个值，
+    否则同一份文档在两处 hash 不同 ⇒ manifest 永远"漂移"、`verify` 永远红。
+    根因：工作区检出可能是 CRLF（Windows 编辑器回写整文件），而 `.gitattributes` 的
+    `* text=auto eol=lf` 保证**入库/CI 检出**是 LF。实测（673u）：976 份受治理 tracked 文档里
+    236 份工作区含 CRLF，`sha256(归一化工作区字节) == sha256(git blob)` **逐条成立（0 处不符）**
+    ⇒ 归一化即等价于"哈希提交内容"，是让 manifest 机器无关的最小改法。
+    """
+    data = path.read_bytes()
+    return data.replace(b"\r\n", b"\n") if b"\r\n" in data else data
+
+
 def _sha256(path: Path) -> str:
-    h = hashlib.sha256()
-    h.update(path.read_bytes())
-    return h.hexdigest()
+    """文件内容的 sha256（换行归一后；见 `_content_bytes()`）。"""
+    return hashlib.sha256(_content_bytes(path)).hexdigest()
 
 
 def _rel(path: Path) -> str:
@@ -107,24 +138,69 @@ def _git_commit() -> str:
     return r.stdout.strip() if r.returncode == 0 else "unknown"
 
 
+def _git_tracked(root: Path) -> set[str] | None:
+    """`root` 下 git **跟踪**（在册）文件的仓相对路径集合（换行安全的 -z 输出）。
+
+    673u 修复（扫描面口径）：`ROOT` **不是 git 工作树根**（如测试注入的假仓）⇒ 返回 `None`
+    （**不启用过滤**，保持 607 起"假仓里全部文件都受治理"的既有语义）；
+    git 不可用/超时 ⇒ 同样返回 `None`（宁可退回旧行为，也不静默丢文档）。
+
+    为什么必须过滤（673u 实测）：607 把 `_auto/inbox/*.md` 与 `_arch_*` 并入扫描面，但
+    `.gitignore` 里有 `_auto/`（第 124 行）与 `_arch_v18/`（第 128 行）——这些是**本机投喂词
+    落盘口/历史归档**，只存在于开发机。把它们算进**入库的** manifest ⇒
+    本地报"新增 44 处"、CI（干净检出）报"删除 21+9 处"，同一份 manifest 两处都不可能一致。
+    过滤后扫描面 == "提交进仓的文档"，manifest 才机器无关。
+    """
+    try:
+        top = subprocess.run(["git", "rev-parse", "--show-toplevel"], cwd=str(root),
+                             capture_output=True, text=True, timeout=20)
+        if top.returncode != 0:
+            return None                                  # 非 git 仓（假仓/副本）⇒ 不过滤
+        try:
+            if Path(top.stdout.strip()).resolve() != Path(root).resolve():
+                return None                              # 根 ≠ 工作树根 ⇒ 不过滤（假仓嵌在真仓内）
+        except OSError:
+            return None
+        r = subprocess.run(["git", "-c", "core.quotepath=false", "ls-files", "-z"],
+                           cwd=str(root), capture_output=True, timeout=60)
+        if r.returncode != 0:
+            return None
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return {p for p in r.stdout.decode("utf-8", "replace").split("\0") if p}
+
+
 def iter_governed_docs(docs_root: Path | None = None) -> list[Path]:
     """受治理文档路径全集（**唯一真源**：`verify` 与 `auto-update` 必须共用）。
 
-    - `docs_root` **显式给出** ⇒ 只扫那一个目录（591 测试注入语义保持不变）；
-    - 省略（默认）⇒ 扫 607 扩边后的全集：`DOCS_ROOT` + 仓根 `_arch_*/**` + `_auto/inbox` + 根下 5 类文件。
+    - `docs_root` **显式给出** ⇒ 只扫那一个目录（591 测试注入语义保持不变，**不做** git 过滤）；
+    - 省略（默认）⇒ 扫 607 扩边后的全集：`DOCS_ROOT` + 仓根 `_arch_*/**` + `_auto/inbox` + 根下 5 类文件；
+      **673u 起把 607 扩边的位置按 git 在册过滤**（剔除 gitignore 的本机落盘口/归档，
+      见 `_git_tracked()`）——否则 manifest 会因开发机残留而机器相关、CI 必红。
+      `DOCS_ROOT`（591 原始面）**豁免**该过滤（真仓 345/345 在册 ⇒ 过滤是 no-op；豁免是为了不破坏
+      把 `DOCS_ROOT` 注入到 tmp 的既有测试，详见下方 `_collect(exempt=True)` 处的注释）。
       去重（按仓根相对路径）后按路径排序，保证 manifest 顺序确定。
     """
     if docs_root is not None:
         return sorted(p for p in Path(docs_root).rglob("*.md") if p.is_file())
     found: dict[str, Path] = {}
+    docs_keys: set[str] = set()          # `DOCS_ROOT`（591 原始治理面）——**豁免** git 在册过滤
 
-    def _collect(paths) -> None:
+    def _collect(paths, exempt: bool = False) -> None:
         for p in paths:
             if p.is_file() and p.suffix == ".md":
-                found.setdefault(_rel(p), p)       # 同一路径只留一份（同名不同根也按相对路径区分）
+                k = _rel(p)
+                found.setdefault(k, p)     # 同一路径只留一份（同名不同根也按相对路径区分）
+                if exempt:
+                    docs_keys.add(k)
 
+    # 591 原始面：投喂词目录。**不**过在册过滤 ——
+    #   ① 实测该目录 345 份 .md **全部在册**（过滤在真仓是 no-op，不损失覆盖）；
+    #   ② 591/601 的测试把它 `monkeypatch` 到 tmp（此时不在 git 在册集合里），
+    #      若一并过滤，注入的临时文档会被静默丢掉 ⇒ 篡改检测失效（673u 实测：591 的
+    #      `test_preflight_combinations` 因此由红转绿的假绿）。语义优先级：注入显式 > 在册过滤。
     if DOCS_ROOT.is_dir():
-        _collect(DOCS_ROOT.rglob("*.md"))
+        _collect(DOCS_ROOT.rglob("*.md"), exempt=True)
     inbox = ROOT.joinpath(*GOVERNED_INBOX_DIR)
     if inbox.is_dir():
         _collect(sorted(inbox.glob("*.md")))
@@ -134,17 +210,22 @@ def iter_governed_docs(docs_root: Path | None = None) -> list[Path]:
                 _collect(sorted(d.rglob("*.md")))
     for pat in GOVERNED_ROOT_FILE_GLOBS:
         _collect(sorted(ROOT.glob(pat)))
-    return [found[k] for k in sorted(found)]
+    tracked = _git_tracked(ROOT)
+    if tracked is None:                            # 非 git 仓 ⇒ 退回 607 的"不过滤"语义
+        return [found[k] for k in sorted(found)]
+    return [found[k] for k in sorted(found) if k in tracked or k in docs_keys]
 
 
 def scan_docs(docs_root: Path | None = None) -> list[dict]:
     """扫描受治理文档，返回按路径排序的 [{path, sha256, size}]。
 
-    `docs_root` 省略 ⇒ 607 扩边后的全集（见 `iter_governed_docs()`）。
+    `docs_root` 省略 ⇒ 607 扩边 + **673u 在册过滤**后的全集（见 `iter_governed_docs()`）。
+    `size` 与 `sha256` 同源（换行归一后的字节数，见 `_content_bytes()`），避免"hash 归一、size 不归一"的自相矛盾。
     """
     out = []
     for p in iter_governed_docs(docs_root):
-        out.append({"path": _rel(p), "sha256": _sha256(p), "size": p.stat().st_size})
+        blob = _content_bytes(p)
+        out.append({"path": _rel(p), "sha256": hashlib.sha256(blob).hexdigest(), "size": len(blob)})
     return out
 
 
