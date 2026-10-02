@@ -4,6 +4,7 @@
 > Files: `queyi_neurips2027.tex` (+ `queyi_refs.bib`, `neurips_2025.sty`), `cover_letter.tex`,
 > `response_template.tex`. Compile: `pdflatex → bibtex → pdflatex → pdflatex`
 > (or a single `tectonic queyi_neurips2027.tex`, which runs the BibTeX pass internally).
+> **v1.1 (673i):** this checklist is the v1.0 snapshot; for v1.1 changes (0 orphan floats, E9 clang-tidy, label-validity design, A5 future-work, arXiv package) see `research/submission_checklist.md §15`.
 
 ## 1. Format & anonymity
 - [x] Official NeurIPS style used: `\usepackage[dandb]{neurips_2025}` (Datasets & Benchmarks track).
@@ -26,7 +27,7 @@
 
 ## 4. Figures & tables
 - [x] Fig. 1 system loop (TikZ) — `\ref{fig:loop}`.
-- [x] Fig. 2 dataset layers (TikZ, colour-coded) — `\ref{fig:data}`.
+- [x] Dataset layers (D0–D4) described in protocol text (no separate figure; the dangling `\ref{fig:data}` was removed in v1.1 — 0 undefined refs).
 - [x] Fig. 3 core recall (pgfplots bar; baseline columns are dashed placeholders `\TODO{670a}`).
 - [x] Fig. 4 evolution curve (pgfplots line; caliber-change annotated).
 - [x] All tables use `booktabs`; numbers identical to `paper_v0.7.md`.

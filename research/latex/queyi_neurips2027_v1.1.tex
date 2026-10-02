@@ -298,7 +298,7 @@ State & Meaning & Action \\
 \bottomrule
 \end{tabular}
 \end{table}
-The point of \texttt{contradict} is that \emph{the machine never picks a side when evidence
+The point of \texttt{contradict} (Table~\ref{tab:verdict}) is that \emph{the machine never picks a side when evidence
 conflicts}---the conflict itself is information. Machine cards are always
 \texttt{needs\_review}$=$true and never counted as ``verified''; \texttt{verified} is
 human-signed only.
@@ -395,13 +395,13 @@ We \emph{freeze the protocol before seeing results}; later changes must be logge
 
 
 \paragraph{Dataset layers (D0--D4).}
-Fig.~\ref{fig:data} summarises the five layers and their claim status; their current values are:
+The five dataset layers (D0--D4) and their claim status are summarised below; their current values are:
 D0 core mutation \textbf{96.5\%} (self-justification only, never claimed), D1 re-injection 1/1
 (coverage 12/15), D2 blind holdout \textbf{82.9\%} (34/41), D3 external corpus \textbf{62.5\%}
 measurable (40/64; 52.6\% all-sample), and D4 16 machine cards (unsigned). The A/B/C sub-layers of
 D3 must \emph{not} be merged into one number.
 
-\paragraph{Baselines (three, all budget-matched).}
+\paragraph{Baselines (three, all budget-matched; Table~\ref{tab:baseline}).}
 \label{sec:baseline}
 \begin{table}[t]
 \caption{Baselines and their alignment conditions.}
@@ -472,7 +472,7 @@ still small, so read \emph{direction} first, magnitude second.}
 \label{fig:core}
 \end{figure}
 
-\paragraph{E1 --- Main experiment: static vs.\ random vs.\ failure-driven.}
+\paragraph{E1 --- Main experiment: static vs.\ random vs.\ failure-driven (Figure~\ref{fig:core}).}
 \begin{table}[t]
 \caption{E1. Three arms on the same samples. Static is a caliber re-binning; Random$\dagger$ is a
 proxy (the real B3 needs the split-repo \texttt{select\_assets}).}
@@ -502,7 +502,7 @@ positive, sample h35, is registered). We report these as measured---no ``correct
 does \emph{not} hold and must be reported as-is. All four $\Delta$ CIs are strictly positive
 (lowest bound 28.6pp).
 
-\paragraph{E2 --- Caliber ablation.} Three arms share \emph{the same raw catch counts}
+\paragraph{E2 --- Caliber ablation (Table~\ref{tab:e2}).} Three arms share \emph{the same raw catch counts}
 (holdout 34, corpus 40; recomputed after the 672h expansion) and differ only in the denominator:
 \begin{table}[t]
 \caption{E2. Caliber ablation (same raw counts, different denominator). The 669d table
@@ -549,7 +549,7 @@ measurable, 10 unblinded merged in, corpus caliber to dual-flag $+$ \texttt{seta
 \label{fig:evolution}
 \end{figure}
 
-\paragraph{E3 --- Evolution curve.}
+\paragraph{E3 --- Evolution curve (cross-batch metrics in Table~\ref{tab:e3}).}
 The holdout column is \emph{not the same $X$}, so it must not be read as evolution. The only
 same-sample re-measurement is 668 vs.\ 665, and it changed the \emph{flag}, not the capability.
 
@@ -562,11 +562,11 @@ A0 $-$ A5} (failure-driven vs.\ same-budget random asset selection), the paper's
 A5's interface was resolved at 672g (split-repo \texttt{select\_assets}); the \emph{experiment} is not run, and
 at $n{=}41/64$ it could not yet yield an interpretable $\Delta$. Full detail: Appendix~\ref{app:humanize}.
 
-\paragraph{E5 --- Statistical tests for the baseline contrasts.}
+\paragraph{E5 --- Statistical tests for the baseline contrasts (Table~\ref{tab:e5}).}
 FD and the two opponent arms are paired \emph{on the same samples} (holdout 41 pairs, corpus 64
 pairs) $\Rightarrow$ exact McNemar; the effect size is Cohen's $h$~\cite{cohen1988statistical}
 (recomputed after the 672h expansion):
-Small-sample warning: McNemar rests on the extreme $c{=}0$ structure---a few reverse pairs would
+Small-sample warning: McNemar rests on the extreme $c{=}0$ structure (the required sample sizes are recomputed in Table~\ref{tab:samplesize})---a few reverse pairs would
 inflate $p$ quickly; magnitudes are interval-reads at $n=41/64$. Multiplicity control: Bonferroni
 over the four pre-registered contrasts gives $p_{\max}=1.2\times10^{-7}$ (Holm: $3.0\times10^{-8}$),
 so all four survive---the correction changes no conclusion, but the discipline requires it.
@@ -584,6 +584,27 @@ UB 80.0\%), with pre-registered \textbf{H2 missing by 0.8pp} and registered as \
 Appendix~\ref{app:extra} details both experiments; we report both without ``correction''.\footnote{The LLM arm is a single model on a single prompt, and some samples carry
 \texttt{answer\_leak\_risk}; the anchor's reconstructed subset is our own (\texttt{verified\_source=false})
 and therefore an upper bound.}
+
+\paragraph{E9 --- External tool comparison (clang-tidy / cppcheck).}
+We answer the red-team critique (673c, E2) that we never compared against an off-the-shelf
+static analyzer. On the \emph{same} 41/64 samples we ran clang-tidy (LLVM 22.1.8, Windows-native,
+syntax-level) and cppcheck (2.13.0, WSL). \textbf{Three caveats frame every number.}
+\textbf{(C1, caliber is post-hoc):} our pre-registered main caliber (four check families) is
+\emph{failed}---100\% recall \emph{and} 100\% FPR on holdout, zero discrimination; the only
+defensible caliber is \texttt{clang-analyzer-*} (StrictA), chosen \emph{after} results, so its
+$p$-values are exploratory. \textbf{(C2, do not merge):} holdout and corpus are reported separately.
+Under StrictA, on \textbf{holdout} FD \textbf{82.9\% (34/41)} beats clang-analyzer
+\textbf{48.8\% (20/41)} (exact McNemar $p{=}1.2\times10^{-4}$, pair $(b,c){=}(14,0)$,
+$\Delta{+34.1}$pp [19.6, 48.7]); on \textbf{corpus} FD \textbf{62.5\% (40/64)} only
+\emph{ties} cppcheck \textbf{54.7\% (35/64)} ($p{=}0.383$). \textbf{(C3, the 8 reverse pairs are
+named):} all 8 (tool catches, FD records miss) fall in corpus---uninit variables
+(\texttt{uninitvar}, \texttt{UndefinedBinaryOperatorResult}), double-free / use-after-free on paths
+never executed (\texttt{doubleFree}, \texttt{deallocuse}, \texttt{NewDelete},
+\texttt{security.ArrayBound}), and compile-time (\texttt{missingReturn},
+\texttt{wrongPrintfScanfArgNum})---exposing FD's real weakness: compile-time-visible and
+path-not-executed defects. FD's edge is runtime evidence (sanitizer layer 29 vs 17/26); its gap is
+exactly the ``separates having vs.\ not-having runtime evidence'' claim. Full tables, the layered
+breakdown, and the environment asymmetry are in Appendix~\ref{app:clangtidy}.
 
 % =====================================================================
 \section{Analysis}
@@ -614,10 +635,36 @@ not run).
 \label{sec:validity}
 % =====================================================================
 
+The nineteen concrete threats and their mitigations/residuals are catalogued in
+Table~\ref{tab:threats} (Appendix~\ref{app:tables}); the residual-validity matrix
+(internal / external / statistical / temporal) is in Table~\ref{tab:validity}.
+
+\paragraph{Biggest unresolved validity threat: unreviewed labels.}
+All detection rates in this paper rest on human-authored ground-truth labels
+(41 blind-holdout $+$ 64 external-corpus samples). \textbf{As of this submission those
+labels have \emph{not} been independently re-reviewed:} a single annotator authored
+them and no inter-rater reliability (IRR) check has run. This is the largest validity
+threat to the recall numbers---larger than any statistical-CI caveat---because a
+mislabeled sample moves a rate silently in either direction.
+
+\paragraph{Planned label-validity review (design, not yet executed).}
+We will run a two-annotator re-label of a random 25\% subsample ($10/41$ holdout,
+$16/64$ corpus; realized count reported at execution) with the original annotator
+blinded to the second. Agreement is quantified with Cohen's $\kappa$; if $\kappa<0.6$
+on any layer we escalate to a $100\%$ re-review of that layer by a third party.
+Every disagreement is adjudicated and the corrected labels are re-fed into the
+detection-rate recomputation; the before/after rate delta is reported as a validity
+residual. This protocol is pre-registered here and will be executed before any claim
+of ``verified'' status.
+
 % =====================================================================
 \section{Claim Boundary}
 \label{sec:claim}
 % =====================================================================
+
+The precise, falsifiable claim boundary---every claim we assert, refuse, or leave
+unknown, with its evidence and residual---is enumerated in Table~\ref{tab:claim}
+(Appendix~\ref{app:tables}).
 
 % =====================================================================
 \section{Conclusion}
@@ -648,10 +695,14 @@ interfaces BLOCKED), ``generalizes to other languages'' (C++ only), ``exact magn
 ($n{=}41/64$ still small; $\pm$5pp half-width needs $n{=}236/378$), or \emph{any} ablation
 conclusion (design frozen, experiments not run). \textbf{Three qualifiers travel with it:} the
 $\Delta$ separates having runtime evidence from not having it rather than failure-driven selection
-(only A0$-$A5 could test the latter, and it is not run); we compare against no off-the-shelf static
-analyzer; and the holdout labels have zero second annotators (T17). Our failure cases, design
+(only A0$-$A5 could test the latter, and it is not run); our off-the-shelf static-analyzer
+comparison (E9) is post-hoc and exploratory, and on corpus it is inconclusive (ties cppcheck); and
+the holdout labels have zero second annotators (T17). Our failure cases, design
 trade-offs, engineering realities and judgment boundaries are in Appendix~\ref{app:humanize}.
-\textbf{Future work:} (i) keep expanding toward $n\ge100$ (672h already moved holdout to 41
+\textbf{Future work:} The single highest-priority item is running ablation \textbf{A5}
+(random-budget control): it is the only experiment that can falsify the central ``failure-driven
+beats same-budget random'' claim, and until it runs that claim remains directional only (design
+frozen in \S\ref{sec:exp}, A0--A5). The remaining items: (i) keep expanding toward $n\ge100$ (672h already moved holdout to 41
 measurable / corpus to 64; ablation needs $n\approx103$--173 pairs); (ii) expose the split-repo
 interfaces, run the true B1, and rerun the true B3 at the new denominator; (iii) run A0--A5 so that
 A0$-$A5 can try to falsify the core mechanism; (iv) obtain at least one independent reproduction; (v) \emph{make the guard rerun detectors},
@@ -659,8 +710,7 @@ since the 81.2\% incident can still recur and this is the one place where v1.0 d
 disease, admitted the cure was ineffective, and kept using it; (vi) \emph{label reliability:}
 one second annotator on 15 random holdout items, and report $\kappa$ (T17); (vii) a
 \emph{fail-loud environment self-check} in the reproduction scripts plus explicit
-macOS/Windows-native non-reproducibility statements; (viii) compare against clang-tidy/cppcheck
-on the same 41/64; (ix) backfill semantic scope (0/26).
+macOS/Windows-native non-reproducibility statements; (viii) \emph{done} in E9 (clang-tidy/cppcheck on 41/64; exploratory, post-hoc caliber, corpus inconclusive); (ix) backfill semantic scope (0/26).
 
 \label{page:endmain}% records the page where the main text ends (for the 9-page check)
 \bibliographystyle{plainnat}
@@ -1216,5 +1266,76 @@ table's verdict column contradicted the section's conclusion. Semantic-scope bac
 anchor: still a placeholder, so ``on-chain'' does not hold. And the last hole in the guard: the
 81.2\% incident can still recur, and v1.0 diagnosed it, admitted the cure was ineffective, and kept
 using the same cure.
+
+\section{External Tool Comparison (clang-tidy / cppcheck; details)}
+\label{app:clangtidy}
+This appendix backs Experiment~E9 with the full tables and the three mandatory caveats.
+\textbf{Environment asymmetry (must be declared):} clang-tidy (LLVM~22.1.8) runs Windows-native and
+syntax-level; cppcheck~2.13.0 runs under WSL; FD uses WSL~g++ $+$ sanitizer \emph{runtime} evidence.
+The three are \emph{not} in one compiler environment, so nothing here is a same-environment
+capability ranking.
+
+\paragraph{Holdout (true errors $n{=}41$, controls $n{=}11$).}
+\begin{center}\footnotesize
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Tool / caliber & recall & $k/n$ & FPR & vs FD McNemar $p$ \\
+\midrule
+FD (queyi) & 82.9\% & 34/41 & 18.2\% (2/11) & --- \\
+clang-analyzer-* (StrictA) & 48.8\% & 20/41 & 11.1\% (1/9) & $1.2\times10^{-4}$ \\
+cppcheck (error+warning) & 41.5\% & 17/41 & 11.1\% (1/9) & $1.5\times10^{-5}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+StrictA pair $(b,c){=}(14,0)$ $\Rightarrow$ tool catches $\subset$ FD catches;
+$\Delta(\text{FD}{-}\text{StrictA}){=}+34.1$pp [19.6, 48.7].
+
+\paragraph{Corpus ($n{=}64$, controls $n{=}3$).}
+\begin{center}\footnotesize
+\begin{tabular}{@{}llrr@{}}
+\toprule
+Tool / caliber & recall & $k/n$ & vs FD McNemar $p$ \\
+\midrule
+FD (queyi) & 62.5\% & 40/64 & --- \\
+clang-analyzer-* (StrictA) & 34.4\% & 22/64 & $9.1\times10^{-4}$ \\
+cppcheck (error+warning) & 54.7\% & 35/64 & 0.383 (tie) \\
+\bottomrule
+\end{tabular}
+\end{center}
+StrictA $\Delta{=}+28.1$pp but pair $(b,c){=}(23,5)$; cppcheck $\Delta{=}+7.8$pp [$-6.1$, 21.7]
+(CI crosses 0).
+
+\paragraph{Layered (corpus).}
+sanitizer: FD 29 vs clang-analyzer 17 / cppcheck 26; compiler-warn: FD 9 / cppcheck 8 (tie);
+cross-compile: 2 / 0 / 1 ($n{=}12$, all three fail).
+
+\paragraph{The 8 reverse pairs (tool catches, FD records miss; all in corpus).}
+\begin{center}\footnotesize
+\begin{tabular}{@{}llll@{}}
+\toprule
+Sample & layer & clang-analyzer & cppcheck \\
+\midrule
+d3f-12 & compiler-warn & --- & missingReturn \\
+d3e-06 & compiler-warn & UndefinedBinaryOperatorResult & uninitvar \\
+d3-06 & compiler-warn & UndefinedBinaryOperatorResult & uninitvar \\
+d3-11 & cross-compile & --- & wrongPrintfScanfArgNum \\
+d3-21 & sanitizer & NewDelete & deallocuse \\
+d3-22 & sanitizer & NewDelete & doubleFree \\
+d3-25 & sanitizer & security.ArrayBound & arrayIndexOutOfBounds \\
+d3-32 & compiler-warn & --- & missingReturn \\
+\bottomrule
+\end{tabular}
+\end{center}
+They expose FD's real weakness: \emph{compile-time-visible} and \emph{path-not-executed} defects
+(uninitialized variables, double-free / use-after-free, compile-time signatures) that FD's
+runtime-evidence scope does not reach.
+
+\paragraph{Caveats (restated).}
+\textbf{C1 (caliber is post-hoc):} the pre-registered main caliber (four check families) failed---
+100\% recall \emph{and} 100\% FPR on holdout, zero discrimination; StrictA is chosen after results,
+so its $p$-values are exploratory. \textbf{C2 (do not merge):} holdout and corpus are separate and
+must not be pooled. \textbf{C3 (named pairs):} the 8 reverse pairs above are named individually. This
+comparison does \emph{not} support ``FD beats a real static detector on corpus,'' and answers none of
+the open questions about other languages, platforms, or clang-tidy's full capability.
 
 \end{document}

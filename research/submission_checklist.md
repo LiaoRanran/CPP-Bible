@@ -1,4 +1,4 @@
-# NeurIPS 2027 Datasets & Benchmarks — Submission Checklist（v1.0 定稿批次）
+# NeurIPS 2027 Datasets & Benchmarks — Submission Checklist（v1.0 定稿 + v1.1 投稿准备）
 
 > **目标**：NeurIPS 2027 E&D（当前最新官方模板为 2026 版；2027 CFP 未发布）。
 > **产物（673a 定稿）**：`research/latex/queyi_neurips2027_v1.0.tex`（+ `queyi_refs.bib`、`neurips_2025.sty`）、
@@ -21,6 +21,7 @@
 ## 2. 长度（✅ 已编译实测通过）
 
 - [x] **正文 9 页**（`\label{page:endmain}` 实测落在第 9 页；NeurIPS 限制 = 9 content pages，含所有图表）。
+- ⚠ **v1.1 内容增量须重新编译复验**：§7 新增标签效度复核设计（~17 行）、§8 Claim Boundary 补引用指针、§6 新增 **E9 外部工具对比**（~17 行）、§10 强调 A5 最高优先级。本机**无 TeX 工具链**，**页数 ≤9 未实测**；若溢出，按本清单 §2 末条削减手段（移 sample-size 表 + related-work 表入补充材料，合并两张 ablation 表）。
 - [x] 正文散文词数 **3,866**；正文 **4 表 + 4 图**（其余表已移入附录，不计入页数）。
 - [x] 编译引擎：**tectonic 0.15.0**（本机无 TeX Live/MiKTeX，已下载临时二进制完成验证）。
 - [x] **0 error、0 未定义引用**（`??` 计数 = 0）。
@@ -48,8 +49,8 @@
 - [x] Fig.1 系统闭环（TikZ）—— `\ref{fig:loop}` ✅
 - [x] Fig.4 演化曲线（pgfplots）—— `\ref{fig:evolution}` ✅
 - [x] 全部表格用 `booktabs`。
-- 🔴 **13/18 个浮动体从未被正文引用**（`fig:core`、`fig:data`、`tab:ablation`、`tab:baseline`、`tab:claim`、`tab:data`、`tab:e2`、`tab:e3`、`tab:e4`、`tab:e5`、`tab:samplesize`、`tab:validity`、`tab:verdict`）。
-  - [ ] **必须**在每个浮动体首次出现处补半句 `\ref`。
+- [x] **v1.1：0 个浮动体孤儿**（673i 修复，`analyze_refs.py` 核验 15 个 `fig:/tab:` 浮动体 `never referenced = 0`）。原 v1.0「13/18 从未被正文引用」清单中 `tab:ablation`/`tab:data` 已在 673a 合并/移除，其余 9 个（`fig:core`、`tab:baseline`、`tab:claim`、`tab:e2`、`tab:e3`、`tab:e5`、`tab:samplesize`、`tab:validity`、`tab:verdict`）已在 v1.1 补 `\ref`。补 `\ref` 位置：§Method(tab:verdict)、§Protocol(tab:baseline)、§Experiments(fig:core/tab:e2/tab:e3/tab:e5)、§E5(tab:samplesize)、§Claim Boundary(tab:claim)、§Threats(tab:validity)、附录(app:clangtidy)。
+  - [x] 原 `\ref{fig:data}` 为**未定义引用**（无对应 `\label`）→ v1.1 改为正文叙述数据集五层（D0–D4），移除该 `\ref`；现 0 未定义 `fig:/tab:` 引用。
 - [x] 编号连续，无重号；`\ref` 全部可解析（**0 个 `??`**）。
 - ⚠ 公式**无编号**（LaTeX `equation` 环境 0 个）⇒ 建议给 VC/EE 两个新增度量加编号。
 
@@ -232,3 +233,33 @@ pdfinfo queyi_neurips2027.pdf | grep Pages   # 主文 ≤ 9 页（不含参考�
 - [x] 正文无作者信息、无个人链接、无本地绝对路径（`anonymity_check` MAIN/STRICT 命中 0）。
 - [ ] **注意**：NeurIPS D&B 允许**单盲或双盲**（作者自选）。若选单盲须补作者块；若选双盲须确认
       补充材料（代码/数据链接）匿名可访问。**2027 CFP 未发布，须复核。**
+
+---
+
+## 15. 673i v1.1 投稿准备批次记录
+
+### 15.1 浮动体引用修复（Task A）
+- [x] `analyze_refs.py` 核验：15 个 `fig:/tab:` 浮动体全部被正文引用（`never referenced = 0`）。
+- [x] 修复未定义引用 `\ref{fig:data}`（无对应 `\label`）→ 改为正文叙述数据集五层（D0–D4），**0 未定义引用**。
+- [x] 补 `\ref` 的 9 个原孤儿浮动体：`tab:verdict` / `tab:baseline` / `fig:core` / `tab:e2` / `tab:e3` / `tab:e5` / `tab:samplesize` / `tab:claim` / `tab:validity`。
+
+### 15.2 外部工具对比（Task B）
+- [x] 新增 §6.9 / **E9 — External tool comparison (clang-tidy / cppcheck)**：同批 41/64 样本，StrictA 口径 holdout FD 82.9% vs 48.8%（McNemar p=1.2e-4, c=0），corpus FD 62.5% vs 54.7%（p=0.383 打平）。
+- [x] 三强制 caveat：(C1) 主口径失败（100% 召回 + 100% FPR）、StrictA 为事后/探索性；(C2) 不合并 holdout/corpus；(C3) 点名 8 条反向对。
+- [x] 附录新增 `app:clangtidy`（完整表 + 分层 + 8 反向对 + 环境不对称声明）。
+- [x] 投稿信 `cover_letter.md` 第 5 条贡献 + 局限补充；`response_template.md` 新增标签效度与 A5 标准回复。
+
+### 15.3 标签效度复核流程设计（Task D，仅设计不复核）
+- [x] §7 声明「labels unreviewed = 最大效度威胁」+ 25% 随机子样本双标注 + Cohen's κ + κ<0.6→全量复核流程（设计，未执行）。
+
+### 15.4 A5 证伪实验设计（Task C）
+- [x] §10 未来工作把 A5（random-budget control）列为**最高优先级**实验（唯一可否定核心机制者）。
+
+### 15.5 arXiv 投稿包（Task E）
+- [x] 新建 `data/673i_arXiv投稿清单.md`：匿名化 / 自引 / tarball 结构 / 图片可编译性 / 投稿步骤 / endorser / FAQ。
+- [x] 确认：图片均为内联 TikZ/pgfplots，无外部图文件；`.bib` 无身份泄露。
+
+### 15.6 红线与编译
+- [x] 未改核心主张/数字；未跑新实验；未触碰 `tools/ tests/ web/` 与既有实验数据（仅新建 `data/673i_*` 报告）。
+- [⚠] **本机无 LaTeX 工具链** ⇒ 页数 ≤9、0 未定义引用（读 `.aux`/`.log`）须用户在 TeX 环境或 CI 复验。
+- [ ] 待办：编译实测主文页数；若溢出，削减手段见 §2（移 sample-size 表 + related-work 表入补充材料，合并两张 ablation 表）。
