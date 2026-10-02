@@ -1,0 +1,659 @@
+{
+ "schema": "queyi-a5-experiment/673p",
+ "version": "1.0",
+ "generated_by": "tools/run_a5_experiment_673p.py",
+ "prereg": "data/673p_a5_preregistration.json",
+ "seed": 20260930,
+ "multi_seed_runs": 2000,
+ "asset_pool_owner": "tools/verifier_pool_673p.py::ASSET_POOL",
+ "selection_owner": "tools/selection_strategies_673p.py::select",
+ "execution_model": {
+  "name": "replay_single_attribution",
+  "is_real_execution": false,
+  "assumption": "单归属：一条样本的 catch 只归属到明细里记的 detector；其它资产的判决未知，一律记 miss。",
+  "direction_of_bias": "对大资产集**低估**检出、对小资产集**高估**检出。",
+  "why_not_real": "真跑需 WSL g++ + sanitizer 双档 × 3 回合（小时级）；本批只建基础设施。"
+ },
+ "sources": {
+  "holdout": "data/holdout/reveal_5_detail_672h.json（planted=true，可测 41）",
+  "corpus": "data/external_corpus/reveal_detail_672h.json（可测 64）"
+ },
+ "primary": {
+  "holdout": {
+   "n_measurable": 41,
+   "budget": {
+    "k_assets": 4,
+    "anchor": [
+     "asan",
+     "linker",
+     "tsan",
+     "ubsan"
+    ],
+    "anchor_note": "FD 在 catch 上实际用到的资产（**事后记账**，非选择）；Random/Static 必须与它同预算。",
+    "cost_units_fd_full": 18,
+    "cost_units_matched": 8
+   },
+   "arms": {
+    "fd_full_pool": {
+     "assets": [
+      "asan",
+      "compile-time",
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "tsan",
+      "ubsan",
+      "wunsequenced"
+     ],
+     "budget_k": 8,
+     "cost_units": 18,
+     "k": 34,
+     "n": 41,
+     "point": 0.8292682926829268,
+     "rate_pct": 82.9268,
+     "cp95": [
+      67.9439,
+      92.8485
+     ]
+    },
+    "fd_budget_matched": {
+     "assets": [
+      "asan",
+      "tsan",
+      "ubsan",
+      "linker"
+     ],
+     "budget_k": 4,
+     "cost_units": 11,
+     "allocation_table": [
+      {
+       "asset": "asan",
+       "rank": 1,
+       "cost_units": 3
+      },
+      {
+       "asset": "tsan",
+       "rank": 2,
+       "cost_units": 3
+      },
+      {
+       "asset": "ubsan",
+       "rank": 3,
+       "cost_units": 3
+      },
+      {
+       "asset": "linker",
+       "rank": 4,
+       "cost_units": 2
+      }
+     ],
+     "k": 34,
+     "n": 41,
+     "point": 0.8292682926829268,
+     "rate_pct": 82.9268,
+     "cp95": [
+      67.9439,
+      92.8485
+     ]
+    },
+    "random": {
+     "assets": [
+      "wunsequenced",
+      "cross-compile",
+      "tsan",
+      "compile-time"
+     ],
+     "budget_k": 4,
+     "cost_units": 8,
+     "seed": 20260930,
+     "allocation_table": [
+      {
+       "asset": "wunsequenced",
+       "rank": 1,
+       "cost_units": 2
+      },
+      {
+       "asset": "cross-compile",
+       "rank": 2,
+       "cost_units": 2
+      },
+      {
+       "asset": "tsan",
+       "rank": 3,
+       "cost_units": 3
+      },
+      {
+       "asset": "compile-time",
+       "rank": 4,
+       "cost_units": 1
+      }
+     ],
+     "k": 4,
+     "n": 41,
+     "point": 0.0975609756097561,
+     "rate_pct": 9.7561,
+     "cp95": [
+      2.7227,
+      23.1315
+     ]
+    },
+    "static": {
+     "assets": [
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "wunsequenced"
+     ],
+     "budget_k": 4,
+     "cost_units": 8,
+     "allocation_table": [
+      {
+       "asset": "compiler-warn",
+       "rank": 1,
+       "cost_units": 2
+      },
+      {
+       "asset": "cross-compile",
+       "rank": 2,
+       "cost_units": 2
+      },
+      {
+       "asset": "linker",
+       "rank": 3,
+       "cost_units": 2
+      },
+      {
+       "asset": "wunsequenced",
+       "rank": 4,
+       "cost_units": 2
+      }
+     ],
+     "k": 1,
+     "n": 41,
+     "point": 0.024390243902439025,
+     "rate_pct": 2.439,
+     "cp95": [
+      0.0617,
+      12.8554
+     ]
+    }
+   },
+   "paired_tests": {
+    "fd_vs_random": {
+     "n_pairs": 41,
+     "fd_catch": 34,
+     "other_catch": 4,
+     "discordant_fd_only": 30,
+     "discordant_other_only": 0,
+     "delta_pp": 73.1707,
+     "mcnemar_p": 1.8626451492309587e-09,
+     "cohens_h": 1.6543
+    },
+    "fd_vs_static": {
+     "n_pairs": 41,
+     "fd_catch": 34,
+     "other_catch": 1,
+     "discordant_fd_only": 33,
+     "discordant_other_only": 0,
+     "delta_pp": 80.4878,
+     "mcnemar_p": 2.328306436538702e-10,
+     "cohens_h": 1.976
+    }
+   },
+   "random_multi_seed": {
+    "runs": 2000,
+    "mean_rate_pct": 40.8768,
+    "sd_pp": 29.3227,
+    "min_rate_pct": 0.0,
+    "max_rate_pct": 82.9268,
+    "percentile_2.5_pct": 2.439,
+    "percentile_97.5_pct": 80.4878,
+    "note": "同预算随机子集的检出率**分布**（非单点）；单点 seed=20260930 用于配对检验。"
+   },
+   "replay_wall_seconds": 0.005741,
+   "fail_hits_used": {
+    "asan": 25,
+    "linker": 1,
+    "tsan": 4,
+    "ubsan": 4
+   }
+  },
+  "corpus": {
+   "n_measurable": 64,
+   "budget": {
+    "k_assets": 5,
+    "anchor": [
+     "asan",
+     "compiler-warn",
+     "cross-compile",
+     "tsan",
+     "ubsan"
+    ],
+    "anchor_note": "FD 在 catch 上实际用到的资产（**事后记账**，非选择）；Random/Static 必须与它同预算。",
+    "cost_units_fd_full": 18,
+    "cost_units_matched": 10
+   },
+   "arms": {
+    "fd_full_pool": {
+     "assets": [
+      "asan",
+      "compile-time",
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "tsan",
+      "ubsan",
+      "wunsequenced"
+     ],
+     "budget_k": 8,
+     "cost_units": 18,
+     "k": 40,
+     "n": 64,
+     "point": 0.625,
+     "rate_pct": 62.5,
+     "cp95": [
+      49.5076,
+      74.2951
+     ]
+    },
+    "fd_budget_matched": {
+     "assets": [
+      "asan",
+      "ubsan",
+      "compiler-warn",
+      "tsan",
+      "cross-compile"
+     ],
+     "budget_k": 5,
+     "cost_units": 13,
+     "allocation_table": [
+      {
+       "asset": "asan",
+       "rank": 1,
+       "cost_units": 3
+      },
+      {
+       "asset": "ubsan",
+       "rank": 2,
+       "cost_units": 3
+      },
+      {
+       "asset": "compiler-warn",
+       "rank": 3,
+       "cost_units": 2
+      },
+      {
+       "asset": "tsan",
+       "rank": 4,
+       "cost_units": 3
+      },
+      {
+       "asset": "cross-compile",
+       "rank": 5,
+       "cost_units": 2
+      }
+     ],
+     "k": 40,
+     "n": 64,
+     "point": 0.625,
+     "rate_pct": 62.5,
+     "cp95": [
+      49.5076,
+      74.2951
+     ]
+    },
+    "random": {
+     "assets": [
+      "wunsequenced",
+      "cross-compile",
+      "tsan",
+      "compile-time",
+      "compiler-warn"
+     ],
+     "budget_k": 5,
+     "cost_units": 10,
+     "seed": 20260930,
+     "allocation_table": [
+      {
+       "asset": "wunsequenced",
+       "rank": 1,
+       "cost_units": 2
+      },
+      {
+       "asset": "cross-compile",
+       "rank": 2,
+       "cost_units": 2
+      },
+      {
+       "asset": "tsan",
+       "rank": 3,
+       "cost_units": 3
+      },
+      {
+       "asset": "compile-time",
+       "rank": 4,
+       "cost_units": 1
+      },
+      {
+       "asset": "compiler-warn",
+       "rank": 5,
+       "cost_units": 2
+      }
+     ],
+     "k": 14,
+     "n": 64,
+     "point": 0.21875,
+     "rate_pct": 21.875,
+     "cp95": [
+      12.5068,
+      33.9696
+     ]
+    },
+    "static": {
+     "assets": [
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "wunsequenced"
+     ],
+     "budget_k": 4,
+     "cost_units": 8,
+     "allocation_table": [
+      {
+       "asset": "compiler-warn",
+       "rank": 1,
+       "cost_units": 2
+      },
+      {
+       "asset": "cross-compile",
+       "rank": 2,
+       "cost_units": 2
+      },
+      {
+       "asset": "linker",
+       "rank": 3,
+       "cost_units": 2
+      },
+      {
+       "asset": "wunsequenced",
+       "rank": 4,
+       "cost_units": 2
+      }
+     ],
+     "k": 11,
+     "n": 64,
+     "point": 0.171875,
+     "rate_pct": 17.1875,
+     "cp95": [
+      8.9049,
+      28.6754
+     ]
+    }
+   },
+   "paired_tests": {
+    "fd_vs_random": {
+     "n_pairs": 64,
+     "fd_catch": 40,
+     "other_catch": 14,
+     "discordant_fd_only": 26,
+     "discordant_other_only": 0,
+     "delta_pp": 40.625,
+     "mcnemar_p": 2.980232238769535e-08,
+     "cohens_h": 0.8501
+    },
+    "fd_vs_static": {
+     "n_pairs": 64,
+     "fd_catch": 40,
+     "other_catch": 11,
+     "discordant_fd_only": 29,
+     "discordant_other_only": 0,
+     "delta_pp": 45.3125,
+     "mcnemar_p": 3.725290298461911e-09,
+     "cohens_h": 0.9685
+    }
+   },
+   "random_multi_seed": {
+    "runs": 2000,
+    "mean_rate_pct": 39.2906,
+    "sd_pp": 12.4954,
+    "min_rate_pct": 7.8125,
+    "max_rate_pct": 62.5,
+    "percentile_2.5_pct": 17.1875,
+    "percentile_97.5_pct": 59.375,
+    "note": "同预算随机子集的检出率**分布**（非单点）；单点 seed=20260930 用于配对检验。"
+   },
+   "replay_wall_seconds": 0.005903,
+   "fail_hits_used": {
+    "asan": 15,
+    "compiler-warn": 9,
+    "cross-compile": 2,
+    "tsan": 3,
+    "ubsan": 11
+   }
+  }
+ },
+ "exploratory_derivation_split": {
+  "holdout": {
+   "status": "exploratory",
+   "derivation": {
+    "n": 21,
+    "source": "672h 扩样前旧样本（source != measured_672h）",
+    "fail_hits": {
+     "asan": 12,
+     "linker": 1,
+     "tsan": 2,
+     "ubsan": 2
+    }
+   },
+   "evaluation": {
+    "n": 20,
+    "source": "672h 扩样新样本（source == measured_672h）"
+   },
+   "budget_k": 4,
+   "arms": {
+    "fd_derived": {
+     "assets": [
+      "asan",
+      "tsan",
+      "ubsan",
+      "linker"
+     ],
+     "k": 17,
+     "n": 20,
+     "point": 0.85,
+     "rate_pct": 85.0,
+     "cp95": [
+      62.1073,
+      96.7929
+     ]
+    },
+    "random": {
+     "assets": [
+      "wunsequenced",
+      "cross-compile",
+      "tsan",
+      "compile-time"
+     ],
+     "seed": 20260930,
+     "k": 2,
+     "n": 20,
+     "point": 0.1,
+     "rate_pct": 10.0,
+     "cp95": [
+      1.2349,
+      31.6983
+     ]
+    },
+    "static": {
+     "assets": [
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "wunsequenced"
+     ],
+     "k": 0,
+     "n": 20,
+     "point": 0.0,
+     "rate_pct": 0.0,
+     "cp95": [
+      0.0,
+      16.8433
+     ]
+    }
+   },
+   "paired_tests": {
+    "fd_vs_random": {
+     "n_pairs": 20,
+     "fd_catch": 17,
+     "other_catch": 2,
+     "discordant_fd_only": 15,
+     "discordant_other_only": 0,
+     "delta_pp": 75.0,
+     "mcnemar_p": 6.103515625000003e-05,
+     "cohens_h": 1.7027
+    },
+    "fd_vs_static": {
+     "n_pairs": 20,
+     "fd_catch": 17,
+     "other_catch": 0,
+     "discordant_fd_only": 17,
+     "discordant_other_only": 0,
+     "delta_pp": 85.0,
+     "mcnemar_p": 1.5258789062500003e-05,
+     "cohens_h": 2.3462
+    }
+   },
+   "random_multi_seed": {
+    "runs": 2000,
+    "mean_rate_pct": 41.895,
+    "sd_pp": 31.5152,
+    "percentile_2.5_pct": 0.0,
+    "percentile_97.5_pct": 85.0
+   },
+   "honest_note": "派生集与评测集是**时间切分**（旧→新），但两者出自同一批夹具政策 ⇒ 分布漂移已由 672h H4 登记（corpus 新子集检出率显著更高）。本条为探索性，不进确认性结论。"
+  },
+  "corpus": {
+   "status": "exploratory",
+   "derivation": {
+    "n": 48,
+    "source": "672h 扩样前旧样本（source != measured_672h）",
+    "fail_hits": {
+     "asan": 10,
+     "compiler-warn": 6,
+     "cross-compile": 1,
+     "tsan": 1,
+     "ubsan": 8
+    }
+   },
+   "evaluation": {
+    "n": 16,
+    "source": "672h 扩样新样本（source == measured_672h）"
+   },
+   "budget_k": 5,
+   "arms": {
+    "fd_derived": {
+     "assets": [
+      "asan",
+      "ubsan",
+      "compiler-warn",
+      "cross-compile",
+      "tsan"
+     ],
+     "k": 14,
+     "n": 16,
+     "point": 0.875,
+     "rate_pct": 87.5,
+     "cp95": [
+      61.6524,
+      98.4486
+     ]
+    },
+    "random": {
+     "assets": [
+      "wunsequenced",
+      "cross-compile",
+      "tsan",
+      "compile-time",
+      "compiler-warn"
+     ],
+     "seed": 20260930,
+     "k": 6,
+     "n": 16,
+     "point": 0.375,
+     "rate_pct": 37.5,
+     "cp95": [
+      15.1984,
+      64.5654
+     ]
+    },
+    "static": {
+     "assets": [
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "wunsequenced"
+     ],
+     "k": 4,
+     "n": 16,
+     "point": 0.25,
+     "rate_pct": 25.0,
+     "cp95": [
+      7.2662,
+      52.3771
+     ]
+    }
+   },
+   "paired_tests": {
+    "fd_vs_random": {
+     "n_pairs": 16,
+     "fd_catch": 14,
+     "other_catch": 6,
+     "discordant_fd_only": 8,
+     "discordant_other_only": 0,
+     "delta_pp": 50.0,
+     "mcnemar_p": 0.007812500000000002,
+     "cohens_h": 1.1007
+    },
+    "fd_vs_static": {
+     "n_pairs": 16,
+     "fd_catch": 14,
+     "other_catch": 4,
+     "discordant_fd_only": 10,
+     "discordant_other_only": 0,
+     "delta_pp": 62.5,
+     "mcnemar_p": 0.001953125,
+     "cohens_h": 1.3717
+    }
+   },
+   "random_multi_seed": {
+    "runs": 2000,
+    "mean_rate_pct": 54.9094,
+    "sd_pp": 15.6018,
+    "percentile_2.5_pct": 25.0,
+    "percentile_97.5_pct": 81.25
+   },
+   "honest_note": "派生集与评测集是**时间切分**（旧→新），但两者出自同一批夹具政策 ⇒ 分布漂移已由 672h H4 登记（corpus 新子集检出率显著更高）。本条为探索性，不进确认性结论。"
+  }
+ },
+ "blockers": [
+  {
+   "id": "A5-B3",
+   "title": "A5 阻塞条件 3：现有架构不支持干净分离",
+   "detail": "FD 对每个样本跑**全池**，没有'在预算下选子集'这一层。现状 'FD 用到的资产数' 是从 catch 反推的**事后记账**，不是选择量。把它当 FD 的选择 ⇒ oracle（用了评测集自身信息）；把预算设成全池 ⇒ Random 抽满池，Δ 恒 0。两条路都不是选择-vs-选择对照。",
+   "consequence": "预注册的 FD-vs-Random 主对照**不得**被读作'failure-driven selection 优于 random selection'。",
+   "mitigation": "新增探索性派生集对照（exploratory_derivation_split）：在旧样本上估 fail_hits、在新样本上评估 ⇒ FD 成为真预测器。"
+  }
+ ],
+ "honest_notes": [
+  "所有数字由逐样本明细现算；区间用 Clopper–Pearson 95%（tools/stat_bounds.py）。",
+  "运行层是 replay 不是重跑 ⇒ '运行时间' 只报 replay 墙钟 + 声明式序数成本，**不报**真实执行耗时（未实测，不得编造）。",
+  "Random 臂有随机性 ⇒ 报 N=2000 次运行的分布（均值/标准差/2.5–97.5 分位），单点 seed=20260930 只用于配对检验。",
+  "资产池的 cost_units 是**声明式序数**（未实测墙钟）；把它当秒数是错的。",
+  "exploratory_derivation_split 非预注册、非确认性 ⇒ 只读方向 + CI。"
+ ],
+ "reproducibility": {
+  "run1_sha256": "d314d1370543c73639dba32a869737ae5ead0ed126c3cd2b09ece80c7cd92194",
+  "run2_sha256": "d314d1370543c73639dba32a869737ae5ead0ed126c3cd2b09ece80c7cd92194",
+  "identical": true
+ }
+}
