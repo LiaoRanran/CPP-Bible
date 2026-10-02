@@ -104,7 +104,11 @@ def test_end_to_end_chain_red_on_link_record_tamper(tmp_path: Path, monkeypatch)
 # CI 无残留且 atoms 已提交应通过。残留在则跳过。
 @pytest.mark.skipif(
     clr.residue_present(),
-    reason="本地未跟踪残留(_arch_v2x/)与未提交 atoms 改动让 integrity_check 红；CI 应通过(631 A4)",
+    reason="673s 实测修正：阻塞原因**不是**未跟踪残留 —— _arch_v19..v23/_adv_v80 已全部入库"
+           "（168 文件 tracked）⇒ 守卫恒真、本用例在 CI 也从未跑过。真阻塞是"
+           " data/governance_docs_manifest.json 与真实文档树**漂移 634 处**（这些目录入库时未同步清单）。"
+           "解除条件：owner 重生成/重钉治理清单（治理动作，673s 红线 4 不擅自清票）。"
+           "实测：摘掉守卫后 4 个依赖它的用例 4/4 全红。",
 )
 def test_chain_verify_with_real_inspections(tmp_path: Path):
     """inspection 真的跑起来（真 layout + **真仓**，检查命令是只读的）：绿；换成必失败 ⇒ 红。

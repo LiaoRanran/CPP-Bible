@@ -136,3 +136,14 @@ node_modules/
 *.bbl
 *.blg
 *.out
+
+# ── 673s · 工程杂活清理（CI/工程线批次）─────────────────────────────────────
+# 622 沙箱的应用锁（replay/sandbox 互斥文件，内含持锁 PID）。
+# 病：正常结束时该删，但被中断/被安全删除拦截层拦下时会留成孤儿 ⇒ 污染 git status
+# （实测 2026-10-02 留了 3 个：.622_apply.lock.{48196,50968,gw2}，PID 均已死）。
+# 治法：进 ignore（运行时状态不入库）+ 清理已存在的孤儿。
+data/.622_apply.lock.*
+# 论文投稿包（273KB zip + 同名目录，可由 research/ 的打包脚本重生成；根目录同名项不入库）。
+# 注：Book.zip 已在上面单独 ignore；此处只钉这两个具体名字，不用 *.zip（避免误伤其它交付 zip）。
+/QueYi_paper_package.zip
+/QueYi_paper_package/

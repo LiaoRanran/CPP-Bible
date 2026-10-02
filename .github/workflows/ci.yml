@@ -576,6 +576,36 @@ jobs:
         [ "$rc" = "0" ] || echo "::warning::670c 主门禁未全绿（exit=$rc）——结论见 step summary 与 artifact 670c-discipline-reports"
         exit $rc
 
+    - name: Quality gates 补漏（book_atom_sync / writer_selfcheck · 只读）
+      # 673s 审计：pyproject `[tool.cppbible].quality_gates` 声明了 31 项核心门禁，
+      # 其中 4 项在 ci.yml 里**一次都没出现**（writer_selfcheck / book_atom_sync /
+      # adversarial_regression / tool_integrity）。本步补上其中**已验证安全**的两项：
+      #   * 在干净检出（git worktree）上实测 exit=0；
+      #   * 实测**只读**（跑完 `git status` 零改动）。
+      # 另外两项**刻意不加**，理由写死在此免得后人重复踩（673s 在**干净检出**上复验）：
+      #   * `tools/tool_integrity.py`：干净检出上 **exit=1**（`evidence/` 与 `data/mutation`
+      #     的 merkle 根与台账不匹配）。注意 673q 报告里"tool_integrity exit 0"是**主仓脏树**
+      #     口径——其绿依赖**未提交的** `tools/.tool_checksums`；CI 拿到的是提交版 ⇒ 必红。
+      #     属**真实治理债**（670c 信任锚漂移），须先重钉并提交信任根再上 CI。
+      #   * `tools/adversarial_regression.py`：实测会**改写 33 个受跟踪文件**
+      #     （`_adv_v80/probes/*.md`）⇒ 会弄脏工作树并撞 quality job 的 Worktree Cleanliness。
+      # 非阻断（与相邻步骤同口径）：这两项是补漏，不该成为新的红源。
+      continue-on-error: true
+      run: |
+        set -uo pipefail
+        rc=0
+        python3 tools/book_atom_sync.py --check 2>&1 | tee /tmp/gate_book_atom_sync.log || rc=1
+        python3 tools/writer_selfcheck.py --all 2>&1 | tee -a /tmp/gate_writer_selfcheck.log || rc=1
+        {
+          echo "## Quality gates 补漏（exit=$rc，0=PASS）"
+          echo ''
+          echo '```'
+          tail -n 20 /tmp/gate_book_atom_sync.log /tmp/gate_writer_selfcheck.log
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
+        [ "$rc" = "0" ] || echo "::warning::补漏门禁未全绿（exit=$rc）——见 step summary"
+        exit $rc
+
     - name: Fast tests (pytest -m "not slow" · 含 670c D1-D3 新测试)
       # 与 pytest job 同口径的「快测」子集（slow 标记的串行重活仍只在 pytest job 跑）。
       # 放在本 job 的目的：主门禁与它的测试**同屏**，红了立刻能看出是门禁坏了还是测试坏了。

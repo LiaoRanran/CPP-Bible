@@ -68,12 +68,18 @@ def test_cli_exit_one_on_experimental_no_seed(tmp_path):
 #: 673b A3 实测：这 6 个文件都**不是**未固定种子 —— 它们用 `random.Random(seed)`
 #: （带固定默认种子的局部 RNG，见 tests/test_seed_audit_673b.py 的连跑两次哈希断言）。
 #: 扫描器只认全局 `random.seed()`，故把它们记成 WARN 属于**口径限制**，不是真缺口。
+#:
+#: 673s 追加（同为「口径限制」类，非新缺口）：`tools/selection_strategies_673p.py`
+#: 用 `random.Random(seed).sample(...)`（seed 由 CLI 传入、默认 20260930）——与上面 6 个
+#: 完全同一形态。673s 另修掉一处**真误报**：`tools/verifier_pool_673p.py` 此前仅在
+#: **注释/报错文案**里出现 `random.sample` 字样、代码里零随机性，已改写文案使其不再被扫中。
 KNOWN_LOCAL_RNG_WARNS = sorted([
     "tools/confidence_sequence.py",
     "tools/eprocess_671g.py",
     "tools/learner_behavior_logger.py",
     "tools/learner_state.py",
     "tools/metrics_collector.py",
+    "tools/selection_strategies_673p.py",
     "tools/trajectory_floor_check_671g.py",
 ])
 

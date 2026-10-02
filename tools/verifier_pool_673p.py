@@ -123,7 +123,7 @@ def _a(id_: str, kind: str, cost: int, caps: tuple[str, ...], defects: tuple[str
 
 _MEASURED = "data/holdout/reveal_5_detail_672h.json + data/external_corpus/reveal_detail_672h.json"
 
-#: 验证资产池（**字典序钉死次序**：`random.sample` 依赖序列次序 ⇒ 次序即契约）。
+#: 验证资产池（**字典序钉死次序**：随机抽样的结果依赖序列次序 ⇒ 次序即契约）。
 #: 12 项 = 8 个已实测资产 + 4 个声明未接线资产；不含 measure/perf-counter。
 #: 注意：已实测子集（`implemented_ids()`）的次序 = 672g `ASSET_POOL` 的次序（字典序），
 #: 这样 673p 的选择结果与 672g 可直接对照。
@@ -226,7 +226,7 @@ def verify_pool_integrity(pool: Iterable[AssetSpec] = ASSET_POOL) -> list[str]:
     names = [a.id for a in items]
 
     if names != sorted(names):
-        problems.append("池次序不是字典序（random.sample 依赖次序 ⇒ 必须钉死）")
+        problems.append("池次序不是字典序（随机抽样依赖次序 ⇒ 必须钉死）")
     if len(names) != len(set(names)):
         problems.append("池中存在重复 id")
     for a in items:
