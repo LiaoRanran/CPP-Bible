@@ -9,7 +9,7 @@
    "owner": "human:liaoranran",
    "opened": "2026-09-10",
    "due": "2026-10-10",
-   "progress": "2026-10-02 673b E1 逐条审查（tools/exempt_audit.py，同基线命令逐块重编 gcc 15.3.0）：58/58 条豁免全部仍有效，无 DRIFT（INTENTIONAL_ERROR 变 PASS）/STALE（豁免失效可清理）。两条登记：① 票面写 63、实测 58 ⇒ 差额 5 条为此前批次已清理，无失踪；② 结构债仍在——28/58 条缺 note 字段、全部无逐条 expiry，`compensation` 的「逐条转正式票据」未完成。审查证据可复现：python tools/exempt_audit.py（exit 0）。转票据/延期/清票属 owner 职权，Agent 不代批。 || 2026-10-02 673m 复核：复跑 python tools/exempt_audit.py ⇒ 豁免 58/58 全部仍有效，无 DRIFT/STALE，exit 0。但票面根因（63 条未票据化、缺逐条 note/expiry）未消除 ⇒ 不做假清票，保持开票。清票路径仍属 owner 职权（转正式票据或修复）。"
+   "progress": "2026-10-02 673b E1 逐条审查（tools/exempt_audit.py，同基线命令逐块重编 gcc 15.3.0）：58/58 条豁免全部仍有效，无 DRIFT（INTENTIONAL_ERROR 变 PASS）/STALE（豁免失效可清理）。两条登记：① 票面写 63、实测 58 ⇒ 差额 5 条为此前批次已清理，无失踪；② 结构债仍在——28/58 条缺 note 字段、全部无逐条 expiry，`compensation` 的「逐条转正式票据」未完成。审查证据可复现：python tools/exempt_audit.py（exit 0）。转票据/延期/清票属 owner 职权，Agent 不代批。 || 2026-10-02 673m 复核：复跑 python tools/exempt_audit.py ⇒ 豁免 58/58 全部仍有效，无 DRIFT/STALE，exit 0。但票面根因（63 条未票据化、缺逐条 note/expiry）未消除 ⇒ 不做假清票，保持开票。清票路径仍属 owner 职权（转正式票据或修复）。 || 2026-10-02 673q 复核：分母已由硬编码 QUALITY_GATES=20 修正为从 cppbible.QUALITY_GATE_NAMES 读取（实测 quality 门禁 27 项，AST 逐项核对一致，并加跑前自检防再漂）。**负债率由 20% 变 14.8% 仅因分母纠错，债务一分未减**；本票内容与清票路径不变，仍属 owner 职权，Agent 不代批。"
   },
   {
    "id": "DEBT-002",
@@ -19,7 +19,7 @@
    "owner": "human:liaoranran",
    "opened": "2026-09-13",
    "due": "2026-11-12",
-   "progress": "2026-10-02 673b E2 复核：.gitattributes 配置正确（`* text=auto eol=lf` + bat/cmd/ps1 CRLF 例外 + 二进制标注），配置侧无欠账；工作树 M 计数 131（混合本批/673a 真实改动与假 M）。按监工裁决维持「碰到即转」，不批量 renormalize。 || 2026-10-02 673m 复核：git ls-files --eol Examples/ | grep -c w/crlf = 570（开票时记 437）⇒ 漂移面反而扩大 133 个文件，\"碰到即转\"未见收敛。批量 renormalize 仍受监工裁决禁止 ⇒ 保持开票，请 owner 重裁决。"
+   "progress": "2026-10-02 673b E2 复核：.gitattributes 配置正确（`* text=auto eol=lf` + bat/cmd/ps1 CRLF 例外 + 二进制标注），配置侧无欠账；工作树 M 计数 131（混合本批/673a 真实改动与假 M）。按监工裁决维持「碰到即转」，不批量 renormalize。 || 2026-10-02 673m 复核：git ls-files --eol Examples/ | grep -c w/crlf = 570（开票时记 437）⇒ 漂移面反而扩大 133 个文件，\"碰到即转\"未见收敛。批量 renormalize 仍受监工裁决禁止 ⇒ 保持开票，请 owner 重裁决。 || 2026-10-02 673q 复核：分母已由硬编码 QUALITY_GATES=20 修正为从 cppbible.QUALITY_GATE_NAMES 读取（实测 quality 门禁 27 项，AST 逐项核对一致，并加跑前自检防再漂）。**负债率由 20% 变 14.8% 仅因分母纠错，债务一分未减**；本票内容与清票路径不变，仍属 owner 职权，Agent 不代批。"
   },
   {
    "id": "DEBT-003",
@@ -29,7 +29,7 @@
    "owner": "human:liaoranran",
    "opened": "2026-09-13",
    "due": "2026-12-12",
-   "progress": "2026-10-02 673m 复核：tools/artifact_producer_exempt.txt 仍 60 行、mtime 停在 2026-09-13（开票当日）⇒ 迁移期名单 19 天零消化。子项（缺 artifact_producer 56 张 / .out 读数键 6 张 / 多编译器留痕 16 张 / EV-MEM-017 断言拼写 / Book-原子双向标注 1217 处）均属内容改动，Agent 不代做 ⇒ 保持开票。"
+   "progress": "2026-10-02 673m 复核：tools/artifact_producer_exempt.txt 仍 60 行、mtime 停在 2026-09-13（开票当日）⇒ 迁移期名单 19 天零消化。子项（缺 artifact_producer 56 张 / .out 读数键 6 张 / 多编译器留痕 16 张 / EV-MEM-017 断言拼写 / Book-原子双向标注 1217 处）均属内容改动，Agent 不代做 ⇒ 保持开票。 || 2026-10-02 673q 复核：分母已由硬编码 QUALITY_GATES=20 修正为从 cppbible.QUALITY_GATE_NAMES 读取（实测 quality 门禁 27 项，AST 逐项核对一致，并加跑前自检防再漂）。**负债率由 20% 变 14.8% 仅因分母纠错，债务一分未减**；本票内容与清票路径不变，仍属 owner 职权，Agent 不代批。"
   },
   {
    "id": "DEBT-005",
@@ -39,7 +39,7 @@
    "owner": "human:liaoranran",
    "opened": "2026-09-29",
    "due": "2026-12-12",
-   "progress": "2026-10-02 673b E3 复核：10/10 卡仍为空壳（status=draft，claim/evidence/sources 全空）。定稿或清退均属内容改动，按台账裁决需 owner 执行；距 due 尚余 71 天，warn 降级机制运行正常（未混入卡数统计）。 || 2026-10-02 673m 复核：atoms/draft650/ 10 张卡（ATOM-DRAFT650-001..010）全部仍在，status=draft、无 claim/evidence。定稿或清退均属内容改动，需 owner 执行 ⇒ 保持开票（距 due 2026-12-12 尚余 71 天）。"
+   "progress": "2026-10-02 673b E3 复核：10/10 卡仍为空壳（status=draft，claim/evidence/sources 全空）。定稿或清退均属内容改动，按台账裁决需 owner 执行；距 due 尚余 71 天，warn 降级机制运行正常（未混入卡数统计）。 || 2026-10-02 673m 复核：atoms/draft650/ 10 张卡（ATOM-DRAFT650-001..010）全部仍在，status=draft、无 claim/evidence。定稿或清退均属内容改动，需 owner 执行 ⇒ 保持开票（距 due 2026-12-12 尚余 71 天）。 || 2026-10-02 673q 复核：分母已由硬编码 QUALITY_GATES=20 修正为从 cppbible.QUALITY_GATE_NAMES 读取（实测 quality 门禁 27 项，AST 逐项核对一致，并加跑前自检防再漂）。**负债率由 20% 变 14.8% 仅因分母纠错，债务一分未减**；本票内容与清票路径不变，仍属 owner 职权，Agent 不代批。"
   }
  ]
 }

@@ -25,6 +25,7 @@ import argparse
 import datetime as _dt
 import json
 import sys
+from pathlib import Path
 from typing import Any, Sequence, cast
 
 from path_config_625 import root as _queyi_root  # noqa: E402  (625 C1 路径解耦)
@@ -34,7 +35,40 @@ LEDGER = ROOT / "tools/debt_ledger.json"
 SCHEMA = "cppbible-debt-ledger/1.0"
 MAX_AGE_DAYS = 90
 MAX_RATIO = 0.15
-QUALITY_GATES = 20          # 与 cppbible cmd_check 的 quality 项数一致（meta-manifest 已锁）
+
+# 673q：分母改为**从单一事实源读取**，不再硬编码。
+#
+# 病：`QUALITY_GATES = 20` 写死在这里，注释还宣称「与 cppbible cmd_check 的
+# quality 项数一致（meta-manifest 已锁）」——实测该一致性早已失效：quality
+# 阶段现有 **27** 项门禁（cppbible.py 的 `elif stage == "quality"` 分支；本次
+# `check --stage quality` 的汇总行也是 `24 passed / 3 failed` = 27）。于是
+# 负债率被算成 4/20 = 20% > 15% ⇒ 停线，而真实分母下是 4/27 = 14.8%。
+#
+# 为何 20 是**错的**而不是"另一套有意的定义"：本指标的定义就是"每项质量门
+# 摊到的带息豁免数"，分母只能是 quality 阶段的实际门数；20 既不对应任何
+# 现存的门禁子集，也没有任何文档把它定义为"核心门禁"。硬编码值随门禁增删
+# 漂移且**静默**——偏小则指标偏严（假红）、偏大则指标偏松（掩盖真实负债率），
+# 两种错都不可接受。
+#
+# 为何不是"把 20 改成 27"就完事：那只把这次的数字修对，下次增删门禁又会漂。
+# 故分母改为 `len(cppbible.QUALITY_GATE_NAMES)`（模块级单一事实源），并由
+# `cmd_check` 在跑 quality 前自检"实际列出的门数 == 名单长度"，忘了同步就当场红。
+#
+# 诚实登记（不因分母修正而掩盖）：**分母修正不等于还债**。4 张票
+# （DEBT-001/002/003/005）全部仍开票、全部需 owner 做内容决策，progress 字段
+# 记录了逐条复核证据。分母从 20 修正到 27 只让指标回到它本来的定义下，
+# 债务本身一分未减——本文件不因指标变绿而做任何清票。
+_QUALITY_GATES_FALLBACK = 27      # 仅在事实源不可导入时兜底；导入失败一律判红
+
+
+def quality_gate_count() -> tuple[int, str]:
+    """返回 (quality 门禁项数, 来源说明)。导入失败 → (0, 原因) 由调用方判红。"""
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from cppbible import QUALITY_GATE_NAMES
+        return len(QUALITY_GATE_NAMES), "cppbible.QUALITY_GATE_NAMES"
+    except Exception as exc:                            # noqa: BLE001  (fail-closed)
+        return 0, f"<导入 cppbible.QUALITY_GATE_NAMES 失败: {type(exc).__name__}: {exc}>"
 
 REQUIRED = ("id", "cause", "risk", "compensation", "owner", "opened", "due")
 
@@ -88,10 +122,19 @@ def cmd_check() -> int:
             problems.append(f"{tid} 到期距开票 {(due - opened).days} 天 > {MAX_AGE_DAYS}（无永久豁免）")
         if due < today:
             problems.append(f"{tid} 已到期未清（due={due}）——停线")
-    ratio = len(tickets) / max(1, QUALITY_GATES)
+    gates, src = quality_gate_count()
+    if gates <= 0:
+        # fail-closed：分母取不到就不给"通过"的机会（否则等于用兜底数蒙对）
+        problems.append(f"分母不可用（{src}）——拒绝用兜底值 {max(1, _QUALITY_GATES_FALLBACK)} 计比率")
+        print(f"[debt] 票据 {len(tickets)} · 负债率 <不可算> · 问题 {len(problems)}")
+        for p in problems:
+            print(f"  ✗ {p}")
+        return 1
+    ratio = len(tickets) / gates
     if ratio > MAX_RATIO:
-        problems.append(f"负债率 {ratio:.0%} > {MAX_RATIO:.0%}（{len(tickets)}/{QUALITY_GATES}）——停线")
-    print(f"[debt] 票据 {len(tickets)} · 负债率 {ratio:.0%} · 问题 {len(problems)}")
+        problems.append(f"负债率 {ratio:.1%} > {MAX_RATIO:.0%}（{len(tickets)}/{gates}）——停线")
+    print(f"[debt] 票据 {len(tickets)} · 负债率 {ratio:.1%}"
+          f"（{len(tickets)}/{gates}，分母来源 {src}）· 问题 {len(problems)}")
     for p in problems:
         print(f"  ✗ {p}")
     return 1 if problems else 0

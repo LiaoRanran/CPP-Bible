@@ -1,18 +1,18 @@
 {
  "schema": "cppbible-golden-lock/1.0",
- "updated": "2026-09-30",
- "commit": "4ae457d2",
+ "updated": "2026-10-02",
+ "commit": "8f1092c4",
  "metrics": {
   "block_findings": 0,
-  "warn_findings": 176,
-  "atoms_total": 47,
-  "evidence_total": 66,
-  "verified_atoms": 26,
+  "warn_findings": 203,
+  "atoms_total": 52,
+  "evidence_total": 71,
+  "verified_atoms": 31,
   "human_verified": 23,
   "red_team_verified": 3,
-  "machine_verified": 0,
+  "machine_verified": 5,
   "dal_gap": 0,
-  "replay_confirm": 56,
+  "replay_confirm": 71,
   "replay_infra_error": 0
  },
  "accepted": [
@@ -275,6 +275,36 @@
    },
    "commit": "4ae457d2",
    "dirty": true
+  },
+  {
+   "ts": "2026-10-02T23:41:52",
+   "reason": "673q: +27 全部为存量、非本批新增。逐规则核实归属：ATOM-AUDIENCE / ATOM-CLAIM-STRUCTURED / ATOM-FM-REQUIRED / ATOM-ID-FORMAT 各 10 条，全部来自 atoms/draft650/ 的 10 张占位空壳卡（DEBT-005 跟踪，666 A2 已对这三条标准规则降 warn 以保门禁判别力）；EV-MATRIX 10 条来自 648 C 探针批次的卡；EV-ARTIFACT-VERSION-MATCH 5 条来自 669 批次卡；EV-ASSERT-SYMBOL-MAPPED(4) / EV-FALSIFICATION-QUANT(4) / EV-OUT-UNDECLARED-KEY(6) 共 14 条分布在 EV-CONC-001、EV-CONC-002..006、EV-MEM-003/006/010/017/035、EV-HIST-001、EV-UB-OOB-669、EV-UB-WRAP-669，均非 673q 触及的卡。673q 自身净变化为 0：A 批次一度引入 9 条 OBSERVATION-LIVENESS 悬空锚（原子卡的 liveness.symbol 指向已被内联的 C 函数名），已把 9 张原子卡的锚改指其载荷读数键，warn 回到本批开工时的 203。诚实登记：快照只存总数 176、不存逐规则明细，故 +27 无法逐规则回溯到基线；此处按「现状归属 + 不再新增」接受，并把 6 个此前未分类的规则 ID 显式归入 legacy，使存量债可见可追。",
+   "classify": {
+    "ATOM-AUDIENCE": "legacy",
+    "ATOM-CLAIM-STRUCTURED": "legacy",
+    "ATOM-FM-REQUIRED": "legacy",
+    "ATOM-ID-FORMAT": "legacy",
+    "EV-ARTIFACT-VERSION-MATCH": "legacy",
+    "EV-MATRIX": "legacy"
+   },
+   "worse": [
+    "warn_findings: 176 → 203"
+   ],
+   "metrics_after": {
+    "block_findings": 0,
+    "warn_findings": 203,
+    "atoms_total": 52,
+    "evidence_total": 71,
+    "verified_atoms": 31,
+    "human_verified": 23,
+    "red_team_verified": 3,
+    "machine_verified": 5,
+    "dal_gap": 0,
+    "replay_confirm": 71,
+    "replay_infra_error": 0
+   },
+   "commit": "8f1092c4",
+   "dirty": true
   }
  ],
  "dirty": true,
@@ -288,6 +318,12 @@
   "ATOM-REL-TARGET": "legacy",
   "EV-SERVES-EXIST": "legacy",
   "OBSERVATION-LIVENESS": "legacy",
-  "warn_findings": "real"
+  "warn_findings": "real",
+  "ATOM-AUDIENCE": "legacy",
+  "ATOM-CLAIM-STRUCTURED": "legacy",
+  "ATOM-FM-REQUIRED": "legacy",
+  "ATOM-ID-FORMAT": "legacy",
+  "EV-ARTIFACT-VERSION-MATCH": "legacy",
+  "EV-MATRIX": "legacy"
  }
 }

@@ -1,16 +1,16 @@
 {
   "schema": "queyi-guard-rerun/v1",
   "generated_by": "tools/guard_rerun_670c.py",
-  "generated_at": "2026-09-30 20:57:01",
+  "generated_at": "2026-10-02 23:50:04",
   "note": "基线 = 一次「源码指纹 + 产物指纹」快照。判据：源码语义变了而产物没变 ⇒ STALE。刷新基线请在**确认产物已重跑**之后执行 --update。",
   "tools": {
     "atom_evidence_replay": {
       "src": "tools/atom_evidence_replay.py",
-      "src_sha256": "b370c3a656acae63a6d40523b524cf0f8a9dc265fc69717bb688261c5ae0e65b",
-      "src_ast_sha256": "5d4acd92cf3b33579de27032a57c87432e629adb126179398ddf80a3c27cb9f4",
-      "src_mtime": 1790734465.3706672,
+      "src_sha256": "d8d53839a377fd71ce4827df5d5505e91dcc09e3a01b4e73a5427ae38bb1e698",
+      "src_ast_sha256": "16832e6d5b7fe82f4583234d8902dfe9951bcc1639513ed1ac517b67f137180d",
+      "src_mtime": 1790953877.2866492,
       "products": {
-        "build/replay_manifest.json": "4466ad90ddedd6be599bfa9fc750a89d8be3be511bd6566897cf0296a7780319"
+        "build/replay_manifest.json": "c35b9aeb1e3cea5038c8139e4678e2c19d33a57cf83c62df38a990ca9c14c039"
       },
       "declared_products": [
         "build/replay_manifest.json"
@@ -18,9 +18,9 @@
     },
     "cppbible": {
       "src": "tools/cppbible.py",
-      "src_sha256": "ca4c63bb18fa844c56c91ffb671c8971a40f4b2b12f36f8b2a8d090d34ba743f",
-      "src_ast_sha256": "a4efa7a226affca63aeceb1dd9898e4e354cc1e198748d707bd7303a05ceb95f",
-      "src_mtime": 1790521172.5854185,
+      "src_sha256": "c62a97a837f6ff67a5d09225542c5b3dab114ec75992444f83da6dc5fb6ccf93",
+      "src_ast_sha256": "3774dd2b88f06bdc03d6ca5bae62ffa5498cdf3eb42c8c3842b77986d6b5cbc6",
+      "src_mtime": 1790955390.7761872,
       "products": {
         "tools/compile_report.json": "268637431f0ac641d92a8b135f9c2d6f05b614006e743b62c0d397f6d736f504"
       },

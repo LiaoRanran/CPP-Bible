@@ -198,6 +198,24 @@ def cmd_env(_args: argparse.Namespace) -> int:
     return 0
 
 
+# `check --stage quality` 的**门禁名单**（单一事实源，673q 新增）。
+# 为何要有它：S5 债务台账的负债率 = 票据数 / **质量门禁项数**，它的分母原先在
+# `debt_ledger.py` 里硬编码 `QUALITY_GATES = 20`，而本分支实际已增长到 27 项
+# ⇒ 4/20 = 20% > 15% 判停线。硬编码分母必然随门禁增删漂移，且漂移是**静默**的
+# （分母偏小 ⇒ 指标偏严；分母偏大 ⇒ 指标偏松，两种错都会掩盖真实负债率）。
+# 故把名单提到模块级做单一事实源，由 `cmd_check` 在跑之前自检数量一致，
+# `debt_ledger.py` 直接 `len(QUALITY_GATE_NAMES)` 取分母。
+# 增删 quality 门时**必须**同步这里；忘了会被下面的自检当场拦下（不是静默失配）。
+QUALITY_GATE_NAMES: tuple[str, ...] = (
+    "Preflight", "Consistency", "Cross-Reference", "Xref", "Index Freshness",
+    "Density", "D5 Appendix", "D5 Source Integrity", "Terminology", "Exercise Dup",
+    "ASM Evidence", "Book ASM Freshness", "Structure", "Atom Coverage",
+    "Evidence Replay", "Gate Engine", "Golden Lock", "Debt Ledger", "Poison Drill",
+    "Fence Sweep", "Whitespace", "S10 Verify", "Book Link Integrity",
+    "Book-Atom Sync", "Writer Selfcheck", "Adversarial Regression", "Tool Integrity",
+)
+
+
 def cmd_check(args: argparse.Namespace) -> int:
     """运行质量门禁。"""
     stage = args.stage or "fast"
@@ -264,6 +282,13 @@ def cmd_check(args: argparse.Namespace) -> int:
             # 498 任务 3：核心工具完整性（5 个工具 sha256 基准；缺基准 exit 2 不静默放行）
             ("Tool Integrity", [PYTHON_EXE, "tools/tool_integrity.py"]),
         ]
+        # 673q：分母自检——本分支实际列出的 gate 数必须与模块级单一事实源一致。
+        # 不一致就当场红，而不是让 debt_ledger 的负债率分母静默失配。
+        if len(gates) != len(QUALITY_GATE_NAMES):
+            print(f"\n[cppbible] ❌ quality 门数 {len(gates)} != QUALITY_GATE_NAMES "
+                  f"{len(QUALITY_GATE_NAMES)}——请同步更新后者"
+                  f"（debt_ledger 的负债率分母直接取它）")
+            return 1
     elif stage == "compile":
         gates = [
             ("Compile All", [PYTHON_EXE, "tools/compile_all.py", "--main-only", "--parallel"]),

@@ -22,7 +22,10 @@ claim_structured:
     statement: "char_promoted_sum=200 char_sum_type_size=4 cmp_signed_unsigned=0 minus1_as_unsigned=4294967295（gcc -std=c11 -O2 实测）。"
     evidence: [EV-LANG-007]
     extracted_by: writer
-    liveness: {kind: fixture_symbol, symbol: intpromo_probe}
+    # 673q: 锚由「夹具里的 static C 函数名」改为「本命题的载荷读数键」。原锚指向的
+    # 函数在 -O2 下被内联、符号名在任何 .asm 里都不出现；673q A 已把证据卡的
+    # artifact_assert 换成真实存在的 claim 锚定断言，原锚随之悬空，故同步改指。
+    liveness: {kind: fixture_symbol, symbol: "char_sum_type_size=%zu"}
 claim_boundary:
   standard: [C11, C17, C23]
   compilers: [gcc 13.1.0 / clang 22.1.8]
