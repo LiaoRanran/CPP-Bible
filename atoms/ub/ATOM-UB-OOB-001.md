@@ -9,8 +9,11 @@ cpp_standard: [C++17]
 compiler: [WSL g++ (Ubuntu 13.3.0)]
 platform: [WSL2 Linux x86-64]
 input_domain: unknown
-dal: B
-human_review: required
+dal: C
+human_review: waived
+dal_reviewed_by: human:liaoranran
+dal_reviewed_at: 2026-10-02
+dal_review_reason: "基础UB/内存知识，机器验证(ASan/SIGFPE/SIGSEGV)已充分，人审暂豁免，待批量人审后调回B"
 audience: intermediate
 cognitive_load: low
 claim: >-
