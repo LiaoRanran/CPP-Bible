@@ -63,11 +63,10 @@ def test_sync_checks_holdout_ci():
 
 # ---------------- bib_audit ----------------
 
-@pytest.mark.skip(reason="673h 内容同步：bib 条目数(58≠49)依赖 research/ 论文 bib 源，红线禁止改。登记 data/673h_内容同步报告.md")
 def test_bib_parse_counts():
     text = open(os.path.join(ROOT, "research", "latex", "queyi_refs.bib"), encoding="utf-8").read()
     entries = bib.parse_bib(text)
-    assert len(entries) == 49   # 671b：新增 tang2024minicheck（[49]）
+    assert len(entries) == 58   # 673j：673i 扩充引用（clang-tidy/cppcheck 等）后 bib 现值 58 条
 
 
 def test_bib_all_have_title():
