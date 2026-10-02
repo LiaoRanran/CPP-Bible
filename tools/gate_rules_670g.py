@@ -86,7 +86,7 @@ def check_rate_consistency(root: Path) -> list[dict]:
 PCT_RE = re.compile(r"(\d+(?:\.\d+)?)\s*%")
 
 
-CODE_FENCE_RE = re.compile(r"```.*?```", re.S)
+CODE_FENCE_RE = re.compile(r"```.*?```", re.DOTALL)
 # 这些语境里的百分比不是"检出率"，无需 k/n
 SKIP_CTX = ("CP", "CI", "置信", "95%", "半宽", "目标", "阈值", "≥", "≤", "上限",
             "→", "pp", "口径", "置信度", "置信水平", "percentile")

@@ -325,3 +325,60 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list) -> None:
         if drop:
             config.hook.pytest_deselected(items=drop)
             items[:] = keep
+
+
+# ── 660 B6 拆仓：协议内核 canonical 在兄弟仓；单仓检出时**显式**排除内核闭包测试 ──
+# 背景：`tools/queyi_core_v10_641.py`（及 queyi_core_cpp_641 / queyi_data_models_645 等）
+# 是**薄 wrapper**：运行期从 `tools/` 向上逐级探测 `queyi-verifier/tools/<同名文件>`，
+# 用 importlib 装载 canonical 实现；探测不到即 `raise RuntimeError`——**设计上 fail-loud，
+# 绝不静默退化**（见该文件 docstring）。
+#
+# 后果：CI 只 checkout 本仓（兄弟仓未检出）⇒ 下列 10 个文件在**收集期**就 RuntimeError。
+# 而 CI 的 pytest 走 `--maxfail=1`，一条收集错误即中止整轮 —— 日志里只剩这一条，
+# 其余数百条测试根本没跑，真实状态被掩盖。
+#
+# 处置（显式登记，不粉饰）：兄弟仓不可用时把这 10 个文件**显式排除**并在 pytest 头部
+# 打印可见提示；兄弟仓可用时（本机双仓布局）行为**完全不变**（collect_ignore 为空）。
+# 不在这里伪造内核 stub —— 那会让"内核缺失"看起来像"内核正常"，与 fail-loud 设计相悖。
+# 让 CI 检出兄弟仓属仓库布局/治理决定（远程仓与本地双仓不同步，本批不单方面改 CI 依赖）。
+# 详见 data/673f_CI修复报告.md §3.2。
+_KERNEL_REPO_TESTS = (
+    "test_conflict_detector_642.py",
+    "test_conflict_detector_647.py",
+    "test_core_pbt_656.py",
+    "test_kernel_minimality_audit_642.py",
+    "test_queyi_core_cpp_641.py",
+    "test_queyi_core_toy_641.py",
+    "test_queyi_core_v10_641.py",
+    "test_repo_split_sandbox_647.py",
+    "test_run_641_gate.py",
+    "test_verifier_closure_641.py",
+)
+
+
+def _kernel_canonical_available() -> bool:
+    """兄弟仓 `queyi-verifier/tools/queyi_core_v10_641.py` 是否可探测到。
+
+    探测规则与 `tools/queyi_core_v10_641.py::_find_qv_tools` **逐字对齐**（自 `tools/`
+    起向上 8 级找 `queyi-verifier/tools/<同名文件>`），避免两处判据分叉。
+    """
+    d = TOOLS
+    for _ in range(8):
+        if (d / "queyi-verifier" / "tools" / "queyi_core_v10_641.py").is_file():
+            return True
+        d = d.parent
+    return False
+
+
+collect_ignore = [] if _kernel_canonical_available() else list(_KERNEL_REPO_TESTS)
+
+
+def pytest_report_header(config: pytest.Config) -> list[str]:
+    if _kernel_canonical_available():
+        return []
+    return [
+        "⚠ 660 B6 拆仓：queyi-verifier/ 协议内核 canonical 仓未检出 ⇒ 已显式排除 "
+        f"{len(_KERNEL_REPO_TESTS)} 个内核闭包测试文件（{', '.join(_KERNEL_REPO_TESTS)}）。"
+        "根因（CI 检出兄弟仓）见 data/673f_CI修复报告.md §3.2。"
+    ]
+

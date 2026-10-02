@@ -327,7 +327,6 @@ def run(ids: list[str], runs_n: int, write: bool = True) -> dict[str, Any]:
     for r in rows:
         r["source"] = "measured_671a"
     cand = rows + hist_rows
-    cand_ids = ids + historical_ids
 
     round4 = tally(rows, labels)
     cumulative = tally(cand, labels)

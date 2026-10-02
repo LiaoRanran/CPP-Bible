@@ -40,7 +40,7 @@ def load(root: Path) -> dict[str, Any]:
     p = root / REGISTRY
     if not p.is_file():
         return default_registry()
-    d = json.loads(p.read_text(encoding="utf-8"))
+    d: dict[str, Any] = json.loads(p.read_text(encoding="utf-8"))
     d.setdefault("experiments", {})
     return d
 

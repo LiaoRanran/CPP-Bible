@@ -39,8 +39,8 @@ TAG_RE = re.compile(r"<([a-zA-Z][a-zA-Z0-9-]*)")
 
 # ── 672d B · 加载时资源 vs 导航链接 ──
 # 加载时：浏览器解析到就会去下载；导航链接：用户点击才下载（与首屏无关）。
-LOAD_TAGS_RE = re.compile(r"<(link|script|img)\b([^>]*)>", re.I)
-NAV_A_RE = re.compile(r"<a\b([^>]*)>", re.I)
+LOAD_TAGS_RE = re.compile(r"<(link|script|img)\b([^>]*)>", re.IGNORECASE)
+NAV_A_RE = re.compile(r"<a\b([^>]*)>", re.IGNORECASE)
 ATTR_VAL_RE = re.compile(r'(?:src|href)\s*=\s*"([^"]+)"')
 REL_RE = re.compile(r'rel\s*=\s*"([^"]+)"')
 LOADABLE_REL = {"stylesheet", "icon", "shortcut", "apple-touch-icon", "manifest",

@@ -68,7 +68,7 @@ def load(root: Path) -> dict[str, Any]:
     p = root / CONFIG
     if not p.is_file():
         return default_config()
-    d = json.loads(p.read_text(encoding="utf-8"))
+    d: dict[str, Any] = json.loads(p.read_text(encoding="utf-8"))
     for k in ("train_ids", "validation_ids", "test_ids", "rule_tuning"):
         d.setdefault(k, [])
     return d

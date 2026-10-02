@@ -40,7 +40,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import ablation_stats_671b as AS  # noqa: E402
-import stat_bounds as sb          # noqa: E402
+import stat_bounds as sb  # noqa: E402
 
 VERSION = "1.0"
 OUT = ROOT / "data" / "experiments" / "sample_size_671b.json"
@@ -95,7 +95,6 @@ def ci_halfwidth_table() -> list[dict]:
 
 def current_gap(target_halfwidth_pp: float = 10.0) -> dict:
     """④ 当前样本量 vs 目标的差距（诚实登记，不粉饰）。"""
-    import math
     # 目标：p≈0.5 时 CP 半宽 ≤ 10pp ⇒ 反解最小 n
     n = 1
     while n < 5000:

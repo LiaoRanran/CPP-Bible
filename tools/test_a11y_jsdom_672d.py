@@ -18,8 +18,8 @@ TOOLS = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(TOOLS)
 sys.path.insert(0, TOOLS)
 
-import a11y_audit_jsdom_672d as J  # noqa: E402
 import a11y_audit_670c4 as STATIC  # noqa: E402
+import a11y_audit_jsdom_672d as J  # noqa: E402
 
 
 def test_node_and_jsdom_resolvable():
