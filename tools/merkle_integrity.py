@@ -49,7 +49,11 @@ from path_config_625 import root as _queyi_root  # noqa: E402  (625 C1 路径解
 
 ROOT = _queyi_root()
 VERSION = "1.0"
-ALGO = "sha256-path-bound-count-bound-v1"
+# 673t：v1 -> v2 —— v1 直接哈希工作树原始字节，行尾随检出环境变（Windows 工作树 CRLF
+# / CI 与干净检出 LF）=> 同一份提交算出不同的根，本机绿则 CI 必红，且重算成任何一棵树
+# 另一棵立刻红。v2 对**文本文件**先做 CRLF->LF 归一再哈希，使根只取决于内容
+# （二进制字节一字不动）。换代必须重算全部根 —— 已随本批重算并提交。
+ALGO = "sha256-path-bound-count-bound-v2"
 ROOTS_PATH = ROOT / "data" / "supply_chain" / "merkle_roots.json"
 EMPTY_ROOT = hashlib.sha256(b"").hexdigest()      # 空目录的根（明确定义，不是"未定义"）
 CHUNK = 1 << 20                                    # 分块读取（1 MiB）
@@ -70,18 +74,96 @@ def _u64(n: int) -> bytes:
     return int(n).to_bytes(8, "big")
 
 
+def _text_flags() -> dict[str, bool]:
+    """`{仓库相对路径(posix): 是否按文本处理}`，惰性构建、整仓只问 git 一次。
+
+    673t 根因：`leaf_hash` 原本直接哈希**工作树的原始字节**，而行尾取决于检出环境
+    ——Windows 工作树里 659 个文件是 CRLF（本仓 `.gitattributes` 是 `* text=auto
+    eol=lf`，但既有文件的工作树副本仍是 CRLF，即 DEBT-002），CI / 干净检出是 LF。
+    于是**同一份提交内容**在不同机器上算出**不同的 Merkle 根**：本机（CRLF 树）绿、
+    干净检出与 CI（LF 树）红。更糟的是这个红**修不掉**——把根重算成任何一棵树，
+    另一棵立刻红；两边都是"真实机器"，谁也不该被判假。
+
+    根一旦依赖检出环境，它就不再是"内容锚"。故哈希前把**文本文件**的 CRLF 统一成
+    LF：文本的行尾不是内容（git 自己也这么判，`core.autocrlf` / `eol` 只影响检出），
+    二进制文件的字节则一字不动。判据用 git 自己的分类（`git ls-files --eol` 里
+    `attr/-text` 就是二进制），避免对二进制误归一；git 不可用时退回"无 NUL 即文本"。
+
+    注意：这里**不**改用 `git cat-file blob`（哈希索引内容）。那样本地未暂存的改动
+    会被忽略，篡改工作树而根不变——对一个完整性锚来说是安全性倒退。
+    """
+    global _TEXT_FLAGS
+    if _TEXT_FLAGS is not None:
+        return _TEXT_FLAGS
+    flags: dict[str, bool] = {}
+    try:
+        import subprocess
+        out = subprocess.run(
+            ["git", "ls-files", "--eol", "-z"],
+            cwd=str(ROOT), capture_output=True, timeout=120,
+        )
+        if out.returncode == 0:
+            for rec in out.stdout.decode("utf-8", "replace").split("\0"):
+                if not rec.strip():
+                    continue
+                # 形如 "i/lf\tw/crlf\tattr/text=auto eol=lf\tpath"
+                parts = rec.split("\t")
+                path = parts[-1]
+                attrs = parts[2] if len(parts) > 2 else ""
+                flags[path] = "-text" not in attrs
+    except Exception as exc:                            # noqa: BLE001
+        print(f"[merkle] 无法确定文本/二进制分类（{type(exc).__name__}）⇒ 退回逐文件 NUL 探测",
+              file=sys.stderr)
+    _TEXT_FLAGS = flags
+    return flags
+
+
+_TEXT_FLAGS: dict[str, bool] | None = None
+
+
+def _looks_binary(sample: bytes) -> bool:
+    return b"\x00" in sample
+
+
 def leaf_hash(rel_path: str, file_path: Path) -> str:
-    """叶节点 hash：`sha256(0x00 || rel_path || 0x00 || content)`（分块读，路径绑定）。"""
+    """叶节点 hash：`sha256(0x00 || rel_path || 0x00 || content)`（分块读，路径绑定）。
+
+    673t：对文本文件先做 CRLF→LF 归一（理由见 `_text_flags` 的文档串），使根与检出
+    环境无关。分块读时按 1 字节预留处理跨块的 `\r\n`，不漏改。
+    """
+    p = Path(file_path)
+    flags = _text_flags()
+    rel_repo = None
+    try:
+        rel_repo = p.resolve().relative_to(ROOT.resolve()).as_posix()
+    except Exception:                                   # noqa: BLE001
+        rel_repo = None
+    is_text = flags.get(rel_repo) if (flags and rel_repo) else None
+
     h = hashlib.sha256()
     h.update(_LEAF_PREFIX)
     h.update(rel_path.encode("utf-8"))
     h.update(b"\x00")
-    with Path(file_path).open("rb") as f:
+    carry = b""
+    first = True
+    with p.open("rb") as f:
         while True:
             buf = f.read(CHUNK)
             if not buf:
                 break
+            if first:
+                if is_text is None:
+                    is_text = not _looks_binary(buf[:4096])
+                first = False
+            if is_text:
+                data = carry + buf
+                carry = data[-1:] if data.endswith(b"\r") else b""
+                buf = data[:len(data) - len(carry)].replace(b"\r\n", b"\n")
+            else:
+                carry = b""
             h.update(buf)
+    if carry:
+        h.update(carry)
     return h.hexdigest()
 
 

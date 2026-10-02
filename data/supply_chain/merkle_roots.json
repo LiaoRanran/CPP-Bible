@@ -1,40 +1,40 @@
 {
- "algo": "sha256-path-bound-count-bound-v1",
+ "algo": "sha256-path-bound-count-bound-v2",
  "tool": "merkle_integrity",
  "version": "1.0",
  "generated_at": null,
  "dirs": {
   "atoms": {
    "path": "atoms",
-   "root": "8f77fb41178327994fcca25fdb6eb26e45df65be49fa5c34b5baa830bc1d3acc",
+   "root": "178cc4ededc38b596b9bb7a48da23fa5105026f9d6c011c6c6da97ec19afacdb",
    "file_count": 54,
    "tree_height": 6,
    "generated_at": null
   },
   "evidence": {
    "path": "evidence",
-   "root": "14e0d74d88d9c4f64857aced24c52db15fef6103388dfe92e25b63a954b3ba54",
+   "root": "305fa8d206a3521883cc97a4be10d0934d3532ba3459b61b85315a892d66252f",
    "file_count": 72,
    "tree_height": 7,
    "generated_at": null
   },
   "Examples": {
    "path": "Examples",
-   "root": "265147a08df20c47375d8d58f20fdbf8dd815cd0d30706ae6a6332c846ac42b1",
+   "root": "16c27b56a4017f3642bf3ad2b8868088e2d3a929f989457e15d71f201eb60d2b",
    "file_count": 1586,
    "tree_height": 11,
    "generated_at": null
   },
   "Book": {
    "path": "Book",
-   "root": "0a36f80b46c4d317505f6c4c4bb7976cd6264075b80f251c9556cf701c9bc12c",
+   "root": "a83ef1bb00885cc477ae8bc6557fa957d8c427de2369d2cff17ba9fea8e06600",
    "file_count": 183,
    "tree_height": 8,
    "generated_at": null
   },
   "mutation_baselines": {
    "path": "data/mutation",
-   "root": "42829d7851991a3f502a18471094e1d89acb5a206d42cb04fc3d5c8a52aa4565",
+   "root": "df83b78919a336ce622f7f573badd3e3438e32dcae5bf467734129a50fd09cdf",
    "file_count": 7,
    "tree_height": 3,
    "generated_at": null

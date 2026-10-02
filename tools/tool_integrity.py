@@ -141,8 +141,31 @@ _RULER_MARK = "# ruler"                      # .tool_checksums 里的节标记
 
 
 def sha256_of(p: Path) -> str:
+    """文件 sha256。
+
+    673t：与 `merkle_integrity.leaf_hash` **同一口径**——先按 git 的文本/二进制分类
+    把文本文件的 CRLF 统一成 LF 再哈希。否则基准值取决于**谁在哪种行尾下跑的
+    `--update`**：本机工作树 659 个文件是 CRLF（DEBT-002），CI / 干净检出是 LF，
+    ⇒ `.tool_checksums` 在一个环境里绿、在另一个环境里必红，而且两边都是真实机器。
+    实测触发：`data/governance_docs_manifest.json` 在本仓钉的是 CRLF 版
+    `9293421a…`，干净检出算出 `b4b708ee…`，CI 上同样是后者。
+    二进制文件的字节一字不动（分类见 `merkle_integrity._text_flags`）。
+    """
+    from merkle_integrity import _text_flags
+    raw = p.read_bytes()
+    flags = _text_flags()
+    rel = None
+    try:
+        rel = p.resolve().relative_to(ROOT.resolve()).as_posix()
+    except Exception:                                   # noqa: BLE001
+        rel = None
+    is_text = flags.get(rel) if (flags and rel) else None
+    if is_text is None:
+        is_text = b"\x00" not in raw[:4096]
+    if is_text:
+        raw = raw.replace(b"\r\n", b"\n")
     h = hashlib.sha256()
-    h.update(p.read_bytes())
+    h.update(raw)
     return h.hexdigest()
 
 
