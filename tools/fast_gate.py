@@ -43,6 +43,7 @@ import json
 import shutil
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -99,10 +100,11 @@ def _xdist_available() -> bool:
 
 def run_tests(test_files: list[str], all_fast: bool,
               timeout: float = DEFAULT_TIMEOUT_TESTS,
-              jobs: str = "", ) -> dict:
+              jobs: str = "", maxfail: int = 0) -> dict:
     """跑 pytest。all_fast ⇒ 全部非 slow；否则只跑指定文件（也带 not slow 过滤）。
 
     jobs："" ⇒ 自动（--all 并行 / --tests 串行）；"0" ⇒ 串行；"auto"/"N" ⇒ 显式。
+    maxfail：0 ⇒ 不限（本地默认，一次看全失败）；>0 ⇒ 快速失败（CI 口径是 1）。
     """
     if all_fast:
         base, name = ["tests"], "pytest（全部非 slow）"
@@ -115,6 +117,9 @@ def run_tests(test_files: list[str], all_fast: bool,
     jobs = jobs or ("auto" if all_fast else "0")
     cmd = [sys.executable, "-m", "pytest", *base, "-q", "-m", "not slow",
            "-p", "no:cacheprovider", "--tb=line"]
+    if maxfail > 0:
+        cmd += [f"--maxfail={maxfail}"]
+        name += f"（maxfail={maxfail}）"
     note = ""
     if jobs != "0":
         if _xdist_available():
@@ -172,12 +177,17 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--json", action="store_true", help="机读输出")
     ap.add_argument("--timeout", type=float, default=None, help="单步超时秒（默认门禁 300/测试 900）")
     ap.add_argument("--jobs", default="", help='pytest 并行：""=自动、"0"=串行、"auto"/N')
+    ap.add_argument("--maxfail", type=int, default=0,
+                    help="pytest 快速失败阈值（0=不限，本地默认；CI 用 1）")
+    ap.add_argument("--serial-phases", action="store_true",
+                    help="673b C1：三路串行（默认并发；排查偶发争用/CI 复现时用）")
     a = ap.parse_args(argv)
 
     t0 = time.monotonic()
     tg = a.timeout or DEFAULT_TIMEOUT_GATE
     tt = a.timeout or DEFAULT_TIMEOUT_TESTS
     items: list[dict] = []
+    lock = threading.Lock()
 
     def _emit(item: dict) -> None:
         """672h：逐项**完成即打印**（长跑时可看到进度；--json 时仍只在最后输出）。"""
@@ -186,17 +196,37 @@ def main(argv: list[str] | None = None) -> int:
         tag = "SKIP" if item.get("skipped") else ("PASS" if item["rc"] == 0 else "FAIL")
         print(f"  [{tag:4}] {item['name']}  {item['seconds']:.1f}s", flush=True)
 
+    def _collect(item: dict) -> None:
+        with lock:
+            items.append(item)
+            _emit(item)
+
+    def _gates_phase() -> None:
+        for item in run_gates(tg):          # 走 run_gates()（测试可桩化；逐项收集以支持流式打印）
+            _collect(item)
+
+    def _pytest_phase() -> None:
+        _collect(run_tests(a.tests, a.all, tt, jobs=a.jobs, maxfail=a.maxfail))
+
+    def _frontend_phase() -> None:
+        _collect(run_frontend(a.skip_frontend, tg, web_has_changes()))
+
     if not a.json:
-        print("[fast-gate] 快速门禁", flush=True)
-    for item in run_gates(tg):
-        items.append(item)
-        _emit(item)
-    item = run_tests(a.tests, a.all, tt, jobs=a.jobs)
-    items.append(item)
-    _emit(item)
-    item = run_frontend(a.skip_frontend, tg, web_has_changes())
-    items.append(item)
-    _emit(item)
+        print("[fast-gate] 快速门禁（673b：门禁 / pytest / 前端 **三路并发**）", flush=True)
+    phases = [_gates_phase, _pytest_phase, _frontend_phase]
+    if a.serial_phases:
+        for fn in phases:
+            fn()
+    else:
+        threads = [threading.Thread(target=fn, name=fn.__name__) for fn in phases]
+        for th in threads:
+            th.start()
+        for th in threads:
+            th.join()
+    # 稳定排序：门禁 → pytest → 前端（并发下完成顺序不定，摘要必须可比）
+    order = {name: i for i, (name, _) in enumerate(GATES)}
+    items.sort(key=lambda i: (0, order[i["name"]]) if i["name"] in order
+               else (1 if "pytest" in i["name"] else 2, 0))
     total = round(time.monotonic() - t0, 2)
 
     failed = [i for i in items if i["rc"] != 0]

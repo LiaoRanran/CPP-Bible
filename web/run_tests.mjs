@@ -29,6 +29,7 @@ const TESTS = [
   'tests/robustness_670c3.test.mjs',
   'tests/a11y_670c4.test.mjs',
   'tests/keybind_670c5.test.mjs',
+  'tests/keyboard_nav_673b.test.mjs',
   'tests/perf_670c5.test.mjs',
   'tests/home_dom_672d.test.mjs',
   'tests/pages_extract_672g.test.mjs',

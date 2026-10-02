@@ -71,7 +71,9 @@ button { font: inherit; font-size: 12px; color: var(--color-text-dim, #a1a1a1);
          border-radius: var(--radius-md, 6px); padding: 5px 10px; cursor: pointer; }
 button:hover { color: var(--color-text, #ededed); border-color: var(--color-accent, #5b8def); }
 button:focus-visible { outline: var(--focus-ring, 2px solid #5b8def); outline-offset: 2px; }
-@media (max-width: 900px) {
+/* 673b B2：断点统一 —— 原 900px 是全站唯一非标值（672c 定的档位是 480/640/768/1024/1280），
+   导航折叠与 669c.css / responsive.css / style.css 的 768px 对齐。 */
+@media (max-width: 768px) {
   nav { gap: 12px; flex-wrap: wrap; padding-inline: 16px; }
   a { min-height: var(--touch-min, 44px); display: inline-flex; align-items: center; }
 }

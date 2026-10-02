@@ -16,7 +16,6 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import fast_gate as FG  # noqa: E402
 
-
 # ── 基础契约 ──────────────────────────────────────────────────────────────────
 
 def test_gates_cover_three_deliverable_doors():
@@ -131,7 +130,7 @@ def test_run_captures_timeout(monkeypatch):
 def test_main_pass_all_stubbed(monkeypatch, capsys):
     monkeypatch.setattr(FG, "run_gates", lambda t: [
         {"name": "g1", "cmd": "", "rc": 0, "seconds": 0.1, "tail": []}])
-    monkeypatch.setattr(FG, "run_tests", lambda files, all_fast, t, jobs="":
+    monkeypatch.setattr(FG, "run_tests", lambda files, all_fast, t, jobs="", maxfail=0:
                         {"name": "t", "cmd": "", "rc": 0, "seconds": 0.1, "tail": []})
     monkeypatch.setattr(FG, "run_frontend", lambda skip, t, wd=None:
                         {"name": "f", "cmd": "", "rc": 0, "seconds": 0.1,
@@ -146,7 +145,7 @@ def test_main_fail_reports_evidence(monkeypatch, capsys):
     monkeypatch.setattr(FG, "run_gates", lambda t: [
         {"name": "g-bad", "cmd": "x y", "rc": 1, "seconds": 0.1,
          "tail": ["[BLOCK] 三方数字不一致"]}])
-    monkeypatch.setattr(FG, "run_tests", lambda files, all_fast, t, jobs="":
+    monkeypatch.setattr(FG, "run_tests", lambda files, all_fast, t, jobs="", maxfail=0:
                         {"name": "t", "cmd": "", "rc": 0, "seconds": 0.1, "tail": []})
     monkeypatch.setattr(FG, "run_frontend", lambda skip, t, wd=None:
                         {"name": "f", "cmd": "", "rc": 0, "seconds": 0.1,
@@ -162,7 +161,7 @@ def test_main_json_output_is_machine_readable(monkeypatch, capsys):
     import json
     monkeypatch.setattr(FG, "run_gates", lambda t: [
         {"name": "g1", "cmd": "", "rc": 0, "seconds": 0.1, "tail": []}])
-    monkeypatch.setattr(FG, "run_tests", lambda files, all_fast, t, jobs="":
+    monkeypatch.setattr(FG, "run_tests", lambda files, all_fast, t, jobs="", maxfail=0:
                         {"name": "t", "cmd": "", "rc": 0, "seconds": 0.1, "tail": []})
     monkeypatch.setattr(FG, "run_frontend", lambda skip, t, wd=None:
                         {"name": "f", "cmd": "", "rc": 0, "seconds": 0.1,
@@ -176,6 +175,121 @@ def test_main_json_output_is_machine_readable(monkeypatch, capsys):
 def test_web_has_changes_returns_bool_or_none():
     v = FG.web_has_changes()
     assert v is None or isinstance(v, bool)
+
+
+# ── 673b C1：三路并发（门禁 / pytest / 前端）与摘要顺序 ──────────────────────────
+
+def _stub_three_phases(monkeypatch, log, gate_rc=0, test_rc=0, front_rc=0, sleep=0.20):
+    import time as _t
+
+    def fake_gates(timeout):
+        log.append("gates:start")
+        _t.sleep(sleep)
+        log.append("gates:end")
+        return [{"name": FG.GATES[0][0], "cmd": "c1", "rc": gate_rc,
+                 "seconds": 0.1, "tail": ["FAILED x"] if gate_rc else []}]
+
+    def fake_tests(files, all_fast, timeout, jobs="", maxfail=0):
+        log.append("tests:start")
+        _t.sleep(sleep)
+        log.append("tests:end")
+        return {"name": "pytest（全部非 slow）（xdist）", "cmd": "c2", "rc": test_rc,
+                "seconds": 0.1, "tail": []}
+
+    def fake_frontend(skip, timeout, wd=None):
+        log.append("front:start")
+        _t.sleep(sleep)
+        log.append("front:end")
+        return {"name": "前端自测 node web/run_tests.mjs", "cmd": "c3", "rc": front_rc,
+                "seconds": 0.1, "tail": [], "skipped": False}
+
+    monkeypatch.setattr(FG, "run_gates", fake_gates)
+    monkeypatch.setattr(FG, "run_tests", fake_tests)
+    monkeypatch.setattr(FG, "run_frontend", fake_frontend)
+
+
+def test_phases_overlap_when_not_serial(monkeypatch, capsys):
+    """默认并发：三段各睡 0.20s ⇒ 总墙钟应显著小于串行 0.60s。"""
+    import time as _t
+    log: list[str] = []
+    _stub_three_phases(monkeypatch, log)
+    t0 = _t.monotonic()
+    rc = FG.main(["--json"])
+    wall = _t.monotonic() - t0
+    assert rc == 0
+    assert wall < 0.50, f"三路没有并发（墙钟 {wall:.2f}s ≥ 0.50s）"
+    # 三个 start 必须都出现在第一个 end 之前（否则就是串行）
+    first_end = min(i for i, k in enumerate(log) if k.endswith(":end"))
+    starts_before = sum(1 for k in log[:first_end] if k.endswith(":start"))
+    assert starts_before >= 2, f"并发证据不足：{log}"
+
+
+def test_serial_phases_preserve_order(monkeypatch, capsys):
+    """--serial-phases：回到老顺序（门禁 → pytest → 前端），用于排查争用。"""
+    log: list[str] = []
+    _stub_three_phases(monkeypatch, log)
+    rc = FG.main(["--json", "--serial-phases"])
+    assert rc == 0
+    assert log == ["gates:start", "gates:end", "tests:start", "tests:end",
+                   "front:start", "front:end"], log
+
+
+def test_summary_item_order_is_stable(monkeypatch, capsys):
+    """并发下完成顺序不定，但 --json 的 items 顺序必须稳定（门禁 → pytest → 前端）。"""
+    import json as _json
+    log: list[str] = []
+    _stub_three_phases(monkeypatch, log)
+    FG.main(["--json"])
+    payload = _json.loads(capsys.readouterr().out)
+    names = [i["name"] for i in payload["items"]]
+    assert names[0] == FG.GATES[0][0]
+    assert "pytest" in names[1]
+    assert "前端" in names[2]
+
+
+def test_concurrent_failure_still_reports_evidence(monkeypatch, capsys):
+    """并发不改变判定：任一路红 ⇒ overall=FAIL 且打印证据。"""
+    log: list[str] = []
+    _stub_three_phases(monkeypatch, log, test_rc=1)
+    rc = FG.main([])
+    out = capsys.readouterr().out
+    assert rc == 1 and "overall=FAIL" in out and "FAILED x" in out or "pytest" in out
+
+
+# ── 673b C4：--maxfail 透传（本地默认 0=不限，CI 用 1）──────────────────────────
+
+def _capture_cmd(monkeypatch) -> dict:
+    seen: dict = {}
+
+    def fake_run(name, cmd, timeout):
+        seen["cmd"] = cmd
+        seen["name"] = name
+        return {"name": name, "cmd": "", "rc": 0, "seconds": 0.1, "tail": []}
+
+    monkeypatch.setattr(FG, "_run", fake_run)
+    return seen
+
+
+def test_maxfail_forwarded_when_positive(monkeypatch):
+    seen = _capture_cmd(monkeypatch)
+    FG.run_tests([], True, jobs="0", maxfail=1)
+    assert "--maxfail=1" in seen["cmd"]
+    assert "maxfail=" in seen["name"]          # 名字里显形，便于事后审计
+
+
+def test_maxfail_zero_means_unlimited(monkeypatch):
+    seen = _capture_cmd(monkeypatch)
+    FG.run_tests([], True, jobs="0", maxfail=0)
+    assert not any(c.startswith("--maxfail") for c in seen["cmd"])
+
+
+def test_worksteal_is_default_for_parallel(monkeypatch):
+    """C4 口径锁定：并行时必须带 --dist worksteal（672h 实测 343s → 270s）。"""
+    seen = _capture_cmd(monkeypatch)
+    monkeypatch.setattr(FG, "_xdist_available", lambda: True)
+    FG.run_tests([], True, jobs="auto")
+    assert "-n" in seen["cmd"] and "auto" in seen["cmd"]
+    assert "--dist" in seen["cmd"] and "worksteal" in seen["cmd"]
 
 
 if __name__ == "__main__":                      # 直接运行 = 自跑自身测试
