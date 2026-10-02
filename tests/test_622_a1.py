@@ -6,8 +6,13 @@ import pytest
 
 import json
 import os
+# 673m：下列"真实仓/真实沙箱"用例**串行全过**，但 xdist 并发 worker 下因锁与共享产物
+#   争用失败。故改为**条件 skip**：只在并发下跳过，串行仍真跑（CI 钉 -n 16 ⇒ CI 走跳过分支）。
+_XDIST_PARALLEL = os.environ.get("PYTEST_XDIST_WORKER") is not None
 import sys
 import tempfile
+
+import pytest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -158,7 +163,7 @@ def test_findings_for_filters_by_card():
     assert SA.Sandbox.findings_for(gj, "atoms/zzz.md") == []
 
 
-@pytest.mark.skip(reason="673h 内容同步：622 沙箱并发锁 .622_apply.lock.* 被在途进程占用（环境）致 RuntimeError，属 batch 622/环境，本批仅登记")
+@pytest.mark.skipif(_XDIST_PARALLEL, reason="673m 实测：串行复跑全过；xdist 并发（-n auto / CI -n 16）下 622 沙箱锁 .622_apply.lock.* 争用致 RuntimeError ⇒ 仅并发下跳过，串行仍真跑")
 def test_real_gate_end_to_end_and_clean():
     """真实跑一次 apply_and_run：判决格式正确、卡还原、受控目录零污染。"""
     card = "atoms/conc/ATOM-CONC-FENCE-001.md"
@@ -181,6 +186,6 @@ def test_real_gate_end_to_end_and_clean():
     assert st.stdout.strip() == ""
 
 
-@pytest.mark.skip(reason="673h 内容同步：622 沙箱 selftest flip-flop（并发锁/环境），属 batch 622；本批仅登记")
+@pytest.mark.skipif(_XDIST_PARALLEL, reason="673m 实测：串行复跑全过；xdist 并发（-n auto / CI -n 16）下 622 沙箱锁 .622_apply.lock.* 争用致 RuntimeError ⇒ 仅并发下跳过，串行仍真跑")
 def test_selftest_passes():
     assert SA.selftest() == 0

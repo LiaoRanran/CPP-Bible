@@ -6,7 +6,12 @@ import pytest
 
 import json
 import os
+# 673m：下列"真实仓/真实沙箱"用例**串行全过**，但 xdist 并发 worker 下因锁与共享产物
+#   争用失败。故改为**条件 skip**：只在并发下跳过，串行仍真跑（CI 钉 -n 16 ⇒ CI 走跳过分支）。
+_XDIST_PARALLEL = os.environ.get("PYTEST_XDIST_WORKER") is not None
 import sys
+
+import pytest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -100,6 +105,6 @@ def test_new_nonblock_field_recorded():
     assert "detected_nonblock" in src
 
 
-@pytest.mark.skip(reason="673h 内容同步：622 沙箱 selftest flip-flop（并发锁/环境），属 batch 622；本批仅登记")
+@pytest.mark.skipif(_XDIST_PARALLEL, reason="673m 实测：串行复跑全过；xdist 并发（-n auto / CI -n 16）下 622 沙箱锁 .622_apply.lock.* 争用致 RuntimeError ⇒ 仅并发下跳过，串行仍真跑")
 def test_selftest_passes():
     assert SA.selftest() == 0

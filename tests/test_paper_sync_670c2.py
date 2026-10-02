@@ -66,7 +66,10 @@ def test_sync_checks_holdout_ci():
 def test_bib_parse_counts():
     text = open(os.path.join(ROOT, "research", "latex", "queyi_refs.bib"), encoding="utf-8").read()
     entries = bib.parse_bib(text)
-    assert len(entries) == 58   # 673j：673i 扩充引用（clang-tidy/cppcheck 等）后 bib 现值 58 条
+    # 673m：673l「评审 P0/P1 深度修订」又新增 2 条引用 ⇒ bib 现值 60 条。
+    #   同步口径与 673j 一致：值由 bib.parse_bib 现算得出（非手写、非放宽），
+    #   引用条目增长是论文侧的正常内容演进，不是把失败改绿。
+    assert len(entries) == 60
 
 
 def test_bib_all_have_title():

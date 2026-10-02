@@ -11,7 +11,11 @@ import pytest
 import hashlib
 import json
 import os
+# 673m：下列"真实仓/真实沙箱"用例**串行全过**，但 xdist 并发 worker 下因锁与共享产物
+#   争用失败。故改为**条件 skip**：只在并发下跳过，串行仍真跑（CI 钉 -n 16 ⇒ CI 走跳过分支）。
+_XDIST_PARALLEL = os.environ.get("PYTEST_XDIST_WORKER") is not None
 
+import pytest
 import trust_root_audit_647 as T
 
 
@@ -36,7 +40,7 @@ def test_a5_2_a2_event_strictness():
 
 
 # ── A5-3：A3 实测 —— 闭包 OK / 一致 / 假删必 FAIL ─────────────────────────────
-@pytest.mark.skip(reason="673h 内容同步：647 批次信任根重算中（consistent_with_tool_integrity flip-flop），属 batch 647 范畴；本批仅登记，待 647 落定后由其解锁")
+@pytest.mark.skipif(_XDIST_PARALLEL, reason="673m 实测：串行复跑全过；xdist 并发下 647 信任根/闭包对共享产物的读写争用致 flip-flop ⇒ 仅并发下跳过，串行仍真跑")
 def test_a5_3_a3_closure():
     a = T.audit_closure()
     assert a["status"] == "OK" and a["n_rules"] == 67
@@ -85,7 +89,7 @@ def test_a5_7_audit_is_read_only():
 
 
 # ── A5-8：报告与自检 ─────────────────────────────────────────────────────────
-@pytest.mark.skip(reason="673h 内容同步：647 批次信任根重算中（selftest flip-flop），属 batch 647 范畴；本批仅登记，待 647 落定后由其解锁")
+@pytest.mark.skipif(_XDIST_PARALLEL, reason="673m 实测：串行复跑全过；xdist 并发下 647 信任根/闭包对共享产物的读写争用致 flip-flop ⇒ 仅并发下跳过，串行仍真跑")
 def test_a5_8_report_and_selftest():
     assert T.selftest() == 0
     assert T.main(["--report"]) == 0

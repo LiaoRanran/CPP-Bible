@@ -10,7 +10,11 @@ from __future__ import annotations
 import pytest
 
 import os
+# 673m：下列"真实仓/真实沙箱"用例**串行全过**，但 xdist 并发 worker 下因锁与共享产物
+#   争用失败。故改为**条件 skip**：只在并发下跳过，串行仍真跑（CI 钉 -n 16 ⇒ CI 走跳过分支）。
+_XDIST_PARALLEL = os.environ.get("PYTEST_XDIST_WORKER") is not None
 
+import pytest
 import tool_integrity as ti
 import verifier_closure_641 as v641
 import verifier_closure_647 as V
@@ -61,7 +65,7 @@ def test_a3_4_sha256_matches_disk():
 
 
 # ── A3-5：与 tool_integrity 一致（core 节 + supply_chain 节）───────────────────
-@pytest.mark.skip(reason="673h 内容同步：647 批次闭包扩展重算中（与 tool_integrity 一致性 flip-flop），属 batch 647 范畴；本批仅登记，待 647 落定后由其解锁")
+@pytest.mark.skipif(_XDIST_PARALLEL, reason="673m 实测：串行复跑全过；xdist 并发下 647 信任根/闭包对共享产物的读写争用致 flip-flop ⇒ 仅并发下跳过，串行仍真跑")
 def test_a3_5_consistent_with_tool_integrity():
     cl = V.build_closure()
     cons = V.consistency_with_tool_integrity(cl)
@@ -98,7 +102,7 @@ def test_a3_8_simulate_missing_cli():
 
 
 # ── A3-9：产物与自检 ─────────────────────────────────────────────────────────
-@pytest.mark.skip(reason="673h 内容同步：647 批次闭包扩展重算中（selftest flip-flop），属 batch 647 范畴；本批仅登记，待 647 落定后由其解锁")
+@pytest.mark.skipif(_XDIST_PARALLEL, reason="673m 实测：串行复跑全过；xdist 并发下 647 信任根/闭包对共享产物的读写争用致 flip-flop ⇒ 仅并发下跳过，串行仍真跑")
 def test_a3_9_report_and_selftest():
     assert V.selftest() == 0
     assert V.main(["--report"]) == 0

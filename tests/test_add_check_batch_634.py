@@ -35,7 +35,6 @@ def test_all_have_check_guard():
 
 # A2-3：每个目标 --check exit 0（参数化，逐工具）
 @pytest.mark.parametrize("tool", TARGETS)
-@pytest.mark.skip(reason="673j：该 check（poison_drill）在并发批次高负载 -n auto 下失败、顺序执行通过，属环境/并发 flake；待 churn 结束后解除。登记 data/673j_双线总收尾报告.md")
 def test_check_exit0(tool):
     r = subprocess.run([sys.executable, os.path.join(ROOT, "tools", tool), "--check"],
                        cwd=ROOT, capture_output=True, text=True, timeout=120)

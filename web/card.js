@@ -51,7 +51,10 @@ function renderLearnedButton() {
 // ── 渲染小工具 ─────────────────────────────────────────────────────────────
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const mono = (s) => `<span class="mono">${esc(s)}</span>`;
-const panel = (title, body, cap = '') => `<qy-card title="${esc(title)}">${body}${cap ? `<p class="muted" style="margin-top:8px">${cap}</p>` : ''}</qy-card>`;
+// 673m：qy-card 组件已被 672b 减法批次删除，这里原本还在渲染 <qy-card title="…">
+//   自定义标签 ⇒ 标签无定义，title 属性不渲染 ⇒ 每个小节的标题整段丢失。
+//   改用 style.css 既有 .card 类承载，标题落到 <h3>（.card h3 已有样式），正文原样保留。
+const panel = (title, body, cap = '') => `<div class="card"><h3>${esc(title)}</h3>${body}${cap ? `<p class="muted" style="margin-top:8px">${cap}</p>` : ''}</div>`;
 
 // ── 三段渲染 ───────────────────────────────────────────────────────────────
 function renderPrereq(card) {
@@ -76,7 +79,8 @@ function renderPrereq(card) {
 
 function renderLearn(card) {
   const m = card.meta;
-  $('card-head').innerHTML = panel(esc(m.title || card.id),
+  // 673m：panel() 内部已做 esc()，这里原先重复转义（属性语义下的历史写法），改渲染到 h3 后必须只转义一次
+  $('card-head').innerHTML = panel(m.title || card.id,
     `<p class="muted">${mono(card.id)} · ${esc(m.domain || '—')} / ${esc(m.type || '—')}
       · status ${esc(m.status || '—')} · DAL ${esc(m.dal || '—')}
       · 认知负荷 ${esc(m.cognitive_load || '—')} · 面向 ${esc(m.audience || '—')}</p>
@@ -102,7 +106,7 @@ function renderLearn(card) {
 
   const v = card.verdict || {};
   $('verdict').innerHTML = panel('四态判决（现算）',
-    `<p style="color:var(--color-text)"><qy-status state="${esc(v.state || 'unknown')}"></qy-status>
+    `<p style="color:var(--color-text)"><span class="state-pill" data-state="${esc(v.state || 'unknown')}"><i></i>${esc(v.state || 'unknown')}</span>
       <span class="muted">（boundary_ok=${esc(v.boundary_ok)} · downgraded=${esc(v.downgraded)}）</span></p>
      <ul style="margin:8px 0 0 18px;color:var(--color-text-dim);font-size:13px">
        ${(v.reasons || []).map((r) => `<li>${esc(r)}</li>`).join('')}
@@ -135,7 +139,7 @@ function renderLearn(card) {
     ? `<table><thead><tr><th>误解</th><th>指向</th><th>状态</th></tr></thead><tbody>${
         mis.map((x) => `<tr><td class="mono-cell">${esc(x.misconception)}</td>
           <td class="mono-cell">${esc(x.target)}</td>
-          <td><qy-tag kind="${x.defeated ? 'ok' : 'warn'}">${x.defeated ? '已击败' : '未被击败'}</qy-tag></td></tr>`).join('')
+          <td><span class="chip">${x.defeated ? '已击败' : '未被击败'}</span></td></tr>`).join('')
       }</tbody></table>`
     : '<p class="muted">W2 接地图里没有指向本卡命题的攻击边（不等于没有反例，只表示台账没记）。</p>');
 }
@@ -143,7 +147,7 @@ function renderLearn(card) {
 function renderSelfcheck(card) {
   const rows = card.selfcheck || [];
   $('selfcheck').innerHTML = rows.map((s, i) => `
-    <qy-card title="Q${i + 1}　${esc(s.q)}">
+    <div class="card"><h3>Q${i + 1}　${esc(s.q)}</h3>
       <div class="btnrow">
         <qy-button data-reveal="${i}" label="显示答案"></qy-button>
         <qy-button data-score="1" data-idx="${i}" label="我答对了"></qy-button>
@@ -154,7 +158,7 @@ function renderSelfcheck(card) {
         <p style="color:var(--color-text);white-space:pre-wrap">${esc(s.a)}</p>
         <p class="muted" style="margin-top:6px">出处：${esc(s.source)}</p>
       </div>
-    </qy-card>`).join('');
+    </div>`).join('');
   const p = progress[card.id] || {};
   if (p.correct != null && p.total) {
     $('sc-state-0').textContent = '';   // 状态由按钮更新，保持简洁
