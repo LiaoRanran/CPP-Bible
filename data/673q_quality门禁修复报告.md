@@ -276,3 +276,24 @@ A 批次换掉断言后，原子卡里的 `liveness: {kind: fixture_symbol, symb
 3. `golden_state` 缺 per-rule 基线，故 +27 只能整体接受、无法逐规则归因。
 4. 本批未跑 `check --stage compile`（`compile_report.json` 保持 2026-09-09 的状态）；
    compile 阶段的质量由 CI 的 `compile` job 覆盖。
+---
+
+## F. 附：分母 27 的三方交叉确认（防「到底是 20 / 27 / 31」之争）
+
+673q 之后有并行批次（673s）在 `ci.yml` 里写下「`pyproject` 声明了 **31** 项核心门禁」，
+与本报告的 27 不一致，故在此把三个数字的来源与裁决写清：
+
+| 数字 | 来源 | 语义 | 673q 裁决 |
+|---|---|---|---|
+| **27** | `cppbible.py` 的 `elif stage == "quality"` 分支 + 新增的 `QUALITY_GATE_NAMES` | `check --stage quality` **实际跑**的门禁数 | **采用**（负债率分母取此） |
+| **27** | `pyproject.toml` 的 `[tool.cppbible].quality_gates`（manifest，27 条脚本路径） | 核心门禁**清单**（ADR-0004 双清单收敛的另一侧） | 与上者**同一集合**，仅一个是显示名、一个是脚本路径 |
+| 20 | `debt_ledger.py` 旧硬编码 + 注释「meta-manifest 已锁」 | 无对应集合，也无文档定义 | **判定为错**，已废 |
+| 31 | 673s 批次笔记里的数字 | 与上述两处都对不上（疑为笔误，或含 compile/publish 阶段） | **不采用**；若 673s 的作者能指出 31 的具体清单，请以清单为准 |
+
+两处 27 的**独立一致性**已实测：`python tools/gate_engine.py --manifest-check` exit 0
+（该检查就是校验 pyproject manifest 与 cppbible quality 元组的一一对应），
+且逐项点数两边都是 27、顺序与工具集合相同。
+
+**为什么分母必须等于「实际跑的门数」而不是「任何清单的长度」**：负债率的意义是
+「每项质量门摊到的带息豁免数」，分母若换成别的清单，指标就换了含义，而指标换含义
+是比指标偏高更坏的事（它会让一个真实数字看起来像另一个真实数字）。
