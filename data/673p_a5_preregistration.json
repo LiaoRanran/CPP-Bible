@@ -1,0 +1,203 @@
+{
+  "schema": "queyi-prereg/673p",
+  "prereg_id": "673p-A5-random-budget",
+  "registered_at": "2026-10-02",
+  "registrant": "LiaoRanran",
+  "status": "locked_before_experiment",
+  "immutability": "本文件在**任何 673p A5 运行之前**落盘并单独 commit（先于 tools/*_673p.py 的实现 commit）。事后不得回改假设、主要指标、预算定义、纳入/排除标准与停止规则；结果与假设不符时按 mismatch 如实报告，不调参重跑。",
+
+  "research_question": "在**同等预算**下，把『按历史失败模式挑选验证资产』（failure-driven selection）换成『随机挑选验证资产』（random selection），缺陷检出率会不会掉？",
+
+  "context": {
+    "why_now": "论文最大硬伤：A5（random-budget）从未真正跑过——核心主张『failure-driven selection > same-budget alternatives』没有被实验隔离（docs/670a_实验结果.md §3、docs/669_实验结果.md §3 登记为 BLOCKED）。根因是 FD 端到端耦合：最终能力 = 资产池里有哪些资产 × 这些资产怎么选的，两个因素混在一起。",
+    "before": {
+      "holdout": {"k": 34, "n": 41, "rate_pct": 82.9, "cp95": [67.9, 92.8]},
+      "corpus": {"k": 40, "n": 64, "rate_pct": 62.5, "cp95": [49.5, 74.3]},
+      "source": "data/current_numbers.json（672h 扩样后，权威源）"
+    },
+    "prior_attempts": [
+      "670a Random†：**仪器级代理**（把『资产』退化成『检测仪器』），明文禁止进论文结论。",
+      "671b：只写接口形状 + 设计，不跑实验；A5 登记 BLOCKED。",
+      "672g：拆仓验证器暴露 select_assets 权威接口，跑通 22/60 样本的三臂（n 不足，只作方向性读法）。"
+    ]
+  },
+
+  "hypotheses": {
+    "H0": "在同等预算（同资产数）下，failure-driven selection 与 random selection 的 holdout 可测检出率**无差异**。",
+    "H1": "在同等预算下，failure-driven selection 的 holdout 可测检出率**高于** random selection（单侧）。",
+    "H_secondary_corpus": "同 H1，但指标换成 corpus 可测检出率。",
+    "H_exploratory": "（**探索性，非确认性**）用 672h 扩样前的旧样本估计 fail_hits、在扩样新样本上评估时，FD 仍优于 Random。此项只报方向 + CI，不参与通过/不通过判定。",
+    "H0_note": "H0/H1 的**可判定性本身**受 A5 阻塞条件 3 限制，见 known_limitations。"
+  },
+
+  "methods": {
+    "datasets": {
+      "holdout": {
+        "n_measurable": 41,
+        "definition": "planted=true 且 verdict ∈ {catch, miss}（可测真错；unknown 不进分母）",
+        "source_of_record": "data/holdout/reveal_5_detail_672h.json",
+        "catch": 34,
+        "miss": 7
+      },
+      "corpus": {
+        "n_measurable": 64,
+        "definition": "verdict ∈ {catch, miss}（可测且非测量类；unknown 与 not_error 不进分母）",
+        "source_of_record": "data/external_corpus/reveal_detail_672h.json",
+        "catch": 40,
+        "miss": 24
+      },
+      "why_these_sizes": "与 672h 一致（holdout 41 / corpus 64），不新增样本 ⇒ 本批只做隔离，不做扩样。"
+    },
+
+    "asset_pool": {
+      "owner": "tools/verifier_pool_673p.py::ASSET_POOL",
+      "size": 12,
+      "measured_subset": ["asan", "compile-time", "compiler-warn", "cross-compile", "linker", "tsan", "ubsan", "wunsequenced"],
+      "declared_unimplemented": ["coredump", "gdb", "ptrace", "valgrind"],
+      "excluded": ["measure", "perf-counter"],
+      "excluded_rationale": "measure / perf-counter 是**性能测量仪器**，不产出缺陷判决；把它们当验证资产正是 670a Random† 的仪器级退化。",
+      "note": "声明未接线资产（implemented=false）无实测判决归属 ⇒ 不进选择候选，也不进 replay。"
+    },
+
+    "selection_layer": {
+      "owner": "tools/selection_strategies_673p.py::select",
+      "strategies": {
+        "failure_driven": "fail_hits 降序（同分按 id 升序，确定性）",
+        "random": "random.Random(seed).sample（同 seed 完全可复现）",
+        "static": "只取编译期/静态资产（compiler-warn / wunsequenced / cross-compile / linker），不使用运行时证据"
+      },
+      "fail_loud": [
+        "两个预算维度都不给 ⇒ ValueError",
+        "max_assets < 0 或 > 候选数 ⇒ ValueError（不静默截断，否则预算对齐失效）",
+        "max_cost 装不下最便宜候选 ⇒ ValueError",
+        "random 缺 seed / failure_driven 缺 fail_hits / static 预算超过静态资产数 ⇒ ValueError"
+      ]
+    },
+
+    "budget_alignment": {
+      "rule": "Random 与 Static 必须在**与 FD 相同的预算**下运行。",
+      "primary_definition": "budget = |FD 在 catch 样本上实际用到的资产集合|（事后记账）",
+      "k_holdout": 4,
+      "k_corpus": 5,
+      "anchor_holdout": ["asan", "linker", "tsan", "ubsan"],
+      "anchor_corpus": ["asan", "compiler-warn", "cross-compile", "tsan", "ubsan"],
+      "static_budget_rule": "Static 预算 = min(k, 池中静态资产数)=4；静态臂**不得**用运行时资产补齐。",
+      "cost_dimension": "次预算维度 = 序数成本之和（verifier_pool_673p::cost_units，声明式，非实测墙钟）。",
+      "honest_caveat": "⚠ 本定义下 FD 跑的是**全池**（不是选 k 个）；k 只是事后从 catch 反推的记账量。见 known_limitations。"
+    },
+
+    "arms": {
+      "fd_full_pool": "现状 FD：对每个样本跑全池（= 基线 82.9% / 62.5%）。",
+      "fd_budget_matched": "FD 限制到预算锚集合（用于与 Random 同预算对照）。",
+      "random": "同预算随机子集，seed=20260930 单点用于配对检验；另跑 N 次报分布。",
+      "static": "静态资产固定子集。"
+    },
+
+    "execution_model": {
+      "name": "replay_single_attribution",
+      "is_real_execution": false,
+      "definition": "给定选中资产集 S，样本 s 的重放判决 = catch 若 s 原判 catch 且 detector(s) ∈ S；unknown/not_error 原样保留；其余 miss。",
+      "assumption": "一条样本的 catch 只归属到明细里记的 detector；其它资产的判决未知，一律记 miss。",
+      "direction_of_bias": "对大资产集**低估**检出、对小资产集**高估**检出。",
+      "validation": "该模型在 672g 的 22/60 样本上**逐位复现**了 FD 17/21、Static 1/21、Random 2/21（corpus 26/48、7/48、8/48）⇒ 与既有实现同口径。",
+      "why_not_real": "真跑需 WSL g++ + sanitizer 双档 × 3 回合（小时级）；本批目标是建立 A5 基础设施，不是产出新实测判决。"
+    },
+
+    "primary_metric": "holdout 可测检出率 = catch / (catch + miss)",
+    "secondary_metrics": [
+      "corpus 可测检出率",
+      "FD−Random 配对差值（pp）与 exact McNemar p",
+      "Random 臂 N 次运行的检出率分布（均值 / 标准差 / 2.5–97.5 分位）",
+      "replay 墙钟（**注意**：不是真实执行耗时；真实执行耗时本批未测，不得编造）",
+      "声明式序数成本（cost_units）"
+    ],
+
+    "statistical_tests": {
+      "primary": "exact McNemar（配对，双侧），α=0.05",
+      "alpha": 0.05,
+      "sidedness_note": "H1 是方向性（FD > Random），但**检验用双侧精确 McNemar** 报 p，方向由 Δ 的符号给出（与 672h/672g 同口径，便于跨批对照）。",
+      "effect_size": "Cohen's h（必报）+ 配对差值",
+      "ci": "Clopper–Pearson 95%（tools/stat_bounds.py，唯一实现）",
+      "multiplicity": "A5 是**预先指定的关键对照**；本批只报 FD-vs-Random 与 FD-vs-Static 两个对照，不额外扫描 ⇒ 不做多重比较校正，但两者都如实报 p。"
+    },
+
+    "randomness": {
+      "seed_primary": 20260930,
+      "seed_rationale": "项目约定种子（670d §3.1）；与 670a Random†、672g 同值 ⇒ 口径可对照。",
+      "multi_run": {
+        "n_runs": 2000,
+        "seeds": "20260930 + i, i ∈ [0, 2000)",
+        "report": "均值 / 标准差 / 最小值 / 最大值 / 2.5 与 97.5 分位",
+        "why": "Random 臂有随机性 ⇒ 单点不足以支撑结论，必须报分布。"
+      }
+    },
+
+    "sample_size_reality_check": {
+      "source": "data/experiments/sample_size_671b.json",
+      "delta_target_pp": 15,
+      "n_pairs_needed_psi_0.40": 138,
+      "current_measurable": {"holdout": 41, "corpus": 64},
+      "verdict": "holdout 41 仍 < 138 ⇒ 即便 p<0.05，**幅度**不得写成确认性点估计，只读方向 + CI。"
+    }
+  },
+
+  "decision_thresholds": {
+    "primary_pass": "holdout exact McNemar p < 0.05 且 Δ(FD−Random) > 0",
+    "secondary_pass": "corpus exact McNemar p < 0.05 且 Δ > 0",
+    "not_significant": "p ≥ 0.05 ⇒ 如实报『不显著』，不改假设、不换指标、不增样本重跑。",
+    "ci_crosses_zero": "Δ 的 95% CI 跨 0 ⇒ 报『方向不明确』。",
+    "no_goal_seeking": "本批不以『数字好看』为目标；若 FD 并不优于 Random，或差异完全由预算定义造成，必须原样报告。"
+  },
+
+  "exclusion_criteria": [
+    "unknown / not_error 不进检出率分母（逐条列原因）。",
+    "planted≠true 不进 holdout 分母。",
+    "声明未接线资产（implemented=false）不进选择候选与 replay。",
+    "同一样本同一批次只计一次。",
+    "budget 未对齐的两臂结果**作废**，不得引用。"
+  ],
+
+  "known_limitations": [
+    {
+      "id": "A5-B3",
+      "title": "A5 阻塞条件 3：现有架构不支持干净分离",
+      "detail": "FD 对每个样本跑**全池**，没有『在预算下选子集』这一层。主预算定义（k = FD 实际用到的资产数）是从 catch **反推**的记账量，用的是评测集自身信息 ⇒ 若把它当 FD 的选择，FD 就是 oracle。若把预算设成全池大小 8，则 Random 抽满池 ⇒ Δ 恒为 0。两条路都不是『选择策略 vs 选择策略』的干净对照。",
+      "consequence": "本预注册的 FD-vs-Random **主对照不得**被读作『failure-driven selection 优于 random selection』的确认性证据。",
+      "mitigation": "新增探索性派生集对照（旧样本估 fail_hits → 新样本评估），使 FD 成为不含评测集信息的真预测器；该臂明确标为探索性、不进确认性结论。"
+    },
+    {
+      "id": "replay-model",
+      "title": "运行层是 replay（单归属假设）",
+      "detail": "本批不重跑资产，只用已落盘的 detector 归属复算 ⇒ 存在单归属偏差。",
+      "mitigation": "已在 672g 22/60 样本上逐位复现既有三臂数字，确认与既有实现同口径；偏差方向已在产物登记。"
+    },
+    {
+      "id": "cost-not-measured",
+      "title": "资产成本是声明式序数，非实测墙钟",
+      "detail": "本批没有测每个资产的墙钟耗时 ⇒ cost_units 只能作同口径比较，不得换算成秒。",
+      "mitigation": "在池定义与产物里显式标注 cost_basis=declared_ordinal。"
+    }
+  ],
+
+  "stopping_rule": "预注册落盘并单独 commit 后，**主要指标（holdout 可测检出率）与预算定义不得修改**。任何事后发现的方法学缺陷，只允许在验收报告里显式登记『方法学偏差』+ 缓解措施，不得回改本文件、不得调参重跑以追求显著。",
+
+  "post_registration": {
+    "results_files": ["data/experiments/a5_673p.json"],
+    "report": "data/673p_拆仓verifier报告.md",
+    "implementation": [
+      "tools/verifier_pool_673p.py",
+      "tools/selection_strategies_673p.py",
+      "tools/run_a5_experiment_673p.py"
+    ],
+    "tests": ["tests/test_verifier_pool_673p.py", "tests/test_selection_strategies_673p.py"],
+    "honesty_rule": "数字一律现算；与假设不符按 mismatch 报告；不得把『资产池存在』当成『selection 策略有效』——两个因素必须严格分离。"
+  },
+
+  "red_lines": [
+    "不碰 research/ 论文正文（论文线独立）。",
+    "不碰 web/ 前端（工程线独立）。",
+    "不修改已有测试的断言（只新增测试）。",
+    "所有数字来自实测或权威源，不编造。",
+    "A5 未隔离成功时如实登记阻塞，不伪造『FD > Random』结论。"
+  ]
+}
