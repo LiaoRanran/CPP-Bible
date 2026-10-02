@@ -37,6 +37,8 @@
 | 判决规则 | **67** 条（其中 `severity=block` 44 条），规范清单见 `data/_gate_rules.json`（= `gate_engine.RULES`；661 A2 裁定） | `len(gate_engine.RULES)` / `len(_gate_rules.json)` |
 | 保护器 | **9** 个（冲突检测 / anti-windup / 盲化 / 校准追踪 / MDL 准入 / 工具级门 / shadow / 熔断 / 预算） | `queyi-core/tools/*_64*.py` |
 | 逃逸率 | **1 / 1406 = 0.0711%**（v7 变异基线；统计上界 0.9062%，已用 e-process 复算） | `data/616_baseline.md` |
+| 盲化 holdout 检出 | **34 / 41 = 82.9%**（W3 扩样后可测口径；unknown 1 不进分母） | `data/holdout_reveal_5_672h.json` |
+| 外部 corpus 检出 | **40 / 64 = 62.5%**（W3 扩样后；unknown 9 不进分母） | `data/external_corpus_reveal_672h.json` |
 | 接地模型 | W2 加权论辩求解：**131 节点**（IN 89 / OUT 42 / UNDEC 0） | `data/grounded_labels_w2.json` |
 | 前端星图 | 178 节点 / 1,093 边（攻击 388、击败 194）/ 全部由真实台账生成 | `web/data/graph.json` |
 
@@ -72,9 +74,11 @@ python tools/fast_gate.py --all --skip-frontend          # 只动后端时
 慢档（`@pytest.mark.slow`：WSL 编译 / 全量变异 / 全量重跑，单测 >10s）本地默认跳过，
 **全量回归只在 CI 跑**（CI 为 `-m "not slow" -n 16` + `-m slow -n0` 两阶段）。
 
-> **豁免说明**：`tools/compile_exempt.json` 中的 66 个失败块均为**设计性不可单编**内容
+> **豁免说明**：`tools/compile_exempt.json` 中的 58 个失败块均为**设计性不可单编**内容
 > （多文件示例、C++20 Modules、POSIX / Windows 专用 API、外部库、故意展示的错误 / UB、
 > 跨块依赖），**非**内容 bug。真实语法 / 类型错误一旦出现，CI 编译门禁立即变红。
+> 豁免并非"挂起即忘"：`python tools/exempt_audit.py` 会用与基线相同的命令逐块重编，
+> 任何一条豁免失效（STALE）或正文漂移（DRIFT）都会显形（673b 复核：58/58 仍有效）。
 
 **汇编证据口径（如实披露）**：全书 513 个 ```` ```asm ```` 展示块中，**203 个已锚定**
 真实机器产物（与 `Examples/*.asm` 逐一符号比对，DRIFT=0，由 `verify_asm_evidence.py`
@@ -95,7 +99,12 @@ python tools/consistency_check.py            # 全文一致性
 python tools/tool_integrity.py --check       # 信任根哈希面（缺失即 FAIL）
 python tools/license_header_check_655.py     # 许可证头
 
-# 2) 跑测试（两阶段：fast 可并行，slow 必须串行）
+# 2) 跑测试 —— 批次回归默认走快速门禁（门禁三件套 + 本批测试，<5 分钟）
+python tools/fast_gate.py --tests tests/test_<本批>.py    # 或 --all 跑全部非 slow 测试
+python tools/fast_gate.py --all --skip-frontend           # 只动后端时
+node web/run_tests.mjs                                    # 前端自测（~14s，23 个测试文件）
+
+# 全量两阶段（CI 同口径；本地全量很慢，一般不跑）
 python -m pytest -m "not slow" -n auto
 python -m pytest -m slow -n0
 
@@ -159,7 +168,7 @@ bash tools/generate_pdf.sh --by-part   # PDF（分卷）
 前端"逃逸率 0.0711%（1/1406）"是**对自造变异分布（v7）的漏检率**，**不是本书的真实错误率**。
 
 - Clopper-Pearson 95% 单侧上界 = **0.337%**，且仅对该变异分布成立；
-- `mutation score`（core 97.3% = 110/113，95% CI 92.4–99.4；all 81.5% = 128/157，95% CI 74.6–87.3）衡量的是**测试充分度（Test adequacy）**，
+- `mutation score`（core 96.5% = 110/114，95% CI 91.3–99.0；all 81.8% = 130/159，95% CI 74.9–87.4）衡量的是**测试充分度（Test adequacy）**，
   **不等于外部效度**——详见 [`docs/metric_layers_658.md`](docs/metric_layers_658.md)；
 - 真实世界错误检测能力由盲化 holdout（[`data/holdout/`](data/holdout/)）与外部 corpus
   （[`data/external_corpus_658.md`](data/external_corpus_658.md)）另行评估。

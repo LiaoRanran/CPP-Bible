@@ -104,17 +104,38 @@ HANDOVER.md          ← 快照（较旧，可略）
 
 **结论**：规模与结构已就位，可信度是唯一短板——353 个编造数字是当前最大质量问题。第三阶段核心工作：用真实数据替换每一个 [示意]。
 
+## ⚠️ 常见坑（673b 登记，新 Agent 先读）
+
+1. **Python 3.13/3.14 + importlib 动态加载 dataclass**：用 `spec_from_file_location`
+   加载带 `@dataclass` 的模块会炸（671g 修复过，模式见 `tools/numbers_671g.py` 的加载器）。
+2. **CRLF**：`.gitattributes` 已声明 `* text=auto eol=lf`；工作树里 Examples 的假 M
+   是 DEBT-002（**不要**批量 renormalize——监工裁决"碰到即转"）。
+3. **并发批次提交**：多 Agent 同时干活时，各自只 add 自己批次的文件
+   （先 `git status` 确认归属再 add）；提交信息带批次号（`672f:` / `673b:`），
+   DCO 署名 `git commit -s`，**不 push**（push 由批次任务书显式授权）。
+4. **受控目录零写**：`atoms/ evidence/ Examples/ Book/` 只有批次任务书显式授权才能碰。
+5. **数字必须现算**：任何报告里的数字都要能给出一行复算命令；从产物读，不抄旧文档。
+6. **改了门禁/判据代码 ⇒ 必须重跑它守护的产物**，然后 `guard_rerun_671a.py --init`
+   重标定（673b 实操：变异套件 + corpus reveal 重跑 9 分钟）。
+
+## 📌 批次提交规范（673b 补）
+
+```bash
+git add <仅本批文件>            # 先 git status 确认归属，不替别的批次收文件
+git commit -s -m "<批次号>: <一句话成果>"   # -s = DCO 署名；不 push 除非任务书要求
+```
+
 ---
 
 _最后更新：2026-07-14 19:05 — 第三阶段启动，NEXT_LLM.md + state.json 就位_
 _代际：第 5 代 Agent（WorkBuddy → Hy3 → Phase3-Auto）_
 
 <!-- GENERATED:BEGIN (status_reconciler_658.py · 机器生成，禁止手改) -->
-HEAD: eb700aec398c1c240502f2b57e015bc9e1ff2f2d
+HEAD: 15efa4e1d8bc408607ecd3266dd9e44ec4820e12
 Branch: master
-Ahead/Behind: 0/0
+Ahead/Behind: 1/0
 Dirty(tracked): True
-Mutation core/all: 97.3/81.5%
-Cards(atoms): 48
+Mutation core/all: 96.5/81.8%
+Cards(atoms): 53
 Graph nodes/links: 178/1093
 <!-- GENERATED:END -->

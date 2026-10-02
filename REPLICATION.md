@@ -367,3 +367,63 @@ python tools/gate_rules_670g.py --check      # 0 BLOCK
 
 **依赖**：上述命令**不需要 WSL / g++**（与 §6 的检测器复现不同）。
 **注意**：主门禁的 `670c/controlled-dirs` 阶段在**有并行批次改仓库时可能偶发报 1 处写入**（快照期间文件被并发修改）；重跑即可确认（本仓实测：首跑 1 处、复跑 0 处）。
+
+---
+
+## 17. W3–W6 扩样 / 裁判臂 / 外部锚定 / 统计重做（672h–672k · 673b D2 补）
+
+### 17.0 快速门禁与前端预览
+
+```bash
+# 批次回归默认（门禁三件套 + 本批测试，<5 分钟）
+python tools/fast_gate.py --tests tests/test_<本批>.py
+python tools/fast_gate.py --all                  # 全部非 slow 测试 + 前端（三路并发）
+
+# 前端自测（23 个测试文件 / 1500+ 断言，~14s，无需浏览器）
+node web/run_tests.mjs
+
+# 前端预览（无构建步骤；file:// 会被 fetch 拦截，必须走 http）
+python -m http.server 8099 --directory web       # http://127.0.0.1:8099/
+```
+
+### 17.1 W3 扩样（672h）：holdout 21→41、corpus 48→64
+
+```bash
+python tools/holdout_merge_672h.py --write       # h31–h60 幂等合并进 data/holdout/holdout.json
+python tools/holdout_reveal_5_672h.py            # 逐样本 WSL 编译 ⇒ data/holdout_reveal_5_672h.json
+python tools/external_corpus_reveal_672h.py      # d3e-* ⇒ data/external_corpus_reveal_672h.json
+python tools/verify_expand_672h.py               # 双路径复算（<0.1pp），写 data/experiments/verify_expand_672h.json
+#    预期：holdout 34/41=82.9%（unknown 1 不进分母）；corpus 40/64=62.5%（unknown 9 不进分母）
+```
+
+### 17.2 W4 LLM 裁判臂（672i）
+
+```bash
+python tools/llm_arm_672i.py                     # 预注册 H1–H4 ⇒ data/experiments/llm_arm_672i.json
+#    结论（诚实登记）：H1–H4 全不成立——LLM 臂检出率低于 FD 且假阳性更高，见产物与 672i 验收报告
+```
+
+### 17.3 W5 外部锚定（672j）
+
+```bash
+python tools/external_anchor_fetch_672j.py       # 抓公开 C++ 题库 raw（URL+sha256 留痕）
+python tools/external_anchor_672j.py             # 判决 ⇒ data/external_anchor_reveal_672j.json
+#    预期：50 条样本（准则反例 35 + 重建 UB 15）
+```
+
+### 17.4 W6 统计重做（672k）
+
+```bash
+python tools/stats_672k.py                       # McNemar / Cohen h / CP / power / e-value ⇒ data/experiments/stats_672k.json
+python tools/drift_watch_671a.py --selftest      # 三方数字 + 空值加固自检（673b A2 后 28 条断言）
+python tools/guard_rerun_671a.py                 # 18 检测器全 OK（673b A4 扩容后）
+```
+
+### 17.5 环境常见问题（如实登记）
+
+| 问题 | 现状 / 绕法 |
+|---|---|
+| Node 18 无法装 playwright | 永久边界：前端验证走 jsdom / 纯 Node 测试（run_tests.mjs）；真实浏览器需手动截图清单 |
+| WSL 编译慢 | holdout/corpus reveal 逐样本 g++ 编译，全量约 1–5 分钟；只有 slow 档测试会触发 |
+| tectonic 下载慢/失败 | PDF 构建依赖 tectonic；网络受限时配代理或用 `generate_pdf.sh` 的缓存路径 |
+| Windows 控制台 UTF-8 | 工具已内置 `utf8_console` 兜底；PowerShell 建议 `chcp 65001` |
