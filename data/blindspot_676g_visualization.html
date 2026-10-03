@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>676g · 检测器盲区地图</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  body { font-family: "Segoe UI", "Microsoft YaHei", sans-serif; margin: 0;
+         background: #f7f8fa; color: #222; }
+  header { padding: 20px 28px 8px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #666; font-size: 13px; margin-bottom: 6px; }
+  .caliber { background: #fffbe6; border: 1px solid #ffe58f; border-radius: 6px;
+             padding: 8px 12px; font-size: 12.5px; margin: 10px 28px; line-height: 1.7; }
+  .card { background: #fff; border-radius: 10px; margin: 14px 28px; padding: 14px;
+          box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .chart { width: 100%; height: 620px; }
+  .chart-tall { width: 100%; height: 1150px; }
+  h2 { font-size: 15.5px; margin: 4px 4px 10px; color: #333; }
+</style>
+</head>
+<body>
+<header>
+  <h1>检测器盲区地图 — 全量 1147 样本 × 8 资产（676g）</h1>
+  <div class="sub">检测器：WSL g++ 13.3（ASan/UBSan/TSan，-O0/-O2 双档）+ 本机 MinGW g++ 13.1 / clang++ 22.1.8
+  （compiler-warn / wunsequenced / cross-compile / linker）；矩阵 schema queyi-blindspot-matrix/676g</div>
+</header>
+<div class="caliber" id="caliber"></div>
+<div class="card"><h2>① 类型 × 资产 catch 率热力图（按盲区比例降序、按缺陷家族分组；点击图例可筛选）</h2>
+  <div id="heat" class="chart-tall"></div></div>
+<div class="card"><h2>② 各类型盲区比例排序（蓝=确定漏报 miss，橙=全部 unknown 无法判定）</h2>
+  <div id="bar" class="chart"></div></div>
+<div class="card"><h2>③ 资产 × 缺陷家族 覆盖率雷达（catch 率 %）</h2>
+  <div id="radar" class="chart"></div></div>
+<div class="card"><h2>④ 批次盲区比例 与 planted 对比</h2>
+  <div id="batch" class="chart"></div></div>
+<script>
+const D = {"y_labels": ["uninitialized_read (20)", "resource_leak (20)", "memory_safety (24)", "heap_overread (17)", "out_of_bounds (20)", "null_pointer_deref (15)", "heap_overflow (12)", "MEM (10)", "use_after_free (7)", "null_deref (5)", "stack_overflow_write (5)", "memory (4)", "double_free (3)", "type_confusion (2)", "heap_underflow (2)", "leak (1)", "memory_leak (1)", "stack_overflow (1)", "stack_overread (1)", "global_overflow (1)", "state_machine (4)", "resource_exhaustion (2)", "infinite_loop (1)", "logic_error (17)", "info_leak (2)", "conditional_trigger (40)", "memory-order (2)", "lock_priority_inversion (30)", "aba_problem (30)", "condition_variable (30)", "memory_order (40)", "atomic_ub (35)", "CONC (5)", "data_race (14)", "race_condition (4)", "compiler-bug (1)", "deadlock (35)", "compiler-diff (2)", "unspecified (8)", "historical (1)", "ambiguity (1)", "compiler_warning (1)", "timing_side_channel (1)", "volatile_misuse (28)", "endianness (28)", "interrupt_safety (20)", "register_ub (20)", "alignment (25)", "algorithm_misuse (35)", "iterator_invalidation (35)", "string_ub (35)", "smart_pointer (30)", "stl_container_ub (35)", "cross_tu_ub (30)", "ODR (1)", "virtual_function (30)", "move_semantics (30)", "raii_violation (30)", "lambda_capture (30)", "RAII/UB (1)", "type_punning (20)", "pointer_overflow (3)", "optimization_dependent (40)", "bit_operation (28)", "other_ub (20)", "integer_overflow (26)", "UB (64)", "undefined_behavior (21)", "division_by_zero (1)", "API (4)"], "x_assets": ["ASan", "UBSan", "TSan", "compiler-warn", "cross-compile", "linker"], "heat": [[0, 0, 0.0], [1, 0, 0.0], [2, 0, 0.0], [3, 0, 0.0], [4, 0, 0.0], [5, 0, 0.0], [0, 1, 85.0], [1, 1, 0.0], [2, 1, 0.0], [3, 1, 5.0], [4, 1, 5.0], [5, 1, 0.0], [0, 2, 75.0], [1, 2, 29.2], [2, 2, 41.7], [3, 2, 4.2], [4, 2, 0.0], [5, 2, 0.0], [0, 3, 88.2], [1, 3, 52.9], [2, 3, 23.5], [3, 3, 17.6], [4, 3, 23.5], [5, 3, 0.0], [0, 4, 95.0], [1, 4, 75.0], [2, 4, 0.0], [3, 4, 20.0], [4, 4, 0.0], [5, 4, 0.0], [0, 5, 100.0], [1, 5, 100.0], [2, 5, 93.3], [3, 5, 0.0], [4, 5, 0.0], [5, 5, 0.0], [0, 6, 100.0], [1, 6, 50.0], [2, 6, 8.3], [3, 6, 16.7], [4, 6, 16.7], [5, 6, 0.0], [0, 7, 100.0], [1, 7, 10.0], [2, 7, 10.0], [3, 7, 0.0], [4, 7, 10.0], [5, 7, 0.0], [0, 8, 100.0], [1, 8, 0.0], [2, 8, 85.7], [3, 8, 0.0], [4, 8, 0.0], [5, 8, 0.0], [0, 9, 100.0], [1, 9, 100.0], [2, 9, 100.0], [3, 9, 0.0], [4, 9, 20.0], [5, 9, 0.0], [0, 10, 100.0], [1, 10, 60.0], [2, 10, 40.0], [3, 10, 40.0], [4, 10, 40.0], [5, 10, 0.0], [0, 11, 100.0], [1, 11, 25.0], [2, 11, 50.0], [3, 11, 25.0], [4, 11, 0.0], [5, 11, 0.0], [0, 12, 100.0], [1, 12, 0.0], [2, 12, 66.7], [3, 12, 0.0], [4, 12, 33.3], [5, 12, 0.0], [0, 13, 100.0], [1, 13, 50.0], [2, 13, 50.0], [3, 13, 0.0], [4, 13, 0.0], [5, 13, 0.0], [0, 14, 100.0], [1, 14, 0.0], [2, 14, 50.0], [3, 14, 0.0], [4, 14, 0.0], [5, 14, 0.0], [0, 15, 100.0], [1, 15, 0.0], [2, 15, 0.0], [3, 15, 0.0], [4, 15, 0.0], [5, 15, 0.0], [0, 16, 100.0], [1, 16, 0.0], [2, 16, 0.0], [3, 16, 0.0], [4, 16, 0.0], [5, 16, 0.0], [0, 17, 100.0], [1, 17, 0.0], [2, 17, 100.0], [3, 17, 0.0], [4, 17, 0.0], [5, 17, 0.0], [0, 18, 100.0], [1, 18, 0.0], [2, 18, 0.0], [3, 18, 0.0], [4, 18, 0.0], [5, 18, 0.0], [0, 19, 100.0], [1, 19, 100.0], [2, 19, 0.0], [3, 19, 0.0], [4, 19, 100.0], [5, 19, 0.0], [0, 20, 0.0], [1, 20, 0.0], [2, 20, 0.0], [3, 20, 0.0], [4, 20, 0.0], [5, 20, 0.0], [0, 21, 0.0], [1, 21, 0.0], [2, 21, 0.0], [3, 21, 0.0], [4, 21, 0.0], [5, 21, 0.0], [0, 22, 0.0], [1, 22, 0.0], [2, 22, 0.0], [3, 22, 0.0], [4, 22, 0.0], [5, 22, 0.0], [0, 23, 0.0], [1, 23, 0.0], [2, 23, 5.9], [3, 23, 17.6], [4, 23, 11.8], [5, 23, 0.0], [0, 24, 0.0], [1, 24, 0.0], [2, 24, 0.0], [3, 24, 50.0], [4, 24, 0.0], [5, 24, 0.0], [0, 25, 67.5], [1, 25, 20.0], [2, 25, 15.0], [3, 25, 25.0], [4, 25, 0.0], [5, 25, 0.0], [0, 26, 0.0], [1, 26, 0.0], [2, 26, 0.0], [3, 26, 0.0], [4, 26, 0.0], [5, 26, 0.0], [0, 27, 0.0], [1, 27, 6.7], [2, 27, 23.3], [3, 27, 0.0], [4, 27, 3.3], [5, 27, 0.0], [0, 28, 33.3], [1, 28, 3.3], [2, 28, 3.3], [3, 28, 0.0], [4, 28, 3.3], [5, 28, 0.0], [0, 29, 0.0], [1, 29, 6.7], [2, 29, 43.3], [3, 29, 0.0], [4, 29, 10.0], [5, 29, 0.0], [0, 30, 7.5], [1, 30, 2.5], [2, 30, 50.0], [3, 30, 0.0], [4, 30, 0.0], [5, 30, 0.0], [0, 31, 22.9], [1, 31, 11.4], [2, 31, 42.9], [3, 31, 2.9], [4, 31, 8.6], [5, 31, 0.0], [0, 32, 20.0], [1, 32, 0.0], [2, 32, 80.0], [3, 32, 0.0], [4, 32, 0.0], [5, 32, 0.0], [0, 33, 0.0], [1, 33, 0.0], [2, 33, 100.0], [3, 33, 0.0], [4, 33, 0.0], [5, 33, 0.0], [0, 34, 25.0], [1, 34, 0.0], [2, 34, 100.0], [3, 34, 0.0], [4, 34, 0.0], [5, 34, 0.0], [0, 35, 0.0], [1, 35, 0.0], [2, 35, 0.0], [3, 35, 0.0], [4, 35, 0.0], [5, 35, 0.0], [0, 36, 0.0], [1, 36, 0.0], [2, 36, 5.7], [3, 36, 0.0], [4, 36, 0.0], [5, 36, 0.0], [0, 37, 0.0], [1, 37, 0.0], [2, 37, 0.0], [3, 37, 0.0], [4, 37, 0.0], [5, 37, 50.0], [0, 38, 0.0], [1, 38, 12.5], [2, 38, 0.0], [3, 38, 50.0], [4, 38, 12.5], [5, 38, 0.0], [0, 39, 0.0], [1, 39, 0.0], [2, 39, 0.0], [3, 39, 100.0], [4, 39, 0.0], [5, 39, 0.0], [0, 40, 0.0], [1, 40, 0.0], [2, 40, 100.0], [3, 40, 0.0], [4, 40, 0.0], [5, 40, 0.0], [0, 41, 0.0], [1, 41, 0.0], [2, 41, 0.0], [3, 41, 100.0], [4, 41, 0.0], [5, 41, 0.0], [0, 42, 0.0], [1, 42, 0.0], [2, 42, 0.0], [3, 42, 0.0], [4, 42, 0.0], [5, 42, 0.0], [0, 43, 3.6], [1, 43, 3.6], [2, 43, 0.0], [3, 43, 0.0], [4, 43, 0.0], [5, 43, 0.0], [0, 44, 10.7], [1, 44, 7.1], [2, 44, 0.0], [3, 44, 0.0], [4, 44, 7.1], [5, 44, 0.0], [0, 45, 5.0], [1, 45, 5.0], [2, 45, 25.0], [3, 45, 0.0], [4, 45, 0.0], [5, 45, 0.0], [0, 46, 5.0], [1, 46, 0.0], [2, 46, 5.0], [3, 46, 50.0], [4, 46, 0.0], [5, 46, 0.0], [0, 47, 12.0], [1, 47, 68.0], [2, 47, 8.0], [3, 47, 0.0], [4, 47, 8.0], [5, 47, 0.0], [0, 48, 22.9], [1, 48, 0.0], [2, 48, 0.0], [3, 48, 0.0], [4, 48, 0.0], [5, 48, 0.0], [0, 49, 60.0], [1, 49, 0.0], [2, 49, 54.3], [3, 49, 0.0], [4, 49, 2.9], [5, 49, 0.0], [0, 50, 68.6], [1, 50, 0.0], [2, 50, 60.0], [3, 50, 0.0], [4, 50, 62.9], [5, 50, 0.0], [0, 51, 90.0], [1, 51, 10.0], [2, 51, 10.0], [3, 51, 0.0], [4, 51, 10.0], [5, 51, 0.0], [0, 52, 68.6], [1, 52, 34.3], [2, 52, 48.6], [3, 52, 0.0], [4, 52, 34.3], [5, 52, 0.0], [0, 53, 3.3], [1, 53, 0.0], [2, 53, 0.0], [3, 53, 0.0], [4, 53, 0.0], [5, 53, 26.7], [0, 54, 0.0], [1, 54, 0.0], [2, 54, 0.0], [3, 54, 0.0], [4, 54, 0.0], [5, 54, 100.0], [0, 55, 20.0], [1, 55, 16.7], [2, 55, 20.0], [3, 55, 16.7], [4, 55, 0.0], [5, 55, 0.0], [0, 56, 6.7], [1, 56, 16.7], [2, 56, 0.0], [3, 56, 46.7], [4, 56, 0.0], [5, 56, 0.0], [0, 57, 36.7], [1, 57, 3.3], [2, 57, 6.7], [3, 57, 20.0], [4, 57, 0.0], [5, 57, 0.0], [0, 58, 83.3], [1, 58, 0.0], [2, 58, 23.3], [3, 58, 0.0], [4, 58, 83.3], [5, 58, 0.0], [0, 59, 100.0], [1, 59, 0.0], [2, 59, 0.0], [3, 59, 0.0], [4, 59, 0.0], [5, 59, 0.0], [0, 60, 15.0], [1, 60, 50.0], [2, 60, 0.0], [3, 60, 0.0], [4, 60, 10.0], [5, 60, 0.0], [0, 61, 66.7], [1, 61, 66.7], [2, 61, 33.3], [3, 61, 0.0], [4, 61, 33.3], [5, 61, 0.0], [0, 62, 20.0], [1, 62, 70.0], [2, 62, 17.5], [3, 62, 40.0], [4, 62, 0.0], [5, 62, 0.0], [0, 63, 3.6], [1, 63, 53.6], [2, 63, 3.6], [3, 63, 71.4], [4, 63, 53.6], [5, 63, 0.0], [0, 64, 30.0], [1, 64, 50.0], [2, 64, 30.0], [3, 64, 35.0], [4, 64, 25.0], [5, 64, 0.0], [0, 65, 3.9], [1, 65, 84.6], [2, 65, 0.0], [3, 65, 0.0], [4, 65, 3.9], [5, 65, 0.0], [0, 66, 53.1], [1, 66, 48.4], [2, 66, 35.9], [3, 66, 18.8], [4, 66, 10.9], [5, 66, 0.0], [0, 67, 23.8], [1, 67, 100.0], [2, 67, 19.1], [3, 67, 71.4], [4, 67, 0.0], [5, 67, 0.0], [0, 68, 0.0], [1, 68, 100.0], [2, 68, 0.0], [3, 68, 0.0], [4, 68, 0.0], [5, 68, 0.0], [0, 69, 0.0], [1, 69, 0.0], [2, 69, 0.0], [3, 69, 75.0], [4, 69, 0.0], [5, 69, 0.0]], "bar_types": ["uninitialized_read", "resource_leak", "memory_safety", "heap_overread", "out_of_bounds", "null_pointer_deref", "heap_overflow", "MEM", "use_after_free", "null_deref", "stack_overflow_write", "memory", "double_free", "type_confusion", "heap_underflow", "leak", "memory_leak", "stack_overflow", "stack_overread", "global_overflow", "state_machine", "resource_exhaustion", "infinite_loop", "logic_error", "info_leak", "conditional_trigger", "memory-order", "lock_priority_inversion", "aba_problem", "condition_variable", "memory_order", "atomic_ub", "CONC", "data_race", "race_condition", "compiler-bug", "deadlock", "compiler-diff", "unspecified", "historical", "ambiguity", "compiler_warning", "timing_side_channel", "volatile_misuse", "endianness", "interrupt_safety", "register_ub", "alignment", "algorithm_misuse", "iterator_invalidation", "string_ub", "smart_pointer", "stl_container_ub", "cross_tu_ub", "ODR", "virtual_function", "move_semantics", "raii_violation", "lambda_capture", "RAII/UB", "type_punning", "pointer_overflow", "optimization_dependent", "bit_operation", "other_ub", "integer_overflow", "UB", "undefined_behavior", "division_by_zero", "API"], "bar_miss": [100.0, 15.0, 8.3, 5.9, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 100.0, 100.0, 100.0, 64.7, 50.0, 30.0, 100.0, 73.3, 66.7, 56.7, 47.5, 42.9, 20.0, 0.0, 0.0, 100.0, 94.3, 50.0, 25.0, 0.0, 0.0, 0.0, 100.0, 92.9, 89.3, 65.0, 45.0, 28.0, 77.1, 37.1, 11.4, 10.0, 8.6, 70.0, 0.0, 60.0, 50.0, 40.0, 16.7, 0.0, 50.0, 33.3, 30.0, 28.6, 20.0, 15.4, 12.5, 0.0, 0.0, 25.0], "bar_unknown": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "radar_ind": [{"name": "内存安全", "max": 100}, {"name": "逻辑/语义", "max": 100}, {"name": "并发", "max": 100}, {"name": "其他", "max": 100}, {"name": "嵌入式/平台", "max": 100}, {"name": "标准库/STL", "max": 100}, {"name": "链接/ODR", "max": 100}, {"name": "语言语义/RAII", "max": 100}, {"name": "未定义行为", "max": 100}, {"name": "API 误用", "max": 100}], "radar_series": [{"value": [81.3, 40.9, 12.1, 0.0, 7.4, 61.2, 3.2, 37.2, 26.9, 0.0], "name": "ASan"}, {"value": [37.4, 12.1, 5.3, 2.0, 17.2, 8.8, 0.0, 9.1, 62.8, 0.0], "name": "UBSan"}, {"value": [29.2, 10.6, 41.1, 6.1, 6.6, 35.3, 0.0, 12.4, 18.8, 0.0], "name": "TSan"}, {"value": [8.2, 21.2, 0.5, 12.2, 8.2, 0.0, 0.0, 20.7, 31.4, 75.0], "name": "compiler-warn"}, {"value": [7.6, 3.0, 4.2, 2.0, 3.3, 22.4, 0.0, 20.7, 13.9, 0.0], "name": "cross-compile"}, {"value": [0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 29.0, 0.0, 0.0, 0.0], "name": "linker"}], "batch_names": ["corpus", "expA", "expB", "expC", "expD", "expE", "expF", "expG", "holdout"], "batch_blind": [15.6, 22.0, 22.3, 45.0, 27.5, 63.0, 59.1, 22.2, 14.6], "planted": {"true": {"n": 1009, "catch": 595, "miss": 414, "unknown": 0, "blindspot_ratio": 0.4103, "blindspot_wilson95": [0.3804, 0.4409]}, "false": {"n": 74, "catch": 58, "miss": 16, "unknown": 0, "blindspot_ratio": 0.2162, "blindspot_wilson95": [0.1377, 0.3227], "note": "planted=false 仅 74 条（expG 真实 CVE 衍生）；n 小，比例不稳，务必看 Wilson 区间"}, "null": {"n": 64, "catch": 54, "miss": 10, "unknown": 0, "blindspot_ratio": 0.1562, "blindspot_wilson95": [0.0871, 0.2643], "note": "corpus 64 条为外部真实语料，无 planted 字段；其中 53 条源码来自历史真实缺陷/规范差异，不能与 planted=true 混同"}}, "bands": {"high_blindspot(>50%)": ["uninitialized_read", "state_machine", "memory-order", "resource_exhaustion", "compiler-bug", "infinite_loop", "timing_side_channel", "deadlock", "volatile_misuse", "endianness", "algorithm_misuse", "lock_priority_inversion", "cross_tu_ub", "aba_problem", "interrupt_safety", "logic_error", "virtual_function", "condition_variable"], "partial_visibility(20-50%)": ["move_semantics", "type_punning", "compiler-diff", "info_leak", "memory_order", "register_ub", "atomic_ub", "raii_violation", "iterator_invalidation", "pointer_overflow", "optimization_dependent", "conditional_trigger", "bit_operation", "alignment", "unspecified", "API", "other_ub", "CONC"], "low_blindspot(<20%)": ["lambda_capture", "integer_overflow", "resource_leak", "UB", "string_ub", "smart_pointer", "stl_container_ub", "memory_safety", "heap_overread", "undefined_behavior", "out_of_bounds", "null_pointer_deref", "data_race", "heap_overflow", "MEM", "use_after_free", "null_deref", "stack_overflow_write", "memory", "race_condition", "double_free", "type_confusion", "heap_underflow", "leak", "RAII/UB", "ODR", "historical", "ambiguity", "memory_leak", "stack_overflow", "stack_overread", "division_by_zero", "global_overflow", "compiler_warning"]}, "total": {"n": 1147, "catch": 707, "miss": 440, "unknown": 0, "MISSING": 0, "blindspot_ratio": 0.3836}, "n_types": 70, "caliber": {"sample_catch": "8 资产任一 catch（wunsequenced/compile-time 结构性恒 unknown，永不 catch，OR 口径等价于 6 可用资产）", "sample_miss": "无 catch 且 ≥1 可用资产确定 miss", "sample_unknown": "可用 6 资产全部 unknown", "blindspot_ratio": "(miss + unknown) / n；miss 与 unknown 单列，不混同", "types_note": "细粒度类型沿用各批次 INDEX 的 defect_type 原字符串；family 为报告分组（附录口径）", "hierarchy_note": "corpus/holdout 用粗粒度 category（MEM/UB/CONC/...），扩样批次用细粒度类型；两层不合并计数，避免层级重复"}};
+document.getElementById('caliber').innerHTML =
+  '<b>口径</b>：样本级 catch = 8 资产任一 catch；miss = 无 catch 且 ≥1 可用资产确定 miss；' +
+  'unknown = 6 可用资产全部 unknown；<b>盲区比例 = (miss+unknown)/n</b>。' +
+  'wunsequenced（MinGW 不认 -Wunsequenced）与 compile-time（无本地检测器）结构性恒 unknown、永不 catch，' +
+  '故 OR 口径下 8 资产与 6 可用资产完全等价；两资产仍单列于按资产统计并注明。' +
+  '本图 catch 率均为 "catch 样本数 / 类型样本数"。总盲区 <b>' +
+  (D.total.blindspot_ratio*100).toFixed(1) + '%</b>（catch ' + D.total.catch + ' / miss ' +
+  D.total.miss + ' / unknown ' + D.total.unknown + '，n=' + D.total.n + '）';
+
+const heat = echarts.init(document.getElementById('heat'));
+heat.setOption({
+  tooltip: { position: 'top', formatter: p => D.y_labels[p.value[1]] + '<br>' +
+            D.x_assets[p.value[0]] + ' catch 率: <b>' + p.value[2] + '%</b>' },
+  grid: { left: 190, right: 120, top: 10, bottom: 60 },
+  xAxis: { type: 'category', data: D.x_assets, splitArea: { show: true } },
+  yAxis: { type: 'category', data: D.y_labels, splitArea: { show: true },
+           axisLabel: { fontSize: 11 } },
+  visualMap: { min: 0, max: 100, calculable: true, orient: 'vertical',
+               right: 8, top: 'center',
+               inRange: { color: ['#a50026', '#d73027', '#f46d43', '#fdae61',
+                                  '#fee08b', '#d9ef8b', '#a6d96a', '#66bd63', '#1a9850'] },
+               formatter: v => v + '%' },
+  series: [{ type: 'heatmap', data: D.heat, label: { show: true, fontSize: 9,
+             formatter: p => p.value[2] > 0 ? p.value[2] : '' } }]
+});
+
+const bar = echarts.init(document.getElementById('bar'));
+bar.setOption({
+  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
+             valueFormatter: v => v + '%' },
+  legend: { data: ['miss（确定漏报）', 'unknown（无法判定）'] },
+  grid: { left: 190, right: 40, top: 40, bottom: 40 },
+  xAxis: { type: 'value', axisLabel: { formatter: '{value}%' }, max: 100 },
+  yAxis: { type: 'category', data: D.bar_types, axisLabel: { fontSize: 11 } },
+  series: [
+    { name: 'miss（确定漏报）', type: 'bar', stack: 'b', data: D.bar_miss,
+      itemStyle: { color: '#4393c3' } },
+    { name: 'unknown（无法判定）', type: 'bar', stack: 'b', data: D.bar_unknown,
+      itemStyle: { color: '#f4a582' } }
+  ]
+});
+
+const radar = echarts.init(document.getElementById('radar'));
+radar.setOption({
+  tooltip: {},
+  legend: { top: 0 },
+  radar: { indicator: D.radar_ind, radius: '62%' },
+  series: [{ type: 'radar', data: D.radar_series,
+             areaStyle: { opacity: 0.08 }, lineStyle: { width: 2 } }]
+});
+
+const batch = echarts.init(document.getElementById('batch'));
+const P = D.planted;
+batch.setOption({
+  tooltip: { valueFormatter: v => v + '%' },
+  legend: {},
+  grid: { left: 60, right: 40, top: 40, bottom: 40 },
+  xAxis: { type: 'category',
+           data: D.batch_names.concat(['planted=true', 'planted=false (n=74)', 'corpus planted=null']) },
+  axisLabel: { rotate: 30 },
+  yAxis: { type: 'value', axisLabel: { formatter: '{value}%' }, max: 100 },
+  series: [
+    { name: '盲区比例', type: 'bar',
+      data: D.batch_blind.concat([P['true'] ? +(P['true'].blindspot_ratio*100).toFixed(1) : null,
+                                  P['false'] ? +(P['false'].blindspot_ratio*100).toFixed(1) : null,
+                                  P['null'] ? +(P['null'].blindspot_ratio*100).toFixed(1) : null]),
+      itemStyle: { color: '#d73027' },
+      label: { show: true, position: 'top', formatter: '{c}%' } }
+  ]
+});
+
+window.addEventListener('resize', () => { heat.resize(); bar.resize(); radar.resize(); batch.resize(); });
+</script>
+</body>
+</html>

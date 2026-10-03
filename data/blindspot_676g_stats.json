@@ -1,0 +1,6453 @@
+{
+ "schema": "queyi-blindspot-stats/676g",
+ "generated_at": "2026-10-04T02:11:13+08:00",
+ "source": "data/blindspot_676g_detection_matrix.json",
+ "caliber": {
+  "sample_catch": "8 资产任一 catch（wunsequenced/compile-time 结构性恒 unknown，永不 catch，OR 口径等价于 6 可用资产）",
+  "sample_miss": "无 catch 且 ≥1 可用资产确定 miss",
+  "sample_unknown": "可用 6 资产全部 unknown",
+  "blindspot_ratio": "(miss + unknown) / n；miss 与 unknown 单列，不混同",
+  "types_note": "细粒度类型沿用各批次 INDEX 的 defect_type 原字符串；family 为报告分组（附录口径）",
+  "hierarchy_note": "corpus/holdout 用粗粒度 category（MEM/UB/CONC/...），扩样批次用细粒度类型；两层不合并计数，避免层级重复"
+ },
+ "total": {
+  "n": 1147,
+  "catch": 707,
+  "miss": 440,
+  "unknown": 0,
+  "MISSING": 0,
+  "blindspot_ratio": 0.3836
+ },
+ "by_type": [
+  {
+   "defect_type": "uninitialized_read",
+   "family": "memory",
+   "n": 20,
+   "catch": 0,
+   "miss": 20,
+   "unknown": 0,
+   "blindspot_ratio": 1.0,
+   "miss_ratio": 1.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expA": 20
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 20,
+    "ubsan": 20,
+    "tsan": 20,
+    "compiler-warn": 20,
+    "cross-compile": 20,
+    "linker": 20
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expA:sample_060",
+     "batch": "expA",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expA:sample_061",
+     "batch": "expA",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpsyj0exh6/sample_092.cpp:7:7: runtime error: negation of -2",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expA:sample_062",
+     "batch": "expA",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expA:sample_063",
+     "batch": "expA",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [],
+   "rank": 1,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "state_machine",
+   "family": "logic_semantic",
+   "n": 4,
+   "catch": 0,
+   "miss": 4,
+   "unknown": 0,
+   "blindspot_ratio": 1.0,
+   "miss_ratio": 1.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 4
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 4,
+    "ubsan": 4,
+    "tsan": 4,
+    "compiler-warn": 4,
+    "cross-compile": 4,
+    "linker": 4
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expG:sample_G021",
+     "batch": "expG",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) finished accepted with key_len=0 state=2 key_len=0 (正确: CCS 应被拒绝, key_len=48); -O2(rc=0) finished ",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) finished accepted with key_len=0 state=2 key_len=0 (正确: CCS 应被拒绝, key_len=48); -O2(rc=0) finished",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) finished accepted with key_len=0 state=2 key_len=0 (正确: CCS 应被拒绝, key_len=48); -O2(rc=0) finished ",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expG:sample_G044",
+     "batch": "expG",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=66) ThreadSanitizer:DEADLYSIGNAL ==344279==ERROR: ThreadSanitizer: SEGV on unknown address 0x00000000",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) POST 实际发送: POST-REQUEST-BODY (正确行为: 发送 POST-REQUEST-BODY, 不应调用已废弃的读回调); -O2(rc=0) POST 实际发送: POST",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) POST 实际发送: POST-REQUEST-BODY (正确行为: 发送 POST-REQUEST-BODY, 不应调用已废弃的读回调); -O2(rc=0) POST 实际发送: POST-",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expG:sample_G075",
+     "batch": "expG",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) channel_opened=1 state=0 (正确行为: 未认证必须拒绝 CHANNEL_OPEN); -O2(rc=0) channel_opened=1 state=0 (正确行为: 未",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) channel_opened=1 state=0 (正确行为: 未认证必须拒绝 CHANNEL_OPEN); -O2(rc=0) channel_opened=1 state=0 (正确行为: ",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) channel_opened=1 state=0 (正确行为: 未认证必须拒绝 CHANNEL_OPEN); -O2(rc=0) channel_opened=1 state=0 (正确行为: 未",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expG:sample_G076",
+     "batch": "expG",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) ext_info_received=1 seq=2 (正确行为: EXT_INFO 必须在 seq==2 到达且无插入包); -O2(rc=0) ext_info_received=1 seq=2",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) ext_info_received=1 seq=2 (正确行为: EXT_INFO 必须在 seq==2 到达且无插入包); -O2(rc=0) ext_info_received=1 seq=",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) ext_info_received=1 seq=2 (正确行为: EXT_INFO 必须在 seq==2 到达且无插入包); -O2(rc=0) ext_info_received=1 seq=2",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [],
+   "rank": 2,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "memory-order",
+   "family": "concurrency",
+   "n": 2,
+   "catch": 0,
+   "miss": 2,
+   "unknown": 0,
+   "blindspot_ratio": 1.0,
+   "miss_ratio": 1.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "holdout": 1,
+    "corpus": 1
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 2,
+    "ubsan": 2,
+    "tsan": 2,
+    "compiler-warn": 2,
+    "cross-compile": 2,
+    "linker": 2
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "holdout:h34",
+     "batch": "holdout",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) spin_plain_ret=7|spin_signal_fence_ret=8|spin_with_fence_ret=9|spin_volatile_ret=10 spin_fence_out",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) spin_plain_ret=7|spin_signal_fence_ret=8|spin_with_fence_ret=9|spin_volatile_ret=10 spin_fence_ou",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) spin_plain_ret=7|spin_signal_fence_ret=8|spin_with_fence_ret=9|spin_volatile_ret=10 spin_fence_out",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "corpus:d3e-19",
+     "batch": "corpus",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=2) 无输出; -O2(rc=2) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=2) 无输出; -O2(rc=2) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=2) 无输出; -O2(rc=2) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [],
+   "rank": 3,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "resource_exhaustion",
+   "family": "logic_semantic",
+   "n": 2,
+   "catch": 0,
+   "miss": 2,
+   "unknown": 0,
+   "blindspot_ratio": 1.0,
+   "miss_ratio": 1.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 2
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 2,
+    "ubsan": 2,
+    "tsan": 2,
+    "compiler-warn": 2,
+    "cross-compile": 2,
+    "linker": 2
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expG:sample_G088",
+     "batch": "expG",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) open_streams=20000 (正确行为: 服务端应限流, 例如 <= 100); -O2(rc=0) open_streams=20000 (正确行为: 服务端应限流, 例如 <= 10",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) open_streams=20000 (正确行为: 服务端应限流, 例如 <= 100); -O2(rc=0) open_streams=20000 (正确行为: 服务端应限流, 例如 <= 1",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) open_streams=20000 (正确行为: 服务端应限流, 例如 <= 100); -O2(rc=0) open_streams=20000 (正确行为: 服务端应限流, 例如 <= 10",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expG:sample_G089",
+     "batch": "expG",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) pending settings frames=20000 (正确行为: 队列应有上限或丢弃策略); -O2(rc=0) pending settings frames=20000 (正确行为: ",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) pending settings frames=20000 (正确行为: 队列应有上限或丢弃策略); -O2(rc=0) pending settings frames=20000 (正确行为:",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) pending settings frames=20000 (正确行为: 队列应有上限或丢弃策略); -O2(rc=0) pending settings frames=20000 (正确行为: ",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [],
+   "rank": 4,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "compiler-bug",
+   "family": "other",
+   "n": 1,
+   "catch": 0,
+   "miss": 1,
+   "unknown": 0,
+   "blindspot_ratio": 1.0,
+   "miss_ratio": 1.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "corpus": 1
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 1,
+    "ubsan": 1,
+    "tsan": 1,
+    "compiler-warn": 1,
+    "cross-compile": 1,
+    "linker": 1
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "corpus:d3-19",
+     "batch": "corpus",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [],
+   "rank": 5,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "infinite_loop",
+   "family": "logic_semantic",
+   "n": 1,
+   "catch": 0,
+   "miss": 1,
+   "unknown": 0,
+   "blindspot_ratio": 1.0,
+   "miss_ratio": 1.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 1
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 1,
+    "ubsan": 1,
+    "tsan": 1,
+    "compiler-warn": 1,
+    "cross-compile": 1,
+    "linker": 1
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expG:sample_G019",
+     "batch": "expG",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 120",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 12",
+      "tsan": "tsan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 120",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [],
+   "rank": 6,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "timing_side_channel",
+   "family": "embedded_platform",
+   "n": 1,
+   "catch": 0,
+   "miss": 1,
+   "unknown": 0,
+   "blindspot_ratio": 1.0,
+   "miss_ratio": 1.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 1
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 1,
+    "ubsan": 1,
+    "tsan": 1,
+    "compiler-warn": 1,
+    "cross-compile": 1,
+    "linker": 1
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expG:sample_G086",
+     "batch": "expG",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) ops(k1)=64 ops(k2)=96 差异=32 (应恒等: 常量时间缺失); -O2(rc=0) ops(k1)=64 ops(k2)=96 差异=32 (应恒等: 常量时间缺失)]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) ops(k1)=64 ops(k2)=96 差异=32 (应恒等: 常量时间缺失); -O2(rc=0) ops(k1)=64 ops(k2)=96 差异=32 (应恒等: 常量时间缺失)]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) ops(k1)=64 ops(k2)=96 差异=32 (应恒等: 常量时间缺失); -O2(rc=0) ops(k1)=64 ops(k2)=96 差异=32 (应恒等: 常量时间缺失)]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [],
+   "rank": 7,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "deadlock",
+   "family": "other",
+   "n": 35,
+   "catch": 2,
+   "miss": 33,
+   "unknown": 0,
+   "blindspot_ratio": 0.9429,
+   "miss_ratio": 0.9429,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expE": 35
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 2,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 35,
+    "ubsan": 35,
+    "tsan": 33,
+    "compiler-warn": 35,
+    "cross-compile": 35,
+    "linker": 35
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0571,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expE:sample_E076",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 120",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 12",
+      "tsan": "tsan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 120",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E077",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 120",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 12",
+      "tsan": "tsan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 120",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E078",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 120",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 12",
+      "tsan": "tsan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 120",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E079",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 120",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 12",
+      "tsan": "tsan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 120",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expE:sample_E087",
+     "caught_by": [
+      "tsan"
+     ]
+    },
+    {
+     "uid": "expE:sample_E107",
+     "caught_by": [
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 8,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "volatile_misuse",
+   "family": "embedded_platform",
+   "n": 28,
+   "catch": 2,
+   "miss": 26,
+   "unknown": 0,
+   "blindspot_ratio": 0.9286,
+   "miss_ratio": 0.9286,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expF": 28
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 1,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 27,
+    "ubsan": 27,
+    "tsan": 28,
+    "compiler-warn": 28,
+    "cross-compile": 28,
+    "linker": 28
+   },
+   "asset_catch_rate": {
+    "asan": 0.0357,
+    "ubsan": 0.0357,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expF:F071",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) dtls: buffered msg len=128/mnt/c/Users/ASUS/AppData/Local/Temp/tmpw56ttf8h/sample_G00",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F072",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=1) ================================================================= ==304030==ERROR: Ad",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F074",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F075",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expF:F076",
+     "caught_by": [
+      "asan"
+     ]
+    },
+    {
+     "uid": "expF:F101",
+     "caught_by": [
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 9,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "endianness",
+   "family": "embedded_platform",
+   "n": 28,
+   "catch": 3,
+   "miss": 25,
+   "unknown": 0,
+   "blindspot_ratio": 0.8929,
+   "miss_ratio": 0.8929,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expF": 28
+   },
+   "asset_catch": {
+    "asan": 3,
+    "ubsan": 2,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 2,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 25,
+    "ubsan": 26,
+    "tsan": 28,
+    "compiler-warn": 28,
+    "cross-compile": 26,
+    "linker": 28
+   },
+   "asset_catch_rate": {
+    "asan": 0.1071,
+    "ubsan": 0.0714,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0714,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expF:F036",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 13330; -O2(rc=0) 13330]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 499500; -O2(rc=0) 13330]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 13330; -O2(rc=0) 13330]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F037",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 2018915346; -O2(rc=0) 2018915346]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 2018915346; -O2(rc=0) 499500]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 2018915346; -O2(rc=0) 2018915346]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F039",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 2018915346; -O2(rc=0) 2018915346]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 2018915346; -O2(rc=0) 2018915346]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 499500; -O2(rc=0) 2018915346]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F040",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 13330; -O2(rc=0) 13330]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 13330; -O2(rc=0) 13330]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 13330; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expF:F042",
+     "caught_by": [
+      "asan"
+     ]
+    },
+    {
+     "uid": "expF:F069",
+     "caught_by": [
+      "asan",
+      "cross-compile",
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 10,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "algorithm_misuse",
+   "family": "stl",
+   "n": 35,
+   "catch": 8,
+   "miss": 27,
+   "unknown": 0,
+   "blindspot_ratio": 0.7714,
+   "miss_ratio": 0.7714,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expD": 35
+   },
+   "asset_catch": {
+    "asan": 8,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 27,
+    "ubsan": 35,
+    "tsan": 35,
+    "compiler-warn": 35,
+    "cross-compile": 35,
+    "linker": 35
+   },
+   "asset_catch_rate": {
+    "asan": 0.2286,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expD:D106",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 8; -O2(rc=0) 8]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E035 c7=507; -O2(rc=0) 8]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 8; -O2(rc=0) 8]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D107",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 8; -O2(rc=0) 8]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) 8]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 8; -O2(rc=0) 8]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D108",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 8; -O2(rc=0) 8]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E038 n=4 buf3=4 E038 n=4 buf3=4; -O2(rc=0) 8]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 8; -O2(rc=0) 8]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D109",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 8; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 8; -O2(rc=0) 8]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 8; -O2(rc=0) 8]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expD:D120",
+     "caught_by": [
+      "asan"
+     ]
+    },
+    {
+     "uid": "expD:D121",
+     "caught_by": [
+      "asan"
+     ]
+    }
+   ],
+   "rank": 11,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "lock_priority_inversion",
+   "family": "concurrency",
+   "n": 30,
+   "catch": 8,
+   "miss": 22,
+   "unknown": 0,
+   "blindspot_ratio": 0.7333,
+   "miss_ratio": 0.7333,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expE": 30
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 2,
+    "tsan": 7,
+    "compiler-warn": 0,
+    "cross-compile": 1,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 30,
+    "ubsan": 28,
+    "tsan": 23,
+    "compiler-warn": 30,
+    "cross-compile": 28,
+    "linker": 30
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0667,
+    "tsan": 0.2333,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0333,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expE:sample_E141",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E141 acc=8999995 stage=3; -O2(rc=0) E141 acc=8999995 stage=3]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) E141 acc=8999995 stage=",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E141 acc=8999995 stage=3; -O2(rc=0) E141 acc=8999995 stage=3]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E142",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E132 v=2 gen=200 E132 read_gen=200; -O2(rc=0) E142 t0=2021.172761]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E142 t0=2021.172761; -O2(rc=0) E142 t0=2021.172761]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E142 t0=2021.172761; -O2(rc=0) E142 t0=2021.172761]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E144",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E144 n=7; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E144 n=7; -O2(rc=0) E144 n=7]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E138 retries=0 top_v=1; -O2(rc=0) E144 n=7]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E145",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E145 allocs=20000; -O2(rc=0) E145 allocs=20000]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E145 allocs=20000; -O2(rc=0) E145 allocs=20000]",
+      "tsan": "tsan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) E145 allocs=20000]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expE:sample_E143",
+     "caught_by": [
+      "tsan"
+     ]
+    },
+    {
+     "uid": "expE:sample_E147",
+     "caught_by": [
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 12,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "cross_tu_ub",
+   "family": "link_odr",
+   "n": 30,
+   "catch": 9,
+   "miss": 21,
+   "unknown": 0,
+   "blindspot_ratio": 0.7,
+   "miss_ratio": 0.7,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expC": 30
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 8,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 21,
+    "ubsan": 22,
+    "tsan": 22,
+    "compiler-warn": 30,
+    "cross-compile": 7,
+    "linker": 22
+   },
+   "asset_catch_rate": {
+    "asan": 0.0333,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.2667,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expC:sample_100",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=2) 无输出; -O2(rc=3) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=2) 无输出; -O2(rc=3) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=2) 无输出; -O2(rc=3) 无输出]",
+      "compiler-warn": "无告警",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_101",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=2) 无输出; -O2(rc=3) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=2) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=2) 无输出; -O2(rc=3) 无输出]",
+      "compiler-warn": "无告警",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_102",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=2) 无输出; -O2(rc=3) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=2) 无输出; -O2(rc=3) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=2) 无输出; -O2(rc=3) 无输出]",
+      "compiler-warn": "无告警",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_103",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=2) 无输出; -O2(rc=3) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=2) 无输出; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "tsan": "tsan 两档均无报告[-O0(rc=2) 无输出; -O2(rc=3) 无输出]",
+      "compiler-warn": "无告警",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expC:sample_091",
+     "caught_by": [
+      "linker"
+     ]
+    },
+    {
+     "uid": "expC:sample_092",
+     "caught_by": [
+      "linker"
+     ]
+    }
+   ],
+   "rank": 13,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "aba_problem",
+   "family": "concurrency",
+   "n": 30,
+   "catch": 10,
+   "miss": 20,
+   "unknown": 0,
+   "blindspot_ratio": 0.6667,
+   "miss_ratio": 0.6667,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expE": 30
+   },
+   "asset_catch": {
+    "asan": 10,
+    "ubsan": 1,
+    "tsan": 1,
+    "compiler-warn": 0,
+    "cross-compile": 1,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 20,
+    "ubsan": 29,
+    "tsan": 29,
+    "compiler-warn": 30,
+    "cross-compile": 29,
+    "linker": 30
+   },
+   "asset_catch_rate": {
+    "asan": 0.3333,
+    "ubsan": 0.0333,
+    "tsan": 0.0333,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0333,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expE:sample_E111",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E111 CAS succeeded on stale pointer E111 reachable=1 live=2; -O2(rc=0) E111 CAS succeeded on stale",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E111 CAS succeeded on stale pointer E111 reachable=1 live=2; -O2(rc=0) E111 CAS succeeded on stal",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E111 CAS succeeded on stale pointer E111 reachable=1 live=2; -O2(rc=0) E111 CAS succeeded on stale",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E113",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E113 reachable=1 pushes=3 pops=1; -O2(rc=0) E113 reachable=1 pushes=3 pops=1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E113 reachable=1 pushes=3 pops=1; -O2(rc=0) E113 reachable=1 pushes=3 pops=1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E113 reachable=1 pushes=3 pops=1; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permissio",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E114",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E114 head_count=3 top_v=1; -O2(rc=0) E114 head_count=3 top_v=1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E114 head_count=3 top_v=1; -O2(rc=0) E114 head_count=3 top_v=1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E114 head_count=3 top_v=1; -O2(rc=0) E114 head_count=3 top_v=1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E116",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E116 in=2 out=0; -O2(rc=0) E116 in=2 out=0]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E116 in=2 out=0; -O2(rc=0) E116 in=2 out=0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E116 in=2 out=0; -O2(rc=0) E116 in=2 out=0]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expE:sample_E112",
+     "caught_by": [
+      "asan"
+     ]
+    },
+    {
+     "uid": "expE:sample_E115",
+     "caught_by": [
+      "asan"
+     ]
+    }
+   ],
+   "rank": 14,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "interrupt_safety",
+   "family": "embedded_platform",
+   "n": 20,
+   "catch": 7,
+   "miss": 13,
+   "unknown": 0,
+   "blindspot_ratio": 0.65,
+   "miss_ratio": 0.65,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expF": 20
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 1,
+    "tsan": 5,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 19,
+    "ubsan": 19,
+    "tsan": 15,
+    "compiler-warn": 20,
+    "cross-compile": 20,
+    "linker": 20
+   },
+   "asset_catch_rate": {
+    "asan": 0.05,
+    "ubsan": 0.05,
+    "tsan": 0.25,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expF:F141",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F144",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=66) ThreadSanitizer:DEADLYSIGNAL ==322554==ERROR: ThreadSanitizer: SEGV on unknown addre",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F146",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F152",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 499500]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 499500; -O2(rc=0) 499500]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 499500; -O2(rc=0) 499500]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expF:F143",
+     "caught_by": [
+      "asan"
+     ]
+    },
+    {
+     "uid": "expF:F147",
+     "caught_by": [
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 15,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "logic_error",
+   "family": "logic_semantic",
+   "n": 17,
+   "catch": 6,
+   "miss": 11,
+   "unknown": 0,
+   "blindspot_ratio": 0.6471,
+   "miss_ratio": 0.6471,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 17
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 1,
+    "compiler-warn": 3,
+    "cross-compile": 2,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 17,
+    "ubsan": 17,
+    "tsan": 16,
+    "compiler-warn": 14,
+    "cross-compile": 15,
+    "linker": 17
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0588,
+    "compiler-warn": 0.1765,
+    "cross-compile": 0.1176,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expG:sample_G020",
+     "batch": "expG",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) verify(Leaf)=ACCEPT[错误]  (正确行为: reject, 因为 FakeRoot 非 CA 且不在信任库); -O2(rc=0) verify(Leaf)=ACCEPT[错误",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) verify(Leaf)=ACCEPT[错误]  (正确行为: reject, 因为 FakeRoot 非 CA 且不在信任库); -O2(rc=0) verify(Leaf)=ACCEPT[错",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) verify(Leaf)=ACCEPT[错误]  (正确行为: reject, 因为 FakeRoot 非 CA 且不在信任库); -O2(rc=0) verify(Leaf)=ACCEPT[错误",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expG:sample_G040",
+     "batch": "expG",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) Referer: https://alice:hunter2@internal.example.com/ (正确行为: Referer 不应包含 alice:hunter2); -O2(rc=0)",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) Referer: https://alice:hunter2@internal.example.com/ (正确行为: Referer 不应包含 alice:hunter2); -O2(rc=0",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) Referer: https://alice:hunter2@internal.example.com/ (正确行为: Referer 不应包含 alice:hunter2); -O2(rc=0)",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expG:sample_G046",
+     "batch": "expG",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) SFTP 实际访问: /home/victim~~poor-~/../../etc/passwd (正确行为: 不应展开到 /home/victim 之外); -O2(rc=126) setarc",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) SFTP 实际访问: /home/victim~~poor-~/../../etc/passwd (正确行为: 不应展开到 /home/victim 之外); -O2(rc=0) SFTP 实际",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) SFTP 实际访问: /home/victim~~poor-~/../../etc/passwd (正确行为: 不应展开到 /home/victim 之外); -O2(rc=0) SFTP 实际访",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expG:sample_G047",
+     "batch": "expG",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 证书已撤销? 否[错误: 校验失败应阻断连接] (响应畸形: 是); -O2(rc=0) 证书已撤销? 否[错误: 校验失败应阻断连接] (响应畸形: 是)]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 证书已撤销? 否[错误: 校验失败应阻断连接] (响应畸形: 是); -O2(rc=0) 证书已撤销? 否[错误: 校验失败应阻断连接] (响应畸形: 是)]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 证书已撤销? 否[错误: 校验失败应阻断连接] (响应畸形: 是); -O2(rc=0) 证书已撤销? 否[错误: 校验失败应阻断连接] (响应畸形: 是)]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G022",
+     "caught_by": [
+      "compiler-warn"
+     ]
+    },
+    {
+     "uid": "expG:sample_G042",
+     "caught_by": [
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 16,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "virtual_function",
+   "family": "language_raii",
+   "n": 30,
+   "catch": 12,
+   "miss": 18,
+   "unknown": 0,
+   "blindspot_ratio": 0.6,
+   "miss_ratio": 0.6,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expC": 30
+   },
+   "asset_catch": {
+    "asan": 6,
+    "ubsan": 5,
+    "tsan": 6,
+    "compiler-warn": 5,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 24,
+    "ubsan": 25,
+    "tsan": 24,
+    "compiler-warn": 25,
+    "cross-compile": 30,
+    "linker": 30
+   },
+   "asset_catch_rate": {
+    "asan": 0.2,
+    "ubsan": 0.1667,
+    "tsan": 0.2,
+    "compiler-warn": 0.1667,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expC:sample_061",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) B; -O2(rc=0) B]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) B; -O2(rc=0) B]",
+      "tsan": "tsan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) B]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_062",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) B; -O2(rc=0) B]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) B; -O2(rc=0) B]",
+      "tsan": "tsan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) B]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_063",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) B; -O2(rc=0) B]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) B; -O2(rc=0) B]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) B]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_065",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) B; -O2(rc=0) B]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) B; -O2(rc=0) B]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) B; -O2(rc=0) B]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expC:sample_064",
+     "caught_by": [
+      "tsan"
+     ]
+    },
+    {
+     "uid": "expC:sample_069",
+     "caught_by": [
+      "asan"
+     ]
+    }
+   ],
+   "rank": 17,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "condition_variable",
+   "family": "concurrency",
+   "n": 30,
+   "catch": 13,
+   "miss": 17,
+   "unknown": 0,
+   "blindspot_ratio": 0.5667,
+   "miss_ratio": 0.5667,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expE": 30
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 2,
+    "tsan": 13,
+    "compiler-warn": 0,
+    "cross-compile": 3,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 30,
+    "ubsan": 28,
+    "tsan": 17,
+    "compiler-warn": 30,
+    "cross-compile": 27,
+    "linker": 30
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0667,
+    "tsan": 0.4333,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.1,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expE:sample_E171",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E171 work_done=1 ready=0; -O2(rc=0) E171 work_done=1 ready=0]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) E171 work_done=1 ready=",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E171 work_done=1 ready=0; -O2(rc=0) E171 work_done=1 ready=0]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E172",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E172 produced=3 consumed=3; -O2(rc=0) E172 produced=3 consumed=3]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E172 produced=3 consumed=3; -O2(rc=0) E172 produced=3 consumed=3]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E172 produced=3 consumed=3; -O2(rc=0) ok]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E174",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E174 taken=42; -O2(rc=0) E174 taken=42]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E174 taken=42; -O2(rc=0) E174 taken=42]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E174 taken=42; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E176",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 120",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 12",
+      "tsan": "tsan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 120",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expE:sample_E173",
+     "caught_by": [
+      "cross-compile",
+      "tsan",
+      "ubsan"
+     ]
+    },
+    {
+     "uid": "expE:sample_E175",
+     "caught_by": [
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 18,
+   "band": "high_blindspot(>50%)"
+  },
+  {
+   "defect_type": "move_semantics",
+   "family": "language_raii",
+   "n": 30,
+   "catch": 15,
+   "miss": 15,
+   "unknown": 0,
+   "blindspot_ratio": 0.5,
+   "miss_ratio": 0.5,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expC": 30
+   },
+   "asset_catch": {
+    "asan": 2,
+    "ubsan": 5,
+    "tsan": 0,
+    "compiler-warn": 14,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 28,
+    "ubsan": 25,
+    "tsan": 30,
+    "compiler-warn": 16,
+    "cross-compile": 30,
+    "linker": 30
+   },
+   "asset_catch_rate": {
+    "asan": 0.0667,
+    "ubsan": 0.1667,
+    "tsan": 0.0,
+    "compiler-warn": 0.4667,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expC:sample_015",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_016",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_017",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=2) /tmp/rv_bin_O2: 2: Syntax error: \"(\" unexpected]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=2) /tmp/rv_bin_O0: 13: Syntax error: \"(\" unexpected; -O2(rc=2) /tmp/rv_bin_O2: 2: Syntax error: \"(\" ",
+      "tsan": "tsan 两档均无报告[-O0(rc=2) /tmp/rv_bin_O0: 1: Syntax error: \"(\" unexpected; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_018",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=139) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expC:sample_001",
+     "caught_by": [
+      "compiler-warn"
+     ]
+    },
+    {
+     "uid": "expC:sample_002",
+     "caught_by": [
+      "compiler-warn"
+     ]
+    }
+   ],
+   "rank": 19,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "type_punning",
+   "family": "ub",
+   "n": 20,
+   "catch": 10,
+   "miss": 10,
+   "unknown": 0,
+   "blindspot_ratio": 0.5,
+   "miss_ratio": 0.5,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expB": 20
+   },
+   "asset_catch": {
+    "asan": 3,
+    "ubsan": 10,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 2,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 17,
+    "ubsan": 10,
+    "tsan": 20,
+    "compiler-warn": 20,
+    "cross-compile": 18,
+    "linker": 20
+   },
+   "asset_catch_rate": {
+    "asan": 0.15,
+    "ubsan": 0.5,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.1,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expB:sample_B071",
+     "batch": "expB",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) 1.000000]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1.000000; -O2(rc=0) 1.000000]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1.000000; -O2(rc=0) 1.000000]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B072",
+     "batch": "expB",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1065353216; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1065353216; -O2(rc=0) 1065353216]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1065353216; -O2(rc=0) 1065353216]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B073",
+     "batch": "expB",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 0.000000; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 0.000000; -O2(rc=0) 0.000000]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 0.000000; -O2(rc=0) 0.000000]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B074",
+     "batch": "expB",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 0.000000; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 0.000000; -O2(rc=0) 0.000000]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 0.000000; -O2(rc=0) 0.000000]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expB:sample_B061",
+     "caught_by": [
+      "ubsan"
+     ]
+    },
+    {
+     "uid": "expB:sample_B062",
+     "caught_by": [
+      "asan",
+      "cross-compile",
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 20,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "compiler-diff",
+   "family": "other",
+   "n": 2,
+   "catch": 1,
+   "miss": 1,
+   "unknown": 0,
+   "blindspot_ratio": 0.5,
+   "miss_ratio": 0.5,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "corpus": 2
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 1,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 1,
+    "ubsan": 1,
+    "tsan": 1,
+    "compiler-warn": 2,
+    "cross-compile": 1,
+    "linker": 1
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.5,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "corpus:d3-15",
+     "batch": "corpus",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) double; -O2(rc=0) double]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) double; -O2(rc=0) double]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) double; -O2(rc=0) double]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "corpus:d3-14",
+     "caught_by": [
+      "linker"
+     ]
+    }
+   ],
+   "rank": 21,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "info_leak",
+   "family": "logic_semantic",
+   "n": 2,
+   "catch": 1,
+   "miss": 1,
+   "unknown": 0,
+   "blindspot_ratio": 0.5,
+   "miss_ratio": 0.5,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 2
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 1,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 2,
+    "ubsan": 2,
+    "tsan": 2,
+    "compiler-warn": 1,
+    "cross-compile": 2,
+    "linker": 2
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.5,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expG:sample_G041",
+     "batch": "expG",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) TELNET 发送: NEW_ENV:TERM=xterm;USER=alice;HOME=/home/alice;SECRET_TOKEN=s3cr3t-value (正确行为: 仅发送 TER",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) TELNET 发送: NEW_ENV:TERM=xterm;USER=alice;HOME=/home/alice;SECRET_TOKEN=s3cr3t-value (正确行为: 仅发送 TE",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) TELNET 发送: NEW_ENV:TERM=xterm;USER=alice;HOME=/home/alice;SECRET_TOKEN=s3cr3t-value (正确行为: 仅发送 TER",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G068",
+     "caught_by": [
+      "compiler-warn"
+     ]
+    }
+   ],
+   "rank": 22,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "memory_order",
+   "family": "concurrency",
+   "n": 40,
+   "catch": 21,
+   "miss": 19,
+   "unknown": 0,
+   "blindspot_ratio": 0.475,
+   "miss_ratio": 0.475,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expE": 40
+   },
+   "asset_catch": {
+    "asan": 3,
+    "ubsan": 1,
+    "tsan": 20,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 37,
+    "ubsan": 39,
+    "tsan": 20,
+    "compiler-warn": 40,
+    "cross-compile": 39,
+    "linker": 40
+   },
+   "asset_catch_rate": {
+    "asan": 0.075,
+    "ubsan": 0.025,
+    "tsan": 0.5,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expE:sample_E001",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E001 data=42; -O2(rc=0) E001 data=42]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E001 data=42; -O2(rc=0) E001 data=42]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E001 data=42; -O2(rc=0) E001 data=42]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E002",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E002 load=3.500000; -O2(rc=0) E002 load=3.500000]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E002 load=3.500000; -O2(rc=0) E002 load=3.500000]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E002 load=3.500000; -O2(rc=0) E002 load=3.500000]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E006",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E006 state=5; -O2(rc=0) E006 state=5]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E006 state=5; -O2(rc=0) E006 state=5]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E007",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E007 payload=22; -O2(rc=0) E007 payload=22]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E007 payload=22; -O2(rc=0) E007 payload=22]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E007 payload=22; -O2(rc=0) E007 payload=22]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expE:sample_E003",
+     "caught_by": [
+      "tsan"
+     ]
+    },
+    {
+     "uid": "expE:sample_E004",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 23,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "register_ub",
+   "family": "embedded_platform",
+   "n": 20,
+   "catch": 11,
+   "miss": 9,
+   "unknown": 0,
+   "blindspot_ratio": 0.45,
+   "miss_ratio": 0.45,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expF": 20
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 0,
+    "tsan": 1,
+    "compiler-warn": 10,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 19,
+    "ubsan": 20,
+    "tsan": 19,
+    "compiler-warn": 10,
+    "cross-compile": 9,
+    "linker": 20
+   },
+   "asset_catch_rate": {
+    "asan": 0.05,
+    "ubsan": 0.0,
+    "tsan": 0.05,
+    "compiler-warn": 0.5,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expF:F181",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F183",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F185",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) done; -O2(rc=0) format: hello format: temp]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) done]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F187",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expF:F171",
+     "caught_by": [
+      "compiler-warn"
+     ]
+    },
+    {
+     "uid": "expF:F172",
+     "caught_by": [
+      "compiler-warn"
+     ]
+    }
+   ],
+   "rank": 24,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "atomic_ub",
+   "family": "concurrency",
+   "n": 35,
+   "catch": 20,
+   "miss": 15,
+   "unknown": 0,
+   "blindspot_ratio": 0.4286,
+   "miss_ratio": 0.4286,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expE": 35
+   },
+   "asset_catch": {
+    "asan": 8,
+    "ubsan": 4,
+    "tsan": 15,
+    "compiler-warn": 1,
+    "cross-compile": 3,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 27,
+    "ubsan": 31,
+    "tsan": 20,
+    "compiler-warn": 34,
+    "cross-compile": 32,
+    "linker": 35
+   },
+   "asset_catch_rate": {
+    "asan": 0.2286,
+    "ubsan": 0.1143,
+    "tsan": 0.4286,
+    "compiler-warn": 0.0286,
+    "cross-compile": 0.0857,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expE:sample_E042",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E042 old=0; -O2(rc=0) E042 old=0]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E042 old=0; -O2(rc=0) E042 old=0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E042 old=0; -O2(rc=0) E042 old=0]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E043",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E043 total=7; -O2(rc=0) E043 total=7]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E043 total=7; -O2(rc=0) E043 total=7]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E043 total=7; -O2(rc=0) E043 total=7]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E045",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E045 gave up (expected=1) E045 taken=1; -O2(rc=0) E045 gave up (expected=1) E045 taken=1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E045 gave up (expected=1) E045 taken=1; -O2(rc=0) E045 gave up (expected=1) E045 taken=1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E045 gave up (expected=1) E045 taken=1; -O2(rc=0) E045 gave up (expected=1) E045 taken=1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E047",
+     "batch": "expE",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E047 ok=1 a=9; -O2(rc=0) E047 ok=1 a=9]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E047 ok=1 a=9; -O2(rc=0) E047 ok=1 a=9]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E047 ok=1 a=9; -O2(rc=0) E047 ok=1 a=9]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expE:sample_E041",
+     "caught_by": [
+      "cross-compile"
+     ]
+    },
+    {
+     "uid": "expE:sample_E044",
+     "caught_by": [
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 25,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "raii_violation",
+   "family": "language_raii",
+   "n": 30,
+   "catch": 18,
+   "miss": 12,
+   "unknown": 0,
+   "blindspot_ratio": 0.4,
+   "miss_ratio": 0.4,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expC": 30
+   },
+   "asset_catch": {
+    "asan": 11,
+    "ubsan": 1,
+    "tsan": 2,
+    "compiler-warn": 6,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 19,
+    "ubsan": 29,
+    "tsan": 28,
+    "compiler-warn": 24,
+    "cross-compile": 30,
+    "linker": 30
+   },
+   "asset_catch_rate": {
+    "asan": 0.3667,
+    "ubsan": 0.0333,
+    "tsan": 0.0667,
+    "compiler-warn": 0.2,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expC:sample_032",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Text file busy; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_049",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=255) 无输出; -O2(rc=255) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=255) 无输出; -O2(rc=255) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=255) 无输出; -O2(rc=255) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_050",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=255) 无输出; -O2(rc=255) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=255) 无输出; -O2(rc=255) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=255) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_051",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=255) 无输出; -O2(rc=255) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=255) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=255) 无输出; -O2(rc=255) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expC:sample_031",
+     "caught_by": [
+      "asan"
+     ]
+    },
+    {
+     "uid": "expC:sample_033",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 26,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "iterator_invalidation",
+   "family": "stl",
+   "n": 35,
+   "catch": 22,
+   "miss": 13,
+   "unknown": 0,
+   "blindspot_ratio": 0.3714,
+   "miss_ratio": 0.3714,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expD": 35
+   },
+   "asset_catch": {
+    "asan": 21,
+    "ubsan": 0,
+    "tsan": 19,
+    "compiler-warn": 0,
+    "cross-compile": 1,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 14,
+    "ubsan": 35,
+    "tsan": 16,
+    "compiler-warn": 35,
+    "cross-compile": 34,
+    "linker": 35
+   },
+   "asset_catch_rate": {
+    "asan": 0.6,
+    "ubsan": 0.0,
+    "tsan": 0.5429,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0286,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expD:D013",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 30; -O2(rc=0) 30]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 30; -O2(rc=0) 30]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 30; -O2(rc=0) 30]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D014",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 40; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 40; -O2(rc=0) 40]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 40; -O2(rc=0) 40]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D015",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 40; -O2(rc=0) 40]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 40; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 40; -O2(rc=0) 40]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D018",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) 2]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 2; -O2(rc=0) 2]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 2; -O2(rc=0) 2]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expD:D001",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    },
+    {
+     "uid": "expD:D002",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 27,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "pointer_overflow",
+   "family": "ub",
+   "n": 3,
+   "catch": 2,
+   "miss": 1,
+   "unknown": 0,
+   "blindspot_ratio": 0.3333,
+   "miss_ratio": 0.3333,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 3
+   },
+   "asset_catch": {
+    "asan": 2,
+    "ubsan": 2,
+    "tsan": 1,
+    "compiler-warn": 0,
+    "cross-compile": 1,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 1,
+    "ubsan": 1,
+    "tsan": 2,
+    "compiler-warn": 3,
+    "cross-compile": 2,
+    "linker": 3
+   },
+   "asset_catch_rate": {
+    "asan": 0.6667,
+    "ubsan": 0.6667,
+    "tsan": 0.3333,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.3333,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expG:sample_G013",
+     "batch": "expG",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) in_bounds=0 (回绕使越界长度通过边界检查); -O2(rc=0) in_bounds=0 (回绕使越界长度通过边界检查)]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) in_bounds=0 (回绕使越界长度通过边界检查); -O2(rc=0) in_bounds=0 (回绕使越界长度通过边界检查)]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) in_bounds=0 (回绕使越界长度通过边界检查); -O2(rc=0) in_bounds=0 (回绕使越界长度通过边界检查)]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G060",
+     "caught_by": [
+      "asan",
+      "cross-compile",
+      "tsan",
+      "ubsan"
+     ]
+    },
+    {
+     "uid": "expG:sample_G061",
+     "caught_by": [
+      "asan",
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 28,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "optimization_dependent",
+   "family": "ub",
+   "n": 40,
+   "catch": 28,
+   "miss": 12,
+   "unknown": 0,
+   "blindspot_ratio": 0.3,
+   "miss_ratio": 0.3,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expC": 40
+   },
+   "asset_catch": {
+    "asan": 8,
+    "ubsan": 28,
+    "tsan": 7,
+    "compiler-warn": 16,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 32,
+    "ubsan": 12,
+    "tsan": 33,
+    "compiler-warn": 24,
+    "cross-compile": 40,
+    "linker": 40
+   },
+   "asset_catch_rate": {
+    "asan": 0.2,
+    "ubsan": 0.7,
+    "tsan": 0.175,
+    "compiler-warn": 0.4,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expC:sample_149",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_150",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 0; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "tsan": "tsan 两档均无报告[-O0(rc=1) ================================================================= ==128577==ERROR: AddressSanitize",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_151",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_152",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expC:sample_121",
+     "caught_by": [
+      "ubsan"
+     ]
+    },
+    {
+     "uid": "expC:sample_122",
+     "caught_by": [
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 29,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "conditional_trigger",
+   "family": "logic_semantic",
+   "n": 40,
+   "catch": 28,
+   "miss": 12,
+   "unknown": 0,
+   "blindspot_ratio": 0.3,
+   "miss_ratio": 0.3,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expC": 40
+   },
+   "asset_catch": {
+    "asan": 27,
+    "ubsan": 8,
+    "tsan": 6,
+    "compiler-warn": 10,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 13,
+    "ubsan": 32,
+    "tsan": 34,
+    "compiler-warn": 30,
+    "cross-compile": 40,
+    "linker": 40
+   },
+   "asset_catch_rate": {
+    "asan": 0.675,
+    "ubsan": 0.2,
+    "tsan": 0.15,
+    "compiler-warn": 0.25,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expC:sample_189",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_190",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_191",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_192",
+     "batch": "expC",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 4127; -O2(rc=0) 4139]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expC:sample_161",
+     "caught_by": [
+      "asan",
+      "compiler-warn",
+      "ubsan"
+     ]
+    },
+    {
+     "uid": "expC:sample_162",
+     "caught_by": [
+      "asan",
+      "compiler-warn",
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 30,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "bit_operation",
+   "family": "ub",
+   "n": 28,
+   "catch": 20,
+   "miss": 8,
+   "unknown": 0,
+   "blindspot_ratio": 0.2857,
+   "miss_ratio": 0.2857,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expF": 28
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 15,
+    "tsan": 1,
+    "compiler-warn": 20,
+    "cross-compile": 15,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 27,
+    "ubsan": 13,
+    "tsan": 27,
+    "compiler-warn": 8,
+    "cross-compile": 13,
+    "linker": 28
+   },
+   "asset_catch_rate": {
+    "asan": 0.0357,
+    "ubsan": 0.5357,
+    "tsan": 0.0357,
+    "compiler-warn": 0.7143,
+    "cross-compile": 0.5357,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expF:F126",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=0) -2147483643]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=139) 无输出; -O2(rc=0) -2147483643]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=0) -2147483643]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F128",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=0) -2147483643]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=0) nUsed=-2146484296 (应为 -2146484296)]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=0) -2147483643]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F130",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=0) -2147483643]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=0) -2147483643]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F132",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=1) ================================================================= ==320043==ERROR: AddressSanitize",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expF:F106",
+     "caught_by": [
+      "compiler-warn",
+      "cross-compile",
+      "ubsan"
+     ]
+    },
+    {
+     "uid": "expF:F107",
+     "caught_by": [
+      "compiler-warn",
+      "cross-compile",
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 31,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "alignment",
+   "family": "embedded_platform",
+   "n": 25,
+   "catch": 18,
+   "miss": 7,
+   "unknown": 0,
+   "blindspot_ratio": 0.28,
+   "miss_ratio": 0.28,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expF": 25
+   },
+   "asset_catch": {
+    "asan": 3,
+    "ubsan": 17,
+    "tsan": 2,
+    "compiler-warn": 0,
+    "cross-compile": 2,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 22,
+    "ubsan": 8,
+    "tsan": 23,
+    "compiler-warn": 25,
+    "cross-compile": 23,
+    "linker": 25
+   },
+   "asset_catch_rate": {
+    "asan": 0.12,
+    "ubsan": 0.68,
+    "tsan": 0.08,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.08,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expF:F016",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F018",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 0; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F020",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F022",
+     "batch": "expF",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) ok; -O2(rc=0) ok]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) ok; -O2(rc=0) ok]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) ok; -O2(rc=0) ok]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expF:F001",
+     "caught_by": [
+      "ubsan"
+     ]
+    },
+    {
+     "uid": "expF:F002",
+     "caught_by": [
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 32,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "unspecified",
+   "family": "other",
+   "n": 8,
+   "catch": 6,
+   "miss": 2,
+   "unknown": 0,
+   "blindspot_ratio": 0.25,
+   "miss_ratio": 0.25,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "corpus": 8
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 1,
+    "tsan": 0,
+    "compiler-warn": 4,
+    "cross-compile": 1,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 8,
+    "ubsan": 7,
+    "tsan": 8,
+    "compiler-warn": 4,
+    "cross-compile": 7,
+    "linker": 8
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.125,
+    "tsan": 0.0,
+    "compiler-warn": 0.5,
+    "cross-compile": 0.125,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "corpus:d3-08",
+     "batch": "corpus",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "corpus:d3-10",
+     "batch": "corpus",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) -4; -O2(rc=0) -4]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) -4; -O2(rc=0) -4]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) -4; -O2(rc=0) -4]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "corpus:d3e-13",
+     "caught_by": [
+      "compiler-warn"
+     ]
+    },
+    {
+     "uid": "corpus:d3e-14",
+     "caught_by": [
+      "compiler-warn"
+     ]
+    }
+   ],
+   "rank": 33,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "API",
+   "family": "api_misuse",
+   "n": 4,
+   "catch": 3,
+   "miss": 1,
+   "unknown": 0,
+   "blindspot_ratio": 0.25,
+   "miss_ratio": 0.25,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "corpus": 4
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 3,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 4,
+    "ubsan": 4,
+    "tsan": 4,
+    "compiler-warn": 1,
+    "cross-compile": 4,
+    "linker": 4
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.75,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "corpus:d3f-12",
+     "batch": "corpus",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "corpus:d3f-11",
+     "caught_by": [
+      "compiler-warn"
+     ]
+    },
+    {
+     "uid": "corpus:d3f-13",
+     "caught_by": [
+      "compiler-warn"
+     ]
+    }
+   ],
+   "rank": 34,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "other_ub",
+   "family": "ub",
+   "n": 20,
+   "catch": 16,
+   "miss": 4,
+   "unknown": 0,
+   "blindspot_ratio": 0.2,
+   "miss_ratio": 0.2,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expB": 20
+   },
+   "asset_catch": {
+    "asan": 6,
+    "ubsan": 10,
+    "tsan": 6,
+    "compiler-warn": 7,
+    "cross-compile": 5,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 14,
+    "ubsan": 10,
+    "tsan": 14,
+    "compiler-warn": 13,
+    "cross-compile": 15,
+    "linker": 20
+   },
+   "asset_catch_rate": {
+    "asan": 0.3,
+    "ubsan": 0.5,
+    "tsan": 0.3,
+    "compiler-warn": 0.35,
+    "cross-compile": 0.25,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expB:sample_B086",
+     "batch": "expB",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) -2147483648; -O2(rc=0) -2147483648]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) -2147483648; -O2(rc=0) -2147483648]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) -2147483648; -O2(rc=0) -2147483648]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B098",
+     "batch": "expB",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) done; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B099",
+     "batch": "expB",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1374389535; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1374389535; -O2(rc=0) 1374389535]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1374389535; -O2(rc=0) 1374389535]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B100",
+     "batch": "expB",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1.000000; -O2(rc=0) 1.000000]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1.000000]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1.000000; -O2(rc=0) 1.000000]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expB:sample_B081",
+     "caught_by": [
+      "asan",
+      "tsan",
+      "ubsan"
+     ]
+    },
+    {
+     "uid": "expB:sample_B082",
+     "caught_by": [
+      "asan",
+      "tsan",
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 35,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "CONC",
+   "family": "concurrency",
+   "n": 5,
+   "catch": 4,
+   "miss": 1,
+   "unknown": 0,
+   "blindspot_ratio": 0.2,
+   "miss_ratio": 0.2,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "holdout": 3,
+    "corpus": 2
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 0,
+    "tsan": 4,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 4,
+    "ubsan": 5,
+    "tsan": 1,
+    "compiler-warn": 5,
+    "cross-compile": 5,
+    "linker": 5
+   },
+   "asset_catch_rate": {
+    "asan": 0.2,
+    "ubsan": 0.0,
+    "tsan": 0.8,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "holdout:h59",
+     "batch": "holdout",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) counter = 5; -O2(rc=0) counter = 5]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) counter = 5; -O2(rc=0) counter = 5]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) counter = 5; -O2(rc=0) counter = 5]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "holdout:h57",
+     "caught_by": [
+      "tsan"
+     ]
+    },
+    {
+     "uid": "holdout:h58",
+     "caught_by": [
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 36,
+   "band": "partial_visibility(20-50%)"
+  },
+  {
+   "defect_type": "lambda_capture",
+   "family": "language_raii",
+   "n": 30,
+   "catch": 25,
+   "miss": 5,
+   "unknown": 0,
+   "blindspot_ratio": 0.1667,
+   "miss_ratio": 0.1667,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expD": 30
+   },
+   "asset_catch": {
+    "asan": 25,
+    "ubsan": 0,
+    "tsan": 7,
+    "compiler-warn": 0,
+    "cross-compile": 25,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 5,
+    "ubsan": 30,
+    "tsan": 23,
+    "compiler-warn": 30,
+    "cross-compile": 5,
+    "linker": 30
+   },
+   "asset_catch_rate": {
+    "asan": 0.8333,
+    "ubsan": 0.0,
+    "tsan": 0.2333,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.8333,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expD:D181",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D182",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D183",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D184",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expD:D171",
+     "caught_by": [
+      "asan",
+      "cross-compile"
+     ]
+    },
+    {
+     "uid": "expD:D172",
+     "caught_by": [
+      "asan",
+      "cross-compile"
+     ]
+    }
+   ],
+   "rank": 37,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "integer_overflow",
+   "family": "ub",
+   "n": 26,
+   "catch": 22,
+   "miss": 4,
+   "unknown": 0,
+   "blindspot_ratio": 0.1538,
+   "miss_ratio": 0.1538,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expB": 20,
+    "expG": 6
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 22,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 1,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 25,
+    "ubsan": 4,
+    "tsan": 26,
+    "compiler-warn": 26,
+    "cross-compile": 25,
+    "linker": 26
+   },
+   "asset_catch_rate": {
+    "asan": 0.0385,
+    "ubsan": 0.8462,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0385,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expB:sample_B027",
+     "batch": "expB",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 25000000000; -O2(rc=0) 25000000000]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 25000000000; -O2(rc=0) 25000000000]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 25000000000; -O2(rc=1) AddressSanitizer:DEADLYSIGNAL =============================================",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B028",
+     "batch": "expB",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) -116; -O2(rc=0) -116]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) -116; -O2(rc=0) -116]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) -116; -O2(rc=0) -116]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B029",
+     "batch": "expB",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=127) /tmp/rv_bin_O0: symbol lookup error: /tmp/rv_bin_O0: undefined symbol: __asan_init; -O2(rc=0) -5",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) -5536; -O2(rc=0) -5536]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) -5536; -O2(rc=0) -5536]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B030",
+     "batch": "expB",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 2000000000; -O2(rc=0) 2000000000]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 2000000000; -O2(rc=0) 2000000000]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 2000000000; -O2(rc=0) 2000000000]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expB:sample_B021",
+     "caught_by": [
+      "ubsan"
+     ]
+    },
+    {
+     "uid": "expB:sample_B022",
+     "caught_by": [
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 38,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "resource_leak",
+   "family": "memory",
+   "n": 20,
+   "catch": 17,
+   "miss": 3,
+   "unknown": 0,
+   "blindspot_ratio": 0.15,
+   "miss_ratio": 0.15,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expB": 20
+   },
+   "asset_catch": {
+    "asan": 17,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 1,
+    "cross-compile": 1,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 3,
+    "ubsan": 20,
+    "tsan": 20,
+    "compiler-warn": 19,
+    "cross-compile": 19,
+    "linker": 20
+   },
+   "asset_catch_rate": {
+    "asan": 0.85,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.05,
+    "cross-compile": 0.05,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expB:sample_B050",
+     "batch": "expB",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 99; -O2(rc=0) 99]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 99; -O2(rc=0) 99]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 99; -O2(rc=0) 99]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B054",
+     "batch": "expB",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B057",
+     "batch": "expB",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expB:sample_B041",
+     "caught_by": [
+      "asan"
+     ]
+    },
+    {
+     "uid": "expB:sample_B042",
+     "caught_by": [
+      "asan"
+     ]
+    }
+   ],
+   "rank": 39,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "UB",
+   "family": "ub",
+   "n": 64,
+   "catch": 56,
+   "miss": 8,
+   "unknown": 0,
+   "blindspot_ratio": 0.125,
+   "miss_ratio": 0.125,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "holdout": 24,
+    "corpus": 40
+   },
+   "asset_catch": {
+    "asan": 34,
+    "ubsan": 31,
+    "tsan": 23,
+    "compiler-warn": 12,
+    "cross-compile": 7,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 30,
+    "ubsan": 33,
+    "tsan": 41,
+    "compiler-warn": 52,
+    "cross-compile": 57,
+    "linker": 64
+   },
+   "asset_catch_rate": {
+    "asan": 0.5312,
+    "ubsan": 0.4844,
+    "tsan": 0.3594,
+    "compiler-warn": 0.1875,
+    "cross-compile": 0.1094,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "holdout:h60",
+     "batch": "holdout",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) x = 1065353217; -O2(rc=0) x = 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) x = 1065353217; -O2(rc=0) x = 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) x = 1065353217; -O2(rc=0) x = 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "holdout:h5",
+     "batch": "holdout",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是; -O2(rc=0) A 函数返回=1 ",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是; -O2(rc=0) A 函数返回=1",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是; -O2(rc=0) A 函数返回=1 ",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "holdout:h29",
+     "batch": "holdout",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "holdout:h33",
+     "batch": "holdout",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是; -O2(rc=0) A 函数返回=1 ",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是; -O2(rc=0) A 函数返回=1",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是; -O2(rc=0) A 函数返回=1 ",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "holdout:h41",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    },
+    {
+     "uid": "holdout:h42",
+     "caught_by": [
+      "asan"
+     ]
+    }
+   ],
+   "rank": 40,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "string_ub",
+   "family": "stl",
+   "n": 35,
+   "catch": 31,
+   "miss": 4,
+   "unknown": 0,
+   "blindspot_ratio": 0.1143,
+   "miss_ratio": 0.1143,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expD": 35
+   },
+   "asset_catch": {
+    "asan": 24,
+    "ubsan": 0,
+    "tsan": 21,
+    "compiler-warn": 0,
+    "cross-compile": 22,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 11,
+    "ubsan": 35,
+    "tsan": 14,
+    "compiler-warn": 35,
+    "cross-compile": 13,
+    "linker": 35
+   },
+   "asset_catch_rate": {
+    "asan": 0.6857,
+    "ubsan": 0.0,
+    "tsan": 0.6,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.6286,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expD:D086",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  basic_string::subs",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  basic_string::sub",
+      "tsan": "tsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  basic_string::subs",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D087",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  basic_string::subs",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  basic_string::sub",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E013 stamp=deadbeef; -O2(rc=134) terminate called after throwing an instance of 'std::out_of_range",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D088",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  basic_string::subs",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  basic_string::sub",
+      "tsan": "tsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  basic_string::subs",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D089",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  basic_string::subs",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  basic_string::sub",
+      "tsan": "tsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  basic_string::subs",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expD:D071",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    },
+    {
+     "uid": "expD:D072",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 41,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "smart_pointer",
+   "family": "stl",
+   "n": 30,
+   "catch": 27,
+   "miss": 3,
+   "unknown": 0,
+   "blindspot_ratio": 0.1,
+   "miss_ratio": 0.1,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expD": 30
+   },
+   "asset_catch": {
+    "asan": 27,
+    "ubsan": 3,
+    "tsan": 3,
+    "compiler-warn": 0,
+    "cross-compile": 3,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 3,
+    "ubsan": 27,
+    "tsan": 27,
+    "compiler-warn": 30,
+    "cross-compile": 27,
+    "linker": 30
+   },
+   "asset_catch_rate": {
+    "asan": 0.9,
+    "ubsan": 0.1,
+    "tsan": 0.1,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.1,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expD:D158",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_weak_ptr'   what():  bad_weak_ptr; -O2(",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_weak_ptr'   what():  bad_weak_ptr; -O2",
+      "tsan": "tsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_weak_ptr'   what():  bad_weak_ptr; -O2(",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D159",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_weak_ptr'   what():  bad_weak_ptr; -O2(",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_weak_ptr'   what():  bad_weak_ptr; -O2",
+      "tsan": "tsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_weak_ptr'   what():  bad_weak_ptr; -O2(",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D160",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_weak_ptr'   what():  bad_weak_ptr; -O2(",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_weak_ptr'   what():  bad_weak_ptr; -O2",
+      "tsan": "tsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_weak_ptr'   what():  bad_weak_ptr; -O2(",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expD:D141",
+     "caught_by": [
+      "asan"
+     ]
+    },
+    {
+     "uid": "expD:D142",
+     "caught_by": [
+      "asan"
+     ]
+    }
+   ],
+   "rank": 42,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "stl_container_ub",
+   "family": "stl",
+   "n": 35,
+   "catch": 32,
+   "miss": 3,
+   "unknown": 0,
+   "blindspot_ratio": 0.0857,
+   "miss_ratio": 0.0857,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expD": 35
+   },
+   "asset_catch": {
+    "asan": 24,
+    "ubsan": 12,
+    "tsan": 17,
+    "compiler-warn": 0,
+    "cross-compile": 12,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 11,
+    "ubsan": 23,
+    "tsan": 18,
+    "compiler-warn": 35,
+    "cross-compile": 23,
+    "linker": 35
+   },
+   "asset_catch_rate": {
+    "asan": 0.6857,
+    "ubsan": 0.3429,
+    "tsan": 0.4857,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.3429,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expD:D059",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_variant_access'   what():  std::get: wr",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_variant_access'   what():  std::get: w",
+      "tsan": "tsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_variant_access'   what():  std::get: wr",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D061",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_variant_access'   what():  std::get: wr",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_variant_access'   what():  std::get: w",
+      "tsan": "tsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_variant_access'   what():  std::get: wr",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D063",
+     "batch": "expD",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) -1094795586; -O2(rc=0) -1094795586]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expD:D036",
+     "caught_by": [
+      "asan",
+      "tsan",
+      "ubsan"
+     ]
+    },
+    {
+     "uid": "expD:D037",
+     "caught_by": [
+      "asan",
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 43,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "memory_safety",
+   "family": "memory",
+   "n": 24,
+   "catch": 22,
+   "miss": 2,
+   "unknown": 0,
+   "blindspot_ratio": 0.0833,
+   "miss_ratio": 0.0833,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expA": 24
+   },
+   "asset_catch": {
+    "asan": 18,
+    "ubsan": 7,
+    "tsan": 10,
+    "compiler-warn": 1,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 6,
+    "ubsan": 17,
+    "tsan": 14,
+    "compiler-warn": 23,
+    "cross-compile": 24,
+    "linker": 24
+   },
+   "asset_catch_rate": {
+    "asan": 0.75,
+    "ubsan": 0.2917,
+    "tsan": 0.4167,
+    "compiler-warn": 0.0417,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expA:sample_011",
+     "batch": "expA",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=134) free(): double free detected in tcache 2; -O2(rc=134) free(): double free detected in tcache 2]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expA:sample_012",
+     "batch": "expA",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=134) free(): double free detected in tcache 2; -O2(rc=134) free(): double free detected in tcache 2]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expA:sample_001",
+     "caught_by": [
+      "tsan"
+     ]
+    },
+    {
+     "uid": "expA:sample_002",
+     "caught_by": [
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 44,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "heap_overread",
+   "family": "memory",
+   "n": 17,
+   "catch": 16,
+   "miss": 1,
+   "unknown": 0,
+   "blindspot_ratio": 0.0588,
+   "miss_ratio": 0.0588,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 17
+   },
+   "asset_catch": {
+    "asan": 15,
+    "ubsan": 9,
+    "tsan": 4,
+    "compiler-warn": 3,
+    "cross-compile": 4,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 2,
+    "ubsan": 8,
+    "tsan": 13,
+    "compiler-warn": 14,
+    "cross-compile": 13,
+    "linker": 17
+   },
+   "asset_catch_rate": {
+    "asan": 0.8824,
+    "ubsan": 0.5294,
+    "tsan": 0.2353,
+    "compiler-warn": 0.1765,
+    "cross-compile": 0.2353,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [
+    {
+     "uid": "expG:sample_G051",
+     "batch": "expG",
+     "class": "miss",
+     "miss_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=66) E005 p7=49================== WARNING: ThreadSanitizer: data race (pid=346823)   Read of size 4 at",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) cell 0 coord0=0.000477 ",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) cell 0 coord0=0.000477 cell 1 coord0=0.000477 cell 2 coord0=0.000000 cell 3 coord0=0.000000 cell 4",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G001",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    },
+    {
+     "uid": "expG:sample_G002",
+     "caught_by": [
+      "asan"
+     ]
+    }
+   ],
+   "rank": 45,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "undefined_behavior",
+   "family": "ub",
+   "n": 21,
+   "catch": 21,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expA": 21
+   },
+   "asset_catch": {
+    "asan": 5,
+    "ubsan": 21,
+    "tsan": 4,
+    "compiler-warn": 15,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 16,
+    "ubsan": 0,
+    "tsan": 17,
+    "compiler-warn": 6,
+    "cross-compile": 21,
+    "linker": 21
+   },
+   "asset_catch_rate": {
+    "asan": 0.2381,
+    "ubsan": 1.0,
+    "tsan": 0.1905,
+    "compiler-warn": 0.7143,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expA:sample_080",
+     "caught_by": [
+      "compiler-warn",
+      "ubsan"
+     ]
+    },
+    {
+     "uid": "expA:sample_081",
+     "caught_by": [
+      "compiler-warn",
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 46,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "out_of_bounds",
+   "family": "memory",
+   "n": 20,
+   "catch": 20,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expA": 20
+   },
+   "asset_catch": {
+    "asan": 19,
+    "ubsan": 15,
+    "tsan": 0,
+    "compiler-warn": 4,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 1,
+    "ubsan": 5,
+    "tsan": 20,
+    "compiler-warn": 16,
+    "cross-compile": 20,
+    "linker": 20
+   },
+   "asset_catch_rate": {
+    "asan": 0.95,
+    "ubsan": 0.75,
+    "tsan": 0.0,
+    "compiler-warn": 0.2,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expA:sample_025",
+     "caught_by": [
+      "asan",
+      "ubsan"
+     ]
+    },
+    {
+     "uid": "expA:sample_026",
+     "caught_by": [
+      "asan",
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 47,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "null_pointer_deref",
+   "family": "memory",
+   "n": 15,
+   "catch": 15,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expA": 15
+   },
+   "asset_catch": {
+    "asan": 15,
+    "ubsan": 15,
+    "tsan": 14,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 1,
+    "compiler-warn": 15,
+    "cross-compile": 15,
+    "linker": 15
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 1.0,
+    "tsan": 0.9333,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expA:sample_045",
+     "caught_by": [
+      "asan",
+      "tsan",
+      "ubsan"
+     ]
+    },
+    {
+     "uid": "expA:sample_046",
+     "caught_by": [
+      "asan",
+      "tsan",
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 48,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "data_race",
+   "family": "concurrency",
+   "n": 14,
+   "catch": 14,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expB": 14
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 14,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 14,
+    "ubsan": 14,
+    "tsan": 0,
+    "compiler-warn": 14,
+    "cross-compile": 14,
+    "linker": 14
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 1.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expB:sample_B001",
+     "caught_by": [
+      "tsan"
+     ]
+    },
+    {
+     "uid": "expB:sample_B003",
+     "caught_by": [
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 49,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "heap_overflow",
+   "family": "memory",
+   "n": 12,
+   "catch": 12,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 12
+   },
+   "asset_catch": {
+    "asan": 12,
+    "ubsan": 6,
+    "tsan": 1,
+    "compiler-warn": 2,
+    "cross-compile": 2,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 6,
+    "tsan": 11,
+    "compiler-warn": 10,
+    "cross-compile": 10,
+    "linker": 12
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 0.5,
+    "tsan": 0.0833,
+    "compiler-warn": 0.1667,
+    "cross-compile": 0.1667,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G025",
+     "caught_by": [
+      "asan"
+     ]
+    },
+    {
+     "uid": "expG:sample_G030",
+     "caught_by": [
+      "asan",
+      "compiler-warn",
+      "cross-compile"
+     ]
+    }
+   ],
+   "rank": 50,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "MEM",
+   "family": "memory",
+   "n": 10,
+   "catch": 10,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "holdout": 6,
+    "corpus": 4
+   },
+   "asset_catch": {
+    "asan": 10,
+    "ubsan": 1,
+    "tsan": 1,
+    "compiler-warn": 0,
+    "cross-compile": 1,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 9,
+    "tsan": 9,
+    "compiler-warn": 10,
+    "cross-compile": 9,
+    "linker": 10
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 0.1,
+    "tsan": 0.1,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.1,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "holdout:h48",
+     "caught_by": [
+      "asan"
+     ]
+    },
+    {
+     "uid": "holdout:h49",
+     "caught_by": [
+      "asan",
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 51,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "use_after_free",
+   "family": "memory",
+   "n": 7,
+   "catch": 7,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 7
+   },
+   "asset_catch": {
+    "asan": 7,
+    "ubsan": 0,
+    "tsan": 6,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 7,
+    "tsan": 1,
+    "compiler-warn": 7,
+    "cross-compile": 7,
+    "linker": 7
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 0.0,
+    "tsan": 0.8571,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G034",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    },
+    {
+     "uid": "expG:sample_G035",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 52,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "null_deref",
+   "family": "memory",
+   "n": 5,
+   "catch": 5,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 5
+   },
+   "asset_catch": {
+    "asan": 5,
+    "ubsan": 5,
+    "tsan": 5,
+    "compiler-warn": 0,
+    "cross-compile": 1,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 5,
+    "cross-compile": 4,
+    "linker": 5
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 1.0,
+    "tsan": 1.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.2,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G003",
+     "caught_by": [
+      "asan",
+      "tsan",
+      "ubsan"
+     ]
+    },
+    {
+     "uid": "expG:sample_G007",
+     "caught_by": [
+      "asan",
+      "cross-compile",
+      "tsan",
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 53,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "stack_overflow_write",
+   "family": "memory",
+   "n": 5,
+   "catch": 5,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 5
+   },
+   "asset_catch": {
+    "asan": 5,
+    "ubsan": 3,
+    "tsan": 2,
+    "compiler-warn": 2,
+    "cross-compile": 2,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 2,
+    "tsan": 3,
+    "compiler-warn": 3,
+    "cross-compile": 3,
+    "linker": 5
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 0.6,
+    "tsan": 0.4,
+    "compiler-warn": 0.4,
+    "cross-compile": 0.4,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G018",
+     "caught_by": [
+      "asan",
+      "compiler-warn",
+      "ubsan"
+     ]
+    },
+    {
+     "uid": "expG:sample_G050",
+     "caught_by": [
+      "asan",
+      "tsan",
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 54,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "memory",
+   "family": "memory",
+   "n": 4,
+   "catch": 4,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "holdout": 4
+   },
+   "asset_catch": {
+    "asan": 4,
+    "ubsan": 1,
+    "tsan": 2,
+    "compiler-warn": 1,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 3,
+    "tsan": 2,
+    "compiler-warn": 3,
+    "cross-compile": 4,
+    "linker": 4
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 0.25,
+    "tsan": 0.5,
+    "compiler-warn": 0.25,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "holdout:h26",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    },
+    {
+     "uid": "holdout:h27",
+     "caught_by": [
+      "asan"
+     ]
+    }
+   ],
+   "rank": 55,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "race_condition",
+   "family": "concurrency",
+   "n": 4,
+   "catch": 4,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 4
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 0,
+    "tsan": 4,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 3,
+    "ubsan": 4,
+    "tsan": 0,
+    "compiler-warn": 4,
+    "cross-compile": 4,
+    "linker": 4
+   },
+   "asset_catch_rate": {
+    "asan": 0.25,
+    "ubsan": 0.0,
+    "tsan": 1.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G024",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    },
+    {
+     "uid": "expG:sample_G082",
+     "caught_by": [
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 56,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "double_free",
+   "family": "memory",
+   "n": 3,
+   "catch": 3,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 3
+   },
+   "asset_catch": {
+    "asan": 3,
+    "ubsan": 0,
+    "tsan": 2,
+    "compiler-warn": 0,
+    "cross-compile": 1,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 3,
+    "tsan": 1,
+    "compiler-warn": 3,
+    "cross-compile": 2,
+    "linker": 3
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 0.0,
+    "tsan": 0.6667,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.3333,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G005",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    },
+    {
+     "uid": "expG:sample_G036",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 57,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "type_confusion",
+   "family": "memory",
+   "n": 2,
+   "catch": 2,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 2
+   },
+   "asset_catch": {
+    "asan": 2,
+    "ubsan": 1,
+    "tsan": 1,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 1,
+    "tsan": 1,
+    "compiler-warn": 2,
+    "cross-compile": 2,
+    "linker": 2
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 0.5,
+    "tsan": 0.5,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G006",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    },
+    {
+     "uid": "expG:sample_G080",
+     "caught_by": [
+      "asan",
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 58,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "heap_underflow",
+   "family": "memory",
+   "n": 2,
+   "catch": 2,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 2
+   },
+   "asset_catch": {
+    "asan": 2,
+    "ubsan": 0,
+    "tsan": 1,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 2,
+    "tsan": 1,
+    "compiler-warn": 2,
+    "cross-compile": 2,
+    "linker": 2
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 0.0,
+    "tsan": 0.5,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G071",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    },
+    {
+     "uid": "expG:sample_G090",
+     "caught_by": [
+      "asan"
+     ]
+    }
+   ],
+   "rank": 59,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "leak",
+   "family": "memory",
+   "n": 1,
+   "catch": 1,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "holdout": 1
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 1,
+    "tsan": 1,
+    "compiler-warn": 1,
+    "cross-compile": 1,
+    "linker": 1
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "holdout:h7",
+     "caught_by": [
+      "asan"
+     ]
+    }
+   ],
+   "rank": 60,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "RAII/UB",
+   "family": "language_raii",
+   "n": 1,
+   "catch": 1,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "holdout": 1
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 1,
+    "tsan": 1,
+    "compiler-warn": 1,
+    "cross-compile": 1,
+    "linker": 1
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "holdout:h8",
+     "caught_by": [
+      "asan"
+     ]
+    }
+   ],
+   "rank": 61,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "ODR",
+   "family": "link_odr",
+   "n": 1,
+   "catch": 1,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "holdout": 1
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 1,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 1,
+    "cross-compile": 0,
+    "linker": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 1.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "holdout:h14",
+     "caught_by": [
+      "linker"
+     ]
+    }
+   ],
+   "rank": 62,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "historical",
+   "family": "other",
+   "n": 1,
+   "catch": 1,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "corpus": 1
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 1,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 1,
+    "ubsan": 1,
+    "tsan": 1,
+    "compiler-warn": 0,
+    "cross-compile": 1,
+    "linker": 1
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 1.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "corpus:d3e-20",
+     "caught_by": [
+      "compiler-warn"
+     ]
+    }
+   ],
+   "rank": 63,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "ambiguity",
+   "family": "other",
+   "n": 1,
+   "catch": 1,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "corpus": 1
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 1,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 1,
+    "ubsan": 1,
+    "tsan": 0,
+    "compiler-warn": 1,
+    "cross-compile": 1,
+    "linker": 1
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 1.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "corpus:d3-18",
+     "caught_by": [
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 64,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "memory_leak",
+   "family": "memory",
+   "n": 1,
+   "catch": 1,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 1
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 1,
+    "tsan": 1,
+    "compiler-warn": 1,
+    "cross-compile": 1,
+    "linker": 1
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G004",
+     "caught_by": [
+      "asan"
+     ]
+    }
+   ],
+   "rank": 65,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "stack_overflow",
+   "family": "memory",
+   "n": 1,
+   "catch": 1,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 1
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 0,
+    "tsan": 1,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 1,
+    "tsan": 0,
+    "compiler-warn": 1,
+    "cross-compile": 1,
+    "linker": 1
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 0.0,
+    "tsan": 1.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G015",
+     "caught_by": [
+      "asan",
+      "tsan"
+     ]
+    }
+   ],
+   "rank": 66,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "stack_overread",
+   "family": "memory",
+   "n": 1,
+   "catch": 1,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 1
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 1,
+    "tsan": 1,
+    "compiler-warn": 1,
+    "cross-compile": 1,
+    "linker": 1
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G026",
+     "caught_by": [
+      "asan"
+     ]
+    }
+   ],
+   "rank": 67,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "division_by_zero",
+   "family": "ub",
+   "n": 1,
+   "catch": 1,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 1
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 1,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 1,
+    "ubsan": 0,
+    "tsan": 1,
+    "compiler-warn": 1,
+    "cross-compile": 1,
+    "linker": 1
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 1.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G058",
+     "caught_by": [
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 68,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "global_overflow",
+   "family": "memory",
+   "n": 1,
+   "catch": 1,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 1
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 1,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 1,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 1,
+    "compiler-warn": 1,
+    "cross-compile": 0,
+    "linker": 1
+   },
+   "asset_catch_rate": {
+    "asan": 1.0,
+    "ubsan": 1.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 1.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G094",
+     "caught_by": [
+      "asan",
+      "cross-compile",
+      "ubsan"
+     ]
+    }
+   ],
+   "rank": 69,
+   "band": "low_blindspot(<20%)"
+  },
+  {
+   "defect_type": "compiler_warning",
+   "family": "other",
+   "n": 1,
+   "catch": 1,
+   "miss": 0,
+   "unknown": 0,
+   "blindspot_ratio": 0.0,
+   "miss_ratio": 0.0,
+   "unknown_ratio": 0.0,
+   "batches": {
+    "expG": 1
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 1,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_miss": {
+    "asan": 1,
+    "ubsan": 1,
+    "tsan": 1,
+    "compiler-warn": 0,
+    "cross-compile": 1,
+    "linker": 1
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 1.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "evidence_miss": [],
+   "evidence_catch": [
+    {
+     "uid": "expG:sample_G099",
+     "caught_by": [
+      "compiler-warn"
+     ]
+    }
+   ],
+   "rank": 70,
+   "band": "low_blindspot(<20%)"
+  }
+ ],
+ "by_asset": {
+  "asan": {
+   "n": 1147,
+   "catch": 408,
+   "miss": 729,
+   "unknown": 10,
+   "other": 0,
+   "coverage_catch_rate": 0.3557,
+   "note": ""
+  },
+  "ubsan": {
+   "n": 1147,
+   "catch": 270,
+   "miss": 867,
+   "unknown": 10,
+   "other": 0,
+   "coverage_catch_rate": 0.2354,
+   "note": ""
+  },
+  "tsan": {
+   "n": 1147,
+   "catch": 263,
+   "miss": 874,
+   "unknown": 10,
+   "other": 0,
+   "coverage_catch_rate": 0.2293,
+   "note": ""
+  },
+  "compiler-warn": {
+   "n": 1147,
+   "catch": 143,
+   "miss": 1004,
+   "unknown": 0,
+   "other": 0,
+   "coverage_catch_rate": 0.1247,
+   "note": ""
+  },
+  "cross-compile": {
+   "n": 1147,
+   "catch": 122,
+   "miss": 987,
+   "unknown": 38,
+   "other": 0,
+   "coverage_catch_rate": 0.1064,
+   "note": ""
+  },
+  "linker": {
+   "n": 1147,
+   "catch": 10,
+   "miss": 1137,
+   "unknown": 0,
+   "other": 0,
+   "coverage_catch_rate": 0.0087,
+   "note": ""
+  },
+  "wunsequenced": {
+   "n": 1147,
+   "catch": 0,
+   "miss": 0,
+   "unknown": 1147,
+   "other": 0,
+   "coverage_catch_rate": 0.0,
+   "note": "本机 MinGW g++ 13.1 不认 -Wunsequenced ⇒ 恒 unknown（673u 判据，已如实区分）"
+  },
+  "compile-time": {
+   "n": 1147,
+   "catch": 0,
+   "miss": 0,
+   "unknown": 1147,
+   "other": 0,
+   "coverage_catch_rate": 0.0,
+   "note": "无本地检测器 ⇒ 恒 unknown（检测器池中的声明性资产）"
+  }
+ },
+ "asset_rank_by_coverage": [
+  "asan",
+  "ubsan",
+  "tsan",
+  "compiler-warn",
+  "cross-compile",
+  "linker",
+  "wunsequenced",
+  "compile-time"
+ ],
+ "by_batch": {
+  "holdout": {
+   "n": 41,
+   "catch": 35,
+   "miss": 6,
+   "unknown": 0,
+   "blindspot_ratio": 0.1463,
+   "asset_catch_rate": {
+    "asan": 0.6341,
+    "ubsan": 0.2683,
+    "tsan": 0.3171,
+    "compiler-warn": 0.0976,
+    "cross-compile": 0.0488,
+    "linker": 0.0244
+   }
+  },
+  "corpus": {
+   "n": 64,
+   "catch": 54,
+   "miss": 10,
+   "unknown": 0,
+   "blindspot_ratio": 0.1562,
+   "asset_catch_rate": {
+    "asan": 0.3906,
+    "ubsan": 0.3594,
+    "tsan": 0.2812,
+    "compiler-warn": 0.2656,
+    "cross-compile": 0.1094,
+    "linker": 0.0156
+   }
+  },
+  "expA": {
+   "n": 100,
+   "catch": 78,
+   "miss": 22,
+   "unknown": 0,
+   "blindspot_ratio": 0.22,
+   "asset_catch_rate": {
+    "asan": 0.57,
+    "ubsan": 0.58,
+    "tsan": 0.28,
+    "compiler-warn": 0.2,
+    "cross-compile": 0.0,
+    "linker": 0.0
+   }
+  },
+  "expB": {
+   "n": 94,
+   "catch": 73,
+   "miss": 21,
+   "unknown": 0,
+   "blindspot_ratio": 0.2234,
+   "asset_catch_rate": {
+    "asan": 0.2872,
+    "ubsan": 0.383,
+    "tsan": 0.2128,
+    "compiler-warn": 0.0851,
+    "cross-compile": 0.0851,
+    "linker": 0.0
+   }
+  },
+  "expC": {
+   "n": 200,
+   "catch": 110,
+   "miss": 90,
+   "unknown": 0,
+   "blindspot_ratio": 0.45,
+   "asset_catch_rate": {
+    "asan": 0.275,
+    "ubsan": 0.235,
+    "tsan": 0.105,
+    "compiler-warn": 0.255,
+    "cross-compile": 0.0,
+    "linker": 0.04
+   }
+  },
+  "expD": {
+   "n": 200,
+   "catch": 145,
+   "miss": 55,
+   "unknown": 0,
+   "blindspot_ratio": 0.275,
+   "asset_catch_rate": {
+    "asan": 0.645,
+    "ubsan": 0.075,
+    "tsan": 0.335,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.315,
+    "linker": 0.0
+   }
+  },
+  "expE": {
+   "n": 200,
+   "catch": 74,
+   "miss": 126,
+   "unknown": 0,
+   "blindspot_ratio": 0.63,
+   "asset_catch_rate": {
+    "asan": 0.105,
+    "ubsan": 0.05,
+    "tsan": 0.29,
+    "compiler-warn": 0.005,
+    "cross-compile": 0.04,
+    "linker": 0.0
+   }
+  },
+  "expF": {
+   "n": 149,
+   "catch": 61,
+   "miss": 88,
+   "unknown": 0,
+   "blindspot_ratio": 0.5906,
+   "asset_catch_rate": {
+    "asan": 0.0671,
+    "ubsan": 0.2416,
+    "tsan": 0.0604,
+    "compiler-warn": 0.2013,
+    "cross-compile": 0.1275,
+    "linker": 0.0
+   }
+  },
+  "expG": {
+   "n": 99,
+   "catch": 77,
+   "miss": 22,
+   "unknown": 0,
+   "blindspot_ratio": 0.2222,
+   "asset_catch_rate": {
+    "asan": 0.5859,
+    "ubsan": 0.3434,
+    "tsan": 0.2929,
+    "compiler-warn": 0.1212,
+    "cross-compile": 0.1515,
+    "linker": 0.0
+   }
+  }
+ },
+ "by_planted": {
+  "true": {
+   "n": 1009,
+   "catch": 595,
+   "miss": 414,
+   "unknown": 0,
+   "blindspot_ratio": 0.4103,
+   "blindspot_wilson95": [
+    0.3804,
+    0.4409
+   ]
+  },
+  "false": {
+   "n": 74,
+   "catch": 58,
+   "miss": 16,
+   "unknown": 0,
+   "blindspot_ratio": 0.2162,
+   "blindspot_wilson95": [
+    0.1377,
+    0.3227
+   ],
+   "note": "planted=false 仅 74 条（expG 真实 CVE 衍生）；n 小，比例不稳，务必看 Wilson 区间"
+  },
+  "null": {
+   "n": 64,
+   "catch": 54,
+   "miss": 10,
+   "unknown": 0,
+   "blindspot_ratio": 0.1562,
+   "blindspot_wilson95": [
+    0.0871,
+    0.2643
+   ],
+   "note": "corpus 64 条为外部真实语料，无 planted 字段；其中 53 条源码来自历史真实缺陷/规范差异，不能与 planted=true 混同"
+  }
+ },
+ "complementarity": {
+  "solo_catch": {
+   "asan": 408,
+   "ubsan": 270,
+   "tsan": 263,
+   "compiler-warn": 143,
+   "cross-compile": 122,
+   "linker": 10
+  },
+  "all6_union_catch": 707,
+  "all6_union_rate": 0.6164,
+  "pairwise_union": [
+   {
+    "pair": [
+     "asan",
+     "ubsan"
+    ],
+    "union_catch": 539,
+    "union_rate": 0.4699
+   },
+   {
+    "pair": [
+     "asan",
+     "compiler-warn"
+    ],
+    "union_catch": 506,
+    "union_rate": 0.4412
+   },
+   {
+    "pair": [
+     "asan",
+     "tsan"
+    ],
+    "union_catch": 504,
+    "union_rate": 0.4394
+   },
+   {
+    "pair": [
+     "ubsan",
+     "tsan"
+    ],
+    "union_catch": 454,
+    "union_rate": 0.3958
+   },
+   {
+    "pair": [
+     "asan",
+     "cross-compile"
+    ],
+    "union_catch": 448,
+    "union_rate": 0.3906
+   },
+   {
+    "pair": [
+     "asan",
+     "linker"
+    ],
+    "union_catch": 418,
+    "union_rate": 0.3644
+   },
+   {
+    "pair": [
+     "tsan",
+     "compiler-warn"
+    ],
+    "union_catch": 382,
+    "union_rate": 0.333
+   },
+   {
+    "pair": [
+     "ubsan",
+     "cross-compile"
+    ],
+    "union_catch": 346,
+    "union_rate": 0.3017
+   },
+   {
+    "pair": [
+     "tsan",
+     "cross-compile"
+    ],
+    "union_catch": 339,
+    "union_rate": 0.2956
+   },
+   {
+    "pair": [
+     "ubsan",
+     "compiler-warn"
+    ],
+    "union_catch": 336,
+    "union_rate": 0.2929
+   },
+   {
+    "pair": [
+     "ubsan",
+     "linker"
+    ],
+    "union_catch": 280,
+    "union_rate": 0.2441
+   },
+   {
+    "pair": [
+     "tsan",
+     "linker"
+    ],
+    "union_catch": 273,
+    "union_rate": 0.238
+   },
+   {
+    "pair": [
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "union_catch": 241,
+    "union_rate": 0.2101
+   },
+   {
+    "pair": [
+     "compiler-warn",
+     "linker"
+    ],
+    "union_catch": 153,
+    "union_rate": 0.1334
+   },
+   {
+    "pair": [
+     "cross-compile",
+     "linker"
+    ],
+    "union_catch": 132,
+    "union_rate": 0.1151
+   }
+  ],
+  "marginal_gain_of_adding_asset_to_rest": {
+   "asan": 0.1212,
+   "ubsan": 0.0724,
+   "tsan": 0.0741,
+   "compiler-warn": 0.0462,
+   "cross-compile": 0.0122,
+   "linker": 0.0087
+  }
+ },
+ "tsan_stability": {
+  "n_with_runs": 180,
+  "stable": 177,
+  "unstable": 3,
+  "unstable_list": [
+   {
+    "uid": "expE:sample_E038",
+    "runs": [
+     "catch",
+     "miss",
+     "catch"
+    ]
+   },
+   {
+    "uid": "expE:sample_E054",
+    "runs": [
+     "catch",
+     "miss",
+     "miss"
+    ]
+   },
+   {
+    "uid": "expE:sample_E177",
+    "runs": [
+     "miss",
+     "catch",
+     "miss"
+    ]
+   }
+  ]
+ },
+ "blindspot_bands": {
+  "high_blindspot(>50%)": [
+   "uninitialized_read",
+   "state_machine",
+   "memory-order",
+   "resource_exhaustion",
+   "compiler-bug",
+   "infinite_loop",
+   "timing_side_channel",
+   "deadlock",
+   "volatile_misuse",
+   "endianness",
+   "algorithm_misuse",
+   "lock_priority_inversion",
+   "cross_tu_ub",
+   "aba_problem",
+   "interrupt_safety",
+   "logic_error",
+   "virtual_function",
+   "condition_variable"
+  ],
+  "partial_visibility(20-50%)": [
+   "move_semantics",
+   "type_punning",
+   "compiler-diff",
+   "info_leak",
+   "memory_order",
+   "register_ub",
+   "atomic_ub",
+   "raii_violation",
+   "iterator_invalidation",
+   "pointer_overflow",
+   "optimization_dependent",
+   "conditional_trigger",
+   "bit_operation",
+   "alignment",
+   "unspecified",
+   "API",
+   "other_ub",
+   "CONC"
+  ],
+  "low_blindspot(<20%)": [
+   "lambda_capture",
+   "integer_overflow",
+   "resource_leak",
+   "UB",
+   "string_ub",
+   "smart_pointer",
+   "stl_container_ub",
+   "memory_safety",
+   "heap_overread",
+   "undefined_behavior",
+   "out_of_bounds",
+   "null_pointer_deref",
+   "data_race",
+   "heap_overflow",
+   "MEM",
+   "use_after_free",
+   "null_deref",
+   "stack_overflow_write",
+   "memory",
+   "race_condition",
+   "double_free",
+   "type_confusion",
+   "heap_underflow",
+   "leak",
+   "RAII/UB",
+   "ODR",
+   "historical",
+   "ambiguity",
+   "memory_leak",
+   "stack_overflow",
+   "stack_overread",
+   "division_by_zero",
+   "global_overflow",
+   "compiler_warning"
+  ]
+ },
+ "n_types": 70
+}

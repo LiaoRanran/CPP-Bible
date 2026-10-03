@@ -1,0 +1,303 @@
+{
+ "schema": "queyi-blindspot-new-findings/676g",
+ "generated_at": "2026-10-04T02:11:13+08:00",
+ "source": "data/blindspot_676g_detection_matrix.json",
+ "method": "每条声明 = 批次报告原文 + 全量判定矩阵复核 + （需要时）本批对照实验；known_before=true 的是批次已记载、本批全量验证的条目，不冒充新发现",
+ "n_findings": 8,
+ "n_new": 4,
+ "findings": [
+  {
+   "id": "NF-1",
+   "title": "进程级 abort（std::system_error/EDEADLK）对所有 6 个可用资产隐形",
+   "source_claim": "data/676c_扩样E报告.md §4「一条额外发现的盲区（新类别，卡片未列）」：E103/E110 由 libstdc++ 抛 std::system_error(\"Resource deadlock avoided\") 并 abort(rc=6)，既不挂起也不产生任何 sanitizer 报告——程序当场崩掉而检测流水线标签为「干净」",
+   "category": "tool/流水线行为",
+   "classification": "检测器设计缺失",
+   "verification": {
+    "samples": {
+     "expE:sample_E103": {
+      "asan": "miss",
+      "ubsan": "miss",
+      "tsan": "miss",
+      "compiler-warn": "miss",
+      "cross-compile": "miss",
+      "linker": "miss"
+     },
+     "expE:sample_E110": {
+      "asan": "miss",
+      "ubsan": "miss",
+      "tsan": "miss",
+      "compiler-warn": "miss",
+      "cross-compile": "miss",
+      "linker": "miss"
+     }
+    },
+    "interpretation": "若两样本全部可用资产=miss 且无任何报告文本 ⇒ 声明在矩阵上成立",
+    "deadlock_type_stats": {
+     "n": 35,
+     "catch": 2,
+     "miss": 33,
+     "unknown": 0,
+     "blindspot_ratio": 0.9429,
+     "asset_catch": {
+      "asan": 0,
+      "ubsan": 0,
+      "tsan": 2,
+      "compiler-warn": 0,
+      "cross-compile": 0,
+      "linker": 0
+     }
+    }
+   },
+   "known_before": false
+  },
+  {
+   "id": "NF-2",
+   "title": "ASan 不校验 printf(\"%.*s\", len, ptr) 形态的悬垂读",
+   "source_claim": "data/676c_扩样D报告.md §4 第 2 条：悬垂 string_view 用 printf(\"%.*s\",...) 输出，ASan 只拦截 printf(\"%s\", p) 形态的指针校验，libc 内部读不被编译期插桩 ⇒ 漏报",
+   "category": "tool/插桩边界",
+   "classification": "工具链限制（库函数插桩的参数形态覆盖不足）",
+   "verification": {
+    "samples": {
+     "expD:D081": {
+      "asan": "miss",
+      "ubsan": "miss",
+      "tsan": "miss",
+      "compiler-warn": "miss",
+      "cross-compile": "catch",
+      "linker": "miss"
+     },
+     "expD:D093": {
+      "asan": "miss",
+      "ubsan": "miss",
+      "tsan": "miss",
+      "compiler-warn": "miss",
+      "cross-compile": "catch",
+      "linker": "miss"
+     }
+    },
+    "string_ub_type_stats": {
+     "n": 35,
+     "catch": 31,
+     "miss": 4,
+     "unknown": 0,
+     "blindspot_ratio": 0.1143,
+     "asset_catch": {
+      "asan": 24,
+      "ubsan": 0,
+      "tsan": 21,
+      "compiler-warn": 0,
+      "cross-compile": 22,
+      "linker": 0
+     }
+    }
+   },
+   "known_before": false
+  },
+  {
+   "id": "NF-3",
+   "title": "-fsanitize=undefined 默认组不含 float-cast-overflow ⇒ G098 型 float→uint64 越界转换零报告",
+   "source_claim": "data/676c_扩样G报告.md §附录：G098（jsoncpp#1545 float→uint64 越界转换）：默认 -fsanitize=undefined 不启用 float-cast-overflow → 无报告",
+   "category": "config/口径",
+   "classification": "配置问题（检查存在、detect 固定口径未启用）",
+   "verification": {
+    "samples": {
+     "expG:sample_G098": {
+      "asan": "miss",
+      "ubsan": "miss",
+      "tsan": "miss",
+      "compiler-warn": "miss",
+      "cross-compile": "catch",
+      "linker": "miss"
+     }
+    },
+    "integer_overflow_type_stats": {
+     "n": 26,
+     "catch": 22,
+     "miss": 4,
+     "unknown": 0,
+     "blindspot_ratio": 0.1538,
+     "asset_catch": {
+      "asan": 1,
+      "ubsan": 22,
+      "tsan": 0,
+      "compiler-warn": 0,
+      "cross-compile": 1,
+      "linker": 0
+     }
+    }
+   },
+   "known_before": false,
+   "control_experiment": {
+    "setup": "WSL g++ 13.3，double d=3e19; (unsigned long long)d（G098 同型 UB 转换）",
+    "result": "默认口径 -fsanitize=undefined：输出 0，无任何报告（miss）；显式 -fsanitize=float-cast-overflow：runtime error: 3e+19 is outside the range of representable values of type 'long long unsigned int'（catch）",
+    "conclusion": "检查在本工具链存在且有效，仅因 detect 固定 -fsanitize=undefined 口径未启用 ⇒ 配置缺口"
+   }
+  },
+  {
+   "id": "NF-4",
+   "title": "pointer-overflow 检查并非 clang 专属：WSL g++ 13.3 接受该 flag，只是不在 undefined 默认组",
+   "source_claim": "data/676c_扩样G报告.md §附录：G013（CVE-2016-2177 指针算术回绕）：GCC 的 -fsanitize=undefined 不含 pointer-overflow 检查（clang 专属资产）→ 检测器无报告",
+   "category": "config/口径（批次报告误标为平台限制）",
+   "classification": "配置问题（**修正**：非 clang 专属）",
+   "verification": {
+    "samples": {
+     "expG:sample_G013": {
+      "asan": "miss",
+      "ubsan": "miss",
+      "tsan": "miss",
+      "compiler-warn": "miss",
+      "cross-compile": "miss",
+      "linker": "miss"
+     }
+    },
+    "pointer_overflow_type_stats": {
+     "n": 3,
+     "catch": 2,
+     "miss": 1,
+     "unknown": 0,
+     "blindspot_ratio": 0.3333,
+     "asset_catch": {
+      "asan": 2,
+      "ubsan": 2,
+      "tsan": 1,
+      "compiler-warn": 0,
+      "cross-compile": 1,
+      "linker": 0
+     }
+    }
+   },
+   "known_before": false,
+   "control_experiment": {
+    "setup": "WSL g++ 13.3 上分别编译 -fsanitize=pointer-overflow、-fsanitize=bogus-test-flag（对照）、-fsanitize=undefined",
+    "result": "pointer-overflow 编译通过（rc=0）；bogus-test-flag 被拒绝：g++: error: unrecognized argument to '-fsanitize=' option；undefined 组编译通过但不含该检查",
+    "conclusion": "GCC 13.3 实现了 pointer-overflow 检查（接受 flag、拒绝未知名），只是不在 -fsanitize=undefined 默认组 ⇒ 与 NF-3 同类：**配置缺口**。批次报告的「clang 专属资产（平台限制）」分类不成立，本批予以纠正。G013 在 detect 固定口径下仍为 miss（矩阵验证），但根因归类必须改。"
+   }
+  },
+  {
+   "id": "NF-5",
+   "title": "TSan 不建模内存序：memory_order / aba_problem / lock_priority_inversion 三类结构性盲区",
+   "source_claim": "data/676c_扩样E报告.md §4：lock_priority_inversion 76.7%、aba_problem 66.7%、memory_order 55.0%（本批以全量矩阵复测）",
+   "category": "tool/设计哲学 + 平台",
+   "classification": "检测器设计缺失 + 平台依赖（x86-TSO 下不显现）",
+   "verification": {
+    "type_stats": {
+     "memory_order": {
+      "n": 40,
+      "catch": 21,
+      "miss": 19,
+      "unknown": 0,
+      "blindspot_ratio": 0.475,
+      "asset_catch": {
+       "asan": 3,
+       "ubsan": 1,
+       "tsan": 20,
+       "compiler-warn": 0,
+       "cross-compile": 0,
+       "linker": 0
+      }
+     },
+     "aba_problem": {
+      "n": 30,
+      "catch": 10,
+      "miss": 20,
+      "unknown": 0,
+      "blindspot_ratio": 0.6667,
+      "asset_catch": {
+       "asan": 10,
+       "ubsan": 1,
+       "tsan": 1,
+       "compiler-warn": 0,
+       "cross-compile": 1,
+       "linker": 0
+      }
+     },
+     "lock_priority_inversion": {
+      "n": 30,
+      "catch": 8,
+      "miss": 22,
+      "unknown": 0,
+      "blindspot_ratio": 0.7333,
+      "asset_catch": {
+       "asan": 0,
+       "ubsan": 2,
+       "tsan": 7,
+       "compiler-warn": 0,
+       "cross-compile": 1,
+       "linker": 0
+      }
+     }
+    },
+    "interpretation": "类型级盲区比例 >50% 且 asan/ubsan 几乎无补充覆盖 ⇒ 结构性而非样本噪声",
+    "note": "批次报告已指出，本批在全量矩阵上验证并量化（复核性发现，非首次发现）"
+   },
+   "known_before": true
+  },
+  {
+   "id": "NF-6",
+   "title": "endianness（字节序误用）：无任何运行时陷阱，全部资产不可见",
+   "source_claim": "data/676c_扩样F报告.md §5 第 1 条：端序是逻辑错误，sanitizer/compiler 均不报，35 候选全 miss",
+   "category": "defect/本质",
+   "classification": "缺陷本质（逻辑/语义错误，无运行时表现）",
+   "verification": {
+    "type_stats": {
+     "n": 28,
+     "catch": 3,
+     "miss": 25,
+     "unknown": 0,
+     "blindspot_ratio": 0.8929,
+     "asset_catch": {
+      "asan": 3,
+      "ubsan": 2,
+      "tsan": 0,
+      "compiler-warn": 0,
+      "cross-compile": 2,
+      "linker": 0
+     }
+    }
+   },
+   "known_before": true
+  },
+  {
+   "id": "NF-7",
+   "title": "uninitialized_read：本地无 MSan 等价资产，20 个样本结构性全盲",
+   "source_claim": "data/676c_扩样数据生成报告.md §结论第 4 条：uninitialized_read 需 MSan，本地无可用检测器，20 个样本标注 miss 且检测器一致返回 miss",
+   "category": "tool/资产池缺口",
+   "classification": "工具链限制（本地未接线 MSan；MSan 需 libc++ 全量重编）",
+   "verification": {
+    "type_stats": {
+     "n": 20,
+     "catch": 0,
+     "miss": 20,
+     "unknown": 0,
+     "blindspot_ratio": 1.0,
+     "asset_catch": {
+      "asan": 0,
+      "ubsan": 0,
+      "tsan": 0,
+      "compiler-warn": 0,
+      "cross-compile": 0,
+      "linker": 0
+     }
+    },
+    "interpretation": "asan（分配 poisoning 不同机制）/ubsan/tsan 对未初始化读均无报告"
+   },
+   "known_before": true
+  },
+  {
+   "id": "NF-8",
+   "title": "（复核已知）wunsequenced/compile-time 两资产在全部 1147 样本上恒 unknown",
+   "source_claim": "673u 判据修正记载（tools/holdout_reveal_661.py 头注）+ 本规格常见坑第 4 条：MinGW g++ 13.1 不认 -Wunsequenced ⇒ 恒 unknown，不计入盲区",
+   "category": "tool/工具链版本",
+   "classification": "工具链限制（已知，列为对照基线，不算新发现）",
+   "verification": {
+    "asset_unknown_counts_over_n": {
+     "n_total": 1147,
+     "wunsequenced": 1147,
+     "compile-time": 1147
+    },
+    "interpretation": "两资产 unknown 数应等于样本总数；统计口径中已按规格说明排除"
+   },
+   "known_before": true
+  }
+ ]
+}

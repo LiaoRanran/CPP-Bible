@@ -1,0 +1,154 @@
+{
+ "schema": "queyi-blindspot-root-cause/676g",
+ "generated_at": "2026-10-04T02:10:00+08:00",
+ "source": {
+  "matrix": "data/blindspot_676g_detection_matrix.json",
+  "stats": "data/blindspot_676g_stats.json"
+ },
+ "method": "对盲区比例 >50% 的全部 18 个细粒度类型逐一根因归类；数字全部取自判定矩阵（data/blindspot_676g_stats.json by_type）；根因四分类：toolchain_limit（工具链限制）/ platform_dependency（平台依赖）/ defect_essence（缺陷本质）/ detector_philosophy（检测器设计哲学），一个类型可有多重根因，按主次排序。小样本类型（n≤5）单列 n_caveat。",
+ "classification_scheme": {
+  "toolchain_limit": "检测器本身不支持该类缺陷，或本机工具链缺组件（如 MinGW 缺 libasan、本地无 MSan 资产）",
+  "platform_dependency": "缺陷只在特定平台/硬件/调度器上才触发（如 x86 容忍未对齐、通用调度器不发生优先级反转）",
+  "defect_essence": "逻辑/语义错误，无运行时陷阱、无可观测的错误状态，任何运行时检测器原则上都看不见",
+  "detector_philosophy": "检测器按设计只覆盖特定错误类别（ASan 只看内存、UBSan 只看 UB 陷阱、TSan 只看 happens-before 竞争），缺陷不在其设计目标内"
+ },
+ "types": [
+  {
+   "rank": 1, "defect_type": "uninitialized_read", "n": 20, "catch": 0,
+   "miss": 20, "unknown": 0, "blindspot_ratio": 1.0, "batches": {"expA": 20},
+   "root_causes": ["toolchain_limit", "detector_philosophy"],
+   "summary": "未初始化读需要 MSan（或等价的影子内存机制）；本地 8 资产池中没有 MSan。asan 的堆 poisoned 机制只管已释放/越界内存，不管未初始化；ubsan/tsan 均不覆盖。",
+   "evidence": "20/20 样本 asan/ubsan/tsan 全部 miss（0 命中）；expA 批次报告（data/676c_扩样数据生成报告.md §结论 4）已注明需 MSan。MSan 需要 libc++ 全量重编，WSL g++ 13.3 + libstdc++ 下不可用——这是资产池缺口而非样本问题。"
+  },
+  {
+   "rank": 2, "defect_type": "state_machine", "n": 4, "catch": 0,
+   "miss": 4, "unknown": 0, "blindspot_ratio": 1.0, "batches": {"expG": 4},
+   "root_causes": ["defect_essence"],
+   "n_caveat": "n=4，均为 expG 真实 CVE 衍生（CVE-2014-0224 CCS 注入、CVE-2022-32221、CVE-2018-10933、CVE-2023-48795 Terrapin）",
+   "summary": "状态机缺陷（状态未校验就推进/错误回调）是纯语义错误：程序正常终止、输出正常、内存完好，运行时检测器无从判断「这一步不该发生」。",
+   "evidence": "4/4 样本全部资产 miss；需要协议级/模型级规约检验（formal state machine spec）才能检出，属未来检测器方向。"
+  },
+  {
+   "rank": 3, "defect_type": "memory-order", "n": 2, "catch": 0,
+   "miss": 2, "unknown": 0, "blindspot_ratio": 1.0, "batches": {"holdout": 1, "corpus": 1},
+   "root_causes": ["detector_philosophy", "platform_dependency"],
+   "n_caveat": "n=2（原有样本中的 memory-order 类别）",
+   "summary": "TSan 只检查 happens-before 竞争，不建模 C++ 内存序；全 atomic 的内存序错误（relaxed 轮询、seq_cst/relaxed 错配）没有竞争就没有报告。x86-TSO 强内存模型下这些缺陷大多也不表现为可观测错误。",
+   "evidence": "2/2 全资产 miss；与 expE memory_order 类（47.5% 盲区，catch 全靠伴随 data race）同根因。"
+  },
+  {
+   "rank": 4, "defect_type": "resource_exhaustion", "n": 2, "catch": 0,
+   "miss": 2, "unknown": 0, "blindspot_ratio": 1.0, "batches": {"expG": 2},
+   "root_causes": ["defect_essence", "detector_philosophy"],
+   "n_caveat": "n=2（CVE-2019-9514/9512 HTTP/2 flood 类）",
+   "summary": "资源耗尽（无限流/无配额）是资源管理策略错误：每次分配都合法、总量失控才是缺陷。ASan/UBSan 不做资源会计；需要吞吐/配额监控类工具。",
+   "evidence": "2/2 全资产 miss（本批实测未触发长时间挂起，程序在样本封装的有限循环内正常退出）。"
+  },
+  {
+   "rank": 5, "defect_type": "compiler-bug", "n": 1, "catch": 0,
+   "miss": 1, "unknown": 0, "blindspot_ratio": 1.0, "batches": {"corpus": 1},
+   "root_causes": ["defect_essence"],
+   "n_caveat": "n=1（corpus 编译器缺陷类历史样本）",
+   "summary": "编译器自身缺陷导致的错误代码生成：对被测程序来说代码可能完全合法，检测器按正确语义编译，缺陷在编译器的 codegen 里——需要差分测试/超测试才能暴露。",
+   "evidence": "1/1 全资产 miss。"
+  },
+  {
+   "rank": 6, "defect_type": "infinite_loop", "n": 1, "catch": 0,
+   "miss": 1, "unknown": 0, "blindspot_ratio": 1.0, "batches": {"expG": 1},
+   "root_causes": ["defect_essence", "detector_philosophy"],
+   "n_caveat": "n=1（expG:sample_G019，CVE-2022-0778 BN_mod_sqrt 永不返回）",
+   "summary": "无限循环 = 活性（liveness）缺陷，不是安全（safety）缺陷。sanitizer 全部是 safety 工具；活性需要超时/终止性分析。检测流水线只能靠 120s 运行超时观听到「挂起」，但挂起不产生任何检测器报告 ⇒ 判 miss（挂起观测与检测器判定的口径差异见报告 §2）。",
+   "evidence": "1/1 全资产 miss，note 为运行超时（wsl_error/timed out）。"
+  },
+  {
+   "rank": 7, "defect_type": "timing_side_channel", "n": 1, "catch": 0,
+   "miss": 1, "unknown": 0, "blindspot_ratio": 1.0, "batches": {"expG": 1},
+   "root_causes": ["defect_essence"],
+   "n_caveat": "n=1（expG:sample_G086，CVE-2016-2178 非常量时间）",
+   "summary": "时序侧信道需要统计计时分布分析（dudect 等专门工具），任何内存/UB/竞争检测器都不看时间。",
+   "evidence": "1/1 全资产 miss。"
+  },
+  {
+   "rank": 8, "defect_type": "deadlock", "n": 35, "catch": 2,
+   "miss": 33, "unknown": 0, "blindspot_ratio": 0.9429, "batches": {"expE": 35},
+   "root_causes": ["detector_philosophy", "defect_essence"],
+   "summary": "TSan 不做死锁检测（其 lock-order-inversion 报告需要观察到两次相反的加锁顺序；expE 样本普遍用自旋门闩在第二把锁之前就互相卡死，顺序未被观察到）。31 个样本表现为永久挂起 → 运行超时、零报告 → miss；2 个样本（E103/E110）是 std::system_error(EDEADLK) 直接 abort，同样零报告。仅 2 个暴露相反加锁顺序的样本被 TSan lock-order-inversion 抓到（expE:sample_E087 等）。",
+   "evidence": "asset_catch={tsan: 2}；33 miss 中 31 个为确定性运行超时、2 个为 EDEADLK abort（expE 批次报告 §4/§5 与本矩阵一致）；挂起观测视角（批次报告 5.7% 盲区）与检测器视角（本矩阵 94.3% 盲区）的差异是口径差异，不是数据矛盾。"
+  },
+  {
+   "rank": 9, "defect_type": "volatile_misuse", "n": 28, "catch": 2,
+   "miss": 26, "unknown": 0, "blindspot_ratio": 0.9286, "batches": {"expF": 28},
+   "root_causes": ["defect_essence", "detector_philosophy"],
+   "summary": "volatile 语义误用（该用没用/不该用乱用）是抽象语义错误：编译器按标准合法优化，程序行为「符合错误预期」，无任何运行时陷阱。仅 2 例因为误用同时造成真实越界被 asan/ubsan 顺带抓到。",
+   "evidence": "asset_catch={asan: 1, ubsan: 1}；expF 批次报告 §5 第 2 条（35 候选全 miss 的预期）在本矩阵上得到复现。"
+  },
+  {
+   "rank": 10, "defect_type": "endianness", "n": 28, "catch": 3,
+   "miss": 25, "unknown": 0, "blindspot_ratio": 0.8929, "batches": {"expF": 28},
+   "root_causes": ["defect_essence", "platform_dependency"],
+   "summary": "字节序误用是逻辑错误：交换/不交换字节在目标平台上都「合法执行」。本机 x86-64 小端单平台无法暴露「换台机器就错」的类缺陷（平台依赖）；3 个 catch 是误用同时造成越界读（asan）或输出分歧（cross-compile）的变体。",
+   "evidence": "asset_catch={asan: 3, ubsan: 2, cross-compile: 2}（有样本被多资产同时命中）；expF 报告 §5 第 1 条预测全 miss，实测 3 个伴随缺陷变体被抓。"
+  },
+  {
+   "rank": 11, "defect_type": "algorithm_misuse", "n": 35, "catch": 8,
+   "miss": 27, "unknown": 0, "blindspot_ratio": 0.7714, "batches": {"expD": 35},
+   "root_causes": ["defect_essence"],
+   "summary": "算法误用（错误比较器、错误复杂度、错误迭代顺序）产出的是「错误的正确执行」：结果错但不崩溃。只有误用同时踩穿容器边界（越界访问）时 asan 才有报告（8 例）。",
+   "evidence": "asset_catch={asan: 8}，8 个 catch 全部是伴随真实越界的变体；纯逻辑误用 27 例全 miss。"
+  },
+  {
+   "rank": 12, "defect_type": "lock_priority_inversion", "n": 30, "catch": 8,
+   "miss": 22, "unknown": 0, "blindspot_ratio": 0.7333, "batches": {"expE": 30},
+   "root_causes": ["platform_dependency", "detector_philosophy"],
+   "summary": "优先级反转需要抢占式优先级调度器；通用 Linux 调度（SCHED_OTHER）上「中优先级抢占低优先级持锁者」根本不会发生 ⇒ 缺陷在测量平台上不表现（平台依赖）。TSan/UBSan 不看调度。8 个 catch 全部来自样本里额外植入的伴随数据竞争/UB，不是反转本身被检出。",
+   "evidence": "asset_catch={tsan: 7, ubsan: 2, cross-compile: 1}；与 expE 批次报告 §4 的归因一致（反转本身 0 检出）。"
+  },
+  {
+   "rank": 13, "defect_type": "cross_tu_ub", "n": 30, "catch": 9,
+   "miss": 21, "unknown": 0, "blindspot_ratio": 0.7, "batches": {"expC": 30},
+   "root_causes": ["detector_philosophy", "toolchain_limit"],
+   "summary": "跨翻译单元 UB 三分成因：① 强 ODR 违规（非 inline 多重定义）被 linker 抓（8 例）——这是唯一「设计对口」的资产；② inline/weak 符号与静态初始化顺序 fiasco（SIOF）在链接成功后运行期无陷阱，asan 亦无法归因到初始化顺序（1 例顺带抓到）；③ 需要专门的 ODR/SIOF 检测器（如 -Wodr + LTO 全程序视图），本机 MinGW 13.1 不支持完整 ODR 诊断（工具链限制）。",
+   "evidence": "asset_catch={linker: 8, asan: 1}；expC 批次报告 §4「盲区 22/30」与本矩阵 21 miss 一致。"
+  },
+  {
+   "rank": 14, "defect_type": "aba_problem", "n": 30, "catch": 10,
+   "miss": 20, "unknown": 0, "blindspot_ratio": 0.6667, "batches": {"expE": 30},
+   "root_causes": ["detector_philosophy", "defect_essence"],
+   "summary": "ABA 的「地址回到原值」本身对任何检测器不可见（指针值合法）；只有 ABA 退化成 use-after-free（节点被释放后重用）时 asan 才抓得到。静态 arena 复用型 ABA（地址必然合法）表现为纯计数错误，完全不可见。",
+   "evidence": "asset_catch={asan: 10, ubsan: 1, tsan: 1, cross-compile: 1}；10 个 asan catch 与 expE 报告「ABA 只有在退化成 UAF 时才可见」的归因一致。"
+  },
+  {
+   "rank": 15, "defect_type": "interrupt_safety", "n": 20, "catch": 7,
+   "miss": 13, "unknown": 0, "blindspot_ratio": 0.65, "batches": {"expF": 20},
+   "root_causes": ["platform_dependency", "detector_philosophy"],
+   "summary": "中断安全缺陷需要真实中断/信号异步语义；用户态以 SIGINT 模拟与真实硬件中断的原子窗口不同（expF 诚实边界第 2 条）。13 例模拟下不触发；7 个 catch 来自伴随的真实 UB（TSan 5 例为模拟信号处理路径里的数据竞争，TSan 视角成立）。",
+   "evidence": "asset_catch={tsan: 5, asan: 1, ubsan: 1}。"
+  },
+  {
+   "rank": 16, "defect_type": "logic_error", "n": 17, "catch": 6,
+   "miss": 11, "unknown": 0, "blindspot_ratio": 0.6471, "batches": {"expG": 17},
+   "root_causes": ["defect_essence"],
+   "summary": "真实世界逻辑错误（CVE 中「算错/处理错分支」类）：程序按错误逻辑正常执行，无任何运行时陷阱。6 个 catch 是逻辑错误伴随可观测症状的变体（compiler-warn 3：可疑代码形态告警；cross-compile 2：g++/clang++ 优化分歧；tsan 1：伴随竞争）。",
+   "evidence": "asset_catch={compiler-warn: 3, cross-compile: 2, tsan: 1}。"
+  },
+  {
+   "rank": 17, "defect_type": "virtual_function", "n": 30, "catch": 12,
+   "miss": 18, "unknown": 0, "blindspot_ratio": 0.6, "batches": {"expC": 30},
+   "root_causes": ["detector_philosophy", "defect_essence"],
+   "summary": "虚函数类缺陷分层：构造/析构期虚分派（调到基类版本）是语义陷阱、行为「合法」不可检；对象切片是值语义变化不可检；默认实参静态绑定不可检——这 18 例 miss 属于此层。可检的是「虚分派 + 生命周期违规」复合变体（vtable 悬垂 → asan UAF）。",
+   "evidence": "asset_catch={asan: 6, ubsan: 5, tsan: 6, compiler-warn: 5}（多资产重叠；tsan/compiler-warn 命中的是伴随竞争/可疑形态告警）。"
+  },
+  {
+   "rank": 18, "defect_type": "condition_variable", "n": 30, "catch": 13,
+   "miss": 17, "unknown": 0, "blindspot_ratio": 0.5667, "batches": {"expE": 30},
+   "root_causes": ["detector_philosophy", "defect_essence"],
+   "summary": "cv 语义错误（虚假唤醒未循环检查谓词、边沿谓词当电平、wait_for 超时不复查）是时序语义错误：同步原语全部合法使用。TSan 能抓到其中伴随的共享标志数据竞争（13 例），cross-compile 抓到输出分歧 3 例；纯谓词错误（程序正常结束、状态错）不可见。",
+   "evidence": "asset_catch={tsan: 13, cross-compile: 3, ubsan: 2}。"
+  }
+ ],
+ "cross_cutting": {
+  "hang_vs_detector_caliber": "expE 批次报告的 deadlock 5.7% 盲区是「挂起观测」口径（超时=观察到死锁）；本矩阵是「检测器报告」口径（挂起不产生任何 sanitizer 报告 ⇒ miss）。两个口径都真实，回答的问题不同：前者回答『缺陷是否表现』，后者回答『检测器是否给出证据』。论文与后续批次引用时必须注明口径。",
+  "companion_defect_pattern": "高盲区类型中凡是 catch 非 0 的，几乎全部来自「目标缺陷 + 伴随的真实内存/UB/竞争缺陷」变体（aba→UAF、endianness→越界、lock_priority_inversion→伴随 race、logic_error→可疑形态告警）。这支持一个论文论点：运行时检测器抓到的是『内存/UB/竞争』这些物理层错误，而不是『并发语义/逻辑』这些设计层错误。",
+  "small_n_caveat": "n≤5 的 7 个类型（state_machine/memory-order/resource_exhaustion/compiler-bug/infinite_loop/timing_side_channel + 部分 corpus 类）比例不稳定，只作定性参考。"
+ }
+}

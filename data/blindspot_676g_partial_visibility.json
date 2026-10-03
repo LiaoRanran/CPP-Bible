@@ -1,0 +1,2499 @@
+{
+ "schema": "queyi-blindspot-partial-visibility/676g",
+ "generated_at": "2026-10-04T02:11:13+08:00",
+ "source": {
+  "stats": "data/blindspot_676g_stats.json",
+  "matrix": "data/blindspot_676g_detection_matrix.json"
+ },
+ "caliber": "部分可见 = 盲区比例在 [20%, 50%] 的细粒度缺陷类型；条件分析从判定矩阵 note 自动归集（sanitizer 档位 / 告警文本 / 互补覆盖），叙述性结论见 676g_检测器盲区地图报告.md",
+ "n_types": 18,
+ "types": [
+  {
+   "defect_type": "move_semantics",
+   "n": 30,
+   "catch": 15,
+   "miss": 15,
+   "unknown": 0,
+   "blindspot_ratio": 0.5,
+   "batches": {
+    "expC": 30
+   },
+   "asset_catch": {
+    "asan": 2,
+    "ubsan": 5,
+    "tsan": 0,
+    "compiler-warn": 14,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.0667,
+    "ubsan": 0.1667,
+    "tsan": 0.0,
+    "compiler-warn": 0.4667,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "compiler-warn": [
+     {
+      "uid": "expC:sample_001",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpy5n8lom7\\sample_001.cpp:5:5: warni",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpy5n8lom7\\sample_001.cpp:5:5: warni"
+     },
+     {
+      "uid": "expC:sample_002",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpnugmn3mz\\sample_002.cpp:5:5: warni",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpnugmn3mz\\sample_002.cpp:5:5: warni"
+     },
+     {
+      "uid": "expC:sample_003",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpi11358cm\\sample_003.cpp:5:5: warni",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpi11358cm\\sample_003.cpp:5:5: warni"
+     }
+    ],
+    "asan": [
+     {
+      "uid": "expC:sample_005",
+      "note": "asan 命中[-O2(rc=1) ================================================================= ==77572==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x5555555551fb bp 0x7fffffffe0",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expC:sample_021",
+      "note": "asan 命中[-O2(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==82940==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x0000000",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     }
+    ],
+    "ubsan": [
+     {
+      "uid": "expC:sample_009",
+      "note": "ubsan 命中[-O0(rc=0) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpph10gqp_/sample_009.cpp:1:29: runtime error: reference binding to null pointer of type 'int']（档位 -O0,-O2）",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expC:sample_011",
+      "note": "ubsan 命中[-O0(rc=0) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpui6sw1n6/sample_011.cpp:2:24: runtime error: reference binding to null pointer of type 'struct S'; -O2(rc=0) /mnt/c/Users/ASUS/AppData/Local/",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expC:sample_012",
+      "note": "ubsan 命中[-O0(rc=0) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpmzfdxs8h/sample_012.cpp:1:29: runtime error: reference binding to null pointer of type 'int']（档位 -O0,-O2）",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "expC:sample_015",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_016",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_017",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=2) /tmp/rv_bin_O2: 2: Syntax error: \"(\" unexpected]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=2) /tmp/rv_bin_O0: 13: Syntax error: \"(\" unexpected; -O2(rc=2) /tmp/rv_bin_O2: 2: Syntax error: \"(\" unexpected]",
+      "tsan": "tsan 两档均无报告[-O0(rc=2) /tmp/rv_bin_O0: 1: Syntax error: \"(\" unexpected; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_018",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=139) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 9,
+    "caught_by_multiple_assets": 6,
+    "solo_catcher_counts": {
+     "compiler-warn": 9
+    },
+    "union_gap": "并集覆盖 = 15/30；单资产最高 = ('compiler-warn', 14)"
+   }
+  },
+  {
+   "defect_type": "type_punning",
+   "n": 20,
+   "catch": 10,
+   "miss": 10,
+   "unknown": 0,
+   "blindspot_ratio": 0.5,
+   "batches": {
+    "expB": 20
+   },
+   "asset_catch": {
+    "asan": 3,
+    "ubsan": 10,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 2,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.15,
+    "ubsan": 0.5,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.1,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "ubsan": [
+     {
+      "uid": "expB:sample_B061",
+      "note": "ubsan 命中[-O0(rc=0) 5/mnt/c/Users/ASUS/AppData/Local/Temp/tmpc00vyl7u/sample_B061.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe0c1 for type 'int', which requires 4 byte alignment 0x7",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expB:sample_B062",
+      "note": "ubsan 命中[-O0(rc=134) /mnt/c/Users/ASUS/AppData/Local/Temp/tmp4kalucip/sample_B062.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe0c3 for type 'long long int', which requires 8 byte al",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expB:sample_B063",
+      "note": "ubsan 命中[-O0(rc=0) 1/mnt/c/Users/ASUS/AppData/Local/Temp/tmp4azwq4z2/sample_B063.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe0c1 for type 'short int', which requires 2 byte alignme",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ],
+    "asan": [
+     {
+      "uid": "expB:sample_B062",
+      "note": "asan 命中[-O2(rc=1) ================================================================= ==61951==ERROR: AddressSanitizer: unknown-crash on address 0x7ffff4f00023 at pc 0x5555555552ef bp 0x7fffffffe050 sp ",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expB:sample_B065",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==63004==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff4f00022 at pc 0x55555555532d bp 0x7fffffff",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expB:sample_B068",
+      "note": "asan 命中[-O2(rc=1) ================================================================= ==64182==ERROR: AddressSanitizer: alloc-dealloc-mismatch (malloc vs operator delete) on 0x504000000010     #0 0x7fff",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     }
+    ],
+    "cross-compile": [
+     {
+      "uid": "expB:sample_B062",
+      "note": "g++/clang++ 输出不一致"
+     },
+     {
+      "uid": "expB:sample_B065",
+      "note": "g++/clang++ 输出不一致"
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "expB:sample_B071",
+     "batch": "expB",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) 1.000000]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1.000000; -O2(rc=0) 1.000000]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1.000000; -O2(rc=0) 1.000000]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B072",
+     "batch": "expB",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1065353216; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1065353216; -O2(rc=0) 1065353216]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1065353216; -O2(rc=0) 1065353216]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B073",
+     "batch": "expB",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 0.000000; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 0.000000; -O2(rc=0) 0.000000]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 0.000000; -O2(rc=0) 0.000000]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B074",
+     "batch": "expB",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 0.000000; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 0.000000; -O2(rc=0) 0.000000]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 0.000000; -O2(rc=0) 0.000000]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 7,
+    "caught_by_multiple_assets": 3,
+    "solo_catcher_counts": {
+     "ubsan": 7
+    },
+    "union_gap": "并集覆盖 = 10/20；单资产最高 = ('ubsan', 10)"
+   }
+  },
+  {
+   "defect_type": "compiler-diff",
+   "n": 2,
+   "catch": 1,
+   "miss": 1,
+   "unknown": 0,
+   "blindspot_ratio": 0.5,
+   "batches": {
+    "corpus": 2
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 1,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.5,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "linker": [
+     {
+      "uid": "corpus:d3-14",
+      "note": "链接失败(多定义/缺符号)"
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "corpus:d3-15",
+     "batch": "corpus",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) double; -O2(rc=0) double]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) double; -O2(rc=0) double]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) double; -O2(rc=0) double]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 1,
+    "caught_by_multiple_assets": 0,
+    "solo_catcher_counts": {
+     "linker": 1
+    },
+    "union_gap": "并集覆盖 = 1/2；单资产最高 = ('linker', 1)"
+   }
+  },
+  {
+   "defect_type": "info_leak",
+   "n": 2,
+   "catch": 1,
+   "miss": 1,
+   "unknown": 0,
+   "blindspot_ratio": 0.5,
+   "batches": {
+    "expG": 2
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 1,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.5,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "compiler-warn": [
+     {
+      "uid": "expG:sample_G068",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpigv5_z7y\\sample_G068.cpp:14:47: wa",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpigv5_z7y\\sample_G068.cpp:14:47: wa"
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "expG:sample_G041",
+     "batch": "expG",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) TELNET 发送: NEW_ENV:TERM=xterm;USER=alice;HOME=/home/alice;SECRET_TOKEN=s3cr3t-value (正确行为: 仅发送 TERM=xterm, SECRET_TOKEN 不应离开本机);",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) TELNET 发送: NEW_ENV:TERM=xterm;USER=alice;HOME=/home/alice;SECRET_TOKEN=s3cr3t-value (正确行为: 仅发送 TERM=xterm, SECRET_TOKEN 不应离开本机)",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) TELNET 发送: NEW_ENV:TERM=xterm;USER=alice;HOME=/home/alice;SECRET_TOKEN=s3cr3t-value (正确行为: 仅发送 TERM=xterm, SECRET_TOKEN 不应离开本机);",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 1,
+    "caught_by_multiple_assets": 0,
+    "solo_catcher_counts": {
+     "compiler-warn": 1
+    },
+    "union_gap": "并集覆盖 = 1/2；单资产最高 = ('compiler-warn', 1)"
+   }
+  },
+  {
+   "defect_type": "memory_order",
+   "n": 40,
+   "catch": 21,
+   "miss": 19,
+   "unknown": 0,
+   "blindspot_ratio": 0.475,
+   "batches": {
+    "expE": 40
+   },
+   "asset_catch": {
+    "asan": 3,
+    "ubsan": 1,
+    "tsan": 20,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.075,
+    "ubsan": 0.025,
+    "tsan": 0.5,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "tsan": [
+     {
+      "uid": "expE:sample_E003",
+      "note": "tsan 命中[-O0(rc=66) E003 a=1 E003 a=1================== WARNING: ThreadSanitizer: data race (pid=203283)   Read of size 4 at 0x720400000800 by thread T2:     #0 operator() /mnt/c/Users/ASUS/AppData/Loc",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expE:sample_E004",
+      "note": "tsan 命中[-O0(rc=66) E004 v=7 E004 v=7================== WARNING: ThreadSanitizer: data race (pid=203571)   Write of size 8 at 0x555555559020 by thread T1:     #0 acquire_node /mnt/c/Users/ASUS/AppData/",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expE:sample_E005",
+      "note": "tsan 命中[-O0(rc=66) E005 p7=49================== WARNING: ThreadSanitizer: data race (pid=203859)   Read of size 4 at 0x72080000103c by thread T2:     #0 reader /mnt/c/Users/ASUS/AppData/Local/Temp/tmp",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ],
+    "asan": [
+     {
+      "uid": "expE:sample_E004",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==203457==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 16 byte(s) in 1 object(s) allocated from:     ",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expE:sample_E019",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==207805==ERROR: AddressSanitizer: global-buffer-overflow on address 0x55555555a2c0 at pc 0x5555555565fd bp 0x7ffff3",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expE:sample_E038",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==213403==ERROR: AddressSanitizer: alloc-dealloc-mismatch (operator new [] vs operator delete) on 0x502000002030    ",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     }
+    ],
+    "ubsan": [
+     {
+      "uid": "expE:sample_E019",
+      "note": "ubsan 命中[-O0(rc=0) E019 chunk31=62/mnt/c/Users/ASUS/AppData/Local/Temp/tmpzf5usz7p/sample_E019.cpp:21:40: runtime error: index 16 out of bounds for type 'int [16]' /mnt/c/Users/ASUS/AppData/Local/Temp",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "expE:sample_E001",
+     "batch": "expE",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E001 data=42; -O2(rc=0) E001 data=42]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E001 data=42; -O2(rc=0) E001 data=42]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E001 data=42; -O2(rc=0) E001 data=42]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E002",
+     "batch": "expE",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E002 load=3.500000; -O2(rc=0) E002 load=3.500000]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E002 load=3.500000; -O2(rc=0) E002 load=3.500000]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E002 load=3.500000; -O2(rc=0) E002 load=3.500000]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E006",
+     "batch": "expE",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E006 state=5; -O2(rc=0) E006 state=5]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E006 state=5; -O2(rc=0) E006 state=5]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E007",
+     "batch": "expE",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E007 payload=22; -O2(rc=0) E007 payload=22]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E007 payload=22; -O2(rc=0) E007 payload=22]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E007 payload=22; -O2(rc=0) E007 payload=22]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 19,
+    "caught_by_multiple_assets": 2,
+    "solo_catcher_counts": {
+     "tsan": 18,
+     "asan": 1
+    },
+    "union_gap": "并集覆盖 = 21/40；单资产最高 = ('tsan', 20)"
+   }
+  },
+  {
+   "defect_type": "register_ub",
+   "n": 20,
+   "catch": 11,
+   "miss": 9,
+   "unknown": 0,
+   "blindspot_ratio": 0.45,
+   "batches": {
+    "expF": 20
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 0,
+    "tsan": 1,
+    "compiler-warn": 10,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.05,
+    "ubsan": 0.0,
+    "tsan": 0.05,
+    "compiler-warn": 0.5,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "compiler-warn": [
+     {
+      "uid": "expF:F171",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpkx_xkl2n\\sample_F171.cpp:3:16: war",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpkx_xkl2n\\sample_F171.cpp:3:16: war"
+     },
+     {
+      "uid": "expF:F172",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmprvd8uuj_\\sample_F172.cpp:3:16: war",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmprvd8uuj_\\sample_F172.cpp:3:16: war"
+     },
+     {
+      "uid": "expF:F173",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpwl618629\\sample_F173.cpp:3:16: war",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpwl618629\\sample_F173.cpp:3:16: war"
+     }
+    ],
+    "asan": [
+     {
+      "uid": "expF:F180",
+      "note": "asan 命中[-O2(rc=1) ================================================================= ==331508==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000011 at pc 0x55555555527b bp 0x7fffffff",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     }
+    ],
+    "tsan": [
+     {
+      "uid": "expF:F189",
+      "note": "tsan 命中[-O0(rc=66) ThreadSanitizer:DEADLYSIGNAL ==333510==ERROR: ThreadSanitizer: SEGV on unknown address 0x555555556004 (pc 0x5555555551dd bp 0x7fffffffe0d0 sp 0x7fffffffe0b0 T333510) ==333510==The s",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "expF:F181",
+     "batch": "expF",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F183",
+     "batch": "expF",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F185",
+     "batch": "expF",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) done; -O2(rc=0) format: hello format: temp]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) done]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F187",
+     "batch": "expF",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 10,
+    "caught_by_multiple_assets": 1,
+    "solo_catcher_counts": {
+     "compiler-warn": 9,
+     "tsan": 1
+    },
+    "union_gap": "并集覆盖 = 11/20；单资产最高 = ('compiler-warn', 10)"
+   }
+  },
+  {
+   "defect_type": "atomic_ub",
+   "n": 35,
+   "catch": 20,
+   "miss": 15,
+   "unknown": 0,
+   "blindspot_ratio": 0.4286,
+   "batches": {
+    "expE": 35
+   },
+   "asset_catch": {
+    "asan": 8,
+    "ubsan": 4,
+    "tsan": 15,
+    "compiler-warn": 1,
+    "cross-compile": 3,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.2286,
+    "ubsan": 0.1143,
+    "tsan": 0.4286,
+    "compiler-warn": 0.0286,
+    "cross-compile": 0.0857,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "cross-compile": [
+     {
+      "uid": "expE:sample_E041",
+      "note": "g++/clang++ 输出不一致"
+     },
+     {
+      "uid": "expE:sample_E052",
+      "note": "g++/clang++ 输出不一致"
+     },
+     {
+      "uid": "expE:sample_E059",
+      "note": "g++/clang++ 输出不一致"
+     }
+    ],
+    "tsan": [
+     {
+      "uid": "expE:sample_E044",
+      "note": "tsan 命中[-O0(rc=66) E044 loser saw=2 E044 resource=1002================== WARNING: ThreadSanitizer: data race (pid=215224)   Write of size 4 at 0x555555559024 by thread T1:     #0 claim /mnt/c/Users/AS",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expE:sample_E046",
+      "note": "tsan 命中[-O0(rc=66) E046 version=1 observed=2================== WARNING: ThreadSanitizer: data race (pid=215888)   Write of size 4 at 0x555555559020 by thread T2:     #0 bump /mnt/c/Users/ASUS/AppData/",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expE:sample_E052",
+      "note": "tsan 命中[-O0(rc=66) E052 v=7================== WARNING: ThreadSanitizer: data race (pid=217976)   Write of size 8 at 0x720400000800 by thread T1:     #0 operator delete(void*, unsigned long) ../../../.",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ],
+    "asan": [
+     {
+      "uid": "expE:sample_E051",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==217489==ERROR: AddressSanitizer: global-buffer-overflow on address 0x55555555a044 at pc 0x5555555564bd bp 0x7ffff3",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expE:sample_E052",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==217834==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000001010 at pc 0x555555556531 bp 0x7ffff37fd",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expE:sample_E059",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==220807==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000001010 at pc 0x555555556899 bp 0x7ffff37fd",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ],
+    "ubsan": [
+     {
+      "uid": "expE:sample_E058",
+      "note": "ubsan 命中[-O0(rc=0) E058 v=2 E058 v=1/mnt/c/Users/ASUS/AppData/Local/Temp/tmpwlk6m24s/sample_E058.cpp:21:57: runtime error: constructor call on misaligned address 0x7ffff6ffed61 for type 'struct atomic",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expE:sample_E060",
+      "note": "ubsan 命中[-O0(rc=139) /mnt/c/Users/ASUS/AppData/Local/Temp/tmp0sua7o12/sample_E060.cpp:22:19: runtime error: member access within null pointer of type 'struct atomic' /mnt/c/Users/ASUS/AppData/Local/Te",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expE:sample_E065",
+      "note": "ubsan 命中[-O0(rc=139) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpk7x7ggzz/sample_E065.cpp:22:14: runtime error: load of address 0x55595555c0b8 with insufficient space for an object of type 'int' 0x5559555",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ],
+    "compiler-warn": [
+     {
+      "uid": "expE:sample_E067",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpb6fjdftc\\sample_E067.cpp:25:14: wa",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpb6fjdftc\\sample_E067.cpp:25:14: wa"
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "expE:sample_E042",
+     "batch": "expE",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E042 old=0; -O2(rc=0) E042 old=0]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E042 old=0; -O2(rc=0) E042 old=0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E042 old=0; -O2(rc=0) E042 old=0]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E043",
+     "batch": "expE",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E043 total=7; -O2(rc=0) E043 total=7]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E043 total=7; -O2(rc=0) E043 total=7]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E043 total=7; -O2(rc=0) E043 total=7]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E045",
+     "batch": "expE",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E045 gave up (expected=1) E045 taken=1; -O2(rc=0) E045 gave up (expected=1) E045 taken=1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E045 gave up (expected=1) E045 taken=1; -O2(rc=0) E045 gave up (expected=1) E045 taken=1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E045 gave up (expected=1) E045 taken=1; -O2(rc=0) E045 gave up (expected=1) E045 taken=1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expE:sample_E047",
+     "batch": "expE",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) E047 ok=1 a=9; -O2(rc=0) E047 ok=1 a=9]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) E047 ok=1 a=9; -O2(rc=0) E047 ok=1 a=9]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) E047 ok=1 a=9; -O2(rc=0) E047 ok=1 a=9]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 14,
+    "caught_by_multiple_assets": 6,
+    "solo_catcher_counts": {
+     "cross-compile": 1,
+     "tsan": 9,
+     "asan": 2,
+     "ubsan": 1,
+     "compiler-warn": 1
+    },
+    "union_gap": "并集覆盖 = 20/35；单资产最高 = ('tsan', 15)"
+   }
+  },
+  {
+   "defect_type": "raii_violation",
+   "n": 30,
+   "catch": 18,
+   "miss": 12,
+   "unknown": 0,
+   "blindspot_ratio": 0.4,
+   "batches": {
+    "expC": 30
+   },
+   "asset_catch": {
+    "asan": 11,
+    "ubsan": 1,
+    "tsan": 2,
+    "compiler-warn": 6,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.3667,
+    "ubsan": 0.0333,
+    "tsan": 0.0667,
+    "compiler-warn": 0.2,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "asan": [
+     {
+      "uid": "expC:sample_031",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==86526==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 64 byte(s) in 1 object(s) allocated from:     #",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expC:sample_033",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==87169==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 64 byte(s) in 1 object(s) allocated from:     #",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expC:sample_034",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==87489==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 64 byte(s) in 1 object(s) allocated from:     #",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     }
+    ],
+    "tsan": [
+     {
+      "uid": "expC:sample_033",
+      "note": "tsan 命中[-O0(rc=66) ThreadSanitizer:DEADLYSIGNAL ==87377==ERROR: ThreadSanitizer: SEGV on unknown address 0x000000000001 (pc 0x000000000001 bp 0x000000000000 sp 0x7fffffffe1f8 T87377) ==87377==Hint: pc",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expC:sample_046",
+      "note": "tsan 命中[-O2(rc=66) ThreadSanitizer:DEADLYSIGNAL ==92156==ERROR: ThreadSanitizer: SEGV on unknown address 0x000000000000 (pc 0x000000000000 bp 0x7fffffffe170 sp 0x7fffffffe0d8 T92156) ==92156==Hint: pc",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     }
+    ],
+    "compiler-warn": [
+     {
+      "uid": "expC:sample_043",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpietbxb30\\sample_043.cpp:6:3: warni",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpietbxb30\\sample_043.cpp:6:3: warni"
+     },
+     {
+      "uid": "expC:sample_044",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpqv_6z7at\\sample_044.cpp:6:3: warni",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpqv_6z7at\\sample_044.cpp:6:3: warni"
+     },
+     {
+      "uid": "expC:sample_045",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpeu0j5dk2\\sample_045.cpp:6:3: warni",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpeu0j5dk2\\sample_045.cpp:6:3: warni"
+     }
+    ],
+    "ubsan": [
+     {
+      "uid": "expC:sample_053",
+      "note": "ubsan 命中[-O2(rc=0) /mnt/c/Users/ASUS/AppData/Local/Temp/tmp7s10pl5w/sample_145.cpp:3:13: runtime error: division by zero]（档位 -O0,-O2）",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "expC:sample_032",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Text file busy; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_049",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=255) 无输出; -O2(rc=255) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=255) 无输出; -O2(rc=255) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=255) 无输出; -O2(rc=255) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_050",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=255) 无输出; -O2(rc=255) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=255) 无输出; -O2(rc=255) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=255) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_051",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=255) 无输出; -O2(rc=255) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=255) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=255) 无输出; -O2(rc=255) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 16,
+    "caught_by_multiple_assets": 2,
+    "solo_catcher_counts": {
+     "asan": 10,
+     "compiler-warn": 5,
+     "ubsan": 1
+    },
+    "union_gap": "并集覆盖 = 18/30；单资产最高 = ('asan', 11)"
+   }
+  },
+  {
+   "defect_type": "iterator_invalidation",
+   "n": 35,
+   "catch": 22,
+   "miss": 13,
+   "unknown": 0,
+   "blindspot_ratio": 0.3714,
+   "batches": {
+    "expD": 35
+   },
+   "asset_catch": {
+    "asan": 21,
+    "ubsan": 0,
+    "tsan": 19,
+    "compiler-warn": 0,
+    "cross-compile": 1,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.6,
+    "ubsan": 0.0,
+    "tsan": 0.5429,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0286,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "asan": [
+     {
+      "uid": "expD:D001",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==143938==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x55555555574f bp 0x7fffffffd",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expD:D002",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==144263==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x555555555750 bp 0x7fffffffd",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expD:D003",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==144603==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x555555555750 bp 0x7fffffffd",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ],
+    "tsan": [
+     {
+      "uid": "expD:D001",
+      "note": "tsan 命中[-O0(rc=66) 42================== WARNING: ThreadSanitizer: heap-use-after-free (pid=144147)   Write of size 4 at 0x720400000000 by main thread:     #0 main /mnt/c/Users/ASUS/AppData/Local/Temp/",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expD:D002",
+      "note": "tsan 命中[-O0(rc=66) 42================== WARNING: ThreadSanitizer: heap-use-after-free (pid=144487)   Write of size 4 at 0x720400000000 by main thread:     #0 main /mnt/c/Users/ASUS/AppData/Local/Temp/",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expD:D003",
+      "note": "tsan 命中[-O0(rc=66) 42================== WARNING: ThreadSanitizer: heap-use-after-free (pid=144828)   Write of size 4 at 0x720400000000 by main thread:     #0 main /mnt/c/Users/ASUS/AppData/Local/Temp/",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ],
+    "cross-compile": [
+     {
+      "uid": "expD:D033",
+      "note": "g++/clang++ 输出不一致"
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "expD:D013",
+     "batch": "expD",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 30; -O2(rc=0) 30]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 30; -O2(rc=0) 30]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 30; -O2(rc=0) 30]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D014",
+     "batch": "expD",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 40; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 40; -O2(rc=0) 40]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 40; -O2(rc=0) 40]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D015",
+     "batch": "expD",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 40; -O2(rc=0) 40]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 40; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 40; -O2(rc=0) 40]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expD:D018",
+     "batch": "expD",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) 2]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 2; -O2(rc=0) 2]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 2; -O2(rc=0) 2]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 4,
+    "caught_by_multiple_assets": 18,
+    "solo_catcher_counts": {
+     "asan": 3,
+     "tsan": 1
+    },
+    "union_gap": "并集覆盖 = 22/35；单资产最高 = ('asan', 21)"
+   }
+  },
+  {
+   "defect_type": "pointer_overflow",
+   "n": 3,
+   "catch": 2,
+   "miss": 1,
+   "unknown": 0,
+   "blindspot_ratio": 0.3333,
+   "batches": {
+    "expG": 3
+   },
+   "asset_catch": {
+    "asan": 2,
+    "ubsan": 2,
+    "tsan": 1,
+    "compiler-warn": 0,
+    "cross-compile": 1,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.6667,
+    "ubsan": 0.6667,
+    "tsan": 0.3333,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.3333,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "asan": [
+     {
+      "uid": "expG:sample_G060",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==349803==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff5100060 at pc 0x5555555553f6 bp 0x7ffffff",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expG:sample_G061",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==350133==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x506000000066 at pc 0x55555555537b bp 0x7fffffff",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ],
+    "ubsan": [
+     {
+      "uid": "expG:sample_G060",
+      "note": "ubsan 命中[-O2(rc=139) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpp8f9aakx/sample_G060.cpp:28:15: runtime error: store to address 0x7fffffffe070 with insufficient space for an object of type 'struct Code' ",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expG:sample_G061",
+      "note": "ubsan 命中[-O2(rc=0) produced=118/mnt/c/Users/ASUS/AppData/Local/Temp/tmpi6nmy5cy/sample_G061.cpp:20:16: runtime error: store to address 0x55555556b2f6 with insufficient space for an object of type 'uns",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     }
+    ],
+    "tsan": [
+     {
+      "uid": "expG:sample_G060",
+      "note": "tsan 命中[-O0(rc=66) ThreadSanitizer:DEADLYSIGNAL ==350023==ERROR: ThreadSanitizer: SEGV on unknown address (pc 0x7ffff6eb1862 bp 0x7fffffffdfd0 sp 0x7fffffffdfc8 T350023) ==350023==The signal is caused",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ],
+    "cross-compile": [
+     {
+      "uid": "expG:sample_G060",
+      "note": "g++/clang++ 输出不一致"
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "expG:sample_G013",
+     "batch": "expG",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) in_bounds=0 (回绕使越界长度通过边界检查); -O2(rc=0) in_bounds=0 (回绕使越界长度通过边界检查)]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) in_bounds=0 (回绕使越界长度通过边界检查); -O2(rc=0) in_bounds=0 (回绕使越界长度通过边界检查)]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) in_bounds=0 (回绕使越界长度通过边界检查); -O2(rc=0) in_bounds=0 (回绕使越界长度通过边界检查)]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 0,
+    "caught_by_multiple_assets": 2,
+    "solo_catcher_counts": {},
+    "union_gap": "并集覆盖 = 2/3；单资产最高 = ('asan', 2)"
+   }
+  },
+  {
+   "defect_type": "optimization_dependent",
+   "n": 40,
+   "catch": 28,
+   "miss": 12,
+   "unknown": 0,
+   "blindspot_ratio": 0.3,
+   "batches": {
+    "expC": 40
+   },
+   "asset_catch": {
+    "asan": 8,
+    "ubsan": 28,
+    "tsan": 7,
+    "compiler-warn": 16,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.2,
+    "ubsan": 0.7,
+    "tsan": 0.175,
+    "compiler-warn": 0.4,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "ubsan": [
+     {
+      "uid": "expC:sample_121",
+      "note": "ubsan 命中[-O0(rc=0) /mnt/c/Users/ASUS/AppData/Local/Temp/tmphkgnv35c/sample_121.cpp:4:5: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int']（档位 -O0,-O2）",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expC:sample_122",
+      "note": "ubsan 命中[-O0(rc=0) /mnt/c/Users/ASUS/AppData/Local/Temp/tmppyiet44s/sample_122.cpp:4:5: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int']（档位 -O0,-O2）",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expC:sample_123",
+      "note": "ubsan 命中[-O0(rc=0) /mnt/c/Users/ASUS/AppData/Local/Temp/tmp2x5zz3ff/sample_123.cpp:4:5: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int']（档位 -O0,-O2）",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     }
+    ],
+    "compiler-warn": [
+     {
+      "uid": "expC:sample_133",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmp7_6latp7\\sample_133.cpp:2:13: warn",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmp7_6latp7\\sample_133.cpp:2:13: warn"
+     },
+     {
+      "uid": "expC:sample_134",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpo2gxn8le\\sample_134.cpp:2:13: warn",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpo2gxn8le\\sample_134.cpp:2:13: warn"
+     },
+     {
+      "uid": "expC:sample_135",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpkxnptev0\\sample_135.cpp:2:13: warn",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpkxnptev0\\sample_135.cpp:2:13: warn"
+     }
+    ],
+    "asan": [
+     {
+      "uid": "expC:sample_141",
+      "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==125616==ERROR: AddressSanitizer: FPE on unknown address 0x555555555181 (pc 0x5555555",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expC:sample_142",
+      "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==125903==ERROR: AddressSanitizer: FPE on unknown address 0x555555555181 (pc 0x5555555",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expC:sample_143",
+      "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==126191==ERROR: AddressSanitizer: FPE on unknown address 0x555555555181 (pc 0x5555555",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     }
+    ],
+    "tsan": [
+     {
+      "uid": "expC:sample_141",
+      "note": "tsan 命中[-O0(rc=66) ThreadSanitizer:DEADLYSIGNAL ==125801==ERROR: ThreadSanitizer: FPE on unknown address 0x555555555161 (pc 0x555555555161 bp 0x7fffffffe0d0 sp 0x7fffffffe0d0 T125801)     #0 main /mnt",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expC:sample_142",
+      "note": "tsan 命中[-O0(rc=66) ThreadSanitizer:DEADLYSIGNAL ==126088==ERROR: ThreadSanitizer: FPE on unknown address 0x555555555161 (pc 0x555555555161 bp 0x7fffffffe0d0 sp 0x7fffffffe0d0 T126088)     #0 main /mnt",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expC:sample_143",
+      "note": "tsan 命中[-O0(rc=66) ThreadSanitizer:DEADLYSIGNAL ==126400==ERROR: ThreadSanitizer: FPE on unknown address 0x555555555161 (pc 0x555555555161 bp 0x7fffffffe0d0 sp 0x7fffffffe0d0 T126400)     #0 main /mnt",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "expC:sample_149",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_150",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 0; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "tsan": "tsan 两档均无报告[-O0(rc=1) ================================================================= ==128577==ERROR: AddressSanitizer: heap-use-after-free on addr",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_151",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_152",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 12,
+    "caught_by_multiple_assets": 16,
+    "solo_catcher_counts": {
+     "ubsan": 12
+    },
+    "union_gap": "并集覆盖 = 28/40；单资产最高 = ('ubsan', 28)"
+   }
+  },
+  {
+   "defect_type": "conditional_trigger",
+   "n": 40,
+   "catch": 28,
+   "miss": 12,
+   "unknown": 0,
+   "blindspot_ratio": 0.3,
+   "batches": {
+    "expC": 40
+   },
+   "asset_catch": {
+    "asan": 27,
+    "ubsan": 8,
+    "tsan": 6,
+    "compiler-warn": 10,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.675,
+    "ubsan": 0.2,
+    "tsan": 0.15,
+    "compiler-warn": 0.25,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "asan": [
+     {
+      "uid": "expC:sample_161",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==131878==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff4f00030 at pc 0x5555555552f3 bp 0x7ffffff",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expC:sample_162",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==132203==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff4f00030 at pc 0x5555555552f3 bp 0x7ffffff",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expC:sample_163",
+      "note": "asan 命中[-O0(rc=1) ================================================================= ==132504==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff5000038 at pc 0x555555555359 bp 0x7ffffff",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ],
+    "ubsan": [
+     {
+      "uid": "expC:sample_161",
+      "note": "ubsan 命中[-O0(rc=134) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpl9v49ekk/sample_161.cpp:4:34: runtime error: index 4 out of bounds for type 'int [4]' /mnt/c/Users/ASUS/AppData/Local/Temp/tmpl9v49ekk/samp",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expC:sample_162",
+      "note": "ubsan 命中[-O2(rc=0) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpm8ea8wjm/sample_162.cpp:4:34: runtime error: index 4 out of bounds for type 'int [4]' /mnt/c/Users/ASUS/AppData/Local/Temp/tmpm8ea8wjm/sample",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expC:sample_163",
+      "note": "ubsan 命中[-O0(rc=134) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpwrudkz4w/sample_163.cpp:4:34: runtime error: index 6 out of bounds for type 'int [6]' /mnt/c/Users/ASUS/AppData/Local/Temp/tmpwrudkz4w/samp",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ],
+    "compiler-warn": [
+     {
+      "uid": "expC:sample_161",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpvjz207ba\\sample_161.cpp:3:7: warni",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpvjz207ba\\sample_161.cpp:3:7: warni"
+     },
+     {
+      "uid": "expC:sample_162",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpa17mqi24\\sample_162.cpp:3:7: warni",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpa17mqi24\\sample_162.cpp:3:7: warni"
+     },
+     {
+      "uid": "expC:sample_163",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmphxxf1h6d\\sample_163.cpp:3:7: warni",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmphxxf1h6d\\sample_163.cpp:3:7: warni"
+     }
+    ],
+    "tsan": [
+     {
+      "uid": "expC:sample_164",
+      "note": "tsan 命中[-O0(rc=66) aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa================== WARNING: ThreadSanitizer: heap-use-after-free (pid=133028)   Read of size 8 at 0x720c00000000 by main thread:     #0 put",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expC:sample_171",
+      "note": "tsan 命中[-O0(rc=66) ================== WARNING: ThreadSanitizer: heap-use-after-free (pid=135269)   Read of size 4 at 0x720400000000 by main thread:     #0 main /mnt/c/Users/ASUS/AppData/Local/Temp/tmp",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expC:sample_172",
+      "note": "tsan 命中[-O0(rc=66) ================== WARNING: ThreadSanitizer: heap-use-after-free (pid=135560)   Read of size 4 at 0x720400000000 by main thread:     #0 main /mnt/c/Users/ASUS/AppData/Local/Temp/tmp",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "expC:sample_189",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_190",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_191",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expC:sample_192",
+     "batch": "expC",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 4127; -O2(rc=0) 4139]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=126) setarch: failed to execute /tmp/rv_bin_O0: Permission denied; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 13,
+    "caught_by_multiple_assets": 15,
+    "solo_catcher_counts": {
+     "asan": 13
+    },
+    "union_gap": "并集覆盖 = 28/40；单资产最高 = ('asan', 27)"
+   }
+  },
+  {
+   "defect_type": "bit_operation",
+   "n": 28,
+   "catch": 20,
+   "miss": 8,
+   "unknown": 0,
+   "blindspot_ratio": 0.2857,
+   "batches": {
+    "expF": 28
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 15,
+    "tsan": 1,
+    "compiler-warn": 20,
+    "cross-compile": 15,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.0357,
+    "ubsan": 0.5357,
+    "tsan": 0.0357,
+    "compiler-warn": 0.7143,
+    "cross-compile": 0.5357,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "ubsan": [
+     {
+      "uid": "expF:F106",
+      "note": "ubsan 命中[-O0(rc=0) -2147483648/mnt/c/Users/ASUS/AppData/Local/Temp/tmpmauz13xy/sample_F106.cpp:4:13: runtime error: shift exponent -1 is negative; -O2(rc=0) 0/mnt/c/Users/ASUS/AppData/Local/Temp/tmpma",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expF:F107",
+      "note": "ubsan 命中[-O2(rc=0) 0/mnt/c/Users/ASUS/AppData/Local/Temp/tmp8xsaotdo/sample_F107.cpp:4:13: runtime error: shift exponent -2 is negative]（档位 -O0,-O2）",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expF:F108",
+      "note": "ubsan 命中[-O0(rc=0) 536870912/mnt/c/Users/ASUS/AppData/Local/Temp/tmp3kpnyi5u/sample_F108.cpp:4:13: runtime error: shift exponent -3 is negative; -O2(rc=0) 0/mnt/c/Users/ASUS/AppData/Local/Temp/tmp3kpn",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ],
+    "compiler-warn": [
+     {
+      "uid": "expF:F106",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpf4ic1nnb\\sample_F106.cpp:4:13: war",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpf4ic1nnb\\sample_F106.cpp:4:13: war"
+     },
+     {
+      "uid": "expF:F107",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpkr4r7207\\sample_F107.cpp:4:13: war",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpkr4r7207\\sample_F107.cpp:4:13: war"
+     },
+     {
+      "uid": "expF:F108",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpfn64ugqg\\sample_F108.cpp:4:13: war",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpfn64ugqg\\sample_F108.cpp:4:13: war"
+     }
+    ],
+    "cross-compile": [
+     {
+      "uid": "expF:F106",
+      "note": "g++/clang++ 输出不一致"
+     },
+     {
+      "uid": "expF:F107",
+      "note": "g++/clang++ 输出不一致"
+     },
+     {
+      "uid": "expF:F108",
+      "note": "g++/clang++ 输出不一致"
+     }
+    ],
+    "tsan": [
+     {
+      "uid": "expF:F109",
+      "note": "tsan 命中[-O0(rc=66) ThreadSanitizer:DEADLYSIGNAL ==313641==ERROR: ThreadSanitizer: SEGV on unknown address 0x000000000000 (pc 0x000000000000 bp 0x000000000000 sp 0x7fffffffe1e0 T313641) ==313641==Hint:",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     }
+    ],
+    "asan": [
+     {
+      "uid": "expF:F112",
+      "note": "asan 命中[-O2(rc=1) ================================================================= ==314319==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000015 at pc 0x555555555387 bp 0x7fffffff",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "expF:F126",
+     "batch": "expF",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=0) -2147483643]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=139) 无输出; -O2(rc=0) -2147483643]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=0) -2147483643]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F128",
+     "batch": "expF",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=0) -2147483643]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=0) nUsed=-2146484296 (应为 -2146484296)]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=0) -2147483643]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F130",
+     "batch": "expF",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=0) -2147483643]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) -2147483643; -O2(rc=0) -2147483643]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F132",
+     "batch": "expF",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=1) ================================================================= ==320043==ERROR: AddressSanitizer: stack-buffer-overflow on ad",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 5,
+    "caught_by_multiple_assets": 15,
+    "solo_catcher_counts": {
+     "compiler-warn": 5
+    },
+    "union_gap": "并集覆盖 = 20/28；单资产最高 = ('compiler-warn', 20)"
+   }
+  },
+  {
+   "defect_type": "alignment",
+   "n": 25,
+   "catch": 18,
+   "miss": 7,
+   "unknown": 0,
+   "blindspot_ratio": 0.28,
+   "batches": {
+    "expF": 25
+   },
+   "asset_catch": {
+    "asan": 3,
+    "ubsan": 17,
+    "tsan": 2,
+    "compiler-warn": 0,
+    "cross-compile": 2,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.12,
+    "ubsan": 0.68,
+    "tsan": 0.08,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.08,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "ubsan": [
+     {
+      "uid": "expF:F001",
+      "note": "ubsan 命中[-O0(rc=0) ok/mnt/c/Users/ASUS/AppData/Local/Temp/tmpclexr1i4/sample_F001.cpp:6:7: runtime error: load of misaligned address 0x7fffffffe081 for type 'int', which requires 4 byte alignment 0x7f",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expF:F002",
+      "note": "ubsan 命中[-O0(rc=0) ok/mnt/c/Users/ASUS/AppData/Local/Temp/tmp8a62sz6a/sample_F002.cpp:6:9: runtime error: load of misaligned address 0x7fffffffe081 for type 'short int', which requires 2 byte alignmen",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expF:F003",
+      "note": "ubsan 命中[-O0(rc=0) ok/mnt/c/Users/ASUS/AppData/Local/Temp/tmpru1hdvjc/sample_F003.cpp:6:6: runtime error: store to misaligned address 0x7fffffffe082 for type 'int', which requires 4 byte alignment 0x7",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ],
+    "asan": [
+     {
+      "uid": "expF:F027",
+      "note": "asan 命中[-O2(rc=1) ================================================================= ==291694==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff4f00020 at pc 0x55555555526e bp 0x7ffffff",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expF:F029",
+      "note": "asan 命中[-O2(rc=1) ================================================================= ==292063==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff4f00020 at pc 0x55555555526e bp 0x7ffffff",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expF:F031",
+      "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==292369==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000001 (pc 0x000000",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     }
+    ],
+    "tsan": [
+     {
+      "uid": "expF:F027",
+      "note": "tsan 命中[-O0(rc=66) ThreadSanitizer:DEADLYSIGNAL ==291878==ERROR: ThreadSanitizer: SEGV on unknown address (pc 0x7ffff6eb1299 bp 0x7fffffffe090 sp 0x7fffffffe088 T291878) ==291878==The signal is caused",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     },
+     {
+      "uid": "expF:F029",
+      "note": "tsan 命中[-O0(rc=66) ThreadSanitizer:DEADLYSIGNAL ==292256==ERROR: ThreadSanitizer: SEGV on unknown address (pc 0x7ffff6eb1299 bp 0x7fffffffe090 sp 0x7fffffffe088 T292256) ==292256==The signal is caused",
+      "opt_levels_hit": [
+       "-O0"
+      ]
+     }
+    ],
+    "cross-compile": [
+     {
+      "uid": "expF:F027",
+      "note": "g++/clang++ 输出不一致"
+     },
+     {
+      "uid": "expF:F029",
+      "note": "g++/clang++ 输出不一致"
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "expF:F016",
+     "batch": "expF",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F018",
+     "batch": "expF",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 0]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 0; -O2(rc=126) setarch: failed to execute /tmp/rv_bin_O2: Permission denied]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F020",
+     "batch": "expF",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expF:F022",
+     "batch": "expF",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) ok; -O2(rc=0) ok]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) ok; -O2(rc=0) ok]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) ok; -O2(rc=0) ok]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 16,
+    "caught_by_multiple_assets": 2,
+    "solo_catcher_counts": {
+     "ubsan": 15,
+     "asan": 1
+    },
+    "union_gap": "并集覆盖 = 18/25；单资产最高 = ('ubsan', 17)"
+   }
+  },
+  {
+   "defect_type": "unspecified",
+   "n": 8,
+   "catch": 6,
+   "miss": 2,
+   "unknown": 0,
+   "blindspot_ratio": 0.25,
+   "batches": {
+    "corpus": 8
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 1,
+    "tsan": 0,
+    "compiler-warn": 4,
+    "cross-compile": 1,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.125,
+    "tsan": 0.0,
+    "compiler-warn": 0.5,
+    "cross-compile": 0.125,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "compiler-warn": [
+     {
+      "uid": "corpus:d3e-13",
+      "note": "警告 2 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmp4fwbnaw0\\s.cpp:2:34: warning: oper",
+      "n_warnings": 2,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmp4fwbnaw0\\s.cpp:2:34: warning: oper"
+     },
+     {
+      "uid": "corpus:d3e-14",
+      "note": "警告 4 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmppp8_xmzg\\s.cpp:1:21: warning: oper",
+      "n_warnings": 4,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmppp8_xmzg\\s.cpp:1:21: warning: oper"
+     },
+     {
+      "uid": "corpus:d3-09",
+      "note": "警告 2 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpta0bq4lb\\s.cpp:1:21: warning: oper",
+      "n_warnings": 2,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpta0bq4lb\\s.cpp:1:21: warning: oper"
+     }
+    ],
+    "cross-compile": [
+     {
+      "uid": "corpus:d3-12",
+      "note": "g++/clang++ 输出不一致"
+     }
+    ],
+    "ubsan": [
+     {
+      "uid": "corpus:d3-37",
+      "note": "ubsan 命中[-O0(rc=0) -2147483648/mnt/c/Users/ASUS/AppData/Local/Temp/tmp6d51hzko/s.cpp:2:30: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'; -O2(rc=0) -214748",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "corpus:d3-08",
+     "batch": "corpus",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "corpus:d3-10",
+     "batch": "corpus",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) -4; -O2(rc=0) -4]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) -4; -O2(rc=0) -4]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) -4; -O2(rc=0) -4]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 6,
+    "caught_by_multiple_assets": 0,
+    "solo_catcher_counts": {
+     "compiler-warn": 4,
+     "cross-compile": 1,
+     "ubsan": 1
+    },
+    "union_gap": "并集覆盖 = 6/8；单资产最高 = ('compiler-warn', 4)"
+   }
+  },
+  {
+   "defect_type": "API",
+   "n": 4,
+   "catch": 3,
+   "miss": 1,
+   "unknown": 0,
+   "blindspot_ratio": 0.25,
+   "batches": {
+    "corpus": 4
+   },
+   "asset_catch": {
+    "asan": 0,
+    "ubsan": 0,
+    "tsan": 0,
+    "compiler-warn": 3,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.0,
+    "ubsan": 0.0,
+    "tsan": 0.0,
+    "compiler-warn": 0.75,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "compiler-warn": [
+     {
+      "uid": "corpus:d3f-11",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmp74i9ryf6\\s.cpp:2:43: warning: form",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmp74i9ryf6\\s.cpp:2:43: warning: form"
+     },
+     {
+      "uid": "corpus:d3f-13",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpwvtu4y6q\\s.cpp:2:31: warning: comp",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpwvtu4y6q\\s.cpp:2:31: warning: comp"
+     },
+     {
+      "uid": "corpus:d3f-14",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmplyggz3xg\\s.cpp:2:30: warning: sugg",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmplyggz3xg\\s.cpp:2:30: warning: sugg"
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "corpus:d3f-12",
+     "batch": "corpus",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 3,
+    "caught_by_multiple_assets": 0,
+    "solo_catcher_counts": {
+     "compiler-warn": 3
+    },
+    "union_gap": "并集覆盖 = 3/4；单资产最高 = ('compiler-warn', 3)"
+   }
+  },
+  {
+   "defect_type": "other_ub",
+   "n": 20,
+   "catch": 16,
+   "miss": 4,
+   "unknown": 0,
+   "blindspot_ratio": 0.2,
+   "batches": {
+    "expB": 20
+   },
+   "asset_catch": {
+    "asan": 6,
+    "ubsan": 10,
+    "tsan": 6,
+    "compiler-warn": 7,
+    "cross-compile": 5,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.3,
+    "ubsan": 0.5,
+    "tsan": 0.3,
+    "compiler-warn": 0.35,
+    "cross-compile": 0.25,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "asan": [
+     {
+      "uid": "expB:sample_B081",
+      "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==68775==ERROR: AddressSanitizer: FPE on unknown address 0x55555555526c (pc 0x55555555",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expB:sample_B082",
+      "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==69141==ERROR: AddressSanitizer: FPE on unknown address 0x55555555526c (pc 0x55555555",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expB:sample_B087",
+      "note": "asan 命中[-O2(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==70917==ERROR: AddressSanitizer: SEGV on unknown address 0x555555556020 (pc 0x5555555",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     }
+    ],
+    "ubsan": [
+     {
+      "uid": "expB:sample_B081",
+      "note": "ubsan 命中[-O0(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/tmp2z12dii5/sample_B081.cpp:12:13: runtime error: division by zero; -O2(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/tmp2z12dii5/sample_B081.c",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expB:sample_B082",
+      "note": "ubsan 命中[-O0(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/tmp5y09gpd4/sample_B082.cpp:12:13: runtime error: division by zero; -O2(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/tmp5y09gpd4/sample_B082.c",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expB:sample_B083",
+      "note": "ubsan 命中[-O2(rc=0) 0/mnt/c/Users/ASUS/AppData/Local/Temp/tmpbt3tllz_/sample_B083.cpp:12:22: runtime error: shift exponent 40 is too large for 32-bit type 'int']（档位 -O0,-O2）",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     }
+    ],
+    "tsan": [
+     {
+      "uid": "expB:sample_B081",
+      "note": "tsan 命中[-O2(rc=66) ThreadSanitizer:DEADLYSIGNAL ==69078==ERROR: ThreadSanitizer: FPE on unknown address 0x555555555122 (pc 0x555555555122 bp 0x7fffffffe170 sp 0x7fffffffe0c0 T69078)     #0 main /mnt/c",
+      "opt_levels_hit": [
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expB:sample_B082",
+      "note": "tsan 命中[-O0(rc=66) ThreadSanitizer:DEADLYSIGNAL ==69375==ERROR: ThreadSanitizer: FPE on unknown address 0x5555555551f2 (pc 0x5555555551f2 bp 0x7fffffffe0d0 sp 0x7fffffffe0b0 T69375)     #0 main /mnt/c",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "expB:sample_B087",
+      "note": "tsan 命中[-O0(rc=66) ThreadSanitizer:DEADLYSIGNAL ==71100==ERROR: ThreadSanitizer: SEGV on unknown address 0x555555556004 (pc 0x55555555521d bp 0x7fffffffe0d0 sp 0x7fffffffe0b0 T71100) ==71100==The sign",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ],
+    "compiler-warn": [
+     {
+      "uid": "expB:sample_B083",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpzz5ezpu3\\sample_B083.cpp:12:22: wa",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpzz5ezpu3\\sample_B083.cpp:12:22: wa"
+     },
+     {
+      "uid": "expB:sample_B089",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmptwgg6ztg\\sample_B089.cpp:13:14: wa",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmptwgg6ztg\\sample_B089.cpp:13:14: wa"
+     },
+     {
+      "uid": "expB:sample_B092",
+      "note": "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmp0ebpghne\\sample_B092.cpp:12:13: wa",
+      "n_warnings": 1,
+      "first_warning": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmp0ebpghne\\sample_B092.cpp:12:13: wa"
+     }
+    ],
+    "cross-compile": [
+     {
+      "uid": "expB:sample_B083",
+      "note": "g++/clang++ 输出不一致"
+     },
+     {
+      "uid": "expB:sample_B087",
+      "note": "g++/clang++ 输出不一致"
+     },
+     {
+      "uid": "expB:sample_B089",
+      "note": "g++/clang++ 输出不一致"
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "expB:sample_B086",
+     "batch": "expB",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) -2147483648; -O2(rc=0) -2147483648]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) -2147483648; -O2(rc=0) -2147483648]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) -2147483648; -O2(rc=0) -2147483648]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B098",
+     "batch": "expB",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) done; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) done; -O2(rc=0) done]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B099",
+     "batch": "expB",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1374389535; -O2(rc=0) 1]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1374389535; -O2(rc=0) 1374389535]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1374389535; -O2(rc=0) 1374389535]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    },
+    {
+     "uid": "expB:sample_B100",
+     "batch": "expB",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) 1.000000; -O2(rc=0) 1.000000]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1.000000]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) 1.000000; -O2(rc=0) 1.000000]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 7,
+    "caught_by_multiple_assets": 9,
+    "solo_catcher_counts": {
+     "ubsan": 4,
+     "compiler-warn": 3
+    },
+    "union_gap": "并集覆盖 = 16/20；单资产最高 = ('ubsan', 10)"
+   }
+  },
+  {
+   "defect_type": "CONC",
+   "n": 5,
+   "catch": 4,
+   "miss": 1,
+   "unknown": 0,
+   "blindspot_ratio": 0.2,
+   "batches": {
+    "holdout": 3,
+    "corpus": 2
+   },
+   "asset_catch": {
+    "asan": 1,
+    "ubsan": 0,
+    "tsan": 4,
+    "compiler-warn": 0,
+    "cross-compile": 0,
+    "linker": 0,
+    "wunsequenced": 0,
+    "compile-time": 0
+   },
+   "asset_catch_rate": {
+    "asan": 0.2,
+    "ubsan": 0.0,
+    "tsan": 0.8,
+    "compiler-warn": 0.0,
+    "cross-compile": 0.0,
+    "linker": 0.0,
+    "wunsequenced": 0.0,
+    "compile-time": 0.0
+   },
+   "catch_by_asset_examples": {
+    "tsan": [
+     {
+      "uid": "holdout:h57",
+      "note": "tsan 命中[-O0(rc=66) g = 2000000  (期望 2000000，但可能更少)================== WARNING: ThreadSanitizer: data race (pid=10545)   Read of size 4 at 0x55555555901c by thread T2:     #0 worker() /mnt/c/Users/ASUS/",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "holdout:h58",
+      "note": "tsan 命中[-O0(rc=66) ================== WARNING: ThreadSanitizer: data race (pid=10717)   Read of size 4 at 0x55555555901c by thread T2:     #0 inc() /mnt/c/Users/ASUS/AppData/Local/Temp/tmp2glz0gvp/_ch",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     },
+     {
+      "uid": "corpus:d3f-09",
+      "note": "tsan 命中[-O0(rc=66) 400000================== WARNING: ThreadSanitizer: data race (pid=15857)   Read of size 4 at 0x55555555901c by thread T2:     #0 w() /mnt/c/Users/ASUS/AppData/Local/Temp/tmpmc00hdj9",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ],
+    "asan": [
+     {
+      "uid": "corpus:d3f-10",
+      "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==15972==ERROR: AddressSanitizer: SEGV on unknown address 0x000000001000 (pc 0x5555555",
+      "opt_levels_hit": [
+       "-O0",
+       "-O2"
+      ]
+     }
+    ]
+   },
+   "miss_examples": [
+    {
+     "uid": "holdout:h59",
+     "batch": "holdout",
+     "asset_notes": {
+      "asan": "asan 两档均无报告[-O0(rc=0) counter = 5; -O2(rc=0) counter = 5]",
+      "ubsan": "ubsan 两档均无报告[-O0(rc=0) counter = 5; -O2(rc=0) counter = 5]",
+      "tsan": "tsan 两档均无报告[-O0(rc=0) counter = 5; -O2(rc=0) counter = 5]",
+      "compiler-warn": "无告警",
+      "cross-compile": "两编译器输出一致",
+      "linker": "链接成功"
+     }
+    }
+   ],
+   "complementarity": {
+    "caught_by_single_asset_only": 3,
+    "caught_by_multiple_assets": 1,
+    "solo_catcher_counts": {
+     "tsan": 3
+    },
+    "union_gap": "并集覆盖 = 4/5；单资产最高 = ('tsan', 4)"
+   }
+  }
+ ]
+}
