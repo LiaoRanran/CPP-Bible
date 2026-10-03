@@ -40,6 +40,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -55,6 +56,16 @@ DEFAULT_TIMEOUT_TESTS = 900.0
 
 #: 总耗时预算（秒）—— 超过只 WARN（可见），不判红
 BUDGET_S = 300.0
+
+#: `--all` 的 pytest 腿**并发上限**（674a）。为什么不用 `-n auto`：
+#: fast_gate 是"门禁 / pytest / 前端 **三路并发**"，pytest 腿若吃掉全部核，另外两路会被饿死；
+#: 更要紧的是**内存**——根 `conftest.py` 的会话级隔离会给**每个 worker** 存一份 `data/` 快照
+#: （实测 61 MB），`-n auto` 在 32 核机上 = 32 份 ≈ 2 GB，叠加 xdist 进程与模块导入，
+#: 是本机出现"进程硬崩（0xC0000102）/ 串行 900s 超时"的最可疑压力源（673t 报告）。
+#: 实测（本机 32 核，干净检出）：`-n 16` 200.1s vs `-n auto` 193.7s —— 墙钟只差 ~6s（噪声内），
+#: 峰值内存却减半。故把默认钉成 `min(核数, 16)`（与 CI 的 `-n 16` 同口径，理由也同：
+#: "runner 通常 2-4 核，且 replay/gate job 会同时抢 CPU"）。要回旧行为用 `--jobs auto`。
+MAX_WORKERS = 16
 
 GATES = (
     ("658 门禁（L0 5/5 + S5/S6）", [sys.executable, "tools/run_658_gate.py"]),
@@ -114,7 +125,10 @@ def run_tests(test_files: list[str], all_fast: bool,
         return {"name": "pytest（未指定，跳过）", "cmd": "", "rc": 0,
                 "seconds": 0.0, "tail": ["--tests 未给文件且未 --all ⇒ 本项跳过"],
                 "skipped": True}
-    jobs = jobs or ("auto" if all_fast else "0")
+    # 674a：`--all` 的默认并发从 `auto`（=全部核）改为 `min(核数, MAX_WORKERS)`，理由见 MAX_WORKERS。
+    # 显式 `--jobs auto` 仍可拿回旧行为（`jobs` 非空时原样透传）。
+    if not jobs:
+        jobs = (str(min(os.cpu_count() or 1, MAX_WORKERS)) if all_fast else "0")
     cmd = [sys.executable, "-m", "pytest", *base, "-q", "-m", "not slow",
            "-p", "no:cacheprovider", "--tb=line"]
     if maxfail > 0:

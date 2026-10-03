@@ -10,7 +10,7 @@ claim:
 evidence:
 - type: artifact
   ref: evidence/mem/EV-MEM-033.md
-  hash: sha256:73b721bc1a4dd68411f3146a523bb943cecdcd077fed0793b0e09071be72dd7b
+  hash: sha256:2246e7f0368c25d6b6178ea147ae8761dbbae88b4880399710e221119e0f28c6
 negative_tests:
 - mutation_id: evidence/mem/EV-MEM-033.md|M1|删 artifact_sha256
   result: blocked

@@ -46,12 +46,21 @@ NEEDS_HUMAN = "ref_missing_needs_human"
 
 
 def _sha256_file(path: str) -> Optional[str]:
+    """文件内容的 sha256（**按 `.gitattributes` 归一换行**：CRLF→LF）。
+
+    674a 修复（换行口径，与 673t C 的 `merkle_integrity.leaf_hash` / `tool_integrity.sha256_of` 同一约定）：
+    原先直接哈希**工作树原始字节**，而行尾取决于检出环境——本机主仓多个文件是 CRLF
+    （甚至**混行**：`data/human_attack_edge_annotations.jsonl` 实测 194 行 CRLF + 194 行 LF），
+    干净检出/CI 是 LF ⇒ **同一份提交内容在两处算出不同 hash**，证书校验必然一处红。
+    文本的行尾不是内容（git 自己也这么判：`core.autocrlf`/`eol` 只影响检出形态，索引里是 LF）。
+    """
     if not os.path.exists(path):
         return None
-    h = hashlib.sha256()
     with open(path, "rb") as fh:
-        h.update(fh.read())
-    return h.hexdigest()
+        blob = fh.read()
+    if b"\r\n" in blob:
+        blob = blob.replace(b"\r\n", b"\n")
+    return hashlib.sha256(blob).hexdigest()
 
 
 def load_categories() -> dict[str, dict[str, str]]:

@@ -416,6 +416,27 @@ jobs:
       uses: actions/setup-python@v7
       with:
         python-version: '3.11'
+    - name: Prepare derived artifacts (674a)
+      # 674a：干净检出上这批产物**都不存在**（全部被 .gitignore 排除），于是大量测试因
+      # "缺产物"而红（实测干净检出 45 项失败里 26 项属此类）。这里在跑 pytest **之前**
+      # 用生成器补上。三个生成器本机实测均 <10s、幂等、不依赖网络：
+      #   prop_graph build          → data/propositions.db        （0s；救 14 项：prop_asof/closure/inventory/learner_twin/sqlite_version）
+      #   metrics_collector --no-heavy → data/metrics.jsonl       （6s；救 6 项：metrics_honesty/metrics_collector_curves）
+      #   web_data_pipeline --dist-only → web/dist/               （4s；救 4 项：dist_perf_670c2）
+      #     **注意**：这里必须用 674a 新加的 `--dist-only`，不能用 `--build`。
+      #     `--build` 的第 1 步会重跑数据生成器、**重写受跟踪的 `web/data/*.json`**（实测 5 个），
+      #     那既违反"不碰 web/ 前端"的红线，也会让本地同树的前端自测 3/23 变红（实测）。
+      #     `--dist-only` 只读 `web/data/`（复制到 `dist/data/`，不写回源）⇒ 对 web/ 零改动。
+      # 大体积产物**不入库**（红线 5），只在 CI 现生成。
+      run: |
+        python3 tools/prop_graph.py build
+        python3 tools/metrics_collector.py --no-heavy
+        python3 tools/web_data_pipeline_656.py --dist-only
+        # build/replay_manifest.json 是"已 replay 过的卡"增量清单（build/ 被 gitignore）。
+        # 干净检出 = 还没有卡被 replay ⇒ 诚实初值就是**空清单**（不是伪造 replay 记录）。
+        # 它让 `test_manifest_consistency_zero_mismatch` 的不变量（0 stale / 0 missing）在 CI 可判。
+        mkdir -p build
+        printf '{}\n' > build/replay_manifest.json
     - name: Pytest (xdist 并行 · 工具链回归测试)
       # 工具链的单元测试：锁定真实发生过的回归（git() 非 UTF-8 崩溃、patch_blocks stale-span、
       # triage 路径分隔符、run_expected PATH 注入、gen_metrics 行尾伪 diff、star_h2 分类）。
@@ -426,7 +447,10 @@ jobs:
       # 失败可读性：job 日志下载需 admin（实测 API 403），故把失败摘要输出为 **error 注解**
       # （经 check-runs /annotations 端点可公开读取）。
       run: |
-        python3 -m pip install --quiet pytest pytest-xdist pyyaml hypothesis
+        # 674a：补 ruff==0.6.9（与 quality job 同版本钉定）。`test_quality_gate_613::test_run_step_reports_rc`
+        # 会真跑 `python3 -m ruff check tools/` 并断言 rc=0；干净检出/CI 原先没装 ruff ⇒ rc=127（命令不存在）⇒ 假红。
+        # 版本必须钉：浮动版本会让"已清零"的 tools/ 基线失效（quality job 已因同一理由钉 0.6.9）。
+        python3 -m pip install --quiet pytest pytest-xdist pyyaml hypothesis "ruff==0.6.9"
         rc=0
         # 两阶段（508 实测结论）：纯逻辑并行、共享真实仓库状态的串行。
         # 为何不直接 `-n 16` 全量：~14 个模块共享 replay 全局锁与 Examples/atoms 工件，

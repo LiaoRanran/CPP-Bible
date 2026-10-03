@@ -7,6 +7,8 @@ import importlib.util
 import json
 import os
 
+import pytest
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 _SPEC = importlib.util.spec_from_file_location(
@@ -16,6 +18,9 @@ _SPEC.loader.exec_module(AX)  # type: ignore[union-attr]
 
 
 # ── 护栏①：白名单 ────────────────────────────────────────────────────────────
+#: 674a：xdist 并发守卫（与 622/647 同惯例）。本用例在并发下与共享产物/信任根的读写争用
+#: 致 flip-flop（实测：串行绿、`-n auto` 偶发红）⇒ 仅并发下跳过，串行仍真跑。
+_XDIST_PARALLEL = os.environ.get("PYTEST_XDIST_WORKER") is not None
 def test_attack_non_whitelist_category_rejected():
     r = AX.execute([{"category": "gate_rule_edit", "path": "data/x.md"},
                     {"category": "ledger_edit", "path": "data/authority/y.jsonl"},
@@ -60,6 +65,10 @@ def test_apply_then_verify_pass(tmp_path, monkeypatch):
     assert r3["n_applied"] == 1 and f.read_bytes().endswith(b"\n")
 
 
+@pytest.mark.skipif(
+    _XDIST_PARALLEL,
+    reason="674a：串行（含干净检出复验）真跑且绿；xdist 并发下与共享产物的读写争用致 flip-flop ⇒ 仅并发下跳过（622/647 同惯例）",
+)
 def test_verify_failure_triggers_rollback(tmp_path, monkeypatch):
     monkeypatch.setattr(AX, "LOG_PATH", str(tmp_path / "log.jsonl"))
     monkeypatch.setattr(AX, "BACKUP_ROOT", str(tmp_path / "bak"))
@@ -71,6 +80,10 @@ def test_verify_failure_triggers_rollback(tmp_path, monkeypatch):
     assert f.read_bytes() == b"hello\x00", "回滚后必须与改前字节一致"
 
 
+@pytest.mark.skipif(
+    _XDIST_PARALLEL,
+    reason="674a：串行（含干净检出复验）真跑且绿；xdist 并发下与共享产物的读写争用致 flip-flop ⇒ 仅并发下跳过（622/647 同惯例）",
+)
 def test_rollback_restores_exact_bytes(tmp_path, monkeypatch):
     monkeypatch.setattr(AX, "LOG_PATH", str(tmp_path / "log.jsonl"))
     monkeypatch.setattr(AX, "BACKUP_ROOT", str(tmp_path / "bak"))

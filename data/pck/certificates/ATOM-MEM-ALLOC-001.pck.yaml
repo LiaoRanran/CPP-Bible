@@ -10,16 +10,16 @@ claim:
 evidence:
 - type: replay
   ref: evidence/mem/EV-MEM-026.md
-  hash: sha256:82257d578ef88f448b98935fde315c4810412906ce9012342fa45f0d1d58ca9b
+  hash: sha256:c75388b7d01dcfad9aa00e3d8856c7dddbfa87cdce7424ea1274fb837eecd1be
 - type: replay
   ref: evidence/mem/EV-MEM-027.md
-  hash: sha256:d43263a4dd94d64384025c65294a0abf975c44d87d7b254754c9c987950ffc04
+  hash: sha256:98cf33796ac445b01a973a030dfc8ed4669f7d332e6a5d1017e0673281f0f1da
 - type: replay
   ref: evidence/mem/EV-MEM-028.md
-  hash: sha256:fe5d76f5537d1947b44315922584d4057fff1bfef5a4fcb9d817207cece14113
+  hash: sha256:37c34dba620e12c0bfbc0af7e5be289d280ab00daa42240edf9efecf9d9bbb63
 - type: replay
   ref: evidence/mem/EV-MEM-026.md
-  hash: sha256:82257d578ef88f448b98935fde315c4810412906ce9012342fa45f0d1d58ca9b
+  hash: sha256:c75388b7d01dcfad9aa00e3d8856c7dddbfa87cdce7424ea1274fb837eecd1be
 negative_tests:
 - mutation_id: atoms/mem/ATOM-MEM-ALLOC-001.md|M1|-
   result: n_a

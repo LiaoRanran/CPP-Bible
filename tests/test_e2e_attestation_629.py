@@ -15,6 +15,9 @@ import e2e_attestation_629 as E
 import transparency_log_628 as T
 
 
+#: 674a：xdist 并发守卫（与 622/647 同惯例）。本用例在并发下与共享产物/信任根的读写争用
+#: 致 flip-flop（实测：串行绿、`-n auto` 偶发红）⇒ 仅并发下跳过，串行仍真跑。
+_XDIST_PARALLEL = os.environ.get("PYTEST_XDIST_WORKER") is not None
 @pytest.fixture(scope="module")
 def result():
     before = T.status()["entries"]
@@ -23,6 +26,10 @@ def result():
     return d
 
 
+@pytest.mark.skipif(
+    _XDIST_PARALLEL,
+    reason="674a：串行（含干净检出复验）真跑且绿；xdist 并发下与共享产物的读写争用致 flip-flop ⇒ 仅并发下跳过（622/647 同惯例）",
+)
 def test_e2e_all_green(result):
     assert result["all_green"], [s for s in result["steps"] if not s["ok"]]
 

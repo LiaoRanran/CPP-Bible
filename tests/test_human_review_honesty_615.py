@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 LiaoRanran (阿信)
 """615 A1 回归测试：human_review_honesty_615（人审诚实化标签）。"""
-import hashlib
 import sys
 from pathlib import Path
 
@@ -38,5 +37,10 @@ def test_batch_authorization_stats() -> None:
 
 
 def test_annotations_unmodified() -> None:
-    cur = hashlib.sha256(a1.ANNOTATIONS.read_bytes()).hexdigest()
+    # 674a：改用工具的 `annotations_sha256()`（CRLF→LF 归一）。
+    # 原写法 `hashlib.sha256(a1.ANNOTATIONS.read_bytes())` 直接哈希**工作树原始字节**，
+    # 而该文件在本机是混行（194 行 CRLF）、干净检出/CI 是 LF ⇒ 同一提交内容在两处 hash 不同，
+    # 断言随检出环境翻转（本机绿 / CI 红）。**断言意图不变**（仍是"文件未被改过"），
+    # 只是把"内容"口径从"字节含行尾"收敛为"归一后的内容"。
+    cur = a1.annotations_sha256()
     assert cur == a1.ANNOTATIONS_SHA256

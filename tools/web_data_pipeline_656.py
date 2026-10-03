@@ -90,12 +90,21 @@ ASSETS: list[str] = [
     "learn.html", "experiments.html",
     "app.js", "starmap.js", "verify.js", "verify_core.js", "graph_core.js",
     "card.js", "cards.js", "verdicts.js", "verdicts_core.js",
+    # 674a 修复：`web/*.html` 静态引用但 ASSETS 漏列的 3 个 js（干净检出实测 dist 缺失：
+    # index.html→home.js、learn.html→js/learn.js、experiments.html→js/experiments.js）。
+    "home.js", "js/learn.js", "js/experiments.js",
     # 670c：页面用的纯逻辑模块（少了这些 dist 里的页面会 404 加载不到核心）
     "js/learn_engine.js", "js/charts.js", "js/cards_core.js", "js/contrast_check.js",
     "js/verdicts_core.js",
     "style.css", "css/design-tokens.css",
     # 670c A6：新页面的共享组件层（此前 dist 里没有它，新页面会掉样式）
     "css/669c.css",
+    # 674a 修复：`web/*.html` 实际 `<link href="css/…">` 引用 5 个 css，而 ASSETS 只列了
+    # `design-tokens.css` / `669c.css` ⇒ 干净检出上 `dist/` 缺 3 个 css（实测 27 处引用缺失、
+    # `test_dist_no_missing_refs` / `test_dist_overall_passes` 红）。主仓之所以看着正常，
+    # 是因为 `web/dist/`（gitignore）里**残留着更早一次构建**留下的文件 —— 属"本地绿、CI 红"的典型。
+    # 这里按"页面实际引用"补齐（纯构建资源清单，不动任何前端源码）。
+    "css/a11y.css", "css/responsive.css", "css/robustness.css",
     "components/index.js", "components/qy-nav.js", "components/qy-card.js",
     "components/qy-panel.js", "components/qy-button.js", "components/qy-tag.js",
     "components/qy-status.js",
@@ -345,23 +354,33 @@ def minify_js(text: str) -> str:
     return "\n".join(out)
 
 
-def build() -> dict[str, Any]:
+def build(dist_only: bool = False) -> dict[str, Any]:
+    """`dist_only=True`（674a）：**跳过数据生成器与 index.json 写入**，只产出 `dist/`。
+
+    为什么需要这个模式：`--build` 的第 1 步会重跑数据生成器，**重写受跟踪的
+    `web/data/*.json`**（实测 5 个受跟踪文件 + 23 个新文件）。CI 的 pytest job 需要
+    `web/dist/` 才能跑 `test_dist_perf_670c2`（4 项），但那一步会把工作树里的 web/data 改脏
+    ⇒ ① 违反"不碰 web/ 前端"的红线；② 本地同树跑前端自测会因此 3/23 红（实测）。
+    `dist_only` 只**读** `web/data/`（`dist/data/` 是复制，不写回源），故对源零改动。
+    """
     rep: dict[str, Any] = {"steps": [], "files": {}}
-    for cmd in GENERATORS:
-        rc, tail = run(cmd)
-        rep["steps"].append({"cmd": " ".join(Path(cmd[1]).name for cmd in [cmd]) + " " + " ".join(cmd[2:]),
-                             "rc": rc, "tail": tail[-120:]})
+    if not dist_only:
+        for cmd in GENERATORS:
+            rc, tail = run(cmd)
+            rep["steps"].append({"cmd": " ".join(Path(cmd[1]).name for cmd in [cmd]) + " " + " ".join(cmd[2:]),
+                                 "rc": rc, "tail": tail[-120:]})
 
     files: dict[str, Any] = {}
     for p in sorted(DATA.glob("*.json")):
         if p.name == "index.json":
             continue
         files[p.name] = {"bytes": p.stat().st_size, "sha256": sha256_file(p)}
-    (DATA / "index.json").write_text(json.dumps({
-        "generated_at": __import__("time").strftime("%Y-%m-%dT%H:%M:%S"),
-        "tool": "tools/web_data_pipeline_656.py",
-        "files": files,
-    }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    if not dist_only:
+        (DATA / "index.json").write_text(json.dumps({
+            "generated_at": __import__("time").strftime("%Y-%m-%dT%H:%M:%S"),
+            "tool": "tools/web_data_pipeline_656.py",
+            "files": files,
+        }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     rep["files"] = files
 
     # dist：保守压缩 + 版本号 + manifest
@@ -418,12 +437,15 @@ def build() -> dict[str, Any]:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="656 C3/C4：前端数据管线与构建")
     ap.add_argument("--build", action="store_true", help="跑齐生成器 + 写 index.json + 产出 dist/")
+    ap.add_argument("--dist-only", action="store_true",
+                    help="674a：只产出 dist/（**不**重跑数据生成器、**不**写 web/data/index.json）——"
+                         "给 CI 补 dist 用，对 web/ 源码与数据零改动")
     ap.add_argument("--check", action="store_true", help="只读校验（schema / 漂移 / 对比度 / 接线）")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
 
-    if a.build:
-        rep = build()
+    if a.build or a.dist_only:
+        rep = build(dist_only=a.dist_only)
         if a.json:
             print(json.dumps(rep, ensure_ascii=False, indent=2))
         else:

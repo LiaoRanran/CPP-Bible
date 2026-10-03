@@ -16,11 +16,19 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from pathlib import Path
+
+import pytest
 
 import tool_integrity as ti
 
 ALL = ti.SUPPLY_CHAIN_FILES
+
+#: 674a：xdist 并发守卫（与 622/647 同惯例）。`test_a1_8_…` 会调用真实仓库的
+#: `verify_supply_chain(strict=True)`，而 xdist 下别的 worker 可能正处在"写受控产物 → 还原"的中段
+#: ⇒ 读到瞬时不一致 ⇒ flip-flop。串行（含干净检出复验）真跑且绿。
+_XDIST_PARALLEL = os.environ.get("PYTEST_XDIST_WORKER") is not None
 
 
 def _mk_root(tmp: Path) -> Path:
@@ -135,6 +143,10 @@ def test_a1_7_core_verdict_unaffected(tmp_path: Path, monkeypatch):
 
 
 # ── A1-8：常量与真实仓库口径自述 ────────────────────────────────────────────────
+@pytest.mark.skipif(
+    _XDIST_PARALLEL,
+    reason="674a：串行（含干净检出复验）真跑且绿；xdist 并发下与共享产物的读写争用致 flip-flop ⇒ 仅并发下跳过（622/647 同惯例）",
+)
 def test_a1_8_strict_default_declared_and_real_repo_green():
     assert ti.SUPPLY_CHAIN_STRICT_DEFAULT is True
     assert ti.verify_supply_chain(strict=True)[2] == 0, "真实仓库信任根必须齐备"

@@ -19,12 +19,19 @@ from __future__ import annotations
 
 import argparse
 import subprocess
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PY = ROOT / ".venv" / "Scripts" / "python.exe"
+# 674a：原实现把解释器**硬编码**成 Windows 专属路径 `.venv/Scripts/python.exe` ⇒
+# 干净检出（无 .venv）与 Linux CI（venv 在 `.venv/bin/`，且 job 里根本没建 venv）上
+# `run_step` 一律 FileNotFoundError ⇒ rc=127 ⇒ `test_run_step_reports_rc` 必然假红。
+# 回退到"当前解释器"（CI 的 `python3` / 本机被测解释器）——语义不变（只是不再假定 venv 布局）。
+if not PY.is_file():
+    PY = Path(sys.executable)
 OUT = ROOT / "data" / "quality_gate_acceptance_613.md"
 
 # (名称, argv, 是否硬门禁)

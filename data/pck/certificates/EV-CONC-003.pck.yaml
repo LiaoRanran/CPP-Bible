@@ -8,7 +8,7 @@ claim:
 evidence:
 - type: artifact
   ref: evidence/conc/EV-CONC-003.md
-  hash: sha256:a71e02841be6a9889bf44fa2a09f3f2d3307cbac0c6057d4d6b3d09e35383584
+  hash: sha256:4c8b3d83e1cbb79d16d2c92eb1cf9045dd9b51163ab753b7b4d7c94c783b5ea7
 negative_tests:
 - mutation_id: evidence/conc/EV-CONC-003.md|M1|删 artifact_sha256
   result: blocked

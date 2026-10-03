@@ -8,7 +8,7 @@ claim:
 evidence:
 - type: artifact
   ref: evidence/lang/EV-LANG-002.md
-  hash: sha256:714688894609267ca040477e525c6e748c3d5038b099e08725f3c6f6ca5194cb
+  hash: sha256:5db91fed1e18d4e428c19f1289fe9f5a3d3b007cd653293c938e44eca1d74576
 negative_tests:
 - mutation_id: evidence/lang/EV-LANG-002.md|M1|删 artifact_sha256
   result: blocked

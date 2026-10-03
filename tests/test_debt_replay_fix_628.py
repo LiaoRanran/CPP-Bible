@@ -11,6 +11,20 @@ import pytest  # noqa: E402  672h：slow 标记
 import replay_manifest_fix_628 as R
 
 
+def _manifest_entries() -> int:
+    """`build/replay_manifest.json` 的条目数（缺失/坏 ⇒ 0）。674a。"""
+    import json
+    p = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                     "build", "replay_manifest.json")
+    if not os.path.exists(p):
+        return 0
+    try:
+        d = json.load(open(p, encoding="utf-8"))
+    except ValueError:
+        return 0
+    return len(d) if isinstance(d, dict) else 0
+
+
 def test_debt_001_fixture_dynamized():
     # fixture 日期动态化：clean 场景 due 在未来
     here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,6 +51,13 @@ def test_manifest_consistency_zero_mismatch():
     assert c["stale_count"] == 0 and c["missing_count"] == 0
 
 
+@pytest.mark.skipif(
+    _manifest_entries() == 0,
+    reason="674a：`build/replay_manifest.json` 是**构建产物**（gitignore），干净检出/CI 里没有"
+           "任何卡被 replay 过 ⇒ 清单为空。本用例的不变量要求**非空**清单（`0 < len(m) ≤ 卡数`），"
+           "只能由 `atom_evidence_replay.py --rebuild-manifest` 产出（需真编译，属交人项）。"
+           "注：同一文件的 `test_manifest_consistency_zero_mismatch` 对空清单仍成立，CI 里照跑。",
+)
 def test_manifest_covers_evidence_subset_and_is_consistent():
     """670a 去写死：`build/replay_manifest.json` 是**构建产物**（gitignore；按"已 replay 过的卡"
     增量累积），新卡未跑 replay 前条目数 **< 证据卡数** ⇒ 既不能写死 56、也不能与

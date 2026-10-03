@@ -37,7 +37,23 @@ LABELS = ROOT / "data" / "human_review_honesty_labels.jsonl"
 REPORT = ROOT / "data" / "human_review_honesty_615.md"
 
 #: 原 annotations 的 sha256 基线（防误改的对照锚；由任务0 实测）
-ANNOTATIONS_SHA256 = "027dff3aaaa6247f04541968b988fc90325363b75314b1c54fa8a9a346f9f3c4"
+#: 674a：基线改为**按 `.gitattributes` 归一换行（CRLF→LF）后**的 hash。
+#: 原值 `027dff3a…` 实测是**本机工作树**的 hash —— 该文件在工作树里是**混行**
+#: （194 行 CRLF + 194 行 LF），干净检出/CI 是纯 LF（`3ff75ae6…`）⇒ 基线随检出环境变。
+#: 归一后两处同值。见 `annotations_sha256()`。
+ANNOTATIONS_SHA256 = "3ff75ae60b85193422c0b8e016bf305742df5d307ef288d3e99b84f4e473b12f"
+
+
+def annotations_sha256(path: "Path | None" = None) -> str:
+    """annotations 文件内容的 sha256（**CRLF→LF 归一**；674a）。
+
+    行尾不是内容（git 自己也这么判：`core.autocrlf`/`eol` 只影响检出形态）。
+    不归一会让"文件是否被改过"的判决随检出环境翻转 —— 本机（混行）绿、CI（LF）红。
+    """
+    blob = (path or ANNOTATIONS).read_bytes()
+    if b"\r\n" in blob:
+        blob = blob.replace(b"\r\n", b"\n")
+    return hashlib.sha256(blob).hexdigest()
 
 MIRROR_MARK = "对称边"
 TEMPLATE_SIGNATURES = (
@@ -152,7 +168,7 @@ def check() -> list[str]:
     labels = build()
     # 原文件未被修改
     if ANNOTATIONS.is_file():
-        cur = hashlib.sha256(ANNOTATIONS.read_bytes()).hexdigest()
+        cur = annotations_sha256()
         if cur != ANNOTATIONS_SHA256:
             problems.append(f"annotations 已被修改（sha256 {cur[:16]}… ≠ 基线）")
     # 行数匹配 + edge_id 一一对应

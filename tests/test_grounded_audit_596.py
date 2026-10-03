@@ -13,11 +13,30 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 import grounded_audit as ga
 
 SECTIONS = ("## §1 grounded 标注总览", "## §2 与 `claim_type` 对照",
             "## §3 与 replay verdict 对照", "## §4 辩护链示例",
             "## §5 异常检测", "## §6 与 594 实证对账")
+
+
+def _manifest_has_entries() -> bool:
+    """`build/replay_manifest.json` 里有没有**实跑**条目（674a）。
+
+    报告 §3 的**来源口径**取决于这份清单：有条目 ⇒ "replay 实跑，N 张"；无/空/缺失 ⇒
+    回退"卡面 verdict 字段回退"。清单是 `build/` 下的**构建产物**（gitignore），
+    干净检出/CI 没有 replay 实跑 ⇒ 口径必然不同 ⇒ 提交版报告只可能在**有清单**的环境里逐字节对上。
+    """
+    p = ga.DEFAULT_MANIFEST
+    if not p.is_file():
+        return False
+    try:
+        d = json.loads(p.read_text(encoding="utf-8"))
+    except ValueError:
+        return False
+    return bool(d)
 
 
 def _labels() -> dict:
@@ -91,6 +110,12 @@ def test_report_is_idempotent_and_check_works(tmp_path):
     assert ga.main(["--out", str(out), "--check"]) == expect
 
 
+@pytest.mark.skipif(
+    not _manifest_has_entries(),
+    reason="674a：build/replay_manifest.json 无**实跑**条目（干净检出/CI 不跑 replay）⇒ 报告 §3 走"
+           "『卡面 verdict 回退』口径，与提交版（有清单时『replay 实跑』口径）不同 ⇒ 本用例只在"
+           "有清单的环境真跑。产物生成属交人项（atom_evidence_replay.py --rebuild-manifest 需真编译）",
+)
 def test_real_committed_report_matches_fresh_render():
     """已提交报告必须与现读事实源重新渲染**逐字节**一致（锁"不过期"）。
 
