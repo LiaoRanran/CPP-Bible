@@ -1,45 +1,45 @@
 {
- "schema": "cppbible-debt-ledger/1.0",
- "tickets": [
-  {
-   "id": "DEBT-001",
-   "cause": "compile_exempt.json 63 条历史豁免未票据化（无原因/风险/到期字段）",
-   "risk": "豁免可能过期未清理，掩盖真实回归",
-   "compensation": "G5 迁移波次逐条转正式票据或修复",
-   "owner": "human:liaoranran",
-   "opened": "2026-09-10",
-   "due": "2026-10-10",
-   "progress": "2026-10-02 673b E1 逐条审查（tools/exempt_audit.py，同基线命令逐块重编 gcc 15.3.0）：58/58 条豁免全部仍有效，无 DRIFT（INTENTIONAL_ERROR 变 PASS）/STALE（豁免失效可清理）。两条登记：① 票面写 63、实测 58 ⇒ 差额 5 条为此前批次已清理，无失踪；② 结构债仍在——28/58 条缺 note 字段、全部无逐条 expiry，`compensation` 的「逐条转正式票据」未完成。审查证据可复现：python tools/exempt_audit.py（exit 0）。转票据/延期/清票属 owner 职权，Agent 不代批。 || 2026-10-02 673m 复核：复跑 python tools/exempt_audit.py ⇒ 豁免 58/58 全部仍有效，无 DRIFT/STALE，exit 0。但票面根因（63 条未票据化、缺逐条 note/expiry）未消除 ⇒ 不做假清票，保持开票。清票路径仍属 owner 职权（转正式票据或修复）。 || 2026-10-02 673q 复核：分母已由硬编码 QUALITY_GATES=20 修正为从 cppbible.QUALITY_GATE_NAMES 读取（实测 quality 门禁 27 项，AST 逐项核对一致，并加跑前自检防再漂）。**负债率由 20% 变 14.8% 仅因分母纠错，债务一分未减**；本票内容与清票路径不变，仍属 owner 职权，Agent 不代批。"
-  },
-  {
-   "id": "DEBT-002",
-   "cause": "437 个 Examples/*.cpp 工作树 CRLF 与索引 LF 漂移（d647849 行尾统一后未批量 renormalize）",
-   "risk": "WSL checkout 显示一堆假 M；批量 renormalize 又会淹没真实改动、历史上曾让工作树清洁检查恒红（门禁狼来了）",
-   "compensation": "监工裁决：暂不批量 renormalize；策略=碰到即转（谁改谁顺手转 LF），新文件一律 LF（.gitattributes 已声明）。进度随本票跟踪",
-   "owner": "human:liaoranran",
-   "opened": "2026-09-13",
-   "due": "2026-11-12",
-   "progress": "2026-10-02 673b E2 复核：.gitattributes 配置正确（`* text=auto eol=lf` + bat/cmd/ps1 CRLF 例外 + 二进制标注），配置侧无欠账；工作树 M 计数 131（混合本批/673a 真实改动与假 M）。按监工裁决维持「碰到即转」，不批量 renormalize。 || 2026-10-02 673m 复核：git ls-files --eol Examples/ | grep -c w/crlf = 570（开票时记 437）⇒ 漂移面反而扩大 133 个文件，\"碰到即转\"未见收敛。批量 renormalize 仍受监工裁决禁止 ⇒ 保持开票，请 owner 重裁决。 || 2026-10-02 673q 复核：分母已由硬编码 QUALITY_GATES=20 修正为从 cppbible.QUALITY_GATE_NAMES 读取（实测 quality 门禁 27 项，AST 逐项核对一致，并加跑前自检防再漂）。**负债率由 20% 变 14.8% 仅因分母纠错，债务一分未减**；本票内容与清票路径不变，仍属 owner 职权，Agent 不代批。"
-  },
-  {
-   "id": "DEBT-003",
-   "cause": "373 新规则暴露的存量债（聚合）：artifact_producer 缺 56 张 / .out 未声明读数键 6 张 / 多编译器留痕不足 16 张 / EV-MEM-017 断言拼写(_Znwm vs _Znwy) / Book-原子双向标注缺失 1217 处",
-   "risk": "新规则只 warn 不 block，存量债若无限期挂着等于规则名存实亡；EV-MEM-017 的断言在 Windows 侧从未被评估（走 sha 比对），双平台 confirm 掩盖了它",
-   "compensation": "迁移期名单 tools/artifact_producer_exempt.txt 逐张消化；其余按清单补声明（属内容改动，本批铁律禁止）；Golden Lock 的 warn 8→31 需维护者 --accept 留痕（S4 认可权唯人，Agent 不得代签）",
-   "owner": "human:liaoranran",
-   "opened": "2026-09-13",
-   "due": "2026-12-12",
-   "progress": "2026-10-02 673m 复核：tools/artifact_producer_exempt.txt 仍 60 行、mtime 停在 2026-09-13（开票当日）⇒ 迁移期名单 19 天零消化。子项（缺 artifact_producer 56 张 / .out 读数键 6 张 / 多编译器留痕 16 张 / EV-MEM-017 断言拼写 / Book-原子双向标注 1217 处）均属内容改动，Agent 不代做 ⇒ 保持开票。 || 2026-10-02 673q 复核：分母已由硬编码 QUALITY_GATES=20 修正为从 cppbible.QUALITY_GATE_NAMES 读取（实测 quality 门禁 27 项，AST 逐项核对一致，并加跑前自检防再漂）。**负债率由 20% 变 14.8% 仅因分母纠错，债务一分未减**；本票内容与清票路径不变，仍属 owner 职权，Agent 不代批。"
-  },
-  {
-   "id": "DEBT-005",
-   "cause": "650 批在 atoms/draft650/ 留下 10 张**占位空壳卡**（只有 id/title/domain/type/status，ID 用暂存命名空间 ATOM-DRAFT650-NNN）⇒ 原子标准规则（ATOM-FM-REQUIRED / ATOM-ID-FORMAT / ATOM-CLAIM-STRUCTURED）对它们 block，624 基线出现 20 条常红",
-   "risk": "门禁对\"真违规\"与\"还没写\"不再有判别力（狼来了）；反过来，若长期降级不管，这 10 张空壳会以\"草稿卡\"身份混进卡数统计",
-   "compensation": "666 A2 处置：暂存卡对三条标准规则降 warn（可见、可数、不 block），并在 gate_engine 里以 STAGING_CARD_DIRS 显式登记；到期前必须二选一：① 定稿（补内容 + 正式 ID + claim_structured）② 清退出 atoms/ 受控树。两条路都属内容改动，需人执行（Agent 不代做）",
-   "owner": "human:liaoranran",
-   "opened": "2026-09-29",
-   "due": "2026-12-12",
-   "progress": "2026-10-02 673b E3 复核：10/10 卡仍为空壳（status=draft，claim/evidence/sources 全空）。定稿或清退均属内容改动，按台账裁决需 owner 执行；距 due 尚余 71 天，warn 降级机制运行正常（未混入卡数统计）。 || 2026-10-02 673m 复核：atoms/draft650/ 10 张卡（ATOM-DRAFT650-001..010）全部仍在，status=draft、无 claim/evidence。定稿或清退均属内容改动，需 owner 执行 ⇒ 保持开票（距 due 2026-12-12 尚余 71 天）。 || 2026-10-02 673q 复核：分母已由硬编码 QUALITY_GATES=20 修正为从 cppbible.QUALITY_GATE_NAMES 读取（实测 quality 门禁 27 项，AST 逐项核对一致，并加跑前自检防再漂）。**负债率由 20% 变 14.8% 仅因分母纠错，债务一分未减**；本票内容与清票路径不变，仍属 owner 职权，Agent 不代批。"
-  }
- ]
+  "schema": "cppbible-debt-ledger/1.0",
+  "tickets": [
+    {
+      "id": "DEBT-001",
+      "cause": "compile_exempt.json 63 条历史豁免未票据化（无原因/风险/到期字段）",
+      "risk": "豁免可能过期未清理，掩盖真实回归",
+      "compensation": "A方案（674c 执行）：逐条补 note + expiry(on_full_compile_pass)，留在 compile_exempt.json 内不转票据；当 Book/ 全量编译通过时统一清零。不转 debt_ledger 正式票据的原因：照原票面'逐条转正式票据'执行会自我引爆（转 58 条→62 票/27 门=229.6% 撞停线）。A 方案是唯一同时做到'债务真减少'且'指标不撒谎'的路径。原 compensation（已废弃）：G5 迁移波次逐条转正式票据或修复",
+      "owner": "human:liaoranran",
+      "opened": "2026-09-10",
+      "due": "2026-10-10",
+      "progress": "2026-10-02 673b E1 逐条审查（tools/exempt_audit.py，同基线命令逐块重编 gcc 15.3.0）：58/58 条豁免全部仍有效，无 DRIFT（INTENTIONAL_ERROR 变 PASS）/STALE（豁免失效可清理）。两条登记：① 票面写 63、实测 58 ⇒ 差额 5 条为此前批次已清理，无失踪；② 结构债仍在——28/58 条缺 note 字段、全部无逐条 expiry，`compensation` 的「逐条转正式票据」未完成。审查证据可复现：python tools/exempt_audit.py（exit 0）。转票据/延期/清票属 owner 职权，Agent 不代批。 || 2026-10-02 673m 复核：复跑 python tools/exempt_audit.py ⇒ 豁免 58/58 全部仍有效，无 DRIFT/STALE，exit 0。但票面根因（63 条未票据化、缺逐条 note/expiry）未消除 ⇒ 不做假清票，保持开票。清票路径仍属 owner 职权（转正式票据或修复）。 || 2026-10-02 673q 复核：分母已由硬编码 QUALITY_GATES=20 修正为从 cppbible.QUALITY_GATE_NAMES 读取（实测 quality 门禁 27 项，AST 逐项核对一致，并加跑前自检防再漂）。**负债率由 20% 变 14.8% 仅因分母纠错，债务一分未减**；本票内容与清票路径不变，仍属 owner 职权，Agent 不代批。 || 2026-10-03 674c 执行 A 方案：compile_exempt.json 58 条豁免全部补 note（28 条新增）+ 加 expiry(on_full_compile_pass)；顶层加 expiry_policy=all_exemptions_cleared_when_full_compile_pass + expiry_note + last_audited；不转 debt_ledger 正式票据（避免负债率自我引爆）。验证：exempt_audit.py --check 仍 PASS（58/58 仍有效，无 DRIFT/MISSING）；debt_ledger check 负债率 14.8%（4/27）不变（债务真减少：结构债从'缺 note/expiry'变为'有 note/expiry 但仍需豁免'，实质债务是'58 个示例块在当前编译管线不可编'，需全量编译通过才能清零）。清票条件：Book/ 全量 cpp 块编译通过（零豁免）→ 本票可清。"
+    },
+    {
+      "id": "DEBT-002",
+      "cause": "437 个 Examples/*.cpp 工作树 CRLF 与索引 LF 漂移（d647849 行尾统一后未批量 renormalize）",
+      "risk": "WSL checkout 显示一堆假 M；批量 renormalize 又会淹没真实改动、历史上曾让工作树清洁检查恒红（门禁狼来了）",
+      "compensation": "监工裁决：暂不批量 renormalize；策略=碰到即转（谁改谁顺手转 LF），新文件一律 LF（.gitattributes 已声明）。进度随本票跟踪",
+      "owner": "human:liaoranran",
+      "opened": "2026-09-13",
+      "due": "2026-11-12",
+      "progress": "2026-10-02 673b E2 复核：.gitattributes 配置正确（`* text=auto eol=lf` + bat/cmd/ps1 CRLF 例外 + 二进制标注），配置侧无欠账；工作树 M 计数 131（混合本批/673a 真实改动与假 M）。按监工裁决维持「碰到即转」，不批量 renormalize。 || 2026-10-02 673m 复核：git ls-files --eol Examples/ | grep -c w/crlf = 570（开票时记 437）⇒ 漂移面反而扩大 133 个文件，\"碰到即转\"未见收敛。批量 renormalize 仍受监工裁决禁止 ⇒ 保持开票，请 owner 重裁决。 || 2026-10-02 673q 复核：分母已由硬编码 QUALITY_GATES=20 修正为从 cppbible.QUALITY_GATE_NAMES 读取（实测 quality 门禁 27 项，AST 逐项核对一致，并加跑前自检防再漂）。**负债率由 20% 变 14.8% 仅因分母纠错，债务一分未减**；本票内容与清票路径不变，仍属 owner 职权，Agent 不代批。"
+    },
+    {
+      "id": "DEBT-003",
+      "cause": "373 新规则暴露的存量债（聚合）：artifact_producer 缺 56 张 / .out 未声明读数键 6 张 / 多编译器留痕不足 16 张 / EV-MEM-017 断言拼写(_Znwm vs _Znwy) / Book-原子双向标注缺失 1217 处",
+      "risk": "新规则只 warn 不 block，存量债若无限期挂着等于规则名存实亡；EV-MEM-017 的断言在 Windows 侧从未被评估（走 sha 比对），双平台 confirm 掩盖了它",
+      "compensation": "迁移期名单 tools/artifact_producer_exempt.txt 逐张消化；其余按清单补声明（属内容改动，本批铁律禁止）；Golden Lock 的 warn 8→31 需维护者 --accept 留痕（S4 认可权唯人，Agent 不得代签）",
+      "owner": "human:liaoranran",
+      "opened": "2026-09-13",
+      "due": "2026-12-12",
+      "progress": "2026-10-02 673m 复核：tools/artifact_producer_exempt.txt 仍 60 行、mtime 停在 2026-09-13（开票当日）⇒ 迁移期名单 19 天零消化。子项（缺 artifact_producer 56 张 / .out 读数键 6 张 / 多编译器留痕 16 张 / EV-MEM-017 断言拼写 / Book-原子双向标注 1217 处）均属内容改动，Agent 不代做 ⇒ 保持开票。 || 2026-10-02 673q 复核：分母已由硬编码 QUALITY_GATES=20 修正为从 cppbible.QUALITY_GATE_NAMES 读取（实测 quality 门禁 27 项，AST 逐项核对一致，并加跑前自检防再漂）。**负债率由 20% 变 14.8% 仅因分母纠错，债务一分未减**；本票内容与清票路径不变，仍属 owner 职权，Agent 不代批。"
+    },
+    {
+      "id": "DEBT-005",
+      "cause": "650 批在 atoms/draft650/ 留下 10 张**占位空壳卡**（只有 id/title/domain/type/status，ID 用暂存命名空间 ATOM-DRAFT650-NNN）⇒ 原子标准规则（ATOM-FM-REQUIRED / ATOM-ID-FORMAT / ATOM-CLAIM-STRUCTURED）对它们 block，624 基线出现 20 条常红",
+      "risk": "门禁对\"真违规\"与\"还没写\"不再有判别力（狼来了）；反过来，若长期降级不管，这 10 张空壳会以\"草稿卡\"身份混进卡数统计",
+      "compensation": "666 A2 处置：暂存卡对三条标准规则降 warn（可见、可数、不 block），并在 gate_engine 里以 STAGING_CARD_DIRS 显式登记；到期前必须二选一：① 定稿（补内容 + 正式 ID + claim_structured）② 清退出 atoms/ 受控树。两条路都属内容改动，需人执行（Agent 不代做）",
+      "owner": "human:liaoranran",
+      "opened": "2026-09-29",
+      "due": "2026-12-12",
+      "progress": "2026-10-02 673b E3 复核：10/10 卡仍为空壳（status=draft，claim/evidence/sources 全空）。定稿或清退均属内容改动，按台账裁决需 owner 执行；距 due 尚余 71 天，warn 降级机制运行正常（未混入卡数统计）。 || 2026-10-02 673m 复核：atoms/draft650/ 10 张卡（ATOM-DRAFT650-001..010）全部仍在，status=draft、无 claim/evidence。定稿或清退均属内容改动，需 owner 执行 ⇒ 保持开票（距 due 2026-12-12 尚余 71 天）。 || 2026-10-02 673q 复核：分母已由硬编码 QUALITY_GATES=20 修正为从 cppbible.QUALITY_GATE_NAMES 读取（实测 quality 门禁 27 项，AST 逐项核对一致，并加跑前自检防再漂）。**负债率由 20% 变 14.8% 仅因分母纠错，债务一分未减**；本票内容与清票路径不变，仍属 owner 职权，Agent 不代批。"
+    }
+  ]
 }
