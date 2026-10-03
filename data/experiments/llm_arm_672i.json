@@ -1,7 +1,7 @@
 {
  "schema": "queyi-llm-arm/672i",
  "generated_by": "tools/llm_arm_672i.py（W4 第三方裁判臂）",
- "generated_at": "2026-10-01 23:13:17",
+ "generated_at": "2026-10-03 15:13:37",
  "prereg": "data/experiments/prereg_672i.json",
  "mode": "live_api",
  "model": {
@@ -73,7 +73,7 @@
    "truth": "error",
    "detector": "tsan",
    "layer": "sanitizer",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": true
   },
   {
@@ -85,7 +85,7 @@
    "truth": "control",
    "detector": "unknown",
    "layer": "other",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -97,7 +97,7 @@
    "truth": "control",
    "detector": "unknown",
    "layer": "other",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -109,7 +109,7 @@
    "truth": "control",
    "detector": "compiler-warn",
    "layer": "compiler-warn",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -121,7 +121,7 @@
    "truth": "error",
    "detector": "linker",
    "layer": "linker",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -133,7 +133,7 @@
    "truth": "error",
    "detector": "asan",
    "layer": "sanitizer",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -145,7 +145,7 @@
    "truth": "control",
    "detector": "ubsan",
    "layer": "sanitizer",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -157,7 +157,7 @@
    "truth": "control",
    "detector": "asan",
    "layer": "sanitizer",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -169,7 +169,7 @@
    "truth": "control",
    "detector": "ubsan",
    "layer": "sanitizer",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -181,7 +181,7 @@
    "truth": "control",
    "detector": "asan",
    "layer": "sanitizer",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -193,7 +193,7 @@
    "truth": "control",
    "detector": "compiler-warn",
    "layer": "compiler-warn",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -205,7 +205,7 @@
    "truth": "error",
    "detector": "ubsan",
    "layer": "sanitizer",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -217,7 +217,7 @@
    "truth": "error",
    "detector": "asan",
    "layer": "sanitizer",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -229,7 +229,7 @@
    "truth": "error",
    "detector": "asan",
    "layer": "sanitizer",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -241,7 +241,7 @@
    "truth": "error",
    "detector": "ubsan",
    "layer": "sanitizer",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -253,7 +253,7 @@
    "truth": "error",
    "detector": "ubsan",
    "layer": "sanitizer",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -265,7 +265,7 @@
    "truth": "error",
    "detector": "tsan",
    "layer": "sanitizer",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -277,7 +277,7 @@
    "truth": "error",
    "detector": "asan",
    "layer": "sanitizer",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -289,7 +289,7 @@
    "truth": "error",
    "detector": "ubsan",
    "layer": "sanitizer",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   },
   {
@@ -301,16 +301,12 @@
    "truth": "error",
    "detector": "tsan",
    "layer": "sanitizer",
-   "note": "api",
+   "note": "cache",
    "answer_leak_risk": false
   }
  ],
  "unknown_samples": [],
- "usage_total": {
-  "completion_tokens": 1741,
-  "prompt_tokens": 7425,
-  "total_tokens": 9166
- },
+ "usage_total": {},
  "answer_leak_risk_samples": [
   "h1"
  ],

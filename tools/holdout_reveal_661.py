@@ -17,6 +17,17 @@ harness 修正（661 记录）：
   - 泄漏/双释放由 LeakSanitizer/AddressSanitizer 报告，退出码非 0 → 计入 catch。
   - 修正不回盲：.revealed 保留；本次为**测量修正重跑**，非第二次 reveal。
 
+673u 判据修正（detect() 的**唯一**改动点）
+==========================================
+`wunsequenced` 分支原本用 `"unsequenced" in out.lower()` 判定命中；而本机 MinGW g++ 13.1
+**不认** `-Wunsequenced`，输出为 `g++.exe: error: unrecognized command-line option
+'-Wunsequenced'` ⇒ 报错里的 "unsequenced" 被当成命中 ⇒ 该资产对任何样本**恒 catch**
+（常量资产，会污染一切用到它的数字）。现改为：输出含 `unrecognized command-line option`
+或 `unrecognized option` ⇒ 检测器**不可用** ⇒ `unknown`（无支持、无反驳）。
+其余分支（sanitizer 的 -O0/-O2 双档、`setarch -R` 关 ASLR、TSan 不可用判定、
+compiler-warn / cross-compile / linker 的命中定义）**一字未动**。
+产物版本标记：673u 之前的 reveal 记录为 pre-673u（含恒 catch 污染），之后为 post-673u。
+
 输出：data/holdout_reveal_1_661.json
 """
 from __future__ import annotations
@@ -167,7 +178,19 @@ def detect(kind: str, files: list) -> tuple:
         if kind == "wunsequenced":
             rc, out = _local(["g++", "-std=c++17", "-Wall", "-Wextra", "-Wunsequenced",
                               "-fsyntax-only"] + copies)
-            return ("catch", "g++ -Wunsequenced 告警") if "unsequenced" in out.lower() else ("miss", "无 unsequenced 告警")
+            low = out.lower()
+            # 673u 修复：本机 MinGW g++ 13.1 **不认** `-Wunsequenced`，编译输出为
+            #     g++.exe: error: unrecognized command-line option '-Wunsequenced'
+            # 旧判据 `"unsequenced" in out.lower()` 会把这条**选项报错**里的 "unsequenced"
+            # 当成命中 ⇒ 该资产对**任何**样本恒返回 catch（常量资产，不是真实检测器）。
+            # 处置（方案 1）：编译器不认该选项 ⇒ 检测器在当前工具链下**不可用**
+            # ⇒ unknown（无支持、无反驳），而不是假装抓到了东西。四态逻辑里 unknown
+            # 不进检出率分母，也不与 miss 混同。
+            if "unrecognized command-line option" in low or "unrecognized option" in low:
+                return ("unknown",
+                        "检测器不可用(wunsequenced)：编译器不认 -Wunsequenced"
+                        "（detector unavailable: compiler does not recognize -Wunsequenced）")
+            return ("catch", "g++ -Wunsequenced 告警") if "unsequenced" in low else ("miss", "无 unsequenced 告警")
 
         if kind == "compiler-warn":
             rc, out = _local(["g++", "-std=c++17", "-Wall", "-Wextra", "-fsyntax-only"] + copies)

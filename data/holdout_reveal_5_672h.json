@@ -2,7 +2,7 @@
  "schema": "queyi-holdout-reveal/v5",
  "reveal_index": 5,
  "generated_by": "tools/holdout_reveal_5_672h.py（W3 扩样：holdout 可测 21 → 41）",
- "generated_at": "2026-10-02 00:22:21",
+ "generated_at": "2026-10-03 12:39:21",
  "round_label": "第 5 轮（672h）：扩样 h41-h60（存量缺陷夹具）+ h1-h40 复用",
  "runs": 3,
  "samples_requested": [
@@ -81,7 +81,7 @@
   "local_gpp": "g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
   "local_clang": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
   "host": "win32",
-  "python": "3.14.5",
+  "python": "3.13.13",
   "roll": "asan/ubsan/tsan 走 WSL（-O0/-O2 双档 + setarch -R）；wunsequenced/compiler-warn/cross-compile/linker 走本机编译器"
  },
  "round5": {
@@ -133,7 +133,7 @@
   },
   "control_subset": {
    "total": 11,
-   "false_positive": 2
+   "false_positive": 0
   },
   "denominator": {
    "value": 41,

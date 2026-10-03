@@ -1,7 +1,7 @@
 {
   "schema": "queyi-holdout-reveal/v3",
   "reveal_index": 3,
-  "revealed_at": "2026-09-30",
+  "revealed_at": "2026-10-03",
   "generated_by": "tools/holdout_reveal_3_665.py",
   "detector_reuse": "复用 tools/holdout_reveal_661.py::detect（同一判据）；新样本仅切换 ATOMS 目录",
   "caliber": "sanitizer 类：-O0 + -O2 两档都跑，任一档报出即 catch；warn/cross/link 类：单次本机编译；unknown = 检测器不可用（不计入分母）",
@@ -41,7 +41,7 @@
   },
   "control_subset": {
     "total": 9,
-    "false_positive": 1
+    "false_positive": 0
   },
   "compare_reveal_2": {
     "before_total": 7,
@@ -49,7 +49,8 @@
     "after_total": 17,
     "after_rate_pct": 87.5,
     "changed_verdicts": [
-      "h1"
+      "h1",
+      "h3"
     ],
     "note": "注意口径：分母从 7 抬到 17 之后，检出率的变化只说明**样本构成变了**，不说明验证器变好/变差；两轮都把 unknown（检测器不可用）留在分母之外。"
   },
@@ -68,13 +69,13 @@
         "id": "h29",
         "opt": "-O1",
         "verdict": "miss",
-        "note": ""
+        "note": "wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。"
       },
       {
         "id": "h29",
         "opt": "-O0",
         "verdict": "miss",
-        "note": ""
+        "note": "wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。"
       }
     ]
   },
@@ -85,7 +86,7 @@
       "planted": true,
       "detector": "tsan",
       "verdict": "catch",
-      "note": "tsan 命中[-O0(rc=66) single_total=100000 race_ops_total=200000 safe_ops_total=200000 safe_final=200000 ================== WARNING: ThreadSanitizer: data race (pid=1122)   Read of size 4 at 0x55555555d01c by thread T2:    ; -O2(rc=66) single_t",
+      "note": "tsan 命中[-O0(rc=66) single_total=100000 race_ops_total=200000 safe_ops_total=200000 safe_final=200000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data rac; -O2(rc=66) single_t",
       "is_665_new": false,
       "reveal_2": "unknown",
       "changed_vs_reveal_2": true
@@ -104,18 +105,18 @@
       "id": "h3",
       "planted": false,
       "detector": "wunsequenced",
-      "verdict": "catch",
-      "note": "g++ -Wunsequenced 告警",
+      "verdict": "unknown",
+      "note": "检测器不可用(wunsequenced)：编译器不认 -Wunsequenced（detector unavailable: compiler does not recognize -Wunsequenced）",
       "is_665_new": false,
       "reveal_2": "catch",
-      "changed_vs_reveal_2": false
+      "changed_vs_reveal_2": true
     },
     {
       "id": "h4",
       "planted": "unknown",
       "detector": "compiler-warn",
       "verdict": "catch",
-      "note": "警告 8 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpwmgf2c05\\_atom_auto_ptr.cpp:32:52:",
+      "note": "警告 8 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpa0xapbtv\\_atom_auto_ptr.cpp:32:52:",
       "is_665_new": false,
       "reveal_2": "catch",
       "changed_vs_reveal_2": false
@@ -125,7 +126,7 @@
       "planted": true,
       "detector": "ubsan",
       "verdict": "miss",
-      "note": "ubsan 两档均无报告[-O0(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是; -O2(rc=0) A 函数返回=1 内存实际=1073741824 自洽=否 B UB路径=1073741824 合规路径=1073741824 一致=是]",
+      "note": "ubsan 两档均无报告[-O0(rc=0) A 函数返回=1073741824 内存实际=1073741824 自洽=是 B UB路径=1073741824 合规路径=1073741824 一致=是 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) A 函数返回=1 内存实际=1073741824 自洽=否 B UB路径=1073741824 合规路径=1073741824",
       "is_665_new": false,
       "reveal_2": "miss",
       "changed_vs_reveal_2": false
@@ -145,7 +146,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==1236==ERROR: LeakSanitizer: detected memory leaks  Indirect leak of 32 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fe548 ; -O2(rc=1) ==========",
+      "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==2935==ERROR: LeakSanitizer: detected memory leaks  Indirect leak o; -O2(rc=1) wsl: 检测到 l",
       "is_665_new": false,
       "reveal_2": "catch",
       "changed_vs_reveal_2": false
@@ -155,7 +156,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==1290==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 4 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fd9c7 in ; -O2(rc=1) ==========",
+      "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==2989==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ; -O2(rc=1) wsl: 检测到 l",
       "is_665_new": false,
       "reveal_2": "catch",
       "changed_vs_reveal_2": false
@@ -225,7 +226,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==1344==ERROR: AddressSanitizer: out of memory: allocator is trying to allocate 0x5d21dba000 bytes     #0 0x7ffff78fe990 in operator n; -O2(rc=1) ==========",
+      "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================================================================= ==3043==ERROR: AddressSanitizer: out of memory: allocator is trying t; -O2(rc=1) wsl: 检测到 l",
       "is_665_new": false,
       "reveal_2": "catch",
       "changed_vs_reveal_2": false
@@ -235,7 +236,7 @@
       "planted": false,
       "detector": "ubsan",
       "verdict": "miss",
-      "note": "ubsan 两档均无报告[-O0(rc=0) ret_plain copy=1 move=0 / ret_moved copy=0 move=1; -O2(rc=0) ret_plain copy=1 move=0 / ret_moved copy=0 move=1]",
+      "note": "ubsan 两档均无报告[-O0(rc=0) ret_plain copy=1 move=0 / ret_moved copy=0 move=1 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) ret_plain copy=1 move=0 / ret_moved copy=0 move=1 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下",
       "is_665_new": false,
       "reveal_2": "miss",
       "changed_vs_reveal_2": false
@@ -245,7 +246,7 @@
       "planted": false,
       "detector": "asan",
       "verdict": "miss",
-      "note": "asan 两档均无报告[-O0(rc=0) sizeof(std::string)=32 empty capacity=15 (SSO buffer chars) len=15 allocs=0 len=16 allocs=1; -O2(rc=0) sizeof(std::string)=32 empty capacity=15 (SSO buffer chars) len=15 allocs=0 len=16 allocs=1]",
+      "note": "asan 两档均无报告[-O0(rc=0) sizeof(std::string)=32 empty capacity=15 (SSO buffer chars) len=15 allocs=0 len=16 allocs=1 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) sizeof(std::string)=32 empty capacity=15 (SSO buff",
       "is_665_new": false,
       "reveal_2": "miss",
       "changed_vs_reveal_2": false
@@ -255,7 +256,7 @@
       "planted": false,
       "detector": "ubsan",
       "verdict": "miss",
-      "note": "ubsan 两档均无报告[-O0(rc=0) alignof(Aligned)=16 sizeof(Aligned)=16 memcpy roundtrip x=7; -O2(rc=0) alignof(Aligned)=16 sizeof(Aligned)=16 memcpy roundtrip x=7]",
+      "note": "ubsan 两档均无报告[-O0(rc=0) alignof(Aligned)=16 sizeof(Aligned)=16 memcpy roundtrip x=7 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) alignof(Aligned)=16 sizeof(Aligned)=16 memcpy roundtrip x=7 wsl: 检测到 localhost 代理",
       "is_665_new": false,
       "reveal_2": "miss",
       "changed_vs_reveal_2": false
@@ -265,7 +266,7 @@
       "planted": false,
       "detector": "asan",
       "verdict": "miss",
-      "note": "asan 两档均无报告[-O0(rc=0) arena: calls=5 bytes=124 heap_new=0 std  : heap_new=5 (growth reallocations); -O2(rc=0) arena: calls=5 bytes=124 heap_new=0 std  : heap_new=5 (growth reallocations)]",
+      "note": "asan 两档均无报告[-O0(rc=0) arena: calls=5 bytes=124 heap_new=0 std  : heap_new=5 (growth reallocations) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) arena: calls=5 bytes=124 heap_new=0 std  : heap_new=5 (growth rea",
       "is_665_new": false,
       "reveal_2": "miss",
       "changed_vs_reveal_2": false
@@ -285,7 +286,7 @@
       "planted": true,
       "detector": "ubsan",
       "verdict": "catch",
-      "note": "ubsan 命中[-O0(rc=1) /mnt/c/Users/ASUS/AppData/Local/Temp/tmphi4vjnu7/ig-01.cpp:1:31: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'; -O2(rc=1) /mnt/c/Users/ASUS/AppData/Local/Temp/tmphi4vjnu7/ig-01",
+      "note": "ubsan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpfz97gj5c/ig-01.cpp:1:31: runtime error: signed integer overflow: 2147483647 + 1 cannot be repre; -O2(rc=1) wsl: 检测到 ",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -295,7 +296,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==1660==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff4f00034 at pc 0x5555555552e7 bp 0x7fffffffe480 sp 0x7fffffffe; -O2(rc=1) ==========",
+      "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================================================================= ==3359==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7; -O2(rc=1) wsl: 检测到 l",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -305,7 +306,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==1712==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x5555555551d8 bp 0x7fffffff; -O2(rc=1) AddressSan",
+      "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 AddressSanitizer:DEADLYSIGNAL ================================================================= ==3411==ERROR: AddressSanitizer: SEGV o; -O2(rc=1) wsl: 检测到 l",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -315,7 +316,7 @@
       "planted": true,
       "detector": "ubsan",
       "verdict": "catch",
-      "note": "ubsan 命中[-O0(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpcvbtmpri/ig-08.cpp:1:42: runtime error: division by zero; -O2(rc=136) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpcvbtmpri/ig-08.cpp:1:42: runtime error: division by zero]（档位 -O0,-O2）",
+      "note": "ubsan 命中[-O0(rc=136) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpko5j2cr7/ig-08.cpp:1:42: runtime error: division by zero; -O2(rc=136) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 W",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -325,7 +326,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==1816==ERROR: AddressSanitizer: alloc-dealloc-mismatch (operator new [] vs operator delete) on 0x502000000010     #0 0x7ffff78ff5e8 i; -O2(rc=1) ==========",
+      "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================================================================= ==3515==ERROR: AddressSanitizer: alloc-dealloc-mismatch (operator new; -O2(rc=1) wsl: 检测到 l",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -335,7 +336,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==1868==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x55555555526d bp 0x7fffffffe4f0 sp 0x7fffffffe4e]（档位 -O0,-O2）",
+      "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================================================================= ==3567==ERROR: AddressSanitizer: heap-use-after-free on address 0x502]（档位 -O0,-O2）",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -345,7 +346,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==1921==ERROR: AddressSanitizer: attempting double-free on 0x502000000010 in thread T0:     #0 0x7ffff78ff5e8 in operator delete(void*]（档位 -O0,-O2）",
+      "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================================================================= ==3620==ERROR: AddressSanitizer: attempting double-free on 0x50200000]（档位 -O0,-O2）",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -355,7 +356,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==1974==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x555555555347 bp 0x7fffffff; -O2(rc=1) AddressSan",
+      "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 AddressSanitizer:DEADLYSIGNAL ================================================================= ==3673==ERROR: AddressSanitizer: SEGV o; -O2(rc=1) wsl: 检测到 l",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -365,7 +366,7 @@
       "planted": true,
       "detector": "ubsan",
       "verdict": "miss",
-      "note": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+      "note": "ubsan 两档均无报告[-O0(rc=0) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false
@@ -375,7 +376,7 @@
       "planted": true,
       "detector": "asan",
       "verdict": "catch",
-      "note": "asan 命中[-O0(rc=1) ================================================================= ==2078==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 256 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fe6c8 i]（档位 -O0,-O2）",
+      "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3777==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）",
       "is_665_new": true,
       "reveal_2": null,
       "changed_vs_reveal_2": false

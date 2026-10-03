@@ -254,5 +254,30 @@
     "不把 unknown 当 miss。",
     "不事后调参重跑；不伪造结果；不把不显著说成显著。",
     "k=8 的退化结果不进 H0/H1 判定。"
-  ]
+  ],
+ "post_hoc_amendments": [
+  {
+   "batch": "673u",
+   "date": "2026-10-03",
+   "kind": "post_hoc_tooling_fix_register",
+   "locked_fields_touched": [],
+   "what": "`tools/holdout_reveal_661.py::detect` 的 `wunsequenced` 分支已修复（本文件落盘时它是**既有缺陷**，见 `asset_degeneracy.known_case`）：本机 MinGW g++ 13.1 不认 `-Wunsequenced`，旧判据 `'unsequenced' in out.lower()` 把选项报错当成命中 ⇒ 恒 catch。673u 改为：输出含 `unrecognized command-line option`/`unrecognized option` ⇒ `unknown`（检测器不可用）。除该分支外 detect() 一行未动。",
+   "effect_on_this_prereg": [
+    "known_case 描述的『恒 catch 常量资产』不再存在：wunsequenced 在派生集上 catch 率从 100% 变为 0%（全部 unknown），仍按预指定规则被标记 degenerate_constant（0% 形态）。",
+    "主分析（8 候选）不再被天花板压死：k=4 时 holdout Δ=+55.00pp / p=0.00098，corpus Δ=+43.75pp / p=0.0391。**但 holdout 的 Δ 在并列分析（剔除退化资产）中消失（Δ=0.00，p=1）⇒ 按本文件 decision_thresholds.uninterpretable 条款，holdout 主分析仍须并报『不可解释』风险，不得单独据此宣称 FD 优于 Random。**",
+    "『sensitivity_exploratory（只剔恒 catch）』视角的前提不再成立（已无恒 catch 资产）⇒ 该视角在 673u 后 skip。"
+   ],
+   "products_recomputed": [
+    "data/experiments/asset_attribution_673r.json（840 次真实 detect 重跑）",
+    "data/experiments/a5_673p.json（real_attribution 段重跑）",
+    "data/holdout_reveal_3_665.json / data/holdout/reveal_3_detail_668.json",
+    "data/holdout_reveal_4_671a.json / data/holdout/reveal_3_detail_671a.json",
+    "data/holdout_reveal_5_672h.json / data/holdout/reveal_5_detail_672h.json",
+    "data/experiments/llm_arm_672i.json（全缓存命中重跑，指标逐位一致）",
+    "data/guard_rerun_baseline_671a.json（--init 重标定）",
+    "data/current_numbers.json（control_false_positive 2/11 → 0/11）"
+   ],
+   "report": "data/673u_wunsequenced修复报告.md"
+  }
+ ]
 }

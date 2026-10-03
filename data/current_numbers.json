@@ -170,9 +170,10 @@
   "source": "data/experiments/stats_672k.json（W6 重做：规范库 + e-process + post-hoc power）"
  },
  "control_false_positive": {
-  "fp": 2,
+  "fp": 0,
   "total": 11,
-  "rate_pct": 18.2
+  "rate_pct": 0.0,
+  "note": "673u 重算：旧值 fp=2（18.2%）全部来自 wunsequenced 恒 catch 缺陷——h3 与 h35 是 planted=false 的**对照**样本，被 `detect()` 的 `'unsequenced' in out.lower()` 判成 catch（`g++: error: unrecognized command-line option '-Wunsequenced'` 里的 'unsequenced' 被当成命中）。673u 修复后两条转为 unknown ⇒ 对照假阳性 2 → 0。真错检出率（34/41=82.9%）不受影响（这两条是对照，不进分母）。"
  },
  "defect_reinjection": {
   "k": 6,
