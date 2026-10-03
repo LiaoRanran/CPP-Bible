@@ -19,6 +19,21 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 
+def _kernel_repo_available() -> bool:
+    """兄弟仓 `queyi-verifier/tools/queyi_core_v10_641.py` 是否可探测到。
+
+    与 `tests/conftest.py::_kernel_canonical_available` **逐字对齐**（自 `tools/` 起向上
+    8 级找 `queyi-verifier/tools/<同名文件>`）——两处判据必须同源，否则白名单会分叉
+    （674d 已因分叉漏掉 9 个收集期失败文件）。
+    """
+    d = os.path.join(ROOT, "tools")
+    for _ in range(8):
+        if os.path.isfile(os.path.join(d, "queyi-verifier", "tools", "queyi_core_v10_641.py")):
+            return True
+        d = os.path.dirname(d)
+    return False
+
+
 # F1-1：清单里的每个工具文件真实存在（无拼写错）
 def test_tool_lists_match_disk():
     for name in G.NEW_TOOLS_643:
@@ -55,6 +70,10 @@ def test_642_closure():
 
 # F1-5：内核零领域 import（AST 机械证明）
 def test_kernel_purity():
+    # 674d：`check_kernel_purity()` 需读拆仓内核 canonical ⇒ 单仓检出/CI 上必然
+    # RuntimeError（工具 fail-loud 是设计，不改工具）。显式条件 skip；双仓布局下行为不变。
+    if not _kernel_repo_available():
+        pytest.skip("拆仓 queyi-verifier 未检出 ⇒ 内核纯度检查需 canonical 内核（fail-loud）")
     r = G.check_kernel_purity()
     assert r["ok"], r["detail"]
     assert r["detail"] == "领域 import：零"
@@ -62,6 +81,8 @@ def test_kernel_purity():
 
 # F1-6：642 保护器灰度验证（零漂移/零改判/可回滚）
 def test_protector_rollout():
+    if not _kernel_repo_available():
+        pytest.skip("拆仓 queyi-verifier 未检出 ⇒ 保护器灰度验证需 canonical 内核（fail-loud）")
     r = G.check_protector_rollout()
     assert r["ok"], r["detail"]
     assert r["gate"] is False

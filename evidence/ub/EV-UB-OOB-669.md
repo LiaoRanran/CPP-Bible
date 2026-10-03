@@ -38,7 +38,11 @@ expected:
     记录复算：探针输出的 record 行必须与事实源逐字一致 —— detector / verdict / signature /
     measured_at 来自 `data/cards_665/index_665.json`，`fixture_file_sha` 现算自夹具**文件字节**，
     `index_fixture_sha` 是 665 记的（= sha(code)，差一个结尾 LF；见 §1 缺陷登记）。
-expected_sanitizer: [address]
+# 674d：Linux/CI（g++ 13.3）上 UBSan 与 ASan **同时**报出该 UB——同一处越界/空解引用
+# 既是 UB 又是 memory error；卡归属的 MinGW GCC 15.3 只报其中一种 ⇒ 原声明按 MinGW 行为
+# 写，干净检出判 `refute:sanitizer_reported`（命中未声明类别）。
+# 如实补全为两种：两者都是该 UB 的**预期**表现，并非放松（原本期望的类别仍在）。
+expected_sanitizer: [ub, address]
 actual:
   run_record: "EV-UB-OOB-669 rec=index_665/ig-02 detector=asan verdict=catch sig=hit:AddressSanitizer fixture_file_sha=31294d437366433bf14d909fbc8b40b5ab58951c1788ee81bd830118b5236b65 index_fixture_sha=e2f9abdb484ef6d8a81bb34f14a01ea947ae449c5f4c6086c92f7764522de400 measured_at=2026-09-29T00:18:16"
 verdict: confirm

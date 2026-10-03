@@ -48,8 +48,11 @@ def _is_link(p: str) -> bool:
     if os.path.islink(p):
         return True
     try:
-        return bool(os.stat(p).st_file_attributes & 0x400)              # REPARSE_POINT
-    except (AttributeError, OSError):
+        # 674d（跨平台 / mypy）：同 tools/merkle_integrity.py —— `st_file_attributes` 是
+        # Windows 专有字段，posix 上没有，mypy 在 Linux 上会报 attr-defined ⇒ 改 getattr
+        # 显式缺省 0，行为不变（缺字段即非 REPARSE_POINT），静态检查也过。
+        return bool(getattr(os.stat(p), "st_file_attributes", 0) & 0x400)   # REPARSE_POINT
+    except OSError:
         return False
 
 

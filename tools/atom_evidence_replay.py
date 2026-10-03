@@ -364,6 +364,30 @@ def _split_argv(cmd: str) -> list[list[str]] | None:
     return out or None
 
 
+def _output_parents(cmd: str, base: Path) -> list[Path]:
+    """从一条命令里抠出**输出目标**的父目录（`-o X` 与 `> X`），供执行前预建。
+
+    674d（根治"干净检出上 compile_rc 假红"）：卡的 `command` 用**仓库相对**输出路径
+    （如 `build/c648/_c_decay.exe`），而 `run_commands` 的 cwd 是 `run_root()`（跑批根）
+    ⇒ 干净检出上 `build/`（被 .gitignore）不存在时，gcc 无法写目标 ⇒ rc=1；随后
+    "运行可执行文件"那步 rc=127 ⇒ 判 `refute:compile_error`（**假红**，与内容无关）。
+    674d 在干净检出实测：71 张卡里 **11 张**因此假红（EV-LANG-003..009、EV-MEM-046/047、
+    EV-UB-003），而单卡跑（手工 mkdir 后）全部 confirm ⇒ 纯目录缺失，非内容证伪。
+    """
+    outs: list[str] = []
+    for m in re.finditer(r"(?:^|\s)-o\s+([^\s;&|]+)", cmd):
+        outs.append(m.group(1))
+    for m in re.finditer(r">\s*([^\s;&|]+)", cmd):
+        outs.append(m.group(1))
+    parents: list[Path] = []
+    for o in outs:
+        p = Path(o)
+        if not p.is_absolute():
+            p = base / p
+        parents.append(p.parent)
+    return parents
+
+
 _CXX_DRIVERS = ("g++", "c++", "g++.exe", "c++.exe")
 _C_DRIVERS = ("gcc", "cc", "gcc.exe", "cc.exe")
 
@@ -2167,6 +2191,16 @@ def replay_card(path: Path, *, do_sanitizer: bool = True, keep_tmp: bool = False
             art_path.unlink(missing_ok=True)
             for _p, _ in extra_arts:
                 _p.unlink(missing_ok=True)    # 副产物同样先删：重生成才算数（W1）
+
+        # 674d：执行前为命令的输出目标预建父目录（幂等；只建目录、不改任何判据）。
+        # 见 `_output_parents` docstring：干净检出上缺 `build/…` 会让相对输出路径的命令
+        # rc=1/127 ⇒ 11 张卡假红。
+        for _ln in run_lines:
+            for _parent in _output_parents(_ln, run_root()):
+                try:
+                    _parent.mkdir(parents=True, exist_ok=True)
+                except OSError:
+                    pass
 
         results, stdout_all = run_commands(run_lines, run_root(), env)
         bad = [r for r in results if r[1] != 0]

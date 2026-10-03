@@ -283,8 +283,13 @@ def _is_link(p: Path) -> bool:
     if p.is_symlink():
         return True
     try:
-        return bool(p.stat().st_file_attributes & 0x400)               # REPARSE_POINT
-    except (AttributeError, OSError):
+        # 674d（跨平台 / mypy）：`st_file_attributes` 是 **Windows 专有**字段，posix 上不存在。
+        # 运行期原本就靠 `except AttributeError` 兜住，但 **mypy 在 Linux 上会静态报**
+        # `"stat_result" has no attribute "st_file_attributes" [attr-defined]` ⇒ CI 的 mypy
+        # 硬门禁红（干净检出实测 2 处：本文件 + tools/tau_d_635.py）。
+        # 改用 getattr 显式取缺省 0 ⇒ 行为完全不变（缺字段即"非 REPARSE_POINT"），静态类型也干净。
+        return bool(getattr(p.stat(), "st_file_attributes", 0) & 0x400)   # REPARSE_POINT
+    except OSError:
         return False
 
 

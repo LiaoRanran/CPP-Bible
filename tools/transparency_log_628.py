@@ -49,6 +49,40 @@ def _sha256_file(path: str) -> str:
     return h.hexdigest()
 
 
+def _posix(s: object) -> str:
+    """只把分隔符压平成 `/`，**保留绝对/相对语义**（不做任何相对化）。
+
+    674d（跨平台修复）：台账 `data/transparency_log.jsonl` 的 `vsa_file` 是**写入机**形态
+    ——开发机为 Windows ⇒ `data\\vsa\\x.json`。Linux/CI 上 `os.path.join(ROOT, 它)` 得到
+    `.../data\\vsa\\x.json`（反斜杠在 posix 是**文件名字符**）⇒ `FileNotFoundError`。
+    仅压平分隔符即可修好，且**不会**碰绝对路径。
+    """
+    return str(s).strip().replace("\\", "/")
+
+
+def _abs_path(vsa_file: object) -> str:
+    """台账值 → **磁盘路径**：绝对路径原样使用，相对路径按 ROOT 拼。
+
+    为什么不能一律 `relpath(ROOT)`：e2e 夹具（`e2e_attestation_629.run_e2e`）的临时台账
+    里存的是 **`tempfile.mkdtemp()` 的绝对路径**（如 `/tmp/queyi_629_e2e_xxx/vsa_signed.json`），
+    它**不在 ROOT 之下** ⇒ 强行相对化会得到 `tmp/queyi_…`，再 join(ROOT) 就指向
+    `ROOT/tmp/…`（不存在）⇒ 反而制造 FileNotFoundError。
+    """
+    p = _posix(vsa_file)
+    return p if os.path.isabs(p) else os.path.join(ROOT, p)
+
+
+def _rel_key(vsa_file: object) -> str:
+    """台账值 → 与磁盘 `os.path.relpath()` 产出的相对路径**可逐字比较**的键（用于 unlogged 判定）。"""
+    p = _posix(vsa_file)
+    if os.path.isabs(p):
+        try:
+            p = os.path.relpath(p, ROOT).replace("\\", "/")
+        except ValueError:  # 跨盘符（Windows）⇒ 保持原样，绝不误匹配
+            return p
+    return p.lstrip("./")
+
+
 def _read_log() -> list[dict]:
     p = _log_path()
     if not os.path.exists(p):
@@ -120,7 +154,7 @@ def logged_files_status() -> dict:
     log = _read_log()
     missing, drifted = [], []
     for e in log:
-        p = os.path.join(ROOT, str(e.get("vsa_file", "")))
+        p = _abs_path(e.get("vsa_file", ""))
         if not os.path.exists(p):
             missing.append(e.get("log_index"))
         elif _sha256_file(p) != e.get("vsa_hash"):
@@ -133,11 +167,11 @@ def unlogged_credentials() -> list[str]:
     """生产凭证目录里**未入册**的凭证（正常状态应为空）。"""
     if not os.path.isdir(VSA_DIR):
         return []
-    logged = {e.get("vsa_file") for e in _read_log()}
+    logged = {_rel_key(e.get("vsa_file")) for e in _read_log()}
     out = []
     for f in sorted(os.listdir(VSA_DIR)):
         if f.startswith("attestation_") and f.endswith(".json"):
-            rel = os.path.relpath(os.path.join(VSA_DIR, f), ROOT)
+            rel = os.path.relpath(os.path.join(VSA_DIR, f), ROOT).replace("\\", "/")
             if rel not in logged:
                 out.append(rel)
     return out
@@ -148,8 +182,8 @@ def status() -> dict:
     v = verify_log()
     log = _read_log()
     tail = log[-1]["vsa_file"] if log else None
-    inc = check_inclusion(os.path.join(ROOT, tail)) if tail else {"included": False,
-                                                                 "log_index": None}
+    inc = (check_inclusion(_abs_path(tail))
+           if tail else {"included": False, "log_index": None})
     return {**v, "files": logged_files_status(), "unlogged": unlogged_credentials(),
             "tail_vsa_file": tail, "tail_included": bool(inc["included"]),
             "tail_log_index": inc["log_index"]}
@@ -175,7 +209,7 @@ def selftest() -> int:
     # 幂等：重复追加同一凭证不新增条目
     if st["tail_vsa_file"]:
         n_before = len(_read_log())
-        r = append_vsa(os.path.join(ROOT, st["tail_vsa_file"]))
+        r = append_vsa(_abs_path(st["tail_vsa_file"]))
         chk("重复追加幂等（不新增日志条目）",
             bool(r.get("already_present")) and len(_read_log()) == n_before)
         chk("追加后链仍完整", verify_log()["chain_valid"])

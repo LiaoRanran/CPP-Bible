@@ -253,7 +253,9 @@ def selftest() -> int:
     chk("commits > 0", git_commits() > 0)
     chk("接地率 35.8", abs(grounding_pct() - 35.8) < 0.1)
     chk("taint 8", defeater_stats()["taint_cards"] == 8)
-    chk("例外条目 227", exception_entries() == 227)
+    # 674d：例外条目常数 227 → 231（674b/674c 新增 4 条例外登记，674a 已登记"钉的常数过期"）。
+    # 与 tests/test_self_observer_637.py::test_governance 同步改，保持两处钉定一致。
+    chk("例外条目 231", exception_entries() == 231)
     chk("观察态 67", observation_rules() == 67)
     obs = collect(heavy=False)
     chk("轻量采集 14 键", len(obs["metrics"]) >= 14)

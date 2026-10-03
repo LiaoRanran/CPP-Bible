@@ -15,7 +15,9 @@ import os
 import re
 import subprocess
 import sys
+from pathlib import Path
 
+import atom_evidence_replay as replay
 import c_target_648 as T
 import pytest
 import yaml
@@ -78,10 +80,18 @@ def test_a4_out_keys_match_declared_run_match_keys():
         keys = re.findall(r"^([A-Za-z0-9_]+)=", open(outp, encoding="utf-8").read(), re.MULTILINE)
         assert keys, outp
         assert set(keys) == set(d["actual"]["run_match_keys"]), (d["id"], keys, d["actual"]["run_match_keys"])
-        # 夹具源码必须存在，且断言符号真实出现在源码里
-        src = open(os.path.join(T.ROOT, d["fixture"]), encoding="utf-8").read()
-        for a in d["artifact_assert"]:
-            assert a["text"] in src, (d["id"], a["text"])
+        # 674d：`artifact_assert` 的**权威语义**是"编译产物内容级结构断言"（跨编译器替代
+        # `artifact_sha256` 的那一层），见 `atom_evidence_replay.check_artifact_assert()`——
+        # 支持 contains / contains_any / absent / call_count / contains_in / absent_in，
+        # **校验对象是工件（.asm）**，且做空白归一（`\t`→空格）与参数完备性 fail-closed。
+        # 旧写法拿**夹具源码**逐条找 `a["text"]`，三重错：① 假定每条都有 `text`（8 张卡是
+        # `contains_any`+`texts` ⇒ `KeyError: 'text'`）；② **对象错**（`mov\tedx, 40` 这类
+        # 汇编只在工件里，源码里永远没有 ⇒ 必红）；③ 无空白归一。
+        # 故改调**权威实现**：断言强度不降反升（参数完备性 fail-closed 是旧写法没有的）。
+        art = os.path.join(T.ROOT, d["artifact"])
+        assert os.path.isfile(art), d["artifact"]
+        ok, lines = replay.check_artifact_assert(d, Path(art))
+        assert ok, (d["id"], lines)
 
 
 def test_a5_atom_cards_declare_draft_and_are_honest_about_signing():

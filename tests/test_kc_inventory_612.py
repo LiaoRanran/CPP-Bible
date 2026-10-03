@@ -14,6 +14,10 @@ import counts_659 as counts  # noqa: E402
 import kc_inventory as d1  # noqa: E402
 
 ROOT = _P(__file__).resolve().parents[1]
+# 674d：本模块曾因 xdist 并发下 `sys.modules['gate_engine']` 被别的"最小仓库"测试的
+# tmp_path 假模块污染而 6/6 红。**根治在 tests/conftest.py 的 `_isolate_tool_module_cache`
+# autouse fixture**（每个测试后还原工具模块缓存与 sys.path 快照）⇒ 这里**不再需要**任何
+# 模块级守卫，6 例在并发下同样真跑（`-n 16` 实测全绿）。
 
 
 def test_total_kc():

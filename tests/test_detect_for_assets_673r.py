@@ -170,6 +170,11 @@ def test_decode_safety_installs_and_fully_restores():
 def test_probe_returns_environment_facts():
     p = DFA.probe_wsl_banner()
     assert isinstance(p, dict) and "wsl_available" in p
+    # 674d：`wsl` 命令不存在时（CI / 单层 Linux）probe 只回**缺环境事实**形态
+    # （`{"wsl_available": False, "error": ...}`）——这是诚实报告而非缺陷；此时
+    # "探测到了哪些 stderr 事实"不适用 ⇒ 条件 skip（断言在具备 WSL 的机器上不变）。
+    if not p.get("wsl_available"):
+        pytest.skip(f"本环境无 wsl 命令 ⇒ probe 只回缺环境事实：{p.get('error')!r}")
     assert "stderr_utf8_decodable" in p and "stderr_has_nul" in p
 
 

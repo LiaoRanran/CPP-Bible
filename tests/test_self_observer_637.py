@@ -21,9 +21,13 @@ def test_grounding():
     assert abs(S.grounding_pct() - 35.8) < 0.1
 
 
-# TA-4：治理指标（例外 227 / 观察态 67）
+# TA-4：治理指标（例外 231 / 观察态 67）
 def test_governance():
-    assert S.exception_entries() == 227 and S.observation_rules() == 67
+    # 674d：例外条目常数 **227 → 231**。674b/674c（本批之前提交）新增 4 条例外登记，
+    # 674a 已登记为"钉的常数过期"。实测 `exception_review_635.stats()["total_entries"]`
+    # = 231（total 7 / existing 7 / 无缺源、无免期豁免）⇒ 更新钉定值以反映**已提交**状态，
+    # 不改断言结构（仍是"恰好等于当前台账条目数"这一硬钉定）。
+    assert S.exception_entries() == 231 and S.observation_rules() == 67
 
 
 # TA-5：击败器覆盖率与 taint

@@ -77,7 +77,12 @@ def _sha256_bytes(b: bytes) -> str:
 
 
 def _norm(card_rel: str) -> str:
-    return card_rel.replace(os.sep, "/").lstrip("./")
+    # 674d（跨平台修复）：不能只压 `os.sep` —— 它只认**当前平台**的分隔符，于是 Linux 上
+    # Windows 风格输入（`atoms\x\A.md`，来自跨平台测试、卡面数据或人工传参）原样保留反斜杠，
+    # 归一失效。干净检出实测：CI 上 `git checkout -- \atoms\x\ATOM-X-001.md` ≠ 期望的
+    # `atoms/x/ATOM-X-001.md`（632 D2-2 用例红）。`git` 要的是 POSIX 风格路径 ⇒
+    # 显式压平两种分隔符，与平台无关（`is_allowed()` 亦复用它 ⇒ 判定同时收紧而非放松）。
+    return card_rel.replace("\\", "/").lstrip("./")
 
 
 def is_allowed(card_rel: str) -> bool:

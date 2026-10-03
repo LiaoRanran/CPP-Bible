@@ -194,6 +194,33 @@ SERIAL_EXTRA = frozenset({
 _REPLAY_LOCK_WAIT = 5.0
 
 
+@pytest.fixture(autouse=True)
+def _isolate_tool_module_cache():
+    """674d：隔离**同 worker 内**的模块缓存污染（`gate_engine` 等工具模块）。
+
+    病（674d 在干净检出实测，`-n 16` 下 12 例红、`-n0` 全绿）：本仓有一批"最小仓库"类测试
+    会在自己的 `tmp_path` 下造 `tools/gate_engine.py`（以及别的同名工具），**并把它插进
+    `sys.path`**。于是同 worker 里**后续**任意测试再 `import gate_engine` 时，`sys.modules`
+    里缓存的已经是那个**假模块** ⇒ 表现为
+      `AttributeError: module 'gate_engine' has no attribute '_cards' / '_git_author_for' / 'run'`
+      `AttributeError: 'dict' object has no attribute 'id'`（假 RULES 是 dict 列表）
+    受害面（实测）：kc_inventory_612 / overturned_channel_592 / overturned_curves /
+    perf_646 / rule_card_mapper_646 / coverage_gap_631 等。
+
+    处置：**每个测试结束后还原** `sys.modules` 里的工具模块条目与 `sys.path` 快照。
+    这是环境隔离，不改任何被测逻辑；串行与并发行为都变得更确定（不是"并发下跳过"）。
+    """
+    saved_modules = {k: v for k, v in sys.modules.items()
+                     if k in ("gate_engine",) or k.startswith("tools.")}
+    saved_path = list(sys.path)
+    yield
+    for name, mod in list(sys.modules.items()):
+        if (name in ("gate_engine",) or name.startswith("tools.")) and name not in saved_modules:
+            sys.modules.pop(name, None)
+    sys.modules.update(saved_modules)
+    sys.path[:] = saved_path
+
+
 @pytest.fixture()
 def replay_serial():
     """把"读真实仓库工件状态"的断言包在 replay 的同一把锁里（任意 `-n` 跑法都不假红）。"""
@@ -333,16 +360,25 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list) -> None:
 # 用 importlib 装载 canonical 实现；探测不到即 `raise RuntimeError`——**设计上 fail-loud，
 # 绝不静默退化**（见该文件 docstring）。
 #
-# 后果：CI 只 checkout 本仓（兄弟仓未检出）⇒ 下列 10 个文件在**收集期**就 RuntimeError。
+# 后果：CI 只 checkout 本仓（兄弟仓未检出）⇒ 下列文件在**收集期**就 RuntimeError。
 # 而 CI 的 pytest 走 `--maxfail=1`，一条收集错误即中止整轮 —— 日志里只剩这一条，
 # 其余数百条测试根本没跑，真实状态被掩盖。
 #
-# 处置（显式登记，不粉饰）：兄弟仓不可用时把这 10 个文件**显式排除**并在 pytest 头部
+# 处置（显式登记，不粉饰）：兄弟仓不可用时把这些文件**显式排除**并在 pytest 头部
 # 打印可见提示；兄弟仓可用时（本机双仓布局）行为**完全不变**（collect_ignore 为空）。
 # 不在这里伪造内核 stub —— 那会让"内核缺失"看起来像"内核正常"，与 fail-loud 设计相悖。
 # 让 CI 检出兄弟仓属仓库布局/治理决定（远程仓与本地双仓不同步，本批不单方面改 CI 依赖）。
 # 详见 data/673f_CI修复报告.md §3.2。
+#
+# 674d 补漏（**本名单此前不完备**）：673f/660 只列了**直接**测内核的 10 个文件，漏了经
+# `interface_verify_647` / `protector_mode_647` / `protector_rollout_647` /
+# `verifier_closure_647` / `trust_root_audit_647` / `verdict_spec_v1_655` /
+# `repo_split_sandbox_647` 等**间接**闭包 import 内核的测试文件 ⇒ CI 上仍有 9 个文件在
+# 收集期 RuntimeError，且因 16 个 worker 同时炸而表现为"47 秒即失败"（= 任务书描述的真因）。
+# 补入后名单 = 19；判据不变（同一 `_kernel_canonical_available()` 探测），本机双仓布局下
+# collect_ignore 仍为空、行为完全不变。
 _KERNEL_REPO_TESTS = (
+    # ── 直接测内核（660 B6 原名单，10）──
     "test_conflict_detector_642.py",
     "test_conflict_detector_647.py",
     "test_core_pbt_656.py",
@@ -353,6 +389,16 @@ _KERNEL_REPO_TESTS = (
     "test_repo_split_sandbox_647.py",
     "test_run_641_gate.py",
     "test_verifier_closure_641.py",
+    # ── 674d 补漏：经内核闭包**间接**依赖（实测 9，收集期 RuntimeError）──
+    "test_647_end_to_end_slow.py",
+    "test_protector_rollout_642.py",
+    "test_protector_rollout_647.py",
+    "test_queyi_core_interface_v02_631.py",
+    "test_queyi_core_interface_v03_632.py",
+    "test_queyi_data_models_645.py",
+    "test_trust_root_audit_647.py",
+    "test_verdict_spec_v1_655.py",
+    "test_verifier_closure_647.py",
 )
 
 

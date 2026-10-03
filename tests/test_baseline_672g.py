@@ -16,11 +16,24 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
 SEED = 20260930
 QUEYI_VERIFIER = Path(os.environ.get("QUEYI_VERIFIER", r"C:/CodeLearnling/queyi-verifier"))
 SELECTOR = QUEYI_VERIFIER / "tools" / "select_assets_672g.py"
+
+# 674d：拆仓 `queyi-verifier`（真资产池选择器）**不在本仓/CI 检出中**（CI 只 checkout 本仓）
+# ⇒ 依赖它的 5 个用例显式跳过；兄弟仓可用时（本机双仓布局）行为**完全不变**、仍真跑。
+# 不改成"缺选择器也绿"——那会让"拆仓未检出"本身不可见（与 conftest 的 660 B6 口径一致）。
+_NEEDS_SPLIT_REPO = pytest.mark.skipif(
+    not SELECTOR.is_file(),
+    reason=(
+        "拆仓 queyi-verifier 未检出 ⇒ 无 select_assets_672g.py，"
+        f"跳过接口类用例（路径探测：{SELECTOR}）"
+    ),
+)
 
 
 def _json(rel: str):
@@ -37,7 +50,8 @@ def _meas(doc: dict, set_: str) -> dict:
     return doc[set_]["measurable"]
 
 
-# ── 任务 A：拆仓接口 ──────────────────────────────────────────────────────────
+# ── 任务 A：拆仓接口（均需兄弟仓，未检出时 skip）───────────────────────────────
+@_NEEDS_SPLIT_REPO
 def test_selector_exists_and_runs():
     assert SELECTOR.is_file(), f"拆仓选择器不存在：{SELECTOR}"
     doc = _selector("--print-pool")
@@ -47,12 +61,14 @@ def test_selector_exists_and_runs():
         "linker", "tsan", "ubsan", "wunsequenced"}
 
 
+@_NEEDS_SPLIT_REPO
 def test_selector_pool_excludes_measurement_instruments():
     pool = set(_selector("--print-pool")["pool"])
     assert "measure" not in pool
     assert "perf-counter" not in pool
 
 
+@_NEEDS_SPLIT_REPO
 def test_selector_random_reproducible():
     a = _selector("--n", "4", "--strategy", "random", "--seed", str(SEED))
     b = _selector("--n", "4", "--strategy", "random", "--seed", str(SEED))
@@ -61,6 +77,7 @@ def test_selector_random_reproducible():
     assert set(a["picked"]) <= set(a["pool"])
 
 
+@_NEEDS_SPLIT_REPO
 def test_selector_failure_driven_and_static_strategies():
     fd = _selector("--pool-json", '[{"id":"a","fail_hits":1},{"id":"b","fail_hits":9}]',
                    "--n", "1", "--strategy", "failure_driven")
@@ -69,6 +86,7 @@ def test_selector_failure_driven_and_static_strategies():
     assert set(st["picked"]) <= {"compiler-warn", "wunsequenced", "cross-compile", "linker"}
 
 
+@_NEEDS_SPLIT_REPO
 def test_selector_fail_loud_on_overflow():
     proc = subprocess.run([sys.executable, str(SELECTOR), "--n", "99", "--strategy", "random",
                            "--seed", str(SEED), "--json"], capture_output=True, text=True)

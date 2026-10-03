@@ -1,7 +1,7 @@
 # OTS 占位登记（**不是时间戳证明**）—— 666 A1
 
 - 目标：`data/supply_chain/merkle_roots.json`
-- 当前台账 sha256：`2af745a9bb57f259d9475468b274d123bfafc22c8142ddcbaa5e17f2d0566e86`
+- 当前台账 sha256：`28b556c66e3993d29b4582955c8db5b5202102bb993d61186ac4c5bcfddd487e`
 - 同目录 `merkle_roots.json.ots`：666 A1 重新生成的**待上链占位凭据**
   （magic 与官方 `DetachedTimestampFile.HEADER_MAGIC` 一致，attestation 段为占位零）
 

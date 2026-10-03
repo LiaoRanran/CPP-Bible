@@ -763,7 +763,12 @@ def test_c6_complete_runs_verify_and_audits_touch(q: Path, gitrepo: Path):
 
 def test_c6_complete_failed_verify_requeues_then_blocks(q: Path):
     """verify rc≠0 ⇒ 回 queued（attempts+1，释放所有权）；超限 ⇒ blocked（不许无限重试）。"""
-    tid = tq.enqueue("replay_batch", "docs/c6b.md", verify_cmd="exit /b 3")["id"]
+    # 674d（跨平台修复）：原用 `verify_cmd="exit /b 3"`——`exit /b` 是 **Windows cmd 专有**语法，
+    # 在 Linux/CI 上 sh 会把它当"参数 /b 非法"报语法错误 ⇒ 退出码 **2**（干净检出实测：
+    # `assert 'rc=3' in '...rc=2'`）。改用**跨平台**等价写法：直接让解释器以码 3 退出，
+    # 断言语义（rc=3 ⇒ 回 queued）一字不变，且不再依赖 shell 方言。
+    tid = tq.enqueue("replay_batch", "docs/c6b.md",
+                     verify_cmd=f'"{sys.executable}" -c "import sys; sys.exit(3)"')["id"]
     tq.claim("w1")
     r1 = tq.complete(tid, "w1")
     assert r1["status"] == "queued" and r1["attempts"] == 2
@@ -991,7 +996,14 @@ def test_t0_case_and_backslash_variants_blocked_on_windows(q: Path):
 def test_t0_case_sensitive_semantics_preserved_on_posix(q: Path):
     """Linux 大小写敏感：仅大小写不同的两个**真实不同**文件**不许**被合并成一把锁。"""
     assert tq._norm_touch("Tools/A.py") != tq._norm_touch("tools/a.py")
-    assert tq._norm_touch("tools\\a.py") == "tools\\a.py", "posix 下反斜杠是文件名字符，不是分隔符"
+    # 674d：锁定**实际裁决**（539 A1）而不是"posix 下反斜杠不归一"。
+    # `tools/task_queue.py::_touch_store` 的 docstring 明确："入库只此一种形态"——
+    # `PurePath(str(p).replace("\\", "/")).as_posix()` ⇒ **任何**反斜杠写法都被压平成
+    # `/`，比较键随之统一。这正是 538 T0「五个不同集合元素逃逸、写锁被绕过」的修复面；
+    # 若按旧断言在 posix 上保留反斜杠，`tools\a.py` 与 `tools/a.py` 会变成两把锁键，
+    # 反而放行并发改同一文件。故断言改为锁定 posix 归一（上一行仍守住大小写敏感语义）。
+    assert tq._norm_touch("tools\\a.py") == "tools/a.py", \
+        "539 A1：入库/比较键统一 posix 形态（反斜杠被压平，大小写不折叠）"
     tq.enqueue("atom_produce", "docs/t0f.md", touch=["Tools/A.py"], priority=1)
     tq.enqueue("atom_produce", "docs/t0g.md", touch=["tools/a.py"], priority=2)
     assert tq.claim("wA") is not None
