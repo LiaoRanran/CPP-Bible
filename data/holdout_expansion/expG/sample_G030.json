@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G030",
+  "defect_type": "heap_overflow",
+  "defect_location": {
+    "line": 19,
+    "function": "tftp_receive_packet",
+    "description": "CVE-2019-5436: TFTP 接收代码堆溢出（CVE 描述: A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution）。修复版 blksize 上限 512，本样本保留未限制版本。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2019-5436",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-5436",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 TFTP 传输层，服务器选项响应硬编码，保留『blksize 大于接收缓冲时直接 memcpy』核心缺陷（修复版将 blksize 上限设为 512）"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "服务器响应 blksize=1024，接收缓冲固定 512 → 堆越界写 512 字节",
+  "notes": "CVE-2019-5436: TFTP 接收代码堆溢出（CVE 描述: A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution）。修复版 blksize 上限 512，本样本保留未限制版本。"
+}

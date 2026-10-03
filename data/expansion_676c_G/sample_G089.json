@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G089",
+  "defect_type": "resource_exhaustion",
+  "defect_location": {
+    "line": 20,
+    "function": "h2_on_settings_flood",
+    "description": "CVE-2019-9512: HTTP/2 SETTINGS flood（CVE 描述: flood of SETTINGS frames ... uncontrolled resource consumption, CWE-400）。资源耗尽类 → 诚实标 miss。"
+  },
+  "severity": "medium",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2019-9512",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-9512",
+    "project": "http2",
+    "commit": "",
+    "simplification": "协议级 DoS 无法在用户态完整复现：按 CVE 描述（flood of SETTINGS frames: 对端持续发送 SETTINGS 且无速率限制处理）做有界等价模拟，planted=true"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "攻击者持续发送 SETTINGS 帧，服务端为每帧排队处理对象无上限",
+  "notes": "CVE-2019-9512: HTTP/2 SETTINGS flood（CVE 描述: flood of SETTINGS frames ... uncontrolled resource consumption, CWE-400）。资源耗尽类 → 诚实标 miss。"
+}

@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G034",
+  "defect_type": "use_after_free",
+  "defect_location": {
+    "line": 18,
+    "function": "mqtt_send_pending",
+    "description": "CVE-2021-22945: MQTT 发送时错误地保留已释放内存指针（CVE 描述: erroneously keep a pointer to an already freed memory area and both use that again ... and also free it again）→ UAF + double free。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2021-22945",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-22945",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 MQTT 传输层与断连状态机，保留『断连释放缓冲后指针未置空，后续发送再次使用并再次释放』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "向 MQTT 服务器发送数据时服务器断连，断连释放 pending 缓冲后仍被使用",
+  "notes": "CVE-2021-22945: MQTT 发送时错误地保留已释放内存指针（CVE 描述: erroneously keep a pointer to an already freed memory area and both use that again ... and also free it again）→ UAF + double free。"
+}

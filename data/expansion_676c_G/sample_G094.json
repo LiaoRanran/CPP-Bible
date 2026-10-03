@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G094",
+  "defect_type": "global_overflow",
+  "defect_location": {
+    "line": 37,
+    "function": "XMLDocument_ErrorIDToName",
+    "description": "tinyxml2#923（未修复）: ErrorIDToName 对 errorID==XML_ERROR_COUNT 读 _errorNames[19] → AddressSanitizer global-buffer-overflow（issue 附 tinyxml2.cpp:2501-2507 与数组定义 tinyxml2.cpp:2136-2156）。"
+  },
+  "severity": "medium",
+  "planted": false,
+  "source": {
+    "type": "github_issue",
+    "id": "leethomason/tinyxml2#923",
+    "url": "https://github.com/leethomason/tinyxml2/issues/923",
+    "project": "tinyxml2",
+    "commit": "",
+    "simplification": "按 issue 引用的原始代码路径直接镜像（_errorNames 数组 19 项, errorID 可达 XML_ERROR_COUNT=19 → _errorNames[errorID] 越界读）"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "errorID == XML_ERROR_COUNT(19)：_errorNames[19] 越过 19 元素全局数组",
+  "notes": "tinyxml2#923（未修复）: ErrorIDToName 对 errorID==XML_ERROR_COUNT 读 _errorNames[19] → AddressSanitizer global-buffer-overflow（issue 附 tinyxml2.cpp:2501-2507 与数组定义 tinyxml2.cpp:2136-2156）。"
+}

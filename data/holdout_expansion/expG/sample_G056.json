@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G056",
+  "defect_type": "logic_error",
+  "defect_location": {
+    "line": 24,
+    "function": "os_unix_tmpdir_search",
+    "description": "CVE-2016-6153: os_unix.c 临时目录搜索算法实现不当（CVE 描述: improperly implements the temporary directory search algorithm ... obtain sensitive information）。逻辑缺陷，正确=跳过世界可写目录、实际=使用 → 诚实标 miss。"
+  },
+  "severity": "medium",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2016-6153",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-6153",
+    "project": "sqlite",
+    "commit": "",
+    "simplification": "基于 CVE 描述（临时目录搜索算法实现不当导致敏感信息泄露/DoS）以等价的目录选择逻辑重构，非原始代码镜像，故标 planted=true"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "临时目录搜索把用户可写的世界可写目录排在世界可写目录之前",
+  "notes": "CVE-2016-6153: os_unix.c 临时目录搜索算法实现不当（CVE 描述: improperly implements the temporary directory search algorithm ... obtain sensitive information）。逻辑缺陷，正确=跳过世界可写目录、实际=使用 → 诚实标 miss。"
+}

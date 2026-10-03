@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G098",
+  "defect_type": "logic_error",
+  "defect_location": {
+    "line": 14,
+    "function": "value_as_uint64",
+    "description": "jsoncpp#1545（已修复）: [2^64, 2^64+2^11] 的数字经 double 往返静默返回错误值而非抛异常（issue 附完整复现代码与修复 PR #1519）。底层是 float→uint64 越界转换 UB，但 GCC/Clang 默认 -fsanitize=undefined **不包含** float-cast-overflow → 检测器无报告。这是真实的检测器盲区（浮点转换检查未启用），诚实标 miss。"
+  },
+  "severity": "medium",
+  "planted": false,
+  "source": {
+    "type": "github_issue",
+    "id": "open-source-parsers/jsoncpp#1545",
+    "url": "https://github.com/open-source-parsers/jsoncpp/issues/1545",
+    "project": "jsoncpp",
+    "commit": "",
+    "simplification": "按 issue 报告的确切行为（[2^64, 2^64+2^11] 范围返回 0 而非抛异常）镜像经 double 转换的 uint64 解析路径"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "解析 18446744073709551616 (2^64)：double 往返精度丢失 + 越界 float→uint64 转换（x86 硬件产生不定值）",
+  "notes": "jsoncpp#1545（已修复）: [2^64, 2^64+2^11] 的数字经 double 往返静默返回错误值而非抛异常（issue 附完整复现代码与修复 PR #1519）。底层是 float→uint64 越界转换 UB，但 GCC/Clang 默认 -fsanitize=undefined **不包含** float-cast-overflow → 检测器无报告。这是真实的检测器盲区（浮点转换检查未启用），诚实标 miss。"
+}

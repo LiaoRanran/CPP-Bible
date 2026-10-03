@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G046",
+  "defect_type": "logic_error",
+  "defect_location": {
+    "line": 14,
+    "function": "sftp_expand_tilde",
+    "description": "CVE-2023-27534: SFTP 路径穿越（CVE 描述: the tilde (~) character to be wrongly replaced when used as a prefix in the first path element ... path traversal vulnerability, CWE-22）。逻辑缺陷 → 诚实标 miss。"
+  },
+  "severity": "medium",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2023-27534",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-27534",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 SFTP 传输层，保留『~ 前缀被错误展开导致路径穿越』核心缺陷"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "SFTP 路径首段以 ~ 开头且含 /../，被展开到用户主目录之外",
+  "notes": "CVE-2023-27534: SFTP 路径穿越（CVE 描述: the tilde (~) character to be wrongly replaced when used as a prefix in the first path element ... path traversal vulnerability, CWE-22）。逻辑缺陷 → 诚实标 miss。"
+}

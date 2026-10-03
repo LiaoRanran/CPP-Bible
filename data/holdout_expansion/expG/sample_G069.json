@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G069",
+  "defect_type": "heap_overflow",
+  "defect_location": {
+    "line": 15,
+    "function": "nss_hostname_digits_dots",
+    "description": "CVE-2015-0235 (GHOST): glibc gethostbyname 缓冲溢出（CVE 描述: buffer overflow in __nss_hostname_digits_dots ... hostname length close to buffer boundary）。用户态等价重构（planted=true）。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2015-0235",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-0235",
+    "project": "glibc",
+    "commit": "",
+    "simplification": "基于 CVE 描述（__nss_hostname_digits_dots 缓冲区尺寸计算错误，主机名接近边界时溢出）以等价的 off-by-one 尺寸计算重构，非原始代码镜像，故标 planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "主机名恰 1024 字节 = 缓冲大小，尺寸计算缺少 NUL 的 +1 → 写入 buffer[1024]",
+  "notes": "CVE-2015-0235 (GHOST): glibc gethostbyname 缓冲溢出（CVE 描述: buffer overflow in __nss_hostname_digits_dots ... hostname length close to buffer boundary）。用户态等价重构（planted=true）。"
+}

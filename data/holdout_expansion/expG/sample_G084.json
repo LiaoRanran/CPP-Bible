@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G084",
+  "defect_type": "race_condition",
+  "defect_location": {
+    "line": 21,
+    "function": "gup_cow_write",
+    "description": "CVE-2016-5195 (Dirty COW): GUP/COW 竞态（CVE 描述: Race condition in mm/gup.c ... leveraging incorrect handling of a copy-on-write (COW) feature to write to a read-only memory mapping）。用户态等价模拟，TSan 捕获。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2016-5195",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-5195",
+    "project": "linux-kernel",
+    "commit": "",
+    "simplification": "内核漏洞无法在用户态直接复现：按 CVE 描述（GUP 与 COW 处理的竞态允许写只读映射）做用户态等价模拟：写线程与 COW 失效线程无锁竞争同一页对象，planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "写线程反复写共享页，失效线程反复置只读标志，两者无锁竞争",
+  "notes": "CVE-2016-5195 (Dirty COW): GUP/COW 竞态（CVE 描述: Race condition in mm/gup.c ... leveraging incorrect handling of a copy-on-write (COW) feature to write to a read-only memory mapping）。用户态等价模拟，TSan 捕获。"
+}

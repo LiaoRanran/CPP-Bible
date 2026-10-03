@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G049",
+  "defect_type": "logic_error",
+  "defect_location": {
+    "line": 18,
+    "function": "cert_reuse_credential_check",
+    "description": "CVE-2016-7141: 连接复用劫持客户端证书认证（CVE 描述: allow remote attackers to hijack the authentication of a TLS connection by leveraging reuse of a previously loaded client certificate from file for a connection）。逻辑缺陷 → 诚实标 miss。"
+  },
+  "severity": "medium",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2016-7141",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-7141",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 NSS/PEM 后端，保留『连接复用未校验客户端证书状态 → 认证被劫持』核心缺陷"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "新连接未配置客户端证书，复用了此前从文件加载证书的连接",
+  "notes": "CVE-2016-7141: 连接复用劫持客户端证书认证（CVE 描述: allow remote attackers to hijack the authentication of a TLS connection by leveraging reuse of a previously loaded client certificate from file for a connection）。逻辑缺陷 → 诚实标 miss。"
+}

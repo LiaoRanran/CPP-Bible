@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G076",
+  "defect_type": "state_machine",
+  "defect_location": {
+    "line": 22,
+    "function": "ssh_transport_process_packet",
+    "description": "CVE-2023-48795 (Terrapin): SSH 传输协议前缀截断（CVE 描述: allows remote attackers to bypass integrity checks such that some packets are omitted (from the extension negotiation message)）。状态机逻辑错误 → 诚实标 miss。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2023-48795",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-48795",
+    "project": "openssh",
+    "commit": "",
+    "simplification": "剥离 SSH 二进制分组层，以等价序号/前缀校验状态机镜像『非预期包推进序号使 EXT_INFO 前缀校验失效』核心缺陷"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "MITM 注入额外 KEXINIT 包后转发被截断的协商 → 客户端认为 EXT_INFO 完整到达",
+  "notes": "CVE-2023-48795 (Terrapin): SSH 传输协议前缀截断（CVE 描述: allows remote attackers to bypass integrity checks such that some packets are omitted (from the extension negotiation message)）。状态机逻辑错误 → 诚实标 miss。"
+}

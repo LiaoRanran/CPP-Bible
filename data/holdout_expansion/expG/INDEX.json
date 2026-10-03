@@ -1,0 +1,2513 @@
+{
+ "schema": "queyi-expansion-pool/v1",
+ "batch": "676c-G(扩样真实世界缺陷)",
+ "pool_dir": "data/holdout_expansion/expG",
+ "count": 99,
+ "stats": {
+  "total_generated": 99,
+  "compiled": 99,
+  "pooled": 99,
+  "eliminated": 0,
+  "by_type": {
+   "compiler_warning": 1,
+   "division_by_zero": 1,
+   "double_free": 3,
+   "global_overflow": 1,
+   "heap_overflow": 12,
+   "heap_overread": 17,
+   "heap_underflow": 2,
+   "infinite_loop": 1,
+   "info_leak": 2,
+   "integer_overflow": 6,
+   "logic_error": 17,
+   "memory_leak": 1,
+   "null_deref": 5,
+   "pointer_overflow": 3,
+   "race_condition": 4,
+   "resource_exhaustion": 2,
+   "stack_overflow": 1,
+   "stack_overflow_write": 5,
+   "stack_overread": 1,
+   "state_machine": 4,
+   "timing_side_channel": 1,
+   "type_confusion": 2,
+   "use_after_free": 7
+  },
+  "severity": {
+   "high": 73,
+   "low": 3,
+   "medium": 23
+  },
+  "planted_true": 25,
+  "planted_false": 74,
+  "source_distribution": {
+   "cve": 89,
+   "github_issue": 10
+  },
+  "verdict_distribution": {
+   "catch": 71,
+   "miss": 28
+  }
+ },
+ "quality_check": {
+  "seed": 6762,
+  "sampled": 29,
+  "mech_fail": 0,
+  "planted_false_source_checked": 74,
+  "source_problems": 0
+ },
+ "planted_false_samples": [
+  "sample_G001",
+  "sample_G002",
+  "sample_G003",
+  "sample_G004",
+  "sample_G005",
+  "sample_G006",
+  "sample_G007",
+  "sample_G008",
+  "sample_G009",
+  "sample_G010",
+  "sample_G011",
+  "sample_G012",
+  "sample_G013",
+  "sample_G014",
+  "sample_G015",
+  "sample_G016",
+  "sample_G017",
+  "sample_G018",
+  "sample_G020",
+  "sample_G021",
+  "sample_G022",
+  "sample_G023",
+  "sample_G024",
+  "sample_G026",
+  "sample_G027",
+  "sample_G028",
+  "sample_G029",
+  "sample_G030",
+  "sample_G031",
+  "sample_G032",
+  "sample_G033",
+  "sample_G034",
+  "sample_G035",
+  "sample_G036",
+  "sample_G038",
+  "sample_G039",
+  "sample_G040",
+  "sample_G041",
+  "sample_G042",
+  "sample_G043",
+  "sample_G044",
+  "sample_G045",
+  "sample_G046",
+  "sample_G047",
+  "sample_G048",
+  "sample_G049",
+  "sample_G050",
+  "sample_G051",
+  "sample_G052",
+  "sample_G053",
+  "sample_G054",
+  "sample_G055",
+  "sample_G057",
+  "sample_G058",
+  "sample_G059",
+  "sample_G062",
+  "sample_G063",
+  "sample_G064",
+  "sample_G065",
+  "sample_G066",
+  "sample_G068",
+  "sample_G072",
+  "sample_G074",
+  "sample_G075",
+  "sample_G076",
+  "sample_G077",
+  "sample_G087",
+  "sample_G090",
+  "sample_G093",
+  "sample_G094",
+  "sample_G095",
+  "sample_G096",
+  "sample_G097",
+  "sample_G098"
+ ],
+ "samples": [
+  {
+   "sample_id": "sample_G001",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 27,
+    "function": "tls1_process_heartbeat"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2014-0160",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-0160",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "Heartbleed：tls1_process_heartbeat 不校验 payload_length 与请求缓冲区实际大小，按声明长度把堆上请求缓冲之外的内存作为心跳响应回显（最多 64KB 进程内存泄露）。"
+  },
+  {
+   "sample_id": "sample_G002",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 24,
+    "function": "OBJ_obj2txt"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2014-3508",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-3508",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "OBJ_obj2txt 在 pretty print 时分配精确大小的缓冲但不保证写入 '\\0'（CVE 描述: does not ensure the presence of '\\0' characters），调用方以 C 字符串处理 → 读越界，泄露进程内存。"
+  },
+  {
+   "sample_id": "sample_G003",
+   "defect_type": "null_deref",
+   "defect_location": {
+    "line": 29,
+    "function": "dtls1_read_timeout"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2014-3571",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-3571",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2014-3571: crafted DTLS 消息在『header 读』与『消息体读』两条路径处理不一致，导致 NULL 指针解引用（CVE 描述: NULL pointer dereference and application crash）。本样本镜像该模式。"
+  },
+  {
+   "sample_id": "sample_G004",
+   "defect_type": "memory_leak",
+   "defect_location": {
+    "line": 25,
+    "function": "dtls1_buffer_record"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2015-0206",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-0206",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2015-0206: dtls1_buffer_record 为 next epoch 缓冲重复记录时 memory leak（CVE 描述: Memory leak in dtls1_buffer_record ... by sending many duplicate records for the next epoch）→ 攻击者可耗尽内存。LeakSanitizer 捕获。"
+  },
+  {
+   "sample_id": "sample_G005",
+   "defect_type": "double_free",
+   "defect_location": {
+    "line": 30,
+    "function": "dtls1_process_fragment"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2014-3505",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-3505",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2014-3505: d1_both.c 中 DTLS 错误路径的 double free（CVE 描述: Double free vulnerability in d1_both.c ... crafted DTLS packets that trigger an error path）。"
+  },
+  {
+   "sample_id": "sample_G006",
+   "defect_type": "type_confusion",
+   "defect_location": {
+    "line": 24,
+    "function": "ASN1_TYPE_cmp"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2015-0286",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-0286",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2015-0286: ASN1_TYPE_cmp 未正确执行 boolean 类型比较（does not properly perform boolean-type comparisons）→ 无效读/崩溃。本样本按『boolean 值被当指针解引用』镜像。"
+  },
+  {
+   "sample_id": "sample_G007",
+   "defect_type": "null_deref",
+   "defect_location": {
+    "line": 25,
+    "function": "X509_to_X509_REQ"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2015-0288",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-0288",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2015-0288: X509_to_X509_REQ 用 invalid 证书时 NULL pointer dereference（CVE 描述: NULL pointer dereference and application crash via an invalid certificate）。"
+  },
+  {
+   "sample_id": "sample_G008",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 24,
+    "function": "X509_cmp_time"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2015-1789",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-1789",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2015-1789: X509_cmp_time 对 crafted length field 的 ASN1_TIME 做 out-of-bounds read（CVE 描述: out-of-bounds read via a crafted length field in ASN1_TIME）。堆上 6 字节时间串按 4+4 位解析 → 越界 2 字节。"
+  },
+  {
+   "sample_id": "sample_G009",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 18,
+    "function": "X509_NAME_oneline"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-2176",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2176",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2016-2176: X509_NAME_oneline 处理 crafted EBCDIC ASN.1 数据时 buffer over-read（CVE 描述: obtain sensitive information from process stack memory or cause a denial of service (buffer over-read)）。"
+  },
+  {
+   "sample_id": "sample_G010",
+   "defect_type": "integer_overflow",
+   "defect_location": {
+    "line": 13,
+    "function": "EVP_EncodeUpdate"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-2105",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2105",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "catch"
+   },
+   "notes": "CVE-2016-2105: EVP_EncodeUpdate 整数溢出 → heap memory corruption（CVE 描述: Integer overflow in the EVP_EncodeUpdate ... via a large amount of binary data）。本样本镜像长度计算的溢出点。"
+  },
+  {
+   "sample_id": "sample_G011",
+   "defect_type": "integer_overflow",
+   "defect_location": {
+    "line": 14,
+    "function": "EVP_EncryptUpdate"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-2106",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2106",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "catch"
+   },
+   "notes": "CVE-2016-2106: EVP_EncryptUpdate 整数溢出（CVE 描述: Integer overflow in the EVP_EncryptUpdate ... via a large amount of data）。修复 commit 增加的正是 inl+bl 溢出检查，本样本保留无检查版本。"
+  },
+  {
+   "sample_id": "sample_G012",
+   "defect_type": "integer_overflow",
+   "defect_location": {
+    "line": 18,
+    "function": "MDC2_Update"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-6303",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-6303",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "catch"
+   },
+   "notes": "CVE-2016-6303: MDC2_Update 整数溢出 → out-of-bounds write（CVE 描述: Integer overflow in the MDC2_Update ... out-of-bounds write and application crash）。本样本镜像 num 累加溢出点。"
+  },
+  {
+   "sample_id": "sample_G013",
+   "defect_type": "pointer_overflow",
+   "defect_location": {
+    "line": 14,
+    "function": "check_boundary"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-2177",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2177",
+    "project": "openssl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2016-2177: OpenSSL 用指针算术做堆缓冲边界检查（incorrectly uses pointer arithmetic for heap-buffer boundary checks），长度极端时整数溢出。指针回绕本身是 UB，但 GCC 的 -fsanitize=undefined **不包含 pointer-overflow 检查**（该资产为 clang 专属）→ 本机检测器无报告。真实检测器盲区，诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G014",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 17,
+    "function": "chacha20_poly1305_decrypt"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2017-3731",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-3731",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2017-3731: 截断包触发 out-of-bounds read（CVE 描述: a truncated packet can cause ... an out-of-bounds read, usually resulting in a crash）。本样本镜像 tag = in + len - tag_len 的前向越界。"
+  },
+  {
+   "sample_id": "sample_G015",
+   "defect_type": "stack_overflow",
+   "defect_location": {
+    "line": 20,
+    "function": "asn1_parse_constructed"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2018-0739",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-0739",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2018-0739: 递归构造类型的 ASN.1 输入导致栈耗尽（CVE 描述: Constructed ASN.1 types with a recursive definition ... exceed the stack）。ASan 报告 stack-overflow。"
+  },
+  {
+   "sample_id": "sample_G016",
+   "defect_type": "null_deref",
+   "defect_location": {
+    "line": 34,
+    "function": "GENERAL_NAME_cmp"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2020-1971",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-1971",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2020-1971: GENERAL_NAME_cmp 对 EDIPartyName 缺少比较分支 → NULL pointer dereference（CVE 描述: This function can crash ... both GENERAL_NAMEs are EDIPartyName）。"
+  },
+  {
+   "sample_id": "sample_G017",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 18,
+    "function": "ASN1_STRING_cmp"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2021-3712",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3712",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2021-3712: ASN1_STRING 以 (data, length) 表示、不保证 NUL 结尾（CVE 描述: contrasts with normal C strings which are repesented as a buffer for the string data），误按 C 字符串读 → 越界读/信息泄露。"
+  },
+  {
+   "sample_id": "sample_G018",
+   "defect_type": "stack_overflow_write",
+   "defect_location": {
+    "line": 18,
+    "function": "ossl_punycode_decode"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2022-3602",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-3602",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2022-3602: X.509 punycode 解码缓冲区溢出（CVE 描述: A buffer overrun can be triggered in X.509 certificate verification ... name constraint checking）。原始缺陷即 ossl_punycode_decode 输出无界写入。"
+  },
+  {
+   "sample_id": "sample_G019",
+   "defect_type": "infinite_loop",
+   "defect_location": {
+    "line": 16,
+    "function": "bn_mod_sqrt"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2022-0778",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-0778",
+    "project": "openssl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2022-0778: BN_mod_sqrt 对非素数模数永不过返回（CVE 描述: contains a bug that can cause it to loop forever for non-prime moduli），解析证书时可远程 DoS。纯逻辑缺陷，sanitizer 无运行时报告 → 诚实标 miss（DoS 盲区，验证时进程超时）。"
+  },
+  {
+   "sample_id": "sample_G020",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 40,
+    "function": "X509_verify_cert"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2015-1793",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-1793",
+    "project": "openssl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2015-1793: X509_verify_cert 未正确处理 alternate chain 的 Basic Constraints cA 值 → 伪造 CA 被接受（CVE 描述: does not properly process X.509 Basic Constraints cA values ... spoof a Certification Authority）。纯逻辑错误，正确行为=reject、实际=accept，sanitizer 无报告 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G021",
+   "defect_type": "state_machine",
+   "defect_location": {
+    "line": 22,
+    "function": "ssl3_process_ccs"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2014-0224",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-0224",
+    "project": "openssl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2014-0224 (CCS 注入): 不限制 CCS 消息处理状态（CVE 描述: does not properly restrict processing of ChangeCipherSpec messages）→ MITM 强制零长度 master key。纯状态机逻辑错误，正确=拒绝、实际=接受，sanitizer 无报告 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G022",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 17,
+    "function": "ssl3_get_key_exchange"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2015-0204",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-0204",
+    "project": "openssl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2015-0204 (FREAK): ssl3_get_key_exchange 允许 RSA→EXPORT_RSA 降级（CVE 描述: conduct RSA-to-EXPORT_RSA downgrade attacks by offering a weak ephemeral RSA key in a noncompliant way）。纯逻辑错误，正确=拒绝、实际=接受 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G023",
+   "defect_type": "null_deref",
+   "defect_location": {
+    "line": 17,
+    "function": "tls12_choose_sig_alg"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2021-3449",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3449",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2021-3449: TLSv1.2 重协商 ClientHello 省略 signature_algorithms 扩展时服务器崩溃（CVE 描述: may crash if sent a maliciously crafted renegotiation ClientHello ... omits the signature_algorithms extension）。"
+  },
+  {
+   "sample_id": "sample_G024",
+   "defect_type": "race_condition",
+   "defect_location": {
+    "line": 21,
+    "function": "ssl3_get_new_session_ticket"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2015-1791",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-1791",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "tsan"
+   ],
+   "pooled_verdict": {
+    "tsan": "catch"
+   },
+   "notes": "CVE-2015-1791: ssl3_get_new_session_ticket 多线程客户端竞争（CVE 描述: Race condition in the ssl3_get_new_session_ticket ... double free and use-after-free）。TSan 捕获数据竞争。"
+  },
+  {
+   "sample_id": "sample_G025",
+   "defect_type": "heap_overflow",
+   "defect_location": {
+    "line": 20,
+    "function": "SSL_set_SSL_CTX"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2026-72897",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-72897",
+    "project": "openssl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2026-72897: SSL_set_SSL_CTX 证书槽位越界读写 → 堆损坏（官方公告: certificate slot array out-of-bounds read/write, heap corruption）。用户态等价重构（planted=true）。"
+  },
+  {
+   "sample_id": "sample_G026",
+   "defect_type": "stack_overread",
+   "defect_location": {
+    "line": 25,
+    "function": "tftp_send_first"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2017-1000100",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-1000100",
+    "project": "curl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2017-1000100: 超长文件名被截断入 515 缓冲，但缓冲尺寸仍按未截断长度更新，sendto 按错误尺寸发送（CVE 描述: the file name is truncated to fit within the buffer boundaries, but the buffer size is still wrongly updated）。"
+  },
+  {
+   "sample_id": "sample_G027",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 14,
+    "function": "smtp_endofresp"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2019-3823",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-3823",
+    "project": "curl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2019-3823: smtp_endofresp 对未 NUL 结尾且 len=5 的缓冲堆越界读（CVE 描述: heap out-of-bounds read in the code handling the end-of-response for SMTP ... if the buffer ... isn't NUL terminated and contains no character ending the parsed number）。"
+  },
+  {
+   "sample_id": "sample_G028",
+   "defect_type": "integer_overflow",
+   "defect_location": {
+    "line": 12,
+    "function": "ntlm_encode_size"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2017-8816",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-8816",
+    "project": "curl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "catch"
+   },
+   "notes": "CVE-2017-8816: NTLM 认证在 32 位平台整数溢出（CVE 描述: denial of service (integer overflow and resultant buffer overflow) via vectors involving long user and password fields）。本样本镜像长度计算溢出点。"
+  },
+  {
+   "sample_id": "sample_G029",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 17,
+    "function": "ntlm_decode_type2_target"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2018-16890",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-16890",
+    "project": "curl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2018-16890: ntlm_decode_type2_target 未正确校验传入数据（CVE 描述: does not validate incoming data correctly and is subject to an integer overflow / out-of-bounds read），堆越界读。"
+  },
+  {
+   "sample_id": "sample_G030",
+   "defect_type": "heap_overflow",
+   "defect_location": {
+    "line": 19,
+    "function": "tftp_receive_packet"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2019-5436",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-5436",
+    "project": "curl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2019-5436: TFTP 接收代码堆溢出（CVE 描述: A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution）。修复版 blksize 上限 512，本样本保留未限制版本。"
+  },
+  {
+   "sample_id": "sample_G031",
+   "defect_type": "heap_overflow",
+   "defect_location": {
+    "line": 19,
+    "function": "socks5_send_hostname"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2023-38545",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-38545",
+    "project": "curl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2023-38545: SOCKS5 代理握手堆缓冲溢出（CVE 描述: This flaw makes curl overflow a heap based buffer in the SOCKS5 proxy handshake），主机名超长且走慢速握手路径时整段拷贝。"
+  },
+  {
+   "sample_id": "sample_G032",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 17,
+    "function": "rtp_parse"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2018-1000122",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-1000122",
+    "project": "curl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2018-1000122: RTSP+RTP 处理代码缓冲越界读（CVE 描述: A buffer over-read exists ... in the RTSP+RTP handling code that allows an attacker to cause a denial of service or information leakage）。"
+  },
+  {
+   "sample_id": "sample_G033",
+   "defect_type": "heap_overflow",
+   "defect_location": {
+    "line": 13,
+    "function": "deliver_data"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2017-1000257",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-1000257",
+    "project": "curl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2017-1000257: IMAP FETCH 零字节数据时 deliver-data 收到越界指针（CVE 描述: libcurl would pass on that (non-existing) data with a pointer and the size (zero) ... 可写越界 1 字节）。"
+  },
+  {
+   "sample_id": "sample_G034",
+   "defect_type": "use_after_free",
+   "defect_location": {
+    "line": 18,
+    "function": "mqtt_send_pending"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2021-22945",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-22945",
+    "project": "curl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2021-22945: MQTT 发送时错误地保留已释放内存指针（CVE 描述: erroneously keep a pointer to an already freed memory area and both use that again ... and also free it again）→ UAF + double free。"
+  },
+  {
+   "sample_id": "sample_G035",
+   "defect_type": "use_after_free",
+   "defect_location": {
+    "line": 24,
+    "function": "smb_request2"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2026-3805",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-3805",
+    "project": "curl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2026-3805: SMB 第二次请求使用已释放内存的数据指针（官方公告: making a second SMB request curl uses data pointers to freed memory, Medium, CWE-416）。2026-03-11 披露。"
+  },
+  {
+   "sample_id": "sample_G036",
+   "defect_type": "double_free",
+   "defect_location": {
+    "line": 20,
+    "function": "sasl_gsasl_cleanup"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2026-8925",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-8925",
+    "project": "curl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2026-8925: GSASL 上下文 double free（官方公告: GSASL context is cleaned up twice without clearing the pointer in between, Medium, CWE-415）。2026-09-02 披露。"
+  },
+  {
+   "sample_id": "sample_G037",
+   "defect_type": "heap_overflow",
+   "defect_location": {
+    "line": 13,
+    "function": "sasl_build_login_response"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2018-16839",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-16839",
+    "project": "curl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2018-16839: SASL 认证代码缓冲区过写（CVE 描述: a buffer overrun in the SASL authentication code that may lead to denial of service; CWE-122/CWE-190）。"
+  },
+  {
+   "sample_id": "sample_G038",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 17,
+    "function": "tool_writeout"
+   },
+   "severity": "low",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2017-7407",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-7407",
+    "project": "curl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2017-7407: --write-out 以 $ 变量结尾时读取越界（CVE 描述: reading a workstation screen ... obtain sensitive information from process memory via a --write-out argument ending in a variable without terminator）。"
+  },
+  {
+   "sample_id": "sample_G039",
+   "defect_type": "integer_overflow",
+   "defect_location": {
+    "line": 12,
+    "function": "curl_easy_escape_alloc"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-7167",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-7167",
+    "project": "curl"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "catch"
+   },
+   "notes": "CVE-2016-7167: curl_escape 系列函数整数溢出（CVE 描述: Multiple integer overflows in the (1) curl_escape ... via a string of length 0xffffffff, which triggers a heap-based buffer overflow）。"
+  },
+  {
+   "sample_id": "sample_G040",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 13,
+    "function": "http_referer_build"
+   },
+   "severity": "low",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2021-22876",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-22876",
+    "project": "curl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2021-22876: Referer 头泄露凭据（CVE 描述: libcurl does not strip off user credentials from the URL when automatically populating the Referer: HTTP header）。信息泄露逻辑错误，正确=剥离凭据、实际=包含，sanitizer 无报告 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G041",
+   "defect_type": "info_leak",
+   "defect_location": {
+    "line": 21,
+    "function": "telnet_send_new_env"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2021-22898",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-22898",
+    "project": "curl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "miss"
+   },
+   "notes": "CVE-2021-22898: TELNET NEW_ENV 选项解析缺陷导致环境变量发送给服务器（CVE 描述: libcurl could send environment variables to TELNET servers ... information disclosure）。sanitizer 无报告 → 诚实标 miss（信息泄露盲区）。"
+  },
+  {
+   "sample_id": "sample_G042",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 21,
+    "function": "ftp_pasv_connect"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2020-8284",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-8284",
+    "project": "curl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2020-8284: FTP PASV 响应被恶意服务器利用让 curl 回连任意地址（CVE 描述: A malicious server can use the FTP PASV response to trick curl ... into connecting back to a given IP address and port）。逻辑缺陷 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G043",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 20,
+    "function": "http_download_with_J"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2020-8177",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-8177",
+    "project": "curl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2020-8177: -J 选项导致本地文件被覆盖（CVE 描述: improper restriction of names for files ... that can lead to overwriting a local file when the -J flag is used）。逻辑缺陷 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G044",
+   "defect_type": "state_machine",
+   "defect_location": {
+    "line": 25,
+    "function": "http_post_after_put"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2022-32221",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-32221",
+    "project": "curl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2022-32221: PUT 之后复用 handle 发 POST 时错误调用读回调（CVE 描述: might erroneously use the read callback ... even when CURLOPT_POSTFIELDS has been set, if the same handle previously was used to issue a PUT request）。状态逻辑错误 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G045",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 18,
+    "function": "negotiate_reuse_check"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2015-3148",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-3148",
+    "project": "curl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2015-3148: Negotiate 认证连接被错误复用（CVE 描述: do not properly re-use authenticated Negotiate connections, which allows remote attackers to connect as other users via a request）。逻辑缺陷 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G046",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 14,
+    "function": "sftp_expand_tilde"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2023-27534",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-27534",
+    "project": "curl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2023-27534: SFTP 路径穿越（CVE 描述: the tilde (~) character to be wrongly replaced when used as a prefix in the first path element ... path traversal vulnerability, CWE-22）。逻辑缺陷 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G047",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 17,
+    "function": "ocsp_check_response"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2020-8286",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-8286",
+    "project": "curl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2020-8286: 证书撤销检查不足（CVE 描述: improper check for certificate revocation due to insufficient verification of the OCSP response, CWE-295）。逻辑缺陷 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G048",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 15,
+    "function": "url_parse_host_percent"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2022-27780",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-27780",
+    "project": "curl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2022-27780: 百分号编码分隔符使主机名解析不一致（CVE 描述: wrongly accepts percent-encoded URL separators like '/' when decoding the host name part ... making it a *different* URL using the wrong host name, CWE-177）。逻辑缺陷 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G049",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 18,
+    "function": "cert_reuse_credential_check"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-7141",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-7141",
+    "project": "curl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2016-7141: 连接复用劫持客户端证书认证（CVE 描述: allow remote attackers to hijack the authentication of a TLS connection by leveraging reuse of a previously loaded client certificate from file for a connection）。逻辑缺陷 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G050",
+   "defect_type": "stack_overflow_write",
+   "defect_location": {
+    "line": 16,
+    "function": "sqlite3VXPrintf_float"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2015-3416",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-3416",
+    "project": "sqlite"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2015-3416: sqlite3VXPrintf 未正确处理浮点转换的 precision/width（CVE 描述: does not properly handle precision and width values during floating-point conversions ... integer overflow and stack-based buffer overflow）。"
+  },
+  {
+   "sample_id": "sample_G051",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 23,
+    "function": "rtreenode"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2019-8457",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-8457",
+    "project": "sqlite"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2019-8457: rtreenode() 处理无效 rtree 表时堆越界读（CVE 描述: heap out-of-bound read in the rtreenode() function when handling invalid rtree tables, CWE-125）。"
+  },
+  {
+   "sample_id": "sample_G052",
+   "defect_type": "null_deref",
+   "defect_location": {
+    "line": 28,
+    "function": "window_query_agginfo"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2020-11655",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-11655",
+    "project": "sqlite"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2020-11655: 畸形窗口函数查询因 AggInfo 初始化被错误处理而段错误（CVE 描述: denial of service (segmentation fault) via a malformed window-function query because the AggInfo object's initialization is mishandled）。"
+  },
+  {
+   "sample_id": "sample_G053",
+   "defect_type": "use_after_free",
+   "defect_location": {
+    "line": 19,
+    "function": "alter_table_rename"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2020-11656",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-11656",
+    "project": "sqlite"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2020-11656: ALTER TABLE 实现中的 use-after-free（CVE 描述: the ALTER TABLE implementation has a use-after-free, as demonstrated by an ORDER BY clause that belongs to a compound SELECT statement）。"
+  },
+  {
+   "sample_id": "sample_G054",
+   "defect_type": "integer_overflow",
+   "defect_location": {
+    "line": 18,
+    "function": "sqlite3_str_appendall"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2022-35737",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-35737",
+    "project": "sqlite"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "catch"
+   },
+   "notes": "CVE-2022-35737: 数十亿字节的字符串参数导致 array-bounds overflow（CVE 描述: sometimes allows an array-bounds overflow if billions of bytes are used in a string argument to a C API）。本样本镜像 int 累加溢出点。"
+  },
+  {
+   "sample_id": "sample_G055",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 21,
+    "function": "getNodeSize"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2017-10989",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-10989",
+    "project": "sqlite"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2017-10989: getNodeSize 处理 undersized RTree blob 时堆越界读（CVE 描述: mishandles undersized RTree blobs in a crafted database, leading to a heap-based buffer over-read）。"
+  },
+  {
+   "sample_id": "sample_G056",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 24,
+    "function": "os_unix_tmpdir_search"
+   },
+   "severity": "medium",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-6153",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-6153",
+    "project": "sqlite"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2016-6153: os_unix.c 临时目录搜索算法实现不当（CVE 描述: improperly implements the temporary directory search algorithm ... obtain sensitive information）。逻辑缺陷，正确=跳过世界可写目录、实际=使用 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G057",
+   "defect_type": "heap_overflow",
+   "defect_location": {
+    "line": 22,
+    "function": "png_set_PLTE"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2015-8126",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-8126",
+    "project": "libpng"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2015-8126: png_set_PLTE/png_get_PLTE 缓冲区溢出（CVE 描述: Multiple buffer overflows in the (1) png_set_PLTE and (2) png_get_PLTE functions ... allow remote attackers to cause a denial of service）。"
+  },
+  {
+   "sample_id": "sample_G058",
+   "defect_type": "division_by_zero",
+   "defect_location": {
+    "line": 14,
+    "function": "png_check_chunk_length"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2018-13785",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-13785",
+    "project": "libpng"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "catch"
+   },
+   "notes": "CVE-2018-13785: png_check_chunk_length 的 row_factor 错误计算（CVE 描述: a wrong calculation of row_factor ... may trigger an integer overflow and resultant divide-by-zero）。保留原始公式与 crafted 高度。"
+  },
+  {
+   "sample_id": "sample_G059",
+   "defect_type": "heap_overflow",
+   "defect_location": {
+    "line": 28,
+    "function": "BuildHuffmanTable"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2023-4863",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-4863",
+    "project": "libwebp"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2023-4863: libwebp BuildHuffmanTable 堆溢出（CVE 描述: Heap buffer overflow in libwebp ... allowed a remote attacker to perform an out of bounds memory write, Chromium Critical）。修复版增加码长分布合法性校验。"
+  },
+  {
+   "sample_id": "sample_G060",
+   "defect_type": "pointer_overflow",
+   "defect_location": {
+    "line": 22,
+    "function": "inflate_table_build"
+   },
+   "severity": "medium",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-9840",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-9840",
+    "project": "zlib"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2016-9840: inftrees.c 不当指针算术（CVE 描述: inftrees.c in zlib 1.2.8 might allow ... improper pointer arithmetic）。用户态等价重构（planted=true）。UBSan pointer-overflow 捕获。"
+  },
+  {
+   "sample_id": "sample_G061",
+   "defect_type": "pointer_overflow",
+   "defect_location": {
+    "line": 18,
+    "function": "inflate_fast_out"
+   },
+   "severity": "medium",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-9841",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-9841",
+    "project": "zlib"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2016-9841: inffast.c 不当指针算术（CVE 描述: inffast.c in zlib 1.2.8 might allow ... improper pointer arithmetic）。用户态等价重构（planted=true）。UBSan pointer-overflow 捕获。"
+  },
+  {
+   "sample_id": "sample_G062",
+   "defect_type": "use_after_free",
+   "defect_location": {
+    "line": 26,
+    "function": "xptr_range_eval"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-4658",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-4658",
+    "project": "libxml2"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2016-4658: libxml2 xpointer.c 不禁止 namespace 节点进入 XPointer range（CVE 描述: does not forbid namespace nodes in XPointer ranges ... execute arbitrary code or cause a denial of service）。"
+  },
+  {
+   "sample_id": "sample_G063",
+   "defect_type": "stack_overflow_write",
+   "defect_location": {
+    "line": 27,
+    "function": "xmlSnprintfElementContent"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2017-9047",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-9047",
+    "project": "libxml2"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2017-9047: xmlSnprintfElementContent 缓冲溢出（CVE 描述: The function xmlSnprintfElementContent ... is supposed to recursively dump the element content definition into a char buffer 'buf' of size 'size'; len assigned strlen(buf) ... overflow）。"
+  },
+  {
+   "sample_id": "sample_G064",
+   "defect_type": "heap_overflow",
+   "defect_location": {
+    "line": 27,
+    "function": "ngx_resolver_copy_name"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2021-23017",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-23017",
+    "project": "nginx"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2021-23017: nginx resolver 差一错误（CVE 描述: an attacker who is able to forge UDP packets from the DNS server to cause 1-byte memory overwrite, CWE-193）。"
+  },
+  {
+   "sample_id": "sample_G065",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 17,
+    "function": "exif_process_IFD_TAG"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2019-11034",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-11034",
+    "project": "php"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2019-11034: exif_process_IFD_TAG 读越界（CVE 描述: can be caused to read past allocated buffer in exif_process_IFD_TAG function. This may lead to information disclosure or crash）。"
+  },
+  {
+   "sample_id": "sample_G066",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 13,
+    "function": "exif_read_signed_short"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2019-11036",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-11036",
+    "project": "php"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2019-11036: exif_process_IFD_TAG 读越界（CVE 描述: can be caused to read past allocated buffer in exif_process_IFD_TAG function ... information disclosure or crash）。components 计数路径。"
+  },
+  {
+   "sample_id": "sample_G067",
+   "defect_type": "heap_overflow",
+   "defect_location": {
+    "line": 16,
+    "function": "file2strvec"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2018-1124",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-1124",
+    "project": "procps-ng"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2018-1124: procps-ng file2strvec 多处整数溢出 → 堆损坏（CVE 描述: multiple integer overflows leading to a heap corruption in file2strvec function ... privilege escalation）。"
+  },
+  {
+   "sample_id": "sample_G068",
+   "defect_type": "info_leak",
+   "defect_location": {
+    "line": 16,
+    "function": "resend_bytes"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-0777",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-0777",
+    "project": "openssh"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "miss"
+   },
+   "notes": "CVE-2016-0777: resend_bytes 重传整个缓冲区 → 进程内存泄露（CVE 描述: allows remote servers to obtain sensitive information from process memory by requesting transmission of an entire buffer）。纯信息泄露（读不越界），sanitizer 无报告 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G069",
+   "defect_type": "heap_overflow",
+   "defect_location": {
+    "line": 15,
+    "function": "nss_hostname_digits_dots"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2015-0235",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-0235",
+    "project": "glibc"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2015-0235 (GHOST): glibc gethostbyname 缓冲溢出（CVE 描述: buffer overflow in __nss_hostname_digits_dots ... hostname length close to buffer boundary）。用户态等价重构（planted=true）。"
+  },
+  {
+   "sample_id": "sample_G070",
+   "defect_type": "stack_overflow_write",
+   "defect_location": {
+    "line": 14,
+    "function": "send_dg"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2015-7547",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-7547",
+    "project": "glibc"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2015-7547: glibc libresolv send_dg/send_vc 栈溢出（CVE 描述: Multiple stack-based buffer overflows in the (1) send_dg and (2) send_vc functions ... via a crafted DNS response）。用户态等价重构（planted=true）。"
+  },
+  {
+   "sample_id": "sample_G071",
+   "defect_type": "heap_underflow",
+   "defect_location": {
+    "line": 18,
+    "function": "realpath_mirror"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2018-1000001",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-1000001",
+    "project": "glibc"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2018-1000001: realpath 向目的缓冲区之前写入（CVE 描述: confusion in the usage of getcwd() by realpath() which can be used to write before the destination buffer leading to a buffer underflow）。用户态等价重构（planted=true）。"
+  },
+  {
+   "sample_id": "sample_G072",
+   "defect_type": "heap_overflow",
+   "defect_location": {
+    "line": 19,
+    "function": "sudo_set_cmnd"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2021-3156",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3156",
+    "project": "sudo"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2021-3156 (Baron Samedit): sudo 堆溢出。原始缺陷：user_args 尺寸按原始长度计算，但 sudoedit 模式转义循环把每个 '\\' 复制为两个，写入超出分配。"
+  },
+  {
+   "sample_id": "sample_G073",
+   "defect_type": "stack_overflow_write",
+   "defect_location": {
+    "line": 15,
+    "function": "pkexec_main"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2021-4034",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-4034",
+    "project": "polkit"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2021-4034 (PwnKit): pkexec 本地提权（CVE 描述: doesn't handle the calling convention correctly ... CWE-787/CWE-125）。用户态等价重构（planted=true）。"
+  },
+  {
+   "sample_id": "sample_G074",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 22,
+    "function": "bash_import_function"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2014-6271",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-6271",
+    "project": "bash"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2014-6271 (Shellshock): 函数定义后尾随串被执行（CVE 描述: processes trailing strings after function definitions in the values of environment variables, which allows remote attackers to execute arbitrary code）。纯解析逻辑错误 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G075",
+   "defect_type": "state_machine",
+   "defect_location": {
+    "line": 20,
+    "function": "ssh_server_handle_packet"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2018-10933",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-10933",
+    "project": "libssh"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2018-10933: libssh 服务端状态机缺陷（CVE 描述: A malicious client could create channels without first performing authentication, resulting in unauthorized access）。状态机逻辑错误 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G076",
+   "defect_type": "state_machine",
+   "defect_location": {
+    "line": 22,
+    "function": "ssh_transport_process_packet"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2023-48795",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-48795",
+    "project": "openssh"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2023-48795 (Terrapin): SSH 传输协议前缀截断（CVE 描述: allows remote attackers to bypass integrity checks such that some packets are omitted (from the extension negotiation message)）。状态机逻辑错误 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G077",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 13,
+    "function": "cgi_proxy_env"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-5385",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-5385",
+    "project": "php"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2016-5385 (HTTPoxy): RFC 3875 命名空间冲突未处理（CVE 描述: does not attempt to address RFC 3875 section 4.1.18 namespace conflicts ... untrusted client data in the HTTP_PROXY environment variable）。逻辑缺陷 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G078",
+   "defect_type": "use_after_free",
+   "defect_location": {
+    "line": 18,
+    "function": "join_session_keyring"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-0728",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-0728",
+    "project": "linux-kernel"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2016-0728: 内核 keyring 引用计数错误 → UAF/提权。本样本为用户态等价模拟：失败路径不回滚引用计数，对象被提前释放后仍被使用。"
+  },
+  {
+   "sample_id": "sample_G079",
+   "defect_type": "use_after_free",
+   "defect_location": {
+    "line": 27,
+    "function": "mq_notify_retry"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2017-11176",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-11176",
+    "project": "linux-kernel"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2017-11176: mq_notify 未在重试路径置空 sock 指针 → UAF。用户态等价模拟：close 路径释放对象，retry 路径仍使用。"
+  },
+  {
+   "sample_id": "sample_G080",
+   "defect_type": "type_confusion",
+   "defect_location": {
+    "line": 29,
+    "function": "sk_clone_lock"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2018-9568",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-9568",
+    "project": "linux-kernel"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2018-9568 (WrongSize): sk_clone_lock 类型混淆内存损坏。用户态等价模拟：以大结构体尺寸拷贝小结构体。"
+  },
+  {
+   "sample_id": "sample_G081",
+   "defect_type": "double_free",
+   "defect_location": {
+    "line": 21,
+    "function": "snd_usbmidi_create"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-2384",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2384",
+    "project": "linux-kernel"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "CVE-2016-2384: snd_usbmidi_create double free（CVE 描述: Double free vulnerability in the snd_usbmidi_create function ... via vectors involving an invalid USB descriptor）。用户态等价模拟。"
+  },
+  {
+   "sample_id": "sample_G082",
+   "defect_type": "race_condition",
+   "defect_location": {
+    "line": 22,
+    "function": "n_tty_write"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2014-0196",
+    "url": "https://nvd.nist.gov/nvd/detail/CVE-2014-0196",
+    "project": "linux-kernel"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "tsan"
+   ],
+   "pooled_verdict": {
+    "tsan": "catch"
+   },
+   "notes": "CVE-2014-0196: n_tty_write 并发写竞争（CVE 描述: does not properly manage tty driver access in the LECHO & !OPOST case ... memory corruption）。用户态等价模拟，TSan 捕获。"
+  },
+  {
+   "sample_id": "sample_G083",
+   "defect_type": "race_condition",
+   "defect_location": {
+    "line": 21,
+    "function": "n_hdlc_release"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2017-2636",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-2636",
+    "project": "linux-kernel"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "tsan"
+   ],
+   "pooled_verdict": {
+    "tsan": "catch"
+   },
+   "notes": "CVE-2017-2636: n_hdlc 竞态条件（CVE 描述: Race condition in drivers/tty/n_hdlc.c ... gain privileges or cause a denial of service (double free) by setting the HDLC line discipline）。用户态等价模拟，TSan 捕获。"
+  },
+  {
+   "sample_id": "sample_G084",
+   "defect_type": "race_condition",
+   "defect_location": {
+    "line": 21,
+    "function": "gup_cow_write"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-5195",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-5195",
+    "project": "linux-kernel"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "tsan"
+   ],
+   "pooled_verdict": {
+    "tsan": "catch"
+   },
+   "notes": "CVE-2016-5195 (Dirty COW): GUP/COW 竞态（CVE 描述: Race condition in mm/gup.c ... leveraging incorrect handling of a copy-on-write (COW) feature to write to a read-only memory mapping）。用户态等价模拟，TSan 捕获。"
+  },
+  {
+   "sample_id": "sample_G085",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 24,
+    "function": "pipe_buffer_reuse"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2022-0847",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-0847",
+    "project": "linux-kernel"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2022-0847 (Dirty Pipe): pipe_buffer.flags 缺少初始化（CVE 描述: the 'flags' member of the new pipe buffer structure was lacking proper initialization ... could thus contain stale values）。用户态等价模拟，可观察越权写入 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G086",
+   "defect_type": "timing_side_channel",
+   "defect_location": {
+    "line": 17,
+    "function": "dsa_sign_setup"
+   },
+   "severity": "medium",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2016-2178",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2178",
+    "project": "openssl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2016-2178: dsa_sign_setup 非常量时间（CVE 描述: does not properly ensure the use of constant-time operations ... discover a DSA private key via a timing side-channel attack）。侧信道类，sanitizer 无报告 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G087",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 19,
+    "function": "evp_ocb_encrypt"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2022-2097",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-2097",
+    "project": "openssl"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2022-2097: AES OCB 模式部分数据未加密（CVE 描述: AES OCB mode ... encrypting large amounts of data does not encrypt the entire portion）。逻辑缺陷，正确=全量加密、实际=尾部残留明文 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G088",
+   "defect_type": "resource_exhaustion",
+   "defect_location": {
+    "line": 23,
+    "function": "h2_on_reset_flood"
+   },
+   "severity": "medium",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2019-9514",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-9514",
+    "project": "http2"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2019-9514: HTTP/2 reset flood（CVE 描述: The attacker opens a number of streams and sends an invalid request over each stream that should solicit a stream of RST_STREAM frames from the peer ... uncontrolled resource consumption, CWE-400）。资源耗尽类，sanitizer 无报告 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G089",
+   "defect_type": "resource_exhaustion",
+   "defect_location": {
+    "line": 20,
+    "function": "h2_on_settings_flood"
+   },
+   "severity": "medium",
+   "planted": true,
+   "source": {
+    "type": "cve",
+    "id": "CVE-2019-9512",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-9512",
+    "project": "http2"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "CVE-2019-9512: HTTP/2 SETTINGS flood（CVE 描述: flood of SETTINGS frames ... uncontrolled resource consumption, CWE-400）。资源耗尽类 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G090",
+   "defect_type": "heap_underflow",
+   "defect_location": {
+    "line": 22,
+    "function": "json_array_at"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "github_issue",
+    "id": "nlohmann/json#5647",
+    "url": "https://github.com/nlohmann/json/issues/5647",
+    "project": "nlohmann/json"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "nlohmann/json#5647（已修复）: operator[](size_type) 传入 SIZE_MAX 时 resize(idx+1) 回绕为 0 清空数组，随后 operator[](SIZE_MAX) 定位到缓冲区之前 1 元素并写入（issue 附带代码路径 include/nlohmann/json.hpp#L2838）。"
+  },
+  {
+   "sample_id": "sample_G091",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 23,
+    "function": "bjdata_parse_string"
+   },
+   "severity": "high",
+   "planted": true,
+   "source": {
+    "type": "github_issue",
+    "id": "nlohmann/json#3492",
+    "url": "https://github.com/nlohmann/json/issues/3492",
+    "project": "nlohmann/json"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "nlohmann/json#3492（已修复）: OSS-Fuzz 报告 parse_bjdata Heap-buffer-overflow READ 1。等价重构：BJData 解析器按声明长度消费输入而不校验剩余空间。"
+  },
+  {
+   "sample_id": "sample_G092",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 15,
+    "function": "json_parse_string"
+   },
+   "severity": "medium",
+   "planted": true,
+   "source": {
+    "type": "github_issue",
+    "id": "nlohmann/json#575",
+    "url": "https://github.com/nlohmann/json/issues/575",
+    "project": "nlohmann/json"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "nlohmann/json#575（已修复）: OSS-Fuzz 1400 Heap-buffer-overflow READ 2（parse 期间 std::string 构造）。等价重构：字符串扫描缺少 end 边界检查。"
+  },
+  {
+   "sample_id": "sample_G093",
+   "defect_type": "heap_overflow",
+   "defect_location": {
+    "line": 23,
+    "function": "DynArray_EnsureCapacity"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "github_issue",
+    "id": "leethomason/tinyxml2#1065",
+    "url": "https://github.com/leethomason/tinyxml2/issues/1065",
+    "project": "tinyxml2"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "tinyxml2#1065（未修复）: EnsureCapacity 的 newAllocated = cap*2 仅由 release 版被移除的 TIXMLASSERT 保护，溢出后小分配 + 大 memcpy → 堆越界写。issue 附原始代码位置 tinyxml2.h:450-470。"
+  },
+  {
+   "sample_id": "sample_G094",
+   "defect_type": "global_overflow",
+   "defect_location": {
+    "line": 37,
+    "function": "XMLDocument_ErrorIDToName"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "github_issue",
+    "id": "leethomason/tinyxml2#923",
+    "url": "https://github.com/leethomason/tinyxml2/issues/923",
+    "project": "tinyxml2"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "tinyxml2#923（未修复）: ErrorIDToName 对 errorID==XML_ERROR_COUNT 读 _errorNames[19] → AddressSanitizer global-buffer-overflow（issue 附 tinyxml2.cpp:2501-2507 与数组定义 tinyxml2.cpp:2136-2156）。"
+  },
+  {
+   "sample_id": "sample_G095",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 14,
+    "function": "XMLQueryUnsignedAttribute"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "github_issue",
+    "id": "leethomason/tinyxml2#728",
+    "url": "https://github.com/leethomason/tinyxml2/issues/728",
+    "project": "tinyxml2"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "tinyxml2#728（未修复）: QueryUnsignedAttribute 对超过 uint32 范围的输入静默截断（10000000000 → 1410065408），未报错也未饱和到 UINT32_MAX。逻辑缺陷，正确=报错/饱和、实际=截断 → 诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G096",
+   "defect_type": "heap_overread",
+   "defect_location": {
+    "line": 20,
+    "function": "getLocationLineAndColumn"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "github_issue",
+    "id": "open-source-parsers/jsoncpp#1682",
+    "url": "https://github.com/open-source-parsers/jsoncpp/issues/1682",
+    "project": "jsoncpp"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "jsoncpp#1682（已修复）: getLocationLineAndColumn 对 CR 结尾输入堆越界读 1 字节（issue 附 json_reader.cpp:1820-1840 根因代码：CR 分支 current++ 后未重测 current != end_ 即 peek）。"
+  },
+  {
+   "sample_id": "sample_G097",
+   "defect_type": "use_after_free",
+   "defect_location": {
+    "line": 21,
+    "function": "Reader_getFormattedErrorMessages"
+   },
+   "severity": "high",
+   "planted": false,
+   "source": {
+    "type": "github_issue",
+    "id": "open-source-parsers/jsoncpp#1623",
+    "url": "https://github.com/open-source-parsers/jsoncpp/issues/1623",
+    "project": "jsoncpp"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "asan"
+   ],
+   "pooled_verdict": {
+    "asan": "catch"
+   },
+   "notes": "jsoncpp#1623（已修复）: Reader::parse 保存悬垂指针，getFormattedErrorMessages 触发 UAF（issue 附完整 POC testcase.cpp 与复现 commit ca98c98）。"
+  },
+  {
+   "sample_id": "sample_G098",
+   "defect_type": "logic_error",
+   "defect_location": {
+    "line": 14,
+    "function": "value_as_uint64"
+   },
+   "severity": "medium",
+   "planted": false,
+   "source": {
+    "type": "github_issue",
+    "id": "open-source-parsers/jsoncpp#1545",
+    "url": "https://github.com/open-source-parsers/jsoncpp/issues/1545",
+    "project": "jsoncpp"
+   },
+   "expected_verdict": "miss",
+   "expected_detectors": [
+    "ubsan"
+   ],
+   "pooled_verdict": {
+    "ubsan": "miss"
+   },
+   "notes": "jsoncpp#1545（已修复）: [2^64, 2^64+2^11] 的数字经 double 往返静默返回错误值而非抛异常（issue 附完整复现代码与修复 PR #1519）。底层是 float→uint64 越界转换 UB，但 GCC/Clang 默认 -fsanitize=undefined **不包含** float-cast-overflow → 检测器无报告。这是真实的检测器盲区（浮点转换检查未启用），诚实标 miss。"
+  },
+  {
+   "sample_id": "sample_G099",
+   "defect_type": "compiler_warning",
+   "defect_location": {
+    "line": 20,
+    "function": "format_value_map"
+   },
+   "severity": "low",
+   "planted": true,
+   "source": {
+    "type": "github_issue",
+    "id": "fmtlib/fmt#3415",
+    "url": "https://github.com/fmtlib/fmt/issues/3415",
+    "project": "fmtlib/fmt"
+   },
+   "expected_verdict": "catch",
+   "expected_detectors": [
+    "compiler-warn"
+   ],
+   "pooled_verdict": {
+    "compiler-warn": "catch"
+   },
+   "notes": "fmtlib/fmt#3415（已修复）: fmt::v9 core.h:1674 的 arg_mapper().map() 模式在 gcc 13.1 -Wall 下触发 -Wdangling-reference（issue 附 godbolt 复现）。本样本以等价调用模式复现该告警。"
+  }
+ ]
+}

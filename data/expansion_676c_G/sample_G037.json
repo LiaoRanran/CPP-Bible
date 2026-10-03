@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G037",
+  "defect_type": "heap_overflow",
+  "defect_location": {
+    "line": 13,
+    "function": "sasl_build_login_response",
+    "description": "CVE-2018-16839: SASL 认证代码缓冲区过写（CVE 描述: a buffer overrun in the SASL authentication code that may lead to denial of service; CWE-122/CWE-190）。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2018-16839",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-16839",
+    "project": "curl",
+    "commit": "",
+    "simplification": "基于 CVE 描述（SASL 认证代码缓冲区过写, CWE-122+CWE-190）以『长度 int 溢出 → 小分配大写入』等价机制重构，非原始代码逐行镜像，故标 planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "用户名+授权 ID 总长 2^30 级别，响应总长 int 溢出为负 → 按真实长度写入 1 字节分配",
+  "notes": "CVE-2018-16839: SASL 认证代码缓冲区过写（CVE 描述: a buffer overrun in the SASL authentication code that may lead to denial of service; CWE-122/CWE-190）。"
+}

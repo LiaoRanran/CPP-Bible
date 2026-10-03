@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G006",
+  "defect_type": "type_confusion",
+  "defect_location": {
+    "line": 24,
+    "function": "ASN1_TYPE_cmp",
+    "description": "CVE-2015-0286: ASN1_TYPE_cmp 未正确执行 boolean 类型比较（does not properly perform boolean-type comparisons）→ 无效读/崩溃。本样本按『boolean 值被当指针解引用』镜像。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2015-0286",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-0286",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 ASN.1 解码层，boolean/整数共用 union 的类型混淆按 CVE 描述（invalid read operation）直接构造"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "两个 BOOLEAN 类型的 ASN1_TYPE 比较，整数按指针解释后解引用",
+  "notes": "CVE-2015-0286: ASN1_TYPE_cmp 未正确执行 boolean 类型比较（does not properly perform boolean-type comparisons）→ 无效读/崩溃。本样本按『boolean 值被当指针解引用』镜像。"
+}

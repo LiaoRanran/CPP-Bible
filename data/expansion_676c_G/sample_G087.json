@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G087",
+  "defect_type": "logic_error",
+  "defect_location": {
+    "line": 19,
+    "function": "evp_ocb_encrypt",
+    "description": "CVE-2022-2097: AES OCB 模式部分数据未加密（CVE 描述: AES OCB mode ... encrypting large amounts of data does not encrypt the entire portion）。逻辑缺陷，正确=全量加密、实际=尾部残留明文 → 诚实标 miss。"
+  },
+  "severity": "medium",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2022-2097",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-2097",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 OCB 主体，按 CVE 描述（部分数据未被加密）保留『非完整块尾部未加密』核心缺陷"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "20 字节输入: 前 16 字节加密, 尾部 4 字节明文残留",
+  "notes": "CVE-2022-2097: AES OCB 模式部分数据未加密（CVE 描述: AES OCB mode ... encrypting large amounts of data does not encrypt the entire portion）。逻辑缺陷，正确=全量加密、实际=尾部残留明文 → 诚实标 miss。"
+}

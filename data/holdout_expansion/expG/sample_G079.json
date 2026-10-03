@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G079",
+  "defect_type": "use_after_free",
+  "defect_location": {
+    "line": 27,
+    "function": "mq_notify_retry",
+    "description": "CVE-2017-11176: mq_notify 未在重试路径置空 sock 指针 → UAF。用户态等价模拟：close 路径释放对象，retry 路径仍使用。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2017-11176",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-11176",
+    "project": "linux-kernel",
+    "commit": "",
+    "simplification": "内核漏洞无法在用户态直接复现：按 CVE 描述（mq_notify 进入重试逻辑时未把 sock 指针置 NULL → socket close 后 UAF）做用户态等价模拟，planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "netlink socket 关闭释放 sock 对象后，通知重试路径仍解引用该指针",
+  "notes": "CVE-2017-11176: mq_notify 未在重试路径置空 sock 指针 → UAF。用户态等价模拟：close 路径释放对象，retry 路径仍使用。"
+}

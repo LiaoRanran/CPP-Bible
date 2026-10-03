@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G023",
+  "defect_type": "null_deref",
+  "defect_location": {
+    "line": 17,
+    "function": "tls12_choose_sig_alg",
+    "description": "CVE-2021-3449: TLSv1.2 重协商 ClientHello 省略 signature_algorithms 扩展时服务器崩溃（CVE 描述: may crash if sent a maliciously crafted renegotiation ClientHello ... omits the signature_algorithms extension）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2021-3449",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3449",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 TLSv1.2 重协商全流程，保留『重协商 ClientHello 缺 signature_algorithms 扩展时保存指针为 NULL 仍被解引用』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "重协商 ClientHello 省略 signature_algorithms 扩展 → sig_algs 为 NULL",
+  "notes": "CVE-2021-3449: TLSv1.2 重协商 ClientHello 省略 signature_algorithms 扩展时服务器崩溃（CVE 描述: may crash if sent a maliciously crafted renegotiation ClientHello ... omits the signature_algorithms extension）。"
+}

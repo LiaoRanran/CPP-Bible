@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G033",
+  "defect_type": "heap_overflow",
+  "defect_location": {
+    "line": 13,
+    "function": "deliver_data",
+    "description": "CVE-2017-1000257: IMAP FETCH 零字节数据时 deliver-data 收到越界指针（CVE 描述: libcurl would pass on that (non-existing) data with a pointer and the size (zero) ... 可写越界 1 字节）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2017-1000257",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-1000257",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 IMAP FETCH 响应解析，行缓冲硬编码 4 字节，保留『size=0 时仍向数据指针写入终结符』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "IMAP FETCH 响应声明 0 字节数据，deliver_data 仍写 datap[0]='\\0'，而 datap 已指向缓冲区末尾",
+  "notes": "CVE-2017-1000257: IMAP FETCH 零字节数据时 deliver-data 收到越界指针（CVE 描述: libcurl would pass on that (non-existing) data with a pointer and the size (zero) ... 可写越界 1 字节）。"
+}

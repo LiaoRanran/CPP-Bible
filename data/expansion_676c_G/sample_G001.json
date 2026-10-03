@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G001",
+  "defect_type": "heap_overread",
+  "defect_location": {
+    "line": 27,
+    "function": "tls1_process_heartbeat",
+    "description": "Heartbleed：tls1_process_heartbeat 不校验 payload_length 与请求缓冲区实际大小，按声明长度把堆上请求缓冲之外的内存作为心跳响应回显（最多 64KB 进程内存泄露）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2014-0160",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-0160",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 TLS/DTLS 网络层，心跳请求包硬编码在 main 中构造，保留『信任 payload_length、按声明长度 memcpy』的核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "心跳载荷长度字段声明 65535，实际载荷仅 1 字节",
+  "notes": "Heartbleed：tls1_process_heartbeat 不校验 payload_length 与请求缓冲区实际大小，按声明长度把堆上请求缓冲之外的内存作为心跳响应回显（最多 64KB 进程内存泄露）。"
+}

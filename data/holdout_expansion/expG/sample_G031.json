@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G031",
+  "defect_type": "heap_overflow",
+  "defect_location": {
+    "line": 19,
+    "function": "socks5_send_hostname",
+    "description": "CVE-2023-38545: SOCKS5 代理握手堆缓冲溢出（CVE 描述: This flaw makes curl overflow a heap based buffer in the SOCKS5 proxy handshake），主机名超长且走慢速握手路径时整段拷贝。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2023-38545",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-38545",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 SOCKS5 握手状态机，主机名硬编码 20000 字节，保留『主机名超限未校验即整段拷贝进固定堆缓冲』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "代理远程解析路径下主机名 20000 字节 > 16KB 请求缓冲 → 堆越界写约 4KB",
+  "notes": "CVE-2023-38545: SOCKS5 代理握手堆缓冲溢出（CVE 描述: This flaw makes curl overflow a heap based buffer in the SOCKS5 proxy handshake），主机名超长且走慢速握手路径时整段拷贝。"
+}

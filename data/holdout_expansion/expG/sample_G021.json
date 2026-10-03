@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G021",
+  "defect_type": "state_machine",
+  "defect_location": {
+    "line": 22,
+    "function": "ssl3_process_ccs",
+    "description": "CVE-2014-0224 (CCS 注入): 不限制 CCS 消息处理状态（CVE 描述: does not properly restrict processing of ChangeCipherSpec messages）→ MITM 强制零长度 master key。纯状态机逻辑错误，正确=拒绝、实际=接受，sanitizer 无报告 → 诚实标 miss。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2014-0224",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-0224",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 TLS 记录层与密码套件，以等价握手状态机镜像『CCS 消息不检查当前状态即处理』核心缺陷"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "在 ClientHello 之后、ServerHelloDone 之前注入 ChangeCipherSpec",
+  "notes": "CVE-2014-0224 (CCS 注入): 不限制 CCS 消息处理状态（CVE 描述: does not properly restrict processing of ChangeCipherSpec messages）→ MITM 强制零长度 master key。纯状态机逻辑错误，正确=拒绝、实际=接受，sanitizer 无报告 → 诚实标 miss。"
+}

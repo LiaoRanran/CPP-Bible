@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G096",
+  "defect_type": "heap_overread",
+  "defect_location": {
+    "line": 20,
+    "function": "getLocationLineAndColumn",
+    "description": "jsoncpp#1682（已修复）: getLocationLineAndColumn 对 CR 结尾输入堆越界读 1 字节（issue 附 json_reader.cpp:1820-1840 根因代码：CR 分支 current++ 后未重测 current != end_ 即 peek）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "github_issue",
+    "id": "open-source-parsers/jsoncpp#1682",
+    "url": "https://github.com/open-source-parsers/jsoncpp/issues/1682",
+    "project": "jsoncpp",
+    "commit": "",
+    "simplification": "剥离 jsoncpp Reader 全流程，按 issue『Root Cause』一节引用的 getLocationLineAndColumn 循环直接镜像（CR 为最后一个字节时无条件 peek *current）"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "输入以单个 CR(0x0d) 结尾且产生解析错误：错误定位循环在 current==end_ 后仍读 *current",
+  "notes": "jsoncpp#1682（已修复）: getLocationLineAndColumn 对 CR 结尾输入堆越界读 1 字节（issue 附 json_reader.cpp:1820-1840 根因代码：CR 分支 current++ 后未重测 current != end_ 即 peek）。"
+}

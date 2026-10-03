@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G041",
+  "defect_type": "info_leak",
+  "defect_location": {
+    "line": 21,
+    "function": "telnet_send_new_env",
+    "description": "CVE-2021-22898: TELNET NEW_ENV 选项解析缺陷导致环境变量发送给服务器（CVE 描述: libcurl could send environment variables to TELNET servers ... information disclosure）。sanitizer 无报告 → 诚实标 miss（信息泄露盲区）。"
+  },
+  "severity": "medium",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2021-22898",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-22898",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 TELNET 传输层，保留『NEW_ENV 选项解析器把非用户指定的环境变量一并发送』核心缺陷"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "-t NEW_ENV 选项解析时把本机环境变量值(含敏感数据)一并装入发送缓冲",
+  "notes": "CVE-2021-22898: TELNET NEW_ENV 选项解析缺陷导致环境变量发送给服务器（CVE 描述: libcurl could send environment variables to TELNET servers ... information disclosure）。sanitizer 无报告 → 诚实标 miss（信息泄露盲区）。"
+}

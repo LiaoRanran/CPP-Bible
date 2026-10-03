@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G073",
+  "defect_type": "stack_overflow_write",
+  "defect_location": {
+    "line": 15,
+    "function": "pkexec_main",
+    "description": "CVE-2021-4034 (PwnKit): pkexec 本地提权（CVE 描述: doesn't handle the calling convention correctly ... CWE-787/CWE-125）。用户态等价重构（planted=true）。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2021-4034",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-4034",
+    "project": "polkit",
+    "commit": "",
+    "simplification": "基于 CVE 描述（pkexec 未处理 argc==0 的调用约定，把 envp 当 argv 使用导致越界写入）以等价的参数循环重构，非原始代码镜像，故标 planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "execve 传 argc=0：参数循环把 3 个环境字符串写入只有 1 槽的本地 argv 数组",
+  "notes": "CVE-2021-4034 (PwnKit): pkexec 本地提权（CVE 描述: doesn't handle the calling convention correctly ... CWE-787/CWE-125）。用户态等价重构（planted=true）。"
+}

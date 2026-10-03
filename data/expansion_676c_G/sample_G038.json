@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G038",
+  "defect_type": "heap_overread",
+  "defect_location": {
+    "line": 17,
+    "function": "tool_writeout",
+    "description": "CVE-2017-7407: --write-out 以 $ 变量结尾时读取越界（CVE 描述: reading a workstation screen ... obtain sensitive information from process memory via a --write-out argument ending in a variable without terminator）。"
+  },
+  "severity": "low",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2017-7407",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-7407",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 curl 工具 write-out 全部变量类型，保留『变量解析循环缺少缓冲区终止检查』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "--write-out 参数以未闭合的 %{ 结尾，变量扫描越过堆缓冲",
+  "notes": "CVE-2017-7407: --write-out 以 $ 变量结尾时读取越界（CVE 描述: reading a workstation screen ... obtain sensitive information from process memory via a --write-out argument ending in a variable without terminator）。"
+}

@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G012",
+  "defect_type": "integer_overflow",
+  "defect_location": {
+    "line": 18,
+    "function": "MDC2_Update",
+    "description": "CVE-2016-6303: MDC2_Update 整数溢出 → out-of-bounds write（CVE 描述: Integer overflow in the MDC2_Update ... out-of-bounds write and application crash）。本样本镜像 num 累加溢出点。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2016-6303",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-6303",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 MDC2 哈希主体，保留『ctx->num += inl 用 int 累加』核心缺陷，后续越界写按 CVE 描述为 OOB write"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "多次 Update 累加使 ctx->num 越过 INT_MAX",
+  "notes": "CVE-2016-6303: MDC2_Update 整数溢出 → out-of-bounds write（CVE 描述: Integer overflow in the MDC2_Update ... out-of-bounds write and application crash）。本样本镜像 num 累加溢出点。"
+}

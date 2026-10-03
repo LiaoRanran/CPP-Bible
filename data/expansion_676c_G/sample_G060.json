@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G060",
+  "defect_type": "pointer_overflow",
+  "defect_location": {
+    "line": 22,
+    "function": "inflate_table_build",
+    "description": "CVE-2016-9840: inftrees.c 不当指针算术（CVE 描述: inftrees.c in zlib 1.2.8 might allow ... improper pointer arithmetic）。用户态等价重构（planted=true）。UBSan pointer-overflow 捕获。"
+  },
+  "severity": "medium",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2016-9840",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-9840",
+    "project": "zlib",
+    "commit": "",
+    "simplification": "基于 CVE 描述（inftrees.c 不当指针算术）以等价的码表填充循环重构（指针推进越过表尾），非原始代码镜像，故标 planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "crafted 码长分布使码表填充指针越过分配的表尾",
+  "notes": "CVE-2016-9840: inftrees.c 不当指针算术（CVE 描述: inftrees.c in zlib 1.2.8 might allow ... improper pointer arithmetic）。用户态等价重构（planted=true）。UBSan pointer-overflow 捕获。"
+}

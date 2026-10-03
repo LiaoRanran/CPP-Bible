@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G099",
+  "defect_type": "compiler_warning",
+  "defect_location": {
+    "line": 20,
+    "function": "format_value_map",
+    "description": "fmtlib/fmt#3415（已修复）: fmt::v9 core.h:1674 的 arg_mapper().map() 模式在 gcc 13.1 -Wall 下触发 -Wdangling-reference（issue 附 godbolt 复现）。本样本以等价调用模式复现该告警。"
+  },
+  "severity": "low",
+  "planted": true,
+  "source": {
+    "type": "github_issue",
+    "id": "fmtlib/fmt#3415",
+    "url": "https://github.com/fmtlib/fmt/issues/3415",
+    "project": "fmtlib/fmt",
+    "commit": "",
+    "simplification": "剥离 fmt 库依赖，按 issue 引用的 core.h:1674 模式（const auto& arg = mapper().map(FMT_FORWARD(val)) 对临时对象的悬垂引用告警）以等价调用结构重构，故标 planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "map() 以右值引用返回绑定到临时对象的引用 → g++13 -Wall 触发 -Wdangling-reference",
+  "notes": "fmtlib/fmt#3415（已修复）: fmt::v9 core.h:1674 的 arg_mapper().map() 模式在 gcc 13.1 -Wall 下触发 -Wdangling-reference（issue 附 godbolt 复现）。本样本以等价调用模式复现该告警。"
+}

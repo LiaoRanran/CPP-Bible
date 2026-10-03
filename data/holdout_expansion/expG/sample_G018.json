@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G018",
+  "defect_type": "stack_overflow_write",
+  "defect_location": {
+    "line": 18,
+    "function": "ossl_punycode_decode",
+    "description": "CVE-2022-3602: X.509 punycode 解码缓冲区溢出（CVE 描述: A buffer overrun can be triggered in X.509 certificate verification ... name constraint checking）。原始缺陷即 ossl_punycode_decode 输出无界写入。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2022-3602",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-3602",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 X.509 name constraint 检查链路，保留 punycode 解码『输出循环缺少边界检查』核心缺陷（修复版加入 out==out_max 判断）"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "crafted X.509 punycode 名字带超长 literal 前缀（40 字节 > 输出缓冲 8）",
+  "notes": "CVE-2022-3602: X.509 punycode 解码缓冲区溢出（CVE 描述: A buffer overrun can be triggered in X.509 certificate verification ... name constraint checking）。原始缺陷即 ossl_punycode_decode 输出无界写入。"
+}

@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G051",
+  "defect_type": "heap_overread",
+  "defect_location": {
+    "line": 23,
+    "function": "rtreenode",
+    "description": "CVE-2019-8457: rtreenode() 处理无效 rtree 表时堆越界读（CVE 描述: heap out-of-bound read in the rtreenode() function when handling invalid rtree tables, CWE-125）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2019-8457",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-8457",
+    "project": "sqlite",
+    "commit": "",
+    "simplification": "剥离 SQLite rtree 模块，保留『单元数与节点缓冲大小不一致时循环读越界』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "rtree 节点缓冲仅含 2 个单元，头部声明的单元数为 9 → 循环读越界",
+  "notes": "CVE-2019-8457: rtreenode() 处理无效 rtree 表时堆越界读（CVE 描述: heap out-of-bound read in the rtreenode() function when handling invalid rtree tables, CWE-125）。"
+}

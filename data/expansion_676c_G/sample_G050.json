@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G050",
+  "defect_type": "stack_overflow_write",
+  "defect_location": {
+    "line": 16,
+    "function": "sqlite3VXPrintf_float",
+    "description": "CVE-2015-3416: sqlite3VXPrintf 未正确处理浮点转换的 precision/width（CVE 描述: does not properly handle precision and width values during floating-point conversions ... integer overflow and stack-based buffer overflow）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2015-3416",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-3416",
+    "project": "sqlite",
+    "commit": "",
+    "simplification": "剥离 SQLite SQL 引擎，保留『浮点转换的 width/precision 未按缓冲容量截断』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "SQL 中 %.200000f 的巨量宽度 → 输出循环越过 100 字节缓冲",
+  "notes": "CVE-2015-3416: sqlite3VXPrintf 未正确处理浮点转换的 precision/width（CVE 描述: does not properly handle precision and width values during floating-point conversions ... integer overflow and stack-based buffer overflow）。"
+}

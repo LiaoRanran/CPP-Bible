@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G071",
+  "defect_type": "heap_underflow",
+  "defect_location": {
+    "line": 18,
+    "function": "realpath_mirror",
+    "description": "CVE-2018-1000001: realpath 向目的缓冲区之前写入（CVE 描述: confusion in the usage of getcwd() by realpath() which can be used to write before the destination buffer leading to a buffer underflow）。用户态等价重构（planted=true）。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2018-1000001",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-1000001",
+    "project": "glibc",
+    "commit": "",
+    "simplification": "基于 CVE 描述（realpath 对 getcwd 的用法混乱导致向目的缓冲区之前写入 buffer underflow）以等价的指针前移机制重构，非原始代码镜像，故标 planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "深层 cwd 前缀(300 字节) + 相对路径解析 → 目的指针越过缓冲区起点写 300 字节",
+  "notes": "CVE-2018-1000001: realpath 向目的缓冲区之前写入（CVE 描述: confusion in the usage of getcwd() by realpath() which can be used to write before the destination buffer leading to a buffer underflow）。用户态等价重构（planted=true）。"
+}

@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G032",
+  "defect_type": "heap_overread",
+  "defect_location": {
+    "line": 17,
+    "function": "rtp_parse",
+    "description": "CVE-2018-1000122: RTSP+RTP 处理代码缓冲越界读（CVE 描述: A buffer over-read exists ... in the RTSP+RTP handling code that allows an attacker to cause a denial of service or information leakage）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2018-1000122",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-1000122",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 RTSP 传输层，RTP interleaved 帧硬编码 2 字节，保留『检测到 '$' 后按固定偏移读 4 字节头而不检查剩余长度』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "帧缓冲仅 2 字节('$' + 1 字节)，RTP 头按固定偏移读第 3/4 字节 → 堆越界读",
+  "notes": "CVE-2018-1000122: RTSP+RTP 处理代码缓冲越界读（CVE 描述: A buffer over-read exists ... in the RTSP+RTP handling code that allows an attacker to cause a denial of service or information leakage）。"
+}

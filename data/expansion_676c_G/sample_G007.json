@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G007",
+  "defect_type": "null_deref",
+  "defect_location": {
+    "line": 25,
+    "function": "X509_to_X509_REQ",
+    "description": "CVE-2015-0288: X509_to_X509_REQ 用 invalid 证书时 NULL pointer dereference（CVE 描述: NULL pointer dereference and application crash via an invalid certificate）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2015-0288",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-0288",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 X.509 解码层，『证书无 SubjectPublicKeyInfo → 公钥指针为 NULL』按 CVE 描述直接构造"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "传入不含公钥字段的证书，转换路径未检查 NULL 即解引用",
+  "notes": "CVE-2015-0288: X509_to_X509_REQ 用 invalid 证书时 NULL pointer dereference（CVE 描述: NULL pointer dereference and application crash via an invalid certificate）。"
+}

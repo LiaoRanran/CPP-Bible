@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G074",
+  "defect_type": "logic_error",
+  "defect_location": {
+    "line": 22,
+    "function": "bash_import_function",
+    "description": "CVE-2014-6271 (Shellshock): 函数定义后尾随串被执行（CVE 描述: processes trailing strings after function definitions in the values of environment variables, which allows remote attackers to execute arbitrary code）。纯解析逻辑错误 → 诚实标 miss。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2014-6271",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-6271",
+    "project": "bash",
+    "commit": "",
+    "simplification": "剥离 bash 词法/执行主体，以等价导入解析器镜像『函数定义之后的尾随字符串被继续执行』核心缺陷"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "环境变量值 '() { :; }; echo pwned' → 尾随 'echo pwned' 被当作命令执行",
+  "notes": "CVE-2014-6271 (Shellshock): 函数定义后尾随串被执行（CVE 描述: processes trailing strings after function definitions in the values of environment variables, which allows remote attackers to execute arbitrary code）。纯解析逻辑错误 → 诚实标 miss。"
+}

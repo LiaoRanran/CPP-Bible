@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G085",
+  "defect_type": "logic_error",
+  "defect_location": {
+    "line": 24,
+    "function": "pipe_buffer_reuse",
+    "description": "CVE-2022-0847 (Dirty Pipe): pipe_buffer.flags 缺少初始化（CVE 描述: the 'flags' member of the new pipe buffer structure was lacking proper initialization ... could thus contain stale values）。用户态等价模拟，可观察越权写入 → 诚实标 miss。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2022-0847",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-0847",
+    "project": "linux-kernel",
+    "commit": "",
+    "simplification": "内核漏洞无法在用户态直接复现：按 CVE 描述（pipe_buffer.flags 未初始化沿用脏值 → 获得不该有的 CAN_MERGE 权限写穿页缓存）做用户态等价模拟，planted=true"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "复用 pipe_buffer 槽位时 flags 未清空，沿用上一轮的 PIPE_BUF_CAN_MERGE → 对他人页面追加写入",
+  "notes": "CVE-2022-0847 (Dirty Pipe): pipe_buffer.flags 缺少初始化（CVE 描述: the 'flags' member of the new pipe buffer structure was lacking proper initialization ... could thus contain stale values）。用户态等价模拟，可观察越权写入 → 诚实标 miss。"
+}

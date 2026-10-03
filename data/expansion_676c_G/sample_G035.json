@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G035",
+  "defect_type": "use_after_free",
+  "defect_location": {
+    "line": 24,
+    "function": "smb_request2",
+    "description": "CVE-2026-3805: SMB 第二次请求使用已释放内存的数据指针（官方公告: making a second SMB request curl uses data pointers to freed memory, Medium, CWE-416）。2026-03-11 披露。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2026-3805",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-3805",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 SMB 传输层，保留官方公告描述的『第二次请求使用指向已释放内存的数据指针』核心缺陷，share 树指针挂在会话上"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "第一个 SMB 请求把指向请求内部数据的指针存入会话，请求销毁后第二个请求仍使用该指针",
+  "notes": "CVE-2026-3805: SMB 第二次请求使用已释放内存的数据指针（官方公告: making a second SMB request curl uses data pointers to freed memory, Medium, CWE-416）。2026-03-11 披露。"
+}

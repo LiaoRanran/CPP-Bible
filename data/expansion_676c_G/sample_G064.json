@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G064",
+  "defect_type": "heap_overflow",
+  "defect_location": {
+    "line": 27,
+    "function": "ngx_resolver_copy_name",
+    "description": "CVE-2021-23017: nginx resolver 差一错误（CVE 描述: an attacker who is able to forge UDP packets from the DNS server to cause 1-byte memory overwrite, CWE-193）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2021-23017",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-23017",
+    "project": "nginx",
+    "commit": "",
+    "simplification": "剥离 nginx DNS 解析器与网络层，保留『名字解压时 '.' 偏移差一 → 1 字节越界写』核心缺陷（与官方描述 CWE-193 off-by-one 一致）"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "crafted DNS 名总长恰等于目的缓冲大小 → 终止符写到 dst[cap]",
+  "notes": "CVE-2021-23017: nginx resolver 差一错误（CVE 描述: an attacker who is able to forge UDP packets from the DNS server to cause 1-byte memory overwrite, CWE-193）。"
+}

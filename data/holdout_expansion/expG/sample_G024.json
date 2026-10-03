@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G024",
+  "defect_type": "race_condition",
+  "defect_location": {
+    "line": 21,
+    "function": "ssl3_get_new_session_ticket",
+    "description": "CVE-2015-1791: ssl3_get_new_session_ticket 多线程客户端竞争（CVE 描述: Race condition in the ssl3_get_new_session_ticket ... double free and use-after-free）。TSan 捕获数据竞争。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2015-1791",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-1791",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 SSL 连接层，保留『多线程客户端并发处理 NewSessionTicket 时会话对象无锁替换/释放』核心竞争"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两个线程同时处理 NewSessionTicket：无锁读写共享会话指针与成员",
+  "notes": "CVE-2015-1791: ssl3_get_new_session_ticket 多线程客户端竞争（CVE 描述: Race condition in the ssl3_get_new_session_ticket ... double free and use-after-free）。TSan 捕获数据竞争。"
+}

@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G025",
+  "defect_type": "heap_overflow",
+  "defect_location": {
+    "line": 20,
+    "function": "SSL_set_SSL_CTX",
+    "description": "CVE-2026-72897: SSL_set_SSL_CTX 证书槽位越界读写 → 堆损坏（官方公告: certificate slot array out-of-bounds read/write, heap corruption）。用户态等价重构（planted=true）。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2026-72897",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-72897",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "基于 2026-09-29 官方公告描述（握手中途 SSL_set_SSL_CTX 且新上下文签名算法更多时证书槽位数组越界读写）以用户态等价结构重构，非原始代码镜像，故标 planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "握手中途把 SSL_CTX 切换为签名算法更多的上下文，证书槽位按新数量写入旧容量数组",
+  "notes": "CVE-2026-72897: SSL_set_SSL_CTX 证书槽位越界读写 → 堆损坏（官方公告: certificate slot array out-of-bounds read/write, heap corruption）。用户态等价重构（planted=true）。"
+}

@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G054",
+  "defect_type": "integer_overflow",
+  "defect_location": {
+    "line": 18,
+    "function": "sqlite3_str_appendall",
+    "description": "CVE-2022-35737: 数十亿字节的字符串参数导致 array-bounds overflow（CVE 描述: sometimes allows an array-bounds overflow if billions of bytes are used in a string argument to a C API）。本样本镜像 int 累加溢出点。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2022-35737",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-35737",
+    "project": "sqlite",
+    "commit": "",
+    "simplification": "剥离 SQLite C API 字符串层，保留『字符串长度按 int 累加』核心缺陷，长度由运行时变量给出"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "字符串参数达数十亿字节，nUsed += n 的 int 累加溢出",
+  "notes": "CVE-2022-35737: 数十亿字节的字符串参数导致 array-bounds overflow（CVE 描述: sometimes allows an array-bounds overflow if billions of bytes are used in a string argument to a C API）。本样本镜像 int 累加溢出点。"
+}

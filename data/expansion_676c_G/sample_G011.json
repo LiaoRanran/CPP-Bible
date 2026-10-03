@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G011",
+  "defect_type": "integer_overflow",
+  "defect_location": {
+    "line": 14,
+    "function": "EVP_EncryptUpdate",
+    "description": "CVE-2016-2106: EVP_EncryptUpdate 整数溢出（CVE 描述: Integer overflow in the EVP_EncryptUpdate ... via a large amount of data）。修复 commit 增加的正是 inl+bl 溢出检查，本样本保留无检查版本。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2016-2106",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2106",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离加解密主体，保留『inl + block_size 有符号溢出且缺少溢出检查』核心缺陷（修复版本加入 inl+bl<inl 检查）"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "输入长度 inl = INT_MAX-15，块大小 16，inl+bl 有符号溢出",
+  "notes": "CVE-2016-2106: EVP_EncryptUpdate 整数溢出（CVE 描述: Integer overflow in the EVP_EncryptUpdate ... via a large amount of data）。修复 commit 增加的正是 inl+bl 溢出检查，本样本保留无检查版本。"
+}

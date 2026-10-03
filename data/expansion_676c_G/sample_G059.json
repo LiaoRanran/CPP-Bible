@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G059",
+  "defect_type": "heap_overflow",
+  "defect_location": {
+    "line": 28,
+    "function": "BuildHuffmanTable",
+    "description": "CVE-2023-4863: libwebp BuildHuffmanTable 堆溢出（CVE 描述: Heap buffer overflow in libwebp ... allowed a remote attacker to perform an out of bounds memory write, Chromium Critical）。修复版增加码长分布合法性校验。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2023-4863",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-4863",
+    "project": "libwebp",
+    "commit": "",
+    "simplification": "剥离 WebP VP8L 解码器，保留 Huffman 表构建『码长分布合法性未校验 → 表项写入越过分配大小』核心缺陷（与原始 BuildHuffmanTable 填表逻辑同构）"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "crafted 码长分布: 5 个长度为 2 的码 → 需写 20 项 > 分配的 16 项表",
+  "notes": "CVE-2023-4863: libwebp BuildHuffmanTable 堆溢出（CVE 描述: Heap buffer overflow in libwebp ... allowed a remote attacker to perform an out of bounds memory write, Chromium Critical）。修复版增加码长分布合法性校验。"
+}

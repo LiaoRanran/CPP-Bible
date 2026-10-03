@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G053",
+  "defect_type": "use_after_free",
+  "defect_location": {
+    "line": 19,
+    "function": "alter_table_rename",
+    "description": "CVE-2020-11656: ALTER TABLE 实现中的 use-after-free（CVE 描述: the ALTER TABLE implementation has a use-after-free, as demonstrated by an ORDER BY clause that belongs to a compound SELECT statement）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2020-11656",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-11656",
+    "project": "sqlite",
+    "commit": "",
+    "simplification": "剥离 SQLite ALTER TABLE 引擎，保留『token 内容释放后错误路径仍引用』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "ALTER TABLE RENAME 失败路径先释放 token.z，错误消息构造仍引用 t->z",
+  "notes": "CVE-2020-11656: ALTER TABLE 实现中的 use-after-free（CVE 描述: the ALTER TABLE implementation has a use-after-free, as demonstrated by an ORDER BY clause that belongs to a compound SELECT statement）。"
+}

@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G063",
+  "defect_type": "stack_overflow_write",
+  "defect_location": {
+    "line": 27,
+    "function": "xmlSnprintfElementContent",
+    "description": "CVE-2017-9047: xmlSnprintfElementContent 缓冲溢出（CVE 描述: The function xmlSnprintfElementContent ... is supposed to recursively dump the element content definition into a char buffer 'buf' of size 'size'; len assigned strlen(buf) ... overflow）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2017-9047",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-9047",
+    "project": "libxml2",
+    "commit": "",
+    "simplification": "剥离 libxml2 校验器，保留『len=strlen(buf) 后第二次追加分支未按剩余空间收缩 size』核心缺陷（与 issue 中引用的 valid.c 逻辑同构）"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "元素内容名 60 字节 + 子内容再追加 → 第二次写入越过 64 字节缓冲",
+  "notes": "CVE-2017-9047: xmlSnprintfElementContent 缓冲溢出（CVE 描述: The function xmlSnprintfElementContent ... is supposed to recursively dump the element content definition into a char buffer 'buf' of size 'size'; len assigned strlen(buf) ... overflow）。"
+}

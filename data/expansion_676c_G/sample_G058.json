@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G058",
+  "defect_type": "division_by_zero",
+  "defect_location": {
+    "line": 14,
+    "function": "png_check_chunk_length",
+    "description": "CVE-2018-13785: png_check_chunk_length 的 row_factor 错误计算（CVE 描述: a wrong calculation of row_factor ... may trigger an integer overflow and resultant divide-by-zero）。保留原始公式与 crafted 高度。"
+  },
+  "severity": "medium",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2018-13785",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-13785",
+    "project": "libpng",
+    "commit": "",
+    "simplification": "剥离 PNG 解码器，保留官方公告描述的『row_factor 错误计算导致整数溢出与除零』核心缺陷（使用与原始 pngrutil.c 相同的 row_factor 公式）"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "IHDR 高度 h=0x7FFFFFFC，row_factor 公式中 h+7 有符号溢出",
+  "notes": "CVE-2018-13785: png_check_chunk_length 的 row_factor 错误计算（CVE 描述: a wrong calculation of row_factor ... may trigger an integer overflow and resultant divide-by-zero）。保留原始公式与 crafted 高度。"
+}

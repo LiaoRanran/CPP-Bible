@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G009",
+  "defect_type": "heap_overread",
+  "defect_location": {
+    "line": 18,
+    "function": "X509_NAME_oneline",
+    "description": "CVE-2016-2176: X509_NAME_oneline 处理 crafted EBCDIC ASN.1 数据时 buffer over-read（CVE 描述: obtain sensitive information from process stack memory or cause a denial of service (buffer over-read)）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2016-2176",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2176",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 EBCDIC 转换层，保留『高位字节触发转义分支时向前多读一字节且不检查边界』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "名字串最后一个字节是高位字节（crafted EBCDIC 数据），转义分支读 name[len]",
+  "notes": "CVE-2016-2176: X509_NAME_oneline 处理 crafted EBCDIC ASN.1 数据时 buffer over-read（CVE 描述: obtain sensitive information from process stack memory or cause a denial of service (buffer over-read)）。"
+}

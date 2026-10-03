@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G010",
+  "defect_type": "integer_overflow",
+  "defect_location": {
+    "line": 13,
+    "function": "EVP_EncodeUpdate",
+    "description": "CVE-2016-2105: EVP_EncodeUpdate 整数溢出 → heap memory corruption（CVE 描述: Integer overflow in the EVP_EncodeUpdate ... via a large amount of binary data）。本样本镜像长度计算的溢出点。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2016-2105",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2105",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 base64 编码主体，保留『输出长度按 5*n/4+1 用 int 计算』核心缺陷，输入长度由运行时变量给出"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "输入数据量接近 2^29，5*n 乘法发生 int 溢出",
+  "notes": "CVE-2016-2105: EVP_EncodeUpdate 整数溢出 → heap memory corruption（CVE 描述: Integer overflow in the EVP_EncodeUpdate ... via a large amount of binary data）。本样本镜像长度计算的溢出点。"
+}

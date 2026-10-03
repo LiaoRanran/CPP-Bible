@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G026",
+  "defect_type": "stack_overread",
+  "defect_location": {
+    "line": 25,
+    "function": "tftp_send_first",
+    "description": "CVE-2017-1000100: 超长文件名被截断入 515 缓冲，但缓冲尺寸仍按未截断长度更新，sendto 按错误尺寸发送（CVE 描述: the file name is truncated to fit within the buffer boundaries, but the buffer size is still wrongly updated）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2017-1000100",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-1000100",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 TFTP 传输层，文件名硬编码为 600 字节，保留『文件名被截断但缓冲区尺寸仍按未截断长度使用』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "TFTP URL 文件名 600 字节 > 515 缓冲，发送尺寸仍按 600 计算 → 栈越界读 89 字节",
+  "notes": "CVE-2017-1000100: 超长文件名被截断入 515 缓冲，但缓冲尺寸仍按未截断长度更新，sendto 按错误尺寸发送（CVE 描述: the file name is truncated to fit within the buffer boundaries, but the buffer size is still wrongly updated）。"
+}

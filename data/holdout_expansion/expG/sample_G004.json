@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G004",
+  "defect_type": "memory_leak",
+  "defect_location": {
+    "line": 25,
+    "function": "dtls1_buffer_record",
+    "description": "CVE-2015-0206: dtls1_buffer_record 为 next epoch 缓冲重复记录时 memory leak（CVE 描述: Memory leak in dtls1_buffer_record ... by sending many duplicate records for the next epoch）→ 攻击者可耗尽内存。LeakSanitizer 捕获。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2015-0206",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-0206",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 DTLS 网络层，epoch 判定用参数硬编码，保留『为下一 epoch 缓冲记录时错误路径不释放 rdata』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "重复收到下一 epoch 的重复记录（8 次），每次缓冲路径都走错误返回",
+  "notes": "CVE-2015-0206: dtls1_buffer_record 为 next epoch 缓冲重复记录时 memory leak（CVE 描述: Memory leak in dtls1_buffer_record ... by sending many duplicate records for the next epoch）→ 攻击者可耗尽内存。LeakSanitizer 捕获。"
+}

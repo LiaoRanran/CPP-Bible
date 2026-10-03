@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G039",
+  "defect_type": "integer_overflow",
+  "defect_location": {
+    "line": 12,
+    "function": "curl_easy_escape_alloc",
+    "description": "CVE-2016-7167: curl_escape 系列函数整数溢出（CVE 描述: Multiple integer overflows in the (1) curl_escape ... via a string of length 0xffffffff, which triggers a heap-based buffer overflow）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2016-7167",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-7167",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离转义主体，保留『最坏情况下分配尺寸按 int 计算 len+3*2+1』核心缺陷，输入长度由运行时变量给出"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "输入字符串长度接近 INT_MAX，+7 分配计算有符号溢出",
+  "notes": "CVE-2016-7167: curl_escape 系列函数整数溢出（CVE 描述: Multiple integer overflows in the (1) curl_escape ... via a string of length 0xffffffff, which triggers a heap-based buffer overflow）。"
+}

@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G075",
+  "defect_type": "state_machine",
+  "defect_location": {
+    "line": 20,
+    "function": "ssh_server_handle_packet",
+    "description": "CVE-2018-10933: libssh 服务端状态机缺陷（CVE 描述: A malicious client could create channels without first performing authentication, resulting in unauthorized access）。状态机逻辑错误 → 诚实标 miss。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2018-10933",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-10933",
+    "project": "libssh",
+    "commit": "",
+    "simplification": "剥离 libssh 分组加密/传输层，以等价服务端状态机镜像『未认证即可处理 CHANNEL_OPEN』核心缺陷"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "认证完成前客户端发送 SSH_MSG_CHANNEL_OPEN(90) → 通道被创建",
+  "notes": "CVE-2018-10933: libssh 服务端状态机缺陷（CVE 描述: A malicious client could create channels without first performing authentication, resulting in unauthorized access）。状态机逻辑错误 → 诚实标 miss。"
+}

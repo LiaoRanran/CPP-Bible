@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G081",
+  "defect_type": "double_free",
+  "defect_location": {
+    "line": 21,
+    "function": "snd_usbmidi_create",
+    "description": "CVE-2016-2384: snd_usbmidi_create double free（CVE 描述: Double free vulnerability in the snd_usbmidi_create function ... via vectors involving an invalid USB descriptor）。用户态等价模拟。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2016-2384",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2384",
+    "project": "linux-kernel",
+    "commit": "",
+    "simplification": "内核漏洞无法在用户态直接复现：按 CVE 描述（snd_usbmidi_create 无效 USB 描述符错误路径 double free）做用户态等价模拟，planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "无效 USB 描述符触发错误路径释放接口对象，调用方再次释放",
+  "notes": "CVE-2016-2384: snd_usbmidi_create double free（CVE 描述: Double free vulnerability in the snd_usbmidi_create function ... via vectors involving an invalid USB descriptor）。用户态等价模拟。"
+}

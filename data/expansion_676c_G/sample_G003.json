@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G003",
+  "defect_type": "null_deref",
+  "defect_location": {
+    "line": 29,
+    "function": "dtls1_read_timeout",
+    "description": "CVE-2014-3571: crafted DTLS 消息在『header 读』与『消息体读』两条路径处理不一致，导致 NULL 指针解引用（CVE 描述: NULL pointer dereference and application crash）。本样本镜像该模式。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2014-3571",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-3571",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 DTLS 网络层与重传队列，保留『一条读路径释放/置空消息对象后另一读路径仍解引用』的核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "DTLS 握手消息在缓冲读路径被释放后，超时读路径仍解引用该指针",
+  "notes": "CVE-2014-3571: crafted DTLS 消息在『header 读』与『消息体读』两条路径处理不一致，导致 NULL 指针解引用（CVE 描述: NULL pointer dereference and application crash）。本样本镜像该模式。"
+}

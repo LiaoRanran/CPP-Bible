@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G036",
+  "defect_type": "double_free",
+  "defect_location": {
+    "line": 20,
+    "function": "sasl_gsasl_cleanup",
+    "description": "CVE-2026-8925: GSASL 上下文 double free（官方公告: GSASL context is cleaned up twice without clearing the pointer in between, Medium, CWE-415）。2026-09-02 披露。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2026-8925",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-8925",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 GSASL 认证流程，保留官方公告描述的『GSASL 上下文被清理两次且中间未清空指针』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "SASL 认证错误重试路径对同一上下文调用两次 cleanup，中间未置 NULL",
+  "notes": "CVE-2026-8925: GSASL 上下文 double free（官方公告: GSASL context is cleaned up twice without clearing the pointer in between, Medium, CWE-415）。2026-09-02 披露。"
+}

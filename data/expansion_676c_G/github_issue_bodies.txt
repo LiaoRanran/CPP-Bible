@@ -1,0 +1,419 @@
+===== nlohmann/json#5647 [closed] operator[](size_type) with SIZE_MAX empties the array and writes out of bounds
+### Description
+
+The non-const `operator[](size_type idx)` clears the array and then writes before the start of its buffer when `idx` is the largest `size_type` value. This index is easy to produce by accident, for example `j[v.size() - 1]` with an empty `v`.
+
+[`include/nlohmann/json.hpp#L2838`](https://github.com/nlohmann/json/blob/633de8e44bbbc29383d72f8c920343ea5d1eaa21/include/nlohmann/json.hpp#L2838):
+
+```cpp
+if (idx >= m_data.m_value.array->size())
+{
+    ...
+    m_data.m_value.array->resize(idx + 1);   // idx + 1 wraps to 0 for idx == SIZE_MAX
+    ...
+}
+return m_data.m_value.array->operator[](idx);   // out of bounds on the now empty vector
+```
+
+For `idx == SIZE_MAX`, `idx + 1` is `0`, so `resize(0)` erases all elements, and `operator[](SIZE_MAX)` then addresses `begin() + SIZE_MAX`, which is one element *before* the buffer. The assignment writes there. In an optimized build without sanitizers this silently empties the array and corrupts the heap. For every other too-large index (for example `SIZE_MAX - 1`), `resize()` throws `std::length_error` and the array stays unchanged.
+
+The [`operator[]` documentation](https://json.nlohmann.me/api/basic_json/operator%5B%5D/) promises: "Strong exception safety: if an exception occurs, the original value stays intact." It also says that a missing index is created and the gap filled with `null`, which is impossible for `SIZE_MAX`; the documented exceptions list only `type_error.305`. With `JSON_DIAGNOSTICS`, the same branch also computes `idx + 1 - old_size`.
+
+**Since when:** reproduces with the v3.12.0 headers (same output as below); the `resize(idx + 1)` line is there in v3.12.0 as well.
+
+Related but different: #3973 (buffer overflow in *const* `operator[]` on out-of-range access, documented as undefined behavior).
+
+**Possib
+
+===== nlohmann/json#3492 [closed] ASAN error while parsing BJData (Heap-buffer-overflow READ 1)
+### Description
+
+OSS-Fuzz reports a buffer overflow when fuzzing with ASAN
+
+- https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=47391
+- https://oss-fuzz.com/testcase-detail/5698044521218048
+
+### Reproduction steps
+
+- Compile with ASAN
+- Parse input
+[clusterfuzz-testcase-minimized-parse_bjdata_fuzzer-5698044521218048.zip](https://github.com/nlohmann/json/files/8675124/clusterfuzz-testcase-minimized-parse_bjdata_fuzzer-5698044521218048.zip)
+ 
+
+### Expected vs. actual results
+
+Expected: parse error or valid JSON value returned
+
+Actual: ASAN runtime error
+
+### Minimal code example
+
+_No response_
+
+### Error messages
+
+```Shell
++----------------------------------------Release Build Stacktrace----------------------------------------+
+Command: /mnt/scratch0/clusterfuzz/resources/platform/linux/unshare -c -n /mnt/scratch0/clusterfuzz/bot/builds/clusterfuzz-builds_json_26b1464c0c18fac23c49bf26ed996090f90e682a/revisions/parse_bjdata_fuzzer -rss_limit_mb=2560 -timeout=60 -runs=100 /mnt/scratch0/clusterfuzz/bot/inputs/fuzzer-testcases/crash-9c5801955f5d26b496b0a3a159e11fc8baa926bf
+Time ran: 0.3587803840637207
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 937550358
+INFO: Loaded 1 modules   (6059 inline 8-bit counters): 6059 [0x694960, 0x69610b),
+INFO: Loaded 1 PC tables (6059 PCs): 6059 [0x624770,0x63c220),
+/mnt/scratch0/clusterfuzz/bot/builds/clusterfuzz-builds_json_26b1464c0c18fac23c49bf26ed996090f90e682a/revisions/parse_bjdata_fuzzer: Running 1 inputs 100 time(s) each.
+Running: /mnt/scratch0/clusterfuzz/bot/inputs/fuzzer-testcases/crash-9c5801955f5d26b496b0a3a159e11fc8baa926bf
+=================================================================
+==101886==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x602000000140 at pc 0x00000057
+
+===== nlohmann/json#575 [closed] Heap-buffer-overflow (OSS-Fuzz 1400)
+```
+Detailed report: https://oss-fuzz.com/testcase?key=4618963768049664
+
+Project: json
+Fuzzer: afl_json_parse_afl_fuzzer
+Fuzz target binary: parse_afl_fuzzer
+Job Type: afl_asan_json
+Platform Id: linux
+
+Crash Type: Heap-buffer-overflow READ 2
+Crash Address: 0x6020000000b2
+Crash State:
+std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<ch
+nlohmann::basic_json<std::__1::map, std::__1::vector, std::__1::basic_string<cha
+nlohmann::basic_json<std::__1::map, std::__1::vector, std::__1::basic_string<cha
+
+Sanitizer: address (ASAN)
+
+Recommended Security Severity: Medium
+
+Regressed: https://oss-fuzz.com/revisions?job=afl_asan_json&range=201705051619:201705061619
+
+Reproducer Testcase: https://oss-fuzz.com/download?testcase_id=4618963768049664
+
+
+Issue filed automatically.
+
+See https://github.com/google/oss-fuzz/blob/master/docs/reproducing.md for more information.
+
+This bug is subject to a 90 day disclosure deadline. If 90 days elapse
+without an upstream patch, then the bug report will automatically
+become visible to the public.
+```
+
+[inputs.zip](https://github.com/nlohmann/json/files/981399/inputs.zip)
+
+
+===== leethomason/tinyxml2#1065 [open] Security: Integer Overflow and Heap Buffer Overflow in DynArray::EnsureCapacity
+Description:
+I am developing a static analysis engine called Lumos, based on the Z3 theorem prover. It flagged a potential security vulnerability in tinyxml2.h.
+Location:
+In DynArray<T, INITIAL_SIZE>::EnsureCapacity(size_t cap) (around line 450-470).
+The Problem:
+The code calculates new allocation size as follows:
+cpp
+const size_t newAllocated = cap * 2;
+
+The safety of this operation is only guarded by:
+cpp
+TIXMLASSERT( cap <= SIZE_MAX / 2 / sizeof(T));
+
+Since TIXMLASSERT is removed in Release builds, there is no runtime protection. If cap is large enough (e.g., via a specially crafted XML), newAllocated will overflow, leading to:
+A very small memory allocation.
+A large memcpy operation into that small buffer:
+memcpy( newMem, _mem, sizeof(T) * _size );
+This results in a Heap Buffer Overflow.
+Suggested Fix:
+Add a runtime check that persists in release builds:
+cpp
+if (cap > SIZE_MAX / 2 / sizeof(T)) {
+    // Return error or handle gracefully
+}
+
+===== leethomason/tinyxml2#923 [open] ERROR: AddressSanitizer: global-buffer-overflow in function ErrorIDToName
+Instrument [Futag](https://github.com/ispras/Futag) found this error with [tinyxml2 version 9.0.0 ](https://github.com/leethomason/tinyxml2/archive/refs/tags/9.0.0.tar.gz) and in current version.
+
+https://github.com/leethomason/tinyxml2/blob/e45d9d16d430a3f5d3eee9fe40d5e194e1e5e63a/tinyxml2.cpp#L2501-L2507
+
+**errorID** is a variable of XMLError type, which can receive value from XML_SUCCESS (0) to XML_ERROR_COUNT (19)
+https://github.com/leethomason/tinyxml2/blob/e45d9d16d430a3f5d3eee9fe40d5e194e1e5e63a/tinyxml2.h#L523-L545
+
+The _errorNames array has 19 elements (from 0 to 18) and was defined here:
+https://github.com/leethomason/tinyxml2/blob/e45d9d16d430a3f5d3eee9fe40d5e194e1e5e63a/tinyxml2.cpp#L2136-L2156
+
+So, when  **errorID** gets XML_ERROR_COUNT  value, error occurs at instruction `const char* errorName = _errorNames[errorID]; ` 
+
+The generated fuzzing wrapper is attached below.
+[ErrorIDToName1.cpp.zip](https://github.com/leethomason/tinyxml2/files/9914409/ErrorIDToName1.cpp.zip)
+
+
+===== leethomason/tinyxml2#728 [open] Bad overflow management in QueryUnsignedAttribute
+When I try to parse 10 000 000 000 (hex : 2 540B E400) with QueryUnsignedAttribute I get 1 410 065 408 (hex : 540B E400).
+
+I was expecting 4 294 967 295 (hex : FFFF FFFF), max value for uint32_t (unsigned int) or better XML_ERROR.
+
+I think this is really dangerous, no ?
+
+Note : I work on a Linux Lubuntu 64 Bits / G++ compiler.
+
+Thanks for all the work done on this beautiful library.
+
+===== open-source-parsers/jsoncpp#1682 [closed] Heap-Buffer-Overflow READ in jsoncpp `getLocationLineAndColumn` (CR at end of input) — reachable from openscreen Cast `ReceiverMessage` parser
+# Heap-Buffer-Overflow READ in jsoncpp `getLocationLineAndColumn` (CR at end of input) — reachable from openscreen Cast `ReceiverMessage` parser
+
+## Summary
+
+`Json::OurReader::getLocationLineAndColumn` at
+`third_party/jsoncpp/source/src/lib_json/json_reader.cpp:1820-1840`
+walks the input buffer character-by-character to compute a `(line,
+column)` pair for an error token. Inside the loop, when the current
+byte is `\r` (carriage return), the code unconditionally peeks at
+`*current` to check for a following `\n` — without first re-testing
+the `current != end_` loop guard. If the CR byte is the **last** byte
+of the input buffer, `current++` advances `current` to `end_`, and the
+peek at line 1828 reads one byte past the heap allocation.
+
+Trigger is a single attacker-supplied byte (`0x0d`) delivered to any
+`Json::CharReader::parse(begin, end, …)` call where the document
+ends in CR and parsing produces at least one error (so
+`getFormattedErrorMessages` runs over the error list). On a bare CR
+input, jsoncpp records a parse error whose token position points at
+the CR itself; formatting that error reads OOB.
+
+In Chrome, this is reachable through `openscreen::json::Parse`
+(`third_party/openscreen/src/util/json/json_serialization.cc:29`),
+which is on the Cast Streaming receiver-message hot path
+(`SenderSessionMessenger::OnMessage` → `openscreen::json::Parse(message)`
+→ `ReceiverMessage::Parse`). A rogue LAN Cast receiver — including
+one driven by a webpage via `chrome.cast.*` — fully controls the
+JSON body and can ship a 1-byte payload that triggers the OOB read
+inside the Cast sender process.
+
+## Root Cause
+
+### Vulnerable code — `OurReader` (`json_reader.cpp:1820-1840`)
+
+```cpp
+void OurReader::getLocationLineAndColumn(Location location, int& line,
+                                
+
+===== open-source-parsers/jsoncpp#1623 [closed] [bug] UAF via `parse` -> `getFormattedErrorMessages`
+Hi, there is a potential bug in `Json::Reader::parse` where it stores dangling pointers to the string, read back during `getFormattedErrorMessages`.
+
+This bug was reproduced on https://github.com/open-source-parsers/jsoncpp/commit/ca98c98457b1163cca1f7d8db62827c115fec6d1.
+
+### Description
+
+When invoking `Reader::parse`, it may store dangling pointers into the provided input string. These strings can be read back, e.g. by `getFormattedErrorMessages` which will cause a UAF if the original string is deallocated or goes out of scope.
+
+Currently `Reader::parse` doesn't mention this dependency on the lifetime of the string in its documentation, so it may be a bit of a footgun for users.
+
+### Patch Suggestions
+
+**Option 1: copy string**
+If it's possible, you can copy either the whole input string or just the parts you need for error messages (rather than storing dangling pointers). For the latter choice, you only get additional runtime overhead in error cases (which might be acceptable).
+
+**Option 2: document**
+Alternatively, if option 1 is too cumbersome, you could simply document this dependency somewhere in `Reader::parse`, so its on end-users to enforce the in-scopeness of the string.
+
+### POC
+
+The following testcase demonstrates the bug:
+
+**testcase.cpp**
+```cpp
+#include <string>
+#include "/fuzz/install/include/json/json.h"
+int main() {
+  Json::Reader reader;  // legacy API
+  Json::Value root;
+  {
+    // Caller-owned buffer; pass raw pointers to Reader
+    std::string doc = "{\n  \"a\": 1,\n  trailing\n}"; // invalid JSON to force parse errors
+    const char* begin = doc.data();
+    const char* end = begin + doc.size();
+    (void)reader.parse(begin, end, root, /*collectComments=*/true);
+    // doc is destroyed here; Reader still keeps pointers into its buffer
+  }
+  // Lat
+
+===== open-source-parsers/jsoncpp#1471 [closed] json_reader.cpp:1212] (error) Array 'pattern[3]' accessed at index 6, which is out of bounds. [arrayIndexOutOfBounds] 
+Hi Alls,
+I use cpptest and got error for 
+```
+bool OurReader::match(const Char* pattern, int patternLength) {
+  if (end_ - current_ < patternLength)
+    return false;
+  int index = patternLength;
+  while (index--)
+    if (current_[index] != pattern[index])
+      return false;
+  current_ += patternLength;
+  return true;
+}
+```
+
+`[json_reader.cpp:1212] (error) Array 'pattern[3]' accessed at index 6, which is out of bounds. [arrayIndexOutOfBounds]` for this line:
+
+```
+ok = features_.allowSpecialFloats_ && match("nfinity", 7);
+```
+
+What do you think about chage match function to:
+```
+bool OurReader::match(Location pattern, int patternLength) {
+  if (end_ - current_ < patternLength)
+    return false;
+  /*int index = patternLength;
+  while (index--)
+    if (current_[index] != pattern[index])
+      return false;*/
+  for (int i = 0; i < patternLength; ++i) {
+    if (current_[i] != pattern[i])
+    return false;
+  }
+
+  current_ += patternLength;
+  return true;
+}
+```
+
+Thank for your advise 
+
+===== open-source-parsers/jsoncpp#1545 [closed] Uint64 overflow doesn't always throws exception 
+**Describe the bug**
+When trying to read values as uint64, for numbers that are in uint64 range are working properly. Numbers above range but between [2^64,2^64+2^11] return 0. Numbers above 2^64+2^11 throws an exception.
+
+**To Reproduce**
+Code for example:
+
+```
+#include <iostream>
+#include <jsoncpp/json/json.h>
+#include <jsoncpp/json/reader.h>
+#include <jsoncpp/json/value.h>
+
+
+int main() {
+    //std::string uint64Str = "1234"; // any number in range [0, 2**64-1] works correctly (prints uint64Str)
+    //std::string uint64Str = "18446744073709551615"; // any number in range [0, 2**64-1] works correctly, including 2**64-1 (prints uint64Str)
+    //std::string uint64Str = "18446744073709551616"; //max uint64 + 1 print 0
+    //std::string uint64Str = "18446744073709551617"; //max uint64 + 2 print 0
+    // ...
+    //std::string uint64Str = "18446744073709553663"; //max uint64 + 2048 print 0
+    //std::string uint64Str = "18446744073709553664"; //max uint64 + 2049 print 0
+    std::string uint64Str = "18446744073709553665"; //max uint64 + 2050 (or more) throws instance of 'Json::LogicError' what():  double out of UInt64 range
+    Json::Value root;
+    Json::Reader reader;
+    bool parsingResult = reader.parse("{\"key\":"+uint64Str+"}", root);
+        std::cout<<root["key"].asUInt64()<<std::endl;
+    
+        return 0;
+}
+```
+
+**Expected behavior**
+An error should be thrown also for numbers between [2^64,2^64+2^11].
+
+**Desktop (please complete the following information):**
+ - OS: Ubuntu 2020
+
+**Additional context**
+Suggested code for fix is here: https://github.com/open-source-parsers/jsoncpp/pull/1519
+
+
+===== madler/zlib#1276 [open] Unchecked block size in zipRemoveExtraInfoBlock (contrib/minizip/zip.c) causes heap-buffer-overflow write
+`zipRemoveExtraInfoBlock()` in contrib/minizip/zip.c reads a 2-byte
+block-size field directly from the input buffer and uses it unchecked
+as both a memcpy length and a pointer-advance amount, with no
+validation against the buffer's actual remaining size (*dataLen).
+
+Confirmed present, unmodified, in current master.
+
+Reproducer (compiles against contrib/minizip/zip.c + zip.h):
+
+```c
+#include "contrib/minizip/zip.h"
+
+int main(void) {
+    char extra[4] = {0x11, 0x11, (char)0xff, 0x7f};
+    int len = sizeof(extra);
+    (void)zipRemoveExtraInfoBlock(extra, &len, (short)0x2222);
+    return 0;
+}
+```
+
+Build/run:
+
+```
+cc -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer \
+  harness.c contrib/minizip/zip.c -o repro
+./repro
+```
+
+Result: AddressSanitizer heap-buffer-overflow, WRITE of size 32771
+into a 4-byte allocation, aborts (SIGABRT).
+
+```
+==ERROR: AddressSanitizer: heap-buffer-overflow
+WRITE of size 32771 at ...
+    #1 zipRemoveExtraInfoBlock zip.c:1980
+... 4-byte region ... allocated by ... zip.c:1965
+```
+
+This is a different function from CVE-2023-45853
+(zipOpenNewFileInZip4_64). I could not find any real-world caller of
+zipRemoveExtraInfoBlock in a broad GitHub code search across projects
+that vendor this file, so real-world reachability is unconfirmed —
+filing for the record since the function is public API (declared in
+zip.h) and the fix is a simple bounds check before the memcpy/pointer
+advance.
+
+===== fmtlib/fmt#3415 [closed] gcc13.1 warning: possibly dangling reference to a temporary w/ostream operator
+Hi.  Using current to of tree (02cae7e4),  I see this warning with aarch64 gcc 13.1 -Wall. On godbolt, I used "arm64 gcc trunk" to compile and got this error (They don't have an arm64 gcc 13.1 listed yet).  Oddly, I don't see the error with x86-64 gcc13.1.  No error with gcc 11.3 or 12.2 on aarch64.
+
+```
+/opt/compiler-explorer/libs/fmt/trunk/include/fmt/core.h:1674:15: warning: possibly dangling reference to a temporary [-Wdangling-reference]
+ 1674 |   const auto& arg = arg_mapper<Context>().map(FMT_FORWARD(val));
+      |               ^~~
+/opt/compiler-explorer/libs/fmt/trunk/include/fmt/core.h:1674:46: note: the temporary was destroyed at the end of the full expression 'fmt::v9::detail::arg_mapper<fmt::v9::basic_format_context<fmt::v9::appender, char> >().fmt::v9::detail::arg_mapper<fmt::v9::basic_format_context<fmt::v9::appender, char> >::map<foo&>((* & val))'
+ 1674 |   const auto& arg = arg_mapper<Context>().map(FMT_FORWARD(val));
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+Compiler returned: 0
+```
+
+Here is a godbolt repro link:
+
+https://godbolt.org/z/ajsGKe4nE
+
+```
+#include <cstdint>
+#include <ostream>
+#include <string>
+#include <fmt/core.h>
+#include <fmt/ranges.h>
+#include <fmt/ostream.h>
+
+class foo {
+public:
+    int a;
+    std::string b;
+
+    foo(int aa, std::string bb) : a(aa), b(bb) {}
+
+    friend std::ostream& operator<< (std::ostream& os, const foo& obj);
+};
+
+template <> struct fmt::formatter<foo> : ostream_formatter {};
+std::ostream& operator<< (std::ostream& os, const foo& obj) {
+    os << obj.a << " " << obj.b;
+    return os;
+}
+
+
+
+int main(int argc, char** argv) {
+    foo f(5,"hello");
+    fmt::print("{}\n", f);
+}
+
+```

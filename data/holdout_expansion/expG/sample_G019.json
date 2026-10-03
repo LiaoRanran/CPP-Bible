@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G019",
+  "defect_type": "infinite_loop",
+  "defect_location": {
+    "line": 16,
+    "function": "bn_mod_sqrt",
+    "description": "CVE-2022-0778: BN_mod_sqrt 对非素数模数永不过返回（CVE 描述: contains a bug that can cause it to loop forever for non-prime moduli），解析证书时可远程 DoS。纯逻辑缺陷，sanitizer 无运行时报告 → 诚实标 miss（DoS 盲区，验证时进程超时）。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2022-0778",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-0778",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "基于 CVE 描述（BN_mod_sqrt 对非素数模数死循环）以等价的 Tonelli-Shanks 循环骨架重构，非原始代码逐行镜像，故标 planted=true"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "非素数模数 p=15, a=3：平方迭代陷入 3→9→6→6→… 不动点循环，永不终止",
+  "notes": "CVE-2022-0778: BN_mod_sqrt 对非素数模数永不过返回（CVE 描述: contains a bug that can cause it to loop forever for non-prime moduli），解析证书时可远程 DoS。纯逻辑缺陷，sanitizer 无运行时报告 → 诚实标 miss（DoS 盲区，验证时进程超时）。"
+}

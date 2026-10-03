@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G052",
+  "defect_type": "null_deref",
+  "defect_location": {
+    "line": 28,
+    "function": "window_query_agginfo",
+    "description": "CVE-2020-11655: 畸形窗口函数查询因 AggInfo 初始化被错误处理而段错误（CVE 描述: denial of service (segmentation fault) via a malformed window-function query because the AggInfo object's initialization is mishandled）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2020-11655",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-11655",
+    "project": "sqlite",
+    "commit": "",
+    "simplification": "剥离 SQLite 窗口函数引擎，保留『畸形窗口函数查询时 AggInfo 初始化被跳过但调用方继续使用』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "畸形窗口函数查询 → AggInfo 初始化失败(列为 NULL)但后续遍历仍解引用",
+  "notes": "CVE-2020-11655: 畸形窗口函数查询因 AggInfo 初始化被错误处理而段错误（CVE 描述: denial of service (segmentation fault) via a malformed window-function query because the AggInfo object's initialization is mishandled）。"
+}

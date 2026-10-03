@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G067",
+  "defect_type": "heap_overflow",
+  "defect_location": {
+    "line": 16,
+    "function": "file2strvec",
+    "description": "CVE-2018-1124: procps-ng file2strvec 多处整数溢出 → 堆损坏（CVE 描述: multiple integer overflows leading to a heap corruption in file2strvec function ... privilege escalation）。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2018-1124",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-1124",
+    "project": "procps-ng",
+    "commit": "",
+    "simplification": "基于 CVE 描述（file2strvec 多处整数溢出导致堆损坏, CWE-122/CWE-190）以『(int) 截断长度 → 小分配大拷贝』等价机制重构，非原始代码镜像，故标 planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "procfs 条目长度 2^31 级别，(int)(i-start) 截断为负，按原始长度拷贝",
+  "notes": "CVE-2018-1124: procps-ng file2strvec 多处整数溢出 → 堆损坏（CVE 描述: multiple integer overflows leading to a heap corruption in file2strvec function ... privilege escalation）。"
+}

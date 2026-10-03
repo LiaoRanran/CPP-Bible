@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G045",
+  "defect_type": "logic_error",
+  "defect_location": {
+    "line": 18,
+    "function": "negotiate_reuse_check",
+    "description": "CVE-2015-3148: Negotiate 认证连接被错误复用（CVE 描述: do not properly re-use authenticated Negotiate connections, which allows remote attackers to connect as other users via a request）。逻辑缺陷 → 诚实标 miss。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2015-3148",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-3148",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 Negotiate 认证流程，保留『连接复用不检查认证身份一致性』核心缺陷"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "user1 完成 Negotiate 认证后，user2 的请求错误复用该已认证连接",
+  "notes": "CVE-2015-3148: Negotiate 认证连接被错误复用（CVE 描述: do not properly re-use authenticated Negotiate connections, which allows remote attackers to connect as other users via a request）。逻辑缺陷 → 诚实标 miss。"
+}

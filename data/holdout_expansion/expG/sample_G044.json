@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G044",
+  "defect_type": "state_machine",
+  "defect_location": {
+    "line": 25,
+    "function": "http_post_after_put",
+    "description": "CVE-2022-32221: PUT 之后复用 handle 发 POST 时错误调用读回调（CVE 描述: might erroneously use the read callback ... even when CURLOPT_POSTFIELDS has been set, if the same handle previously was used to issue a PUT request）。状态逻辑错误 → 诚实标 miss。"
+  },
+  "severity": "medium",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2022-32221",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-32221",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离连接复用层，保留『同一 handle 先做 PUT(读回调) 再 POST(POSTFIELDS) 时错误调用读回调』核心状态缺陷"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "同一 handle 先 PUT(读回调) 再 POST(POSTFIELDS)，发送阶段错误调用读回调",
+  "notes": "CVE-2022-32221: PUT 之后复用 handle 发 POST 时错误调用读回调（CVE 描述: might erroneously use the read callback ... even when CURLOPT_POSTFIELDS has been set, if the same handle previously was used to issue a PUT request）。状态逻辑错误 → 诚实标 miss。"
+}

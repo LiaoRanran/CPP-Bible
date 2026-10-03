@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G047",
+  "defect_type": "logic_error",
+  "defect_location": {
+    "line": 17,
+    "function": "ocsp_check_response",
+    "description": "CVE-2020-8286: 证书撤销检查不足（CVE 描述: improper check for certificate revocation due to insufficient verification of the OCSP response, CWE-295）。逻辑缺陷 → 诚实标 miss。"
+  },
+  "severity": "medium",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2020-8286",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-8286",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 TLS/OCSP 主体，保留『OCSP 响应校验不足 → 撤销状态检查失效』核心缺陷"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "OCSP 响应状态字段异常，检查函数仍返回证书有效",
+  "notes": "CVE-2020-8286: 证书撤销检查不足（CVE 描述: improper check for certificate revocation due to insufficient verification of the OCSP response, CWE-295）。逻辑缺陷 → 诚实标 miss。"
+}

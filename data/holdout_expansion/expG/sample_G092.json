@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G092",
+  "defect_type": "heap_overread",
+  "defect_location": {
+    "line": 15,
+    "function": "json_parse_string",
+    "description": "nlohmann/json#575（已修复）: OSS-Fuzz 1400 Heap-buffer-overflow READ 2（parse 期间 std::string 构造）。等价重构：字符串扫描缺少 end 边界检查。"
+  },
+  "severity": "medium",
+  "planted": true,
+  "source": {
+    "type": "github_issue",
+    "id": "nlohmann/json#575",
+    "url": "https://github.com/nlohmann/json/issues/575",
+    "project": "nlohmann/json",
+    "commit": "",
+    "simplification": "issue 为 OSS-Fuzz 1400 自动报告（Heap-buffer-overflow READ 2, 位于 parse 期间的 string 构造），未附最小代码；按崩溃类别以『字符串解析越过输入缓冲末尾』等价重构，故标 planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "字符串解析扫描闭合引号时越过 4 字节堆输入缓冲（READ 2）",
+  "notes": "nlohmann/json#575（已修复）: OSS-Fuzz 1400 Heap-buffer-overflow READ 2（parse 期间 std::string 构造）。等价重构：字符串扫描缺少 end 边界检查。"
+}

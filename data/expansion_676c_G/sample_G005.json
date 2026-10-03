@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G005",
+  "defect_type": "double_free",
+  "defect_location": {
+    "line": 30,
+    "function": "dtls1_process_fragment",
+    "description": "CVE-2014-3505: d1_both.c 中 DTLS 错误路径的 double free（CVE 描述: Double free vulnerability in d1_both.c ... crafted DTLS packets that trigger an error path）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2014-3505",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-3505",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 DTLS 网络层，保留『错误路径释放 fragment 后公共清理路径再次释放』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "crafted DTLS 握手分片触发错误路径，随后公共清理再次 free",
+  "notes": "CVE-2014-3505: d1_both.c 中 DTLS 错误路径的 double free（CVE 描述: Double free vulnerability in d1_both.c ... crafted DTLS packets that trigger an error path）。"
+}

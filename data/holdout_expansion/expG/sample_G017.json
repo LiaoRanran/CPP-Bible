@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G017",
+  "defect_type": "heap_overread",
+  "defect_location": {
+    "line": 18,
+    "function": "ASN1_STRING_cmp",
+    "description": "CVE-2021-3712: ASN1_STRING 以 (data, length) 表示、不保证 NUL 结尾（CVE 描述: contrasts with normal C strings which are repesented as a buffer for the string data），误按 C 字符串读 → 越界读/信息泄露。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2021-3712",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3712",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 ASN1_STRING 全部用途，保留『内部 (data,len) 存储不含 NUL、比较路径误用 strlen』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "ASN1_STRING 内容 4 字节无 NUL，比较按 strlen 处理 → 读越界",
+  "notes": "CVE-2021-3712: ASN1_STRING 以 (data, length) 表示、不保证 NUL 结尾（CVE 描述: contrasts with normal C strings which are repesented as a buffer for the string data），误按 C 字符串读 → 越界读/信息泄露。"
+}

@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G083",
+  "defect_type": "race_condition",
+  "defect_location": {
+    "line": 21,
+    "function": "n_hdlc_release",
+    "description": "CVE-2017-2636: n_hdlc 竞态条件（CVE 描述: Race condition in drivers/tty/n_hdlc.c ... gain privileges or cause a denial of service (double free) by setting the HDLC line discipline）。用户态等价模拟，TSan 捕获。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2017-2636",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-2636",
+    "project": "linux-kernel",
+    "commit": "",
+    "simplification": "内核漏洞无法在用户态直接复现：按 CVE 描述（n_hdlc 竞态 → double free）做用户态等价模拟：两线程无锁竞争释放同一缓冲块，planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程同时检查 busy 标志并释放同一 flip buffer → 竞争 + 双重释放",
+  "notes": "CVE-2017-2636: n_hdlc 竞态条件（CVE 描述: Race condition in drivers/tty/n_hdlc.c ... gain privileges or cause a denial of service (double free) by setting the HDLC line discipline）。用户态等价模拟，TSan 捕获。"
+}

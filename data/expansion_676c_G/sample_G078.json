@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G078",
+  "defect_type": "use_after_free",
+  "defect_location": {
+    "line": 18,
+    "function": "join_session_keyring",
+    "description": "CVE-2016-0728: 内核 keyring 引用计数错误 → UAF/提权。本样本为用户态等价模拟：失败路径不回滚引用计数，对象被提前释放后仍被使用。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2016-0728",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-0728",
+    "project": "linux-kernel",
+    "commit": "",
+    "simplification": "内核漏洞无法在用户态直接复现：按 CVE 描述（join_session_keyring 在错误路径 mishandles object references → 引用计数泄漏 + UAF）做用户态等价模拟，planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "多次 join 失败泄漏引用计数，维护方按计数归零释放对象，残留 join 路径继续使用",
+  "notes": "CVE-2016-0728: 内核 keyring 引用计数错误 → UAF/提权。本样本为用户态等价模拟：失败路径不回滚引用计数，对象被提前释放后仍被使用。"
+}

@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G013",
+  "defect_type": "pointer_overflow",
+  "defect_location": {
+    "line": 14,
+    "function": "check_boundary",
+    "description": "CVE-2016-2177: OpenSSL 用指针算术做堆缓冲边界检查（incorrectly uses pointer arithmetic for heap-buffer boundary checks），长度极端时整数溢出。指针回绕本身是 UB，但 GCC 的 -fsanitize=undefined **不包含 pointer-overflow 检查**（该资产为 clang 专属）→ 本机检测器无报告。真实检测器盲区，诚实标 miss。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2016-2177",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2177",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离协议解析层，保留『用指针算术做堆缓冲边界检查且长度攻击者可控』核心模式，长度字段由运行时变量给出"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "包长字段为 LLONG_MAX，p + len 指针算术回绕 → 边界检查被绕过",
+  "notes": "CVE-2016-2177: OpenSSL 用指针算术做堆缓冲边界检查（incorrectly uses pointer arithmetic for heap-buffer boundary checks），长度极端时整数溢出。指针回绕本身是 UB，但 GCC 的 -fsanitize=undefined **不包含 pointer-overflow 检查**（该资产为 clang 专属）→ 本机检测器无报告。真实检测器盲区，诚实标 miss。"
+}

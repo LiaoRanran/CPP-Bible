@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G082",
+  "defect_type": "race_condition",
+  "defect_location": {
+    "line": 22,
+    "function": "n_tty_write",
+    "description": "CVE-2014-0196: n_tty_write 并发写竞争（CVE 描述: does not properly manage tty driver access in the LECHO & !OPOST case ... memory corruption）。用户态等价模拟，TSan 捕获。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2014-0196",
+    "url": "https://nvd.nist.gov/nvd/detail/CVE-2014-0196",
+    "project": "linux-kernel",
+    "commit": "",
+    "simplification": "内核漏洞无法在用户态直接复现：按 CVE 描述（n_tty_write 未正确管理 tty 访问 → 并发写内存损坏）做用户态等价模拟：两线程无锁并发写共享 tty 缓冲与游标，planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两个线程同时向同一 tty 缓冲无锁写入",
+  "notes": "CVE-2014-0196: n_tty_write 并发写竞争（CVE 描述: does not properly manage tty driver access in the LECHO & !OPOST case ... memory corruption）。用户态等价模拟，TSan 捕获。"
+}

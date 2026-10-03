@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G097",
+  "defect_type": "use_after_free",
+  "defect_location": {
+    "line": 21,
+    "function": "Reader_getFormattedErrorMessages",
+    "description": "jsoncpp#1623（已修复）: Reader::parse 保存悬垂指针，getFormattedErrorMessages 触发 UAF（issue 附完整 POC testcase.cpp 与复现 commit ca98c98）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "github_issue",
+    "id": "open-source-parsers/jsoncpp#1623",
+    "url": "https://github.com/open-source-parsers/jsoncpp/issues/1623",
+    "project": "jsoncpp",
+    "commit": "",
+    "simplification": "按 issue 中的 POC 代码直接镜像（Reader::parse 保存指向输入串的指针，输入串析构后 getFormattedErrorMessages 读回）"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "parse 失败保存指向 doc 的 token 指针，doc 析构后 getFormattedErrorMessages 读已释放内存",
+  "notes": "jsoncpp#1623（已修复）: Reader::parse 保存悬垂指针，getFormattedErrorMessages 触发 UAF（issue 附完整 POC testcase.cpp 与复现 commit ca98c98）。"
+}

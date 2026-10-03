@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G091",
+  "defect_type": "heap_overread",
+  "defect_location": {
+    "line": 23,
+    "function": "bjdata_parse_string",
+    "description": "nlohmann/json#3492（已修复）: OSS-Fuzz 报告 parse_bjdata Heap-buffer-overflow READ 1。等价重构：BJData 解析器按声明长度消费输入而不校验剩余空间。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "github_issue",
+    "id": "nlohmann/json#3492",
+    "url": "https://github.com/nlohmann/json/issues/3492",
+    "project": "nlohmann/json",
+    "commit": "",
+    "simplification": "issue 报告 OSS-Fuzz 47391 的 parse_bjdata 堆越界读（READ 1）但未公开具体代码行；按报告的崩溃类别以『解析器按头部声明长度读而未校验剩余输入』等价重构，故标 planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "BJData string 头部声明长度 32，输入缓冲仅 8 字节 → 解析循环读越界",
+  "notes": "nlohmann/json#3492（已修复）: OSS-Fuzz 报告 parse_bjdata Heap-buffer-overflow READ 1。等价重构：BJData 解析器按声明长度消费输入而不校验剩余空间。"
+}

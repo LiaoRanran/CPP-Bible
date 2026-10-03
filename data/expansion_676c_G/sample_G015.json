@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G015",
+  "defect_type": "stack_overflow",
+  "defect_location": {
+    "line": 20,
+    "function": "asn1_parse_constructed",
+    "description": "CVE-2018-0739: 递归构造类型的 ASN.1 输入导致栈耗尽（CVE 描述: Constructed ASN.1 types with a recursive definition ... exceed the stack）。ASan 报告 stack-overflow。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2018-0739",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-0739",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 ASN.1 具体结构（PKCS7 等），保留『递归定义的构造类型解析无深度限制』核心缺陷，嵌套输入在 main 中构造"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "200 万层嵌套的 ASN.1 构造类型 → 递归解析耗尽调用栈",
+  "notes": "CVE-2018-0739: 递归构造类型的 ASN.1 输入导致栈耗尽（CVE 描述: Constructed ASN.1 types with a recursive definition ... exceed the stack）。ASan 报告 stack-overflow。"
+}

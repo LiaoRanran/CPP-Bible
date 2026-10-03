@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G095",
+  "defect_type": "logic_error",
+  "defect_location": {
+    "line": 14,
+    "function": "XMLQueryUnsignedAttribute",
+    "description": "tinyxml2#728（未修复）: QueryUnsignedAttribute 对超过 uint32 范围的输入静默截断（10000000000 → 1410065408），未报错也未饱和到 UINT32_MAX。逻辑缺陷，正确=报错/饱和、实际=截断 → 诚实标 miss。"
+  },
+  "severity": "medium",
+  "planted": false,
+  "source": {
+    "type": "github_issue",
+    "id": "leethomason/tinyxml2#728",
+    "url": "https://github.com/leethomason/tinyxml2/issues/728",
+    "project": "tinyxml2",
+    "commit": "",
+    "simplification": "剥离 XML 解析层，按 issue 报告的确切行为（输入 10000000000 → 返回 1410065408 而非错误/饱和）镜像无溢出检查的无符号解析"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "QueryUnsignedAttribute 解析 10000000000（超过 uint32 范围）→ 静默截断为 1410065408",
+  "notes": "tinyxml2#728（未修复）: QueryUnsignedAttribute 对超过 uint32 范围的输入静默截断（10000000000 → 1410065408），未报错也未饱和到 UINT32_MAX。逻辑缺陷，正确=报错/饱和、实际=截断 → 诚实标 miss。"
+}

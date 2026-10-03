@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G016",
+  "defect_type": "null_deref",
+  "defect_location": {
+    "line": 34,
+    "function": "GENERAL_NAME_cmp",
+    "description": "CVE-2020-1971: GENERAL_NAME_cmp 对 EDIPartyName 缺少比较分支 → NULL pointer dereference（CVE 描述: This function can crash ... both GENERAL_NAMEs are EDIPartyName）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2020-1971",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-1971",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 X.509 GENERAL_NAME 全部实际类型，只保留 EDIPartyName 分支缺失 + other 联合成员为 NULL 的核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "两个 EDIPARTYNAME 类型的 GENERAL_NAME 比较 → otherName 未分配为 NULL → 解引用",
+  "notes": "CVE-2020-1971: GENERAL_NAME_cmp 对 EDIPartyName 缺少比较分支 → NULL pointer dereference（CVE 描述: This function can crash ... both GENERAL_NAMEs are EDIPartyName）。"
+}

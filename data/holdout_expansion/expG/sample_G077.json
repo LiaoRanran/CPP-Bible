@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G077",
+  "defect_type": "logic_error",
+  "defect_location": {
+    "line": 13,
+    "function": "cgi_proxy_env",
+    "description": "CVE-2016-5385 (HTTPoxy): RFC 3875 命名空间冲突未处理（CVE 描述: does not attempt to address RFC 3875 section 4.1.18 namespace conflicts ... untrusted client data in the HTTP_PROXY environment variable）。逻辑缺陷 → 诚实标 miss。"
+  },
+  "severity": "medium",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2016-5385",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-5385",
+    "project": "php",
+    "commit": "",
+    "simplification": "剥离 CGI 层与 HTTP 客户端，保留『HTTP_PROXY 环境变量来自客户端可注入的 Proxy 头且被直接信任』核心缺陷"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "客户端发送 Proxy: attacker.example 头 → CGI 环境出现 HTTP_PROXY → 出站请求被劫持",
+  "notes": "CVE-2016-5385 (HTTPoxy): RFC 3875 命名空间冲突未处理（CVE 描述: does not attempt to address RFC 3875 section 4.1.18 namespace conflicts ... untrusted client data in the HTTP_PROXY environment variable）。逻辑缺陷 → 诚实标 miss。"
+}

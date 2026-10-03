@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G072",
+  "defect_type": "heap_overflow",
+  "defect_location": {
+    "line": 19,
+    "function": "sudo_set_cmnd",
+    "description": "CVE-2021-3156 (Baron Samedit): sudo 堆溢出。原始缺陷：user_args 尺寸按原始长度计算，但 sudoedit 模式转义循环把每个 '\\' 复制为两个，写入超出分配。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2021-3156",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3156",
+    "project": "sudo",
+    "commit": "",
+    "simplification": "剥离 sudo 命令行解析，保留『user_args 按原始长度分配、转义拷贝时反斜杠翻倍』核心缺陷（与原始 set_cmnd 循环同构）"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "sudoedit -s 参数含 100 个反斜杠：分配按 strlen+1，写入时每个反斜杠占 2 槽 → 溢出",
+  "notes": "CVE-2021-3156 (Baron Samedit): sudo 堆溢出。原始缺陷：user_args 尺寸按原始长度计算，但 sudoedit 模式转义循环把每个 '\\' 复制为两个，写入超出分配。"
+}

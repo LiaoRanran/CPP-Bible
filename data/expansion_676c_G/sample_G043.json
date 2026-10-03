@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G043",
+  "defect_type": "logic_error",
+  "defect_location": {
+    "line": 20,
+    "function": "http_download_with_J",
+    "description": "CVE-2020-8177: -J 选项导致本地文件被覆盖（CVE 描述: improper restriction of names for files ... that can lead to overwriting a local file when the -J flag is used）。逻辑缺陷 → 诚实标 miss。"
+  },
+  "severity": "medium",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2020-8177",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-8177",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 HTTP 下载流程，Content-Disposition 硬编码，保留『-J 使用服务器提供文件名时不做覆盖检查』核心缺陷"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "服务器返回 Content-Disposition filename 指向已存在的本地文件 → 被覆盖",
+  "notes": "CVE-2020-8177: -J 选项导致本地文件被覆盖（CVE 描述: improper restriction of names for files ... that can lead to overwriting a local file when the -J flag is used）。逻辑缺陷 → 诚实标 miss。"
+}

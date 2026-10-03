@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G014",
+  "defect_type": "heap_overread",
+  "defect_location": {
+    "line": 17,
+    "function": "chacha20_poly1305_decrypt",
+    "description": "CVE-2017-3731: 截断包触发 out-of-bounds read（CVE 描述: a truncated packet can cause ... an out-of-bounds read, usually resulting in a crash）。本样本镜像 tag = in + len - tag_len 的前向越界。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2017-3731",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-3731",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 ChaCha20-Poly1305 主体，保留『tag 指针在长度检查之前计算』核心缺陷，截断包长度硬编码"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "截断的 AEAD 包 len=5 < tag_len=16，tag 指针指向缓冲区之前 → 前向越界读",
+  "notes": "CVE-2017-3731: 截断包触发 out-of-bounds read（CVE 描述: a truncated packet can cause ... an out-of-bounds read, usually resulting in a crash）。本样本镜像 tag = in + len - tag_len 的前向越界。"
+}

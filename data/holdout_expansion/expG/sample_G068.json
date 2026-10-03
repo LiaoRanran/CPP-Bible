@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G068",
+  "defect_type": "info_leak",
+  "defect_location": {
+    "line": 16,
+    "function": "resend_bytes",
+    "description": "CVE-2016-0777: resend_bytes 重传整个缓冲区 → 进程内存泄露（CVE 描述: allows remote servers to obtain sensitive information from process memory by requesting transmission of an entire buffer）。纯信息泄露（读不越界），sanitizer 无报告 → 诚实标 miss。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2016-0777",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-0777",
+    "project": "openssh",
+    "commit": "",
+    "simplification": "剥离 roaming 协议层，保留『服务器请求重传时按整个缓冲区而非剩余未确认字节发送』核心缺陷"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "服务器请求重传：应只发 offset 之后的 16 字节，实际把含私钥残留的整个 64 字节缓冲发出",
+  "notes": "CVE-2016-0777: resend_bytes 重传整个缓冲区 → 进程内存泄露（CVE 描述: allows remote servers to obtain sensitive information from process memory by requesting transmission of an entire buffer）。纯信息泄露（读不越界），sanitizer 无报告 → 诚实标 miss。"
+}

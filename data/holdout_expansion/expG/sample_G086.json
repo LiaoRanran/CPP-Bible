@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G086",
+  "defect_type": "timing_side_channel",
+  "defect_location": {
+    "line": 17,
+    "function": "dsa_sign_setup",
+    "description": "CVE-2016-2178: dsa_sign_setup 非常量时间（CVE 描述: does not properly ensure the use of constant-time operations ... discover a DSA private key via a timing side-channel attack）。侧信道类，sanitizer 无报告 → 诚实标 miss。"
+  },
+  "severity": "medium",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2016-2178",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2178",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "基于 CVE 描述（dsa_sign_setup 未确保常量时间操作 → 时序侧信道泄露 DSA 私钥）以数据相关分支计数的等价机制重构，非原始代码镜像，故标 planted=true"
+  },
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "不同 k 值的模乘操作数位模式不同 → 操作计数差异可被测量",
+  "notes": "CVE-2016-2178: dsa_sign_setup 非常量时间（CVE 描述: does not properly ensure the use of constant-time operations ... discover a DSA private key via a timing side-channel attack）。侧信道类，sanitizer 无报告 → 诚实标 miss。"
+}

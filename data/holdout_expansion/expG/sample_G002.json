@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G002",
+  "defect_type": "heap_overread",
+  "defect_location": {
+    "line": 24,
+    "function": "OBJ_obj2txt",
+    "description": "OBJ_obj2txt 在 pretty print 时分配精确大小的缓冲但不保证写入 '\\0'（CVE 描述: does not ensure the presence of '\\0' characters），调用方以 C 字符串处理 → 读越界，泄露进程内存。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2014-3508",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-3508",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离 OID 解码逻辑，保留『分配的文本缓冲不保证 NUL 结尾』核心缺陷，调用方按 C 字符串使用"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "OID pretty-print 返回不含 NUL 的精确长度缓冲，调用方 printf 按字符串读越界",
+  "notes": "OBJ_obj2txt 在 pretty print 时分配精确大小的缓冲但不保证写入 '\\0'（CVE 描述: does not ensure the presence of '\\0' characters），调用方以 C 字符串处理 → 读越界，泄露进程内存。"
+}

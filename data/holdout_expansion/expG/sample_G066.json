@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G066",
+  "defect_type": "heap_overread",
+  "defect_location": {
+    "line": 13,
+    "function": "exif_read_signed_short",
+    "description": "CVE-2019-11036: exif_process_IFD_TAG 读越界（CVE 描述: can be caused to read past allocated buffer in exif_process_IFD_TAG function ... information disclosure or crash）。components 计数路径。"
+  },
+  "severity": "medium",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2019-11036",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-11036",
+    "project": "php",
+    "commit": "",
+    "simplification": "剥离 PHP EXIF 扩展，保留『components 计数参与偏移计算且未按文件大小校验』核心缺陷（与 11034 同函数不同触发路径）"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "IFD 条目 components=100000 → 偏移 8+200000 远超 64 字节缓冲 → 野指针读",
+  "notes": "CVE-2019-11036: exif_process_IFD_TAG 读越界（CVE 描述: can be caused to read past allocated buffer in exif_process_IFD_TAG function ... information disclosure or crash）。components 计数路径。"
+}

@@ -1,0 +1,1887 @@
+{
+ "G001": {
+  "sample_id": "sample_G001",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==70==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==100==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x5020000000"
+   }
+  },
+  "match": true
+ },
+ "G011": {
+  "sample_id": "sample_G011",
+  "expected": "catch",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "sample_G011.cpp:14:22: runtime error: signed integer overflow: 2147483632 + 16 cannot be represented in type 'int'\ncheck=0",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "catch",
+    "note": "ubsan 命中[-O0(rc=0) check=0 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp2mp_c0vr/sample_G011.cpp:14:22: runtime error: signed integer overflow: 2147483632 + 16 canno"
+   }
+  },
+  "match": true
+ },
+ "G015": {
+  "sample_id": "sample_G015",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "SUMMARY: AddressSanitizer: stack-overflow ../../../../src/libsanitizer/sanitizer_common/sanitizer_tls_get_addr.cpp:114 in __sanitizer::DTLS_on_tls_get",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==269==ERROR: AddressSanitizer: stack-overflow"
+   }
+  },
+  "match": true
+ },
+ "G024": {
+  "sample_id": "sample_G024",
+  "expected": "catch",
+  "detectors": [
+   "tsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "wsl_compile_thr": "PASS",
+  "run_exit": 1,
+  "run_note": "SUMMARY: AddressSanitizer: double-free ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164 in operator delete(void*, unsigned long)\n==351==ABORT",
+  "pooled_verdict": {
+   "tsan": {
+    "verdict": "catch",
+    "note": "tsan 命中[-O0(rc=66) session age=393926 ================== WARNING: ThreadSanitizer: data race (pid=372)   Read of size 8 at 0x555555559020 by thread T2:     #0 s"
+   }
+  },
+  "match": true
+ },
+ "G051": {
+  "sample_id": "sample_G051",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==443==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==462==ERROR: AddressSanitizer: unknown-crash on address 0x5070000000d4 at p"
+   }
+  },
+  "match": true
+ },
+ "G055": {
+  "sample_id": "sample_G055",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==527==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==546==ERROR: AddressSanitizer: unknown-crash on address 0x502000000014 at p"
+   }
+  },
+  "match": true
+ },
+ "G090": {
+  "sample_id": "sample_G090",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==38==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==68==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x50200000002"
+   }
+  },
+  "match": true
+ },
+ "G092": {
+  "sample_id": "sample_G092",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==133==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==152==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x5020000000"
+   }
+  },
+  "match": true
+ },
+ "G096": {
+  "sample_id": "sample_G096",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==217==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==236==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x5020000000"
+   }
+  },
+  "match": true
+ },
+ "G099": {
+  "sample_id": "sample_G099",
+  "expected": "catch",
+  "detectors": [
+   "compiler-warn"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "format: hello\nformat: temp",
+  "pooled_verdict": {
+   "compiler-warn": {
+    "verdict": "catch",
+    "note": "警告 2 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmp4tchw9sh\\sample_G099.cpp:21:17: wa"
+   }
+  },
+  "match": true
+ },
+ "G002": {
+  "sample_id": "sample_G002",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==38==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==68==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x50200000004"
+   }
+  },
+  "match": true
+ },
+ "G003": {
+  "sample_id": "sample_G003",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "AddressSanitizer can not provide additional info.\nSUMMARY: AddressSanitizer: SEGV /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/expansion_676c_G/s",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==153==ERROR: AddressSanitizer: SEGV on unknow"
+   }
+  },
+  "match": true
+ },
+ "G004": {
+  "sample_id": "sample_G004",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "#5 0x571436323304 in _start (/tmp/sample_G004_add.bin+0x2304) (BuildId: 01f5fc57fd8264bf5cea6b4bb5dfd15237b4aa68)\n\nSUMMARY: AddressSanitizer: 4224 byt",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==239==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 128 byte("
+   }
+  },
+  "match": true
+ },
+ "G005": {
+  "sample_id": "sample_G005",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==306==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==325==ERROR: AddressSanitizer: heap-use-after-free on address 0x50200000001"
+   }
+  },
+  "match": true
+ },
+ "G006": {
+  "sample_id": "sample_G006",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "AddressSanitizer can not provide additional info.\nSUMMARY: AddressSanitizer: SEGV (/lib/x86_64-linux-gnu/libc.so.6+0x198398) (BuildId: 8e9fd827446c240",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==409==ERROR: AddressSanitizer: SEGV on unknow"
+   }
+  },
+  "match": true
+ },
+ "G007": {
+  "sample_id": "sample_G007",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "AddressSanitizer can not provide additional info.\nSUMMARY: AddressSanitizer: SEGV /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/expansion_676c_G/s",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==493==ERROR: AddressSanitizer: SEGV on unknow"
+   }
+  },
+  "match": true
+ },
+ "G008": {
+  "sample_id": "sample_G008",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==558==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==577==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x5020000000"
+   }
+  },
+  "match": true
+ },
+ "G009": {
+  "sample_id": "sample_G009",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==642==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==661==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x5020000000"
+   }
+  },
+  "match": true
+ },
+ "G010": {
+  "sample_id": "sample_G010",
+  "expected": "catch",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "sample_G010.cpp:13:32: runtime error: signed integer overflow: 536870912 * 5 cannot be represented in type 'int'\nencode size=-402653183 (应为 671088641)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "catch",
+    "note": "ubsan 命中[-O0(rc=0) encode size=-402653183 (应为 671088641) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpps_tz3au/sample_G010.cpp:13:32: runtime error: signed integer o"
+   }
+  },
+  "match": true
+ },
+ "G012": {
+  "sample_id": "sample_G012",
+  "expected": "catch",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "sample_G012.cpp:18:25: runtime error: signed integer overflow: 100 + 2147483640 cannot be represented in type 'int'\nnum=-2147483556",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "catch",
+    "note": "ubsan 命中[-O0(rc=0) num=-2147483556 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp70nyxkq_/sample_G012.cpp:18:25: runtime error: signed integer overflow: 100 + 2147483"
+   }
+  },
+  "match": true
+ },
+ "G014": {
+  "sample_id": "sample_G014",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==982==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==1001==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000"
+   }
+  },
+  "match": true
+ },
+ "G016": {
+  "sample_id": "sample_G016",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "AddressSanitizer can not provide additional info.\nSUMMARY: AddressSanitizer: SEGV /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/expansion_676c_G/s",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==1085==ERROR: AddressSanitizer: SEGV on unkno"
+   }
+  },
+  "match": true
+ },
+ "G017": {
+  "sample_id": "sample_G017",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==1150==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==1169==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000"
+   }
+  },
+  "match": true
+ },
+ "G018": {
+  "sample_id": "sample_G018",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==1234==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==1253==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff510"
+   }
+  },
+  "match": true
+ },
+ "G019": {
+  "sample_id": "sample_G019",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 124,
+  "run_note": "",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 120 seconds; -O2(rc=0) sqrt=0]"
+   }
+  },
+  "match": true
+ },
+ "G021": {
+  "sample_id": "sample_G021",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "finished accepted with key_len=0\nstate=2 key_len=0 (正确: CCS 应被拒绝, key_len=48)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) finished accepted with key_len=0 state=2 key_len=0 (正确: CCS 应被拒绝, key_len=48); -O2(rc=0) finished accepted with key_len=0 state=2 key_len"
+   }
+  },
+  "match": true
+ },
+ "G022": {
+  "sample_id": "sample_G022",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "key exchange ACCEPT[错误]: server_key_bits=512 requested_export=0 (正确行为: reject)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) key exchange ACCEPT[错误]: server_key_bits=512 requested_export=0 (正确行为: reject); -O2(rc=0) key exchange ACCEPT[错误]: server_key_bits=512 re"
+   }
+  },
+  "match": true
+ },
+ "G023": {
+  "sample_id": "sample_G023",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "AddressSanitizer can not provide additional info.\nSUMMARY: AddressSanitizer: SEGV /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/expansion_676c_G/s",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==1591==ERROR: AddressSanitizer: SEGV on unkno"
+   }
+  },
+  "match": true
+ },
+ "G025": {
+  "sample_id": "sample_G025",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==1657==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==1676==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000"
+   }
+  },
+  "match": true
+ },
+ "G026": {
+  "sample_id": "sample_G026",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==1741==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==1760==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff530"
+   }
+  },
+  "match": true
+ },
+ "G027": {
+  "sample_id": "sample_G027",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==1825==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==1844==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000"
+   }
+  },
+  "match": true
+ },
+ "G028": {
+  "sample_id": "sample_G028",
+  "expected": "catch",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "sample_G028.cpp:12:22: runtime error: signed integer overflow: 1610612768 * 2 cannot be represented in type 'int'\nntlm total=-1073741760 (应为 322122553",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "catch",
+    "note": "ubsan 命中[-O0(rc=0) ntlm total=-1073741760 (应为 3221225536) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpujeyzt80/sample_G028.cpp:12:22: runtime error: signed integer "
+   }
+  },
+  "match": true
+ },
+ "G029": {
+  "sample_id": "sample_G029",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==1994==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==2013==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x503000000"
+   }
+  },
+  "match": true
+ },
+ "G030": {
+  "sample_id": "sample_G030",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==2078==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==2097==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x515000000"
+   }
+  },
+  "match": true
+ },
+ "G031": {
+  "sample_id": "sample_G031",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==2163==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==2182==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x529000004"
+   }
+  },
+  "match": true
+ },
+ "G032": {
+  "sample_id": "sample_G032",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==2248==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==2267==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000"
+   }
+  },
+  "match": true
+ },
+ "G033": {
+  "sample_id": "sample_G033",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==2332==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==2351==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000"
+   }
+  },
+  "match": true
+ },
+ "G034": {
+  "sample_id": "sample_G034",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==2417==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==2436==ERROR: AddressSanitizer: heap-use-after-free on address 0x5020000000"
+   }
+  },
+  "match": true
+ },
+ "G035": {
+  "sample_id": "sample_G035",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==2501==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==2520==ERROR: AddressSanitizer: heap-use-after-free on address 0x5030000000"
+   }
+  },
+  "match": true
+ },
+ "G036": {
+  "sample_id": "sample_G036",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==2586==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==2605==ERROR: AddressSanitizer: heap-use-after-free on address 0x5020000000"
+   }
+  },
+  "match": true
+ },
+ "G037": {
+  "sample_id": "sample_G037",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==2670==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==2689==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000"
+   }
+  },
+  "match": true
+ },
+ "G038": {
+  "sample_id": "sample_G038",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==2754==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==2773==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000"
+   }
+  },
+  "match": true
+ },
+ "G039": {
+  "sample_id": "sample_G039",
+  "expected": "catch",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "sample_G039.cpp:12:34: runtime error: signed integer overflow: 2147483642 + 6 cannot be represented in type 'int'\nescape alloc=-2147483647 (应为 2147483",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "catch",
+    "note": "ubsan 命中[-O0(rc=0) escape alloc=-2147483647 (应为 2147483649) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpzt4ugnyf/sample_G039.cpp:12:34: runtime error: signed intege"
+   }
+  },
+  "match": true
+ },
+ "G040": {
+  "sample_id": "sample_G040",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "Referer: https://alice:hunter2@internal.example.com/\n(正确行为: Referer 不应包含 alice:hunter2)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) Referer: https://alice:hunter2@internal.example.com/ (正确行为: Referer 不应包含 alice:hunter2); -O2(rc=0) Referer: https://alice:hunter2@interna"
+   }
+  },
+  "match": true
+ },
+ "G041": {
+  "sample_id": "sample_G041",
+  "expected": "miss",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "TELNET 发送: NEW_ENV:TERM=xterm;USER=alice;HOME=/home/alice;SECRET_TOKEN=s3cr3t-value\n(正确行为: 仅发送 TERM=xterm, SECRET_TOKEN 不应离开本机)",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "miss",
+    "note": "asan 两档均无报告[-O0(rc=0) TELNET 发送: NEW_ENV:TERM=xterm;USER=alice;HOME=/home/alice;SECRET_TOKEN=s3cr3t-value (正确行为: 仅发送 TERM=xterm, SECRET_TOKEN 不应离开本机); -O2(rc=0)"
+   }
+  },
+  "match": true
+ },
+ "G042": {
+  "sample_id": "sample_G042",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "数据通道连接: 10.0.0.169:400 (用户意图: 连接 ftp.victim.example)\n(正确行为: 拒绝与控制连接主机不一致的 PASV 地址)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) 数据通道连接: 10.0.0.169:400 (用户意图: 连接 ftp.victim.example) (正确行为: 拒绝与控制连接主机不一致的 PASV 地址); -O2(rc=0) 数据通道连接: 10.0.0.169:400 (用户意图: 连接 ftp.victim"
+   }
+  },
+  "match": true
+ },
+ "G043": {
+  "sample_id": "sample_G043",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "写入目标: .bashrc (文件已存在: 是)\n(正确行为: 目标已存在时应中止或改名, 不覆盖)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) 写入目标: .bashrc (文件已存在: 是) (正确行为: 目标已存在时应中止或改名, 不覆盖); -O2(rc=0) 写入目标: .bashrc (文件已存在: 是) (正确行为: 目标已存在时应中止或改名, 不覆盖)]"
+   }
+  },
+  "match": true
+ },
+ "G044": {
+  "sample_id": "sample_G044",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "POST 实际发送: POST-REQUEST-BODY\n(正确行为: 发送 POST-REQUEST-BODY, 不应调用已废弃的读回调)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) POST 实际发送: POST-REQUEST-BODY (正确行为: 发送 POST-REQUEST-BODY, 不应调用已废弃的读回调); -O2(rc=0) POST 实际发送: POST-REQUEST-BODY (正确行为: 发送 POST-REQUEST-BOD"
+   }
+  },
+  "match": true
+ },
+ "G045": {
+  "sample_id": "sample_G045",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "user2 的请求复用连接: authenticated_as=user1 (正确行为: 不应复用)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) user2 的请求复用连接: authenticated_as=user1 (正确行为: 不应复用); -O2(rc=0) user2 的请求复用连接: authenticated_as=user1 (正确行为: 不应复用)]"
+   }
+  },
+  "match": true
+ },
+ "G046": {
+  "sample_id": "sample_G046",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "SFTP 实际访问: /home/victim~~poor-~/../../etc/passwd\n(正确行为: 不应展开到 /home/victim 之外)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) SFTP 实际访问: /home/victim~~poor-~/../../etc/passwd (正确行为: 不应展开到 /home/victim 之外); -O2(rc=0) SFTP 实际访问: /home/victim~~poor-~/../../etc/passw"
+   }
+  },
+  "match": true
+ },
+ "G047": {
+  "sample_id": "sample_G047",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "证书已撤销? 否[错误: 校验失败应阻断连接] (响应畸形: 是)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) 证书已撤销? 否[错误: 校验失败应阻断连接] (响应畸形: 是); -O2(rc=0) 证书已撤销? 否[错误: 校验失败应阻断连接] (响应畸形: 是)]"
+   }
+  },
+  "match": true
+ },
+ "G048": {
+  "sample_id": "sample_G048",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "解析时主机: example.com%2F127.0.0.1\n实际连接主机: example.com/127.0.0.1\n(正确行为: 两者必须一致)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) 解析时主机: example.com%2F127.0.0.1 实际连接主机: example.com/127.0.0.1 (正确行为: 两者必须一致); -O2(rc=0) 解析时主机: example.com%2F127.0.0.1 实际连接主机: example.com"
+   }
+  },
+  "match": true
+ },
+ "G049": {
+  "sample_id": "sample_G049",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "新连接使用的客户端证书: '/home/alice/client.pem' (正确行为: 无证书应新建连接)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) 新连接使用的客户端证书: '/home/alice/client.pem' (正确行为: 无证书应新建连接); -O2(rc=0) 新连接使用的客户端证书: '/home/alice/client.pem' (正确行为: 无证书应新建连接)]"
+   }
+  },
+  "match": true
+ },
+ "G050": {
+  "sample_id": "sample_G050",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==3775==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==3794==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff510"
+   }
+  },
+  "match": true
+ },
+ "G052": {
+  "sample_id": "sample_G052",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "AddressSanitizer can not provide additional info.\nSUMMARY: AddressSanitizer: SEGV /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/expansion_676c_G/s",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==3878==ERROR: AddressSanitizer: SEGV on unkno"
+   }
+  },
+  "match": true
+ },
+ "G053": {
+  "sample_id": "sample_G053",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==3943==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==3962==ERROR: AddressSanitizer: global-buffer-overflow on address 0x5555555"
+   }
+  },
+  "match": true
+ },
+ "G054": {
+  "sample_id": "sample_G054",
+  "expected": "catch",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "sample_G054.cpp:18:27: runtime error: signed integer overflow: 1000000 + 2147483000 cannot be represented in type 'int'\nnUsed=-2146484296 (应为 -2146484",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "catch",
+    "note": "ubsan 命中[-O0(rc=0) nUsed=-2146484296 (应为 -2146484296) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpcmneu403/sample_G054.cpp:18:27: runtime error: signed integer over"
+   }
+  },
+  "match": true
+ },
+ "G056": {
+  "sample_id": "sample_G056",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "SQLite 临时数据库目录: /var/tmp (该目录 world_writable=true)\n(正确行为: 跳过世界可写目录, 防止 DB 文件被攻击者读取/替换)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) SQLite 临时数据库目录: /var/tmp (该目录 world_writable=true) (正确行为: 跳过世界可写目录, 防止 DB 文件被攻击者读取/替换); -O2(rc=0) SQLite 临时数据库目录: /var/tmp (该目录 world_wri"
+   }
+  },
+  "match": true
+ },
+ "G057": {
+  "sample_id": "sample_G057",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==4197==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==4216==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff530"
+   }
+  },
+  "match": true
+ },
+ "G059": {
+  "sample_id": "sample_G059",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==4366==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==4385==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x506000000"
+   }
+  },
+  "match": true
+ },
+ "G060": {
+  "sample_id": "sample_G060",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==4450==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==4469==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff510"
+   }
+  },
+  "match": true
+ },
+ "G062": {
+  "sample_id": "sample_G062",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==4621==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==4640==ERROR: AddressSanitizer: heap-use-after-free on address 0x5020000000"
+   }
+  },
+  "match": true
+ },
+ "G063": {
+  "sample_id": "sample_G063",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==4705==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==4724==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff510"
+   }
+  },
+  "match": true
+ },
+ "G064": {
+  "sample_id": "sample_G064",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==4789==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==4808==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x503000000"
+   }
+  },
+  "match": true
+ },
+ "G065": {
+  "sample_id": "sample_G065",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==4873==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==4892==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x50b000000"
+   }
+  },
+  "match": true
+ },
+ "G066": {
+  "sample_id": "sample_G066",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "AddressSanitizer can not provide additional info.\nSUMMARY: AddressSanitizer: SEGV /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/expansion_676c_G/s",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==4976==ERROR: AddressSanitizer: SEGV on unkno"
+   }
+  },
+  "match": true
+ },
+ "G067": {
+  "sample_id": "sample_G067",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "SUMMARY: AddressSanitizer: memcpy-param-overlap ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors_memintrinsics.inc:115 in m",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==5060==ERROR: AddressSanitizer: memcpy-param-overlap: memory ranges [0x5020"
+   }
+  },
+  "match": true
+ },
+ "G069": {
+  "sample_id": "sample_G069",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==5209==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==5228==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x519000000"
+   }
+  },
+  "match": true
+ },
+ "G070": {
+  "sample_id": "sample_G070",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==5293==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==5312==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff530"
+   }
+  },
+  "match": true
+ },
+ "G071": {
+  "sample_id": "sample_G071",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==5377==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==5396==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x511000000"
+   }
+  },
+  "match": true
+ },
+ "G072": {
+  "sample_id": "sample_G072",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==5462==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==5481==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x511000000"
+   }
+  },
+  "match": true
+ },
+ "G074": {
+  "sample_id": "sample_G074",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "define func:  :; \nEXECUTE: echo pwned; cat /etc/shadow\n(正确行为: 只注册函数体, 尾随命令必须被丢弃)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) define func:  :;  EXECUTE: echo pwned; cat /etc/shadow (正确行为: 只注册函数体, 尾随命令必须被丢弃); -O2(rc=0) define func:  :;  EXECUTE: echo pwned; cat /e"
+   }
+  },
+  "match": true
+ },
+ "G075": {
+  "sample_id": "sample_G075",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "channel_opened=1 state=0 (正确行为: 未认证必须拒绝 CHANNEL_OPEN)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) channel_opened=1 state=0 (正确行为: 未认证必须拒绝 CHANNEL_OPEN); -O2(rc=0) channel_opened=1 state=0 (正确行为: 未认证必须拒绝 CHANNEL_OPEN)]"
+   }
+  },
+  "match": true
+ },
+ "G076": {
+  "sample_id": "sample_G076",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "ext_info_received=1 seq=2 (正确行为: EXT_INFO 必须在 seq==2 到达且无插入包)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) ext_info_received=1 seq=2 (正确行为: EXT_INFO 必须在 seq==2 到达且无插入包); -O2(rc=0) ext_info_received=1 seq=2 (正确行为: EXT_INFO 必须在 seq==2 到达且无插入包)]"
+   }
+  },
+  "match": true
+ },
+ "G077": {
+  "sample_id": "sample_G077",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "出站请求: proxy://attacker.example:8080 -> api.internal.example\n(正确行为: 忽略客户端注入的 HTTP_PROXY, 使用直连或服务器配置代理)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) 出站请求: proxy://attacker.example:8080 -> api.internal.example (正确行为: 忽略客户端注入的 HTTP_PROXY, 使用直连或服务器配置代理); -O2(rc=0) 出站请求: proxy://attacker.e"
+   }
+  },
+  "match": true
+ },
+ "G078": {
+  "sample_id": "sample_G078",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==5967==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==5986==ERROR: AddressSanitizer: heap-use-after-free on address 0x5020000000"
+   }
+  },
+  "match": true
+ },
+ "G079": {
+  "sample_id": "sample_G079",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==6051==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==6070==ERROR: AddressSanitizer: heap-use-after-free on address 0x5020000000"
+   }
+  },
+  "match": true
+ },
+ "G081": {
+  "sample_id": "sample_G081",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "SUMMARY: AddressSanitizer: double-free ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164 in operator delete(void*, unsigned long)\n==6135==ABOR",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==6154==ERROR: AddressSanitizer: attempting double-free on 0x502000000010 in"
+   }
+  },
+  "match": true
+ },
+ "G082": {
+  "sample_id": "sample_G082",
+  "expected": "catch",
+  "detectors": [
+   "tsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "wsl_compile_thr": "PASS",
+  "run_exit": 0,
+  "run_note": "write_cnt=898675",
+  "pooled_verdict": {
+   "tsan": {
+    "verdict": "catch",
+    "note": "tsan 命中[-O0(rc=66) write_cnt=1090987 ================== WARNING: ThreadSanitizer: data race (pid=6259)   Read of size 4 at 0x555555559140 by thread T2:     #0 n"
+   }
+  },
+  "match": true
+ },
+ "G083": {
+  "sample_id": "sample_G083",
+  "expected": "catch",
+  "detectors": [
+   "tsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "wsl_compile_thr": "PASS",
+  "run_exit": 1,
+  "run_note": "SUMMARY: AddressSanitizer: double-free ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164 in operator delete(void*, unsigned long)\n==6347==ABOR",
+  "pooled_verdict": {
+   "tsan": {
+    "verdict": "catch",
+    "note": "tsan 命中[-O0(rc=66) done ================== WARNING: ThreadSanitizer: heap-use-after-free (pid=6368)   Read of size 1 at 0x720400000000 by thread T1:     #0 n_hd"
+   }
+  },
+  "match": true
+ },
+ "G084": {
+  "sample_id": "sample_G084",
+  "expected": "catch",
+  "detectors": [
+   "tsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "wsl_compile_thr": "PASS",
+  "run_exit": 0,
+  "run_note": "content=4919",
+  "pooled_verdict": {
+   "tsan": {
+    "verdict": "catch",
+    "note": "tsan 命中[-O0(rc=66) content=1 ================== WARNING: ThreadSanitizer: data race (pid=6478)   Write of size 1 at 0x555555559010 by thread T2:     #0 cow_inva"
+   }
+  },
+  "match": true
+ },
+ "G085": {
+  "sample_id": "sample_G085",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "victim page content after write: DATA-ROUND-2HACKED (期望: DATA-ROUND-2 前缀完好)\n(正确行为: 新 pipe_buffer 的 flags 必须清零, 不可合并写)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) victim page content after write: DATA-ROUND-2HACKED (期望: DATA-ROUND-2 前缀完好) (正确行为: 新 pipe_buffer 的 flags 必须清零, 不可合并写); -O2(rc=0) victim p"
+   }
+  },
+  "match": true
+ },
+ "G086": {
+  "sample_id": "sample_G086",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "ops(k1)=64 ops(k2)=96 差异=32 (应恒等: 常量时间缺失)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) ops(k1)=64 ops(k2)=96 差异=32 (应恒等: 常量时间缺失); -O2(rc=0) ops(k1)=64 ops(k2)=96 差异=32 (应恒等: 常量时间缺失)]"
+   }
+  },
+  "match": true
+ },
+ "G087": {
+  "sample_id": "sample_G087",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "(encrypted)\nout[16..19]=\u0000\u0000\u0000\u0000 (应为密文, 实为明文残留)\n(正确行为: 20 字节应全部被加密)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) out[0..3]=\u000e\u0015 \t (encrypted) out[16..19]=\u0000\u0000\u0000\u0000 (应为密文, 实为明文残留) (正确行为: 20 字节应全部被加密); -O2(rc=0) out[0..3]=\u000e\u0015 \t (encrypted) out[16..19]=glib (应为"
+   }
+  },
+  "match": true
+ },
+ "G088": {
+  "sample_id": "sample_G088",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "open_streams=20000 (正确行为: 服务端应限流, 例如 <= 100)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) open_streams=20000 (正确行为: 服务端应限流, 例如 <= 100); -O2(rc=0) open_streams=20000 (正确行为: 服务端应限流, 例如 <= 100)]"
+   }
+  },
+  "match": true
+ },
+ "G089": {
+  "sample_id": "sample_G089",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "pending settings frames=20000 (正确行为: 队列应有上限或丢弃策略)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) pending settings frames=20000 (正确行为: 队列应有上限或丢弃策略); -O2(rc=0) pending settings frames=20000 (正确行为: 队列应有上限或丢弃策略)]"
+   }
+  },
+  "match": true
+ },
+ "G091": {
+  "sample_id": "sample_G091",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==6974==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==6993==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff4f0"
+   }
+  },
+  "match": true
+ },
+ "G093": {
+  "sample_id": "sample_G093",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==7058==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==7077==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000"
+   }
+  },
+  "match": true
+ },
+ "G094": {
+  "sample_id": "sample_G094",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==7142==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==7161==ERROR: AddressSanitizer: global-buffer-overflow on address 0x5555555"
+   }
+  },
+  "match": true
+ },
+ "G095": {
+  "sample_id": "sample_G095",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "ok=1 parsed=1410065408 (期望: 报错或 4294967295, 实际: 1410065408)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) ok=1 parsed=1410065408 (期望: 报错或 4294967295, 实际: 1410065408); -O2(rc=0) ok=1 parsed=1410065408 (期望: 报错或 4294967295, 实际: 1410065408)]"
+   }
+  },
+  "match": true
+ },
+ "G097": {
+  "sample_id": "sample_G097",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==7312==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==7331==ERROR: AddressSanitizer: heap-use-after-free on address 0x5030000000"
+   }
+  },
+  "match": true
+ },
+ "G098": {
+  "sample_id": "sample_G098",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "parsed=0 (期望: 抛异常, 实际: 0)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) parsed=0 (期望: 抛异常, 实际: 0); -O2(rc=0) parsed=0 (期望: 抛异常, 实际: 0)]"
+   }
+  },
+  "match": true
+ },
+ "G013": {
+  "sample_id": "sample_G013",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "in_bounds=0 (回绕使越界长度通过边界检查)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) in_bounds=0 (回绕使越界长度通过边界检查); -O2(rc=0) in_bounds=0 (回绕使越界长度通过边界检查)]"
+   }
+  },
+  "match": true
+ },
+ "G020": {
+  "sample_id": "sample_G020",
+  "expected": "miss",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "verify(Leaf)=ACCEPT[错误]  (正确行为: reject, 因为 FakeRoot 非 CA 且不在信任库)",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "miss",
+    "note": "ubsan 两档均无报告[-O0(rc=0) verify(Leaf)=ACCEPT[错误]  (正确行为: reject, 因为 FakeRoot 非 CA 且不在信任库); -O2(rc=0) verify(Leaf)=ACCEPT[错误]  (正确行为: reject, 因为 FakeRoot 非 CA 且不在信"
+   }
+  },
+  "match": true
+ },
+ "G058": {
+  "sample_id": "sample_G058",
+  "expected": "catch",
+  "detectors": [
+   "ubsan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "sample_G058.cpp:14:26: runtime error: signed integer overflow: 2147483644 + 7 cannot be represented in type 'int'\nchunk length check: 1 blocks of 1073",
+  "pooled_verdict": {
+   "ubsan": {
+    "verdict": "catch",
+    "note": "ubsan 命中[-O0(rc=0) chunk length check: 1 blocks of 1073741824 (hh=-2147483645) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpa5xcu0bo/sample_G058.cpp:14:26: runtime e"
+   }
+  },
+  "match": true
+ },
+ "G061": {
+  "sample_id": "sample_G061",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==304==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==323==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x5060000000"
+   }
+  },
+  "match": true
+ },
+ "G068": {
+  "sample_id": "sample_G068",
+  "expected": "miss",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 0,
+  "run_note": "resend: 发送 64 字节 (confirmed_offset=48, 应仅发送 16 字节)\n(正确行为: 只重传 offset 之后的 16 字节)",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "miss",
+    "note": "asan 两档均无报告[-O0(rc=0) resend: 发送 64 字节 (confirmed_offset=48, 应仅发送 16 字节) (正确行为: 只重传 offset 之后的 16 字节); -O2(rc=0) resend: 发送 64 字节 (confirmed_offset=48, 应仅发送 16 "
+   }
+  },
+  "match": true
+ },
+ "G080": {
+  "sample_id": "sample_G080",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==556==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==575==ERROR: AddressSanitizer: unknown-crash on address 0x7ffff5000020 at p"
+   }
+  },
+  "match": true
+ },
+ "G073": {
+  "sample_id": "sample_G073",
+  "expected": "catch",
+  "detectors": [
+   "asan"
+  ],
+  "done": true,
+  "syntax_mingw": "PASS",
+  "wsl_compile_add": "PASS",
+  "run_exit": 1,
+  "run_note": "Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==55==ABORTING",
+  "pooled_verdict": {
+   "asan": {
+    "verdict": "catch",
+    "note": "asan 命中[-O0(rc=1) ================================================================= ==85==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff4f000"
+   }
+  },
+  "match": true
+ }
+}

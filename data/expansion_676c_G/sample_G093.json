@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G093",
+  "defect_type": "heap_overflow",
+  "defect_location": {
+    "line": 23,
+    "function": "DynArray_EnsureCapacity",
+    "description": "tinyxml2#1065（未修复）: EnsureCapacity 的 newAllocated = cap*2 仅由 release 版被移除的 TIXMLASSERT 保护，溢出后小分配 + 大 memcpy → 堆越界写。issue 附原始代码位置 tinyxml2.h:450-470。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "github_issue",
+    "id": "leethomason/tinyxml2#1065",
+    "url": "https://github.com/leethomason/tinyxml2/issues/1065",
+    "project": "tinyxml2",
+    "commit": "",
+    "simplification": "按 issue 中引用的原始代码（DynArray<T,INITIAL_SIZE>::EnsureCapacity: cap*2 无运行时保护 + memcpy）直接镜像，只剥离 XML 解析层"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "EnsureCapacity(cap=2^63/T)：cap*2 溢出 → 分配极小 → memcpy 大尺寸 → 堆越界写",
+  "notes": "tinyxml2#1065（未修复）: EnsureCapacity 的 newAllocated = cap*2 仅由 release 版被移除的 TIXMLASSERT 保护，溢出后小分配 + 大 memcpy → 堆越界写。issue 附原始代码位置 tinyxml2.h:450-470。"
+}

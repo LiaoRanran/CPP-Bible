@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G090",
+  "defect_type": "heap_underflow",
+  "defect_location": {
+    "line": 22,
+    "function": "json_array_at",
+    "description": "nlohmann/json#5647（已修复）: operator[](size_type) 传入 SIZE_MAX 时 resize(idx+1) 回绕为 0 清空数组，随后 operator[](SIZE_MAX) 定位到缓冲区之前 1 元素并写入（issue 附带代码路径 include/nlohmann/json.hpp#L2838）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "github_issue",
+    "id": "nlohmann/json#5647",
+    "url": "https://github.com/nlohmann/json/issues/5647",
+    "project": "nlohmann/json",
+    "commit": "",
+    "simplification": "剥离 JSON 库类型层，用 vector<int> 数组镜像 issue 中引用的 operator[] 代码路径（resize(idx+1) 回绕 + operator[](SIZE_MAX) 前向越界写）"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "operator[](SIZE_MAX)：idx+1 回绕为 0 → resize(0) 清空数组 → v[SIZE_MAX] 写到缓冲区之前 1 元素",
+  "notes": "nlohmann/json#5647（已修复）: operator[](size_type) 传入 SIZE_MAX 时 resize(idx+1) 回绕为 0 清空数组，随后 operator[](SIZE_MAX) 定位到缓冲区之前 1 元素并写入（issue 附带代码路径 include/nlohmann/json.hpp#L2838）。"
+}

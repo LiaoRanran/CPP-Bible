@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G057",
+  "defect_type": "heap_overflow",
+  "defect_location": {
+    "line": 22,
+    "function": "png_set_PLTE",
+    "description": "CVE-2015-8126: png_set_PLTE/png_get_PLTE 缓冲区溢出（CVE 描述: Multiple buffer overflows in the (1) png_set_PLTE and (2) png_get_PLTE functions ... allow remote attackers to cause a denial of service）。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2015-8126",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-8126",
+    "project": "libpng",
+    "commit": "",
+    "simplification": "剥离 PNG 解码器，PLTE chunk 硬编码为 1200 字节，保留『palette 数量未校验上限即 memcpy』核心缺陷（修复版校验 num > PNG_MAX_PALETTE_LENGTH）"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "PLTE chunk 声明 400 项(1200 字节) > 256 项上限 → 拷贝越界 1KB",
+  "notes": "CVE-2015-8126: png_set_PLTE/png_get_PLTE 缓冲区溢出（CVE 描述: Multiple buffer overflows in the (1) png_set_PLTE and (2) png_get_PLTE functions ... allow remote attackers to cause a denial of service）。"
+}

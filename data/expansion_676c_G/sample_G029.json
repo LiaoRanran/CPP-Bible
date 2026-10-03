@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G029",
+  "defect_type": "heap_overread",
+  "defect_location": {
+    "line": 17,
+    "function": "ntlm_decode_type2_target",
+    "description": "CVE-2018-16890: ntlm_decode_type2_target 未正确校验传入数据（CVE 描述: does not validate incoming data correctly and is subject to an integer overflow / out-of-bounds read），堆越界读。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2018-16890",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-16890",
+    "project": "curl",
+    "commit": "",
+    "simplification": "剥离 NTLM 握手流程，type-2 消息硬编码为 32 字节堆缓冲，保留『target 长度/偏移字段未校验即 memcpy』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "type-2 消息 target_info_len=1000，消息实际仅 32 字节 → 读越界",
+  "notes": "CVE-2018-16890: ntlm_decode_type2_target 未正确校验传入数据（CVE 描述: does not validate incoming data correctly and is subject to an integer overflow / out-of-bounds read），堆越界读。"
+}

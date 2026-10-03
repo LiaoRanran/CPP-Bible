@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G080",
+  "defect_type": "type_confusion",
+  "defect_location": {
+    "line": 29,
+    "function": "sk_clone_lock",
+    "description": "CVE-2018-9568 (WrongSize): sk_clone_lock 类型混淆内存损坏。用户态等价模拟：以大结构体尺寸拷贝小结构体。"
+  },
+  "severity": "high",
+  "planted": true,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2018-9568",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-9568",
+    "project": "linux-kernel",
+    "commit": "",
+    "simplification": "内核漏洞无法在用户态直接复现：按 CVE 描述（sk_clone_lock 因类型混淆导致内存损坏）做用户态等价模拟：小结构体按大结构体整块拷贝，planted=true"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "INET socket 克隆按 Bluetooth 大结构体整块拷贝 → 读越界",
+  "notes": "CVE-2018-9568 (WrongSize): sk_clone_lock 类型混淆内存损坏。用户态等价模拟：以大结构体尺寸拷贝小结构体。"
+}

@@ -1,0 +1,25 @@
+{
+  "sample_id": "sample_G008",
+  "defect_type": "heap_overread",
+  "defect_location": {
+    "line": 24,
+    "function": "X509_cmp_time",
+    "description": "CVE-2015-1789: X509_cmp_time 对 crafted length field 的 ASN1_TIME 做 out-of-bounds read（CVE 描述: out-of-bounds read via a crafted length field in ASN1_TIME）。堆上 6 字节时间串按 4+4 位解析 → 越界 2 字节。"
+  },
+  "severity": "high",
+  "planted": false,
+  "source": {
+    "type": "cve",
+    "id": "CVE-2015-1789",
+    "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-1789",
+    "project": "openssl",
+    "commit": "",
+    "simplification": "剥离证书时间比较外围逻辑，保留『按固定位数解析 ASN1_TIME 而不校验 crafted 长度字段』核心缺陷"
+  },
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "ASN1_TIME 长度字段被 crafted 为 2，解析仍按固定 4 位读年/月 → 读越界",
+  "notes": "CVE-2015-1789: X509_cmp_time 对 crafted length field 的 ASN1_TIME 做 out-of-bounds read（CVE 描述: out-of-bounds read via a crafted length field in ASN1_TIME）。堆上 6 字节时间串按 4+4 位解析 → 越界 2 字节。"
+}
