@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E133",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 28,
+    "function": "main",
+    "description": "无锁队列：元素在「出队-回队」后同址复用，被重复消费"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：元素出队后同址回队，消费者读到新内容",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "重复消费型 ABA。预期 miss。"
+}

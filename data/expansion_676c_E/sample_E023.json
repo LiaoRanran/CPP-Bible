@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E023",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 21,
+    "function": "worker",
+    "description": "以 relaxed 的 fetch_or 位标志作完成判据"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "4 个工作线程 + 1 个等待线程并发",
+  "thread_count": 5,
+  "timeout_seconds": 5,
+  "notes": "全 atomic，位标志内存序错误不产生非原子竞争 → 预期 miss。"
+}

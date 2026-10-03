@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E015",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 27,
+    "function": "consumer",
+    "description": "用 memory_order_consume 发布载荷（C++17 起不推荐且实现多等同 relaxed）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；读侧用 consume 取载荷",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "memory_order_consume 误用：既读侧无 acquire，写侧标志也是 release 而非 release+consume 配对。预期 miss（无内存序检测器）。"
+}

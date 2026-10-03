@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E047",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 16,
+    "function": "main",
+    "description": "compare_exchange 的失败序强于成功序（违反标准前置条件，UB）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "单线程调用违反前置条件的 compare_exchange",
+  "thread_count": 0,
+  "timeout_seconds": 5,
+  "notes": "内存序前置条件违规属 UB，但 libstdc++ 不做运行时检查，UBSan 也不覆盖 → 预期 miss（真实盲区）。 【调和】标注与实测一致（ubsan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "ubsan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "ubsan",
+    "verdict": "miss",
+    "detector_note": "ubsan 两档均无报告[-O0(rc=0) E047 ok=1 a=9; -O2(rc=0) E047 ok=1 a=9]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E044",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 25,
+    "function": "claim",
+    "description": "compare_exchange_weak 失败后不检查 expected，直接拿它当新值用"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程竞争同一资源所有权，仅一方 CAS 成功",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "CAS 失败路径误用 expected。无 sanitizer 覆盖 → 预期 miss。 【调和】原标注预期 miss，实测被tsan捕获 ⇒ 已按卡片「真实不一致即更新标注」改为 catch。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "updated_to_catch",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E044 loser saw=2 E044 resource=1002 ================== WARNING: ThreadSanitizer: data race (pid=3320)   Write of size 4 at 0x555555559024 by thread T1:     #0 claim /mnt/c/Users/ASUS/AppData/Local/Tem; -O2(rc=66) E044 loser saw=2 E044 resource=1002 ================== WARNING: ThreadSanitizer: data race (pid=3641)   Write of size 4 at 0x555555558028 by thread T1:     #0 claim /mn",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

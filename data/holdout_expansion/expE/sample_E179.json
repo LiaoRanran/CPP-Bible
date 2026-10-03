@@ -1,0 +1,53 @@
+{
+  "sample_id": "sample_E179",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 33,
+    "function": "notifier",
+    "description": "三个等待者共用一个谓词但只 notify_one 两次（依赖运气）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 个等待者 + 1 个通知者，逐次 notify_one",
+  "thread_count": 4,
+  "timeout_seconds": 5,
+  "notes": "多次 notify_one 覆盖多等待者的时序依赖缺陷。是否永久阻塞取决于调度 → 预期 miss（时序相关，记录复现率）。 【调和】标注与实测一致（tsan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "tsan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "tsan",
+    "verdict": "miss",
+    "detector_note": "tsan 两档均无报告[-O0(rc=0) E179 done=3 wakes=3; -O2(rc=0) E179 done=3 wakes=3]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

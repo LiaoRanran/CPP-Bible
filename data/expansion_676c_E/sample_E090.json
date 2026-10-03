@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E090",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 18,
+    "function": "f",
+    "description": "adopt_lock 取得所有权后把同一把锁交给 std::lock"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "单线程 adopt_lock 后再 std::lock",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "adopt_lock 与 std::lock 混用。确定性自死锁。"
+}

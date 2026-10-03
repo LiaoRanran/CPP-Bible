@@ -1,0 +1,53 @@
+{
+  "sample_id": "sample_E090",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 18,
+    "function": "f",
+    "description": "adopt_lock 取得所有权后把同一把锁交给 std::lock"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "单线程 adopt_lock 后再 std::lock",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "adopt_lock 与 std::lock 混用。确定性自死锁。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    },
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

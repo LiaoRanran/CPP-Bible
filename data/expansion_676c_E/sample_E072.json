@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E072",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 19,
+    "function": "push_side_effect",
+    "description": "通过 const_cast 绕过 const 原子对象写保护"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "单线程对 const 原子对象做 const_cast 写",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "对 const 对象的写入是 UB。若放只读段 ASan 可报，否则无检测器 → 标注预期 miss。"
+}

@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E004",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 20,
+    "function": "acquire_node",
+    "description": "DCLP 用普通指针承载已发布对象，二次检查走 relaxed"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发调用 acquire_node",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "发布对象用非原子裸指针承载 + relaxed 二次检查。属未定义行为；ASan/TSan 均不检查内存序正确性，预期 miss。"
+}

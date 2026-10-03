@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E144",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 23,
+    "function": "low_rt",
+    "description": "低优先级线程持锁排序，高优先级线程等锁，中优先级线程空转"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 线程：低优先级持锁排序",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "持锁做重计算型反转。预期 miss。 【调和】标注与实测一致（tsan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "tsan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "tsan",
+    "verdict": "miss",
+    "detector_note": "tsan 两档均无报告[-O0(rc=0) E144 n=7; -O2(rc=0) E144 n=7]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

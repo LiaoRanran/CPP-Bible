@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E152",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 22,
+    "function": "flush",
+    "description": "持锁做「日志落盘」等待，同时中优先级线程无锁读日志缓冲"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 线程：落盘等待 + 无锁日志采集",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "除反转形态外还植入真实数据竞争 → 预期 TSan catch。"
+}

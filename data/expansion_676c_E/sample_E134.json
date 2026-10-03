@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E134",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 25,
+    "function": "main",
+    "description": "无锁栈 pop 后把陈旧指针写回链表（UAF 写）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "2 线程：A 在 ABA 窗口内向已释放节点写并重新挂链",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "UAF 写。ASan 稳定捕获 → 预期 catch。"
+}

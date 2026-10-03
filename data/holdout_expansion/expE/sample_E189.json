@@ -1,0 +1,53 @@
+{
+  "sample_id": "sample_E189",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 22,
+    "function": "waiter",
+    "description": "三个线程各用不同的锁 wait 同一个条件变量"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 个等待线程各配一把不同的锁 + 1 个通知者",
+  "thread_count": 4,
+  "timeout_seconds": 5,
+  "notes": "一变量多锁：谓词与 payload 的同步边界不一致 → 真实数据竞争 → 预期 TSan catch。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E189 woke=3 payload=103 ================== WARNING: ThreadSanitizer: data race (pid=14192)   Write of size 1 at 0x55555555c130 by thread T4 (mutexes: write M0):     #0 setter /mnt/c/Users/ASUS/AppData; -O2(rc=66) E189 woke=3 payload=106 ================== WARNING: ThreadSanitizer: data race (pid=14457)   Write of size 1 at 0x555555559048 by thread T4 (mutexes: write M0):     #0 ",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

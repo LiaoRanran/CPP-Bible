@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E186",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 22,
+    "function": "waiter",
+    "description": "wait_until 使用绝对时间点，但时间点在锁外计算且早已过期"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：wait_until 的截止时间在锁外计算且已过期",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "超时返回值被忽略。预期 miss。"
+}

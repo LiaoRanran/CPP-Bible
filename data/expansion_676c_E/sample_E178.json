@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E178",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 21,
+    "function": "submitter",
+    "description": "先 notify 再设置谓词（顺序颠倒），等待者永久阻塞"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：谓词在锁外写，通知与谓词更新都无同步",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "谓词不受mutex 保护 ⇒ TSan 可稳定抓到 submitted 上的数据竞争；是否永久阻塞取决于「检查谓词→阻塞」窗口是否被命中，触发率见验收报告。"
+}

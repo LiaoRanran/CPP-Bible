@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E152",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 22,
+    "function": "flush",
+    "description": "持锁做「日志落盘」等待，同时中优先级线程无锁读日志缓冲"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 线程：落盘等待 + 无锁日志采集",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "除反转形态外还植入真实数据竞争 → 预期 TSan catch。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E152 sum=32853151 E152 logbuf0=Z ================== WARNING: ThreadSanitizer: data race (pid=11364)   Read of size 1 at 0x55555555b152 by thread T3:     #0 tail /mnt/c/Users/ASUS/AppData/Local/Temp/tm; -O2(rc=66) E152 sum=32879439 E152 logbuf0=Z ================== WARNING: ThreadSanitizer: data race (pid=11648)   Write of size 1 at 0x5555555580ac by thread T1 (mutexes: write M0)",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

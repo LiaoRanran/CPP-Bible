@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E099",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 24,
+    "function": "left",
+    "description": "左线程持 la 等 lb，右线程持 lb 等 la（两个条件变量互等）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程各持一把锁、各等对方置位",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "条件变量互等死锁（且谓词分别由不同的 mutex 保护，本身也是 cv/mutex 配对错误）。确定性触发。"
+}

@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E177",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 24,
+    "function": "worker",
+    "description": "谓词在 wait 之前被判断一次就再也不检查（循环外判断）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：谓词判断在循环外",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "预期 miss。"
+}

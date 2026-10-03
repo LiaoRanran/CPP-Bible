@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E135",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 29,
+    "function": "main",
+    "description": "以「指针 + 独立计数器」代替 tagged pointer，两字更新不原子"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：指针与版本号分处两个原子，校验不原子",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "「伪 tagged pointer」。预期 miss。"
+}

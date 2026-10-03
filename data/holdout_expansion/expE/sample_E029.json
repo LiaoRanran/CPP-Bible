@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E029",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 22,
+    "function": "producer",
+    "description": "中间的 relaxed store 打断 release 序列，读侧仍用 acquire"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；consumer 读 release 序列之外的写入",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "release 序列被 relaxed 打断。竞争真实 → 预期 TSan catch。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E029 v2=3 ================== WARNING: ThreadSanitizer: data race (pid=2138)   Read of size 4 at 0x555555559038 by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData/Local/Temp/tmp52uvfs25/sample_E02; -O2(rc=66) E029 v2=3 ================== WARNING: ThreadSanitizer: data race (pid=2441)   Read of size 4 at 0x555555558048 by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData/L",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E076",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 24,
+    "function": "threadA",
+    "description": "线程 A 按 m1->m2 加锁，线程 B 按 m2->m1 加锁（锁顺序不一致）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程同时启动并各自持有第一把锁后去抢对方的锁",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "教科书式锁顺序反转。用原子门闸保证确定性触发，超时挂起即死锁成立。"
+}

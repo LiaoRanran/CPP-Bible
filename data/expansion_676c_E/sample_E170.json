@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E170",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 21,
+    "function": "sign",
+    "description": "持锁做加密/签名运算（CPU 密集 + 可能换出）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：持锁做签名运算",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "预期 miss。"
+}

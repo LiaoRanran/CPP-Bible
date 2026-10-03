@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E123",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 23,
+    "function": "main",
+    "description": "引用计数用「load-判断-置回」实现，计数 A→B→A 后误判无人持有"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：引用计数走 0->1->0",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "引用计数的 ABA。预期 miss。"
+}

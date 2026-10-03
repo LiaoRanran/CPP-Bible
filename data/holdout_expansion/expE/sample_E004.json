@@ -1,0 +1,54 @@
+{
+  "sample_id": "sample_E004",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 20,
+    "function": "acquire_node",
+    "description": "DCLP 用普通指针承载已发布对象，二次检查走 relaxed"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发调用 acquire_node",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "发布对象用非原子裸指针承载 + relaxed 二次检查。属未定义行为；ASan/TSan 均不检查内存序正确性，预期 miss。 【调和】标注与实测一致（asan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "asan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "asan",
+    "verdict": "miss",
+    "detector_note": "asan 两档均无报告[-O0(rc=0) E004 v=7 E004 v=7; -O2(rc=0) E004 v=7 E004 v=7]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": {
+      "kind": "asan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

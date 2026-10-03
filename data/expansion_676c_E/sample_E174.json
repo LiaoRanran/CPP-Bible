@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E174",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 25,
+    "function": "consumer",
+    "description": "wait 无谓词，且通知与「数据准备」之间的顺序倒置"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：消费者不检查谓词，通知早于数据可用",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "预期 miss。"
+}

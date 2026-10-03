@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E162",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 27,
+    "function": "outer_lock_and_join",
+    "description": "持锁调用阻塞型函数（条件变量 wait 之外的阻塞，如 join 别的线程）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：持锁 join 等锁线程",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "持锁调用阻塞函数。预期 miss。"
+}

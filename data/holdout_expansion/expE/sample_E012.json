@@ -1,0 +1,41 @@
+{
+  "sample_id": "sample_E012",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 26,
+    "function": "dropper",
+    "description": "引用计数用 relaxed 增减，读侧据此判定对象存活"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan",
+    "asan"
+  ],
+  "trigger_condition": "两线程并发；dropper 误判引用计数并 delete",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "relaxed 引用计数导致提前释放。owner 的构造写与 dropper 的 delete 之间无 happens-before → TSan/ASan 可捕获。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E012 done ================== WARNING: ThreadSanitizer: data race (pid=884)   Read of size 8 at 0x555555559030 by thread T2:     #0 dropper /mnt/c/Users/ASUS/AppData/Local/Temp/tmpaax7c_xj/sample_E012.; -O2(rc=66) E012 done ================== WARNING: ThreadSanitizer: data race (pid=1211)   Read of size 8 at 0x555555558028 by thread T2:     #0 dropper /mnt/c/Users/ASUS/AppData/Lo",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

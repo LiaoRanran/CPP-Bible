@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E175",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 26,
+    "function": "producer",
+    "description": "通知早于 wait（丢失唤醒）：notify 在 wait 之前发生"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：谓词在锁外写 + notify_all，consumer 在锁内检查谓词",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "丢失唤醒的根因是「谓词不受mutex 保护」。谓词的检查/写入之间没有 happens-before ⇒ TSan 能稳定抓到 ready 上的数据竞争；至于是否真的永久阻塞取决于窗口是否命中，实测触发率见验收报告。"
+}

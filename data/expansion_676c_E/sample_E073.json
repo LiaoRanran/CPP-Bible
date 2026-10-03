@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E073",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 22,
+    "function": "counter",
+    "description": "在「类信号处理」语境里用非 lock-free 原子的自增"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "单线程高频原子自增，模拟中断上下文的原子使用",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "原子操作的异步上下文安全性依赖 is_lock_free，C++17 起标准不再保证。预期 miss（无检测器）。"
+}

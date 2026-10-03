@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E160",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 21,
+    "function": "sampler",
+    "description": "持锁统计线程 + 无锁直写统计数组的高优先级线程"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 线程：持锁采样 + 无锁快路径写",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "含真实数据竞争 → 预期 TSan catch。"
+}

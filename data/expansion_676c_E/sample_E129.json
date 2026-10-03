@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E129",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 25,
+    "function": "main",
+    "description": "内存池 freelist 用无版本 CAS 分配，槽位 A→B→A"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：freelist 槽位被释放回同一地址",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "无版本 freelist 的 ABA（双所有者）。预期 miss。"
+}

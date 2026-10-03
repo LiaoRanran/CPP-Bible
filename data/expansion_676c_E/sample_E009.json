@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E009",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 20,
+    "function": "setter",
+    "description": "acquire 存储配 relaxed 加载（配对方向反了）"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；watcher 观察标志",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "acquire 存储 / relaxed 加载的错向配对。预期 miss。"
+}

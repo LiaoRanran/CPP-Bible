@@ -1,0 +1,41 @@
+{
+  "sample_id": "sample_E122",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 22,
+    "function": "main",
+    "description": "双原子「不变式」在 ABA 下被绕过（校验通过但不变式已破）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：lo/hi 走 A->B->A",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "不变式校验被 ABA 绕过。预期 miss。 【调和】标注与实测一致（asan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "asan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "asan",
+    "verdict": "miss",
+    "detector_note": "asan 两档均无报告[-O0(rc=0) E122 bad=0 lo=9 hi=-10; -O2(rc=0) E122 bad=0 lo=9 hi=-10]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

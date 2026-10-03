@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E060",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 21,
+    "function": "poller",
+    "description": "堆上 atomic 在其它线程还在自旋轮询时被 delete"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；一个 delete 原子对象，另一个正在读它",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "原子对象生命周期竞态。ASan heap-use-after-free → 预期 catch。"
+}

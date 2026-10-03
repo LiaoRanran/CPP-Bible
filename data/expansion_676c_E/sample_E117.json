@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E117",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 35,
+    "function": "main",
+    "description": "无锁队列的「head/tail 分离」更新遇 ABA"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：tail 走一圈回到同一槽位",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "head/tail 分离的无锁队列 ABA。预期 miss。"
+}

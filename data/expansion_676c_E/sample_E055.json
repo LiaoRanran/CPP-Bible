@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E055",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 24,
+    "function": "guard",
+    "description": "atomic_flag 作为未初始化成员，test_and_set 前无原子状态建立"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发进入未初始化的 atomic_flag 自旋锁",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "atomic_flag 漏初始化。标准要求用 ATOMIC_FLAG_INIT；无检测器 → 预期 miss。"
+}

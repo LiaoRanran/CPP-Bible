@@ -1,0 +1,53 @@
+{
+  "sample_id": "sample_E087",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 23,
+    "function": "need_b",
+    "description": "持 A 锁等 B 锁，同时第三线程持 B 锁等 A 锁"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程分别持 A 等 B、持 B 等 A",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "教科书 hold-and-wait 循环等待。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】TSan 自身报出 lock-order-inversion。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E087 got both E087 got both reverse ================== WARNING: ThreadSanitizer: lock-order-inversion (potential deadlock) (pid=6457)   Cycle in lock order graph: M0 (0x555555559040) => M1 (0x55555555; -O2(rc=66) E087 got both E087 got both reverse ================== WARNING: ThreadSanitizer: lock-order-inversion (potential deadlock) (pid=6594)   Cycle in lock order graph: M0 (0",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E159",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 21,
+    "function": "cpu_worker",
+    "description": "DMA 完成回调（高优先级）等锁，持锁者在做用户态大块内存整理"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：DMA 回调等锁 vs 用户态内存整理",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "预期 miss。"
+}

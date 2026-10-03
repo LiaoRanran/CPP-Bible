@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E131",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 22,
+    "function": "main",
+    "description": "RCU 读侧无保护 + reclaim 用 sleep 代替 grace period，命中 UAF"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "2 线程：reclaim 立即 delete，读侧随后遍历 payload",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "无保护 RCU 读侧。ASan 的 heap-use-after-free 稳定命中 → 预期 catch。 【调和】标注与实测一致（asan）。",
+  "pooled_verdict": {
+    "asan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "asan",
+    "verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) ================================================================= ==9782==ERROR: AddressSanitizer: heap-use-after-free on address 0x503000000044 at pc 0x555555556588 bp 0x7ffff3ffec60 sp 0x7ffff3ffec5; -O2(rc=1) ================================================================= ==10100==ERROR: AddressSanitizer: heap-use-after-free on address 0x503000000044 at pc 0x555555556da8 bp ",
+    "hung": false,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

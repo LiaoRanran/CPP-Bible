@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E193",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 27,
+    "function": "waiter",
+    "description": "谓词在 notify_all 与 wait 之间被第三方线程清零"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "1 等待者 + 1 个两次置位/清零的线程",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "谓词被当作「一次性请求」清零。预期 miss。"
+}

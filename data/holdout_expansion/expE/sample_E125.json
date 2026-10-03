@@ -1,0 +1,57 @@
+{
+  "sample_id": "sample_E125",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 22,
+    "function": "main",
+    "description": "危险指针「发布顺序」错误：先读数据再登记 hazard"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "2 线程：读侧不遵守 hazard pointer 发布协议，写侧立即回收",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "两个协议缺陷叠加：读侧 check-after-use（读指针后立刻解引用，登记与校验都没做），回收侧不扫描 hazard 集合。用 step 门闸把「登记hazard 之后、解引用之前」的窗口固定住，所以 ASan 的 heap-use-after-free 可稳定捕获 → 预期 catch。 【调和】标注与实测一致（asan）。",
+  "pooled_verdict": {
+    "asan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "asan",
+    "verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) ================================================================= ==9407==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x555555556597 bp 0x7ffff3ffec70 sp 0x7ffff3ffec6; -O2(rc=1) ================================================================= ==9720==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x555555556cef bp 0",
+    "hung": false,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": {
+      "kind": "asan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

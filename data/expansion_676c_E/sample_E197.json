@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E197",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 28,
+    "function": "dispatcher",
+    "description": "notify 在不持锁时调用，且谓词更新也在锁外（通知必丢）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：谓词与 notify 都在锁外",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "通知丢失导致永久阻塞 + 无锁写谓词的数据竞争 → 记为阻塞触发。"
+}

@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E199",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 24,
+    "function": "recursive_worker",
+    "description": "condition_variable_any 与 recursive_mutex 搭配：wait 只释放一层锁"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：condition_variable_any + recursive_mutex 递归计数",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "CV 只能配「wait 能完全解锁」的 mutex。预期记为阻塞触发。"
+}

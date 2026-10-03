@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E124",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 25,
+    "function": "main",
+    "description": "无锁链表遍历：读 next 之后节点被删除复用"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "2 线程：遍历线程无保护地读节点，主线程删除并复用",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "缺 hazard pointer 的读侧遍历。ASan 捕获 UAF → 预期 catch。 【调和】标注与实测一致（asan）。",
+  "pooled_verdict": {
+    "asan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "asan",
+    "verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) ================================================================= ==9258==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000030 at pc 0x55555555655c bp 0x7ffff3ffec60 sp 0x7ffff3ffec5; -O2(rc=1) ================================================================= ==9535==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000030 at pc 0x555555556c4f bp 0",
+    "hung": false,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

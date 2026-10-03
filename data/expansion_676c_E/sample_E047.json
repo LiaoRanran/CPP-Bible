@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E047",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 16,
+    "function": "main",
+    "description": "compare_exchange 的失败序强于成功序（违反标准前置条件，UB）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "单线程调用违反前置条件的 compare_exchange",
+  "thread_count": 0,
+  "timeout_seconds": 5,
+  "notes": "内存序前置条件违规属 UB，但 libstdc++ 不做运行时检查，UBSan 也不覆盖 → 预期 miss（真实盲区）。"
+}

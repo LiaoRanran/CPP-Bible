@@ -1,0 +1,41 @@
+{
+  "sample_id": "sample_E071",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 15,
+    "function": "main",
+    "description": "在未初始化的栈缓冲区上直接使用 atomic_flag（缺 ATOMIC_FLAG_INIT）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "ubsan"
+  ],
+  "trigger_condition": "单线程在未初始化栈内存上使用 atomic_flag",
+  "thread_count": 0,
+  "timeout_seconds": 5,
+  "notes": "未初始化内存当原子对象用是 UB。ASan 不会报（栈内），→ 预期 miss。 【调和】标注与实测一致（asan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "asan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "asan",
+    "verdict": "miss",
+    "detector_note": "asan 两档均无报告[-O0(rc=0) E071 ok; -O2(rc=0) E071 ok]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

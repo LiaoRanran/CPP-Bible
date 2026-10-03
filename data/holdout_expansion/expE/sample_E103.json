@@ -1,0 +1,53 @@
+{
+  "sample_id": "sample_E103",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 17,
+    "function": "f",
+    "description": "unique_lock 已持有时再次调用 lock()"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "单线程 unique_lock 重复 lock",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "unique_lock 状态机误用：已拥有所有权时再 lock()。实测（WSL glibc 2.39）不是挂起，而是由 libstdc++/glibc 抛 std::system_error(\"Resource deadlock avoided\") 并 abort（EDEADLK）。TSan / ASan / UBSan 均无报告 ⇒ 预期 miss。与 E110 同类：**一个让进程直接崩溃的并发缺陷对现有 sanitizer 资产完全隐形**。 【调和】原标注预期 catch，实测tsan未报告 ⇒ 按卡片「真实盲区：改标miss，在 notes 里说明」处理。这是**检测器盲区**，不代表缺陷不成立。",
+  "pooled_verdict": {
+    "tsan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "downgraded_to_miss_real_blindspot",
+    "detector": "tsan",
+    "verdict": "miss",
+    "detector_note": "tsan 两档均无报告[-O0(rc=6) terminate called after throwing an instance of 'std::system_error'   what():  Resource deadlock avoided timeout: the monitored command dumped core; -O2(rc=6) terminate called after throwing an instance of 'std::system_error'   what():  Resource deadlock avoided timeout: the monitored command dumped core]",
+    "hung": false,
+    "raw_rc": [
+      6,
+      6
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

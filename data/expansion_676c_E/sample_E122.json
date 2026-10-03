@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E122",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 22,
+    "function": "main",
+    "description": "双原子「不变式」在 ABA 下被绕过（校验通过但不变式已破）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：lo/hi 走 A->B->A",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "不变式校验被 ABA 绕过。预期 miss。"
+}

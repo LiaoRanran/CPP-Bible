@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E034",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 22,
+    "function": "arm",
+    "description": "exchange 用 relaxed 换出指针，读侧 acquire 的是另一个标志"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；take 读 relaxed 发布的指针",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "发布链被 relaxed 打断。属 UB；TSan 不建模内存序 → 预期 miss。"
+}

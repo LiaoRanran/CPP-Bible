@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E092",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 24,
+    "function": "read_balance",
+    "description": "读路径 account->ledger，写路径 ledger->account"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程走读路径与写路径",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "账户/账本双锁顺序反转。确定性触发。"
+}

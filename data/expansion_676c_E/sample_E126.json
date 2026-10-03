@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E126",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 19,
+    "function": "reclaim",
+    "description": "危险指针只发布不重新校验，删除线程无视 hazard 直接回收"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：读侧发布 hazard 后挂起，写侧无视 hazard 回收并复用地址",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "hazard pointer 协议只做了一半。窗口内的 UAF 取决于 delete 与读是否重叠 → 预期 miss（sanitizer 未必命中，但 ABA 语义确实被破坏）。"
+}

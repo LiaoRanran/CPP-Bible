@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E082",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 17,
+    "function": "inner",
+    "description": "同一线程对非递归 std::mutex 二次加锁（递归加锁误用）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "单线程内嵌套调用导致同线程重复加锁",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "std::mutex 上同线程重入是未定义行为，libstdc++ 上表现为自死锁。确定性触发。"
+}

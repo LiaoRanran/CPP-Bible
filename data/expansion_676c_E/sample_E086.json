@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E086",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 26,
+    "function": "waiter",
+    "description": "持锁等待条件变量：等一个只有拿到该锁的线程才能满足的条件"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：等待者持锁等条件，通知者需要该锁才能满足条件",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "持锁等待条件变量。确定性死锁。"
+}

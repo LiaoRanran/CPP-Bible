@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E046",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 21,
+    "function": "bump",
+    "description": "compare_exchange_strong 用在循环里（该用 weak）"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程竞争写同一原子版本号",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "strong 用于循环属性能/活性缺陷而非 UB。无检测器 → 预期 miss（低severity）。"
+}

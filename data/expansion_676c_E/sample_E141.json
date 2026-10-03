@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E141",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 21,
+    "function": "low_prio",
+    "description": "低优先级线程持锁做长耗时计算，高优先级线程等锁，中优先级线程忙等抢占"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 线程：低优先级持锁长算 + 高优先级等锁 + 中优先级抢占",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "优先级反转的完整三要素代码形态。通用调度器上无检测器可报 → 预期 miss（真实盲区）。"
+}

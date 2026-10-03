@@ -1,0 +1,53 @@
+{
+  "sample_id": "sample_E141",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 21,
+    "function": "low_prio",
+    "description": "低优先级线程持锁做长耗时计算，高优先级线程等锁，中优先级线程忙等抢占"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 线程：低优先级持锁长算 + 高优先级等锁 + 中优先级抢占",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "优先级反转的完整三要素代码形态。通用调度器上无检测器可报 → 预期 miss（真实盲区）。 【调和】标注与实测一致（tsan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "tsan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "tsan",
+    "verdict": "miss",
+    "detector_note": "tsan 两档均无报告[-O0(rc=0) E141 acc=8999995 stage=3; -O2(rc=0) E141 acc=8999995 stage=3]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

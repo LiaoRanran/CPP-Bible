@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E010",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 24,
+    "function": "watcher",
+    "description": "seq_cst 存储配 relaxed 加载（强度不匹配）"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；watcher 观察初始化标志",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "seq_cst 写 + relaxed 读：强度不匹配（写侧够强、读侧过弱）。预期 miss。"
+}

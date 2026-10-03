@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E173",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 24,
+    "function": "reader",
+    "description": "wait 返回后读取未被锁保护的共享状态（真实数据竞争）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：waiter 醒后无锁读非原子计数，writer 无锁写",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "虚假唤醒 + 无锁访问共享状态，真实数据竞争 → 预期 TSan catch。"
+}

@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E050",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 19,
+    "function": "scale",
+    "description": "std::atomic<short> fetch_mul 溢出（C++17 下为 UB）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "两线程并发放大 short 原子计数直至溢出",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "预期 miss：UBSan 不覆盖 atomic RMW 溢出。 【调和】标注与实测一致（ubsan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "ubsan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "ubsan",
+    "verdict": "miss",
+    "detector_note": "ubsan 两档均无报告[-O0(rc=0) E050 gain=-10072; -O2(rc=0) E050 gain=-10072]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

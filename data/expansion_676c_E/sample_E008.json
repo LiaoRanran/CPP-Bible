@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E008",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 22,
+    "function": "producer",
+    "description": "用 relaxed 计数器的读数作为「数据已就绪」的判据"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；waiter 轮询 relaxed 计数器",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "载荷为非原子数组 + relaxed 计数发布。数据竞争真实存在，但 TSan 的 happens-before 是按原子操作的对称性建模的，relaxed 不建立边 → 预期可被 TSan 捕获。"
+}

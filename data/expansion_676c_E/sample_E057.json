@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E057",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 19,
+    "function": "bump_via_fake_atomic",
+    "description": "把 std::atomic<int> 的引用绑到普通 int 上，当作原子操作使用"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "两线程并发对伪装成原子的普通变量做 RMW",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "对非原子对象施加原子操作是 UB，且实为数据竞争。TSan 可能捕获（它按实际内存访问建模），但也可能因硬件 LOCK 前缀而无报告；标注预期 miss 并说明。"
+}

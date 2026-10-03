@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E062",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 20,
+    "function": "bump2",
+    "description": "读-改-写序列中混入非原子成员赋值，破坏原子性保证"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 线程并发更新同一结构体（原子+非原子混合）",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "非原子成员 lo 存在真实竞争，TSan 可捕获；但 lo 读改写极短，命中率不定 → 标注预期 catch 并说明。"
+}

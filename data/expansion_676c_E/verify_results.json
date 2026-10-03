@@ -1,0 +1,4398 @@
+{
+  "E001": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E001 data=42; -O2(rc=0) E001 data=42]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E002": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E002 load=3.500000; -O2(rc=0) E002 load=3.500000]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E003": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E003 a=1 E003 a=1; -O2(rc=0) E003 a=1 E003 a=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E004": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E004 v=7 E004 v=7; -O2(rc=0) E004 v=7 E004 v=7]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "asan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E005": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E005 p7=49; -O2(rc=0) E005 p7=49]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E006": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E007": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E007 payload=22; -O2(rc=0) E007 payload=22]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E008": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E008 table3=103 ================== WARNING: ThreadSanitizer: data race (pid=216)   Read of size 4 at 0x55555555904c by thread T2:     #0 waiter /mnt/c/Users/ASUS/AppData/Local/Temp/tmpdioncdcl/sample_; -O2(rc=66) E008 table3=103 ================== WARNING: ThreadSanitizer: data race (pid=522)   Read of size 4 at 0x55555555804c by thread T2:     #0 waiter /mnt/c/Users/ASUS/AppDat",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E009": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E010": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E011": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E011 mirror=7777 pub=4242 ================== WARNING: ThreadSanitizer: data race (pid=868)   Read of size 4 at 0x55555555901c by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData/Local/Temp/tmplupi; -O2(rc=66) E011 mirror=7777 pub=4242 ================== WARNING: ThreadSanitizer: data race (pid=1172)   Read of size 4 at 0x555555558024 by thread T2:     #0 consumer /mnt/c/User",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E012": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E012 done ================== WARNING: ThreadSanitizer: data race (pid=884)   Read of size 8 at 0x555555559030 by thread T2:     #0 dropper /mnt/c/Users/ASUS/AppData/Local/Temp/tmpaax7c_xj/sample_E012.; -O2(rc=66) E012 done ================== WARNING: ThreadSanitizer: data race (pid=1211)   Read of size 8 at 0x555555558028 by thread T2:     #0 dropper /mnt/c/Users/ASUS/AppData/Lo",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E013": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E013 stamp=deadbeef; -O2(rc=0) E013 stamp=deadbeef]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E014": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E014 body=31; -O2(rc=0) E014 body=31]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E015": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E015 x=3 y=4; -O2(rc=0) E015 x=3 y=4]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E016": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E016 body=64; -O2(rc=0) E016 body=64]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E017": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E017 ring7=21 ================== WARNING: ThreadSanitizer: data race (pid=1415)   Read of size 4 at 0x55555555905c by thread T2:     #0 waiter /mnt/c/Users/ASUS/AppData/Local/Temp/tmphdnphpzx/sample_E; -O2(rc=66) E017 ring7=21 ================== WARNING: ThreadSanitizer: data race (pid=1728)   Read of size 4 at 0x55555555807c by thread T2:     #0 waiter /mnt/c/Users/ASUS/AppData",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E018": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E018 a3=104 b3=54 ================== WARNING: ThreadSanitizer: data race (pid=1433)   Read of size 4 at 0x55555555903c by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData/Local/Temp/tmpep1fjoh7/sa; -O2(rc=66) E018 a3=104 b3=54 ================== WARNING: ThreadSanitizer: data race (pid=1734)   Read of size 4 at 0x55555555805c by thread T2:     #0 consumer /mnt/c/Users/ASUS/A",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E019": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E019 chunk31=62 ================== WARNING: ThreadSanitizer: data race (pid=1481)   Write of size 4 at 0x555555559080 by thread T1:     #0 producer /mnt/c/Users/ASUS/AppData/Local/Temp/tmpkklf2uci/sam; -O2(rc=66) E019 chunk31=62 ================== WARNING: ThreadSanitizer: data race (pid=1791)   Read of size 4 at 0x5555555580dc by thread T2:     #0 consumer /mnt/c/Users/ASUS/App",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E020": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E020 id=1 cached=4242 ================== WARNING: ThreadSanitizer: data race (pid=1508)   Read of size 4 at 0x720800001034 by thread T2:     #0 reader /mnt/c/Users/ASUS/AppData/Local/Temp/tmp2xbgih7v/; -O2(rc=66) E020 id=1 cached=4242 ================== WARNING: ThreadSanitizer: data race (pid=1788)   Read of size 4 at 0x720800001034 by thread T2:     #0 reader /mnt/c/Users/ASUS",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E021": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E021 a=11 b=22 ================== WARNING: ThreadSanitizer: data race (pid=1517)   Read of size 4 at 0x555555559024 by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData/Local/Temp/tmpd871h00e/sampl; -O2(rc=66) E021 a=11 b=22 ================== WARNING: ThreadSanitizer: data race (pid=1830)   Read of size 4 at 0x55555555802c by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppD",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E022": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E022 live=8 E022 live=8; -O2(rc=0) E022 live=8 E022 live=8]",
+    "hung": false,
+    "reconcile": "downgraded_to_miss_real_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "miss",
+        "miss",
+        "catch",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stable": false
+    },
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": false
+    }
+  },
+  "E023": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E023 s3=30; -O2(rc=0) E023 s3=30]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E024": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E024 big=123456789; -O2(rc=0) E024 big=123456789]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E025": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E025 token=1; -O2(rc=0) E025 token=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E026": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E026 arr0=100 arr1=200 ================== WARNING: ThreadSanitizer: data race (pid=2041)   Read of size 4 at 0x555555559014 by thread T2:     #0 peek /mnt/c/Users/ASUS/AppData/Local/Temp/tmp7st_zgxp/s; -O2(rc=66) E026 arr0=100 arr1=200 ================== WARNING: ThreadSanitizer: data race (pid=2351)   Read of size 4 at 0x555555558014 by thread T2:     #0 peek /mnt/c/Users/ASUS/",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E027": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E027 v=5 E027 v=5; -O2(rc=0) E027 v=5 E027 v=5]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E028": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E028 step=3 ================== WARNING: ThreadSanitizer: data race (pid=2108)   Read of size 8 at 0x555555559020 by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData/Local/Temp/tmpugpsa4d4/sample_E; -O2(rc=66) E028 step=3 ================== WARNING: ThreadSanitizer: data race (pid=2405)   Read of size 8 at 0x555555558028 by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E029": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E029 v2=3 ================== WARNING: ThreadSanitizer: data race (pid=2138)   Read of size 4 at 0x555555559038 by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData/Local/Temp/tmp52uvfs25/sample_E02; -O2(rc=66) E029 v2=3 ================== WARNING: ThreadSanitizer: data race (pid=2441)   Read of size 4 at 0x555555558048 by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData/L",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E030": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E030 total=5; -O2(rc=0) E030 total=5]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E031": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E031 f1=10 f2=20 f3=30; -O2(rc=0) E031 f1=10 f2=20 f3=30]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E032": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E032 v=6 E032 v=6 ================== WARNING: ThreadSanitizer: data race (pid=2220)   Write of size 8 at 0x555555559030 by thread T2:     #0 get_cached /mnt/c/Users/ASUS/AppData/Local/Temp/tmppvt3o9oe; -O2(rc=66) E032 v=6 E032 v=6 ================== WARNING: ThreadSanitizer: data race (pid=2543)   Write of size 8 at 0x555555558020 by thread T1:     #0 get_cached /mnt/c/Users/ASU",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E033": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E033 payload=88; -O2(rc=0) E033 payload=88]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E034": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E034 prio=9; -O2(rc=0) E034 prio=9]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E035": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E035 c7=507 ================== WARNING: ThreadSanitizer: data race (pid=2705)   Read of size 4 at 0x55555555905c by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData/Local/Temp/tmpvszcc2zr/sample_E; -O2(rc=66) E035 c7=507 ================== WARNING: ThreadSanitizer: data race (pid=3030)   Read of size 4 at 0x55555555807c by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E036": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E036 l0=1 l3=4 ================== WARNING: ThreadSanitizer: data race (pid=2706)   Read of size 4 at 0x55555555903c by thread T3:     #0 consumer /mnt/c/Users/ASUS/AppData/Local/Temp/tmpdbuyfm6r/sampl; -O2(rc=66) E036 l0=1 l3=4 ================== WARNING: ThreadSanitizer: data race (pid=3004)   Read of size 4 at 0x55555555804c by thread T3:     #0 consumer /mnt/c/Users/ASUS/AppD",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E037": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E037 id=9001 bal=12.500000 ================== WARNING: ThreadSanitizer: data race (pid=2772)   Read of size 8 at 0x555555559038 by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData/Local/Temp/tmpjw; -O2(rc=66) E037 id=9001 bal=12.500000 ================== WARNING: ThreadSanitizer: data race (pid=3051)   Read of size 8 at 0x555555558048 by thread T2:     #0 consumer /mnt/c/Use",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E038": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) ================================================================= ==2823==ERROR: AddressSanitizer: alloc-dealloc-mismatch (operator new [] vs operator delete) on 0x502000002030     #0 0x7ffff78ff5e8 i]（档位 -O0,-O2）",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E039": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E039 w7=707 ================== WARNING: ThreadSanitizer: data race (pid=2838)   Read of size 4 at 0x55555555905c by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData/Local/Temp/tmppd82w2eb/sample_E; -O2(rc=66) E039 w7=707 ================== WARNING: ThreadSanitizer: data race (pid=3114)   Read of size 4 at 0x55555555807c by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E040": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E040 t15=225 ================== WARNING: ThreadSanitizer: data race (pid=2850)   Read of size 4 at 0x55555555907c by thread T2:     #0 reader /mnt/c/Users/ASUS/AppData/Local/Temp/tmpp8xw2a8p/sample_E0; -O2(rc=66) E040 t15=225 ================== WARNING: ThreadSanitizer: data race (pid=3121)   Read of size 4 at 0x55555555809c by thread T2:     #0 reader /mnt/c/Users/ASUS/AppData/",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E041": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "ubsan",
+    "primary_verdict": "miss",
+    "primary_note": "ubsan 两档均无报告[-O0(rc=0) E041 x=1; -O2(rc=0) E041 x=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E042": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E042 old=0; -O2(rc=0) E042 old=0]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E043": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E043 total=7; -O2(rc=0) E043 total=7]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E044": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E044 loser saw=2 E044 resource=1002 ================== WARNING: ThreadSanitizer: data race (pid=3320)   Write of size 4 at 0x555555559024 by thread T1:     #0 claim /mnt/c/Users/ASUS/AppData/Local/Tem; -O2(rc=66) E044 loser saw=2 E044 resource=1002 ================== WARNING: ThreadSanitizer: data race (pid=3641)   Write of size 4 at 0x555555558028 by thread T1:     #0 claim /mn",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E045": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E045 gave up (expected=1) E045 taken=1; -O2(rc=0) E045 gave up (expected=1) E045 taken=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E046": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E046 version=2 observed=1 ================== WARNING: ThreadSanitizer: data race (pid=3438)   Write of size 4 at 0x555555559020 by thread T1:     #0 bump /mnt/c/Users/ASUS/AppData/Local/Temp/tmpcv7z6v; -O2(rc=66) E046 version=1 observed=2 ================== WARNING: ThreadSanitizer: data race (pid=3736)   Write of size 4 at 0x555555558020 by thread T2:     #0 bump /mnt/c/Users/A",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E047": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "ubsan",
+    "primary_verdict": "miss",
+    "primary_note": "ubsan 两档均无报告[-O0(rc=0) E047 ok=1 a=9; -O2(rc=0) E047 ok=1 a=9]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E048": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "ubsan",
+    "primary_verdict": "miss",
+    "primary_note": "ubsan 两档均无报告[-O0(rc=0) E048 counter=-1947484296; -O2(rc=0) E048 counter=-1947484296]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E049": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "ubsan",
+    "primary_verdict": "miss",
+    "primary_note": "ubsan 两档均无报告[-O0(rc=0) E049 budget=-15; -O2(rc=0) E049 budget=-15]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E050": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "ubsan",
+    "primary_verdict": "miss",
+    "primary_note": "ubsan 两档均无报告[-O0(rc=0) E050 gain=-10072; -O2(rc=0) E050 gain=-10072]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E051": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) ================================================================= ==3907==ERROR: AddressSanitizer: global-buffer-overflow on address 0x55555555a044 at pc 0x5555555564bd bp 0x7ffff37fdca0 sp 0x7ffff37f; -O2(rc=1) ================================================================= ==4199==ERROR: AddressSanitizer: global-buffer-overflow on address 0x555555559044 at pc 0x55555555687e b",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "elapsed_s": null
+  },
+  "E052": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E052 v=0; -O2(rc=0) E052 v=7]",
+    "hung": false,
+    "reconcile": "downgraded_to_miss_real_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "asan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "miss",
+        "catch",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stable": false
+    }
+  },
+  "E053": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E053 req=1 count=1 ================== WARNING: ThreadSanitizer: data race (pid=3943)   Write of size 4 at 0x555555559020 by thread T2:     #0 requester /mnt/c/Users/ASUS/AppData/Local/Temp/tmplslqy183; -O2(rc=66) E053 req=1 count=2 ================== WARNING: ThreadSanitizer: data race (pid=4237)   Read of size 4 at 0x555555558020 by thread T1:     #0 requester /mnt/c/Users/ASUS",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E054": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O2(rc=66) E054 writes=2 ================== WARNING: ThreadSanitizer: data race (pid=4314)   Read of size 4 at 0x555555558020 by thread T1:     #0 enter /mnt/c/Users/ASUS/AppData/Local/Temp/tmpi2e4bn8a/sample_E0]（档位 -O0,-O2）",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E055": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E055 payload=1; -O2(rc=0) E055 payload=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E056": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E056 counter=2 ================== WARNING: ThreadSanitizer: data race (pid=4083)   Read of size 4 at 0x555555559020 by thread T1:     #0 worker /mnt/c/Users/ASUS/AppData/Local/Temp/tmpt2qtp_km/sample_; -O2(rc=66) E056 counter=2 ================== WARNING: ThreadSanitizer: data race (pid=4392)   Read of size 4 at 0x555555558020 by thread T2:     #0 worker /mnt/c/Users/ASUS/AppDat",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E057": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "ubsan",
+    "primary_verdict": "miss",
+    "primary_note": "ubsan 两档均无报告[-O0(rc=0) E057 plain=2; -O2(rc=0) E057 plain=2]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E058": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "ubsan",
+    "primary_verdict": "catch",
+    "primary_note": "ubsan 命中[-O0(rc=0) E058 v=1 E058 v=2 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpv69tapvb/sample_E058.cpp:21:57: runtime error: constructor call on misaligned address 0x7ffff6ffed61 for type 'struct atomic', which requires ; -O2(rc=0) E058 v=2 E058 v=1 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpv69tapvb/sample_E058.cpp:21:57: runtime error: constructor call on misaligned address 0x7ffff6ffee41 for type '",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E059": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) ================================================================= ==4495==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000001010 at pc 0x555555556899 bp 0x7ffff37fdc60 sp 0x7ffff37fdc5; -O2(rc=1) ================================================================= ==4806==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000001010 at pc 0x55555555680b bp 0",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "asan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stable": false
+    }
+  },
+  "E060": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) ================================================================= ==4520==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x5555555564bc bp 0x7ffff3ffec90 sp 0x7ffff3ffec8]（档位 -O0,-O2）",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E061": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E061 n=1005; -O2(rc=0) E061 n=1010]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E062": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E062 hi=3 lo=3 ================== WARNING: ThreadSanitizer: data race (pid=4621)   Read of size 4 at 0x555555559024 by thread T3:     #0 bump2 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp5r6ob94r/sample_E; -O2(rc=66) E062 hi=3 lo=3 ================== WARNING: ThreadSanitizer: data race (pid=4900)   Read of size 4 at 0x55555555802c by thread T2:     #0 bump2 /mnt/c/Users/ASUS/AppData",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E063": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E063 swaps=1 state=2; -O2(rc=0) E063 swaps=1 state=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E064": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E064 st=2 transitions=3 ================== WARNING: ThreadSanitizer: data race (pid=4693)   Read of size 4 at 0x555555559020 by thread T1:     #0 advance /mnt/c/Users/ASUS/AppData/Local/Temp/tmprhzyso; -O2(rc=66) E064 st=2 transitions=3 ================== WARNING: ThreadSanitizer: data race (pid=4997)   Read of size 4 at 0x555555558020 by thread T2:     #0 advance /mnt/c/Users/A",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E065": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= AddressSanitizer:DEADLYSIGNAL ==4972==ERROR: AddressSanitizer: SEGV on unknown address 0x55595555a01c (p; -O2(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==5310==ERROR: AddressSanitizer: SEGV on unknown address 0x55595555805c (p",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "asan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E066": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "ubsan",
+    "primary_verdict": "miss",
+    "primary_note": "ubsan 两档均无报告[-O0(rc=0) E066 tiny=-56; -O2(rc=0) E066 tiny=-56]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E067": {
+    "syntax_rc": 0,
+    "syntax_warnings": [
+      "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\expansion_676c_E\\sample_E067.cpp:25:14: warning: 'void* memcpy(void*, const void*, size_t)' writing to an object of type 'struct SpinLock' with no trivial copy-assignment [-Wclass-memaccess]"
+    ],
+    "syntax_head": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\expansion_676c_E\\sample_E067.cpp: In function 'void worker(SpinLock*)':\nC:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\expansion_676c_E\\sample_E067.cpp:25:",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E067 counter=0; -O2(rc=0) E067 counter=0]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E068": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E068 acc=0; -O2(rc=0) E068 acc=0]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E069": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) ================================================================= ==5132==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 8 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fe548 in ]（档位 -O0,-O2）",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      0
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "asan",
+      "verdicts": [
+        "miss",
+        "catch",
+        "miss",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stable": false
+    }
+  },
+  "E070": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E070 peeled=1 E070 peeled=1 E070 cell=2 ================== WARNING: ThreadSanitizer: data race (pid=5221)   Read of size 4 at 0x555555559020 by thread T1:     #0 peel /mnt/c/Users/ASUS/AppData/Local/T; -O2(rc=66) E070 peeled=1 E070 peeled=1 E070 cell=2 ================== WARNING: ThreadSanitizer: data race (pid=5565)   Read of size 4 at 0x555555558020 by thread T1:     #0 peel /",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E071": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E071 ok; -O2(rc=0) E071 ok]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E072": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "ubsan",
+    "primary_verdict": "miss",
+    "primary_note": "ubsan 两档均无报告[-O0(rc=11) timeout: the monitored command dumped core; -O2(rc=11) timeout: the monitored command dumped core]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      11,
+      11
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "ubsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E073": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E073 tick=100000 sig=0; -O2(rc=0) E073 tick=100000 sig=0]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E074": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==5606==ERROR: AddressSanitizer: SEGV on unknown address 0x1555d554e808 (pc 0x5555555565f0 bp 0x7ffff37f; -O2(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==5849==ERROR: AddressSanitizer: SEGV on unknown address 0x1555d554e408 (p",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "elapsed_s": null
+  },
+  "E075": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E075 key=6 val=99; -O2(rc=0) E075 key=6 val=99]",
+    "hung": false,
+    "reconcile": "downgraded_to_miss_real_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "asan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E076": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E077": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    },
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E078": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E079": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E080": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    },
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E081": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E082": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    },
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E083": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E084": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E085": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    },
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E086": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=0) E086 waiter done]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      0
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E087": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E087 got both E087 got both reverse ================== WARNING: ThreadSanitizer: lock-order-inversion (potential deadlock) (pid=6457)   Cycle in lock order graph: M0 (0x555555559040) => M1 (0x55555555; -O2(rc=66) E087 got both E087 got both reverse ================== WARNING: ThreadSanitizer: lock-order-inversion (potential deadlock) (pid=6594)   Cycle in lock order graph: M0 (0",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E088": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E089": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E090": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E091": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E092": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E093": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E094": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E095": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E096": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E097": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E098": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E099": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E100": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E101": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E102": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E103": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=6) terminate called after throwing an instance of 'std::system_error'   what():  Resource deadlock avoided timeout: the monitored command dumped core; -O2(rc=6) terminate called after throwing an instance of 'std::system_error'   what():  Resource deadlock avoided timeout: the monitored command dumped core]",
+    "hung": false,
+    "reconcile": "downgraded_to_miss_real_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      6,
+      6
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E104": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E105": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E106": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E107": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E107 path a E107 path b ================== WARNING: ThreadSanitizer: lock-order-inversion (potential deadlock) (pid=7931)   Cycle in lock order graph: M0 (0x555555559040) => M1 (0x555555559080) => M0 ; -O2(rc=66) E107 path a E107 path b ================== WARNING: ThreadSanitizer: lock-order-inversion (potential deadlock) (pid=8009)   Cycle in lock order graph: M0 (0x5555555580a",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E108": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E109": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E110": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=6) terminate called after throwing an instance of 'std::system_error'   what():  Resource deadlock avoided timeout: the monitored command dumped core; -O2(rc=6) terminate called after throwing an instance of 'std::system_error'   what():  Resource deadlock avoided timeout: the monitored command dumped core]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      6,
+      6
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E111": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E111 CAS succeeded on stale pointer E111 reachable=1 live=2; -O2(rc=0) E111 CAS succeeded on stale pointer E111 reachable=1 live=2]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E112": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) ================================================================= ==8332==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x5555555569ba bp 0x7ffff3ffebf0 sp 0x7ffff3ffebe; -O2(rc=1) ================================================================= ==8451==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x555555556ed0 bp 0",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "asan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E113": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E113 reachable=1 pushes=3 pops=1; -O2(rc=0) E113 reachable=1 pushes=3 pops=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "asan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E114": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E114 head_count=3 top_v=1; -O2(rc=0) E114 head_count=3 top_v=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E115": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) ================================================================= ==8679==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x5555555569ba bp 0x7ffff3ffebf0 sp 0x7ffff3ffebe; -O2(rc=1) ================================================================= ==8752==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x555555556eb2 bp 0",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "elapsed_s": null
+  },
+  "E116": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E116 in=2 out=0; -O2(rc=0) E116 in=2 out=0]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E117": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E117 drained=1 head_v=1; -O2(rc=0) E117 drained=1 head_v=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E118": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) ================================================================= ==8862==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x55555555663e bp 0x7ffff3ffebf0 sp 0x7ffff3ffebe; -O2(rc=1) ================================================================= ==9028==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x555555556d90 bp 0",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "elapsed_s": null
+  },
+  "E119": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E119 h_v=5 E119 empty=0 nonempty=1; -O2(rc=0) E119 h_v=5 E119 empty=0 nonempty=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E120": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E120 applied=1 cell=9; -O2(rc=0) E120 applied=1 cell=9]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "asan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E121": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E121 a=3 b=20 ops=1; -O2(rc=0) E121 a=3 b=20 ops=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E122": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E122 bad=0 lo=9 hi=-10; -O2(rc=0) E122 bad=0 lo=9 hi=-10]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E123": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E123 refs=1 payload=42; -O2(rc=0) E123 refs=1 payload=42]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E124": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) ================================================================= ==9258==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000030 at pc 0x55555555655c bp 0x7ffff3ffec60 sp 0x7ffff3ffec5; -O2(rc=1) ================================================================= ==9535==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000030 at pc 0x555555556c4f bp 0",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "elapsed_s": null
+  },
+  "E125": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) ================================================================= ==9407==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x555555556597 bp 0x7ffff3ffec70 sp 0x7ffff3ffec6; -O2(rc=1) ================================================================= ==9720==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x555555556cef bp 0",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "asan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E126": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) ================================================================= ==9454==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x555555556761 bp 0x7ffff3ffec70 sp 0x7ffff3ffec6; -O2(rc=1) ================================================================= ==9757==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x555555556d5f bp 0",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "elapsed_s": null
+  },
+  "E127": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) ================================================================= ==9618==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x55555555656d bp 0x7ffff3ffec70 sp 0x7ffff3ffec6; -O2(rc=1) ================================================================= ==9921==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x555555556cce bp 0",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "elapsed_s": null
+  },
+  "E128": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E128 ops=1 ver=1 top_v=1; -O2(rc=0) E128 ops=1 ver=1 top_v=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E129": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E129 allocs=1 frees=1; -O2(rc=0) E129 allocs=1 frees=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E130": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E130 v=1 E130 grace=1; -O2(rc=0) E130 v=1 E130 grace=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E131": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) ================================================================= ==9782==ERROR: AddressSanitizer: heap-use-after-free on address 0x503000000044 at pc 0x555555556588 bp 0x7ffff3ffec60 sp 0x7ffff3ffec5; -O2(rc=1) ================================================================= ==10100==ERROR: AddressSanitizer: heap-use-after-free on address 0x503000000044 at pc 0x555555556da8 bp ",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "elapsed_s": null
+  },
+  "E132": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E132 v=2 gen=200 E132 read_gen=200; -O2(rc=0) E132 v=2 gen=200 E132 read_gen=200]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "asan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E133": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E133 consumed=1 ids=3,0; -O2(rc=0) E133 consumed=1 ids=3,0]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E134": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) ================================================================= ==10038==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x5555555565fe bp 0x7ffff3ffebf0 sp 0x7ffff3ffeb; -O2(rc=1) ================================================================= ==10338==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x555555556d1f bp ",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "elapsed_s": null
+  },
+  "E135": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E135 stale_succ=1 ver=0; -O2(rc=0) E135 stale_succ=1 ver=0]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E136": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E136 removed=2 added=1; -O2(rc=0) E136 removed=2 added=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E137": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E137 commits=1 value=7 version=2; -O2(rc=0) E137 commits=1 value=7 version=2]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E138": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E138 retries=0 top_v=1; -O2(rc=0) E138 retries=0 top_v=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "asan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E139": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "catch",
+    "primary_note": "asan 命中[-O0(rc=1) ================================================================= ==10397==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000014 at pc 0x555555556568 bp 0x7ffff3ffec70 sp 0x7ffff3ffec; -O2(rc=1) ================================================================= ==10701==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000014 at pc 0x555555556cad bp ",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "elapsed_s": null
+  },
+  "E140": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "asan",
+    "primary_verdict": "miss",
+    "primary_note": "asan 两档均无报告[-O0(rc=0) E140 frees=1 head_v=0; -O2(rc=0) E140 frees=1 head_v=0]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E141": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E141 acc=8999995 stage=3; -O2(rc=0) E141 acc=8999995 stage=3]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E142": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E142 t0=2021.172761; -O2(rc=0) E142 t0=2021.172761]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E143": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E143 s7=120000 ================== WARNING: ThreadSanitizer: data race (pid=10772)   Read of size 4 at 0x55555555909c by thread T3:     #0 mid /mnt/c/Users/ASUS/AppData/Local/Temp/tmppnnezwf8/sample_E1; -O2(rc=66) E143 s7=120000 ================== WARNING: ThreadSanitizer: data race (pid=11076)   Read of size 4 at 0x55555555807c by thread T3:     #0 mid /mnt/c/Users/ASUS/AppData/",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E144": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E144 n=7; -O2(rc=0) E144 n=7]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E145": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E145 allocs=20000; -O2(rc=0) E145 allocs=20000]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E146": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E146 resource=-1; -O2(rc=0) E146 resource=-1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E147": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E147 d0=-540593795; -O2(rc=0) E147 d0=-540593795]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E148": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E148 len=20000; -O2(rc=0) E148 len=20000]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E149": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E149 px=136; -O2(rc=0) E149 px=136]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E150": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E150 state=2; -O2(rc=0) E150 state=2]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E151": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E151 session=2; -O2(rc=0) E151 session=2]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E152": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E152 sum=32853151 E152 logbuf0=Z ================== WARNING: ThreadSanitizer: data race (pid=11364)   Read of size 1 at 0x55555555b152 by thread T3:     #0 tail /mnt/c/Users/ASUS/AppData/Local/Temp/tm; -O2(rc=66) E152 sum=32879439 E152 logbuf0=Z ================== WARNING: ThreadSanitizer: data race (pid=11648)   Write of size 1 at 0x5555555580ac by thread T1 (mutexes: write M0)",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E153": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E153 qlen=11; -O2(rc=0) E153 qlen=11]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E154": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E154 rpc=2; -O2(rc=0) E154 rpc=2]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E155": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E155 r0=255 in_isr=1 ================== WARNING: ThreadSanitizer: data race (pid=11600)   Read of size 4 at 0x55555555909c by thread T3:     #0 deferred /mnt/c/Users/ASUS/AppData/Local/Temp/tmpr55uu3c; -O2(rc=66) E155 r0=255 in_isr=1 ================== WARNING: ThreadSanitizer: data race (pid=11872)   Read of size 4 at 0x55555555807c by thread T3:     #0 deferred /mnt/c/Users/AS",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E156": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E156 sample=6000001; -O2(rc=0) E156 sample=6000001]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E157": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E157 total=199990001; -O2(rc=0) E157 total=199990001]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E158": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E158 frame=2; -O2(rc=0) E158 frame=2]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E159": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E159 dma=1; -O2(rc=0) E159 dma=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E160": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E160 stat3=1054899 ================== WARNING: ThreadSanitizer: data race (pid=12002)   Read of size 8 at 0x555555559098 by thread T2:     #0 fast_path /mnt/c/Users/ASUS/AppData/Local/Temp/tmp3vuahlnh; -O2(rc=66) E160 stat3=1050000 ================== WARNING: ThreadSanitizer: data race (pid=12260)   Read of size 8 at 0x555555558078 by thread T2:     #0 fast_path /mnt/c/Users/ASU",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E161": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E161 cfg=k=ctrl; -O2(rc=0) E161 cfg=k=ctrl]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E162": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E162 value=2 inner=1; -O2(rc=0) E162 value=2 inner=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E163": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E163 reg=1235; -O2(rc=0) E163 reg=1235]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E164": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E164 state=5; -O2(rc=0) E164 state=5]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E165": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E165 d0=1 ================== WARNING: ThreadSanitizer: lock-order-inversion (potential deadlock) (pid=12355)   Cycle in lock order graph: M0 (0x555555559040) => M1 (0x555555559080) => M0    Mutex M1 a; -O2(rc=66) E165 d0=1 ================== WARNING: ThreadSanitizer: lock-order-inversion (potential deadlock) (pid=12656)   Cycle in lock order graph: M0 (0x555555558120) => M1 (0x5",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E166": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E166 urgent got inner ================== WARNING: ThreadSanitizer: lock-order-inversion (potential deadlock) (pid=12537)   Cycle in lock order graph: M0 (0x55555555c040) => M1 (0x55555555c080) => M0  ; -O2(rc=66) E166 urgent got inner ================== WARNING: ThreadSanitizer: lock-order-inversion (potential deadlock) (pid=12916)   Cycle in lock order graph: M0 (0x5555555590e0",
+    "hung": false,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E167": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E167 tx0=f ================== WARNING: ThreadSanitizer: data race (pid=12498)   Write of size 1 at 0x55555555925a by thread T1 (mutexes: write M0):     #0 bulk_tx /mnt/c/Users/ASUS/AppData/Local/Temp/; -O2(rc=66) E167 tx0=f ================== WARNING: ThreadSanitizer: data race (pid=12804)   Write of size 1 at 0x5555555581e6 by thread T1 (mutexes: write M0):     #0 bulk_tx /mnt/",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E168": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E168 s=14336; -O2(rc=0) E168 s=14336]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E169": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E169 pool=5000; -O2(rc=0) E169 pool=5000]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E170": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E170 key0=196; -O2(rc=0) E170 key0=196]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E171": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E171 work_done=1 ready=0; -O2(rc=0) E171 work_done=1 ready=0]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E172": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E172 produced=3 consumed=3; -O2(rc=0) E172 produced=3 consumed=3]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E173": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E173 total=615053112000000 ================== WARNING: ThreadSanitizer: data race (pid=12969)   Read of size 4 at 0x55555555a0b4 by thread T1:     #0 reader /mnt/c/Users/ASUS/AppData/Local/Temp/tmp49x; -O2(rc=66) E173 total=0 ================== WARNING: ThreadSanitizer: data race (pid=13251)   Write of size 4 at 0x555555559044 by thread T2:     #0 writer /mnt/c/Users/ASUS/AppDat",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E174": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E174 taken=42; -O2(rc=0) E174 taken=42]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E175": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E175 finished=1 ================== WARNING: ThreadSanitizer: data race (pid=13111)   Write of size 1 at 0x55555555a0b0 by thread T2:     #0 producer /mnt/c/Users/ASUS/AppData/Local/Temp/tmpv25ze3h2/sa; -O2(rc=66) E175 finished=1 ================== WARNING: ThreadSanitizer: data race (pid=13385)   Write of size 1 at 0x555555559048 by thread T2:     #0 producer /mnt/c/Users/ASUS/A",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E176": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    }
+  },
+  "E177": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E177 items=0; -O2(rc=0) E177 items=0]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E178": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E178 submitted E178 got=1 ================== WARNING: ThreadSanitizer: data race (pid=13359)   Read of size 1 at 0x55555555a0b0 by thread T2 (mutexes: write M0):     #0 waiter /mnt/c/Users/ASUS/AppDat; -O2(rc=66) E178 submitted E178 got=1 ================== WARNING: ThreadSanitizer: data race (pid=13628)   Read of size 1 at 0x555555559044 by thread T2 (mutexes: write M0):     #0",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E179": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E179 done=3 wakes=3; -O2(rc=0) E179 done=3 wakes=3]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E180": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E180 exited=2; -O2(rc=0) E180 exited=2]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E181": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E181 left=1 arrived=3; -O2(rc=0) E181 left=1 arrived=3]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E182": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E182 payload=99 ================== WARNING: ThreadSanitizer: data race (pid=13653)   Write of size 1 at 0x55555555c0b0 by thread T2:     #0 setter /mnt/c/Users/ASUS/AppData/Local/Temp/tmpyr59ku_0/samp; -O2(rc=66) E182 payload=99 ================== WARNING: ThreadSanitizer: data race (pid=13915)   Write of size 1 at 0x555555559048 by thread T2:     #0 setter /mnt/c/Users/ASUS/App",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E183": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E183 consumed=1 permits=2; -O2(rc=0) E183 consumed=1 permits=2]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E184": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E184 result=-1 done=0; -O2(rc=0) E184 result=-1 done=0]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E185": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E185 attempts=200000 done=1 ================== WARNING: ThreadSanitizer: data race (pid=13896)   Read of size 8 at 0x55555555d0b8 by thread T1:     #0 waiter /mnt/c/Users/ASUS/AppData/Local/Temp/tmp1z; -O2(rc=66) E185 attempts=200000 done=0 ================== WARNING: ThreadSanitizer: data race (pid=14149)   Read of size 8 at 0x555555559048 by thread T1:     #0 waiter /mnt/c/Use",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E186": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E186 ok=0 ready=0; -O2(rc=0) E186 ok=0 ready=0]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E187": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E187 woke=1; -O2(rc=0) E187 woke=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E188": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E188 flag=1 ================== WARNING: ThreadSanitizer: data race (pid=14060)   Write of size 1 at 0x55555555a0f0 by thread T2 (mutexes: write M0):     #0 setter /mnt/c/Users/ASUS/AppData/Local/Temp/; -O2(rc=66) E188 flag=1 ================== WARNING: ThreadSanitizer: data race (pid=14337)   Write of size 1 at 0x555555559044 by thread T2 (mutexes: write M0):     #0 setter /mnt/",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E189": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E189 woke=3 payload=103 ================== WARNING: ThreadSanitizer: data race (pid=14192)   Write of size 1 at 0x55555555c130 by thread T4 (mutexes: write M0):     #0 setter /mnt/c/Users/ASUS/AppData; -O2(rc=66) E189 woke=3 payload=106 ================== WARNING: ThreadSanitizer: data race (pid=14457)   Write of size 1 at 0x555555559048 by thread T4 (mutexes: write M0):     #0 ",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E190": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E190 sum=1410065408 ================== WARNING: ThreadSanitizer: data race (pid=14170)   Read of size 4 at 0x55555555a0c0 by thread T1:     #0 waiter /mnt/c/Users/ASUS/AppData/Local/Temp/tmp05sr08mh/s; -O2(rc=66) E190 sum=1410065408 ================== WARNING: ThreadSanitizer: data race (pid=14425)   Read of size 4 at 0x555555559060 by thread T1:     #0 waiter /mnt/c/Users/ASUS/",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E191": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null
+  },
+  "E192": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E192 served=2; -O2(rc=0) E192 served=2]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E193": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E193 handled=1; -O2(rc=0) E193 handled=1]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  },
+  "E194": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E194 loops=100001 ================== WARNING: ThreadSanitizer: data race (pid=14577)   Write of size 1 at 0x55555555a0b0 by thread T2:     #0 notifier /mnt/c/Users/ASUS/AppData/Local/Temp/tmpky33fvsd/; -O2(rc=66) E194 loops=100001 ================== WARNING: ThreadSanitizer: data race (pid=14820)   Write of size 1 at 0x555555559044 by thread T2:     #0 notifier /mnt/c/Users/ASUS",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E195": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E195 counter=50000 E195 final=150000 ================== WARNING: ThreadSanitizer: data race (pid=14583)   Read of size 4 at 0x55555555c0b4 by thread T3:     #0 notifier /mnt/c/Users/ASUS/AppData/Local; -O2(rc=66) E195 counter=50000 E195 final=150000 ================== WARNING: ThreadSanitizer: data race (pid=14855)   Write of size 1 at 0x555555559044 by thread T2:     #0 notifie",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E196": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E196 sum=12400000 ================== WARNING: ThreadSanitizer: data race (pid=14683)   Write of size 4 at 0x55555555c0b4 by thread T2 (mutexes: write M0):     #0 updater /mnt/c/Users/ASUS/AppData/Loca; -O2(rc=66) E196 sum=18800000 ================== WARNING: ThreadSanitizer: data race (pid=14934)   Write of size 4 at 0x555555559044 by thread T2 (mutexes: write M0):     #0 update",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null
+  },
+  "E197": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "tsan 命中[-O0(rc=66) E197 picked=1 ================== WARNING: ThreadSanitizer: data race (pid=14697)   Write of size 1 at 0x55555555a0b0 by thread T2:     #0 dispatcher /mnt/c/Users/ASUS/AppData/Local/Temp/tmpzdzwhd_8/sa; -O2(rc=66) E197 picked=1 ================== WARNING: ThreadSanitizer: data race (pid=14920)   Write of size 1 at 0x555555559048 by thread T2:     #0 dispatcher /mnt/c/Users/ASUS/A",
+    "hung": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "elapsed_s": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    }
+  },
+  "E198": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "catch",
+    "primary_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "elapsed_s": null
+  },
+  "E199": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=6) terminate called after throwing an instance of 'std::system_error'   what():  Resource deadlock avoided timeout: the monitored command dumped core; -O2(rc=6) terminate called after throwing an instance of 'std::system_error'   what():  Resource deadlock avoided timeout: the monitored command dumped core]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      6,
+      6
+    ],
+    "elapsed_s": null
+  },
+  "E200": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "syntax_head": "",
+    "primary_kind": "tsan",
+    "primary_verdict": "miss",
+    "primary_note": "tsan 两档均无报告[-O0(rc=0) E200 finished=2; -O2(rc=0) E200 finished=2]",
+    "hung": false,
+    "reconcile": "consistent_blindspot",
+    "pooled": true,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "elapsed_s": null
+  }
+}

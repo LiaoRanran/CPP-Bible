@@ -1,0 +1,53 @@
+{
+  "sample_id": "sample_E065",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 20,
+    "function": "indexer",
+    "description": "无符号原子下溢后作为数组下标使用"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "6 线程并发递减下标（起始 2），必然越过 0 发生无符号回绕",
+  "thread_count": 6,
+  "timeout_seconds": 5,
+  "notes": "无符号回绕成巨型下标。6 个线程从 2 开始递减，第 3 次就下溢 ⇒ ASan 稳定捕获越界 → 预期 catch。 【调和】标注与实测一致（asan）。",
+  "pooled_verdict": {
+    "asan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "asan",
+    "verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= AddressSanitizer:DEADLYSIGNAL ==4972==ERROR: AddressSanitizer: SEGV on unknown address 0x55595555a01c (p; -O2(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==5310==ERROR: AddressSanitizer: SEGV on unknown address 0x55595555805c (p",
+    "hung": false,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": {
+      "kind": "asan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

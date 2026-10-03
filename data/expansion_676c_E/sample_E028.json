@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E028",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 27,
+    "function": "consumer",
+    "description": "以 relaxed 读标志 + 非原子裸指针读取已发布对象"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；consumer 读非原子指针指向的对象",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "竞争真实 → 预期 TSan catch。"
+}

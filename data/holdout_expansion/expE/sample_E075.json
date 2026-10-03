@@ -1,0 +1,58 @@
+{
+  "sample_id": "sample_E075",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 23,
+    "function": "mutator",
+    "description": "CAS 只比较指针，指针指向的结构体内容被并发改写（伪原子快照）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；一方在发布后继续改写内容，另一方 CAS 取出并读取",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "伪原子快照 + 双重所有权。竞争真实（key/val 非原子读写）→ 预期 TSan catch；ASan 可能报双删。 【调和】原标注预期 catch，实测asan未报告 ⇒ 按卡片「真实盲区：改标miss，在 notes 里说明」处理。这是**检测器盲区**，不代表缺陷不成立。",
+  "pooled_verdict": {
+    "asan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "downgraded_to_miss_real_blindspot",
+    "detector": "asan",
+    "verdict": "miss",
+    "detector_note": "asan 两档均无报告[-O0(rc=0) E075 key=6 val=99; -O2(rc=0) E075 key=6 val=99]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": {
+      "kind": "asan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

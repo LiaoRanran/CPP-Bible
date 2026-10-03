@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E156",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 20,
+    "function": "rt_consumer",
+    "description": "实时消费者与普通生产者共享同一把无优先级继承的锁"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：实时消费者 + 普通持锁者",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "RT 与非 RT 共享无 PI 锁。预期 miss。"
+}

@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E188",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 21,
+    "function": "waiter",
+    "description": "条件变量配错了 mutex：wait 用 m2，谓词由 m1 保护"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：cv 配 m2，谓词由 m1 保护",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "条件变量与错误的 mutex 配对：谓词读与写分处两把锁 → 真实数据竞争 → 预期 TSan catch。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E188 flag=1 ================== WARNING: ThreadSanitizer: data race (pid=14060)   Write of size 1 at 0x55555555a0f0 by thread T2 (mutexes: write M0):     #0 setter /mnt/c/Users/ASUS/AppData/Local/Temp/; -O2(rc=66) E188 flag=1 ================== WARNING: ThreadSanitizer: data race (pid=14337)   Write of size 1 at 0x555555559044 by thread T2 (mutexes: write M0):     #0 setter /mnt/",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

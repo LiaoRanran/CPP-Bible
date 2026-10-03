@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E179",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 33,
+    "function": "notifier",
+    "description": "三个等待者共用一个谓词但只 notify_one 两次（依赖运气）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 个等待者 + 1 个通知者，逐次 notify_one",
+  "thread_count": 4,
+  "timeout_seconds": 5,
+  "notes": "多次 notify_one 覆盖多等待者的时序依赖缺陷。是否永久阻塞取决于调度 → 预期 miss（时序相关，记录复现率）。"
+}

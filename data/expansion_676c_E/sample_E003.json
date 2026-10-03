@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E003",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 22,
+    "function": "get_instance",
+    "description": "DCLP 二次检查用 relaxed，读到非空指针时对象未完成构造"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程同时首次调用 get_instance，触发 DCLP 快路径",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "双重检查锁定内存序错误。构造函数写入与 relaxed 读之间无 happens-before，TSan 不建模内存序（只建模竞争），预期 miss（真实盲区）。"
+}

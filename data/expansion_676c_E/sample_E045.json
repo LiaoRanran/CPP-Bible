@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E045",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 21,
+    "function": "try_acquire",
+    "description": "单次 compare_exchange_weak 失败即放弃（未放入循环）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发尝试获取单一资源",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "weak CAS 不循环。属逻辑 UB（伪失败未处理），无检测器 → 预期 miss。"
+}

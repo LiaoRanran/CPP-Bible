@@ -1,0 +1,41 @@
+{
+  "sample_id": "sample_E041",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 19,
+    "function": "main",
+    "description": "局部 std::atomic<int> 默认初始化（值不确定）后直接 fetch_add"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan",
+    "asan"
+  ],
+  "trigger_condition": "单线程线程中读取未初始化原子的值",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "未初始化原子是真实 UB，但没有任何 sanitizer 会为「原子的不确定初值」设陷阱 → 预期 miss（真实盲区）。 【调和】标注与实测一致（ubsan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "ubsan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "ubsan",
+    "verdict": "miss",
+    "detector_note": "ubsan 两档均无报告[-O0(rc=0) E041 x=1; -O2(rc=0) E041 x=1]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

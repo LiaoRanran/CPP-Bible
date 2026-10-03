@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E196",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 23,
+    "function": "waiter",
+    "description": "谓词读取在锁外（wait 返回后解锁再读谓词）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：wait 后解锁再读非原子版本号",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "解锁后读共享状态 → 真实数据竞争 → 预期 TSan catch。"
+}

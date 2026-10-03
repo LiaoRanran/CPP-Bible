@@ -1,0 +1,41 @@
+{
+  "sample_id": "sample_E126",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 19,
+    "function": "reclaim",
+    "description": "危险指针只发布不重新校验，删除线程无视 hazard 直接回收"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：读侧发布 hazard 后挂起，写侧无视 hazard 回收并复用地址",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "hazard pointer 协议只做了一半。窗口内的 UAF 取决于 delete 与读是否重叠 → 预期 miss（sanitizer 未必命中，但 ABA 语义确实被破坏）。 【调和】原标注预期 miss，实测被asan捕获 ⇒ 已按卡片「真实不一致即更新标注」改为 catch。",
+  "pooled_verdict": {
+    "asan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "updated_to_catch",
+    "detector": "asan",
+    "verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) ================================================================= ==9454==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x555555556761 bp 0x7ffff3ffec70 sp 0x7ffff3ffec6; -O2(rc=1) ================================================================= ==9757==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x555555556d5f bp 0",
+    "hung": false,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

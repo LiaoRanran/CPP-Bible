@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E168",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 22,
+    "function": "touch_pages",
+    "description": "持锁访问尚未映射的内存（sleep 模拟缺页/换入）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：持锁页换入 vs 实时读",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "预期 miss。"
+}

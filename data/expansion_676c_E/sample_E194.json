@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E194",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 22,
+    "function": "waiter",
+    "description": "谓词在 notify 路径上完全不加锁修改"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：谓词在通知侧完全不加锁写",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "谓词无锁写 + 锁内读 → 真实数据竞争 → 预期 TSan catch。"
+}

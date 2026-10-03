@@ -1,0 +1,41 @@
+{
+  "sample_id": "sample_E117",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 35,
+    "function": "main",
+    "description": "无锁队列的「head/tail 分离」更新遇 ABA"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：tail 走一圈回到同一槽位",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "head/tail 分离的无锁队列 ABA。预期 miss。 【调和】标注与实测一致（asan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "asan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "asan",
+    "verdict": "miss",
+    "detector_note": "asan 两档均无报告[-O0(rc=0) E117 drained=1 head_v=1; -O2(rc=0) E117 drained=1 head_v=1]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

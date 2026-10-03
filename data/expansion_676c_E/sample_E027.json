@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E027",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 21,
+    "function": "get",
+    "description": "DCLP 二次检查的 relaxed 读 + 重试循环"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发首次调用 get()",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "纯原子 DCLP 内存序错误。预期 miss。"
+}

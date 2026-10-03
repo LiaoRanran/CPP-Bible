@@ -1,0 +1,57 @@
+{
+  "sample_id": "sample_E069",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 21,
+    "function": "retire",
+    "description": "原子指针指向的对象被 delete 后，另一线程经 CAS 取出并使用"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "两线程并发；一个 delete 原子指针指向的对象，另一个 CAS 取出",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "取用与回收竞态导致 UAF。ASan 稳定捕获 → 预期 catch。 【调和】标注与实测一致（asan）。 【复现特性】复跑非确定: miss/catch/miss/catch/catch。",
+  "pooled_verdict": {
+    "asan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "asan",
+    "verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) ================================================================= ==5132==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 8 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fe548 in ]（档位 -O0,-O2）",
+    "hung": false,
+    "raw_rc": [
+      1,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": {
+      "kind": "asan",
+      "verdicts": [
+        "miss",
+        "catch",
+        "miss",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stable": false
+    },
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

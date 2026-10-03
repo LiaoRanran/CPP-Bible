@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E167",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 21,
+    "function": "bulk_tx",
+    "description": "持锁线程做长操作，快路径线程无锁读写同一缓冲区"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：持锁批量填充 vs 无锁快路径写",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "含真实数据竞争 → 预期 TSan catch。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E167 tx0=f ================== WARNING: ThreadSanitizer: data race (pid=12498)   Write of size 1 at 0x55555555925a by thread T1 (mutexes: write M0):     #0 bulk_tx /mnt/c/Users/ASUS/AppData/Local/Temp/; -O2(rc=66) E167 tx0=f ================== WARNING: ThreadSanitizer: data race (pid=12804)   Write of size 1 at 0x5555555581e6 by thread T1 (mutexes: write M0):     #0 bulk_tx /mnt/",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E147",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 22,
+    "function": "low",
+    "description": "低优先级线程持两把锁做长操作，高优先级线程等其中一把"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 线程：低优先级同时持有两把锁",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "多锁持有扩大反转窗口。预期 miss。"
+}

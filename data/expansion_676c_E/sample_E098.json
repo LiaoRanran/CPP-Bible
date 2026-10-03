@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E098",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 18,
+    "function": "on_row",
+    "description": "迭代器持有共享锁时调用回调，回调内部请求独占锁"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程都走「持锁遍历 + 回调」路径",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "遍历-回调重入。确定性触发。"
+}

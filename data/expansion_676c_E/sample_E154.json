@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E154",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 22,
+    "function": "do_rpc",
+    "description": "持锁执行 RPC（sleep 模拟往返），高优先级线程等锁"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：持锁 RPC",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "预期 miss。"
+}

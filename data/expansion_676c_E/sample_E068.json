@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E068",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 21,
+    "function": "reset_once",
+    "description": "对仍在被其它线程使用的 atomic 对象做 placement-new 重新初始化"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "两线程并发；一个重新初始化原子对象，另一个持续读它",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "对象生命周期被并发结束。ASan 未必命中（地址复用），TSan 可能报竞争 → 标注预期 miss 并说明。"
+}

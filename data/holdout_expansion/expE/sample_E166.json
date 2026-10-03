@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E166",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 25,
+    "function": "holder",
+    "description": "持锁等待条件变量（释放的是外层锁，内层锁仍被占）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：cv.wait 只释放外层锁，内层锁仍被占",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "预期 miss。 【调和】原标注预期 miss，实测被tsan捕获 ⇒ 已按卡片「真实不一致即更新标注」改为 catch。 【复现特性】TSan 自身报出 lock-order-inversion。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "updated_to_catch",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E166 urgent got inner ================== WARNING: ThreadSanitizer: lock-order-inversion (potential deadlock) (pid=12537)   Cycle in lock order graph: M0 (0x55555555c040) => M1 (0x55555555c080) => M0  ; -O2(rc=66) E166 urgent got inner ================== WARNING: ThreadSanitizer: lock-order-inversion (potential deadlock) (pid=12916)   Cycle in lock order graph: M0 (0x5555555590e0",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

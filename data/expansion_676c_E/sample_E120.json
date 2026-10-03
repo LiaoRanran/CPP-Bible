@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E120",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 22,
+    "function": "main",
+    "description": "无锁「值替换」CAS：值 A→B→A 后 CAS 误判未变"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：cell 值走 A->B->A",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "值型 ABA（最容易被误认为「CSC 场景下不会发生」的一类）。预期 miss。"
+}

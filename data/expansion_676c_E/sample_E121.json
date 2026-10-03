@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E121",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 22,
+    "function": "main",
+    "description": "两步 CAS 之间的读-改-写被 ABA 打断"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：a/b 两个原子都走 A->B->A",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "复合更新里的 ABA。预期 miss。"
+}

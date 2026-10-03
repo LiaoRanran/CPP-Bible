@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E014",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 20,
+    "function": "producer",
+    "description": "用 relaxed fence 代替 release 语义"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；fence 完全失效",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "relaxed fence 是 no-op。预期 miss。"
+}

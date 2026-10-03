@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E058",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 19,
+    "function": "work",
+    "description": "把 atomic<int> placement-new 到未对齐的地址上"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan",
+    "asan"
+  ],
+  "trigger_condition": "两线程各自在未对齐地址上构造原子对象",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "未对齐原子对象访问是 UB。libstdc++ 的原子 load/store 编译成普通 mov，UBSan 的 alignment 插桩不会命中 → 预期 miss（真实盲区）。"
+}

@@ -1,0 +1,3525 @@
+{
+  "mechanical": {
+    "E001": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E002": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E003": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E004": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E005": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E006": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E007": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E008": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E009": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E010": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E011": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E012": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E013": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E014": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E015": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E016": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E017": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E018": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E019": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E020": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E021": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E022": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E023": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际5)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E024": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E025": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E026": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E027": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E028": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E029": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E030": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际5)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E031": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E032": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E033": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E034": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E035": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E036": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E037": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E038": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E039": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E040": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E041": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E042": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E043": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E044": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E045": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E046": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E047": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际0)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E048": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E049": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际0)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E050": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E051": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E052": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E053": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E054": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E055": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E056": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E057": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E058": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E059": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E060": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E061": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E062": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E063": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E064": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E065": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际6)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E066": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际0)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E067": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E068": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E069": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E070": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E071": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际0)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E072": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E073": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E074": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E075": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E076": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E077": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E078": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E079": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E080": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E081": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E082": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E083": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E084": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E085": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E086": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E087": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E088": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E089": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E090": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E091": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E092": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E093": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E094": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E095": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E096": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E097": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E098": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E099": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E100": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E101": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E102": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E103": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E104": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E105": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E106": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E107": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E108": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E109": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E110": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true,
+        "死锁样本可触发（挂起/lock-order-inversion/异常终止）": true
+      },
+      "fails": []
+    },
+    "E111": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E112": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E113": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E114": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E115": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E116": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E117": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E118": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E119": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E120": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E121": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E122": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E123": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E124": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E125": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E126": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E127": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E128": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E129": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E130": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E131": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E132": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E133": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E134": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E135": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E136": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E137": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E138": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E139": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E140": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际1)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E141": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E142": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E143": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E144": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E145": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E146": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E147": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E148": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E149": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E150": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E151": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E152": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E153": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E154": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E155": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E156": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E157": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E158": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E159": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E160": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E161": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E162": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E163": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E164": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E165": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E166": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E167": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E168": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E169": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E170": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E171": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E172": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E173": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E174": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E175": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E176": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E177": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E178": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E179": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际4)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E180": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E181": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E182": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E183": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E184": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E185": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E186": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E187": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E188": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E189": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际4)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E190": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E191": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E192": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E193": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E194": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E195": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E196": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E197": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E198": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E199": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际2)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    },
+    "E200": {
+      "ok": true,
+      "checks": {
+        "必填字段齐全": true,
+        "defect_location.line 指向 DEFECT 行": true,
+        "function 出现在源码": true,
+        "thread_count 与实际线程数一致(实际3)": true,
+        "severity 合法": true,
+        "planted==true": true,
+        "timeout_seconds>0": true,
+        "编译通过": true,
+        "expected_detectors 非空": true
+      },
+      "fails": []
+    }
+  },
+  "manual_subset": [
+    "E002",
+    "E004",
+    "E006",
+    "E007",
+    "E015",
+    "E017",
+    "E021",
+    "E022",
+    "E025",
+    "E026",
+    "E039",
+    "E061",
+    "E062",
+    "E065",
+    "E070",
+    "E072",
+    "E077",
+    "E080",
+    "E082",
+    "E085",
+    "E110",
+    "E112",
+    "E113",
+    "E120",
+    "E132",
+    "E138",
+    "E141",
+    "E150",
+    "E154",
+    "E162",
+    "E168",
+    "E172",
+    "E173",
+    "E176",
+    "E179",
+    "E181",
+    "E182",
+    "E187",
+    "E189",
+    "E197"
+  ],
+  "manual": {
+    "E002": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E004": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E006": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E007": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E015": {
+      "defect_real": true,
+      "sync_intentional": false,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E017": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E021": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E022": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "miss"
+      ],
+      "trigger_rate": "2/3",
+      "annotation_aligned": false
+    },
+    "E025": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E026": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E039": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E061": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E062": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E065": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E070": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E072": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E077": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E080": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E082": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E085": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E110": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E112": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E113": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E120": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E132": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E138": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E141": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E150": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E154": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E162": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E168": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E172": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E173": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E176": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E179": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E181": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E182": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E187": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "trigger_rate": "0/3",
+      "annotation_aligned": true
+    },
+    "E189": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    },
+    "E197": {
+      "defect_real": true,
+      "sync_intentional": true,
+      "trigger_verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "trigger_rate": "3/3",
+      "annotation_aligned": true
+    }
+  },
+  "mechanical_bad": 0,
+  "manual_unstable": 1
+}

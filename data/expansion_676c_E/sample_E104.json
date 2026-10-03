@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E104",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 23,
+    "function": "holder",
+    "description": "一条路径「先 a 再 std::lock(b,c)」，另一条「先 std::lock(b,c) 再 a」"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程分别走「a + std::lock(b,c)」与「std::lock(b,c) + a」两条路径",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "std::lock 误用：把「已被本线程持有的锁」排在 std::lock 之外，死锁避免算法因此失效 ⇒ 确定性死锁。"
+}

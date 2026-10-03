@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E043",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 22,
+    "function": "main",
+    "description": "结构体成员原子未在构造函数中初始化即被读改写"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "两线程对未初始化原子成员做 RMW",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "类成员原子漏初始化。预期 miss（无对应检测器）。 【调和】标注与实测一致（asan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "asan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "asan",
+    "verdict": "miss",
+    "detector_note": "asan 两档均无报告[-O0(rc=0) E043 total=7; -O2(rc=0) E043 total=7]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

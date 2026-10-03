@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E022",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 24,
+    "function": "get",
+    "description": "DCLP 中 relaxed 读实例指针 + 构造函数内的非原子字段写"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发首次调用 get()，走 DCLP 慢路径",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "DCLP + relaxed 二次检查，读线程可能看到未构造完的 slots/live → 预期 TSan catch。"
+}

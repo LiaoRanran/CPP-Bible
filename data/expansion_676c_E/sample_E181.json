@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E181",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 22,
+    "function": "waiter",
+    "description": "等待「计数达到 N」但只 notify 了一次（notify 次数与谓词语义不匹配）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "1 等待者 + 3 次到达通知",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "谓词与通知节奏不匹配。本例中更新在通知前，通常能收敛 ⇒ 预期 miss（时序相关）。"
+}

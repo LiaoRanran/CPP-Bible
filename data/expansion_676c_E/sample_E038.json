@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E038",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 22,
+    "function": "get",
+    "description": "DCLP 中 relaxed 二次检查 + 竞争分支 delete 导致 UAF 窗口"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发首次调用 get()，同时进入慢路径",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "DCLP 的 relaxed 二次检查是真实的内存序缺陷（缺happens-before，发布的对象可能只被构造了一半）。但「是否恰好撞上 use-after-free」取决于两线程的调度窗口：只有竞争分支真的 delete 掉别人的对象时 ASan 才会报，通用调度下窗口极窄 ⇒ 预期 miss。这条记录了「缺陷成立」与「可被观测」是两件事。"
+}

@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E059",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 19,
+    "function": "publish_and_die",
+    "description": "栈上的 atomic 对象生命周期结束后仍被另一线程访问"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "两线程并发；发布者 delete 原子对象后，另一线程仍通过裸指针访问它",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "原子对象生命周期竞态。ASan 的 heap-use-after-free 可稳定捕获 → 预期 catch。"
+}

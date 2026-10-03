@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E042",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 15,
+    "function": "main",
+    "description": "堆上 new std::atomic<int> 未值初始化即参与运算"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "单线程内对未值初始化原子做 RMW",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "预期 miss：ASan 只管内存错误，不管未初始化值。"
+}

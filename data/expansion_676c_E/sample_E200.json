@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E200",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 25,
+    "function": "worker",
+    "description": "关停流程：先 notify_all 让等待者醒来，但此时状态标志尚未置位"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 个工作线程 + 1 个关停线程，先 notify 后置位",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "关停时序颠倒导致通知丢失。是否永久阻塞取决于调度 → 预期 miss（时序相关）。"
+}

@@ -1,0 +1,57 @@
+{
+  "sample_id": "sample_E178",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 21,
+    "function": "submitter",
+    "description": "先 notify 再设置谓词（顺序颠倒），等待者永久阻塞"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：谓词在锁外写，通知与谓词更新都无同步",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "谓词不受mutex 保护 ⇒ TSan 可稳定抓到 submitted 上的数据竞争；是否永久阻塞取决于「检查谓词→阻塞」窗口是否被命中，触发率见验收报告。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E178 submitted E178 got=1 ================== WARNING: ThreadSanitizer: data race (pid=13359)   Read of size 1 at 0x55555555a0b0 by thread T2 (mutexes: write M0):     #0 waiter /mnt/c/Users/ASUS/AppDat; -O2(rc=66) E178 submitted E178 got=1 ================== WARNING: ThreadSanitizer: data race (pid=13628)   Read of size 1 at 0x555555559044 by thread T2 (mutexes: write M0):     #0",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

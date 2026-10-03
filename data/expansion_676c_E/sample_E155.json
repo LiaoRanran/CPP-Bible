@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E155",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 22,
+    "function": "driver_thread",
+    "description": "「中断处理器」形态的线程直接获取用户态锁，与持锁线程并发"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 线程：驱动持锁 + 模拟 ISR 取锁 + 延后处理无锁写",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "中断与用户态锁混用；其中延后处理线程的写入是真实数据竞争 → 预期 TSan catch。"
+}

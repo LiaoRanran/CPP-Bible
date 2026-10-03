@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E064",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 21,
+    "function": "advance",
+    "description": "状态机混用 exchange 与 CAS，转换表不完整"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发推进同一状态机",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "状态机转换不完整。预期 miss。"
+}

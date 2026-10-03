@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E180",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 33,
+    "function": "controller",
+    "description": "notify_all 写成 notify_one（多等待者漏唤醒）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 等待者 + 控制器分两次 notify_one",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "notify_all 误用为 notify_one。预期 miss。"
+}

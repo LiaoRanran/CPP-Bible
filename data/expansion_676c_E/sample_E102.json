@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E102",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 26,
+    "function": "waiter",
+    "description": "超时等待路径在持锁时进入 wait，超时后仍不释放外层锁"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：超时等待者持锁不释放，助手需该锁",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "超时路径未正确释放外层锁。确定性触发。"
+}

@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E019",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 22,
+    "function": "producer",
+    "description": "两段发布中末段标志用 relaxed，读侧 acquire 后读非原子载荷"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；消费者等待末段标志后读整块缓冲",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "末段标志内存序过弱导致后半段写入无同步。竞争真实 → 预期 TSan catch。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E019 chunk31=62 ================== WARNING: ThreadSanitizer: data race (pid=1481)   Write of size 4 at 0x555555559080 by thread T1:     #0 producer /mnt/c/Users/ASUS/AppData/Local/Temp/tmpkklf2uci/sam; -O2(rc=66) E019 chunk31=62 ================== WARNING: ThreadSanitizer: data race (pid=1791)   Read of size 4 at 0x5555555580dc by thread T2:     #0 consumer /mnt/c/Users/ASUS/App",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

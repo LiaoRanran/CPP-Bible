@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E074",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 20,
+    "function": "shifter",
+    "description": "把原子指针的位运算结果当指针存回并解引用"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan",
+    "ubsan"
+  ],
+  "trigger_condition": "两线程并发；整数位运算结果被当作指针解引用",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "非法指针解引用。ASan 通常会捕获（wild pointer）但地址落在映射区外时可能 segfault 而非报告 → 标注预期 miss。"
+}

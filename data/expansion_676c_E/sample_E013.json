@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E013",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 19,
+    "function": "producer",
+    "description": "载荷与标志全部 relaxed 存储，整条发布链无 release"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；consumer 轮询全 relaxed 标志",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "全 relaxed 链路。预期 miss（TSan 只看竞争不看内存序）。"
+}

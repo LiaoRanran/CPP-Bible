@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E087",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 23,
+    "function": "need_b",
+    "description": "持 A 锁等 B 锁，同时第三线程持 B 锁等 A 锁"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程分别持 A 等 B、持 B 等 A",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "教科书 hold-and-wait 循环等待。确定性触发。"
+}

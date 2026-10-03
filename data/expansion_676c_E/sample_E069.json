@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E069",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 21,
+    "function": "retire",
+    "description": "原子指针指向的对象被 delete 后，另一线程经 CAS 取出并使用"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "两线程并发；一个 delete 原子指针指向的对象，另一个 CAS 取出",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "取用与回收竞态导致 UAF。ASan 稳定捕获 → 预期 catch。"
+}

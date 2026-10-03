@@ -1,0 +1,53 @@
+{
+  "sample_id": "sample_E021",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 25,
+    "function": "consumer",
+    "description": "以 relaxed 读布尔标志作为「数据可读」判据，随后读非原子字段"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；consumer 读非原子结构体",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "结构体载荷 + relaxed 标志。竞争真实 → 预期 TSan catch。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E021 a=11 b=22 ================== WARNING: ThreadSanitizer: data race (pid=1517)   Read of size 4 at 0x555555559024 by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData/Local/Temp/tmpd871h00e/sampl; -O2(rc=66) E021 a=11 b=22 ================== WARNING: ThreadSanitizer: data race (pid=1830)   Read of size 4 at 0x55555555802c by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppD",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

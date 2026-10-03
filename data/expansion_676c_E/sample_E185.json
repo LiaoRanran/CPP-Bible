@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E185",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 25,
+    "function": "waiter",
+    "description": "wait_for 超时后走「重试」分支，重试分支无锁读写共享状态"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：超时重试分支无锁自增非原子计数",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "超时路径逃逸出锁保护造成真实数据竞争 → 预期 TSan catch。"
+}

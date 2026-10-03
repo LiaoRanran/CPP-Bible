@@ -1,0 +1,53 @@
+{
+  "sample_id": "sample_E173",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 24,
+    "function": "reader",
+    "description": "wait 返回后读取未被锁保护的共享状态（真实数据竞争）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：waiter 醒后无锁读非原子计数，writer 无锁写",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "虚假唤醒 + 无锁访问共享状态，真实数据竞争 → 预期 TSan catch。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E173 total=615053112000000 ================== WARNING: ThreadSanitizer: data race (pid=12969)   Read of size 4 at 0x55555555a0b4 by thread T1:     #0 reader /mnt/c/Users/ASUS/AppData/Local/Temp/tmp49x; -O2(rc=66) E173 total=0 ================== WARNING: ThreadSanitizer: data race (pid=13251)   Write of size 4 at 0x555555559044 by thread T2:     #0 writer /mnt/c/Users/ASUS/AppDat",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

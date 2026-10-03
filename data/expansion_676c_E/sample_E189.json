@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E189",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 22,
+    "function": "waiter",
+    "description": "三个线程各用不同的锁 wait 同一个条件变量"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 个等待线程各配一把不同的锁 + 1 个通知者",
+  "thread_count": 4,
+  "timeout_seconds": 5,
+  "notes": "一变量多锁：谓词与 payload 的同步边界不一致 → 真实数据竞争 → 预期 TSan catch。"
+}

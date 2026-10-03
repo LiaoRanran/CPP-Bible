@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E021",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 25,
+    "function": "consumer",
+    "description": "以 relaxed 读布尔标志作为「数据可读」判据，随后读非原子字段"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；consumer 读非原子结构体",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "结构体载荷 + relaxed 标志。竞争真实 → 预期 TSan catch。"
+}

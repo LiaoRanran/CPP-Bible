@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E172",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 24,
+    "function": "worker",
+    "description": "多次 wait 共用一个布尔谓词但只在第一次检查"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：worker 连续三次 wait 只检查一次谓词",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "谓词检查缺失型误用。预期 miss。"
+}

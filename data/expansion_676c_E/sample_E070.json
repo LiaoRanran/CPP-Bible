@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E070",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 21,
+    "function": "peel",
+    "description": "CAS 循环用常量 expected 反复重试，无法取得进展"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发 CAS 同一原子，expected 固定为常量",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "CAS 重试基准错误。预期 miss。"
+}

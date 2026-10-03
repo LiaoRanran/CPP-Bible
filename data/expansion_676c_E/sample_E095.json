@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E095",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 20,
+    "function": "on_big_ready",
+    "description": "持锁线程触发回调，回调里再加第二把锁；另一线程反向持有"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程走大锁路径（含回调）与小锁路径",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "回调跨锁 + 顺序反转。确定性触发。"
+}

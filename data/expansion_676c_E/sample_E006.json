@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E006",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 24,
+    "function": "watcher",
+    "description": "标志以 release 存储、以 relaxed 加载，acquire 语义被丢弃"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；watcher 观察到标志后立即读载荷",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "release/acquire 配对缺失的第二种形态（只加载一次而非轮询）。预期 miss。"
+}

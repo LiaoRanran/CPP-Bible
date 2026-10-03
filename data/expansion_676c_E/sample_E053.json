@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E053",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 20,
+    "function": "requester",
+    "description": "atomic<bool>::exchange 的返回值被丢弃，信号丢失"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发发停机请求",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "exchange 返回值被忽略属逻辑缺陷。预期 miss。"
+}

@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E031",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 27,
+    "function": "consumer",
+    "description": "生产者 relaxed 写多个原子字段，消费者只 acquire 一个总标志"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；消费者读三个 relaxed 字段",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "全 atomic，acquire 不覆盖其余字段 → 无数据竞争 → 预期 miss。"
+}

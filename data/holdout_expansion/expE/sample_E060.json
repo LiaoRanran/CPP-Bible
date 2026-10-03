@@ -1,0 +1,41 @@
+{
+  "sample_id": "sample_E060",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 21,
+    "function": "poller",
+    "description": "堆上 atomic 在其它线程还在自旋轮询时被 delete"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；一个 delete 原子对象，另一个正在读它",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "原子对象生命周期竞态。ASan heap-use-after-free → 预期 catch。 【调和】标注与实测一致（asan）。",
+  "pooled_verdict": {
+    "asan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "asan",
+    "verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) ================================================================= ==4520==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x5555555564bc bp 0x7ffff3ffec90 sp 0x7ffff3ffec8]（档位 -O0,-O2）",
+    "hung": false,
+    "raw_rc": [
+      1,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

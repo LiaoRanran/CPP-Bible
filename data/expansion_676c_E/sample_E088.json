@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E088",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 26,
+    "function": "producer",
+    "description": "生产者持锁等待空间释放，消费者要拿同一把锁才能腾出空间"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：生产者持锁等空间，消费者需该锁腾空间",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "有界缓冲的经典死锁变体。确定性触发。"
+}

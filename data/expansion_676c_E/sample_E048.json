@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E048",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 19,
+    "function": "bump",
+    "description": "std::atomic<int>::fetch_add 有符号溢出（C++17 下为 UB）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "两线程并发把有符号原子计数推过 INT_MAX",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "C++17 原子算术溢出是 UB；但 libstdc++ 硬件回绕且 UBSan 不插桩原子 RMW → 预期 miss（真实盲区）。"
+}

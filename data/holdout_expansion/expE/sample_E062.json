@@ -1,0 +1,53 @@
+{
+  "sample_id": "sample_E062",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 20,
+    "function": "bump2",
+    "description": "读-改-写序列中混入非原子成员赋值，破坏原子性保证"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 线程并发更新同一结构体（原子+非原子混合）",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "非原子成员 lo 存在真实竞争，TSan 可捕获；但 lo 读改写极短，命中率不定 → 标注预期 catch 并说明。 【调和】原标注预期 miss，实测被tsan捕获 ⇒ 已按卡片「真实不一致即更新标注」改为 catch。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "updated_to_catch",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E062 hi=3 lo=3 ================== WARNING: ThreadSanitizer: data race (pid=4621)   Read of size 4 at 0x555555559024 by thread T3:     #0 bump2 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp5r6ob94r/sample_E; -O2(rc=66) E062 hi=3 lo=3 ================== WARNING: ThreadSanitizer: data race (pid=4900)   Read of size 4 at 0x55555555802c by thread T2:     #0 bump2 /mnt/c/Users/ASUS/AppData",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

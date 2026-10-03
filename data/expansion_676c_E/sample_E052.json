@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E052",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 22,
+    "function": "publish",
+    "description": "把已 delete 的堆地址存进 atomic 指针，另一线程解引用"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "两线程并发；发布后立即 delete，消费者随后解引用",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "原子指针悬垂。ASan 稳定捕获 → 预期 catch。"
+}

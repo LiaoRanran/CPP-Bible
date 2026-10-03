@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E183",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 32,
+    "function": "issuer",
+    "description": "条件变量在正确的锁上，但「重复通知」被当作「多次许可」消费"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "1 等待者 + 3 次许可发放",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "把条件变量当信号量用的经典误用。预期 miss。"
+}

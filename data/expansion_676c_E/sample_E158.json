@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E158",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 22,
+    "function": "loader",
+    "description": "渲染线程等锁，而持锁线程在做同步磁盘预读（sleep 模拟）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：持锁同步预读 vs 渲染等锁",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "预期 miss。"
+}

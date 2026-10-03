@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E089",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 17,
+    "function": "f",
+    "description": "已持有 m1 时调用 std::lock(m1, m2)"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "单线程已持锁再调 std::lock",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "std::lock 误用。确定性自死锁。"
+}

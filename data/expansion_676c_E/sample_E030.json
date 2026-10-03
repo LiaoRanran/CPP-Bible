@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E030",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 20,
+    "function": "task",
+    "description": "以 relaxed 计数作「配额已满」判据（顺序正确性依赖内存序但全是原子）"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "5 个线程并发执行限流任务",
+  "thread_count": 5,
+  "timeout_seconds": 5,
+  "notes": "限流判据内存序错误但全程 atomic，无数据竞争 → 预期 miss。"
+}

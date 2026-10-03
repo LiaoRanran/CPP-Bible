@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E025",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 20,
+    "function": "writer",
+    "description": "在 load 上误用 memory_order_release（release 对 load 无效）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；读侧在 load 上用 release",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "release 用在 load 上是无效内存序。预期 miss。"
+}

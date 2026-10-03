@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E055",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 24,
+    "function": "guard",
+    "description": "atomic_flag 作为未初始化成员，test_and_set 前无原子状态建立"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发进入未初始化的 atomic_flag 自旋锁",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "atomic_flag 漏初始化。标准要求用 ATOMIC_FLAG_INIT；无检测器 → 预期 miss。 【调和】标注与实测一致（tsan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "tsan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "tsan",
+    "verdict": "miss",
+    "detector_note": "tsan 两档均无报告[-O0(rc=0) E055 payload=1; -O2(rc=0) E055 payload=1]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E130",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 21,
+    "function": "main",
+    "description": "RCU 读侧无 rcu_read_lock：同步回调式「伪 RCU」"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：读侧无保护，reclaim 用 sleep 假装 grace period",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "伪 RCU。读侧访问是否落在已释放内存取决于时序 → 预期 miss（真实盲区）。"
+}

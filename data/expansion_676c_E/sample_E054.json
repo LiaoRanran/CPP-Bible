@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E054",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 20,
+    "function": "enter",
+    "description": "用 atomic<bool>::exchange 抢占独占权，忽略「已被占用」返回值"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发进入「临界区」",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "exchange 返回值被忽略导致伪互斥。预期 miss。"
+}

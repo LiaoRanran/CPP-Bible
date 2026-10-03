@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E050",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 19,
+    "function": "scale",
+    "description": "std::atomic<short> fetch_mul 溢出（C++17 下为 UB）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "两线程并发放大 short 原子计数直至溢出",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "预期 miss：UBSan 不覆盖 atomic RMW 溢出。"
+}

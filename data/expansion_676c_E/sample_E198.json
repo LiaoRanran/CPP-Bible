@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E198",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 28,
+    "function": "waiter_high",
+    "description": "notify_one 在有多个「不同谓词」的等待者时通知了错误的目标"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 个不同谓词的等待者共用一个 cv + 1 个 notify_one",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "共享 cv 上的多谓词与 notify_one 的不确定性。是否死锁取决于调度 → 预期 miss（时序相关）。"
+}

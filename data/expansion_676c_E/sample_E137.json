@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E137",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 25,
+    "function": "main",
+    "description": "以「值 + 版本」分开存放导致值 ABA（版本更新滞后）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：值与版本号分别更新，乐观校验被绕过",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "非原子「值+版本」校验。预期 miss。"
+}

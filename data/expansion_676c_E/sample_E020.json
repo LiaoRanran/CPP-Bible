@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E020",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 26,
+    "function": "writer",
+    "description": "以 relaxed 发布指针，读侧 acquire 标志后仍读非原子缓存字段"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan",
+    "asan"
+  ],
+  "trigger_condition": "两线程并发；读者读非原子缓存字段",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "acquire 只作用于 live 原子，对象内普通字段的可见性依赖发布链；此处发布链被 relaxed 打断 → 预期 TSan catch。"
+}

@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E167",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 21,
+    "function": "bulk_tx",
+    "description": "持锁线程做长操作，快路径线程无锁读写同一缓冲区"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：持锁批量填充 vs 无锁快路径写",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "含真实数据竞争 → 预期 TSan catch。"
+}

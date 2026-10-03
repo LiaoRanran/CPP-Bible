@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E103",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 17,
+    "function": "f",
+    "description": "unique_lock 已持有时再次调用 lock()"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "单线程 unique_lock 重复 lock",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "unique_lock 状态机误用：已拥有所有权时再 lock()。实测（WSL glibc 2.39）不是挂起，而是由 libstdc++/glibc 抛 std::system_error(\"Resource deadlock avoided\") 并 abort（EDEADLK）。TSan / ASan / UBSan 均无报告 ⇒ 预期 miss。与 E110 同类：**一个让进程直接崩溃的并发缺陷对现有 sanitizer 资产完全隐形**。"
+}

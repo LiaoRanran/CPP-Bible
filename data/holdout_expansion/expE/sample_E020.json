@@ -1,0 +1,41 @@
+{
+  "sample_id": "sample_E020",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 26,
+    "function": "writer",
+    "description": "以 relaxed 发布指针，读侧 acquire 标志后仍读非原子缓存字段"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan",
+    "asan"
+  ],
+  "trigger_condition": "两线程并发；读者读非原子缓存字段",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "acquire 只作用于 live 原子，对象内普通字段的可见性依赖发布链；此处发布链被 relaxed 打断 → 预期 TSan catch。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E020 id=1 cached=4242 ================== WARNING: ThreadSanitizer: data race (pid=1508)   Read of size 4 at 0x720800001034 by thread T2:     #0 reader /mnt/c/Users/ASUS/AppData/Local/Temp/tmp2xbgih7v/; -O2(rc=66) E020 id=1 cached=4242 ================== WARNING: ThreadSanitizer: data race (pid=1788)   Read of size 4 at 0x720800001034 by thread T2:     #0 reader /mnt/c/Users/ASUS",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

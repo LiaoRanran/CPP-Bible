@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E113",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 43,
+    "function": "main",
+    "description": "无锁栈 pop 后立即 delete 头节点，槽位复用造成 ABA"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：pop 后立即回收槽位并复用",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "版本号缺失的 ABA。纯逻辑破坏 ⇒ 预期 miss。"
+}

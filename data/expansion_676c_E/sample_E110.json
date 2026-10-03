@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E110",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 25,
+    "function": "waiter",
+    "description": "condition_variable_any 与 recursive_mutex 错误配对：wait 只释放一层锁"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan",
+    "asan"
+  ],
+  "trigger_condition": "2 线程：递归锁下 wait 只释放一层，notifier 拿不到完整锁",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "条件变量必须配「wait 能完全解锁」的 mutex。实测（WSL glibc 2.39）：这个缺陷**不是挂起**，而是由 libstdc++/glibc 直接抛 std::system_error(\"Resource deadlock avoided\") 并 abort（EDEADLK）。TSan / ASan / UBSan 三个资产**都不输出任何报告**——一个让进程直接崩溃的并发缺陷，对现有 sanitizer 资产完全隐形 ⇒ 预期 miss（真实盲区）。"
+}

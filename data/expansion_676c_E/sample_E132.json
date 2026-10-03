@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E132",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 25,
+    "function": "main",
+    "description": "原子指针指向的节点内容被回收方「就地改写复用」（同址不同值）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：节点被摘下后同址改写复用，读者仍按旧对象解释",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "内容维度的 ABA（地址相同、语义不同）。预期 miss。"
+}

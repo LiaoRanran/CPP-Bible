@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E124",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 25,
+    "function": "main",
+    "description": "无锁链表遍历：读 next 之后节点被删除复用"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "2 线程：遍历线程无保护地读节点，主线程删除并复用",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "缺 hazard pointer 的读侧遍历。ASan 捕获 UAF → 预期 catch。"
+}

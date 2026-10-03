@@ -1,0 +1,57 @@
+{
+  "sample_id": "sample_E059",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 19,
+    "function": "publish_and_die",
+    "description": "栈上的 atomic 对象生命周期结束后仍被另一线程访问"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "两线程并发；发布者 delete 原子对象后，另一线程仍通过裸指针访问它",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "原子对象生命周期竞态。ASan 的 heap-use-after-free 可稳定捕获 → 预期 catch。 【调和】标注与实测一致（asan）。 【复现特性】复跑非确定: miss/miss/catch/catch/catch。",
+  "pooled_verdict": {
+    "asan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "asan",
+    "verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) ================================================================= ==4495==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000001010 at pc 0x555555556899 bp 0x7ffff37fdc60 sp 0x7ffff37fdc5; -O2(rc=1) ================================================================= ==4806==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000001010 at pc 0x55555555680b bp 0",
+    "hung": false,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": {
+      "kind": "asan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stable": false
+    },
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E145",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 21,
+    "function": "low",
+    "description": "低优先级线程持锁做内存分配/释放风暴，高优先级线程等锁"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：低优先级持锁做分配器风暴",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "持锁调用分配器型反转。预期 miss。"
+}

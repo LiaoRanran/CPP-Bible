@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E106",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 19,
+    "function": "enter",
+    "description": "scoped_lock 作用域内再次进入同一函数（再次 scoped_lock 同两把锁）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "单线程递归重入同一加锁函数",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "scoped_lock 递归重入。确定性自死锁。"
+}

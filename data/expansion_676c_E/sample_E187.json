@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E187",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 24,
+    "function": "worker",
+    "description": "wait 使用谓词但谓词在 notify 之后才更新（更新与通知顺序颠倒）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：两段式谓词的第二次通知可能落在 wait 之前",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "两阶段等待的通知丢失。是否永久阻塞取决于调度 → 预期 miss（时序相关）。"
+}

@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E075",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 23,
+    "function": "mutator",
+    "description": "CAS 只比较指针，指针指向的结构体内容被并发改写（伪原子快照）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；一方在发布后继续改写内容，另一方 CAS 取出并读取",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "伪原子快照 + 双重所有权。竞争真实（key/val 非原子读写）→ 预期 TSan catch；ASan 可能报双删。"
+}

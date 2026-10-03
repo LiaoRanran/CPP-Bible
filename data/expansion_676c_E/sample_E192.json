@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E192",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 24,
+    "function": "waiter",
+    "description": "谓词按「边沿」而非「电平」消费：多个等待者共享一次性信号"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 等待者共享一次性边沿信号",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "边沿谓词被当作电平使用。程序跑完但语义错 → 预期 miss。"
+}

@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E161",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 22,
+    "function": "cfg_parser",
+    "description": "控制线程（高优先级）等锁，配置线程（低优先级）持锁做解析"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：低优先级持锁解析配置",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "预期 miss。"
+}

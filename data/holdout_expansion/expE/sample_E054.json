@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E054",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 20,
+    "function": "enter",
+    "description": "用 atomic<bool>::exchange 抢占独占权，忽略「已被占用」返回值"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发进入「临界区」",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "exchange 返回值被忽略导致伪互斥。预期 miss。 【调和】原标注预期 miss，实测被tsan捕获 ⇒ 已按卡片「真实不一致即更新标注」改为 catch。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "updated_to_catch",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O2(rc=66) E054 writes=2 ================== WARNING: ThreadSanitizer: data race (pid=4314)   Read of size 4 at 0x555555558020 by thread T1:     #0 enter /mnt/c/Users/ASUS/AppData/Local/Temp/tmpi2e4bn8a/sample_E0]（档位 -O0,-O2）",
+    "hung": false,
+    "raw_rc": [
+      0,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

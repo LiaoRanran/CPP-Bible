@@ -1,0 +1,41 @@
+{
+  "sample_id": "sample_E139",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 26,
+    "function": "main",
+    "description": "reclaim 线程把「刚被读侧引用」的对象立即放回 freelist 供他人分配"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：reclaim 无 grace period 直接 delete 并复用地址",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "ABA 的内存复用表现。glibc malloc 对同尺寸的小对象几乎必然复用刚释放的块，所以实际发生的是「地址复用型 ABA」（读到错数据），内存**没有**落入已释放状态，ASan 无从报告 ⇒ 预期 miss。这条恰好说明 ABA 与 UAF 是两类缺陷：前者 sanitizer 完全看不见，后者才看得见。 【调和】原标注预期 miss，实测被asan捕获 ⇒ 已按卡片「真实不一致即更新标注」改为 catch。",
+  "pooled_verdict": {
+    "asan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "updated_to_catch",
+    "detector": "asan",
+    "verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) ================================================================= ==10397==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000014 at pc 0x555555556568 bp 0x7ffff3ffec70 sp 0x7ffff3ffec; -O2(rc=1) ================================================================= ==10701==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000014 at pc 0x555555556cad bp ",
+    "hung": false,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

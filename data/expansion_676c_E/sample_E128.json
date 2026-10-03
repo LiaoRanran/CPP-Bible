@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E128",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 28,
+    "function": "main",
+    "description": "无锁栈缺少 tagged pointer，节点值 A→B→A"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：存在版本计数器但未与指针打包",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "tagged pointer 缺失。预期 miss。"
+}

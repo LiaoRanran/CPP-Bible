@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E144",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 23,
+    "function": "low_rt",
+    "description": "低优先级线程持锁排序，高优先级线程等锁，中优先级线程空转"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 线程：低优先级持锁排序",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "持锁做重计算型反转。预期 miss。"
+}

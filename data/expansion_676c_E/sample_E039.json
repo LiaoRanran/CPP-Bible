@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E039",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 20,
+    "function": "producer",
+    "description": "写侧 acq_rel / 读侧 relaxed，载荷为非原子数组"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；读侧 relaxed 读 seq 后读非原子数组",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "竞争真实 → 预期 TSan catch。"
+}

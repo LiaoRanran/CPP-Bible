@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E084",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 17,
+    "function": "f",
+    "description": "同一作用域内两个 lock_guard 锁同一把 mutex"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "单线程同作用域重复加锁",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "防御性重复加锁。确定性自死锁。"
+}

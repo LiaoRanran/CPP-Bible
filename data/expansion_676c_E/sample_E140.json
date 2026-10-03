@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E140",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 28,
+    "function": "main",
+    "description": "epoch-based reclamation 的 epoch 号本身遭遇 ABA"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：epoch 计数器绕回同值",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "计数器自身的 ABA。预期 miss。"
+}

@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E091",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 17,
+    "function": "f",
+    "description": "std::lock 之后又手动 lock 其中一把"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "单线程 std::lock 后重复 lock",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "std::lock 与手动 lock 混用。确定性自死锁。"
+}

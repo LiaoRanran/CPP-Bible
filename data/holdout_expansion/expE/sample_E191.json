@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E191",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 27,
+    "function": "consumer_b",
+    "description": "多个条件变量共用一个谓词，但只通知了其中一个"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 个消费者各等一个 cv + 1 个生产者只通知其中一个",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "多条件变量共用一个谓词。consumer_b 永久阻塞 → 记为阻塞触发（超时挂起）。 【调和】原标注预期 miss，实测被tsan捕获 ⇒ 已按卡片「真实不一致即更新标注」改为 catch。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "updated_to_catch",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

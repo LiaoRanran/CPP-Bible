@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E005",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 22,
+    "function": "writer",
+    "description": "指针以 relaxed 发布，reader 以 relaxed 读取后解引用"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；reader 轮询发布指针",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "relaxed 发布/读取指针。读侧解引用未同步的对象内容是 UB；预期 miss。"
+}

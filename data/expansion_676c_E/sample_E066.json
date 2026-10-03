@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E066",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 15,
+    "function": "main",
+    "description": "std::atomic<signed char> 的 fetch_add 溢出"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "单线程把有符号字符原子加到溢出",
+  "thread_count": 0,
+  "timeout_seconds": 5,
+  "notes": "预期 miss：UBSan 不插桩 atomic RMW。"
+}

@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E182",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 25,
+    "function": "waiter",
+    "description": "谓词标志被无锁写入（真实数据竞争 + 丢失唤醒）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：谓词被无锁写，wait 侧在锁内读",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "谓词无锁访问是真实数据竞争 → 预期 TSan catch（同时也是丢失唤醒的根因）。"
+}

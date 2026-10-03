@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E018",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 24,
+    "function": "producer",
+    "description": "消费者 acquire 了错误的标志，读到未被保护的载荷"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；消费者读错标志对应的载荷",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "acquire 标志与被保护载荷错配。竞争真实 → 预期 TSan catch。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E018 a3=104 b3=54 ================== WARNING: ThreadSanitizer: data race (pid=1433)   Read of size 4 at 0x55555555903c by thread T2:     #0 consumer /mnt/c/Users/ASUS/AppData/Local/Temp/tmpep1fjoh7/sa; -O2(rc=66) E018 a3=104 b3=54 ================== WARNING: ThreadSanitizer: data race (pid=1734)   Read of size 4 at 0x55555555805c by thread T2:     #0 consumer /mnt/c/Users/ASUS/A",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

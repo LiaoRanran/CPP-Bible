@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E067",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 23,
+    "function": "worker",
+    "description": "用 memcpy 复制含 atomic_flag 的锁对象，锁状态被复制成两份"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "两线程并发 memcpy 复制同一个锁对象",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "复制含原子对象的对象。属 UB 但无检测器；counter 竞争窗口窄 → 预期 miss。"
+}

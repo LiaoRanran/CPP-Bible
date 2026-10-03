@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E029",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 22,
+    "function": "producer",
+    "description": "中间的 relaxed store 打断 release 序列，读侧仍用 acquire"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；consumer 读 release 序列之外的写入",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "release 序列被 relaxed 打断。竞争真实 → 预期 TSan catch。"
+}

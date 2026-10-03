@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E041",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 19,
+    "function": "main",
+    "description": "局部 std::atomic<int> 默认初始化（值不确定）后直接 fetch_add"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan",
+    "asan"
+  ],
+  "trigger_condition": "单线程线程中读取未初始化原子的值",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "未初始化原子是真实 UB，但没有任何 sanitizer 会为「原子的不确定初值」设陷阱 → 预期 miss（真实盲区）。"
+}

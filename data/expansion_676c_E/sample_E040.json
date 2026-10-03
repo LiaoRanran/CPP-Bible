@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E040",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 24,
+    "function": "reader",
+    "description": "「一次性初始化」标志用 seq_cst 写 + relaxed 读，读侧读非原子全局表"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；reader 读非原子全局表",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "写侧 seq_cst 读侧 relaxed。竞争真实 → 预期 TSan catch。"
+}

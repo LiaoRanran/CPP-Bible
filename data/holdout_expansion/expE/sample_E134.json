@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E134",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 25,
+    "function": "main",
+    "description": "无锁栈 pop 后把陈旧指针写回链表（UAF 写）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "2 线程：A 在 ABA 窗口内向已释放节点写并重新挂链",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "UAF 写。ASan 稳定捕获 → 预期 catch。 【调和】标注与实测一致（asan）。",
+  "pooled_verdict": {
+    "asan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "asan",
+    "verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) ================================================================= ==10038==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x5555555565fe bp 0x7ffff3ffebf0 sp 0x7ffff3ffeb; -O2(rc=1) ================================================================= ==10338==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x555555556d1f bp ",
+    "hung": false,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

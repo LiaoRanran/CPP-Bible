@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E001",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 24,
+    "function": "consumer",
+    "description": "consumer 用 relaxed 轮询 ready 标志，未与 producer 的 release 配对 acquire"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；consumer 的 relaxed 轮询在弱内存序架构上可观测到未发布的数据",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "release/acquire 不匹配的教科书形态。C++ 内存模型下缺少 synchronizes-with，属未定义行为；x86 TSO 下通常不显现，TSan 只检查竞争不检查内存序，故预期 miss（真实盲区）。 【调和】标注与实测一致（tsan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "tsan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "tsan",
+    "verdict": "miss",
+    "detector_note": "tsan 两档均无报告[-O0(rc=0) E001 data=42; -O2(rc=0) E001 data=42]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

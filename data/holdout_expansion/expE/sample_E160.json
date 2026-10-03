@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E160",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 21,
+    "function": "sampler",
+    "description": "持锁统计线程 + 无锁直写统计数组的高优先级线程"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 线程：持锁采样 + 无锁快路径写",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "含真实数据竞争 → 预期 TSan catch。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E160 stat3=1054899 ================== WARNING: ThreadSanitizer: data race (pid=12002)   Read of size 8 at 0x555555559098 by thread T2:     #0 fast_path /mnt/c/Users/ASUS/AppData/Local/Temp/tmp3vuahlnh; -O2(rc=66) E160 stat3=1050000 ================== WARNING: ThreadSanitizer: data race (pid=12260)   Read of size 8 at 0x555555558078 by thread T2:     #0 fast_path /mnt/c/Users/ASU",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

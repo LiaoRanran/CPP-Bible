@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E032",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 21,
+    "function": "get_cached",
+    "description": "DCLP 里 relaxed 检查非原子局部缓存指针"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发首次调用 get_cached()",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "非原子静态缓存 + relaxed 二次检查。竞争真实但窗口窄，TSan 可能漏报；诚实标注。"
+}

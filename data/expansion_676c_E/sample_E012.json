@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E012",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 26,
+    "function": "dropper",
+    "description": "引用计数用 relaxed 增减，读侧据此判定对象存活"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan",
+    "asan"
+  ],
+  "trigger_condition": "两线程并发；dropper 误判引用计数并 delete",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "relaxed 引用计数导致提前释放。owner 的构造写与 dropper 的 delete 之间无 happens-before → TSan/ASan 可捕获。"
+}

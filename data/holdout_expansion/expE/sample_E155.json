@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E155",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 22,
+    "function": "driver_thread",
+    "description": "「中断处理器」形态的线程直接获取用户态锁，与持锁线程并发"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 线程：驱动持锁 + 模拟 ISR 取锁 + 延后处理无锁写",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "中断与用户态锁混用；其中延后处理线程的写入是真实数据竞争 → 预期 TSan catch。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E155 r0=255 in_isr=1 ================== WARNING: ThreadSanitizer: data race (pid=11600)   Read of size 4 at 0x55555555909c by thread T3:     #0 deferred /mnt/c/Users/ASUS/AppData/Local/Temp/tmpr55uu3c; -O2(rc=66) E155 r0=255 in_isr=1 ================== WARNING: ThreadSanitizer: data race (pid=11872)   Read of size 4 at 0x55555555807c by thread T3:     #0 deferred /mnt/c/Users/AS",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

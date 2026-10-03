@@ -1,0 +1,41 @@
+{
+  "sample_id": "sample_E140",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 28,
+    "function": "main",
+    "description": "epoch-based reclamation 的 epoch 号本身遭遇 ABA"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：epoch 计数器绕回同值",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "计数器自身的 ABA。预期 miss。 【调和】标注与实测一致（asan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "asan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "asan",
+    "verdict": "miss",
+    "detector_note": "asan 两档均无报告[-O0(rc=0) E140 frees=1 head_v=0; -O2(rc=0) E140 frees=1 head_v=0]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

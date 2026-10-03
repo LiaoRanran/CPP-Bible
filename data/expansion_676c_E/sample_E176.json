@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E176",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 27,
+    "function": "waiter",
+    "description": "notify_one 只有一个等待者时通知了「错误的那一个」（实际无通知到达）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 个等待者 + 1 个通知者，只发 notify_one",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "通知丢失导致部分等待者永久阻塞（超时挂起）。"
+}

@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E035",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 21,
+    "function": "producer",
+    "description": "以 relaxed 计数作数组下标发布，随后读非原子数组"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；消费者依 relaxed 下标读非原子单元",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "竞争真实 → 预期 TSan catch。"
+}

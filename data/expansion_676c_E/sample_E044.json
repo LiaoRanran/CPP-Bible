@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E044",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 25,
+    "function": "claim",
+    "description": "compare_exchange_weak 失败后不检查 expected，直接拿它当新值用"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程竞争同一资源所有权，仅一方 CAS 成功",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "CAS 失败路径误用 expected。无 sanitizer 覆盖 → 预期 miss。"
+}

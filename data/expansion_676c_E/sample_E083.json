@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E083",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 18,
+    "function": "on_event",
+    "description": "两个线程都走「取锁后回调」的路径，回调再次取同一把锁"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程都进入「取锁 + 回调」路径",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "回调中获取已持有的锁。第一个进入的线程立即自死锁。"
+}

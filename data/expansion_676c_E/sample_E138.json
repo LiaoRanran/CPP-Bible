@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E138",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 27,
+    "function": "main",
+    "description": "CAS 失败重试时复用已被别人改写的 expected，ABA 使重试逻辑错乱"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：CAS 重试循环遇上同址复用",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "重试逻辑在 ABA 下错乱。预期 miss。"
+}

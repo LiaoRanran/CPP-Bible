@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E024",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 20,
+    "function": "writer",
+    "description": "acquire 加载与 relaxed 存储错配（读侧够强写侧过弱）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；读侧 acquire 写侧 relaxed",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "错向配对的另一形态。预期 miss。"
+}

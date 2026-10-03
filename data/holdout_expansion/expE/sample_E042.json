@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E042",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 15,
+    "function": "main",
+    "description": "堆上 new std::atomic<int> 未值初始化即参与运算"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "单线程内对未值初始化原子做 RMW",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "预期 miss：ASan 只管内存错误，不管未初始化值。 【调和】标注与实测一致（asan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "asan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "asan",
+    "verdict": "miss",
+    "detector_note": "asan 两档均无报告[-O0(rc=0) E042 old=0; -O2(rc=0) E042 old=0]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

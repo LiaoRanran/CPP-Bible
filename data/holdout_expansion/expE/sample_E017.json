@@ -1,0 +1,53 @@
+{
+  "sample_id": "sample_E017",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 21,
+    "function": "producer",
+    "description": "以 relaxed 读计数作同步判据，随后读非原子缓冲"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；waiter 轮询 relaxed 尾索引后读非原子环形缓冲",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "SPSC 单生产者单消费者队列用 relaxed 索引当同步机制。竞争真实 → 预期 TSan catch。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E017 ring7=21 ================== WARNING: ThreadSanitizer: data race (pid=1415)   Read of size 4 at 0x55555555905c by thread T2:     #0 waiter /mnt/c/Users/ASUS/AppData/Local/Temp/tmphdnphpzx/sample_E; -O2(rc=66) E017 ring7=21 ================== WARNING: ThreadSanitizer: data race (pid=1728)   Read of size 4 at 0x55555555807c by thread T2:     #0 waiter /mnt/c/Users/ASUS/AppData",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

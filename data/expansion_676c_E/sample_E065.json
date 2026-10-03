@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E065",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 20,
+    "function": "indexer",
+    "description": "无符号原子下溢后作为数组下标使用"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "6 线程并发递减下标（起始 2），必然越过 0 发生无符号回绕",
+  "thread_count": 6,
+  "timeout_seconds": 5,
+  "notes": "无符号回绕成巨型下标。6 个线程从 2 开始递减，第 3 次就下溢 ⇒ ASan 稳定捕获越界 → 预期 catch。"
+}

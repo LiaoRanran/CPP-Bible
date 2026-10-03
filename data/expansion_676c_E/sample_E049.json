@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E049",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 15,
+    "function": "main",
+    "description": "std::atomic<long long>::fetch_sub 无符号下溢后当作合法计数使用"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "单线程把有符号原子计数减到负数",
+  "thread_count": 0,
+  "timeout_seconds": 5,
+  "notes": "预期 miss：UBSan 不插桩 atomic RMW。"
+}

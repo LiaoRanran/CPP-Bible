@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E190",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 24,
+    "function": "waiter",
+    "description": "谓词本身是原子的，但伴随数据是非原子的（只同步了标志位）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：谓词是原子的，载荷是普通数组且在锁外写",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "只同步标志位而非数据 → 真实数据竞争 → 预期 TSan catch。"
+}

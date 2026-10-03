@@ -1,0 +1,41 @@
+{
+  "sample_id": "sample_E058",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 19,
+    "function": "work",
+    "description": "把 atomic<int> placement-new 到未对齐的地址上"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan",
+    "asan"
+  ],
+  "trigger_condition": "两线程各自在未对齐地址上构造原子对象",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "未对齐原子对象访问是 UB。libstdc++ 的原子 load/store 编译成普通 mov，UBSan 的 alignment 插桩不会命中 → 预期 miss（真实盲区）。 【调和】原标注预期 miss，实测被ubsan捕获 ⇒ 已按卡片「真实不一致即更新标注」改为 catch。",
+  "pooled_verdict": {
+    "ubsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "updated_to_catch",
+    "detector": "ubsan",
+    "verdict": "catch",
+    "detector_note": "ubsan 命中[-O0(rc=0) E058 v=1 E058 v=2 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpv69tapvb/sample_E058.cpp:21:57: runtime error: constructor call on misaligned address 0x7ffff6ffed61 for type 'struct atomic', which requires ; -O2(rc=0) E058 v=2 E058 v=1 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpv69tapvb/sample_E058.cpp:21:57: runtime error: constructor call on misaligned address 0x7ffff6ffee41 for type '",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

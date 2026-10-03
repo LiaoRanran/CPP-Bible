@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E136",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 24,
+    "function": "main",
+    "description": "无锁栈在「摘链」与「改链」之间留出 ABA 窗口"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：摘链与改链之间节点被同址重新挂链",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "两段式 pop 的 ABA 窗口。预期 miss。"
+}

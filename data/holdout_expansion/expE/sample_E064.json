@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E064",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 21,
+    "function": "advance",
+    "description": "状态机混用 exchange 与 CAS，转换表不完整"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发推进同一状态机",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "状态机转换不完整。预期 miss。 【调和】原标注预期 miss，实测被tsan捕获 ⇒ 已按卡片「真实不一致即更新标注」改为 catch。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "updated_to_catch",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E064 st=2 transitions=3 ================== WARNING: ThreadSanitizer: data race (pid=4693)   Read of size 4 at 0x555555559020 by thread T1:     #0 advance /mnt/c/Users/ASUS/AppData/Local/Temp/tmprhzyso; -O2(rc=66) E064 st=2 transitions=3 ================== WARNING: ThreadSanitizer: data race (pid=4997)   Read of size 4 at 0x555555558020 by thread T2:     #0 advance /mnt/c/Users/A",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

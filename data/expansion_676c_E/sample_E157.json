@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E157",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 21,
+    "function": "rt_low",
+    "description": "三个「实时」线程共享锁，低优先级持锁者被中优先级压制"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 线程：RT 高/中/低优先级共享总线锁",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "RT 经典反转形态。预期 miss。"
+}

@@ -1,0 +1,41 @@
+{
+  "sample_id": "sample_E130",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 21,
+    "function": "main",
+    "description": "RCU 读侧无 rcu_read_lock：同步回调式「伪 RCU」"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：读侧无保护，reclaim 用 sleep 假装 grace period",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "伪 RCU。读侧访问是否落在已释放内存取决于时序 → 预期 miss（真实盲区）。 【调和】标注与实测一致（asan 未报告，属真实盲区）。",
+  "pooled_verdict": {
+    "asan": "miss"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "consistent_blindspot",
+    "detector": "asan",
+    "verdict": "miss",
+    "detector_note": "asan 两档均无报告[-O0(rc=0) E130 v=1 E130 grace=1; -O2(rc=0) E130 v=1 E130 grace=1]",
+    "hung": false,
+    "raw_rc": [
+      0,
+      0
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

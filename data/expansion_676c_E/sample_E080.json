@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E080",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 24,
+    "function": "engine",
+    "description": "引擎层 engine->plugin，插件层 plugin->engine"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程走引擎层与插件层",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "分层架构的锁顺序反转。确定性触发。"
+}

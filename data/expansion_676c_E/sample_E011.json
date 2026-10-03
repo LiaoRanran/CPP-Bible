@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E011",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 23,
+    "function": "producer",
+    "description": "载荷以 relaxed 发布到原子，但读侧读的是非原子镜像"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；consumer 读非原子 mirror",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "release/acquire 只覆盖 release **之前**的写。生产者 release 之后又改了mirror，这批写对读线程没有 happens-before ⇒ 竞争真实，预期 TSan catch。"
+}

@@ -1,0 +1,66 @@
+{
+  "sample_id": "sample_E077",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 24,
+    "function": "alpha",
+    "description": "三线程分别以 m1->m2、m2->m3、m3->m1 顺序嵌套加锁"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "3 线程环形嵌套加锁",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "三锁环形等待。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "[tsan] 运行超时(rc=124) ⇒ 阻塞/死锁触发 | tsan 两档均无报告[-O0(rc=124) 无输出; -O2(rc=124) 无输出]",
+    "hung": true,
+    "raw_rc": [
+      124,
+      124
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    },
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        true,
+        true,
+        true
+      ],
+      "stable": true
+    },
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E125",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 22,
+    "function": "main",
+    "description": "危险指针「发布顺序」错误：先读数据再登记 hazard"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "2 线程：读侧不遵守 hazard pointer 发布协议，写侧立即回收",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "两个协议缺陷叠加：读侧 check-after-use（读指针后立刻解引用，登记与校验都没做），回收侧不扫描 hazard 集合。用 step 门闸把「登记hazard 之后、解引用之前」的窗口固定住，所以 ASan 的 heap-use-after-free 可稳定捕获 → 预期 catch。"
+}

@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E127",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 26,
+    "function": "main",
+    "description": "危险指针「扫描-退休」缺失：reclaimer 连续回收多个节点"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "2 线程：读侧宣告 hazard，写侧连删两个节点",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "无退休扫描的 hazard pointer。ASan 可捕获读侧的 UAF → 预期 catch。 【调和】标注与实测一致（asan）。",
+  "pooled_verdict": {
+    "asan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "asan",
+    "verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) ================================================================= ==9618==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x55555555656d bp 0x7ffff3ffec70 sp 0x7ffff3ffec6; -O2(rc=1) ================================================================= ==9921==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x555555556cce bp 0",
+    "hung": false,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

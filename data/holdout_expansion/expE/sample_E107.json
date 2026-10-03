@@ -1,0 +1,53 @@
+{
+  "sample_id": "sample_E107",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 20,
+    "function": "path_atomic",
+    "description": "一条路径一次取两把锁，另一条路径先取其中一把再取另一把"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程分别以 a->b 与 b->a 加锁",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "同一对锁两种书写顺序。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】TSan 自身报出 lock-order-inversion。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E107 path a E107 path b ================== WARNING: ThreadSanitizer: lock-order-inversion (potential deadlock) (pid=7931)   Cycle in lock order graph: M0 (0x555555559040) => M1 (0x555555559080) => M0 ; -O2(rc=66) E107 path a E107 path b ================== WARNING: ThreadSanitizer: lock-order-inversion (potential deadlock) (pid=8009)   Cycle in lock order graph: M0 (0x5555555580a",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

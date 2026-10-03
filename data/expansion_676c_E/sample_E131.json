@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E131",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 22,
+    "function": "main",
+    "description": "RCU 读侧无保护 + reclaim 用 sleep 代替 grace period，命中 UAF"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "2 线程：reclaim 立即 delete，读侧随后遍历 payload",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "无保护 RCU 读侧。ASan 的 heap-use-after-free 稳定命中 → 预期 catch。"
+}

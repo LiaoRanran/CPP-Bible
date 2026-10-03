@@ -1,0 +1,53 @@
+{
+  "sample_id": "sample_E182",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 25,
+    "function": "waiter",
+    "description": "谓词标志被无锁写入（真实数据竞争 + 丢失唤醒）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：谓词被无锁写，wait 侧在锁内读",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "谓词无锁访问是真实数据竞争 → 预期 TSan catch（同时也是丢失唤醒的根因）。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E182 payload=99 ================== WARNING: ThreadSanitizer: data race (pid=13653)   Write of size 1 at 0x55555555c0b0 by thread T2:     #0 setter /mnt/c/Users/ASUS/AppData/Local/Temp/tmpyr59ku_0/samp; -O2(rc=66) E182 payload=99 ================== WARNING: ThreadSanitizer: data race (pid=13915)   Write of size 1 at 0x555555559048 by thread T2:     #0 setter /mnt/c/Users/ASUS/App",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E036",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 20,
+    "function": "producer_a",
+    "description": "两个生产者一个 acquire 一个 relaxed，发布强度不一致"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 生产者 + 1 消费者并发",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "多生产者发布强度不一致，读侧覆盖全部载荷。竞争真实 → 预期 TSan catch。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E036 l0=1 l3=4 ================== WARNING: ThreadSanitizer: data race (pid=2706)   Read of size 4 at 0x55555555903c by thread T3:     #0 consumer /mnt/c/Users/ASUS/AppData/Local/Temp/tmpdbuyfm6r/sampl; -O2(rc=66) E036 l0=1 l3=4 ================== WARNING: ThreadSanitizer: data race (pid=3004)   Read of size 4 at 0x55555555804c by thread T3:     #0 consumer /mnt/c/Users/ASUS/AppD",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

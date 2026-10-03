@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E116",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 42,
+    "function": "main",
+    "description": "无锁队列 dequeue 的 CAS 遇 A→B→A"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：A 读 head 后挂起，B 让 head 走一圈回到同一槽位",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "无锁队列 ABA。静态 ring ⇒ 纯逻辑重复出队，sanitizer 无感 → 预期 miss。"
+}

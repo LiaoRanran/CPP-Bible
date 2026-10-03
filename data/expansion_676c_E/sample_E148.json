@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E148",
+  "defect_type": "lock_priority_inversion",
+  "defect_location": {
+    "line": 22,
+    "function": "low",
+    "description": "低优先级线程持锁做字符串/正则匹配，高优先级线程等锁"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：低优先级持锁做字符串操作",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "预期 miss。"
+}

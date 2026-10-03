@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E119",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 25,
+    "function": "main",
+    "description": "「队列空判断」轮询在 A→B→A 后误判队列非空"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：head 在消费者观测期间走一圈回到原地址",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "基于陈旧观测的队列状态判断。预期 miss。"
+}

@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E016",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 20,
+    "function": "producer",
+    "description": "seq_cst fence 放在载荷写与标志写之间，位置错误导致不构成 release 序列"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；fence 位置错误",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "强 fence 也会用错位置。预期 miss。"
+}

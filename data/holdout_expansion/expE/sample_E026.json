@@ -1,0 +1,53 @@
+{
+  "sample_id": "sample_E026",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 21,
+    "function": "bump",
+    "description": "compare_exchange_weak 成功序用 relaxed 做「读-改-写-再写」多步更新"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；peek 观察 idx 后读非原子数组",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "CAS 成功序过弱。注意：peek 用 acquire 读 idx，release 序列在 relaxed CAS 处断开 → 预期 TSan catch 更可能；若 TSan 判为无竞争则诚实记 miss。 【调和】原标注预期 miss，实测被tsan捕获 ⇒ 已按卡片「真实不一致即更新标注」改为 catch。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "miss",
+    "reconcile": "updated_to_catch",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E026 arr0=100 arr1=200 ================== WARNING: ThreadSanitizer: data race (pid=2041)   Read of size 4 at 0x555555559014 by thread T2:     #0 peek /mnt/c/Users/ASUS/AppData/Local/Temp/tmp7st_zgxp/s; -O2(rc=66) E026 arr0=100 arr1=200 ================== WARNING: ThreadSanitizer: data race (pid=2351)   Read of size 4 at 0x555555558014 by thread T2:     #0 peek /mnt/c/Users/ASUS/",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": {
+      "kind": "tsan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

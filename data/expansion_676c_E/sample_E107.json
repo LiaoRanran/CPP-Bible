@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E107",
+  "defect_type": "deadlock",
+  "defect_location": {
+    "line": 20,
+    "function": "path_atomic",
+    "description": "一条路径一次取两把锁，另一条路径先取其中一把再取另一把"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程分别以 a->b 与 b->a 加锁",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "同一对锁两种书写顺序。确定性触发。"
+}

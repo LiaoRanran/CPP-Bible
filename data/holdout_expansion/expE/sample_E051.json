@@ -1,0 +1,40 @@
+{
+  "sample_id": "sample_E051",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 21,
+    "function": "shifter",
+    "description": "对 atomic<T*> 做指针算术后存回，越界解引用"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "两线程并发；一方把原子指针推出数组边界，另一方解引用",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "原子指针算术越界。ASan 的 global-buffer-overflow 可稳定捕获 → 预期 catch。 【调和】标注与实测一致（asan）。",
+  "pooled_verdict": {
+    "asan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "asan",
+    "verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) ================================================================= ==3907==ERROR: AddressSanitizer: global-buffer-overflow on address 0x55555555a044 at pc 0x5555555564bd bp 0x7ffff37fdca0 sp 0x7ffff37f; -O2(rc=1) ================================================================= ==4199==ERROR: AddressSanitizer: global-buffer-overflow on address 0x555555559044 at pc 0x55555555687e b",
+    "hung": false,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

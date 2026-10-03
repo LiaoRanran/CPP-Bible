@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E191",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 27,
+    "function": "consumer_b",
+    "description": "多个条件变量共用一个谓词，但只通知了其中一个"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 个消费者各等一个 cv + 1 个生产者只通知其中一个",
+  "thread_count": 3,
+  "timeout_seconds": 5,
+  "notes": "多条件变量共用一个谓词。consumer_b 永久阻塞 → 记为阻塞触发（超时挂起）。"
+}

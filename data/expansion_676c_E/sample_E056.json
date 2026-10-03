@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E056",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 20,
+    "function": "worker",
+    "description": "自旋锁的 test_and_set 与 clear 都用 relaxed，失去 acquire/release"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发进入 relaxed 自旋锁保护的临界区",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "自旋锁内存序过弱导致真实数据竞争，TSan 可捕获；但若竞争窗口太窄可能漏报，标注为预期 catch 并在 notes 里说明漏报可能。"
+}

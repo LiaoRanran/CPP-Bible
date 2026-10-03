@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_E071",
+  "defect_type": "atomic_ub",
+  "defect_location": {
+    "line": 15,
+    "function": "main",
+    "description": "在未初始化的栈缓冲区上直接使用 atomic_flag（缺 ATOMIC_FLAG_INIT）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "ubsan"
+  ],
+  "trigger_condition": "单线程在未初始化栈内存上使用 atomic_flag",
+  "thread_count": 0,
+  "timeout_seconds": 5,
+  "notes": "未初始化内存当原子对象用是 UB。ASan 不会报（栈内），→ 预期 miss。"
+}

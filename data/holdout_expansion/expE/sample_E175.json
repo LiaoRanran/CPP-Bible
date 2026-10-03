@@ -1,0 +1,57 @@
+{
+  "sample_id": "sample_E175",
+  "defect_type": "condition_variable",
+  "defect_location": {
+    "line": 26,
+    "function": "producer",
+    "description": "通知早于 wait（丢失唤醒）：notify 在 wait 之前发生"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "2 线程：谓词在锁外写 + notify_all，consumer 在锁内检查谓词",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "丢失唤醒的根因是「谓词不受mutex 保护」。谓词的检查/写入之间没有 happens-before ⇒ TSan 能稳定抓到 ready 上的数据竞争；至于是否真的永久阻塞取决于窗口是否命中，实测触发率见验收报告。 【调和】标注与实测一致（tsan）。",
+  "pooled_verdict": {
+    "tsan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "tsan",
+    "verdict": "catch",
+    "detector_note": "tsan 命中[-O0(rc=66) E175 finished=1 ================== WARNING: ThreadSanitizer: data race (pid=13111)   Write of size 1 at 0x55555555a0b0 by thread T2:     #0 producer /mnt/c/Users/ASUS/AppData/Local/Temp/tmpv25ze3h2/sa; -O2(rc=66) E175 finished=1 ================== WARNING: ThreadSanitizer: data race (pid=13385)   Write of size 1 at 0x555555559048 by thread T2:     #0 producer /mnt/c/Users/ASUS/A",
+    "hung": false,
+    "raw_rc": [
+      66,
+      66
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": null,
+    "flakiness": {
+      "kind": "tsan",
+      "verdicts": [
+        "miss",
+        "miss",
+        "miss",
+        "miss",
+        "miss"
+      ],
+      "hung": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}

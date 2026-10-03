@@ -1,0 +1,19 @@
+{
+  "sample_id": "sample_E019",
+  "defect_type": "memory_order",
+  "defect_location": {
+    "line": 22,
+    "function": "producer",
+    "description": "两段发布中末段标志用 relaxed，读侧 acquire 后读非原子载荷"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "trigger_condition": "两线程并发；消费者等待末段标志后读整块缓冲",
+  "thread_count": 2,
+  "timeout_seconds": 5,
+  "notes": "末段标志内存序过弱导致后半段写入无同步。竞争真实 → 预期 TSan catch。"
+}

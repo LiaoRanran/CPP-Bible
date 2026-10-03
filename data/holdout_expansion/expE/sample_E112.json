@@ -1,0 +1,53 @@
+{
+  "sample_id": "sample_E112",
+  "defect_type": "aba_problem",
+  "defect_location": {
+    "line": 34,
+    "function": "main",
+    "description": "无锁栈 pop 在 ABA 后解引用已 delete 的陈旧指针"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "两线程：A 持有陈旧指针，B 弹出并 delete 后再 push",
+  "thread_count": 1,
+  "timeout_seconds": 5,
+  "notes": "ABA + use-after-free。ASan 的 heap-use-after-free 可稳定捕获 → 预期 catch。 【调和】标注与实测一致（asan）。",
+  "pooled_verdict": {
+    "asan": "catch"
+  },
+  "verification": {
+    "original_expected_verdict": "catch",
+    "reconcile": "consistent",
+    "detector": "asan",
+    "verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) ================================================================= ==8332==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x5555555569ba bp 0x7ffff3ffebf0 sp 0x7ffff3ffebe; -O2(rc=1) ================================================================= ==8451==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000038 at pc 0x555555556ed0 bp 0",
+    "hung": false,
+    "raw_rc": [
+      1,
+      1
+    ],
+    "syntax_rc": 0,
+    "secondary_kind": null,
+    "secondary_verdict": null,
+    "stability": {
+      "kind": "asan",
+      "verdicts": [
+        "catch",
+        "catch",
+        "catch"
+      ],
+      "hung": [
+        false,
+        false,
+        false
+      ],
+      "stable": true
+    },
+    "flakiness": null,
+    "harness": "tools/holdout_reveal_661.detect() 运行时 monkeypatch：ATOMS->data/expansion_676c_E；_wsl 加运行超时与 exe 名去冲突。检测器文件零修改。"
+  }
+}
