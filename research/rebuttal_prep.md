@@ -8,8 +8,9 @@
 ## 0 · 使用纪律（三步走）
 
 1. **三段式**：每问都写成 `Concede（承认点） / Already addressed（已做修订） / Plan（未来工作）`。英文段落可直接粘贴进 rebuttal；中文是策略提示，不投出去。
-2. **不含新数字**：除 Q1 的探索性派生集结果（标 `exploratory`、有 artifact）外，rebuttal 不得引入正文与 672h 权威源之外的任何数字。红线：**不把未做的实验写成已做**。
-3. **诚实优先**：凡是论文已自认的缺口（A5 未跑、标签零复核、scope 0/26、历史钉定不完整），rebuttal 一律先说"我们同意"，再给已落地修订，最后给路线图——**不要辩护式反驳**。评审对"承认 + 已修 + 路线"的接受度远高于"辩解"。
+2. **数字只能来自 artifact**：rebuttal 引入的每个数字都必须可回溯到仓库产物（`current_numbers.json` / `reveal_update_672h.json` / `a5_673p.json::real_attribution` / `data/673r_A5实验报告.md`）。红线：**不把未做的实验写成已做**，也**不把已被推翻的旧数字继续当弹药**。
+3. **诚实优先**：凡是论文已自认的缺口（标签零复核、scope 0/26、历史钉定不完整）**以及新出现的不利结果**（A5 主端点不显著），rebuttal 一律先说"我们同意"，再给已落地修订，最后给路线图——**不要辩护式反驳**。评审对"承认 + 已修 + 路线"的接受度远高于"辩解"。
+4. **态势会随并行批次变化（本批已发生）**：本仓库多 Agent 并行。**673r 在本预案写作期间提交**，把 A5 从"未跑（BLOCKED）"变成"已跑且主端点不显著"——Q1 与附录 A 已按 673r 重写。任何 rebuttal 预案在发出前**必须重新核对 HEAD 与最新产物**。
 
 ## 1 · 评审已知事实（写 rebuttal 时的事实底座）
 
@@ -23,7 +24,11 @@
 | random† proxy | 9.8% / 21.9%（**instrument-level proxy，非真 B3**） | 同上 `random_proxy` |
 | Δ(static→FD) | +80.5pp / +45.3pp | 同上 |
 | exact McNemar | p ≤ 3.0×10⁻⁸（最低下界（Δ）≥ 28.6pp） | 同上 |
-| 派生集探索（**exploratory**） | holdout FD 85.0% (17/20) vs random 10.0% (2/20)；corpus FD 87.5% (14/16) vs random 37.5% (6/16) | `a5_673p.json::exploratory_derivation_split` |
+| **A5 真实逐资产对照（673r）** | 主预算 k=4：holdout Δ=**+0.00pp** p=1.0000；corpus Δ=**+25.00pp** CI [−2.39, +52.39] p=0.2188（跨 0）⇒ **主端点不显著** | `a5_673p.json::real_attribution`、`data/673r_A5实验报告.md` |
+| A5 方向（2000 次重采样） | FD 严格优于 **61.2%**（holdout）/ **80.0%**（corpus）的随机子集；Δ 多数预算点非负 | 同上 |
+| A5 退化资产（**既有缺陷**） | `wunsequenced` **恒 catch**（MinGW g++ 13.1 不认 `-Wunsequenced`，`detect` 把"选项不认识"当命中）⇒ 主分析被天花板压死 | `673r_A5实验报告.md` §4.2 |
+| A5 口径警告 | 673r = **1 回合**；82.9%/62.5% 头条 = **3 回合** ⇒ **两套数字不得相减或比较** | `673r_A5实验报告.md` §3.1 |
+| 派生集探索（**replay 口径**，exploratory） | holdout FD 85.0% (17/20) vs random 10.0% (2/20)；corpus 87.5% (14/16) vs 37.5% (6/16)——**未被 673r 的真实口径在主预算上复现** | `a5_673p.json::exploratory_derivation_split` |
 | 样本量要求 | Δ=15pp 需 n≈138（paired）/170（independent）；±10pp 需 n≈104；±5pp 需 n≈236/378 | `tab:samplesize` |
 | VC / 变异 | 31/42 = 73.8% [58.0, 86.1]；core 96.5% (110/114) / all-scope 81.8% (130/159) | `current_numbers.json` |
 
@@ -31,15 +36,19 @@
 
 # Part I · Q1–Q5（14 点评审的主问题）
 
-## Q1 · "核心主张（failure-driven 优于同预算随机）没有被检验：A5 没有跑。"
+## Q1 · "核心主张（failure-driven 优于同预算随机）检验了吗？结果如何？"
 
-**Concede.** We agree, and we state it in the paper rather than hide it: the core mechanism is *not* confirmation-tested. §6.4, §7 and §10 record A5 as **BLOCKED**, with two independent reasons: (i) sample size — at n=41/64 the contrast cannot yield an interpretable Δ; (ii) instrument fidelity — a confirmatory A5 requires the split-repo verifier to expose a **true asset pool**, whereas this repository offers only an instrument-level proxy, and our own protocol forbids reading a main-repository Δ as confirmatory. Running it here could not license the very claim it tests.
+> **态势已变（2026-10-03）**：A5 **已跑**（673r，真实逐资产对照），**主端点不显著**。此后 rebuttal 不得再说"A5 未跑"。但论文正文目前仍写 A5 为 **BLOCKED**（架构不支持）——**这正是需要下一个论文批次修的地方**（见附录 B）。
 
-**Already addressed.** The falsifier is *pre-registered with a decision rule*: "if the CI of Δ(A0−A5) crosses 0, then 'failure-driven beats same-budget random' does not hold" (§6.4). The paper's E1 contrasts are explicitly labelled as **directional** (static = caliber re-binning; random† = instrument-level proxy), not as the A0−A5 result. §10 lists A0−A5 as the top future-work item, and Table `tab:e4` carries per-group hypotheses with `{{TODO_ablation_*}}` placeholders instead of invented numbers.
+**Concede.** A5 has now been run, and the pre-registered primary endpoint is **not significant**. Real per-asset attribution (673r, 2026-10-03): 105 samples × 8 assets = **840 real `detect` calls**, giving a true N×8 verdict matrix; FD stays an honest predictor because its `fail_hits` come only from the derivation set, never from the evaluation set. At the pre-registered budget k=4 with degenerate assets excluded: **holdout Δ(FD−Random) = +0.00pp (p = 1.0000)**; **corpus Δ = +25.00pp, 95% CI [−2.39, +52.39], p = 0.2188 (CI crosses 0)**. The 8-candidate primary analysis (degenerate assets included) is ceiling-pressed and reported as **uninterpretable** under the pre-registered rule. **We do not claim "failure-driven beats same-budget random."**
 
-**Plan / preliminary evidence.** The A5 design is frozen and versioned (`data/673p_a5_preregistration.json`; runner `tools/run_a5_experiment_673p.py`): same-sample, **budget-matched** (anchor = the 4 assets FD actually used on catches, cost-matched), 2000-seed distribution for the random arm, exact McNemar for the paired contrast, single-attribution replay with a declared *bias direction*. As *preliminary and explicitly non-confirmatory* evidence we additionally ran an **exploratory derivation split** (`a5_673p.json::exploratory_derivation_split`): derive the failure-hits asset set on the **old** samples, then evaluate on the **new** samples — turn FD into a genuine predictor. On holdout: FD-derived **85.0% (17/20)** vs random **10.0% (2/20)** (Δ=75pp, exact McNemar p=6.1×10⁻⁵, h=1.70); on corpus: **87.5% (14/16)** vs **37.5% (6/16)** (Δ=50pp, p=7.8×10⁻³). **We label this `exploratory`, not confirmatory**: derivation and evaluation are a time split from the same fixture policy, and the resulting distribution drift is exactly what our H4 subset check already registers (corpus +33.3pp, outside the pre-registered range). It is evidence *about direction*, and we do not place it in the claim table.
+**Why "not yet decidable" ≠ "proven equal".** Three independent reasons, each pre-registered or measured: (i) **a degenerate asset** — `wunsequenced` is a *constant catch* (the local MinGW g++ 13.1 does not recognise `-Wunsequenced`, and the existing `detect()` treats "unknown option" as a hit), so any subset containing it reads 100% and the primary endpoint is ceiling-pressed; (ii) **power** — the evaluation sets are **n=20/16**, far below the n≈138 needed for a 15pp paired contrast; (iii) **single-point random variance** — at k=4 the 2000-draw random distribution has **sd = 24.65pp** on holdout, so one seed is not a fair opponent. None of these is a claim of equivalence.
 
-> 中文要点：先认（A5 没跑，论文已写 BLOCKED），再亮已落地（预注册 + 决策规则 + 占位符诚实），最后给"设计 + 探索性初步证据"。派生集结果是本批唯一的"新弹药"，务必每次带 `exploratory / non-confirmatory` 标签与 artifact 路径。
+**Direction (consistent, but explicitly not a claim).** At the pre-registered k=4 with degenerate assets excluded, FD ≥ Random on both sets, and FD strictly dominates **61.2%** (holdout) / **80.0%** (corpus) of the 2000 random draws; Δ is never negative across the budget sweep except one post-hoc sensitivity view (corpus k=1, −6.25pp). Two nominally significant points — **holdout k=3, p=0.0156; corpus k=2, p=0.0313** — sit on the **exploratory sweep**, not on the pre-registered endpoint, and are **not** confirmatory. Note also that the earlier *replay-caliber* derivation split (673p: 85.0% vs 10.0%) is **not reproduced by 673r's real attribution at the primary budget**; we report the newer, weaker result and retire the older number rather than keep it as ammunition.
+
+**What this buys (and what it does not).** It converts A5 from "architecturally impossible" to "**runnable, with a neutral primary result**": the same-budget comparison substrate now exists as an artifact. It does not license the superiority claim, and the paper must not contain an "FD > Random" sentence. **Roadmap:** (1) expand to n≥138 (see `data/673s_扩样方案.md`); (2) fix the `wunsequenced` mis-hit — this touches `detect()`, hence a separate batch; (3) unify the round caliber: 673r used **1 round** while the 82.9%/62.5% headline uses **3 rounds (any-round catch ⇒ catch)**, so the two must **not** be subtracted or compared.
+
+> 中文要点：Q1 从"没跑"变成"跑了但不显著"——这是**更难**的一问，答法必须四步：(1) 先认主端点不显著；(2) 用三条独立原因论证"不可判定"而非"证明无差异"（退化资产天花板 / n=20-16 ≪ 138 / 随机方差 sd=24.65pp）；(3) 给方向证据（61.2% / 80.0%）但明标非确认；(4) 主动交代 673p 的 85%/10% **未被真实口径复现**，不保留旧弹药。**绝不在论文里写 "FD > Random"。**
 
 ## Q2 · "82.9% 不是 blind：41 个 holdout 里只有 21 个是严格盲的。"
 
@@ -189,7 +198,7 @@
 
 ## 附录 A · 一句话弹药库（One-line armory）
 
-- **A5**：设计已冻结并预注册，未跑；阻塞是双重的（样本量 + 仪器保真度），不是"忘了做"。探索性派生集：85.0% vs 10.0%（标 exploratory）。
+- **A5**：**已跑**（673r，105×8 真判定矩阵，840 次真实 detect）；主端点**不显著**（holdout Δ=+0.00pp p=1.0000；corpus Δ=+25.00pp，CI [−2.39,+52.39] 跨 0，p=0.2188）；方向一致为正（FD 严格优于 61.2%/80.0% 的随机子集）。**不可判定的三因**：`wunsequenced` 恒 catch 压天花板、n=20/16 ≪ 138、随机单点 sd=24.65pp。**不得写 "FD > Random"。**
 - **blind**：只有 21 个样本严格盲；主估计量是 **81.0% (17/21)**，扩样值 82.9% (34/41) 明标含 20 个 reveal 后并入。
 - **Belnap**：`(support, refutation)`；`pass=(1,0)`…`contradict=(1,1)`；detector availability 是独立 metadata；我们不声称编码新颖。
 - **auditability**：当前状态成立；历史钉定不完整（452 事件无 ruleset hash）；路线图 = hash 入账本 + guard 重跑探测器 + fail-loud 自检。
@@ -199,6 +208,20 @@
 - **caliber**：三口径全报（62.5/54.8/52.6）；四个 Δ 的 CI 均不跨 0。
 - **标签**：零第二标注者（T17）；已预注册 25% 双标注 + κ<0.6 全复核。
 - **E9**：跨缺陷区间压力测试；corpus 与 cppcheck 打平；8 个 reverse pair 逐条列出。
+
+## 附录 A′ · ⚠ 论文正文已过时（**需下一个论文批次修；本批按红线 2 未动**）
+
+`queyi_neurips2027_v1.1.tex` 目前在 §6.4 / §7 / §10 把 A5 写成 **BLOCKED**（"架构不支持干净分离""接口已解析但实验未跑"），表 `tab:e4` 的 A5 行仍是 `{{TODO_ablation_A5}}`。**673r 提交后该表述不再成立**：
+
+| 论文现状（过时） | 673r 后的现实 |
+|---|---|
+| "A5 未跑；阻塞 = 拆仓真资产池" | A5 **已跑**；真判定矩阵已建成（105×8，840 次真实 detect） |
+| "0 groups run" | A5 有结果：**主端点不显著**（holdout p=1.0000 / corpus p=0.2188，CI 跨 0） |
+| "在此运行无法许可其主张" | 运行了，**结论中性**；仍许可不了 superiority 主张，但原因变为 **n 与退化资产**，不再"架构不支持" |
+
+**建议（独立批次）**：把 §6.4/§7/§10 的 A5 段落改写为"**已运行 + 主端点不显著 + 三个可判定性限制 + 方向为正**"，同步 `tab:e4` 的 A5 行与中文稿 §6.2/§7.6；**并且必须登记 `wunsequenced` 恒 catch 缺陷对历史数字的潜在污染**（673r §4.2），以及"673r 1 回合 vs 头条 3 回合不得相减"的口径警告。
+
+> 本批不做的理由：任务红线 2 明令"不碰 A5 实验结果（那是 673r 的范围）"。但**预案必须反映现实**——否则 rebuttal 会答错，这就是本附录取代旧 Q1 的原因。
 
 ## 附录 B · 三条应答纪律（回复技巧）
 
