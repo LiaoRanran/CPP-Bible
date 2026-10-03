@@ -1,0 +1,29 @@
+{
+  "id": "sample_068",
+  "category": "A",
+  "defect_type": "uninitialized_read",
+  "defect_location": {
+    "line": 7,
+    "function": "main",
+    "note": "use(v); // <<PLANTED-DEFECT>> uninitialized read: pass uninit var to function"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "notes": "未初始化变量 v 作为参数传入函数（uninitialized read）。无本地检测器可抓，属边界案例。",
+  "generator": "676c-expA-generate",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "detector_kind": "compiler-warn",
+    "detector_verdict": "miss",
+    "detector_note": "无告警",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

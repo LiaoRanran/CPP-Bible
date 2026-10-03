@@ -1,0 +1,29 @@
+{
+  "id": "sample_066",
+  "category": "A",
+  "defect_type": "uninitialized_read",
+  "defect_location": {
+    "line": 6,
+    "function": "main",
+    "note": "if (c > 100) { (void)1; } // <<PLANTED-DEFECT>> uninitialized read: compare uninit var"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "notes": "未初始化变量 c 直接参与比较（uninitialized read）。compiler-warn 在 -O0 -fsyntax-only 下通常不报，属边界案例。",
+  "generator": "676c-expA-generate",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "detector_kind": "compiler-warn",
+    "detector_verdict": "miss",
+    "detector_note": "无告警",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

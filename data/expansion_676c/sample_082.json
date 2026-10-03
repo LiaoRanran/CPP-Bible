@@ -1,0 +1,31 @@
+{
+  "id": "sample_082",
+  "category": "A",
+  "defect_type": "undefined_behavior",
+  "defect_location": {
+    "line": 5,
+    "function": "main",
+    "note": "int r = 1 << 45; // <<PLANTED-DEFECT>> undefined behavior: shift exponent 45 too large for 32-bit int"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "左移指数 45 超出 int 位宽（ub：shift exponent too large）。ubsan 捕获。",
+  "generator": "676c-expA-generate",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [
+      "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\expansion_676c\\sample_082.cpp:5:13: warning: left shift count >= width of type [-Wshift-count-overflow]"
+    ],
+    "detector_kind": "ubsan",
+    "detector_verdict": "catch",
+    "detector_note": "ubsan 命中[-O0(rc=0) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp5wf0n2f0/_676c_tmp_082.cpp:5:13: runtime error: shift exponent 45 is too large for 32-bit type ; -O2(rc=0) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

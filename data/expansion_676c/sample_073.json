@@ -1,0 +1,29 @@
+{
+  "id": "sample_073",
+  "category": "A",
+  "defect_type": "uninitialized_read",
+  "defect_location": {
+    "line": 6,
+    "function": "main",
+    "note": "if (flag) { (void)0; } // <<PLANTED-DEFECT>> uninitialized read: branch on uninit bool"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "notes": "未初始化 bool 控制分支（uninitialized read）。无本地检测器可抓，边界案例。",
+  "generator": "676c-expA-generate",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "detector_kind": "compiler-warn",
+    "detector_verdict": "miss",
+    "detector_note": "无告警",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

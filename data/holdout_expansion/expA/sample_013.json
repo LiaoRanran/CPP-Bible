@@ -1,0 +1,29 @@
+{
+  "id": "sample_013",
+  "category": "A",
+  "defect_type": "memory_safety",
+  "defect_location": {
+    "line": 8,
+    "function": "main",
+    "note": "if (k == 1) delete[] p; // <<PLANTED-DEFECT>> double-free at loop iteration 1"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "循环中对同一指针重复释放（double-free）。asan 捕获。",
+  "generator": "676c-expA-generate",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "detector_kind": "asan",
+    "detector_verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================================================================= ==2007==ERROR: AddressSanitizer: attempting double-free on 0x50200000]（档位 -O0,-O2）",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

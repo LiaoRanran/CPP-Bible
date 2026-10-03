@@ -1,0 +1,29 @@
+{
+  "id": "sample_078",
+  "category": "A",
+  "defect_type": "uninitialized_read",
+  "defect_location": {
+    "line": 7,
+    "function": "main",
+    "note": "int r = p.a + p.b; // <<PLANTED-DEFECT>> uninitialized read: read uninit struct fields"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "notes": "读取未初始化的结构字段（uninitialized read）。无本地检测器可抓，边界案例。",
+  "generator": "676c-expA-generate",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "detector_kind": "compiler-warn",
+    "detector_verdict": "miss",
+    "detector_note": "无告警",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

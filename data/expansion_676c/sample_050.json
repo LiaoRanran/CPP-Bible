@@ -1,0 +1,29 @@
+{
+  "id": "sample_050",
+  "category": "A",
+  "defect_type": "null_pointer_deref",
+  "defect_location": {
+    "line": 7,
+    "function": "main",
+    "note": "*p = 3; // <<PLANTED-DEFECT>> null pointer dereference: deref returned nullptr"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "函数返回 nullptr 后解引用写入。asan 捕获。",
+  "generator": "676c-expA-generate",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "detector_kind": "asan",
+    "detector_verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 AddressSanitizer:DEADLYSIGNAL ================================================================= ==3967==ERROR: AddressSanitizer: SEGV o; -O2(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 Addre",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

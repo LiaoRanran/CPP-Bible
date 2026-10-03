@@ -1,0 +1,46 @@
+{
+  "pooled": 100,
+  "failed": 0,
+  "failed_ids": [],
+  "by_type": {
+    "memory_safety": 24,
+    "out_of_bounds": 20,
+    "null_pointer_deref": 15,
+    "uninitialized_read": 20,
+    "undefined_behavior": 21
+  },
+  "severity": {
+    "high": 68,
+    "medium": 24,
+    "low": 8
+  },
+  "planted_true": 100,
+  "planted_ratio": 1.0,
+  "warned": 15,
+  "avg_time_s": 1.191,
+  "spotcheck_n": 20,
+  "spotcheck_fail": 0,
+  "spotcheck_rate": 0.0,
+  "spotcheck_ids": [
+    "sample_002",
+    "sample_003",
+    "sample_004",
+    "sample_011",
+    "sample_013",
+    "sample_031",
+    "sample_036",
+    "sample_039",
+    "sample_041",
+    "sample_043",
+    "sample_055",
+    "sample_056",
+    "sample_057",
+    "sample_060",
+    "sample_069",
+    "sample_071",
+    "sample_077",
+    "sample_081",
+    "sample_088",
+    "sample_090"
+  ]
+}

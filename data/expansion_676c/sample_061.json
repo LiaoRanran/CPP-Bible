@@ -1,0 +1,29 @@
+{
+  "id": "sample_061",
+  "category": "A",
+  "defect_type": "uninitialized_read",
+  "defect_location": {
+    "line": 6,
+    "function": "main",
+    "note": "int r = y + 7; // <<PLANTED-DEFECT>> uninitialized read: arithmetic on uninit var"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "notes": "变量 y 未初始化即参与运算（uninitialized read）。无本地检测器可抓（需 MSan），属边界案例。",
+  "generator": "676c-expA-generate",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "detector_kind": "compiler-warn",
+    "detector_verdict": "miss",
+    "detector_note": "无告警",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

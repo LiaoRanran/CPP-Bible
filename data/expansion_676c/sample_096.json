@@ -1,0 +1,29 @@
+{
+  "id": "sample_096",
+  "category": "A",
+  "defect_type": "undefined_behavior",
+  "defect_location": {
+    "line": 8,
+    "function": "main",
+    "note": "bool c = b; // <<PLANTED-DEFECT>> undefined behavior: load of invalid bool value (2)"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "内存中 bool 被写成非法值 2 后加载（ub：invalid bool load）。ubsan 捕获。",
+  "generator": "676c-expA-generate",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "detector_kind": "ubsan",
+    "detector_verdict": "catch",
+    "detector_note": "ubsan 命中[-O0(rc=0) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpcaupfmao/_676c_tmp_096.cpp:8:8: runtime error: load of value 2, which is not a valid value for ; -O2(rc=0) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

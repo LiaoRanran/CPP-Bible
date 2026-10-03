@@ -1,0 +1,29 @@
+{
+  "id": "sample_041",
+  "category": "A",
+  "defect_type": "out_of_bounds",
+  "defect_location": {
+    "line": 6,
+    "function": "main",
+    "note": "for (int i = 0; i <= 4; ++i) { b[i] = i; } // <<PLANTED-DEFECT>> out-of-bounds: loop writes index 4 (size 4)"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "循环 off-by-one，写入下标 4（越界）。asan 捕获。",
+  "generator": "676c-expA-generate",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "detector_kind": "asan",
+    "detector_verdict": "catch",
+    "detector_note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================================================================= ==3499==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7; -O2(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 =====",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

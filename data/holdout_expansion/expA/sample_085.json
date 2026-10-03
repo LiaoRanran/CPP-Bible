@@ -1,0 +1,31 @@
+{
+  "id": "sample_085",
+  "category": "A",
+  "defect_type": "undefined_behavior",
+  "defect_location": {
+    "line": 5,
+    "function": "main",
+    "note": "int r = 1 << (-3); // <<PLANTED-DEFECT>> undefined behavior: negative shift exponent -3"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "负左移指数 -3（ub：negative shift）。ubsan 捕获。",
+  "generator": "676c-expA-generate",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [
+      "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\expansion_676c\\sample_085.cpp:5:13: warning: left shift count is negative [-Wshift-count-negative]"
+    ],
+    "detector_kind": "ubsan",
+    "detector_verdict": "catch",
+    "detector_note": "ubsan 命中[-O0(rc=0) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpv0srzffg/_676c_tmp_085.cpp:5:13: runtime error: shift exponent -3 is negative; -O2(rc=0) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppD",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

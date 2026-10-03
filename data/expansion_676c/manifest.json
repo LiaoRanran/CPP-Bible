@@ -1,0 +1,1802 @@
+{
+  "001": {
+    "id": "sample_001",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "int v = p[0]; // <<PLANTED-DEFECT>> use-after-free: read freed heap slot"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "释放后访问已 delete 的堆数组第 0 槽（UAF，read）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "002": {
+    "id": "sample_002",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "int v = p[3]; // <<PLANTED-DEFECT>> use-after-free: read freed heap slot"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "释放后访问已 delete 的堆数组第 3 槽（UAF，read）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "003": {
+    "id": "sample_003",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "int v = p[5]; // <<PLANTED-DEFECT>> use-after-free: read freed heap slot"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "释放后访问已 delete 的堆数组第 5 槽（UAF，read）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "004": {
+    "id": "sample_004",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "int v = p[7]; // <<PLANTED-DEFECT>> use-after-free: read freed heap slot"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "释放后访问已 delete 的堆数组第 7 槽（UAF，read）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "005": {
+    "id": "sample_005",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "p[1] = 99; // <<PLANTED-DEFECT>> use-after-free: write freed heap slot"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "释放后访问已 delete 的堆数组第 1 槽（UAF，write）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "006": {
+    "id": "sample_006",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "p[2] = 99; // <<PLANTED-DEFECT>> use-after-free: write freed heap slot"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "释放后访问已 delete 的堆数组第 2 槽（UAF，write）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "007": {
+    "id": "sample_007",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "p[4] = 99; // <<PLANTED-DEFECT>> use-after-free: write freed heap slot"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "释放后访问已 delete 的堆数组第 4 槽（UAF，write）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "008": {
+    "id": "sample_008",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "p[6] = 99; // <<PLANTED-DEFECT>> use-after-free: write freed heap slot"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "释放后访问已 delete 的堆数组第 6 槽（UAF，write）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "009": {
+    "id": "sample_009",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "r->a = 7; // <<PLANTED-DEFECT>> use-after-free: write through freed struct pointer"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "释放后通过悬空结构指针写内存（UAF）。asan 在运行时捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "010": {
+    "id": "sample_010",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "r->a = 7; // <<PLANTED-DEFECT>> use-after-free: write through freed struct pointer"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "释放后通过悬空结构指针写内存（UAF）。asan 在运行时捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "011": {
+    "id": "sample_011",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "delete[] p; // <<PLANTED-DEFECT>> double-free: same pointer released twice"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "同一指针被 delete[] 两次（double-free）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "012": {
+    "id": "sample_012",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 9,
+      "function": "main",
+      "note": "delete[] p; // <<PLANTED-DEFECT>> double-free inside branch"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "条件分支内对同一指针二次释放（double-free）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "013": {
+    "id": "sample_013",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "if (k == 1) delete[] p; // <<PLANTED-DEFECT>> double-free at loop iteration 1"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "循环中对同一指针重复释放（double-free）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "014": {
+    "id": "sample_014",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "delete[] p; // <<PLANTED-DEFECT>> double-free: same pointer released twice"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "同一指针被 delete[] 两次（double-free）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "015": {
+    "id": "sample_015",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 9,
+      "function": "main",
+      "note": "delete[] p; // <<PLANTED-DEFECT>> double-free inside branch"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "条件分支内对同一指针二次释放（double-free）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "016": {
+    "id": "sample_016",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "if (k == 1) delete[] p; // <<PLANTED-DEFECT>> double-free at loop iteration 1"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "循环中对同一指针重复释放（double-free）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "017": {
+    "id": "sample_017",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "a[6] = 1; // <<PLANTED-DEFECT>> heap buffer overflow: write 6 past size 4"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组 size=4，越界访问下标 6（heap OOB write）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "018": {
+    "id": "sample_018",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "a[10] = 1; // <<PLANTED-DEFECT>> heap buffer overflow: write 10 past size 8"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组 size=8，越界访问下标 10（heap OOB write）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "019": {
+    "id": "sample_019",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "a[18] = 1; // <<PLANTED-DEFECT>> heap buffer overflow: write 18 past size 16"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组 size=16，越界访问下标 18（heap OOB write）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "020": {
+    "id": "sample_020",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "a[34] = 1; // <<PLANTED-DEFECT>> heap buffer overflow: write 34 past size 32"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组 size=32，越界访问下标 34（heap OOB write）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "021": {
+    "id": "sample_021",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int v = a[6]; // <<PLANTED-DEFECT>> heap buffer overflow: read 6 past size 4"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组 size=4，越界访问下标 6（heap OOB read）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "022": {
+    "id": "sample_022",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int v = a[10]; // <<PLANTED-DEFECT>> heap buffer overflow: read 10 past size 8"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组 size=8，越界访问下标 10（heap OOB read）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "023": {
+    "id": "sample_023",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "b[7] = 1; // <<PLANTED-DEFECT>> stack buffer overflow: write 7 past size 4"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "栈数组 size=4，越界访问下标 7（stack OOB write）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "024": {
+    "id": "sample_024",
+    "category": "A",
+    "defect_type": "memory_safety",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int v = b[7]; // <<PLANTED-DEFECT>> stack buffer overflow: read 7 past size 4"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "栈数组 size=4，越界访问下标 7（stack OOB read）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "025": {
+    "id": "sample_025",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "int v = a[5]; // <<PLANTED-DEFECT>> out-of-bounds: read heap index 5 (size 4)"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组越界读，下标 5 >= size 4。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "026": {
+    "id": "sample_026",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "int v = a[9]; // <<PLANTED-DEFECT>> out-of-bounds: read heap index 9 (size 8)"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组越界读，下标 9 >= size 8。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "027": {
+    "id": "sample_027",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "int v = a[17]; // <<PLANTED-DEFECT>> out-of-bounds: read heap index 17 (size 16)"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组越界读，下标 17 >= size 16。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "028": {
+    "id": "sample_028",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "int v = a[33]; // <<PLANTED-DEFECT>> out-of-bounds: read heap index 33 (size 32)"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组越界读，下标 33 >= size 32。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "029": {
+    "id": "sample_029",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "int v = a[65]; // <<PLANTED-DEFECT>> out-of-bounds: read heap index 65 (size 64)"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组越界读，下标 65 >= size 64。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "030": {
+    "id": "sample_030",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "a[5] = 7; // <<PLANTED-DEFECT>> out-of-bounds: write heap index 5 (size 4)"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组越界写，下标 5 >= size 4。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "031": {
+    "id": "sample_031",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "a[9] = 7; // <<PLANTED-DEFECT>> out-of-bounds: write heap index 9 (size 8)"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组越界写，下标 9 >= size 8。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "032": {
+    "id": "sample_032",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "a[17] = 7; // <<PLANTED-DEFECT>> out-of-bounds: write heap index 17 (size 16)"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组越界写，下标 17 >= size 16。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "033": {
+    "id": "sample_033",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "a[33] = 7; // <<PLANTED-DEFECT>> out-of-bounds: write heap index 33 (size 32)"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组越界写，下标 33 >= size 32。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "034": {
+    "id": "sample_034",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "a[65] = 7; // <<PLANTED-DEFECT>> out-of-bounds: write heap index 65 (size 64)"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "堆数组越界写，下标 65 >= size 64。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "035": {
+    "id": "sample_035",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "__builtin_memcpy(dst, src, 9); // <<PLANTED-DEFECT>> out-of-bounds: memcpy 9 bytes into 4-byte dst"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "memcpy 写入 9 字节到仅 4 字节目标（堆/栈溢出）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "036": {
+    "id": "sample_036",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "__builtin_memcpy(dst, src, 13); // <<PLANTED-DEFECT>> out-of-bounds: memcpy 13 bytes into 8-byte dst"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "memcpy 写入 13 字节到仅 8 字节目标（堆/栈溢出）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "037": {
+    "id": "sample_037",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int v = b[6]; // <<PLANTED-DEFECT>> out-of-bounds: read stack index 6 (size 4)"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "栈数组越界读，下标 6 >= size 4。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "038": {
+    "id": "sample_038",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int v = b[10]; // <<PLANTED-DEFECT>> out-of-bounds: read stack index 10 (size 8)"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "栈数组越界读，下标 10 >= size 8。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "039": {
+    "id": "sample_039",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int v = b[18]; // <<PLANTED-DEFECT>> out-of-bounds: read stack index 18 (size 16)"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "栈数组越界读，下标 18 >= size 16。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "040": {
+    "id": "sample_040",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int v = b[34]; // <<PLANTED-DEFECT>> out-of-bounds: read stack index 34 (size 32)"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "栈数组越界读，下标 34 >= size 32。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "041": {
+    "id": "sample_041",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "for (int i = 0; i <= 4; ++i) { b[i] = i; } // <<PLANTED-DEFECT>> out-of-bounds: loop writes index 4 (size 4)"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "循环 off-by-one，写入下标 4（越界）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "042": {
+    "id": "sample_042",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "for (int i = 0; i <= 8; ++i) { b[i] = i; } // <<PLANTED-DEFECT>> out-of-bounds: loop writes index 8 (size 8)"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "循环 off-by-one，写入下标 8（越界）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "043": {
+    "id": "sample_043",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "for (int i = 0; i <= 16; ++i) { b[i] = i; } // <<PLANTED-DEFECT>> out-of-bounds: loop writes index 16 (size 16)"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "循环 off-by-one，写入下标 16（越界）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "044": {
+    "id": "sample_044",
+    "category": "A",
+    "defect_type": "out_of_bounds",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "for (int i = 0; i <= 32; ++i) { b[i] = i; } // <<PLANTED-DEFECT>> out-of-bounds: loop writes index 32 (size 32)"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "循环 off-by-one，写入下标 32（越界）。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "045": {
+    "id": "sample_045",
+    "category": "A",
+    "defect_type": "null_pointer_deref",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "*p = 5; // <<PLANTED-DEFECT>> null pointer dereference: write through nullptr"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "解引用空指针写入（null pointer dereference）。asan 捕获 SEGV。",
+    "generator": "676c-expA-generate"
+  },
+  "046": {
+    "id": "sample_046",
+    "category": "A",
+    "defect_type": "null_pointer_deref",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "*p = 5; // <<PLANTED-DEFECT>> null pointer dereference: write through nullptr"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "解引用空指针写入（null pointer dereference）。asan 捕获 SEGV。",
+    "generator": "676c-expA-generate"
+  },
+  "047": {
+    "id": "sample_047",
+    "category": "A",
+    "defect_type": "null_pointer_deref",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "*p = 5; // <<PLANTED-DEFECT>> null pointer dereference: write through nullptr"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "解引用空指针写入（null pointer dereference）。asan 捕获 SEGV。",
+    "generator": "676c-expA-generate"
+  },
+  "048": {
+    "id": "sample_048",
+    "category": "A",
+    "defect_type": "null_pointer_deref",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "*p = 5; // <<PLANTED-DEFECT>> null pointer dereference: write through nullptr"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "解引用空指针写入（null pointer dereference）。asan 捕获 SEGV。",
+    "generator": "676c-expA-generate"
+  },
+  "049": {
+    "id": "sample_049",
+    "category": "A",
+    "defect_type": "null_pointer_deref",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "*p = 3; // <<PLANTED-DEFECT>> null pointer dereference: deref returned nullptr"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "函数返回 nullptr 后解引用写入。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "050": {
+    "id": "sample_050",
+    "category": "A",
+    "defect_type": "null_pointer_deref",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "*p = 3; // <<PLANTED-DEFECT>> null pointer dereference: deref returned nullptr"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "函数返回 nullptr 后解引用写入。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "051": {
+    "id": "sample_051",
+    "category": "A",
+    "defect_type": "null_pointer_deref",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "*p = 3; // <<PLANTED-DEFECT>> null pointer dereference: deref returned nullptr"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "函数返回 nullptr 后解引用写入。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "052": {
+    "id": "sample_052",
+    "category": "A",
+    "defect_type": "null_pointer_deref",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "*p = 3; // <<PLANTED-DEFECT>> null pointer dereference: deref returned nullptr"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "函数返回 nullptr 后解引用写入。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "053": {
+    "id": "sample_053",
+    "category": "A",
+    "defect_type": "null_pointer_deref",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "s->x = 1; // <<PLANTED-DEFECT>> null pointer dereference: member access through null"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "通过空结构指针访问成员。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "054": {
+    "id": "sample_054",
+    "category": "A",
+    "defect_type": "null_pointer_deref",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "s->x = 1; // <<PLANTED-DEFECT>> null pointer dereference: member access through null"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "通过空结构指针访问成员。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "055": {
+    "id": "sample_055",
+    "category": "A",
+    "defect_type": "null_pointer_deref",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "s->x = 1; // <<PLANTED-DEFECT>> null pointer dereference: member access through null"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "通过空结构指针访问成员。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "056": {
+    "id": "sample_056",
+    "category": "A",
+    "defect_type": "null_pointer_deref",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "s->x = 1; // <<PLANTED-DEFECT>> null pointer dereference: member access through null"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "通过空结构指针访问成员。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "057": {
+    "id": "sample_057",
+    "category": "A",
+    "defect_type": "null_pointer_deref",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "(*pp)[0] = 1; // <<PLANTED-DEFECT>> null pointer dereference: double deref of null"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "二级空指针双重解引用写入。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "058": {
+    "id": "sample_058",
+    "category": "A",
+    "defect_type": "null_pointer_deref",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "(*pp)[0] = 1; // <<PLANTED-DEFECT>> null pointer dereference: double deref of null"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "二级空指针双重解引用写入。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "059": {
+    "id": "sample_059",
+    "category": "A",
+    "defect_type": "null_pointer_deref",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "(*pp)[0] = 1; // <<PLANTED-DEFECT>> null pointer dereference: double deref of null"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "notes": "二级空指针双重解引用写入。asan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "060": {
+    "id": "sample_060",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int r = x + 7; // <<PLANTED-DEFECT>> uninitialized read: arithmetic on uninit var"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "变量 x 未初始化即参与运算（uninitialized read）。无本地检测器可抓（需 MSan），属边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "061": {
+    "id": "sample_061",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int r = y + 7; // <<PLANTED-DEFECT>> uninitialized read: arithmetic on uninit var"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "变量 y 未初始化即参与运算（uninitialized read）。无本地检测器可抓（需 MSan），属边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "062": {
+    "id": "sample_062",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int r = z + 7; // <<PLANTED-DEFECT>> uninitialized read: arithmetic on uninit var"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "变量 z 未初始化即参与运算（uninitialized read）。无本地检测器可抓（需 MSan），属边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "063": {
+    "id": "sample_063",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int r = k + 7; // <<PLANTED-DEFECT>> uninitialized read: arithmetic on uninit var"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "变量 k 未初始化即参与运算（uninitialized read）。无本地检测器可抓（需 MSan），属边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "064": {
+    "id": "sample_064",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "if (a > 100) { (void)1; } // <<PLANTED-DEFECT>> uninitialized read: compare uninit var"
+    },
+    "severity": "low",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "未初始化变量 a 直接参与比较（uninitialized read）。compiler-warn 在 -O0 -fsyntax-only 下通常不报，属边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "065": {
+    "id": "sample_065",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "if (b > 100) { (void)1; } // <<PLANTED-DEFECT>> uninitialized read: compare uninit var"
+    },
+    "severity": "low",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "未初始化变量 b 直接参与比较（uninitialized read）。compiler-warn 在 -O0 -fsyntax-only 下通常不报，属边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "066": {
+    "id": "sample_066",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "if (c > 100) { (void)1; } // <<PLANTED-DEFECT>> uninitialized read: compare uninit var"
+    },
+    "severity": "low",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "未初始化变量 c 直接参与比较（uninitialized read）。compiler-warn 在 -O0 -fsyntax-only 下通常不报，属边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "067": {
+    "id": "sample_067",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "if (d > 100) { (void)1; } // <<PLANTED-DEFECT>> uninitialized read: compare uninit var"
+    },
+    "severity": "low",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "未初始化变量 d 直接参与比较（uninitialized read）。compiler-warn 在 -O0 -fsyntax-only 下通常不报，属边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "068": {
+    "id": "sample_068",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "use(v); // <<PLANTED-DEFECT>> uninitialized read: pass uninit var to function"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "未初始化变量 v 作为参数传入函数（uninitialized read）。无本地检测器可抓，属边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "069": {
+    "id": "sample_069",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "use(w); // <<PLANTED-DEFECT>> uninitialized read: pass uninit var to function"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "未初始化变量 w 作为参数传入函数（uninitialized read）。无本地检测器可抓，属边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "070": {
+    "id": "sample_070",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "use(q); // <<PLANTED-DEFECT>> uninitialized read: pass uninit var to function"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "未初始化变量 q 作为参数传入函数（uninitialized read）。无本地检测器可抓，属边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "071": {
+    "id": "sample_071",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "use(t); // <<PLANTED-DEFECT>> uninitialized read: pass uninit var to function"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "未初始化变量 t 作为参数传入函数（uninitialized read）。无本地检测器可抓，属边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "072": {
+    "id": "sample_072",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "int r = p.a + p.b; // <<PLANTED-DEFECT>> uninitialized read: read uninit struct fields"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "读取未初始化的结构字段（uninitialized read）。无本地检测器可抓，边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "073": {
+    "id": "sample_073",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "if (flag) { (void)0; } // <<PLANTED-DEFECT>> uninitialized read: branch on uninit bool"
+    },
+    "severity": "low",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "未初始化 bool 控制分支（uninitialized read）。无本地检测器可抓，边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "074": {
+    "id": "sample_074",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int r = arr[2]; // <<PLANTED-DEFECT>> uninitialized read: read uninit array element"
+    },
+    "severity": "low",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "读取未初始化数组元素（uninitialized read）。无本地检测器可抓，边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "075": {
+    "id": "sample_075",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int r = m + 7; // <<PLANTED-DEFECT>> uninitialized read: arithmetic on uninit var"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "变量 m 未初始化即参与运算（uninitialized read）。无本地检测器可抓（需 MSan），属边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "076": {
+    "id": "sample_076",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "if (e > 100) { (void)1; } // <<PLANTED-DEFECT>> uninitialized read: compare uninit var"
+    },
+    "severity": "low",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "未初始化变量 e 直接参与比较（uninitialized read）。compiler-warn 在 -O0 -fsyntax-only 下通常不报，属边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "077": {
+    "id": "sample_077",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "use(s); // <<PLANTED-DEFECT>> uninitialized read: pass uninit var to function"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "未初始化变量 s 作为参数传入函数（uninitialized read）。无本地检测器可抓，属边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "078": {
+    "id": "sample_078",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "int r = p.a + p.b; // <<PLANTED-DEFECT>> uninitialized read: read uninit struct fields"
+    },
+    "severity": "medium",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "读取未初始化的结构字段（uninitialized read）。无本地检测器可抓，边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "079": {
+    "id": "sample_079",
+    "category": "A",
+    "defect_type": "uninitialized_read",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "if (flag) { (void)0; } // <<PLANTED-DEFECT>> uninitialized read: branch on uninit bool"
+    },
+    "severity": "low",
+    "planted": true,
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "notes": "未初始化 bool 控制分支（uninitialized read）。无本地检测器可抓，边界案例。",
+    "generator": "676c-expA-generate"
+  },
+  "080": {
+    "id": "sample_080",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 5,
+      "function": "main",
+      "note": "int r = 1 << 33; // <<PLANTED-DEFECT>> undefined behavior: shift exponent 33 too large for 32-bit int"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "左移指数 33 超出 int 位宽（ub：shift exponent too large）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "081": {
+    "id": "sample_081",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 5,
+      "function": "main",
+      "note": "int r = 1 << 40; // <<PLANTED-DEFECT>> undefined behavior: shift exponent 40 too large for 32-bit int"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "左移指数 40 超出 int 位宽（ub：shift exponent too large）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "082": {
+    "id": "sample_082",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 5,
+      "function": "main",
+      "note": "int r = 1 << 45; // <<PLANTED-DEFECT>> undefined behavior: shift exponent 45 too large for 32-bit int"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "左移指数 45 超出 int 位宽（ub：shift exponent too large）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "083": {
+    "id": "sample_083",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 5,
+      "function": "main",
+      "note": "int r = 1 << 60; // <<PLANTED-DEFECT>> undefined behavior: shift exponent 60 too large for 32-bit int"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "左移指数 60 超出 int 位宽（ub：shift exponent too large）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "084": {
+    "id": "sample_084",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 5,
+      "function": "main",
+      "note": "int r = 1 << (-1); // <<PLANTED-DEFECT>> undefined behavior: negative shift exponent -1"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "负左移指数 -1（ub：negative shift）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "085": {
+    "id": "sample_085",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 5,
+      "function": "main",
+      "note": "int r = 1 << (-3); // <<PLANTED-DEFECT>> undefined behavior: negative shift exponent -3"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "负左移指数 -3（ub：negative shift）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "086": {
+    "id": "sample_086",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 5,
+      "function": "main",
+      "note": "int r = 1 << (-5); // <<PLANTED-DEFECT>> undefined behavior: negative shift exponent -5"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "负左移指数 -5（ub：negative shift）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "087": {
+    "id": "sample_087",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int r = x << 32; // <<PLANTED-DEFECT>> undefined behavior: shift by 32 equals width of int"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "左移量等于 int 位宽 32（ub：shift by width）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "088": {
+    "id": "sample_088",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int r = a / 0; // <<PLANTED-DEFECT>> undefined behavior: integer division by zero"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "整数除以零（ub：division by zero）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "089": {
+    "id": "sample_089",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int r = a / 0; // <<PLANTED-DEFECT>> undefined behavior: integer division by zero"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "整数除以零（ub：division by zero）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "090": {
+    "id": "sample_090",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int r = a / 0; // <<PLANTED-DEFECT>> undefined behavior: integer division by zero"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "整数除以零（ub：division by zero）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "091": {
+    "id": "sample_091",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "int r = -m; // <<PLANTED-DEFECT>> undefined behavior: negation of INT_MIN not representable"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "对 INT_MIN 取负（ub：negation overflow）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "092": {
+    "id": "sample_092",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "int r = -m; // <<PLANTED-DEFECT>> undefined behavior: negation of INT_MIN not representable"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "对 INT_MIN 取负（ub：negation overflow）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "093": {
+    "id": "sample_093",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 7,
+      "function": "main",
+      "note": "int r = -m; // <<PLANTED-DEFECT>> undefined behavior: negation of INT_MIN not representable"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "对 INT_MIN 取负（ub：negation overflow）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "094": {
+    "id": "sample_094",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "bool c = b; // <<PLANTED-DEFECT>> undefined behavior: load of invalid bool value (2)"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "内存中 bool 被写成非法值 2 后加载（ub：invalid bool load）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "095": {
+    "id": "sample_095",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "bool c = b; // <<PLANTED-DEFECT>> undefined behavior: load of invalid bool value (2)"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "内存中 bool 被写成非法值 2 后加载（ub：invalid bool load）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "096": {
+    "id": "sample_096",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 8,
+      "function": "main",
+      "note": "bool c = b; // <<PLANTED-DEFECT>> undefined behavior: load of invalid bool value (2)"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "内存中 bool 被写成非法值 2 后加载（ub：invalid bool load）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "097": {
+    "id": "sample_097",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 5,
+      "function": "main",
+      "note": "int r = 1 << 50; // <<PLANTED-DEFECT>> undefined behavior: shift exponent 50 too large for 32-bit int"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "左移指数 50 超出 int 位宽（ub：shift exponent too large）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "098": {
+    "id": "sample_098",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 5,
+      "function": "main",
+      "note": "int r = 1 << 55; // <<PLANTED-DEFECT>> undefined behavior: shift exponent 55 too large for 32-bit int"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "左移指数 55 超出 int 位宽（ub：shift exponent too large）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "099": {
+    "id": "sample_099",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int r = a / 0; // <<PLANTED-DEFECT>> undefined behavior: integer division by zero"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "整数除以零（ub：division by zero）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  },
+  "100": {
+    "id": "sample_100",
+    "category": "A",
+    "defect_type": "undefined_behavior",
+    "defect_location": {
+      "line": 6,
+      "function": "main",
+      "note": "int r = a / 0; // <<PLANTED-DEFECT>> undefined behavior: integer division by zero"
+    },
+    "severity": "high",
+    "planted": true,
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "notes": "整数除以零（ub：division by zero）。ubsan 捕获。",
+    "generator": "676c-expA-generate"
+  }
+}

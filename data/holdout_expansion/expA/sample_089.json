@@ -1,0 +1,31 @@
+{
+  "id": "sample_089",
+  "category": "A",
+  "defect_type": "undefined_behavior",
+  "defect_location": {
+    "line": 6,
+    "function": "main",
+    "note": "int r = a / 0; // <<PLANTED-DEFECT>> undefined behavior: integer division by zero"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "整数除以零（ub：division by zero）。ubsan 捕获。",
+  "generator": "676c-expA-generate",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [
+      "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\expansion_676c\\sample_089.cpp:6:13: warning: division by zero [-Wdiv-by-zero]"
+    ],
+    "detector_kind": "ubsan",
+    "detector_verdict": "catch",
+    "detector_note": "ubsan 命中[-O0(rc=136) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp6bgslb55/_676c_tmp_089.cpp:6:13: runtime error: division by zero; -O2(rc=0) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/T",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}
