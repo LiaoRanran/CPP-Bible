@@ -1,0 +1,258 @@
+{
+  "schema": "queyi-prereg/673r",
+  "prereg_id": "673r-A5-fd-vs-random",
+  "registered_at": "2026-10-03",
+  "registrant": "LiaoRanran",
+  "status": "locked_before_experiment",
+  "immutability": "本文件在**任何 673r 运行之前**落盘并单独 commit。事后不得回改假设、主要指标、预算定义、纳入/排除标准与停止规则；结果与假设不符时按 mismatch 如实报告，不调参重跑。",
+
+  "relation_to_673p": {
+    "inherits": ["data/673p_a5_preregistration.json"],
+    "what_changes": "673p 的运行层是 **replay 单归属**（一条样本的 catch 只归属到明细里记的那一个 detector，其它资产一律记 miss）。673r 改为**真实逐资产实测**：对每个样本、每个资产各调一次 `tools/holdout_reveal_661.py::detect`，得到 8×N 的真实判定矩阵。",
+    "what_does_not_change": [
+      "假设 H0/H1 的方向与语义",
+      "主要指标定义（可测检出率 = catch/(catch+miss)）",
+      "样本集与可测口径（holdout 41 / corpus 64，与 672h 一致，不扩样）",
+      "资产池与 8 项已实测资产（tools/verifier_pool_673p.py::ASSET_POOL）",
+      "检验方法（精确 McNemar 双侧 / Clopper–Pearson 95% / Cohen's h）",
+      "随机性契约（seed=20260930 单点配对 + 2000 次重采样报分布）"
+    ],
+    "why_it_matters": "673p 登记的 **A5 阻塞条件 3**（FD 无选择层、预算是事后记账）在 replay 单归属模型下无法解除：重放只认一个 detector，故『选哪些资产』只能靠事后反推。换成真实逐资产矩阵后，同一条样本可以被多个资产抓到 ⇒ OR 语义成立 ⇒ 『同预算选子集』第一次成为可计算的量。"
+  },
+
+  "research_question": "在**同等预算**（同资产数 k）下，按历史失败模式挑选验证资产（failure-driven selection）与随机挑选（random selection）相比，缺陷检出率是否有差异？",
+
+  "hypotheses": {
+    "H0": "在同等预算 k=4 下，failure-driven selection 与 random selection 在 **holdout 评估集**（672h 扩样新样本，n=20）上的可测检出率**无差异**。",
+    "H1": "在同等预算下，failure-driven selection 的可测检出率**高于** random selection（方向性假设）。",
+    "H_secondary_corpus": "同 H0/H1，数据集换成 **corpus 评估集**（672h 扩样新样本，n=16）。",
+    "H_exploratory": "预算 k 扫描（k=1..7）上的 FD−Random 差值方向；以及**全集**（n=41 / n=64）对照。**探索性，不参与通过/不通过判定**。",
+    "test_note": "H1 是方向性的，但检验报**双侧**精确 McNemar p，方向由 Δ 的符号给出（与 672h/673p 同口径，便于跨批对照）。"
+  },
+
+  "methods": {
+    "datasets": {
+      "holdout": {
+        "n_measurable": 41,
+        "definition": "planted=true 且 verdict ∈ {catch, miss}（unknown 不进分母）",
+        "source_of_record": "data/holdout/reveal_5_detail_672h.json",
+        "catch": 34,
+        "miss": 7,
+        "derivation_split": {
+          "n": 21,
+          "rule": "source != measured_672h（672h 扩样**前**的旧样本）",
+          "catch": 17,
+          "miss": 4,
+          "use": "**只用于**估计 fail_hits ⇒ 选资产"
+        },
+        "evaluation_split": {
+          "n": 20,
+          "rule": "source == measured_672h（672h 扩样新增样本 h41–h60）",
+          "catch": 17,
+          "miss": 3,
+          "use": "**只用于**评估三臂 ⇒ FD 的选择不含评估集信息"
+        }
+      },
+      "corpus": {
+        "n_measurable": 64,
+        "definition": "verdict ∈ {catch, miss}（unknown 与 not_error 不进分母）",
+        "source_of_record": "data/external_corpus/reveal_detail_672h.json",
+        "catch": 40,
+        "miss": 24,
+        "derivation_split": {"n": 48, "rule": "source != measured_672h", "catch": 26, "miss": 22},
+        "evaluation_split": {"n": 16, "rule": "source == measured_672h（d3f-* 新样本）", "catch": 14, "miss": 2}
+      },
+      "why_these_sizes": "与 672h/673p 一致，本批**不扩样**。切分依据为样本来源（时间切分），不是按索引切：索引切会打散『旧/新』语义。"
+    },
+
+    "asset_pool": {
+      "owner": "tools/verifier_pool_673p.py::ASSET_POOL",
+      "size": 12,
+      "selectable": ["asan", "compile-time", "compiler-warn", "cross-compile", "linker", "tsan", "ubsan", "wunsequenced"],
+      "selectable_n": 8,
+      "excluded_unimplemented": ["coredump", "gdb", "ptrace", "valgrind"],
+      "excluded_measurement_instruments": ["measure", "perf-counter"],
+      "known_no_local_detector": {
+        "asset": "compile-time",
+        "behaviour": "`holdout_reveal_661.detect` 无该 kind 的分支 ⇒ 恒返回 unknown（note=『无本地检测器』）",
+        "discipline": "unknown **不是** miss；它计入 `unknown_reasons`，不进检出率分母判定为真阴性。"
+      }
+    },
+
+    "execution_model": {
+      "name": "real_per_asset_detect",
+      "is_real_execution": true,
+      "owner": "tools/detect_for_assets.py",
+      "definition": "对每条样本 s、每个资产 a 各调用一次既有 `detect(kind=a, files=s.files)`，得到真实判定；样本在子集 S 下的判定 = OR：S 中任一资产 catch ⇒ catch；S 中全部 unknown ⇒ unknown；其余 ⇒ miss。",
+      "reuses_frozen_detector": "是。判据、双档 -O0/-O2、TSan 不可用判定、`setarch -R` 全部来自 661.detect，**未复制、未修改**。",
+      "holdout_input": "样本自带磁盘夹具（detail 里的 dir + files，四个目录：Examples/atoms / Appendix/ub / data/cards_665/fixtures / Examples）。沿用 672h 的『按样本切 rv.ATOMS』既有做法。",
+      "corpus_input": "样本只有内联 `code` 字符串（无磁盘文件）⇒ 673r 把 code 落到临时目录再按同样方式调 detect。",
+      "aggregation": "OR（任一资产抓到即算抓到）。这与 673p 的 replay 单归属不同，是本批能解除阻塞条件 3 的原因。",
+      "rounds": 1,
+      "rounds_note": "⚠ 672h 冻结记录的口径是 **3 回合、任一回合 catch ⇒ catch**；本批为 840 次调用的预算约束只跑 **1 回合**。因此本批数字与 673p/672h 的基线**不是同口径**，不得直接相减。保真率（本批单回合判定 vs 冻结记录）作为独立指标如实报告。"
+    },
+
+    "asset_degeneracy": {
+      "status": "本条在**全量运行之前**补登（此时只有 6 条冒烟样本，无任何实验结果）⇒ 属预指定，不是事后调口径。",
+      "detection_rule": "在**派生集**上统计每个资产的 catch 率。catch 率 == 100%（抓到每一条派生样本）或 == 0%（一条都没抓到）⇒ 标记 `degenerate_constant`。",
+      "why": "常量资产的判定与样本无关：任何含它的子集都会把 OR 拉满或拉空 ⇒ FD 与 Random 的差异将**只由『谁选到了它』**决定，而不是由『选择策略是否更懂历史失败模式』决定。那样的对照不可解释。",
+      "known_case": {
+        "asset": "wunsequenced",
+        "evidence": "本机 MinGW g++ 13.1 **不支持** `-Wunsequenced`，编译输出为 `g++: error: unrecognized command-line option '-Wunsequenced'`；而 `holdout_reveal_661.detect` 的命中判定是 `'unsequenced' in out.lower()` ⇒ **恒真** ⇒ 该资产对任何样本都返回 catch。已在 h41/h42/h43/h44/d3f-01/d3f-02 上实测确认（6/6 全 catch）。",
+        "is_preexisting_defect": true,
+        "why_not_fixed_here": "修它就要改 detect() 的 wunsequenced 分支 ⇒ 触碰红线 1（已落盘 reveal 记录的可复现性依赖它）。属**独立批次**：改用 clang++ 判 `-Wunsequenced`，或把命中判定改成只认真正的告警行（而非把『选项不认识』当命中）。"
+      },
+      "pre_specified_handling": [
+        "**主分析（primary）**：按预注册的 8 项资产池跑，不剔除任何资产（忠实于预算定义，无事后改动）。",
+        "**并列分析（co-primary）**：剔除被标记 `degenerate_constant` 的资产后重跑（k 与预算规则不变，候选池缩小）。",
+        "两者**都**如实报告。若主分析的差异完全由常量资产驱动 ⇒ 报『不可解释（uninterpretable）』，**不**宣称 FD 优于 Random。",
+        "被剔除资产在产物与报告里逐条列名 + 列证据，绝不静默丢弃。"
+      ]
+    },
+
+    "budget": {
+      "primary_k": 4,
+      "primary_k_rationale": "沿用 673p 已发布的 holdout 预算锚（k=4）。选一个**已发布**的 k 而不是从本批数据里挑 k，是为了避免事后选 k 造成的目标寻求。corpus 同样用 k=4（跨数据集口径一致）。",
+      "sweep_k": [1, 2, 3, 4, 5, 6, 7],
+      "sweep_role": "探索性，只报方向 + CI，不参与通过/不通过判定。",
+      "k8_degeneracy": {
+        "k": 8,
+        "why_degenerate": "可选项共 8 个 ⇒ k=8 时三臂选中集合**恒等于全池** ⇒ Δ ≡ 0、p ≡ 1。",
+        "discipline": "k=8 结果照算照报（作为对照的退化验证），但**不得**作为 H0/H1 的证据，也不得写成『无差异』的结论。"
+      },
+      "static_arm_rule": "Static 臂预算 = min(k, 池中静态资产数 4)；不得用运行时资产补齐。",
+      "cost_dimension": "次预算维度 = 序数成本之和（verifier_pool_673p::cost_units，声明式，非实测墙钟）。"
+    },
+
+    "arms": {
+      "fd": "failure_driven：按 **派生集**上的 fail_hits 降序选 k 个资产（同分按 id 升序）。fail_hits = 该资产在派生集样本上真实抓到的条数。",
+      "random": "同预算 k 随机子集（`random.Random(seed).sample`，同 seed 完全可复现）。",
+      "static": "静态资产固定子集（compiler-warn / wunsequenced / cross-compile / linker 字典序）。",
+      "fd_full_pool": "全 8 项资产（对照上限，非选择策略）。"
+    },
+
+    "primary_metric": "holdout 评估集上的可测检出率 = catch / (catch + miss)，catch 定义为选中资产集的 OR 判定",
+    "secondary_metrics": [
+      "corpus 评估集可测检出率",
+      "FD−Random 配对差值 Δ（pp）与精确 McNemar p",
+      "FD−Static 配对差值与 p",
+      "Random 臂 2000 次运行的检出率分布（均值 / 标准差 / 2.5–97.5 分位）",
+      "Cohen's h",
+      "保真率：本批逐资产判定 vs 672h 冻结逐样本判决的一致率",
+      "声明式序数成本（cost_units）"
+    ],
+
+    "statistical_tests": {
+      "primary": "精确 McNemar（配对，双侧），α=0.05",
+      "alpha": 0.05,
+      "ci": "Clopper–Pearson 95%（tools/stat_bounds.py，唯一实现）",
+      "effect_size": "Cohen's h（必报）+ 配对差值",
+      "multiplicity": "只报 FD-vs-Random 与 FD-vs-Static 两个**预先指定**的对照；k 扫描为探索性 ⇒ 不做多重比较校正，但每个 k 都如实报 p。"
+    },
+
+    "randomness": {
+      "seed_primary": 20260930,
+      "seed_rationale": "项目约定种子（670d §3.1）；与 670a Random†、672g、673p 同值 ⇒ 口径可对照。",
+      "multi_run": {"n_runs": 2000, "seeds": "20260930 + i, i ∈ [0, 2000)",
+                    "report": "均值 / 标准差 / 最小值 / 最大值 / 2.5 与 97.5 分位"}
+    },
+
+    "sample_size_reality_check": {
+      "source": "data/experiments/sample_size_671b.json",
+      "delta_target_pp": 15,
+      "n_pairs_needed_psi_0.40": 138,
+      "evaluation_n": {"holdout": 20, "corpus": 16},
+      "verdict": "评估集 n=20 / n=16 **远小于** 138 ⇒ 即便 p<0.05，幅度也**不得**写成确认性点估计，只读方向 + CI。若 CI 跨 0 则报『方向不明确』；本批**不因不显著而扩样**（扩样属独立批次）。"
+    }
+  },
+
+  "decision_thresholds": {
+    "primary_pass": "holdout 评估集 exact McNemar p < 0.05 且 Δ(FD−Random) > 0",
+    "secondary_pass": "corpus 评估集 exact McNemar p < 0.05 且 Δ > 0",
+    "not_significant": "p ≥ 0.05 ⇒ 如实报『不显著』，不改假设、不换指标、不增样本重跑。",
+    "ci_crosses_zero": "Δ 的 95% CI 跨 0 ⇒ 报『方向不明确』。",
+    "uninterpretable": "若主分析的 Δ 完全由 `degenerate_constant` 资产驱动（并列分析中消失或反号）⇒ 报『不可解释』，不宣称 FD 优于 Random。",
+    "no_goal_seeking": "本批不以『数字好看』为目标；若 FD 并不优于 Random，必须原样报告。"
+  },
+
+  "exclusion_criteria": [
+    "unknown 不进检出率分母，但**逐条**记录原因（无本地检测器 / 原子缺失 / 两档均不可用）。",
+    "not_error 不进 corpus 分母；planted≠true 不进 holdout 分母。",
+    "声明未接线资产（implemented=false）不进选择候选与评估。",
+    "派生集样本**不进**评估集（FD 的选择必须不含评估集信息）。",
+    "预算未对齐的两臂结果作废，不得引用。",
+    "k=8 结果不得进 H0/H1 判定（退化）。"
+  ],
+
+  "known_limitations": [
+    {
+      "id": "n-too-small",
+      "title": "评估集样本量远低于功效门槛",
+      "detail": "holdout 评估集 n=20、corpus 评估集 n=16，而 Δ=15pp / ψ=0.40 需要 138 对。",
+      "consequence": "本批最可能的结局是『不显著』。这是**预期内**的结果，不是失败；不得为了显著而换指标或扩样。",
+      "mitigation": "如实报 Δ + CI + p；CI 跨 0 时报方向不明确；并在报告中写明扩样到 n≥138 是解除该限制的唯一路径。"
+    },
+    {
+      "id": "single-round",
+      "title": "单回合实测，与 3 回合冻结口径不同",
+      "detail": "672h 冻结记录取 3 回合『任一回合 catch ⇒ catch』；本批 840 次调用的预算只允许 1 回合。",
+      "consequence": "本批 catch 率**不应**与 82.9% / 62.5% 直接比较或相减。",
+      "mitigation": "报『保真率』（本批单回合 vs 冻结判决的一致率）并列出不一致样本，供读者判断环境漂移。"
+    },
+    {
+      "id": "degenerate-wunsequenced",
+      "title": "wunsequenced 资产在本工具链下恒 catch（既有 detect 缺陷）",
+      "detail": "见 methods.asset_degeneracy.known_case。g++ 不认 `-Wunsequenced`，命中判定把『选项不认识』当命中。",
+      "consequence": "含该资产的子集 OR 恒为 catch ⇒ 主分析的差异可能被这一个常量资产主导。",
+      "mitigation": "预指定的主分析 + 剔除退化资产的并列分析双报；差异由常量资产驱动时报『不可解释』。修复属独立批次（不得在本批改 detect）。"
+    },
+    {
+      "id": "wsl-banner-adapter",
+      "title": "WSL 2.7.10 代理横幅污染 stderr，需解码适配层",
+      "detail": "本机 Windows 系统代理开启（ProxyEnable=1）⇒ wsl.exe 每次调用向 stderr 写一条 **UTF-16LE** 警告横幅；Python 文本模式解码抛 `UnicodeDecodeError` ⇒ `subprocess.run(...).stderr` 变 None ⇒ ASan/UBSan 报告（走 stderr）全部丢失 ⇒ **系统性假 miss**。实测：h41 的 asan 本应 catch，未装适配层时判 miss。",
+      "consequence": "不处理则该环境产出的任何检出率都不可信。",
+      "mitigation": "三层适配（详见 tools/detect_for_assets.py）：① `WSL_UTF8=1` + `WSLENV=WSL_UTF8/u` 强制 wsl 输出 UTF-8（**治本**，实测横幅变为合法 UTF-8）；② 解码兜底 `errors=replace`（不抛异常）；③ 过滤含 NUL 的行（去掉 UTF-16 残留）。适配层**不改** detect() 的代码，只在其外层改变子进程文本解码与环境变量。",
+      "verification": "h41 的 asan 在装适配层后恢复 catch（与冻结记录一致）；全量保真率在报告中如实给出。"
+    },
+    {
+      "id": "compile-time-unknown",
+      "title": "compile-time 资产无本地检测器",
+      "detail": "`detect()` 没有 compile-time 分支 ⇒ 恒 unknown。",
+      "consequence": "该资产在 OR 聚合中永远不贡献 catch ⇒ 选到它的臂等于浪费预算。",
+      "mitigation": "如实计入 unknown_reasons；不把它当 miss；报告中说明这会让含 compile-time 的臂被系统性低估。"
+    },
+    {
+      "id": "corpus-code-only",
+      "title": "corpus 样本只有内联代码，无磁盘夹具",
+      "detail": "corpus 的 76 条样本在仓库里只有 `code` 字符串；673r 落临时目录后调用 detect。",
+      "consequence": "临时目录路径与历史测量路径不同；若某判据依赖路径则不可比（本批判据不依赖路径）。",
+      "mitigation": "在产物里显式登记 `input_mode=code_materialized`。"
+    }
+  ],
+
+  "stopping_rule": "预注册落盘并单独 commit 后，**主要指标（holdout 评估集可测检出率）、预算定义（k=4 主 + 1..7 扫描）、派生集切分规则不得修改**。任何事后发现的方法学缺陷，只允许在验收报告里显式登记『方法学偏差』+ 缓解措施，不得回改本文件、不得调参重跑以追求显著。",
+
+  "post_registration": {
+    "results_files": [
+      "data/experiments/asset_attribution_673r.json",
+      "data/experiments/a5_673p.json"
+    ],
+    "report": "data/673r_A5实验报告.md",
+    "implementation": [
+      "tools/detect_for_assets.py",
+      "tools/run_a5_experiment_673p.py"
+    ],
+    "tests": ["tests/test_detect_for_assets_673r.py"],
+    "honesty_rule": "数字一律现算；与假设不符按 mismatch 报告；不得把『资产池存在』当成『selection 策略有效』；不显著就是不显著。"
+  },
+
+  "red_lines": [
+    "不改 `tools/holdout_reveal_661.py::detect`（已落盘 reveal 记录的可复现性依赖它）。",
+    "不改 `tools/holdout_reveal_661.py::main`（触发 [REFUSED] 盲区铁律）。",
+    "不碰 research/ 论文正文（实验结果出来后由独立批次更新论文）。",
+    "不修改已有测试的断言（只新增测试）。",
+    "不把 unknown 当 miss。",
+    "不事后调参重跑；不伪造结果；不把不显著说成显著。",
+    "k=8 的退化结果不进 H0/H1 判定。"
+  ]
+}

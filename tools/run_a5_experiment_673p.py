@@ -30,6 +30,23 @@
 本批的目标是**建立 A5 的基础设施**（可运行的拆仓 + 预注册），不是产出新的实测判决。
 真跑留给后续批次（本文件已把运行层做成可替换的 `Executor` 协议）。
 
+673r：**真跑已经做了**
+======================
+673r 新增 `tools/detect_for_assets.py`：对每条样本、每个资产**各调一次**
+`tools/holdout_reveal_661.py::detect`，得到 N × 8 的真实判定矩阵
+（`data/experiments/asset_attribution_673r.json`）。本文件因此新增第二个
+Executor —— `AttributionExecutor`：
+
+    给定选中资产集 S，样本 s 的判定 = S 中各资产真实判定的 **OR**
+    （任一 catch ⇒ catch；全部 unknown ⇒ unknown；其余 miss）
+
+与 `ReplayExecutor` 的差别是**根本性的**：重放只认"明细里记的那一个 detector"，
+真实矩阵承认"同一条样本可以被多个资产抓到"。673p 的 A5 阻塞条件 3
+（"FD 无选择层、预算是事后记账"）在 replay 模型下无法解除，在真实矩阵下可以。
+
+本文件同时保留 replay 段（`primary`）与真实段（`real_attribution`）：
+前者与 673p 逐位同口径，供跨批对照；后者是本批的结论来源。
+
 A5 的**核心诚实问题**（本文件必须回答）
 ======================================
 A5 问：「**同等预算**下，failure-driven **选择** 是否优于 random **选择**？」
@@ -84,6 +101,14 @@ C_DETAIL = ROOT / "data" / "external_corpus" / "reveal_detail_672h.json"
 SEED = 20260930                              # 项目约定种子（预注册 673p 钉死）
 MULTI_SEED_N = 2000                          # Random 臂多次运行次数（预注册钉死）
 NEW_SOURCE = "measured_672h"                 # 672h 扩样新样本的来源标记（派生集切分用）
+
+# ── 673r：真实逐资产归属 ──────────────────────────────────────────────────────
+ATTRIB = ROOT / "data" / "experiments" / "asset_attribution_673r.json"
+PREREG_673R = "data/673r_a5_preregistration.json"
+PRIMARY_K = 4                                # 预注册 673r 钉死的主预算
+SWEEP_K = (1, 2, 3, 4, 5, 6, 7)             # 探索性预算扫描
+DEGENERATE_K = 8                             # k=8 ⇒ 三臂恒等于全池（退化，只报不判）
+Z95 = 1.959963984540054
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -232,6 +257,325 @@ def _static_budget(pool: tuple[vp.AssetSpec, ...], k_budget: int) -> int:
     当 FD 预算 k=5（corpus）时 Static 只能跑 4 个 ⇒ 这里显式降级并如实标注，不静默。
     """
     return min(k_budget, len([a for a in vp.selectable_ids(pool) if a in vp.STATIC_ASSETS]))
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 673r：真实逐资产归属层（AttributionExecutor + 派生集真选择 + 预算扫描）
+# ─────────────────────────────────────────────────────────────────────────────
+class AttributionExecutor:
+    """**真实逐资产 OR**：判定矩阵来自 `detect_for_assets` 的实测，不是重放。
+
+    `selected` 中任一资产真实 catch ⇒ catch；全部 unknown ⇒ unknown；其余 miss。
+    样本不在矩阵里 ⇒ **KeyError（fail-loud）**，绝不静默记 miss。
+    """
+
+    name = "real_per_asset_or"
+
+    def __init__(self, index: dict[str, dict[str, str]]):
+        self.index = index
+
+    def verdict(self, sample: dict, selected: tuple[str, ...]) -> str:
+        sid = str(sample.get("id"))
+        if sid not in self.index:
+            raise KeyError(f"样本 {sid!r} 不在真实归属矩阵中（fail-loud，不得静默记 miss）")
+        row = self.index[sid]
+        vs = [row.get(a) for a in selected]
+        vs = [v for v in vs if v is not None]
+        if not vs:
+            return "unknown"
+        if any(v == "catch" for v in vs):
+            return "catch"
+        if all(v == "unknown" for v in vs):
+            return "unknown"
+        return "miss"
+
+
+def load_attribution(path: Path = ATTRIB) -> dict[str, Any] | None:
+    """读真实归属矩阵；不存在 ⇒ None（本段整体 skip，不伪造）。"""
+    if not path.is_file():
+        return None
+    return dict(json.loads(path.read_text(encoding="utf-8")))
+
+
+def attribution_index(doc: dict[str, Any], dataset: str) -> dict[str, dict[str, str]]:
+    """dataset → {sample_id: {asset_id: verdict}}。"""
+    out: dict[str, dict[str, str]] = {}
+    for r in doc["datasets"][dataset]["samples"]:
+        out[str(r["id"])] = {a: str(v.get("verdict")) for a, v in r["per_asset"].items()}
+    return out
+
+
+def rows_with_attribution(detail: Path, *, planted_only: bool,
+                          index: dict[str, dict[str, str]]) -> tuple[list[dict], list[str]]:
+    """可测样本 ∩ 有真实归属的样本；返回 (rows, 缺失 id)。"""
+    rows = measurable_rows(detail, planted_only=planted_only)
+    have: list[dict] = []
+    missing: list[str] = []
+    for r in rows:
+        sid = str(r.get("id"))
+        if sid in index:
+            have.append(r)
+        else:
+            missing.append(sid)
+    return have, missing
+
+
+def fail_hits_real(rows: list[dict], assets: list[str],
+                   index: dict[str, dict[str, str]]) -> dict[str, int]:
+    """资产在 rows 上**真实**抓到的条数（真实矩阵 ⇒ 一条样本可同时计给多个资产）。"""
+    cnt = {a: 0 for a in assets}
+    for r in rows:
+        row = index.get(str(r.get("id")), {})
+        for a in assets:
+            if row.get(a) == "catch":
+                cnt[a] += 1
+    return cnt
+
+
+def degenerate_assets(rows: list[dict], assets: list[str],
+                      index: dict[str, dict[str, str]]) -> dict[str, dict[str, Any]]:
+    """预注册 673r 的退化判定：在 rows 上 catch 率 == 100% 或 == 0% ⇒ degenerate_constant。"""
+    n = len(rows)
+    out: dict[str, dict[str, Any]] = {}
+    for a in assets:
+        k = sum(1 for r in rows if index.get(str(r.get("id")), {}).get(a) == "catch")
+        unk = sum(1 for r in rows if index.get(str(r.get("id")), {}).get(a) == "unknown")
+        rate = (k / n) if n else None
+        if n and (k == n or k == 0):
+            out[a] = {"catch": k, "unknown": unk, "n": n,
+                      "catch_rate_pct": round(rate * 100, 4) if rate is not None else None,
+                      "flag": "degenerate_constant",
+                      "why": ("抓到每一条 ⇒ 常量 catch" if k == n else "一条都没抓到 ⇒ 零信息")}
+    return out
+
+
+def paired_test(rows: list[dict], sel_a: tuple[str, ...], sel_b: tuple[str, ...], ex: Executor,
+                *, label_a: str = "fd", label_b: str = "other") -> dict[str, Any]:
+    """配对对照：Δ(pp) + **95% CI** + exact McNemar p + Cohen's h。
+
+    Δ 的 CI 用**不一致对**的标准误（McNemar 口径）：
+        SE = sqrt(b + c − (b−c)²/n) / n
+    """
+    n = len(rows)
+    b = c = 0
+    ka = kb = 0
+    for r in rows:
+        a = ex.verdict(r, sel_a) == "catch"
+        o = ex.verdict(r, sel_b) == "catch"
+        ka += int(a)
+        kb += int(o)
+        if a and not o:
+            b += 1
+        elif o and not a:
+            c += 1
+    p1, p2 = (ka / n if n else 0.0), (kb / n if n else 0.0)
+    delta = (p1 - p2) * 100
+    if n:
+        se = math.sqrt(max(0.0, b + c - (b - c) ** 2 / n)) / n
+        lo, hi = delta - Z95 * se * 100, delta + Z95 * se * 100
+    else:
+        se, lo, hi = 0.0, None, None
+    return {"n_pairs": n, f"{label_a}_catch": ka, f"{label_b}_catch": kb,
+            "discordant_a_only": b, "discordant_b_only": c,
+            "delta_pp": round(delta, 4),
+            "delta_ci95_pp": [round(lo, 4) if lo is not None else None,
+                              round(hi, 4) if hi is not None else None],
+            "delta_se_pp": round(se * 100, 4),
+            "mcnemar_p": mcnemar_exact_p(b, c),
+            "cohens_h": round(abs(cohens_h(p1, p2)), 4) if n else None,
+            "ci_crosses_zero": (lo is not None and hi is not None and lo < 0 < hi)}
+
+
+def _arm_block(sel: ss.Selection, rows: list[dict], ex: Executor, pool: tuple[vp.AssetSpec, ...],
+               *, extra: dict[str, Any] | None = None) -> dict[str, Any]:
+    return {"assets": list(sel.assets), "budget_k": len(sel.assets),
+            "cost_units": sel.cost_units,
+            "allocation_table": [dict(r) for r in sel.allocation_table],
+            **arm_stats(rows, sel.assets, ex), **(extra or {})}
+
+
+def real_budget_comparison(rows: list[dict], ex: AttributionExecutor,
+                           index: dict[str, dict[str, str]], pool: tuple[vp.AssetSpec, ...],
+                           *, candidates: list[str], k: int, seed: int = SEED,
+                           multi_seed_n: int = MULTI_SEED_N,
+                           fail_hits: dict[str, int] | None = None,
+                           eval_rows: list[dict] | None = None) -> dict[str, Any]:
+    """同预算 k 的三臂对照。**FD 的 fail_hits 只来自派生集** ⇒ FD 是真预测器。
+
+    参数
+    ----
+    rows        : 全部可测样本（用于 full-pool 对照臂）。
+    eval_rows   : 评估集（FD/Random/Static 三臂在它上面比）。None ⇒ 用 rows。
+    fail_hits   : 派生集上估的 fail_hits（**必须**来自评估集之外）。
+    """
+    ev = eval_rows if eval_rows is not None else rows
+    fh = fail_hits if fail_hits is not None else fail_hits_real(ev, candidates, index)
+    k_eff = min(k, len(candidates))
+
+    fd_sel = ss.select("failure_driven", pool, max_assets=k_eff, fail_hits=fh,
+                       candidates=candidates)
+    rnd_sel = ss.select("random", pool, max_assets=k_eff, seed=seed, candidates=candidates)
+    n_static = len([a for a in candidates if a in vp.STATIC_ASSETS])
+    st_sel = ss.select("static", pool, max_assets=min(k_eff, n_static), candidates=candidates)
+    full_sel = ss.select("failure_driven", pool, max_assets=len(candidates), fail_hits=fh,
+                         candidates=candidates)
+
+    fd_catch = sum(1 for r in ev if ex.verdict(r, fd_sel.assets) == "catch")
+    rates: list[float] = []
+    for i in range(multi_seed_n):
+        s = ss.select("random", pool, max_assets=k_eff, seed=seed + i, candidates=candidates)
+        rates.append(sum(1 for r in ev if ex.verdict(r, s.assets) == "catch") / len(ev))
+    rs = sorted(rates)
+
+    return {
+        "budget_k": k_eff,
+        "is_primary_k": k_eff == PRIMARY_K,
+        "is_degenerate_k": k_eff >= len(candidates),
+        "candidates": list(candidates),
+        "eval_n": len(ev),
+        "arms": {
+            "fd": _arm_block(fd_sel, ev, ex, pool, extra={"fail_hits_rank": fh}),
+            "random": _arm_block(rnd_sel, ev, ex, pool, extra={"seed": seed}),
+            "static": _arm_block(st_sel, ev, ex, pool),
+            "fd_full_pool": _arm_block(full_sel, ev, ex, pool),
+        },
+        "paired_tests": {
+            "fd_vs_random": paired_test(ev, fd_sel.assets, rnd_sel.assets, ex,
+                                       label_a="fd", label_b="random"),
+            "fd_vs_static": paired_test(ev, fd_sel.assets, st_sel.assets, ex,
+                                       label_a="fd", label_b="static"),
+        },
+        "random_multi_seed": {
+            "runs": multi_seed_n,
+            "mean_rate_pct": round(statistics.fmean(rates) * 100, 4),
+            "sd_pp": round(statistics.pstdev(rates) * 100, 4),
+            "min_rate_pct": round(min(rates) * 100, 4),
+            "max_rate_pct": round(max(rates) * 100, 4),
+            "percentile_2.5_pct": round(rs[int(0.025 * (multi_seed_n - 1))] * 100, 4),
+            "percentile_97.5_pct": round(rs[int(0.975 * (multi_seed_n - 1))] * 100, 4),
+            # FD 在随机分布中的位置：多少次抽样里 FD 严格更好 / 更好或持平 / 更差
+            "fd_strictly_better_frac": round(sum(1 for x in rates if x * len(ev) < fd_catch)
+                                             / multi_seed_n, 4),
+            "fd_better_or_tie_frac": round(sum(1 for x in rates if x * len(ev) <= fd_catch)
+                                           / multi_seed_n, 4),
+            "random_strictly_better_frac": round(sum(1 for x in rates if x * len(ev) > fd_catch)
+                                                 / multi_seed_n, 4),
+            "fd_catch": fd_catch,
+            "note": "单点 seed 只用于配对检验；分布才说明 Random 臂的期望位置。",
+        },
+    }
+
+
+def real_dataset_section(dataset: str, doc: dict[str, Any], pool: tuple[vp.AssetSpec, ...],
+                         multi_seed_n: int = MULTI_SEED_N) -> dict[str, Any]:
+    """一个数据集的完整真实分析：派生集切分 + 退化诊断 + 预算扫描 + 并列分析。"""
+    detail = H_DETAIL if dataset == "holdout" else C_DETAIL
+    planted_only = dataset == "holdout"
+    index = attribution_index(doc, dataset)
+    rows, missing = rows_with_attribution(detail, planted_only=planted_only, index=index)
+    ex = AttributionExecutor(index)
+
+    assets = [a for a in vp.selectable_ids(pool) if a in set(doc["datasets"][dataset]["asset_ids"])]
+    deriv = [r for r in rows if r.get("source") != NEW_SOURCE]
+    evalset = [r for r in rows if r.get("source") == NEW_SOURCE]
+
+    fh_deriv = fail_hits_real(deriv, assets, index)
+    degen = degenerate_assets(deriv, assets, index)
+
+    def scan(cands: list[str]) -> list[dict[str, Any]]:
+        """k=1..8 扫描。预算被候选数钳制时同一个有效 k 会出现多次 ⇒ 折叠成一行并登记。"""
+        out: list[dict[str, Any]] = []
+        by_k: dict[int, dict[str, Any]] = {}
+        for k in (*SWEEP_K, DEGENERATE_K):
+            row = real_budget_comparison(rows, ex, index, pool, candidates=cands, k=k,
+                                         multi_seed_n=multi_seed_n,
+                                         fail_hits={a: fh_deriv.get(a, 0) for a in cands},
+                                         eval_rows=evalset)
+            if row["budget_k"] in by_k:
+                by_k[row["budget_k"]]["k_requested"].append(k)
+                continue
+            row["k_requested"] = [k]
+            by_k[row["budget_k"]] = row
+            out.append(row)
+        return out
+
+    co_cands = [a for a in assets if a not in degen]
+    # 事后敏感性视角：只剔除**恒 catch**（100%）资产，保留派生集上 0 命中的资产。
+    const_catch = [a for a, v in degen.items() if v.get("catch_rate_pct") == 100.0]
+    sens_cands = [a for a in assets if a not in const_catch]
+    # 全集（含评估集）对照：fail_hits 用**全集** ⇒ oracle，明确标为不可用于确认性结论
+    fullset = real_budget_comparison(rows, ex, index, pool, candidates=assets, k=PRIMARY_K,
+                                     multi_seed_n=multi_seed_n,
+                                     fail_hits=fail_hits_real(rows, assets, index))
+    fullset["oracle_note"] = ("fail_hits 与评估集来自同一批样本 ⇒ FD 在此是 oracle，"
+                              "**不得**用于 H0/H1 判定；仅为与 673p 同口径的连续性对照。")
+
+    return {
+        "dataset": dataset,
+        "n_measurable_with_attribution": len(rows),
+        "missing_attribution_ids": missing,
+        "derivation": {"n": len(deriv), "rule": "source != measured_672h",
+                       "fail_hits": {a: v for a, v in fh_deriv.items() if v},
+                       "fail_hits_all": fh_deriv},
+        "evaluation": {"n": len(evalset), "rule": "source == measured_672h"},
+        "asset_diagnostics": {
+            "assets": assets,
+            "degenerate_on_derivation": degen,
+            "per_asset_on_measurable": {
+                a: {"catch": sum(1 for r in rows if index.get(str(r["id"]), {}).get(a) == "catch"),
+                    "miss": sum(1 for r in rows if index.get(str(r["id"]), {}).get(a) == "miss"),
+                    "unknown": sum(1 for r in rows if index.get(str(r["id"]), {}).get(a) == "unknown")}
+                for a in assets},
+        },
+        "primary": {"candidates": assets, "note": "预注册主分析：全 8 项资产池，不剔除。",
+                    "by_k": scan(assets)},
+        "co_primary_excluding_degenerate": {
+            "candidates": co_cands,
+            "note": "并列分析：剔除在派生集上 catch 率 100%/0% 的常量资产（预注册预指定）。",
+            "by_k": scan(co_cands)} if len(co_cands) < len(assets) else
+            {"status": "skip", "why": "没有资产被标记为退化"},
+        "sensitivity_exploratory": {
+            "candidates": sens_cands,
+            "note": "**事后增设**的敏感性视角：只剔除恒 catch（100%）资产，保留派生集上 0 命中的资产。"
+                    "**不参与**通过/不通过判定，只用来看预注册『0% 也算子退化』这条规则有多保守。",
+            "by_k": scan(sens_cands)} if len(sens_cands) < len(assets) else
+            {"status": "skip", "why": "没有恒 catch 资产"},
+        "fullset_exploratory": fullset,
+    }
+
+
+def real_attribution_section(pool: tuple[vp.AssetSpec, ...],
+                             multi_seed_n: int = MULTI_SEED_N) -> dict[str, Any]:
+    doc = load_attribution()
+    if doc is None:
+        return {"status": "skip", "why": f"缺少真实归属矩阵 {ATTRIB.relative_to(ROOT).as_posix()}"
+                                         f"（先跑 `python tools/detect_for_assets.py --dataset both`）"}
+    return {
+        "status": "ok",
+        "prereg": PREREG_673R,
+        "generated_by": "tools/detect_for_assets.py + tools/run_a5_experiment_673p.py",
+        "execution_model": {
+            "name": "real_per_asset_or",
+            "is_real_execution": True,
+            "owner": "tools/detect_for_assets.py（复用 661.detect，未改动）",
+            "aggregation": "OR：任一资产真实 catch ⇒ catch；全部 unknown ⇒ unknown；其余 miss",
+            "rounds": 1,
+            "rounds_note": "672h 冻结记录为 3 回合口径；本批 1 回合 ⇒ 与 82.9%/62.5% 不同口径，不得相减。",
+        },
+        "primary_k": PRIMARY_K,
+        "sweep_k": list(SWEEP_K),
+        "degenerate_k": DEGENERATE_K,
+        "seed": SEED,
+        "attribution_source": ATTRIB.relative_to(ROOT).as_posix(),
+        "datasets": {d: real_dataset_section(d, doc, pool, multi_seed_n=multi_seed_n)
+                     for d in ("holdout", "corpus") if d in doc["datasets"]},
+        "honest_notes": [
+            "FD 的 fail_hits **只**来自派生集（672h 扩样前的旧样本），评估只在扩样新样本上做 ⇒ FD 是真预测器，不是 oracle。",
+            "Random 臂报 %d 次重采样分布；单点 seed=%d 只用于配对检验。" % (multi_seed_n, SEED),
+            "k=8 时三臂选中集合恒等于全池 ⇒ Δ 恒 0、p 恒 1（退化），只报不作证据。",
+            "Δ 的 95% CI 用不一致对标准误（McNemar 口径）；各臂检出率区间用 Clopper–Pearson 95%。",
+        ],
+    }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -396,6 +740,7 @@ def _payload(ex: Executor, pool: tuple[vp.AssetSpec, ...],
             "holdout": exploratory_derivation_split("holdout", h_rows, ex, pool, multi_seed_n=multi_seed_n),
             "corpus": exploratory_derivation_split("corpus", c_rows, ex, pool, multi_seed_n=multi_seed_n),
         },
+        "real_attribution": real_attribution_section(pool, multi_seed_n=multi_seed_n),
         "blockers": [
             {
                 "id": "A5-B3",
@@ -479,6 +824,25 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[a5-673p] 复现一致：{doc['reproducibility']['identical']}")
         print(f"[a5-673p] A5 阻塞：{doc['blockers'][0]['title']}")
 
+        ra = doc.get("real_attribution", {})
+        if ra.get("status") == "ok":
+            print("\n[a5-673r] 真实逐资产实测（prereg 673r，FD 的 fail_hits 只来自派生集）")
+            for name, d in ra["datasets"].items():
+                prim = next(x for x in d["primary"]["by_k"] if x["is_primary_k"])
+                p = prim["paired_tests"]["fd_vs_random"]
+                ar = prim["arms"]
+                print(f"  {name}: 派生 n={d['derivation']['n']} → 评估 n={d['evaluation']['n']} | k={prim['budget_k']}")
+                print(f"    FD {ar['fd']['rate_pct']}% | Random {ar['random']['rate_pct']}% "
+                      f"| Static {ar['static']['rate_pct']}% | 全池 {ar['fd_full_pool']['rate_pct']}%")
+                print(f"    FD−Random Δ{p['delta_pp']:+.2f}pp CI[{p['delta_ci95_pp'][0]:+.2f},"
+                      f"{p['delta_ci95_pp'][1]:+.2f}] p={p['mcnemar_p']:.4f} "
+                      f"(b={p['discordant_a_only']}, c={p['discordant_b_only']})")
+                dg = d["asset_diagnostics"]["degenerate_on_derivation"]
+                if dg:
+                    print(f"    退化资产（派生集上常量）：{sorted(dg)}")
+        else:
+            print(f"\n[a5-673r] 真实段跳过：{ra.get('why', '未知原因')}")
+
     if not a.no_write:
         OUT.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + "\n",
                        encoding="utf-8", newline="\n")
@@ -513,6 +877,41 @@ def selftest() -> int:
         lo is not None and hi is not None and abs(lo * 100 - 58.1) < 0.3 and abs(hi * 100 - 94.6) < 0.3,
         f"({lo}, {hi})")
     chk("Cohen's h 符号", cohens_h(0.8, 0.2) > 0)
+
+    # ── 673r：真实逐资产层（合成矩阵，不读仓库产物）
+    def _raises2(fn) -> bool:
+        try:
+            fn()
+            return False
+        except (KeyError, ValueError, TypeError):
+            return True
+
+    idx = {"s1": {"asan": "catch", "ubsan": "miss", "compile-time": "unknown"},
+           "s2": {"asan": "miss", "ubsan": "miss", "compile-time": "unknown"}}
+    aex = AttributionExecutor(idx)
+    chk("真实 OR：命中资产在选中集 ⇒ catch", aex.verdict({"id": "s1"}, ("asan",)) == "catch")
+    chk("真实 OR：多资产同时命中也算 catch", aex.verdict({"id": "s1"}, ("asan", "ubsan")) == "catch")
+    chk("真实 OR：未命中 ⇒ miss", aex.verdict({"id": "s1"}, ("ubsan",)) == "miss")
+    chk("真实 OR：只选恒 unknown ⇒ unknown", aex.verdict({"id": "s1"}, ("compile-time",)) == "unknown")
+    chk("真实 OR：unknown+miss ⇒ miss", aex.verdict({"id": "s1"}, ("compile-time", "ubsan")) == "miss")
+    chk("样本不在矩阵 ⇒ KeyError（fail-loud）",
+        _raises2(lambda: aex.verdict({"id": "zzz"}, ("asan",))))
+    rows2 = [{"id": "s1"}, {"id": "s2"}]
+    chk("fail_hits_real 逐资产计数",
+        fail_hits_real(rows2, ["asan", "ubsan", "compile-time"], idx)
+        == {"asan": 1, "ubsan": 0, "compile-time": 0})
+    dg = degenerate_assets(rows2, ["asan", "ubsan", "compile-time"], idx)
+    chk("退化判定：0% catch 被标记", "ubsan" in dg and "compile-time" in dg)
+    chk("退化判定：非恒定资产不标记", "asan" not in dg)
+    cidx = {"s1": {"w": "catch"}, "s2": {"w": "catch"}}
+    chk("退化判定：100% catch 被标记", "w" in degenerate_assets(rows2, ["w"], cidx))
+    t1 = paired_test(rows2, ("asan",), ("ubsan",), aex, label_a="fd", label_b="random")
+    chk("paired_test 给出 Δ 与 CI", t1["delta_pp"] == 50.0 and t1["delta_ci95_pp"][0] is not None)
+    chk("Δ CI 在 n 很小时会跨 0（如实暴露）", t1["ci_crosses_zero"] is True)
+    t2 = paired_test([{"id": "s2"}], ("asan",), ("ubsan",), aex)
+    chk("无不一致对 ⇒ Δ=0 且 p=1", t2["delta_pp"] == 0.0 and t2["mcnemar_p"] == 1.0)
+    chk("缺少归属矩阵 ⇒ 真实段 skip（不伪造）",
+        load_attribution(ROOT / "data" / "experiments" / "__none__.json") is None)
 
     print(f"run_a5_experiment_673p selftest: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
