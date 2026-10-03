@@ -1,0 +1,32 @@
+{
+  "sample_id": "F113",
+  "defect_type": "bit_operation",
+  "defect_location": {
+    "description": "int 左移 34（>=32 越界）",
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "移位量 >= 类型宽度时 UB，UBSan shift-out-of-bounds 报",
+  "platform_dependent": false,
+  "platform_notes": "移位越界是明确 UB，UBSan 在 x86 报 shift out of bounds。实测 catch。（注：1<<31 恰好可表示 INT_MIN 故本例用 >=32 保证 UB。）",
+  "notes": "移位量须 < 类型位宽。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "ubsan",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

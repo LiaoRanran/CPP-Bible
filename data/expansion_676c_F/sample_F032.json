@@ -1,0 +1,32 @@
+{
+  "sample_id": "F032",
+  "defect_type": "alignment",
+  "defect_location": {
+    "description": "误假设 malloc 提供 48 字节对齐",
+    "line": 6,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "malloc 仅保证 max_align_t 对齐（通常 16），更大对齐需 aligned_alloc/posix_memalign",
+  "platform_dependent": true,
+  "platform_notes": "malloc 在 x86 通常 16 对齐，访问 double 不会出错；但严格要求 32/64 对齐时应使用 aligned_alloc。ubsan/compiler-warn miss。",
+  "notes": "大对齐需求应使用 std::aligned_alloc 或 posix_memalign。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

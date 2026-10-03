@@ -1,0 +1,32 @@
+{
+  "sample_id": "F060",
+  "defect_type": "endianness",
+  "defect_location": {
+    "description": "把位域对象当字节数组解读，依赖实现定义的位序/端序",
+    "line": 6,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "位域中位分配顺序与字节序由实现定义，跨平台/编译器布局不同",
+  "platform_dependent": true,
+  "platform_notes": "位域布局是未指定行为，sanitizer 不抓；compiler-warn miss。",
+  "notes": "跨平台位级协议应手动按位组装，不用位域。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

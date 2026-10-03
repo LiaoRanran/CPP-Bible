@@ -1,0 +1,32 @@
+{
+  "sample_id": "F021",
+  "defect_type": "alignment",
+  "defect_location": {
+    "description": "packed 结构体成员 w 未对齐访问（char 后被压缩到偏移 1）",
+    "line": 12,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "GCC 扩展 #pragma pack 压缩布局，成员不再按自然对齐；取地址/非对齐访问在严格对齐架构 UB",
+  "platform_dependent": true,
+  "platform_notes": "packed 成员在 x86 上可访问（可能跨 cache 行，性能差）；在 ARM 取 packed 成员地址并解引用是 UB。UBSan 在本工具链对该结构编译失败(unknown)，故用 compiler-warn 复现（miss）。",
+  "notes": "packed 结构用于节省空间/匹配线上格式，但访问未对齐成员是平台相关 UB。应使用 memcpy 而非直接访问成员地址。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

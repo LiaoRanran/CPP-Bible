@@ -1,0 +1,32 @@
+{
+  "sample_id": "F149",
+  "defect_type": "interrupt_safety",
+  "defect_location": {
+    "description": "信号处理程序调用非异步信号安全的 printf",
+    "line": 7,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "ISR 中调用非重入函数（malloc/printf 等）在重入时破坏其内部状态",
+  "platform_dependent": true,
+  "platform_notes": "POSIX 规定 ISR 只能调用异步信号安全函数；sanitizer 不抓，compiler-warn miss。真实盲区。",
+  "notes": "ISR 内仅调用异步信号安全函数。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "sample_id": "F135",
+  "defect_type": "bit_operation",
+  "defect_location": {
+    "description": "位掩码宽度/位置计算错误（本例掩码本身正确但位置假设错）",
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "掩码拼接/偏移错误产生错误结果，不触发 sanitizer",
+  "platform_dependent": false,
+  "platform_notes": "位掩码逻辑错误是纯逻辑缺陷，sanitizer 与 compiler-warn 均不抓。真实盲区。",
+  "notes": "位掩码应单测验证。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

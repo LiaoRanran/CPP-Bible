@@ -1,0 +1,32 @@
+{
+  "sample_id": "F096",
+  "defect_type": "volatile_misuse",
+  "defect_location": {
+    "description": "对普通变量加 volatile（不必要的性能损失，且非同步）",
+    "line": 3,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "无 MMIO/信号处理场景的 volatile 既无同步作用又妨碍优化",
+  "platform_dependent": false,
+  "platform_notes": "无意义 volatile 是代码异味而非 UB；sanitizer 不抓，compiler-warn miss。真实盲区。",
+  "notes": "仅在 MMIO/信号处理/ setjmp 场景使用 volatile。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

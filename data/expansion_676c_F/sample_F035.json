@@ -1,0 +1,32 @@
+{
+  "sample_id": "F035",
+  "defect_type": "alignment",
+  "defect_location": {
+    "description": "把 alignas(8) 对象放进仅 8 字节的栈 char 缓冲（起始对齐不保证）",
+    "line": 6,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "缓冲区起始地址对齐未知，placement 到 alignas 对象上可能未对齐",
+  "platform_dependent": true,
+  "platform_notes": "栈 char[8] 未必 8 对齐；x86 上访问不出错，严格架构 UB。compiler-warn miss。",
+  "notes": "应为对齐对象使用对齐分配或 alignas 缓冲区。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

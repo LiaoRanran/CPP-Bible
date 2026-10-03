@@ -1,0 +1,32 @@
+{
+  "sample_id": "F146",
+  "defect_type": "interrupt_safety",
+  "defect_location": {
+    "description": "信号处理程序与主程序竞态自增非原子全局 shared",
+    "line": 8,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "ISR 与主循环并发 RMW 同一非原子变量，会丢失更新/读到撕裂值",
+  "platform_dependent": true,
+  "platform_notes": "用户态无法复现真实中断并发；TSan 不识别 signal 并发；sanitizer/compiler-warn 均 miss。真实盲区。",
+  "notes": "ISR 共享计数器用 std::atomic 或关中断保护。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

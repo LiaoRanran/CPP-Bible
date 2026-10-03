@@ -1,0 +1,32 @@
+{
+  "sample_id": "F164",
+  "defect_type": "interrupt_safety",
+  "defect_location": {
+    "description": "主程序读取 ISR 正在写入的非原子 Pkt 结构体",
+    "line": 9,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "主程序在 ISR 更新结构体中途读取，得到 len 与 buf 不一致的数据",
+  "platform_dependent": true,
+  "platform_notes": "用户态无法复现；sanitizer 不识别；compiler-warn miss。真实盲区。",
+  "notes": "ISR 与主程序共享结构体用双缓冲/原子指针或关中断。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

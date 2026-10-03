@@ -1,0 +1,32 @@
+{
+  "sample_id": "F120",
+  "defect_type": "bit_operation",
+  "defect_location": {
+    "description": "uint32_t 左移 36（>=32 越界）",
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "无符号移位量 >= 宽度也是 UB，UBSan 报",
+  "platform_dependent": false,
+  "platform_notes": "无符号移位越界同样 UB，UBSan 在 x86 报。实测 catch。",
+  "notes": "无符号移位也须 < 宽度。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "ubsan",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

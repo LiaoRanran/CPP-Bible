@@ -1,0 +1,32 @@
+{
+  "sample_id": "F153",
+  "defect_type": "interrupt_safety",
+  "defect_location": {
+    "description": "ISR 与主程序对 total 的非原子读写（撕裂读）",
+    "line": 8,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "多字变量在 ISR 与主循环间无临界区保护，读到半更新值",
+  "platform_dependent": true,
+  "platform_notes": "用户态无法复现；sanitizer 不识别 signal 并发；compiler-warn miss。真实盲区。",
+  "notes": "多字共享量用原子或关中断/自旋锁保护。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

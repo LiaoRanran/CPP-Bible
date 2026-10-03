@@ -1,0 +1,32 @@
+{
+  "sample_id": "F004",
+  "defect_type": "alignment",
+  "defect_location": {
+    "description": "char buffer+3 强转 long long* 后读，未满足 long long 对齐边界",
+    "line": 6,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "在 x86 上 UBSan 对齐检查会报 runtime error；在 ARM/严格对齐架构未对齐访问直接硬件异常（SIGBUS）",
+  "platform_dependent": true,
+  "platform_notes": "未对齐访问在 x86 上硬件不 trap（仅性能下降），但 UBSan(-fsanitize=alignment) 在 x86 也会插桩并报错；在 ARM/RISC-V 等严格对齐架构会崩溃。UBSan 实测 catch。",
+  "notes": "reinterpret_cast<long long*>(buffer+3) 产生未对齐指针，解引用是 UB。正确做法用 memcpy 或 std::aligned_storage/alignas。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "ubsan",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

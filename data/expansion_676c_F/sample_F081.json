@@ -1,0 +1,32 @@
+{
+  "sample_id": "F081",
+  "defect_type": "volatile_misuse",
+  "defect_location": {
+    "description": "把 volatile 对象 const_cast 为非 volatile 引用后调用成员函数（volatile 限定被丢弃）",
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "volatile 对象调用非 volatile 成员函数时 volatile 限定不传播，MMIO 写入可能被优化",
+  "platform_dependent": false,
+  "platform_notes": "成员函数未带 volatile 限定则无法对 volatile 对象正确生成访问；sanitizer 不抓，compiler-warn miss。真实盲区。",
+  "notes": "MMIO 访问的成员函数应加 volatile 限定。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

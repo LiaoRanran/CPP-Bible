@@ -1,0 +1,32 @@
+{
+  "sample_id": "F130",
+  "defect_type": "bit_operation",
+  "defect_location": {
+    "description": "无作用域枚举与 0x80000000u 混合位操作（底层类型不确定）",
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "无作用域枚举底层类型是能容纳值的实现定义整数类型，混入大常量可能溢出/符号问题",
+  "platform_dependent": false,
+  "platform_notes": "枚举位操作属设计隐患，sanitizer 与 compiler-warn 通常不报（除非 -Wenum）；compiler-warn miss。真实盲区。",
+  "notes": "枚举位标志宜用 enum class + 显式底层类型。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

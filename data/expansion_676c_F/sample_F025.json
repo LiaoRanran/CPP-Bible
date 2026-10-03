@@ -1,0 +1,32 @@
+{
+  "sample_id": "F025",
+  "defect_type": "alignment",
+  "defect_location": {
+    "description": "假设成员位于偏移 10 而实际因对齐在 4",
+    "line": 8,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "结构体填充导致成员实际偏移与假设不同；手工偏移计算在跨编译器/对齐设置下错位",
+  "platform_dependent": true,
+  "platform_notes": "结构体填充与对齐由 ABI/编译器决定，手工偏移在 x86 与 ARM 可能不同。sanitizer 不抓（逻辑错误），compiler-warn miss。",
+  "notes": "应使用 offsetof() 获取真实偏移，而非硬编码。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

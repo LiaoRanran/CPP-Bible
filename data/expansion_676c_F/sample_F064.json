@@ -1,0 +1,32 @@
+{
+  "sample_id": "F064",
+  "defect_type": "endianness",
+  "defect_location": {
+    "description": "把 double 的位表示直接当作整数发送，未转换端序",
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "浮点位模式在小端/大端机器上字节顺序相反，跨网络重建得到 NaN/错误值",
+  "platform_dependent": true,
+  "platform_notes": "浮点位模式端序是协议问题，sanitizer 不抓；compiler-warn miss。",
+  "notes": "浮点跨网络应固定端序（交换字节）。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

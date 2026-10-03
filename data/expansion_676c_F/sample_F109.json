@@ -1,0 +1,32 @@
+{
+  "sample_id": "F109",
+  "defect_type": "bit_operation",
+  "defect_location": {
+    "description": "移位量为负（-4）",
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "trigger_condition": "负移位量在 C++ 中是 UB，UBSan shift 检查必报",
+  "platform_dependent": false,
+  "platform_notes": "负移位是明确 UB，UBSan(-fsanitize=shift) 在 x86 也会报 shift exponent negative。实测 catch。",
+  "notes": "移位量必须 >=0 且 < 类型宽度。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "ubsan",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

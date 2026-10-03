@@ -1,0 +1,32 @@
+{
+  "sample_id": "F100",
+  "defect_type": "volatile_misuse",
+  "defect_location": {
+    "description": "中断/信号处理程序读写普通全局变量（应为 volatile 或 atomic）",
+    "line": 8,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "ISR 与主程序共享的非 volatile 变量可能被编译器缓存/重排，读到陈旧值",
+  "platform_dependent": true,
+  "platform_notes": "ISR 共享变量必须是 volatile 或 std::atomic（C++11 起 atomic 也适用）；用户态无法复现，sanitizer 不抓，compiler-warn miss。真实盲区。",
+  "notes": "ISR 与主程序共享变量用 volatile 或 std::atomic。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

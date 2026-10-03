@@ -1,0 +1,32 @@
+{
+  "sample_id": "F048",
+  "defect_type": "endianness",
+  "defect_location": {
+    "description": "union 类型双关读取多字节对象的字节序（C++ 严格别名 UB）",
+    "line": 6,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "用 union 读另一成员字节布局依赖具体实现；同一代码在不同端序机器上结论不同",
+  "platform_dependent": true,
+  "platform_notes": "union 双关在 C++ 是 UB（尽管 GCC/Clang 扩展允许）。UBsan 未启用严格别名时 miss；compiler-warn miss。真实盲区。",
+  "notes": "端序检测应用 std::endian (C++20) 或 memcpy。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

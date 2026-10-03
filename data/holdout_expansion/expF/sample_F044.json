@@ -1,0 +1,32 @@
+{
+  "sample_id": "F044",
+  "defect_type": "endianness",
+  "defect_location": {
+    "description": "字节序反转函数误用：连续两次字节反转（双转换回原序）",
+    "line": 6,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "多/少一次字节序转换导致线上格式与对端不一致",
+  "platform_dependent": true,
+  "platform_notes": "逻辑错误，sanitizer 与 compiler-warn 均不抓。小端系统上双反转抵消返回原值，掩盖错误。",
+  "notes": "字节序反转函数（如 htonl/bswap）应在发送端调用一次、接收端调用一次。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

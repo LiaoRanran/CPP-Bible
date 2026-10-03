@@ -1,0 +1,3002 @@
+{
+  "F001": {
+    "id": "F001",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.23
+  },
+  "F002": {
+    "id": "F002",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.02
+  },
+  "F003": {
+    "id": "F003",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.0
+  },
+  "F004": {
+    "id": "F004",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.97
+  },
+  "F005": {
+    "id": "F005",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.0
+  },
+  "F006": {
+    "id": "F006",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.03
+  },
+  "F007": {
+    "id": "F007",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.03
+  },
+  "F008": {
+    "id": "F008",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.98
+  },
+  "F009": {
+    "id": "F009",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.0
+  },
+  "F010": {
+    "id": "F010",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.99
+  },
+  "F011": {
+    "id": "F011",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.99
+  },
+  "F012": {
+    "id": "F012",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.02
+  },
+  "F013": {
+    "id": "F013",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.02
+  },
+  "F014": {
+    "id": "F014",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.98
+  },
+  "F015": {
+    "id": "F015",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.02
+  },
+  "F016": {
+    "id": "F016",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F017": {
+    "id": "F017",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F018": {
+    "id": "F018",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.37
+  },
+  "F019": {
+    "id": "F019",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.39
+  },
+  "F020": {
+    "id": "F020",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F021": {
+    "id": "F021",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F022": {
+    "id": "F022",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F023": {
+    "id": "F023",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.45
+  },
+  "F024": {
+    "id": "F024",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.44
+  },
+  "F025": {
+    "id": "F025",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F026": {
+    "id": "F026",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.43
+  },
+  "F027": {
+    "id": "F027",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.44
+  },
+  "F028": {
+    "id": "F028",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F029": {
+    "id": "F029",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.43
+  },
+  "F030": {
+    "id": "F030",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.45
+  },
+  "F031": {
+    "id": "F031",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F032": {
+    "id": "F032",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.44
+  },
+  "F033": {
+    "id": "F033",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.39
+  },
+  "F034": {
+    "id": "F034",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F035": {
+    "id": "F035",
+    "stage": "pass",
+    "defect_type": "alignment",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.39
+  },
+  "F036": {
+    "id": "F036",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.43
+  },
+  "F037": {
+    "id": "F037",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F038": {
+    "id": "F038",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.49
+  },
+  "F039": {
+    "id": "F039",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F040": {
+    "id": "F040",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F041": {
+    "id": "F041",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F042": {
+    "id": "F042",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F043": {
+    "id": "F043",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F044": {
+    "id": "F044",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F045": {
+    "id": "F045",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F046": {
+    "id": "F046",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.39
+  },
+  "F047": {
+    "id": "F047",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F048": {
+    "id": "F048",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F049": {
+    "id": "F049",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F050": {
+    "id": "F050",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F051": {
+    "id": "F051",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F052": {
+    "id": "F052",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F053": {
+    "id": "F053",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F054": {
+    "id": "F054",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.43
+  },
+  "F055": {
+    "id": "F055",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.39
+  },
+  "F056": {
+    "id": "F056",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F057": {
+    "id": "F057",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F058": {
+    "id": "F058",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F059": {
+    "id": "F059",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F060": {
+    "id": "F060",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F061": {
+    "id": "F061",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F062": {
+    "id": "F062",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F063": {
+    "id": "F063",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F064": {
+    "id": "F064",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F065": {
+    "id": "F065",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.43
+  },
+  "F066": {
+    "id": "F066",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F067": {
+    "id": "F067",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F068": {
+    "id": "F068",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F069": {
+    "id": "F069",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F070": {
+    "id": "F070",
+    "stage": "pass",
+    "defect_type": "endianness",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F071": {
+    "id": "F071",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F072": {
+    "id": "F072",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.37
+  },
+  "F073": {
+    "id": "F073",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F074": {
+    "id": "F074",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F075": {
+    "id": "F075",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F076": {
+    "id": "F076",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F077": {
+    "id": "F077",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.37
+  },
+  "F078": {
+    "id": "F078",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.39
+  },
+  "F079": {
+    "id": "F079",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F080": {
+    "id": "F080",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F081": {
+    "id": "F081",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F082": {
+    "id": "F082",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.51
+  },
+  "F083": {
+    "id": "F083",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.37
+  },
+  "F084": {
+    "id": "F084",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F085": {
+    "id": "F085",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.37
+  },
+  "F086": {
+    "id": "F086",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.37
+  },
+  "F087": {
+    "id": "F087",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F088": {
+    "id": "F088",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.37
+  },
+  "F089": {
+    "id": "F089",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.39
+  },
+  "F090": {
+    "id": "F090",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F091": {
+    "id": "F091",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F092": {
+    "id": "F092",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F093": {
+    "id": "F093",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F094": {
+    "id": "F094",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.36
+  },
+  "F095": {
+    "id": "F095",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.39
+  },
+  "F096": {
+    "id": "F096",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.39
+  },
+  "F097": {
+    "id": "F097",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.43
+  },
+  "F098": {
+    "id": "F098",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.52
+  },
+  "F099": {
+    "id": "F099",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.54
+  },
+  "F100": {
+    "id": "F100",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.56
+  },
+  "F101": {
+    "id": "F101",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.6
+  },
+  "F102": {
+    "id": "F102",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.47
+  },
+  "F103": {
+    "id": "F103",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.59
+  },
+  "F104": {
+    "id": "F104",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.58
+  },
+  "F105": {
+    "id": "F105",
+    "stage": "pass",
+    "defect_type": "volatile_misuse",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.49
+  },
+  "F106": {
+    "id": "F106",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.54
+  },
+  "F107": {
+    "id": "F107",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.56
+  },
+  "F108": {
+    "id": "F108",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.71
+  },
+  "F109": {
+    "id": "F109",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.24
+  },
+  "F110": {
+    "id": "F110",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.11
+  },
+  "F111": {
+    "id": "F111",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.02
+  },
+  "F112": {
+    "id": "F112",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.01
+  },
+  "F113": {
+    "id": "F113",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.99
+  },
+  "F114": {
+    "id": "F114",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.05
+  },
+  "F115": {
+    "id": "F115",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.0
+  },
+  "F116": {
+    "id": "F116",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.98
+  },
+  "F117": {
+    "id": "F117",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.03
+  },
+  "F118": {
+    "id": "F118",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.5
+  },
+  "F119": {
+    "id": "F119",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.56
+  },
+  "F120": {
+    "id": "F120",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "ubsan",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 2.6
+  },
+  "F121": {
+    "id": "F121",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.55
+  },
+  "F122": {
+    "id": "F122",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.56
+  },
+  "F123": {
+    "id": "F123",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.5
+  },
+  "F124": {
+    "id": "F124",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.55
+  },
+  "F125": {
+    "id": "F125",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.53
+  },
+  "F126": {
+    "id": "F126",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.51
+  },
+  "F127": {
+    "id": "F127",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.56
+  },
+  "F128": {
+    "id": "F128",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.52
+  },
+  "F129": {
+    "id": "F129",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.49
+  },
+  "F130": {
+    "id": "F130",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.51
+  },
+  "F131": {
+    "id": "F131",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.43
+  },
+  "F132": {
+    "id": "F132",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F133": {
+    "id": "F133",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.45
+  },
+  "F134": {
+    "id": "F134",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F135": {
+    "id": "F135",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F136": {
+    "id": "F136",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.17
+  },
+  "F137": {
+    "id": "F137",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.22
+  },
+  "F138": {
+    "id": "F138",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.19
+  },
+  "F139": {
+    "id": "F139",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.17
+  },
+  "F140": {
+    "id": "F140",
+    "stage": "pass",
+    "defect_type": "bit_operation",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.17
+  },
+  "F141": {
+    "id": "F141",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F142": {
+    "id": "F142",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F143": {
+    "id": "F143",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F144": {
+    "id": "F144",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.6
+  },
+  "F145": {
+    "id": "F145",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F146": {
+    "id": "F146",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F147": {
+    "id": "F147",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F148": {
+    "id": "F148",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.55
+  },
+  "F149": {
+    "id": "F149",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F150": {
+    "id": "F150",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.51
+  },
+  "F151": {
+    "id": "F151",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F152": {
+    "id": "F152",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F153": {
+    "id": "F153",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F154": {
+    "id": "F154",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F155": {
+    "id": "F155",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F156": {
+    "id": "F156",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.39
+  },
+  "F157": {
+    "id": "F157",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.43
+  },
+  "F158": {
+    "id": "F158",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.39
+  },
+  "F159": {
+    "id": "F159",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F160": {
+    "id": "F160",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.39
+  },
+  "F161": {
+    "id": "F161",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F162": {
+    "id": "F162",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F163": {
+    "id": "F163",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.43
+  },
+  "F164": {
+    "id": "F164",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.43
+  },
+  "F165": {
+    "id": "F165",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.39
+  },
+  "F166": {
+    "id": "F166",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F167": {
+    "id": "F167",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F168": {
+    "id": "F168",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.39
+  },
+  "F169": {
+    "id": "F169",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F170": {
+    "id": "F170",
+    "stage": "pass",
+    "defect_type": "interrupt_safety",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F171": {
+    "id": "F171",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F172": {
+    "id": "F172",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F173": {
+    "id": "F173",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.43
+  },
+  "F174": {
+    "id": "F174",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F175": {
+    "id": "F175",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.39
+  },
+  "F176": {
+    "id": "F176",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.43
+  },
+  "F177": {
+    "id": "F177",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F178": {
+    "id": "F178",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F179": {
+    "id": "F179",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F180": {
+    "id": "F180",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "catch",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.44
+  },
+  "F181": {
+    "id": "F181",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.54
+  },
+  "F182": {
+    "id": "F182",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.26
+  },
+  "F183": {
+    "id": "F183",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.21
+  },
+  "F184": {
+    "id": "F184",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.19
+  },
+  "F185": {
+    "id": "F185",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.19
+  },
+  "F186": {
+    "id": "F186",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.26
+  },
+  "F187": {
+    "id": "F187",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.65
+  },
+  "F188": {
+    "id": "F188",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 1.18
+  },
+  "F189": {
+    "id": "F189",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F190": {
+    "id": "F190",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F191": {
+    "id": "F191",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F192": {
+    "id": "F192",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F193": {
+    "id": "F193",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.43
+  },
+  "F194": {
+    "id": "F194",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F195": {
+    "id": "F195",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.38
+  },
+  "F196": {
+    "id": "F196",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F197": {
+    "id": "F197",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.4
+  },
+  "F198": {
+    "id": "F198",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.41
+  },
+  "F199": {
+    "id": "F199",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.42
+  },
+  "F200": {
+    "id": "F200",
+    "stage": "pass",
+    "defect_type": "register_ub",
+    "detector_kind": "compiler-warn",
+    "expected_verdict": "miss",
+    "full_compile": "ok",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "elapsed_s": 0.49
+  }
+}

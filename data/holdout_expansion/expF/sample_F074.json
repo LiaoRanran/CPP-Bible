@@ -1,0 +1,32 @@
+{
+  "sample_id": "F074",
+  "defect_type": "volatile_misuse",
+  "defect_location": {
+    "description": "用 volatile int 做线程间同步标志（缺失 atomic 语义）",
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "多核/强内存模型下 volatile 不阻止重排与缓存可见性问题，导致线程永远看不到更新",
+  "platform_dependent": false,
+  "platform_notes": "volatile 不提供原子性或跨线程可见性；TSan 在本例（单线程伪代码）不报；实际上用户态无法复现，compiler-warn miss。真实检测器盲区。",
+  "notes": "线程同步应使用 std::atomic<int> 而非 volatile。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

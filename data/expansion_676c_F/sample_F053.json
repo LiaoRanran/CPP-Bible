@@ -1,0 +1,32 @@
+{
+  "sample_id": "F053",
+  "defect_type": "endianness",
+  "defect_location": {
+    "description": "二进制文件/网络格式直接采用主机内存表示，未固定端序",
+    "line": 6,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "文件在小端机器写入、大端机器读取时字段全反转",
+  "platform_dependent": true,
+  "platform_notes": "文件格式端序是协议层问题，sanitizer 不抓；compiler-warn miss。真实盲区。",
+  "notes": "序列化应固定端序（htonl 或手动组装字节）。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "alignment_reinterpret": {
+    "ubsan": [
+      "catch",
+      "ubsan 命中[-O0(rc=0) /mnt/c/Users/ASUS/AppData/Local/Temp/tmphjlro4fo/alignment_reinterpret.cpp:1:53: runtime error: load "
+    ],
+    "compiler-warn": [
+      "miss",
+      "无告警"
+    ]
+  },
+  "alignment_packed": {
+    "ubsan": [
+      "unknown",
+      "检测器不可用(ubsan)：-O0 编译失败: /mnt/c/Users/ASUS/AppData/Local/Temp/tmpdhfpo8ox/alignment_packed.cpp:2:26: erro; -O2 编译失败: /mnt"
+    ],
+    "compiler-warn": [
+      "miss",
+      "无告警"
+    ]
+  },
+  "alignment_simd_attr": {
+    "ubsan": [
+      "miss",
+      "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]"
+    ],
+    "compiler-warn": [
+      "miss",
+      "无告警"
+    ]
+  },
+  "shift_overflow_signed": {
+    "ubsan": [
+      "miss",
+      "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]"
+    ],
+    "compiler-warn": [
+      "miss",
+      "无告警"
+    ]
+  },
+  "shift_negative": {
+    "ubsan": [
+      "catch",
+      "ubsan 命中[-O0(rc=0) /mnt/c/Users/ASUS/AppData/Local/Temp/tmpu58sp98t/shift_negative.cpp:1:29: runtime error: shift expone"
+    ],
+    "compiler-warn": [
+      "catch",
+      "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpluhiun51\\shift_negative.cpp:1:29: "
+    ]
+  },
+  "shift_overflow_unsigned": {
+    "ubsan": [
+      "miss",
+      "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]"
+    ],
+    "compiler-warn": [
+      "miss",
+      "无告警"
+    ]
+  },
+  "endian_network_nohtonl": {
+    "ubsan": [
+      "miss",
+      "ubsan 两档均无报告[-O0(rc=0) 2018915346; -O2(rc=0) 2018915346]"
+    ],
+    "compiler-warn": [
+      "miss",
+      "无告警"
+    ]
+  },
+  "volatile_sync_flag": {
+    "ubsan": [
+      "miss",
+      "ubsan 两档均无报告[-O0(rc=-1) wsl_error:Command '['wsl', '-e', 'bash', '-lc', 'setarch -R /tmp/rv_bin_O0']' timed out after 12"
+    ],
+    "compiler-warn": [
+      "miss",
+      "无告警"
+    ]
+  },
+  "volatile_constcast": {
+    "ubsan": [
+      "miss",
+      "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]"
+    ],
+    "compiler-warn": [
+      "miss",
+      "无告警"
+    ]
+  },
+  "interrupt_signal_nonreentrant": {
+    "ubsan": [
+      "miss",
+      "ubsan 两档均无报告[-O0(rc=0) x; -O2(rc=0) x]"
+    ],
+    "compiler-warn": [
+      "miss",
+      "无告警"
+    ]
+  },
+  "setjmp_longjmp_skip_dtor": {
+    "ubsan": [
+      "miss",
+      "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]"
+    ],
+    "compiler-warn": [
+      "miss",
+      "无告警"
+    ]
+  },
+  "register_keyword": {
+    "ubsan": [
+      "miss",
+      "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]"
+    ],
+    "compiler-warn": [
+      "catch",
+      "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpgr3erjlk\\register_keyword.cpp:1:26"
+    ]
+  },
+  "bitfield_overflow": {
+    "ubsan": [
+      "miss",
+      "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]"
+    ],
+    "compiler-warn": [
+      "catch",
+      "警告 1 条: C:\\Users\\ASUS\\AppData\\Local\\Temp\\tmpiubb5ap_\\bitfield_overflow.cpp:2:2"
+    ]
+  },
+  "bitset_oob": {
+    "ubsan": [
+      "miss",
+      "ubsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  bitset::test: __p"
+    ],
+    "compiler-warn": [
+      "miss",
+      "无告警"
+    ]
+  }
+}

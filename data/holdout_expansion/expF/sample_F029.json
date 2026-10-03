@@ -1,0 +1,32 @@
+{
+  "sample_id": "F029",
+  "defect_type": "alignment",
+  "defect_location": {
+    "description": "aligned_storage 对齐参数 4 小于 Payload(double) 所需 8",
+    "line": 6,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "aligned_storage 对齐参数小于实际类型对齐要求时，placement new/强转产生未对齐访问",
+  "platform_dependent": true,
+  "platform_notes": "double 需 8 字节对齐；若缓冲区仅 4 对齐，x86 上普通访问不出错但跨平台 UB。ubsan/compiler-warn 在本例 miss（访问未执行或对齐恰巧满足）。",
+  "notes": "aligned_storage 第二个模板参数应与 alignof(T) 一致，或用 std::aligned_storage_t<sizeof(T), alignof(T)>。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

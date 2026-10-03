@@ -1,0 +1,32 @@
+{
+  "sample_id": "F166",
+  "defect_type": "interrupt_safety",
+  "defect_location": {
+    "description": "信号处理程序内调用 longjmp 跳出主程序栈帧",
+    "line": 8,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "从 ISR longjmp 到主程序 setjmp 点，跳过中间栈帧的非平凡对象析构（UB）",
+  "platform_dependent": true,
+  "platform_notes": "setjmp/longjmp 跨栈帧跳过析构是 UB；sanitizer 在用户态通常不报，compiler-warn miss。真实盲区。",
+  "notes": "ISR 内禁止 longjmp。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

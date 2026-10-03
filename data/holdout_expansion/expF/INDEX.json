@@ -1,0 +1,1598 @@
+{
+  "agent": "676c-expF",
+  "category": "F",
+  "theme": "嵌入式/平台特定缺陷（对齐/端序/volatile/位操作/中断安全/寄存器）",
+  "generated": 200,
+  "pooled": 149,
+  "not_pooled": 51,
+  "not_pooled_reason": "全部 200 个候选均通过编译与检测器复现验证；按规格各类型入池目标区间（20-30/25-30/25-30/25-30/15-25/15-25，合计 125-170）做确定性裁剪：每类型收全 catch 样本，差额在 miss 样本内等距抽样（端点必含，保留变体多样性）。未入池候选保留于 data/expansion_676c_F/ 可追溯。",
+  "failed": 0,
+  "failed_ids": [],
+  "by_type": {
+    "alignment": 25,
+    "endianness": 28,
+    "volatile_misuse": 28,
+    "bit_operation": 28,
+    "interrupt_safety": 20,
+    "register_ub": 20
+  },
+  "by_type_plan": {
+    "alignment": {
+      "target": 25,
+      "range": [
+        20,
+        30
+      ],
+      "catch_avail": 15,
+      "miss_avail": 20,
+      "pooled": 25,
+      "pooled_catch": 15,
+      "pooled_miss": 10
+    },
+    "endianness": {
+      "target": 28,
+      "range": [
+        25,
+        30
+      ],
+      "catch_avail": 0,
+      "miss_avail": 35,
+      "pooled": 28,
+      "pooled_catch": 0,
+      "pooled_miss": 28
+    },
+    "volatile_misuse": {
+      "target": 28,
+      "range": [
+        25,
+        30
+      ],
+      "catch_avail": 0,
+      "miss_avail": 35,
+      "pooled": 28,
+      "pooled_catch": 0,
+      "pooled_miss": 28
+    },
+    "bit_operation": {
+      "target": 28,
+      "range": [
+        25,
+        30
+      ],
+      "catch_avail": 20,
+      "miss_avail": 15,
+      "pooled": 28,
+      "pooled_catch": 20,
+      "pooled_miss": 8
+    },
+    "interrupt_safety": {
+      "target": 20,
+      "range": [
+        15,
+        25
+      ],
+      "catch_avail": 0,
+      "miss_avail": 30,
+      "pooled": 20,
+      "pooled_catch": 0,
+      "pooled_miss": 20
+    },
+    "register_ub": {
+      "target": 20,
+      "range": [
+        15,
+        25
+      ],
+      "catch_avail": 10,
+      "miss_avail": 20,
+      "pooled": 20,
+      "pooled_catch": 10,
+      "pooled_miss": 10
+    }
+  },
+  "severity": {
+    "medium": 58,
+    "low": 24,
+    "high": 67
+  },
+  "detector_mix": {
+    "ubsan": 30,
+    "compiler-warn": 119
+  },
+  "blind_spot_ratio": 0.698,
+  "platform_dependent_ratio": 0.557,
+  "platform_dependent_count": 83,
+  "selection_rule": "catch 全收 + miss 等距抽样（deterministic，无随机种子依赖）",
+  "index": [
+    {
+      "id": "F001",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F002",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F003",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F004",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F005",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F006",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F007",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F008",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F009",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F010",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F011",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F012",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F013",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F014",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F015",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F016",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 12,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F018",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 12,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F020",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 12,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F022",
+      "defect_type": "alignment",
+      "severity": "low",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F024",
+      "defect_type": "alignment",
+      "severity": "low",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F027",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F029",
+      "defect_type": "alignment",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F031",
+      "defect_type": "alignment",
+      "severity": "low",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F033",
+      "defect_type": "alignment",
+      "severity": "low",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F035",
+      "defect_type": "alignment",
+      "severity": "low",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F036",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F037",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F039",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F040",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F041",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F042",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F044",
+      "defect_type": "endianness",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F045",
+      "defect_type": "endianness",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F046",
+      "defect_type": "endianness",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F047",
+      "defect_type": "endianness",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F049",
+      "defect_type": "endianness",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F050",
+      "defect_type": "endianness",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F051",
+      "defect_type": "endianness",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F052",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F054",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F055",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F056",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F057",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F059",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F060",
+      "defect_type": "endianness",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F061",
+      "defect_type": "endianness",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F062",
+      "defect_type": "endianness",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 6,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F064",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F065",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F066",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F067",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F069",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F070",
+      "defect_type": "endianness",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F071",
+      "defect_type": "volatile_misuse",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F072",
+      "defect_type": "volatile_misuse",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F074",
+      "defect_type": "volatile_misuse",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F075",
+      "defect_type": "volatile_misuse",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F076",
+      "defect_type": "volatile_misuse",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F077",
+      "defect_type": "volatile_misuse",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F079",
+      "defect_type": "volatile_misuse",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F080",
+      "defect_type": "volatile_misuse",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F081",
+      "defect_type": "volatile_misuse",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F082",
+      "defect_type": "volatile_misuse",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F084",
+      "defect_type": "volatile_misuse",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F085",
+      "defect_type": "volatile_misuse",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F086",
+      "defect_type": "volatile_misuse",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F087",
+      "defect_type": "volatile_misuse",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F089",
+      "defect_type": "volatile_misuse",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F090",
+      "defect_type": "volatile_misuse",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F091",
+      "defect_type": "volatile_misuse",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F092",
+      "defect_type": "volatile_misuse",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F094",
+      "defect_type": "volatile_misuse",
+      "severity": "low",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F095",
+      "defect_type": "volatile_misuse",
+      "severity": "low",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F096",
+      "defect_type": "volatile_misuse",
+      "severity": "low",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F097",
+      "defect_type": "volatile_misuse",
+      "severity": "low",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F099",
+      "defect_type": "volatile_misuse",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F100",
+      "defect_type": "volatile_misuse",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F101",
+      "defect_type": "volatile_misuse",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F102",
+      "defect_type": "volatile_misuse",
+      "severity": "low",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F104",
+      "defect_type": "volatile_misuse",
+      "severity": "low",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F105",
+      "defect_type": "volatile_misuse",
+      "severity": "low",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F106",
+      "defect_type": "bit_operation",
+      "severity": "high",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F107",
+      "defect_type": "bit_operation",
+      "severity": "high",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F108",
+      "defect_type": "bit_operation",
+      "severity": "high",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F109",
+      "defect_type": "bit_operation",
+      "severity": "high",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F110",
+      "defect_type": "bit_operation",
+      "severity": "high",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F111",
+      "defect_type": "bit_operation",
+      "severity": "high",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F112",
+      "defect_type": "bit_operation",
+      "severity": "high",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F113",
+      "defect_type": "bit_operation",
+      "severity": "high",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F114",
+      "defect_type": "bit_operation",
+      "severity": "high",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F115",
+      "defect_type": "bit_operation",
+      "severity": "high",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F116",
+      "defect_type": "bit_operation",
+      "severity": "high",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F117",
+      "defect_type": "bit_operation",
+      "severity": "high",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F118",
+      "defect_type": "bit_operation",
+      "severity": "high",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F119",
+      "defect_type": "bit_operation",
+      "severity": "high",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F120",
+      "defect_type": "bit_operation",
+      "severity": "high",
+      "expected_verdict": "catch",
+      "detector": "ubsan",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F121",
+      "defect_type": "bit_operation",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F122",
+      "defect_type": "bit_operation",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F123",
+      "defect_type": "bit_operation",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F124",
+      "defect_type": "bit_operation",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F125",
+      "defect_type": "bit_operation",
+      "severity": "medium",
+      "expected_verdict": "catch",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F126",
+      "defect_type": "bit_operation",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F128",
+      "defect_type": "bit_operation",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F130",
+      "defect_type": "bit_operation",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F132",
+      "defect_type": "bit_operation",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F134",
+      "defect_type": "bit_operation",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F136",
+      "defect_type": "bit_operation",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F138",
+      "defect_type": "bit_operation",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F140",
+      "defect_type": "bit_operation",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F141",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F143",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F144",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F146",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F147",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 7,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F149",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 7,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F150",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 7,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F152",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F153",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F155",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F156",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F158",
+      "defect_type": "interrupt_safety",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 7,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F159",
+      "defect_type": "interrupt_safety",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 7,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F161",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 9,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F162",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 9,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F164",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 9,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F165",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 9,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F167",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F168",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F170",
+      "defect_type": "interrupt_safety",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 8,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F171",
+      "defect_type": "register_ub",
+      "severity": "low",
+      "expected_verdict": "catch",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F172",
+      "defect_type": "register_ub",
+      "severity": "low",
+      "expected_verdict": "catch",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F173",
+      "defect_type": "register_ub",
+      "severity": "low",
+      "expected_verdict": "catch",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F174",
+      "defect_type": "register_ub",
+      "severity": "low",
+      "expected_verdict": "catch",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F175",
+      "defect_type": "register_ub",
+      "severity": "low",
+      "expected_verdict": "catch",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F176",
+      "defect_type": "register_ub",
+      "severity": "low",
+      "expected_verdict": "catch",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F177",
+      "defect_type": "register_ub",
+      "severity": "low",
+      "expected_verdict": "catch",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F178",
+      "defect_type": "register_ub",
+      "severity": "low",
+      "expected_verdict": "catch",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F179",
+      "defect_type": "register_ub",
+      "severity": "low",
+      "expected_verdict": "catch",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F180",
+      "defect_type": "register_ub",
+      "severity": "low",
+      "expected_verdict": "catch",
+      "detector": "compiler-warn",
+      "defect_line": 3,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F181",
+      "defect_type": "register_ub",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 9,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F183",
+      "defect_type": "register_ub",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 9,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F185",
+      "defect_type": "register_ub",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 9,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F187",
+      "defect_type": "register_ub",
+      "severity": "high",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 9,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F189",
+      "defect_type": "register_ub",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F192",
+      "defect_type": "register_ub",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F194",
+      "defect_type": "register_ub",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 5,
+      "planted": true,
+      "platform_dependent": true
+    },
+    {
+      "id": "F196",
+      "defect_type": "register_ub",
+      "severity": "low",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F198",
+      "defect_type": "register_ub",
+      "severity": "low",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": false
+    },
+    {
+      "id": "F200",
+      "defect_type": "register_ub",
+      "severity": "medium",
+      "expected_verdict": "miss",
+      "detector": "compiler-warn",
+      "defect_line": 4,
+      "planted": true,
+      "platform_dependent": true
+    }
+  ]
+}

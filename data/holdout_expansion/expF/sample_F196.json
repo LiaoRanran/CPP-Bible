@@ -1,0 +1,32 @@
+{
+  "sample_id": "F196",
+  "defect_type": "register_ub",
+  "defect_location": {
+    "description": "对局部变量取地址并借指针别名修改（register 取地址的现代化误用模拟）",
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "一旦变量可能取地址，register 提示失效；现代等价误用是未预期的别名",
+  "platform_dependent": false,
+  "platform_notes": "取地址本身是合法的；此处模拟 register 时代取地址 UB 的现代化等价误用，sanitizer 不抓，compiler-warn miss。真实盲区。",
+  "notes": "不要对会被取地址的变量做寄存器假设优化。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

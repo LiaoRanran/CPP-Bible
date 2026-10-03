@@ -1,0 +1,32 @@
+{
+  "sample_id": "F160",
+  "defect_type": "interrupt_safety",
+  "defect_location": {
+    "description": "信号处理程序内再次 raise 同一信号导致嵌套",
+    "line": 7,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "ISR 内触发自身造成栈嵌套/重入，深嵌套致栈溢出",
+  "platform_dependent": true,
+  "platform_notes": "信号嵌套在用户态难复现真实中断嵌套；sanitizer 不抓，compiler-warn miss。真实盲区。",
+  "notes": "ISR 应避免再次触发自身，或屏蔽同信号。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

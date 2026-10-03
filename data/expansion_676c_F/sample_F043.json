@@ -1,0 +1,32 @@
+{
+  "sample_id": "F043",
+  "defect_type": "endianness",
+  "defect_location": {
+    "description": "把网络字节序原始字节直接按主机序解读为 uint32_t（漏 ntohl/ntohs）",
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "在大端系统上 raw 与主机序一致（看似正常），在小端系统上字节被反转——跨端序解析错误",
+  "platform_dependent": true,
+  "platform_notes": "端序是逻辑错误，sanitizer 完全不抓；在小端 x86 上结果明显错误但程序不崩溃，compiler-warn miss。真实检测器盲区。",
+  "notes": "网络/文件字节序须用 ntohl/ntohs 或手动字节重组，不能直接强转。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

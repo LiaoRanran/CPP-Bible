@@ -1,0 +1,32 @@
+{
+  "sample_id": "F103",
+  "defect_type": "volatile_misuse",
+  "defect_location": {
+    "description": "误以为 volatile const 提供硬件只读保护",
+    "line": 3,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "volatile const 仅影响编译器对访问的假设，不提供任何内存保护",
+  "platform_dependent": false,
+  "platform_notes": "语义误解，非 UB；sanitizer 不抓，compiler-warn miss。真实盲区。",
+  "notes": "只读保护靠 MMIO/MPU，不由 volatile const 提供。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "sample_id": "F185",
+  "defect_type": "register_ub",
+  "defect_location": {
+    "description": "longjmp 跳过局部 std::string 的析构函数",
+    "line": 9,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "setjmp/longjmp 跨过含非平凡析构的栈帧，析构被跳过（资源泄漏/UB）",
+  "platform_dependent": false,
+  "platform_notes": "跳过析构是 UB，但运行时通常不崩溃，UBSan 不报；compiler-warn miss。真实盲区。",
+  "notes": "用异常或 RAII 替代 longjmp 控制流。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

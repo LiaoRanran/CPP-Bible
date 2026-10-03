@@ -1,0 +1,32 @@
+{
+  "sample_id": "F056",
+  "defect_type": "endianness",
+  "defect_location": {
+    "description": "反序列化把 64 位值当 32 位读取（截断 + 端序混淆）",
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "序列化/反序列化宽度与端序处理不一致导致数据损坏",
+  "platform_dependent": true,
+  "platform_notes": "逻辑错误，sanitizer 不抓；compiler-warn miss。",
+  "notes": "序列化/反序列化必须对称且固定端序。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

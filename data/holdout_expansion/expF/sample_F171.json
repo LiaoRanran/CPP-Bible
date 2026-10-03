@@ -1,0 +1,32 @@
+{
+  "sample_id": "F171",
+  "defect_type": "register_ub",
+  "defect_location": {
+    "description": "使用 register 关键字声明 r0",
+    "line": 3,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "register 在 C++17 弃用、C++20 移除；使用会触发弃用警告",
+  "platform_dependent": false,
+  "platform_notes": "register 关键字自 C++17 起弃用，g++ -Wall 发出 -Wdeprecated 警告。实测 compiler-warn catch。",
+  "notes": "删除 register 关键字（现代编译器自动决定寄存器分配）。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "sample_id": "F136",
+  "defect_type": "bit_operation",
+  "defect_location": {
+    "description": "std::bitset<8> 越界访问下标 9",
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "bitset::operator[] 不做边界检查，越界是 UB，运行期通常静默读脏数据",
+  "platform_dependent": false,
+  "platform_notes": "bitset 越界是 UB 但 sanitizer 不插桩 std::bitset；compiler-warn miss。真实盲区。",
+  "notes": "越界访问用 bs.test()（带异常）或先检查 size()。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

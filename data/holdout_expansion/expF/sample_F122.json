@@ -1,0 +1,32 @@
+{
+  "sample_id": "F122",
+  "defect_type": "bit_operation",
+  "defect_location": {
+    "description": "向 3 位位域写入 16（超出宽度）",
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "写入值超出位域宽度时行为由实现定义，部分编译器 -W 警告",
+  "platform_dependent": false,
+  "platform_notes": "位域越界写是 C++ 未指定/UB；g++ -Wall 会发出截断警告。实测 compiler-warn catch。",
+  "notes": "写入位域的值应在其宽度范围内。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

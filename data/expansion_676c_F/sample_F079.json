@@ -1,0 +1,32 @@
+{
+  "sample_id": "F079",
+  "defect_type": "volatile_misuse",
+  "defect_location": {
+    "description": "将普通 int 的地址强转为 volatile int* 访问（虚假 volatile 限定）",
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "非 volatile 数据的 volatile 限定是谎言，编译器可能仍优化掉预期屏障",
+  "platform_dependent": false,
+  "platform_notes": "纯逻辑/语义误用，sanitizer 与 compiler-warn 均不抓；真实盲区。",
+  "notes": "volatile 限定应与对象的真实存储属性一致。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

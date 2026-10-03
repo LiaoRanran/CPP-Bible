@@ -1,0 +1,32 @@
+{
+  "sample_id": "F193",
+  "defect_type": "register_ub",
+  "defect_location": {
+    "description": "内联汇编未声明 memory/被修改寄存器 clobber",
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "内联汇编读写内存/寄存器但未在 clobber 列表声明，编译器据此错误优化相邻代码",
+  "platform_dependent": true,
+  "platform_notes": "内联汇编 clobber 缺失是真实缺陷，但静态分析在本工具链不覆盖；ubsan/compiler-warn miss。WSL x86-64 可编译运行。真实盲区。",
+  "notes": "内联汇编须完整声明输出/输入/clobber（含 \"memory\"）。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

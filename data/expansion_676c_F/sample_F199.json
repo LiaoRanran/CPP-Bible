@@ -1,0 +1,32 @@
+{
+  "sample_id": "F199",
+  "defect_type": "register_ub",
+  "defect_location": {
+    "description": "GCC 全局寄存器变量扩展把 rbx 当作 gp",
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "全局寄存器变量劫持被调用约定保留的寄存器（如 rbx），破坏 ABI 导致崩溃",
+  "platform_dependent": true,
+  "platform_notes": "全局寄存器变量是 GCC 扩展，劫持保留寄存器会破坏 ABI；本工具链 compiler-warn miss。真实盲区（WSL x86-64 可编译运行）。",
+  "notes": "避免使用全局寄存器变量，或用编译器保留的专用寄存器。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

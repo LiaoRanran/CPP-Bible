@@ -1,0 +1,32 @@
+{
+  "sample_id": "F093",
+  "defect_type": "volatile_misuse",
+  "defect_location": {
+    "description": "对 volatile 变量做自增，误信其原子性",
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "并发场景下 volatile 自增仍是非原子 RMW，会被打断导致丢失更新",
+  "platform_dependent": false,
+  "platform_notes": "volatile 不提供原子 RMW；正确做法 std::atomic::fetch_add；sanitizer 单线程不报，compiler-warn miss。真实盲区。",
+  "notes": "计数器递增应使用 std::atomic。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

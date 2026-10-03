@@ -1,0 +1,32 @@
+{
+  "sample_id": "F066",
+  "defect_type": "endianness",
+  "defect_location": {
+    "description": "raw+1 处按 uint16_t 直接解读（未对齐 + 未转换端序）",
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "trigger_condition": "未对齐 + 端序同时错误，跨平台结果完全不同",
+  "platform_dependent": true,
+  "platform_notes": "未对齐在 x86 上 UBSan 会报 alignment（本例为 endianness 主题，仍标 miss 因核心缺陷是端序）；compiler-warn miss。",
+  "notes": "应使用 memcpy + ntohl 系列处理。",
+  "verification": {
+    "syntax_fail": false,
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}
