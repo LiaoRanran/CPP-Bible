@@ -1,0 +1,2202 @@
+{
+  "sample_001": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "medium",
+    "trigger_condition": "无条件（始终触发）",
+    "optimization_sensitivity": "n/a",
+    "notes": "自移动 a=std::move(a) 触发 -Wself-move（compiler-warn 抓）。移动语义误用。"
+  },
+  "sample_002": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "medium",
+    "trigger_condition": "无条件（始终触发）",
+    "optimization_sensitivity": "n/a",
+    "notes": "自移动 a=std::move(a) 触发 -Wself-move（compiler-warn 抓）。移动语义误用。"
+  },
+  "sample_003": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "medium",
+    "trigger_condition": "无条件（始终触发）",
+    "optimization_sensitivity": "n/a",
+    "notes": "自移动 a=std::move(a) 触发 -Wself-move（compiler-warn 抓）。移动语义误用。"
+  },
+  "sample_004": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "medium",
+    "trigger_condition": "无条件（始终触发）",
+    "optimization_sensitivity": "n/a",
+    "notes": "自移动 a=std::move(a) 触发 -Wself-move（compiler-warn 抓）。移动语义误用。"
+  },
+  "sample_005": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "medium",
+    "trigger_condition": "无条件（始终触发）",
+    "optimization_sensitivity": "n/a",
+    "notes": "自移动 a=std::move(a) 触发 -Wself-move（compiler-warn 抓）。移动语义误用。"
+  },
+  "sample_006": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "medium",
+    "trigger_condition": "无条件（始终触发）",
+    "optimization_sensitivity": "n/a",
+    "notes": "自移动 a=std::move(a) 触发 -Wself-move（compiler-warn 抓）。移动语义误用。"
+  },
+  "sample_007": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "medium",
+    "trigger_condition": "无条件（始终触发）",
+    "optimization_sensitivity": "n/a",
+    "notes": "自移动 a=std::move(a) 触发 -Wself-move（compiler-warn 抓）。移动语义误用。"
+  },
+  "sample_008": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "medium",
+    "trigger_condition": "无条件（始终触发）",
+    "optimization_sensitivity": "n/a",
+    "notes": "自移动 a=std::move(a) 触发 -Wself-move（compiler-warn 抓）。移动语义误用。"
+  },
+  "sample_009": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "返回指向已销毁栈对象的引用/指针，触发 -Wreturn-local-addr（compiler-warn 抓）。"
+  },
+  "sample_010": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "返回指向已销毁栈对象的引用/指针，触发 -Wreturn-local-addr（compiler-warn 抓）。"
+  },
+  "sample_011": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "返回指向已销毁栈对象的引用/指针，触发 -Wreturn-local-addr（compiler-warn 抓）。"
+  },
+  "sample_012": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "返回指向已销毁栈对象的引用/指针，触发 -Wreturn-local-addr（compiler-warn 抓）。"
+  },
+  "sample_013": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "返回指向已销毁栈对象的引用/指针，触发 -Wreturn-local-addr（compiler-warn 抓）。"
+  },
+  "sample_014": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "返回指向已销毁栈对象的引用/指针，触发 -Wreturn-local-addr（compiler-warn 抓）。"
+  },
+  "sample_015": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "对已移动自 string 的对象继续访问：C++ 允许但结果未指定；无检测器可抓（盲区）。"
+  },
+  "sample_016": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "对已移动自 vector 的对象继续访问：C++ 允许但结果未指定；无检测器可抓（盲区）。"
+  },
+  "sample_017": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "对已移动自 unique 的对象继续访问：C++ 允许但结果未指定；无检测器可抓（盲区）。"
+  },
+  "sample_018": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "对已移动自 map 的对象继续访问：C++ 允许但结果未指定；无检测器可抓（盲区）。"
+  },
+  "sample_019": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "对已移动自 string 的对象继续访问：C++ 允许但结果未指定；无检测器可抓（盲区）。"
+  },
+  "sample_020": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "对已移动自 vector 的对象继续访问：C++ 允许但结果未指定；无检测器可抓（盲区）。"
+  },
+  "sample_021": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "对已移动自 unique 的对象继续访问：C++ 允许但结果未指定；无检测器可抓（盲区）。"
+  },
+  "sample_022": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "对已移动自 map 的对象继续访问：C++ 允许但结果未指定；无检测器可抓（盲区）。"
+  },
+  "sample_023": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "对已移动自 string 的对象继续访问：C++ 允许但结果未指定；无检测器可抓（盲区）。"
+  },
+  "sample_024": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "对已移动自 vector 的对象继续访问：C++ 允许但结果未指定；无检测器可抓（盲区）。"
+  },
+  "sample_025": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "多次移动同一对象：合法但语义可疑，无检测器可抓（盲区）。"
+  },
+  "sample_026": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "多次移动同一对象：合法但语义可疑，无检测器可抓（盲区）。"
+  },
+  "sample_027": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "多次移动同一对象：合法但语义可疑，无检测器可抓（盲区）。"
+  },
+  "sample_028": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "多次移动同一对象：合法但语义可疑，无检测器可抓（盲区）。"
+  },
+  "sample_029": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "多次移动同一对象：合法但语义可疑，无检测器可抓（盲区）。"
+  },
+  "sample_030": {
+    "defect_type": "move_semantics",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "多次移动同一对象：合法但语义可疑，无检测器可抓（盲区）。"
+  },
+  "sample_031": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "异常被抛出时（始终触发）",
+    "optimization_sensitivity": "n/a",
+    "notes": "异常安全漏洞：分配后抛异常未释放，LeakSanitizer 抓。"
+  },
+  "sample_032": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "异常被抛出时（始终触发）",
+    "optimization_sensitivity": "n/a",
+    "notes": "异常安全漏洞：分配后抛异常未释放，LeakSanitizer 抓。"
+  },
+  "sample_033": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "异常被抛出时（始终触发）",
+    "optimization_sensitivity": "n/a",
+    "notes": "异常安全漏洞：分配后抛异常未释放，LeakSanitizer 抓。"
+  },
+  "sample_034": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "异常被抛出时（始终触发）",
+    "optimization_sensitivity": "n/a",
+    "notes": "异常安全漏洞：分配后抛异常未释放，LeakSanitizer 抓。"
+  },
+  "sample_035": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "异常被抛出时（始终触发）",
+    "optimization_sensitivity": "n/a",
+    "notes": "异常安全漏洞：分配后抛异常未释放，LeakSanitizer 抓。"
+  },
+  "sample_036": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "异常被抛出时（始终触发）",
+    "optimization_sensitivity": "n/a",
+    "notes": "异常安全漏洞：分配后抛异常未释放，LeakSanitizer 抓。"
+  },
+  "sample_037": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "new/delete 或 malloc/free 不匹配：AddressSanitizer 抓 allocation-deallocation-mismatch。"
+  },
+  "sample_038": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "new/delete 或 malloc/free 不匹配：AddressSanitizer 抓 allocation-deallocation-mismatch。"
+  },
+  "sample_039": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "new/delete 或 malloc/free 不匹配：AddressSanitizer 抓 allocation-deallocation-mismatch。"
+  },
+  "sample_040": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "new/delete 或 malloc/free 不匹配：AddressSanitizer 抓 allocation-deallocation-mismatch。"
+  },
+  "sample_041": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "new/delete 或 malloc/free 不匹配：AddressSanitizer 抓 allocation-deallocation-mismatch。"
+  },
+  "sample_042": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "new/delete 或 malloc/free 不匹配：AddressSanitizer 抓 allocation-deallocation-mismatch。"
+  },
+  "sample_043": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "经非虚析构基类删除派生对象：-Wdelete-non-virtual-dtor（compiler-warn 抓）。"
+  },
+  "sample_044": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "经非虚析构基类删除派生对象：-Wdelete-non-virtual-dtor（compiler-warn 抓）。"
+  },
+  "sample_045": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "经非虚析构基类删除派生对象：-Wdelete-non-virtual-dtor（compiler-warn 抓）。"
+  },
+  "sample_046": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "经非虚析构基类删除派生对象：-Wdelete-non-virtual-dtor（compiler-warn 抓）。"
+  },
+  "sample_047": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "经非虚析构基类删除派生对象：-Wdelete-non-virtual-dtor（compiler-warn 抓）。"
+  },
+  "sample_048": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "compiler-warn"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "经非虚析构基类删除派生对象：-Wdelete-non-virtual-dtor（compiler-warn 抓）。"
+  },
+  "sample_049": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "提前返回分支",
+    "optimization_sensitivity": "n/a",
+    "notes": "手动加锁后提前返回未解锁：锁泄漏，无 sanitizer 可抓（盲区）。"
+  },
+  "sample_050": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "提前返回分支",
+    "optimization_sensitivity": "n/a",
+    "notes": "手动加锁后提前返回未解锁：锁泄漏，无 sanitizer 可抓（盲区）。"
+  },
+  "sample_051": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "提前返回分支",
+    "optimization_sensitivity": "n/a",
+    "notes": "手动加锁后提前返回未解锁：锁泄漏，无 sanitizer 可抓（盲区）。"
+  },
+  "sample_052": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "提前返回分支",
+    "optimization_sensitivity": "n/a",
+    "notes": "手动加锁后提前返回未解锁：锁泄漏，无 sanitizer 可抓（盲区）。"
+  },
+  "sample_053": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "FILE* 未关闭即返回：句柄泄漏，AddressSanitizer 不追踪 FILE（盲区）。"
+  },
+  "sample_054": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "FILE* 未关闭即返回：句柄泄漏，AddressSanitizer 不追踪 FILE（盲区）。"
+  },
+  "sample_055": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "FILE* 未关闭即返回：句柄泄漏，AddressSanitizer 不追踪 FILE（盲区）。"
+  },
+  "sample_056": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "FILE* 未关闭即返回：句柄泄漏，AddressSanitizer 不追踪 FILE（盲区）。"
+  },
+  "sample_057": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "异常抛出",
+    "optimization_sensitivity": "n/a",
+    "notes": "异常安全：锁在异常路径未释放，无 sanitizer 可抓（盲区）。"
+  },
+  "sample_058": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "异常抛出",
+    "optimization_sensitivity": "n/a",
+    "notes": "异常安全：锁在异常路径未释放，无 sanitizer 可抓（盲区）。"
+  },
+  "sample_059": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "异常抛出",
+    "optimization_sensitivity": "n/a",
+    "notes": "异常安全：锁在异常路径未释放，无 sanitizer 可抓（盲区）。"
+  },
+  "sample_060": {
+    "defect_type": "raii_violation",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "异常抛出",
+    "optimization_sensitivity": "n/a",
+    "notes": "异常安全：锁在异常路径未释放，无 sanitizer 可抓（盲区）。"
+  },
+  "sample_061": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "构造函数在基类构造阶段调用虚函数，静态绑定到基类版本，逻辑错误；无检测器可抓（盲区）。"
+  },
+  "sample_062": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "构造函数在基类构造阶段调用虚函数，静态绑定到基类版本，逻辑错误；无检测器可抓（盲区）。"
+  },
+  "sample_063": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "构造函数在基类构造阶段调用虚函数，静态绑定到基类版本，逻辑错误；无检测器可抓（盲区）。"
+  },
+  "sample_064": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "构造函数在基类构造阶段调用虚函数，静态绑定到基类版本，逻辑错误；无检测器可抓（盲区）。"
+  },
+  "sample_065": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "构造函数在基类构造阶段调用虚函数，静态绑定到基类版本，逻辑错误；无检测器可抓（盲区）。"
+  },
+  "sample_066": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "析构函数在基类析构阶段调用虚函数，绑定基类版本；无检测器可抓（盲区）。"
+  },
+  "sample_067": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "析构函数在基类析构阶段调用虚函数，绑定基类版本；无检测器可抓（盲区）。"
+  },
+  "sample_068": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "析构函数在基类析构阶段调用虚函数，绑定基类版本；无检测器可抓（盲区）。"
+  },
+  "sample_069": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "析构函数在基类析构阶段调用虚函数，绑定基类版本；无检测器可抓（盲区）。"
+  },
+  "sample_070": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "析构函数在基类析构阶段调用虚函数，绑定基类版本；无检测器可抓（盲区）。"
+  },
+  "sample_071": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "对象切片后用基类对象调用虚函数，丢失派生行为；无检测器可抓（盲区）。"
+  },
+  "sample_072": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "对象切片后用基类对象调用虚函数，丢失派生行为；无检测器可抓（盲区）。"
+  },
+  "sample_073": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "对象切片后用基类对象调用虚函数，丢失派生行为；无检测器可抓（盲区）。"
+  },
+  "sample_074": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "对象切片后用基类对象调用虚函数，丢失派生行为；无检测器可抓（盲区）。"
+  },
+  "sample_075": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "对象切片后用基类对象调用虚函数，丢失派生行为；无检测器可抓（盲区）。"
+  },
+  "sample_076": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "虚函数默认实参按静态类型解析（非动态），导致意外值；无检测器可抓（盲区）。"
+  },
+  "sample_077": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "虚函数默认实参按静态类型解析（非动态），导致意外值；无检测器可抓（盲区）。"
+  },
+  "sample_078": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "虚函数默认实参按静态类型解析（非动态），导致意外值；无检测器可抓（盲区）。"
+  },
+  "sample_079": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "虚函数默认实参按静态类型解析（非动态），导致意外值；无检测器可抓（盲区）。"
+  },
+  "sample_080": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "虚函数默认实参按静态类型解析（非动态），导致意外值；无检测器可抓（盲区）。"
+  },
+  "sample_081": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "非虚函数名字隐藏导致调用基类版本；逻辑错误，无检测器可抓（盲区）。"
+  },
+  "sample_082": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "非虚函数名字隐藏导致调用基类版本；逻辑错误，无检测器可抓（盲区）。"
+  },
+  "sample_083": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "非虚函数名字隐藏导致调用基类版本；逻辑错误，无检测器可抓（盲区）。"
+  },
+  "sample_084": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "非虚函数名字隐藏导致调用基类版本；逻辑错误，无检测器可抓（盲区）。"
+  },
+  "sample_085": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "非虚函数名字隐藏导致调用基类版本；逻辑错误，无检测器可抓（盲区）。"
+  },
+  "sample_086": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "经基类指针在 delete 后调用虚函数 = use-after-free，AddressSanitizer 抓（根因是内存安全，经虚分派触发）。"
+  },
+  "sample_087": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "经基类指针在 delete 后调用虚函数 = use-after-free，AddressSanitizer 抓（根因是内存安全，经虚分派触发）。"
+  },
+  "sample_088": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "经基类指针在 delete 后调用虚函数 = use-after-free，AddressSanitizer 抓（根因是内存安全，经虚分派触发）。"
+  },
+  "sample_089": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "经基类指针在 delete 后调用虚函数 = use-after-free，AddressSanitizer 抓（根因是内存安全，经虚分派触发）。"
+  },
+  "sample_090": {
+    "defect_type": "virtual_function",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "n/a",
+    "notes": "经基类指针在 delete 后调用虚函数 = use-after-free，AddressSanitizer 抓（根因是内存安全，经虚分派触发）。"
+  },
+  "sample_091": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "linker"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "链接阶段（多 TU 包含同一定义）",
+    "optimization_sensitivity": "n/a",
+    "notes": "头文件中定义非 inline 函数并被多个翻译单元包含：强多重定义，链接器抓。"
+  },
+  "sample_092": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "linker"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "链接阶段（多 TU 包含同一定义）",
+    "optimization_sensitivity": "n/a",
+    "notes": "头文件中定义非 inline 函数并被多个翻译单元包含：强多重定义，链接器抓。"
+  },
+  "sample_093": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "linker"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "链接阶段（多 TU 包含同一定义）",
+    "optimization_sensitivity": "n/a",
+    "notes": "头文件中定义非 inline 函数并被多个翻译单元包含：强多重定义，链接器抓。"
+  },
+  "sample_094": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "linker"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "链接阶段（多 TU 包含同一定义）",
+    "optimization_sensitivity": "n/a",
+    "notes": "头文件中定义非 inline 函数并被多个翻译单元包含：强多重定义，链接器抓。"
+  },
+  "sample_095": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "linker"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "链接阶段（多 TU 包含同一定义）",
+    "optimization_sensitivity": "n/a",
+    "notes": "头文件中定义非 inline 函数并被多个翻译单元包含：强多重定义，链接器抓。"
+  },
+  "sample_096": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "linker"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "链接阶段（多 TU 包含同一定义）",
+    "optimization_sensitivity": "n/a",
+    "notes": "头文件中定义非 inline 函数并被多个翻译单元包含：强多重定义，链接器抓。"
+  },
+  "sample_097": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "linker"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "链接阶段（多 TU 包含同一定义）",
+    "optimization_sensitivity": "n/a",
+    "notes": "头文件中定义非 inline 函数并被多个翻译单元包含：强多重定义，链接器抓。"
+  },
+  "sample_098": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "linker"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "链接阶段（多 TU 包含同一定义）",
+    "optimization_sensitivity": "n/a",
+    "notes": "头文件中定义非 inline 函数并被多个翻译单元包含：强多重定义，链接器抓。"
+  },
+  "sample_099": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "链接/运行",
+    "optimization_sensitivity": "n/a",
+    "notes": "不同 TU 的 inline 函数 f 体不同：ODR 违例（弱符号），链接通过但行为未定义；无检测器可抓（盲区）。"
+  },
+  "sample_100": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "链接/运行",
+    "optimization_sensitivity": "n/a",
+    "notes": "不同 TU 的 inline 函数 f 体不同：ODR 违例（弱符号），链接通过但行为未定义；无检测器可抓（盲区）。"
+  },
+  "sample_101": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "链接/运行",
+    "optimization_sensitivity": "n/a",
+    "notes": "不同 TU 的 inline 函数 f 体不同：ODR 违例（弱符号），链接通过但行为未定义；无检测器可抓（盲区）。"
+  },
+  "sample_102": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "链接/运行",
+    "optimization_sensitivity": "n/a",
+    "notes": "不同 TU 的 inline 函数 f 体不同：ODR 违例（弱符号），链接通过但行为未定义；无检测器可抓（盲区）。"
+  },
+  "sample_103": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "链接/运行",
+    "optimization_sensitivity": "n/a",
+    "notes": "不同 TU 的 inline 函数 f 体不同：ODR 违例（弱符号），链接通过但行为未定义；无检测器可抓（盲区）。"
+  },
+  "sample_104": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "链接/运行",
+    "optimization_sensitivity": "n/a",
+    "notes": "不同 TU 的 inline 函数 f 体不同：ODR 违例（弱符号），链接通过但行为未定义；无检测器可抓（盲区）。"
+  },
+  "sample_105": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "链接/运行",
+    "optimization_sensitivity": "n/a",
+    "notes": "不同 TU 的 inline 函数 f 体不同：ODR 违例（弱符号），链接通过但行为未定义；无检测器可抓（盲区）。"
+  },
+  "sample_106": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "链接/运行",
+    "optimization_sensitivity": "n/a",
+    "notes": "不同 TU 的 inline 函数 f 体不同：ODR 违例（弱符号），链接通过但行为未定义；无检测器可抓（盲区）。"
+  },
+  "sample_107": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "程序启动静态初始化阶段",
+    "optimization_sensitivity": "n/a",
+    "notes": "跨 TU 全局变量初始化顺序：x 依赖 y 但顺序未定义（静态初始化顺序 fiasco）；无检测器可抓（盲区）。"
+  },
+  "sample_108": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "程序启动静态初始化阶段",
+    "optimization_sensitivity": "n/a",
+    "notes": "跨 TU 全局变量初始化顺序：x 依赖 y 但顺序未定义（静态初始化顺序 fiasco）；无检测器可抓（盲区）。"
+  },
+  "sample_109": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "程序启动静态初始化阶段",
+    "optimization_sensitivity": "n/a",
+    "notes": "跨 TU 全局变量初始化顺序：x 依赖 y 但顺序未定义（静态初始化顺序 fiasco）；无检测器可抓（盲区）。"
+  },
+  "sample_110": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "程序启动静态初始化阶段",
+    "optimization_sensitivity": "n/a",
+    "notes": "跨 TU 全局变量初始化顺序：x 依赖 y 但顺序未定义（静态初始化顺序 fiasco）；无检测器可抓（盲区）。"
+  },
+  "sample_111": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "程序启动静态初始化阶段",
+    "optimization_sensitivity": "n/a",
+    "notes": "跨 TU 全局变量初始化顺序：x 依赖 y 但顺序未定义（静态初始化顺序 fiasco）；无检测器可抓（盲区）。"
+  },
+  "sample_112": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "程序启动静态初始化阶段",
+    "optimization_sensitivity": "n/a",
+    "notes": "跨 TU 全局变量初始化顺序：x 依赖 y 但顺序未定义（静态初始化顺序 fiasco）；无检测器可抓（盲区）。"
+  },
+  "sample_113": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "程序启动静态初始化阶段",
+    "optimization_sensitivity": "n/a",
+    "notes": "跨 TU 全局变量初始化顺序：x 依赖 y 但顺序未定义（静态初始化顺序 fiasco）；无检测器可抓（盲区）。"
+  },
+  "sample_114": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "链接/运行",
+    "optimization_sensitivity": "n/a",
+    "notes": "不同 TU 的 inline 变量 g 初值不同：ODR 违例（弱符号），链接通过行为未定义；无检测器可抓（盲区）。"
+  },
+  "sample_115": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "链接/运行",
+    "optimization_sensitivity": "n/a",
+    "notes": "不同 TU 的 inline 变量 g 初值不同：ODR 违例（弱符号），链接通过行为未定义；无检测器可抓（盲区）。"
+  },
+  "sample_116": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "链接/运行",
+    "optimization_sensitivity": "n/a",
+    "notes": "不同 TU 的 inline 变量 g 初值不同：ODR 违例（弱符号），链接通过行为未定义；无检测器可抓（盲区）。"
+  },
+  "sample_117": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "链接/运行",
+    "optimization_sensitivity": "n/a",
+    "notes": "不同 TU 的 inline 变量 g 初值不同：ODR 违例（弱符号），链接通过行为未定义；无检测器可抓（盲区）。"
+  },
+  "sample_118": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "链接/运行",
+    "optimization_sensitivity": "n/a",
+    "notes": "不同 TU 的 inline 变量 g 初值不同：ODR 违例（弱符号），链接通过行为未定义；无检测器可抓（盲区）。"
+  },
+  "sample_119": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "链接/运行",
+    "optimization_sensitivity": "n/a",
+    "notes": "不同 TU 的 inline 变量 g 初值不同：ODR 违例（弱符号），链接通过行为未定义；无检测器可抓（盲区）。"
+  },
+  "sample_120": {
+    "defect_type": "cross_tu_ub",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "high",
+    "trigger_condition": "链接/运行",
+    "optimization_sensitivity": "n/a",
+    "notes": "不同 TU 的 inline 变量 g 初值不同：ODR 违例（弱符号），链接通过行为未定义；无检测器可抓（盲区）。"
+  },
+  "sample_121": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 编译器按 UB 假设消除，常不报",
+    "notes": "有符号溢出 UB；-fsanitize=undefined 在 -O0 抓，但 -O2 下常被优化器消除（优化敏感）。"
+  },
+  "sample_122": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 编译器按 UB 假设消除，常不报",
+    "notes": "有符号溢出 UB；-fsanitize=undefined 在 -O0 抓，但 -O2 下常被优化器消除（优化敏感）。"
+  },
+  "sample_123": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 编译器按 UB 假设消除，常不报",
+    "notes": "有符号溢出 UB；-fsanitize=undefined 在 -O0 抓，但 -O2 下常被优化器消除（优化敏感）。"
+  },
+  "sample_124": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 编译器按 UB 假设消除，常不报",
+    "notes": "有符号溢出 UB；-fsanitize=undefined 在 -O0 抓，但 -O2 下常被优化器消除（优化敏感）。"
+  },
+  "sample_125": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 编译器按 UB 假设消除，常不报",
+    "notes": "有符号溢出 UB；-fsanitize=undefined 在 -O0 抓，但 -O2 下常被优化器消除（优化敏感）。"
+  },
+  "sample_126": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 编译器按 UB 假设消除，常不报",
+    "notes": "有符号溢出 UB；-fsanitize=undefined 在 -O0 抓，但 -O2 下常被优化器消除（优化敏感）。"
+  },
+  "sample_127": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 编译器按 UB 假设消除，常不报",
+    "notes": "有符号溢出 UB；-fsanitize=undefined 在 -O0 抓，但 -O2 下常被优化器消除（优化敏感）。"
+  },
+  "sample_128": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 编译器按 UB 假设消除，常不报",
+    "notes": "有符号溢出 UB；-fsanitize=undefined 在 -O0 抓，但 -O2 下常被优化器消除（优化敏感）。"
+  },
+  "sample_129": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 编译器按 UB 假设消除，常不报",
+    "notes": "有符号溢出 UB；-fsanitize=undefined 在 -O0 抓，但 -O2 下常被优化器消除（优化敏感）。"
+  },
+  "sample_130": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 编译器按 UB 假设消除，常不报",
+    "notes": "有符号溢出 UB；-fsanitize=undefined 在 -O0 抓，但 -O2 下常被优化器消除（优化敏感）。"
+  },
+  "sample_131": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 编译器按 UB 假设消除，常不报",
+    "notes": "有符号溢出 UB；-fsanitize=undefined 在 -O0 抓，但 -O2 下常被优化器消除（优化敏感）。"
+  },
+  "sample_132": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 编译器按 UB 假设消除，常不报",
+    "notes": "有符号溢出 UB；-fsanitize=undefined 在 -O0 抓，但 -O2 下常被优化器消除（优化敏感）。"
+  },
+  "sample_133": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 移位结果可能被常量折叠，未必报",
+    "notes": "左移量超位宽 UB；ubsan 在 -O0 抓，优化档位下行为可能改变。"
+  },
+  "sample_134": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 移位结果可能被常量折叠，未必报",
+    "notes": "左移量超位宽 UB；ubsan 在 -O0 抓，优化档位下行为可能改变。"
+  },
+  "sample_135": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 移位结果可能被常量折叠，未必报",
+    "notes": "左移量超位宽 UB；ubsan 在 -O0 抓，优化档位下行为可能改变。"
+  },
+  "sample_136": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 移位结果可能被常量折叠，未必报",
+    "notes": "左移量超位宽 UB；ubsan 在 -O0 抓，优化档位下行为可能改变。"
+  },
+  "sample_137": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 移位结果可能被常量折叠，未必报",
+    "notes": "左移量超位宽 UB；ubsan 在 -O0 抓，优化档位下行为可能改变。"
+  },
+  "sample_138": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 移位结果可能被常量折叠，未必报",
+    "notes": "左移量超位宽 UB；ubsan 在 -O0 抓，优化档位下行为可能改变。"
+  },
+  "sample_139": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 移位结果可能被常量折叠，未必报",
+    "notes": "左移量超位宽 UB；ubsan 在 -O0 抓，优化档位下行为可能改变。"
+  },
+  "sample_140": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 移位结果可能被常量折叠，未必报",
+    "notes": "左移量超位宽 UB；ubsan 在 -O0 抓，优化档位下行为可能改变。"
+  },
+  "sample_141": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 可能被识别为不可达/常量",
+    "notes": "整数除以零 UB；ubsan 在 -O0 抓，优化档位下可能不同。"
+  },
+  "sample_142": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 可能被识别为不可达/常量",
+    "notes": "整数除以零 UB；ubsan 在 -O0 抓，优化档位下可能不同。"
+  },
+  "sample_143": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 可能被识别为不可达/常量",
+    "notes": "整数除以零 UB；ubsan 在 -O0 抓，优化档位下可能不同。"
+  },
+  "sample_144": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 可能被识别为不可达/常量",
+    "notes": "整数除以零 UB；ubsan 在 -O0 抓，优化档位下可能不同。"
+  },
+  "sample_145": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 可能被识别为不可达/常量",
+    "notes": "整数除以零 UB；ubsan 在 -O0 抓，优化档位下可能不同。"
+  },
+  "sample_146": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 可能被识别为不可达/常量",
+    "notes": "整数除以零 UB；ubsan 在 -O0 抓，优化档位下可能不同。"
+  },
+  "sample_147": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 可能被识别为不可达/常量",
+    "notes": "整数除以零 UB；ubsan 在 -O0 抓，优化档位下可能不同。"
+  },
+  "sample_148": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: ubsan 抓；O2: 可能被识别为不可达/常量",
+    "notes": "整数除以零 UB；ubsan 在 -O0 抓，优化档位下可能不同。"
+  },
+  "sample_149": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: 返回 float 位模式被 int 写破坏后的值；O2: 假设无别名，返回原 2.0f -> 输出不同",
+    "notes": "严格别名违例：经不同类型指针访问同一对象。无 sanitizer 直接抓，但 O0/O2 输出不同（优化敏感）。"
+  },
+  "sample_150": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: 返回 float 位模式被 int 写破坏后的值；O2: 假设无别名，返回原 2.0f -> 输出不同",
+    "notes": "严格别名违例：经不同类型指针访问同一对象。无 sanitizer 直接抓，但 O0/O2 输出不同（优化敏感）。"
+  },
+  "sample_151": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: 返回 float 位模式被 int 写破坏后的值；O2: 假设无别名，返回原 2.0f -> 输出不同",
+    "notes": "严格别名违例：经不同类型指针访问同一对象。无 sanitizer 直接抓，但 O0/O2 输出不同（优化敏感）。"
+  },
+  "sample_152": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: 返回 float 位模式被 int 写破坏后的值；O2: 假设无别名，返回原 2.0f -> 输出不同",
+    "notes": "严格别名违例：经不同类型指针访问同一对象。无 sanitizer 直接抓，但 O0/O2 输出不同（优化敏感）。"
+  },
+  "sample_153": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: 返回 float 位模式被 int 写破坏后的值；O2: 假设无别名，返回原 2.0f -> 输出不同",
+    "notes": "严格别名违例：经不同类型指针访问同一对象。无 sanitizer 直接抓，但 O0/O2 输出不同（优化敏感）。"
+  },
+  "sample_154": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: 返回 float 位模式被 int 写破坏后的值；O2: 假设无别名，返回原 2.0f -> 输出不同",
+    "notes": "严格别名违例：经不同类型指针访问同一对象。无 sanitizer 直接抓，但 O0/O2 输出不同（优化敏感）。"
+  },
+  "sample_155": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: 返回 float 位模式被 int 写破坏后的值；O2: 假设无别名，返回原 2.0f -> 输出不同",
+    "notes": "严格别名违例：经不同类型指针访问同一对象。无 sanitizer 直接抓，但 O0/O2 输出不同（优化敏感）。"
+  },
+  "sample_156": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: 返回 float 位模式被 int 写破坏后的值；O2: 假设无别名，返回原 2.0f -> 输出不同",
+    "notes": "严格别名违例：经不同类型指针访问同一对象。无 sanitizer 直接抓，但 O0/O2 输出不同（优化敏感）。"
+  },
+  "sample_157": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: 返回 float 位模式被 int 写破坏后的值；O2: 假设无别名，返回原 2.0f -> 输出不同",
+    "notes": "严格别名违例：经不同类型指针访问同一对象。无 sanitizer 直接抓，但 O0/O2 输出不同（优化敏感）。"
+  },
+  "sample_158": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: 返回 float 位模式被 int 写破坏后的值；O2: 假设无别名，返回原 2.0f -> 输出不同",
+    "notes": "严格别名违例：经不同类型指针访问同一对象。无 sanitizer 直接抓，但 O0/O2 输出不同（优化敏感）。"
+  },
+  "sample_159": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: 返回 float 位模式被 int 写破坏后的值；O2: 假设无别名，返回原 2.0f -> 输出不同",
+    "notes": "严格别名违例：经不同类型指针访问同一对象。无 sanitizer 直接抓，但 O0/O2 输出不同（优化敏感）。"
+  },
+  "sample_160": {
+    "defect_type": "optimization_dependent",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "medium",
+    "trigger_condition": "无条件",
+    "optimization_sensitivity": "O0: 返回 float 位模式被 int 写破坏后的值；O2: 假设无别名，返回原 2.0f -> 输出不同",
+    "notes": "严格别名违例：经不同类型指针访问同一对象。无 sanitizer 直接抓，但 O0/O2 输出不同（优化敏感）。"
+  },
+  "sample_161": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "n=8（>= 数组大小 4）时触发越界",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当输入 n>= 4 时越界写；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_162": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "n=5（>= 数组大小 4）时触发越界",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当输入 n>= 4 时越界写；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_163": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "n=10（>= 数组大小 6）时触发越界",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当输入 n>= 6 时越界写；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_164": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "n=3（>= 数组大小 2）时触发越界",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当输入 n>= 2 时越界写；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_165": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "n=16（>= 数组大小 8）时触发越界",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当输入 n>= 8 时越界写；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_166": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "n=7（>= 数组大小 4）时触发越界",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当输入 n>= 4 时越界写；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_167": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "n=12（>= 数组大小 8）时触发越界",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当输入 n>= 8 时越界写；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_168": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "n=20（>= 数组大小 10）时触发越界",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当输入 n>= 10 时越界写；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_169": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "n=9（>= 数组大小 5）时触发越界",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当输入 n>= 5 时越界写；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_170": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "n=6（>= 数组大小 3）时触发越界",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当输入 n>= 3 时越界写；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_171": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "flag=1（为真）时触发 UAF",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 flag=1 时释放后继续访问；main 内构造触发条件，AddressSanitizer 抓。"
+  },
+  "sample_172": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "flag=1（为真）时触发 UAF",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 flag=1 时释放后继续访问；main 内构造触发条件，AddressSanitizer 抓。"
+  },
+  "sample_173": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "flag=1（为真）时触发 UAF",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 flag=1 时释放后继续访问；main 内构造触发条件，AddressSanitizer 抓。"
+  },
+  "sample_174": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "flag=0（为真）时触发 UAF",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 flag=0 时释放后继续访问；main 内构造触发条件，AddressSanitizer 抓。"
+  },
+  "sample_175": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "flag=1（为真）时触发 UAF",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 flag=1 时释放后继续访问；main 内构造触发条件，AddressSanitizer 抓。"
+  },
+  "sample_176": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "flag=1（为真）时触发 UAF",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 flag=1 时释放后继续访问；main 内构造触发条件，AddressSanitizer 抓。"
+  },
+  "sample_177": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "input==7 时触发双释放",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 input==7 时二次释放；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_178": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "input==3 时触发双释放",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 input==3 时二次释放；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_179": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "input==9 时触发双释放",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 input==9 时二次释放；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_180": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "input==5 时触发双释放",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 input==5 时二次释放；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_181": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "input==2 时触发双释放",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 input==2 时二次释放；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_182": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "input==8 时触发双释放",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 input==8 时二次释放；main 内构造触发输入，AddressSanitizer 抓。"
+  },
+  "sample_183": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "input>0（input=1）时提前返回触发泄漏",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 input>0 时走泄漏分支；main 内构造触发输入，LeakSanitizer 抓。"
+  },
+  "sample_184": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "input>0（input=5）时提前返回触发泄漏",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 input>0 时走泄漏分支；main 内构造触发输入，LeakSanitizer 抓。"
+  },
+  "sample_185": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "input>0（input=9）时提前返回触发泄漏",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 input>0 时走泄漏分支；main 内构造触发输入，LeakSanitizer 抓。"
+  },
+  "sample_186": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "input>0（input=2）时提前返回触发泄漏",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 input>0 时走泄漏分支；main 内构造触发输入，LeakSanitizer 抓。"
+  },
+  "sample_187": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "input>0（input=4）时提前返回触发泄漏",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 input>0 时走泄漏分支；main 内构造触发输入，LeakSanitizer 抓。"
+  },
+  "sample_188": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "catch",
+    "severity": "high",
+    "trigger_condition": "input>0（input=6）时提前返回触发泄漏",
+    "optimization_sensitivity": "n/a",
+    "notes": "仅当 input>0 时走泄漏分支；main 内构造触发输入，LeakSanitizer 抓。"
+  },
+  "sample_189": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "n=4 时循环多迭代一次（结果错误，但无内存越界）",
+    "optimization_sensitivity": "n/a",
+    "notes": "off-by-one 导致结果错误但数组在界内；无 sanitizer 可抓（盲区）。触发条件由 main 构造，可复现。"
+  },
+  "sample_190": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "n=10 时循环多迭代一次（结果错误，但无内存越界）",
+    "optimization_sensitivity": "n/a",
+    "notes": "off-by-one 导致结果错误但数组在界内；无 sanitizer 可抓（盲区）。触发条件由 main 构造，可复现。"
+  },
+  "sample_191": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "n=7 时循环多迭代一次（结果错误，但无内存越界）",
+    "optimization_sensitivity": "n/a",
+    "notes": "off-by-one 导致结果错误但数组在界内；无 sanitizer 可抓（盲区）。触发条件由 main 构造，可复现。"
+  },
+  "sample_192": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "n=3 时循环多迭代一次（结果错误，但无内存越界）",
+    "optimization_sensitivity": "n/a",
+    "notes": "off-by-one 导致结果错误但数组在界内；无 sanitizer 可抓（盲区）。触发条件由 main 构造，可复现。"
+  },
+  "sample_193": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "n=8 时循环多迭代一次（结果错误，但无内存越界）",
+    "optimization_sensitivity": "n/a",
+    "notes": "off-by-one 导致结果错误但数组在界内；无 sanitizer 可抓（盲区）。触发条件由 main 构造，可复现。"
+  },
+  "sample_194": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "n=12 时循环多迭代一次（结果错误，但无内存越界）",
+    "optimization_sensitivity": "n/a",
+    "notes": "off-by-one 导致结果错误但数组在界内；无 sanitizer 可抓（盲区）。触发条件由 main 构造，可复现。"
+  },
+  "sample_195": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "输入为 3.999（非整数）时截断丢精度",
+    "optimization_sensitivity": "n/a",
+    "notes": "浮点截断导致逻辑错误但无内存问题；无检测器可抓（盲区），触发可复现。"
+  },
+  "sample_196": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "输入为 3.999（非整数）时截断丢精度",
+    "optimization_sensitivity": "n/a",
+    "notes": "浮点截断导致逻辑错误但无内存问题；无检测器可抓（盲区），触发可复现。"
+  },
+  "sample_197": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "输入为 3.999（非整数）时截断丢精度",
+    "optimization_sensitivity": "n/a",
+    "notes": "浮点截断导致逻辑错误但无内存问题；无检测器可抓（盲区），触发可复现。"
+  },
+  "sample_198": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "total=10,n=3（不能整除）时取整丢精度",
+    "optimization_sensitivity": "n/a",
+    "notes": "整数除法语义错误（应为浮点）；无内存问题，无检测器可抓（盲区），触发可复现。"
+  },
+  "sample_199": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "total=10,n=3（不能整除）时取整丢精度",
+    "optimization_sensitivity": "n/a",
+    "notes": "整数除法语义错误（应为浮点）；无内存问题，无检测器可抓（盲区），触发可复现。"
+  },
+  "sample_200": {
+    "defect_type": "conditional_trigger",
+    "expected_detectors": [
+      "asan"
+    ],
+    "expected_verdict": "miss",
+    "severity": "low",
+    "trigger_condition": "total=10,n=3（不能整除）时取整丢精度",
+    "optimization_sensitivity": "n/a",
+    "notes": "整数除法语义错误（应为浮点）；无内存问题，无检测器可抓（盲区），触发可复现。"
+  }
+}

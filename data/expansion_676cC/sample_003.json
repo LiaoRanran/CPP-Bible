@@ -1,0 +1,39 @@
+{
+  "defect_type": "move_semantics",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "expected_verdict": "catch",
+  "severity": "medium",
+  "trigger_condition": "无条件（始终触发）",
+  "optimization_sensitivity": "n/a",
+  "notes": "自移动 a=std::move(a) 触发 -Wself-move（compiler-warn 抓）。移动语义误用。",
+  "id": "sample_003",
+  "category": "C",
+  "defect_location": {
+    "line": 5,
+    "function": "main",
+    "note": "a = std::move(a); // <<PLANTED-DEFECT>> 自移动（self-move）：对象移动给自身"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_003.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

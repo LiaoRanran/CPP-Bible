@@ -1,0 +1,40 @@
+{
+  "defect_type": "virtual_function",
+  "expected_detectors": [
+    "asan"
+  ],
+  "expected_verdict": "miss",
+  "severity": "high",
+  "trigger_condition": "无条件",
+  "optimization_sensitivity": "n/a",
+  "notes": "析构函数在基类析构阶段调用虚函数，绑定基类版本；无检测器可抓（盲区）。",
+  "id": "sample_068",
+  "category": "C",
+  "defect_location": {
+    "line": 4,
+    "function": "main",
+    "note": "int main(){ D d; return 0; } // <<PLANTED-DEFECT>> 析构期间调用虚函数 -> 调用 B::vf"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_068.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "asan",
+    "verdicts": {
+      "asan": "miss",
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

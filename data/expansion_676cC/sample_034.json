@@ -1,0 +1,39 @@
+{
+  "defect_type": "raii_violation",
+  "expected_detectors": [
+    "asan"
+  ],
+  "expected_verdict": "catch",
+  "severity": "high",
+  "trigger_condition": "异常被抛出时（始终触发）",
+  "optimization_sensitivity": "n/a",
+  "notes": "raii_violation 内存泄漏：分支提前 return，delete[] 不可达，LeakSanitizer 抓。",
+  "id": "sample_034",
+  "category": "C",
+  "defect_location": {
+    "line": 3,
+    "function": "main",
+    "note": "if (true) return 0;   // <<PLANTED-DEFECT>> 提前返回，p 未释放 -> 内存泄漏"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_034.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "asan",
+    "verdicts": {
+      "asan": "catch"
+    },
+    "detector_verdict": "catch",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

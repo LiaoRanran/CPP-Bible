@@ -1,0 +1,39 @@
+{
+  "defect_type": "raii_violation",
+  "expected_detectors": [
+    "asan"
+  ],
+  "expected_verdict": "catch",
+  "severity": "high",
+  "trigger_condition": "无条件",
+  "optimization_sensitivity": "n/a",
+  "notes": "new/delete 或 malloc/free 不匹配：AddressSanitizer 抓 allocation-deallocation-mismatch。",
+  "id": "sample_041",
+  "category": "C",
+  "defect_location": {
+    "line": 3,
+    "function": "main",
+    "note": "delete[] p; // <<PLANTED-DEFECT>> new / delete[] 不匹配"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_041.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "asan",
+    "verdicts": {
+      "asan": "catch"
+    },
+    "detector_verdict": "catch",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

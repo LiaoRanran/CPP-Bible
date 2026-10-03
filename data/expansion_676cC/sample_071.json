@@ -1,0 +1,40 @@
+{
+  "defect_type": "virtual_function",
+  "expected_detectors": [
+    "asan"
+  ],
+  "expected_verdict": "miss",
+  "severity": "medium",
+  "trigger_condition": "无条件",
+  "optimization_sensitivity": "n/a",
+  "notes": "对象切片后用基类对象调用虚函数，丢失派生行为；无检测器可抓（盲区）。",
+  "id": "sample_071",
+  "category": "C",
+  "defect_location": {
+    "line": 6,
+    "function": "main",
+    "note": "B b = d; // <<PLANTED-DEFECT>> 对象切片：b 仅含 B 子对象"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_071.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "asan",
+    "verdicts": {
+      "asan": "miss",
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

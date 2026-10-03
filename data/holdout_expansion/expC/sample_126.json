@@ -1,0 +1,39 @@
+{
+  "defect_type": "optimization_dependent",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "expected_verdict": "catch",
+  "severity": "high",
+  "trigger_condition": "无条件",
+  "optimization_sensitivity": "O0: ubsan 抓；O2: 编译器按 UB 假设消除，常不报",
+  "notes": "有符号溢出 UB；-fsanitize=undefined 在 -O0 抓，但 -O2 下常被优化器消除（优化敏感）。",
+  "id": "sample_126",
+  "category": "C",
+  "defect_location": {
+    "line": 4,
+    "function": "main",
+    "note": "x = x + 1; // <<PLANTED-DEFECT>> 有符号整数溢出（UB）"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_126.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "ubsan",
+    "verdicts": {
+      "ubsan": "catch"
+    },
+    "detector_verdict": "catch",
+    "opt_O0_detector": "catch",
+    "opt_O2_detector": "miss",
+    "opt_output_differs": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

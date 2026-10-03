@@ -1,0 +1,44 @@
+{
+  "defect_type": "cross_tu_ub",
+  "expected_detectors": [
+    "asan"
+  ],
+  "expected_verdict": "miss",
+  "severity": "high",
+  "trigger_condition": "链接/运行",
+  "optimization_sensitivity": "n/a",
+  "notes": "不同 TU 的 inline 函数 f 体不同：ODR 违例（弱符号），链接通过但行为未定义；无检测器可抓（盲区）。",
+  "id": "sample_105",
+  "category": "C",
+  "defect_location": {
+    "line": 2,
+    "function": "fa",
+    "note": "int fa(){ return f(); } // <<PLANTED-DEFECT>> 不同 TU 中 inline f 定义不一致（ODR 违例） }"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_105_a.h",
+    "sample_105_b.h",
+    "sample_105_a.cpp",
+    "sample_105_b.cpp",
+    "sample_105_main.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "asan",
+    "verdicts": {
+      "asan": "miss",
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

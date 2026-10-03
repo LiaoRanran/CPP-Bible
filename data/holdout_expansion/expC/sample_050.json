@@ -1,0 +1,40 @@
+{
+  "defect_type": "raii_violation",
+  "expected_detectors": [
+    "asan"
+  ],
+  "expected_verdict": "miss",
+  "severity": "medium",
+  "trigger_condition": "提前返回分支",
+  "optimization_sensitivity": "n/a",
+  "notes": "手动加锁后提前返回未解锁：锁泄漏，无 sanitizer 可抓（盲区）。",
+  "id": "sample_050",
+  "category": "C",
+  "defect_location": {
+    "line": 5,
+    "function": "main",
+    "note": "if (true) return -1; // <<PLANTED-DEFECT>> 提前返回，未 unlock -> 锁泄漏"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_050.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "asan",
+    "verdicts": {
+      "asan": "miss",
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

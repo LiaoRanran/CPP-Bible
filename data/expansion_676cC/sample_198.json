@@ -1,0 +1,40 @@
+{
+  "defect_type": "conditional_trigger",
+  "expected_detectors": [
+    "asan"
+  ],
+  "expected_verdict": "miss",
+  "severity": "low",
+  "trigger_condition": "total=10,n=3（不能整除）时取整丢精度",
+  "optimization_sensitivity": "n/a",
+  "notes": "整数除法语义错误（应为浮点）；无内存问题，无检测器可抓（盲区），触发可复现。",
+  "id": "sample_198",
+  "category": "C",
+  "defect_location": {
+    "line": 3,
+    "function": "main",
+    "note": "int avg = total / n; // <<PLANTED-DEFECT>> 整数除法：avg=3 而非 3.33（特定输入下语义错误）"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_198.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "asan",
+    "verdicts": {
+      "asan": "miss",
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

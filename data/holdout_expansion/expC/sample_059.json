@@ -1,0 +1,40 @@
+{
+  "defect_type": "raii_violation",
+  "expected_detectors": [
+    "asan"
+  ],
+  "expected_verdict": "miss",
+  "severity": "medium",
+  "trigger_condition": "异常抛出",
+  "optimization_sensitivity": "n/a",
+  "notes": "异常安全：锁在异常路径未释放，无 sanitizer 可抓（盲区）。",
+  "id": "sample_059",
+  "category": "C",
+  "defect_location": {
+    "line": 5,
+    "function": "main",
+    "note": "try { throw 1; } catch (int) { return 1; } // <<PLANTED-DEFECT>> 异常路径未 unlock"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_059.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "asan",
+    "verdicts": {
+      "asan": "miss",
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

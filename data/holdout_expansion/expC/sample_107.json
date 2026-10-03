@@ -1,0 +1,42 @@
+{
+  "defect_type": "cross_tu_ub",
+  "expected_detectors": [
+    "asan"
+  ],
+  "expected_verdict": "miss",
+  "severity": "high",
+  "trigger_condition": "程序启动静态初始化阶段",
+  "optimization_sensitivity": "n/a",
+  "notes": "跨 TU 全局变量初始化顺序：x 依赖 y 但顺序未定义（静态初始化顺序 fiasco）；无检测器可抓（盲区）。",
+  "id": "sample_107",
+  "category": "C",
+  "defect_location": {
+    "line": 2,
+    "function": "(global)",
+    "note": "int x = y + 1; // <<PLANTED-DEFECT>> 依赖 y，但 y 可能尚未构造（静态初始化顺序未定义）"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_107_a.cpp",
+    "sample_107_b.cpp",
+    "sample_107_main.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "asan",
+    "verdicts": {
+      "asan": "miss",
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

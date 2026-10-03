@@ -1,0 +1,40 @@
+{
+  "defect_type": "virtual_function",
+  "expected_detectors": [
+    "asan"
+  ],
+  "expected_verdict": "catch",
+  "severity": "medium",
+  "trigger_condition": "无条件",
+  "optimization_sensitivity": "n/a",
+  "notes": "虚函数默认实参按静态类型解析（非动态），导致意外值；无检测器可抓（盲区）。",
+  "id": "sample_078",
+  "category": "C",
+  "defect_location": {
+    "line": 6,
+    "function": "main",
+    "note": "p->f(); // <<PLANTED-DEFECT>> 默认实参按静态类型 B 解析 -> 打印 1 而非 2"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_078.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "asan",
+    "verdicts": {
+      "asan": "miss",
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "updated_to_catch",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "defect_type": "raii_violation",
+  "expected_detectors": [
+    "asan"
+  ],
+  "expected_verdict": "miss",
+  "severity": "medium",
+  "trigger_condition": "无条件",
+  "optimization_sensitivity": "n/a",
+  "notes": "FILE* 未关闭即返回：句柄泄漏，AddressSanitizer 不追踪 FILE（盲区）。",
+  "id": "sample_056",
+  "category": "C",
+  "defect_location": {
+    "line": 5,
+    "function": "main",
+    "note": "// <<PLANTED-DEFECT>> 文件句柄未 fclose 即返回 -> 句柄泄漏"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_056.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "asan",
+    "verdicts": {
+      "asan": "miss",
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

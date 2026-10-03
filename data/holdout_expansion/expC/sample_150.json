@@ -1,0 +1,40 @@
+{
+  "defect_type": "optimization_dependent",
+  "expected_detectors": [
+    "asan"
+  ],
+  "expected_verdict": "miss",
+  "severity": "medium",
+  "trigger_condition": "无条件",
+  "optimization_sensitivity": "none（实测 O0/O2 无差异，非优化敏感 UB）",
+  "notes": "严格别名违例：经不同类型指针访问同一对象。无 sanitizer 直接抓，但 O0/O2 输出不同（优化敏感）。",
+  "id": "sample_150",
+  "category": "C",
+  "defect_location": {
+    "line": 2,
+    "function": "main",
+    "note": "float g(float* pf, int* pi){ *pi = 1; return *pf; } // <<PLANTED-DEFECT>> 通过 int* 写后通过 float* 读（严格别名违例）"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_150.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "asan",
+    "verdicts": {
+      "asan": "miss",
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "opt_O0_detector": "miss",
+    "opt_O2_detector": "miss",
+    "opt_output_differs": false,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

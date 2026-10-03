@@ -1,0 +1,39 @@
+{
+  "defect_type": "conditional_trigger",
+  "expected_detectors": [
+    "asan"
+  ],
+  "expected_verdict": "catch",
+  "severity": "high",
+  "trigger_condition": "flag=1（为真）时触发 UAF",
+  "optimization_sensitivity": "n/a",
+  "notes": "仅当 flag=1 时释放后继续访问；main 内构造触发条件，AddressSanitizer 抓。",
+  "id": "sample_175",
+  "category": "C",
+  "defect_location": {
+    "line": 5,
+    "function": "main",
+    "note": "int v = p[0]; // <<PLANTED-DEFECT>> flag 为真时 p 已释放 -> 释放后使用"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_175.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "asan",
+    "verdicts": {
+      "asan": "catch"
+    },
+    "detector_verdict": "catch",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

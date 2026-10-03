@@ -1,0 +1,39 @@
+{
+  "defect_type": "move_semantics",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "expected_verdict": "miss",
+  "severity": "low",
+  "trigger_condition": "无条件",
+  "optimization_sensitivity": "n/a",
+  "notes": "多次移动同一对象：合法但语义可疑，无检测器可抓（盲区）。",
+  "id": "sample_025",
+  "category": "C",
+  "defect_location": {
+    "line": 6,
+    "function": "main",
+    "note": "a = std::move(b); // <<PLANTED-DEFECT>> 双移动：a、b 均处于已移动状态，逻辑混乱"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_025.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

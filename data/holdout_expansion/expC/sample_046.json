@@ -1,0 +1,39 @@
+{
+  "defect_type": "raii_violation",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "expected_verdict": "catch",
+  "severity": "high",
+  "trigger_condition": "无条件",
+  "optimization_sensitivity": "n/a",
+  "notes": "经非虚析构基类删除派生对象：-Wdelete-non-virtual-dtor（compiler-warn 抓）。",
+  "id": "sample_046",
+  "category": "C",
+  "defect_location": {
+    "line": 6,
+    "function": "main",
+    "note": "delete p; // <<PLANTED-DEFECT>> 经非虚析构基类指针删除派生 -> 仅 ~B，~D 不跑"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_046.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "catch"
+    },
+    "detector_verdict": "catch",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

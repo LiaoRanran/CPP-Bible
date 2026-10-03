@@ -1,0 +1,39 @@
+{
+  "defect_type": "move_semantics",
+  "expected_detectors": [
+    "compiler-warn"
+  ],
+  "expected_verdict": "miss",
+  "severity": "low",
+  "trigger_condition": "无条件",
+  "optimization_sensitivity": "n/a",
+  "notes": "对已移动自 string 的对象继续访问：C++ 允许但结果未指定；无检测器可抓（盲区）。",
+  "id": "sample_019",
+  "category": "C",
+  "defect_location": {
+    "line": 5,
+    "function": "main",
+    "note": "if (s.empty()) { (void)0; } // <<PLANTED-DEFECT>> 使用已移动对象 s（有效但处于未指定状态）"
+  },
+  "planted": true,
+  "source_files": [
+    "sample_019.cpp"
+  ],
+  "generator": "676c-expC-generate",
+  "verification": {
+    "syntax_fail": [],
+    "full_compile": "ok",
+    "detector_kind": "compiler-warn",
+    "verdicts": {
+      "compiler-warn": "miss"
+    },
+    "detector_verdict": "miss",
+    "opt_O0_detector": null,
+    "opt_O2_detector": null,
+    "opt_output_differs": null,
+    "reconcile": "consistent",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}
