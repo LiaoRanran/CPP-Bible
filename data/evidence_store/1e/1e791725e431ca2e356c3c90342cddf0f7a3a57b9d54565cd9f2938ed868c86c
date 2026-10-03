@@ -1,0 +1,16 @@
+{
+  "acquired_at": "2026-10-02",
+  "acquisition_method": "compiler_probe_644",
+  "content": "compiler: g++.EXE (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0\ncommand: C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.EXE -std=c++17 -O2 C:\\Users\\ASUS\\AppData\\Local\\Temp\\cppbible_probe_5o6e8y_k\\snippet.cpp -o C:\\Users\\ASUS\\AppData\\Local\\Temp\\cppbible_probe_5o6e8y_k\\snippet.exe\noutput: 42\n\nexit_code: 0\n\n```cpp\n#include <iostream>\nint main(){ std::cout << \"42\" << std::endl; return 0; }\n\n```",
+  "credibility": 0.95,
+  "evidence_id": "1e791725e431ca2e356c3c90342cddf0f7a3a57b9d54565cd9f2938ed868c86c",
+  "grade": "L1",
+  "meta": {
+    "compiler_version": "g++.EXE (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+    "compilers": 1,
+    "grade_note": "单编译器原型(§十二.4)",
+    "kind": "compiler_run"
+  },
+  "source_type": "compiler_run",
+  "source_url": null
+}

@@ -730,6 +730,18 @@ jobs:
         apt-get install -y --no-install-recommends git python3
 
     - uses: actions/checkout@v7
+      with:
+        # 673u 登记的 E4：`Compile + Link + Run + Sanitizer (T1-1)` 步用
+        # `--changed`，其基线策略是 `origin/master...HEAD` →回退 `HEAD~1..HEAD`。
+        # actions/checkout 默认 `fetch-depth: 1`（浅克隆），此时 HEAD~1 不存在，
+        # `git diff` 报错 ⇒ changed 为空 ⇒ 工具打印「无变更章节，跳过」并 exit 0
+        # ⇒ **T1-1 自迁入以来从未在 CI 上真跑过**（compile 审计过的是语法级
+        # -fsyntax-only，运行期 + ASan/UBSan/TSan 一直是静默空转）。
+        # 本job 另需完整历史：T1-1 的 fallback 基线即 HEAD~1。
+        # 代价：compile 是 matrix 双编译器（GCC 容器 + Clang runner），
+        # 完整历史会略增 checkout 时间；相对 quality/replay/gate/discipline
+        # 四个job 早已是fetch-depth: 0，属一致性对齐。
+        fetch-depth: 0
 
     - name: Assert GCC toolchain version (钉 15.3.0，漂移即硬失败)
       if: matrix.compiler == 'gcc'
