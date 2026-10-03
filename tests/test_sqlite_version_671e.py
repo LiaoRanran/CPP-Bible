@@ -42,8 +42,8 @@ pg = _load()
 
 
 def _fresh_db_with(schema_sql: str, meta_version: str) -> str:
-    import tempfile
     import pathlib
+    import tempfile
     p = pathlib.Path(tempfile.mkdtemp()) / "t.db"
     con = sqlite3.connect(str(p))
     con.executescript(schema_sql)
@@ -53,12 +53,36 @@ def _fresh_db_with(schema_sql: str, meta_version: str) -> str:
     return str(p)
 
 
-def test_current_db_user_version_is_zero_documents_gap():
-    """锁定当前真实状态：PRAGMA user_version == 0（低严重度 gap，标准机制未用）。"""
+def test_current_db_user_version_mirrors_meta_schema_version():
+    """锁定**镜像不变量**：`PRAGMA user_version` == `int(meta.schema_version)`。
+
+    673t 修正（原测试名 `..._is_zero_documents_gap`，断言 `uv == 0`）：
+    原断言锁的是 673e 当时记录的一个**历史 gap**——"`meta.schema_version` 记了，但
+    SQLite 标准机制 `PRAGMA user_version` 没被用（值为 0）"。该 gap 后来被**关掉了**：
+    `prop_graph.build` 现在会执行 `PRAGMA user_version = int(SCHEMA_VERSION)`，把
+    `meta.schema_version` 镜像进标准机制（见 `prop_graph.sync_user_version` 的文档串）。
+    于是**建库后 user_version 的合理值就是 2**（== int(SCHEMA_VERSION)），原断言 0
+    只在"库由更老的版本构建"时才成立——它钉的是一次性的历史状态，不是不变量。
+
+    为什么改成"镜像"而不是直接改写成 `== 2`：673e 任务 D 真正要保证的是
+    「标准机制是权威源的镜像」这一条；把它写成常量 2，将来 SCHEMA_VERSION 升到 3
+    又会假红。故断言两侧都从代码/库里取，锁关系而非锁数字。
+
+    副作用：无（只读两个 PRAGMA / 一行 SELECT，不改库）。
+    """
     con = sqlite3.connect(DB)
-    uv = con.execute("PRAGMA user_version").fetchone()[0]
-    con.close()
-    assert uv == 0
+    try:
+        uv = con.execute("PRAGMA user_version").fetchone()[0]
+        row = con.execute("SELECT value FROM meta WHERE key='schema_version'").fetchone()
+    finally:
+        con.close()
+    assert row is not None, "库里必须有 meta.schema_version（权威源）"
+    assert uv == int(row[0]), (
+        f"PRAGMA user_version({uv}) 必须是 meta.schema_version({row[0]}) 的镜像"
+    )
+    assert uv == int(pg.SCHEMA_VERSION), (
+        f"PRAGMA user_version({uv}) 应等于代码 SCHEMA_VERSION({pg.SCHEMA_VERSION})"
+    )
 
 
 def test_current_db_meta_schema_version_matches_code():
@@ -105,8 +129,8 @@ def test_pragma_user_version_round_trip_is_viable_fix():
     """锁定推荐的最小修复（把版本同步进 PRAGMA user_version）是可行且低风险的：
     在临时库上设置/读回 PRAGMA user_version 应一致。后续批次可让 prop_graph 在建库后
     `conn.execute("PRAGMA user_version = <SCHEMA_VERSION>")` 并加一组开库校验。"""
-    import tempfile
     import pathlib
+    import tempfile
     p = pathlib.Path(tempfile.mkdtemp()) / "uv.db"
     con = sqlite3.connect(str(p))
     con.execute("PRAGMA user_version = 2")
