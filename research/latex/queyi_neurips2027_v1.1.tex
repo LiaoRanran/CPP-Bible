@@ -225,12 +225,36 @@ the denominator; as \texttt{pass} it creates a \emph{false pass} (the most dange
 \texttt{miss} as \texttt{unknown} hides a capability gap. Hence the \textbf{denominator is
 $\text{catch}+\text{miss}$ (measurable samples)}; we report \texttt{unknown} separately and exclude it; \texttt{not\_error} is a separate class. We store the caliber in the artifact, not in prose.
 
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[font=\small, x=1.9cm, y=1.6cm]
+  \draw[->, thick] (-0.22,0) -- (1.42,0) node[right, font=\scriptsize] {support};
+  \draw[->, thick] (0,-0.22) -- (0,1.34) node[above, font=\scriptsize] {refutation};
+  \draw[gray!40, dashed] (1,0) -- (1,1) -- (0,1);
+  \node[draw, rounded corners, fill=yellow!25, align=center, inner sep=2pt, minimum width=1.55cm]
+    at (0,0) {\texttt{unknown}\\\scriptsize$(0,0)$\\\scriptsize\emph{neither}};
+  \node[draw, rounded corners, fill=green!20, align=center, inner sep=2pt, minimum width=1.55cm]
+    at (1,0) {\texttt{pass}\\\scriptsize$(1,0)$\\\scriptsize supported};
+  \node[draw, rounded corners, fill=red!20, align=center, inner sep=2pt, minimum width=1.55cm]
+    at (0,1) {\texttt{fail}\\\scriptsize$(0,1)$\\\scriptsize refuted};
+  \node[draw, rounded corners, fill=orange!25, align=center, inner sep=2pt, minimum width=1.55cm]
+    at (1,1) {\texttt{contradict}\\\scriptsize$(1,1)$\\\scriptsize both};
+\end{tikzpicture}
+\caption{Every verdict is a Belnap state $(\mathrm{support},\mathrm{refutation})$ over
+\emph{registered evidence}: \texttt{pass}$=(1,0)$, \texttt{fail}$=(0,1)$, \texttt{unknown}$=(0,0)$,
+\texttt{contradict}$=(1,1)$. \textbf{Detector availability is separate per-item metadata, not a
+coordinate of this plane}: \texttt{unknown} means ``not registered either way'', never ``no detector
+exists''.}
+\label{fig:belnap}
+\end{figure}
+
 \paragraph{Nineteen threats (T1--T19).}
 Table~\ref{tab:threats} (Appendix~\ref{app:tables}) lists all nineteen with mitigations and
 residuals; \S\ref{sec:validity} quantifies them under the standard validity
-layers~\cite{shadish2002experimental}. The four that bear most on our claims are \textbf{T8}
-(budget selection bias), \textbf{T13} (peeking), \textbf{T15} (untrusted LLM channel) and
-\textbf{T16} (small-sample poisoning); the A0--A5 ablations (\S\ref{sec:exp}) and the e-process protocol (\S\ref{sec:method}) exist precisely to bound their residuals.
+layers~\cite{shadish2002experimental}. The four bearing most on our claims are \textbf{T8} (budget
+selection bias), \textbf{T13} (peeking), \textbf{T15} (untrusted LLM channel) and \textbf{T16}
+(small-sample poisoning); the A0--A5 ablations and the e-process protocol (\S\ref{sec:method}) exist
+to bound their residuals.
 
 
 \paragraph{Three focus threats.}
@@ -245,14 +269,14 @@ A real incident: a batch changed the detector flag but \emph{did not rerun the g
 artifact stayed on the old caliber while the paper reported \textbf{81.2\% (13/16)}---a number that
 \emph{never appeared in any artifact}---and \texttt{--check} did not compare those fields, so it
 stayed green (Appendix~\ref{app:humanize}). \textbf{(c) Evaluation contamination:} leakage (T3);
-\emph{shared-criterion} labeling making the score an upper bound ($F_1{=}1.0$); unblinded expansion. We add three that v1.0 omitted. \textbf{T17 (label validity):} which
-holdout items are true errors was decided by us with \emph{zero} second annotators, so every rate
-here is recall under self-produced labels and the bias direction is unknown. \textbf{T18
-(adversarial evasion):} once the 67 rules are public, verified parties can rewrite code to slip
-past them; we do not model this race. \textbf{T19 (code-level adversarial examples):} C++ can be
-built that a sanitizer cannot see, and we met three---\texttt{h46} crashes ($rc{=}1$) with no ASan
-banner, \texttt{h59} defeats TSan, \texttt{h60} yields identical g++/clang++ output. v1.0 logged
-these as capability gaps; they are also attack surface (Appendix~\ref{app:humanize}).
+\emph{shared-criterion} labeling making the score an upper bound ($F_1{=}1.0$); unblinded expansion.
+Three threats omitted by v1.0: \textbf{T17 (label validity)}---true-error labels were decided by us
+with \emph{zero} second annotators, so every rate is recall under self-produced labels and the bias
+direction is unknown; \textbf{T18 (adversarial evasion)}---once the 67 rules are public, verified
+parties can rewrite code to slip past them, a race we do not model; \textbf{T19 (code-level
+adversarial examples)}---we met three C++ samples a sanitizer cannot see (\texttt{h46} crashes with
+no ASan banner, \texttt{h59} defeats TSan, \texttt{h60} yields identical g++/clang++ output), which
+v1.0 logged as capability gaps but are also attack surface (Appendix~\ref{app:humanize}).
 
 % =====================================================================
 \section{Method}
@@ -297,26 +321,11 @@ $+$ command $+$ flag $+$ output $+$ sha256); currently \textbf{28} cards have L1
 \textbf{452}-event append-only authority ledger under a zero-change red line.
 
 \paragraph{Four-state verdict.}
-\begin{table}[t]
-\caption{Four-state verdict.}
-\label{tab:verdict}
-\centering
-\footnotesize
-\begin{tabular}{@{}lll@{}}
-\toprule
-State & Meaning & Action \\
-\midrule
-\texttt{pass} & evidence supports the assertion; boundary triple complete & may enter the teaching ledger \\
-\texttt{fail} & evidence contradicts the assertion & counterexample to the teaching set \\
-\texttt{unknown} & insufficient evidence or detector unavailable & never recorded as pass/miss; reported separately \\
-\texttt{contradict} & two pieces of evidence conflict (e.g.\ cross-compiler) & escalated to human review; no machine pick \\
-\bottomrule
-\end{tabular}
-\end{table}
-The point of \texttt{contradict} (Table~\ref{tab:verdict}) is that \emph{the machine never picks a side when evidence
-conflicts}---the conflict itself is information. Machine cards are always
-\texttt{needs\_review}$=$true and never counted as ``verified''; \texttt{verified} is
-human-signed only.
+The four states are drawn in Fig.~\ref{fig:belnap}; their meanings, actions and escalation rule are
+in Table~\ref{tab:verdict} (Appendix~\ref{app:tables}). The point of \texttt{contradict} is that
+\emph{the machine never picks a side when evidence conflicts}---the conflict itself is information.
+Machine cards are always \texttt{needs\_review}$=$true and never counted as ``verified'';
+\texttt{verified} is human-signed only.
 
 \paragraph{Gate tiers L0/L1.} \textbf{L0 (blocking)}---meta-state reconciliation, gate-tier
 legality, real-defect detection, blind-holdout state, unit tests---has \textbf{7} gates, all
@@ -421,18 +430,20 @@ D3 must \emph{not} be merged into one number.
 
 \paragraph{Baselines (three, all budget-matched; Table~\ref{tab:baseline}).}
 \label{sec:baseline}
-The three budget-matched baselines are B1 (static gate, no runtime evidence), B2 (static $+$ mutation testing), and B3 (budget-matched random under equal budget); the full alignment table is in Appendix~\ref{tab:baseline}.
-B3 is the key control: it separates ``failure-driven'' from ``it just spends more''.
-\textbf{Current status:} we \emph{ran all three arms} (static caliber re-binning, random$\dagger$ instrument-level proxy, failure-driven) \emph{on the same samples} (\S\ref{sec:exp}, $n{=}41/64$).
-The \emph{true} B3 was wired through the split-repo \texttt{select\_assets} and run once on an
-older $n{=}21/48$ denominator; after the expanded-sample re-estimate the random arm is again an instrument-level proxy, so we
-claim \emph{direction}, not a controlled magnitude.
+B1 (static gate, no runtime evidence), B2 (static $+$ mutation), B3 (budget-matched random under
+equal budget); the full alignment table is in Appendix~\ref{tab:baseline}. B3 is the key control:
+it separates ``failure-driven'' from ``it just spends more''. \textbf{Current status:} we ran all
+three arms (static caliber re-binning, random$\dagger$ instrument-level proxy, failure-driven) on the
+same samples (\S\ref{sec:exp}, $n{=}41/64$). The \emph{true} B3 was wired through the split-repo
+\texttt{select\_assets} and run once on an older $n{=}21/48$ denominator; after the expanded-sample
+re-estimate the random arm is again an instrument-level proxy, so we claim \emph{direction}, not a
+controlled magnitude.
 
 \paragraph{Ablation (A0--A5, restructured from the earlier A--F).}
-Table~\ref{tab:e4} gives the six groups, their pre-registered hypotheses, primary metrics and (placeholder) results (\S\ref{sec:exp}); each group writes its hypothesis \emph{before} results.
-Each group writes its hypothesis before results; a result contradicting the hypothesis is reported
-as-is. \textbf{Current status: design frozen, 0 groups run} (this batch wrote scripts and design
-only). \textbf{A0 - A5 is the key contrast.}
+Table~\ref{tab:e4} gives the six groups, their pre-registered hypotheses, primary metrics and
+(placeholder) results (\S\ref{sec:exp}); each writes its hypothesis \emph{before} results, and a
+result contradicting it is reported as-is. \textbf{Current status: design frozen, 0 groups run.}
+\textbf{A0 $-$ A5 is the key contrast.}
 
 \paragraph{Metrics (seven).} Real-defect recall; blind-holdout recall; external recall; FPR;
 mutation score (\emph{self-justification only}); regression-retention rate; cost. \textbf{Every
@@ -442,14 +453,14 @@ rate must carry a \texttt{denominator}}. Two \emph{descriptive} metrics of the v
 \section{Experiments}
 \label{sec:exp}
 % =====================================================================
-All numbers are \emph{recomputed from artifacts}; intervals are \textbf{Clopper--Pearson 95\%},
-Wilson shown as sensitivity. A single script recomputes the baseline arms (see Appendix~\ref{app:repro}).
+All numbers are \emph{recomputed from artifacts}; intervals are \textbf{Clopper--Pearson 95\%}
+(Wilson as sensitivity). A single script recomputes the baseline arms (Appendix~\ref{app:repro}).
 
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-  width=8.2cm, height=4.8cm,
+  width=7.6cm, height=4.5cm,
   ybar, bar width=7pt,
   ymin=0, ymax=100,
   ylabel={Recall (\%)},
@@ -466,13 +477,11 @@ Wilson shown as sensitivity. A single script recomputes the baseline arms (see A
 \legend{FD, Static, Random$\dagger$}
 \end{axis}
 \end{tikzpicture}
-\caption{Core recall across three arms (expanded samples; the holdout drop and corpus
-rise are the honest re-estimates). \textbf{FD} (failure-driven) holdout
-82.9\% [67.9, 92.8] and corpus 62.5\% [49.5, 74.3]; \textbf{Static} (rule-only, a
-\emph{caliber re-binning}, not a re-run) 2.4\% [0.1, 12.9] / 17.2\% [8.9, 28.7];
-\textbf{Random$\dagger$} (an instrument-level \emph{proxy}, not the paper's B3) 9.8\% / 21.9\%.
-Bars show point estimates; Clopper--Pearson 95\% CIs are in Table~\ref{tab:e1}. $n=41/64$ is
-still small, so read \emph{direction} first, magnitude second.}
+\caption{Core recall across three arms on the expanded samples. \textbf{FD} holdout 82.9\%
+[67.9, 92.8] / corpus 62.5\% [49.5, 74.3]; \textbf{Static} (rule-only, a \emph{caliber re-binning},
+not a re-run) 2.4\% / 17.2\%; \textbf{Random$\dagger$} (instrument-level \emph{proxy}, not the
+paper's B3) 9.8\% / 21.9\%. Point estimates only; Clopper--Pearson 95\% CIs are in
+Table~\ref{tab:e1}. $n=41/64$ is small---read \emph{direction} first, magnitude second.}
 \label{fig:core}
 \end{figure}
 
@@ -480,28 +489,52 @@ still small, so read \emph{direction} first, magnitude second.}
 The three arms on the same samples (Static caliber re-bin; Random$\dagger$ proxy; FD) give holdout
 82.9\% [67.9, 92.8] / corpus 62.5\% [49.5, 74.3] for FD, vs.\ Static 2.4\%/17.2\% and Random$\dagger$ 9.8\%/21.9\%;
 $\Delta$(static$\to$FD) is $+80.5$pp/$+45.3$pp and $\Delta$(random$\dagger\to$FD) $+73.2$pp/$+40.6$pp (all CIs strictly positive). Full table in Appendix~\ref{tab:e1}.
-\textbf{Expanded-sample honesty:} the expansion moved holdout 81.0\%$\to$\textbf{82.9\%} (up;
-new subset 17/20 vs historical 17/21) and corpus 54.2\%$\to$\textbf{62.5\%} (up; new subset
-14/16 vs historical 54.2\%); both rises are split into \emph{composition change} vs
-\emph{within-layer change} and are \textbf{not} read as capability gains. The H4 subset
-consistency check passes for holdout (+4.0pp) but \textbf{fails for corpus (+33.3pp, outside the
-pre-registered range)} and we register it as a composition shift. FPR stayed at \textbf{18.2\%} (one new false
-positive, sample h35, is registered). We report these as measured---no ``correction.''
+\textbf{Expanded-sample honesty:} the expansion moved holdout 81.0\%$\to$\textbf{82.9\%} (new
+subset 17/20 vs historical 17/21) and corpus 54.2\%$\to$\textbf{62.5\%} (14/16 vs 54.2\%); both
+rises are split into \emph{composition} vs \emph{within-layer} change and are \textbf{not} read as
+capability gains. The H4 subset check passes for holdout (+4.0pp) but \textbf{fails for corpus
+(+33.3pp, outside the pre-registered range)} and is registered as a composition shift. FPR stayed at
+\textbf{18.2\%} (one new false positive, h35, registered). We report these as measured---no
+``correction.''
 \textbf{Pre-registered rule:} if the difference CI crosses 0, the ``failure-driven'' mechanism
 does \emph{not} hold and must be reported as-is. All four $\Delta$ CIs are strictly positive
 (lowest bound 28.6pp).
 
-\paragraph{E2 --- Caliber ablation (Table~\ref{tab:e2}).} Three arms share \emph{the same raw catch counts}
-(holdout 34, corpus 40; recomputed after the expanded-sample re-estimate) and differ only in the denominator:
-A (main; drop unknown) gives \textbf{82.9\%/62.5\%}, B (unknown$\to$miss) 81.0\%/54.8\%, C (all samples) 81.0\%/52.6\%; the caliber effect on the external corpus reaches $\mathbf{+9.9}$pp, so a rate without its caliber is uninterpretable. The full table is in Appendix~\ref{tab:e2}.
-The caliber effect on the external corpus (up to \textbf{9.9}pp) is not negligible, so reporting
-a rate without its caliber lets readers pick anywhere in 52.6--62.5\%.
+\paragraph{E2 --- Caliber ablation (Table~\ref{tab:e2}, Fig.~\ref{fig:caliber}).} Three arms share
+\emph{the same raw catch counts} (holdout 34, corpus 40) and differ only in the denominator: A (main;
+drop unknown) gives \textbf{82.9\%/62.5\%}, B (unknown$\to$miss) 81.0\%/54.8\%, C (all samples)
+81.0\%/52.6\%. The caliber effect on the external corpus reaches $\mathbf{+9.9}$pp, so a rate without
+its caliber is uninterpretable---a reader could pick anywhere in 52.6--62.5\%. Full table: Appendix~\ref{tab:e2}.
 
 \begin{figure}[t]
 \centering
+\begin{minipage}[t]{0.48\linewidth}
+\centering
 \begin{tikzpicture}
 \begin{axis}[
-  width=7.6cm, height=4.4cm,
+  width=6.2cm, height=3.6cm,
+  ybar, bar width=10pt,
+  ymin=0, ymax=72,
+  ylabel={corpus recall (\%)},
+  symbolic x coords={C, B, A},
+  xtick=data,
+  x tick label style={font=\small},
+  nodes near coords, nodes near coords style={font=\scriptsize},
+  enlarge x limits=0.34,
+]
+\addplot[fill=blue!30, draw=blue!60!black] coordinates {(C,52.6) (B,54.8) (A,62.5)};
+\end{axis}
+\end{tikzpicture}
+\caption{Caliber ablation on the external corpus: the \emph{same} 40 catches, three
+denominators---C (all samples) 52.6\%, B ($+$unknown) 54.8\%, A (main) 62.5\%: a \textbf{+9.9}pp
+swing from the caliber alone (holdout: $+1.9$pp).}
+\label{fig:caliber}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\linewidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=6.2cm, height=3.6cm,
   ymin=0, ymax=100, ylabel={holdout recall (\%)},
   symbolic x coords={660,665,666,668,669,671a,672h}, xtick=data,
   nodes near coords, nodes near coords style={font=\scriptsize},
@@ -510,14 +543,12 @@ a rate without its caliber lets readers pick anywhere in 52.6--62.5\%.
 \addplot[mark=*, thick, blue] coordinates {(660,80.0) (665,66.7) (666,81.2) (668,87.5) (669,87.5) (671a,81.0) (672h,82.9)};
 \end{axis}
 \end{tikzpicture}
-\caption{Evolution curve. \textbf{80.0\%$\to$66.7\%$\to$87.5\%$\to$81.0\% is not a capability
-curve}: 660 has a small denominator (20 samples / 7 true errors), 665 is single-flag (30 / 17), 668
-is dual-flag---detector unchanged; 671a is an \emph{expanded-sample re-estimate} (16$\to$21
-measurable, 10 unblinded merged in, corpus caliber to dual-flag $+$ \texttt{setarch}), so the
-87.5$\to$81.0 drop is the measurement object growing, not the verifier regressing. The 666 value
-(81.2\%) never landed in any artifact and is marked hollow; 656/662 report only mutation metrics
-(core 62.5\%$\to$96.5\%).}
+\caption{Evolution curve. \textbf{80.0$\to$66.7$\to$87.5$\to$81.0$\to$82.9 is not a capability
+curve}: 660 has a small denominator, 665 is single-flag, 668 is dual-flag---detector unchanged;
+671a/672h are \emph{expanded-sample re-estimates} (10 unblinded samples merged in). The 666 value
+(81.2\%) never landed in any artifact and is hollow.}
 \label{fig:evolution}
+\end{minipage}
 \end{figure}
 
 \paragraph{E3 --- Evolution curve (cross-batch metrics in Table~\ref{tab:e3}).}
@@ -540,15 +571,15 @@ designed to test. Full detail: Appendix~\ref{app:humanize}.
 
 \paragraph{E5 --- Statistical tests for the baseline contrasts (Table~\ref{tab:e5}).}
 FD and the two opponent arms are paired \emph{on the same samples} (holdout 41 pairs, corpus 64
-pairs) $\Rightarrow$ exact McNemar on the paired risk difference, with Clopper--Pearson intervals
-(recomputed after the expanded-sample re-estimate):
-Small-sample warning: McNemar rests on the extreme $c{=}0$ structure (the required sample sizes are recomputed in Table~\ref{tab:samplesize})---a few reverse pairs would
-inflate $p$ quickly; magnitudes are interval-reads at $n=41/64$. Multiplicity control: Bonferroni
-over the four pre-registered contrasts gives $p_{\max}=1.2\times10^{-7}$ (Holm: $3.0\times10^{-8}$),
-so all four survive---the correction changes no conclusion, but the discipline requires it. An arcsine
-effect size (Cohen's $h$) is reported in Appendix~\ref{app:stats} for \emph{sensitivity only}: at these
-base rates the transform inflates it and the design is paired, so the paired $\Delta$ and its interval
-are our primary effect measures.
+pairs), so we use exact McNemar on the paired risk difference with Clopper--Pearson intervals.
+Small-sample warning: McNemar rests on the extreme $c{=}0$ structure (the required sample sizes are
+recomputed in Table~\ref{tab:samplesize})---a few reverse pairs would inflate $p$ quickly; magnitudes
+are interval-reads at $n=41/64$. Multiplicity control: Bonferroni over the four pre-registered
+contrasts gives $p_{\max}=1.2\times10^{-7}$ (Holm $3.0\times10^{-8}$), so all four survive---the
+correction changes no conclusion, but the discipline requires it. Cohen's $h$ is reported in
+Appendix~\ref{app:stats} for \emph{sensitivity only}: at these base rates the arcsine transform
+inflates it, and the design is paired, so the paired $\Delta$ and its interval are our primary effect
+measures.
 
 \paragraph{E7--E8 --- LLM judge arm and external anchor.}
 An LLM judge arm (\textbf{GLM-4}) caught \textbf{12/12} errors vs.\ FD's 6/12 on the same subset
@@ -596,18 +627,14 @@ unrun, blocked A0--A5 tests (\S\ref{sec:exp}).
 The nineteen concrete threats and their mitigations/residuals are catalogued in
 Table~\ref{tab:threats}; the residual-validity matrix is in Table~\ref{tab:validity}.
 
-\paragraph{Biggest unresolved validity threat: unreviewed labels.}
-All detection rates rest on human-authored labels (41 holdout $+$ 64 corpus) that have \emph{not}
-been independently re-reviewed---a single annotator, no IRR. This is the largest threat to the
-recall numbers: a mislabeled sample moves a rate silently in either direction.
-
-\paragraph{Planned label-validity review, and the pinning gap.} Labels (41 holdout $+$ 64 corpus)
-are single-annotator with no IRR---the largest threat to the recall numbers, since a mislabeled sample
-moves a rate silently in either direction. We pre-registered a two-annotator re-label of a random 25\%
-subsample ($10/41$, $16/64$), original annotator blinded, with $\kappa<0.6$ escalating to a $100\%$
-third-party re-review; it runs before any ``verified'' claim. Historical state pinning is separately
-\emph{incomplete}: a \emph{current-state} verdict is fully reproducible, a \emph{historical} one only
-under an unchanged-ruleset assumption, and the guard does not re-run detectors (Appendix~\ref{app:pinning}).
+\paragraph{Biggest unresolved threat: unreviewed labels; and the pinning gap.}
+All detection rates rest on human-authored labels (41 holdout $+$ 64 corpus) with a single annotator
+and \emph{no} IRR, so a mislabeled sample moves a rate silently in either direction. We pre-registered
+a two-annotator re-label of a random 25\% subsample ($10/41$, $16/64$), original annotator blinded,
+with $\kappa<0.6$ escalating to a $100\%$ third-party re-review; it runs before any ``verified''
+claim. Historical state pinning is separately \emph{incomplete}: a \emph{current-state} verdict is
+fully reproducible, a \emph{historical} one only under an unchanged-ruleset assumption, and the guard
+does not re-run detectors (Appendix~\ref{app:pinning}).
 
 % =====================================================================
 \section{Claim Boundary}
@@ -636,17 +663,18 @@ gains}---reported as measured; 81.2\% never landed, and ``code changed without r
 guard (and is \emph{not} caught today). A third-party audit rates overall credibility \textbf{6/10}:
 infrastructure trustworthy, \emph{numbers fragile}.
 
-\textbf{Evidence boundary.} The evidence \emph{supports} ``verification capability can be measured externally''
-and ``FD beats the static re-binning and random-instrument proxy arms'' ($\Delta$ lower bound $\ge$28.6pp,
-exact McNemar $p\le3.0\times10^{-8}$); it does \emph{not} support ``better than a \emph{real} static detector or a
-true B3'' (split-repo BLOCKED), other languages, ``exact magnitudes'' ($n{=}41/64$), or \emph{any} ablation
-conclusion (design frozen, unrun). \textbf{Three qualifiers:} the $\Delta$ separates having runtime evidence from not, not failure-driven selection
-(A0$-$A5 unrun, \S\ref{sec:exp}); E9 is a \emph{cross-regime stress test}; labels have zero second annotators
-(T17). Appendix~\ref{app:humanize}. \textbf{Future work:} top priority remains ablation \textbf{A5} (random-budget
-control), the only experiment that can falsify ``failure-driven beats same-budget random''; it is
-\emph{blocked} (needs the split-repo verifier's true asset pool; this repository only admits an
-instrument-level proxy our protocol forbids reading as confirmatory). Until it runs the claim stays
-directional. Next: independent reproduction, label reliability ($\kappa$, T17), then
+\textbf{Evidence boundary.} The evidence \emph{supports} ``verification capability can be measured
+externally'' and ``FD beats the static re-binning and random-instrument proxy arms'' ($\Delta$ lower
+bound $\ge$28.6pp, exact McNemar $p\le3.0\times10^{-8}$); it does \emph{not} support ``better than a
+\emph{real} static detector or a true B3'' (split-repo BLOCKED), other languages, ``exact magnitudes''
+($n{=}41/64$), or \emph{any} ablation conclusion (design frozen, unrun). \textbf{Three qualifiers:}
+the $\Delta$ separates having runtime evidence from not, not failure-driven selection (A0$-$A5 unrun,
+\S\ref{sec:exp}); E9 is a \emph{cross-regime stress test}; labels have zero second annotators (T17).
+\textbf{Future work:} top priority remains ablation \textbf{A5} (random-budget control), the only
+experiment that can falsify ``failure-driven beats same-budget random''; it is \emph{blocked} (needs
+the split-repo verifier's true asset pool; this repository only admits an instrument-level proxy our
+protocol forbids reading as confirmatory). Until it runs, the claim stays directional. Next:
+independent reproduction and label reliability ($\kappa$, T17); the rest is in
 Appendix~\ref{app:future}.
 
 \clearpage
@@ -739,6 +767,23 @@ Baseline & Definition & Alignment \\
 B1 static gate & static rules only (no runtime evidence) & same corpus, same verdict granularity \\
 B2 static $+$ mutation & static rules $+$ mutation testing & same as above $+$ same mutation budget \\
 \textbf{B3 budget-matched random} & random evidence acquisition under \emph{equal budget} & same budget (time/calls), same corpus, same flags \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\caption{Four-state verdict (moved from main text; referenced in \S\ref{sec:method}).}
+\label{tab:verdict}
+\centering
+\footnotesize
+\begin{tabular}{@{}lll@{}}
+\toprule
+State & Meaning & Action \\
+\midrule
+\texttt{pass} & evidence supports the assertion; boundary triple complete & may enter the teaching ledger \\
+\texttt{fail} & evidence contradicts the assertion & counterexample to the teaching set \\
+\texttt{unknown} & insufficient evidence or detector unavailable & never recorded as pass/miss; reported separately \\
+\texttt{contradict} & two pieces of evidence conflict (e.g.\ cross-compiler) & escalated to human review; no machine pick \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1070,8 +1115,6 @@ Direction & Representative work \\
 \section{Humanization Material (full versions; 673c)}
 \label{app:humanize}
 % =====================================================================
-
-@@FIGDATA@@
 
 \paragraph{E4 --- Ablation framework (A0--A5; design frozen, experiments \emph{not} run).}
 We re-express the pre-registered ablations as six \emph{same-batch-executable} groups A0--A5, each
