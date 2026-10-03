@@ -8,7 +8,7 @@
 
 ## Summary of changes（修订摘要，按实际改动填）
 
-- 同步全部数字至 **672h** 权威源（holdout **82.9%** (34/41)、corpus **62.5%** (40/64)、FPR **18.2%** (2/11)）。
+- 同步全部数字至 **672h/673u** 权威源（holdout **82.9%** (34/41)、corpus **62.5%** (40/64)、**对照 FPR 0.0% (0/11)**——旧值 18.2% (2/11) 系 `wunsequenced` 恒 catch 缺陷所致，673u 已修复，头条率逐位不变）。
 - 随机臂在 672h 为**仪器级代理**（真 B3 仅在 672g 的旧分母 21/48 上跑过）；**Static 臂仍为口径重分箱**。
 - 全部率值补 Clopper–Pearson 95% CI；配对对比补精确 McNemar + Cohen's $h$ + Δ CI。
 - 明确 `UNVERIFIED` 协议（缺依赖时报未验证，不报误导性低分）。
@@ -20,7 +20,7 @@
 ## Reviewer 1
 
 **R1.1** `Reviewer: "The paper claims a new evaluation paradigm, but the empirical support is thin."`
-**Response:** We agree the first submission was thin on baselines. The revised version reports a **same-sample three-arm contrast**: failure-driven (FD) vs. a static caliber arm vs. a **true budget-matched random (B3)** arm, recomputed by a single script from landed artifacts.
+**Response:** We agree the first submission was thin on baselines. The revised version reports a **same-sample three-arm contrast**: failure-driven (FD) vs. a static caliber arm vs. a **random-proxy arm** (the *true* B3 ran once at 672g on the older $n=21/48$; its rerun on the expanded samples is registered as open), recomputed by a single script from landed artifacts.
 - FD holdout **82.9%** (34/41) vs. Static **2.4%** (1/41) vs. Random **9.8%** (4/41);
   FD corpus **62.5%** (40/64) vs. Static **17.2%** (11/64) vs. Random **21.9%** (14/64).
 - Exact McNemar $p\le3.0\times10^{-8}$; Cohen's $h\ge0.85$; all four paired $\Delta$ CIs strictly positive ($\Delta$ lower bound $\ge$ **28.6pp**); e-values up to $2.5\times10^{8}$.
@@ -56,7 +56,7 @@
 ## Reviewer 3
 
 **R3.1** `Reviewer: "Small sample sizes undermine the statistical claims."`
-**Response:** We agree, and we now say so in the abstract and §Claim Boundary rather than in a footnote. The measurable sizes are holdout **$n=41$** and corpus **$n=64$**; $\pm$5pp of CI half-width needs $n=236/378$ ($\pm$10pp needs 61/97); a $\Delta=15$pp paired contrast needs $n\approx103$–173, an independent one $\approx170$ per group. We therefore report **direction, intervals and effect sizes**, and explicitly refuse to report magnitude. Sample expansion to $n\ge100$ is the first item of future work.
+**Response:** We agree, and we now say so in the abstract and §Claim Boundary rather than in a footnote. The measurable sizes are holdout **$n=41$** and corpus **$n=64$**; $\pm$5pp of CI half-width needs $n=236/378$ ($\pm$10pp needs 61/97); a $\Delta=15$pp paired contrast needs $n\approx103$–173, an independent one $\approx170$ per group. We therefore report **direction, intervals and effect sizes**, and explicitly refuse to report magnitude. Sample expansion to **$n\ge138$** (the paired $\Delta=15$pp design; $n\ge100$ is the looser ±10pp bound) is the first item of future work.
 **Change:** Abstract; §Statistical (§7.3); Appendix (sample-size table).
 
 **R3.2** `Reviewer: "McNemar significance rests on an extreme structure (c=0)."`
@@ -64,7 +64,7 @@
 **Change:** §Statistical (Table E5 note); §Threats (Statistical).
 
 **R3.3** `Reviewer: "Minor: terminology is inconsistent."`
-**Response:** Fixed. We use "detector" throughout; `unknown` and `miss` are kept strictly separate; `Random†` has been relabeled to the **true B3** arm.
+**Response:** Fixed. We use "detector" throughout; `unknown` and `miss` are kept strictly separate; `Random†` keeps its dagger as an **instrument-level proxy** (the *true* B3 ran once at 672g on the older $n=21/48$—it is *not* the reported arm at 672h).
 **Change:** Whole manuscript.
 
 ---
@@ -72,7 +72,7 @@
 ## Standard reusable replies
 
 ### On "sample size is too small"
-We agree and say so up front. Measurable $n=41$ (holdout) / $n=64$ (corpus); $\pm$5pp half-width needs $n=236/378$; $\Delta=15$pp paired needs $n\approx103$–173. We report **direction** ($\Delta$ lower bound $\ge$ **28.6pp**; exact McNemar $p\le3.0\times10^{-8}$) and **refuse to report magnitude**. Expansion to $n\ge100$ is the first future-work item, with a written plan.
+We agree and say so up front. Measurable $n=41$ (holdout) / $n=64$ (corpus); $\pm$5pp half-width needs $n=236/378$; $\Delta=15$pp paired needs $n\approx103$–173. We report **direction** ($\Delta$ lower bound $\ge$ **28.6pp**; exact McNemar $p\le3.0\times10^{-8}$) and **refuse to report magnitude**. Expansion to **$n\ge138$** is the first future-work item, with a written plan.
 
 ### On "the baseline is not strong enough"
 Partly correct, and we label precisely. The **static arm is a caliber re-binning**, not a re-run of a real static detector (split-repo `detect_static` still missing) — this is marked and excluded from conclusions. The **random arm is an instrument-level proxy**; the true B3 ran only at 672g on the older denominator. We register the missing `detect_static` and the B3 rerun as **open items** rather than substituting an approximation.
@@ -98,7 +98,7 @@ The main text is compressed to the E&D 9-page target (references and appendix ex
 We agree and now say so explicitly in §7 (Threats to Validity), where we name **unreviewed labels** as the **single largest validity threat** to the recall numbers. The 41 holdout + 64 corpus labels were authored by a single annotator and have **no** second-annotator check yet (IRR = 0). We have pre-registered a remediation protocol: a two-annotator re-label of a **random 25% subsample** (10/41 holdout, 16/64 corpus) with the original annotator blinded to the second; agreement measured by **Cohen's κ**, and if κ < 0.6 on any layer we escalate to a **100% re-review** of that layer by a third party. Every disagreement is adjudicated and re-fed into the detection-rate recomputation; the before/after rate delta is reported as a validity residual. This protocol is specified in §7 and will be executed before any claim of "verified" status. Until it runs, all detection rates carry this unresolved residual.
 
 ### On "A5 / the core-mechanism falsification experiment"
-Correct that A5 (random-budget control) is **not yet run**—and we now state it as the **single highest-priority future-work item** (§10). A5 is the only experiment that can *falsify* the central claim: if the CI of Δ(A0 − A5) crosses 0, "failure-driven beats same-budget random" does **not** hold. Its split-repo interface (`select_assets`) was resolved at 672g, but the experiment itself is unfrozen-design / not executed; at n=41/64 it could not yet yield an interpretable Δ. We therefore continue to report the FD advantage as **directional**, not a controlled magnitude, and register this openly rather than substituting an approximation.
+A5 (random-budget control) has now **run**: its pre-registered main endpoint is **significant for the first time** — holdout FD 90.0% (18/20) vs. Random 35.0% (7/20), Δ **+55.0pp** (CI [+33.2, +76.8], exact McNemar p=9.8×10⁻⁴, b=11/c=0); corpus 81.3% (13/16) vs. 37.5%, Δ **+43.8pp** (p=0.039, b=8/c=1). **But it does not license "FD beats Random":** the holdout effect is **pool composition** — Random's draw spends half its budget on degenerate (constant-`unknown`) assets, and in the pre-registered *parallel* analysis that excludes them the Δ **collapses to 0.0pp (p=1.0), triggering our `uninterpretable` clause**. With n=20/16 ≪ 138 the result is **direction-only**; we write no "FD > Random" sentence. The table became readable only after we fixed a `wunsequenced` constant-catch defect (headline rates **unchanged**; control FPR 2/11 → **0/11**). Roadmap: confirm A5 by expanding to **n ≥ 138** — the only design separating selection from pool composition.
 
 ## 落款
 
@@ -124,11 +124,13 @@ specific*. All four pre-registered hypotheses failed. Two caveats are stated: so
 architecture keeps "LLM output never becomes a verdict".
 
 ### Q3. The external anchor's H2 did not pass
-Yes — **H2 misses by 0.8pp** (threshold 45%, observed 44.0% over 50 snippets) and is registered as
-**not passed**. The two subsets are reported separately because their targets differ: verbatim
-guideline snippets 28.6% (most guideline text is stylistic advice, so "no detection" is expected)
-and reconstructed UB fragments 80.0% (our own reconstruction, hence an upper bound). A harness was
-added post-registration and the deviation is logged.
+Yes — **H2 misses by 0.8pp** and is registered as **not passed**: H2 required the reconstructed-UB
+subset (80.0%) to differ from the corpus historical reference (54.2%) by **< 25pp**, but the observed
+difference is **25.8pp**. The two subsets are reported separately because their targets differ:
+verbatim guideline snippets 28.6% (most guideline text is stylistic advice, so "no detection" is
+expected) and reconstructed UB fragments 80.0% (our own reconstruction, hence an upper bound). A
+harness was added post-registration and the deviation is logged. (The 50-snippet total rate of
+**44.0%** belongs to H3, which passed at ≥30%.)
 
 ### Q4. How does this differ from related work?
 Benchmark evolution changes the **items**; mutation-guided testing changes the **tests**; formal
