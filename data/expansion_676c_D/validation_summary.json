@@ -1,0 +1,40 @@
+{
+  "total": 200,
+  "catch": 132,
+  "miss": 68,
+  "eliminated": 0,
+  "syntax_fail": 0,
+  "sanitizer_unavailable": 0,
+  "by_type": {
+    "iterator_invalidation": {
+      "catch": 22,
+      "miss": 13,
+      "elim": 0
+    },
+    "stl_container_ub": {
+      "catch": 27,
+      "miss": 8,
+      "elim": 0
+    },
+    "string_ub": {
+      "catch": 25,
+      "miss": 10,
+      "elim": 0
+    },
+    "algorithm_misuse": {
+      "catch": 6,
+      "miss": 29,
+      "elim": 0
+    },
+    "smart_pointer": {
+      "catch": 27,
+      "miss": 3,
+      "elim": 0
+    },
+    "lambda_capture": {
+      "catch": 25,
+      "miss": 5,
+      "elim": 0
+    }
+  }
+}

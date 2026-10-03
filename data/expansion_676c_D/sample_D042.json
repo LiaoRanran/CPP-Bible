@@ -1,0 +1,45 @@
+{
+  "sample_id": "D042",
+  "defect_type": "stl_container_ub",
+  "defect_location": {
+    "line": 7,
+    "function": "main",
+    "description": "vector operator[] 越界访问"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "operator[] 不做边界检查，越界访问堆内存，asan 报 heap-buffer-overflow。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) ================================================================= ==5301==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000020 at pc 0x5555555555fb bp 0x7fffffffe3b0 sp 0x7fffffffe3; -O2(rc=1) ================================================================= ==53"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 0; -O2(rc=0) 0]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

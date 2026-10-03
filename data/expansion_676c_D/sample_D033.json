@@ -1,0 +1,45 @@
+{
+  "sample_id": "D033",
+  "defect_type": "iterator_invalidation",
+  "defect_location": {
+    "line": 10,
+    "function": "Holder::read_bad",
+    "description": "类成员 vector 在成员函数内 push_back 后使用失效迭代器"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "类成员容器修改导致成员函数内迭代器失效，asan 报 heap-use-after-free。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) ================================================================= ==3572==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x55555555570c bp 0x7fffffffe350 sp 0x7fffffffe34; -O2(rc=1) ================================================================= ==36"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 1431655793; -O2(rc=0) 1431655792]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "sample_id": "D152",
+  "defect_type": "smart_pointer",
+  "defect_location": {
+    "line": 8,
+    "function": "main",
+    "description": "对 shared_ptr::get() 返回指针手动 delete"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "析构时触发",
+  "notes": "shared_ptr 仍管理该指针，手动 delete 后析构再 delete，asan 报 double-free。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) ================================================================= ==32003==ERROR: AddressSanitizer: attempting free on address which was not malloc()-ed: 0x503000000050 in thread T0     #0 0x7ffff78ff; -O2(rc=1) ================================================================= ==32"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=134) double free or corruption (out); -O2(rc=134) double free or corruption (out)]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

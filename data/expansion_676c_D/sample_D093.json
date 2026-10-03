@@ -1,0 +1,44 @@
+{
+  "sample_id": "D093",
+  "defect_type": "string_ub",
+  "defect_location": {
+    "line": 8,
+    "function": "leak",
+    "description": "函数返回指向局部 string 的 string_view（悬垂）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "ubsan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "局部 string 析构后 string_view 悬垂，访问触发 use-after-scope，asan 捕获。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "miss",
+        "note": "asan 两档均无报告[-O0(rc=0) local content; -O2(rc=0) local content]"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) local content; -O2(rc=0) local content]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "miss",
+    "actual_detectors": [],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

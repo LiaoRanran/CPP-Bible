@@ -1,0 +1,45 @@
+{
+  "sample_id": "D054",
+  "defect_type": "stl_container_ub",
+  "defect_location": {
+    "line": 9,
+    "function": "main",
+    "description": "vector<bool> 代理引用在重分配后悬垂"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "vector<bool> 的 operator[] 返回代理对象，持有指向位字的指针；位数超过一机器字后 push_back 必然重分配，代理悬垂，读取为 use-after-free。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) ================================================================= ==244==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x555555556916 bp 0x7fffffffe380 sp 0x7fffffffe370; -O2(rc=1) ================================================================= ==27"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 0]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

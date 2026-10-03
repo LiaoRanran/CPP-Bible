@@ -1,0 +1,45 @@
+{
+  "sample_id": "D154",
+  "defect_type": "smart_pointer",
+  "defect_location": {
+    "line": 11,
+    "function": "main",
+    "description": "std::shared_ptr 循环引用导致内存泄漏"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "析构后泄漏",
+  "notes": "循环引用使引用计数不归零，对象永不释放；asan 默认不报告泄漏（需 detect_leaks=1）——检测器盲区。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) ================================================================= ==33396==ERROR: LeakSanitizer: detected memory leaks  Indirect leak of 32 byte(s) in 1 object(s) allocated from:     #0 0x7ffff78fe548; -O2(rc=1) ================================================================= ==33"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) leak; -O2(rc=0) leak]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

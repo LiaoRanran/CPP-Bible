@@ -1,0 +1,45 @@
+{
+  "sample_id": "D091",
+  "defect_type": "string_ub",
+  "defect_location": {
+    "line": 6,
+    "function": "main",
+    "description": "修改字符串字面量（const 转非 const）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "写只读段是 UB，是否崩溃取决于段保护，asan 通常报 SEGV/公交车——多为盲区（可能直接段错误而非 sanitizer 报告）。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==14360==ERROR: AddressSanitizer: SEGV on unknown address 0x555555556022 (pc 0x55555555523c bp 0x7ffffff; -O2(rc=1) AddressSanitizer:DEADLYSIGNAL ========================================"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=139) 无输出; -O2(rc=139) 无输出]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

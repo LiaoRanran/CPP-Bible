@@ -1,0 +1,44 @@
+{
+  "sample_id": "D191",
+  "defect_type": "lambda_capture",
+  "defect_location": {
+    "line": 7,
+    "function": "main",
+    "description": "递归 lambda 按值捕获尚未初始化的自身（空副本）"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "ubsan"
+  ],
+  "trigger_condition": "递归调用时触发",
+  "notes": "按值捕获时复制的是仍为空的 std::function，递归调用抛 bad_function_call；应以 [&] 捕获。是真实缺陷但非 sanitizer 可检——盲区。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "miss",
+        "note": "asan 两档均无报告[-O0(rc=0) threw; -O2(rc=0) threw]"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) threw; -O2(rc=0) threw]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "miss",
+    "actual_detectors": [],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

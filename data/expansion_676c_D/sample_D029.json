@@ -1,0 +1,45 @@
+{
+  "sample_id": "D029",
+  "defect_type": "iterator_invalidation",
+  "defect_location": {
+    "line": 7,
+    "function": "main",
+    "description": "range-for 循环内修改容器触发迭代器失效"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "range-for 隐式使用迭代器，循环内 push_back 致 realloc，后续迭代 UB，asan 报 heap-use-after-free/infinite-loop。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) ================================================================= ==3149==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000014 at pc 0x5555555556bf bp 0x7fffffffe360 sp 0x7fffffffe35]（档位 -O0,-O2）"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 6; -O2(rc=0) 6]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

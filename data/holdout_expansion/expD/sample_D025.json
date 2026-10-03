@@ -1,0 +1,45 @@
+{
+  "sample_id": "D025",
+  "defect_type": "iterator_invalidation",
+  "defect_location": {
+    "line": 10,
+    "function": "main",
+    "description": "map erase 后使用被擦除的迭代器"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "map 节点被删除后，迭代器悬垂，解引用为 use-after-free，asan 可能捕获。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) ================================================================= ==2731==ERROR: AddressSanitizer: heap-use-after-free on address 0x504000000074 at pc 0x55555555690f bp 0x7fffffffe390 sp 0x7fffffffe38; -O2(rc=1) ================================================================= ==27"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 20; -O2(rc=0) 20]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

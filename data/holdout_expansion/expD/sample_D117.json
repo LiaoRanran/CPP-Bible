@@ -1,0 +1,44 @@
+{
+  "sample_id": "D117",
+  "defect_type": "algorithm_misuse",
+  "defect_location": {
+    "line": 7,
+    "function": "main",
+    "description": "std::copy 源与目标区间重叠（UB）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "ubsan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "重叠 copy 是 UB，行为依实现；asan 通常无重叠检测——盲区（部分实现可用 memmove 掩盖）。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "miss",
+        "note": "asan 两档均无报告[-O0(rc=0) 6; -O2(rc=0) 6]"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 6; -O2(rc=0) 6]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "miss",
+    "actual_detectors": [],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

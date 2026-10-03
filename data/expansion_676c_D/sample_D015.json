@@ -1,0 +1,44 @@
+{
+  "sample_id": "D015",
+  "defect_type": "iterator_invalidation",
+  "defect_location": {
+    "line": 9,
+    "function": "main",
+    "description": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "ubsan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "erase 使插入点之后迭代器失效但不一定 realloc，内存仍分配，asan 通常检测不到——检测器盲区。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "miss",
+        "note": "asan 两档均无报告[-O0(rc=0) 40; -O2(rc=0) 40]"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 40; -O2(rc=0) 40]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "miss",
+    "actual_detectors": [],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

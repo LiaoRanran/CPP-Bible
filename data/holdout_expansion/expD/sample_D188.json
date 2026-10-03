@@ -1,0 +1,45 @@
+{
+  "sample_id": "D188",
+  "defect_type": "lambda_capture",
+  "defect_location": {
+    "line": 7,
+    "function": "mk",
+    "description": "lambda 按值捕获指针，所指对象已释放"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "调用 lambda 时触发",
+  "notes": "捕获的指针所指对象在 lambda 返回前被 delete，调用时 use-after-free，asan 捕获。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) ================================================================= ==42328==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x5555555553f5 bp 0x7fffffffe370 sp 0x7fffffffe3; -O2(rc=1) ================================================================= ==42"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 1431655789; -O2(rc=0) 1431655788]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

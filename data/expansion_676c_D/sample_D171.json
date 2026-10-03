@@ -1,0 +1,45 @@
+{
+  "sample_id": "D171",
+  "defect_type": "lambda_capture",
+  "defect_location": {
+    "line": 7,
+    "function": "make",
+    "description": "lambda 引用捕获局部变量并在作用域外调用"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "调用返回的 lambda 时触发",
+  "notes": "返回的 lambda 引用已销毁的局部变量，调用时 use-after-scope，asan 报 stack-use-after-return。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) ================================================================= ==39900==ERROR: AddressSanitizer: stack-use-after-return on address 0x7ffff50000b0 at pc 0x555555555395 bp 0x7fffffffe370 sp 0x7ffffff; -O2(rc=1) ================================================================= ==39"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 21846; -O2(rc=0) 43]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "sample_id": "D084",
+  "defect_type": "string_ub",
+  "defect_location": {
+    "line": 8,
+    "function": "main",
+    "description": "从临时 std::string 构造的 string_view 悬垂"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "ubsan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "临时 string 在语句结束析构，sv 悬垂，访问触发 use-after-scope/heap，asan 捕获。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "miss",
+        "note": "asan 两档均无报告[-O0(rc=0) temp4; -O2(rc=0) temp4]"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) temp4; -O2(rc=0) temp4]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "miss",
+    "actual_detectors": [],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

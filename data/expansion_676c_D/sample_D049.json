@@ -1,0 +1,47 @@
+{
+  "sample_id": "D049",
+  "defect_type": "stl_container_ub",
+  "defect_location": {
+    "line": 7,
+    "function": "main",
+    "description": "std::array operator[] 越界访问"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan",
+    "ubsan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "std::array 越界访问栈上内存，asan 报 stack-buffer-overflow。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) ================================================================= ==6029==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffff4f00034 at pc 0x5555555553cf bp 0x7fffffffe430 sp 0x7fffffffe; -O2(rc=1) ================================================================= ==60"
+      },
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O2(rc=0) 805513444 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpdm8tqgfx/sample_D049.cpp:7:14: runtime error: load of address 0x7fffffffe4cc with insufficient space for an object of type 'int' 0x7fffffffe4cc: note:]（档位 -O0,-O2）"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan",
+      "ubsan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

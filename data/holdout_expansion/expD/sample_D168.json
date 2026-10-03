@@ -1,0 +1,45 @@
+{
+  "sample_id": "D168",
+  "defect_type": "smart_pointer",
+  "defect_location": {
+    "line": 8,
+    "function": "main",
+    "description": "多 shared_ptr 共享同一裸指针（补充）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "析构时触发",
+  "notes": "双重释放，asan 报 double-free。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) ================================================================= ==39588==ERROR: AddressSanitizer: attempting double-free on 0x502000000010 in thread T0:     #0 0x7ffff78ff5e8 in operator delete(void; -O2(rc=1) ================================================================= ==39"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=134) free(): double free detected in tcache 2; -O2(rc=134) free(): double free detected in tcache 2]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

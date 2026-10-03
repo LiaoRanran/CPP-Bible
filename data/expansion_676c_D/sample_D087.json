@@ -1,0 +1,44 @@
+{
+  "sample_id": "D087",
+  "defect_type": "string_ub",
+  "defect_location": {
+    "line": 7,
+    "function": "main",
+    "description": "std::string::substr 越界（抛异常）"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "ubsan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "substr(pos>size) 抛 out_of_range（良定义异常），sanitizer 不报——盲区。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "miss",
+        "note": "asan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  basic_string::substr: __pos (which is 5) > this->size() (which is 3); -O2(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  basic_string::substr: __pos (which is "
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  basic_string::substr: __pos (which is 5) > this->size() (which is 3); -O2(rc=134) terminate called after throwing an instance of 'std::out_of_range'   what():  basic_string::substr: __pos (which is"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "miss",
+    "actual_detectors": [],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

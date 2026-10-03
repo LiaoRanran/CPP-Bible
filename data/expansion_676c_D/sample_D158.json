@@ -1,0 +1,44 @@
+{
+  "sample_id": "D158",
+  "defect_type": "smart_pointer",
+  "defect_location": {
+    "line": 7,
+    "function": "Bad::Bad",
+    "description": "在构造函数中调用 shared_from_this"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "ubsan"
+  ],
+  "trigger_condition": "构造时触发",
+  "notes": "构造期间对象尚未被任何 shared_ptr 拥有，shared_from_this 抛 bad_weak_ptr（异常）或 UB——sanitizer 盲区。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "miss",
+        "note": "asan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_weak_ptr'   what():  bad_weak_ptr; -O2(rc=134) terminate called after throwing an instance of 'std::bad_weak_ptr'   what():  bad_weak_ptr]"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=134) terminate called after throwing an instance of 'std::bad_weak_ptr'   what():  bad_weak_ptr; -O2(rc=134) terminate called after throwing an instance of 'std::bad_weak_ptr'   what():  bad_weak_ptr]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "miss",
+    "actual_detectors": [],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

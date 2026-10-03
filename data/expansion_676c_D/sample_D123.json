@@ -1,0 +1,45 @@
+{
+  "sample_id": "D123",
+  "defect_type": "algorithm_misuse",
+  "defect_location": {
+    "line": 9,
+    "function": "main",
+    "description": "std::transform 目标区间容量不足（越界写入）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "out 容量小于 in，写入越界堆内存，asan 报 heap-buffer-overflow。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) ================================================================= ==22188==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000018 at pc 0x555555555917 bp 0x7fffffffe250 sp 0x7fffffffe; -O2(rc=1) ================================================================= ==22"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 2; -O2(rc=0) 2]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

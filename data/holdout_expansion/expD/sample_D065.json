@@ -1,0 +1,47 @@
+{
+  "sample_id": "D065",
+  "defect_type": "stl_container_ub",
+  "defect_location": {
+    "line": 7,
+    "function": "main",
+    "description": "空 vector 调用 back()（补充）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan",
+    "ubsan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "空容器 back() 是 UB，asan/ubsan 盲区。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==8492==ERROR: AddressSanitizer: SEGV on unknown address (pc 0x5555555553b3 bp 0x7fffffffe4d0 sp 0x7ffff; -O2(rc=1) AddressSanitizer:DEADLYSIGNAL ========================================"
+      },
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=139) /usr/include/c++/13/bits/stl_iterator.h:1158:45: runtime error: applying non-zero offset 18446744073709551612 to null pointer; -O2(rc=139) /usr/include/c++/13/bits/stl_iterator.h:1158:45: runtime error: applying non-zero offset 18446744073709551612 to null pointer]（档位 -O0,-O2）"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan",
+      "ubsan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

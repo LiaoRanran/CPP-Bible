@@ -1,0 +1,45 @@
+{
+  "sample_id": "D095",
+  "defect_type": "string_ub",
+  "defect_location": {
+    "line": 11,
+    "function": "main",
+    "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "长串字面量构造时 capacity==size，append 后必然 realloc，sv 指向已释放缓冲；在插桩代码中遍历读取，asan 报 heap-use-after-free。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) ================================================================= ==6412==ERROR: AddressSanitizer: heap-use-after-free on address 0x506000000020 at pc 0x555555556698 bp 0x7fffffffe3a0 sp 0x7fffffffe39; -O2(rc=1) ================================================================= ==64"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 6348; -O2(rc=0) 6596]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

@@ -1,0 +1,390 @@
+{
+  "seed": 6761,
+  "sample_rate": 0.2,
+  "sampled": 40,
+  "passed": 40,
+  "failed": 0,
+  "fail_rate": 0.0,
+  "records": {
+    "passed": [
+      {
+        "sample_id": "D002",
+        "defect_type": "iterator_invalidation",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 9
+      },
+      {
+        "sample_id": "D004",
+        "defect_type": "iterator_invalidation",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 9
+      },
+      {
+        "sample_id": "D006",
+        "defect_type": "iterator_invalidation",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 9
+      },
+      {
+        "sample_id": "D007",
+        "defect_type": "iterator_invalidation",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 9
+      },
+      {
+        "sample_id": "D015",
+        "defect_type": "iterator_invalidation",
+        "expected_verdict": "miss",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 9
+      },
+      {
+        "sample_id": "D017",
+        "defect_type": "iterator_invalidation",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 9
+      },
+      {
+        "sample_id": "D021",
+        "defect_type": "iterator_invalidation",
+        "expected_verdict": "miss",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 10
+      },
+      {
+        "sample_id": "D022",
+        "defect_type": "iterator_invalidation",
+        "expected_verdict": "miss",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 10
+      },
+      {
+        "sample_id": "D025",
+        "defect_type": "iterator_invalidation",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 10
+      },
+      {
+        "sample_id": "D026",
+        "defect_type": "iterator_invalidation",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 10
+      },
+      {
+        "sample_id": "D039",
+        "defect_type": "stl_container_ub",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 7
+      },
+      {
+        "sample_id": "D061",
+        "defect_type": "stl_container_ub",
+        "expected_verdict": "miss",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 7
+      },
+      {
+        "sample_id": "D062",
+        "defect_type": "stl_container_ub",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 9
+      },
+      {
+        "sample_id": "D065",
+        "defect_type": "stl_container_ub",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 7
+      },
+      {
+        "sample_id": "D070",
+        "defect_type": "stl_container_ub",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 7
+      },
+      {
+        "sample_id": "D072",
+        "defect_type": "string_ub",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 9
+      },
+      {
+        "sample_id": "D077",
+        "defect_type": "string_ub",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 9
+      },
+      {
+        "sample_id": "D080",
+        "defect_type": "string_ub",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 8
+      },
+      {
+        "sample_id": "D082",
+        "defect_type": "string_ub",
+        "expected_verdict": "miss",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 8
+      },
+      {
+        "sample_id": "D085",
+        "defect_type": "string_ub",
+        "expected_verdict": "miss",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 8
+      },
+      {
+        "sample_id": "D110",
+        "defect_type": "algorithm_misuse",
+        "expected_verdict": "miss",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 8
+      },
+      {
+        "sample_id": "D112",
+        "defect_type": "algorithm_misuse",
+        "expected_verdict": "miss",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 8
+      },
+      {
+        "sample_id": "D113",
+        "defect_type": "algorithm_misuse",
+        "expected_verdict": "miss",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 8
+      },
+      {
+        "sample_id": "D120",
+        "defect_type": "algorithm_misuse",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 7
+      },
+      {
+        "sample_id": "D132",
+        "defect_type": "algorithm_misuse",
+        "expected_verdict": "miss",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 8
+      },
+      {
+        "sample_id": "D138",
+        "defect_type": "algorithm_misuse",
+        "expected_verdict": "miss",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 8
+      },
+      {
+        "sample_id": "D141",
+        "defect_type": "smart_pointer",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 6
+      },
+      {
+        "sample_id": "D150",
+        "defect_type": "smart_pointer",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 8
+      },
+      {
+        "sample_id": "D154",
+        "defect_type": "smart_pointer",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 11
+      },
+      {
+        "sample_id": "D162",
+        "defect_type": "smart_pointer",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 10
+      },
+      {
+        "sample_id": "D168",
+        "defect_type": "smart_pointer",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 8
+      },
+      {
+        "sample_id": "D172",
+        "defect_type": "lambda_capture",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 7
+      },
+      {
+        "sample_id": "D173",
+        "defect_type": "lambda_capture",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 7
+      },
+      {
+        "sample_id": "D176",
+        "defect_type": "lambda_capture",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 7
+      },
+      {
+        "sample_id": "D179",
+        "defect_type": "lambda_capture",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 8
+      },
+      {
+        "sample_id": "D181",
+        "defect_type": "lambda_capture",
+        "expected_verdict": "miss",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 6
+      },
+      {
+        "sample_id": "D182",
+        "defect_type": "lambda_capture",
+        "expected_verdict": "miss",
+        "detectors": [
+          "asan",
+          "ubsan"
+        ],
+        "defect_line": 6
+      },
+      {
+        "sample_id": "D187",
+        "defect_type": "lambda_capture",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 7
+      },
+      {
+        "sample_id": "D189",
+        "defect_type": "lambda_capture",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 7
+      },
+      {
+        "sample_id": "D197",
+        "defect_type": "lambda_capture",
+        "expected_verdict": "catch",
+        "detectors": [
+          "asan"
+        ],
+        "defect_line": 7
+      }
+    ],
+    "failed": []
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "sample_id": "D037",
+  "defect_type": "stl_container_ub",
+  "defect_location": {
+    "line": 7,
+    "function": "main",
+    "description": "空 vector 调用 front()"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan",
+    "ubsan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "空容器 front() 是 UB，但 asan/ubsan 通常不报（读未初始化/越界不一定触发），属于检测器盲区。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==4405==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x5555555553e9 bp 0x7fffffff; -O2(rc=1) AddressSanitizer:DEADLYSIGNAL ========================================"
+      },
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=139) /usr/include/c++/13/bits/stl_iterator.h:1100:17: runtime error: reference binding to null pointer of type 'int' /usr/include/c++/13/bits/stl_vector.h:1212:16: runtime error: reference binding to null ; -O2(rc=139) /usr/include/c++/13/bits/stl_iterator.h:1100:17: runtime error: r"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan",
+      "ubsan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

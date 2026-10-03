@@ -1,0 +1,45 @@
+{
+  "sample_id": "D002",
+  "defect_type": "iterator_invalidation",
+  "defect_location": {
+    "line": 9,
+    "function": "main",
+    "description": "vector push_back 重新分配后使用失效迭代器"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "push_back 触发 realloc，it 指向已释放/搬迁的旧缓冲区，asan 报 heap-use-after-free。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) ================================================================= ==300==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x555555555750 bp 0x7fffffffe390 sp 0x7fffffffe380; -O2(rc=1) ================================================================= ==32"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 42; -O2(rc=0) 42]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

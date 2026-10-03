@@ -1,0 +1,44 @@
+{
+  "sample_id": "D184",
+  "defect_type": "lambda_capture",
+  "defect_location": {
+    "line": 6,
+    "function": "main",
+    "description": "按值捕获 lambda 修改副本，原变量不变"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan",
+    "ubsan"
+  ],
+  "trigger_condition": "直接运行即触发",
+  "notes": "按值捕获得到副本，修改不影响原变量，属逻辑错误，sanitizer 不报——盲区。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "miss",
+        "note": "asan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]"
+      },
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 1; -O2(rc=0) 1]"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "miss",
+    "actual_detectors": [],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}

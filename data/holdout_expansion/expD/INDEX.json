@@ -1,0 +1,4533 @@
+{
+  "schema": "queyi-expansion-pool/v1",
+  "batch": "676c-扩样-D",
+  "agent": "676c-expD",
+  "pool_dir": "data/holdout_expansion/expD",
+  "count": 200,
+  "stats": {
+    "total_generated": 200,
+    "compiled": 200,
+    "pooled": 200,
+    "eliminated": 0,
+    "by_type": {
+      "iterator_invalidation": 35,
+      "stl_container_ub": 35,
+      "string_ub": 35,
+      "algorithm_misuse": 35,
+      "smart_pointer": 30,
+      "lambda_capture": 30
+    },
+    "severity": {
+      "low": 5,
+      "medium": 42,
+      "high": 153
+    },
+    "planted_true": 200,
+    "catch": 132,
+    "miss": 68,
+    "blind_spot_ratio": 0.34
+  },
+  "total": 200,
+  "type_distribution": {
+    "iterator_invalidation": 35,
+    "stl_container_ub": 35,
+    "string_ub": 35,
+    "algorithm_misuse": 35,
+    "smart_pointer": 30,
+    "lambda_capture": 30
+  },
+  "catch_count": 132,
+  "miss_count": 68,
+  "blind_spot_ratio": 0.34,
+  "sample_ids": [
+    "D001",
+    "D002",
+    "D003",
+    "D004",
+    "D005",
+    "D006",
+    "D007",
+    "D008",
+    "D009",
+    "D010",
+    "D011",
+    "D012",
+    "D013",
+    "D014",
+    "D015",
+    "D016",
+    "D017",
+    "D018",
+    "D019",
+    "D020",
+    "D021",
+    "D022",
+    "D023",
+    "D024",
+    "D025",
+    "D026",
+    "D027",
+    "D028",
+    "D029",
+    "D030",
+    "D031",
+    "D032",
+    "D033",
+    "D034",
+    "D035",
+    "D036",
+    "D037",
+    "D038",
+    "D039",
+    "D040",
+    "D041",
+    "D042",
+    "D043",
+    "D044",
+    "D045",
+    "D046",
+    "D047",
+    "D048",
+    "D049",
+    "D050",
+    "D051",
+    "D052",
+    "D053",
+    "D054",
+    "D055",
+    "D056",
+    "D057",
+    "D058",
+    "D059",
+    "D060",
+    "D061",
+    "D062",
+    "D063",
+    "D064",
+    "D065",
+    "D066",
+    "D067",
+    "D068",
+    "D069",
+    "D070",
+    "D071",
+    "D072",
+    "D073",
+    "D074",
+    "D075",
+    "D076",
+    "D077",
+    "D078",
+    "D079",
+    "D080",
+    "D081",
+    "D082",
+    "D083",
+    "D084",
+    "D085",
+    "D086",
+    "D087",
+    "D088",
+    "D089",
+    "D090",
+    "D091",
+    "D092",
+    "D093",
+    "D094",
+    "D095",
+    "D096",
+    "D097",
+    "D098",
+    "D099",
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "D108",
+    "D109",
+    "D110",
+    "D111",
+    "D112",
+    "D113",
+    "D114",
+    "D115",
+    "D116",
+    "D117",
+    "D118",
+    "D119",
+    "D120",
+    "D121",
+    "D122",
+    "D123",
+    "D124",
+    "D125",
+    "D126",
+    "D127",
+    "D128",
+    "D129",
+    "D130",
+    "D131",
+    "D132",
+    "D133",
+    "D134",
+    "D135",
+    "D136",
+    "D137",
+    "D138",
+    "D139",
+    "D140",
+    "D141",
+    "D142",
+    "D143",
+    "D144",
+    "D145",
+    "D146",
+    "D147",
+    "D148",
+    "D149",
+    "D150",
+    "D151",
+    "D152",
+    "D153",
+    "D154",
+    "D155",
+    "D156",
+    "D157",
+    "D158",
+    "D159",
+    "D160",
+    "D161",
+    "D162",
+    "D163",
+    "D164",
+    "D165",
+    "D166",
+    "D167",
+    "D168",
+    "D169",
+    "D170",
+    "D171",
+    "D172",
+    "D173",
+    "D174",
+    "D175",
+    "D176",
+    "D177",
+    "D178",
+    "D179",
+    "D180",
+    "D181",
+    "D182",
+    "D183",
+    "D184",
+    "D185",
+    "D186",
+    "D187",
+    "D188",
+    "D189",
+    "D190",
+    "D191",
+    "D192",
+    "D193",
+    "D194",
+    "D195",
+    "D196",
+    "D197",
+    "D198",
+    "D199",
+    "D200"
+  ],
+  "samples": [
+    {
+      "sample_id": "D001",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector push_back 重新分配后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "push_back 触发 realloc，it 指向已释放/搬迁的旧缓冲区，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D002",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector push_back 重新分配后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "push_back 触发 realloc，it 指向已释放/搬迁的旧缓冲区，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D003",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector push_back 重新分配后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "push_back 触发 realloc，it 指向已释放/搬迁的旧缓冲区，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D004",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector push_back 重新分配后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "push_back 触发 realloc，it 指向已释放/搬迁的旧缓冲区，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D005",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector push_back 重新分配后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "push_back 触发 realloc，it 指向已释放/搬迁的旧缓冲区，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D006",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector push_back 重新分配后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "push_back 触发 realloc，it 指向已释放/搬迁的旧缓冲区，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D007",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector push_back 重新分配后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "push_back 触发 realloc，it 指向已释放/搬迁的旧缓冲区，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D008",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector insert 后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "insert 使插入点之后的迭代器失效，写入越界/悬垂，asan 报 heap-buffer-overflow/use-after-free。"
+    },
+    {
+      "sample_id": "D009",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector insert 后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "insert 使插入点之后的迭代器失效，写入越界/悬垂，asan 报 heap-buffer-overflow/use-after-free。"
+    },
+    {
+      "sample_id": "D010",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector insert 后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "insert 使插入点之后的迭代器失效，写入越界/悬垂，asan 报 heap-buffer-overflow/use-after-free。"
+    },
+    {
+      "sample_id": "D011",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector insert 后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "insert 使插入点之后的迭代器失效，写入越界/悬垂，asan 报 heap-buffer-overflow/use-after-free。"
+    },
+    {
+      "sample_id": "D012",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector insert 后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "insert 使插入点之后的迭代器失效，写入越界/悬垂，asan 报 heap-buffer-overflow/use-after-free。"
+    },
+    {
+      "sample_id": "D013",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "erase 使插入点之后迭代器失效但不一定 realloc，内存仍分配，asan 通常检测不到——检测器盲区。"
+    },
+    {
+      "sample_id": "D014",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "erase 使插入点之后迭代器失效但不一定 realloc，内存仍分配，asan 通常检测不到——检测器盲区。"
+    },
+    {
+      "sample_id": "D015",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "erase 使插入点之后迭代器失效但不一定 realloc，内存仍分配，asan 通常检测不到——检测器盲区。"
+    },
+    {
+      "sample_id": "D016",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "erase 使插入点之后迭代器失效但不一定 realloc，内存仍分配，asan 通常检测不到——检测器盲区。"
+    },
+    {
+      "sample_id": "D017",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "erase 使插入点之后迭代器失效但不一定 realloc，内存仍分配，asan 通常检测不到——检测器盲区。"
+    },
+    {
+      "sample_id": "D018",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "deque push_front 后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "deque 在两端增删会使全部迭代器失效，访问悬垂，asan 报 heap-use-after-free/invalid。"
+    },
+    {
+      "sample_id": "D019",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "deque push_front 后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "deque 在两端增删会使全部迭代器失效，访问悬垂，asan 报 heap-use-after-free/invalid。"
+    },
+    {
+      "sample_id": "D020",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "deque push_front 后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "deque 在两端增删会使全部迭代器失效，访问悬垂，asan 报 heap-use-after-free/invalid。"
+    },
+    {
+      "sample_id": "D021",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 10,
+        "function": "main",
+        "description": "unordered_map rehash 后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "insert 触发 rehash，旧迭代器悬垂，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D022",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 10,
+        "function": "main",
+        "description": "unordered_map rehash 后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "insert 触发 rehash，旧迭代器悬垂，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D023",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 10,
+        "function": "main",
+        "description": "unordered_map rehash 后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "insert 触发 rehash，旧迭代器悬垂，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D024",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 10,
+        "function": "main",
+        "description": "map erase 后使用被擦除的迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "map 节点被删除后，迭代器悬垂，解引用为 use-after-free，asan 可能捕获。"
+    },
+    {
+      "sample_id": "D025",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 10,
+        "function": "main",
+        "description": "map erase 后使用被擦除的迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "map 节点被删除后，迭代器悬垂，解引用为 use-after-free，asan 可能捕获。"
+    },
+    {
+      "sample_id": "D026",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 10,
+        "function": "main",
+        "description": "map erase 后使用被擦除的迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "map 节点被删除后，迭代器悬垂，解引用为 use-after-free，asan 可能捕获。"
+    },
+    {
+      "sample_id": "D027",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "range-for 循环内修改容器触发迭代器失效"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "range-for 隐式使用迭代器，循环内 push_back 致 realloc，后续迭代 UB，asan 报 heap-use-after-free/infinite-loop。"
+    },
+    {
+      "sample_id": "D028",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "range-for 循环内修改容器触发迭代器失效"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "range-for 隐式使用迭代器，循环内 push_back 致 realloc，后续迭代 UB，asan 报 heap-use-after-free/infinite-loop。"
+    },
+    {
+      "sample_id": "D029",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "range-for 循环内修改容器触发迭代器失效"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "range-for 隐式使用迭代器，循环内 push_back 致 realloc，后续迭代 UB，asan 报 heap-use-after-free/infinite-loop。"
+    },
+    {
+      "sample_id": "D030",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "容器修改后使用失效的 end() 迭代器"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "保存的 end() 在插入后失效，比较结果是未定义行为但通常不崩溃，asan 检测不到——盲区。"
+    },
+    {
+      "sample_id": "D031",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "容器修改后使用失效的 end() 迭代器"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "保存的 end() 在插入后失效，比较结果是未定义行为但通常不崩溃，asan 检测不到——盲区。"
+    },
+    {
+      "sample_id": "D032",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "容器修改后使用失效的 end() 迭代器"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "保存的 end() 在插入后失效，比较结果是未定义行为但通常不崩溃，asan 检测不到——盲区。"
+    },
+    {
+      "sample_id": "D033",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 10,
+        "function": "Holder::read_bad",
+        "description": "类成员 vector 在成员函数内 push_back 后使用失效迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "类成员容器修改导致成员函数内迭代器失效，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D034",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector erase 后使用失效迭代器（补充变体）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "无 realloc 的逻辑失效，asan 盲区。"
+    },
+    {
+      "sample_id": "D035",
+      "defect_type": "iterator_invalidation",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector erase 后使用失效迭代器（补充变体）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "无 realloc 的逻辑失效，asan 盲区。"
+    },
+    {
+      "sample_id": "D036",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "空 vector 调用 front()"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "空容器 front() 是 UB，但 asan/ubsan 通常不报（读未初始化/越界不一定触发），属于检测器盲区。"
+    },
+    {
+      "sample_id": "D037",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "空 vector 调用 front()"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "空容器 front() 是 UB，但 asan/ubsan 通常不报（读未初始化/越界不一定触发），属于检测器盲区。"
+    },
+    {
+      "sample_id": "D038",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "空 vector 调用 front()"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "空容器 front() 是 UB，但 asan/ubsan 通常不报（读未初始化/越界不一定触发），属于检测器盲区。"
+    },
+    {
+      "sample_id": "D039",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "空 vector 调用 front()"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "空容器 front() 是 UB，但 asan/ubsan 通常不报（读未初始化/越界不一定触发），属于检测器盲区。"
+    },
+    {
+      "sample_id": "D040",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "空 vector 调用 front()"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "空容器 front() 是 UB，但 asan/ubsan 通常不报（读未初始化/越界不一定触发），属于检测器盲区。"
+    },
+    {
+      "sample_id": "D041",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "空 vector 调用 front()"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "空容器 front() 是 UB，但 asan/ubsan 通常不报（读未初始化/越界不一定触发），属于检测器盲区。"
+    },
+    {
+      "sample_id": "D042",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "vector operator[] 越界访问"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "operator[] 不做边界检查，越界访问堆内存，asan 报 heap-buffer-overflow。"
+    },
+    {
+      "sample_id": "D043",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "vector operator[] 越界访问"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "operator[] 不做边界检查，越界访问堆内存，asan 报 heap-buffer-overflow。"
+    },
+    {
+      "sample_id": "D044",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "vector operator[] 越界访问"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "operator[] 不做边界检查，越界访问堆内存，asan 报 heap-buffer-overflow。"
+    },
+    {
+      "sample_id": "D045",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "vector operator[] 越界访问"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "operator[] 不做边界检查，越界访问堆内存，asan 报 heap-buffer-overflow。"
+    },
+    {
+      "sample_id": "D046",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "vector operator[] 越界访问"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "operator[] 不做边界检查，越界访问堆内存，asan 报 heap-buffer-overflow。"
+    },
+    {
+      "sample_id": "D047",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "vector operator[] 越界访问"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "operator[] 不做边界检查，越界访问堆内存，asan 报 heap-buffer-overflow。"
+    },
+    {
+      "sample_id": "D048",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::array operator[] 越界访问"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "std::array 越界访问栈上内存，asan 报 stack-buffer-overflow。"
+    },
+    {
+      "sample_id": "D049",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::array operator[] 越界访问"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "std::array 越界访问栈上内存，asan 报 stack-buffer-overflow。"
+    },
+    {
+      "sample_id": "D050",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::array operator[] 越界访问"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "std::array 越界访问栈上内存，asan 报 stack-buffer-overflow。"
+    },
+    {
+      "sample_id": "D051",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::array operator[] 越界访问"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "std::array 越界访问栈上内存，asan 报 stack-buffer-overflow。"
+    },
+    {
+      "sample_id": "D052",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector<bool> 代理引用在重分配后悬垂"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "vector<bool> 的 operator[] 返回代理对象，持有指向位字的指针；位数超过一机器字后 push_back 必然重分配，代理悬垂，读取为 use-after-free。"
+    },
+    {
+      "sample_id": "D053",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector<bool> 代理引用在重分配后悬垂"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "vector<bool> 的 operator[] 返回代理对象，持有指向位字的指针；位数超过一机器字后 push_back 必然重分配，代理悬垂，读取为 use-after-free。"
+    },
+    {
+      "sample_id": "D054",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "vector<bool> 代理引用在重分配后悬垂"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "vector<bool> 的 operator[] 返回代理对象，持有指向位字的指针；位数超过一机器字后 push_back 必然重分配，代理悬垂，读取为 use-after-free。"
+    },
+    {
+      "sample_id": "D055",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "从空 std::optional 解引用取值"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "对空 optional 解引用是 UB，但 sanitizer 一般无专门检查，编译器警告也通常没有——检测器盲区。"
+    },
+    {
+      "sample_id": "D056",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "从空 std::optional 解引用取值"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "对空 optional 解引用是 UB，但 sanitizer 一般无专门检查，编译器警告也通常没有——检测器盲区。"
+    },
+    {
+      "sample_id": "D057",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "从空 std::optional 解引用取值"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "对空 optional 解引用是 UB，但 sanitizer 一般无专门检查，编译器警告也通常没有——检测器盲区。"
+    },
+    {
+      "sample_id": "D058",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "从空 std::optional 解引用取值"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "对空 optional 解引用是 UB，但 sanitizer 一般无专门检查，编译器警告也通常没有——检测器盲区。"
+    },
+    {
+      "sample_id": "D059",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::variant 取错误 alternative（抛异常）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "std::get 错误类型抛 bad_variant_access，属异常而非 sanitizer 可检——盲区。"
+    },
+    {
+      "sample_id": "D060",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::variant 取错误 alternative（抛异常）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "std::get 错误类型抛 bad_variant_access，属异常而非 sanitizer 可检——盲区。"
+    },
+    {
+      "sample_id": "D061",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::variant 取错误 alternative（抛异常）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "std::get 错误类型抛 bad_variant_access，属异常而非 sanitizer 可检——盲区。"
+    },
+    {
+      "sample_id": "D062",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "std::list erase 后使用已删除节点的迭代器"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "erase 释放节点内存，it 悬垂，解引用为 heap-use-after-free，asan 捕获。"
+    },
+    {
+      "sample_id": "D063",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::deque operator[] 越界访问"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "deque 越界访问，asan 报 heap/container-buffer-overflow。"
+    },
+    {
+      "sample_id": "D064",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "空 vector 调用 back()（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "空容器 back() 是 UB，asan/ubsan 盲区。"
+    },
+    {
+      "sample_id": "D065",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "空 vector 调用 back()（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "空容器 back() 是 UB，asan/ubsan 盲区。"
+    },
+    {
+      "sample_id": "D066",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "空 vector 调用 back()（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "空容器 back() 是 UB，asan/ubsan 盲区。"
+    },
+    {
+      "sample_id": "D067",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "空 vector 调用 back()（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "空容器 back() 是 UB，asan/ubsan 盲区。"
+    },
+    {
+      "sample_id": "D068",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "空 vector 调用 back()（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "空容器 back() 是 UB，asan/ubsan 盲区。"
+    },
+    {
+      "sample_id": "D069",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "空 vector 调用 back()（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "空容器 back() 是 UB，asan/ubsan 盲区。"
+    },
+    {
+      "sample_id": "D070",
+      "defect_type": "stl_container_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "空 vector 调用 back()（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "空容器 back() 是 UB，asan/ubsan 盲区。"
+    },
+    {
+      "sample_id": "D071",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "std::string 修改后使用失效的 c_str() 指针"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "初始串超 SSO，+= 触发 realloc，p 悬垂，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D072",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "std::string 修改后使用失效的 c_str() 指针"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "初始串超 SSO，+= 触发 realloc，p 悬垂，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D073",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "std::string 修改后使用失效的 c_str() 指针"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "初始串超 SSO，+= 触发 realloc，p 悬垂，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D074",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "std::string 修改后使用失效的 c_str() 指针"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "初始串超 SSO，+= 触发 realloc，p 悬垂，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D075",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "std::string 修改后使用失效的 c_str() 指针"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "初始串超 SSO，+= 触发 realloc，p 悬垂，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D076",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "std::string 修改后使用失效的 c_str() 指针"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "初始串超 SSO，+= 触发 realloc，p 悬垂，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D077",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "std::string 修改后使用失效的 c_str() 指针"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "初始串超 SSO，+= 触发 realloc，p 悬垂，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D078",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "通过 data() 指针越界写 std::string 堆缓冲"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "data() 仅保证 [data(), data()+size()) 可写；越过 size 写入为越界，asan 报 heap-buffer-overflow。"
+    },
+    {
+      "sample_id": "D079",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "通过 data() 指针越界写 std::string 堆缓冲"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "data() 仅保证 [data(), data()+size()) 可写；越过 size 写入为越界，asan 报 heap-buffer-overflow。"
+    },
+    {
+      "sample_id": "D080",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "通过 data() 指针越界写 std::string 堆缓冲"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "data() 仅保证 [data(), data()+size()) 可写；越过 size 写入为越界，asan 报 heap-buffer-overflow。"
+    },
+    {
+      "sample_id": "D081",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "从临时 std::string 构造的 string_view 悬垂"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "临时 string 在语句结束析构，sv 悬垂，访问触发 use-after-scope/heap，asan 捕获。"
+    },
+    {
+      "sample_id": "D082",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "从临时 std::string 构造的 string_view 悬垂"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "临时 string 在语句结束析构，sv 悬垂，访问触发 use-after-scope/heap，asan 捕获。"
+    },
+    {
+      "sample_id": "D083",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "从临时 std::string 构造的 string_view 悬垂"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "临时 string 在语句结束析构，sv 悬垂，访问触发 use-after-scope/heap，asan 捕获。"
+    },
+    {
+      "sample_id": "D084",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "从临时 std::string 构造的 string_view 悬垂"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "临时 string 在语句结束析构，sv 悬垂，访问触发 use-after-scope/heap，asan 捕获。"
+    },
+    {
+      "sample_id": "D085",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "从临时 std::string 构造的 string_view 悬垂"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "临时 string 在语句结束析构，sv 悬垂，访问触发 use-after-scope/heap，asan 捕获。"
+    },
+    {
+      "sample_id": "D086",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::string::substr 越界（抛异常）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "substr(pos>size) 抛 out_of_range（良定义异常），sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D087",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::string::substr 越界（抛异常）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "substr(pos>size) 抛 out_of_range（良定义异常），sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D088",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::string::substr 越界（抛异常）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "substr(pos>size) 抛 out_of_range（良定义异常），sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D089",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::string::substr 越界（抛异常）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "substr(pos>size) 抛 out_of_range（良定义异常），sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D090",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 6,
+        "function": "main",
+        "description": "修改字符串字面量（const 转非 const）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "写只读段是 UB，是否崩溃取决于段保护，asan 通常报 SEGV/公交车——多为盲区（可能直接段错误而非 sanitizer 报告）。"
+    },
+    {
+      "sample_id": "D091",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 6,
+        "function": "main",
+        "description": "修改字符串字面量（const 转非 const）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "写只读段是 UB，是否崩溃取决于段保护，asan 通常报 SEGV/公交车——多为盲区（可能直接段错误而非 sanitizer 报告）。"
+    },
+    {
+      "sample_id": "D092",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 6,
+        "function": "main",
+        "description": "修改字符串字面量（const 转非 const）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "写只读段是 UB，是否崩溃取决于段保护，asan 通常报 SEGV/公交车——多为盲区（可能直接段错误而非 sanitizer 报告）。"
+    },
+    {
+      "sample_id": "D093",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 8,
+        "function": "leak",
+        "description": "函数返回指向局部 string 的 string_view（悬垂）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "局部 string 析构后 string_view 悬垂，访问触发 use-after-scope，asan 捕获。"
+    },
+    {
+      "sample_id": "D094",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "长串字面量构造时 capacity==size，append 后必然 realloc，sv 指向已释放缓冲；在插桩代码中遍历读取，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D095",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "长串字面量构造时 capacity==size，append 后必然 realloc，sv 指向已释放缓冲；在插桩代码中遍历读取，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D096",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "长串字面量构造时 capacity==size，append 后必然 realloc，sv 指向已释放缓冲；在插桩代码中遍历读取，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D097",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "长串字面量构造时 capacity==size，append 后必然 realloc，sv 指向已释放缓冲；在插桩代码中遍历读取，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D098",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "长串字面量构造时 capacity==size，append 后必然 realloc，sv 指向已释放缓冲；在插桩代码中遍历读取，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D099",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "长串字面量构造时 capacity==size，append 后必然 realloc，sv 指向已释放缓冲；在插桩代码中遍历读取，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D100",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "长串字面量构造时 capacity==size，append 后必然 realloc，sv 指向已释放缓冲；在插桩代码中遍历读取，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D101",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "长串字面量构造时 capacity==size，append 后必然 realloc，sv 指向已释放缓冲；在插桩代码中遍历读取，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D102",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "长串字面量构造时 capacity==size，append 后必然 realloc，sv 指向已释放缓冲；在插桩代码中遍历读取，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D103",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "长串字面量构造时 capacity==size，append 后必然 realloc，sv 指向已释放缓冲；在插桩代码中遍历读取，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D104",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "长串字面量构造时 capacity==size，append 后必然 realloc，sv 指向已释放缓冲；在插桩代码中遍历读取，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D105",
+      "defect_type": "string_ub",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "长串字面量构造时 capacity==size，append 后必然 realloc，sv 指向已释放缓冲；在插桩代码中遍历读取，asan 报 heap-use-after-free。"
+    },
+    {
+      "sample_id": "D106",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::sort 比较器违反严格弱序（非传递）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "比较器 (a%2)<(b%2) 破坏传递性（偶<奇、奇<偶，但非偶<偶），不满足严格弱序，sort 行为未定义；实测可终止但结果无序，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D107",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::sort 比较器违反严格弱序（非传递）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "比较器 (a%2)<(b%2) 破坏传递性（偶<奇、奇<偶，但非偶<偶），不满足严格弱序，sort 行为未定义；实测可终止但结果无序，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D108",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::sort 比较器违反严格弱序（非传递）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "比较器 (a%2)<(b%2) 破坏传递性（偶<奇、奇<偶，但非偶<偶），不满足严格弱序，sort 行为未定义；实测可终止但结果无序，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D109",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::sort 比较器违反严格弱序（非传递）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "比较器 (a%2)<(b%2) 破坏传递性（偶<奇、奇<偶，但非偶<偶），不满足严格弱序，sort 行为未定义；实测可终止但结果无序，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D110",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::sort 比较器违反严格弱序（非传递）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "比较器 (a%2)<(b%2) 破坏传递性（偶<奇、奇<偶，但非偶<偶），不满足严格弱序，sort 行为未定义；实测可终止但结果无序，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D111",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::remove 后未调用 erase"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "remove 只移动元素不删除，size 不变，属逻辑错误，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D112",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::remove 后未调用 erase"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "remove 只移动元素不删除，size 不变，属逻辑错误，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D113",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::remove 后未调用 erase"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "remove 只移动元素不删除，size 不变，属逻辑错误，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D114",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::remove 后未调用 erase"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "remove 只移动元素不删除，size 不变，属逻辑错误，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D115",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::remove 后未调用 erase"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "remove 只移动元素不删除，size 不变，属逻辑错误，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D116",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::remove 后未调用 erase"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "remove 只移动元素不删除，size 不变，属逻辑错误，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D117",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::copy 源与目标区间重叠（UB）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "重叠 copy 是 UB，行为依实现；asan 通常无重叠检测——盲区（部分实现可用 memmove 掩盖）。"
+    },
+    {
+      "sample_id": "D118",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::copy 源与目标区间重叠（UB）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "重叠 copy 是 UB，行为依实现；asan 通常无重叠检测——盲区（部分实现可用 memmove 掩盖）。"
+    },
+    {
+      "sample_id": "D119",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::copy 源与目标区间重叠（UB）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "重叠 copy 是 UB，行为依实现；asan 通常无重叠检测——盲区（部分实现可用 memmove 掩盖）。"
+    },
+    {
+      "sample_id": "D120",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::copy 源与目标区间重叠（UB）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "重叠 copy 是 UB，行为依实现；asan 通常无重叠检测——盲区（部分实现可用 memmove 掩盖）。"
+    },
+    {
+      "sample_id": "D121",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "std::copy 源与目标区间重叠（UB）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "重叠 copy 是 UB，行为依实现；asan 通常无重叠检测——盲区（部分实现可用 memmove 掩盖）。"
+    },
+    {
+      "sample_id": "D122",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "std::transform 目标区间容量不足（越界写入）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "out 容量小于 in，写入越界堆内存，asan 报 heap-buffer-overflow。"
+    },
+    {
+      "sample_id": "D123",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "std::transform 目标区间容量不足（越界写入）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "out 容量小于 in，写入越界堆内存，asan 报 heap-buffer-overflow。"
+    },
+    {
+      "sample_id": "D124",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "std::transform 目标区间容量不足（越界写入）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "out 容量小于 in，写入越界堆内存，asan 报 heap-buffer-overflow。"
+    },
+    {
+      "sample_id": "D125",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "std::transform 目标区间容量不足（越界写入）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "out 容量小于 in，写入越界堆内存，asan 报 heap-buffer-overflow。"
+    },
+    {
+      "sample_id": "D126",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 9,
+        "function": "main",
+        "description": "std::transform 目标区间容量不足（越界写入）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "out 容量小于 in，写入越界堆内存，asan 报 heap-buffer-overflow。"
+    },
+    {
+      "sample_id": "D127",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::accumulate 初始值类型错误导致截断"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "以 int 0 为初值使 double 累加被截断，是逻辑错误，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D128",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::accumulate 初始值类型错误导致截断"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "以 int 0 为初值使 double 累加被截断，是逻辑错误，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D129",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::accumulate 初始值类型错误导致截断"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "以 int 0 为初值使 double 累加被截断，是逻辑错误，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D130",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::accumulate 初始值类型错误导致截断"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "以 int 0 为初值使 double 累加被截断，是逻辑错误，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D131",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::lower_bound 用于未排序区间"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "lower_bound 要求有序，未排序时结果无意义，属逻辑错误——盲区。"
+    },
+    {
+      "sample_id": "D132",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::lower_bound 用于未排序区间"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "lower_bound 要求有序，未排序时结果无意义，属逻辑错误——盲区。"
+    },
+    {
+      "sample_id": "D133",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::lower_bound 用于未排序区间"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "lower_bound 要求有序，未排序时结果无意义，属逻辑错误——盲区。"
+    },
+    {
+      "sample_id": "D134",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::unique 后未调用 erase"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "unique 只把重复元素移到尾部，size 不变，逻辑错误——盲区。"
+    },
+    {
+      "sample_id": "D135",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::merge 输入区间未排序"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "merge 要求两区间有序，未排序结果错误，逻辑错误——盲区。"
+    },
+    {
+      "sample_id": "D136",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::remove_if 后未 erase（补充）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "逻辑错误，sanitizer 盲区。"
+    },
+    {
+      "sample_id": "D137",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::remove_if 后未 erase（补充）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "逻辑错误，sanitizer 盲区。"
+    },
+    {
+      "sample_id": "D138",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::remove_if 后未 erase（补充）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "逻辑错误，sanitizer 盲区。"
+    },
+    {
+      "sample_id": "D139",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::remove_if 后未 erase（补充）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "逻辑错误，sanitizer 盲区。"
+    },
+    {
+      "sample_id": "D140",
+      "defect_type": "algorithm_misuse",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "std::remove_if 后未 erase（补充）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "逻辑错误，sanitizer 盲区。"
+    },
+    {
+      "sample_id": "D141",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 6,
+        "function": "main",
+        "description": "unique_ptr 用默认 delete 管理 new[] 数组"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "数组需用 delete[]，默认 delete 导致 mismatched-free，asan 报 new-delete-type-mismatch。"
+    },
+    {
+      "sample_id": "D142",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 6,
+        "function": "main",
+        "description": "unique_ptr 用默认 delete 管理 new[] 数组"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "数组需用 delete[]，默认 delete 导致 mismatched-free，asan 报 new-delete-type-mismatch。"
+    },
+    {
+      "sample_id": "D143",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 6,
+        "function": "main",
+        "description": "unique_ptr 用默认 delete 管理 new[] 数组"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "数组需用 delete[]，默认 delete 导致 mismatched-free，asan 报 new-delete-type-mismatch。"
+    },
+    {
+      "sample_id": "D144",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 6,
+        "function": "main",
+        "description": "unique_ptr 用默认 delete 管理 new[] 数组"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "数组需用 delete[]，默认 delete 导致 mismatched-free，asan 报 new-delete-type-mismatch。"
+    },
+    {
+      "sample_id": "D145",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 6,
+        "function": "main",
+        "description": "unique_ptr 用默认 delete 管理 new[] 数组"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "数组需用 delete[]，默认 delete 导致 mismatched-free，asan 报 new-delete-type-mismatch。"
+    },
+    {
+      "sample_id": "D146",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 6,
+        "function": "main",
+        "description": "unique_ptr 用默认 delete 管理 new[] 数组"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "数组需用 delete[]，默认 delete 导致 mismatched-free，asan 报 new-delete-type-mismatch。"
+    },
+    {
+      "sample_id": "D147",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "从同一裸指针构造多个独立 shared_ptr（双重释放）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "a、b 各自持有控制块，析构时两次 delete 同一指针，asan 报 double-free。"
+    },
+    {
+      "sample_id": "D148",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "从同一裸指针构造多个独立 shared_ptr（双重释放）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "a、b 各自持有控制块，析构时两次 delete 同一指针，asan 报 double-free。"
+    },
+    {
+      "sample_id": "D149",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "从同一裸指针构造多个独立 shared_ptr（双重释放）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "a、b 各自持有控制块，析构时两次 delete 同一指针，asan 报 double-free。"
+    },
+    {
+      "sample_id": "D150",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "从同一裸指针构造多个独立 shared_ptr（双重释放）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "a、b 各自持有控制块，析构时两次 delete 同一指针，asan 报 double-free。"
+    },
+    {
+      "sample_id": "D151",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "对 shared_ptr::get() 返回指针手动 delete"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "shared_ptr 仍管理该指针，手动 delete 后析构再 delete，asan 报 double-free。"
+    },
+    {
+      "sample_id": "D152",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "对 shared_ptr::get() 返回指针手动 delete"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "shared_ptr 仍管理该指针，手动 delete 后析构再 delete，asan 报 double-free。"
+    },
+    {
+      "sample_id": "D153",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "对 shared_ptr::get() 返回指针手动 delete"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "shared_ptr 仍管理该指针，手动 delete 后析构再 delete，asan 报 double-free。"
+    },
+    {
+      "sample_id": "D154",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "std::shared_ptr 循环引用导致内存泄漏"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "循环引用使引用计数不归零，对象永不释放；asan 默认不报告泄漏（需 detect_leaks=1）——检测器盲区。"
+    },
+    {
+      "sample_id": "D155",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "std::shared_ptr 循环引用导致内存泄漏"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "循环引用使引用计数不归零，对象永不释放；asan 默认不报告泄漏（需 detect_leaks=1）——检测器盲区。"
+    },
+    {
+      "sample_id": "D156",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "std::shared_ptr 循环引用导致内存泄漏"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "循环引用使引用计数不归零，对象永不释放；asan 默认不报告泄漏（需 detect_leaks=1）——检测器盲区。"
+    },
+    {
+      "sample_id": "D157",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 11,
+        "function": "main",
+        "description": "std::shared_ptr 循环引用导致内存泄漏"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "循环引用使引用计数不归零，对象永不释放；asan 默认不报告泄漏（需 detect_leaks=1）——检测器盲区。"
+    },
+    {
+      "sample_id": "D158",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 7,
+        "function": "Bad::Bad",
+        "description": "在构造函数中调用 shared_from_this"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "构造期间对象尚未被任何 shared_ptr 拥有，shared_from_this 抛 bad_weak_ptr（异常）或 UB——sanitizer 盲区。"
+    },
+    {
+      "sample_id": "D159",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 7,
+        "function": "Bad::Bad",
+        "description": "在构造函数中调用 shared_from_this"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "构造期间对象尚未被任何 shared_ptr 拥有，shared_from_this 抛 bad_weak_ptr（异常）或 UB——sanitizer 盲区。"
+    },
+    {
+      "sample_id": "D160",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 7,
+        "function": "Bad::Bad",
+        "description": "在构造函数中调用 shared_from_this"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "构造期间对象尚未被任何 shared_ptr 拥有，shared_from_this 抛 bad_weak_ptr（异常）或 UB——sanitizer 盲区。"
+    },
+    {
+      "sample_id": "D161",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 10,
+        "function": "main",
+        "description": "weak_ptr 未检查 expired 直接解引用 lock() 结果"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "lock() 返回空指针，解引用为空指针解引用，asan 报 SEGV/nullptr-deref。"
+    },
+    {
+      "sample_id": "D162",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 10,
+        "function": "main",
+        "description": "weak_ptr 未检查 expired 直接解引用 lock() 结果"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "lock() 返回空指针，解引用为空指针解引用，asan 报 SEGV/nullptr-deref。"
+    },
+    {
+      "sample_id": "D163",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 10,
+        "function": "main",
+        "description": "weak_ptr 未检查 expired 直接解引用 lock() 结果"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "catch",
+        "compiler-warn": "miss"
+      },
+      "notes": "lock() 返回空指针，解引用为空指针解引用，asan 报 SEGV/nullptr-deref。"
+    },
+    {
+      "sample_id": "D164",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "unique_ptr::release() 后未接管裸指针"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "release() 放弃所有权但不释放，返回的裸指针未被接管即泄漏；asan 默认不报泄漏——盲区。"
+    },
+    {
+      "sample_id": "D165",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "多 shared_ptr 共享同一裸指针（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "双重释放，asan 报 double-free。"
+    },
+    {
+      "sample_id": "D166",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "多 shared_ptr 共享同一裸指针（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "双重释放，asan 报 double-free。"
+    },
+    {
+      "sample_id": "D167",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "多 shared_ptr 共享同一裸指针（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "双重释放，asan 报 double-free。"
+    },
+    {
+      "sample_id": "D168",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "多 shared_ptr 共享同一裸指针（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "双重释放，asan 报 double-free。"
+    },
+    {
+      "sample_id": "D169",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "多 shared_ptr 共享同一裸指针（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "双重释放，asan 报 double-free。"
+    },
+    {
+      "sample_id": "D170",
+      "defect_type": "smart_pointer",
+      "defect_location": {
+        "line": 8,
+        "function": "main",
+        "description": "多 shared_ptr 共享同一裸指针（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "双重释放，asan 报 double-free。"
+    },
+    {
+      "sample_id": "D171",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "make",
+        "description": "lambda 引用捕获局部变量并在作用域外调用"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "返回的 lambda 引用已销毁的局部变量，调用时 use-after-scope，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D172",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "make",
+        "description": "lambda 引用捕获局部变量并在作用域外调用"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "返回的 lambda 引用已销毁的局部变量，调用时 use-after-scope，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D173",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "make",
+        "description": "lambda 引用捕获局部变量并在作用域外调用"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "返回的 lambda 引用已销毁的局部变量，调用时 use-after-scope，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D174",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "make",
+        "description": "lambda 引用捕获局部变量并在作用域外调用"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "返回的 lambda 引用已销毁的局部变量，调用时 use-after-scope，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D175",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "make",
+        "description": "lambda 引用捕获局部变量并在作用域外调用"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "返回的 lambda 引用已销毁的局部变量，调用时 use-after-scope，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D176",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "make",
+        "description": "lambda 引用捕获局部变量并在作用域外调用"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "返回的 lambda 引用已销毁的局部变量，调用时 use-after-scope，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D177",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 8,
+        "function": "Widget::bind",
+        "description": "lambda 捕获 this，对象销毁后仍调用"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "捕获的 this 指向已释放对象，调用时 heap-use-after-free，asan 捕获。"
+    },
+    {
+      "sample_id": "D178",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 8,
+        "function": "Widget::bind",
+        "description": "lambda 捕获 this，对象销毁后仍调用"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "捕获的 this 指向已释放对象，调用时 heap-use-after-free，asan 捕获。"
+    },
+    {
+      "sample_id": "D179",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 8,
+        "function": "Widget::bind",
+        "description": "lambda 捕获 this，对象销毁后仍调用"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "捕获的 this 指向已释放对象，调用时 heap-use-after-free，asan 捕获。"
+    },
+    {
+      "sample_id": "D180",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 8,
+        "function": "Widget::bind",
+        "description": "lambda 捕获 this，对象销毁后仍调用"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "捕获的 this 指向已释放对象，调用时 heap-use-after-free，asan 捕获。"
+    },
+    {
+      "sample_id": "D181",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 6,
+        "function": "main",
+        "description": "按值捕获 lambda 修改副本，原变量不变"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "按值捕获得到副本，修改不影响原变量，属逻辑错误，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D182",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 6,
+        "function": "main",
+        "description": "按值捕获 lambda 修改副本，原变量不变"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "按值捕获得到副本，修改不影响原变量，属逻辑错误，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D183",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 6,
+        "function": "main",
+        "description": "按值捕获 lambda 修改副本，原变量不变"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "按值捕获得到副本，修改不影响原变量，属逻辑错误，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D184",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 6,
+        "function": "main",
+        "description": "按值捕获 lambda 修改副本，原变量不变"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "按值捕获得到副本，修改不影响原变量，属逻辑错误，sanitizer 不报——盲区。"
+    },
+    {
+      "sample_id": "D185",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "mk",
+        "description": "默认 [&] 捕获导致悬垂引用"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "默认引用捕获局部变量，返回后悬垂，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D186",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "mk",
+        "description": "默认 [&] 捕获导致悬垂引用"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "默认引用捕获局部变量，返回后悬垂，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D187",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "mk",
+        "description": "默认 [&] 捕获导致悬垂引用"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "默认引用捕获局部变量，返回后悬垂，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D188",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "mk",
+        "description": "lambda 按值捕获指针，所指对象已释放"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "捕获的指针所指对象在 lambda 返回前被 delete，调用时 use-after-free，asan 捕获。"
+    },
+    {
+      "sample_id": "D189",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "mk",
+        "description": "lambda 按值捕获指针，所指对象已释放"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "捕获的指针所指对象在 lambda 返回前被 delete，调用时 use-after-free，asan 捕获。"
+    },
+    {
+      "sample_id": "D190",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "mk",
+        "description": "lambda 按值捕获指针，所指对象已释放"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "捕获的指针所指对象在 lambda 返回前被 delete，调用时 use-after-free，asan 捕获。"
+    },
+    {
+      "sample_id": "D191",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "main",
+        "description": "递归 lambda 按值捕获尚未初始化的自身（空副本）"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan",
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "按值捕获时复制的是仍为空的 std::function，递归调用抛 bad_function_call；应以 [&] 捕获。是真实缺陷但非 sanitizer 可检——盲区。"
+    },
+    {
+      "sample_id": "D192",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "mk",
+        "description": "lambda 引用捕获局部变量（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "悬垂引用，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D193",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "mk",
+        "description": "lambda 引用捕获局部变量（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "悬垂引用，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D194",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "mk",
+        "description": "lambda 引用捕获局部变量（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "悬垂引用，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D195",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "mk",
+        "description": "lambda 引用捕获局部变量（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "悬垂引用，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D196",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "mk",
+        "description": "lambda 引用捕获局部变量（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "悬垂引用，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D197",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "mk",
+        "description": "lambda 引用捕获局部变量（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "悬垂引用，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D198",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "mk",
+        "description": "lambda 引用捕获局部变量（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "悬垂引用，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D199",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "mk",
+        "description": "lambda 引用捕获局部变量（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "悬垂引用，asan 报 stack-use-after-return。"
+    },
+    {
+      "sample_id": "D200",
+      "defect_type": "lambda_capture",
+      "defect_location": {
+        "line": 7,
+        "function": "mk",
+        "description": "lambda 引用捕获局部变量（补充）"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch",
+        "ubsan": "miss",
+        "compiler-warn": "miss"
+      },
+      "notes": "悬垂引用，asan 报 stack-use-after-return。"
+    }
+  ]
+}

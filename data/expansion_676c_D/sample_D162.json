@@ -1,0 +1,47 @@
+{
+  "sample_id": "D162",
+  "defect_type": "smart_pointer",
+  "defect_location": {
+    "line": 10,
+    "function": "main",
+    "description": "weak_ptr 未检查 expired 直接解引用 lock() 结果"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan",
+    "ubsan"
+  ],
+  "trigger_condition": "运行时空指针解引用",
+  "notes": "lock() 返回空指针，解引用为空指针解引用，asan 报 SEGV/nullptr-deref。",
+  "generator": "676c-expD-generate_D",
+  "verification": {
+    "syntax_rc": 0,
+    "syntax_warnings": [],
+    "per_kind": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==38816==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x5555555565e6 bp 0x7ffffff; -O2(rc=1) AddressSanitizer:DEADLYSIGNAL ========================================"
+      },
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=139) /usr/include/c++/13/bits/shared_ptr_base.h:1350:16: runtime error: reference binding to null pointer of type 'element_type' /mnt/c/Users/ASUS/AppData/Local/Temp/tmpk9bouitt/sample_D162.cpp:10:14: runt; -O2(rc=139) /usr/include/c++/13/bits/shared_ptr_base.h:1350:16: runtime error"
+      },
+      "compiler-warn": {
+        "verdict": "miss",
+        "note": "无告警"
+      }
+    },
+    "reconcile": "n/a",
+    "actual_verdict": "catch",
+    "actual_detectors": [
+      "asan",
+      "ubsan"
+    ],
+    "compiler_warn": "miss",
+    "pooled": true,
+    "stage": "pass",
+    "reason": ""
+  }
+}
