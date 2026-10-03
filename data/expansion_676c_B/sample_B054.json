@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B054",
+  "defect_type": "resource_leak",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "realloc 后丢弃旧指针 p（移动即泄漏），LSan 报告。作用域内 new 未释放；本机 LSan 两档均未报（可达性/栈槽残留盲区），诚实标 miss。"
+}

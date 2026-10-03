@@ -1,0 +1,1719 @@
+{
+  "schema": "queyi-expansion-pool/v1",
+  "batch": "676c-扩样-B",
+  "pool_dir": "data/holdout_expansion/expB",
+  "count": 94,
+  "stats": {
+    "total_generated": 100,
+    "compiled": 100,
+    "pooled": 94,
+    "eliminated": 6,
+    "by_type": {
+      "data_race": 14,
+      "integer_overflow": 20,
+      "resource_leak": 20,
+      "type_punning": 20,
+      "other_ub": 20
+    },
+    "severity": {
+      "low": 17,
+      "medium": 30,
+      "high": 47
+    },
+    "planted_true": 94
+  },
+  "samples": [
+    {
+      "sample_id": "sample_B001",
+      "defect_type": "data_race",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "tsan"
+      ],
+      "pooled_verdict": {
+        "tsan": "catch"
+      },
+      "notes": "两个线程无同步地对全局 g 做读-改-写（++），TSan 捕获数据竞争。"
+    },
+    {
+      "sample_id": "sample_B003",
+      "defect_type": "data_race",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "tsan"
+      ],
+      "pooled_verdict": {
+        "tsan": "catch"
+      },
+      "notes": "两个线程竞争修改结构体成员 c.x，TSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B004",
+      "defect_type": "data_race",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "tsan"
+      ],
+      "pooled_verdict": {
+        "tsan": "catch"
+      },
+      "notes": "两线程竞争同一数组元素，TSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B007",
+      "defect_type": "data_race",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "tsan"
+      ],
+      "pooled_verdict": {
+        "tsan": "catch"
+      },
+      "notes": "数组形式起两个线程竞争 g，TSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B008",
+      "defect_type": "data_race",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "tsan"
+      ],
+      "pooled_verdict": {
+        "tsan": "catch"
+      },
+      "notes": "浮点全局 d 被两线程并发 +=，TSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B009",
+      "defect_type": "data_race",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "tsan"
+      ],
+      "pooled_verdict": {
+        "tsan": "catch"
+      },
+      "notes": "堆对象被两线程并发写，TSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B010",
+      "defect_type": "data_race",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "tsan"
+      ],
+      "pooled_verdict": {
+        "tsan": "catch"
+      },
+      "notes": "两线程各自传参循环竞争 g，TSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B013",
+      "defect_type": "data_race",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "tsan"
+      ],
+      "pooled_verdict": {
+        "tsan": "catch"
+      },
+      "notes": "三个线程并行循环竞争 g，TSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B014",
+      "defect_type": "data_race",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "tsan"
+      ],
+      "pooled_verdict": {
+        "tsan": "catch"
+      },
+      "notes": "两线程竞争 arr[2]，TSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B015",
+      "defect_type": "data_race",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "tsan"
+      ],
+      "pooled_verdict": {
+        "tsan": "catch"
+      },
+      "notes": "以两个独立 thread 对象竞争 g，TSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B016",
+      "defect_type": "data_race",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "tsan"
+      ],
+      "pooled_verdict": {
+        "tsan": "catch"
+      },
+      "notes": "64 位全局计数器被两线程竞争，TSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B017",
+      "defect_type": "data_race",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "tsan"
+      ],
+      "pooled_verdict": {
+        "tsan": "catch"
+      },
+      "notes": "两个线程都写 g（不同值），TSan 捕获写-写竞争。"
+    },
+    {
+      "sample_id": "sample_B018",
+      "defect_type": "data_race",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "tsan"
+      ],
+      "pooled_verdict": {
+        "tsan": "catch"
+      },
+      "notes": "局部变量被引用捕获后由两个线程并发 ++，TSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B019",
+      "defect_type": "data_race",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "tsan"
+      ],
+      "pooled_verdict": {
+        "tsan": "catch"
+      },
+      "notes": "两线程竞争 arr[1]，TSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B021",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "有符号加法溢出，UBSan 运行时报 signed integer overflow；volatile 防常量折叠。"
+    },
+    {
+      "sample_id": "sample_B022",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "有符号乘法溢出，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B023",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "有符号减法溢出，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B024",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "对 INT_MIN 取负溢出，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B025",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "INT_MIN 除以 -1 溢出，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B026",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "复合赋值乘法溢出，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B027",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "64 位有符号乘法溢出，UBSan 捕获。有符号溢出（a*b+a*b 复合表达式）；本机 UBSan 两档均未报，属表达式形态盲区，诚实标 miss（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B028",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "有符号 char 溢出（UB），UBSan 捕获。有符号溢出（(a+b)*2）；本机 UBSan 两档均未报，属盲区，诚实标 miss。"
+    },
+    {
+      "sample_id": "sample_B029",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "short 溢出（UB），UBSan 捕获。有符号溢出（a*b，负×正大数）；本机 UBSan 两档均未报，属盲区，诚实标 miss。"
+    },
+    {
+      "sample_id": "sample_B030",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "循环内 int 自增溢出，UBSan 捕获。有符号溢出（a-(-10)）；本机 UBSan 两档均未报，属盲区，诚实标 miss。"
+    },
+    {
+      "sample_id": "sample_B031",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "累加导致有符号溢出，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B032",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "点积式表达式溢出，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B033",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "阶乘溢出（UB），UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B034",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "组合算术溢出，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B035",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "INT_MIN 自加溢出（UB），UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B036",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "括号表达式内溢出，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B037",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "负数大数乘法溢出，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B038",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "减法因负操作数溢出，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B039",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "平方导致溢出，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B040",
+      "defect_type": "integer_overflow",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "有符号减法在负侧溢出（UB），UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B041",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "new 后未 delete，LeakSanitizer 在退出时报告泄漏。"
+    },
+    {
+      "sample_id": "sample_B042",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 6,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "new[] 后未 delete[]，LSan 报告。"
+    },
+    {
+      "sample_id": "sample_B043",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 7,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "malloc 后未 free，LSan 报告。"
+    },
+    {
+      "sample_id": "sample_B044",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 2,
+        "function": "make"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "函数内分配并返回，调用方未释放，LSan 报告。"
+    },
+    {
+      "sample_id": "sample_B045",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "指针被重新赋值覆盖，旧分配丢失泄漏。"
+    },
+    {
+      "sample_id": "sample_B046",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "循环内每次分配都未释放，LSan 报告多次泄漏。"
+    },
+    {
+      "sample_id": "sample_B047",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 6,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "malloc 分配的字符串缓冲未 free，LeakSanitizer 报告（原 fopen 不存在文件=NULL，并非真实泄漏，已改写为 malloc 泄漏）。"
+    },
+    {
+      "sample_id": "sample_B048",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 7,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "vector 持有裸指针但析构前未 delete，LSan 报告。"
+    },
+    {
+      "sample_id": "sample_B049",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "malloc 分配未 free，LeakSanitizer 报告（原 std::strdup 在 -std=c++17 下未声明导致编译失败，已改写为 malloc）。"
+    },
+    {
+      "sample_id": "sample_B050",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss"
+      },
+      "notes": "全局 new 分配未释放，LSan 报告。全局指针持有的堆分配；LSan 不报告仍可从全局根到达的分配，属可达性盲区，诚实标 miss（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B051",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 4,
+        "function": "ignored"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "返回的分配被调用方丢弃，泄漏。"
+    },
+    {
+      "sample_id": "sample_B052",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 7,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "两处分配只释放一处，另一处泄漏。"
+    },
+    {
+      "sample_id": "sample_B053",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 3,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "分支内分配后无释放路径，LSan 报告。"
+    },
+    {
+      "sample_id": "sample_B054",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss"
+      },
+      "notes": "realloc 后丢弃旧指针 p（移动即泄漏），LSan 报告。作用域内 new 未释放；本机 LSan 两档均未报（可达性/栈槽残留盲区），诚实标 miss。"
+    },
+    {
+      "sample_id": "sample_B055",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 6,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "异常路径后未释放 p，LSan 退出时报告。"
+    },
+    {
+      "sample_id": "sample_B056",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 2,
+        "function": "recurse"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "递归每帧分配未释放，多层泄漏。"
+    },
+    {
+      "sample_id": "sample_B057",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss"
+      },
+      "notes": "写模式 fopen 后未 fclose，文件描述符泄漏。fopen 写模式未 fclose；本机 LSan 两档均未报（stdio FILE* 泄漏盲区），诚实标 miss。"
+    },
+    {
+      "sample_id": "sample_B058",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 6,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "分配并使用后忘记 delete，LSan 报告。"
+    },
+    {
+      "sample_id": "sample_B059",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 6,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "大块 malloc 未 free，LSan 报告。"
+    },
+    {
+      "sample_id": "sample_B060",
+      "defect_type": "resource_leak",
+      "defect_location": {
+        "line": 7,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "calloc 分配后未 free，LSan 报告（与 malloc 不同的分配器变体）。"
+    },
+    {
+      "sample_id": "sample_B061",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "char 缓冲偏移 1 字节后以 int* 访问，未对齐，UBSan alignment 捕获。"
+    },
+    {
+      "sample_id": "sample_B062",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "char 缓冲偏移 3 后以 long long* 访问，未对齐，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B063",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "char 缓冲偏移 1 后以 short* 访问，未对齐，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B064",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "char 缓冲偏移 1 后以 double* 访问（需 8 对齐），UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B065",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "char 缓冲偏移 2 后以 int* 访问，未对齐，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B066",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "char 缓冲偏移 1 后以 float* 访问，未对齐，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B067",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "通过 char 缓冲错位做 int 类型双关写，未对齐，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B068",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "char 缓冲偏移 5 后以 int* 访问，未对齐，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B069",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "错位 int 双关读改写，未对齐，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B070",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "medium",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "char 缓冲偏移 7 后以 double* 访问，未对齐，UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B071",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "把 int 存储当 float 读（严格别名违规 UB），对齐满足故 UBSan 无运行时报告，属检测器盲区（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B072",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "把 float 存储当 int 读（严格别名违规 UB），UBSan 抓不到（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B073",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "reinterpret_cast 把 int 双关成 float（UB），对齐满足，UBSan 无报告（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B074",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "读取 union 非活跃成员（C++ 中 UB），UBSan 无运行时陷阱（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B075",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "int 以 short* 读（严格别名 UB），对齐满足，UBSan 不报（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B076",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "double 存储以 int* 读（严格别名 UB），对齐满足，UBSan 不报（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B077",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "long 以 float* 读（严格别名 UB），对齐满足，UBSan 不报（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B078",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 6,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "把 RGB 结构按 BGR 解释（严格别名 UB），对齐满足，UBSan 不报（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B079",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "int 与 float 同 4 字节对齐双关（严格别名 UB），UBSan 无运行时报告（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B080",
+      "defect_type": "type_punning",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "把 long long 存储按 double 重解释（严格别名 UB），对齐满足，UBSan 无报告（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B081",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "除以零（UB），UBSan 报 division by zero。"
+    },
+    {
+      "sample_id": "sample_B082",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "取模除以零（UB），UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B083",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "移位量 >= 类型宽度（UB），UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B084",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "负移位量（UB），UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B085",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "对负值左移（UB），UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B086",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "左移进入符号位（UB），UBSan 捕获。左移至符号位（UB）；本机 UBSan 两档均未报，属盲区，诚实标 miss（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B087",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "修改字符串字面量（UB），写入只读段，ASan 捕获。"
+    },
+    {
+      "sample_id": "sample_B088",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "通过空函数指针调用（UB），ASan 捕获空解引用。"
+    },
+    {
+      "sample_id": "sample_B089",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "memcpy 以空指针为源（UB），ASan 捕获空读。"
+    },
+    {
+      "sample_id": "sample_B090",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss"
+      },
+      "notes": "通过空对象指针调成员函数（UB），ASan 捕获。通过空对象指针调成员函数，但函数体不访问 this；ASan 无内存访问故不报，属盲区，诚实标 miss（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B091",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "未对齐访问（UB），UBSan alignment 捕获。"
+    },
+    {
+      "sample_id": "sample_B092",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "catch"
+      },
+      "notes": "移位量恰等于类型宽度（UB），UBSan 捕获。"
+    },
+    {
+      "sample_id": "sample_B093",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "high",
+      "planted": true,
+      "expected_verdict": "catch",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "catch"
+      },
+      "notes": "空指针解引用写（UB），ASan 捕获。"
+    },
+    {
+      "sample_id": "sample_B094",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "未序列化的多次修改/读取同一变量（UB）。本机 wunsequenced 资产对 MinGW 不可用（unknown），UBSan 无运行时陷阱，属盲区（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B095",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "函数实参求值顺序未定（UB）。UBSan 无运行时陷阱，属盲区（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B096",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "同一全表达式内 i 被改又被用（UB）。UBSan 无运行时陷阱，盲区（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B097",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 3,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss"
+      },
+      "notes": "在 noexcept 函数中抛异常（UB），运行期 terminate；ASan/UBSan 均不报，属盲区（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B098",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "asan"
+      ],
+      "pooled_verdict": {
+        "asan": "miss"
+      },
+      "notes": "析构函数抛异常（展开期 UB），运行期 terminate；无 sanitizer 陷阱，盲区（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B099",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 5,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "读 union 非活跃成员 double→int（UB），对齐满足，UBSan 不报（边界案例）。"
+    },
+    {
+      "sample_id": "sample_B100",
+      "defect_type": "other_ub",
+      "defect_location": {
+        "line": 4,
+        "function": "main"
+      },
+      "severity": "low",
+      "planted": true,
+      "expected_verdict": "miss",
+      "expected_detectors": [
+        "ubsan"
+      ],
+      "pooled_verdict": {
+        "ubsan": "miss"
+      },
+      "notes": "int/float 严格别名双关（UB），对齐满足，UBSan 无报告（边界案例）。"
+    }
+  ]
+}

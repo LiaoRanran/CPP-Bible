@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B073",
+  "defect_type": "type_punning",
+  "defect_location": {
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "reinterpret_cast 把 int 双关成 float（UB），对齐满足，UBSan 无报告（边界案例）。"
+}

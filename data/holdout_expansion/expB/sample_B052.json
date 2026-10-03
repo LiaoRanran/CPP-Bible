@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B052",
+  "defect_type": "resource_leak",
+  "defect_location": {
+    "line": 7,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "两处分配只释放一处，另一处泄漏。"
+}

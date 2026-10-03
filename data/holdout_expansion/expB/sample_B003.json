@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B003",
+  "defect_type": "data_race",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "notes": "两个线程竞争修改结构体成员 c.x，TSan 捕获。"
+}

@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B089",
+  "defect_type": "other_ub",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "memcpy 以空指针为源（UB），ASan 捕获空读。"
+}

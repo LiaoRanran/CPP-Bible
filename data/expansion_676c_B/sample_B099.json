@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B099",
+  "defect_type": "other_ub",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "读 union 非活跃成员 double→int（UB），对齐满足，UBSan 不报（边界案例）。"
+}

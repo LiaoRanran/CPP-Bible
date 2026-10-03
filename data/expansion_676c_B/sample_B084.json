@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B084",
+  "defect_type": "other_ub",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "负移位量（UB），UBSan 捕获。"
+}

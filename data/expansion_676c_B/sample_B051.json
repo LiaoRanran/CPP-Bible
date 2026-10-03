@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B051",
+  "defect_type": "resource_leak",
+  "defect_location": {
+    "line": 4,
+    "function": "ignored"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "返回的分配被调用方丢弃，泄漏。"
+}

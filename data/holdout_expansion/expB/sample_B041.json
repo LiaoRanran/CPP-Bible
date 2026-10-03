@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B041",
+  "defect_type": "resource_leak",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "new 后未 delete，LeakSanitizer 在退出时报告泄漏。"
+}

@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B071",
+  "defect_type": "type_punning",
+  "defect_location": {
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "把 int 存储当 float 读（严格别名违规 UB），对齐满足故 UBSan 无运行时报告，属检测器盲区（边界案例）。"
+}

@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B097",
+  "defect_type": "other_ub",
+  "defect_location": {
+    "line": 3,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "在 noexcept 函数中抛异常（UB），运行期 terminate；ASan/UBSan 均不报，属盲区（边界案例）。"
+}

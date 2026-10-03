@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B006",
+  "defect_type": "data_race",
+  "defect_location": {
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "notes": "写线程反复置 flag、读线程反复读，TSan 捕获竞争。"
+}

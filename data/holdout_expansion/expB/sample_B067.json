@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B067",
+  "defect_type": "type_punning",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "通过 char 缓冲错位做 int 类型双关写，未对齐，UBSan 捕获。"
+}

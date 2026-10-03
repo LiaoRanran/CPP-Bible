@@ -1,0 +1,2008 @@
+[
+  {
+    "sample_id": "sample_B001",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "catch",
+        "note": "tsan 命中[-O0(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=110)   Read of size 4 at 0x55555555901c by thread T2:     #0 f() /m; -O2(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=139)   Read of size 4 at 0x55555555801c by thread T2:     #0 f() /m]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B002",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "miss",
+        "note": "tsan 两档均无报告[-O0(rc=0) 1999999 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 1999999 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": false,
+    "unknown_flag": false,
+    "pool": false,
+    "elim_reason": "Task C 判定与期望不一致"
+  },
+  {
+    "sample_id": "sample_B003",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "catch",
+        "note": "tsan 命中[-O0(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=256)   Read of size 4 at 0x55555555901c by thread T2:     #0 f() /m; -O2(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=285)   Read of size 4 at 0x55555555801c by thread T2:     #0 f() /m]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B004",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "catch",
+        "note": "tsan 命中[-O0(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=329)   Read of size 4 at 0x555555559030 by thread T2:     #0 f() /m; -O2(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=358)   Read of size 4 at 0x555555558030 by thread T2:     #0 f() /m]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B005",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "miss",
+        "note": "tsan 两档均无报告[-O0(rc=0) 1999999 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 1999999 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": false,
+    "unknown_flag": false,
+    "pool": false,
+    "elim_reason": "Task C 判定与期望不一致"
+  },
+  {
+    "sample_id": "sample_B006",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "miss",
+        "note": "tsan 两档均无报告[-O0(rc=0) 1 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 1 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": false,
+    "unknown_flag": false,
+    "pool": false,
+    "elim_reason": "Task C 判定与期望不一致"
+  },
+  {
+    "sample_id": "sample_B007",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "catch",
+        "note": "tsan 命中[-O0(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=548)   Read of size 4 at 0x55555555901c by thread T2:     #0 f() /m; -O2(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=577)   Read of size 4 at 0x55555555801c by thread T2:     #0 f() /m]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B008",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "catch",
+        "note": "tsan 命中[-O0(rc=66) 4000000.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=621)   Read of size 8 at 0x555555559020 by thread T2:     #0; -O2(rc=66) 2000000.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=650)   Write of size 8 at 0x555555558020 by thread T1:     #]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B009",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "catch",
+        "note": "tsan 命中[-O0(rc=66) 1999999 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=694)   Write of size 4 at 0x7fffffffe064 by thread T2:     #0 f() /; -O2(rc=66) 1999999 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=723)   Write of size 4 at 0x7fffffffe054 by thread T2:     #0 f() /]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B010",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "catch",
+        "note": "tsan 命中[-O0(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=767)   Read of size 4 at 0x55555555901c by thread T2:     #0 f(int); -O2(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=796)   Read of size 4 at 0x55555555801c by thread T2:     #0 f(int)]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B011",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "miss",
+        "note": "tsan 两档均无报告[-O0(rc=0) 1 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 1 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": false,
+    "unknown_flag": false,
+    "pool": false,
+    "elim_reason": "Task C 判定与期望不一致"
+  },
+  {
+    "sample_id": "sample_B012",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "miss",
+        "note": "tsan 两档均无报告[-O0(rc=0) 0 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 0 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": false,
+    "unknown_flag": false,
+    "pool": false,
+    "elim_reason": "Task C 判定与期望不一致"
+  },
+  {
+    "sample_id": "sample_B013",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "catch",
+        "note": "tsan 命中[-O0(rc=66) 5409504 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=986)   Read of size 4 at 0x55555555901c by thread T2:     #0 f() /m; -O2(rc=66) 6000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=1016)   Read of size 4 at 0x55555555801c by thread T2:     #0 f() /]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B014",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "catch",
+        "note": "tsan 命中[-O0(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=1061)   Read of size 4 at 0x555555559038 by thread T2:     #0 f() /; -O2(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=1090)   Read of size 4 at 0x555555558038 by thread T2:     #0 f() /]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B015",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "catch",
+        "note": "tsan 命中[-O0(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=1134)   Read of size 4 at 0x55555555901c by thread T2:     #0 f() /; -O2(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=1163)   Read of size 4 at 0x55555555801c by thread T2:     #0 f() /]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B016",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "catch",
+        "note": "tsan 命中[-O0(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=1207)   Read of size 8 at 0x555555559020 by thread T2:     #0 f() /; -O2(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=1236)   Read of size 8 at 0x555555558020 by thread T2:     #0 f() /]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B017",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "catch",
+        "note": "tsan 命中[-O0(rc=66) -1999999 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=1280)   Write of size 4 at 0x55555555901c by thread T2:     #0 w2(; -O2(rc=66) -1999999 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=1309)   Write of size 4 at 0x55555555801c by thread T2:     #0 w2(]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B018",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "catch",
+        "note": "tsan 命中[-O0(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=1353)   Read of size 4 at 0x7fffffffe05c by thread T2:     #0 opera; -O2(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=1382)   Read of size 4 at 0x7fffffffe04c by thread T2:     #0 opera]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B019",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "catch",
+        "note": "tsan 命中[-O0(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=1426)   Read of size 4 at 0x555555559034 by thread T2:     #0 f() /; -O2(rc=66) 4000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 ================== WARNING: ThreadSanitizer: data race (pid=1455)   Read of size 4 at 0x555555558034 by thread T2:     #0 f() /]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B020",
+    "defect_type": "data_race",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "tsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "tsan": {
+        "verdict": "miss",
+        "note": "tsan 两档均无报告[-O0(rc=0) 1999999 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 1999999 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": false,
+    "unknown_flag": false,
+    "pool": false,
+    "elim_reason": "Task C 判定与期望不一致"
+  },
+  {
+    "sample_id": "sample_B021",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) -2147483648 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpw14so_pw/sample_B021.cpp:12:22: runtime error: signed integer overflow: 2147483647 ; -O2(rc=0) -2147483648 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpw14so_pw/sample_B021.cpp:12:22: runtime error: signed integer overflow: 2147483647 ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B022",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) -2147479015 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmph1cv5fvm/sample_B022.cpp:12:22: runtime error: signed integer overflow: 46341 * 463; -O2(rc=0) -2147479015 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmph1cv5fvm/sample_B022.cpp:12:22: runtime error: signed integer overflow: 46341 * 463]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B023",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 2147483556 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpahyj9khf/sample_B023.cpp:12:22: runtime error: signed integer overflow: -2147483640 ; -O2(rc=0) 2147483556 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpahyj9khf/sample_B023.cpp:12:22: runtime error: signed integer overflow: -2147483640 ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B024",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) -2147483648 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpl6ckzww4/sample_B024.cpp:12:20: runtime error: negation of -2147483648 cannot be re; -O2(rc=0) -2147483648 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpl6ckzww4/sample_B024.cpp:12:20: runtime error: negation of -2147483648 cannot be re]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B025",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) -2147483648 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpenxho18f/sample_B025.cpp:13:22: runtime error: division of -2147483648 by -1 cannot; -O2(rc=0) -2147483648 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpenxho18f/sample_B025.cpp:13:22: runtime error: division of -2147483648 by -1 cannot]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B026",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) -294967296 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpmtg_952m/sample_B026.cpp:12:5: runtime error: signed integer overflow: 2000000000 * ; -O2(rc=0) -294967296 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpmtg_952m/sample_B026.cpp:12:5: runtime error: signed integer overflow: 2000000000 * ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B027",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 25000000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 25000000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B028",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) -116 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) -116 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B029",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) -5536 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) -5536 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B030",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 2000000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 2000000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B031",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) -294967296 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpchqmlfqi/sample_B031.cpp:13:17: runtime error: signed integer overflow: 2000000000 +; -O2(rc=0) -294967296 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpchqmlfqi/sample_B031.cpp:13:17: runtime error: signed integer overflow: 2000000000 +]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B032",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) -1474836480 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpue5ia4kq/sample_B032.cpp:13:24: runtime error: signed integer overflow: 100000 * 10; -O2(rc=0) -1474836480 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpue5ia4kq/sample_B032.cpp:13:24: runtime error: signed integer overflow: 100000 * 10]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B033",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 1932053504 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp42_7w956/sample_B033.cpp:13:48: runtime error: signed integer overflow: 479001600 * ; -O2(rc=0) 1932053504 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp42_7w956/sample_B033.cpp:13:48: runtime error: signed integer overflow: 479001600 * ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B034",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) -294967293 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmps5jnc064/sample_B034.cpp:12:22: runtime error: signed integer overflow: 2000000000 *; -O2(rc=0) -294967293 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmps5jnc064/sample_B034.cpp:12:22: runtime error: signed integer overflow: 2000000000 *]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B035",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 0 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpqungfc0v/sample_B035.cpp:12:22: runtime error: signed integer overflow: -2147483648 + -214748; -O2(rc=0) 0 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpqungfc0v/sample_B035.cpp:12:22: runtime error: signed integer overflow: -2147483648 + -214748]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B036",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) -1294967290 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmplz3e4d8n/sample_B036.cpp:13:28: runtime error: signed integer overflow: 1500000003 ; -O2(rc=0) -1294967290 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmplz3e4d8n/sample_B036.cpp:13:28: runtime error: signed integer overflow: 1500000003 ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B037",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) -1410065408 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpd2nmkwu4/sample_B037.cpp:13:22: runtime error: signed integer overflow: -100000 * 1; -O2(rc=0) -1410065408 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpd2nmkwu4/sample_B037.cpp:13:22: runtime error: signed integer overflow: -100000 * 1]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B038",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) -2147483646 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp_5b4m9co/sample_B038.cpp:12:22: runtime error: signed integer overflow: 2147483640 ; -O2(rc=0) -2147483646 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp_5b4m9co/sample_B038.cpp:12:22: runtime error: signed integer overflow: 2147483640 ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B039",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) -1757895751 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpqyhk16i6/sample_B039.cpp:12:22: runtime error: signed integer overflow: 123456789 *; -O2(rc=0) -1757895751 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpqyhk16i6/sample_B039.cpp:12:22: runtime error: signed integer overflow: 123456789 *]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B040",
+    "defect_type": "integer_overflow",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 1294967296 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp0b0nicf8/sample_B040.cpp:12:22: runtime error: signed integer overflow: -2000000000 ; -O2(rc=0) 1294967296 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp0b0nicf8/sample_B040.cpp:12:22: runtime error: signed integer overflow: -2000000000 ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B041",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==2912==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B042",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==2981==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B043",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3050==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B044",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3119==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B045",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3188==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B046",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3257==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ; -O2(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3284==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B047",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3326==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ; -O2(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3353==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B048",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/expansion_676c_B/sample_B048.cpp:14:17: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘std::vector<int*>::size_type’ {aka ‘long unsigned int’} [-Wformat=]",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3395==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ; -O2(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3422==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B049",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3464==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B050",
+    "defect_type": "resource_leak",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "miss",
+        "note": "asan 两档均无报告[-O0(rc=0) 99 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 99 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B051",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3602==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B052",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3671==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B053",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3740==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B054",
+    "defect_type": "resource_leak",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "miss",
+        "note": "asan 两档均无报告[-O0(rc=0) 1 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 1 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B055",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3878==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B056",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==3947==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B057",
+    "defect_type": "resource_leak",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "miss",
+        "note": "asan 两档均无报告[-O0(rc=0) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B058",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==4085==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B059",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==4154==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ; -O2(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==4181==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B060",
+    "defect_type": "resource_leak",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。  ================================================================= ==4223==ERROR: LeakSanitizer: detected memory leaks  Direct leak of ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B061",
+    "defect_type": "type_punning",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 5 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpur0n4ftb/sample_B061.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe081 for ; -O2(rc=0) 5 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpur0n4ftb/sample_B061.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe081 for ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B062",
+    "defect_type": "type_punning",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=134) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpuw75l5qw/sample_B062.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe083 for ty; -O2(rc=134) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpuw75l5qw/sample_B062.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe083 for ty]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B063",
+    "defect_type": "type_punning",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 1 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpsarscy8k/sample_B063.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe081 for ; -O2(rc=0) 1 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpsarscy8k/sample_B063.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe081 for ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B064",
+    "defect_type": "type_punning",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 1.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpgouyaeie/sample_B064.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe0; -O2(rc=0) 1.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpgouyaeie/sample_B064.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe0]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B065",
+    "defect_type": "type_punning",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=134) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp8hsvnwm5/sample_B065.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe086 for ty; -O2(rc=134) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp8hsvnwm5/sample_B065.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe086 for ty]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B066",
+    "defect_type": "type_punning",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 1.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpjyrrjl1s/sample_B066.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe0; -O2(rc=0) 1.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpjyrrjl1s/sample_B066.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe0]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B067",
+    "defect_type": "type_punning",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 42 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp4ia70x5k/sample_B067.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe081 for; -O2(rc=0) 42 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp4ia70x5k/sample_B067.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe081 for]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B068",
+    "defect_type": "type_punning",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 7 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpu3gyyk_0/sample_B068.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe081 for ; -O2(rc=0) 7 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpu3gyyk_0/sample_B068.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe081 for ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B069",
+    "defect_type": "type_punning",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 1 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmphj2tjlav/sample_B069.cpp:13:8: runtime error: load of misaligned address 0x7fffffffe071 for t; -O2(rc=0) 1 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmphj2tjlav/sample_B069.cpp:13:8: runtime error: load of misaligned address 0x7fffffffe081 for t]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B070",
+    "defect_type": "type_punning",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 3.140000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpa_myctu9/sample_B070.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe0; -O2(rc=0) 3.140000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpa_myctu9/sample_B070.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe0]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B071",
+    "defect_type": "type_punning",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 1.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 1.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B072",
+    "defect_type": "type_punning",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 1065353216 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 1065353216 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B073",
+    "defect_type": "type_punning",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 0.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 0.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B074",
+    "defect_type": "type_punning",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 0.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 0.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B075",
+    "defect_type": "type_punning",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 42 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 42 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B076",
+    "defect_type": "type_punning",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 0 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 0 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B077",
+    "defect_type": "type_punning",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 0.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 0.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B078",
+    "defect_type": "type_punning",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 3 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 3 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B079",
+    "defect_type": "type_punning",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 3.141593 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 3.141593 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B080",
+    "defect_type": "type_punning",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 1.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 1.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B081",
+    "defect_type": "other_ub",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=136) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp1s8j0oz0/sample_B081.cpp:12:13: runtime error: division by zero; -O2(rc=136) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp1s8j0oz0/sample_B081.cpp:12:13: runtime error: division by zero]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B082",
+    "defect_type": "other_ub",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=136) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpf39fdz08/sample_B082.cpp:12:13: runtime error: division by zero; -O2(rc=136) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpf39fdz08/sample_B082.cpp:12:13: runtime error: division by zero]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B083",
+    "defect_type": "other_ub",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/expansion_676c_B/sample_B083.cpp:12:22: warning: left shift count >= width of type [-Wshift-count-overflow]",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 0 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpjdaw9nn0/sample_B083.cpp:12:22: runtime error: shift exponent 40 is too large for 32-bit type; -O2(rc=0) 0 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpjdaw9nn0/sample_B083.cpp:12:22: runtime error: shift exponent 40 is too large for 32-bit type]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B084",
+    "defect_type": "other_ub",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 1073741824 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp1vjm0qau/sample_B084.cpp:13:22: runtime error: shift exponent -2 is negative; -O2(rc=0) 1073741824 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmp1vjm0qau/sample_B084.cpp:13:22: runtime error: shift exponent -2 is negative]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B085",
+    "defect_type": "other_ub",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) -4 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpzv_k9hjx/sample_B085.cpp:12:22: runtime error: left shift of negative value -1; -O2(rc=0) -4 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpzv_k9hjx/sample_B085.cpp:12:22: runtime error: left shift of negative value -1]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B086",
+    "defect_type": "other_ub",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) -2147483648 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) -2147483648 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B087",
+    "defect_type": "other_ub",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 AddressSanitizer:DEADLYSIGNAL ================================================================= ==6034==ERROR: AddressSanitizer: SEGV o; -O2(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 AddressSanitizer:DEADLYSIGNAL ================================================================= ==6060==ERROR: AddressSanitizer: SEGV o]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B088",
+    "defect_type": "other_ub",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 AddressSanitizer:DEADLYSIGNAL ================================================================= ==6101==ERROR: AddressSanitizer: SEGV o; -O2(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 AddressSanitizer:DEADLYSIGNAL ================================================================= ==6127==ERROR: AddressSanitizer: SEGV o]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B089",
+    "defect_type": "other_ub",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/expansion_676c_B/sample_B089.cpp:13:14: warning: argument 2 null where non-null expected [-Wnonnull]",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 AddressSanitizer:DEADLYSIGNAL ================================================================= ==6168==ERROR: AddressSanitizer: SEGV o; -O2(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 AddressSanitizer:DEADLYSIGNAL ================================================================= ==6194==ERROR: AddressSanitizer: SEGV o]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B090",
+    "defect_type": "other_ub",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "miss",
+        "note": "asan 两档均无报告[-O0(rc=0) ok wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) ok wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B091",
+    "defect_type": "other_ub",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 5 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmph4wl2pgl/sample_B091.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe081 for ; -O2(rc=0) 5 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmph4wl2pgl/sample_B091.cpp:13:6: runtime error: store to misaligned address 0x7fffffffe081 for ]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B092",
+    "defect_type": "other_ub",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/expansion_676c_B/sample_B092.cpp:12:13: warning: left shift count >= width of type [-Wshift-count-overflow]",
+    "detections": {
+      "ubsan": {
+        "verdict": "catch",
+        "note": "ubsan 命中[-O0(rc=0) 0 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpl1rc8gc8/sample_B092.cpp:12:13: runtime error: shift exponent 32 is too large for 32-bit type; -O2(rc=0) 0 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 /mnt/c/Users/ASUS/AppData/Local/Temp/tmpl1rc8gc8/sample_B092.cpp:12:13: runtime error: shift exponent 32 is too large for 32-bit type]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B093",
+    "defect_type": "other_ub",
+    "expected_verdict": "catch",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "catch",
+        "note": "asan 命中[-O0(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 AddressSanitizer:DEADLYSIGNAL ================================================================= ==6438==ERROR: AddressSanitizer: SEGV o; -O2(rc=1) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 AddressSanitizer:DEADLYSIGNAL ================================================================= ==6464==ERROR: AddressSanitizer: SEGV o]（档位 -O0,-O2）"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B094",
+    "defect_type": "other_ub",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 0 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 32767 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B095",
+    "defect_type": "other_ub",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 1 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 1 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B096",
+    "defect_type": "other_ub",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 0 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 0 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B097",
+    "defect_type": "other_ub",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/expansion_676c_B/sample_B097.cpp:11:3: warning: ‘throw’ will always call ‘terminate’ [-Wterminate]",
+    "detections": {
+      "asan": {
+        "verdict": "miss",
+        "note": "asan 两档均无报告[-O0(rc=134) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 terminate called after throwing an instance of 'int'; -O2(rc=134) wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。 terminate called after throwing an instance of 'int']"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B098",
+    "defect_type": "other_ub",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "asan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "asan": {
+        "verdict": "miss",
+        "note": "asan 两档均无报告[-O0(rc=0) done wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) done wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B099",
+    "defect_type": "other_ub",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 1374389535 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 1374389535 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  },
+  {
+    "sample_id": "sample_B100",
+    "defect_type": "other_ub",
+    "expected_verdict": "miss",
+    "expected_detectors": [
+      "ubsan"
+    ],
+    "compile_rc": 0,
+    "compile_ok": true,
+    "compile_warnings": "",
+    "detections": {
+      "ubsan": {
+        "verdict": "miss",
+        "note": "ubsan 两档均无报告[-O0(rc=0) 1.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。; -O2(rc=0) 1.000000 wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。]"
+      }
+    },
+    "consistent": true,
+    "unknown_flag": false,
+    "pool": true
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B068",
+  "defect_type": "type_punning",
+  "defect_location": {
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "char 缓冲偏移 5 后以 int* 访问，未对齐，UBSan 捕获。"
+}

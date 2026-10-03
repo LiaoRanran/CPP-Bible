@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B078",
+  "defect_type": "type_punning",
+  "defect_location": {
+    "line": 6,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "把 RGB 结构按 BGR 解释（严格别名 UB），对齐满足，UBSan 不报（边界案例）。"
+}

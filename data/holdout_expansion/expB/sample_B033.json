@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B033",
+  "defect_type": "integer_overflow",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "阶乘溢出（UB），UBSan 捕获。"
+}

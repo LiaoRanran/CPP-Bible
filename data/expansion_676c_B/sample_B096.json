@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B096",
+  "defect_type": "other_ub",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "同一全表达式内 i 被改又被用（UB）。UBSan 无运行时陷阱，盲区（边界案例）。"
+}

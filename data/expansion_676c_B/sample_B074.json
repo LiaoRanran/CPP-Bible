@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B074",
+  "defect_type": "type_punning",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "读取 union 非活跃成员（C++ 中 UB），UBSan 无运行时陷阱（边界案例）。"
+}

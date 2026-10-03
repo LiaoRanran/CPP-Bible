@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B082",
+  "defect_type": "other_ub",
+  "defect_location": {
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "取模除以零（UB），UBSan 捕获。"
+}

@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B072",
+  "defect_type": "type_punning",
+  "defect_location": {
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "把 float 存储当 int 读（严格别名违规 UB），UBSan 抓不到（边界案例）。"
+}

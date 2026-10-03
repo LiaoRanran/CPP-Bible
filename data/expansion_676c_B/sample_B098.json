@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B098",
+  "defect_type": "other_ub",
+  "defect_location": {
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "析构函数抛异常（展开期 UB），运行期 terminate；无 sanitizer 陷阱，盲区（边界案例）。"
+}

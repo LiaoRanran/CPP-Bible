@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B043",
+  "defect_type": "resource_leak",
+  "defect_location": {
+    "line": 7,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "malloc 后未 free，LSan 报告。"
+}

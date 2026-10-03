@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B047",
+  "defect_type": "resource_leak",
+  "defect_location": {
+    "line": 6,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "malloc 分配的字符串缓冲未 free，LeakSanitizer 报告（原 fopen 不存在文件=NULL，并非真实泄漏，已改写为 malloc 泄漏）。"
+}

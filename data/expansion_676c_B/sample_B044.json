@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B044",
+  "defect_type": "resource_leak",
+  "defect_location": {
+    "line": 2,
+    "function": "make"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "函数内分配并返回，调用方未释放，LSan 报告。"
+}

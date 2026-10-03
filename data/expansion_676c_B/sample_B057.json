@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B057",
+  "defect_type": "resource_leak",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "写模式 fopen 后未 fclose，文件描述符泄漏。fopen 写模式未 fclose；本机 LSan 两档均未报（stdio FILE* 泄漏盲区），诚实标 miss。"
+}

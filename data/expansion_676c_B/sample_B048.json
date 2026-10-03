@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B048",
+  "defect_type": "resource_leak",
+  "defect_location": {
+    "line": 7,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "vector 持有裸指针但析构前未 delete，LSan 报告。"
+}

@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B053",
+  "defect_type": "resource_leak",
+  "defect_location": {
+    "line": 3,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "分支内分配后无释放路径，LSan 报告。"
+}

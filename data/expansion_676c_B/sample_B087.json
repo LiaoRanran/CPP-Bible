@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B087",
+  "defect_type": "other_ub",
+  "defect_location": {
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "修改字符串字面量（UB），写入只读段，ASan 捕获。"
+}

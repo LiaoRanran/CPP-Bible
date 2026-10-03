@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B058",
+  "defect_type": "resource_leak",
+  "defect_location": {
+    "line": 6,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "分配并使用后忘记 delete，LSan 报告。"
+}

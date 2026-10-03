@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B020",
+  "defect_type": "data_race",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "notes": "一线程写结构体字段 s.y、另一线程读，TSan 捕获。"
+}

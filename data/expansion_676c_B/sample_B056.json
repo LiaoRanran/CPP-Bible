@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B056",
+  "defect_type": "resource_leak",
+  "defect_location": {
+    "line": 2,
+    "function": "recurse"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "递归每帧分配未释放，多层泄漏。"
+}

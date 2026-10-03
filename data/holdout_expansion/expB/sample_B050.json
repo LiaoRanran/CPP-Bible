@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B050",
+  "defect_type": "resource_leak",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "全局 new 分配未释放，LSan 报告。全局指针持有的堆分配；LSan 不报告仍可从全局根到达的分配，属可达性盲区，诚实标 miss（边界案例）。"
+}

@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B095",
+  "defect_type": "other_ub",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "函数实参求值顺序未定（UB）。UBSan 无运行时陷阱，属盲区（边界案例）。"
+}

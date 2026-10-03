@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B090",
+  "defect_type": "other_ub",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "通过空对象指针调成员函数（UB），ASan 捕获。通过空对象指针调成员函数，但函数体不访问 this；ASan 无内存访问故不报，属盲区，诚实标 miss（边界案例）。"
+}

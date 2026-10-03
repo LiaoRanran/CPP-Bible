@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B012",
+  "defect_type": "data_race",
+  "defect_location": {
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "tsan"
+  ],
+  "notes": "指针 gp 被一线程写、另一线程读，TSan 捕获。"
+}

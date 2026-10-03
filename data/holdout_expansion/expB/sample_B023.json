@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B023",
+  "defect_type": "integer_overflow",
+  "defect_location": {
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "有符号减法溢出，UBSan 捕获。"
+}

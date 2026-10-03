@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B094",
+  "defect_type": "other_ub",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "low",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "未序列化的多次修改/读取同一变量（UB）。本机 wunsequenced 资产对 MinGW 不可用（unknown），UBSan 无运行时陷阱，属盲区（边界案例）。"
+}

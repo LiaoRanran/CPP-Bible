@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B086",
+  "defect_type": "other_ub",
+  "defect_location": {
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "左移进入符号位（UB），UBSan 捕获。左移至符号位（UB）；本机 UBSan 两档均未报，属盲区，诚实标 miss（边界案例）。"
+}

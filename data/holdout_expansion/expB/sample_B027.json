@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B027",
+  "defect_type": "integer_overflow",
+  "defect_location": {
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "high",
+  "planted": true,
+  "expected_verdict": "miss",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "64 位有符号乘法溢出，UBSan 捕获。有符号溢出（a*b+a*b 复合表达式）；本机 UBSan 两档均未报，属表达式形态盲区，诚实标 miss（边界案例）。"
+}

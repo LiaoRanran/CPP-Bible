@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B064",
+  "defect_type": "type_punning",
+  "defect_location": {
+    "line": 4,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "ubsan"
+  ],
+  "notes": "char 缓冲偏移 1 后以 double* 访问（需 8 对齐），UBSan 捕获。"
+}

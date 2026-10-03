@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B060",
+  "defect_type": "resource_leak",
+  "defect_location": {
+    "line": 7,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "calloc 分配后未 free，LSan 报告（与 malloc 不同的分配器变体）。"
+}

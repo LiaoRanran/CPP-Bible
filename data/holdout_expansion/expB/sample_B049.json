@@ -1,0 +1,15 @@
+{
+  "sample_id": "sample_B049",
+  "defect_type": "resource_leak",
+  "defect_location": {
+    "line": 5,
+    "function": "main"
+  },
+  "severity": "medium",
+  "planted": true,
+  "expected_verdict": "catch",
+  "expected_detectors": [
+    "asan"
+  ],
+  "notes": "malloc 分配未 free，LeakSanitizer 报告（原 std::strdup 在 -std=c++17 下未声明导致编译失败，已改写为 malloc）。"
+}
