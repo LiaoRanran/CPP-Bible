@@ -67,12 +67,14 @@ $\ge$28.6pp. \textbf{Limitations:} headline numbers depend on one WSL sanitizer 
 post-reveal additions mean only the 21-sample subset is strictly blind; the static arm is a caliber
 re-binning and the random arm an instrument-level proxy---so we claim \emph{auditability plus
 on-sample significance}, \emph{not} superiority over real static detectors or a budget-matched random
-baseline. Three qualifiers: the $\Delta$ separates \emph{having runtime evidence from not having it} from
-\emph{failure-driven selection}---the A5 budget-matched control now \emph{runs}, with a significant
-main endpoint (holdout $\Delta$ \textbf{+55.0}pp, $p{=}9.8\times10^{-4}$; corpus \textbf{+43.8}pp,
-$p{=}0.039$) that is nonetheless \emph{direction-only}: the holdout effect is pool composition (it
-vanishes once degenerate assets are excluded, triggering our pre-registered \texttt{uninterpretable}
-clause) and $n{=}20/16\ll138$; our static-analyzer comparison is a \emph{cross-regime stress test},
+baseline. Three qualifiers: the $\Delta$ separates \emph{having runtime evidence} from \emph{failure-driven
+selection}---the A5 budget-matched control now \emph{runs at full scale} ($n{=}566$ evaluation):
+FD \textbf{54.6\%} vs.\ Random \textbf{30.6\%} (\textbf{+24.0}pp, $p{=}2.3\times10^{-41}$) and
+vs.\ Static \textbf{24.7\%} (\textbf{+29.9}pp, robust in the parallel analysis). \textbf{But the
+Random contrast stays direction-only}: excluding the two degenerate assets Random draws
+\emph{the same four}, so $\Delta{=}\textbf{0.0}$pp---A5 isolates ``do not fund assets that cannot
+inform,'' not ``a smarter ranking''; our static-analyzer comparison is a \emph{cross-regime stress
+test},
 not evidence of general superiority; and the 41 holdout labels have zero second annotators (T17).
 \end{abstract}
 
@@ -168,32 +170,35 @@ LLM-as-a-judge~\cite{zheng2023judging} is practical and scalable, but we use LLM
 \emph{propose candidates} and keep the \emph{judgment} fully programmatic. seL4~\cite{klein2009sel4}
 and CompCert~\cite{leroy2009compcert} show that proof power can be extreme, at high human cost and
 narrow coverage; we do not pursue formal proofs, only \emph{evidence that a third party can
-recompute line by line}. The mutation-testing survey~\cite{jia2011mutation} informs our framework,
-but only for the self-justification layer.
+recompute line by line}. Two 2026 lines sharpen this: model-based
+verifiers~\cite{kwok2026llmverifier} keep the judge \emph{inside} the model (our
+shared-failure-domain objection stands), while evidence-grounded agent
+testing~\cite{feng2026vera} anchors verdicts in observable execution records---the instinct we
+share, applied to a corpus rather than an agent. The mutation-testing survey~\cite{jia2011mutation}
+informs our framework, but only for the self-justification layer.
 
 \paragraph{(4) Measurement governance, reproducibility, provenance (our methodological sources).}
 Goodhart/Strathern, reward hacking and over-optimization, Datasheets/Model Cards and
-reproducibility reporting, and Merkle provenance auditing~\cite{merkle1988digital,kao2025constantsize,wang2026whoaudits}
-inform our protocol; the statistical caliber uses Clopper--Pearson/Wilson/McNemar/Holm/Cohen
-\cite{clopper1934use,mcnemar1947note,cohen1960coefficient}.
+reproducibility reporting, Merkle provenance auditing and ML-lifecycle attestation
+\cite{merkle1988digital,kao2025constantsize,wang2026whoaudits,spoczynski2025atlas} inform our
+protocol; claim--evidence interfaces~\cite{martinboyle2026papertrail} and the finding that
+reproducibility failures live in \emph{interactions}, not missing
+artifacts~\cite{li2026reprobeyond}, motivate our claim table and evidence cards; statistics use
+Clopper--Pearson/Wilson/McNemar/Holm/Cohen \cite{clopper1934use,mcnemar1947note,cohen1960coefficient}.
 
 \paragraph{(5) Trained fact-checking models (the nearest neighbor where the \emph{judge} itself evolves).}
-MiniCheck~\cite{tang2024minicheck} trains an efficient fact-checking model to judge whether LLM
-output is supported by a grounding document---the representative case of \emph{the judge being
-improved}: the evolved object is model weights, the strategy is distillation, and auditability
-boils down to trusting the model's behavior. This is complementary to, not competing with, our
-goal: MiniCheck evolves ``judging faster''; we evolve ``judging in a process a third party can
-audit.'' \paragraph{(6) Program analysis, symbolic execution, property testing (added in v1.1).}
-KLEE~\cite{cadar2008klee} and SymCC~\cite{poeplau2020symcc} drive path exploration by
-\emph{uncovered branches}; QuickCheck/Hypothesis~\cite{claessen2000quickcheck,hypothesis2026} drive
-generation by \emph{counterexamples}; abstract interpretation~\cite{cousot1977abstract} represents
-``don't know'' as a lattice element. \textbf{Driving evidence acquisition from failure or
-non-coverage is therefore not our invention.} Our only dividing line is the \emph{evolved object}:
-they evolve properties, paths or abstract domains, whereas we evolve the verifier's
-evidence-acquisition capability $\mathcal{C}$ and require each step to leave a recomputable
-\emph{failure}~$\to$~\emph{rule}~$\to$~\emph{re-test} chain.
+Trained fact-checkers~\cite{tang2024minicheck} evolve \emph{the judge} itself, so auditability
+reduces to trusting model behaviour---complementary to us (\S\ref{app:related}).
+\paragraph{(6) Program analysis, symbolic execution, property testing (added in v1.1).}
+KLEE~\cite{cadar2008klee} and SymCC~\cite{poeplau2020symcc} explore by uncovered branches,
+QuickCheck/Hypothesis~\cite{claessen2000quickcheck,hypothesis2026} generate from counterexamples,
+and abstract interpretation~\cite{cousot1977abstract} makes ``don't know'' a lattice element.
+\textbf{Driving evidence acquisition from failure or non-coverage is therefore not our invention};
+our dividing line is the \emph{evolved object}---they evolve properties, paths or abstract domains,
+we evolve the verifier's evidence-acquisition capability $\mathcal{C}$
+(\S\ref{app:related}).
 \paragraph{(7) Closest 2026 work (metric evolution and self-evolving verification).}
-Two 2026 preprints sit closest. \emph{Who Grades the Grader?}~\cite{zhang2026whogrades} evolves the
+Full text in \S\ref{app:related} (Table~\ref{tab:neighbours}). \emph{Who Grades the Grader?}~\cite{zhang2026whogrades} evolves the
 evaluation \emph{metric} itself against Goodhart drift via anchors and external audits---the closest
 analogue to our anti-Goodhart discipline, but its evolved object is the metric, not a verifier's
 evidence-acquisition capability. \emph{Self-Evolving Agents with Anytime-Valid
@@ -561,21 +566,17 @@ The six pre-registered groups A0--A5 keep their written hypotheses and decision 
 design-only (\texttt{\{\{TODO\_ablation\_A0\}\}}\dots\texttt{\{\{TODO\_ablation\_A4\}\}}).
 \textbf{The key contrast A0 $-$ A5} is the core-mechanism falsifier: \textbf{if the CI of
 $\Delta(\text{A0}-\text{A5})$ crosses 0, ``failure-driven beats same-budget random'' does not hold}.
-It has now \textbf{run} as a real per-asset matrix ($105\times8$, $840$ real \texttt{detect} calls;
-failure-hits derived on a disjoint split, holdout $n{=}21$ / corpus $n{=}48$, evaluated on holdout
-$n{=}20$ / corpus $n{=}16$), budget-matched at $k{=}4$ against a 2000-draw random distribution.
-\textbf{Its main endpoint is significant}: holdout FD $90.0\%$ (18/20) vs.\ Random $35.0\%$ (7/20)
-and Static $10.0\%$, i.e.\ $\Delta_{\text{FD}-\text{Rnd}}$ \textbf{+55.0}pp (CI [+33.2, +76.8],
-exact McNemar $p{=}9.8\times10^{-4}$, $b{=}11,c{=}0$), and corpus $81.3\%$ (13/16) vs.\ $37.5\%$,
-\textbf{+43.8}pp (CI [+13.9, +73.6], $p{=}0.039$, $b{=}8,c{=}1$); FD strictly beats the single-seed
-draw in \textbf{93.8\%} / \textbf{95.8\%} of the 2000 resamples. \textbf{But the effect is pool
-composition, not selection}: Random's $k{=}4$ draw spends budget on degenerate
-(constant-\texttt{unknown}) assets, while the failure-driven ranking avoids them by construction; in
-the pre-registered \emph{parallel} analysis excluding them, the holdout $\Delta$ collapses to
-\textbf{0.0}pp ($p{=}1.0$), \textbf{triggering our pre-registered \texttt{uninterpretable}
-clause}---so we do \emph{not} claim ``FD beats Random''. With $n{=}20/16\ll138$ the result is
-\emph{direction-only} on pool composition; the selection-strategy effect stays undecidable (full
-numbers: Appendix~\ref{app:humanize}).
+It has now \textbf{run at full scale} (676f): a real $1137\times8$ per-asset matrix, every cell a
+real \texttt{detect} call, failure-hits from a disjoint derivation split ($n{=}571$), evaluation on
+the held-out split ($n{=}566\gg138$). At $k{=}4$ against a 2000-draw random
+distribution, FD \textbf{54.6\%} vs.\ Random \textbf{30.6\%} ($\Delta{=}\mathbf{+24.0}$pp,
+CI [+20.5, +27.5], $p{=}2.3\times10^{-41}$) and vs.\ Static \textbf{24.7\%}
+($\Delta{=}\mathbf{+29.9}$pp). \textbf{The Static contrast is robust; the Random one is not:}
+excluding the two degenerate assets, FD-vs-Static \emph{grows} to \textbf{+30.6}pp while
+FD-vs-Random collapses to \textbf{0.0}pp ($p{=}1.0$)---with five usable assets left, Random's draw
+is the same four. A5 isolates ``do not fund assets that cannot inform,'' not ``a smarter ranking'';
+we still do not write ``FD beats Random''
+(full tables: Appendix~\ref{app:a5full}).
 
 \paragraph{E5 --- Statistical tests for the baseline contrasts (Table~\ref{tab:e5}).}
 FD and the two opponent arms are paired \emph{on the same samples} (holdout 41 pairs, corpus 64
@@ -623,10 +624,9 @@ rerun differed by 10 catches. \textbf{(4) Mutation score $\neq$ real defect dete
 \textbf{96.5\%} (110/114; all-scope \textbf{81.8\%}, 130/159) vs external \textbf{62.5\%} (40/64; 52.6\%
 all-sample); mutants correlate with, but do not equal, real faults~\cite{just2014mutants}.
 \textbf{(5) Whether FD gains are real.} FD beats the static and random-proxy arms ($p\le3.0\times10^{-8}$),
-but the random arm is an \emph{instrument-level proxy} (true B3 ran once, $n{=}21/48$). A5 has now run
-with a significant main endpoint, yet its holdout effect is \emph{pool composition}---it vanishes in the
-pre-registered parallel analysis---so ``FD beats same-budget random'' stays \emph{directional}
-(\S\ref{sec:exp}).
+but that random arm is an \emph{instrument-level proxy}; the real A5 control is significant at
+$n{=}566$ yet collapses to $0.0$pp once degenerate assets are removed, so ``FD beats same-budget
+random'' stays \emph{directional} (\S\ref{sec:exp}).
 
 % =====================================================================
 \section{Threats to Validity}
@@ -644,6 +644,11 @@ $\kappa<0.6$ escalating to a $100\%$ third-party re-review, before any ``verifie
 Historical-state pinning is separately \emph{incomplete}: current-state verdicts are fully
 reproducible, historical ones only under an unchanged-ruleset assumption, and the guard does not
 re-run detectors (Appendix~\ref{app:pinning}).
+
+\paragraph{Instrument boundary; A5's remaining gap (both measured).}
+Over $1147$ samples \textbf{38.4\%} are blind spots ($15$ of $70$ types exceed $50\%$), so every
+rate here speaks about the \emph{visible} region only (Appendix~\ref{app:blindspot}). For A5, power
+is closed ($n{=}566$) and \emph{identification} is not (Appendix~\ref{app:threats_quantified}).
 
 % =====================================================================
 \section{Claim Boundary}
@@ -675,14 +680,14 @@ infrastructure trustworthy, \emph{numbers fragile}.
 the static re-binning and random-proxy arms ($\Delta$ lower bound $\ge$28.6pp, exact McNemar
 $p\le3.0\times10^{-8}$); it does \emph{not} support superiority over a \emph{real} static detector or a
 true B3 (split-repo BLOCKED), other languages, ``exact magnitudes'' ($n{=}41/64$), or ``FD beats
-same-budget random''---A5 remains direction-only: significant, but the holdout effect collapses to
-0.0pp in the pre-registered parallel analysis (pool composition; \S\ref{sec:exp}). \textbf{Three
-qualifiers:} the $\Delta$ concerns \emph{having runtime evidence}, not failure-driven selection
-(A5 \emph{run}, \S\ref{sec:exp}); E9 is a \emph{cross-regime stress test}; labels have zero second
-annotators (T17). \textbf{Future work:} top priority is to \emph{confirm} A5 by expanding to $n\ge138$
-(the only design separating selection from pool composition) and to expose the split-repo interfaces
-for a true B3. Until then the claim stays directional (independent reproduction and label
-reliability: Appendix~\ref{app:future}).
+same-budget random''---A5 now runs at $n{=}566$ and its \emph{Static} contrast is robust
+(\textbf{+29.9}pp; \textbf{+30.6}pp in the parallel analysis), but the \emph{Random} contrast still
+collapses to \textbf{0.0}pp once degenerate assets are excluded, so it stays an effect of pool
+composition. \textbf{Qualifiers:} the $\Delta$ concerns \emph{having runtime evidence}, not
+failure-driven selection; E9 is a cross-regime stress test; labels have zero second annotators
+(T17); and our instrument's boundary is measured---\textbf{38.4\%} of $1147$ samples are blind
+spots, so no rate here speaks about deadlock or interrupt safety (\S\ref{app:blindspot}).
+\textbf{Next:} a non-degenerate pool at usable $k$ (Appendix~\ref{app:future}).
 
 \clearpage
 \label{page:endmain}% records the page where the main text ends (for the 9-page check)
@@ -730,7 +735,7 @@ artifacts and are the source of the abstract's layered read.
 \label{tab:e4}
 \centering
 \footnotesize
-\begin{tabular}{@{}clp{3.3cm}p{3.6cm}l@{}}
+\begin{tabular}{@{}clp{2.9cm}p{3.1cm}p{4.7cm}@{}}
 \toprule
 ID & Remove/change & Hypothesis & Primary metric & Result \\
 \midrule
@@ -739,7 +744,7 @@ A1 & $-$failure-derived rules (post-657 ruleset) & H: detection drops & $\Delta$
 A2 & $-$holdout isolation (blind$\to$dev) & H: overfitting (dev$\uparrow$, blind flat) & dev vs.\ blind recall & \texttt{\{\{TODO\_ablation\_A2\}\}} \\
 A3 & $-$provenance (boundary-triple check) & H: false-pass rate rises & false-pass rate & \texttt{\{\{TODO\_ablation\_A3\}\}} \\
 A4 & $-$mutation (L1 self-justification) & H: internal strength drops & mutation kill (internal) & \texttt{\{\{TODO\_ablation\_A4\}\}} \\
-A5 & random-budget control & H: below A0 & $\Delta$ detection vs.\ A0 & \textbf{run}: holdout $\Delta$ \textbf{+55.0}pp ($p{=}9.8{\times}10^{-4}$), corpus \textbf{+43.8}pp ($p{=}0.039$); holdout effect is pool composition $\Rightarrow$ \texttt{uninterpretable} \\
+A5 & random-budget control & H: below A0 & $\Delta$ detection vs.\ A0 & \textbf{run at full scale (676f)}: $n{=}566$ eval; vs Random \textbf{+24.0}pp [+20.5, +27.5] ($p{=}2.3{\times}10^{-41}$), vs Static \textbf{+29.9}pp ($p{=}1.9{\times}10^{-31}$); Static contrast survives the parallel analysis (\textbf{+30.6}pp), Random contrast collapses to \textbf{0.0}pp $\Rightarrow$ \texttt{uninterpretable} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -899,10 +904,12 @@ MiniCheck~\cite{tang2024minicheck} & the judge (fact-check weights) & distillati
 \cmark\ supported & Caliber declarable and recomputable & three-arm caliber ablation; every rate carries a denominator \\
 \cmark\ supported & On the same samples FD beats the static re-binning and random$\dagger$ proxy arms & exact McNemar $p\le3.0\times10^{-8}$; Cohen's $h\ge0.85$; $\Delta$ lower bound $\ge$28.6pp (\S\ref{sec:exp}) \\
 \cmark\ supported & Verifier semantic coverage and evolution rate are measurable & Verifier Coverage 31/42 = 73.8\% [58.0, 86.1] (domain 4/5); EE 1.9pp/rule (descriptive; \S\ref{sec:method}) \\
+\cmark\ supported & On the \emph{visible} region, FD beats a budget-matched static arm at scale & A5: +29.9pp ($p{=}1.9\times10^{-31}$), +30.6pp in the parallel analysis ($n{=}566$) \\
+\cmark\ supported & A detector's capability boundary can be mapped and published & 1147-sample $\times$ 8-asset matrix; blind-spot ratio 38.4\%; 15/70 types $>50\%$ blind; union of 6 assets 61.6\% vs best single 35.6\% (\S\ref{app:blindspot}) \\
 \midrule
 $\times$ not supported & Generalization to \emph{unseen} error types & all samples same-source; scope backfill 0/26 \\
 $\times$ not supported & Absolute ``detection rate $X$\%'' & $n{=}41/64$, CI half-width $\approx$12pp; $\pm$5pp needs $n{=}236/378$ \\
-$\times$ not supported & Better than a \emph{real} static detector / true B3, or ``FD beats same-budget random'' & static arm is a caliber re-binning; random$\dagger$ is a proxy; real interfaces BLOCKED; A5 run but \emph{direction-only} (holdout effect is pool composition) \\
+$\times$ not supported & Better than a \emph{real} static detector / true B3, or ``FD beats same-budget random'' & static arm is a caliber re-binning; random$\dagger$ is a proxy; real interfaces BLOCKED; \textbf{A5 at full scale ($n{=}566$) is significant vs Static and robust in the parallel analysis (+30.6pp)}, but vs Random it collapses to 0.0pp once degenerate assets are excluded $\Rightarrow$ still \emph{direction-only} on selection \\
 $\times$ not supported & ``$F_1{=}1.0$ is calibrated'' & criterion and truth are same-source $\Rightarrow$ upper bound \\
 $\times$ not supported & Mutation score as detection rate & core 96.5\% $\neq$ defect-detection rate~\cite{just2014mutants} \\
 $\times$ not supported & Evolution trend & only a single same-sample re-measurement \\
@@ -954,13 +961,16 @@ Layer & Threat & Mitigation & Residual \\
 Construct & \texttt{catch} $\neq$ truth; A/B/C split by detector availability not difficulty; mutation score not a detection proxy~\cite{just2014mutants}; \textbf{static arm is a caliber re-binning, not a re-run; random$\dagger$ is an instrument-level proxy, not B3} & caliber/denominator/opt\_levels/env stored with artifacts; dual-flag; three-state separation; proxy arms marked $\dagger$ and excluded from conclusions & cross-environment reproduction unverified (upgraded from ``residual'' to ``observed failure'': score drops without WSL); no independent label review; ``with/without runtime evidence'' vs.\ ``failure-driven'' not yet separated (needs ablation) \\
 Internal & meta-Goodhart; budget selection bias; code changed without rerun & caliber three-step discipline; range self-check (5/5 turn red); budget-matched random control & guard does not rerun the detector, so the 666 incident can recur; A5 run but holds only as pool composition (\texttt{uninterpretable}); A0--A4 design frozen \\
 External & small $n$ (holdout 21 / corpus 48 measurable); \textbf{expanded samples merged after reveal (no blind state: 10 holdout $+$ 20 corpus)}; same-source clustering; scope 0/26; single domain (C++) & layered reporting; two sample sets explicitly incomparable; unblinded samples explicitly flagged & static re-bin $+$ random$\dagger$ proxy \emph{run}; \textbf{real B3 BLOCKED}; only A5 run; reconciler is still our own; 0 third-party reproductions \\
-Statistical & \textbf{small $n$ (41/64)} $\Rightarrow$ still-wide CIs; McNemar rests on the extreme $c{=}0$ structure; \textbf{control FPR 0.0\% (0/11)}; multiple comparisons; Wald invalid at small $n$; clustering; $p$ without effect size & frozen plan; CP primary, Wilson sensitivity; Fisher/Boschloo $+$ exact McNemar \emph{tool-implemented}; BH/Holm; difference $+$ CI $+$ effect size $+$ e-value required & $\pm$5pp needs $n{=}236/378$; $\pm$10pp needs $61/97$; $\Delta{=}15$pp needs $n\approx103$--173 (paired); magnitude not readable as exact; IRR not done \\
+Statistical & \textbf{small $n$ (41/64)} $\Rightarrow$ still-wide CIs; McNemar rests on the extreme $c{=}0$ structure; \textbf{control FPR 0.0\% (0/11)}; multiple comparisons; Wald invalid at small $n$; clustering; $p$ without effect size & frozen plan; CP primary, Wilson sensitivity; Fisher/Boschloo $+$ exact McNemar \emph{tool-implemented}; BH/Holm; difference $+$ CI $+$ effect size $+$ e-value required & $\pm$5pp needs $n{=}236/378$; $\pm$10pp needs $61/97$; $\Delta{=}15$pp needs $n\approx103$--173 (paired)---\textbf{A5 now has $n{=}566$ and clears this}, so power is no longer binding for A5, but the holdout/corpus headline ($n{=}41/64$) still has $\approx$12pp half-widths; magnitude not readable as exact; IRR not done \\
 Temporal & OTS anchor expired~\cite{opentimestamps}; sample aging; environment drift (TSan intermittently fails under WSL high-entropy ASLR) & Merkle roots $+$ hash chain; versions captured with evidence & OTS not really anchored; re-pinning invalidates the anchor; WSL hard dependency undeclared \\
 \bottomrule
 \end{tabular}
 \end{table}
 \begin{table}[t]
-\caption{E3. Cross-batch key metrics.}
+\caption{E3. Cross-batch key metrics. \textbf{Un-pinned rows:} the 656 mutation cell (\,62.5\%, 30/48)
+has \emph{no surviving artifact}---the current reports recompute to 110/114 and 130/159---and the 665
+cell (66.7\%) comes from the retired single-flag (\texttt{-O1}) caliber, so neither may be read as a
+reproducible result; they are kept only as a record of what was reported at the time.}
 \label{tab:e3}
 \centering
 \small
@@ -1074,17 +1084,64 @@ python tools/external_corpus_reveal_665.py  # pre-expansion caliber 35.0%  (requ
 python tools/mutation_test_656.py           # core 96.5% / all 81.8%
 python tools/counterfactual_extend_665.py   # F1=1.0
 python tools/run_658_gate.py                # L0 5/5
-# post-672h authority numbers: holdout 82.9% (34/41), corpus measurable 62.5% (40/64), FPR 0.0% (0/11)
-python -c "import json;d=json.load(open('data/experiments/reveal_update_671a.json',encoding='utf-8'));print(json.dumps(d['pending_for_671b'],ensure_ascii=False,indent=2))"
+# post-672h authority: holdout 82.9% (34/41), corpus measurable 62.5% (40/64), FPR 0.0% (0/11)
+python -c "import json;d=json.load(open('data/experiments/reveal_update_671a.json', \
+  encoding='utf-8'));print(json.dumps(d['pending_for_671b'],ensure_ascii=False,indent=2))"
 # Verifier Coverage: denominator 42, numerator 31 -> 73.8% [58.0, 86.1]
 python tools/counts_659.py --json           # atoms_real = 42 (denominator authority)
-python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval;print(cp_interval(31,42))"
+python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval; \
+  print(cp_interval(31,42))"
 # consistency
 python -c "import sys;sys.path.insert(0,'tools');import gate_engine;print(len(gate_engine.RULES))"  # 67
 wc -l data/authority/decision_event_v2_ledger.jsonl  # 452
 \end{verbatim}
 Paths are relative to the artifact root (the non-anonymous release provides the full layout).
 \texttt{reveal}-type commands must redirect their output to a temporary directory outside the repo.
+
+\section{Reproducibility: Environment, Seeds and Commands}
+\label{app:reproducibility}
+\textbf{One command.} \texttt{bash docker/paper/run\_all.sh} (or the Docker image
+\texttt{docker/paper/Dockerfile}) re-derives every number in this paper that can be re-derived
+without re-running detectors, writes them to \texttt{out/}, and \emph{fails loudly} on any mismatch;
+it never overwrites a landed artifact. The full manual (including the parts it cannot do) is
+\texttt{REPRODUCE.md} at the repository root.
+
+\paragraph{Environment (versions of record).}
+Python \textbf{3.13.13} (the version recorded in \texttt{data/holdout\_reveal\_5\_672h.json::env.python});
+WSL \textbf{Ubuntu 24.04.4}; g++ \textbf{13.3.0} (Ubuntu 13.3.0-6ubuntu2$\sim$24.04.1) with
+\texttt{setarch} from util-linux \textbf{2.39.3}; MinGW g++ 13.1.0 and clang 22.1.8 for the
+Windows-native parts; clang-tidy \textbf{LLVM 22.1.8} and cppcheck \textbf{2.13.0} for E9;
+tectonic \textbf{0.17.0} for compilation. \textbf{Environment is not cosmetic:} the local MinGW
+toolchain ships no UBSan runtime, and without WSL 15 samples silently degrade to \texttt{unknown}
+(corpus 35.0\%$\to$10.0\%) \emph{with the guard still green}.
+
+\paragraph{Seeds (all fixed; audited by \texttt{tools/seed\_audit\_676h.py}).}
+\begin{center}\footnotesize
+\begin{tabular}{@{}lll@{}}
+\toprule
+Seed & Used by & Recorded in \\
+\midrule
+\texttt{20260930} & project convention: Random$\dagger$ arm, A5 single-point, 672h expansion & \texttt{data/current\_numbers.json::seed} \\
+\texttt{20260928} & mutation sampling (\texttt{mutation\_test\_656.py --seed}) & \texttt{data/656\_mutation\_report*.json::seed} \\
+\texttt{20261003} & 676f derivation/evaluation split & \texttt{data/676f\_pipeline.py::SEED\_SPLIT} \\
+\texttt{6761}, \texttt{6762}, \dots & 676c expansion batches & \texttt{data/expansion\_676c*/} \\
+\texttt{676}, \texttt{67610} & 676g blind-spot sampling & \texttt{data/blindspot\_676g\_runner.py} \\
+\bottomrule
+\end{tabular}
+\end{center}
+Zero experiment-class scripts use randomness without a fixed seed
+(\texttt{data/676h\_seed\_audit.json::summary.experiment\_unseeded $= 0$}). The 676f split is
+deterministic: within each $(source\_batch, defect\_group)$ stratum, order by
+\texttt{sha256('20260930':sample\_id)} ascending, even positions $\to$ derivation, odd $\to$
+evaluation---no dependence on filesystem order.
+
+\paragraph{What is \emph{not} reproducible by the script (declared, not hidden).}
+(1) The headline holdout/corpus rates require re-running detectors inside WSL (hours; ASan/UBSan/TSan
+runtime); the script re-derives them \emph{from landed artifacts} instead. (2) E9's driver script is
+not preserved and its clang-tidy version (LLVM 22.1.8, Windows) differs from Ubuntu's (LLVM 18).
+(3) Two historical table rows are un-pinned (Appendix~\ref{app:tables}, Table~\ref{tab:e3}).
+(4) The OTS time anchor is a zero-attestation placeholder. (5) macOS cannot reproduce the corpus
+caliber at all (no \texttt{setarch}).
 
 \section{AI Use Statement}
 \label{app:ai}
@@ -1100,6 +1157,38 @@ made. Any unregistered AI contribution is treated as an undeclared author.
 
 \section{Related Work (seven directions)}
 \label{app:related}
+
+\paragraph{Nearest neighbours added in v1.1 (2025--2026; metadata checked against arXiv).}
+Table~\ref{tab:neighbours} places six recent systems against ours on the axes that actually divide
+them: \emph{what evolves}, \emph{where the verdict comes from}, and whether a third party can
+recompute it.
+\begin{table}[h]
+\caption{Six 2025--2026 neighbours. None of them is our object of study: they evolve items, judges,
+metric or agents; we evolve a verifier's evidence-acquisition capability over a \emph{knowledge
+corpus}.}
+\label{tab:neighbours}
+\centering
+\small
+\begin{tabular}{@{}lp{3.6cm}p{3.4cm}p{5.2cm}@{}}
+\toprule
+Work & Evolved object & Verdict source & Relation to this paper \\
+\midrule
+FuzzingBrain V2~\cite{sheng2026fuzzingbrain} & agent pipeline (fuzzing) & fuzzer-reproducible crash & Same discipline (``evidence or it did not happen''), different goal: finding new bugs, not auditing a corpus \\
+Vera~\cite{feng2026vera} & test cases for agents & deterministic predicates over tool-call evidence & Methodological cousin: evidence-grounded, not self-report; but the object under test is an agent, not a knowledge claim \\
+LLM-as-a-Verifier~\cite{kwok2026llmverifier} & the verifier's \emph{score distribution} & model logits (continuous score) & Sharpest contrast: the judge stays inside the model---our shared-failure-domain objection applies; no recomputable chain \\
+PaperTrail~\cite{martinboyle2026papertrail} & the \emph{interface} (claims vs.\ evidence) & human judgement & Same claim/evidence decomposition as our evidence cards, but a UI study with no verdict algebra and no audit trail \\
+Reproducibility Beyond Artifacts~\cite{li2026reprobeyond} & socio-technical process & interview evidence & Explains \emph{why} our guard/pinning gap matters: failures live in interactions, not missing artifacts \\
+Atlas~\cite{spoczynski2025atlas} & ML lifecycle metadata & attestation + transparent logs & Our Merkle ledger is a smaller sibling; they target supply chain, we target verdicts \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{MiniCheck (the judge that evolves), full text.}
+MiniCheck~\cite{tang2024minicheck} trains an efficient fact-checking model to judge whether LLM
+output is supported by a grounding document---the representative case of \emph{the judge being
+improved}: the evolved object is model weights, the strategy is distillation, and auditability boils
+down to trusting the model's behavior. Complementary to, not competing with, our goal: MiniCheck
+evolves ``judging faster''; we evolve ``judging in a process a third party can audit.''
 \begin{table}[h]
 \caption{Seven related-work directions.}
 \centering
@@ -1124,7 +1213,7 @@ Direction & Representative work \\
 \label{app:humanize}
 % =====================================================================
 
-\paragraph{E4 --- Ablation A5 (\emph{run}): full numbers.}
+\paragraph{E4 --- Ablation A5: the 673p-era numbers are \emph{superseded}.}
 The six pre-registered groups A0--A5 each carry a written hypothesis and a decision rule; A0--A4
 remain design-only (\texttt{\{\{TODO\_ablation\_A0\}\}}\dots\texttt{\{\{TODO\_ablation\_A4\}\}}), since
 A1 needs a git-history ruleset snapshot, A2 hits the \emph{irreversible-blindness} barrier (a revealed
@@ -1134,43 +1223,19 @@ random asset selection) is the paper's core-mechanism falsifier: \textbf{if the 
 $\Delta(\text{A0}-\text{A5})$ crosses 0, then ``failure-driven beats same-budget random'' does
 \emph{not} hold.}
 
-\emph{Design.} The control runs on a real per-asset verdict matrix: $105$ measurable samples
-(holdout 41, corpus 64) $\times$ $8$ assets, each cell a real \texttt{detect} call ($840$ calls
-total, one round). Failure-hits are estimated on a \textbf{disjoint derivation split} (holdout
-$n{=}21$, corpus $n{=}48$) and evaluated on the held-out split (holdout $n{=}20$, corpus $n{=}16$), so
-the failure-driven arm is a genuine \emph{predictor} rather than a post-hoc accounting of its own
-catches. Budget is matched at $k{=}4$ assets, with a 2000-draw random distribution and exact McNemar
-on the paired evaluation split.
-
-\emph{Main endpoint (pre-registered full 8-asset pool, $k{=}4$).} holdout: FD \textbf{90.0\%} (18/20)
-vs.\ Random \textbf{35.0\%} (7/20) vs.\ Static \textbf{10.0\%} (2/20);
-$\Delta_{\text{FD}-\text{Rnd}}{=}\mathbf{+55.0}$pp, CI [+33.2, +76.8], exact McNemar
-$p{=}9.8\times10^{-4}$ ($b{=}11$, $c{=}0$), $h{=}1.23$. corpus: FD \textbf{81.3\%} (13/16) vs.\
-Random \textbf{37.5\%} (6/16) vs.\ Static \textbf{37.5\%}; $\Delta{=}\mathbf{+43.8}$pp, CI [+13.9,
-+73.6], $p{=}0.039$ ($b{=}8$, $c{=}1$), $h{=}0.93$. Over the 2000 resampled random distributions, FD
-is \emph{strictly} better in \textbf{93.75\%} (holdout; mean draw 55.0\%, SD 23.4pp) and
-\textbf{95.8\%} (corpus; mean 53.7\%, SD 16.0pp) of them; the single seed is used only for the paired
-test. The pre-registered decision table therefore reads \texttt{primary\_pass} $\checkmark$
-(holdout) and \texttt{secondary\_pass} $\checkmark$ (corpus)---both significant for the first time.
-
-\emph{The three limits (none optional).} (i) \emph{Pool composition.} Random's $k{=}4$ draw is
-$\{$wunsequenced, cross-compile, tsan, compile-time$\}$, of which wunsequenced and compile-time are
-\emph{degenerate} (constant \texttt{unknown}---they catch nothing by construction), so half its budget
-goes to zero-information assets while the failure-driven ranking avoids them (their derivation
-fail-hits are 0). In the pre-registered \textbf{parallel analysis} that excludes degenerate assets
-(holdout 5 candidates, corpus 6), the holdout $\Delta$ collapses to \textbf{0.0}pp ($p{=}1.0$,
-$b{=}c{=}0$)---\textbf{triggering the pre-registered \texttt{uninterpretable} clause}. The effect is
-therefore mostly ``not wasting budget on assets that cannot inform'', a real but weaker statement than
-``failure-driven selection is smarter''. The corpus side does \emph{not} trigger the clause (parallel
-$\Delta{=}+31.3$pp, CI [+2.7, +59.8], same sign) but is not significant there either ($p{=}0.125$).
-(ii) \emph{Power.} $n{=}20/16\ll138$ (the paired $\Delta{=}15$pp requirement), so magnitudes stay
-interval-reads; a $\pm5$pp half-width would need $n{=}236/378$. (iii) \emph{No superiority claim.} We
-do not write ``FD beats Random'': the significant main endpoint and the vanishing parallel analysis
-are reported together, and the $k$-sweep (holdout $p\le9.8\times10^{-4}$ for $k{=}1..5$, $p{=}0.0156$
-at $k{=}6/7$; corpus $p{=}0.039$ at $k{=}4$, $0.070$ at $k{=}2$, $0.063$ at $k{=}5$) is exploratory.
-What made this table readable at all was fixing a \emph{detector-unavailability} defect (a
-constant-catch \texttt{wunsequenced} branch, since repaired with regression tests); the headline
-detection rates are unchanged by that fix, and it is recorded separately.
+\emph{Superseded first run (673p/673u, kept for the audit trail).} On the then-available
+$105$-sample matrix ($840$ real \texttt{detect} calls; derivation holdout $n{=}21$ / corpus $n{=}48$,
+evaluation holdout $n{=}20$ / corpus $n{=}16$) the main endpoint read holdout FD \textbf{90.0\%}
+(18/20) vs.\ Random \textbf{35.0\%} (7/20), $\Delta{=}\mathbf{+55.0}$pp (CI [+33.2, +76.8],
+$p{=}9.8\times10^{-4}$, $b{=}11$, $c{=}0$, $h{=}1.23$), and corpus FD \textbf{81.3\%} (13/16) vs.\
+\textbf{37.5\%} (6/16), $\Delta{=}\mathbf{+43.8}$pp (CI [+13.9, +73.6], $p{=}0.039$, $b{=}8$,
+$c{=}1$, $h{=}0.93$). At $n{=}20/16\ll138$ those magnitudes were interval-reads only, and the
+pre-registered parallel analysis already collapsed them to \textbf{0.0}pp on holdout.
+\textbf{676f re-ran the same design on 1137 samples; the numbers quoted in the main text are the
+676f ones, and the full tables are in Appendix~\ref{app:a5full}.} What made either run readable at
+all was fixing a \emph{detector-unavailability} defect (a constant-catch \texttt{wunsequenced}
+branch, since repaired with regression tests); the headline detection rates are unchanged by that
+fix, and it is recorded separately.
 
 \paragraph{Motivation 3: provenance moved from good practice to obligation.}
 EU Regulation 2024/1689 (AI Act), Article 50 imposes transparency obligations on generative AI
@@ -1326,6 +1391,190 @@ anchor: still a placeholder, so ``on-chain'' does not hold. And the last hole in
 81.2\% incident can still recur, and v1.0 diagnosed it, admitted the cure was ineffective, and kept
 using the same cure.
 
+\section{A5 at Full Scale (676f): 1137 Samples}
+\label{app:a5full}
+This appendix is the authoritative record of the budget-matched control; the main text quotes it and
+Appendix~\ref{app:humanize} keeps the superseded 673p-era numbers for audit.
+
+\paragraph{Design and sample bookkeeping.}
+$1137$ samples after de-duplication ($10$ content duplicates dropped, $0$ id collisions), split
+$571$ derivation / $566$ evaluation by \emph{stratified deterministic} rule: within each
+$(source\_batch, defect\_group)$ stratum, order by \texttt{sha256('20260930':sample\_id)} ascending,
+even positions $\to$ derivation, odd $\to$ evaluation (no filesystem order dependence).
+Composition: $1063$ \texttt{planted=true} / $74$ \texttt{planted=false}; families
+stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,
+ODR 30, conditional 40, optimization 40. Every cell of the $1137\times8$ matrix is a real
+\texttt{detect} call; \texttt{unknown} is never counted as \texttt{miss}.
+
+\paragraph{Asset diagnostics: two of the eight assets are degenerate.}
+\begin{center}\footnotesize
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Asset & catch & catch rate & unknown rate & verdict \\
+\midrule
+asan & 399 & 35.1\% & 0.88\% & usable \\
+ubsan & 268 & 23.6\% & 0.88\% & usable \\
+tsan & 255 & 22.4\% & 0.88\% & usable (3/180 unstable, see \S\ref{app:blindspot}) \\
+cross-compile & 170 & 15.0\% & 3.34\% & usable \\
+compiler-warn & 143 & 12.6\% & 0.0\% & usable \\
+linker & 10 & 0.88\% & 0.0\% & usable \\
+wunsequenced & 0 & 0.0\% & \textbf{100\%} & \textbf{degenerate} \\
+compile-time & 0 & 0.0\% & \textbf{100\%} & \textbf{degenerate} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Main endpoint ($k{=}4$, pre-registered full 8-asset pool, $n{=}566$ evaluation).}
+\begin{center}\footnotesize
+\begin{tabular}{@{}p{2.7cm}p{3.3cm}p{2.2cm}p{3.9cm}@{}}
+\toprule
+Arm & assets drawn & recall (CP 95\%) & vs FD \\
+\midrule
+FD (failure-driven) & asan, ubsan, tsan, cross-compile & \textbf{54.6\% (309/566) [50.4, 58.8]} & --- \\
+Random (budget-matched) & wunsequenced, cross-compile, tsan, compile-time & 30.6\% (173/566) [26.8, 34.5] & $\Delta{=}\mathbf{+24.0}$pp [+20.5, +27.5], $p{=}2.3\times10^{-41}$, $b{=}136,c{=}0$, $h{=}0.49$ \\
+Static & compiler-warn, cross-compile, linker, wunsequenced & 24.7\% (140/566) [21.2, 28.5] & $\Delta{=}\mathbf{+29.9}$pp [+25.2, +34.5], $p{=}1.9\times10^{-31}$, $b{=}200,c{=}31$, $h{=}0.62$ \\
+full pool ($k{=}8$) & all eight & 60.1\% (340/566) [55.9, 64.1] & ceiling reference \\
+\bottomrule
+\end{tabular}
+\end{center}
+Over 2000 resampled random draws, FD is \emph{strictly} better in \textbf{97.6\%} of them
+(random mean 40.2\%, SD 9.3pp); the single seed is used only for the paired test.
+
+\paragraph{Pre-registered parallel analysis (5 usable assets, $k{=}4$).}
+Excluding the two degenerate assets leaves five candidates, and at $k{=}4$ a random draw lands on
+\emph{exactly the four assets} FD picks (asan, ubsan, tsan, cross-compile)---both arms read
+54.6\% (309/566), so $\Delta_{\text{FD}-\text{Rnd}}{=}\mathbf{0.0}$pp ($p{=}1.0$), while the
+Static contrast \emph{grows} to \textbf{+30.6}pp (CI [+26.0, +35.1], $p{=}8.1\times10^{-34}$).
+
+\paragraph{What the contrast actually identifies (a conditional statement, not a theorem).}
+Let $A$ be the asset pool and $D\subseteq A$ the \emph{degenerate} assets---those that are
+constant-\texttt{unknown} on every sample ($|D|{=}2$ here). Failure-driven ranking is built from
+derivation fail-hits, which are exactly $0$ on $D$, so whenever $|A\setminus D|\ge k$ the FD arm's
+top-$k$ contains no degenerate asset; a uniform random draw spends an expected $k\cdot|D|/|A|$ of its
+budget on zero-information assets. Hence
+$E[\text{catch}_{\text{FD}}]\ge E[\text{catch}_{\text{Rnd}}]$ \emph{whenever the pool contains
+degenerate assets and $k<|A|$}, with the gap driven by $|D|$ and $k$---and it \emph{vanishes when
+$D$ is removed}. That is precisely what the parallel analysis shows ($+24.0\to0.0$). \textbf{We
+therefore state only the conditional result:} A5 supports ``do not spend budget on assets that
+cannot inform,'' and provides \emph{no} evidence for a ranking advantage beyond that.
+
+\paragraph{$k$-sweep (exploratory).}
+\begin{center}\footnotesize
+\begin{tabular}{@{}rrrrrr@{}}
+\toprule
+$k$ & FD & Random & $\Delta$pp & 95\% CI & $p$ \\
+\midrule
+1 & 33.0\% & 0.0\% & +33.0 & [+29.2, +36.9] & $1.0\times10^{-56}$ \\
+2 & 45.1\% & 14.3\% & +30.7 & [+26.2, +35.3] & $7.8\times10^{-35}$ \\
+3 & 51.1\% & 30.6\% & +20.5 & [+16.5, +24.5] & $2.2\times10^{-22}$ \\
+\textbf{4} & \textbf{54.6\%} & \textbf{30.6\%} & \textbf{+24.0} & [+20.5, +27.5] & $2.3\times10^{-41}$ \\
+5 & 59.4\% & 38.7\% & +20.7 & [+17.3, +24.0] & $1.2\times10^{-35}$ \\
+6 & 60.1\% & 48.8\% & +11.3 & [+8.7, +13.9] & $1.1\times10^{-19}$ \\
+7 & 60.1\% & 49.5\% & +10.6 & [+8.1, +13.1] & $1.7\times10^{-18}$ \\
+8 & 60.1\% & 60.1\% & 0.0 & [0.0, 0.0] & 1.0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Subgroups with multiplicity control (11 tests).}
+We report BH-FDR \emph{and} Bonferroni; uncorrected $p$ must not be quoted alone.
+\begin{center}\footnotesize
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Defect group & $n$ (eval) & $\Delta$pp & $p_{\text{BH-FDR}}$ & $p_{\text{Bonferroni}}$ \\
+\midrule
+undefined behavior & 43 & +58.1 & $1.0\times10^{-6}$ & $1.0\times10^{-6}$ \\
+memory safety & 49 & +46.9 & $1.0\times10^{-6}$ & $3.0\times10^{-6}$ \\
+legacy & 47 & +36.2 & $5.6\times10^{-5}$ & $1.7\times10^{-4}$ \\
+stl & 100 & +15.0 & $1.7\times10^{-4}$ & $6.7\times10^{-4}$ \\
+real world & 44 & +29.5 & $5.4\times10^{-4}$ & $2.7\times10^{-3}$ \\
+optimization sensitive & 20 & +55.0 & $1.8\times10^{-3}$ & $1.1\times10^{-2}$ \\
+conditional trigger & 20 & +45.0 & $6.1\times10^{-3}$ & $4.3\times10^{-2}$ \\
+concurrency & 109 & +7.3 & $9.6\times10^{-3}$ & $8.6\times10^{-2}$ \\
+language semantics & 45 & +17.8 & $9.6\times10^{-3}$ & $8.6\times10^{-2}$ \\
+embedded & 74 & +8.1 & $3.4\times10^{-2}$ & $3.4\times10^{-1}$ \\
+odr / link & 15 & +6.7 & $1.0$ & $1.0$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Ten of eleven survive BH-FDR at $0.05$; \emph{odr/link} does not ($n{=}15$, $\Delta{=}+6.7$pp,
+$p{=}1$), and \emph{concurrency} is the largest group ($n{=}109$) with the smallest gain
+($+7.3$pp)---FD's advantage is concentrated in UB / memory / legacy, not in concurrency.
+
+\paragraph{Real (non-planted) defects.} On the $74$ \texttt{planted=false} samples
+($34$ in the evaluation split) FD reads \textbf{64.7\%} (22/34) vs.\ Random 35.3\%,
+$\Delta{=}\mathbf{+29.4}$pp (CI [+14.1, +44.7], $p{=}2.0\times10^{-3}$, $b{=}10,c{=}0$);
+on \texttt{planted=true} ($532$ evaluated) FD reads 53.9\% (287/532) vs.\ 30.3\%,
+$\Delta{=}\mathbf{+23.7}$pp (CI [+20.1, +27.3], $p{=}2.4\times10^{-38}$). The direction is the same
+on real defects, but with $n{=}34$ the real-defect interval is wide.
+
+\paragraph{Power.} The pre-registered requirement for a paired $\Delta{=}15$pp contrast was
+$n\approx103$--$173$; the evaluation split has \textbf{$n{=}566$}, i.e.\ $3$--$5\times$ the
+requirement, and the observed $\Delta{=}+24.0$pp carries a CI half-width of only $3.5$pp. We use the
+\emph{pre-registered} minimum detectable effect for the design claim and never the observed effect.
+
+\section{Threats to Validity, Quantified}
+\label{app:threats_quantified}
+This appendix backs the two short paragraphs in \S\ref{sec:validity} with the numbers and the
+reasoning that did not fit in nine pages.
+
+\paragraph{Instrument capability boundary.}
+Over the $1147$-sample matrix: catch $707$, miss $440$, unknown $0$ $\Rightarrow$ blind-spot ratio
+\textbf{38.4\%}. It is \emph{not} uniform: \textbf{41.0\%} [38.0, 44.1] on \texttt{planted=true}
+versus \textbf{21.6\%} [13.8, 32.3] on the $74$ real defects---self-authored defects are
+\emph{harder} for our pool than real ones, the opposite of the usual ``we built the exam'' worry
+(and with $n{=}74$ the real-defect interval is wide). \textbf{15 of 70} types exceed $50\%$ blind:
+uninitialized read, state machine, memory-order, resource exhaustion, compiler bug, infinite loop,
+timing side channel, deadlock, volatile misuse, endianness, algorithm misuse, lock-priority
+inversion, cross-TU UB, ABA, interrupt safety. \emph{Consequence:} no rate in this paper says
+anything about deadlock, endianness or interrupt safety, because no asset we own can see them. A
+second, independent instrument (clang-tidy / cppcheck in E9) covers a partially \emph{different}
+region---FD 82.9\% vs.\ clang-analyzer 48.8\% on holdout, but only a tie on corpus---which is why
+E9 is a cross-regime stress test and not a ranking. TSan instability: $3$ of $180$ thrice-run
+samples flipped verdict (1.7\%).
+
+\paragraph{A5: why power is no longer the binding limitation, and identification is.}
+The pre-registered requirement for a paired $\Delta{=}15$pp contrast was $n\approx103$--$173$; the
+evaluation split has $n{=}566$, and the observed $\Delta{=}+24.0$pp has a CI half-width of $3.5$pp.
+\emph{Small sample is therefore retired as an objection to A5.} The binding limitation is
+identification: at $k{=}4$ in an eight-asset pool with two degenerate assets, the failure-driven arm
+and a budget-matched random arm differ \emph{only} in whether they waste budget on assets that are
+constant-\texttt{unknown}; excluding those assets, both arms draw the same four and $\Delta$ is
+exactly $0$. Any future design that wants to isolate \emph{ranking} must (i) use a pool with no
+degenerate assets \emph{and} (ii) choose $k$ strictly between $1$ and $|A|{-}1$ with enough assets
+that random draws actually differ---neither of which our current pool supports at usable $k$.
+
+\section{Detector Capability Boundaries (676g): a Blind-Spot Map}
+\label{app:blindspot}
+\textbf{Why this is a method, not a list of findings.} Any detector report of the form ``we find
+$X$\%'' is uninterpretable without the \emph{capability boundary} of the instrument that produced it.
+We therefore ship a reusable three-step procedure: (1) build the \emph{sample $\times$ asset}
+verdict matrix over a labelled pool, keeping \texttt{miss} and \texttt{unknown} separate;
+(2) aggregate to \emph{type $\times$ asset} coverage, plus a \emph{complementarity} analysis
+(per-asset solo catch, union catch, pairwise unions); (3) publish the \emph{blind-spot bands}---the
+defect types whose miss$+$unknown ratio exceeds a pre-declared threshold---so that any downstream
+user can see \emph{which classes their instrument structurally cannot see}. Steps 1--3 are
+instrument-agnostic and language-agnostic; our C++ instantiation is the case study.
+
+\paragraph{The map we measured ($n{=}1147$).}
+Overall: catch $707$, miss $440$, unknown $0$ $\Rightarrow$ \textbf{blind-spot ratio 38.4\%}; the
+union of the six usable assets reaches \textbf{61.6\%}, versus \textbf{35.6\%} for the single best
+asset (asan)---so more than half of what the pool finds is \emph{not} findable by any one asset.
+Coverage by asset: asan 35.6\%, ubsan 23.5\%, tsan 22.9\%, compiler-warn 12.5\%, cross-compile
+10.6\%, linker 0.9\%. \textbf{High-blind-spot bands} ($>50\%$ miss$+$unknown, 15 of 70 types):
+uninitialized read, state machine, memory-order, resource exhaustion, compiler bug, infinite loop,
+timing side channel, deadlock, volatile misuse, endianness, algorithm misuse, lock-priority
+inversion, cross-TU UB, ABA, interrupt safety. \textbf{Planted status matters:} blind-spot ratio is
+41.0\% (95\% CI [38.0, 44.1]) on \texttt{planted=true} but \emph{21.6\%} ([13.8, 32.3]) on the
+$74$ real defects---self-authored defects are \emph{harder} for us than real ones, which is the
+opposite of the usual ``we built the exam'' worry, and with $n{=}74$ the real-defect interval is
+wide. \textbf{Stability:} over 180 samples re-run three times under TSan, $3$ samples flipped
+(1.7\%), so concurrency verdicts carry an instrument-level instability floor.
+
+\paragraph{What it buys the reader.} Every headline rate in this paper is now accompanied by the
+classes that \emph{cannot} contribute to it: a 82.9\% holdout number says nothing about deadlock,
+endianness or interrupt safety, because the pool has no asset that can see them.
+
 \section{External Tool Comparison (clang-tidy / cppcheck; details)}
 \label{app:clangtidy}
 This appendix backs Experiment~E9 with the full tables and the three mandatory caveats.
@@ -1341,8 +1590,8 @@ capability ranking.
 Tool / caliber & recall & $k/n$ & FPR & vs FD McNemar $p$ \\
 \midrule
 FD (queyi) & 82.9\% & 34/41 & 0.0\% (0/11) & --- \\
-clang-analyzer-* (StrictA) & 48.8\% & 20/41 & 11.1\% (1/9) & $1.2\times10^{-4}$ \\
-cppcheck (error+warning) & 41.5\% & 17/41 & 11.1\% (1/9) & $1.5\times10^{-5}$ \\
+clang-analyzer-* (StrictA) & 48.8\% & 20/41 & 9.1\% (1/11) & $1.2\times10^{-4}$ \\
+cppcheck (error+warning) & 41.5\% & 17/41 & 9.1\% (1/11) & $1.5\times10^{-5}$ \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -1403,7 +1652,13 @@ The following lower-priority future-work items are deferred from \S\ref{sec:conc
 \begin{itemize}
 \item (i) Expand toward $n\ge100$ (672h moved holdout to 41 measurable / corpus to 64; ablation needs $n\approx103$--173 pairs).
 \item (ii) Expose the split-repo interfaces, run the true B1, and rerun the true B3 at the new denominator.
-\item (iii) Expand A5 to $n\ge138$ and run A0--A4, so the core mechanism can be \emph{falsified} rather than merely bounded: A5's main endpoint is significant, but its holdout effect is pool composition.
+\item (iii) \textbf{Done for power, still open for identification:} A5 now runs at $n{=}566$
+($\gg138$), so the power objection is retired; what remains is a \emph{non-degenerate} asset pool
+with $1<k<|A|{-}1$ so that failure-driven ranking and a random draw can actually differ. Run A0--A4
+so the core mechanism can be \emph{falsified} rather than merely bounded.
+\item (iii-b) Re-run the blind-spot map (Appendix~\ref{app:blindspot}) after each asset addition:
+it is the cheapest available check that a new asset widened the visible region rather than merely
+re-scoring the old one.
 \item (v) Make the guard rerun detectors, since the 81.2\% incident can still recur and this is the one place where v1.0 diagnosed a disease, admitted the cure was ineffective, and kept using it.
 \item (vii) A fail-loud environment self-check in the reproduction scripts plus explicit macOS/Windows-native non-reproducibility statements.
 \item (viii) Done in E9 (clang-tidy/cppcheck on 41/64; exploratory, post-hoc caliber, corpus inconclusive).

@@ -145,7 +145,7 @@ bash tools/generate_pdf.sh --by-part   # PDF（分卷）
 1. **第一年四件地基**（`_arch_v34` 战略结论）
    - ✅ 许可与协作包（本文件 + `LICENSE` + `DCO.md` + `CONTRIBUTING.md` + `CODE_OF_CONDUCT.md` + `.github/` 模板）
    - ✅ 判决形式规格 v1（[`docs/verdict_formal_spec_v1.md`](docs/verdict_formal_spec_v1.md)）——为后续 Rust + Verus 形式化做准备
-   - 🚧 元验证论文（arXiv）：调研已完成（`_arch_v35_brief.md`），写作未开始
+   - ✅ 元验证论文（NeurIPS 2027 Datasets & Benchmarks 投稿稿 v1.1）：`research/latex/queyi_neurips2027_v1.1.tex`（正文 9 页 / 全稿 29 页）；同批交付可复现化改造——一键复算 `bash docker/paper/run_all.sh`、手册 [`REPRODUCE.md`](REPRODUCE.md)、数字审计 `tools/verify_paper_numbers.py`（118 条检察 / 0 硬伤）、种子审计 `tools/seed_audit_676h.py`（实验类未固定种子 0）
    - ✅ 门禁三杠杆（增量选例 / 结果缓存 / 分片）：`tools/test_selector_655.py`、`tools/result_cache_655.py`
 2. **信任根继续独立化**：外部锚（OpenTimestamps 上链）、第三方盲评、独立性从 L2 走向 L3
 3. **知识面扩展**：`draft650` 草稿卡 → 补证据升 `verified`；C 语言与嵌入式域适配

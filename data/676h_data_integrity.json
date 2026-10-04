@@ -1,0 +1,60 @@
+{
+ "schema": "queyi-data-integrity/676h",
+ "generated_by": "tools/data_integrity_676h.py",
+ "manifest": "data/a5_676f_sample_manifest.json",
+ "n_samples": 1137,
+ "split": {
+  "derivation": 571,
+  "evaluation": 566
+ },
+ "planted": {
+  "true": 1063,
+  "false": 74
+ },
+ "fingerprint_sha256_16": "c9f51f51bc96f034",
+ "md5_recheck": {
+  "verified": 1080,
+  "skipped": 57,
+  "mismatched": 0
+ },
+ "blindspot_n": 1147,
+ "checks": [
+  {
+   "id": "D1",
+   "name": "清单条目数 == n_total",
+   "ok": true,
+   "detail": "n_total=1137 len(samples)=1137"
+  },
+  {
+   "id": "D2",
+   "name": "保留样本 content_md5 无重复（去重不变式）",
+   "ok": true,
+   "detail": "唯一 1137 / 条目 1137；重复 0"
+  },
+  {
+   "id": "D3",
+   "name": "切分计数与 676f 结果登记一致",
+   "ok": true,
+   "detail": "manifest 571/566；results 登记 571/566"
+  },
+  {
+   "id": "D4",
+   "name": "planted 计数与 676f 结果登记一致",
+   "ok": true,
+   "detail": "manifest true=1063 false=74；results 登记 true=1063 false=74"
+  },
+  {
+   "id": "D5",
+   "name": "盲区地图样本数已登记且 ≥ A5 清单",
+   "ok": true,
+   "detail": "blindspot n=1147；A5 n=1137（并集含历史批次，差异属预期）"
+  },
+  {
+   "id": "D6",
+   "name": "可定位源文件的 md5 重算无失配",
+   "ok": true,
+   "detail": "重算一致 1080；跳过（内联 / 文件不在库内）57；失配 0 []"
+  }
+ ],
+ "verdict": "pass"
+}

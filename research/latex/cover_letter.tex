@@ -49,20 +49,28 @@ Benchmark-evolution lines (Benchmark Self-Evolving, ArenaBencher, LiveBench) evo
 proving the change is externally measurable.} That is our position.
 
 \paragraph{Headline result.}
-On the \emph{same} samples, failure-driven verification reaches \textbf{87.5\%} holdout recall
-(14/16) and \textbf{43.8\%} corpus measurable recall (14/32), versus a \emph{static caliber arm} at
-\textbf{6.2\%} and \textbf{12.5\%} ($\Delta$ \textbf{+81.3pp} / \textbf{+31.3pp}; exact McNemar
-$p\le0.002$, Cohen's $h\ge0.72$).
+On the \emph{same} samples, failure-driven verification reaches \textbf{82.9\%} blind-holdout recall
+(34/41, CP95 [67.9, 92.8]) and \textbf{62.5\%} external-corpus recall (40/64, CP95 [49.5, 74.3]),
+versus a \emph{static caliber arm} at \textbf{2.4\%} and \textbf{17.2\%} ($\Delta$
+\textbf{+80.5pp} [+68.4, +92.6] / \textbf{+45.3pp} [+33.1, +57.5]; exact McNemar
+$p=2.3\times10^{-10}$ / $3.7\times10^{-9}$; Cohen's $h\ge0.97$). The budget-matched control A5 now
+runs at full scale (1137 samples; $n{=}566$ held out): FD \textbf{54.6\%} vs.\ Random \textbf{30.6\%}
+(\textbf{+24.0}pp, $p{=}2.3\times10^{-41}$) and vs.\ Static \textbf{24.7\%} (\textbf{+29.9}pp),
+with the Static contrast surviving the pre-registered parallel analysis (\textbf{+30.6}pp) while
+the Random contrast collapses to \textbf{0.0}pp once degenerate assets are excluded. We also publish
+a capability-boundary map of the instrument itself (\textbf{38.4\%} of 1147 samples are blind spots;
+15 of 70 defect types exceed 50\% blind).
 
 \paragraph{Honest limitations (stated up front).}
-Two headline numbers depend on a specific WSL sanitizer environment and \textbf{fail silently} when
-it is absent (35.0\% $\to$ 10.0\%); sample sizes are small ($n=16/32$ --- we report \emph{direction},
-not magnitude; $\pm$10pp needs $n\approx96$); the static arm is a \textbf{caliber re-binning} (not a
-re-run) and the random arm is an \textbf{instrument-level proxy} (not the paper's budget-matched B3,
-whose interface is currently blocked in a split repository). We therefore claim
-\textbf{auditability of the mechanism} plus \textbf{a significant same-sample advantage over the
-static/proxy arms} --- \textbf{not} superiority over a true static detector or the real B3. We
-include this analysis as part of the contribution rather than hiding it.
+The two headline rates depend on a specific WSL sanitizer environment and \textbf{fail silently} when
+it is absent (corpus 35.0\% $\to$ 10.0\%) --- the reproducibility script now checks for this and
+aborts; the static arm is a \textbf{caliber re-binning} (not a re-run) and the random arm is an
+\textbf{instrument-level proxy} (not the paper's budget-matched B3, whose interface is currently
+blocked in a split repository); A5 isolates \emph{pool composition} (``do not fund assets that
+cannot inform''), not a smarter ranking, so we claim \textbf{auditability of the mechanism} plus
+\textbf{a significant same-sample advantage over the static/proxy arms} --- \textbf{not} superiority
+over a true static detector or the real B3. We include this analysis as part of the contribution
+rather than hiding it.
 
 \paragraph{Data and code availability.}
 The repository is public (Apache-2.0) with DCO sign-off. Datasets D2/D3/D4 and the recomputation

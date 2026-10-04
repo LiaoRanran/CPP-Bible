@@ -1,0 +1,535 @@
+{
+  "schema": "queyi-676h/seed-audit",
+  "generated_at": "2026-10-04T09:14:32+08:00",
+  "scope": [
+    "tools",
+    "data"
+  ],
+  "summary": {
+    "files_using_random": 30,
+    "experiment_seeded": 16,
+    "experiment_unseeded": 0,
+    "non_experiment_or_unknown": 14
+  },
+  "seed_registry": {
+    "1234": [
+      "tools/learner_behavior_logger.py",
+      "tools/learner_state.py"
+    ],
+    "20260920": [
+      "tools/learner_twin_dashboard.py"
+    ],
+    "20260928": [
+      "tools/mutation_test_656.py"
+    ],
+    "20260930": [
+      "data/676f_analysis.py",
+      "data/676f_pipeline.py",
+      "tools/attack_simulator_643.py",
+      "tools/baseline_670a.py",
+      "tools/baseline_672g.py",
+      "tools/blind_protocol_636.py",
+      "tools/mutation_test_656.py",
+      "tools/run_a5_experiment_673p.py",
+      "tools/select_assets_671b.py",
+      "tools/selection_strategies_673p.py",
+      "tools/targeted_attacker_645.py",
+      "tools/verify_baseline_672f.py",
+      "tools/verify_baseline_672g.py"
+    ],
+    "20261001": [
+      "tools/trajectory_floor_check_671g.py"
+    ],
+    "20261003": [
+      "data/676f_pipeline.py"
+    ],
+    "5000": [
+      "tools/eprocess_671g.py"
+    ],
+    "636": [
+      "tools/blind_protocol_636.py"
+    ],
+    "6761": [
+      "data/expansion_676c/analyze_676c.py",
+      "data/expansion_676c_D/spotcheck_D.py",
+      "data/expansion_676c_E/pool_E.py",
+      "data/expansion_676c_E/verify_E.py",
+      "data/expansion_676c_F/spotcheck_F.py"
+    ],
+    "67610": [
+      "data/blindspot_676g_runner.py"
+    ],
+    "6762": [
+      "data/expansion_676cC/finalize_676cC.py",
+      "data/expansion_676c_G/quality_check.py"
+    ]
+  },
+  "artifact_seeds": [
+    {
+      "artifact": "data/656_mutation_report.json",
+      "field": "seed",
+      "value": "20260928",
+      "label": "变异（core）"
+    },
+    {
+      "artifact": "data/656_mutation_report_all.json",
+      "field": "seed",
+      "value": "20260928",
+      "label": "变异（all）"
+    },
+    {
+      "artifact": "data/current_numbers.json",
+      "field": "seed",
+      "value": "20260930",
+      "label": "672h 扩样"
+    },
+    {
+      "artifact": "data/experiments/a5_673p.json",
+      "field": "seed",
+      "value": "20260930",
+      "label": "A5 实验"
+    },
+    {
+      "artifact": "data/experiments/a5_673p.json",
+      "field": "real_attribution.seed",
+      "value": "20260930",
+      "label": "A5 Real Attribution"
+    },
+    {
+      "artifact": "data/external_anchor_reveal_672j.json",
+      "field": "runs",
+      "value": "3",
+      "label": "外部锚点（重复次数，非种子）"
+    }
+  ],
+  "seed_drift": [],
+  "experiment_unseeded": [],
+  "files": [
+    {
+      "file": "data/676f_analysis.py",
+      "kind": "experiment",
+      "uses_random": false,
+      "seed_call": false,
+      "seed_constants": [
+        "20260930"
+      ],
+      "seed_symbols": [
+        "MULTI_SEED_N",
+        "SEED",
+        "multi_seed",
+        "multi_seed_n",
+        "multi_seed_runs",
+        "random_multi_seed",
+        "seed"
+      ],
+      "lines": 459
+    },
+    {
+      "file": "data/676f_pipeline.py",
+      "kind": "experiment",
+      "uses_random": false,
+      "seed_call": false,
+      "seed_constants": [
+        "20260930",
+        "20261003"
+      ],
+      "seed_symbols": [
+        "SEED_RANDOM",
+        "SEED_SPLIT",
+        "seed",
+        "seeds"
+      ],
+      "lines": 742
+    },
+    {
+      "file": "data/blindspot_676g_runner.py",
+      "kind": "experiment",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "67610"
+      ],
+      "seed_symbols": [
+        "seeds"
+      ],
+      "lines": 723
+    },
+    {
+      "file": "data/expansion_676c/analyze_676c.py",
+      "kind": "unknown",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "6761"
+      ],
+      "seed_symbols": [
+        "seed"
+      ],
+      "lines": 113
+    },
+    {
+      "file": "data/expansion_676cC/finalize_676cC.py",
+      "kind": "unknown",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "6762"
+      ],
+      "seed_symbols": [
+        "seed"
+      ],
+      "lines": 134
+    },
+    {
+      "file": "data/expansion_676c_D/spotcheck_D.py",
+      "kind": "unknown",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "6761"
+      ],
+      "seed_symbols": [
+        "seed"
+      ],
+      "lines": 71
+    },
+    {
+      "file": "data/expansion_676c_E/pool_E.py",
+      "kind": "unknown",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "6761"
+      ],
+      "seed_symbols": [
+        "seed"
+      ],
+      "lines": 334
+    },
+    {
+      "file": "data/expansion_676c_E/verify_E.py",
+      "kind": "unknown",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "6761"
+      ],
+      "seed_symbols": [
+        "seed"
+      ],
+      "lines": 321
+    },
+    {
+      "file": "data/expansion_676c_F/spotcheck_F.py",
+      "kind": "unknown",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "6761"
+      ],
+      "seed_symbols": [
+        "SEED"
+      ],
+      "lines": 122
+    },
+    {
+      "file": "data/expansion_676c_G/quality_check.py",
+      "kind": "unknown",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "6762"
+      ],
+      "seed_symbols": [
+        "seed"
+      ],
+      "lines": 102
+    },
+    {
+      "file": "tools/attack_simulator_643.py",
+      "kind": "experiment",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "20260930"
+      ],
+      "seed_symbols": [
+        "SEED",
+        "seed"
+      ],
+      "lines": 275
+    },
+    {
+      "file": "tools/baseline_670a.py",
+      "kind": "experiment",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "20260930"
+      ],
+      "seed_symbols": [
+        "SEED",
+        "seed"
+      ],
+      "lines": 367
+    },
+    {
+      "file": "tools/baseline_672g.py",
+      "kind": "experiment",
+      "uses_random": false,
+      "seed_call": false,
+      "seed_constants": [
+        "20260930"
+      ],
+      "seed_symbols": [
+        "SEED",
+        "seed"
+      ],
+      "lines": 268
+    },
+    {
+      "file": "tools/blind_protocol_636.py",
+      "kind": "experiment",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "20260930",
+        "636"
+      ],
+      "seed_symbols": [
+        "SEED",
+        "seed"
+      ],
+      "lines": 164
+    },
+    {
+      "file": "tools/confidence_sequence.py",
+      "kind": "experiment",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [],
+      "seed_symbols": [
+        "seed"
+      ],
+      "lines": 343
+    },
+    {
+      "file": "tools/eprocess_671g.py",
+      "kind": "experiment",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "5000"
+      ],
+      "seed_symbols": [
+        "seed"
+      ],
+      "lines": 182
+    },
+    {
+      "file": "tools/learner_behavior_logger.py",
+      "kind": "non-experiment",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "1234"
+      ],
+      "seed_symbols": [
+        "seed"
+      ],
+      "lines": 316
+    },
+    {
+      "file": "tools/learner_state.py",
+      "kind": "non-experiment",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "1234"
+      ],
+      "seed_symbols": [
+        "seed"
+      ],
+      "lines": 245
+    },
+    {
+      "file": "tools/learner_twin_dashboard.py",
+      "kind": "non-experiment",
+      "uses_random": false,
+      "seed_call": false,
+      "seed_constants": [
+        "20260920"
+      ],
+      "seed_symbols": [
+        "seed"
+      ],
+      "lines": 282
+    },
+    {
+      "file": "tools/metrics_collector.py",
+      "kind": "non-experiment",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [],
+      "seed_symbols": [
+        "seed"
+      ],
+      "lines": 876
+    },
+    {
+      "file": "tools/mutation_test_656.py",
+      "kind": "experiment",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "20260928",
+        "20260930"
+      ],
+      "seed_symbols": [
+        "SEED",
+        "seed"
+      ],
+      "lines": 693
+    },
+    {
+      "file": "tools/run_a5_experiment_673p.py",
+      "kind": "experiment",
+      "uses_random": false,
+      "seed_call": false,
+      "seed_constants": [
+        "20260930"
+      ],
+      "seed_symbols": [
+        "MULTI_SEED_N",
+        "SEED",
+        "multi_seed",
+        "multi_seed_n",
+        "multi_seed_runs",
+        "random_multi_seed",
+        "seed"
+      ],
+      "lines": 921
+    },
+    {
+      "file": "tools/seed_audit_676h.py",
+      "kind": "unknown",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [],
+      "seed_symbols": [
+        "ANY_SEED_LITERAL_RE",
+        "ARTIFACT_SEED_SOURCES",
+        "DEFAULT_SEED",
+        "SEED",
+        "SEED_",
+        "SEED_CALL_RE",
+        "SEED_CONST_RE",
+        "SEED_LITERAL_EXTRA_RES",
+        "_SEED",
+        "artifact_seeds",
+        "bseed",
+        "code_seeds"
+      ],
+      "lines": 255
+    },
+    {
+      "file": "tools/seed_check_671i.py",
+      "kind": "unknown",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [],
+      "seed_symbols": [
+        "NO_SEED",
+        "SEED",
+        "SEED_RE",
+        "manual_seed",
+        "seed"
+      ],
+      "lines": 79
+    },
+    {
+      "file": "tools/select_assets_671b.py",
+      "kind": "experiment",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "20260930"
+      ],
+      "seed_symbols": [
+        "DEFAULT_SEED",
+        "SEED",
+        "seed"
+      ],
+      "lines": 268
+    },
+    {
+      "file": "tools/selection_strategies_673p.py",
+      "kind": "experiment",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "20260930"
+      ],
+      "seed_symbols": [
+        "DEFAULT_SEED",
+        "seed"
+      ],
+      "lines": 319
+    },
+    {
+      "file": "tools/targeted_attacker_645.py",
+      "kind": "experiment",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "20260930"
+      ],
+      "seed_symbols": [
+        "SEED",
+        "seed"
+      ],
+      "lines": 258
+    },
+    {
+      "file": "tools/trajectory_floor_check_671g.py",
+      "kind": "unknown",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "20261001"
+      ],
+      "seed_symbols": [
+        "seed"
+      ],
+      "lines": 113
+    },
+    {
+      "file": "tools/verify_baseline_672f.py",
+      "kind": "experiment",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "20260930"
+      ],
+      "seed_symbols": [
+        "SEED",
+        "seed"
+      ],
+      "lines": 325
+    },
+    {
+      "file": "tools/verify_baseline_672g.py",
+      "kind": "experiment",
+      "uses_random": true,
+      "seed_call": true,
+      "seed_constants": [
+        "20260930"
+      ],
+      "seed_symbols": [
+        "SEED",
+        "seed"
+      ],
+      "lines": 283
+    }
+  ]
+}

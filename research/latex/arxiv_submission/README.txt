@@ -1,51 +1,31 @@
-Queyi — arXiv / NeurIPS 2027 submission package
-================================================
+Queyi / "Evolving Verifiers" — arXiv source package
+===================================================
 
-Title
------
-Evolving Verifiers: Failure-Driven Evidence Acquisition with Auditable Provenance
+Contents (4 files, no external graphics):
+  queyi_neurips2027_v1.1.tex   main LaTeX source (all figures are inline TikZ; no \includegraphics)
+  queyi_refs.bib               BibTeX database (66 entries)
+  neurips_2025.sty             NeurIPS 2025 style file (Datasets & Benchmarks track, [dandb], anonymous)
+  README.txt                   this file
 
-Authors
+Compile
 -------
-ANONYMOUS (double-blind submission). The \author{} block intentionally reads
-"Anonymous Author(s) / Affiliation / Address / email". Do not add author names,
-affiliations, emails, acknowledgments, or funding information to this package.
+  tectonic -X compile queyi_neurips2027_v1.1.tex        # verified: tectonic 0.17.0
+  # or: pdflatex queyi_neurips2027_v1.1 && bibtex queyi_neurips2027_v1.1 && pdflatex x2
 
-Files
------
-queyi_neurips2027_v1.1.tex   Main source (single entry point).
-queyi_refs.bib              Bibliography (BibTeX).
-neurips_2025.sty            NeurIPS style file.
-
-There are NO external image files: every figure is inline TikZ/pgfplots, and the
-paper uses no \input/\include of sub-files. These three files are sufficient.
-
-How to compile
---------------
-Option A (recommended, no TeX distribution needed; downloads deps on first run):
-
-    tectonic -X compile queyi_neurips2027_v1.1.tex --keep-logs --keep-intermediates
-
-Option B (standard TeX Live / MiKTeX, two passes):
-
-    pdflatex queyi_neurips2027_v1.1.tex
-    bibtex   queyi_neurips2027_v1.1
-    pdflatex queyi_neurips2027_v1.1.tex
-    pdflatex queyi_neurips2027_v1.1.tex
-
-Expected output: queyi_neurips2027_v1.1.pdf (main text 9 pages; references and
-appendices follow and are not counted toward the 9-page limit).
-
-Submission steps (arXiv)
-------------------------
-1. Upload this package as a single source archive (e.g. queyi_arxiv_submission.tar.gz).
-2. Choose arXiv subject classes: cs.SE (Software Engineering) as primary;
-   cs.PL (Programming Languages) as secondary. Cross-list to cs.AI if desired.
-3. Confirm the "Submitter(s) ... anonymous / no author information" option and
-   verify the compiled PDF shows no author, affiliation, or acknowledgment.
-4. If an endorser is required, see data/673i_arXiv投稿清单.md for the lookup steps.
+Verified build (2026-10-04)
+---------------------------
+  total pages        29
+  main text          ends on page 9 (\label{page:endmain}); References start on page 10
+  undefined refs     none (0 undefined citations / 0 undefined \ref)
+  overfull hboxes    none at >200pt; remaining warnings are underfull vbox at page breaks
 
 Notes
 -----
-- All figures/tables are self-contained; no data files are needed to compile.
-- The v1.1 source compiles with 0 errors and 0 undefined references/citations.
+- The paper is written for double-blind review; the sty file defaults to the anonymous option.
+- Appendix sections are ordered: extra experiments, A5 at full scale (1137 samples),
+  detector capability boundaries (676g), reproducibility (environment/seeds/commands),
+  positioning, tables, AI-use statement, limitations, future work.
+- Numbers in the paper are recomputed from landed artifacts by tools/verify_paper_numbers.py
+  (118 checks; 113 consistent, 0 hard mismatches); see REPRODUCE.md in the repository root.
+- Code/data availability: repository is public (Apache-2.0) with DCO sign-off; the
+  Croissant metadata and per-sample artifacts are provided as supplementary material.

@@ -1,0 +1,132 @@
+{
+ "schema": "queyi-a5-recompute/676h",
+ "generated_by": "tools/recompute_a5_676f.py",
+ "matrix": "data/a5_676f_detection_matrix.json",
+ "n_samples": 1137,
+ "n_derivation": 571,
+ "n_evaluation": 566,
+ "derivation_fail_hits": {
+  "asan": 212,
+  "compile-time": 0,
+  "compiler-warn": 76,
+  "cross-compile": 89,
+  "linker": 6,
+  "tsan": 132,
+  "ubsan": 139,
+  "wunsequenced": 0
+ },
+ "arms_k4": {
+  "fd": {
+   "assets": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile"
+   ],
+   "recomputed_k": 309,
+   "registered_k": 309,
+   "recomputed_rate_pct": 54.5936,
+   "registered_rate_pct": 54.5936
+  },
+  "random": {
+   "assets": [
+    "wunsequenced",
+    "cross-compile",
+    "tsan",
+    "compile-time"
+   ],
+   "recomputed_k": 173,
+   "registered_k": 173,
+   "recomputed_rate_pct": 30.5654,
+   "registered_rate_pct": 30.5654
+  },
+  "static": {
+   "assets": [
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "wunsequenced"
+   ],
+   "recomputed_k": 140,
+   "registered_k": 140,
+   "recomputed_rate_pct": 24.735,
+   "registered_rate_pct": 24.735
+  },
+  "fd_full_pool": {
+   "assets": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile",
+    "compiler-warn",
+    "linker",
+    "compile-time",
+    "wunsequenced"
+   ],
+   "recomputed_k": 340,
+   "registered_k": 340,
+   "recomputed_rate_pct": 60.0707,
+   "registered_rate_pct": 60.0707
+  }
+ },
+ "blindspot_676g": {
+  "n": 1147,
+  "catch": 707,
+  "miss": 440,
+  "unknown": 0,
+  "blindspot_ratio": 0.3836094158674804,
+  "usable_assets": [
+   "asan",
+   "ubsan",
+   "tsan",
+   "compiler-warn",
+   "cross-compile",
+   "linker"
+  ]
+ },
+ "checks": [
+  {
+   "id": "R2",
+   "name": "逐资产派生 fail_hits 与登记一致",
+   "ok": true,
+   "detail": "重算 {\"asan\": 212, \"compile-time\": 0, \"compiler-warn\": 76, \"cross-compile\": 89, \"linker\": 6, \"tsan\": 132, \"ubsan\": 139, \"wunsequenced\": 0}"
+  },
+  {
+   "id": "R1",
+   "name": "k=4 四臂 catch 数可从原始矩阵重算",
+   "ok": true,
+   "detail": "fd: 309/566 vs 登记 309; random: 173/566 vs 登记 173; static: 140/566 vs 登记 140; fd_full_pool: 340/566 vs 登记 340"
+  },
+  {
+   "id": "R3",
+   "name": "FD 资产集 == 派生 fail_hits 排序前 k 个可用资产",
+   "ok": true,
+   "detail": "FD=['asan', 'cross-compile', 'tsan', 'ubsan']；排名前 4=['asan', 'ubsan', 'tsan', 'cross-compile']"
+  },
+  {
+   "id": "R5",
+   "name": "退化资产（全样本 unknown）可重算",
+   "ok": true,
+   "detail": "重算退化集 ['compile-time', 'wunsequenced']"
+  },
+  {
+   "id": "R4",
+   "name": "并列分析 Δ 可从原始矩阵重算",
+   "ok": true,
+   "detail": "重算 Δ(FD−Rnd)=+0.00pp（登记 +0.00）、Δ(FD−Static)=+30.57pp（登记 +30.57）"
+  },
+  {
+   "id": "R6",
+   "name": "676g 盲区统计可从矩阵重算",
+   "ok": true,
+   "detail": "重算 n=1147 catch=707 miss=440 unknown=0 盲区比=0.3836；登记 n=1147 catch=707 miss=440 盲区比=0.3836（可用资产 ['asan', 'ubsan', 'tsan', 'compiler-warn', 'cross-compile', 'linker']）"
+  },
+  {
+   "id": "R7",
+   "name": "676g 并集覆盖率可从矩阵重算",
+   "ok": true,
+   "detail": "重算并集 707/1147 = 61.6%；登记 61.6%"
+  }
+ ],
+ "verdict": "pass"
+}
