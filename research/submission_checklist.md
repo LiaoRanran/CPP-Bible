@@ -1,5 +1,11 @@
 # NeurIPS 2027 Datasets & Benchmarks — Submission Checklist（v1.0 定稿 + v1.1 投稿准备）
 
+> **⚠️ 677a 政策更新（2026-10-04）**：Track 名自 2026 年起为 **E&D（Evaluations & Datasets，原 D&B）**，
+> 且**通常要求双盲**（不再是"单盲/双盲自选"）。本清单早于该政策，下文所有 "D&B 允许单盲或双盲" 的表述
+> **均已过时**；权威口径见 `research/latex/VERSION.md` 与 `research/cover_letter.md`。
+> 本清单的产物指向仍为 v1.0 时代的文件；**当前 version of record 是
+> `research/latex/queyi_neurips2027_v1.1.tex`（内部版本号 v1.2）**。
+
 > **目标**：NeurIPS 2027 E&D（当前最新官方模板为 2026 版；2027 CFP 未发布）。
 > **产物（673a 定稿）**：`research/latex/queyi_neurips2027_v1.0.tex`（+ `queyi_refs.bib`、`neurips_2025.sty`）、
 > `research/latex/cover_letter.tex`、`research/latex/response_template.tex`；
@@ -229,10 +235,12 @@ pdfinfo queyi_neurips2027.pdf | grep Pages   # 主文 ≤ 9 页（不含参考�
 - [x] `guard_rerun_671a.py`：三方数字**一致 4 / 待认领 0 / block 0**。
 - [ ] 待办：`fast_gate` 全绿、`drift_watch` PASS（见任务 I）。 —— 673k：工程线：fast_gate pytest 腿 PASS；overall 仅因 web/ 前端腿（红线，前端线在途）
 
-### 14.5 匿名化（D&B 政策）
+### 14.5 匿名化（⚠️ 政策已更新，见本文件顶部 677a 说明）
 - [x] 正文无作者信息、无个人链接、无本地绝对路径（`anonymity_check` MAIN/STRICT 命中 0）。
-- [ ] **注意**：NeurIPS D&B 允许**单盲或双盲**（作者自选）。若选单盲须补作者块；若选双盲须确认 —— 673k：D&B 允许单盲/双盲；当前匿名版，投稿时确认策略
-      补充材料（代码/数据链接）匿名可访问。**2027 CFP 未发布，须复核。**
+- [ ] **注意（677a）**：2026 起 **E&D 通常要求双盲**（旧表述"D&B 允许单盲或双盲、作者自选"已过时）。
+      当前匿名版；投稿前须确认**补充材料**（附录逐样本明细、代码/数据链接）同样匿名可访问。
+      **2027 CFP 未发布，须复核。**
+- [ ] **Croissant / RAI metadata**（2026 起 dataset submission 需要）：**只登记未生成**（2027 规范未定），见 `research/latex/VERSION.md` §5。
 
 ---
 

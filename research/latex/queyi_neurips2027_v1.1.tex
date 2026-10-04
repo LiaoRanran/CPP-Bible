@@ -59,28 +59,27 @@
 \maketitle
 
 \begin{abstract}
-When LLMs produce knowledge at near-zero cost, the bottleneck moves from generating correct
-knowledge to evolving the apparatus that acquires evidence. Existing self-evolving benchmarks
-evolve the items; we evolve the verifier's evidence-acquisition capability, under an externally
-interruptible audit discipline. Throughout, ``verifier'' means an evidence-acquisition apparatus,
-not an oracle of truth: a pass reports that no acquired evidence contradicts the assertion within
-the current capability boundary, not that it is semantically correct. We present \textbf{Queyi}:
-conclusion--evidence--recomputation bound into a chain, with the verifier's own failures as the
-only legal input to evolution. Objects are executable C++ assertions; verdicts are four-state
-(pass/fail/unknown/contradict); credibility comes from a forced provenance/scope split and a
-kernel-independent reconciler. Queyi has 67 verdict rules, 42 real cards (31 with evidence
-anchors; Verifier Coverage 73.8\%, a descriptive census), a 452-event ledger and Merkle roots over
-5 directories. On the same samples, expanded holdout recall is 82.9\% (34/41), of which the
-pre-reveal blind subset is 81.0\% (17/21); corpus measurable recall is 62.5\% (40/64), versus a
-static caliber arm at 2.4\%/17.2\% ($\Delta$ +80.5pp/+45.3pp) and an instrument-level random proxy
-at 9.8\%/21.9\% ($\Delta$ +73.2pp/+40.6pp); exact McNemar $p\le3.0\times10^{-8}$. Limitations:
-headline numbers depend on one WSL sanitizer environment; $n{=}41/64$ is small; only the 21-sample
-subset is strictly blind; the static arm is a caliber re-binning and the random arm a proxy---so we
-claim auditability plus on-sample significance, not superiority over real static detectors. The A5
-budget-matched control runs at full scale ($n{=}566$): FD 54.6\% vs.\ Random 30.6\% (+24.0pp,
-$p{=}2.3\times10^{-41}$) and vs.\ Static 24.7\% (+29.9pp), but excluding degenerate assets Random
-draws the same four ($\Delta{=}0.0$pp): A5 isolates ``do not fund assets that cannot inform,'' not
-``a smarter ranking''. Label agreement is AI self-consistency only ($\kappa{=}0.77$).
+At near-zero generation cost, the bottleneck moves to evolving the evidence-acquisition apparatus.
+Existing benchmarks evolve the items; we evolve the verifier's evidence-acquisition capability,
+under an externally interruptible audit discipline. Throughout, ``verifier'' means an
+evidence-acquisition apparatus, not an oracle of truth: a pass means no acquired evidence
+contradicts the assertion within the capability boundary, not semantic correctness. We present
+\textbf{Queyi}: conclusion--evidence--recomputation bound into a chain, the verifier's own failures
+being the only legal input to evolution. Objects are executable C++ assertions judged by four-state
+verdicts; credibility comes from a forced provenance/scope split and a kernel-independent
+reconciler. Queyi has 67 rules, 42 real cards (31 with evidence anchors; Verifier Coverage
+73.8\%, a descriptive census), a 452-event ledger and Merkle roots over 5 directories. On the same
+samples, expanded holdout recall is 82.9\% (34/41), of which 81.0\% (17/21) is strictly pre-reveal
+blind; corpus measurable recall is 62.5\% (40/64), versus a static caliber arm 2.4\%/17.2\%
+($\Delta$ +80.5/+45.3pp) and an instrument-level random proxy 9.8\%/21.9\% ($\Delta$
++73.2/+40.6pp); exact McNemar $p\le3.0\times10^{-8}$. Limitations: headline numbers depend on one
+WSL sanitizer environment; $n{=}41/64$ is small; only the 21-sample subset is strictly blind; the
+static arm is a caliber re-binning, the random arm a proxy. We claim auditability plus on-sample
+significance, not superiority over real static detectors. The A5 budget-matched control runs at
+full scale ($n{=}566$): FD 54.6\% vs.\ Random 30.6\% (+24.0pp, $p{=}2.3\times10^{-41}$), vs.\
+Static 24.7\% (+29.9pp); but excluding degenerate assets Random draws the same four
+($\Delta{=}0.0$pp): A5 isolates ``do not fund assets that cannot inform,'' not ``a smarter
+ranking''. Labels have AI self-consistency only ($\kappa{=}0.77$).
 \end{abstract}
 
 % =====================================================================

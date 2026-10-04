@@ -69,8 +69,11 @@
 | `research/latex/cover_letter.tex` | **v1.2 (677a)** | ✅ current（与 md 孪生版同步） |
 | `research/rebuttal_prep.md` | **v1.2 (677a)**（原 676j） | ✅ current（A5 旧数字已标注 superseded） |
 | `research/response_template.md` | **v1.2 (677a)**（原 676f） | ✅ current（盲区 18/70 已对齐、e-value 标注 exploratory） |
-| `research/latex/response_template.tex` | 676f | ⚠️ 未同步（677a 未改；如需改动请同批更新） |
-| `research/submission_checklist.md` | 673k | ⚠️ 历史（D&B 政策条目已过时，见 §5 待办） |
+| `research/latex/response_template.tex` | **v1.2 (677a)** | ✅ current（677a 续批按 `response_template.md` 重写；原为 v0.x 旧稿） |
+| `research/submission_checklist.md` | 673k + **677a 政策横幅** | ⚠️ 历史清单（产物指向 v1.0 时代）；D&B 政策已标注过时 |
+| `research/latex/arxiv_submission/queyi_neurips2027_v1.1.tex` | **v1.2 (677a)** | ✅ current（v1.1 tex 的逐字节拷贝，677a 续批已同步） |
+| `research/latex/arxiv_submission/README.txt` | **v1.2 (677a)** | ✅ current（677a repack 记录；676m 记录标 superseded） |
+| `research/latex/queyi_neurips2027.tex` | 旧 canonical（build.ps1 引用） | 🔴 **未同步**（与 v1.1 差 ~1900 行，非逐字节拷贝；需专门决定命运） |
 
 ### 3.3 数据与规范
 
@@ -116,7 +119,8 @@
 | **模板** | ⚠️ placeholder | 仍用 `neurips_2025.sty`（**第三方文件，禁止修改**）。PDF 页脚自动生成的 "Submitted to 39th Conference … (NeurIPS 2025)" 是已知 placeholder 伪影，2027 CFP 发布后迁移 |
 | **Croissant metadata** | ⬜ **TODO（未实现）** | 2026 起 dataset submission 需要 Croissant 元数据。**2027 规范未定 ⇒ 677a 只登记不生成**。投稿前必须补 |
 | **RAI metadata** | ⬜ **TODO（未实现）** | 同上。2026 起 dataset submission 需要 Responsible AI 元数据 |
-| `research/submission_checklist.md` 的 D&B 政策条目 | ⬜ TODO | 仍写"D&B 允许单盲或双盲"，已过时，待下批更新 |
+| `research/submission_checklist.md` 的 D&B 政策条目 | ✅ 已更新 | 677a 续批：顶部加 E&D/双盲政策横幅，§14.5 改写并登记 Croissant/RAI 待办 |
+| 摘要词数 ≤250（门禁口径） | ✅ 已达标 | **246 词**（HEAD v1.1 为 367）；所有数字与限定语保留 |
 
 ---
 

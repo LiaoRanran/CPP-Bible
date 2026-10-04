@@ -1,7 +1,17 @@
 % =====================================================================
-%  Response to Reviewers — template (NeurIPS / E&D style)
-%  Compile: pdflatex response_template.tex
-%  Convention: quote the reviewer comment, then respond; cite line numbers.
+%  Response to Reviewers — template (NeurIPS 2027 Evaluations & Datasets)
+%  v1.2 (677a): rewritten from research/response_template.md (the authoritative
+%  version). The previous .tex was a v0.x-era draft with stale numbers and
+%  dangling \ref's into the paper; numbers here mirror the .md exactly.
+%  Version of record: research/latex/VERSION.md
+%  Compile: pdflatex response_template.tex   (standalone; no bib, no paper labels)
+%  Calibration notes for the responder (677a):
+%    * "verifier" = evidence-acquisition apparatus; pass != semantic truth.
+%    * 38.4% blind spot is an instrument-boundary statistic ("on our 1147-sample
+%      corpus with our 8-asset instrument"); 18/70 types >50% blind.
+%    * Verifier Coverage 73.8% has NO confidence interval (complete enumeration).
+%    * e-process is EXPLORATORY and is never quoted as evidence strength.
+%    * planted=false = source-derived reconstruction (968/74/0), not production code.
 % =====================================================================
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -19,86 +29,238 @@
 
 \begin{center}
 {\Large\bfseries Response to Reviewers}\\[2pt]
-{\large Queyi: Making Verification Capability Independently Auditable}\\[2pt]
-\textbf{Paper \#XXXX} \quad (Anonymous submission)
+{\large Evolving Verifiers: Failure-Driven Evidence Acquisition with Auditable Provenance}\\[2pt]
+\textbf{Paper \#XXXX} \quad (Anonymous submission, NeurIPS E\&D, double-blind)
 \end{center}
 
 \noindent
 We thank all reviewers for their careful reading. We address every point below; reviewer comments
-are in \emph{italic}, our responses follow. Section/line numbers refer to the revised manuscript.
+are in \emph{italic}, our responses follow. Section numbers refer to the revised manuscript.
+\textbf{Discipline:} we do not defend; we concede, show the landed revision, and give the roadmap.
+Every number below is recomputed from a landed artifact.
 
 \section*{Summary of changes}
 \begin{itemize}[leftmargin=1.4em]
-  \item Added the budget-matched baseline results (B1/B2/B3) and the A--F ablation in \S6.
-  \item Expanded the holdout/corpus sample sizes (holdout $\ge$30 measurable; corpus $\ge$60).
-  \item Added Clopper--Pearson CIs to all headline numbers.
-  \item Clarified the environment dependency (WSL) and the \texttt{UNVERIFIED} protocol.
+  \item All numbers synced to the authoritative artifacts (672h/673u/676f/676g/676l/676m): holdout
+        \textbf{82.9\%} (34/41), corpus \textbf{62.5\%} (40/64), control FPR \textbf{0.0\%} (0/11) ---
+        an early draft reported 2 control false positives caused by a constant-catch detector bug
+        (fixed in 673u); the headline rates are bit-identical before and after.
+  \item \textbf{A5 has run at full scale} (1137 samples $\times$ 8 assets = 9096 real \texttt{detect}
+        calls; derivation 571 / evaluation 566, $k{=}4$): FD \textbf{54.6\%} vs Random \textbf{30.6\%}
+        ($\Delta$ \textbf{+24.0pp}, $p{=}2.3\times10^{-41}$) vs Static \textbf{24.7\%} (+29.9pp); the
+        pre-registered parallel analysis collapses to $\Delta$ \textbf{0.0pp} $\Rightarrow$
+        \textbf{direction-only}, not ``FD $>$ Random''.
+  \item New \textbf{detector capability-boundary map} (676g): 1147$\times$8 matrix, detection 61.6\%,
+        blind spot \textbf{38.4\%}, \textbf{18/70} types $>$50\% blind; a measured $\sim$5\%
+        run-to-run flip rate is registered alongside it.
+  \item Terminology unified (677a): ``verifier'' means an \textbf{evidence-acquisition apparatus};
+        a \texttt{pass} means no acquired evidence contradicts the assertion within the capability
+        boundary, \emph{not} semantic truth (\S3 Terminology; first item of \S9, ``C0'').
+  \item The 38.4\% figure is qualified at every occurrence as an \textbf{instrument-boundary}
+        statistic on our corpus with our 8-asset instrument.
+  \item Verifier Coverage 73.8\% is reported \emph{without} a confidence interval: the 42 cards are a
+        complete enumeration, not a sample.
+  \item The e-process layer is \textbf{exploratory} (not pre-registered) and supports no confirmatory
+        claim; it is reported in an appendix marked as such.
+  \item \texttt{planted=false} samples are described as \textbf{source-derived reconstructions}
+        (968 self-authored / 74 source-derived / 0 original external artifacts), not production code.
 \end{itemize}
 
 \section*{Reviewer 1}
 
 \rev{The paper claims a new evaluation paradigm, but the empirical support is thin.}
-\resp We agree that the initial submission was thin on baselines. We have now run the three
-budget-matched baselines (B1 static, B2 static$+$mutation, B3 random-budget) and report them in
-Table~\ref{tab:e1}. We also state explicitly in \S9 which claims remain unsupported. See
-\chg{\S6.1 (Table~\ref{tab:e1}), \S9 (Table~\ref{tab:claim}).}
+\resp We agree the first submission was thin on baselines. The revised version reports a
+\textbf{same-sample three-arm contrast}: failure-driven (FD) vs a static caliber arm vs a
+\textbf{random-proxy arm}, recomputed by a single script from landed artifacts. Separately, the
+\textbf{budget-matched control (A5) has run at full scale}: FD \textbf{54.6\%} vs Random
+\textbf{30.6\%} ($\Delta$ \textbf{+24.0pp}, exact McNemar $p{=}2.3\times10^{-41}$, $b{=}136$/$c{=}0$)
+and vs Static \textbf{24.7\%} (+29.9pp) --- but the pre-registered parallel analysis collapses to
+$\Delta$ \textbf{0.0pp}, so we register it as \textbf{direction-only}, not a superiority claim.
+\begin{itemize}[leftmargin=1.4em]
+  \item FD holdout \textbf{82.9\%} (34/41) vs Static \textbf{2.4\%} (1/41) vs Random \textbf{9.8\%} (4/41);
+        FD corpus \textbf{62.5\%} (40/64) vs Static \textbf{17.2\%} (11/64) vs Random \textbf{21.9\%} (14/64).
+  \item Exact McNemar $p\le3.0\times10^{-8}$; Cohen's $h\ge0.85$; all four paired $\Delta$ CIs strictly
+        positive (lower bound $\ge$\,\textbf{28.6pp}).
+  \item \S9 (Claim Boundary) states explicitly which claims remain unsupported.
+\end{itemize}
+\chg{\S Experiments (Tables E1, E5); \S Claim Boundary.}
 
 \rev{Why is mutation score not treated as defect detection?}
-\resp Because the two measure different things; we cite Just et al.\ (FSE 2014) and show the gap
-empirically (internal mutation core 97.3\% vs.\ external corpus 35.0\%). See \chg{\S7 item 4.}
+\resp Because they measure different things. Internal mutation core is \textbf{96.5\%} (110/114;
+all-scope 81.8\%, 130/159), while external corpus measurable recall is \textbf{62.5\%} (40/64;
+52.6\% all-sample). We cite Just et al.\ (FSE 2014): mutants are correlated with, but not equivalent
+to, real faults; mutation is kept as an \textbf{internal self-justification metric only}.
+\chg{\S Analysis item 4; \S Threats (Construct).}
+
+\rev{The static arm is weak; is this a straw man?}
+\resp We agree the static arm is \emph{not} a real static detector, and we say so. It is a
+\textbf{caliber re-binning} (same raw catches, runtime evidence removed), and the two detection
+sets' true errors are overwhelmingly visible only through sanitizer evidence. So the low static
+number reflects the \textbf{detection sets' dependence on instrumentation}, not the weakness of
+static analysis. We explicitly refuse to claim ``we beat a static detector''; the real
+\texttt{detect\_static} interface lives in a split repository and remains missing.
+\chg{\S Experiments (E1); \S Threats (Construct).}
 
 \section*{Reviewer 2}
 
 \rev{Reproducibility is unclear; the numbers depend on an undeclared environment.}
-\resp We now declare the WSL + \texttt{g++} + \texttt{setarch} dependency in the abstract, \S9, and
-Appendix~\ref{app:repro}, and require a verdict of \texttt{UNVERIFIED} (not a low score) when a
-dependency is missing. See \chg{Abstract; \S9; Appendix~\ref{app:repro}.}
+\resp We now declare the \textbf{WSL + g++ + \texttt{setarch}} dependency in the abstract, \S Claim
+Boundary and the reproduction appendix, and require a verdict of \texttt{UNVERIFIED} (not a
+misleading low score) when a dependency is missing. We also report the observed silent-drop failure
+mode (35.0\% $\to$ 10.0\% without WSL) as a \emph{real} threat rather than a residual one.
+\chg{Abstract; \S Claim Boundary; Appendix (Reproduction Commands).}
 
 \rev{How does this differ from benchmark-evolution work?}
-\resp Benchmark evolution changes the \emph{items}; we change the \emph{measuring stick} and require
-the change to be externally measurable. See \chg{Table~\ref{tab:positioning}, \S2.}
+\resp Benchmark evolution changes the \textbf{items}; mutation-guided testing changes the
+\textbf{tests}; formal verification produces \textbf{proofs}; MiniCheck changes the \textbf{judge's
+weights}. We change the \textbf{verifier's evidence-acquisition capability} itself, and require each
+step of that change to be \textbf{externally measurable and third-party recomputable} --- and,
+uniquely, \textbf{self-falsifiable} (ablation A0 $-$ A5).
+\chg{\S Related Work (positioning table); \S Experiments (ablation protocol).}
+
+\rev{The paper says the random baseline is blocked --- then how do you claim an advantage over random?}
+\resp The random arm in the \textbf{headline two-rate contrast} is an \textbf{instrument-level
+proxy} (holdout 9.8\% (4/41), corpus 21.9\% (14/64); $p{=}1.9\times10^{-9}$ / $3.0\times10^{-8}$;
+$h{=}1.65$ / $0.85$). The blocker is resolved: the budget-matched random control (\textbf{A5}) has
+run at full scale --- FD \textbf{54.6\%} vs Random \textbf{30.6\%}, $\Delta$ \textbf{+24.0pp}
+($p{=}2.3\times10^{-41}$). We still report a \textbf{directional} conclusion rather than a
+controlled magnitude, but the reason has changed: it is no longer ``the arm is missing'' but that
+the effect is \textbf{pool composition} --- the pre-registered parallel analysis collapses to
+$\Delta$ \textbf{0.0pp} ($p{=}1.0$), triggering the \texttt{uninterpretable} clause.
+\chg{\S Experiments (Tables E1/E5); \S Analysis; \S Threats (External).}
 
 \section*{Reviewer 3}
 
 \rev{Small sample sizes undermine the statistical claims.}
-\resp We agree; we report Clopper--Pearson CIs everywhere, mark $n<20$ rows as exploratory, and
-state that $\Delta{=}15$pp needs $n\approx102$--172. See \chg{\S6, Appendix~\ref{app:stats}.}
+\resp We agree, and we now say so in the abstract and \S Claim Boundary rather than in a footnote.
+Measurable sizes are holdout $n{=}41$ and corpus $n{=}64$; $\pm$5pp of CI half-width needs
+$n{=}236/378$ ($\pm$10pp needs 61/97); a $\Delta{=}15$pp paired contrast needs $n\approx103$--173.
+We therefore report \textbf{direction, intervals and effect sizes}, and explicitly refuse to report
+magnitude \textbf{for the two headline rates}. For the budget-matched A5 contrast the power gap is
+now \textbf{closed}: A5 ran at $n{=}566$ ($\gg$ the $n\approx138$ paired requirement), so what
+remains is a \textbf{non-degenerate pool with $1<k<|A|-1$}, not more samples.
+\chg{Abstract; \S Statistical; Appendix (sample-size table).}
 
-\rev{Minor: terminology (detector/probe) is inconsistent.}
-\resp Fixed; we use ``detector'' throughout. See \chg{whole manuscript.}
+\rev{McNemar significance rests on an extreme structure ($c{=}0$).}
+\resp Correct, and we state it. All four contrasts have $c{=}0$ (the opponent's catches are a subset
+of FD's), so the significance is carried by the extreme discordant structure; a few reverse pairs
+would inflate $p$ quickly. This is flagged as a residual statistical threat.
+\chg{\S Statistical (Table E5 note); \S Threats (Statistical).}
 
-\section*{Standard replies (reusable blocks)}
+\rev{Minor: terminology is inconsistent.}
+\resp Fixed (677a). We use ``detector'' for assets and reserve ``verifier'' for the
+\textbf{evidence-acquisition apparatus} as a whole; \texttt{unknown} and \texttt{miss} stay strictly
+separate; \texttt{Random}$^\dagger$ keeps its dagger as an \textbf{instrument-level proxy} (the
+dagger marks that the reported headline arm is the proxy, not that the arm is missing).
+\chg{Whole manuscript.}
+
+\section*{Standard reusable replies}
 
 \paragraph{On ``sample size is too small''.}
-We agree, and we now say so in the abstract and \S9 rather than only in a limitations footnote.
-Our holdout is $n{=}16$ measurable and the corpus $n{=}32$; $\pm$10pp of CI half-width would need
-$n\approx96$. We therefore report \emph{direction} (the $\Delta$ lower bound is $\ge31.5$pp; exact
-McNemar $p\le0.002$) and explicitly refuse to report magnitude. Sample expansion to $n\ge100$ is
-listed as the first item of future work, with a written sampling plan.
+We agree and say so up front. Measurable $n{=}41$ (holdout) / $n{=}64$ (corpus); $\pm$5pp half-width
+needs $n{=}236/378$; $\Delta{=}15$pp paired needs $n\approx103$--173. We report \textbf{direction}
+($\Delta$ lower bound $\ge$\,\textbf{28.6pp}; exact McNemar $p\le3.0\times10^{-8}$) and
+\textbf{refuse to report magnitude} for the two headline rates. For the budget-matched A5 contrast
+the expansion has already happened ($n{=}566 \gg 138$), so the remaining limitation there is pool
+geometry, not power.
 
 \paragraph{On ``the baseline is not strong enough''.}
-Correct, and we label it as such. The static arm is a \textbf{caliber re-binning}, not a re-run of a
-real static detector; the random arm is an \textbf{instrument-level proxy}, not the paper's
-budget-matched B3. Both are marked and excluded from the conclusion. The true B1/B3 require a
-\texttt{detect\_static}/\texttt{select\_assets} interface that currently lives in a split
-repository and is \textbf{blocked} for us; we register this as a blocked item rather than
-substituting a convenient approximation.
+Partly correct, and we label precisely. The \textbf{static arm is a caliber re-binning}, not a re-run
+of a real static detector (split-repo \texttt{detect\_static} still missing) --- marked and excluded
+from conclusions. The \textbf{random arm in the headline contrast is an instrument-level proxy}; the
+true budget-matched control (\textbf{A5}) has run at full scale (1137 samples; $\Delta$ +24.0pp,
+$p{=}2.3\times10^{-41}$) and is reported \textbf{direction-only} because its effect is pool
+composition. The missing \texttt{detect\_static} remains an \textbf{open item} rather than being
+substituted by an approximation.
 
 \paragraph{On ``why not evaluate on SWE-bench''.}
-Because our object of study is not code repair but \emph{verification of knowledge claims}. SWE-bench
-measures whether a model can patch an issue; we measure whether a claim is true under an explicit
-boundary triple. Adapting SWE-bench would change the construct (see \S8.1). We do cite the
-SWE-bench contamination line as \emph{motivation} for external-sample-first design.
+Because our object of study is not code repair but \textbf{verification of knowledge claims}.
+SWE-bench measures whether a model can patch an issue; we measure whether a claim is supported by
+recomputable evidence under an explicit boundary triple. Adapting SWE-bench would change the
+construct. We cite the SWE-bench contamination line as \textbf{motivation} for
+external-sample-first design.
 
 \paragraph{On ``reproducibility''.}
 Every headline number is recomputed from landed artifacts by a single command; the environment
 dependency (WSL + g++ + \texttt{setarch}) is declared, and a missing dependency yields
-\texttt{UNVERIFIED} rather than a misleading low score. A five-tool paper pipeline (number sync,
-BibTeX audit, figure-data provenance, anonymization, quality gate) runs in CI. Code is Apache-2.0
-with DCO sign-off; Croissant metadata ships with the supplement.
+\texttt{UNVERIFIED} rather than a misleading low score. Statistical plans were pre-registered before
+the reveals and recomputed through two independent paths (differences $<0.1$pp). Code is Apache-2.0
+with DCO sign-off. Croissant and Responsible-AI metadata are \textbf{registered pre-submission
+TODOs} (the 2027 specification is not yet released), not yet shipped.
+
+\paragraph{On ``how do you handle untrusted LLM input / prompt injection''.}
+Registered as an explicit threat (T15). Architectural mitigation: \textbf{LLM output never becomes a
+verdict directly} --- every LLM-produced candidate passes a deterministic schema check before
+entering the ledger, and ML-based detection only \textbf{warns, never blocks}. Prompt injection can
+pollute \emph{evidence processing} but not \emph{verdict recomputation}, because verdicts are fully
+programmatic and checked by a kernel-independent reconciler. We cite a live CVE (CVE-2025-59145,
+CVSS 9.6) as evidence the threat is real.
+
+\paragraph{On ``data provenance / ethics of the external corpus''.}
+The 74 \texttt{planted=false} samples are \textbf{single-file reconstructions} of public CVEs and
+GitHub issues, not original production code; 74/74 sources were verified reachable (HTTP 200) and
+the reduction applied to each is recorded per sample. \textbf{No original external artifacts are
+included in the corpus} (provenance class \texttt{original-external-artifact} has count 0). Labels
+were authored by a single annotator; the 676m blinded double annotation ($\kappa{=}0.77$ / 0.69 /
+0.71) is \textbf{AI self-consistency, not human IAA}, and a two-annotator re-label protocol with
+escalation is pre-registered in \S Threats. Until it runs, every rate reads as ``recall under
+self-produced labels''.
+
+\paragraph{On ``9-page limit''.}
+The main text ends on page 8 (references start on page 9). If the camera-ready overflows, we move
+the sample-size table and the related-work table into the supplement and merge the two ablation
+tables (protocol + experiment).
+
+\paragraph{On ``A5 / the core-mechanism falsification experiment''.}
+A5 has run at full scale (1137 samples; derivation 571 / evaluation \textbf{566}): at $k{=}4$ over
+the full 8-asset pool, FD \textbf{54.6\%} (309/566) vs Random \textbf{30.6\%} (173/566) vs Static
+\textbf{24.7\%} (140/566); $\Delta$(FD$-$Random) \textbf{+24.0pp} (CI [+20.5, +27.5],
+$p{=}2.3\times10^{-41}$, $b{=}136$/$c{=}0$), $\Delta$(FD$-$Static) \textbf{+29.9pp}
+($p{=}1.9\times10^{-31}$); FD is strictly better than the single-seed draw in \textbf{97.6\%} of
+2000 resamples. \textbf{But it still does not license ``FD beats Random''}: the effect is
+\textbf{pool composition} --- 2 of 8 assets are constant-\texttt{unknown} over all 1137 samples and
+the pre-registered 5\% rule adds a third (\texttt{linker}, 0.88\% catch rate), so in the
+pre-registered parallel analysis (5 candidates) the $\Delta$ \textbf{collapses to 0.0pp}
+($p{=}1.0$) while the \textbf{Static gap grows to +30.6pp} ($p{=}8.1\times10^{-34}$). The parallel
+analysis is significant at $k{=}1$--3 (+11.31/+7.42/+7.42pp), pinning the \emph{selection} effect at
+$\approx$\,+7--11pp; that sweep is exploratory. We therefore write no ``FD $>$ Random'' sentence.
+Roadmap: the power gap is closed; what remains is a \textbf{non-degenerate pool with $1<k<|A|-1$}
+and running A0--A4. Separately we publish the capability-boundary map (38.4\% blind spot,
+18/70 types $>$50\% blind) and a measured $\sim$5\% run-to-run flip rate as first-class limitations.
+
+\section*{High-frequency questions}
+
+\paragraph{Q1. Sample size is still small (41/64).}
+See ``On sample size'' above; A5's power gap is closed at $n{=}566$, the two headline rates are not.
+
+\paragraph{Q2. The LLM arm result contradicts your expectation.}
+Correct, and registered as a \textbf{negative result}. GLM-4 caught 12/12 errors (vs FD's 6/12 on
+the same subset) but produced 4/8 false positives on controls: more sensitive, far less specific.
+All four pre-registered hypotheses failed. Caveats stated: some samples carry
+\texttt{answer\_leak\_risk}; single model, single prompt. This is exactly why our architecture keeps
+``LLM output never becomes a verdict''.
+
+\paragraph{Q3. The external anchor's H2 did not pass.}
+Yes --- \textbf{H2 misses by 0.8pp} and is registered as \emph{not} passed. The two subsets are
+reported separately because their targets differ: verbatim guideline snippets 28.6\% (most guideline
+text is stylistic advice, so ``no detection'' is expected) and reconstructed UB fragments 80.0\%
+(our own reconstruction, hence an upper bound). The 50-snippet total rate of 44.0\% belongs to H3,
+which passed at $\ge$30\%.
+
+\paragraph{Q4. How does this differ from related work?}
+Benchmark evolution changes the items; mutation-guided testing changes the tests; formal
+verification produces proofs; MiniCheck changes the judge's weights; CELEUS uses e-processes to
+save samples. We change the verifier's \textbf{evidence-acquisition capability} and require each
+step to be externally measurable and \textbf{self-falsifiable} (A0 $-$ A5). The four-state verdict
+is the information-structure projection of Belnap's four-valued logic; auditability rests on Merkle
+roots plus a kernel-independent reconciler.
+
+\paragraph{Q5. Reproducibility.}
+See ``On reproducibility'' above.
 
 \bigskip
 \noindent
-We hope the revised version addresses all concerns.
+We thank the reviewers again; the revised version addresses every point, and every remaining gap is
+\textbf{registered rather than hidden}.
 
 \end{document}
