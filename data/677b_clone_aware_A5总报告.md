@@ -130,4 +130,5 @@
   - `data/677b_cluster_bootstrap.json`
   - `data/677b_clone_family_report.md`、`data/677b_split_comparison.md`、`data/677b_a5_comparison_table.md`、`data/677b_ci_comparison.md`、`data/677b_结果分析报告.md`、`data/677b_论文更新建议.md`、`data/677b_clone_aware_A5总报告.md`
 - **未纳入**（红线）：`tools/holdout_reveal_661.py`、`data/holdout_expansion/**/*.cpp`、`data/676f_*`、`research/`、其他批次未提交改动、运行日志（`data/677b_*.log|.err`）。
-- **提交哈希**：待回填（见本报告下一次小提交）。
+- **提交哈希**：**`92482d4f`**（16 个文件：tool 1 + JSON 7 + 报告 8）；`Signed-off-by: 674d-ci <674d-ci@example.invalid>`；**未 push**（等用户确认）。
+- 注：`data/677b_*.err`（3 个 0 字节运行残留）未纳入提交，可由后续清理批次删除。
