@@ -1,7 +1,9 @@
-# `data/holdout_expansion/` 标注 Schema（676m 起生效）
+# `data/holdout_expansion/` 标注 Schema（676m 起生效；677a 增补 `provenance`）
 
 > 本文件是扩样集 1042 条标注（`sample_*.json`）的**唯一字段规范**。
 > 由 `tools/fix_676m_schema.py` 生成/校验；批次：676m（数据修复）。
+> **677a 增补**：新增 `provenance` 枚举（§2.1），把布尔 `planted` 细化为三类来源；
+> **只改 schema 与表述，不改逐样本 .json、不重新标注**。版本 of record：`research/latex/VERSION.md`。
 
 ## 1. 文件布局
 
@@ -26,7 +28,8 @@ data/holdout_expansion/<batch>/
 | `defect_location.function` | str | ✅ | 缺陷所在函数（全局初始化用 `(global)`） |
 | `defect_location.notes` | str | ⭕ | 缺陷行说明（676m 起由 `note`/`description` 统一而来） |
 | `severity` | str | ✅ | `low` / `medium` / `high` |
-| `planted` | bool | ✅ | `true`=本项目人工植入；`false`=真实世界来源或对照样本 |
+| `planted` | bool | ✅ | **兼容字段（676m 口径，保留）**：`true`=本项目人工植入；`false`=非自造（真实来源重写或对照样本）。**677a 起请改用 `provenance`**，见 §2.1 |
+| `provenance` | str | ⭕ | **677a 新增（枚举，见 §2.1）**：`self-authored` / `source-derived-reconstruction` / `original-external-artifact`。当前由 `planted` **派生**（`true → self-authored`，`false → source-derived-reconstruction`），**不写进逐样本 .json**（红线 6 同款：不新增逐样本字段），只在聚合清单中派生 |
 | `expected_verdict` | str | ✅ | `catch` / `miss`（**独立检测器判据**，见 §4.1） |
 | `expected_detectors` | list[str] | ⭕ | 预期命中的资产名 |
 | `trigger_condition` | str | ⭕ | 触发条件 / 优化敏感性（676m 起承接原 `conditional_trigger`、`optimization_dependent` 元标签） |
@@ -35,6 +38,33 @@ data/holdout_expansion/<batch>/
 | `source` | obj | ⭕ | `planted=false` 样本的来源（CVE / GitHub issue） |
 
 > 红线 6：676m 只改 §4 列出的字段，其余字段（含 `verification`、`source`、`platform_*`、`thread_count` 等）逐字节保持不变。
+
+## 2.1 `provenance`（677a 新增；`planted` 的语义细化）
+
+### 2.1.1 为什么要细化
+
+`planted=false` **不等于"真实世界样本"**。本库的 74 条 `planted=false` 是**从真实 CVE / GitHub issue
+重写而来的单文件教学化片段**（"real-source-derived reconstruction"），既不是原始外部产物，
+也不是自然分布的生产代码。把布尔 `planted=false` 读成 "real-world defects" 会系统性高估外部效度
+（677a 评审指出的问题）。
+
+### 2.1.2 枚举定义
+
+| `provenance` | 对应 `planted` | n（扩样 1042） | 定义 |
+|---|---|--:|---|
+| `self-authored` | `true` | **968** | 本项目为演示某类缺陷**自撰**的可编译片段 |
+| `source-derived-reconstruction` | `false` | **74** | 基于真实 **CVE / GitHub issue** 的**等价重写**：单文件、教学化、剥离了原始上下文；构造过程记录在 `source.{type,id,url,project,commit,simplification}` |
+| `original-external-artifact` | —— | **0** | **当前语料中不存在**。无任何原始外部代码片段被收录 |
+
+### 2.1.3 迁移说明
+
+- **不改逐样本 .json**（红线 6：不新增逐样本字段）。`provenance` 由 `planted` 按上表**确定性派生**，
+  写在聚合清单 `data/676m_sample_manifest_corrected.json` 的派生成分中。
+- **不重新标注**：677a 只改 schema 与表述，**不重判任何样本的 provenance**（真源核查由 677b/677c 负责）。
+- **`planted` 保留**：`planted=true` ⇒ `self-authored`；`planted=false` ⇒ `source-derived-reconstruction`
+  （当前**无** `original-external-artifact`，故该分支恒空）。若将来收录原始外部代码，必须显式置
+  `original-external-artifact` 并附许可与来源。
+- **复现**：`python -c "import json,collections;print(collections.Counter(...))"`（见 `DATASHEET.md` §2.2）。
 
 ## 3. 统一词表（`defect_type`，34 项闭集）
 
@@ -144,7 +174,9 @@ data/holdout_expansion/<batch>/
 2. **多文件样本行号**：expC 的 30 条多 TU 样本 `line` 指向头文件/单 TU，跨文件不可比；676k 的 κ 分析亦记 null。
 3. **行号语义分歧**：iterator 类样本原标注指向「使用行」，重标注指向「失效操作行」（676k §3.2）。676m 不改语义，只在本文档明确为「缺陷发生的操作行」。
 4. **批内克隆率 62.2%**：全库仅 572 种不同代码结构（676k §H3）。676m **不删样本**，只在数据卡 `DATASHEET.md` 中披露。
-5. **`planted=true` 占 93%**：数据集固有特征，不修改，只在数据卡披露。
+5. **`planted=true` 占 93%**：数据集固有特征，不修改，只在数据卡披露。**677a 补充**：这 93% 在
+   `provenance` 口径下即 `self-authored`；剩下 7% 是 `source-derived-reconstruction` 而**非**
+   `original-external-artifact`（后者计数为 0）。因此本库**不能**用于估计真实世界缺陷分布。
 
 ## 6. 676m 迁移结果快照
 

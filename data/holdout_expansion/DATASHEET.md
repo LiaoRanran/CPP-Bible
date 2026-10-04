@@ -1,4 +1,4 @@
-# Datasheet — `queyi-holdout-expansion`（676m 版）
+# Datasheet — `queyi-holdout-expansion`（676m 版 + 677a 来源三分类）
 
 > 按 **Gebru et al. (2021), "Datasheets for Datasets"** 的九节格式编写。
 > 本数据卡描述 `data/holdout_expansion/`（**1042 条扩样标注** + 对应 C++ 源码），
@@ -44,15 +44,20 @@
 | A5 判定矩阵 | 1137 样本 × 8 资产 = **9096 格**真实 `detect`（676f） |
 | 盲区地图矩阵 | 1147 样本 × 8 资产 = **9176 格**（676g） |
 
-### 2.2 `planted`（是否人工植入）
+### 2.2 `provenance`（来源三分类；677a 新增，取代布尔 `planted` 的读法）
 
-| 值 | n | 占比 | 说明 |
-|----|---|-----:|------|
-| `true` | **968** | **92.9%** | 本项目为演示某类缺陷而**自撰**的可编译片段 |
-| `false` | **74** | 7.1% | 全部来自 **expG**，是**真实世界 CVE / GitHub issue 的等价重写** |
+> **`planted=false` ≠ "真实世界样本"。** 677a 把来源细化为**三值枚举**（规范见
+> `SCHEMA.md` §2.1）；`planted` 保留为兼容字段，二者是**确定性映射**。
 
-> ⚠️ **这是本数据集最大的外部效度限制**：92.9% 的样本是自造的，
-> 所以它测的是**仪器**，不是真实缺陷分布（见 §9）。
+| `provenance` | `planted` | n | 占比 | 定义与构造过程 |
+|---|:---:|---:|---:|---|
+| `self-authored` | `true` | **968** | 92.9% | 本项目为演示某类缺陷而**自撰**的可编译片段 |
+| `source-derived-reconstruction` | `false` | **74** | 7.1% | 全部来自 **expG**。构造路径：**真实 CVE / GitHub issue → 定位缺陷 → 缩减为最小可编译单文件片段 → 重新标注**；剥离内容逐条记录在 `source.simplification` |
+| `original-external-artifact` | —— | **0** | 0% | **当前语料中不存在**。**No original external artifacts are included in the current corpus.** |
+
+> ⚠️ **这是本数据集最大的外部效度限制**：92.9% 的样本是自造的，且剩下 7.1% 也是**重构**而非
+> 原始产物 ⇒ 它测的是**仪器**，**不是真实缺陷分布**（见 §9）。
+> 复现：`.venv/Scripts/python.exe -c "import json;d=json.load(open('data/676m_sample_manifest_corrected.json',encoding='utf-8'));print(len(d))"`（按 `planted` 聚合即得三分类计数）。
 
 ### 2.3 缺陷类型（`defect_type`）
 
@@ -87,7 +92,12 @@
 
 `high` 721 / `medium` 229 / `low` 92（自评，非外部标准）。
 
-### 2.6 真实来源（`planted=false` 的 74 条）
+### 2.6 来源重写（`provenance = source-derived-reconstruction` 的 74 条）
+
+> **表述纪律（677a）**：这 74 条是**基于真实漏洞的重构**（single-file teaching reconstruction），
+> **不是** original external artifacts，**也不是** naturalistic production code。论文与任何下游文档
+> 一律写 "74 source-derived reconstructions based on real CVEs and GitHub issues"，
+> **不得**写 "74 real defects" / "74 real-world samples"。
 
 | 来源类型 | n | 示例项目（前 6） |
 |----------|---|------------------|
@@ -269,8 +279,10 @@ FD（failure-driven）的 fail_hits 只许用派生集，避免 oracle。
 
 ## 9. 已知局限（Known Limitations）——**必须与任何引用同读**
 
-1. **`planted=true` 占 92.9%**：数据集测的是**仪器**，不是真实缺陷分布。
-   用 `planted=false`（n=74）做外部效度时，区间很宽（盲区比 21.6%，CI [13.8, 32.3]）。
+1. **`self-authored` 占 92.9%**：数据集测的是**仪器**，不是真实缺陷分布。
+   用 `source-derived-reconstruction`（n=74）做外部效度时，区间很宽（盲区比 21.6%，CI [13.8, 32.3]）。
+   **677a 补充**：这 74 条是**重构**而非原始外部产物，因此**外部效度主张不能建立在其上**；
+   当前 `original-external-artifact` 计数为 **0**。
 2. **批内模板克隆率 62.2%**：674/1083 条样本落在结构完全相同的组里，
    全库只有 **572** 种不同代码结构。⇒ **有效独立样本量远小于 1042**，
    所有率的区间应据此读宽；且**不可用于训练**。
@@ -281,8 +293,10 @@ FD（failure-driven）的 fail_hits 只许用派生集，避免 oracle。
 5. **~5% 跑间不稳定**：无竞争条件下的干净重测 **18/369 格（4.9%）翻转**；
    TSan 三轮抽检 **4/80 样本（5.0%）出现过翻转**。⇒ 单回合逐格判定带噪声，
    **排序稳健、逐格结论不稳健**。
-6. **检测器盲区 38.4%**：1147 样本上 catch 707 / miss 440 ⇒ 38.4% 的样本
-   在 8 资产下**完全不可见**；15/70 个类型盲区 >50%。
+6. **检测器盲区 38.4%（instrument-boundary 统计）**：1147 样本上 catch 707 / miss 440 ⇒ 38.4%
+   的样本在**本库 + 这 8 个资产**下完全不可见；**18/70** 个类型盲区 >50%。
+   **口径纪律（677a）**：这是**仪器边界**统计，**不**意味着"真实世界 C++ 缺陷有 38.4% 不可检测"；
+   换语料或换资产池该值即变。权威产物 `data/blindspot_676g_stats.json`。
 7. **平台依赖**：sanitizer 走 **WSL Ubuntu 24.04.4 + g++ 13.3.0**（含 `setarch`）；
    本地资产走 **MinGW g++ 13.1.0 / clang 22.1.8**。换环境（如 macOS 无 `setarch`、
    Windows 原生无 UBSan 运行库）**不可复现**。

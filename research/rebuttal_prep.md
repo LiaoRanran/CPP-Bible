@@ -1,6 +1,7 @@
-# 673s · Rebuttal 预演（Rebuttal Preparation）
+# Rebuttal 预演（Rebuttal Preparation）· v1.2 (677a)
 
-- 批次：673s（论文卓越打磨 —— rebuttal 预演）；**676j 已同步最新态势（A5 全量 676f + 盲区地图 676g，见下方「态势更新」）**
+- 批次：673s 起草 → **676j 同步 A5 全量（676f）+ 盲区地图（676g）** → **677a 版本统一（见 `research/latex/VERSION.md`）**
+- **677a 变更（纯表述，不改数字）**：① "verifier" 一律为 **evidence-acquisition 装置**，`pass` ≠ 语义真值（论文新增 §3 Terminology 段与 Claim Boundary 第一条 C0）；② 盲区 **38.4%** 一律带 **instrument-boundary** 口径限定；③ 高盲区类型数统一为 **18/70**（对齐 `data/blindspot_676g_stats.json`）；④ VC 73.8% **去掉无抽样基础的 95% CI**；⑤ **e-process 降级为 exploratory**（正文压至 2 句，完整内容移附录并标注）；⑥ `planted=false` 表述改为 **source-derived-reconstruction**（provenance 三分类）。**答 rebuttal 时按新表述口径。**
 - 仓库：`C:\CodeLearnling\note\note\C++\CPP-Bible`
 - 目标稿件：`research/latex/queyi_neurips2027_v1.1.tex`（英文稿）+ `research/paper_shturl.md`（中文稿）
 - 权威数字源：`data/current_numbers.json`（schema `queyi-current-numbers/672h`）、`data/experiments/reveal_update_672h.json`、`data/a5_676f_results.json`（**A5 全量重跑，取代 `a5_673p.json`**）、`data/blindspot_676g_stats.json`（**检测器能力边界地图**）
@@ -23,7 +24,7 @@
 ## 0 · 使用纪律（三步走）
 
 1. **三段式**：每问都写成 `Concede（承认点） / Already addressed（已做修订） / Plan（未来工作）`。英文段落可直接粘贴进 rebuttal；中文是策略提示，不投出去。
-2. **数字只能来自 artifact**：rebuttal 引入的每个数字都必须可回溯到仓库产物（`current_numbers.json` / `reveal_update_672h.json` / `a5_673p.json::real_attribution` / `data/673r_A5实验报告.md`）。红线：**不把未做的实验写成已做**，也**不把已被推翻的旧数字继续当弹药**。
+2. **数字只能来自 artifact**：rebuttal 引入的每个数字都必须可回溯到仓库产物（`current_numbers.json` / `reveal_update_672h.json` / **`a5_676f_results.json`**（取代 `a5_673p.json`）/ `data/blindspot_676g_stats.json` / `data/673r_A5实验报告.md`）。红线：**不把未做的实验写成已做**，也**不把已被推翻的旧数字继续当弹药**。
 3. **诚实优先**：凡是论文已自认的缺口（标签零复核、scope 0/26、历史钉定不完整）**以及新出现的受限结果**（A5 主端点显著**但**触发预注册 `uninterpretable`、效应落在池构成层面），rebuttal 一律先说"我们同意 / 我们主动登记"，再给已落地修订，最后给路线图——**不要辩护式反驳**。评审对"承认 + 已修 + 路线"的接受度远高于"辩解"。
 4. **态势会随并行批次变化（本批已发生三次）**：本仓库多 Agent 并行。**673r 在预案写作期间提交**，把 A5 从"未跑（BLOCKED）"变成"已跑且主端点不显著"；随后 **673u 修掉 `wunsequenced` 恒 catch**，又把 A5 变成"**主端点显著但触发 `uninterpretable`**"；**676f 把 A5 扩到全量池（1137 样本 / 评估 566）**，主端点以 p≈10⁻⁴¹ 显著、幅度回归 +24.0pp、并列分析仍归零，并首次钉住选择效应 ≈+7~11pp。Q1、附录 A 与「0bis 态势更新」已按**最新产物**重写。任何 rebuttal 预案在发出前**必须重新核对 HEAD 与最新产物**。
 
@@ -47,7 +48,11 @@
 | **`wunsequenced` 缺陷修复（673u）** | 恒 catch → 恒 `unknown`（检测器不可用）；**头条率 82.9% / 62.5% 逐位不变**；对照假阳性 **18.2% (2/11) → 0.0% (0/11)** | `673u_wunsequenced修复报告.md` §0 / §3 |
 | 派生集探索（**replay 口径**，exploratory） | holdout FD 85.0% (17/20) vs random 10.0% (2/20)；corpus 87.5% (14/16) vs 37.5% (6/16)——**replay 口径、非确证；与真实口径不同，不得混用** | `a5_673p.json::exploratory_derivation_split` |
 | 样本量要求 | Δ=15pp 需 n≈138（paired）/170（independent）；±10pp 需 n≈104；±5pp 需 n≈236/378 | `tab:samplesize` |
-| VC / 变异 | 31/42 = 73.8% [58.0, 86.1]；core 96.5% (110/114) / all-scope 81.8% (130/159) | `current_numbers.json` |
+| VC / 变异 | **31/42 = 73.8%（描述性；677a 已去掉无抽样基础的 95% CI——42 张卡是全枚举而非抽样）**；core 96.5% (110/114) / all-scope 81.8% (130/159) | `current_numbers.json` |
+| 术语（677a） | "verifier" = **evidence-acquisition 装置**；`pass` = "边界内未获得矛盾证据"，**不是**语义真值 | 论文 §3 Terminology / §9 C0 |
+| 盲区类型数（677a 统一） | **18/70**（旧写 15/70 系转录不全；权威 `by_type` 中 `blindspot_ratio > 0.5` 计数 = 18） | `data/blindspot_676g_stats.json` |
+| provenance（677a） | **968** self-authored / **74** source-derived-reconstruction / **0** original-external-artifact | `data/holdout_expansion/SCHEMA.md` §2.1 |
+| e-process（677a） | **exploratory**：μ₀ 未冻结、备择网格未冻结、未进 CI ⇒ **不作为证据强度**，不进 Claim 表 | 论文附录 `app:eprocess` |
 
 ---
 

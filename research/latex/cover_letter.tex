@@ -1,5 +1,9 @@
 % =====================================================================
-%  Cover letter — Queyi, NeurIPS Datasets & Benchmarks submission
+%  Cover letter — Queyi, NeurIPS 2027 Evaluations & Datasets (E&D) submission
+%  v1.2 (677a): track renamed D&B -> E&D (2026); typically double-blind; template is a
+%  placeholder (neurips_2025 style, third-party, unmodified); 18/70 blind-spot types
+%  (aligned to data/blindspot_676g_stats.json); provenance three-valued; e-process
+%  exploratory. Version of record: research/latex/VERSION.md
 %  Compile: pdflatex cover_letter.tex   (standalone; no bib needed)
 % =====================================================================
 \documentclass[11pt]{article}
@@ -16,12 +20,22 @@
 \end{flushright}
 
 \noindent
-To the NeurIPS Datasets \& Benchmarks Chairs and Reviewers,
+To the NeurIPS Evaluations \& Datasets Chairs and Reviewers,
 
 \bigskip
 \noindent
-We submit \textbf{``Queyi: Making Verification Capability Independently Auditable''} for
-consideration in the \textbf{Datasets \& Benchmarks} track.
+We submit \textbf{``Evolving Verifiers: Failure-Driven Evidence Acquisition with Auditable
+Provenance''} for consideration in the \textbf{Evaluations \& Datasets (E\&D)} track, renamed from
+Datasets \& Benchmarks in 2026 and (since 2026) \textbf{typically double-blind}; we target the 2027
+edition. \emph{Throughout, ``verifier'' is used in the evidence-acquisition sense}: a
+\texttt{pass} verdict reports that no acquired evidence contradicts the assertion within our
+capability boundary, \textbf{not} that the assertion is semantically true.
+
+\paragraph{Template note.}
+The 2027 CFP is not yet released. This draft uses the official \texttt{neurips\_2025} style as a
+\emph{placeholder} (the style file is third-party and unmodified); it will migrate to the 2027
+E\&D style on release. Croissant and Responsible-AI metadata are registered as pre-submission TODOs
+because the 2027 metadata specification is not yet fixed.
 
 \paragraph{Why this fits E\&D.}
 Our contribution is an \emph{evaluation methodology} with a fully reproducible artifact and an
@@ -59,7 +73,13 @@ runs at full scale (1137 samples; $n{=}566$ held out): FD \textbf{54.6\%} vs.\ R
 with the Static contrast surviving the pre-registered parallel analysis (\textbf{+30.6}pp) while
 the Random contrast collapses to \textbf{0.0}pp once degenerate assets are excluded. We also publish
 a capability-boundary map of the instrument itself (\textbf{38.4\%} of 1147 samples are blind spots;
-15 of 70 defect types exceed 50\% blind).
+\textbf{18 of 70} defect types exceed 50\% blind). This blind-spot ratio is an
+\emph{instrument-boundary} statistic measured on our corpus with our 8-asset pool: it does
+\textbf{not} imply that 38.4\% of real-world C++ defects are undetectable. Provenance in the corpus
+is three-valued: 968 \texttt{self-authored}, 74 \texttt{source-derived-reconstruction} (single-file
+teaching reconstructions of real CVEs/issues, \textbf{not} original production code), and 0
+\texttt{original-external-artifact}. The e-process layer is \emph{exploratory} (priors and
+alternative grids not pre-registered) and supports no confirmatory claim.
 
 \paragraph{Honest limitations (stated up front).}
 The two headline rates depend on a specific WSL sanitizer environment and \textbf{fail silently} when
@@ -74,9 +94,10 @@ rather than hiding it.
 
 \paragraph{Data and code availability.}
 The repository is public (Apache-2.0) with DCO sign-off. Datasets D2/D3/D4 and the recomputation
-commands are described in \texttt{REPLICATION.md}; Croissant metadata will be provided in the
-supplementary material. Every reported number is recomputed from landed artifacts, and the paper
-marks any not-yet-landed value explicitly rather than filling in estimates.
+commands are described in \texttt{REPLICATION.md}. Every reported number is recomputed from landed
+artifacts, and the paper marks any not-yet-landed value explicitly rather than filling in
+estimates. Croissant and Responsible-AI metadata are \emph{registered TODOs} (to be generated before
+submission once the 2027 specification is published), not yet shipped.
 
 \paragraph{Reproducibility.}
 All headline numbers are reproducible via single commands; the paper documents the exact

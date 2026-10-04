@@ -1,8 +1,9 @@
-# Response to Reviewers — Template (Queyi, NeurIPS 2027 E&D)
+# Response to Reviewers — Template (Queyi, NeurIPS 2027 E&D) · v1.2 (677a)
 
 > **用法**：引用审稿人原话（`Reviewer:`），再给回复（`Response:`），并标出改动位置（`Change:`）。
 > **纪律**：不辩解、不回避；**承认的缺口原样承认**（与论文立场一致）。
 > **数字基线**：`data/current_numbers.json`（schema `queyi-current-numbers/672h`）+ `data/a5_676f_results.json`（A5 全量）+ `data/blindspot_676g_stats.json`（盲区地图）。**回复中不得出现未落盘数字。**
+> **677a 口径（回复时必须一致）**：① "verifier" = **evidence-acquisition 装置**，`pass` ≠ 语义真值；② 盲区 38.4% 为 **instrument-boundary** 统计（"on our corpus with our 8-asset instrument"）；③ 高盲区类型 **18/70**；④ VC 73.8% **无 CI**（全枚举，描述性）；⑤ e-process 为 **exploratory**（不得当证据强度）；⑥ `planted=false` = **source-derived reconstruction**（非原始生产代码）；⑦ Track 名为 **E&D**（2026 起由 D&B 更名），**通常双盲**；模板为 2025 placeholder，Croissant/RAI 元数据为**待办**。版本 of record：`research/latex/VERSION.md`。
 
 ---
 
@@ -25,7 +26,7 @@
 **Response:** We agree the first submission was thin on baselines. The revised version reports a **same-sample three-arm contrast**: failure-driven (FD) vs. a static caliber arm vs. a **random-proxy arm**, recomputed by a single script from landed artifacts. Separately, the **budget-matched control (A5) has now run at full scale** (1137 samples × 8 assets = 9096 real `detect` calls; derivation 571 / evaluation 566): FD **54.6%** vs Random **30.6%** (Δ **+24.0pp**, exact McNemar **p=2.3×10⁻⁴¹**, b=136/c=0) and vs Static **24.7%** (+29.9pp) — but the pre-registered parallel analysis collapses to Δ **0.0pp**, so we register it as **direction-only**, not a superiority claim (see "On A5" below).
 - FD holdout **82.9%** (34/41) vs. Static **2.4%** (1/41) vs. Random **9.8%** (4/41);
   FD corpus **62.5%** (40/64) vs. Static **17.2%** (11/64) vs. Random **21.9%** (14/64).
-- Exact McNemar $p\le3.0\times10^{-8}$; Cohen's $h\ge0.85$; all four paired $\Delta$ CIs strictly positive ($\Delta$ lower bound $\ge$ **28.6pp**); e-values up to $2.5\times10^{8}$.
+- Exact McNemar $p\le3.0\times10^{-8}$; Cohen's $h\ge0.85$; all four paired $\Delta$ CIs strictly positive ($\Delta$ lower bound $\ge$ **28.6pp**). (An e-process layer exists but is **exploratory** — not pre-registered, not used for confirmatory claims — and we no longer quote its e-values as evidence strength.)
 - We also state explicitly (§Claim Boundary) which claims remain **unsupported**.
 **Change:** §Experiments (Table E1, E5); §Claim Boundary.
 
@@ -83,7 +84,7 @@ Partly correct, and we label precisely. The **static arm is a caliber re-binning
 Because our object of study is not code repair but **verification of knowledge claims**. SWE-bench measures whether a model can patch an issue; we measure whether a claim is true under an explicit boundary triple. Adapting SWE-bench would change the construct (Construct validity). We cite the SWE-bench contamination line as **motivation** for external-sample-first design.
 
 ### On "reproducibility"
-Every headline number is recomputed from landed artifacts by a single command; the environment dependency (WSL + g++ + `setarch`) is declared; a missing dependency yields `UNVERIFIED`. Code is Apache-2.0 with DCO sign-off; Croissant metadata ships with the supplement.
+Every headline number is recomputed from landed artifacts by a single command; the environment dependency (WSL + g++ + `setarch`) is declared; a missing dependency yields `UNVERIFIED`. Code is Apache-2.0 with DCO sign-off. Croissant and Responsible-AI metadata are **registered pre-submission TODOs** (the 2027 metadata specification is not yet released), not yet shipped.
 
 ### On "how do you handle untrusted LLM input / prompt injection"
 We register this as an explicit threat (T15). Architectural mitigation: **LLM output never becomes a verdict directly** — every LLM-produced candidate passes a deterministic schema check (field allow-list) before entering the ledger, and ML-based detection only **warns, never blocks**. Prompt-injection can pollute *evidence processing* but not *verdict recomputation*, because verdicts are fully programmatic and checked by a kernel-independent reconciler. We cite a real CVE (CVE-2025-59145, CVSS 9.6) as evidence the threat is live.
@@ -114,8 +115,9 @@ A5 (random-budget control) has now **run at full scale** (1137 samples; derivati
 We agree and say so up front. Measurable $n=41$ (holdout) / $n=64$ (corpus); $\pm$5pp half-width
 needs $n=236/378$, and a $\Delta=15$pp paired contrast needs $n\approx103$–173. Beyond intervals we
 add an **e-process** layer: cumulative e-values multiply per item and stay anytime-valid, so the
-expansion protocol does not need re-calibration; measured e-values reach $2.5\times10^{8}$ for the
-static contrast, far above the threshold of 20. We report **direction** and **refuse to report
+expansion protocol does not need re-calibration. It is **exploratory** (μ₀, alternative grid and
+mixing prior not pre-registered) and we therefore do **not** use e-values as evidence strength; the
+layer is reported in an appendix marked as such. We report **direction** and **refuse to report
 magnitude** for the two headline rates. For the budget-matched A5 contrast the expansion has
 **already happened** ($n=566 \gg 138$; Δ +24.0pp, p=2.3×10⁻⁴¹), so the remaining limit there is
 pool geometry, not power.
@@ -149,4 +151,4 @@ Every headline number is recomputed from landed artifacts by a single command; t
 dependency (WSL + g++ + `setarch`) is declared and a missing dependency yields `UNVERIFIED` rather
 than a misleading low score. Statistical plans were pre-registered before the reveals, results were
 recomputed through two independent paths (differences < 0.1pp), and the repository is Apache-2.0
-with DCO sign-off. Croissant metadata ships with the supplement.
+with DCO sign-off. Croissant and Responsible-AI metadata are registered pre-submission TODOs.
