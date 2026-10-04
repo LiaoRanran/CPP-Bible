@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "producer",
-    "description": "用 relaxed 计数器的读数作为「数据已就绪」的判据"
+    "file": "sample_E008.cpp",
+    "notes": "用 relaxed 计数器的读数作为「数据已就绪」的判据"
   },
   "severity": "high",
   "planted": true,

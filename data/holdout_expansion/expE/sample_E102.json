@@ -4,18 +4,19 @@
   "defect_location": {
     "line": 26,
     "function": "waiter",
-    "description": "超时等待路径在持锁时进入 wait，超时后仍不释放外层锁"
+    "file": "sample_E102.cpp",
+    "notes": "超时等待路径在持锁时进入 wait，超时后仍不释放外层锁"
   },
   "severity": "high",
   "planted": true,
-  "expected_verdict": "catch",
+  "expected_verdict": "miss",
   "expected_detectors": [
     "tsan"
   ],
   "trigger_condition": "2 线程：超时等待者持锁不释放，助手需该锁",
   "thread_count": 2,
   "timeout_seconds": 5,
-  "notes": "超时路径未正确释放外层锁。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "notes": "超时路径未正确释放外层锁。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。 【676m 修正：hung_flag 样本真实判据为 miss（sanitizer 挂起超时），原 catch 登记有误】",
   "pooled_verdict": {
     "tsan": "catch"
   },

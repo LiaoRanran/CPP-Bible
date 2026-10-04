@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 15,
     "function": "url_parse_host_percent",
-    "description": "CVE-2022-27780: 百分号编码分隔符使主机名解析不一致（CVE 描述: wrongly accepts percent-encoded URL separators like '/' when decoding the host name part ... making it a *different* URL using the wrong host name, CWE-177）。逻辑缺陷 → 诚实标 miss。"
+    "file": "sample_G048.cpp",
+    "notes": "CVE-2022-27780: 百分号编码分隔符使主机名解析不一致（CVE 描述: wrongly accepts percent-encoded URL separators like '/' when decoding the host name part ... making it a *different* URL using the wrong host name, CWE-177）。逻辑缺陷 → 诚实标 miss。"
   },
   "severity": "medium",
   "planted": false,

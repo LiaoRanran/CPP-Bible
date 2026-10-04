@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 24,
     "function": "smb_request2",
-    "description": "CVE-2026-3805: SMB 第二次请求使用已释放内存的数据指针（官方公告: making a second SMB request curl uses data pointers to freed memory, Medium, CWE-416）。2026-03-11 披露。"
+    "file": "sample_G035.cpp",
+    "notes": "CVE-2026-3805: SMB 第二次请求使用已释放内存的数据指针（官方公告: making a second SMB request curl uses data pointers to freed memory, Medium, CWE-416）。2026-03-11 披露。"
   },
   "severity": "high",
   "planted": false,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 27,
     "function": "consumer",
-    "description": "以 relaxed 读标志 + 非原子裸指针读取已发布对象"
+    "file": "sample_E028.cpp",
+    "notes": "以 relaxed 读标志 + 非原子裸指针读取已发布对象"
   },
   "severity": "high",
   "planted": true,

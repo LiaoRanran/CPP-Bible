@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E124",
-  "defect_type": "aba_problem",
+  "defect_type": "atomic_ub",
   "defect_location": {
     "line": 25,
     "function": "main",
-    "description": "无锁链表遍历：读 next 之后节点被删除复用"
+    "file": "sample_E124.cpp",
+    "notes": "无锁链表遍历：读 next 之后节点被删除复用"
   },
   "severity": "high",
   "planted": true,

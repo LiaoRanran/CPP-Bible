@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E170",
-  "defect_type": "lock_priority_inversion",
+  "defect_type": "deadlock",
   "defect_location": {
     "line": 21,
     "function": "sign",
-    "description": "持锁做加密/签名运算（CPU 密集 + 可能换出）"
+    "file": "sample_E170.cpp",
+    "notes": "持锁做加密/签名运算（CPU 密集 + 可能换出）"
   },
   "severity": "high",
   "planted": true,

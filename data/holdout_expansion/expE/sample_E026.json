@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "bump",
-    "description": "compare_exchange_weak 成功序用 relaxed 做「读-改-写-再写」多步更新"
+    "file": "sample_E026.cpp",
+    "notes": "compare_exchange_weak 成功序用 relaxed 做「读-改-写-再写」多步更新"
   },
   "severity": "high",
   "planted": true,

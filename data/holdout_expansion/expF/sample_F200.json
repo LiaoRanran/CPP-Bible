@@ -2,9 +2,10 @@
   "sample_id": "F200",
   "defect_type": "register_ub",
   "defect_location": {
-    "description": "GCC 全局寄存器变量扩展把 rbx 当作 gp",
     "line": 4,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F200.cpp",
+    "notes": "GCC 全局寄存器变量扩展把 rbx 当作 gp"
   },
   "severity": "medium",
   "planted": true,

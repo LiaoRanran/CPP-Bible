@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 9,
     "function": "main",
-    "description": "std::transform 目标区间容量不足（越界写入）"
+    "file": "sample_D126.cpp",
+    "notes": "std::transform 目标区间容量不足（越界写入）"
   },
   "severity": "high",
   "planted": true,

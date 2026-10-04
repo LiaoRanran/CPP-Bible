@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 24,
     "function": "watcher",
-    "description": "seq_cst 存储配 relaxed 加载（强度不匹配）"
+    "file": "sample_E010.cpp",
+    "notes": "seq_cst 存储配 relaxed 加载（强度不匹配）"
   },
   "severity": "low",
   "planted": true,

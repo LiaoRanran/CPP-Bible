@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 33,
     "function": "notifier",
-    "description": "三个等待者共用一个谓词但只 notify_one 两次（依赖运气）"
+    "file": "sample_E179.cpp",
+    "notes": "三个等待者共用一个谓词但只 notify_one 两次（依赖运气）"
   },
   "severity": "high",
   "planted": true,

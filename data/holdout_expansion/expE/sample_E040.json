@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 24,
     "function": "reader",
-    "description": "「一次性初始化」标志用 seq_cst 写 + relaxed 读，读侧读非原子全局表"
+    "file": "sample_E040.cpp",
+    "notes": "「一次性初始化」标志用 seq_cst 写 + relaxed 读，读侧读非原子全局表"
   },
   "severity": "high",
   "planted": true,

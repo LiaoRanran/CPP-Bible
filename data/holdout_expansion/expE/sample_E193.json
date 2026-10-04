@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 27,
     "function": "waiter",
-    "description": "谓词在 notify_all 与 wait 之间被第三方线程清零"
+    "file": "sample_E193.cpp",
+    "notes": "谓词在 notify_all 与 wait 之间被第三方线程清零"
   },
   "severity": "high",
   "planted": true,

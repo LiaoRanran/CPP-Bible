@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 8,
     "function": "main",
-    "description": "从同一裸指针构造多个独立 shared_ptr（双重释放）"
+    "file": "sample_D149.cpp",
+    "notes": "从同一裸指针构造多个独立 shared_ptr（双重释放）"
   },
   "severity": "high",
   "planted": true,

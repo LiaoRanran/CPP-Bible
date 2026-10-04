@@ -4,18 +4,19 @@
   "defect_location": {
     "line": 21,
     "function": "thrower",
-    "description": "持两把锁时抛异常，展开顺序使另一线程永久等待"
+    "file": "sample_E109.cpp",
+    "notes": "持两把锁时抛异常，展开顺序使另一线程永久等待"
   },
   "severity": "high",
   "planted": true,
-  "expected_verdict": "catch",
+  "expected_verdict": "miss",
   "expected_detectors": [
     "tsan"
   ],
   "trigger_condition": "2 线程：一方持双锁抛异常，另一方随后按固定顺序取双锁",
   "thread_count": 2,
   "timeout_seconds": 5,
-  "notes": "异常展开与锁顺序耦合。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "notes": "异常展开与锁顺序耦合。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。 【676m 修正：hung_flag 样本真实判据为 miss（sanitizer 挂起超时），原 catch 登记有误】",
   "pooled_verdict": {
     "tsan": "catch"
   },

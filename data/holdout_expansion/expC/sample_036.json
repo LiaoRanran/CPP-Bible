@@ -8,12 +8,13 @@
   "trigger_condition": "异常被抛出时（始终触发）",
   "optimization_sensitivity": "n/a",
   "notes": "raii_violation 异常安全泄漏：throw 被 catch 后直接 return，delete[] 被跳过，LeakSanitizer 抓。",
-  "id": "sample_036",
+  "sample_id": "sample_036",
   "category": "C",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "return 0;   // <<PLANTED-DEFECT>> 异常路径提前返回，p 未释放 -> 内存泄漏"
+    "file": "sample_036.cpp",
+    "notes": "return 0;   // <<PLANTED-DEFECT>> 异常路径提前返回，p 未释放 -> 内存泄漏"
   },
   "planted": true,
   "source_files": [

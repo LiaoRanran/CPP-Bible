@@ -1,11 +1,12 @@
 {
-  "id": "sample_074",
+  "sample_id": "sample_074",
   "category": "A",
   "defect_type": "uninitialized_read",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "int r = arr[2]; // <<PLANTED-DEFECT>> uninitialized read: read uninit array element"
+    "file": "sample_074.cpp",
+    "notes": "int r = arr[2]; // <<PLANTED-DEFECT>> uninitialized read: read uninit array element"
   },
   "severity": "low",
   "planted": true,

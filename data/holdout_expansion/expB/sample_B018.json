@@ -2,8 +2,9 @@
   "sample_id": "sample_B018",
   "defect_type": "data_race",
   "defect_location": {
-    "line": 5,
-    "function": "main"
+    "line": 13,
+    "function": "main",
+    "file": "sample_B018.cpp"
   },
   "severity": "high",
   "planted": true,

@@ -2,9 +2,10 @@
   "sample_id": "F004",
   "defect_type": "alignment",
   "defect_location": {
-    "description": "char buffer+3 强转 long long* 后读，未满足 long long 对齐边界",
     "line": 6,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F004.cpp",
+    "notes": "char buffer+3 强转 long long* 后读，未满足 long long 对齐边界"
   },
   "severity": "medium",
   "planted": true,

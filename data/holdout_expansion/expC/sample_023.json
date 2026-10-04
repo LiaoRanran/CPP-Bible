@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "对已移动自 string 的对象继续访问：C++ 允许但结果未指定；无检测器可抓（盲区）。",
-  "id": "sample_023",
+  "sample_id": "sample_023",
   "category": "C",
   "defect_location": {
     "line": 5,
     "function": "main",
-    "note": "if (s.empty()) { (void)0; } // <<PLANTED-DEFECT>> 使用已移动对象 s（有效但处于未指定状态）"
+    "file": "sample_023.cpp",
+    "notes": "if (s.empty()) { (void)0; } // <<PLANTED-DEFECT>> 使用已移动对象 s（有效但处于未指定状态）"
   },
   "planted": true,
   "source_files": [

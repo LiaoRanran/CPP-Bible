@@ -2,9 +2,10 @@
   "sample_id": "F136",
   "defect_type": "bit_operation",
   "defect_location": {
-    "description": "std::bitset<8> 越界访问下标 9",
     "line": 5,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F136.cpp",
+    "notes": "std::bitset<8> 越界访问下标 9"
   },
   "severity": "medium",
   "planted": true,

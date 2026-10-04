@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 18,
     "function": "negotiate_reuse_check",
-    "description": "CVE-2015-3148: Negotiate 认证连接被错误复用（CVE 描述: do not properly re-use authenticated Negotiate connections, which allows remote attackers to connect as other users via a request）。逻辑缺陷 → 诚实标 miss。"
+    "file": "sample_G045.cpp",
+    "notes": "CVE-2015-3148: Negotiate 认证连接被错误复用（CVE 描述: do not properly re-use authenticated Negotiate connections, which allows remote attackers to connect as other users via a request）。逻辑缺陷 → 诚实标 miss。"
   },
   "severity": "high",
   "planted": false,

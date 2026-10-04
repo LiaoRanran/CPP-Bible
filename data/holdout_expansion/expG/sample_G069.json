@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G069",
-  "defect_type": "heap_overflow",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 15,
     "function": "nss_hostname_digits_dots",
-    "description": "CVE-2015-0235 (GHOST): glibc gethostbyname 缓冲溢出（CVE 描述: buffer overflow in __nss_hostname_digits_dots ... hostname length close to buffer boundary）。用户态等价重构（planted=true）。"
+    "file": "sample_G069.cpp",
+    "notes": "CVE-2015-0235 (GHOST): glibc gethostbyname 缓冲溢出（CVE 描述: buffer overflow in __nss_hostname_digits_dots ... hostname length close to buffer boundary）。用户态等价重构（planted=true）。"
   },
   "severity": "high",
   "planted": true,

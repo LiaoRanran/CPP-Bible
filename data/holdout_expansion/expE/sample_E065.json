@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "indexer",
-    "description": "无符号原子下溢后作为数组下标使用"
+    "file": "sample_E065.cpp",
+    "notes": "无符号原子下溢后作为数组下标使用"
   },
   "severity": "high",
   "planted": true,

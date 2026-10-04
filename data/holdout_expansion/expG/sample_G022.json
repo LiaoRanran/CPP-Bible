@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 17,
     "function": "ssl3_get_key_exchange",
-    "description": "CVE-2015-0204 (FREAK): ssl3_get_key_exchange 允许 RSA→EXPORT_RSA 降级（CVE 描述: conduct RSA-to-EXPORT_RSA downgrade attacks by offering a weak ephemeral RSA key in a noncompliant way）。纯逻辑错误，正确=拒绝、实际=接受 → 诚实标 miss。"
+    "file": "sample_G022.cpp",
+    "notes": "CVE-2015-0204 (FREAK): ssl3_get_key_exchange 允许 RSA→EXPORT_RSA 降级（CVE 描述: conduct RSA-to-EXPORT_RSA downgrade attacks by offering a weak ephemeral RSA key in a noncompliant way）。纯逻辑错误，正确=拒绝、实际=接受 → 诚实标 miss。"
   },
   "severity": "high",
   "planted": false,

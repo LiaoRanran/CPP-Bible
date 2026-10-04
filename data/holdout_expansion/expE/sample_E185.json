@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 25,
     "function": "waiter",
-    "description": "wait_for 超时后走「重试」分支，重试分支无锁读写共享状态"
+    "file": "sample_E185.cpp",
+    "notes": "wait_for 超时后走「重试」分支，重试分支无锁读写共享状态"
   },
   "severity": "high",
   "planted": true,

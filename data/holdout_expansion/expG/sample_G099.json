@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G099",
-  "defect_type": "compiler_warning",
+  "defect_type": "use_after_free",
   "defect_location": {
     "line": 20,
     "function": "format_value_map",
-    "description": "fmtlib/fmt#3415（已修复）: fmt::v9 core.h:1674 的 arg_mapper().map() 模式在 gcc 13.1 -Wall 下触发 -Wdangling-reference（issue 附 godbolt 复现）。本样本以等价调用模式复现该告警。"
+    "file": "sample_G099.cpp",
+    "notes": "fmtlib/fmt#3415（已修复）: fmt::v9 core.h:1674 的 arg_mapper().map() 模式在 gcc 13.1 -Wall 下触发 -Wdangling-reference（issue 附 godbolt 复现）。本样本以等价调用模式复现该告警。"
   },
   "severity": "low",
   "planted": true,

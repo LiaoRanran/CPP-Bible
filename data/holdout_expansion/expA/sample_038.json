@@ -1,11 +1,12 @@
 {
-  "id": "sample_038",
+  "sample_id": "sample_038",
   "category": "A",
   "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "int v = b[10]; // <<PLANTED-DEFECT>> out-of-bounds: read stack index 10 (size 8)"
+    "file": "sample_038.cpp",
+    "notes": "int v = b[10]; // <<PLANTED-DEFECT>> out-of-bounds: read stack index 10 (size 8)"
   },
   "severity": "medium",
   "planted": true,

@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E155",
-  "defect_type": "lock_priority_inversion",
+  "defect_type": "deadlock",
   "defect_location": {
     "line": 22,
     "function": "driver_thread",
-    "description": "「中断处理器」形态的线程直接获取用户态锁，与持锁线程并发"
+    "file": "sample_E155.cpp",
+    "notes": "「中断处理器」形态的线程直接获取用户态锁，与持锁线程并发"
   },
   "severity": "high",
   "planted": true,

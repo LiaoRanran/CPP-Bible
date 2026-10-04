@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G008",
-  "defect_type": "heap_overread",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 24,
     "function": "X509_cmp_time",
-    "description": "CVE-2015-1789: X509_cmp_time 对 crafted length field 的 ASN1_TIME 做 out-of-bounds read（CVE 描述: out-of-bounds read via a crafted length field in ASN1_TIME）。堆上 6 字节时间串按 4+4 位解析 → 越界 2 字节。"
+    "file": "sample_G008.cpp",
+    "notes": "CVE-2015-1789: X509_cmp_time 对 crafted length field 的 ASN1_TIME 做 out-of-bounds read（CVE 描述: out-of-bounds read via a crafted length field in ASN1_TIME）。堆上 6 字节时间串按 4+4 位解析 → 越界 2 字节。"
   },
   "severity": "high",
   "planted": false,

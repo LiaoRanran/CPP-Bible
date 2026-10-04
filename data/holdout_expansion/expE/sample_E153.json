@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E153",
-  "defect_type": "lock_priority_inversion",
+  "defect_type": "deadlock",
   "defect_location": {
     "line": 22,
     "function": "producer",
-    "description": "持锁等待慢速消费者（sleep 模拟背压）"
+    "file": "sample_E153.cpp",
+    "notes": "持锁等待慢速消费者（sleep 模拟背压）"
   },
   "severity": "high",
   "planted": true,

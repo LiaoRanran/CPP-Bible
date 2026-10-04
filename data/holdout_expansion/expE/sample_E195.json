@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "waiter",
-    "description": "多个通知者无锁改谓词，等待者在锁内读（竞争 + 唤醒丢失）"
+    "file": "sample_E195.cpp",
+    "notes": "多个通知者无锁改谓词，等待者在锁内读（竞争 + 唤醒丢失）"
   },
   "severity": "high",
   "planted": true,

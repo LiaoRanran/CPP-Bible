@@ -248,7 +248,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector push_back 重新分配后使用失效迭代器"
+        "file": "sample_D001.cpp",
+        "notes": "vector push_back 重新分配后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -269,7 +270,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector push_back 重新分配后使用失效迭代器"
+        "file": "sample_D002.cpp",
+        "notes": "vector push_back 重新分配后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -290,7 +292,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector push_back 重新分配后使用失效迭代器"
+        "file": "sample_D003.cpp",
+        "notes": "vector push_back 重新分配后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -311,7 +314,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector push_back 重新分配后使用失效迭代器"
+        "file": "sample_D004.cpp",
+        "notes": "vector push_back 重新分配后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -332,7 +336,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector push_back 重新分配后使用失效迭代器"
+        "file": "sample_D005.cpp",
+        "notes": "vector push_back 重新分配后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -353,7 +358,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector push_back 重新分配后使用失效迭代器"
+        "file": "sample_D006.cpp",
+        "notes": "vector push_back 重新分配后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -374,7 +380,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector push_back 重新分配后使用失效迭代器"
+        "file": "sample_D007.cpp",
+        "notes": "vector push_back 重新分配后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -395,7 +402,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector insert 后使用失效迭代器"
+        "file": "sample_D008.cpp",
+        "notes": "vector insert 后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -416,7 +424,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector insert 后使用失效迭代器"
+        "file": "sample_D009.cpp",
+        "notes": "vector insert 后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -437,7 +446,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector insert 后使用失效迭代器"
+        "file": "sample_D010.cpp",
+        "notes": "vector insert 后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -458,7 +468,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector insert 后使用失效迭代器"
+        "file": "sample_D011.cpp",
+        "notes": "vector insert 后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -479,7 +490,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector insert 后使用失效迭代器"
+        "file": "sample_D012.cpp",
+        "notes": "vector insert 后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -500,7 +512,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
+        "file": "sample_D013.cpp",
+        "notes": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
       },
       "severity": "medium",
       "planted": true,
@@ -522,7 +535,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
+        "file": "sample_D014.cpp",
+        "notes": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
       },
       "severity": "medium",
       "planted": true,
@@ -544,7 +558,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
+        "file": "sample_D015.cpp",
+        "notes": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
       },
       "severity": "medium",
       "planted": true,
@@ -566,7 +581,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
+        "file": "sample_D016.cpp",
+        "notes": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
       },
       "severity": "medium",
       "planted": true,
@@ -587,7 +603,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
+        "file": "sample_D017.cpp",
+        "notes": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
       },
       "severity": "medium",
       "planted": true,
@@ -608,7 +625,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "deque push_front 后使用失效迭代器"
+        "file": "sample_D018.cpp",
+        "notes": "deque push_front 后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -630,7 +648,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "deque push_front 后使用失效迭代器"
+        "file": "sample_D019.cpp",
+        "notes": "deque push_front 后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -652,7 +671,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "deque push_front 后使用失效迭代器"
+        "file": "sample_D020.cpp",
+        "notes": "deque push_front 后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -674,7 +694,8 @@
       "defect_location": {
         "line": 10,
         "function": "main",
-        "description": "unordered_map rehash 后使用失效迭代器"
+        "file": "sample_D021.cpp",
+        "notes": "unordered_map rehash 后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -696,7 +717,8 @@
       "defect_location": {
         "line": 10,
         "function": "main",
-        "description": "unordered_map rehash 后使用失效迭代器"
+        "file": "sample_D022.cpp",
+        "notes": "unordered_map rehash 后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -718,7 +740,8 @@
       "defect_location": {
         "line": 10,
         "function": "main",
-        "description": "unordered_map rehash 后使用失效迭代器"
+        "file": "sample_D023.cpp",
+        "notes": "unordered_map rehash 后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -740,7 +763,8 @@
       "defect_location": {
         "line": 10,
         "function": "main",
-        "description": "map erase 后使用被擦除的迭代器"
+        "file": "sample_D024.cpp",
+        "notes": "map erase 后使用被擦除的迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -761,7 +785,8 @@
       "defect_location": {
         "line": 10,
         "function": "main",
-        "description": "map erase 后使用被擦除的迭代器"
+        "file": "sample_D025.cpp",
+        "notes": "map erase 后使用被擦除的迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -782,7 +807,8 @@
       "defect_location": {
         "line": 10,
         "function": "main",
-        "description": "map erase 后使用被擦除的迭代器"
+        "file": "sample_D026.cpp",
+        "notes": "map erase 后使用被擦除的迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -803,7 +829,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "range-for 循环内修改容器触发迭代器失效"
+        "file": "sample_D027.cpp",
+        "notes": "range-for 循环内修改容器触发迭代器失效"
       },
       "severity": "high",
       "planted": true,
@@ -824,7 +851,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "range-for 循环内修改容器触发迭代器失效"
+        "file": "sample_D028.cpp",
+        "notes": "range-for 循环内修改容器触发迭代器失效"
       },
       "severity": "high",
       "planted": true,
@@ -845,7 +873,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "range-for 循环内修改容器触发迭代器失效"
+        "file": "sample_D029.cpp",
+        "notes": "range-for 循环内修改容器触发迭代器失效"
       },
       "severity": "high",
       "planted": true,
@@ -866,7 +895,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "容器修改后使用失效的 end() 迭代器"
+        "file": "sample_D030.cpp",
+        "notes": "容器修改后使用失效的 end() 迭代器"
       },
       "severity": "medium",
       "planted": true,
@@ -888,7 +918,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "容器修改后使用失效的 end() 迭代器"
+        "file": "sample_D031.cpp",
+        "notes": "容器修改后使用失效的 end() 迭代器"
       },
       "severity": "medium",
       "planted": true,
@@ -910,7 +941,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "容器修改后使用失效的 end() 迭代器"
+        "file": "sample_D032.cpp",
+        "notes": "容器修改后使用失效的 end() 迭代器"
       },
       "severity": "medium",
       "planted": true,
@@ -932,7 +964,8 @@
       "defect_location": {
         "line": 10,
         "function": "Holder::read_bad",
-        "description": "类成员 vector 在成员函数内 push_back 后使用失效迭代器"
+        "file": "sample_D033.cpp",
+        "notes": "类成员 vector 在成员函数内 push_back 后使用失效迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -953,7 +986,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector erase 后使用失效迭代器（补充变体）"
+        "file": "sample_D034.cpp",
+        "notes": "vector erase 后使用失效迭代器（补充变体）"
       },
       "severity": "medium",
       "planted": true,
@@ -975,7 +1009,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector erase 后使用失效迭代器（补充变体）"
+        "file": "sample_D035.cpp",
+        "notes": "vector erase 后使用失效迭代器（补充变体）"
       },
       "severity": "medium",
       "planted": true,
@@ -996,7 +1031,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "空 vector 调用 front()"
+        "file": "sample_D036.cpp",
+        "notes": "空 vector 调用 front()"
       },
       "severity": "high",
       "planted": true,
@@ -1018,7 +1054,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "空 vector 调用 front()"
+        "file": "sample_D037.cpp",
+        "notes": "空 vector 调用 front()"
       },
       "severity": "high",
       "planted": true,
@@ -1040,7 +1077,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "空 vector 调用 front()"
+        "file": "sample_D038.cpp",
+        "notes": "空 vector 调用 front()"
       },
       "severity": "high",
       "planted": true,
@@ -1062,7 +1100,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "空 vector 调用 front()"
+        "file": "sample_D039.cpp",
+        "notes": "空 vector 调用 front()"
       },
       "severity": "high",
       "planted": true,
@@ -1084,7 +1123,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "空 vector 调用 front()"
+        "file": "sample_D040.cpp",
+        "notes": "空 vector 调用 front()"
       },
       "severity": "high",
       "planted": true,
@@ -1105,7 +1145,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "空 vector 调用 front()"
+        "file": "sample_D041.cpp",
+        "notes": "空 vector 调用 front()"
       },
       "severity": "high",
       "planted": true,
@@ -1127,7 +1168,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "vector operator[] 越界访问"
+        "file": "sample_D042.cpp",
+        "notes": "vector operator[] 越界访问"
       },
       "severity": "high",
       "planted": true,
@@ -1148,7 +1190,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "vector operator[] 越界访问"
+        "file": "sample_D043.cpp",
+        "notes": "vector operator[] 越界访问"
       },
       "severity": "high",
       "planted": true,
@@ -1169,7 +1212,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "vector operator[] 越界访问"
+        "file": "sample_D044.cpp",
+        "notes": "vector operator[] 越界访问"
       },
       "severity": "high",
       "planted": true,
@@ -1190,7 +1234,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "vector operator[] 越界访问"
+        "file": "sample_D045.cpp",
+        "notes": "vector operator[] 越界访问"
       },
       "severity": "high",
       "planted": true,
@@ -1211,7 +1256,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "vector operator[] 越界访问"
+        "file": "sample_D046.cpp",
+        "notes": "vector operator[] 越界访问"
       },
       "severity": "high",
       "planted": true,
@@ -1232,7 +1278,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "vector operator[] 越界访问"
+        "file": "sample_D047.cpp",
+        "notes": "vector operator[] 越界访问"
       },
       "severity": "high",
       "planted": true,
@@ -1253,7 +1300,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::array operator[] 越界访问"
+        "file": "sample_D048.cpp",
+        "notes": "std::array operator[] 越界访问"
       },
       "severity": "high",
       "planted": true,
@@ -1275,7 +1323,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::array operator[] 越界访问"
+        "file": "sample_D049.cpp",
+        "notes": "std::array operator[] 越界访问"
       },
       "severity": "high",
       "planted": true,
@@ -1297,7 +1346,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::array operator[] 越界访问"
+        "file": "sample_D050.cpp",
+        "notes": "std::array operator[] 越界访问"
       },
       "severity": "high",
       "planted": true,
@@ -1319,7 +1369,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::array operator[] 越界访问"
+        "file": "sample_D051.cpp",
+        "notes": "std::array operator[] 越界访问"
       },
       "severity": "high",
       "planted": true,
@@ -1341,7 +1392,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector<bool> 代理引用在重分配后悬垂"
+        "file": "sample_D052.cpp",
+        "notes": "vector<bool> 代理引用在重分配后悬垂"
       },
       "severity": "high",
       "planted": true,
@@ -1362,7 +1414,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector<bool> 代理引用在重分配后悬垂"
+        "file": "sample_D053.cpp",
+        "notes": "vector<bool> 代理引用在重分配后悬垂"
       },
       "severity": "high",
       "planted": true,
@@ -1383,7 +1436,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "vector<bool> 代理引用在重分配后悬垂"
+        "file": "sample_D054.cpp",
+        "notes": "vector<bool> 代理引用在重分配后悬垂"
       },
       "severity": "high",
       "planted": true,
@@ -1404,7 +1458,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "从空 std::optional 解引用取值"
+        "file": "sample_D055.cpp",
+        "notes": "从空 std::optional 解引用取值"
       },
       "severity": "high",
       "planted": true,
@@ -1426,7 +1481,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "从空 std::optional 解引用取值"
+        "file": "sample_D056.cpp",
+        "notes": "从空 std::optional 解引用取值"
       },
       "severity": "high",
       "planted": true,
@@ -1448,7 +1504,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "从空 std::optional 解引用取值"
+        "file": "sample_D057.cpp",
+        "notes": "从空 std::optional 解引用取值"
       },
       "severity": "high",
       "planted": true,
@@ -1470,7 +1527,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "从空 std::optional 解引用取值"
+        "file": "sample_D058.cpp",
+        "notes": "从空 std::optional 解引用取值"
       },
       "severity": "high",
       "planted": true,
@@ -1492,7 +1550,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::variant 取错误 alternative（抛异常）"
+        "file": "sample_D059.cpp",
+        "notes": "std::variant 取错误 alternative（抛异常）"
       },
       "severity": "medium",
       "planted": true,
@@ -1514,7 +1573,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::variant 取错误 alternative（抛异常）"
+        "file": "sample_D060.cpp",
+        "notes": "std::variant 取错误 alternative（抛异常）"
       },
       "severity": "medium",
       "planted": true,
@@ -1536,7 +1596,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::variant 取错误 alternative（抛异常）"
+        "file": "sample_D061.cpp",
+        "notes": "std::variant 取错误 alternative（抛异常）"
       },
       "severity": "medium",
       "planted": true,
@@ -1558,7 +1619,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "std::list erase 后使用已删除节点的迭代器"
+        "file": "sample_D062.cpp",
+        "notes": "std::list erase 后使用已删除节点的迭代器"
       },
       "severity": "high",
       "planted": true,
@@ -1579,7 +1641,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::deque operator[] 越界访问"
+        "file": "sample_D063.cpp",
+        "notes": "std::deque operator[] 越界访问"
       },
       "severity": "high",
       "planted": true,
@@ -1601,7 +1664,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "空 vector 调用 back()（补充）"
+        "file": "sample_D064.cpp",
+        "notes": "空 vector 调用 back()（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -1623,7 +1687,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "空 vector 调用 back()（补充）"
+        "file": "sample_D065.cpp",
+        "notes": "空 vector 调用 back()（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -1645,7 +1710,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "空 vector 调用 back()（补充）"
+        "file": "sample_D066.cpp",
+        "notes": "空 vector 调用 back()（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -1667,7 +1733,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "空 vector 调用 back()（补充）"
+        "file": "sample_D067.cpp",
+        "notes": "空 vector 调用 back()（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -1689,7 +1756,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "空 vector 调用 back()（补充）"
+        "file": "sample_D068.cpp",
+        "notes": "空 vector 调用 back()（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -1711,7 +1779,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "空 vector 调用 back()（补充）"
+        "file": "sample_D069.cpp",
+        "notes": "空 vector 调用 back()（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -1733,7 +1802,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "空 vector 调用 back()（补充）"
+        "file": "sample_D070.cpp",
+        "notes": "空 vector 调用 back()（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -1755,7 +1825,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "std::string 修改后使用失效的 c_str() 指针"
+        "file": "sample_D071.cpp",
+        "notes": "std::string 修改后使用失效的 c_str() 指针"
       },
       "severity": "high",
       "planted": true,
@@ -1776,7 +1847,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "std::string 修改后使用失效的 c_str() 指针"
+        "file": "sample_D072.cpp",
+        "notes": "std::string 修改后使用失效的 c_str() 指针"
       },
       "severity": "high",
       "planted": true,
@@ -1797,7 +1869,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "std::string 修改后使用失效的 c_str() 指针"
+        "file": "sample_D073.cpp",
+        "notes": "std::string 修改后使用失效的 c_str() 指针"
       },
       "severity": "high",
       "planted": true,
@@ -1818,7 +1891,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "std::string 修改后使用失效的 c_str() 指针"
+        "file": "sample_D074.cpp",
+        "notes": "std::string 修改后使用失效的 c_str() 指针"
       },
       "severity": "high",
       "planted": true,
@@ -1839,7 +1913,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "std::string 修改后使用失效的 c_str() 指针"
+        "file": "sample_D075.cpp",
+        "notes": "std::string 修改后使用失效的 c_str() 指针"
       },
       "severity": "high",
       "planted": true,
@@ -1860,7 +1935,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "std::string 修改后使用失效的 c_str() 指针"
+        "file": "sample_D076.cpp",
+        "notes": "std::string 修改后使用失效的 c_str() 指针"
       },
       "severity": "high",
       "planted": true,
@@ -1881,7 +1957,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "std::string 修改后使用失效的 c_str() 指针"
+        "file": "sample_D077.cpp",
+        "notes": "std::string 修改后使用失效的 c_str() 指针"
       },
       "severity": "high",
       "planted": true,
@@ -1902,7 +1979,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "通过 data() 指针越界写 std::string 堆缓冲"
+        "file": "sample_D078.cpp",
+        "notes": "通过 data() 指针越界写 std::string 堆缓冲"
       },
       "severity": "high",
       "planted": true,
@@ -1923,7 +2001,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "通过 data() 指针越界写 std::string 堆缓冲"
+        "file": "sample_D079.cpp",
+        "notes": "通过 data() 指针越界写 std::string 堆缓冲"
       },
       "severity": "high",
       "planted": true,
@@ -1944,7 +2023,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "通过 data() 指针越界写 std::string 堆缓冲"
+        "file": "sample_D080.cpp",
+        "notes": "通过 data() 指针越界写 std::string 堆缓冲"
       },
       "severity": "high",
       "planted": true,
@@ -1965,7 +2045,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "从临时 std::string 构造的 string_view 悬垂"
+        "file": "sample_D081.cpp",
+        "notes": "从临时 std::string 构造的 string_view 悬垂"
       },
       "severity": "high",
       "planted": true,
@@ -1987,7 +2068,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "从临时 std::string 构造的 string_view 悬垂"
+        "file": "sample_D082.cpp",
+        "notes": "从临时 std::string 构造的 string_view 悬垂"
       },
       "severity": "high",
       "planted": true,
@@ -2009,7 +2091,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "从临时 std::string 构造的 string_view 悬垂"
+        "file": "sample_D083.cpp",
+        "notes": "从临时 std::string 构造的 string_view 悬垂"
       },
       "severity": "high",
       "planted": true,
@@ -2031,7 +2114,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "从临时 std::string 构造的 string_view 悬垂"
+        "file": "sample_D084.cpp",
+        "notes": "从临时 std::string 构造的 string_view 悬垂"
       },
       "severity": "high",
       "planted": true,
@@ -2053,7 +2137,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "从临时 std::string 构造的 string_view 悬垂"
+        "file": "sample_D085.cpp",
+        "notes": "从临时 std::string 构造的 string_view 悬垂"
       },
       "severity": "high",
       "planted": true,
@@ -2075,7 +2160,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::string::substr 越界（抛异常）"
+        "file": "sample_D086.cpp",
+        "notes": "std::string::substr 越界（抛异常）"
       },
       "severity": "medium",
       "planted": true,
@@ -2097,7 +2183,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::string::substr 越界（抛异常）"
+        "file": "sample_D087.cpp",
+        "notes": "std::string::substr 越界（抛异常）"
       },
       "severity": "medium",
       "planted": true,
@@ -2119,7 +2206,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::string::substr 越界（抛异常）"
+        "file": "sample_D088.cpp",
+        "notes": "std::string::substr 越界（抛异常）"
       },
       "severity": "medium",
       "planted": true,
@@ -2141,7 +2229,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::string::substr 越界（抛异常）"
+        "file": "sample_D089.cpp",
+        "notes": "std::string::substr 越界（抛异常）"
       },
       "severity": "medium",
       "planted": true,
@@ -2163,7 +2252,8 @@
       "defect_location": {
         "line": 6,
         "function": "main",
-        "description": "修改字符串字面量（const 转非 const）"
+        "file": "sample_D090.cpp",
+        "notes": "修改字符串字面量（const 转非 const）"
       },
       "severity": "high",
       "planted": true,
@@ -2184,7 +2274,8 @@
       "defect_location": {
         "line": 6,
         "function": "main",
-        "description": "修改字符串字面量（const 转非 const）"
+        "file": "sample_D091.cpp",
+        "notes": "修改字符串字面量（const 转非 const）"
       },
       "severity": "high",
       "planted": true,
@@ -2205,7 +2296,8 @@
       "defect_location": {
         "line": 6,
         "function": "main",
-        "description": "修改字符串字面量（const 转非 const）"
+        "file": "sample_D092.cpp",
+        "notes": "修改字符串字面量（const 转非 const）"
       },
       "severity": "high",
       "planted": true,
@@ -2226,7 +2318,8 @@
       "defect_location": {
         "line": 8,
         "function": "leak",
-        "description": "函数返回指向局部 string 的 string_view（悬垂）"
+        "file": "sample_D093.cpp",
+        "notes": "函数返回指向局部 string 的 string_view（悬垂）"
       },
       "severity": "high",
       "planted": true,
@@ -2248,7 +2341,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+        "file": "sample_D094.cpp",
+        "notes": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
       },
       "severity": "high",
       "planted": true,
@@ -2269,7 +2363,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+        "file": "sample_D095.cpp",
+        "notes": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
       },
       "severity": "high",
       "planted": true,
@@ -2290,7 +2385,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+        "file": "sample_D096.cpp",
+        "notes": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
       },
       "severity": "high",
       "planted": true,
@@ -2311,7 +2407,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+        "file": "sample_D097.cpp",
+        "notes": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
       },
       "severity": "high",
       "planted": true,
@@ -2332,7 +2429,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+        "file": "sample_D098.cpp",
+        "notes": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
       },
       "severity": "high",
       "planted": true,
@@ -2353,7 +2451,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+        "file": "sample_D099.cpp",
+        "notes": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
       },
       "severity": "high",
       "planted": true,
@@ -2374,7 +2473,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+        "file": "sample_D100.cpp",
+        "notes": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
       },
       "severity": "high",
       "planted": true,
@@ -2395,7 +2495,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+        "file": "sample_D101.cpp",
+        "notes": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
       },
       "severity": "high",
       "planted": true,
@@ -2416,7 +2517,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+        "file": "sample_D102.cpp",
+        "notes": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
       },
       "severity": "high",
       "planted": true,
@@ -2437,7 +2539,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+        "file": "sample_D103.cpp",
+        "notes": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
       },
       "severity": "high",
       "planted": true,
@@ -2458,7 +2561,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+        "file": "sample_D104.cpp",
+        "notes": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
       },
       "severity": "high",
       "planted": true,
@@ -2479,7 +2583,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+        "file": "sample_D105.cpp",
+        "notes": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
       },
       "severity": "high",
       "planted": true,
@@ -2500,7 +2605,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::sort 比较器违反严格弱序（非传递）"
+        "file": "sample_D106.cpp",
+        "notes": "std::sort 比较器违反严格弱序（非传递）"
       },
       "severity": "high",
       "planted": true,
@@ -2522,7 +2628,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::sort 比较器违反严格弱序（非传递）"
+        "file": "sample_D107.cpp",
+        "notes": "std::sort 比较器违反严格弱序（非传递）"
       },
       "severity": "high",
       "planted": true,
@@ -2544,7 +2651,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::sort 比较器违反严格弱序（非传递）"
+        "file": "sample_D108.cpp",
+        "notes": "std::sort 比较器违反严格弱序（非传递）"
       },
       "severity": "high",
       "planted": true,
@@ -2566,7 +2674,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::sort 比较器违反严格弱序（非传递）"
+        "file": "sample_D109.cpp",
+        "notes": "std::sort 比较器违反严格弱序（非传递）"
       },
       "severity": "high",
       "planted": true,
@@ -2588,7 +2697,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::sort 比较器违反严格弱序（非传递）"
+        "file": "sample_D110.cpp",
+        "notes": "std::sort 比较器违反严格弱序（非传递）"
       },
       "severity": "high",
       "planted": true,
@@ -2610,7 +2720,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::remove 后未调用 erase"
+        "file": "sample_D111.cpp",
+        "notes": "std::remove 后未调用 erase"
       },
       "severity": "medium",
       "planted": true,
@@ -2632,7 +2743,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::remove 后未调用 erase"
+        "file": "sample_D112.cpp",
+        "notes": "std::remove 后未调用 erase"
       },
       "severity": "medium",
       "planted": true,
@@ -2654,7 +2766,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::remove 后未调用 erase"
+        "file": "sample_D113.cpp",
+        "notes": "std::remove 后未调用 erase"
       },
       "severity": "medium",
       "planted": true,
@@ -2676,7 +2789,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::remove 后未调用 erase"
+        "file": "sample_D114.cpp",
+        "notes": "std::remove 后未调用 erase"
       },
       "severity": "medium",
       "planted": true,
@@ -2698,7 +2812,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::remove 后未调用 erase"
+        "file": "sample_D115.cpp",
+        "notes": "std::remove 后未调用 erase"
       },
       "severity": "medium",
       "planted": true,
@@ -2720,7 +2835,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::remove 后未调用 erase"
+        "file": "sample_D116.cpp",
+        "notes": "std::remove 后未调用 erase"
       },
       "severity": "medium",
       "planted": true,
@@ -2742,7 +2858,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::copy 源与目标区间重叠（UB）"
+        "file": "sample_D117.cpp",
+        "notes": "std::copy 源与目标区间重叠（UB）"
       },
       "severity": "high",
       "planted": true,
@@ -2764,7 +2881,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::copy 源与目标区间重叠（UB）"
+        "file": "sample_D118.cpp",
+        "notes": "std::copy 源与目标区间重叠（UB）"
       },
       "severity": "high",
       "planted": true,
@@ -2786,7 +2904,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::copy 源与目标区间重叠（UB）"
+        "file": "sample_D119.cpp",
+        "notes": "std::copy 源与目标区间重叠（UB）"
       },
       "severity": "high",
       "planted": true,
@@ -2808,7 +2927,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::copy 源与目标区间重叠（UB）"
+        "file": "sample_D120.cpp",
+        "notes": "std::copy 源与目标区间重叠（UB）"
       },
       "severity": "high",
       "planted": true,
@@ -2829,7 +2949,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "std::copy 源与目标区间重叠（UB）"
+        "file": "sample_D121.cpp",
+        "notes": "std::copy 源与目标区间重叠（UB）"
       },
       "severity": "high",
       "planted": true,
@@ -2850,7 +2971,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "std::transform 目标区间容量不足（越界写入）"
+        "file": "sample_D122.cpp",
+        "notes": "std::transform 目标区间容量不足（越界写入）"
       },
       "severity": "high",
       "planted": true,
@@ -2871,7 +2993,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "std::transform 目标区间容量不足（越界写入）"
+        "file": "sample_D123.cpp",
+        "notes": "std::transform 目标区间容量不足（越界写入）"
       },
       "severity": "high",
       "planted": true,
@@ -2892,7 +3015,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "std::transform 目标区间容量不足（越界写入）"
+        "file": "sample_D124.cpp",
+        "notes": "std::transform 目标区间容量不足（越界写入）"
       },
       "severity": "high",
       "planted": true,
@@ -2913,7 +3037,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "std::transform 目标区间容量不足（越界写入）"
+        "file": "sample_D125.cpp",
+        "notes": "std::transform 目标区间容量不足（越界写入）"
       },
       "severity": "high",
       "planted": true,
@@ -2934,7 +3059,8 @@
       "defect_location": {
         "line": 9,
         "function": "main",
-        "description": "std::transform 目标区间容量不足（越界写入）"
+        "file": "sample_D126.cpp",
+        "notes": "std::transform 目标区间容量不足（越界写入）"
       },
       "severity": "high",
       "planted": true,
@@ -2956,7 +3082,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::accumulate 初始值类型错误导致截断"
+        "file": "sample_D127.cpp",
+        "notes": "std::accumulate 初始值类型错误导致截断"
       },
       "severity": "medium",
       "planted": true,
@@ -2978,7 +3105,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::accumulate 初始值类型错误导致截断"
+        "file": "sample_D128.cpp",
+        "notes": "std::accumulate 初始值类型错误导致截断"
       },
       "severity": "medium",
       "planted": true,
@@ -3000,7 +3128,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::accumulate 初始值类型错误导致截断"
+        "file": "sample_D129.cpp",
+        "notes": "std::accumulate 初始值类型错误导致截断"
       },
       "severity": "medium",
       "planted": true,
@@ -3022,7 +3151,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::accumulate 初始值类型错误导致截断"
+        "file": "sample_D130.cpp",
+        "notes": "std::accumulate 初始值类型错误导致截断"
       },
       "severity": "medium",
       "planted": true,
@@ -3044,7 +3174,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::lower_bound 用于未排序区间"
+        "file": "sample_D131.cpp",
+        "notes": "std::lower_bound 用于未排序区间"
       },
       "severity": "medium",
       "planted": true,
@@ -3066,7 +3197,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::lower_bound 用于未排序区间"
+        "file": "sample_D132.cpp",
+        "notes": "std::lower_bound 用于未排序区间"
       },
       "severity": "medium",
       "planted": true,
@@ -3088,7 +3220,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::lower_bound 用于未排序区间"
+        "file": "sample_D133.cpp",
+        "notes": "std::lower_bound 用于未排序区间"
       },
       "severity": "medium",
       "planted": true,
@@ -3110,7 +3243,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::unique 后未调用 erase"
+        "file": "sample_D134.cpp",
+        "notes": "std::unique 后未调用 erase"
       },
       "severity": "medium",
       "planted": true,
@@ -3132,7 +3266,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::merge 输入区间未排序"
+        "file": "sample_D135.cpp",
+        "notes": "std::merge 输入区间未排序"
       },
       "severity": "medium",
       "planted": true,
@@ -3154,7 +3289,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::remove_if 后未 erase（补充）"
+        "file": "sample_D136.cpp",
+        "notes": "std::remove_if 后未 erase（补充）"
       },
       "severity": "medium",
       "planted": true,
@@ -3176,7 +3312,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::remove_if 后未 erase（补充）"
+        "file": "sample_D137.cpp",
+        "notes": "std::remove_if 后未 erase（补充）"
       },
       "severity": "medium",
       "planted": true,
@@ -3198,7 +3335,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::remove_if 后未 erase（补充）"
+        "file": "sample_D138.cpp",
+        "notes": "std::remove_if 后未 erase（补充）"
       },
       "severity": "medium",
       "planted": true,
@@ -3220,7 +3358,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::remove_if 后未 erase（补充）"
+        "file": "sample_D139.cpp",
+        "notes": "std::remove_if 后未 erase（补充）"
       },
       "severity": "medium",
       "planted": true,
@@ -3242,7 +3381,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "std::remove_if 后未 erase（补充）"
+        "file": "sample_D140.cpp",
+        "notes": "std::remove_if 后未 erase（补充）"
       },
       "severity": "medium",
       "planted": true,
@@ -3264,7 +3404,8 @@
       "defect_location": {
         "line": 6,
         "function": "main",
-        "description": "unique_ptr 用默认 delete 管理 new[] 数组"
+        "file": "sample_D141.cpp",
+        "notes": "unique_ptr 用默认 delete 管理 new[] 数组"
       },
       "severity": "high",
       "planted": true,
@@ -3285,7 +3426,8 @@
       "defect_location": {
         "line": 6,
         "function": "main",
-        "description": "unique_ptr 用默认 delete 管理 new[] 数组"
+        "file": "sample_D142.cpp",
+        "notes": "unique_ptr 用默认 delete 管理 new[] 数组"
       },
       "severity": "high",
       "planted": true,
@@ -3306,7 +3448,8 @@
       "defect_location": {
         "line": 6,
         "function": "main",
-        "description": "unique_ptr 用默认 delete 管理 new[] 数组"
+        "file": "sample_D143.cpp",
+        "notes": "unique_ptr 用默认 delete 管理 new[] 数组"
       },
       "severity": "high",
       "planted": true,
@@ -3327,7 +3470,8 @@
       "defect_location": {
         "line": 6,
         "function": "main",
-        "description": "unique_ptr 用默认 delete 管理 new[] 数组"
+        "file": "sample_D144.cpp",
+        "notes": "unique_ptr 用默认 delete 管理 new[] 数组"
       },
       "severity": "high",
       "planted": true,
@@ -3348,7 +3492,8 @@
       "defect_location": {
         "line": 6,
         "function": "main",
-        "description": "unique_ptr 用默认 delete 管理 new[] 数组"
+        "file": "sample_D145.cpp",
+        "notes": "unique_ptr 用默认 delete 管理 new[] 数组"
       },
       "severity": "high",
       "planted": true,
@@ -3369,7 +3514,8 @@
       "defect_location": {
         "line": 6,
         "function": "main",
-        "description": "unique_ptr 用默认 delete 管理 new[] 数组"
+        "file": "sample_D146.cpp",
+        "notes": "unique_ptr 用默认 delete 管理 new[] 数组"
       },
       "severity": "high",
       "planted": true,
@@ -3390,7 +3536,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "从同一裸指针构造多个独立 shared_ptr（双重释放）"
+        "file": "sample_D147.cpp",
+        "notes": "从同一裸指针构造多个独立 shared_ptr（双重释放）"
       },
       "severity": "high",
       "planted": true,
@@ -3411,7 +3558,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "从同一裸指针构造多个独立 shared_ptr（双重释放）"
+        "file": "sample_D148.cpp",
+        "notes": "从同一裸指针构造多个独立 shared_ptr（双重释放）"
       },
       "severity": "high",
       "planted": true,
@@ -3432,7 +3580,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "从同一裸指针构造多个独立 shared_ptr（双重释放）"
+        "file": "sample_D149.cpp",
+        "notes": "从同一裸指针构造多个独立 shared_ptr（双重释放）"
       },
       "severity": "high",
       "planted": true,
@@ -3453,7 +3602,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "从同一裸指针构造多个独立 shared_ptr（双重释放）"
+        "file": "sample_D150.cpp",
+        "notes": "从同一裸指针构造多个独立 shared_ptr（双重释放）"
       },
       "severity": "high",
       "planted": true,
@@ -3474,7 +3624,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "对 shared_ptr::get() 返回指针手动 delete"
+        "file": "sample_D151.cpp",
+        "notes": "对 shared_ptr::get() 返回指针手动 delete"
       },
       "severity": "high",
       "planted": true,
@@ -3495,7 +3646,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "对 shared_ptr::get() 返回指针手动 delete"
+        "file": "sample_D152.cpp",
+        "notes": "对 shared_ptr::get() 返回指针手动 delete"
       },
       "severity": "high",
       "planted": true,
@@ -3516,7 +3668,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "对 shared_ptr::get() 返回指针手动 delete"
+        "file": "sample_D153.cpp",
+        "notes": "对 shared_ptr::get() 返回指针手动 delete"
       },
       "severity": "high",
       "planted": true,
@@ -3537,7 +3690,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "std::shared_ptr 循环引用导致内存泄漏"
+        "file": "sample_D154.cpp",
+        "notes": "std::shared_ptr 循环引用导致内存泄漏"
       },
       "severity": "medium",
       "planted": true,
@@ -3558,7 +3712,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "std::shared_ptr 循环引用导致内存泄漏"
+        "file": "sample_D155.cpp",
+        "notes": "std::shared_ptr 循环引用导致内存泄漏"
       },
       "severity": "medium",
       "planted": true,
@@ -3579,7 +3734,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "std::shared_ptr 循环引用导致内存泄漏"
+        "file": "sample_D156.cpp",
+        "notes": "std::shared_ptr 循环引用导致内存泄漏"
       },
       "severity": "medium",
       "planted": true,
@@ -3600,7 +3756,8 @@
       "defect_location": {
         "line": 11,
         "function": "main",
-        "description": "std::shared_ptr 循环引用导致内存泄漏"
+        "file": "sample_D157.cpp",
+        "notes": "std::shared_ptr 循环引用导致内存泄漏"
       },
       "severity": "medium",
       "planted": true,
@@ -3621,7 +3778,8 @@
       "defect_location": {
         "line": 7,
         "function": "Bad::Bad",
-        "description": "在构造函数中调用 shared_from_this"
+        "file": "sample_D158.cpp",
+        "notes": "在构造函数中调用 shared_from_this"
       },
       "severity": "high",
       "planted": true,
@@ -3643,7 +3801,8 @@
       "defect_location": {
         "line": 7,
         "function": "Bad::Bad",
-        "description": "在构造函数中调用 shared_from_this"
+        "file": "sample_D159.cpp",
+        "notes": "在构造函数中调用 shared_from_this"
       },
       "severity": "high",
       "planted": true,
@@ -3665,7 +3824,8 @@
       "defect_location": {
         "line": 7,
         "function": "Bad::Bad",
-        "description": "在构造函数中调用 shared_from_this"
+        "file": "sample_D160.cpp",
+        "notes": "在构造函数中调用 shared_from_this"
       },
       "severity": "high",
       "planted": true,
@@ -3687,7 +3847,8 @@
       "defect_location": {
         "line": 10,
         "function": "main",
-        "description": "weak_ptr 未检查 expired 直接解引用 lock() 结果"
+        "file": "sample_D161.cpp",
+        "notes": "weak_ptr 未检查 expired 直接解引用 lock() 结果"
       },
       "severity": "high",
       "planted": true,
@@ -3709,7 +3870,8 @@
       "defect_location": {
         "line": 10,
         "function": "main",
-        "description": "weak_ptr 未检查 expired 直接解引用 lock() 结果"
+        "file": "sample_D162.cpp",
+        "notes": "weak_ptr 未检查 expired 直接解引用 lock() 结果"
       },
       "severity": "high",
       "planted": true,
@@ -3731,7 +3893,8 @@
       "defect_location": {
         "line": 10,
         "function": "main",
-        "description": "weak_ptr 未检查 expired 直接解引用 lock() 结果"
+        "file": "sample_D163.cpp",
+        "notes": "weak_ptr 未检查 expired 直接解引用 lock() 结果"
       },
       "severity": "high",
       "planted": true,
@@ -3753,7 +3916,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "unique_ptr::release() 后未接管裸指针"
+        "file": "sample_D164.cpp",
+        "notes": "unique_ptr::release() 后未接管裸指针"
       },
       "severity": "low",
       "planted": true,
@@ -3774,7 +3938,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "多 shared_ptr 共享同一裸指针（补充）"
+        "file": "sample_D165.cpp",
+        "notes": "多 shared_ptr 共享同一裸指针（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -3795,7 +3960,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "多 shared_ptr 共享同一裸指针（补充）"
+        "file": "sample_D166.cpp",
+        "notes": "多 shared_ptr 共享同一裸指针（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -3816,7 +3982,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "多 shared_ptr 共享同一裸指针（补充）"
+        "file": "sample_D167.cpp",
+        "notes": "多 shared_ptr 共享同一裸指针（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -3837,7 +4004,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "多 shared_ptr 共享同一裸指针（补充）"
+        "file": "sample_D168.cpp",
+        "notes": "多 shared_ptr 共享同一裸指针（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -3858,7 +4026,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "多 shared_ptr 共享同一裸指针（补充）"
+        "file": "sample_D169.cpp",
+        "notes": "多 shared_ptr 共享同一裸指针（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -3879,7 +4048,8 @@
       "defect_location": {
         "line": 8,
         "function": "main",
-        "description": "多 shared_ptr 共享同一裸指针（补充）"
+        "file": "sample_D170.cpp",
+        "notes": "多 shared_ptr 共享同一裸指针（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -3900,7 +4070,8 @@
       "defect_location": {
         "line": 7,
         "function": "make",
-        "description": "lambda 引用捕获局部变量并在作用域外调用"
+        "file": "sample_D171.cpp",
+        "notes": "lambda 引用捕获局部变量并在作用域外调用"
       },
       "severity": "high",
       "planted": true,
@@ -3921,7 +4092,8 @@
       "defect_location": {
         "line": 7,
         "function": "make",
-        "description": "lambda 引用捕获局部变量并在作用域外调用"
+        "file": "sample_D172.cpp",
+        "notes": "lambda 引用捕获局部变量并在作用域外调用"
       },
       "severity": "high",
       "planted": true,
@@ -3942,7 +4114,8 @@
       "defect_location": {
         "line": 7,
         "function": "make",
-        "description": "lambda 引用捕获局部变量并在作用域外调用"
+        "file": "sample_D173.cpp",
+        "notes": "lambda 引用捕获局部变量并在作用域外调用"
       },
       "severity": "high",
       "planted": true,
@@ -3963,7 +4136,8 @@
       "defect_location": {
         "line": 7,
         "function": "make",
-        "description": "lambda 引用捕获局部变量并在作用域外调用"
+        "file": "sample_D174.cpp",
+        "notes": "lambda 引用捕获局部变量并在作用域外调用"
       },
       "severity": "high",
       "planted": true,
@@ -3984,7 +4158,8 @@
       "defect_location": {
         "line": 7,
         "function": "make",
-        "description": "lambda 引用捕获局部变量并在作用域外调用"
+        "file": "sample_D175.cpp",
+        "notes": "lambda 引用捕获局部变量并在作用域外调用"
       },
       "severity": "high",
       "planted": true,
@@ -4005,7 +4180,8 @@
       "defect_location": {
         "line": 7,
         "function": "make",
-        "description": "lambda 引用捕获局部变量并在作用域外调用"
+        "file": "sample_D176.cpp",
+        "notes": "lambda 引用捕获局部变量并在作用域外调用"
       },
       "severity": "high",
       "planted": true,
@@ -4026,7 +4202,8 @@
       "defect_location": {
         "line": 8,
         "function": "Widget::bind",
-        "description": "lambda 捕获 this，对象销毁后仍调用"
+        "file": "sample_D177.cpp",
+        "notes": "lambda 捕获 this，对象销毁后仍调用"
       },
       "severity": "high",
       "planted": true,
@@ -4047,7 +4224,8 @@
       "defect_location": {
         "line": 8,
         "function": "Widget::bind",
-        "description": "lambda 捕获 this，对象销毁后仍调用"
+        "file": "sample_D178.cpp",
+        "notes": "lambda 捕获 this，对象销毁后仍调用"
       },
       "severity": "high",
       "planted": true,
@@ -4068,7 +4246,8 @@
       "defect_location": {
         "line": 8,
         "function": "Widget::bind",
-        "description": "lambda 捕获 this，对象销毁后仍调用"
+        "file": "sample_D179.cpp",
+        "notes": "lambda 捕获 this，对象销毁后仍调用"
       },
       "severity": "high",
       "planted": true,
@@ -4089,7 +4268,8 @@
       "defect_location": {
         "line": 8,
         "function": "Widget::bind",
-        "description": "lambda 捕获 this，对象销毁后仍调用"
+        "file": "sample_D180.cpp",
+        "notes": "lambda 捕获 this，对象销毁后仍调用"
       },
       "severity": "high",
       "planted": true,
@@ -4110,7 +4290,8 @@
       "defect_location": {
         "line": 6,
         "function": "main",
-        "description": "按值捕获 lambda 修改副本，原变量不变"
+        "file": "sample_D181.cpp",
+        "notes": "按值捕获 lambda 修改副本，原变量不变"
       },
       "severity": "low",
       "planted": true,
@@ -4132,7 +4313,8 @@
       "defect_location": {
         "line": 6,
         "function": "main",
-        "description": "按值捕获 lambda 修改副本，原变量不变"
+        "file": "sample_D182.cpp",
+        "notes": "按值捕获 lambda 修改副本，原变量不变"
       },
       "severity": "low",
       "planted": true,
@@ -4154,7 +4336,8 @@
       "defect_location": {
         "line": 6,
         "function": "main",
-        "description": "按值捕获 lambda 修改副本，原变量不变"
+        "file": "sample_D183.cpp",
+        "notes": "按值捕获 lambda 修改副本，原变量不变"
       },
       "severity": "low",
       "planted": true,
@@ -4176,7 +4359,8 @@
       "defect_location": {
         "line": 6,
         "function": "main",
-        "description": "按值捕获 lambda 修改副本，原变量不变"
+        "file": "sample_D184.cpp",
+        "notes": "按值捕获 lambda 修改副本，原变量不变"
       },
       "severity": "low",
       "planted": true,
@@ -4198,7 +4382,8 @@
       "defect_location": {
         "line": 7,
         "function": "mk",
-        "description": "默认 [&] 捕获导致悬垂引用"
+        "file": "sample_D185.cpp",
+        "notes": "默认 [&] 捕获导致悬垂引用"
       },
       "severity": "high",
       "planted": true,
@@ -4219,7 +4404,8 @@
       "defect_location": {
         "line": 7,
         "function": "mk",
-        "description": "默认 [&] 捕获导致悬垂引用"
+        "file": "sample_D186.cpp",
+        "notes": "默认 [&] 捕获导致悬垂引用"
       },
       "severity": "high",
       "planted": true,
@@ -4240,7 +4426,8 @@
       "defect_location": {
         "line": 7,
         "function": "mk",
-        "description": "默认 [&] 捕获导致悬垂引用"
+        "file": "sample_D187.cpp",
+        "notes": "默认 [&] 捕获导致悬垂引用"
       },
       "severity": "high",
       "planted": true,
@@ -4261,7 +4448,8 @@
       "defect_location": {
         "line": 7,
         "function": "mk",
-        "description": "lambda 按值捕获指针，所指对象已释放"
+        "file": "sample_D188.cpp",
+        "notes": "lambda 按值捕获指针，所指对象已释放"
       },
       "severity": "high",
       "planted": true,
@@ -4282,7 +4470,8 @@
       "defect_location": {
         "line": 7,
         "function": "mk",
-        "description": "lambda 按值捕获指针，所指对象已释放"
+        "file": "sample_D189.cpp",
+        "notes": "lambda 按值捕获指针，所指对象已释放"
       },
       "severity": "high",
       "planted": true,
@@ -4303,7 +4492,8 @@
       "defect_location": {
         "line": 7,
         "function": "mk",
-        "description": "lambda 按值捕获指针，所指对象已释放"
+        "file": "sample_D190.cpp",
+        "notes": "lambda 按值捕获指针，所指对象已释放"
       },
       "severity": "high",
       "planted": true,
@@ -4324,7 +4514,8 @@
       "defect_location": {
         "line": 7,
         "function": "main",
-        "description": "递归 lambda 按值捕获尚未初始化的自身（空副本）"
+        "file": "sample_D191.cpp",
+        "notes": "递归 lambda 按值捕获尚未初始化的自身（空副本）"
       },
       "severity": "medium",
       "planted": true,
@@ -4346,7 +4537,8 @@
       "defect_location": {
         "line": 7,
         "function": "mk",
-        "description": "lambda 引用捕获局部变量（补充）"
+        "file": "sample_D192.cpp",
+        "notes": "lambda 引用捕获局部变量（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -4367,7 +4559,8 @@
       "defect_location": {
         "line": 7,
         "function": "mk",
-        "description": "lambda 引用捕获局部变量（补充）"
+        "file": "sample_D193.cpp",
+        "notes": "lambda 引用捕获局部变量（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -4388,7 +4581,8 @@
       "defect_location": {
         "line": 7,
         "function": "mk",
-        "description": "lambda 引用捕获局部变量（补充）"
+        "file": "sample_D194.cpp",
+        "notes": "lambda 引用捕获局部变量（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -4409,7 +4603,8 @@
       "defect_location": {
         "line": 7,
         "function": "mk",
-        "description": "lambda 引用捕获局部变量（补充）"
+        "file": "sample_D195.cpp",
+        "notes": "lambda 引用捕获局部变量（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -4430,7 +4625,8 @@
       "defect_location": {
         "line": 7,
         "function": "mk",
-        "description": "lambda 引用捕获局部变量（补充）"
+        "file": "sample_D196.cpp",
+        "notes": "lambda 引用捕获局部变量（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -4451,7 +4647,8 @@
       "defect_location": {
         "line": 7,
         "function": "mk",
-        "description": "lambda 引用捕获局部变量（补充）"
+        "file": "sample_D197.cpp",
+        "notes": "lambda 引用捕获局部变量（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -4472,7 +4669,8 @@
       "defect_location": {
         "line": 7,
         "function": "mk",
-        "description": "lambda 引用捕获局部变量（补充）"
+        "file": "sample_D198.cpp",
+        "notes": "lambda 引用捕获局部变量（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -4493,7 +4691,8 @@
       "defect_location": {
         "line": 7,
         "function": "mk",
-        "description": "lambda 引用捕获局部变量（补充）"
+        "file": "sample_D199.cpp",
+        "notes": "lambda 引用捕获局部变量（补充）"
       },
       "severity": "high",
       "planted": true,
@@ -4514,7 +4713,8 @@
       "defect_location": {
         "line": 7,
         "function": "mk",
-        "description": "lambda 引用捕获局部变量（补充）"
+        "file": "sample_D200.cpp",
+        "notes": "lambda 引用捕获局部变量（补充）"
       },
       "severity": "high",
       "planted": true,

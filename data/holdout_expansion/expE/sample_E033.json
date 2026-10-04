@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 25,
     "function": "waiter",
-    "description": "spin-wait 中 relaxed 轮询 + relaxed 读载荷（无 release 侧）"
+    "file": "sample_E033.cpp",
+    "notes": "spin-wait 中 relaxed 轮询 + relaxed 读载荷（无 release 侧）"
   },
   "severity": "high",
   "planted": true,

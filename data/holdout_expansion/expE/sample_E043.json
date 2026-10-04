@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "main",
-    "description": "结构体成员原子未在构造函数中初始化即被读改写"
+    "file": "sample_E043.cpp",
+    "notes": "结构体成员原子未在构造函数中初始化即被读改写"
   },
   "severity": "high",
   "planted": true,

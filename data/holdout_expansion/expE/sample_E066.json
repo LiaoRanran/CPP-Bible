@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 15,
     "function": "main",
-    "description": "std::atomic<signed char> 的 fetch_add 溢出"
+    "file": "sample_E066.cpp",
+    "notes": "std::atomic<signed char> 的 fetch_add 溢出"
   },
   "severity": "high",
   "planted": true,

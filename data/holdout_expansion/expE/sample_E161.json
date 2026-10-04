@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E161",
-  "defect_type": "lock_priority_inversion",
+  "defect_type": "deadlock",
   "defect_location": {
     "line": 22,
     "function": "cfg_parser",
-    "description": "控制线程（高优先级）等锁，配置线程（低优先级）持锁做解析"
+    "file": "sample_E161.cpp",
+    "notes": "控制线程（高优先级）等锁，配置线程（低优先级）持锁做解析"
   },
   "severity": "high",
   "planted": true,

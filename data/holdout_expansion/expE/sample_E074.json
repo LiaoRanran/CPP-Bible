@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "shifter",
-    "description": "把原子指针的位运算结果当指针存回并解引用"
+    "file": "sample_E074.cpp",
+    "notes": "把原子指针的位运算结果当指针存回并解引用"
   },
   "severity": "high",
   "planted": true,

@@ -1,19 +1,20 @@
 {
-  "defect_type": "conditional_trigger",
+  "defect_type": "out_of_bounds",
   "expected_detectors": [
     "asan"
   ],
   "expected_verdict": "catch",
   "severity": "high",
-  "trigger_condition": "n=6（>= 数组大小 3）时触发越界",
+  "trigger_condition": "n=6（>= 数组大小 3）时触发越界；【676m】原 defect_type=conditional_trigger（元标签，已从 defect_type 拆出）",
   "optimization_sensitivity": "n/a",
   "notes": "仅当输入 n>= 3 时越界写；main 内构造触发输入，AddressSanitizer 抓。",
-  "id": "sample_170",
+  "sample_id": "sample_170",
   "category": "C",
   "defect_location": {
     "line": 4,
     "function": "main",
-    "note": "for (int i = 0; i < n; ++i) a[i] = i; // <<PLANTED-DEFECT>> 当 n>=3 时越界写"
+    "file": "sample_170.cpp",
+    "notes": "for (int i = 0; i < n; ++i) a[i] = i; // <<PLANTED-DEFECT>> 当 n>=3 时越界写"
   },
   "planted": true,
   "source_files": [

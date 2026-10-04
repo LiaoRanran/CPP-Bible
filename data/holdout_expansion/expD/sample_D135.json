@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 8,
     "function": "main",
-    "description": "std::merge 输入区间未排序"
+    "file": "sample_D135.cpp",
+    "notes": "std::merge 输入区间未排序"
   },
   "severity": "medium",
   "planted": true,

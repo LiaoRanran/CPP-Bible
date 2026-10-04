@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 9,
     "function": "main",
-    "description": "std::list erase 后使用已删除节点的迭代器"
+    "file": "sample_D062.cpp",
+    "notes": "std::list erase 后使用已删除节点的迭代器"
   },
   "severity": "high",
   "planted": true,

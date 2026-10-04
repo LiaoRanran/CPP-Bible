@@ -1,11 +1,12 @@
 {
-  "id": "sample_007",
+  "sample_id": "sample_007",
   "category": "A",
-  "defect_type": "memory_safety",
+  "defect_type": "use_after_free",
   "defect_location": {
     "line": 8,
     "function": "main",
-    "note": "p[4] = 99; // <<PLANTED-DEFECT>> use-after-free: write freed heap slot"
+    "file": "sample_007.cpp",
+    "notes": "p[4] = 99; // <<PLANTED-DEFECT>> use-after-free: write freed heap slot"
   },
   "severity": "high",
   "planted": true,

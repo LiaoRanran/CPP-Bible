@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 7,
     "function": "main",
-    "description": "std::string::substr 越界（抛异常）"
+    "file": "sample_D089.cpp",
+    "notes": "std::string::substr 越界（抛异常）"
   },
   "severity": "medium",
   "planted": true,

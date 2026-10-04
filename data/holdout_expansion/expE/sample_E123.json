@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E123",
-  "defect_type": "aba_problem",
+  "defect_type": "atomic_ub",
   "defect_location": {
     "line": 23,
     "function": "main",
-    "description": "引用计数用「load-判断-置回」实现，计数 A→B→A 后误判无人持有"
+    "file": "sample_E123.cpp",
+    "notes": "引用计数用「load-判断-置回」实现，计数 A→B→A 后误判无人持有"
   },
   "severity": "high",
   "planted": true,

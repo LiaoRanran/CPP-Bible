@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E139",
-  "defect_type": "aba_problem",
+  "defect_type": "atomic_ub",
   "defect_location": {
     "line": 26,
     "function": "main",
-    "description": "reclaim 线程把「刚被读侧引用」的对象立即放回 freelist 供他人分配"
+    "file": "sample_E139.cpp",
+    "notes": "reclaim 线程把「刚被读侧引用」的对象立即放回 freelist 供他人分配"
   },
   "severity": "high",
   "planted": true,

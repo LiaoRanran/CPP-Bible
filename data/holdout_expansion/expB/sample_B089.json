@@ -1,9 +1,10 @@
 {
   "sample_id": "sample_B089",
-  "defect_type": "other_ub",
+  "defect_type": "null_pointer_deref",
   "defect_location": {
-    "line": 5,
-    "function": "main"
+    "line": 13,
+    "function": "main",
+    "file": "sample_B089.cpp"
   },
   "severity": "high",
   "planted": true,

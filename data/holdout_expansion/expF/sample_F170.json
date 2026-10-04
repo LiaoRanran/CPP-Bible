@@ -2,9 +2,10 @@
   "sample_id": "F170",
   "defect_type": "interrupt_safety",
   "defect_location": {
-    "description": "信号处理程序内调用 longjmp 跳出主程序栈帧",
     "line": 8,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F170.cpp",
+    "notes": "信号处理程序内调用 longjmp 跳出主程序栈帧"
   },
   "severity": "high",
   "planted": true,

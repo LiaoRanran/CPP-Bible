@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "new/delete 或 malloc/free 不匹配：AddressSanitizer 抓 allocation-deallocation-mismatch。",
-  "id": "sample_042",
+  "sample_id": "sample_042",
   "category": "C",
   "defect_location": {
     "line": 4,
     "function": "main",
-    "note": "delete p; // <<PLANTED-DEFECT>> malloc / delete 不匹配"
+    "file": "sample_042.cpp",
+    "notes": "delete p; // <<PLANTED-DEFECT>> malloc / delete 不匹配"
   },
   "planted": true,
   "source_files": [

@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G024",
-  "defect_type": "race_condition",
+  "defect_type": "data_race",
   "defect_location": {
     "line": 21,
     "function": "ssl3_get_new_session_ticket",
-    "description": "CVE-2015-1791: ssl3_get_new_session_ticket 多线程客户端竞争（CVE 描述: Race condition in the ssl3_get_new_session_ticket ... double free and use-after-free）。TSan 捕获数据竞争。"
+    "file": "sample_G024.cpp",
+    "notes": "CVE-2015-1791: ssl3_get_new_session_ticket 多线程客户端竞争（CVE 描述: Race condition in the ssl3_get_new_session_ticket ... double free and use-after-free）。TSan 捕获数据竞争。"
   },
   "severity": "high",
   "planted": false,

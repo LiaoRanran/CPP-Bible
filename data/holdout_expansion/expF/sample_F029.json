@@ -2,9 +2,10 @@
   "sample_id": "F029",
   "defect_type": "alignment",
   "defect_location": {
-    "description": "aligned_storage 对齐参数 4 小于 Payload(double) 所需 8",
     "line": 6,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F029.cpp",
+    "notes": "aligned_storage 对齐参数 4 小于 Payload(double) 所需 8"
   },
   "severity": "medium",
   "planted": true,

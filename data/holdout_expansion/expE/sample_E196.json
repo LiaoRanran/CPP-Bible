@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 23,
     "function": "waiter",
-    "description": "谓词读取在锁外（wait 返回后解锁再读谓词）"
+    "file": "sample_E196.cpp",
+    "notes": "谓词读取在锁外（wait 返回后解锁再读谓词）"
   },
   "severity": "high",
   "planted": true,

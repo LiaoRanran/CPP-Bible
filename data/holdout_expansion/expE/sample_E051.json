@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "shifter",
-    "description": "对 atomic<T*> 做指针算术后存回，越界解引用"
+    "file": "sample_E051.cpp",
+    "notes": "对 atomic<T*> 做指针算术后存回，越界解引用"
   },
   "severity": "high",
   "planted": true,

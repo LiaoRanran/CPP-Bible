@@ -1,11 +1,12 @@
 {
-  "id": "sample_014",
+  "sample_id": "sample_014",
   "category": "A",
-  "defect_type": "memory_safety",
+  "defect_type": "double_free",
   "defect_location": {
     "line": 7,
     "function": "main",
-    "note": "delete[] p; // <<PLANTED-DEFECT>> double-free: same pointer released twice"
+    "file": "sample_014.cpp",
+    "notes": "delete[] p; // <<PLANTED-DEFECT>> double-free: same pointer released twice"
   },
   "severity": "high",
   "planted": true,

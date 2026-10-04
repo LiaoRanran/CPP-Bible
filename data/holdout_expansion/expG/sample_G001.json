@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G001",
-  "defect_type": "heap_overread",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 27,
     "function": "tls1_process_heartbeat",
-    "description": "Heartbleed：tls1_process_heartbeat 不校验 payload_length 与请求缓冲区实际大小，按声明长度把堆上请求缓冲之外的内存作为心跳响应回显（最多 64KB 进程内存泄露）。"
+    "file": "sample_G001.cpp",
+    "notes": "Heartbleed：tls1_process_heartbeat 不校验 payload_length 与请求缓冲区实际大小，按声明长度把堆上请求缓冲之外的内存作为心跳响应回显（最多 64KB 进程内存泄露）。"
   },
   "severity": "high",
   "planted": false,

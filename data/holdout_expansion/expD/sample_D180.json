@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 8,
     "function": "Widget::bind",
-    "description": "lambda 捕获 this，对象销毁后仍调用"
+    "file": "sample_D180.cpp",
+    "notes": "lambda 捕获 this，对象销毁后仍调用"
   },
   "severity": "high",
   "planted": true,

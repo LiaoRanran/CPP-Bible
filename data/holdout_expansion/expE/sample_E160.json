@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E160",
-  "defect_type": "lock_priority_inversion",
+  "defect_type": "deadlock",
   "defect_location": {
     "line": 21,
     "function": "sampler",
-    "description": "持锁统计线程 + 无锁直写统计数组的高优先级线程"
+    "file": "sample_E160.cpp",
+    "notes": "持锁统计线程 + 无锁直写统计数组的高优先级线程"
   },
   "severity": "high",
   "planted": true,

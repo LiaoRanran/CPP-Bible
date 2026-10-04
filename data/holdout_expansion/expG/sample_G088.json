@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G088",
-  "defect_type": "resource_exhaustion",
+  "defect_type": "logic_error",
   "defect_location": {
     "line": 23,
     "function": "h2_on_reset_flood",
-    "description": "CVE-2019-9514: HTTP/2 reset flood（CVE 描述: The attacker opens a number of streams and sends an invalid request over each stream that should solicit a stream of RST_STREAM frames from the peer ... uncontrolled resource consumption, CWE-400）。资源耗尽类，sanitizer 无报告 → 诚实标 miss。"
+    "file": "sample_G088.cpp",
+    "notes": "CVE-2019-9514: HTTP/2 reset flood（CVE 描述: The attacker opens a number of streams and sends an invalid request over each stream that should solicit a stream of RST_STREAM frames from the peer ... uncontrolled resource consumption, CWE-400）。资源耗尽类，sanitizer 无报告 → 诚实标 miss。"
   },
   "severity": "medium",
   "planted": true,

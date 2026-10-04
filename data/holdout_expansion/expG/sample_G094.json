@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G094",
-  "defect_type": "global_overflow",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 37,
     "function": "XMLDocument_ErrorIDToName",
-    "description": "tinyxml2#923（未修复）: ErrorIDToName 对 errorID==XML_ERROR_COUNT 读 _errorNames[19] → AddressSanitizer global-buffer-overflow（issue 附 tinyxml2.cpp:2501-2507 与数组定义 tinyxml2.cpp:2136-2156）。"
+    "file": "sample_G094.cpp",
+    "notes": "tinyxml2#923（未修复）: ErrorIDToName 对 errorID==XML_ERROR_COUNT 读 _errorNames[19] → AddressSanitizer global-buffer-overflow（issue 附 tinyxml2.cpp:2501-2507 与数组定义 tinyxml2.cpp:2136-2156）。"
   },
   "severity": "medium",
   "planted": false,

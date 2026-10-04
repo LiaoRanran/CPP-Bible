@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 19,
     "function": "producer",
-    "description": "载荷与标志全部 relaxed 存储，整条发布链无 release"
+    "file": "sample_E013.cpp",
+    "notes": "载荷与标志全部 relaxed 存储，整条发布链无 release"
   },
   "severity": "high",
   "planted": true,

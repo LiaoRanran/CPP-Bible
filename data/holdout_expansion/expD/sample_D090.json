@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 6,
     "function": "main",
-    "description": "修改字符串字面量（const 转非 const）"
+    "file": "sample_D090.cpp",
+    "notes": "修改字符串字面量（const 转非 const）"
   },
   "severity": "high",
   "planted": true,

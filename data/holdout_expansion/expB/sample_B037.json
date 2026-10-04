@@ -2,8 +2,9 @@
   "sample_id": "sample_B037",
   "defect_type": "integer_overflow",
   "defect_location": {
-    "line": 5,
-    "function": "main"
+    "line": 13,
+    "function": "main",
+    "file": "sample_B037.cpp"
   },
   "severity": "high",
   "planted": true,

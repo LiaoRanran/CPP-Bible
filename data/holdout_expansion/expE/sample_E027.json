@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "get",
-    "description": "DCLP 二次检查的 relaxed 读 + 重试循环"
+    "file": "sample_E027.cpp",
+    "notes": "DCLP 二次检查的 relaxed 读 + 重试循环"
   },
   "severity": "medium",
   "planted": true,

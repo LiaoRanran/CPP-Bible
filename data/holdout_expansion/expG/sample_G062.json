@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 26,
     "function": "xptr_range_eval",
-    "description": "CVE-2016-4658: libxml2 xpointer.c 不禁止 namespace 节点进入 XPointer range（CVE 描述: does not forbid namespace nodes in XPointer ranges ... execute arbitrary code or cause a denial of service）。"
+    "file": "sample_G062.cpp",
+    "notes": "CVE-2016-4658: libxml2 xpointer.c 不禁止 namespace 节点进入 XPointer range（CVE 描述: does not forbid namespace nodes in XPointer ranges ... execute arbitrary code or cause a denial of service）。"
   },
   "severity": "high",
   "planted": false,

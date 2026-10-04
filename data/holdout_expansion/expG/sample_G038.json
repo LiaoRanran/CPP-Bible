@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G038",
-  "defect_type": "heap_overread",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 17,
     "function": "tool_writeout",
-    "description": "CVE-2017-7407: --write-out 以 $ 变量结尾时读取越界（CVE 描述: reading a workstation screen ... obtain sensitive information from process memory via a --write-out argument ending in a variable without terminator）。"
+    "file": "sample_G038.cpp",
+    "notes": "CVE-2017-7407: --write-out 以 $ 变量结尾时读取越界（CVE 描述: reading a workstation screen ... obtain sensitive information from process memory via a --write-out argument ending in a variable without terminator）。"
   },
   "severity": "low",
   "planted": false,

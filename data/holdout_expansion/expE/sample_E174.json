@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 25,
     "function": "consumer",
-    "description": "wait 无谓词，且通知与「数据准备」之间的顺序倒置"
+    "file": "sample_E174.cpp",
+    "notes": "wait 无谓词，且通知与「数据准备」之间的顺序倒置"
   },
   "severity": "high",
   "planted": true,

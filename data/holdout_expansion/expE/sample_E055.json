@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 24,
     "function": "guard",
-    "description": "atomic_flag 作为未初始化成员，test_and_set 前无原子状态建立"
+    "file": "sample_E055.cpp",
+    "notes": "atomic_flag 作为未初始化成员，test_and_set 前无原子状态建立"
   },
   "severity": "high",
   "planted": true,

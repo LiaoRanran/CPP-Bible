@@ -1,11 +1,12 @@
 {
-  "id": "sample_072",
+  "sample_id": "sample_072",
   "category": "A",
   "defect_type": "uninitialized_read",
   "defect_location": {
     "line": 7,
     "function": "main",
-    "note": "int r = p.a + p.b; // <<PLANTED-DEFECT>> uninitialized read: read uninit struct fields"
+    "file": "sample_072.cpp",
+    "notes": "int r = p.a + p.b; // <<PLANTED-DEFECT>> uninitialized read: read uninit struct fields"
   },
   "severity": "medium",
   "planted": true,

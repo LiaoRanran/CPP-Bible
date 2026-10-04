@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G023",
-  "defect_type": "null_deref",
+  "defect_type": "null_pointer_deref",
   "defect_location": {
     "line": 17,
     "function": "tls12_choose_sig_alg",
-    "description": "CVE-2021-3449: TLSv1.2 重协商 ClientHello 省略 signature_algorithms 扩展时服务器崩溃（CVE 描述: may crash if sent a maliciously crafted renegotiation ClientHello ... omits the signature_algorithms extension）。"
+    "file": "sample_G023.cpp",
+    "notes": "CVE-2021-3449: TLSv1.2 重协商 ClientHello 省略 signature_algorithms 扩展时服务器崩溃（CVE 描述: may crash if sent a maliciously crafted renegotiation ClientHello ... omits the signature_algorithms extension）。"
   },
   "severity": "high",
   "planted": false,

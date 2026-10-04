@@ -2,8 +2,9 @@
   "sample_id": "sample_B097",
   "defect_type": "other_ub",
   "defect_location": {
-    "line": 3,
-    "function": "main"
+    "line": 11,
+    "function": "main",
+    "file": "sample_B097.cpp"
   },
   "severity": "low",
   "planted": true,

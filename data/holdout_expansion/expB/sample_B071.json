@@ -2,8 +2,9 @@
   "sample_id": "sample_B071",
   "defect_type": "type_punning",
   "defect_location": {
-    "line": 4,
-    "function": "main"
+    "line": 12,
+    "function": "main",
+    "file": "sample_B071.cpp"
   },
   "severity": "low",
   "planted": true,

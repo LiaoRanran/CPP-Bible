@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "get_cached",
-    "description": "DCLP 里 relaxed 检查非原子局部缓存指针"
+    "file": "sample_E032.cpp",
+    "notes": "DCLP 里 relaxed 检查非原子局部缓存指针"
   },
   "severity": "medium",
   "planted": true,

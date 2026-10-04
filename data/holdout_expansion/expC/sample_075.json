@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "对象切片后用基类对象调用虚函数，丢失派生行为；无检测器可抓（盲区）。",
-  "id": "sample_075",
+  "sample_id": "sample_075",
   "category": "C",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "B b = d; // <<PLANTED-DEFECT>> 对象切片：b 仅含 B 子对象"
+    "file": "sample_075.cpp",
+    "notes": "B b = d; // <<PLANTED-DEFECT>> 对象切片：b 仅含 B 子对象"
   },
   "planted": true,
   "source_files": [

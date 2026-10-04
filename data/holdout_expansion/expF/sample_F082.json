@@ -2,9 +2,10 @@
   "sample_id": "F082",
   "defect_type": "volatile_misuse",
   "defect_location": {
-    "description": "把 volatile 对象 const_cast 为非 volatile 引用后调用成员函数（volatile 限定被丢弃）",
     "line": 5,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F082.cpp",
+    "notes": "把 volatile 对象 const_cast 为非 volatile 引用后调用成员函数（volatile 限定被丢弃）"
   },
   "severity": "medium",
   "planted": true,

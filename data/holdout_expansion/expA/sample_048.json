@@ -1,11 +1,12 @@
 {
-  "id": "sample_048",
+  "sample_id": "sample_048",
   "category": "A",
   "defect_type": "null_pointer_deref",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "*p = 5; // <<PLANTED-DEFECT>> null pointer dereference: write through nullptr"
+    "file": "sample_048.cpp",
+    "notes": "*p = 5; // <<PLANTED-DEFECT>> null pointer dereference: write through nullptr"
   },
   "severity": "high",
   "planted": true,

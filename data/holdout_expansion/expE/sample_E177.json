@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 24,
     "function": "worker",
-    "description": "谓词在 wait 之前被判断一次就再也不检查（循环外判断）"
+    "file": "sample_E177.cpp",
+    "notes": "谓词在 wait 之前被判断一次就再也不检查（循环外判断）"
   },
   "severity": "high",
   "planted": true,

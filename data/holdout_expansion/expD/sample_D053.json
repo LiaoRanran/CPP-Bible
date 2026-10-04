@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 9,
     "function": "main",
-    "description": "vector<bool> 代理引用在重分配后悬垂"
+    "file": "sample_D053.cpp",
+    "notes": "vector<bool> 代理引用在重分配后悬垂"
   },
   "severity": "high",
   "planted": true,

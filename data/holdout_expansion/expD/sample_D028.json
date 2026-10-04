@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 7,
     "function": "main",
-    "description": "range-for 循环内修改容器触发迭代器失效"
+    "file": "sample_D028.cpp",
+    "notes": "range-for 循环内修改容器触发迭代器失效"
   },
   "severity": "high",
   "planted": true,

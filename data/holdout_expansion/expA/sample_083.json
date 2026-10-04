@@ -1,11 +1,12 @@
 {
-  "id": "sample_083",
+  "sample_id": "sample_083",
   "category": "A",
-  "defect_type": "undefined_behavior",
+  "defect_type": "bit_operation",
   "defect_location": {
     "line": 5,
     "function": "main",
-    "note": "int r = 1 << 60; // <<PLANTED-DEFECT>> undefined behavior: shift exponent 60 too large for 32-bit int"
+    "file": "sample_083.cpp",
+    "notes": "int r = 1 << 60; // <<PLANTED-DEFECT>> undefined behavior: shift exponent 60 too large for 32-bit int"
   },
   "severity": "high",
   "planted": true,

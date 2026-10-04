@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G025",
-  "defect_type": "heap_overflow",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 20,
     "function": "SSL_set_SSL_CTX",
-    "description": "CVE-2026-72897: SSL_set_SSL_CTX 证书槽位越界读写 → 堆损坏（官方公告: certificate slot array out-of-bounds read/write, heap corruption）。用户态等价重构（planted=true）。"
+    "file": "sample_G025.cpp",
+    "notes": "CVE-2026-72897: SSL_set_SSL_CTX 证书槽位越界读写 → 堆损坏（官方公告: certificate slot array out-of-bounds read/write, heap corruption）。用户态等价重构（planted=true）。"
   },
   "severity": "high",
   "planted": true,

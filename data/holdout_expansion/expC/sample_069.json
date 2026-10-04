@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "析构函数在基类析构阶段调用虚函数，绑定基类版本；无检测器可抓（盲区）。",
-  "id": "sample_069",
+  "sample_id": "sample_069",
   "category": "C",
   "defect_location": {
     "line": 4,
     "function": "main",
-    "note": "int main(){ D d; return 0; } // <<PLANTED-DEFECT>> 析构期间调用虚函数 -> 调用 B::vf"
+    "file": "sample_069.cpp",
+    "notes": "int main(){ D d; return 0; } // <<PLANTED-DEFECT>> 析构期间调用虚函数 -> 调用 B::vf"
   },
   "planted": true,
   "source_files": [

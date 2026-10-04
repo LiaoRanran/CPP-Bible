@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 6,
     "function": "main",
-    "description": "按值捕获 lambda 修改副本，原变量不变"
+    "file": "sample_D184.cpp",
+    "notes": "按值捕获 lambda 修改副本，原变量不变"
   },
   "severity": "low",
   "planted": true,

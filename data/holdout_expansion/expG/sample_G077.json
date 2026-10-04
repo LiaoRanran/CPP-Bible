@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 13,
     "function": "cgi_proxy_env",
-    "description": "CVE-2016-5385 (HTTPoxy): RFC 3875 命名空间冲突未处理（CVE 描述: does not attempt to address RFC 3875 section 4.1.18 namespace conflicts ... untrusted client data in the HTTP_PROXY environment variable）。逻辑缺陷 → 诚实标 miss。"
+    "file": "sample_G077.cpp",
+    "notes": "CVE-2016-5385 (HTTPoxy): RFC 3875 命名空间冲突未处理（CVE 描述: does not attempt to address RFC 3875 section 4.1.18 namespace conflicts ... untrusted client data in the HTTP_PROXY environment variable）。逻辑缺陷 → 诚实标 miss。"
   },
   "severity": "medium",
   "planted": false,

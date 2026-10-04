@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "构造函数在基类构造阶段调用虚函数，静态绑定到基类版本，逻辑错误；无检测器可抓（盲区）。",
-  "id": "sample_062",
+  "sample_id": "sample_062",
   "category": "C",
   "defect_location": {
     "line": 4,
     "function": "main",
-    "note": "int main(){ D d; return 0; } // <<PLANTED-DEFECT>> 构造期间调用虚函数 -> 调用 B::vf 而非 D::vf"
+    "file": "sample_062.cpp",
+    "notes": "int main(){ D d; return 0; } // <<PLANTED-DEFECT>> 构造期间调用虚函数 -> 调用 B::vf 而非 D::vf"
   },
   "planted": true,
   "source_files": [

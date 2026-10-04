@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 28,
     "function": "dispatcher",
-    "description": "notify 在不持锁时调用，且谓词更新也在锁外（通知必丢）"
+    "file": "sample_E197.cpp",
+    "notes": "notify 在不持锁时调用，且谓词更新也在锁外（通知必丢）"
   },
   "severity": "high",
   "planted": true,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 7,
     "function": "mk",
-    "description": "lambda 按值捕获指针，所指对象已释放"
+    "file": "sample_D188.cpp",
+    "notes": "lambda 按值捕获指针，所指对象已释放"
   },
   "severity": "high",
   "planted": true,

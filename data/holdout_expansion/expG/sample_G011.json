@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 14,
     "function": "EVP_EncryptUpdate",
-    "description": "CVE-2016-2106: EVP_EncryptUpdate 整数溢出（CVE 描述: Integer overflow in the EVP_EncryptUpdate ... via a large amount of data）。修复 commit 增加的正是 inl+bl 溢出检查，本样本保留无检查版本。"
+    "file": "sample_G011.cpp",
+    "notes": "CVE-2016-2106: EVP_EncryptUpdate 整数溢出（CVE 描述: Integer overflow in the EVP_EncryptUpdate ... via a large amount of data）。修复 commit 增加的正是 inl+bl 溢出检查，本样本保留无检查版本。"
   },
   "severity": "high",
   "planted": false,

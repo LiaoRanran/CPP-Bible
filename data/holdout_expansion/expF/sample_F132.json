@@ -2,9 +2,10 @@
   "sample_id": "F132",
   "defect_type": "bit_operation",
   "defect_location": {
-    "description": "位掩码宽度/位置计算错误（本例掩码本身正确但位置假设错）",
     "line": 4,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F132.cpp",
+    "notes": "位掩码宽度/位置计算错误（本例掩码本身正确但位置假设错）"
   },
   "severity": "medium",
   "planted": true,

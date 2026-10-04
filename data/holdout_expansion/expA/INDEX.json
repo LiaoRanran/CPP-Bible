@@ -12,903 +12,1003 @@
   "index": [
     {
       "id": "sample_001",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_001"
     },
     {
       "id": "sample_002",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_002"
     },
     {
       "id": "sample_003",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_003"
     },
     {
       "id": "sample_004",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_004"
     },
     {
       "id": "sample_005",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_005"
     },
     {
       "id": "sample_006",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_006"
     },
     {
       "id": "sample_007",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_007"
     },
     {
       "id": "sample_008",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_008"
     },
     {
       "id": "sample_009",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 1,
+      "planted": true,
+      "sample_id": "sample_009"
     },
     {
       "id": "sample_010",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 1,
+      "planted": true,
+      "sample_id": "sample_010"
     },
     {
       "id": "sample_011",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 2,
+      "planted": true,
+      "sample_id": "sample_011"
     },
     {
       "id": "sample_012",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 9,
-      "planted": true
+      "defect_line": 1,
+      "planted": true,
+      "sample_id": "sample_012"
     },
     {
       "id": "sample_013",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 1,
+      "planted": true,
+      "sample_id": "sample_013"
     },
     {
       "id": "sample_014",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 2,
+      "planted": true,
+      "sample_id": "sample_014"
     },
     {
       "id": "sample_015",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 9,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_015"
     },
     {
       "id": "sample_016",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_016"
     },
     {
       "id": "sample_017",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_017"
     },
     {
       "id": "sample_018",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_018"
     },
     {
       "id": "sample_019",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_019"
     },
     {
       "id": "sample_020",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_020"
     },
     {
       "id": "sample_021",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "medium",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_021"
     },
     {
       "id": "sample_022",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "medium",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_022"
     },
     {
       "id": "sample_023",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_023"
     },
     {
       "id": "sample_024",
-      "defect_type": "memory_safety",
+      "defect_type": "move_semantics",
       "severity": "medium",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_024"
     },
     {
       "id": "sample_025",
-      "defect_type": "out_of_bounds",
+      "defect_type": "move_semantics",
       "severity": "medium",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 6,
+      "planted": true,
+      "sample_id": "sample_025"
     },
     {
       "id": "sample_026",
-      "defect_type": "out_of_bounds",
+      "defect_type": "move_semantics",
       "severity": "medium",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 7,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_026"
     },
     {
       "id": "sample_027",
-      "defect_type": "out_of_bounds",
+      "defect_type": "move_semantics",
       "severity": "medium",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 6,
+      "planted": true,
+      "sample_id": "sample_027"
     },
     {
       "id": "sample_028",
-      "defect_type": "out_of_bounds",
+      "defect_type": "move_semantics",
       "severity": "medium",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 7,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_028"
     },
     {
       "id": "sample_029",
-      "defect_type": "out_of_bounds",
+      "defect_type": "move_semantics",
       "severity": "medium",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 6,
+      "planted": true,
+      "sample_id": "sample_029"
     },
     {
       "id": "sample_030",
-      "defect_type": "out_of_bounds",
+      "defect_type": "move_semantics",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 7,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_030"
     },
     {
       "id": "sample_031",
-      "defect_type": "out_of_bounds",
+      "defect_type": "raii_violation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 8,
+      "planted": true,
+      "sample_id": "sample_031"
     },
     {
       "id": "sample_032",
-      "defect_type": "out_of_bounds",
+      "defect_type": "raii_violation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 2,
+      "planted": true,
+      "sample_id": "sample_032"
     },
     {
       "id": "sample_033",
-      "defect_type": "out_of_bounds",
+      "defect_type": "raii_violation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 8,
+      "planted": true,
+      "sample_id": "sample_033"
     },
     {
       "id": "sample_034",
-      "defect_type": "out_of_bounds",
+      "defect_type": "raii_violation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 3,
+      "planted": true,
+      "sample_id": "sample_034"
     },
     {
       "id": "sample_035",
-      "defect_type": "out_of_bounds",
+      "defect_type": "raii_violation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 8,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_035"
     },
     {
       "id": "sample_036",
-      "defect_type": "out_of_bounds",
+      "defect_type": "raii_violation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 6,
+      "planted": true,
+      "sample_id": "sample_036"
     },
     {
       "id": "sample_037",
-      "defect_type": "out_of_bounds",
+      "defect_type": "raii_violation",
       "severity": "medium",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 3,
+      "planted": true,
+      "sample_id": "sample_037"
     },
     {
       "id": "sample_038",
-      "defect_type": "out_of_bounds",
+      "defect_type": "raii_violation",
       "severity": "medium",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 3,
+      "planted": true,
+      "sample_id": "sample_038"
     },
     {
       "id": "sample_039",
-      "defect_type": "out_of_bounds",
+      "defect_type": "raii_violation",
       "severity": "medium",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 4,
+      "planted": true,
+      "sample_id": "sample_039"
     },
     {
       "id": "sample_040",
-      "defect_type": "out_of_bounds",
+      "defect_type": "raii_violation",
       "severity": "medium",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 3,
+      "planted": true,
+      "sample_id": "sample_040"
     },
     {
       "id": "sample_041",
-      "defect_type": "out_of_bounds",
+      "defect_type": "raii_violation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 3,
+      "planted": true,
+      "sample_id": "sample_041"
     },
     {
       "id": "sample_042",
-      "defect_type": "out_of_bounds",
+      "defect_type": "raii_violation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 4,
+      "planted": true,
+      "sample_id": "sample_042"
     },
     {
       "id": "sample_043",
-      "defect_type": "out_of_bounds",
+      "defect_type": "raii_violation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_043"
     },
     {
       "id": "sample_044",
-      "defect_type": "out_of_bounds",
+      "defect_type": "raii_violation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_044"
     },
     {
       "id": "sample_045",
-      "defect_type": "null_pointer_deref",
+      "defect_type": "raii_violation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_045"
     },
     {
       "id": "sample_046",
-      "defect_type": "null_pointer_deref",
+      "defect_type": "raii_violation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_046"
     },
     {
       "id": "sample_047",
-      "defect_type": "null_pointer_deref",
+      "defect_type": "raii_violation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_047"
     },
     {
       "id": "sample_048",
-      "defect_type": "null_pointer_deref",
+      "defect_type": "raii_violation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_048"
     },
     {
       "id": "sample_049",
-      "defect_type": "null_pointer_deref",
+      "defect_type": "raii_violation",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_049"
     },
     {
       "id": "sample_050",
-      "defect_type": "null_pointer_deref",
+      "defect_type": "raii_violation",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_050"
     },
     {
       "id": "sample_051",
-      "defect_type": "null_pointer_deref",
+      "defect_type": "raii_violation",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_051"
     },
     {
       "id": "sample_052",
-      "defect_type": "null_pointer_deref",
+      "defect_type": "raii_violation",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_052"
     },
     {
       "id": "sample_053",
-      "defect_type": "null_pointer_deref",
+      "defect_type": "raii_violation",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_053"
     },
     {
       "id": "sample_054",
-      "defect_type": "null_pointer_deref",
+      "defect_type": "raii_violation",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_054"
     },
     {
       "id": "sample_055",
-      "defect_type": "null_pointer_deref",
+      "defect_type": "raii_violation",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_055"
     },
     {
       "id": "sample_056",
-      "defect_type": "null_pointer_deref",
+      "defect_type": "raii_violation",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_056"
     },
     {
       "id": "sample_057",
-      "defect_type": "null_pointer_deref",
+      "defect_type": "raii_violation",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_057"
     },
     {
       "id": "sample_058",
-      "defect_type": "null_pointer_deref",
+      "defect_type": "raii_violation",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_058"
     },
     {
       "id": "sample_059",
-      "defect_type": "null_pointer_deref",
+      "defect_type": "raii_violation",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "asan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_059"
     },
     {
       "id": "sample_060",
-      "defect_type": "uninitialized_read",
+      "defect_type": "raii_violation",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 5,
+      "planted": true,
+      "sample_id": "sample_060"
     },
     {
       "id": "sample_061",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 4,
+      "planted": true,
+      "sample_id": "sample_061"
     },
     {
       "id": "sample_062",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 4,
+      "planted": true,
+      "sample_id": "sample_062"
     },
     {
       "id": "sample_063",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 4,
+      "planted": true,
+      "sample_id": "sample_063"
     },
     {
       "id": "sample_064",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 4,
+      "planted": true,
+      "sample_id": "sample_064"
     },
     {
       "id": "sample_065",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 4,
+      "planted": true,
+      "sample_id": "sample_065"
     },
     {
       "id": "sample_066",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 4,
+      "planted": true,
+      "sample_id": "sample_066"
     },
     {
       "id": "sample_067",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 4,
+      "planted": true,
+      "sample_id": "sample_067"
     },
     {
       "id": "sample_068",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 4,
+      "planted": true,
+      "sample_id": "sample_068"
     },
     {
       "id": "sample_069",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 4,
+      "planted": true,
+      "sample_id": "sample_069"
     },
     {
       "id": "sample_070",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 4,
+      "planted": true,
+      "sample_id": "sample_070"
     },
     {
       "id": "sample_071",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 6,
+      "planted": true,
+      "sample_id": "sample_071"
     },
     {
       "id": "sample_072",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 6,
+      "planted": true,
+      "sample_id": "sample_072"
     },
     {
       "id": "sample_073",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_073"
     },
     {
       "id": "sample_074",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_074"
     },
     {
       "id": "sample_075",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_075"
     },
     {
       "id": "sample_076",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "low",
-      "expected_verdict": "miss",
+      "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_076"
     },
     {
       "id": "sample_077",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "medium",
-      "expected_verdict": "miss",
+      "expected_verdict": "catch",
       "detector": "compiler-warn",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 6,
+      "planted": true,
+      "sample_id": "sample_077"
     },
     {
       "id": "sample_078",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "medium",
-      "expected_verdict": "miss",
+      "expected_verdict": "catch",
       "detector": "compiler-warn",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 6,
+      "planted": true,
+      "sample_id": "sample_078"
     },
     {
       "id": "sample_079",
-      "defect_type": "uninitialized_read",
+      "defect_type": "virtual_function",
       "severity": "low",
-      "expected_verdict": "miss",
+      "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_079"
     },
     {
       "id": "sample_080",
-      "defect_type": "undefined_behavior",
+      "defect_type": "virtual_function",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
-      "defect_line": 5,
-      "planted": true
+      "defect_line": 6,
+      "planted": true,
+      "sample_id": "sample_080"
     },
     {
       "id": "sample_081",
-      "defect_type": "undefined_behavior",
+      "defect_type": "virtual_function",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "ubsan",
-      "defect_line": 5,
-      "planted": true
+      "defect_line": 6,
+      "planted": true,
+      "sample_id": "sample_081"
     },
     {
       "id": "sample_082",
-      "defect_type": "undefined_behavior",
+      "defect_type": "virtual_function",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "ubsan",
-      "defect_line": 5,
-      "planted": true
+      "defect_line": 6,
+      "planted": true,
+      "sample_id": "sample_082"
     },
     {
       "id": "sample_083",
-      "defect_type": "undefined_behavior",
+      "defect_type": "virtual_function",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "ubsan",
-      "defect_line": 5,
-      "planted": true
+      "defect_line": 6,
+      "planted": true,
+      "sample_id": "sample_083"
     },
     {
       "id": "sample_084",
-      "defect_type": "undefined_behavior",
+      "defect_type": "virtual_function",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "ubsan",
-      "defect_line": 5,
-      "planted": true
+      "defect_line": 6,
+      "planted": true,
+      "sample_id": "sample_084"
     },
     {
       "id": "sample_085",
-      "defect_type": "undefined_behavior",
+      "defect_type": "virtual_function",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "ubsan",
-      "defect_line": 5,
-      "planted": true
+      "defect_line": 6,
+      "planted": true,
+      "sample_id": "sample_085"
     },
     {
       "id": "sample_086",
-      "defect_type": "undefined_behavior",
+      "defect_type": "virtual_function",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
-      "defect_line": 5,
-      "planted": true
+      "defect_line": 7,
+      "planted": true,
+      "sample_id": "sample_086"
     },
     {
       "id": "sample_087",
-      "defect_type": "undefined_behavior",
+      "defect_type": "virtual_function",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 7,
+      "planted": true,
+      "sample_id": "sample_087"
     },
     {
       "id": "sample_088",
-      "defect_type": "undefined_behavior",
+      "defect_type": "virtual_function",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 7,
+      "planted": true,
+      "sample_id": "sample_088"
     },
     {
       "id": "sample_089",
-      "defect_type": "undefined_behavior",
+      "defect_type": "virtual_function",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 7,
+      "planted": true,
+      "sample_id": "sample_089"
     },
     {
       "id": "sample_090",
-      "defect_type": "undefined_behavior",
+      "defect_type": "virtual_function",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 7,
+      "planted": true,
+      "sample_id": "sample_090"
     },
     {
       "id": "sample_091",
-      "defect_type": "undefined_behavior",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 3,
+      "planted": true,
+      "sample_id": "sample_091"
     },
     {
       "id": "sample_092",
-      "defect_type": "undefined_behavior",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 3,
+      "planted": true,
+      "sample_id": "sample_092"
     },
     {
       "id": "sample_093",
-      "defect_type": "undefined_behavior",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
-      "defect_line": 7,
-      "planted": true
+      "defect_line": 3,
+      "planted": true,
+      "sample_id": "sample_093"
     },
     {
       "id": "sample_094",
-      "defect_type": "undefined_behavior",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 3,
+      "planted": true,
+      "sample_id": "sample_094"
     },
     {
       "id": "sample_095",
-      "defect_type": "undefined_behavior",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 3,
+      "planted": true,
+      "sample_id": "sample_095"
     },
     {
       "id": "sample_096",
-      "defect_type": "undefined_behavior",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
-      "defect_line": 8,
-      "planted": true
+      "defect_line": 3,
+      "planted": true,
+      "sample_id": "sample_096"
     },
     {
       "id": "sample_097",
-      "defect_type": "undefined_behavior",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
-      "defect_line": 5,
-      "planted": true
+      "defect_line": 3,
+      "planted": true,
+      "sample_id": "sample_097"
     },
     {
       "id": "sample_098",
-      "defect_type": "undefined_behavior",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
-      "defect_line": 5,
-      "planted": true
+      "defect_line": 3,
+      "planted": true,
+      "sample_id": "sample_098"
     },
     {
       "id": "sample_099",
-      "defect_type": "undefined_behavior",
+      "defect_type": "linker_odr",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "ubsan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 2,
+      "planted": true,
+      "sample_id": "sample_099"
     },
     {
       "id": "sample_100",
-      "defect_type": "undefined_behavior",
+      "defect_type": "linker_odr",
       "severity": "high",
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "detector": "ubsan",
-      "defect_line": 6,
-      "planted": true
+      "defect_line": 2,
+      "planted": true,
+      "sample_id": "sample_100"
     }
   ]
 }

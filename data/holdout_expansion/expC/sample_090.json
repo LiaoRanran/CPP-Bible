@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "经基类指针在 delete 后调用虚函数 = use-after-free，AddressSanitizer 抓（根因是内存安全，经虚分派触发）。",
-  "id": "sample_090",
+  "sample_id": "sample_090",
   "category": "C",
   "defect_location": {
     "line": 7,
     "function": "main",
-    "note": "p->vf();           // <<PLANTED-DEFECT>> 释放后经基类指针调用虚函数（UAF）"
+    "file": "sample_090.cpp",
+    "notes": "p->vf();           // <<PLANTED-DEFECT>> 释放后经基类指针调用虚函数（UAF）"
   },
   "planted": true,
   "source_files": [

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 19,
     "function": "main",
-    "description": "局部 std::atomic<int> 默认初始化（值不确定）后直接 fetch_add"
+    "file": "sample_E041.cpp",
+    "notes": "局部 std::atomic<int> 默认初始化（值不确定）后直接 fetch_add"
   },
   "severity": "high",
   "planted": true,

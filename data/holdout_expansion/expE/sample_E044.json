@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 25,
     "function": "claim",
-    "description": "compare_exchange_weak 失败后不检查 expected，直接拿它当新值用"
+    "file": "sample_E044.cpp",
+    "notes": "compare_exchange_weak 失败后不检查 expected，直接拿它当新值用"
   },
   "severity": "high",
   "planted": true,

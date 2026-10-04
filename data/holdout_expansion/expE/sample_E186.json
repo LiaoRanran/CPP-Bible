@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "waiter",
-    "description": "wait_until 使用绝对时间点，但时间点在锁外计算且早已过期"
+    "file": "sample_E186.cpp",
+    "notes": "wait_until 使用绝对时间点，但时间点在锁外计算且早已过期"
   },
   "severity": "high",
   "planted": true,

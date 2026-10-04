@@ -4,18 +4,19 @@
   "defect_location": {
     "line": 24,
     "function": "log_path",
-    "description": "日志路径先锁输出锁再锁配置锁，配置路径先锁配置锁再锁输出锁"
+    "file": "sample_E078.cpp",
+    "notes": "日志路径先锁输出锁再锁配置锁，配置路径先锁配置锁再锁输出锁"
   },
   "severity": "high",
   "planted": true,
-  "expected_verdict": "catch",
+  "expected_verdict": "miss",
   "expected_detectors": [
     "tsan"
   ],
   "trigger_condition": "2 线程分别走日志路径与配置路径",
   "thread_count": 2,
   "timeout_seconds": 5,
-  "notes": "现实项目里最常见的顺序反转（日志 vs 配置）。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "notes": "现实项目里最常见的顺序反转（日志 vs 配置）。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。 【676m 修正：hung_flag 样本真实判据为 miss（sanitizer 挂起超时），原 catch 登记有误】",
   "pooled_verdict": {
     "tsan": "catch"
   },

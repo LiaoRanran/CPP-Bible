@@ -1,19 +1,20 @@
 {
-  "defect_type": "conditional_trigger",
+  "defect_type": "logic_error",
   "expected_detectors": [
     "asan"
   ],
   "expected_verdict": "miss",
   "severity": "low",
-  "trigger_condition": "输入为 3.999（非整数）时截断丢精度",
+  "trigger_condition": "输入为 3.999（非整数）时截断丢精度；【676m】原 defect_type=conditional_trigger（元标签，已从 defect_type 拆出）",
   "optimization_sensitivity": "n/a",
   "notes": "浮点截断导致逻辑错误但无内存问题；无检测器可抓（盲区），触发可复现。",
-  "id": "sample_197",
+  "sample_id": "sample_197",
   "category": "C",
   "defect_location": {
     "line": 3,
     "function": "main",
-    "note": "int r = (int)d; // <<PLANTED-DEFECT>> 浮点截断：r=3 而非 4（特定输入下逻辑错误）"
+    "file": "sample_197.cpp",
+    "notes": "int r = (int)d; // <<PLANTED-DEFECT>> 浮点截断：r=3 而非 4（特定输入下逻辑错误）"
   },
   "planted": true,
   "source_files": [

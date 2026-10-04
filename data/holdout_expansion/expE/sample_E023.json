@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "worker",
-    "description": "以 relaxed 的 fetch_or 位标志作完成判据"
+    "file": "sample_E023.cpp",
+    "notes": "以 relaxed 的 fetch_or 位标志作完成判据"
   },
   "severity": "medium",
   "planted": true,

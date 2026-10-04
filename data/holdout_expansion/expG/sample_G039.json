@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 12,
     "function": "curl_easy_escape_alloc",
-    "description": "CVE-2016-7167: curl_escape 系列函数整数溢出（CVE 描述: Multiple integer overflows in the (1) curl_escape ... via a string of length 0xffffffff, which triggers a heap-based buffer overflow）。"
+    "file": "sample_G039.cpp",
+    "notes": "CVE-2016-7167: curl_escape 系列函数整数溢出（CVE 描述: Multiple integer overflows in the (1) curl_escape ... via a string of length 0xffffffff, which triggers a heap-based buffer overflow）。"
   },
   "severity": "high",
   "planted": false,

@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "返回指向已销毁栈对象的引用/指针，触发 -Wreturn-local-addr（compiler-warn 抓）。",
-  "id": "sample_009",
+  "sample_id": "sample_009",
   "category": "C",
   "defect_location": {
     "line": 1,
     "function": "main",
-    "note": "int& f(){ int x = 5; return x; } // <<PLANTED-DEFECT>> 返回局部变量引用（dangling）"
+    "file": "sample_009.cpp",
+    "notes": "int& f(){ int x = 5; return x; } // <<PLANTED-DEFECT>> 返回局部变量引用（dangling）"
   },
   "planted": true,
   "source_files": [

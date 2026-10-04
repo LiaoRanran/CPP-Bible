@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "sasl_gsasl_cleanup",
-    "description": "CVE-2026-8925: GSASL 上下文 double free（官方公告: GSASL context is cleaned up twice without clearing the pointer in between, Medium, CWE-415）。2026-09-02 披露。"
+    "file": "sample_G036.cpp",
+    "notes": "CVE-2026-8925: GSASL 上下文 double free（官方公告: GSASL context is cleaned up twice without clearing the pointer in between, Medium, CWE-415）。2026-09-02 披露。"
   },
   "severity": "high",
   "planted": false,

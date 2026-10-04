@@ -1,11 +1,12 @@
 {
-  "id": "sample_099",
+  "sample_id": "sample_099",
   "category": "A",
-  "defect_type": "undefined_behavior",
+  "defect_type": "integer_overflow",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "int r = a / 0; // <<PLANTED-DEFECT>> undefined behavior: integer division by zero"
+    "file": "sample_099.cpp",
+    "notes": "int r = a / 0; // <<PLANTED-DEFECT>> undefined behavior: integer division by zero"
   },
   "severity": "high",
   "planted": true,

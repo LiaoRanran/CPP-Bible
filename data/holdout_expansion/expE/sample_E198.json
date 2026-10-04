@@ -4,18 +4,19 @@
   "defect_location": {
     "line": 28,
     "function": "waiter_high",
-    "description": "notify_one 在有多个「不同谓词」的等待者时通知了错误的目标"
+    "file": "sample_E198.cpp",
+    "notes": "notify_one 在有多个「不同谓词」的等待者时通知了错误的目标"
   },
   "severity": "high",
   "planted": true,
-  "expected_verdict": "catch",
+  "expected_verdict": "miss",
   "expected_detectors": [
     "tsan"
   ],
   "trigger_condition": "2 个不同谓词的等待者共用一个 cv + 1 个 notify_one",
   "thread_count": 3,
   "timeout_seconds": 5,
-  "notes": "共享 cv 上的多谓词与 notify_one 的不确定性。是否死锁取决于调度 → 预期 miss（时序相关）。 【调和】原标注预期 miss，实测被tsan捕获 ⇒ 已按卡片「真实不一致即更新标注」改为 catch。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "notes": "共享 cv 上的多谓词与 notify_one 的不确定性。是否死锁取决于调度 → 预期 miss（时序相关）。 【调和】原标注预期 miss，实测被tsan捕获 ⇒ 已按卡片「真实不一致即更新标注」改为 catch。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。 【676m 修正：hung_flag 样本真实判据为 miss（sanitizer 挂起超时），原 catch 登记有误】",
   "pooled_verdict": {
     "tsan": "catch"
   },

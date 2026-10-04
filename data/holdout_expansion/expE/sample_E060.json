@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "poller",
-    "description": "堆上 atomic 在其它线程还在自旋轮询时被 delete"
+    "file": "sample_E060.cpp",
+    "notes": "堆上 atomic 在其它线程还在自旋轮询时被 delete"
   },
   "severity": "high",
   "planted": true,

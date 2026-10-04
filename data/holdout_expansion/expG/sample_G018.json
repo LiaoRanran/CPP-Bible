@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G018",
-  "defect_type": "stack_overflow_write",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 18,
     "function": "ossl_punycode_decode",
-    "description": "CVE-2022-3602: X.509 punycode 解码缓冲区溢出（CVE 描述: A buffer overrun can be triggered in X.509 certificate verification ... name constraint checking）。原始缺陷即 ossl_punycode_decode 输出无界写入。"
+    "file": "sample_G018.cpp",
+    "notes": "CVE-2022-3602: X.509 punycode 解码缓冲区溢出（CVE 描述: A buffer overrun can be triggered in X.509 certificate verification ... name constraint checking）。原始缺陷即 ossl_punycode_decode 输出无界写入。"
   },
   "severity": "high",
   "planted": false,

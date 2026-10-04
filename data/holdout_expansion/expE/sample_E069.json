@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "retire",
-    "description": "原子指针指向的对象被 delete 后，另一线程经 CAS 取出并使用"
+    "file": "sample_E069.cpp",
+    "notes": "原子指针指向的对象被 delete 后，另一线程经 CAS 取出并使用"
   },
   "severity": "high",
   "planted": true,

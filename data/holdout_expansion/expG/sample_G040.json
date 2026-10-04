@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 13,
     "function": "http_referer_build",
-    "description": "CVE-2021-22876: Referer 头泄露凭据（CVE 描述: libcurl does not strip off user credentials from the URL when automatically populating the Referer: HTTP header）。信息泄露逻辑错误，正确=剥离凭据、实际=包含，sanitizer 无报告 → 诚实标 miss。"
+    "file": "sample_G040.cpp",
+    "notes": "CVE-2021-22876: Referer 头泄露凭据（CVE 描述: libcurl does not strip off user credentials from the URL when automatically populating the Referer: HTTP header）。信息泄露逻辑错误，正确=剥离凭据、实际=包含，sanitizer 无报告 → 诚实标 miss。"
   },
   "severity": "low",
   "planted": false,

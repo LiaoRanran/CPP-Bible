@@ -2,9 +2,10 @@
   "sample_id": "F049",
   "defect_type": "endianness",
   "defect_location": {
-    "description": "union 类型双关读取多字节对象的字节序（C++ 严格别名 UB）",
     "line": 6,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F049.cpp",
+    "notes": "union 类型双关读取多字节对象的字节序（C++ 严格别名 UB）"
   },
   "severity": "medium",
   "planted": true,

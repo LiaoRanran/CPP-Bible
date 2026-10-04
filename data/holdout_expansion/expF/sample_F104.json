@@ -2,9 +2,10 @@
   "sample_id": "F104",
   "defect_type": "volatile_misuse",
   "defect_location": {
-    "description": "误以为 volatile const 提供硬件只读保护",
     "line": 3,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F104.cpp",
+    "notes": "误以为 volatile const 提供硬件只读保护"
   },
   "severity": "low",
   "planted": true,

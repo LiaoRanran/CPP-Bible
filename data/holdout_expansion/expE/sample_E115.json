@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E115",
-  "defect_type": "aba_problem",
+  "defect_type": "atomic_ub",
   "defect_location": {
     "line": 34,
     "function": "main",
-    "description": "无锁栈 pop 在 ABA 窗口内对已释放节点做 delete（二次释放）"
+    "file": "sample_E115.cpp",
+    "notes": "无锁栈 pop 在 ABA 窗口内对已释放节点做 delete（二次释放）"
   },
   "severity": "high",
   "planted": true,

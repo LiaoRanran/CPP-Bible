@@ -1,11 +1,12 @@
 {
-  "id": "sample_026",
+  "sample_id": "sample_026",
   "category": "A",
   "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 7,
     "function": "main",
-    "note": "int v = a[9]; // <<PLANTED-DEFECT>> out-of-bounds: read heap index 9 (size 8)"
+    "file": "sample_026.cpp",
+    "notes": "int v = a[9]; // <<PLANTED-DEFECT>> out-of-bounds: read heap index 9 (size 8)"
   },
   "severity": "medium",
   "planted": true,

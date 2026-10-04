@@ -1,11 +1,12 @@
 {
-  "id": "sample_043",
+  "sample_id": "sample_043",
   "category": "A",
   "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "for (int i = 0; i <= 16; ++i) { b[i] = i; } // <<PLANTED-DEFECT>> out-of-bounds: loop writes index 16 (size 16)"
+    "file": "sample_043.cpp",
+    "notes": "for (int i = 0; i <= 16; ++i) { b[i] = i; } // <<PLANTED-DEFECT>> out-of-bounds: loop writes index 16 (size 16)"
   },
   "severity": "high",
   "planted": true,

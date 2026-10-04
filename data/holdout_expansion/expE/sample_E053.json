@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "requester",
-    "description": "atomic<bool>::exchange 的返回值被丢弃，信号丢失"
+    "file": "sample_E053.cpp",
+    "notes": "atomic<bool>::exchange 的返回值被丢弃，信号丢失"
   },
   "severity": "medium",
   "planted": true,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 19,
     "function": "bump",
-    "description": "std::atomic<int>::fetch_add 有符号溢出（C++17 下为 UB）"
+    "file": "sample_E048.cpp",
+    "notes": "std::atomic<int>::fetch_add 有符号溢出（C++17 下为 UB）"
   },
   "severity": "high",
   "planted": true,

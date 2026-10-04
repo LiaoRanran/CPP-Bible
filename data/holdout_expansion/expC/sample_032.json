@@ -8,12 +8,13 @@
   "trigger_condition": "异常被抛出时（始终触发）",
   "optimization_sensitivity": "n/a",
   "notes": "raii_violation 内存泄漏：new[] 分配后无任何释放路径，LeakSanitizer 在程序正常退出时抓泄漏。",
-  "id": "sample_032",
+  "sample_id": "sample_032",
   "category": "C",
   "defect_location": {
     "line": 2,
     "function": "main",
-    "note": "int* p = new int[16];   // <<PLANTED-DEFECT>> 分配后从未释放 -> 内存泄漏"
+    "file": "sample_032.cpp",
+    "notes": "int* p = new int[16];   // <<PLANTED-DEFECT>> 分配后从未释放 -> 内存泄漏"
   },
   "planted": true,
   "source_files": [

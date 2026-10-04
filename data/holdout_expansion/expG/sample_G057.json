@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G057",
-  "defect_type": "heap_overflow",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 22,
     "function": "png_set_PLTE",
-    "description": "CVE-2015-8126: png_set_PLTE/png_get_PLTE 缓冲区溢出（CVE 描述: Multiple buffer overflows in the (1) png_set_PLTE and (2) png_get_PLTE functions ... allow remote attackers to cause a denial of service）。"
+    "file": "sample_G057.cpp",
+    "notes": "CVE-2015-8126: png_set_PLTE/png_get_PLTE 缓冲区溢出（CVE 描述: Multiple buffer overflows in the (1) png_set_PLTE and (2) png_get_PLTE functions ... allow remote attackers to cause a denial of service）。"
   },
   "severity": "high",
   "planted": false,

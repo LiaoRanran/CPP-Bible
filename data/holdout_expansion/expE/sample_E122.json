@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E122",
-  "defect_type": "aba_problem",
+  "defect_type": "atomic_ub",
   "defect_location": {
     "line": 22,
     "function": "main",
-    "description": "双原子「不变式」在 ABA 下被绕过（校验通过但不变式已破）"
+    "file": "sample_E122.cpp",
+    "notes": "双原子「不变式」在 ABA 下被绕过（校验通过但不变式已破）"
   },
   "severity": "high",
   "planted": true,

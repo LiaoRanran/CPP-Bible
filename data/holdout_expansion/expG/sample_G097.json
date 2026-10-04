@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "Reader_getFormattedErrorMessages",
-    "description": "jsoncpp#1623（已修复）: Reader::parse 保存悬垂指针，getFormattedErrorMessages 触发 UAF（issue 附完整 POC testcase.cpp 与复现 commit ca98c98）。"
+    "file": "sample_G097.cpp",
+    "notes": "jsoncpp#1623（已修复）: Reader::parse 保存悬垂指针，getFormattedErrorMessages 触发 UAF（issue 附完整 POC testcase.cpp 与复现 commit ca98c98）。"
   },
   "severity": "high",
   "planted": false,

@@ -1,0 +1,171 @@
+{
+ "schema": "queyi-676m-stability/v1",
+ "generated_by": "tools/recompute_a5_676m.py",
+ "clean_retest": {
+  "note": "676f 的干净重测（zredo，123 样本 × 3 sanitizer = 369 格）vs 首测（san）",
+  "n_cells": 369,
+  "n_flip": 18,
+  "flip_pct": 4.88,
+  "flips": [
+   {
+    "sample_id": "B089",
+    "asset": "ubsan",
+    "first": "miss",
+    "retest": "catch"
+   },
+   {
+    "sample_id": "C181",
+    "asset": "asan",
+    "first": "miss",
+    "retest": "catch"
+   },
+   {
+    "sample_id": "C193",
+    "asset": "tsan",
+    "first": "catch",
+    "retest": "miss"
+   },
+   {
+    "sample_id": "D062",
+    "asset": "tsan",
+    "first": "miss",
+    "retest": "catch"
+   },
+   {
+    "sample_id": "D064",
+    "asset": "asan",
+    "first": "miss",
+    "retest": "catch"
+   },
+   {
+    "sample_id": "D071",
+    "asset": "asan",
+    "first": "miss",
+    "retest": "catch"
+   },
+   {
+    "sample_id": "D071",
+    "asset": "tsan",
+    "first": "miss",
+    "retest": "catch"
+   },
+   {
+    "sample_id": "D098",
+    "asset": "asan",
+    "first": "miss",
+    "retest": "catch"
+   },
+   {
+    "sample_id": "D101",
+    "asset": "tsan",
+    "first": "miss",
+    "retest": "catch"
+   },
+   {
+    "sample_id": "D118",
+    "asset": "asan",
+    "first": "catch",
+    "retest": "miss"
+   },
+   {
+    "sample_id": "D157",
+    "asset": "tsan",
+    "first": "catch",
+    "retest": "miss"
+   },
+   {
+    "sample_id": "D162",
+    "asset": "ubsan",
+    "first": "miss",
+    "retest": "catch"
+   },
+   {
+    "sample_id": "E009",
+    "asset": "tsan",
+    "first": "catch",
+    "retest": "miss"
+   },
+   {
+    "sample_id": "F010",
+    "asset": "tsan",
+    "first": "catch",
+    "retest": "miss"
+   },
+   {
+    "sample_id": "F070",
+    "asset": "tsan",
+    "first": "catch",
+    "retest": "miss"
+   },
+   {
+    "sample_id": "F126",
+    "asset": "ubsan",
+    "first": "catch",
+    "retest": "miss"
+   },
+   {
+    "sample_id": "F146",
+    "asset": "asan",
+    "first": "catch",
+    "retest": "miss"
+   },
+   {
+    "sample_id": "F170",
+    "asset": "tsan",
+    "first": "miss",
+    "retest": "catch"
+   }
+  ]
+ },
+ "three_round_tsan": {
+  "note": "676f 的 tsan 3 轮抽检（80 样本），逐格 3 次取众数",
+  "n_samples": 80,
+  "n_flip_samples": 4,
+  "flip_pct": 5.0,
+  "flips": [
+   {
+    "sample_id": "E003",
+    "asset": "tsan",
+    "votes": [
+     "miss",
+     "catch",
+     "catch"
+    ]
+   },
+   {
+    "sample_id": "E019",
+    "asset": "tsan",
+    "votes": [
+     "catch",
+     "miss",
+     "catch"
+    ]
+   },
+   {
+    "sample_id": "E022",
+    "asset": "tsan",
+    "votes": [
+     "catch",
+     "miss",
+     "miss"
+    ]
+   },
+   {
+    "sample_id": "E038",
+    "asset": "tsan",
+    "votes": [
+     "catch",
+     "catch",
+     "miss"
+    ]
+   }
+  ]
+ },
+ "disjoint_shards": {
+  "note": "local/local2 与 xc1/xc2 均为互补并行分片（样本集互斥，重叠 0）⇒ 不可用作跑间稳定性估计；本报告只用上面两组真重测。",
+  "pairs": {
+   "local vs local2": 0,
+   "xc1 vs xc2": 0
+  }
+ }
+}

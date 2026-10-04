@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G021",
-  "defect_type": "state_machine",
+  "defect_type": "logic_error",
   "defect_location": {
     "line": 22,
     "function": "ssl3_process_ccs",
-    "description": "CVE-2014-0224 (CCS 注入): 不限制 CCS 消息处理状态（CVE 描述: does not properly restrict processing of ChangeCipherSpec messages）→ MITM 强制零长度 master key。纯状态机逻辑错误，正确=拒绝、实际=接受，sanitizer 无报告 → 诚实标 miss。"
+    "file": "sample_G021.cpp",
+    "notes": "CVE-2014-0224 (CCS 注入): 不限制 CCS 消息处理状态（CVE 描述: does not properly restrict processing of ChangeCipherSpec messages）→ MITM 强制零长度 master key。纯状态机逻辑错误，正确=拒绝、实际=接受，sanitizer 无报告 → 诚实标 miss。"
   },
   "severity": "high",
   "planted": false,

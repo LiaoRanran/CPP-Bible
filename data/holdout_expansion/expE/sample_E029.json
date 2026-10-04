@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "producer",
-    "description": "中间的 relaxed store 打断 release 序列，读侧仍用 acquire"
+    "file": "sample_E029.cpp",
+    "notes": "中间的 relaxed store 打断 release 序列，读侧仍用 acquire"
   },
   "severity": "high",
   "planted": true,

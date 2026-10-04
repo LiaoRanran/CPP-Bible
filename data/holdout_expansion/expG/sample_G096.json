@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G096",
-  "defect_type": "heap_overread",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 20,
     "function": "getLocationLineAndColumn",
-    "description": "jsoncpp#1682（已修复）: getLocationLineAndColumn 对 CR 结尾输入堆越界读 1 字节（issue 附 json_reader.cpp:1820-1840 根因代码：CR 分支 current++ 后未重测 current != end_ 即 peek）。"
+    "file": "sample_G096.cpp",
+    "notes": "jsoncpp#1682（已修复）: getLocationLineAndColumn 对 CR 结尾输入堆越界读 1 字节（issue 附 json_reader.cpp:1820-1840 根因代码：CR 分支 current++ 后未重测 current != end_ 即 peek）。"
   },
   "severity": "high",
   "planted": false,

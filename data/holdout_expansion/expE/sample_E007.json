@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "producer",
-    "description": "两段式握手中第二个标志用 relaxed 发布"
+    "file": "sample_E007.cpp",
+    "notes": "两段式握手中第二个标志用 relaxed 发布"
   },
   "severity": "high",
   "planted": true,

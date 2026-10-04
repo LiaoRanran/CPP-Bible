@@ -75,8 +75,36 @@ log "== 3c. 数据完整性（1137 样本清单）=="
 tail -2 "$OUT/32_data_integrity.txt"
 
 log "== 3d. 随机种子审计（实验类未固定种子数须为 0）=="
-"$PY" tools/seed_audit_676h.py > "$OUT/33_seed_audit.txt" || fail "存在未固定种子的实验类脚本"
+# 676m：输出改到 $OUT/ —— 与脚本自身"不覆盖 data/ 下任何已落盘产物"的原则一致
+# （676h 的原始调用会把 data/676h_seed_audit.{json,md} 重写，导致工作树被污染）。
+"$PY" tools/seed_audit_676h.py \
+  --out-json "$OUT/33_seed_audit.json" --out-md "$OUT/33_seed_audit.md" \
+  > "$OUT/33_seed_audit.txt" || fail "存在未固定种子的实验类脚本"
 tail -2 "$OUT/33_seed_audit.txt"
+
+log "== 3e. 676m 数据修复自检（幂等门禁：H1 残留须为 0、待迁移须为 0）=="
+"$PY" tools/fix_676m_schema.py --verify > "$OUT/34_fix_676m_verify.txt" \
+  || fail "676m 修复未落盘或非幂等（见 $OUT/34_fix_676m_verify.txt）"
+tail -2 "$OUT/34_fix_676m_verify.txt"
+
+log "== 3f. 676m A5 重算门禁（修正标签后主端点须与 676f 逐位一致）=="
+"$PY" tools/recompute_a5_676m.py --check > "$OUT/35_a5_676m_check.txt" \
+  || fail "676m 重算与 676f 登记值不一致（见 $OUT/35_a5_676m_check.txt）"
+tail -2 "$OUT/35_a5_676m_check.txt"
+
+log "== 3g. 676k 数据质量审计（只读；去重 + 字段完整性）=="
+"$PY" tools/audit_676k_integrity.py --json "$OUT/36_integrity_676k.json" \
+  > "$OUT/36_integrity_676k.txt" || fail "676k 完整性审计失败"
+tail -3 "$OUT/36_integrity_676k.txt"
+"$PY" tools/audit_676k_dedup.py --json "$OUT/37_dedup_676k.json" --quiet \
+  > "$OUT/37_dedup_676k.txt" || fail "676k 去重审计失败"
+tail -3 "$OUT/37_dedup_676k.txt"
+cat <<'NOTE' | tee "$OUT/38_676k_network_note.txt"
+[note] 676k 的另两项审计需要外部条件，本脚本默认不跑：
+  * tools/audit_676k_compile.py --sample --run   （需要 g++ 13.x + WSL，约 10 分钟）
+  * tools/audit_676k_source.py  --collect --probe（需要联网访问 NVD / GitHub API）
+已落盘结果：data/676k_compile_results.json（217/217）、data/676k_source_results.json（74/74）。
+NOTE
 
 log "== 4. 论文数字 vs 权威源（676h 审计工具）=="
 "$PY" tools/verify_paper_numbers.py --out-json "$OUT/40_number_audit.json" --out-md "$OUT/41_number_audit.md" \

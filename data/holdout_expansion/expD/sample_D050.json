@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 7,
     "function": "main",
-    "description": "std::array operator[] 越界访问"
+    "file": "sample_D050.cpp",
+    "notes": "std::array operator[] 越界访问"
   },
   "severity": "high",
   "planted": true,

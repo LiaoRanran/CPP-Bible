@@ -2,9 +2,10 @@
   "sample_id": "F119",
   "defect_type": "bit_operation",
   "defect_location": {
-    "description": "uint32_t 左移 35（>=32 越界）",
     "line": 5,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F119.cpp",
+    "notes": "uint32_t 左移 35（>=32 越界）"
   },
   "severity": "high",
   "planted": true,

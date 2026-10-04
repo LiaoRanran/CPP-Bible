@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G026",
-  "defect_type": "stack_overread",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 25,
     "function": "tftp_send_first",
-    "description": "CVE-2017-1000100: 超长文件名被截断入 515 缓冲，但缓冲尺寸仍按未截断长度更新，sendto 按错误尺寸发送（CVE 描述: the file name is truncated to fit within the buffer boundaries, but the buffer size is still wrongly updated）。"
+    "file": "sample_G026.cpp",
+    "notes": "CVE-2017-1000100: 超长文件名被截断入 515 缓冲，但缓冲尺寸仍按未截断长度更新，sendto 按错误尺寸发送（CVE 描述: the file name is truncated to fit within the buffer boundaries, but the buffer size is still wrongly updated）。"
   },
   "severity": "high",
   "planted": false,

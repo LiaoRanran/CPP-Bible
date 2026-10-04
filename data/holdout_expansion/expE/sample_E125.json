@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E125",
-  "defect_type": "aba_problem",
+  "defect_type": "atomic_ub",
   "defect_location": {
     "line": 22,
     "function": "main",
-    "description": "危险指针「发布顺序」错误：先读数据再登记 hazard"
+    "file": "sample_E125.cpp",
+    "notes": "危险指针「发布顺序」错误：先读数据再登记 hazard"
   },
   "severity": "high",
   "planted": true,

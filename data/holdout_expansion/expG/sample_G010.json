@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 13,
     "function": "EVP_EncodeUpdate",
-    "description": "CVE-2016-2105: EVP_EncodeUpdate 整数溢出 → heap memory corruption（CVE 描述: Integer overflow in the EVP_EncodeUpdate ... via a large amount of binary data）。本样本镜像长度计算的溢出点。"
+    "file": "sample_G010.cpp",
+    "notes": "CVE-2016-2105: EVP_EncodeUpdate 整数溢出 → heap memory corruption（CVE 描述: Integer overflow in the EVP_EncodeUpdate ... via a large amount of binary data）。本样本镜像长度计算的溢出点。"
   },
   "severity": "high",
   "planted": false,

@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "非虚函数名字隐藏导致调用基类版本；逻辑错误，无检测器可抓（盲区）。",
-  "id": "sample_085",
+  "sample_id": "sample_085",
   "category": "C",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "d.B::f(); // <<PLANTED-DEFECT>> 开发者误以为会调用 D 的 f，实则基类版本（隐藏导致歧义/误用）"
+    "file": "sample_085.cpp",
+    "notes": "d.B::f(); // <<PLANTED-DEFECT>> 开发者误以为会调用 D 的 f，实则基类版本（隐藏导致歧义/误用）"
   },
   "planted": true,
   "source_files": [

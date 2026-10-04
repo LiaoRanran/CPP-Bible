@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 19,
     "function": "publish_and_die",
-    "description": "栈上的 atomic 对象生命周期结束后仍被另一线程访问"
+    "file": "sample_E059.cpp",
+    "notes": "栈上的 atomic 对象生命周期结束后仍被另一线程访问"
   },
   "severity": "high",
   "planted": true,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 8,
     "function": "main",
-    "description": "通过 data() 指针越界写 std::string 堆缓冲"
+    "file": "sample_D080.cpp",
+    "notes": "通过 data() 指针越界写 std::string 堆缓冲"
   },
   "severity": "high",
   "planted": true,

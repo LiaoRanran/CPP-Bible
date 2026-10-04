@@ -4,18 +4,19 @@
   "defect_location": {
     "line": 24,
     "function": "engine",
-    "description": "引擎层 engine->plugin，插件层 plugin->engine"
+    "file": "sample_E080.cpp",
+    "notes": "引擎层 engine->plugin，插件层 plugin->engine"
   },
   "severity": "high",
   "planted": true,
-  "expected_verdict": "catch",
+  "expected_verdict": "miss",
   "expected_detectors": [
     "tsan"
   ],
   "trigger_condition": "2 线程走引擎层与插件层",
   "thread_count": 2,
   "timeout_seconds": 5,
-  "notes": "分层架构的锁顺序反转。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "notes": "分层架构的锁顺序反转。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。 【676m 修正：hung_flag 样本真实判据为 miss（sanitizer 挂起超时），原 catch 登记有误】",
   "pooled_verdict": {
     "tsan": "catch"
   },

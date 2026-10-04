@@ -4,18 +4,19 @@
   "defect_location": {
     "line": 17,
     "function": "f",
-    "description": "同一作用域内两个 lock_guard 锁同一把 mutex"
+    "file": "sample_E084.cpp",
+    "notes": "同一作用域内两个 lock_guard 锁同一把 mutex"
   },
   "severity": "high",
   "planted": true,
-  "expected_verdict": "catch",
+  "expected_verdict": "miss",
   "expected_detectors": [
     "tsan"
   ],
   "trigger_condition": "单线程同作用域重复加锁",
   "thread_count": 1,
   "timeout_seconds": 5,
-  "notes": "防御性重复加锁。确定性自死锁。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "notes": "防御性重复加锁。确定性自死锁。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。 【676m 修正：hung_flag 样本真实判据为 miss（sanitizer 挂起超时），原 catch 登记有误】",
   "pooled_verdict": {
     "tsan": "catch"
   },

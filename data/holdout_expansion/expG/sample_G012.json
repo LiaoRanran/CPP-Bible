@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 18,
     "function": "MDC2_Update",
-    "description": "CVE-2016-6303: MDC2_Update 整数溢出 → out-of-bounds write（CVE 描述: Integer overflow in the MDC2_Update ... out-of-bounds write and application crash）。本样本镜像 num 累加溢出点。"
+    "file": "sample_G012.cpp",
+    "notes": "CVE-2016-6303: MDC2_Update 整数溢出 → out-of-bounds write（CVE 描述: Integer overflow in the MDC2_Update ... out-of-bounds write and application crash）。本样本镜像 num 累加溢出点。"
   },
   "severity": "high",
   "planted": false,

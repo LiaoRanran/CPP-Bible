@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G002",
-  "defect_type": "heap_overread",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 24,
     "function": "OBJ_obj2txt",
-    "description": "OBJ_obj2txt 在 pretty print 时分配精确大小的缓冲但不保证写入 '\\0'（CVE 描述: does not ensure the presence of '\\0' characters），调用方以 C 字符串处理 → 读越界，泄露进程内存。"
+    "file": "sample_G002.cpp",
+    "notes": "OBJ_obj2txt 在 pretty print 时分配精确大小的缓冲但不保证写入 '\\0'（CVE 描述: does not ensure the presence of '\\0' characters），调用方以 C 字符串处理 → 读越界，泄露进程内存。"
   },
   "severity": "high",
   "planted": false,

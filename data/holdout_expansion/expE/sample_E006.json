@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 24,
     "function": "watcher",
-    "description": "标志以 release 存储、以 relaxed 加载，acquire 语义被丢弃"
+    "file": "sample_E006.cpp",
+    "notes": "标志以 release 存储、以 relaxed 加载，acquire 语义被丢弃"
   },
   "severity": "medium",
   "planted": true,

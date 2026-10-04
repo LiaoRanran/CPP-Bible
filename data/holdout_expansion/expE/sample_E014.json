@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "producer",
-    "description": "用 relaxed fence 代替 release 语义"
+    "file": "sample_E014.cpp",
+    "notes": "用 relaxed fence 代替 release 语义"
   },
   "severity": "high",
   "planted": true,

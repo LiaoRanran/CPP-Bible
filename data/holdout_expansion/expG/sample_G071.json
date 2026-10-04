@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G071",
-  "defect_type": "heap_underflow",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 18,
     "function": "realpath_mirror",
-    "description": "CVE-2018-1000001: realpath 向目的缓冲区之前写入（CVE 描述: confusion in the usage of getcwd() by realpath() which can be used to write before the destination buffer leading to a buffer underflow）。用户态等价重构（planted=true）。"
+    "file": "sample_G071.cpp",
+    "notes": "CVE-2018-1000001: realpath 向目的缓冲区之前写入（CVE 描述: confusion in the usage of getcwd() by realpath() which can be used to write before the destination buffer leading to a buffer underflow）。用户态等价重构（planted=true）。"
   },
   "severity": "high",
   "planted": true,

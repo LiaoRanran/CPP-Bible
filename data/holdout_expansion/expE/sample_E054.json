@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "enter",
-    "description": "用 atomic<bool>::exchange 抢占独占权，忽略「已被占用」返回值"
+    "file": "sample_E054.cpp",
+    "notes": "用 atomic<bool>::exchange 抢占独占权，忽略「已被占用」返回值"
   },
   "severity": "medium",
   "planted": true,

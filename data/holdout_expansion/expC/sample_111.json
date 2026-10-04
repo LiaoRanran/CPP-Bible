@@ -8,12 +8,13 @@
   "trigger_condition": "程序启动静态初始化阶段",
   "optimization_sensitivity": "n/a",
   "notes": "跨 TU 全局变量初始化顺序：x 依赖 y 但顺序未定义（静态初始化顺序 fiasco）；无检测器可抓（盲区）。",
-  "id": "sample_111",
+  "sample_id": "sample_111",
   "category": "C",
   "defect_location": {
     "line": 2,
     "function": "(global)",
-    "note": "int x = y + 1; // <<PLANTED-DEFECT>> 依赖 y，但 y 可能尚未构造（静态初始化顺序未定义）"
+    "file": "sample_111_a.cpp",
+    "notes": "int x = y + 1; // <<PLANTED-DEFECT>> 依赖 y，但 y 可能尚未构造（静态初始化顺序未定义）"
   },
   "planted": true,
   "source_files": [

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 17,
     "function": "ocsp_check_response",
-    "description": "CVE-2020-8286: 证书撤销检查不足（CVE 描述: improper check for certificate revocation due to insufficient verification of the OCSP response, CWE-295）。逻辑缺陷 → 诚实标 miss。"
+    "file": "sample_G047.cpp",
+    "notes": "CVE-2020-8286: 证书撤销检查不足（CVE 描述: improper check for certificate revocation due to insufficient verification of the OCSP response, CWE-295）。逻辑缺陷 → 诚实标 miss。"
   },
   "severity": "medium",
   "planted": false,

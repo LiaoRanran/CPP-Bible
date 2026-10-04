@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 23,
     "function": "mutator",
-    "description": "CAS 只比较指针，指针指向的结构体内容被并发改写（伪原子快照）"
+    "file": "sample_E075.cpp",
+    "notes": "CAS 只比较指针，指针指向的结构体内容被并发改写（伪原子快照）"
   },
   "severity": "high",
   "planted": true,

@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G073",
-  "defect_type": "stack_overflow_write",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 15,
     "function": "pkexec_main",
-    "description": "CVE-2021-4034 (PwnKit): pkexec 本地提权（CVE 描述: doesn't handle the calling convention correctly ... CWE-787/CWE-125）。用户态等价重构（planted=true）。"
+    "file": "sample_G073.cpp",
+    "notes": "CVE-2021-4034 (PwnKit): pkexec 本地提权（CVE 描述: doesn't handle the calling convention correctly ... CWE-787/CWE-125）。用户态等价重构（planted=true）。"
   },
   "severity": "high",
   "planted": true,

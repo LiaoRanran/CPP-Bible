@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G003",
-  "defect_type": "null_deref",
+  "defect_type": "null_pointer_deref",
   "defect_location": {
     "line": 29,
     "function": "dtls1_read_timeout",
-    "description": "CVE-2014-3571: crafted DTLS 消息在『header 读』与『消息体读』两条路径处理不一致，导致 NULL 指针解引用（CVE 描述: NULL pointer dereference and application crash）。本样本镜像该模式。"
+    "file": "sample_G003.cpp",
+    "notes": "CVE-2014-3571: crafted DTLS 消息在『header 读』与『消息体读』两条路径处理不一致，导致 NULL 指针解引用（CVE 描述: NULL pointer dereference and application crash）。本样本镜像该模式。"
   },
   "severity": "high",
   "planted": false,

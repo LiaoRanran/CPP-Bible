@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E149",
-  "defect_type": "lock_priority_inversion",
+  "defect_type": "deadlock",
   "defect_location": {
     "line": 21,
     "function": "low",
-    "description": "低优先级线程持锁做位图/图像处理，高优先级线程等锁"
+    "file": "sample_E149.cpp",
+    "notes": "低优先级线程持锁做位图/图像处理，高优先级线程等锁"
   },
   "severity": "high",
   "planted": true,

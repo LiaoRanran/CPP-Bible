@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E159",
-  "defect_type": "lock_priority_inversion",
+  "defect_type": "deadlock",
   "defect_location": {
     "line": 21,
     "function": "cpu_worker",
-    "description": "DMA 完成回调（高优先级）等锁，持锁者在做用户态大块内存整理"
+    "file": "sample_E159.cpp",
+    "notes": "DMA 完成回调（高优先级）等锁，持锁者在做用户态大块内存整理"
   },
   "severity": "high",
   "planted": true,

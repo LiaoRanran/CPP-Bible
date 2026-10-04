@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "inc",
-    "description": "用 load + store 模拟 RMW（丢失更新）"
+    "file": "sample_E061.cpp",
+    "notes": "用 load + store 模拟 RMW（丢失更新）"
   },
   "severity": "high",
   "planted": true,

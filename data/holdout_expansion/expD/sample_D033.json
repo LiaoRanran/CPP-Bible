@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 10,
     "function": "Holder::read_bad",
-    "description": "类成员 vector 在成员函数内 push_back 后使用失效迭代器"
+    "file": "sample_D033.cpp",
+    "notes": "类成员 vector 在成员函数内 push_back 后使用失效迭代器"
   },
   "severity": "high",
   "planted": true,

@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G007",
-  "defect_type": "null_deref",
+  "defect_type": "null_pointer_deref",
   "defect_location": {
     "line": 25,
     "function": "X509_to_X509_REQ",
-    "description": "CVE-2015-0288: X509_to_X509_REQ 用 invalid 证书时 NULL pointer dereference（CVE 描述: NULL pointer dereference and application crash via an invalid certificate）。"
+    "file": "sample_G007.cpp",
+    "notes": "CVE-2015-0288: X509_to_X509_REQ 用 invalid 证书时 NULL pointer dereference（CVE 描述: NULL pointer dereference and application crash via an invalid certificate）。"
   },
   "severity": "high",
   "planted": false,

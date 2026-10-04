@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 32,
     "function": "issuer",
-    "description": "条件变量在正确的锁上，但「重复通知」被当作「多次许可」消费"
+    "file": "sample_E183.cpp",
+    "notes": "条件变量在正确的锁上，但「重复通知」被当作「多次许可」消费"
   },
   "severity": "high",
   "planted": true,

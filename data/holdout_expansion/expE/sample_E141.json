@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E141",
-  "defect_type": "lock_priority_inversion",
+  "defect_type": "deadlock",
   "defect_location": {
     "line": 21,
     "function": "low_prio",
-    "description": "低优先级线程持锁做长耗时计算，高优先级线程等锁，中优先级线程忙等抢占"
+    "file": "sample_E141.cpp",
+    "notes": "低优先级线程持锁做长耗时计算，高优先级线程等锁，中优先级线程忙等抢占"
   },
   "severity": "high",
   "planted": true,

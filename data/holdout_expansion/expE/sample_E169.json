@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E169",
-  "defect_type": "lock_priority_inversion",
+  "defect_type": "deadlock",
   "defect_location": {
     "line": 22,
     "function": "churn",
-    "description": "持锁触发大量内存分配（分配器内部锁 + 缺页）"
+    "file": "sample_E169.cpp",
+    "notes": "持锁触发大量内存分配（分配器内部锁 + 缺页）"
   },
   "severity": "high",
   "planted": true,

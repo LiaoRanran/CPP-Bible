@@ -2,9 +2,10 @@
   "sample_id": "F022",
   "defect_type": "alignment",
   "defect_location": {
-    "description": "假设成员位于偏移 4 而实际因对齐在 4",
     "line": 8,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F022.cpp",
+    "notes": "假设成员位于偏移 4 而实际因对齐在 4"
   },
   "severity": "low",
   "planted": true,

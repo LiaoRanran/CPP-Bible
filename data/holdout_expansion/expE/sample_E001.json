@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 24,
     "function": "consumer",
-    "description": "consumer 用 relaxed 轮询 ready 标志，未与 producer 的 release 配对 acquire"
+    "file": "sample_E001.cpp",
+    "notes": "consumer 用 relaxed 轮询 ready 标志，未与 producer 的 release 配对 acquire"
   },
   "severity": "high",
   "planted": true,

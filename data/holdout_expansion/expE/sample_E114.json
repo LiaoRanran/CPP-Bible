@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E114",
-  "defect_type": "aba_problem",
+  "defect_type": "atomic_ub",
   "defect_location": {
     "line": 34,
     "function": "main",
-    "description": "无锁栈「预留-发布」两阶段 push 的 ABA"
+    "file": "sample_E114.cpp",
+    "notes": "无锁栈「预留-发布」两阶段 push 的 ABA"
   },
   "severity": "high",
   "planted": true,

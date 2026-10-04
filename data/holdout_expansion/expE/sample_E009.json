@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "setter",
-    "description": "acquire 存储配 relaxed 加载（配对方向反了）"
+    "file": "sample_E009.cpp",
+    "notes": "acquire 存储配 relaxed 加载（配对方向反了）"
   },
   "severity": "medium",
   "planted": true,

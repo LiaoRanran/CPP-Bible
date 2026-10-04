@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G080",
-  "defect_type": "type_confusion",
+  "defect_type": "type_punning",
   "defect_location": {
     "line": 29,
     "function": "sk_clone_lock",
-    "description": "CVE-2018-9568 (WrongSize): sk_clone_lock 类型混淆内存损坏。用户态等价模拟：以大结构体尺寸拷贝小结构体。"
+    "file": "sample_G080.cpp",
+    "notes": "CVE-2018-9568 (WrongSize): sk_clone_lock 类型混淆内存损坏。用户态等价模拟：以大结构体尺寸拷贝小结构体。"
   },
   "severity": "high",
   "planted": true,

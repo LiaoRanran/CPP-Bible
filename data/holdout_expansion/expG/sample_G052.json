@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G052",
-  "defect_type": "null_deref",
+  "defect_type": "null_pointer_deref",
   "defect_location": {
     "line": 28,
     "function": "window_query_agginfo",
-    "description": "CVE-2020-11655: 畸形窗口函数查询因 AggInfo 初始化被错误处理而段错误（CVE 描述: denial of service (segmentation fault) via a malformed window-function query because the AggInfo object's initialization is mishandled）。"
+    "file": "sample_G052.cpp",
+    "notes": "CVE-2020-11655: 畸形窗口函数查询因 AggInfo 初始化被错误处理而段错误（CVE 描述: denial of service (segmentation fault) via a malformed window-function query because the AggInfo object's initialization is mishandled）。"
   },
   "severity": "high",
   "planted": false,

@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G029",
-  "defect_type": "heap_overread",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 17,
     "function": "ntlm_decode_type2_target",
-    "description": "CVE-2018-16890: ntlm_decode_type2_target 未正确校验传入数据（CVE 描述: does not validate incoming data correctly and is subject to an integer overflow / out-of-bounds read），堆越界读。"
+    "file": "sample_G029.cpp",
+    "notes": "CVE-2018-16890: ntlm_decode_type2_target 未正确校验传入数据（CVE 描述: does not validate incoming data correctly and is subject to an integer overflow / out-of-bounds read），堆越界读。"
   },
   "severity": "high",
   "planted": false,

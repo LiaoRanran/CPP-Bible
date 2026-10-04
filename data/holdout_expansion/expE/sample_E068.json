@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "reset_once",
-    "description": "对仍在被其它线程使用的 atomic 对象做 placement-new 重新初始化"
+    "file": "sample_E068.cpp",
+    "notes": "对仍在被其它线程使用的 atomic 对象做 placement-new 重新初始化"
   },
   "severity": "high",
   "planted": true,

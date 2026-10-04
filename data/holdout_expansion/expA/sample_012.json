@@ -1,11 +1,12 @@
 {
-  "id": "sample_012",
+  "sample_id": "sample_012",
   "category": "A",
-  "defect_type": "memory_safety",
+  "defect_type": "double_free",
   "defect_location": {
     "line": 9,
     "function": "main",
-    "note": "delete[] p; // <<PLANTED-DEFECT>> double-free inside branch"
+    "file": "sample_012.cpp",
+    "notes": "delete[] p; // <<PLANTED-DEFECT>> double-free inside branch"
   },
   "severity": "high",
   "planted": true,

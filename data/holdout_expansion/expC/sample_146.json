@@ -1,19 +1,20 @@
 {
-  "defect_type": "optimization_dependent",
+  "defect_type": "integer_overflow",
   "expected_detectors": [
     "ubsan"
   ],
   "expected_verdict": "catch",
   "severity": "high",
-  "trigger_condition": "无条件",
+  "trigger_condition": "无条件；【676m】原 defect_type=optimization_dependent（元标签，已从 defect_type 拆出）",
   "optimization_sensitivity": "O0: ubsan 抓；O2: 可能被识别为不可达/常量",
   "notes": "整数除以零 UB；ubsan 在 -O0 抓，优化档位下可能不同。",
-  "id": "sample_146",
+  "sample_id": "sample_146",
   "category": "C",
   "defect_location": {
     "line": 3,
     "function": "main",
-    "note": "int r = a / 0; // <<PLANTED-DEFECT>> 整数除以零（UB）"
+    "file": "sample_146.cpp",
+    "notes": "int r = a / 0; // <<PLANTED-DEFECT>> 整数除以零（UB）"
   },
   "planted": true,
   "source_files": [

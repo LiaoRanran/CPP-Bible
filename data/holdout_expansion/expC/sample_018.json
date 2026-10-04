@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "对已移动自 map 的对象继续访问：C++ 允许但结果未指定；无检测器可抓（盲区）。",
-  "id": "sample_018",
+  "sample_id": "sample_018",
   "category": "C",
   "defect_location": {
     "line": 5,
     "function": "main",
-    "note": "(void)m.empty(); // <<PLANTED-DEFECT>> 使用已移动对象 m"
+    "file": "sample_018.cpp",
+    "notes": "(void)m.empty(); // <<PLANTED-DEFECT>> 使用已移动对象 m"
   },
   "planted": true,
   "source_files": [

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "advance",
-    "description": "状态机混用 exchange 与 CAS，转换表不完整"
+    "file": "sample_E064.cpp",
+    "notes": "状态机混用 exchange 与 CAS，转换表不完整"
   },
   "severity": "medium",
   "planted": true,

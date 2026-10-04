@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "http_download_with_J",
-    "description": "CVE-2020-8177: -J 选项导致本地文件被覆盖（CVE 描述: improper restriction of names for files ... that can lead to overwriting a local file when the -J flag is used）。逻辑缺陷 → 诚实标 miss。"
+    "file": "sample_G043.cpp",
+    "notes": "CVE-2020-8177: -J 选项导致本地文件被覆盖（CVE 描述: improper restriction of names for files ... that can lead to overwriting a local file when the -J flag is used）。逻辑缺陷 → 诚实标 miss。"
   },
   "severity": "medium",
   "planted": false,

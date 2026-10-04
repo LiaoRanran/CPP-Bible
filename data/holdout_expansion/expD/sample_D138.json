@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 8,
     "function": "main",
-    "description": "std::remove_if 后未 erase（补充）"
+    "file": "sample_D138.cpp",
+    "notes": "std::remove_if 后未 erase（补充）"
   },
   "severity": "medium",
   "planted": true,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "acquire_node",
-    "description": "DCLP 用普通指针承载已发布对象，二次检查走 relaxed"
+    "file": "sample_E004.cpp",
+    "notes": "DCLP 用普通指针承载已发布对象，二次检查走 relaxed"
   },
   "severity": "high",
   "planted": true,

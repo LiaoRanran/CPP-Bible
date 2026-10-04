@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E168",
-  "defect_type": "lock_priority_inversion",
+  "defect_type": "deadlock",
   "defect_location": {
     "line": 22,
     "function": "touch_pages",
-    "description": "持锁访问尚未映射的内存（sleep 模拟缺页/换入）"
+    "file": "sample_E168.cpp",
+    "notes": "持锁访问尚未映射的内存（sleep 模拟缺页/换入）"
   },
   "severity": "high",
   "planted": true,

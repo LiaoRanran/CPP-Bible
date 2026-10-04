@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G031",
-  "defect_type": "heap_overflow",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 19,
     "function": "socks5_send_hostname",
-    "description": "CVE-2023-38545: SOCKS5 代理握手堆缓冲溢出（CVE 描述: This flaw makes curl overflow a heap based buffer in the SOCKS5 proxy handshake），主机名超长且走慢速握手路径时整段拷贝。"
+    "file": "sample_G031.cpp",
+    "notes": "CVE-2023-38545: SOCKS5 代理握手堆缓冲溢出（CVE 描述: This flaw makes curl overflow a heap based buffer in the SOCKS5 proxy handshake），主机名超长且走慢速握手路径时整段拷贝。"
   },
   "severity": "high",
   "planted": false,

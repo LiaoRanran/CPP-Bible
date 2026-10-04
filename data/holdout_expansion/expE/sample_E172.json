@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 24,
     "function": "worker",
-    "description": "多次 wait 共用一个布尔谓词但只在第一次检查"
+    "file": "sample_E172.cpp",
+    "notes": "多次 wait 共用一个布尔谓词但只在第一次检查"
   },
   "severity": "high",
   "planted": true,

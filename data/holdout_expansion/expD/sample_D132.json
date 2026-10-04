@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 8,
     "function": "main",
-    "description": "std::lower_bound 用于未排序区间"
+    "file": "sample_D132.cpp",
+    "notes": "std::lower_bound 用于未排序区间"
   },
   "severity": "medium",
   "planted": true,

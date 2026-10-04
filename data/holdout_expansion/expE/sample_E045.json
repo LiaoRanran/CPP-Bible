@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "try_acquire",
-    "description": "单次 compare_exchange_weak 失败即放弃（未放入循环）"
+    "file": "sample_E045.cpp",
+    "notes": "单次 compare_exchange_weak 失败即放弃（未放入循环）"
   },
   "severity": "high",
   "planted": true,

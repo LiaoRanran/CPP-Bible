@@ -2,9 +2,10 @@
   "sample_id": "F176",
   "defect_type": "register_ub",
   "defect_location": {
-    "description": "使用 register 关键字声明 r5",
     "line": 3,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F176.cpp",
+    "notes": "使用 register 关键字声明 r5"
   },
   "severity": "low",
   "planted": true,

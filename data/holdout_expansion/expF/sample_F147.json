@@ -2,9 +2,10 @@
   "sample_id": "F147",
   "defect_type": "interrupt_safety",
   "defect_location": {
-    "description": "信号处理程序调用非异步信号安全的 printf",
     "line": 7,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F147.cpp",
+    "notes": "信号处理程序调用非异步信号安全的 printf"
   },
   "severity": "high",
   "planted": true,

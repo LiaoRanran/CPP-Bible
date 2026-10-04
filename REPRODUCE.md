@@ -60,6 +60,24 @@ docker run --rm -v "$PWD/out:/workspace/out" queyi-paper-repro
 python -m pip install -r requirements.txt
 ```
 
+### 1.1 必需的 WSL 环境变量（**直调 `wsl.exe` 的脚本一律要先设**）
+
+本机 **WSL 2.7.10 + Windows 系统代理开启**时，每次 `wsl.exe` 调用都会向 stderr 写一条
+**UTF-16LE 横幅**。Python 侧 `subprocess.run(..., text=True)` 会因此解码失败 ⇒
+`stderr` 变成 `None` ⇒ **依赖 stderr 的报告（ASan / UBSan / TSan）全部丢失 ⇒ 系统性假 miss**。
+
+```bash
+export WSL_UTF8=1
+export WSLENV=WSL_UTF8/u
+```
+
+- 治本层；`unset HTTP(S)_PROXY` **没用**（横幅来自注册表代理配置，不是环境变量）。
+- 适用：`tools/detect_for_assets.py`、`data/blindspot_676g_runner.py`、
+  `tools/audit_676k_compile.py`，以及任何直接 `subprocess` 调 `wsl.exe` 的工具。
+- **反向坑**：`detect_for_assets.py --check` 的"适配层卸载后 env 已还原"断言**假设
+  `WSL_UTF8` 初始未设**；跑 pytest 时**不要**带这个变量（否则该断言会红）。
+- 出处：673r（`data/673r_A5实验报告.md` §适配层）、673u（`data/673u_wunsequenced修复报告.md`）。
+
 ---
 
 ## 2. 数据 / 扩样（如需重新生成样本；通常不必，样本已在 `data/holdout_expansion/`）
@@ -139,9 +157,42 @@ tectonic -X compile queyi_neurips2027_v1.1.tex
 ```
 
 - 样式：`neurips_2025.sty`（Datasets & Benchmarks track，`[dandb]` 选项，默认匿名）。
-- 预期：全稿 24 页；正文在 `\label{page:endmain}` 处结束，**正文 ≤ 9 页**（见
-  `data/676h_终检.md` 的实测页数，不用换算）。
+- 预期：全稿 **30 页**（676m 起；676h 时为 29 页）；正文在 `\label{page:endmain}` 处结束，
+  **正文 ≤ 9 页**（676m 实测仍为 9 页 —— 见 `data/676m_论文更新报告.md` §0）。
 - 编译 log 里不得出现 `undefined`（引用缺失）或 `??`（`\ref` 落空）。
+- **正文零余量**：676m 实测基线正文已满 9 页，任何主文本净增都会溢出到第 10 页
+  ⇒ 新增内容必须同步把等量细节移入附录。
+
+---
+
+## 6.1 数据修复与 A5 重算（676m）
+
+```bash
+# 数据修复（H1 挂起样本判据 / H2 统一词表 / M1–M5 字段完整性）—— 幂等，重跑零改写
+.venv/Scripts/python.exe tools/fix_676m_schema.py --stage all
+
+# 只校验（门禁用）：H1 残留须为 0、待迁移须为 0；有残留则 exit 1
+.venv/Scripts/python.exe tools/fix_676m_schema.py --verify
+
+# A5 重算（修正标签后主端点须与 676f 逐位一致）
+.venv/Scripts/python.exe tools/recompute_a5_676m.py
+
+# 只校验（门禁用）：不写任何 data/ 产物，主端点逐位比对；不一致则 exit 1
+.venv/Scripts/python.exe tools/recompute_a5_676m.py --check
+```
+
+预期输出（实测）：
+
+```
+[676m][OK] 数据已处于 676m 修复后的稳定态（H1 残留 0、待迁移 0）
+[676m-D][check] 修正件：expected_verdict 34 处、defect_type 308 处
+[676m-D][check] k=4 主端点逐位比对：14/14 一致
+[676m-D][check][OK] 标签修正对 A5 主端点零影响（逐位一致）
+```
+
+**为什么主端点不变（原理）**：A5 的 catch 判定读 `per_asset`（真实 `detect` 判定），
+`expected_verdict` 全程不参与 ⇒ H1 改标注不改观测。唯一受影响的是 `expected=catch` 口径：
+8 资产并集 recall **93.86% → 98.42%**（分母 668 → 634）。
 
 ---
 
@@ -161,6 +212,10 @@ python tools/data_integrity_676h.py  # 数据完整性：清单不变式 + md5 �
 | 5 | 变异脚本的双种子 | 需注意 | `tools/mutation_test_656.py` 模块级 `SEED = 20260930`，而 `run()` 的 `--seed` 默认是 **20260928**（产物登记值）。变异体抽样由后者决定，重跑请用 `--seed 20260928` |
 | 6 | OTS 时间锚 | 只是占位 | 零见证，论文已声明"on-chain"不成立 |
 | 7 | macOS | 不可复现 | 无 `setarch`（BSD 系），corpus 档位无法实现 |
+| 8 | 676m 的 H1/H2 修正**是否影响 A5** | **已验证零影响** | `recompute_a5_676m.py --check` 逐位比对 14/14 一致。**注意**：主分析不读 `expected_verdict`，所以"标签改了数字没变"是原理必然，不是漏算 |
+| 9 | `planted` 的层级分歧 | **未解决（已登记）** | 676f 的 A5 矩阵把 `corpus` 记为 `planted=true`；676g 清单为 `null`；676m 的 M3 修正件为 `false`。本批按红线 9 **只修 676g 层**，未改 A5 层 ⇒ 论文的 planted 子组分析仍按 `true` 计。见 `data/676m_数据修复总报告.md` §8 |
+| 10 | 676k 的编译抽检 / 来源核查 | **需要外部条件** | `audit_676k_compile.py --sample --run` 需要 g++ 13.x + WSL（约 10 分钟）；`audit_676k_source.py --collect --probe` 需要联网访问 NVD / GitHub API。已落盘结果：`data/676k_compile_results.json`（217/217）、`data/676k_source_results.json`（74/74）。`run_all.sh` 默认**只跑**离线的完整性 + 去重两项 |
+| 11 | 676l 的矩阵与 676f 的矩阵不一致 | **已披露** | 两者在 349 个共同样本上有 38/1396 格（2.7%）判定不同，与 ~5% 跑间不稳定同量级。排序结论稳健，**逐格结论不稳健**（论文附录 `app:bench676l` 已写明） |
 
 ---
 

@@ -75,7 +75,8 @@ Random contrast stays direction-only}: excluding the two degenerate assets Rando
 \emph{the same four}, so $\Delta{=}\textbf{0.0}$pp---A5 isolates ``do not fund assets that cannot
 inform,'' not ``a smarter ranking''; our static-analyzer comparison is a \emph{cross-regime stress
 test},
-not evidence of general superiority; and the 41 holdout labels have zero second annotators (T17).
+not evidence of general superiority; and label agreement is AI self-consistency only
+($\kappa{=}0.77$), not human IAA (T17).
 \end{abstract}
 
 % =====================================================================
@@ -428,11 +429,12 @@ existing numbers (statistical details: Appendix~\ref{app:stats}).
 
 
 \paragraph{Dataset layers (D0--D4).}
-The five dataset layers (D0--D4) and their claim status are summarised below; their current values are:
-D0 core mutation \textbf{96.5\%} (self-justification only, never claimed), D1 re-injection \textbf{6/6}
-(coverage 12/15), D2 blind holdout \textbf{82.9\%} (34/41), D3 external corpus \textbf{62.5\%}
-measurable (40/64; 52.6\% all-sample), and D4 16 machine cards (unsigned). The A/B/C sub-layers of
-D3 must \emph{not} be merged into one number.
+The five layers (D0--D4) and their claim status: D0 core mutation \textbf{96.5\%} (self-justification
+only, never claimed), D1 re-injection \textbf{6/6} (coverage 12/15), D2 blind holdout \textbf{82.9\%}
+(34/41), D3 external corpus \textbf{62.5\%} measurable (40/64; 52.6\% all-sample), and D4 16 machine
+cards (unsigned). D3's A/B/C sub-layers must \emph{not} be merged into one number; the $1042$-sample
+quality audit (duplicates, clone rate, re-annotation $\kappa$, compile checks) is in
+Appendix~\ref{app:a5full}.
 
 \paragraph{Baselines (three, all budget-matched; Table~\ref{tab:baseline}).}
 \label{sec:baseline}
@@ -566,16 +568,17 @@ The six pre-registered groups A0--A5 keep their written hypotheses and decision 
 design-only (\texttt{\{\{TODO\_ablation\_A0\}\}}\dots\texttt{\{\{TODO\_ablation\_A4\}\}}).
 \textbf{The key contrast A0 $-$ A5} is the core-mechanism falsifier: \textbf{if the CI of
 $\Delta(\text{A0}-\text{A5})$ crosses 0, ``failure-driven beats same-budget random'' does not hold}.
-It has now \textbf{run at full scale} (676f): a real $1137\times8$ per-asset matrix, every cell a
-real \texttt{detect} call, failure-hits from a disjoint derivation split ($n{=}571$), evaluation on
-the held-out split ($n{=}566\gg138$). At $k{=}4$ against a 2000-draw random
+It has now \textbf{run at full scale} (676f): a real $1137\times8$ matrix, every cell a real
+\texttt{detect} call, failure-hits from a disjoint derivation split ($n{=}571$), evaluation on the
+held-out split ($n{=}566\gg138$). At $k{=}4$ against a 2000-draw random
 distribution, FD \textbf{54.6\%} vs.\ Random \textbf{30.6\%} ($\Delta{=}\mathbf{+24.0}$pp,
 CI [+20.5, +27.5], $p{=}2.3\times10^{-41}$) and vs.\ Static \textbf{24.7\%}
 ($\Delta{=}\mathbf{+29.9}$pp). \textbf{The Static contrast is robust; the Random one is not:}
-excluding the two degenerate assets, FD-vs-Static \emph{grows} to \textbf{+30.6}pp while
-FD-vs-Random collapses to \textbf{0.0}pp ($p{=}1.0$)---with five usable assets left, Random's draw
-is the same four. A5 isolates ``do not fund assets that cannot inform,'' not ``a smarter ranking'';
-we still do not write ``FD beats Random''
+excluding the three degenerate assets (the $5\%$ rule adds \texttt{linker}, $0.88\%$), FD-vs-Static
+\emph{grows} to \textbf{+30.6}pp while FD-vs-Random collapses to \textbf{0.0}pp ($p{=}1.0$)---with
+five usable assets left, Random's draw is the same four. A5 isolates ``do not fund assets that
+cannot inform,'' not ``a smarter ranking''; we still do not write ``FD beats Random''. A 676m label
+re-check moved $34$ hung samples to \texttt{miss} and left this endpoint \emph{bit-identical}
 (full tables: Appendix~\ref{app:a5full}).
 
 \paragraph{E5 --- Statistical tests for the baseline contrasts (Table~\ref{tab:e5}).}
@@ -684,8 +687,8 @@ same-budget random''---A5 now runs at $n{=}566$ and its \emph{Static} contrast i
 (\textbf{+29.9}pp; \textbf{+30.6}pp in the parallel analysis), but the \emph{Random} contrast still
 collapses to \textbf{0.0}pp once degenerate assets are excluded, so it stays an effect of pool
 composition. \textbf{Qualifiers:} the $\Delta$ concerns \emph{having runtime evidence}, not
-failure-driven selection; E9 is a cross-regime stress test; labels have zero second annotators
-(T17); and our instrument's boundary is measured---\textbf{38.4\%} of $1147$ samples are blind
+failure-driven selection; E9 is a cross-regime stress test; labels have only AI self-agreement
+($\kappa{=}0.77$; T17); and our boundary is measured---\textbf{38.4\%} of $1147$ samples are blind
 spots, so no rate here speaks about deadlock or interrupt safety (\S\ref{app:blindspot}).
 \textbf{Next:} a non-degenerate pool at usable $k$ (Appendix~\ref{app:future}).
 
@@ -1411,6 +1414,39 @@ stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90
 ODR 30, conditional 40, optimization 40. Every cell of the $1137\times8$ matrix is a real
 \texttt{detect} call; \texttt{unknown} is never counted as \texttt{miss}.
 
+\paragraph{Template diversity, cross-batch overlap and label quality (676m disclosure).}
+\begin{center}\footnotesize
+\begin{tabular}{@{}lr@{}}
+\toprule
+Quantity & Value \\
+\midrule
+cross-batch byte-level duplicates (L1) & \textbf{0} \\
+cross-batch structural near-clones (L3b) & \textbf{103 pairs} (4 batch pairs) \\
+within-batch template-clone rate (L2) & \textbf{62.2\%} ($674/1083$) \\
+distinct code structures, whole pool & \textbf{572} \\
+blind re-annotation $\kappa$, \texttt{defect\_type} & 0.77 ($n{=}131$) \\
+blind re-annotation $\kappa$, \texttt{expected\_verdict} & 0.69 ($n{=}131$) \\
+compile spot-checks passed & $217/217$ (100\%) \\
+traceable real-defect sources & $74/74$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Three caveats. (i) The $\kappa$ values come from a second annotator that is an \emph{AI agent}
+reading comment-stripped sources: they measure self-consistency, \emph{not} human inter-annotator
+agreement. (ii) The $62.2\%$ clone rate is \emph{disclosed, not repaired}---we do not delete samples,
+and all $103$ near-clone pairs had \emph{conflicting} \texttt{defect\_type} labels before the
+676m unification, which is exactly why the vocabulary was unified. (iii) $93\%$ of samples are
+\texttt{planted=true} by construction, so the pool tests our \emph{instrument}, not the real-world
+defect distribution.
+
+\paragraph{Label corrections applied in 676m.}
+Two data-quality defects were repaired and are visible in this appendix's numbers: $34$
+\texttt{hung\_flag} samples moved \texttt{expected\_verdict} from \texttt{catch} to \texttt{miss}
+(a hung sanitizer emits no report), and the $56$-value \texttt{defect\_type} vocabulary was
+consolidated to $34$ canonical types (with \texttt{conditional\_trigger} /
+\texttt{optimization\_dependent} demoted from a type to a \texttt{trigger\_condition} field). The
+per-asset matrix itself is untouched, so the main endpoint is unchanged.
+
 \paragraph{Asset diagnostics: two of the eight assets are degenerate.}
 \begin{center}\footnotesize
 \begin{tabular}{@{}lrrrr@{}}
@@ -1579,6 +1615,63 @@ wide. \textbf{Stability:} over 180 samples re-run three times under TSan, $3$ sa
 \paragraph{What it buys the reader.} Every headline rate in this paper is now accompanied by the
 classes that \emph{cannot} contribute to it: a 82.9\% holdout number says nothing about deadlock,
 endianness or interrupt safety, because the pool has no asset that can see them.
+
+% =====================================================================
+\section{Detector Depth Benchmark (676l): per-asset performance, complementarity, best-$k$}
+\label{app:bench676l}
+% =====================================================================
+Appendix~\ref{app:blindspot} maps \emph{where} the instrument is blind; this appendix asks the
+follow-up question a reviewer always asks---\emph{which} of the eight assets carry the map, and how
+many are actually needed. All numbers are recomputed from the frozen $1147\times8$ matrix
+($9176$ cells, $0$ missing); recall uses the \texttt{expected=catch} denominator ($n{=}674$)
+throughout, and the all-sample catch rate is reported alongside so it can be compared with
+Appendix~\ref{app:blindspot}.
+
+\paragraph{Single-asset ranking ($n{=}674$ expected-catch).}
+\begin{center}\footnotesize
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Asset & recall & precision & F1 & unknown rate & marginal contrib. (pp) \\
+\midrule
+asan & \textbf{58.5\%} & 95.3\% & 0.725 & 0.87\% & \textbf{+19.29} \\
+ubsan & 38.2\% & 94.1\% & 0.543 & 0.87\% & +10.98 \\
+tsan & 36.1\% & 91.3\% & 0.517 & 0.87\% & +10.39 \\
+compiler-warn & 19.1\% & 90.2\% & 0.316 & 0.00\% & +5.93 \\
+cross-compile & 15.1\% & 83.6\% & 0.255 & 3.31\% & +0.30 \\
+linker & 1.3\% & 90.0\% & 0.026 & 0.00\% & +1.34 \\
+wunsequenced & --- & --- & --- & \textbf{100\%} & 0.00 \\
+compile-time & --- & --- & --- & \textbf{100\%} & 0.00 \\
+\bottomrule
+\end{tabular}
+\end{center}
+The ranking is stable across both denominators: \texttt{asan} leads by a wide margin, and the two
+structurally-\texttt{unknown} assets contribute \emph{exactly} zero. Marginal contribution is
+leave-one-out on the union recall.
+
+\paragraph{Union and best-$k$.} The eight-asset union reaches \textbf{94.21\%}
+($635/674$; all-sample $61.6\%$). Exhaustive enumeration over all $2^8$ subsets gives
+$k{=}4$ best $= \textbf{92.58\%}$ (\texttt{asan, ubsan, tsan, compiler-warn}) with the marginal gain
+collapsing from $+5.93$pp at $k{=}4$ to $+1.34$pp at $k{=}5$ and $0.00$pp beyond---the knee is
+$k{=}5$, and $k{=}4$ already reaches $98.3\%$ of the full-pool ceiling.
+\textbf{FD's own $k{=}4$ pick} (\texttt{asan, ubsan, tsan, cross-compile}) scores
+\textbf{86.94\%}, i.e.\ $5.64$pp below the exhaustive optimum; against $2000$ random draws its
+percentile is \textbf{96.6} (random mean $63.7\%$, SD $16.7$pp). The $5.64$pp gap is a
+\emph{rank-4 estimation} error: the derivation split over-estimates \texttt{cross-compile} relative
+to the full pool ($170$ vs.\ $122$ catches), so it is picked ahead of the higher-marginal
+\texttt{compiler-warn}. This is the same lesson as Appendix~\ref{app:a5full}: FD's value is
+\emph{avoiding zero-information assets}, not superior ranking.
+
+\paragraph{\texttt{linker} is low-marginal but irreplaceable.} Its $10$ catches lie \emph{entirely}
+inside the \texttt{asan}/\texttt{ubsan}/\texttt{tsan} \texttt{unknown} set: a strong ODR multiple
+definition makes the dynamic detectors fail to link at all, so the one asset that is nearly useless
+on average covers precisely the region the other seven structurally cannot reach. Marginal
+contribution and unique coverage are therefore different questions, and we report both.
+
+\paragraph{Cross-matrix caveat.} $676$l reads the $676$g matrix, while the main endpoint reads
+$676$f; on their $349$ common samples the two matrices disagree on $38$ of $1396$ cells
+($2.7\%$), the same order as the $\sim 5\%$ run-to-run instability floor documented in
+Appendix~\ref{app:blindspot}. The ranking above is robust to that noise; individual-cell claims are
+not.
 
 \section{External Tool Comparison (clang-tidy / cppcheck; details)}
 \label{app:clangtidy}

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "submitter",
-    "description": "先 notify 再设置谓词（顺序颠倒），等待者永久阻塞"
+    "file": "sample_E178.cpp",
+    "notes": "先 notify 再设置谓词（顺序颠倒），等待者永久阻塞"
   },
   "severity": "high",
   "planted": true,

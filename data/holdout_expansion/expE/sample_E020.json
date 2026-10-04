@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 26,
     "function": "writer",
-    "description": "以 relaxed 发布指针，读侧 acquire 标志后仍读非原子缓存字段"
+    "file": "sample_E020.cpp",
+    "notes": "以 relaxed 发布指针，读侧 acquire 标志后仍读非原子缓存字段"
   },
   "severity": "high",
   "planted": true,

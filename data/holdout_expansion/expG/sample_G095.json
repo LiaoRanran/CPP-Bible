@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 14,
     "function": "XMLQueryUnsignedAttribute",
-    "description": "tinyxml2#728（未修复）: QueryUnsignedAttribute 对超过 uint32 范围的输入静默截断（10000000000 → 1410065408），未报错也未饱和到 UINT32_MAX。逻辑缺陷，正确=报错/饱和、实际=截断 → 诚实标 miss。"
+    "file": "sample_G095.cpp",
+    "notes": "tinyxml2#728（未修复）: QueryUnsignedAttribute 对超过 uint32 范围的输入静默截断（10000000000 → 1410065408），未报错也未饱和到 UINT32_MAX。逻辑缺陷，正确=报错/饱和、实际=截断 → 诚实标 miss。"
   },
   "severity": "medium",
   "planted": false,

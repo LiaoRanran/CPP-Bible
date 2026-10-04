@@ -1,11 +1,12 @@
 {
-  "id": "sample_024",
+  "sample_id": "sample_024",
   "category": "A",
-  "defect_type": "memory_safety",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "int v = b[7]; // <<PLANTED-DEFECT>> stack buffer overflow: read 7 past size 4"
+    "file": "sample_024.cpp",
+    "notes": "int v = b[7]; // <<PLANTED-DEFECT>> stack buffer overflow: read 7 past size 4"
   },
   "severity": "medium",
   "planted": true,

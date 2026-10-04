@@ -2,9 +2,10 @@
   "sample_id": "F016",
   "defect_type": "alignment",
   "defect_location": {
-    "description": "packed 结构体成员 i 未对齐访问（char 后被压缩到偏移 1）",
     "line": 12,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F016.cpp",
+    "notes": "packed 结构体成员 i 未对齐访问（char 后被压缩到偏移 1）"
   },
   "severity": "medium",
   "planted": true,

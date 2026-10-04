@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 40,
     "function": "X509_verify_cert",
-    "description": "CVE-2015-1793: X509_verify_cert 未正确处理 alternate chain 的 Basic Constraints cA 值 → 伪造 CA 被接受（CVE 描述: does not properly process X.509 Basic Constraints cA values ... spoof a Certification Authority）。纯逻辑错误，正确行为=reject、实际=accept，sanitizer 无报告 → 诚实标 miss。"
+    "file": "sample_G020.cpp",
+    "notes": "CVE-2015-1793: X509_verify_cert 未正确处理 alternate chain 的 Basic Constraints cA 值 → 伪造 CA 被接受（CVE 描述: does not properly process X.509 Basic Constraints cA values ... spoof a Certification Authority）。纯逻辑错误，正确行为=reject、实际=accept，sanitizer 无报告 → 诚实标 miss。"
   },
   "severity": "high",
   "planted": false,

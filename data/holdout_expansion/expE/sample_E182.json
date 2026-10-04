@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 25,
     "function": "waiter",
-    "description": "谓词标志被无锁写入（真实数据竞争 + 丢失唤醒）"
+    "file": "sample_E182.cpp",
+    "notes": "谓词标志被无锁写入（真实数据竞争 + 丢失唤醒）"
   },
   "severity": "high",
   "planted": true,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 8,
     "function": "main",
-    "description": "从临时 std::string 构造的 string_view 悬垂"
+    "file": "sample_D083.cpp",
+    "notes": "从临时 std::string 构造的 string_view 悬垂"
   },
   "severity": "high",
   "planted": true,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 23,
     "function": "producer",
-    "description": "载荷以 relaxed 发布到原子，但读侧读的是非原子镜像"
+    "file": "sample_E011.cpp",
+    "notes": "载荷以 relaxed 发布到原子，但读侧读的是非原子镜像"
   },
   "severity": "high",
   "planted": true,

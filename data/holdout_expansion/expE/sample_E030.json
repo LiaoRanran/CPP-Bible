@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "task",
-    "description": "以 relaxed 计数作「配额已满」判据（顺序正确性依赖内存序但全是原子）"
+    "file": "sample_E030.cpp",
+    "notes": "以 relaxed 计数作「配额已满」判据（顺序正确性依赖内存序但全是原子）"
   },
   "severity": "medium",
   "planted": true,

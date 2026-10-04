@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G090",
-  "defect_type": "heap_underflow",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 22,
     "function": "json_array_at",
-    "description": "nlohmann/json#5647（已修复）: operator[](size_type) 传入 SIZE_MAX 时 resize(idx+1) 回绕为 0 清空数组，随后 operator[](SIZE_MAX) 定位到缓冲区之前 1 元素并写入（issue 附带代码路径 include/nlohmann/json.hpp#L2838）。"
+    "file": "sample_G090.cpp",
+    "notes": "nlohmann/json#5647（已修复）: operator[](size_type) 传入 SIZE_MAX 时 resize(idx+1) 回绕为 0 清空数组，随后 operator[](SIZE_MAX) 定位到缓冲区之前 1 元素并写入（issue 附带代码路径 include/nlohmann/json.hpp#L2838）。"
   },
   "severity": "high",
   "planted": false,

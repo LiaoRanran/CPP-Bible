@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 19,
     "function": "alter_table_rename",
-    "description": "CVE-2020-11656: ALTER TABLE 实现中的 use-after-free（CVE 描述: the ALTER TABLE implementation has a use-after-free, as demonstrated by an ORDER BY clause that belongs to a compound SELECT statement）。"
+    "file": "sample_G053.cpp",
+    "notes": "CVE-2020-11656: ALTER TABLE 实现中的 use-after-free（CVE 描述: the ALTER TABLE implementation has a use-after-free, as demonstrated by an ORDER BY clause that belongs to a compound SELECT statement）。"
   },
   "severity": "high",
   "planted": false,

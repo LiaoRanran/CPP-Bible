@@ -1,11 +1,12 @@
 {
-  "id": "sample_036",
+  "sample_id": "sample_036",
   "category": "A",
   "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 8,
     "function": "main",
-    "note": "__builtin_memcpy(dst, src, 13); // <<PLANTED-DEFECT>> out-of-bounds: memcpy 13 bytes into 8-byte dst"
+    "file": "sample_036.cpp",
+    "notes": "__builtin_memcpy(dst, src, 13); // <<PLANTED-DEFECT>> out-of-bounds: memcpy 13 bytes into 8-byte dst"
   },
   "severity": "high",
   "planted": true,

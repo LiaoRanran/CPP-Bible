@@ -1,19 +1,20 @@
 {
-  "defect_type": "conditional_trigger",
+  "defect_type": "use_after_free",
   "expected_detectors": [
     "asan"
   ],
   "expected_verdict": "catch",
   "severity": "high",
-  "trigger_condition": "flag=1（为真）时触发 UAF",
+  "trigger_condition": "flag=1（为真）时触发 UAF；【676m】原 defect_type=conditional_trigger（元标签，已从 defect_type 拆出）",
   "optimization_sensitivity": "n/a",
   "notes": "仅当 flag=1 时释放后继续访问；main 内构造触发条件，AddressSanitizer 抓。",
-  "id": "sample_175",
+  "sample_id": "sample_175",
   "category": "C",
   "defect_location": {
     "line": 5,
     "function": "main",
-    "note": "int v = p[0]; // <<PLANTED-DEFECT>> flag 为真时 p 已释放 -> 释放后使用"
+    "file": "sample_175.cpp",
+    "notes": "int v = p[0]; // <<PLANTED-DEFECT>> flag 为真时 p 已释放 -> 释放后使用"
   },
   "planted": true,
   "source_files": [

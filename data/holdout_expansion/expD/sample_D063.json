@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 7,
     "function": "main",
-    "description": "std::deque operator[] 越界访问"
+    "file": "sample_D063.cpp",
+    "notes": "std::deque operator[] 越界访问"
   },
   "severity": "high",
   "planted": true,

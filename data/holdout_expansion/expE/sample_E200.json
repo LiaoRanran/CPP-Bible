@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 25,
     "function": "worker",
-    "description": "关停流程：先 notify_all 让等待者醒来，但此时状态标志尚未置位"
+    "file": "sample_E200.cpp",
+    "notes": "关停流程：先 notify_all 让等待者醒来，但此时状态标志尚未置位"
   },
   "severity": "high",
   "planted": true,

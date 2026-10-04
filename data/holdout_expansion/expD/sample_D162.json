@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 10,
     "function": "main",
-    "description": "weak_ptr 未检查 expired 直接解引用 lock() 结果"
+    "file": "sample_D162.cpp",
+    "notes": "weak_ptr 未检查 expired 直接解引用 lock() 结果"
   },
   "severity": "high",
   "planted": true,

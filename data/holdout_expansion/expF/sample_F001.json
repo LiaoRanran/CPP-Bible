@@ -2,9 +2,10 @@
   "sample_id": "F001",
   "defect_type": "alignment",
   "defect_location": {
-    "description": "char buffer+1 强转 int* 后读，未满足 int 对齐边界",
     "line": 6,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F001.cpp",
+    "notes": "char buffer+1 强转 int* 后读，未满足 int 对齐边界"
   },
   "severity": "medium",
   "planted": true,

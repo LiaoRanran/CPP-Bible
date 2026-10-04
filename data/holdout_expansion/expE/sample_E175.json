@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 26,
     "function": "producer",
-    "description": "通知早于 wait（丢失唤醒）：notify 在 wait 之前发生"
+    "file": "sample_E175.cpp",
+    "notes": "通知早于 wait（丢失唤醒）：notify 在 wait 之前发生"
   },
   "severity": "high",
   "planted": true,

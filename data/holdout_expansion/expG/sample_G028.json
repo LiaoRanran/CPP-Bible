@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 12,
     "function": "ntlm_encode_size",
-    "description": "CVE-2017-8816: NTLM 认证在 32 位平台整数溢出（CVE 描述: denial of service (integer overflow and resultant buffer overflow) via vectors involving long user and password fields）。本样本镜像长度计算溢出点。"
+    "file": "sample_G028.cpp",
+    "notes": "CVE-2017-8816: NTLM 认证在 32 位平台整数溢出（CVE 描述: denial of service (integer overflow and resultant buffer overflow) via vectors involving long user and password fields）。本样本镜像长度计算溢出点。"
   },
   "severity": "high",
   "planted": false,

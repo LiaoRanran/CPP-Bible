@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G063",
-  "defect_type": "stack_overflow_write",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 27,
     "function": "xmlSnprintfElementContent",
-    "description": "CVE-2017-9047: xmlSnprintfElementContent 缓冲溢出（CVE 描述: The function xmlSnprintfElementContent ... is supposed to recursively dump the element content definition into a char buffer 'buf' of size 'size'; len assigned strlen(buf) ... overflow）。"
+    "file": "sample_G063.cpp",
+    "notes": "CVE-2017-9047: xmlSnprintfElementContent 缓冲溢出（CVE 描述: The function xmlSnprintfElementContent ... is supposed to recursively dump the element content definition into a char buffer 'buf' of size 'size'; len assigned strlen(buf) ... overflow）。"
   },
   "severity": "high",
   "planted": false,

@@ -2,9 +2,10 @@
   "sample_id": "F036",
   "defect_type": "endianness",
   "defect_location": {
-    "description": "把网络字节序原始字节直接按主机序解读为 uint16_t（漏 ntohl/ntohs）",
     "line": 5,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F036.cpp",
+    "notes": "把网络字节序原始字节直接按主机序解读为 uint16_t（漏 ntohl/ntohs）"
   },
   "severity": "high",
   "planted": true,

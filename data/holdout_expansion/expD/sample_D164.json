@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 7,
     "function": "main",
-    "description": "unique_ptr::release() 后未接管裸指针"
+    "file": "sample_D164.cpp",
+    "notes": "unique_ptr::release() 后未接管裸指针"
   },
   "severity": "low",
   "planted": true,

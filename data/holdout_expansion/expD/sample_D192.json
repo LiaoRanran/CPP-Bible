@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 7,
     "function": "mk",
-    "description": "lambda 引用捕获局部变量（补充）"
+    "file": "sample_D192.cpp",
+    "notes": "lambda 引用捕获局部变量（补充）"
   },
   "severity": "high",
   "planted": true,

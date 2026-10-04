@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 18,
     "function": "join_session_keyring",
-    "description": "CVE-2016-0728: 内核 keyring 引用计数错误 → UAF/提权。本样本为用户态等价模拟：失败路径不回滚引用计数，对象被提前释放后仍被使用。"
+    "file": "sample_G078.cpp",
+    "notes": "CVE-2016-0728: 内核 keyring 引用计数错误 → UAF/提权。本样本为用户态等价模拟：失败路径不回滚引用计数，对象被提前释放后仍被使用。"
   },
   "severity": "high",
   "planted": true,

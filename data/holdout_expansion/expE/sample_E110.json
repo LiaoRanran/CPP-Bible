@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 25,
     "function": "waiter",
-    "description": "condition_variable_any 与 recursive_mutex 错误配对：wait 只释放一层锁"
+    "file": "sample_E110.cpp",
+    "notes": "condition_variable_any 与 recursive_mutex 错误配对：wait 只释放一层锁"
   },
   "severity": "high",
   "planted": true,

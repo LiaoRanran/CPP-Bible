@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E112",
-  "defect_type": "aba_problem",
+  "defect_type": "atomic_ub",
   "defect_location": {
     "line": 34,
     "function": "main",
-    "description": "无锁栈 pop 在 ABA 后解引用已 delete 的陈旧指针"
+    "file": "sample_E112.cpp",
+    "notes": "无锁栈 pop 在 ABA 后解引用已 delete 的陈旧指针"
   },
   "severity": "high",
   "planted": true,

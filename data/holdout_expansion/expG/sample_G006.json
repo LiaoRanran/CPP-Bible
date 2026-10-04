@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G006",
-  "defect_type": "type_confusion",
+  "defect_type": "type_punning",
   "defect_location": {
     "line": 24,
     "function": "ASN1_TYPE_cmp",
-    "description": "CVE-2015-0286: ASN1_TYPE_cmp 未正确执行 boolean 类型比较（does not properly perform boolean-type comparisons）→ 无效读/崩溃。本样本按『boolean 值被当指针解引用』镜像。"
+    "file": "sample_G006.cpp",
+    "notes": "CVE-2015-0286: ASN1_TYPE_cmp 未正确执行 boolean 类型比较（does not properly perform boolean-type comparisons）→ 无效读/崩溃。本样本按『boolean 值被当指针解引用』镜像。"
   },
   "severity": "high",
   "planted": false,

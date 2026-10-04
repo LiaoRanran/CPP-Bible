@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 19,
     "function": "work",
-    "description": "把 atomic<int> placement-new 到未对齐的地址上"
+    "file": "sample_E058.cpp",
+    "notes": "把 atomic<int> placement-new 到未对齐的地址上"
   },
   "severity": "high",
   "planted": true,

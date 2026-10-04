@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 24,
     "function": "worker",
-    "description": "wait 使用谓词但谓词在 notify 之后才更新（更新与通知顺序颠倒）"
+    "file": "sample_E187.cpp",
+    "notes": "wait 使用谓词但谓词在 notify 之后才更新（更新与通知顺序颠倒）"
   },
   "severity": "high",
   "planted": true,

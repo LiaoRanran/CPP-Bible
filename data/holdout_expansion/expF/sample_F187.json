@@ -2,9 +2,10 @@
   "sample_id": "F187",
   "defect_type": "register_ub",
   "defect_location": {
-    "description": "longjmp 跳过局部 std::string 的析构函数",
     "line": 9,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F187.cpp",
+    "notes": "longjmp 跳过局部 std::string 的析构函数"
   },
   "severity": "high",
   "planted": true,

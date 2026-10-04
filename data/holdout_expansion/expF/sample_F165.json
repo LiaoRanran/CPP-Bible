@@ -2,9 +2,10 @@
   "sample_id": "F165",
   "defect_type": "interrupt_safety",
   "defect_location": {
-    "description": "主程序读取 ISR 正在写入的非原子 Pkt 结构体",
     "line": 9,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F165.cpp",
+    "notes": "主程序读取 ISR 正在写入的非原子 Pkt 结构体"
   },
   "severity": "high",
   "planted": true,

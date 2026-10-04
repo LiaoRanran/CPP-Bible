@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 15,
     "function": "main",
-    "description": "在未初始化的栈缓冲区上直接使用 atomic_flag（缺 ATOMIC_FLAG_INIT）"
+    "file": "sample_E071.cpp",
+    "notes": "在未初始化的栈缓冲区上直接使用 atomic_flag（缺 ATOMIC_FLAG_INIT）"
   },
   "severity": "high",
   "planted": true,

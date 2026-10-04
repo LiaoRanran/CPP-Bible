@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G044",
-  "defect_type": "state_machine",
+  "defect_type": "logic_error",
   "defect_location": {
     "line": 25,
     "function": "http_post_after_put",
-    "description": "CVE-2022-32221: PUT 之后复用 handle 发 POST 时错误调用读回调（CVE 描述: might erroneously use the read callback ... even when CURLOPT_POSTFIELDS has been set, if the same handle previously was used to issue a PUT request）。状态逻辑错误 → 诚实标 miss。"
+    "file": "sample_G044.cpp",
+    "notes": "CVE-2022-32221: PUT 之后复用 handle 发 POST 时错误调用读回调（CVE 描述: might erroneously use the read callback ... even when CURLOPT_POSTFIELDS has been set, if the same handle previously was used to issue a PUT request）。状态逻辑错误 → 诚实标 miss。"
   },
   "severity": "medium",
   "planted": false,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 7,
     "function": "main",
-    "description": "空 vector 调用 front()"
+    "file": "sample_D036.cpp",
+    "notes": "空 vector 调用 front()"
   },
   "severity": "high",
   "planted": true,

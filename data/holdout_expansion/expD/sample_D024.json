@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 10,
     "function": "main",
-    "description": "map erase 后使用被擦除的迭代器"
+    "file": "sample_D024.cpp",
+    "notes": "map erase 后使用被擦除的迭代器"
   },
   "severity": "high",
   "planted": true,

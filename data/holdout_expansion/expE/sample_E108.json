@@ -4,18 +4,19 @@
   "defect_location": {
     "line": 19,
     "function": "leaky",
-    "description": "手动 lock 后异常/提前 return 路径未解锁，锁永久泄漏"
+    "file": "sample_E108.cpp",
+    "notes": "手动 lock 后异常/提前 return 路径未解锁，锁永久泄漏"
   },
   "severity": "high",
   "planted": true,
-  "expected_verdict": "catch",
+  "expected_verdict": "miss",
   "expected_detectors": [
     "tsan"
   ],
   "trigger_condition": "第一线程泄漏锁，第二线程随后阻塞在该锁上",
   "thread_count": 2,
   "timeout_seconds": 5,
-  "notes": "手动加锁缺少 RAII 兜底导致锁永久泄漏。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "notes": "手动加锁缺少 RAII 兜底导致锁永久泄漏。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。 【676m 修正：hung_flag 样本真实判据为 miss（sanitizer 挂起超时），原 catch 登记有误】",
   "pooled_verdict": {
     "tsan": "catch"
   },

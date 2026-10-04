@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "producer",
-    "description": "写侧 acq_rel / 读侧 relaxed，载荷为非原子数组"
+    "file": "sample_E039.cpp",
+    "notes": "写侧 acq_rel / 读侧 relaxed，载荷为非原子数组"
   },
   "severity": "high",
   "planted": true,

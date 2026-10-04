@@ -2,9 +2,10 @@
   "sample_id": "F095",
   "defect_type": "volatile_misuse",
   "defect_location": {
-    "description": "对普通变量加 volatile（不必要的性能损失，且非同步）",
     "line": 3,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F095.cpp",
+    "notes": "对普通变量加 volatile（不必要的性能损失，且非同步）"
   },
   "severity": "low",
   "planted": true,

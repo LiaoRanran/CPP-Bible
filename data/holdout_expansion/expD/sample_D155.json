@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 11,
     "function": "main",
-    "description": "std::shared_ptr 循环引用导致内存泄漏"
+    "file": "sample_D155.cpp",
+    "notes": "std::shared_ptr 循环引用导致内存泄漏"
   },
   "severity": "medium",
   "planted": true,

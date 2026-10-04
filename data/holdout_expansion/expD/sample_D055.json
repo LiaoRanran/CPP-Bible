@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 7,
     "function": "main",
-    "description": "从空 std::optional 解引用取值"
+    "file": "sample_D055.cpp",
+    "notes": "从空 std::optional 解引用取值"
   },
   "severity": "high",
   "planted": true,

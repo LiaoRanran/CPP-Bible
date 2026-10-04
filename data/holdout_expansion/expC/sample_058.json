@@ -8,12 +8,13 @@
   "trigger_condition": "异常抛出",
   "optimization_sensitivity": "n/a",
   "notes": "异常安全：锁在异常路径未释放，无 sanitizer 可抓（盲区）。",
-  "id": "sample_058",
+  "sample_id": "sample_058",
   "category": "C",
   "defect_location": {
     "line": 5,
     "function": "main",
-    "note": "try { throw 1; } catch (int) { return 1; } // <<PLANTED-DEFECT>> 异常路径未 unlock"
+    "file": "sample_058.cpp",
+    "notes": "try { throw 1; } catch (int) { return 1; } // <<PLANTED-DEFECT>> 异常路径未 unlock"
   },
   "planted": true,
   "source_files": [

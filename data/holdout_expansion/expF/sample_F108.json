@@ -2,9 +2,10 @@
   "sample_id": "F108",
   "defect_type": "bit_operation",
   "defect_location": {
-    "description": "移位量为负（-3）",
     "line": 4,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F108.cpp",
+    "notes": "移位量为负（-3）"
   },
   "severity": "high",
   "planted": true,

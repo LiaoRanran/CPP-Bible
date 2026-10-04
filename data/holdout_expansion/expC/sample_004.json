@@ -8,12 +8,13 @@
   "trigger_condition": "无条件（始终触发）",
   "optimization_sensitivity": "n/a",
   "notes": "自移动 a=std::move(a) 触发 -Wself-move（compiler-warn 抓）。移动语义误用。",
-  "id": "sample_004",
+  "sample_id": "sample_004",
   "category": "C",
   "defect_location": {
     "line": 5,
     "function": "main",
-    "note": "a = std::move(a); // <<PLANTED-DEFECT>> 自移动（self-move）：对象移动给自身"
+    "file": "sample_004.cpp",
+    "notes": "a = std::move(a); // <<PLANTED-DEFECT>> 自移动（self-move）：对象移动给自身"
   },
   "planted": true,
   "source_files": [

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 23,
     "function": "worker",
-    "description": "用 memcpy 复制含 atomic_flag 的锁对象，锁状态被复制成两份"
+    "file": "sample_E067.cpp",
+    "notes": "用 memcpy 复制含 atomic_flag 的锁对象，锁状态被复制成两份"
   },
   "severity": "medium",
   "planted": true,

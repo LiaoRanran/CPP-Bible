@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "writer",
-    "description": "在 load 上误用 memory_order_release（release 对 load 无效）"
+    "file": "sample_E025.cpp",
+    "notes": "在 load 上误用 memory_order_release（release 对 load 无效）"
   },
   "severity": "high",
   "planted": true,

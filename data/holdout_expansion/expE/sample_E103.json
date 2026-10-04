@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 17,
     "function": "f",
-    "description": "unique_lock 已持有时再次调用 lock()"
+    "file": "sample_E103.cpp",
+    "notes": "unique_lock 已持有时再次调用 lock()"
   },
   "severity": "high",
   "planted": true,

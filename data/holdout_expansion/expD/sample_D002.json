@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 9,
     "function": "main",
-    "description": "vector push_back 重新分配后使用失效迭代器"
+    "file": "sample_D002.cpp",
+    "notes": "vector push_back 重新分配后使用失效迭代器"
   },
   "severity": "high",
   "planted": true,

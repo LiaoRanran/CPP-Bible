@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "producer_a",
-    "description": "两个生产者一个 acquire 一个 relaxed，发布强度不一致"
+    "file": "sample_E036.cpp",
+    "notes": "两个生产者一个 acquire 一个 relaxed，发布强度不一致"
   },
   "severity": "high",
   "planted": true,

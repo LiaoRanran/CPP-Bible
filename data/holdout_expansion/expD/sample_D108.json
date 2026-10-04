@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 8,
     "function": "main",
-    "description": "std::sort 比较器违反严格弱序（非传递）"
+    "file": "sample_D108.cpp",
+    "notes": "std::sort 比较器违反严格弱序（非传递）"
   },
   "severity": "high",
   "planted": true,

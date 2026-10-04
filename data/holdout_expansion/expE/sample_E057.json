@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 19,
     "function": "bump_via_fake_atomic",
-    "description": "把 std::atomic<int> 的引用绑到普通 int 上，当作原子操作使用"
+    "file": "sample_E057.cpp",
+    "notes": "把 std::atomic<int> 的引用绑到普通 int 上，当作原子操作使用"
   },
   "severity": "high",
   "planted": true,

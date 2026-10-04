@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G076",
-  "defect_type": "state_machine",
+  "defect_type": "logic_error",
   "defect_location": {
     "line": 22,
     "function": "ssh_transport_process_packet",
-    "description": "CVE-2023-48795 (Terrapin): SSH 传输协议前缀截断（CVE 描述: allows remote attackers to bypass integrity checks such that some packets are omitted (from the extension negotiation message)）。状态机逻辑错误 → 诚实标 miss。"
+    "file": "sample_G076.cpp",
+    "notes": "CVE-2023-48795 (Terrapin): SSH 传输协议前缀截断（CVE 描述: allows remote attackers to bypass integrity checks such that some packets are omitted (from the extension negotiation message)）。状态机逻辑错误 → 诚实标 miss。"
   },
   "severity": "high",
   "planted": false,

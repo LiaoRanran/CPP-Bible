@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "get",
-    "description": "DCLP 中 relaxed 二次检查 + 竞争分支 delete 导致 UAF 窗口"
+    "file": "sample_E038.cpp",
+    "notes": "DCLP 中 relaxed 二次检查 + 竞争分支 delete 导致 UAF 窗口"
   },
   "severity": "high",
   "planted": true,

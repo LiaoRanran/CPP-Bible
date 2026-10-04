@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E146",
-  "defect_type": "lock_priority_inversion",
+  "defect_type": "deadlock",
   "defect_location": {
     "line": 21,
     "function": "low",
-    "description": "互斥锁无优先级继承：低优先级持锁，高优先级被阻塞且无法提升锁的优先级"
+    "file": "sample_E146.cpp",
+    "notes": "互斥锁无优先级继承：低优先级持锁，高优先级被阻塞且无法提升锁的优先级"
   },
   "severity": "high",
   "planted": true,

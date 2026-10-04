@@ -2,9 +2,10 @@
   "sample_id": "F060",
   "defect_type": "endianness",
   "defect_location": {
-    "description": "把位域对象当字节数组解读，依赖实现定义的位序/端序",
     "line": 6,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F060.cpp",
+    "notes": "把位域对象当字节数组解读，依赖实现定义的位序/端序"
   },
   "severity": "medium",
   "planted": true,

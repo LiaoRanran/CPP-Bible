@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "bump2",
-    "description": "读-改-写序列中混入非原子成员赋值，破坏原子性保证"
+    "file": "sample_E062.cpp",
+    "notes": "读-改-写序列中混入非原子成员赋值，破坏原子性保证"
   },
   "severity": "high",
   "planted": true,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 23,
     "function": "need_b",
-    "description": "持 A 锁等 B 锁，同时第三线程持 B 锁等 A 锁"
+    "file": "sample_E087.cpp",
+    "notes": "持 A 锁等 B 锁，同时第三线程持 B 锁等 A 锁"
   },
   "severity": "high",
   "planted": true,

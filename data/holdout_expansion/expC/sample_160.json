@@ -1,19 +1,20 @@
 {
-  "defect_type": "optimization_dependent",
+  "defect_type": "strict_aliasing",
   "expected_detectors": [
     "asan"
   ],
   "expected_verdict": "miss",
   "severity": "medium",
-  "trigger_condition": "无条件",
+  "trigger_condition": "无条件；【676m】原 defect_type=optimization_dependent（元标签，已从 defect_type 拆出）",
   "optimization_sensitivity": "none（实测 O0/O2 无差异，非优化敏感 UB）",
   "notes": "严格别名违例：经不同类型指针访问同一对象。无 sanitizer 直接抓，但 O0/O2 输出不同（优化敏感）。",
-  "id": "sample_160",
+  "sample_id": "sample_160",
   "category": "C",
   "defect_location": {
     "line": 2,
     "function": "main",
-    "note": "float g(float* pf, int* pi){ *pi = 1; return *pf; } // <<PLANTED-DEFECT>> 通过 int* 写后通过 float* 读（严格别名违例）"
+    "file": "sample_160.cpp",
+    "notes": "float g(float* pf, int* pi){ *pi = 1; return *pf; } // <<PLANTED-DEFECT>> 通过 int* 写后通过 float* 读（严格别名违例）"
   },
   "planted": true,
   "source_files": [

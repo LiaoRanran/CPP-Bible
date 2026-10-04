@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 24,
     "function": "recursive_worker",
-    "description": "condition_variable_any 与 recursive_mutex 搭配：wait 只释放一层锁"
+    "file": "sample_E199.cpp",
+    "notes": "condition_variable_any 与 recursive_mutex 搭配：wait 只释放一层锁"
   },
   "severity": "high",
   "planted": true,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 18,
     "function": "sqlite3_str_appendall",
-    "description": "CVE-2022-35737: 数十亿字节的字符串参数导致 array-bounds overflow（CVE 描述: sometimes allows an array-bounds overflow if billions of bytes are used in a string argument to a C API）。本样本镜像 int 累加溢出点。"
+    "file": "sample_G054.cpp",
+    "notes": "CVE-2022-35737: 数十亿字节的字符串参数导致 array-bounds overflow（CVE 描述: sometimes allows an array-bounds overflow if billions of bytes are used in a string argument to a C API）。本样本镜像 int 累加溢出点。"
   },
   "severity": "high",
   "planted": false,

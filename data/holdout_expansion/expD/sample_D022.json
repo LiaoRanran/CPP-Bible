@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 10,
     "function": "main",
-    "description": "unordered_map rehash 后使用失效迭代器"
+    "file": "sample_D022.cpp",
+    "notes": "unordered_map rehash 后使用失效迭代器"
   },
   "severity": "high",
   "planted": true,

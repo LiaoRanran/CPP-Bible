@@ -27,8 +27,9 @@
       "sample_id": "sample_B001",
       "defect_type": "data_race",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B001.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -45,8 +46,9 @@
       "sample_id": "sample_B003",
       "defect_type": "data_race",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B003.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -63,8 +65,9 @@
       "sample_id": "sample_B004",
       "defect_type": "data_race",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B004.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -81,8 +84,9 @@
       "sample_id": "sample_B007",
       "defect_type": "data_race",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B007.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -99,8 +103,9 @@
       "sample_id": "sample_B008",
       "defect_type": "data_race",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B008.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -117,8 +122,9 @@
       "sample_id": "sample_B009",
       "defect_type": "data_race",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B009.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -135,8 +141,9 @@
       "sample_id": "sample_B010",
       "defect_type": "data_race",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B010.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -153,8 +160,9 @@
       "sample_id": "sample_B013",
       "defect_type": "data_race",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B013.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -171,8 +179,9 @@
       "sample_id": "sample_B014",
       "defect_type": "data_race",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B014.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -189,8 +198,9 @@
       "sample_id": "sample_B015",
       "defect_type": "data_race",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B015.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -207,8 +217,9 @@
       "sample_id": "sample_B016",
       "defect_type": "data_race",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B016.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -225,8 +236,9 @@
       "sample_id": "sample_B017",
       "defect_type": "data_race",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B017.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -243,8 +255,9 @@
       "sample_id": "sample_B018",
       "defect_type": "data_race",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B018.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -261,8 +274,9 @@
       "sample_id": "sample_B019",
       "defect_type": "data_race",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B019.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -279,8 +293,9 @@
       "sample_id": "sample_B021",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B021.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -297,8 +312,9 @@
       "sample_id": "sample_B022",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B022.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -315,8 +331,9 @@
       "sample_id": "sample_B023",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B023.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -333,8 +350,9 @@
       "sample_id": "sample_B024",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B024.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -351,8 +369,9 @@
       "sample_id": "sample_B025",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B025.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -369,8 +388,9 @@
       "sample_id": "sample_B026",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B026.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -387,8 +407,9 @@
       "sample_id": "sample_B027",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B027.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -405,8 +426,9 @@
       "sample_id": "sample_B028",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B028.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -423,8 +445,9 @@
       "sample_id": "sample_B029",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B029.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -441,8 +464,9 @@
       "sample_id": "sample_B030",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B030.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -459,8 +483,9 @@
       "sample_id": "sample_B031",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B031.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -477,8 +502,9 @@
       "sample_id": "sample_B032",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B032.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -495,8 +521,9 @@
       "sample_id": "sample_B033",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B033.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -513,8 +540,9 @@
       "sample_id": "sample_B034",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B034.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -531,8 +559,9 @@
       "sample_id": "sample_B035",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B035.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -549,8 +578,9 @@
       "sample_id": "sample_B036",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B036.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -567,8 +597,9 @@
       "sample_id": "sample_B037",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B037.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -585,8 +616,9 @@
       "sample_id": "sample_B038",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B038.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -603,8 +635,9 @@
       "sample_id": "sample_B039",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B039.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -621,8 +654,9 @@
       "sample_id": "sample_B040",
       "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B040.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -637,10 +671,11 @@
     },
     {
       "sample_id": "sample_B041",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B041.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -655,10 +690,11 @@
     },
     {
       "sample_id": "sample_B042",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 6,
-        "function": "main"
+        "line": 14,
+        "function": "main",
+        "file": "sample_B042.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -673,10 +709,11 @@
     },
     {
       "sample_id": "sample_B043",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 7,
-        "function": "main"
+        "line": 15,
+        "function": "main",
+        "file": "sample_B043.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -691,10 +728,11 @@
     },
     {
       "sample_id": "sample_B044",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 2,
-        "function": "make"
+        "line": 10,
+        "function": "make",
+        "file": "sample_B044.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -709,10 +747,11 @@
     },
     {
       "sample_id": "sample_B045",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B045.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -727,10 +766,11 @@
     },
     {
       "sample_id": "sample_B046",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B046.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -745,10 +785,11 @@
     },
     {
       "sample_id": "sample_B047",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 6,
-        "function": "main"
+        "line": 14,
+        "function": "main",
+        "file": "sample_B047.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -763,10 +804,11 @@
     },
     {
       "sample_id": "sample_B048",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 7,
-        "function": "main"
+        "line": 15,
+        "function": "main",
+        "file": "sample_B048.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -781,10 +823,11 @@
     },
     {
       "sample_id": "sample_B049",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B049.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -799,10 +842,11 @@
     },
     {
       "sample_id": "sample_B050",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B050.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -817,10 +861,11 @@
     },
     {
       "sample_id": "sample_B051",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 4,
-        "function": "ignored"
+        "line": 12,
+        "function": "ignored",
+        "file": "sample_B051.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -835,10 +880,11 @@
     },
     {
       "sample_id": "sample_B052",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 7,
-        "function": "main"
+        "line": 15,
+        "function": "main",
+        "file": "sample_B052.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -853,10 +899,11 @@
     },
     {
       "sample_id": "sample_B053",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 3,
-        "function": "main"
+        "line": 11,
+        "function": "main",
+        "file": "sample_B053.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -871,10 +918,11 @@
     },
     {
       "sample_id": "sample_B054",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B054.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -889,10 +937,11 @@
     },
     {
       "sample_id": "sample_B055",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 6,
-        "function": "main"
+        "line": 14,
+        "function": "main",
+        "file": "sample_B055.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -907,10 +956,11 @@
     },
     {
       "sample_id": "sample_B056",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 2,
-        "function": "recurse"
+        "line": 10,
+        "function": "recurse",
+        "file": "sample_B056.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -925,10 +975,11 @@
     },
     {
       "sample_id": "sample_B057",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B057.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -943,10 +994,11 @@
     },
     {
       "sample_id": "sample_B058",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 6,
-        "function": "main"
+        "line": 14,
+        "function": "main",
+        "file": "sample_B058.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -961,10 +1013,11 @@
     },
     {
       "sample_id": "sample_B059",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 6,
-        "function": "main"
+        "line": 14,
+        "function": "main",
+        "file": "sample_B059.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -979,10 +1032,11 @@
     },
     {
       "sample_id": "sample_B060",
-      "defect_type": "resource_leak",
+      "defect_type": "memory_leak",
       "defect_location": {
-        "line": 7,
-        "function": "main"
+        "line": 15,
+        "function": "main",
+        "file": "sample_B060.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -999,8 +1053,9 @@
       "sample_id": "sample_B061",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B061.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -1017,8 +1072,9 @@
       "sample_id": "sample_B062",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B062.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -1035,8 +1091,9 @@
       "sample_id": "sample_B063",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B063.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -1053,8 +1110,9 @@
       "sample_id": "sample_B064",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B064.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -1071,8 +1129,9 @@
       "sample_id": "sample_B065",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B065.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -1089,8 +1148,9 @@
       "sample_id": "sample_B066",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B066.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -1107,8 +1167,9 @@
       "sample_id": "sample_B067",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B067.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -1125,8 +1186,9 @@
       "sample_id": "sample_B068",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B068.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -1143,8 +1205,9 @@
       "sample_id": "sample_B069",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B069.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -1161,8 +1224,9 @@
       "sample_id": "sample_B070",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B070.cpp"
       },
       "severity": "medium",
       "planted": true,
@@ -1179,8 +1243,9 @@
       "sample_id": "sample_B071",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B071.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1197,8 +1262,9 @@
       "sample_id": "sample_B072",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B072.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1215,8 +1281,9 @@
       "sample_id": "sample_B073",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B073.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1233,8 +1300,9 @@
       "sample_id": "sample_B074",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B074.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1251,8 +1319,9 @@
       "sample_id": "sample_B075",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B075.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1269,8 +1338,9 @@
       "sample_id": "sample_B076",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B076.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1287,8 +1357,9 @@
       "sample_id": "sample_B077",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B077.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1305,8 +1376,9 @@
       "sample_id": "sample_B078",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 6,
-        "function": "main"
+        "line": 14,
+        "function": "main",
+        "file": "sample_B078.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1323,8 +1395,9 @@
       "sample_id": "sample_B079",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B079.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1341,8 +1414,9 @@
       "sample_id": "sample_B080",
       "defect_type": "type_punning",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B080.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1357,10 +1431,11 @@
     },
     {
       "sample_id": "sample_B081",
-      "defect_type": "other_ub",
+      "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B081.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -1375,10 +1450,11 @@
     },
     {
       "sample_id": "sample_B082",
-      "defect_type": "other_ub",
+      "defect_type": "integer_overflow",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B082.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -1393,10 +1469,11 @@
     },
     {
       "sample_id": "sample_B083",
-      "defect_type": "other_ub",
+      "defect_type": "bit_operation",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B083.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -1411,10 +1488,11 @@
     },
     {
       "sample_id": "sample_B084",
-      "defect_type": "other_ub",
+      "defect_type": "bit_operation",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B084.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -1429,10 +1507,11 @@
     },
     {
       "sample_id": "sample_B085",
-      "defect_type": "other_ub",
+      "defect_type": "bit_operation",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B085.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -1447,10 +1526,11 @@
     },
     {
       "sample_id": "sample_B086",
-      "defect_type": "other_ub",
+      "defect_type": "bit_operation",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B086.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -1465,10 +1545,11 @@
     },
     {
       "sample_id": "sample_B087",
-      "defect_type": "other_ub",
+      "defect_type": "out_of_bounds",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B087.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -1483,10 +1564,11 @@
     },
     {
       "sample_id": "sample_B088",
-      "defect_type": "other_ub",
+      "defect_type": "null_pointer_deref",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B088.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -1501,10 +1583,11 @@
     },
     {
       "sample_id": "sample_B089",
-      "defect_type": "other_ub",
+      "defect_type": "null_pointer_deref",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B089.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -1519,10 +1602,11 @@
     },
     {
       "sample_id": "sample_B090",
-      "defect_type": "other_ub",
+      "defect_type": "null_pointer_deref",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B090.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -1537,10 +1621,11 @@
     },
     {
       "sample_id": "sample_B091",
-      "defect_type": "other_ub",
+      "defect_type": "alignment",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B091.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -1555,10 +1640,11 @@
     },
     {
       "sample_id": "sample_B092",
-      "defect_type": "other_ub",
+      "defect_type": "bit_operation",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B092.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -1573,10 +1659,11 @@
     },
     {
       "sample_id": "sample_B093",
-      "defect_type": "other_ub",
+      "defect_type": "null_pointer_deref",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B093.cpp"
       },
       "severity": "high",
       "planted": true,
@@ -1593,8 +1680,9 @@
       "sample_id": "sample_B094",
       "defect_type": "other_ub",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B094.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1611,8 +1699,9 @@
       "sample_id": "sample_B095",
       "defect_type": "other_ub",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B095.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1629,8 +1718,9 @@
       "sample_id": "sample_B096",
       "defect_type": "other_ub",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B096.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1647,8 +1737,9 @@
       "sample_id": "sample_B097",
       "defect_type": "other_ub",
       "defect_location": {
-        "line": 3,
-        "function": "main"
+        "line": 11,
+        "function": "main",
+        "file": "sample_B097.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1665,8 +1756,9 @@
       "sample_id": "sample_B098",
       "defect_type": "other_ub",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B098.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1681,10 +1773,11 @@
     },
     {
       "sample_id": "sample_B099",
-      "defect_type": "other_ub",
+      "defect_type": "type_punning",
       "defect_location": {
-        "line": 5,
-        "function": "main"
+        "line": 13,
+        "function": "main",
+        "file": "sample_B099.cpp"
       },
       "severity": "low",
       "planted": true,
@@ -1699,10 +1792,11 @@
     },
     {
       "sample_id": "sample_B100",
-      "defect_type": "other_ub",
+      "defect_type": "strict_aliasing",
       "defect_location": {
-        "line": 4,
-        "function": "main"
+        "line": 12,
+        "function": "main",
+        "file": "sample_B100.cpp"
       },
       "severity": "low",
       "planted": true,

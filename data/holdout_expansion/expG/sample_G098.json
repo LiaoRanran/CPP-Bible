@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 14,
     "function": "value_as_uint64",
-    "description": "jsoncpp#1545（已修复）: [2^64, 2^64+2^11] 的数字经 double 往返静默返回错误值而非抛异常（issue 附完整复现代码与修复 PR #1519）。底层是 float→uint64 越界转换 UB，但 GCC/Clang 默认 -fsanitize=undefined **不包含** float-cast-overflow → 检测器无报告。这是真实的检测器盲区（浮点转换检查未启用），诚实标 miss。"
+    "file": "sample_G098.cpp",
+    "notes": "jsoncpp#1545（已修复）: [2^64, 2^64+2^11] 的数字经 double 往返静默返回错误值而非抛异常（issue 附完整复现代码与修复 PR #1519）。底层是 float→uint64 越界转换 UB，但 GCC/Clang 默认 -fsanitize=undefined **不包含** float-cast-overflow → 检测器无报告。这是真实的检测器盲区（浮点转换检查未启用），诚实标 miss。"
   },
   "severity": "medium",
   "planted": false,

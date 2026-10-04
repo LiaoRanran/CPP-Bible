@@ -1,5 +1,5 @@
 {
-  "defect_type": "cross_tu_ub",
+  "defect_type": "linker_odr",
   "expected_detectors": [
     "asan"
   ],
@@ -8,12 +8,13 @@
   "trigger_condition": "链接/运行",
   "optimization_sensitivity": "n/a",
   "notes": "不同 TU 的 inline 函数 f 体不同：ODR 违例（弱符号），链接通过但行为未定义；无检测器可抓（盲区）。",
-  "id": "sample_100",
+  "sample_id": "sample_100",
   "category": "C",
   "defect_location": {
     "line": 2,
     "function": "fa",
-    "note": "int fa(){ return f(); } // <<PLANTED-DEFECT>> 不同 TU 中 inline f 定义不一致（ODR 违例） }"
+    "file": "sample_100_a.cpp",
+    "notes": "int fa(){ return f(); } // <<PLANTED-DEFECT>> 不同 TU 中 inline f 定义不一致（ODR 违例） }"
   },
   "planted": true,
   "source_files": [

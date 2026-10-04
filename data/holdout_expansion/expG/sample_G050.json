@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G050",
-  "defect_type": "stack_overflow_write",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 16,
     "function": "sqlite3VXPrintf_float",
-    "description": "CVE-2015-3416: sqlite3VXPrintf 未正确处理浮点转换的 precision/width（CVE 描述: does not properly handle precision and width values during floating-point conversions ... integer overflow and stack-based buffer overflow）。"
+    "file": "sample_G050.cpp",
+    "notes": "CVE-2015-3416: sqlite3VXPrintf 未正确处理浮点转换的 precision/width（CVE 描述: does not properly handle precision and width values during floating-point conversions ... integer overflow and stack-based buffer overflow）。"
   },
   "severity": "high",
   "planted": false,

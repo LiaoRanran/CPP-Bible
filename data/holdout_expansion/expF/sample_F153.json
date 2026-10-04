@@ -2,9 +2,10 @@
   "sample_id": "F153",
   "defect_type": "interrupt_safety",
   "defect_location": {
-    "description": "ISR 与主程序对 total 的非原子读写（撕裂读）",
     "line": 8,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F153.cpp",
+    "notes": "ISR 与主程序对 total 的非原子读写（撕裂读）"
   },
   "severity": "high",
   "planted": true,

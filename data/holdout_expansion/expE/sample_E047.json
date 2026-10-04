@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 16,
     "function": "main",
-    "description": "compare_exchange 的失败序强于成功序（违反标准前置条件，UB）"
+    "file": "sample_E047.cpp",
+    "notes": "compare_exchange 的失败序强于成功序（违反标准前置条件，UB）"
   },
   "severity": "high",
   "planted": true,

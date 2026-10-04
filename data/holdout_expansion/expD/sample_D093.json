@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 8,
     "function": "leak",
-    "description": "函数返回指向局部 string 的 string_view（悬垂）"
+    "file": "sample_D093.cpp",
+    "notes": "函数返回指向局部 string 的 string_view（悬垂）"
   },
   "severity": "high",
   "planted": true,

@@ -2,9 +2,10 @@
   "sample_id": "F189",
   "defect_type": "register_ub",
   "defect_location": {
-    "description": "内联汇编未声明 memory/被修改寄存器 clobber",
     "line": 5,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F189.cpp",
+    "notes": "内联汇编未声明 memory/被修改寄存器 clobber"
   },
   "severity": "medium",
   "planted": true,

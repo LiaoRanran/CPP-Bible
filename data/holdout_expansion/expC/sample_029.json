@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "多次移动同一对象：合法但语义可疑，无检测器可抓（盲区）。",
-  "id": "sample_029",
+  "sample_id": "sample_029",
   "category": "C",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "a = std::move(b); // <<PLANTED-DEFECT>> 双移动：a、b 均处于已移动状态，逻辑混乱"
+    "file": "sample_029.cpp",
+    "notes": "a = std::move(b); // <<PLANTED-DEFECT>> 双移动：a、b 均处于已移动状态，逻辑混乱"
   },
   "planted": true,
   "source_files": [

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 7,
     "function": "main",
-    "description": "std::copy 源与目标区间重叠（UB）"
+    "file": "sample_D121.cpp",
+    "notes": "std::copy 源与目标区间重叠（UB）"
   },
   "severity": "high",
   "planted": true,

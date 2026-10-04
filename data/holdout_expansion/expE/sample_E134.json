@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E134",
-  "defect_type": "aba_problem",
+  "defect_type": "atomic_ub",
   "defect_location": {
     "line": 25,
     "function": "main",
-    "description": "无锁栈 pop 后把陈旧指针写回链表（UAF 写）"
+    "file": "sample_E134.cpp",
+    "notes": "无锁栈 pop 后把陈旧指针写回链表（UAF 写）"
   },
   "severity": "high",
   "planted": true,

@@ -4,18 +4,19 @@
   "defect_location": {
     "line": 26,
     "function": "waiter",
-    "description": "持锁等待条件变量：等一个只有拿到该锁的线程才能满足的条件"
+    "file": "sample_E086.cpp",
+    "notes": "持锁等待条件变量：等一个只有拿到该锁的线程才能满足的条件"
   },
   "severity": "high",
   "planted": true,
-  "expected_verdict": "catch",
+  "expected_verdict": "miss",
   "expected_detectors": [
     "tsan"
   ],
   "trigger_condition": "2 线程：等待者持锁等条件，通知者需要该锁才能满足条件",
   "thread_count": 2,
   "timeout_seconds": 5,
-  "notes": "持锁等待条件变量。确定性死锁。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "notes": "持锁等待条件变量。确定性死锁。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。 【676m 修正：hung_flag 样本真实判据为 miss（sanitizer 挂起超时），原 catch 登记有误】",
   "pooled_verdict": {
     "tsan": "catch"
   },

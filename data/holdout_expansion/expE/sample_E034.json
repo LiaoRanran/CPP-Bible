@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "arm",
-    "description": "exchange 用 relaxed 换出指针，读侧 acquire 的是另一个标志"
+    "file": "sample_E034.cpp",
+    "notes": "exchange 用 relaxed 换出指针，读侧 acquire 的是另一个标志"
   },
   "severity": "high",
   "planted": true,

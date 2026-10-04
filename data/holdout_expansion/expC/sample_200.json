@@ -1,19 +1,20 @@
 {
-  "defect_type": "conditional_trigger",
+  "defect_type": "logic_error",
   "expected_detectors": [
     "asan"
   ],
   "expected_verdict": "miss",
   "severity": "low",
-  "trigger_condition": "total=10,n=3（不能整除）时取整丢精度",
+  "trigger_condition": "total=10,n=3（不能整除）时取整丢精度；【676m】原 defect_type=conditional_trigger（元标签，已从 defect_type 拆出）",
   "optimization_sensitivity": "n/a",
   "notes": "整数除法语义错误（应为浮点）；无内存问题，无检测器可抓（盲区），触发可复现。",
-  "id": "sample_200",
+  "sample_id": "sample_200",
   "category": "C",
   "defect_location": {
     "line": 3,
     "function": "main",
-    "note": "int avg = total / n; // <<PLANTED-DEFECT>> 整数除法：avg=3 而非 3.33（特定输入下语义错误）"
+    "file": "sample_200.cpp",
+    "notes": "int avg = total / n; // <<PLANTED-DEFECT>> 整数除法：avg=3 而非 3.33（特定输入下语义错误）"
   },
   "planted": true,
   "source_files": [

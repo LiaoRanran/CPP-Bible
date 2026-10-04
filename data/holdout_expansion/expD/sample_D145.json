@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 6,
     "function": "main",
-    "description": "unique_ptr 用默认 delete 管理 new[] 数组"
+    "file": "sample_D145.cpp",
+    "notes": "unique_ptr 用默认 delete 管理 new[] 数组"
   },
   "severity": "high",
   "planted": true,

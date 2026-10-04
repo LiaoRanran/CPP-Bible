@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "producer",
-    "description": "以 relaxed 读计数作同步判据，随后读非原子缓冲"
+    "file": "sample_E017.cpp",
+    "notes": "以 relaxed 读计数作同步判据，随后读非原子缓冲"
   },
   "severity": "high",
   "planted": true,

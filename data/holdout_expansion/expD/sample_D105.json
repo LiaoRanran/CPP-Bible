@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 11,
     "function": "main",
-    "description": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
+    "file": "sample_D105.cpp",
+    "notes": "原 string 扩容后遍历悬垂的 string_view（读取已释放缓冲）"
   },
   "severity": "high",
   "planted": true,

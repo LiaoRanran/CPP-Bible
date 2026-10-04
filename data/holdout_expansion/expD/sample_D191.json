@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 7,
     "function": "main",
-    "description": "递归 lambda 按值捕获尚未初始化的自身（空副本）"
+    "file": "sample_D191.cpp",
+    "notes": "递归 lambda 按值捕获尚未初始化的自身（空副本）"
   },
   "severity": "medium",
   "planted": true,

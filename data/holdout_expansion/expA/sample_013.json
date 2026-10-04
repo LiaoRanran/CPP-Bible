@@ -1,11 +1,12 @@
 {
-  "id": "sample_013",
+  "sample_id": "sample_013",
   "category": "A",
-  "defect_type": "memory_safety",
+  "defect_type": "double_free",
   "defect_location": {
     "line": 8,
     "function": "main",
-    "note": "if (k == 1) delete[] p; // <<PLANTED-DEFECT>> double-free at loop iteration 1"
+    "file": "sample_013.cpp",
+    "notes": "if (k == 1) delete[] p; // <<PLANTED-DEFECT>> double-free at loop iteration 1"
   },
   "severity": "high",
   "planted": true,

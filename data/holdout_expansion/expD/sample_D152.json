@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 8,
     "function": "main",
-    "description": "对 shared_ptr::get() 返回指针手动 delete"
+    "file": "sample_D152.cpp",
+    "notes": "对 shared_ptr::get() 返回指针手动 delete"
   },
   "severity": "high",
   "planted": true,

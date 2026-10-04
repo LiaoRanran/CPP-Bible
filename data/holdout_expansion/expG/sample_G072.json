@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G072",
-  "defect_type": "heap_overflow",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 19,
     "function": "sudo_set_cmnd",
-    "description": "CVE-2021-3156 (Baron Samedit): sudo 堆溢出。原始缺陷：user_args 尺寸按原始长度计算，但 sudoedit 模式转义循环把每个 '\\' 复制为两个，写入超出分配。"
+    "file": "sample_G072.cpp",
+    "notes": "CVE-2021-3156 (Baron Samedit): sudo 堆溢出。原始缺陷：user_args 尺寸按原始长度计算，但 sudoedit 模式转义循环把每个 '\\' 复制为两个，写入超出分配。"
   },
   "severity": "high",
   "planted": false,

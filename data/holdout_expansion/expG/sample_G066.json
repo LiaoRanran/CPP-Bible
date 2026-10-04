@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G066",
-  "defect_type": "heap_overread",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 13,
     "function": "exif_read_signed_short",
-    "description": "CVE-2019-11036: exif_process_IFD_TAG 读越界（CVE 描述: can be caused to read past allocated buffer in exif_process_IFD_TAG function ... information disclosure or crash）。components 计数路径。"
+    "file": "sample_G066.cpp",
+    "notes": "CVE-2019-11036: exif_process_IFD_TAG 读越界（CVE 描述: can be caused to read past allocated buffer in exif_process_IFD_TAG function ... information disclosure or crash）。components 计数路径。"
   },
   "severity": "medium",
   "planted": false,

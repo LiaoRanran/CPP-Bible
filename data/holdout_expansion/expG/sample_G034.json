@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 18,
     "function": "mqtt_send_pending",
-    "description": "CVE-2021-22945: MQTT 发送时错误地保留已释放内存指针（CVE 描述: erroneously keep a pointer to an already freed memory area and both use that again ... and also free it again）→ UAF + double free。"
+    "file": "sample_G034.cpp",
+    "notes": "CVE-2021-22945: MQTT 发送时错误地保留已释放内存指针（CVE 描述: erroneously keep a pointer to an already freed memory area and both use that again ... and also free it again）→ UAF + double free。"
   },
   "severity": "high",
   "planted": false,

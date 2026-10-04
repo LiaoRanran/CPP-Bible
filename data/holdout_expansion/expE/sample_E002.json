@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 24,
     "function": "consumer",
-    "description": "consumer 用 relaxed 轮询 ready，随后 relaxed 读 double 载荷"
+    "file": "sample_E002.cpp",
+    "notes": "consumer 用 relaxed 轮询 ready，随后 relaxed 读 double 载荷"
   },
   "severity": "high",
   "planted": true,

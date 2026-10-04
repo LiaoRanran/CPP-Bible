@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G084",
-  "defect_type": "race_condition",
+  "defect_type": "data_race",
   "defect_location": {
     "line": 21,
     "function": "gup_cow_write",
-    "description": "CVE-2016-5195 (Dirty COW): GUP/COW 竞态（CVE 描述: Race condition in mm/gup.c ... leveraging incorrect handling of a copy-on-write (COW) feature to write to a read-only memory mapping）。用户态等价模拟，TSan 捕获。"
+    "file": "sample_G084.cpp",
+    "notes": "CVE-2016-5195 (Dirty COW): GUP/COW 竞态（CVE 描述: Race condition in mm/gup.c ... leveraging incorrect handling of a copy-on-write (COW) feature to write to a read-only memory mapping）。用户态等价模拟，TSan 捕获。"
   },
   "severity": "high",
   "planted": true,

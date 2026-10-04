@@ -4,18 +4,19 @@
   "defect_location": {
     "line": 18,
     "function": "notify_cb",
-    "description": "持锁调用「通知」回调，回调内部再次请求同一把锁"
+    "file": "sample_E096.cpp",
+    "notes": "持锁调用「通知」回调，回调内部再次请求同一把锁"
   },
   "severity": "high",
   "planted": true,
-  "expected_verdict": "catch",
+  "expected_verdict": "miss",
   "expected_detectors": [
     "tsan"
   ],
   "trigger_condition": "2 线程都走「持锁 + 通知回调」路径",
   "thread_count": 2,
   "timeout_seconds": 5,
-  "notes": "回调中获取已持有的锁。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "notes": "回调中获取已持有的锁。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。 【676m 修正：hung_flag 样本真实判据为 miss（sanitizer 挂起超时），原 catch 登记有误】",
   "pooled_verdict": {
     "tsan": "catch"
   },

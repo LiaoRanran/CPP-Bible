@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 9,
     "function": "main",
-    "description": "std::string 修改后使用失效的 c_str() 指针"
+    "file": "sample_D074.cpp",
+    "notes": "std::string 修改后使用失效的 c_str() 指针"
   },
   "severity": "high",
   "planted": true,

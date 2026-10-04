@@ -2,9 +2,10 @@
   "sample_id": "F158",
   "defect_type": "interrupt_safety",
   "defect_location": {
-    "description": "信号处理程序内再次 raise 同一信号导致嵌套",
     "line": 7,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F158.cpp",
+    "notes": "信号处理程序内再次 raise 同一信号导致嵌套"
   },
   "severity": "medium",
   "planted": true,

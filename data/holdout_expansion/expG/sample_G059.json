@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G059",
-  "defect_type": "heap_overflow",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 28,
     "function": "BuildHuffmanTable",
-    "description": "CVE-2023-4863: libwebp BuildHuffmanTable 堆溢出（CVE 描述: Heap buffer overflow in libwebp ... allowed a remote attacker to perform an out of bounds memory write, Chromium Critical）。修复版增加码长分布合法性校验。"
+    "file": "sample_G059.cpp",
+    "notes": "CVE-2023-4863: libwebp BuildHuffmanTable 堆溢出（CVE 描述: Heap buffer overflow in libwebp ... allowed a remote attacker to perform an out of bounds memory write, Chromium Critical）。修复版增加码长分布合法性校验。"
   },
   "severity": "high",
   "planted": false,

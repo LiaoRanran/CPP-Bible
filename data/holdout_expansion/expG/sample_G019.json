@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G019",
-  "defect_type": "infinite_loop",
+  "defect_type": "logic_error",
   "defect_location": {
     "line": 16,
     "function": "bn_mod_sqrt",
-    "description": "CVE-2022-0778: BN_mod_sqrt 对非素数模数永不过返回（CVE 描述: contains a bug that can cause it to loop forever for non-prime moduli），解析证书时可远程 DoS。纯逻辑缺陷，sanitizer 无运行时报告 → 诚实标 miss（DoS 盲区，验证时进程超时）。"
+    "file": "sample_G019.cpp",
+    "notes": "CVE-2022-0778: BN_mod_sqrt 对非素数模数永不过返回（CVE 描述: contains a bug that can cause it to loop forever for non-prime moduli），解析证书时可远程 DoS。纯逻辑缺陷，sanitizer 无运行时报告 → 诚实标 miss（DoS 盲区，验证时进程超时）。"
   },
   "severity": "high",
   "planted": true,

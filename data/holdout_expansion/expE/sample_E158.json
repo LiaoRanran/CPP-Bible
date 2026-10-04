@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E158",
-  "defect_type": "lock_priority_inversion",
+  "defect_type": "deadlock",
   "defect_location": {
     "line": 22,
     "function": "loader",
-    "description": "渲染线程等锁，而持锁线程在做同步磁盘预读（sleep 模拟）"
+    "file": "sample_E158.cpp",
+    "notes": "渲染线程等锁，而持锁线程在做同步磁盘预读（sleep 模拟）"
   },
   "severity": "high",
   "planted": true,

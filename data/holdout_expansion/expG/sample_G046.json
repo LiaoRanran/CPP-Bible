@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 14,
     "function": "sftp_expand_tilde",
-    "description": "CVE-2023-27534: SFTP 路径穿越（CVE 描述: the tilde (~) character to be wrongly replaced when used as a prefix in the first path element ... path traversal vulnerability, CWE-22）。逻辑缺陷 → 诚实标 miss。"
+    "file": "sample_G046.cpp",
+    "notes": "CVE-2023-27534: SFTP 路径穿越（CVE 描述: the tilde (~) character to be wrongly replaced when used as a prefix in the first path element ... path traversal vulnerability, CWE-22）。逻辑缺陷 → 诚实标 miss。"
   },
   "severity": "medium",
   "planted": false,

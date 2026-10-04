@@ -1,11 +1,12 @@
 {
-  "id": "sample_086",
+  "sample_id": "sample_086",
   "category": "A",
-  "defect_type": "undefined_behavior",
+  "defect_type": "bit_operation",
   "defect_location": {
     "line": 5,
     "function": "main",
-    "note": "int r = 1 << (-5); // <<PLANTED-DEFECT>> undefined behavior: negative shift exponent -5"
+    "file": "sample_086.cpp",
+    "notes": "int r = 1 << (-5); // <<PLANTED-DEFECT>> undefined behavior: negative shift exponent -5"
   },
   "severity": "high",
   "planted": true,

@@ -1,11 +1,12 @@
 {
-  "id": "sample_050",
+  "sample_id": "sample_050",
   "category": "A",
   "defect_type": "null_pointer_deref",
   "defect_location": {
     "line": 7,
     "function": "main",
-    "note": "*p = 3; // <<PLANTED-DEFECT>> null pointer dereference: deref returned nullptr"
+    "file": "sample_050.cpp",
+    "notes": "*p = 3; // <<PLANTED-DEFECT>> null pointer dereference: deref returned nullptr"
   },
   "severity": "high",
   "planted": true,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 15,
     "function": "main",
-    "description": "堆上 new std::atomic<int> 未值初始化即参与运算"
+    "file": "sample_E042.cpp",
+    "notes": "堆上 new std::atomic<int> 未值初始化即参与运算"
   },
   "severity": "high",
   "planted": true,

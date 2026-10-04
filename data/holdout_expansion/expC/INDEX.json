@@ -28,7 +28,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_001"
     },
     {
       "id": "sample_002",
@@ -37,7 +38,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_002"
     },
     {
       "id": "sample_003",
@@ -46,7 +48,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_003"
     },
     {
       "id": "sample_004",
@@ -55,7 +58,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_004"
     },
     {
       "id": "sample_005",
@@ -64,7 +68,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_005"
     },
     {
       "id": "sample_006",
@@ -73,7 +78,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_006"
     },
     {
       "id": "sample_007",
@@ -82,7 +88,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_007"
     },
     {
       "id": "sample_008",
@@ -91,7 +98,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_008"
     },
     {
       "id": "sample_009",
@@ -100,7 +108,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 1,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_009"
     },
     {
       "id": "sample_010",
@@ -109,7 +118,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 1,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_010"
     },
     {
       "id": "sample_011",
@@ -118,7 +128,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_011"
     },
     {
       "id": "sample_012",
@@ -127,7 +138,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 1,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_012"
     },
     {
       "id": "sample_013",
@@ -136,7 +148,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 1,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_013"
     },
     {
       "id": "sample_014",
@@ -145,7 +158,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_014"
     },
     {
       "id": "sample_015",
@@ -154,7 +168,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_015"
     },
     {
       "id": "sample_016",
@@ -163,7 +178,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_016"
     },
     {
       "id": "sample_017",
@@ -172,7 +188,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_017"
     },
     {
       "id": "sample_018",
@@ -181,7 +198,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_018"
     },
     {
       "id": "sample_019",
@@ -190,7 +208,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_019"
     },
     {
       "id": "sample_020",
@@ -199,7 +218,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_020"
     },
     {
       "id": "sample_021",
@@ -208,7 +228,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_021"
     },
     {
       "id": "sample_022",
@@ -217,7 +238,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_022"
     },
     {
       "id": "sample_023",
@@ -226,7 +248,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_023"
     },
     {
       "id": "sample_024",
@@ -235,7 +258,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_024"
     },
     {
       "id": "sample_025",
@@ -244,7 +268,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_025"
     },
     {
       "id": "sample_026",
@@ -253,7 +278,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 7,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_026"
     },
     {
       "id": "sample_027",
@@ -262,7 +288,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_027"
     },
     {
       "id": "sample_028",
@@ -271,7 +298,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 7,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_028"
     },
     {
       "id": "sample_029",
@@ -280,7 +308,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_029"
     },
     {
       "id": "sample_030",
@@ -289,7 +318,8 @@
       "expected_verdict": "miss",
       "detector": "compiler-warn",
       "defect_line": 7,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_030"
     },
     {
       "id": "sample_031",
@@ -298,7 +328,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 8,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_031"
     },
     {
       "id": "sample_032",
@@ -307,7 +338,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_032"
     },
     {
       "id": "sample_033",
@@ -316,7 +348,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 8,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_033"
     },
     {
       "id": "sample_034",
@@ -325,7 +358,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_034"
     },
     {
       "id": "sample_035",
@@ -334,7 +368,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 8,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_035"
     },
     {
       "id": "sample_036",
@@ -343,7 +378,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_036"
     },
     {
       "id": "sample_037",
@@ -352,7 +388,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_037"
     },
     {
       "id": "sample_038",
@@ -361,7 +398,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_038"
     },
     {
       "id": "sample_039",
@@ -370,7 +408,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_039"
     },
     {
       "id": "sample_040",
@@ -379,7 +418,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_040"
     },
     {
       "id": "sample_041",
@@ -388,7 +428,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_041"
     },
     {
       "id": "sample_042",
@@ -397,7 +438,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_042"
     },
     {
       "id": "sample_043",
@@ -406,7 +448,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_043"
     },
     {
       "id": "sample_044",
@@ -415,7 +458,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_044"
     },
     {
       "id": "sample_045",
@@ -424,7 +468,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_045"
     },
     {
       "id": "sample_046",
@@ -433,7 +478,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_046"
     },
     {
       "id": "sample_047",
@@ -442,7 +488,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_047"
     },
     {
       "id": "sample_048",
@@ -451,7 +498,8 @@
       "expected_verdict": "catch",
       "detector": "compiler-warn",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_048"
     },
     {
       "id": "sample_049",
@@ -460,7 +508,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_049"
     },
     {
       "id": "sample_050",
@@ -469,7 +518,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_050"
     },
     {
       "id": "sample_051",
@@ -478,7 +528,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_051"
     },
     {
       "id": "sample_052",
@@ -487,7 +538,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_052"
     },
     {
       "id": "sample_053",
@@ -496,7 +548,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_053"
     },
     {
       "id": "sample_054",
@@ -505,7 +558,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_054"
     },
     {
       "id": "sample_055",
@@ -514,7 +568,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_055"
     },
     {
       "id": "sample_056",
@@ -523,7 +578,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_056"
     },
     {
       "id": "sample_057",
@@ -532,7 +588,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_057"
     },
     {
       "id": "sample_058",
@@ -541,7 +598,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_058"
     },
     {
       "id": "sample_059",
@@ -550,7 +608,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_059"
     },
     {
       "id": "sample_060",
@@ -559,7 +618,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_060"
     },
     {
       "id": "sample_061",
@@ -568,7 +628,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_061"
     },
     {
       "id": "sample_062",
@@ -577,7 +638,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_062"
     },
     {
       "id": "sample_063",
@@ -586,7 +648,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_063"
     },
     {
       "id": "sample_064",
@@ -595,7 +658,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_064"
     },
     {
       "id": "sample_065",
@@ -604,7 +668,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_065"
     },
     {
       "id": "sample_066",
@@ -613,7 +678,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_066"
     },
     {
       "id": "sample_067",
@@ -622,7 +688,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_067"
     },
     {
       "id": "sample_068",
@@ -631,7 +698,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_068"
     },
     {
       "id": "sample_069",
@@ -640,7 +708,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_069"
     },
     {
       "id": "sample_070",
@@ -649,7 +718,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_070"
     },
     {
       "id": "sample_071",
@@ -658,7 +728,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_071"
     },
     {
       "id": "sample_072",
@@ -667,7 +738,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_072"
     },
     {
       "id": "sample_073",
@@ -676,7 +748,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_073"
     },
     {
       "id": "sample_074",
@@ -685,7 +758,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_074"
     },
     {
       "id": "sample_075",
@@ -694,7 +768,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_075"
     },
     {
       "id": "sample_076",
@@ -703,7 +778,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_076"
     },
     {
       "id": "sample_077",
@@ -712,7 +788,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_077"
     },
     {
       "id": "sample_078",
@@ -721,7 +798,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_078"
     },
     {
       "id": "sample_079",
@@ -730,7 +808,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_079"
     },
     {
       "id": "sample_080",
@@ -739,7 +818,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_080"
     },
     {
       "id": "sample_081",
@@ -748,7 +828,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_081"
     },
     {
       "id": "sample_082",
@@ -757,7 +838,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_082"
     },
     {
       "id": "sample_083",
@@ -766,7 +848,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_083"
     },
     {
       "id": "sample_084",
@@ -775,7 +858,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_084"
     },
     {
       "id": "sample_085",
@@ -784,7 +868,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 6,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_085"
     },
     {
       "id": "sample_086",
@@ -793,7 +878,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 7,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_086"
     },
     {
       "id": "sample_087",
@@ -802,7 +888,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 7,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_087"
     },
     {
       "id": "sample_088",
@@ -811,7 +898,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 7,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_088"
     },
     {
       "id": "sample_089",
@@ -820,7 +908,8 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 7,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_089"
     },
     {
       "id": "sample_090",
@@ -829,151 +918,168 @@
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 7,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_090"
     },
     {
       "id": "sample_091",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "linker",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_091"
     },
     {
       "id": "sample_092",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "linker",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_092"
     },
     {
       "id": "sample_093",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "linker",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_093"
     },
     {
       "id": "sample_094",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "linker",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_094"
     },
     {
       "id": "sample_095",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "linker",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_095"
     },
     {
       "id": "sample_096",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "linker",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_096"
     },
     {
       "id": "sample_097",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "linker",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_097"
     },
     {
       "id": "sample_098",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "linker",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_098"
     },
     {
       "id": "sample_099",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_099"
     },
     {
       "id": "sample_100",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_100"
     },
     {
       "id": "sample_101",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_101"
     },
     {
       "id": "sample_102",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_102"
     },
     {
       "id": "sample_103",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_103"
     },
     {
       "id": "sample_104",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_104"
     },
     {
       "id": "sample_105",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_105"
     },
     {
       "id": "sample_106",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_106"
     },
     {
       "id": "sample_107",
@@ -982,7 +1088,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_107"
     },
     {
       "id": "sample_108",
@@ -991,7 +1098,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_108"
     },
     {
       "id": "sample_109",
@@ -1000,7 +1108,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_109"
     },
     {
       "id": "sample_110",
@@ -1009,7 +1118,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_110"
     },
     {
       "id": "sample_111",
@@ -1018,7 +1128,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_111"
     },
     {
       "id": "sample_112",
@@ -1027,7 +1138,8 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_112"
     },
     {
       "id": "sample_113",
@@ -1036,790 +1148,878 @@
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_113"
     },
     {
       "id": "sample_114",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_114"
     },
     {
       "id": "sample_115",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_115"
     },
     {
       "id": "sample_116",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_116"
     },
     {
       "id": "sample_117",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_117"
     },
     {
       "id": "sample_118",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_118"
     },
     {
       "id": "sample_119",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_119"
     },
     {
       "id": "sample_120",
-      "defect_type": "cross_tu_ub",
+      "defect_type": "linker_odr",
       "severity": "high",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_120"
     },
     {
       "id": "sample_121",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_121"
     },
     {
       "id": "sample_122",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_122"
     },
     {
       "id": "sample_123",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_123"
     },
     {
       "id": "sample_124",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_124"
     },
     {
       "id": "sample_125",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_125"
     },
     {
       "id": "sample_126",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_126"
     },
     {
       "id": "sample_127",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_127"
     },
     {
       "id": "sample_128",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_128"
     },
     {
       "id": "sample_129",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_129"
     },
     {
       "id": "sample_130",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_130"
     },
     {
       "id": "sample_131",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_131"
     },
     {
       "id": "sample_132",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_132"
     },
     {
       "id": "sample_133",
-      "defect_type": "optimization_dependent",
+      "defect_type": "bit_operation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_133"
     },
     {
       "id": "sample_134",
-      "defect_type": "optimization_dependent",
+      "defect_type": "bit_operation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_134"
     },
     {
       "id": "sample_135",
-      "defect_type": "optimization_dependent",
+      "defect_type": "bit_operation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_135"
     },
     {
       "id": "sample_136",
-      "defect_type": "optimization_dependent",
+      "defect_type": "bit_operation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_136"
     },
     {
       "id": "sample_137",
-      "defect_type": "optimization_dependent",
+      "defect_type": "bit_operation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_137"
     },
     {
       "id": "sample_138",
-      "defect_type": "optimization_dependent",
+      "defect_type": "bit_operation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_138"
     },
     {
       "id": "sample_139",
-      "defect_type": "optimization_dependent",
+      "defect_type": "bit_operation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_139"
     },
     {
       "id": "sample_140",
-      "defect_type": "optimization_dependent",
+      "defect_type": "bit_operation",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_140"
     },
     {
       "id": "sample_141",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_141"
     },
     {
       "id": "sample_142",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_142"
     },
     {
       "id": "sample_143",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_143"
     },
     {
       "id": "sample_144",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_144"
     },
     {
       "id": "sample_145",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_145"
     },
     {
       "id": "sample_146",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_146"
     },
     {
       "id": "sample_147",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_147"
     },
     {
       "id": "sample_148",
-      "defect_type": "optimization_dependent",
+      "defect_type": "integer_overflow",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "ubsan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_148"
     },
     {
       "id": "sample_149",
-      "defect_type": "optimization_dependent",
+      "defect_type": "strict_aliasing",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_149"
     },
     {
       "id": "sample_150",
-      "defect_type": "optimization_dependent",
+      "defect_type": "strict_aliasing",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_150"
     },
     {
       "id": "sample_151",
-      "defect_type": "optimization_dependent",
+      "defect_type": "strict_aliasing",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_151"
     },
     {
       "id": "sample_152",
-      "defect_type": "optimization_dependent",
+      "defect_type": "strict_aliasing",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_152"
     },
     {
       "id": "sample_153",
-      "defect_type": "optimization_dependent",
+      "defect_type": "strict_aliasing",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_153"
     },
     {
       "id": "sample_154",
-      "defect_type": "optimization_dependent",
+      "defect_type": "strict_aliasing",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_154"
     },
     {
       "id": "sample_155",
-      "defect_type": "optimization_dependent",
+      "defect_type": "strict_aliasing",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_155"
     },
     {
       "id": "sample_156",
-      "defect_type": "optimization_dependent",
+      "defect_type": "strict_aliasing",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_156"
     },
     {
       "id": "sample_157",
-      "defect_type": "optimization_dependent",
+      "defect_type": "strict_aliasing",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_157"
     },
     {
       "id": "sample_158",
-      "defect_type": "optimization_dependent",
+      "defect_type": "strict_aliasing",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_158"
     },
     {
       "id": "sample_159",
-      "defect_type": "optimization_dependent",
+      "defect_type": "strict_aliasing",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_159"
     },
     {
       "id": "sample_160",
-      "defect_type": "optimization_dependent",
+      "defect_type": "strict_aliasing",
       "severity": "medium",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 2,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_160"
     },
     {
       "id": "sample_161",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_161"
     },
     {
       "id": "sample_162",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_162"
     },
     {
       "id": "sample_163",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_163"
     },
     {
       "id": "sample_164",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_164"
     },
     {
       "id": "sample_165",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_165"
     },
     {
       "id": "sample_166",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_166"
     },
     {
       "id": "sample_167",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_167"
     },
     {
       "id": "sample_168",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_168"
     },
     {
       "id": "sample_169",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_169"
     },
     {
       "id": "sample_170",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_170"
     },
     {
       "id": "sample_171",
-      "defect_type": "conditional_trigger",
+      "defect_type": "use_after_free",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_171"
     },
     {
       "id": "sample_172",
-      "defect_type": "conditional_trigger",
+      "defect_type": "use_after_free",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_172"
     },
     {
       "id": "sample_173",
-      "defect_type": "conditional_trigger",
+      "defect_type": "use_after_free",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_173"
     },
     {
       "id": "sample_174",
-      "defect_type": "conditional_trigger",
+      "defect_type": "use_after_free",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_174"
     },
     {
       "id": "sample_175",
-      "defect_type": "conditional_trigger",
+      "defect_type": "use_after_free",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_175"
     },
     {
       "id": "sample_176",
-      "defect_type": "conditional_trigger",
+      "defect_type": "use_after_free",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 5,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_176"
     },
     {
       "id": "sample_177",
-      "defect_type": "conditional_trigger",
+      "defect_type": "double_free",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_177"
     },
     {
       "id": "sample_178",
-      "defect_type": "conditional_trigger",
+      "defect_type": "double_free",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_178"
     },
     {
       "id": "sample_179",
-      "defect_type": "conditional_trigger",
+      "defect_type": "double_free",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_179"
     },
     {
       "id": "sample_180",
-      "defect_type": "conditional_trigger",
+      "defect_type": "double_free",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_180"
     },
     {
       "id": "sample_181",
-      "defect_type": "conditional_trigger",
+      "defect_type": "double_free",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_181"
     },
     {
       "id": "sample_182",
-      "defect_type": "conditional_trigger",
+      "defect_type": "double_free",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_182"
     },
     {
       "id": "sample_183",
-      "defect_type": "conditional_trigger",
+      "defect_type": "memory_leak",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_183"
     },
     {
       "id": "sample_184",
-      "defect_type": "conditional_trigger",
+      "defect_type": "memory_leak",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_184"
     },
     {
       "id": "sample_185",
-      "defect_type": "conditional_trigger",
+      "defect_type": "memory_leak",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_185"
     },
     {
       "id": "sample_186",
-      "defect_type": "conditional_trigger",
+      "defect_type": "memory_leak",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_186"
     },
     {
       "id": "sample_187",
-      "defect_type": "conditional_trigger",
+      "defect_type": "memory_leak",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_187"
     },
     {
       "id": "sample_188",
-      "defect_type": "conditional_trigger",
+      "defect_type": "memory_leak",
       "severity": "high",
       "expected_verdict": "catch",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_188"
     },
     {
       "id": "sample_189",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_189"
     },
     {
       "id": "sample_190",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_190"
     },
     {
       "id": "sample_191",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_191"
     },
     {
       "id": "sample_192",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_192"
     },
     {
       "id": "sample_193",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_193"
     },
     {
       "id": "sample_194",
-      "defect_type": "conditional_trigger",
+      "defect_type": "out_of_bounds",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 4,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_194"
     },
     {
       "id": "sample_195",
-      "defect_type": "conditional_trigger",
+      "defect_type": "logic_error",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_195"
     },
     {
       "id": "sample_196",
-      "defect_type": "conditional_trigger",
+      "defect_type": "logic_error",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_196"
     },
     {
       "id": "sample_197",
-      "defect_type": "conditional_trigger",
+      "defect_type": "logic_error",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_197"
     },
     {
       "id": "sample_198",
-      "defect_type": "conditional_trigger",
+      "defect_type": "logic_error",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_198"
     },
     {
       "id": "sample_199",
-      "defect_type": "conditional_trigger",
+      "defect_type": "logic_error",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_199"
     },
     {
       "id": "sample_200",
-      "defect_type": "conditional_trigger",
+      "defect_type": "logic_error",
       "severity": "low",
       "expected_verdict": "miss",
       "detector": "asan",
       "defect_line": 3,
-      "planted": true
+      "planted": true,
+      "sample_id": "sample_200"
     }
   ]
 }

@@ -2,9 +2,10 @@
   "sample_id": "F052",
   "defect_type": "endianness",
   "defect_location": {
-    "description": "二进制文件/网络格式直接采用主机内存表示，未固定端序",
     "line": 6,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F052.cpp",
+    "notes": "二进制文件/网络格式直接采用主机内存表示，未固定端序"
   },
   "severity": "high",
   "planted": true,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "bash_import_function",
-    "description": "CVE-2014-6271 (Shellshock): 函数定义后尾随串被执行（CVE 描述: processes trailing strings after function definitions in the values of environment variables, which allows remote attackers to execute arbitrary code）。纯解析逻辑错误 → 诚实标 miss。"
+    "file": "sample_G074.cpp",
+    "notes": "CVE-2014-6271 (Shellshock): 函数定义后尾随串被执行（CVE 描述: processes trailing strings after function definitions in the values of environment variables, which allows remote attackers to execute arbitrary code）。纯解析逻辑错误 → 诚实标 miss。"
   },
   "severity": "high",
   "planted": false,

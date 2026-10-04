@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "producer",
-    "description": "seq_cst fence 放在载荷写与标志写之间，位置错误导致不构成 release 序列"
+    "file": "sample_E016.cpp",
+    "notes": "seq_cst fence 放在载荷写与标志写之间，位置错误导致不构成 release 序列"
   },
   "severity": "high",
   "planted": true,

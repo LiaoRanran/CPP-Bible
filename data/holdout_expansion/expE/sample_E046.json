@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "bump",
-    "description": "compare_exchange_strong 用在循环里（该用 weak）"
+    "file": "sample_E046.cpp",
+    "notes": "compare_exchange_strong 用在循环里（该用 weak）"
   },
   "severity": "low",
   "planted": true,

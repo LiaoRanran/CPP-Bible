@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E121",
-  "defect_type": "aba_problem",
+  "defect_type": "atomic_ub",
   "defect_location": {
     "line": 22,
     "function": "main",
-    "description": "两步 CAS 之间的读-改-写被 ABA 打断"
+    "file": "sample_E121.cpp",
+    "notes": "两步 CAS 之间的读-改-写被 ABA 打断"
   },
   "severity": "high",
   "planted": true,

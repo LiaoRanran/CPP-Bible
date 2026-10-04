@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 23,
     "function": "swap_role",
-    "description": "CAS 的 expected 变量同时被另一处原子写改写，导致比较对象漂移"
+    "file": "sample_E063.cpp",
+    "notes": "CAS 的 expected 变量同时被另一处原子写改写，导致比较对象漂移"
   },
   "severity": "high",
   "planted": true,

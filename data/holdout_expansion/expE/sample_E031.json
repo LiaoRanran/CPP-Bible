@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 27,
     "function": "consumer",
-    "description": "生产者 relaxed 写多个原子字段，消费者只 acquire 一个总标志"
+    "file": "sample_E031.cpp",
+    "notes": "生产者 relaxed 写多个原子字段，消费者只 acquire 一个总标志"
   },
   "severity": "high",
   "planted": true,

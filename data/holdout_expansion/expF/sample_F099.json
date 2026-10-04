@@ -2,9 +2,10 @@
   "sample_id": "F099",
   "defect_type": "volatile_misuse",
   "defect_location": {
-    "description": "中断/信号处理程序读写普通全局变量（应为 volatile 或 atomic）",
     "line": 8,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F099.cpp",
+    "notes": "中断/信号处理程序读写普通全局变量（应为 volatile 或 atomic）"
   },
   "severity": "high",
   "planted": true,

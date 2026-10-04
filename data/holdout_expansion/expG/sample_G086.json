@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G086",
-  "defect_type": "timing_side_channel",
+  "defect_type": "logic_error",
   "defect_location": {
     "line": 17,
     "function": "dsa_sign_setup",
-    "description": "CVE-2016-2178: dsa_sign_setup 非常量时间（CVE 描述: does not properly ensure the use of constant-time operations ... discover a DSA private key via a timing side-channel attack）。侧信道类，sanitizer 无报告 → 诚实标 miss。"
+    "file": "sample_G086.cpp",
+    "notes": "CVE-2016-2178: dsa_sign_setup 非常量时间（CVE 描述: does not properly ensure the use of constant-time operations ... discover a DSA private key via a timing side-channel attack）。侧信道类，sanitizer 无报告 → 诚实标 miss。"
   },
   "severity": "medium",
   "planted": true,

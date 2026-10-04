@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 20,
     "function": "worker",
-    "description": "自旋锁的 test_and_set 与 clear 都用 relaxed，失去 acquire/release"
+    "file": "sample_E056.cpp",
+    "notes": "自旋锁的 test_and_set 与 clear 都用 relaxed，失去 acquire/release"
   },
   "severity": "high",
   "planted": true,

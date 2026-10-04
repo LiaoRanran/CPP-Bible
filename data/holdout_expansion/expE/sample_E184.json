@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 25,
     "function": "waiter",
-    "description": "wait_for 超时返回后不重新检查谓词，直接继续"
+    "file": "sample_E184.cpp",
+    "notes": "wait_for 超时返回后不重新检查谓词，直接继续"
   },
   "severity": "high",
   "planted": true,

@@ -1,5 +1,5 @@
 {
-  "defect_type": "cross_tu_ub",
+  "defect_type": "linker_odr",
   "expected_detectors": [
     "linker"
   ],
@@ -8,12 +8,13 @@
   "trigger_condition": "链接阶段（多 TU 包含同一定义）",
   "optimization_sensitivity": "n/a",
   "notes": "头文件中定义非 inline 函数并被多个翻译单元包含：强多重定义，链接器抓。",
-  "id": "sample_097",
+  "sample_id": "sample_097",
   "category": "C",
   "defect_location": {
     "line": 3,
     "function": "(global)",
-    "note": "int f6(){ return 1; } // <<PLANTED-DEFECT>> 头文件定义非 inline 函数，被多 TU 包含 -> 强多重定义"
+    "file": "sample_097.h",
+    "notes": "int f6(){ return 1; } // <<PLANTED-DEFECT>> 头文件定义非 inline 函数，被多 TU 包含 -> 强多重定义"
   },
   "planted": true,
   "source_files": [

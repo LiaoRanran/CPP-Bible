@@ -1,19 +1,20 @@
 {
-  "defect_type": "optimization_dependent",
+  "defect_type": "bit_operation",
   "expected_detectors": [
     "ubsan"
   ],
   "expected_verdict": "catch",
   "severity": "high",
-  "trigger_condition": "无条件",
+  "trigger_condition": "无条件；【676m】原 defect_type=optimization_dependent（元标签，已从 defect_type 拆出）",
   "optimization_sensitivity": "O0: ubsan 抓；O2: 移位结果可能被常量折叠，未必报",
   "notes": "左移量超位宽 UB；ubsan 在 -O0 抓，优化档位下行为可能改变。",
-  "id": "sample_137",
+  "sample_id": "sample_137",
   "category": "C",
   "defect_location": {
     "line": 2,
     "function": "main",
-    "note": "int r = 1 << 40; // <<PLANTED-DEFECT>> 移位量超出 int 位宽（UB）"
+    "file": "sample_137.cpp",
+    "notes": "int r = 1 << 40; // <<PLANTED-DEFECT>> 移位量超出 int 位宽（UB）"
   },
   "planted": true,
   "source_files": [

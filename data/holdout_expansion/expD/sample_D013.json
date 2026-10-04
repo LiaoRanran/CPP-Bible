@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 9,
     "function": "main",
-    "description": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
+    "file": "sample_D013.cpp",
+    "notes": "vector erase 后使用失效迭代器（逻辑缺陷，无 realloc）"
   },
   "severity": "medium",
   "planted": true,

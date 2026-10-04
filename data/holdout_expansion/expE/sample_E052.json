@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "publish",
-    "description": "把已 delete 的堆地址存进 atomic 指针，另一线程解引用"
+    "file": "sample_E052.cpp",
+    "notes": "把已 delete 的堆地址存进 atomic 指针，另一线程解引用"
   },
   "severity": "high",
   "planted": true,

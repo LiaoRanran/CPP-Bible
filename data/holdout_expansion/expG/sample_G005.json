@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 30,
     "function": "dtls1_process_fragment",
-    "description": "CVE-2014-3505: d1_both.c 中 DTLS 错误路径的 double free（CVE 描述: Double free vulnerability in d1_both.c ... crafted DTLS packets that trigger an error path）。"
+    "file": "sample_G005.cpp",
+    "notes": "CVE-2014-3505: d1_both.c 中 DTLS 错误路径的 double free（CVE 描述: Double free vulnerability in d1_both.c ... crafted DTLS packets that trigger an error path）。"
   },
   "severity": "high",
   "planted": false,

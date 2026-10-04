@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E130",
-  "defect_type": "aba_problem",
+  "defect_type": "atomic_ub",
   "defect_location": {
     "line": 21,
     "function": "main",
-    "description": "RCU 读侧无 rcu_read_lock：同步回调式「伪 RCU」"
+    "file": "sample_E130.cpp",
+    "notes": "RCU 读侧无 rcu_read_lock：同步回调式「伪 RCU」"
   },
   "severity": "high",
   "planted": true,

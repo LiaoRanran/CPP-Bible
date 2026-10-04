@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G041",
-  "defect_type": "info_leak",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 21,
     "function": "telnet_send_new_env",
-    "description": "CVE-2021-22898: TELNET NEW_ENV 选项解析缺陷导致环境变量发送给服务器（CVE 描述: libcurl could send environment variables to TELNET servers ... information disclosure）。sanitizer 无报告 → 诚实标 miss（信息泄露盲区）。"
+    "file": "sample_G041.cpp",
+    "notes": "CVE-2021-22898: TELNET NEW_ENV 选项解析缺陷导致环境变量发送给服务器（CVE 描述: libcurl could send environment variables to TELNET servers ... information disclosure）。sanitizer 无报告 → 诚实标 miss（信息泄露盲区）。"
   },
   "severity": "medium",
   "planted": false,

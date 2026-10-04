@@ -2,9 +2,10 @@
   "sample_id": "F146",
   "defect_type": "interrupt_safety",
   "defect_location": {
-    "description": "信号处理程序与主程序竞态自增非原子全局 shared",
     "line": 8,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F146.cpp",
+    "notes": "信号处理程序与主程序竞态自增非原子全局 shared"
   },
   "severity": "high",
   "planted": true,

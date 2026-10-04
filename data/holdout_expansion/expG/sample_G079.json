@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 27,
     "function": "mq_notify_retry",
-    "description": "CVE-2017-11176: mq_notify 未在重试路径置空 sock 指针 → UAF。用户态等价模拟：close 路径释放对象，retry 路径仍使用。"
+    "file": "sample_G079.cpp",
+    "notes": "CVE-2017-11176: mq_notify 未在重试路径置空 sock 指针 → UAF。用户态等价模拟：close 路径释放对象，retry 路径仍使用。"
   },
   "severity": "high",
   "planted": true,

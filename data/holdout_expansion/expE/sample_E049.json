@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 15,
     "function": "main",
-    "description": "std::atomic<long long>::fetch_sub 无符号下溢后当作合法计数使用"
+    "file": "sample_E049.cpp",
+    "notes": "std::atomic<long long>::fetch_sub 无符号下溢后当作合法计数使用"
   },
   "severity": "high",
   "planted": true,

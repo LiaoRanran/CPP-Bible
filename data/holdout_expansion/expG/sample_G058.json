@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G058",
-  "defect_type": "division_by_zero",
+  "defect_type": "integer_overflow",
   "defect_location": {
     "line": 14,
     "function": "png_check_chunk_length",
-    "description": "CVE-2018-13785: png_check_chunk_length 的 row_factor 错误计算（CVE 描述: a wrong calculation of row_factor ... may trigger an integer overflow and resultant divide-by-zero）。保留原始公式与 crafted 高度。"
+    "file": "sample_G058.cpp",
+    "notes": "CVE-2018-13785: png_check_chunk_length 的 row_factor 错误计算（CVE 描述: a wrong calculation of row_factor ... may trigger an integer overflow and resultant divide-by-zero）。保留原始公式与 crafted 高度。"
   },
   "severity": "medium",
   "planted": false,

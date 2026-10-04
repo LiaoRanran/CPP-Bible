@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "虚函数默认实参按静态类型解析（非动态），导致意外值；无检测器可抓（盲区）。",
-  "id": "sample_078",
+  "sample_id": "sample_078",
   "category": "C",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "p->f(); // <<PLANTED-DEFECT>> 默认实参按静态类型 B 解析 -> 打印 1 而非 2"
+    "file": "sample_078.cpp",
+    "notes": "p->f(); // <<PLANTED-DEFECT>> 默认实参按静态类型 B 解析 -> 打印 1 而非 2"
   },
   "planted": true,
   "source_files": [

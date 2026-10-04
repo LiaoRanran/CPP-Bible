@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E137",
-  "defect_type": "aba_problem",
+  "defect_type": "atomic_ub",
   "defect_location": {
     "line": 25,
     "function": "main",
-    "description": "以「值 + 版本」分开存放导致值 ABA（版本更新滞后）"
+    "file": "sample_E137.cpp",
+    "notes": "以「值 + 版本」分开存放导致值 ABA（版本更新滞后）"
   },
   "severity": "high",
   "planted": true,

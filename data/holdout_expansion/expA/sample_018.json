@@ -1,11 +1,12 @@
 {
-  "id": "sample_018",
+  "sample_id": "sample_018",
   "category": "A",
-  "defect_type": "memory_safety",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "a[10] = 1; // <<PLANTED-DEFECT>> heap buffer overflow: write 10 past size 8"
+    "file": "sample_018.cpp",
+    "notes": "a[10] = 1; // <<PLANTED-DEFECT>> heap buffer overflow: write 10 past size 8"
   },
   "severity": "high",
   "planted": true,

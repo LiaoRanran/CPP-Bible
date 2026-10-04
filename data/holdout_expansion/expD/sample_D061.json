@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 7,
     "function": "main",
-    "description": "std::variant 取错误 alternative（抛异常）"
+    "file": "sample_D061.cpp",
+    "notes": "std::variant 取错误 alternative（抛异常）"
   },
   "severity": "medium",
   "planted": true,

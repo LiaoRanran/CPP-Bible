@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "counter",
-    "description": "在「类信号处理」语境里用非 lock-free 原子的自增"
+    "file": "sample_E073.cpp",
+    "notes": "在「类信号处理」语境里用非 lock-free 原子的自增"
   },
   "severity": "high",
   "planted": true,

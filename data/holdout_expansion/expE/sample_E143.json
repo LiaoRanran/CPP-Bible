@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E143",
-  "defect_type": "lock_priority_inversion",
+  "defect_type": "deadlock",
   "defect_location": {
     "line": 21,
     "function": "low",
-    "description": "中优先级线程绕过锁写共享状态（与持锁的低优先级线程形成真实竞争）"
+    "file": "sample_E143.cpp",
+    "notes": "中优先级线程绕过锁写共享状态（与持锁的低优先级线程形成真实竞争）"
   },
   "severity": "high",
   "planted": true,

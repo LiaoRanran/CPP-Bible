@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 19,
     "function": "evp_ocb_encrypt",
-    "description": "CVE-2022-2097: AES OCB 模式部分数据未加密（CVE 描述: AES OCB mode ... encrypting large amounts of data does not encrypt the entire portion）。逻辑缺陷，正确=全量加密、实际=尾部残留明文 → 诚实标 miss。"
+    "file": "sample_G087.cpp",
+    "notes": "CVE-2022-2097: AES OCB 模式部分数据未加密（CVE 描述: AES OCB mode ... encrypting large amounts of data does not encrypt the entire portion）。逻辑缺陷，正确=全量加密、实际=尾部残留明文 → 诚实标 miss。"
   },
   "severity": "medium",
   "planted": false,

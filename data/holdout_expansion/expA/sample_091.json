@@ -1,11 +1,12 @@
 {
-  "id": "sample_091",
+  "sample_id": "sample_091",
   "category": "A",
-  "defect_type": "undefined_behavior",
+  "defect_type": "integer_overflow",
   "defect_location": {
     "line": 7,
     "function": "main",
-    "note": "int r = -m; // <<PLANTED-DEFECT>> undefined behavior: negation of INT_MIN not representable"
+    "file": "sample_091.cpp",
+    "notes": "int r = -m; // <<PLANTED-DEFECT>> undefined behavior: negation of INT_MIN not representable"
   },
   "severity": "high",
   "planted": true,

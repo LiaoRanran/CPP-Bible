@@ -2,9 +2,10 @@
   "sample_id": "F031",
   "defect_type": "alignment",
   "defect_location": {
-    "description": "误假设 malloc 提供 32 字节对齐",
     "line": 6,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F031.cpp",
+    "notes": "误假设 malloc 提供 32 字节对齐"
   },
   "severity": "low",
   "planted": true,

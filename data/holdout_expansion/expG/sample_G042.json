@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "ftp_pasv_connect",
-    "description": "CVE-2020-8284: FTP PASV 响应被恶意服务器利用让 curl 回连任意地址（CVE 描述: A malicious server can use the FTP PASV response to trick curl ... into connecting back to a given IP address and port）。逻辑缺陷 → 诚实标 miss。"
+    "file": "sample_G042.cpp",
+    "notes": "CVE-2020-8284: FTP PASV 响应被恶意服务器利用让 curl 回连任意地址（CVE 描述: A malicious server can use the FTP PASV response to trick curl ... into connecting back to a given IP address and port）。逻辑缺陷 → 诚实标 miss。"
   },
   "severity": "medium",
   "planted": false,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 8,
     "function": "main",
-    "description": "std::remove 后未调用 erase"
+    "file": "sample_D116.cpp",
+    "notes": "std::remove 后未调用 erase"
   },
   "severity": "medium",
   "planted": true,

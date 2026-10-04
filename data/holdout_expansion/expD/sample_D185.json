@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 7,
     "function": "mk",
-    "description": "默认 [&] 捕获导致悬垂引用"
+    "file": "sample_D185.cpp",
+    "notes": "默认 [&] 捕获导致悬垂引用"
   },
   "severity": "high",
   "planted": true,

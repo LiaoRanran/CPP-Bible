@@ -1,11 +1,12 @@
 {
-  "id": "sample_095",
+  "sample_id": "sample_095",
   "category": "A",
-  "defect_type": "undefined_behavior",
+  "defect_type": "other_ub",
   "defect_location": {
     "line": 8,
     "function": "main",
-    "note": "bool c = b; // <<PLANTED-DEFECT>> undefined behavior: load of invalid bool value (2)"
+    "file": "sample_095.cpp",
+    "notes": "bool c = b; // <<PLANTED-DEFECT>> undefined behavior: load of invalid bool value (2)"
   },
   "severity": "high",
   "planted": true,

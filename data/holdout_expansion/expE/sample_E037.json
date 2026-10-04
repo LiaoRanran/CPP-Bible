@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 25,
     "function": "consumer",
-    "description": "relaxed 轮询标志后读非原子结构体成员"
+    "file": "sample_E037.cpp",
+    "notes": "relaxed 轮询标志后读非原子结构体成员"
   },
   "severity": "high",
   "planted": true,

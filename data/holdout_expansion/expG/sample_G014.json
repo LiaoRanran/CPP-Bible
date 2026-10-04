@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G014",
-  "defect_type": "heap_overread",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 17,
     "function": "chacha20_poly1305_decrypt",
-    "description": "CVE-2017-3731: 截断包触发 out-of-bounds read（CVE 描述: a truncated packet can cause ... an out-of-bounds read, usually resulting in a crash）。本样本镜像 tag = in + len - tag_len 的前向越界。"
+    "file": "sample_G014.cpp",
+    "notes": "CVE-2017-3731: 截断包触发 out-of-bounds read（CVE 描述: a truncated packet can cause ... an out-of-bounds read, usually resulting in a crash）。本样本镜像 tag = in + len - tag_len 的前向越界。"
   },
   "severity": "high",
   "planted": false,

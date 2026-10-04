@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "writer",
-    "description": "指针以 relaxed 发布，reader 以 relaxed 读取后解引用"
+    "file": "sample_E005.cpp",
+    "notes": "指针以 relaxed 发布，reader 以 relaxed 读取后解引用"
   },
   "severity": "high",
   "planted": true,

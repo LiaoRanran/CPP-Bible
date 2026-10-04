@@ -112,7 +112,8 @@
       "detector": "ubsan",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F001"
     },
     {
       "id": "F002",
@@ -122,7 +123,8 @@
       "detector": "ubsan",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F002"
     },
     {
       "id": "F003",
@@ -132,7 +134,8 @@
       "detector": "ubsan",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F003"
     },
     {
       "id": "F004",
@@ -142,7 +145,8 @@
       "detector": "ubsan",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F004"
     },
     {
       "id": "F005",
@@ -152,7 +156,8 @@
       "detector": "ubsan",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F005"
     },
     {
       "id": "F006",
@@ -162,7 +167,8 @@
       "detector": "ubsan",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F006"
     },
     {
       "id": "F007",
@@ -172,7 +178,8 @@
       "detector": "ubsan",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F007"
     },
     {
       "id": "F008",
@@ -182,7 +189,8 @@
       "detector": "ubsan",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F008"
     },
     {
       "id": "F009",
@@ -192,7 +200,8 @@
       "detector": "ubsan",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F009"
     },
     {
       "id": "F010",
@@ -202,7 +211,8 @@
       "detector": "ubsan",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F010"
     },
     {
       "id": "F011",
@@ -212,7 +222,8 @@
       "detector": "ubsan",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F011"
     },
     {
       "id": "F012",
@@ -222,7 +233,8 @@
       "detector": "ubsan",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F012"
     },
     {
       "id": "F013",
@@ -232,7 +244,8 @@
       "detector": "ubsan",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F013"
     },
     {
       "id": "F014",
@@ -242,7 +255,8 @@
       "detector": "ubsan",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F014"
     },
     {
       "id": "F015",
@@ -252,7 +266,8 @@
       "detector": "ubsan",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F015"
     },
     {
       "id": "F016",
@@ -262,7 +277,8 @@
       "detector": "compiler-warn",
       "defect_line": 12,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F016"
     },
     {
       "id": "F018",
@@ -272,7 +288,8 @@
       "detector": "compiler-warn",
       "defect_line": 12,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F018"
     },
     {
       "id": "F020",
@@ -282,7 +299,8 @@
       "detector": "compiler-warn",
       "defect_line": 12,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F020"
     },
     {
       "id": "F022",
@@ -292,7 +310,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F022"
     },
     {
       "id": "F024",
@@ -302,7 +321,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F024"
     },
     {
       "id": "F027",
@@ -312,7 +332,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F027"
     },
     {
       "id": "F029",
@@ -322,7 +343,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F029"
     },
     {
       "id": "F031",
@@ -332,7 +354,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F031"
     },
     {
       "id": "F033",
@@ -342,7 +365,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F033"
     },
     {
       "id": "F035",
@@ -352,7 +376,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F035"
     },
     {
       "id": "F036",
@@ -362,7 +387,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F036"
     },
     {
       "id": "F037",
@@ -372,7 +398,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F037"
     },
     {
       "id": "F039",
@@ -382,7 +409,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F039"
     },
     {
       "id": "F040",
@@ -392,7 +420,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F040"
     },
     {
       "id": "F041",
@@ -402,7 +431,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F041"
     },
     {
       "id": "F042",
@@ -412,7 +442,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F042"
     },
     {
       "id": "F044",
@@ -422,7 +453,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F044"
     },
     {
       "id": "F045",
@@ -432,7 +464,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F045"
     },
     {
       "id": "F046",
@@ -442,7 +475,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F046"
     },
     {
       "id": "F047",
@@ -452,7 +486,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F047"
     },
     {
       "id": "F049",
@@ -462,7 +497,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F049"
     },
     {
       "id": "F050",
@@ -472,7 +508,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F050"
     },
     {
       "id": "F051",
@@ -482,7 +519,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F051"
     },
     {
       "id": "F052",
@@ -492,7 +530,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F052"
     },
     {
       "id": "F054",
@@ -502,7 +541,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F054"
     },
     {
       "id": "F055",
@@ -512,7 +552,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F055"
     },
     {
       "id": "F056",
@@ -522,7 +563,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F056"
     },
     {
       "id": "F057",
@@ -532,7 +574,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F057"
     },
     {
       "id": "F059",
@@ -542,7 +585,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F059"
     },
     {
       "id": "F060",
@@ -552,7 +596,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F060"
     },
     {
       "id": "F061",
@@ -562,7 +607,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F061"
     },
     {
       "id": "F062",
@@ -572,7 +618,8 @@
       "detector": "compiler-warn",
       "defect_line": 6,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F062"
     },
     {
       "id": "F064",
@@ -582,7 +629,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F064"
     },
     {
       "id": "F065",
@@ -592,7 +640,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F065"
     },
     {
       "id": "F066",
@@ -602,7 +651,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F066"
     },
     {
       "id": "F067",
@@ -612,7 +662,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F067"
     },
     {
       "id": "F069",
@@ -622,7 +673,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F069"
     },
     {
       "id": "F070",
@@ -632,7 +684,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F070"
     },
     {
       "id": "F071",
@@ -642,7 +695,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F071"
     },
     {
       "id": "F072",
@@ -652,7 +706,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F072"
     },
     {
       "id": "F074",
@@ -662,7 +717,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F074"
     },
     {
       "id": "F075",
@@ -672,7 +728,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F075"
     },
     {
       "id": "F076",
@@ -682,7 +739,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F076"
     },
     {
       "id": "F077",
@@ -692,7 +750,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F077"
     },
     {
       "id": "F079",
@@ -702,7 +761,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F079"
     },
     {
       "id": "F080",
@@ -712,7 +772,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F080"
     },
     {
       "id": "F081",
@@ -722,7 +783,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F081"
     },
     {
       "id": "F082",
@@ -732,7 +794,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F082"
     },
     {
       "id": "F084",
@@ -742,7 +805,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F084"
     },
     {
       "id": "F085",
@@ -752,7 +816,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F085"
     },
     {
       "id": "F086",
@@ -762,7 +827,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F086"
     },
     {
       "id": "F087",
@@ -772,7 +838,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F087"
     },
     {
       "id": "F089",
@@ -782,7 +849,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F089"
     },
     {
       "id": "F090",
@@ -792,7 +860,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F090"
     },
     {
       "id": "F091",
@@ -802,7 +871,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F091"
     },
     {
       "id": "F092",
@@ -812,7 +882,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F092"
     },
     {
       "id": "F094",
@@ -822,7 +893,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F094"
     },
     {
       "id": "F095",
@@ -832,7 +904,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F095"
     },
     {
       "id": "F096",
@@ -842,7 +915,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F096"
     },
     {
       "id": "F097",
@@ -852,7 +926,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F097"
     },
     {
       "id": "F099",
@@ -862,7 +937,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F099"
     },
     {
       "id": "F100",
@@ -872,7 +948,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F100"
     },
     {
       "id": "F101",
@@ -882,7 +959,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F101"
     },
     {
       "id": "F102",
@@ -892,7 +970,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F102"
     },
     {
       "id": "F104",
@@ -902,7 +981,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F104"
     },
     {
       "id": "F105",
@@ -912,7 +992,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F105"
     },
     {
       "id": "F106",
@@ -922,7 +1003,8 @@
       "detector": "ubsan",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F106"
     },
     {
       "id": "F107",
@@ -932,7 +1014,8 @@
       "detector": "ubsan",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F107"
     },
     {
       "id": "F108",
@@ -942,7 +1025,8 @@
       "detector": "ubsan",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F108"
     },
     {
       "id": "F109",
@@ -952,7 +1036,8 @@
       "detector": "ubsan",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F109"
     },
     {
       "id": "F110",
@@ -962,7 +1047,8 @@
       "detector": "ubsan",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F110"
     },
     {
       "id": "F111",
@@ -972,7 +1058,8 @@
       "detector": "ubsan",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F111"
     },
     {
       "id": "F112",
@@ -982,7 +1069,8 @@
       "detector": "ubsan",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F112"
     },
     {
       "id": "F113",
@@ -992,7 +1080,8 @@
       "detector": "ubsan",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F113"
     },
     {
       "id": "F114",
@@ -1002,7 +1091,8 @@
       "detector": "ubsan",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F114"
     },
     {
       "id": "F115",
@@ -1012,7 +1102,8 @@
       "detector": "ubsan",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F115"
     },
     {
       "id": "F116",
@@ -1022,7 +1113,8 @@
       "detector": "ubsan",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F116"
     },
     {
       "id": "F117",
@@ -1032,7 +1124,8 @@
       "detector": "ubsan",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F117"
     },
     {
       "id": "F118",
@@ -1042,7 +1135,8 @@
       "detector": "ubsan",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F118"
     },
     {
       "id": "F119",
@@ -1052,7 +1146,8 @@
       "detector": "ubsan",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F119"
     },
     {
       "id": "F120",
@@ -1062,7 +1157,8 @@
       "detector": "ubsan",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F120"
     },
     {
       "id": "F121",
@@ -1072,7 +1168,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F121"
     },
     {
       "id": "F122",
@@ -1082,7 +1179,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F122"
     },
     {
       "id": "F123",
@@ -1092,7 +1190,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F123"
     },
     {
       "id": "F124",
@@ -1102,7 +1201,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F124"
     },
     {
       "id": "F125",
@@ -1112,7 +1212,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F125"
     },
     {
       "id": "F126",
@@ -1122,7 +1223,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F126"
     },
     {
       "id": "F128",
@@ -1132,7 +1234,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F128"
     },
     {
       "id": "F130",
@@ -1142,7 +1245,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F130"
     },
     {
       "id": "F132",
@@ -1152,7 +1256,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F132"
     },
     {
       "id": "F134",
@@ -1162,7 +1267,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F134"
     },
     {
       "id": "F136",
@@ -1172,7 +1278,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F136"
     },
     {
       "id": "F138",
@@ -1182,7 +1289,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F138"
     },
     {
       "id": "F140",
@@ -1192,7 +1300,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F140"
     },
     {
       "id": "F141",
@@ -1202,7 +1311,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F141"
     },
     {
       "id": "F143",
@@ -1212,7 +1322,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F143"
     },
     {
       "id": "F144",
@@ -1222,7 +1333,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F144"
     },
     {
       "id": "F146",
@@ -1232,7 +1344,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F146"
     },
     {
       "id": "F147",
@@ -1242,7 +1355,8 @@
       "detector": "compiler-warn",
       "defect_line": 7,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F147"
     },
     {
       "id": "F149",
@@ -1252,7 +1366,8 @@
       "detector": "compiler-warn",
       "defect_line": 7,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F149"
     },
     {
       "id": "F150",
@@ -1262,7 +1377,8 @@
       "detector": "compiler-warn",
       "defect_line": 7,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F150"
     },
     {
       "id": "F152",
@@ -1272,7 +1388,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F152"
     },
     {
       "id": "F153",
@@ -1282,7 +1399,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F153"
     },
     {
       "id": "F155",
@@ -1292,7 +1410,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F155"
     },
     {
       "id": "F156",
@@ -1302,7 +1421,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F156"
     },
     {
       "id": "F158",
@@ -1312,7 +1432,8 @@
       "detector": "compiler-warn",
       "defect_line": 7,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F158"
     },
     {
       "id": "F159",
@@ -1322,7 +1443,8 @@
       "detector": "compiler-warn",
       "defect_line": 7,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F159"
     },
     {
       "id": "F161",
@@ -1332,7 +1454,8 @@
       "detector": "compiler-warn",
       "defect_line": 9,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F161"
     },
     {
       "id": "F162",
@@ -1342,7 +1465,8 @@
       "detector": "compiler-warn",
       "defect_line": 9,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F162"
     },
     {
       "id": "F164",
@@ -1352,7 +1476,8 @@
       "detector": "compiler-warn",
       "defect_line": 9,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F164"
     },
     {
       "id": "F165",
@@ -1362,7 +1487,8 @@
       "detector": "compiler-warn",
       "defect_line": 9,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F165"
     },
     {
       "id": "F167",
@@ -1372,7 +1498,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F167"
     },
     {
       "id": "F168",
@@ -1382,7 +1509,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F168"
     },
     {
       "id": "F170",
@@ -1392,7 +1520,8 @@
       "detector": "compiler-warn",
       "defect_line": 8,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F170"
     },
     {
       "id": "F171",
@@ -1402,7 +1531,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F171"
     },
     {
       "id": "F172",
@@ -1412,7 +1542,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F172"
     },
     {
       "id": "F173",
@@ -1422,7 +1553,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F173"
     },
     {
       "id": "F174",
@@ -1432,7 +1564,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F174"
     },
     {
       "id": "F175",
@@ -1442,7 +1575,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F175"
     },
     {
       "id": "F176",
@@ -1452,7 +1586,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F176"
     },
     {
       "id": "F177",
@@ -1462,7 +1597,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F177"
     },
     {
       "id": "F178",
@@ -1472,7 +1608,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F178"
     },
     {
       "id": "F179",
@@ -1482,7 +1619,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F179"
     },
     {
       "id": "F180",
@@ -1492,7 +1630,8 @@
       "detector": "compiler-warn",
       "defect_line": 3,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F180"
     },
     {
       "id": "F181",
@@ -1502,7 +1641,8 @@
       "detector": "compiler-warn",
       "defect_line": 9,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F181"
     },
     {
       "id": "F183",
@@ -1512,7 +1652,8 @@
       "detector": "compiler-warn",
       "defect_line": 9,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F183"
     },
     {
       "id": "F185",
@@ -1522,7 +1663,8 @@
       "detector": "compiler-warn",
       "defect_line": 9,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F185"
     },
     {
       "id": "F187",
@@ -1532,7 +1674,8 @@
       "detector": "compiler-warn",
       "defect_line": 9,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F187"
     },
     {
       "id": "F189",
@@ -1542,7 +1685,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F189"
     },
     {
       "id": "F192",
@@ -1552,7 +1696,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F192"
     },
     {
       "id": "F194",
@@ -1562,7 +1707,8 @@
       "detector": "compiler-warn",
       "defect_line": 5,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F194"
     },
     {
       "id": "F196",
@@ -1572,7 +1718,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F196"
     },
     {
       "id": "F198",
@@ -1582,7 +1729,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": false
+      "platform_dependent": false,
+      "sample_id": "F198"
     },
     {
       "id": "F200",
@@ -1592,7 +1740,8 @@
       "detector": "compiler-warn",
       "defect_line": 4,
       "planted": true,
-      "platform_dependent": true
+      "platform_dependent": true,
+      "sample_id": "F200"
     }
   ]
 }

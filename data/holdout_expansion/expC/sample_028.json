@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "多次移动同一对象：合法但语义可疑，无检测器可抓（盲区）。",
-  "id": "sample_028",
+  "sample_id": "sample_028",
   "category": "C",
   "defect_location": {
     "line": 7,
     "function": "main",
-    "note": "S c = f(); // <<PLANTED-DEFECT>> 对同一对象二次移动（通过 lambda 捕获）"
+    "file": "sample_028.cpp",
+    "notes": "S c = f(); // <<PLANTED-DEFECT>> 对同一对象二次移动（通过 lambda 捕获）"
   },
   "planted": true,
   "source_files": [

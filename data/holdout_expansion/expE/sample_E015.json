@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 27,
     "function": "consumer",
-    "description": "用 memory_order_consume 发布载荷（C++17 起不推荐且实现多等同 relaxed）"
+    "file": "sample_E015.cpp",
+    "notes": "用 memory_order_consume 发布载荷（C++17 起不推荐且实现多等同 relaxed）"
   },
   "severity": "high",
   "planted": true,

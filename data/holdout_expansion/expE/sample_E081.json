@@ -4,18 +4,19 @@
   "defect_location": {
     "line": 24,
     "function": "send_path",
-    "description": "网络发送路径 sock->session，会话清理路径 session->sock"
+    "file": "sample_E081.cpp",
+    "notes": "网络发送路径 sock->session，会话清理路径 session->sock"
   },
   "severity": "high",
   "planted": true,
-  "expected_verdict": "catch",
+  "expected_verdict": "miss",
   "expected_detectors": [
     "tsan"
   ],
   "trigger_condition": "2 线程走发送路径与清理路径",
   "thread_count": 2,
   "timeout_seconds": 5,
-  "notes": "网络编程常见顺序反转。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "notes": "网络编程常见顺序反转。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。 【676m 修正：hung_flag 样本真实判据为 miss（sanitizer 挂起超时），原 catch 登记有误】",
   "pooled_verdict": {
     "tsan": "catch"
   },

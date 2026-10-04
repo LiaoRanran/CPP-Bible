@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 26,
     "function": "dropper",
-    "description": "引用计数用 relaxed 增减，读侧据此判定对象存活"
+    "file": "sample_E012.cpp",
+    "notes": "引用计数用 relaxed 增减，读侧据此判定对象存活"
   },
   "severity": "high",
   "planted": true,

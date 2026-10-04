@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G060",
-  "defect_type": "pointer_overflow",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 22,
     "function": "inflate_table_build",
-    "description": "CVE-2016-9840: inftrees.c 不当指针算术（CVE 描述: inftrees.c in zlib 1.2.8 might allow ... improper pointer arithmetic）。用户态等价重构（planted=true）。UBSan pointer-overflow 捕获。"
+    "file": "sample_G060.cpp",
+    "notes": "CVE-2016-9840: inftrees.c 不当指针算术（CVE 描述: inftrees.c in zlib 1.2.8 might allow ... improper pointer arithmetic）。用户态等价重构（planted=true）。UBSan pointer-overflow 捕获。"
   },
   "severity": "medium",
   "planted": true,

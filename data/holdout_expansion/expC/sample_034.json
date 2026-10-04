@@ -8,12 +8,13 @@
   "trigger_condition": "异常被抛出时（始终触发）",
   "optimization_sensitivity": "n/a",
   "notes": "raii_violation 内存泄漏：分支提前 return，delete[] 不可达，LeakSanitizer 抓。",
-  "id": "sample_034",
+  "sample_id": "sample_034",
   "category": "C",
   "defect_location": {
     "line": 3,
     "function": "main",
-    "note": "if (true) return 0;   // <<PLANTED-DEFECT>> 提前返回，p 未释放 -> 内存泄漏"
+    "file": "sample_034.cpp",
+    "notes": "if (true) return 0;   // <<PLANTED-DEFECT>> 提前返回，p 未释放 -> 内存泄漏"
   },
   "planted": true,
   "source_files": [

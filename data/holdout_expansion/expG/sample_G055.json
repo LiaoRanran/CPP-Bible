@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G055",
-  "defect_type": "heap_overread",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 21,
     "function": "getNodeSize",
-    "description": "CVE-2017-10989: getNodeSize 处理 undersized RTree blob 时堆越界读（CVE 描述: mishandles undersized RTree blobs in a crafted database, leading to a heap-based buffer over-read）。"
+    "file": "sample_G055.cpp",
+    "notes": "CVE-2017-10989: getNodeSize 处理 undersized RTree blob 时堆越界读（CVE 描述: mishandles undersized RTree blobs in a crafted database, leading to a heap-based buffer over-read）。"
   },
   "severity": "high",
   "planted": false,

@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "对已移动自 vector 的对象继续访问：C++ 允许但结果未指定；无检测器可抓（盲区）。",
-  "id": "sample_020",
+  "sample_id": "sample_020",
   "category": "C",
   "defect_location": {
     "line": 5,
     "function": "main",
-    "note": "(void)v.size(); // <<PLANTED-DEFECT>> 使用已移动对象 v（size() 结果未指定）"
+    "file": "sample_020.cpp",
+    "notes": "(void)v.size(); // <<PLANTED-DEFECT>> 使用已移动对象 v（size() 结果未指定）"
   },
   "planted": true,
   "source_files": [

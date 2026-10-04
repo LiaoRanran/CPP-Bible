@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 9,
     "function": "main",
-    "description": "容器修改后使用失效的 end() 迭代器"
+    "file": "sample_D032.cpp",
+    "notes": "容器修改后使用失效的 end() 迭代器"
   },
   "severity": "medium",
   "planted": true,

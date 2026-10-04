@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G017",
-  "defect_type": "heap_overread",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 18,
     "function": "ASN1_STRING_cmp",
-    "description": "CVE-2021-3712: ASN1_STRING 以 (data, length) 表示、不保证 NUL 结尾（CVE 描述: contrasts with normal C strings which are repesented as a buffer for the string data），误按 C 字符串读 → 越界读/信息泄露。"
+    "file": "sample_G017.cpp",
+    "notes": "CVE-2021-3712: ASN1_STRING 以 (data, length) 表示、不保证 NUL 结尾（CVE 描述: contrasts with normal C strings which are repesented as a buffer for the string data），误按 C 字符串读 → 越界读/信息泄露。"
   },
   "severity": "high",
   "planted": false,

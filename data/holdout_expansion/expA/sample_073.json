@@ -1,11 +1,12 @@
 {
-  "id": "sample_073",
+  "sample_id": "sample_073",
   "category": "A",
   "defect_type": "uninitialized_read",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "if (flag) { (void)0; } // <<PLANTED-DEFECT>> uninitialized read: branch on uninit bool"
+    "file": "sample_073.cpp",
+    "notes": "if (flag) { (void)0; } // <<PLANTED-DEFECT>> uninitialized read: branch on uninit bool"
   },
   "severity": "low",
   "planted": true,

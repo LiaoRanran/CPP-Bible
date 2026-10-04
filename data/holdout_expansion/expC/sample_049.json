@@ -8,12 +8,13 @@
   "trigger_condition": "提前返回分支",
   "optimization_sensitivity": "n/a",
   "notes": "手动加锁后提前返回未解锁：锁泄漏，无 sanitizer 可抓（盲区）。",
-  "id": "sample_049",
+  "sample_id": "sample_049",
   "category": "C",
   "defect_location": {
     "line": 5,
     "function": "main",
-    "note": "if (true) return -1; // <<PLANTED-DEFECT>> 提前返回，未 unlock -> 锁泄漏"
+    "file": "sample_049.cpp",
+    "notes": "if (true) return -1; // <<PLANTED-DEFECT>> 提前返回，未 unlock -> 锁泄漏"
   },
   "planted": true,
   "source_files": [

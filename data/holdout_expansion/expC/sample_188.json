@@ -1,19 +1,20 @@
 {
-  "defect_type": "conditional_trigger",
+  "defect_type": "memory_leak",
   "expected_detectors": [
     "asan"
   ],
   "expected_verdict": "catch",
   "severity": "high",
-  "trigger_condition": "input>0（input=6）时提前返回触发泄漏",
+  "trigger_condition": "input>0（input=6）时提前返回触发泄漏；【676m】原 defect_type=conditional_trigger（元标签，已从 defect_type 拆出）",
   "optimization_sensitivity": "n/a",
   "notes": "仅当 input>0 时走泄漏分支；main 内构造触发输入，LeakSanitizer 抓。",
-  "id": "sample_188",
+  "sample_id": "sample_188",
   "category": "C",
   "defect_location": {
     "line": 4,
     "function": "main",
-    "note": "if (input > 0) { return 0; } // <<PLANTED-DEFECT>> 特定分支提前返回 -> 泄漏"
+    "file": "sample_188.cpp",
+    "notes": "if (input > 0) { return 0; } // <<PLANTED-DEFECT>> 特定分支提前返回 -> 泄漏"
   },
   "planted": true,
   "source_files": [

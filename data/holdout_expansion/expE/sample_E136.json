@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E136",
-  "defect_type": "aba_problem",
+  "defect_type": "atomic_ub",
   "defect_location": {
     "line": 24,
     "function": "main",
-    "description": "无锁栈在「摘链」与「改链」之间留出 ABA 窗口"
+    "file": "sample_E136.cpp",
+    "notes": "无锁栈在「摘链」与「改链」之间留出 ABA 窗口"
   },
   "severity": "high",
   "planted": true,

@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G067",
-  "defect_type": "heap_overflow",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 16,
     "function": "file2strvec",
-    "description": "CVE-2018-1124: procps-ng file2strvec 多处整数溢出 → 堆损坏（CVE 描述: multiple integer overflows leading to a heap corruption in file2strvec function ... privilege escalation）。"
+    "file": "sample_G067.cpp",
+    "notes": "CVE-2018-1124: procps-ng file2strvec 多处整数溢出 → 堆损坏（CVE 描述: multiple integer overflows leading to a heap corruption in file2strvec function ... privilege escalation）。"
   },
   "severity": "high",
   "planted": true,

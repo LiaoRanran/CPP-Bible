@@ -4,18 +4,19 @@
   "defect_location": {
     "line": 17,
     "function": "f",
-    "description": "std::lock 之后又手动 lock 其中一把"
+    "file": "sample_E091.cpp",
+    "notes": "std::lock 之后又手动 lock 其中一把"
   },
   "severity": "high",
   "planted": true,
-  "expected_verdict": "catch",
+  "expected_verdict": "miss",
   "expected_detectors": [
     "tsan"
   ],
   "trigger_condition": "单线程 std::lock 后重复 lock",
   "thread_count": 1,
   "timeout_seconds": 5,
-  "notes": "std::lock 与手动 lock 混用。确定性自死锁。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "notes": "std::lock 与手动 lock 混用。确定性自死锁。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。 【676m 修正：hung_flag 样本真实判据为 miss（sanitizer 挂起超时），原 catch 登记有误】",
   "pooled_verdict": {
     "tsan": "catch"
   },

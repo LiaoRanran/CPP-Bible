@@ -2,9 +2,10 @@
   "sample_id": "F087",
   "defect_type": "volatile_misuse",
   "defect_location": {
-    "description": "const_cast 去掉 volatile 限定后写 MMIO 寄存器",
     "line": 4,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F087.cpp",
+    "notes": "const_cast 去掉 volatile 限定后写 MMIO 寄存器"
   },
   "severity": "medium",
   "planted": true,

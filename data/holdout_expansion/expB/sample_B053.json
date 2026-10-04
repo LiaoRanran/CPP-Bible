@@ -1,9 +1,10 @@
 {
   "sample_id": "sample_B053",
-  "defect_type": "resource_leak",
+  "defect_type": "memory_leak",
   "defect_location": {
-    "line": 3,
-    "function": "main"
+    "line": 11,
+    "function": "main",
+    "file": "sample_B053.cpp"
   },
   "severity": "medium",
   "planted": true,

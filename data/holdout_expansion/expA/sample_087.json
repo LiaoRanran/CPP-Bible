@@ -1,11 +1,12 @@
 {
-  "id": "sample_087",
+  "sample_id": "sample_087",
   "category": "A",
-  "defect_type": "undefined_behavior",
+  "defect_type": "bit_operation",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "int r = x << 32; // <<PLANTED-DEFECT>> undefined behavior: shift by 32 equals width of int"
+    "file": "sample_087.cpp",
+    "notes": "int r = x << 32; // <<PLANTED-DEFECT>> undefined behavior: shift by 32 equals width of int"
   },
   "severity": "high",
   "planted": true,

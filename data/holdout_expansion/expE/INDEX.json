@@ -57,7 +57,8 @@
       "defect_location": {
         "line": 24,
         "function": "consumer",
-        "description": "consumer 用 relaxed 轮询 ready 标志，未与 producer 的 release 配对 acquire"
+        "file": "sample_E001.cpp",
+        "notes": "consumer 用 relaxed 轮询 ready 标志，未与 producer 的 release 配对 acquire"
       },
       "severity": "high",
       "planted": true,
@@ -78,7 +79,8 @@
       "defect_location": {
         "line": 24,
         "function": "consumer",
-        "description": "consumer 用 relaxed 轮询 ready，随后 relaxed 读 double 载荷"
+        "file": "sample_E002.cpp",
+        "notes": "consumer 用 relaxed 轮询 ready，随后 relaxed 读 double 载荷"
       },
       "severity": "high",
       "planted": true,
@@ -99,7 +101,8 @@
       "defect_location": {
         "line": 22,
         "function": "get_instance",
-        "description": "DCLP 二次检查用 relaxed，读到非空指针时对象未完成构造"
+        "file": "sample_E003.cpp",
+        "notes": "DCLP 二次检查用 relaxed，读到非空指针时对象未完成构造"
       },
       "severity": "high",
       "planted": true,
@@ -120,7 +123,8 @@
       "defect_location": {
         "line": 20,
         "function": "acquire_node",
-        "description": "DCLP 用普通指针承载已发布对象，二次检查走 relaxed"
+        "file": "sample_E004.cpp",
+        "notes": "DCLP 用普通指针承载已发布对象，二次检查走 relaxed"
       },
       "severity": "high",
       "planted": true,
@@ -142,7 +146,8 @@
       "defect_location": {
         "line": 22,
         "function": "writer",
-        "description": "指针以 relaxed 发布，reader 以 relaxed 读取后解引用"
+        "file": "sample_E005.cpp",
+        "notes": "指针以 relaxed 发布，reader 以 relaxed 读取后解引用"
       },
       "severity": "high",
       "planted": true,
@@ -164,7 +169,8 @@
       "defect_location": {
         "line": 24,
         "function": "watcher",
-        "description": "标志以 release 存储、以 relaxed 加载，acquire 语义被丢弃"
+        "file": "sample_E006.cpp",
+        "notes": "标志以 release 存储、以 relaxed 加载，acquire 语义被丢弃"
       },
       "severity": "medium",
       "planted": true,
@@ -185,7 +191,8 @@
       "defect_location": {
         "line": 22,
         "function": "producer",
-        "description": "两段式握手中第二个标志用 relaxed 发布"
+        "file": "sample_E007.cpp",
+        "notes": "两段式握手中第二个标志用 relaxed 发布"
       },
       "severity": "high",
       "planted": true,
@@ -206,7 +213,8 @@
       "defect_location": {
         "line": 22,
         "function": "producer",
-        "description": "用 relaxed 计数器的读数作为「数据已就绪」的判据"
+        "file": "sample_E008.cpp",
+        "notes": "用 relaxed 计数器的读数作为「数据已就绪」的判据"
       },
       "severity": "high",
       "planted": true,
@@ -227,7 +235,8 @@
       "defect_location": {
         "line": 20,
         "function": "setter",
-        "description": "acquire 存储配 relaxed 加载（配对方向反了）"
+        "file": "sample_E009.cpp",
+        "notes": "acquire 存储配 relaxed 加载（配对方向反了）"
       },
       "severity": "medium",
       "planted": true,
@@ -248,7 +257,8 @@
       "defect_location": {
         "line": 24,
         "function": "watcher",
-        "description": "seq_cst 存储配 relaxed 加载（强度不匹配）"
+        "file": "sample_E010.cpp",
+        "notes": "seq_cst 存储配 relaxed 加载（强度不匹配）"
       },
       "severity": "low",
       "planted": true,
@@ -269,7 +279,8 @@
       "defect_location": {
         "line": 23,
         "function": "producer",
-        "description": "载荷以 relaxed 发布到原子，但读侧读的是非原子镜像"
+        "file": "sample_E011.cpp",
+        "notes": "载荷以 relaxed 发布到原子，但读侧读的是非原子镜像"
       },
       "severity": "high",
       "planted": true,
@@ -290,7 +301,8 @@
       "defect_location": {
         "line": 26,
         "function": "dropper",
-        "description": "引用计数用 relaxed 增减，读侧据此判定对象存活"
+        "file": "sample_E012.cpp",
+        "notes": "引用计数用 relaxed 增减，读侧据此判定对象存活"
       },
       "severity": "high",
       "planted": true,
@@ -312,7 +324,8 @@
       "defect_location": {
         "line": 19,
         "function": "producer",
-        "description": "载荷与标志全部 relaxed 存储，整条发布链无 release"
+        "file": "sample_E013.cpp",
+        "notes": "载荷与标志全部 relaxed 存储，整条发布链无 release"
       },
       "severity": "high",
       "planted": true,
@@ -333,7 +346,8 @@
       "defect_location": {
         "line": 20,
         "function": "producer",
-        "description": "用 relaxed fence 代替 release 语义"
+        "file": "sample_E014.cpp",
+        "notes": "用 relaxed fence 代替 release 语义"
       },
       "severity": "high",
       "planted": true,
@@ -354,7 +368,8 @@
       "defect_location": {
         "line": 27,
         "function": "consumer",
-        "description": "用 memory_order_consume 发布载荷（C++17 起不推荐且实现多等同 relaxed）"
+        "file": "sample_E015.cpp",
+        "notes": "用 memory_order_consume 发布载荷（C++17 起不推荐且实现多等同 relaxed）"
       },
       "severity": "high",
       "planted": true,
@@ -375,7 +390,8 @@
       "defect_location": {
         "line": 20,
         "function": "producer",
-        "description": "seq_cst fence 放在载荷写与标志写之间，位置错误导致不构成 release 序列"
+        "file": "sample_E016.cpp",
+        "notes": "seq_cst fence 放在载荷写与标志写之间，位置错误导致不构成 release 序列"
       },
       "severity": "high",
       "planted": true,
@@ -396,7 +412,8 @@
       "defect_location": {
         "line": 21,
         "function": "producer",
-        "description": "以 relaxed 读计数作同步判据，随后读非原子缓冲"
+        "file": "sample_E017.cpp",
+        "notes": "以 relaxed 读计数作同步判据，随后读非原子缓冲"
       },
       "severity": "high",
       "planted": true,
@@ -417,7 +434,8 @@
       "defect_location": {
         "line": 24,
         "function": "producer",
-        "description": "消费者 acquire 了错误的标志，读到未被保护的载荷"
+        "file": "sample_E018.cpp",
+        "notes": "消费者 acquire 了错误的标志，读到未被保护的载荷"
       },
       "severity": "high",
       "planted": true,
@@ -438,7 +456,8 @@
       "defect_location": {
         "line": 22,
         "function": "producer",
-        "description": "两段发布中末段标志用 relaxed，读侧 acquire 后读非原子载荷"
+        "file": "sample_E019.cpp",
+        "notes": "两段发布中末段标志用 relaxed，读侧 acquire 后读非原子载荷"
       },
       "severity": "high",
       "planted": true,
@@ -459,7 +478,8 @@
       "defect_location": {
         "line": 26,
         "function": "writer",
-        "description": "以 relaxed 发布指针，读侧 acquire 标志后仍读非原子缓存字段"
+        "file": "sample_E020.cpp",
+        "notes": "以 relaxed 发布指针，读侧 acquire 标志后仍读非原子缓存字段"
       },
       "severity": "high",
       "planted": true,
@@ -481,7 +501,8 @@
       "defect_location": {
         "line": 25,
         "function": "consumer",
-        "description": "以 relaxed 读布尔标志作为「数据可读」判据，随后读非原子字段"
+        "file": "sample_E021.cpp",
+        "notes": "以 relaxed 读布尔标志作为「数据可读」判据，随后读非原子字段"
       },
       "severity": "high",
       "planted": true,
@@ -502,7 +523,8 @@
       "defect_location": {
         "line": 24,
         "function": "get",
-        "description": "DCLP 中 relaxed 读实例指针 + 构造函数内的非原子字段写"
+        "file": "sample_E022.cpp",
+        "notes": "DCLP 中 relaxed 读实例指针 + 构造函数内的非原子字段写"
       },
       "severity": "high",
       "planted": true,
@@ -523,7 +545,8 @@
       "defect_location": {
         "line": 21,
         "function": "worker",
-        "description": "以 relaxed 的 fetch_or 位标志作完成判据"
+        "file": "sample_E023.cpp",
+        "notes": "以 relaxed 的 fetch_or 位标志作完成判据"
       },
       "severity": "medium",
       "planted": true,
@@ -544,7 +567,8 @@
       "defect_location": {
         "line": 20,
         "function": "writer",
-        "description": "acquire 加载与 relaxed 存储错配（读侧够强写侧过弱）"
+        "file": "sample_E024.cpp",
+        "notes": "acquire 加载与 relaxed 存储错配（读侧够强写侧过弱）"
       },
       "severity": "high",
       "planted": true,
@@ -565,7 +589,8 @@
       "defect_location": {
         "line": 20,
         "function": "writer",
-        "description": "在 load 上误用 memory_order_release（release 对 load 无效）"
+        "file": "sample_E025.cpp",
+        "notes": "在 load 上误用 memory_order_release（release 对 load 无效）"
       },
       "severity": "high",
       "planted": true,
@@ -586,7 +611,8 @@
       "defect_location": {
         "line": 21,
         "function": "bump",
-        "description": "compare_exchange_weak 成功序用 relaxed 做「读-改-写-再写」多步更新"
+        "file": "sample_E026.cpp",
+        "notes": "compare_exchange_weak 成功序用 relaxed 做「读-改-写-再写」多步更新"
       },
       "severity": "high",
       "planted": true,
@@ -607,7 +633,8 @@
       "defect_location": {
         "line": 21,
         "function": "get",
-        "description": "DCLP 二次检查的 relaxed 读 + 重试循环"
+        "file": "sample_E027.cpp",
+        "notes": "DCLP 二次检查的 relaxed 读 + 重试循环"
       },
       "severity": "medium",
       "planted": true,
@@ -628,7 +655,8 @@
       "defect_location": {
         "line": 27,
         "function": "consumer",
-        "description": "以 relaxed 读标志 + 非原子裸指针读取已发布对象"
+        "file": "sample_E028.cpp",
+        "notes": "以 relaxed 读标志 + 非原子裸指针读取已发布对象"
       },
       "severity": "high",
       "planted": true,
@@ -649,7 +677,8 @@
       "defect_location": {
         "line": 22,
         "function": "producer",
-        "description": "中间的 relaxed store 打断 release 序列，读侧仍用 acquire"
+        "file": "sample_E029.cpp",
+        "notes": "中间的 relaxed store 打断 release 序列，读侧仍用 acquire"
       },
       "severity": "high",
       "planted": true,
@@ -670,7 +699,8 @@
       "defect_location": {
         "line": 20,
         "function": "task",
-        "description": "以 relaxed 计数作「配额已满」判据（顺序正确性依赖内存序但全是原子）"
+        "file": "sample_E030.cpp",
+        "notes": "以 relaxed 计数作「配额已满」判据（顺序正确性依赖内存序但全是原子）"
       },
       "severity": "medium",
       "planted": true,
@@ -691,7 +721,8 @@
       "defect_location": {
         "line": 27,
         "function": "consumer",
-        "description": "生产者 relaxed 写多个原子字段，消费者只 acquire 一个总标志"
+        "file": "sample_E031.cpp",
+        "notes": "生产者 relaxed 写多个原子字段，消费者只 acquire 一个总标志"
       },
       "severity": "high",
       "planted": true,
@@ -712,7 +743,8 @@
       "defect_location": {
         "line": 21,
         "function": "get_cached",
-        "description": "DCLP 里 relaxed 检查非原子局部缓存指针"
+        "file": "sample_E032.cpp",
+        "notes": "DCLP 里 relaxed 检查非原子局部缓存指针"
       },
       "severity": "medium",
       "planted": true,
@@ -733,7 +765,8 @@
       "defect_location": {
         "line": 25,
         "function": "waiter",
-        "description": "spin-wait 中 relaxed 轮询 + relaxed 读载荷（无 release 侧）"
+        "file": "sample_E033.cpp",
+        "notes": "spin-wait 中 relaxed 轮询 + relaxed 读载荷（无 release 侧）"
       },
       "severity": "high",
       "planted": true,
@@ -754,7 +787,8 @@
       "defect_location": {
         "line": 22,
         "function": "arm",
-        "description": "exchange 用 relaxed 换出指针，读侧 acquire 的是另一个标志"
+        "file": "sample_E034.cpp",
+        "notes": "exchange 用 relaxed 换出指针，读侧 acquire 的是另一个标志"
       },
       "severity": "high",
       "planted": true,
@@ -776,7 +810,8 @@
       "defect_location": {
         "line": 21,
         "function": "producer",
-        "description": "以 relaxed 计数作数组下标发布，随后读非原子数组"
+        "file": "sample_E035.cpp",
+        "notes": "以 relaxed 计数作数组下标发布，随后读非原子数组"
       },
       "severity": "high",
       "planted": true,
@@ -797,7 +832,8 @@
       "defect_location": {
         "line": 20,
         "function": "producer_a",
-        "description": "两个生产者一个 acquire 一个 relaxed，发布强度不一致"
+        "file": "sample_E036.cpp",
+        "notes": "两个生产者一个 acquire 一个 relaxed，发布强度不一致"
       },
       "severity": "high",
       "planted": true,
@@ -818,7 +854,8 @@
       "defect_location": {
         "line": 25,
         "function": "consumer",
-        "description": "relaxed 轮询标志后读非原子结构体成员"
+        "file": "sample_E037.cpp",
+        "notes": "relaxed 轮询标志后读非原子结构体成员"
       },
       "severity": "high",
       "planted": true,
@@ -839,7 +876,8 @@
       "defect_location": {
         "line": 22,
         "function": "get",
-        "description": "DCLP 中 relaxed 二次检查 + 竞争分支 delete 导致 UAF 窗口"
+        "file": "sample_E038.cpp",
+        "notes": "DCLP 中 relaxed 二次检查 + 竞争分支 delete 导致 UAF 窗口"
       },
       "severity": "high",
       "planted": true,
@@ -861,7 +899,8 @@
       "defect_location": {
         "line": 20,
         "function": "producer",
-        "description": "写侧 acq_rel / 读侧 relaxed，载荷为非原子数组"
+        "file": "sample_E039.cpp",
+        "notes": "写侧 acq_rel / 读侧 relaxed，载荷为非原子数组"
       },
       "severity": "high",
       "planted": true,
@@ -882,7 +921,8 @@
       "defect_location": {
         "line": 24,
         "function": "reader",
-        "description": "「一次性初始化」标志用 seq_cst 写 + relaxed 读，读侧读非原子全局表"
+        "file": "sample_E040.cpp",
+        "notes": "「一次性初始化」标志用 seq_cst 写 + relaxed 读，读侧读非原子全局表"
       },
       "severity": "high",
       "planted": true,
@@ -903,7 +943,8 @@
       "defect_location": {
         "line": 19,
         "function": "main",
-        "description": "局部 std::atomic<int> 默认初始化（值不确定）后直接 fetch_add"
+        "file": "sample_E041.cpp",
+        "notes": "局部 std::atomic<int> 默认初始化（值不确定）后直接 fetch_add"
       },
       "severity": "high",
       "planted": true,
@@ -925,7 +966,8 @@
       "defect_location": {
         "line": 15,
         "function": "main",
-        "description": "堆上 new std::atomic<int> 未值初始化即参与运算"
+        "file": "sample_E042.cpp",
+        "notes": "堆上 new std::atomic<int> 未值初始化即参与运算"
       },
       "severity": "high",
       "planted": true,
@@ -946,7 +988,8 @@
       "defect_location": {
         "line": 22,
         "function": "main",
-        "description": "结构体成员原子未在构造函数中初始化即被读改写"
+        "file": "sample_E043.cpp",
+        "notes": "结构体成员原子未在构造函数中初始化即被读改写"
       },
       "severity": "high",
       "planted": true,
@@ -967,7 +1010,8 @@
       "defect_location": {
         "line": 25,
         "function": "claim",
-        "description": "compare_exchange_weak 失败后不检查 expected，直接拿它当新值用"
+        "file": "sample_E044.cpp",
+        "notes": "compare_exchange_weak 失败后不检查 expected，直接拿它当新值用"
       },
       "severity": "high",
       "planted": true,
@@ -988,7 +1032,8 @@
       "defect_location": {
         "line": 21,
         "function": "try_acquire",
-        "description": "单次 compare_exchange_weak 失败即放弃（未放入循环）"
+        "file": "sample_E045.cpp",
+        "notes": "单次 compare_exchange_weak 失败即放弃（未放入循环）"
       },
       "severity": "high",
       "planted": true,
@@ -1009,7 +1054,8 @@
       "defect_location": {
         "line": 21,
         "function": "bump",
-        "description": "compare_exchange_strong 用在循环里（该用 weak）"
+        "file": "sample_E046.cpp",
+        "notes": "compare_exchange_strong 用在循环里（该用 weak）"
       },
       "severity": "low",
       "planted": true,
@@ -1030,7 +1076,8 @@
       "defect_location": {
         "line": 16,
         "function": "main",
-        "description": "compare_exchange 的失败序强于成功序（违反标准前置条件，UB）"
+        "file": "sample_E047.cpp",
+        "notes": "compare_exchange 的失败序强于成功序（违反标准前置条件，UB）"
       },
       "severity": "high",
       "planted": true,
@@ -1051,7 +1098,8 @@
       "defect_location": {
         "line": 19,
         "function": "bump",
-        "description": "std::atomic<int>::fetch_add 有符号溢出（C++17 下为 UB）"
+        "file": "sample_E048.cpp",
+        "notes": "std::atomic<int>::fetch_add 有符号溢出（C++17 下为 UB）"
       },
       "severity": "high",
       "planted": true,
@@ -1072,7 +1120,8 @@
       "defect_location": {
         "line": 15,
         "function": "main",
-        "description": "std::atomic<long long>::fetch_sub 无符号下溢后当作合法计数使用"
+        "file": "sample_E049.cpp",
+        "notes": "std::atomic<long long>::fetch_sub 无符号下溢后当作合法计数使用"
       },
       "severity": "high",
       "planted": true,
@@ -1093,7 +1142,8 @@
       "defect_location": {
         "line": 19,
         "function": "scale",
-        "description": "std::atomic<short> fetch_mul 溢出（C++17 下为 UB）"
+        "file": "sample_E050.cpp",
+        "notes": "std::atomic<short> fetch_mul 溢出（C++17 下为 UB）"
       },
       "severity": "high",
       "planted": true,
@@ -1114,7 +1164,8 @@
       "defect_location": {
         "line": 21,
         "function": "shifter",
-        "description": "对 atomic<T*> 做指针算术后存回，越界解引用"
+        "file": "sample_E051.cpp",
+        "notes": "对 atomic<T*> 做指针算术后存回，越界解引用"
       },
       "severity": "high",
       "planted": true,
@@ -1135,7 +1186,8 @@
       "defect_location": {
         "line": 22,
         "function": "publish",
-        "description": "把已 delete 的堆地址存进 atomic 指针，另一线程解引用"
+        "file": "sample_E052.cpp",
+        "notes": "把已 delete 的堆地址存进 atomic 指针，另一线程解引用"
       },
       "severity": "high",
       "planted": true,
@@ -1156,7 +1208,8 @@
       "defect_location": {
         "line": 20,
         "function": "requester",
-        "description": "atomic<bool>::exchange 的返回值被丢弃，信号丢失"
+        "file": "sample_E053.cpp",
+        "notes": "atomic<bool>::exchange 的返回值被丢弃，信号丢失"
       },
       "severity": "medium",
       "planted": true,
@@ -1177,7 +1230,8 @@
       "defect_location": {
         "line": 20,
         "function": "enter",
-        "description": "用 atomic<bool>::exchange 抢占独占权，忽略「已被占用」返回值"
+        "file": "sample_E054.cpp",
+        "notes": "用 atomic<bool>::exchange 抢占独占权，忽略「已被占用」返回值"
       },
       "severity": "medium",
       "planted": true,
@@ -1198,7 +1252,8 @@
       "defect_location": {
         "line": 24,
         "function": "guard",
-        "description": "atomic_flag 作为未初始化成员，test_and_set 前无原子状态建立"
+        "file": "sample_E055.cpp",
+        "notes": "atomic_flag 作为未初始化成员，test_and_set 前无原子状态建立"
       },
       "severity": "high",
       "planted": true,
@@ -1219,7 +1274,8 @@
       "defect_location": {
         "line": 20,
         "function": "worker",
-        "description": "自旋锁的 test_and_set 与 clear 都用 relaxed，失去 acquire/release"
+        "file": "sample_E056.cpp",
+        "notes": "自旋锁的 test_and_set 与 clear 都用 relaxed，失去 acquire/release"
       },
       "severity": "high",
       "planted": true,
@@ -1240,7 +1296,8 @@
       "defect_location": {
         "line": 19,
         "function": "bump_via_fake_atomic",
-        "description": "把 std::atomic<int> 的引用绑到普通 int 上，当作原子操作使用"
+        "file": "sample_E057.cpp",
+        "notes": "把 std::atomic<int> 的引用绑到普通 int 上，当作原子操作使用"
       },
       "severity": "high",
       "planted": true,
@@ -1261,7 +1318,8 @@
       "defect_location": {
         "line": 19,
         "function": "work",
-        "description": "把 atomic<int> placement-new 到未对齐的地址上"
+        "file": "sample_E058.cpp",
+        "notes": "把 atomic<int> placement-new 到未对齐的地址上"
       },
       "severity": "high",
       "planted": true,
@@ -1283,7 +1341,8 @@
       "defect_location": {
         "line": 19,
         "function": "publish_and_die",
-        "description": "栈上的 atomic 对象生命周期结束后仍被另一线程访问"
+        "file": "sample_E059.cpp",
+        "notes": "栈上的 atomic 对象生命周期结束后仍被另一线程访问"
       },
       "severity": "high",
       "planted": true,
@@ -1304,7 +1363,8 @@
       "defect_location": {
         "line": 21,
         "function": "poller",
-        "description": "堆上 atomic 在其它线程还在自旋轮询时被 delete"
+        "file": "sample_E060.cpp",
+        "notes": "堆上 atomic 在其它线程还在自旋轮询时被 delete"
       },
       "severity": "high",
       "planted": true,
@@ -1326,7 +1386,8 @@
       "defect_location": {
         "line": 20,
         "function": "inc",
-        "description": "用 load + store 模拟 RMW（丢失更新）"
+        "file": "sample_E061.cpp",
+        "notes": "用 load + store 模拟 RMW（丢失更新）"
       },
       "severity": "high",
       "planted": true,
@@ -1347,7 +1408,8 @@
       "defect_location": {
         "line": 20,
         "function": "bump2",
-        "description": "读-改-写序列中混入非原子成员赋值，破坏原子性保证"
+        "file": "sample_E062.cpp",
+        "notes": "读-改-写序列中混入非原子成员赋值，破坏原子性保证"
       },
       "severity": "high",
       "planted": true,
@@ -1368,7 +1430,8 @@
       "defect_location": {
         "line": 23,
         "function": "swap_role",
-        "description": "CAS 的 expected 变量同时被另一处原子写改写，导致比较对象漂移"
+        "file": "sample_E063.cpp",
+        "notes": "CAS 的 expected 变量同时被另一处原子写改写，导致比较对象漂移"
       },
       "severity": "high",
       "planted": true,
@@ -1389,7 +1452,8 @@
       "defect_location": {
         "line": 21,
         "function": "advance",
-        "description": "状态机混用 exchange 与 CAS，转换表不完整"
+        "file": "sample_E064.cpp",
+        "notes": "状态机混用 exchange 与 CAS，转换表不完整"
       },
       "severity": "medium",
       "planted": true,
@@ -1410,7 +1474,8 @@
       "defect_location": {
         "line": 20,
         "function": "indexer",
-        "description": "无符号原子下溢后作为数组下标使用"
+        "file": "sample_E065.cpp",
+        "notes": "无符号原子下溢后作为数组下标使用"
       },
       "severity": "high",
       "planted": true,
@@ -1431,7 +1496,8 @@
       "defect_location": {
         "line": 15,
         "function": "main",
-        "description": "std::atomic<signed char> 的 fetch_add 溢出"
+        "file": "sample_E066.cpp",
+        "notes": "std::atomic<signed char> 的 fetch_add 溢出"
       },
       "severity": "high",
       "planted": true,
@@ -1452,7 +1518,8 @@
       "defect_location": {
         "line": 23,
         "function": "worker",
-        "description": "用 memcpy 复制含 atomic_flag 的锁对象，锁状态被复制成两份"
+        "file": "sample_E067.cpp",
+        "notes": "用 memcpy 复制含 atomic_flag 的锁对象，锁状态被复制成两份"
       },
       "severity": "medium",
       "planted": true,
@@ -1473,7 +1540,8 @@
       "defect_location": {
         "line": 21,
         "function": "reset_once",
-        "description": "对仍在被其它线程使用的 atomic 对象做 placement-new 重新初始化"
+        "file": "sample_E068.cpp",
+        "notes": "对仍在被其它线程使用的 atomic 对象做 placement-new 重新初始化"
       },
       "severity": "high",
       "planted": true,
@@ -1494,7 +1562,8 @@
       "defect_location": {
         "line": 21,
         "function": "retire",
-        "description": "原子指针指向的对象被 delete 后，另一线程经 CAS 取出并使用"
+        "file": "sample_E069.cpp",
+        "notes": "原子指针指向的对象被 delete 后，另一线程经 CAS 取出并使用"
       },
       "severity": "high",
       "planted": true,
@@ -1515,7 +1584,8 @@
       "defect_location": {
         "line": 21,
         "function": "peel",
-        "description": "CAS 循环用常量 expected 反复重试，无法取得进展"
+        "file": "sample_E070.cpp",
+        "notes": "CAS 循环用常量 expected 反复重试，无法取得进展"
       },
       "severity": "high",
       "planted": true,
@@ -1536,7 +1606,8 @@
       "defect_location": {
         "line": 15,
         "function": "main",
-        "description": "在未初始化的栈缓冲区上直接使用 atomic_flag（缺 ATOMIC_FLAG_INIT）"
+        "file": "sample_E071.cpp",
+        "notes": "在未初始化的栈缓冲区上直接使用 atomic_flag（缺 ATOMIC_FLAG_INIT）"
       },
       "severity": "high",
       "planted": true,
@@ -1558,7 +1629,8 @@
       "defect_location": {
         "line": 19,
         "function": "push_side_effect",
-        "description": "通过 const_cast 绕过 const 原子对象写保护"
+        "file": "sample_E072.cpp",
+        "notes": "通过 const_cast 绕过 const 原子对象写保护"
       },
       "severity": "high",
       "planted": true,
@@ -1579,7 +1651,8 @@
       "defect_location": {
         "line": 22,
         "function": "counter",
-        "description": "在「类信号处理」语境里用非 lock-free 原子的自增"
+        "file": "sample_E073.cpp",
+        "notes": "在「类信号处理」语境里用非 lock-free 原子的自增"
       },
       "severity": "high",
       "planted": true,
@@ -1600,7 +1673,8 @@
       "defect_location": {
         "line": 20,
         "function": "shifter",
-        "description": "把原子指针的位运算结果当指针存回并解引用"
+        "file": "sample_E074.cpp",
+        "notes": "把原子指针的位运算结果当指针存回并解引用"
       },
       "severity": "high",
       "planted": true,
@@ -1622,7 +1696,8 @@
       "defect_location": {
         "line": 23,
         "function": "mutator",
-        "description": "CAS 只比较指针，指针指向的结构体内容被并发改写（伪原子快照）"
+        "file": "sample_E075.cpp",
+        "notes": "CAS 只比较指针，指针指向的结构体内容被并发改写（伪原子快照）"
       },
       "severity": "high",
       "planted": true,
@@ -1644,11 +1719,12 @@
       "defect_location": {
         "line": 24,
         "function": "threadA",
-        "description": "线程 A 按 m1->m2 加锁，线程 B 按 m2->m1 加锁（锁顺序不一致）"
+        "file": "sample_E076.cpp",
+        "notes": "线程 A 按 m1->m2 加锁，线程 B 按 m2->m1 加锁（锁顺序不一致）"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -1665,11 +1741,12 @@
       "defect_location": {
         "line": 24,
         "function": "alpha",
-        "description": "三线程分别以 m1->m2、m2->m3、m3->m1 顺序嵌套加锁"
+        "file": "sample_E077.cpp",
+        "notes": "三线程分别以 m1->m2、m2->m3、m3->m1 顺序嵌套加锁"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -1686,11 +1763,12 @@
       "defect_location": {
         "line": 24,
         "function": "log_path",
-        "description": "日志路径先锁输出锁再锁配置锁，配置路径先锁配置锁再锁输出锁"
+        "file": "sample_E078.cpp",
+        "notes": "日志路径先锁输出锁再锁配置锁，配置路径先锁配置锁再锁输出锁"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -1707,11 +1785,12 @@
       "defect_location": {
         "line": 24,
         "function": "cache_flush",
-        "description": "缓存刷新路径 data->meta，旁路读取路径 meta->data"
+        "file": "sample_E079.cpp",
+        "notes": "缓存刷新路径 data->meta，旁路读取路径 meta->data"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -1728,11 +1807,12 @@
       "defect_location": {
         "line": 24,
         "function": "engine",
-        "description": "引擎层 engine->plugin，插件层 plugin->engine"
+        "file": "sample_E080.cpp",
+        "notes": "引擎层 engine->plugin，插件层 plugin->engine"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -1749,11 +1829,12 @@
       "defect_location": {
         "line": 24,
         "function": "send_path",
-        "description": "网络发送路径 sock->session，会话清理路径 session->sock"
+        "file": "sample_E081.cpp",
+        "notes": "网络发送路径 sock->session，会话清理路径 session->sock"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -1770,11 +1851,12 @@
       "defect_location": {
         "line": 17,
         "function": "inner",
-        "description": "同一线程对非递归 std::mutex 二次加锁（递归加锁误用）"
+        "file": "sample_E082.cpp",
+        "notes": "同一线程对非递归 std::mutex 二次加锁（递归加锁误用）"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -1791,11 +1873,12 @@
       "defect_location": {
         "line": 18,
         "function": "on_event",
-        "description": "两个线程都走「取锁后回调」的路径，回调再次取同一把锁"
+        "file": "sample_E083.cpp",
+        "notes": "两个线程都走「取锁后回调」的路径，回调再次取同一把锁"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -1812,11 +1895,12 @@
       "defect_location": {
         "line": 17,
         "function": "f",
-        "description": "同一作用域内两个 lock_guard 锁同一把 mutex"
+        "file": "sample_E084.cpp",
+        "notes": "同一作用域内两个 lock_guard 锁同一把 mutex"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -1833,11 +1917,12 @@
       "defect_location": {
         "line": 19,
         "function": "walk",
-        "description": "递归函数每层都加同一把锁"
+        "file": "sample_E085.cpp",
+        "notes": "递归函数每层都加同一把锁"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -1854,11 +1939,12 @@
       "defect_location": {
         "line": 26,
         "function": "waiter",
-        "description": "持锁等待条件变量：等一个只有拿到该锁的线程才能满足的条件"
+        "file": "sample_E086.cpp",
+        "notes": "持锁等待条件变量：等一个只有拿到该锁的线程才能满足的条件"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -1875,7 +1961,8 @@
       "defect_location": {
         "line": 23,
         "function": "need_b",
-        "description": "持 A 锁等 B 锁，同时第三线程持 B 锁等 A 锁"
+        "file": "sample_E087.cpp",
+        "notes": "持 A 锁等 B 锁，同时第三线程持 B 锁等 A 锁"
       },
       "severity": "high",
       "planted": true,
@@ -1896,11 +1983,12 @@
       "defect_location": {
         "line": 26,
         "function": "producer",
-        "description": "生产者持锁等待空间释放，消费者要拿同一把锁才能腾出空间"
+        "file": "sample_E088.cpp",
+        "notes": "生产者持锁等待空间释放，消费者要拿同一把锁才能腾出空间"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -1917,11 +2005,12 @@
       "defect_location": {
         "line": 17,
         "function": "f",
-        "description": "已持有 m1 时调用 std::lock(m1, m2)"
+        "file": "sample_E089.cpp",
+        "notes": "已持有 m1 时调用 std::lock(m1, m2)"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -1938,11 +2027,12 @@
       "defect_location": {
         "line": 18,
         "function": "f",
-        "description": "adopt_lock 取得所有权后把同一把锁交给 std::lock"
+        "file": "sample_E090.cpp",
+        "notes": "adopt_lock 取得所有权后把同一把锁交给 std::lock"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -1959,11 +2049,12 @@
       "defect_location": {
         "line": 17,
         "function": "f",
-        "description": "std::lock 之后又手动 lock 其中一把"
+        "file": "sample_E091.cpp",
+        "notes": "std::lock 之后又手动 lock 其中一把"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -1980,11 +2071,12 @@
       "defect_location": {
         "line": 24,
         "function": "read_balance",
-        "description": "读路径 account->ledger，写路径 ledger->account"
+        "file": "sample_E092.cpp",
+        "notes": "读路径 account->ledger，写路径 ledger->account"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2001,11 +2093,12 @@
       "defect_location": {
         "line": 24,
         "function": "upload",
-        "description": "上传路径 file->meta，扫描路径 meta->file"
+        "file": "sample_E093.cpp",
+        "notes": "上传路径 file->meta，扫描路径 meta->file"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2022,11 +2115,12 @@
       "defect_location": {
         "line": 24,
         "function": "t1",
-        "description": "三个线程分别持有 m1 / m2 / m3 并按相反圆周顺序等待下一把"
+        "file": "sample_E094.cpp",
+        "notes": "三个线程分别持有 m1 / m2 / m3 并按相反圆周顺序等待下一把"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2043,11 +2137,12 @@
       "defect_location": {
         "line": 20,
         "function": "on_big_ready",
-        "description": "持锁线程触发回调，回调里再加第二把锁；另一线程反向持有"
+        "file": "sample_E095.cpp",
+        "notes": "持锁线程触发回调，回调里再加第二把锁；另一线程反向持有"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2064,11 +2159,12 @@
       "defect_location": {
         "line": 18,
         "function": "notify_cb",
-        "description": "持锁调用「通知」回调，回调内部再次请求同一把锁"
+        "file": "sample_E096.cpp",
+        "notes": "持锁调用「通知」回调，回调内部再次请求同一把锁"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2085,11 +2181,12 @@
       "defect_location": {
         "line": 18,
         "function": "user_hook",
-        "description": "钩子注册表在读锁下调用用户钩子，钩子又去拿写锁"
+        "file": "sample_E097.cpp",
+        "notes": "钩子注册表在读锁下调用用户钩子，钩子又去拿写锁"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2106,11 +2203,12 @@
       "defect_location": {
         "line": 18,
         "function": "on_row",
-        "description": "迭代器持有共享锁时调用回调，回调内部请求独占锁"
+        "file": "sample_E098.cpp",
+        "notes": "迭代器持有共享锁时调用回调，回调内部请求独占锁"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2127,11 +2225,12 @@
       "defect_location": {
         "line": 24,
         "function": "left",
-        "description": "左线程持 la 等 lb，右线程持 lb 等 la（两个条件变量互等）"
+        "file": "sample_E099.cpp",
+        "notes": "左线程持 la 等 lb，右线程持 lb 等 la（两个条件变量互等）"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2148,11 +2247,12 @@
       "defect_location": {
         "line": 24,
         "function": "request",
-        "description": "请求线程持连接锁等响应，等待线程持响应锁等连接"
+        "file": "sample_E100.cpp",
+        "notes": "请求线程持连接锁等响应，等待线程持响应锁等连接"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2169,11 +2269,12 @@
       "defect_location": {
         "line": 24,
         "function": "stage1",
-        "description": "三个阶段线程各持一锁并等待下一阶段的锁"
+        "file": "sample_E101.cpp",
+        "notes": "三个阶段线程各持一锁并等待下一阶段的锁"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2190,11 +2291,12 @@
       "defect_location": {
         "line": 26,
         "function": "waiter",
-        "description": "超时等待路径在持锁时进入 wait，超时后仍不释放外层锁"
+        "file": "sample_E102.cpp",
+        "notes": "超时等待路径在持锁时进入 wait，超时后仍不释放外层锁"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2211,7 +2313,8 @@
       "defect_location": {
         "line": 17,
         "function": "f",
-        "description": "unique_lock 已持有时再次调用 lock()"
+        "file": "sample_E103.cpp",
+        "notes": "unique_lock 已持有时再次调用 lock()"
       },
       "severity": "high",
       "planted": true,
@@ -2232,11 +2335,12 @@
       "defect_location": {
         "line": 23,
         "function": "holder",
-        "description": "一条路径「先 a 再 std::lock(b,c)」，另一条「先 std::lock(b,c) 再 a」"
+        "file": "sample_E104.cpp",
+        "notes": "一条路径「先 a 再 std::lock(b,c)」，另一条「先 std::lock(b,c) 再 a」"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2253,11 +2357,12 @@
       "defect_location": {
         "line": 17,
         "function": "f",
-        "description": "scoped_lock 已持有 m1 后再手动 lock(m1)"
+        "file": "sample_E105.cpp",
+        "notes": "scoped_lock 已持有 m1 后再手动 lock(m1)"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2274,11 +2379,12 @@
       "defect_location": {
         "line": 19,
         "function": "enter",
-        "description": "scoped_lock 作用域内再次进入同一函数（再次 scoped_lock 同两把锁）"
+        "file": "sample_E106.cpp",
+        "notes": "scoped_lock 作用域内再次进入同一函数（再次 scoped_lock 同两把锁）"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2295,7 +2401,8 @@
       "defect_location": {
         "line": 20,
         "function": "path_atomic",
-        "description": "一条路径一次取两把锁，另一条路径先取其中一把再取另一把"
+        "file": "sample_E107.cpp",
+        "notes": "一条路径一次取两把锁，另一条路径先取其中一把再取另一把"
       },
       "severity": "high",
       "planted": true,
@@ -2316,11 +2423,12 @@
       "defect_location": {
         "line": 19,
         "function": "leaky",
-        "description": "手动 lock 后异常/提前 return 路径未解锁，锁永久泄漏"
+        "file": "sample_E108.cpp",
+        "notes": "手动 lock 后异常/提前 return 路径未解锁，锁永久泄漏"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2337,11 +2445,12 @@
       "defect_location": {
         "line": 21,
         "function": "thrower",
-        "description": "持两把锁时抛异常，展开顺序使另一线程永久等待"
+        "file": "sample_E109.cpp",
+        "notes": "持两把锁时抛异常，展开顺序使另一线程永久等待"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -2358,7 +2467,8 @@
       "defect_location": {
         "line": 25,
         "function": "waiter",
-        "description": "condition_variable_any 与 recursive_mutex 错误配对：wait 只释放一层锁"
+        "file": "sample_E110.cpp",
+        "notes": "condition_variable_any 与 recursive_mutex 错误配对：wait 只释放一层锁"
       },
       "severity": "high",
       "planted": true,
@@ -2376,11 +2486,12 @@
     },
     {
       "sample_id": "sample_E111",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 41,
         "function": "main",
-        "description": "无锁栈 pop 用陈旧指针 CAS；静态槽位复用使 top 回到同一地址"
+        "file": "sample_E111.cpp",
+        "notes": "无锁栈 pop 用陈旧指针 CAS；静态槽位复用使 top 回到同一地址"
       },
       "severity": "high",
       "planted": true,
@@ -2398,11 +2509,12 @@
     },
     {
       "sample_id": "sample_E112",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 34,
         "function": "main",
-        "description": "无锁栈 pop 在 ABA 后解引用已 delete 的陈旧指针"
+        "file": "sample_E112.cpp",
+        "notes": "无锁栈 pop 在 ABA 后解引用已 delete 的陈旧指针"
       },
       "severity": "high",
       "planted": true,
@@ -2419,11 +2531,12 @@
     },
     {
       "sample_id": "sample_E113",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 43,
         "function": "main",
-        "description": "无锁栈 pop 后立即 delete 头节点，槽位复用造成 ABA"
+        "file": "sample_E113.cpp",
+        "notes": "无锁栈 pop 后立即 delete 头节点，槽位复用造成 ABA"
       },
       "severity": "high",
       "planted": true,
@@ -2441,11 +2554,12 @@
     },
     {
       "sample_id": "sample_E114",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 34,
         "function": "main",
-        "description": "无锁栈「预留-发布」两阶段 push 的 ABA"
+        "file": "sample_E114.cpp",
+        "notes": "无锁栈「预留-发布」两阶段 push 的 ABA"
       },
       "severity": "high",
       "planted": true,
@@ -2463,11 +2577,12 @@
     },
     {
       "sample_id": "sample_E115",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 34,
         "function": "main",
-        "description": "无锁栈 pop 在 ABA 窗口内对已释放节点做 delete（二次释放）"
+        "file": "sample_E115.cpp",
+        "notes": "无锁栈 pop 在 ABA 窗口内对已释放节点做 delete（二次释放）"
       },
       "severity": "high",
       "planted": true,
@@ -2484,11 +2599,12 @@
     },
     {
       "sample_id": "sample_E116",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 42,
         "function": "main",
-        "description": "无锁队列 dequeue 的 CAS 遇 A→B→A"
+        "file": "sample_E116.cpp",
+        "notes": "无锁队列 dequeue 的 CAS 遇 A→B→A"
       },
       "severity": "high",
       "planted": true,
@@ -2506,11 +2622,12 @@
     },
     {
       "sample_id": "sample_E117",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 35,
         "function": "main",
-        "description": "无锁队列的「head/tail 分离」更新遇 ABA"
+        "file": "sample_E117.cpp",
+        "notes": "无锁队列的「head/tail 分离」更新遇 ABA"
       },
       "severity": "high",
       "planted": true,
@@ -2528,11 +2645,12 @@
     },
     {
       "sample_id": "sample_E118",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 26,
         "function": "main",
-        "description": "无锁队列 dequeue 后 delete 元素节点，ABA 窗口内二次访问"
+        "file": "sample_E118.cpp",
+        "notes": "无锁队列 dequeue 后 delete 元素节点，ABA 窗口内二次访问"
       },
       "severity": "high",
       "planted": true,
@@ -2549,11 +2667,12 @@
     },
     {
       "sample_id": "sample_E119",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 25,
         "function": "main",
-        "description": "「队列空判断」轮询在 A→B→A 后误判队列非空"
+        "file": "sample_E119.cpp",
+        "notes": "「队列空判断」轮询在 A→B→A 后误判队列非空"
       },
       "severity": "high",
       "planted": true,
@@ -2571,11 +2690,12 @@
     },
     {
       "sample_id": "sample_E120",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 22,
         "function": "main",
-        "description": "无锁「值替换」CAS：值 A→B→A 后 CAS 误判未变"
+        "file": "sample_E120.cpp",
+        "notes": "无锁「值替换」CAS：值 A→B→A 后 CAS 误判未变"
       },
       "severity": "high",
       "planted": true,
@@ -2593,11 +2713,12 @@
     },
     {
       "sample_id": "sample_E121",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 22,
         "function": "main",
-        "description": "两步 CAS 之间的读-改-写被 ABA 打断"
+        "file": "sample_E121.cpp",
+        "notes": "两步 CAS 之间的读-改-写被 ABA 打断"
       },
       "severity": "high",
       "planted": true,
@@ -2615,11 +2736,12 @@
     },
     {
       "sample_id": "sample_E122",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 22,
         "function": "main",
-        "description": "双原子「不变式」在 ABA 下被绕过（校验通过但不变式已破）"
+        "file": "sample_E122.cpp",
+        "notes": "双原子「不变式」在 ABA 下被绕过（校验通过但不变式已破）"
       },
       "severity": "high",
       "planted": true,
@@ -2637,11 +2759,12 @@
     },
     {
       "sample_id": "sample_E123",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 23,
         "function": "main",
-        "description": "引用计数用「load-判断-置回」实现，计数 A→B→A 后误判无人持有"
+        "file": "sample_E123.cpp",
+        "notes": "引用计数用「load-判断-置回」实现，计数 A→B→A 后误判无人持有"
       },
       "severity": "high",
       "planted": true,
@@ -2659,11 +2782,12 @@
     },
     {
       "sample_id": "sample_E124",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 25,
         "function": "main",
-        "description": "无锁链表遍历：读 next 之后节点被删除复用"
+        "file": "sample_E124.cpp",
+        "notes": "无锁链表遍历：读 next 之后节点被删除复用"
       },
       "severity": "high",
       "planted": true,
@@ -2680,11 +2804,12 @@
     },
     {
       "sample_id": "sample_E125",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 22,
         "function": "main",
-        "description": "危险指针「发布顺序」错误：先读数据再登记 hazard"
+        "file": "sample_E125.cpp",
+        "notes": "危险指针「发布顺序」错误：先读数据再登记 hazard"
       },
       "severity": "high",
       "planted": true,
@@ -2701,11 +2826,12 @@
     },
     {
       "sample_id": "sample_E126",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 19,
         "function": "reclaim",
-        "description": "危险指针只发布不重新校验，删除线程无视 hazard 直接回收"
+        "file": "sample_E126.cpp",
+        "notes": "危险指针只发布不重新校验，删除线程无视 hazard 直接回收"
       },
       "severity": "high",
       "planted": true,
@@ -2723,11 +2849,12 @@
     },
     {
       "sample_id": "sample_E127",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 26,
         "function": "main",
-        "description": "危险指针「扫描-退休」缺失：reclaimer 连续回收多个节点"
+        "file": "sample_E127.cpp",
+        "notes": "危险指针「扫描-退休」缺失：reclaimer 连续回收多个节点"
       },
       "severity": "high",
       "planted": true,
@@ -2744,11 +2871,12 @@
     },
     {
       "sample_id": "sample_E128",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 28,
         "function": "main",
-        "description": "无锁栈缺少 tagged pointer，节点值 A→B→A"
+        "file": "sample_E128.cpp",
+        "notes": "无锁栈缺少 tagged pointer，节点值 A→B→A"
       },
       "severity": "high",
       "planted": true,
@@ -2766,11 +2894,12 @@
     },
     {
       "sample_id": "sample_E129",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 25,
         "function": "main",
-        "description": "内存池 freelist 用无版本 CAS 分配，槽位 A→B→A"
+        "file": "sample_E129.cpp",
+        "notes": "内存池 freelist 用无版本 CAS 分配，槽位 A→B→A"
       },
       "severity": "high",
       "planted": true,
@@ -2788,11 +2917,12 @@
     },
     {
       "sample_id": "sample_E130",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 21,
         "function": "main",
-        "description": "RCU 读侧无 rcu_read_lock：同步回调式「伪 RCU」"
+        "file": "sample_E130.cpp",
+        "notes": "RCU 读侧无 rcu_read_lock：同步回调式「伪 RCU」"
       },
       "severity": "high",
       "planted": true,
@@ -2810,11 +2940,12 @@
     },
     {
       "sample_id": "sample_E131",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 22,
         "function": "main",
-        "description": "RCU 读侧无保护 + reclaim 用 sleep 代替 grace period，命中 UAF"
+        "file": "sample_E131.cpp",
+        "notes": "RCU 读侧无保护 + reclaim 用 sleep 代替 grace period，命中 UAF"
       },
       "severity": "high",
       "planted": true,
@@ -2831,11 +2962,12 @@
     },
     {
       "sample_id": "sample_E132",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 25,
         "function": "main",
-        "description": "原子指针指向的节点内容被回收方「就地改写复用」（同址不同值）"
+        "file": "sample_E132.cpp",
+        "notes": "原子指针指向的节点内容被回收方「就地改写复用」（同址不同值）"
       },
       "severity": "high",
       "planted": true,
@@ -2853,11 +2985,12 @@
     },
     {
       "sample_id": "sample_E133",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 28,
         "function": "main",
-        "description": "无锁队列：元素在「出队-回队」后同址复用，被重复消费"
+        "file": "sample_E133.cpp",
+        "notes": "无锁队列：元素在「出队-回队」后同址复用，被重复消费"
       },
       "severity": "high",
       "planted": true,
@@ -2875,11 +3008,12 @@
     },
     {
       "sample_id": "sample_E134",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 25,
         "function": "main",
-        "description": "无锁栈 pop 后把陈旧指针写回链表（UAF 写）"
+        "file": "sample_E134.cpp",
+        "notes": "无锁栈 pop 后把陈旧指针写回链表（UAF 写）"
       },
       "severity": "high",
       "planted": true,
@@ -2896,11 +3030,12 @@
     },
     {
       "sample_id": "sample_E135",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 29,
         "function": "main",
-        "description": "以「指针 + 独立计数器」代替 tagged pointer，两字更新不原子"
+        "file": "sample_E135.cpp",
+        "notes": "以「指针 + 独立计数器」代替 tagged pointer，两字更新不原子"
       },
       "severity": "high",
       "planted": true,
@@ -2918,11 +3053,12 @@
     },
     {
       "sample_id": "sample_E136",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 24,
         "function": "main",
-        "description": "无锁栈在「摘链」与「改链」之间留出 ABA 窗口"
+        "file": "sample_E136.cpp",
+        "notes": "无锁栈在「摘链」与「改链」之间留出 ABA 窗口"
       },
       "severity": "high",
       "planted": true,
@@ -2940,11 +3076,12 @@
     },
     {
       "sample_id": "sample_E137",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 25,
         "function": "main",
-        "description": "以「值 + 版本」分开存放导致值 ABA（版本更新滞后）"
+        "file": "sample_E137.cpp",
+        "notes": "以「值 + 版本」分开存放导致值 ABA（版本更新滞后）"
       },
       "severity": "high",
       "planted": true,
@@ -2962,11 +3099,12 @@
     },
     {
       "sample_id": "sample_E138",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 27,
         "function": "main",
-        "description": "CAS 失败重试时复用已被别人改写的 expected，ABA 使重试逻辑错乱"
+        "file": "sample_E138.cpp",
+        "notes": "CAS 失败重试时复用已被别人改写的 expected，ABA 使重试逻辑错乱"
       },
       "severity": "high",
       "planted": true,
@@ -2984,11 +3122,12 @@
     },
     {
       "sample_id": "sample_E139",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 26,
         "function": "main",
-        "description": "reclaim 线程把「刚被读侧引用」的对象立即放回 freelist 供他人分配"
+        "file": "sample_E139.cpp",
+        "notes": "reclaim 线程把「刚被读侧引用」的对象立即放回 freelist 供他人分配"
       },
       "severity": "high",
       "planted": true,
@@ -3006,11 +3145,12 @@
     },
     {
       "sample_id": "sample_E140",
-      "defect_type": "aba_problem",
+      "defect_type": "atomic_ub",
       "defect_location": {
         "line": 28,
         "function": "main",
-        "description": "epoch-based reclamation 的 epoch 号本身遭遇 ABA"
+        "file": "sample_E140.cpp",
+        "notes": "epoch-based reclamation 的 epoch 号本身遭遇 ABA"
       },
       "severity": "high",
       "planted": true,
@@ -3028,11 +3168,12 @@
     },
     {
       "sample_id": "sample_E141",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 21,
         "function": "low_prio",
-        "description": "低优先级线程持锁做长耗时计算，高优先级线程等锁，中优先级线程忙等抢占"
+        "file": "sample_E141.cpp",
+        "notes": "低优先级线程持锁做长耗时计算，高优先级线程等锁，中优先级线程忙等抢占"
       },
       "severity": "high",
       "planted": true,
@@ -3049,11 +3190,12 @@
     },
     {
       "sample_id": "sample_E142",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 21,
         "function": "low",
-        "description": "低优先级线程持锁期间做浮点重算，高优先级线程等锁"
+        "file": "sample_E142.cpp",
+        "notes": "低优先级线程持锁期间做浮点重算，高优先级线程等锁"
       },
       "severity": "high",
       "planted": true,
@@ -3070,11 +3212,12 @@
     },
     {
       "sample_id": "sample_E143",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 21,
         "function": "low",
-        "description": "中优先级线程绕过锁写共享状态（与持锁的低优先级线程形成真实竞争）"
+        "file": "sample_E143.cpp",
+        "notes": "中优先级线程绕过锁写共享状态（与持锁的低优先级线程形成真实竞争）"
       },
       "severity": "high",
       "planted": true,
@@ -3091,11 +3234,12 @@
     },
     {
       "sample_id": "sample_E144",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 23,
         "function": "low_rt",
-        "description": "低优先级线程持锁排序，高优先级线程等锁，中优先级线程空转"
+        "file": "sample_E144.cpp",
+        "notes": "低优先级线程持锁排序，高优先级线程等锁，中优先级线程空转"
       },
       "severity": "high",
       "planted": true,
@@ -3112,11 +3256,12 @@
     },
     {
       "sample_id": "sample_E145",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 21,
         "function": "low",
-        "description": "低优先级线程持锁做内存分配/释放风暴，高优先级线程等锁"
+        "file": "sample_E145.cpp",
+        "notes": "低优先级线程持锁做内存分配/释放风暴，高优先级线程等锁"
       },
       "severity": "high",
       "planted": true,
@@ -3133,11 +3278,12 @@
     },
     {
       "sample_id": "sample_E146",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 21,
         "function": "low",
-        "description": "互斥锁无优先级继承：低优先级持锁，高优先级被阻塞且无法提升锁的优先级"
+        "file": "sample_E146.cpp",
+        "notes": "互斥锁无优先级继承：低优先级持锁，高优先级被阻塞且无法提升锁的优先级"
       },
       "severity": "high",
       "planted": true,
@@ -3154,11 +3300,12 @@
     },
     {
       "sample_id": "sample_E147",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 22,
         "function": "low",
-        "description": "低优先级线程持两把锁做长操作，高优先级线程等其中一把"
+        "file": "sample_E147.cpp",
+        "notes": "低优先级线程持两把锁做长操作，高优先级线程等其中一把"
       },
       "severity": "high",
       "planted": true,
@@ -3175,11 +3322,12 @@
     },
     {
       "sample_id": "sample_E148",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 22,
         "function": "low",
-        "description": "低优先级线程持锁做字符串/正则匹配，高优先级线程等锁"
+        "file": "sample_E148.cpp",
+        "notes": "低优先级线程持锁做字符串/正则匹配，高优先级线程等锁"
       },
       "severity": "high",
       "planted": true,
@@ -3196,11 +3344,12 @@
     },
     {
       "sample_id": "sample_E149",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 21,
         "function": "low",
-        "description": "低优先级线程持锁做位图/图像处理，高优先级线程等锁"
+        "file": "sample_E149.cpp",
+        "notes": "低优先级线程持锁做位图/图像处理，高优先级线程等锁"
       },
       "severity": "high",
       "planted": true,
@@ -3217,11 +3366,12 @@
     },
     {
       "sample_id": "sample_E150",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 22,
         "function": "io_holder",
-        "description": "持锁执行「类 I/O」阻塞操作（sleep 模拟磁盘/网络等待）"
+        "file": "sample_E150.cpp",
+        "notes": "持锁执行「类 I/O」阻塞操作（sleep 模拟磁盘/网络等待）"
       },
       "severity": "high",
       "planted": true,
@@ -3238,11 +3388,12 @@
     },
     {
       "sample_id": "sample_E151",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 22,
         "function": "net_io",
-        "description": "持锁做「网络往返」（sleep 模拟 RTT）"
+        "file": "sample_E151.cpp",
+        "notes": "持锁做「网络往返」（sleep 模拟 RTT）"
       },
       "severity": "high",
       "planted": true,
@@ -3259,11 +3410,12 @@
     },
     {
       "sample_id": "sample_E152",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 22,
         "function": "flush",
-        "description": "持锁做「日志落盘」等待，同时中优先级线程无锁读日志缓冲"
+        "file": "sample_E152.cpp",
+        "notes": "持锁做「日志落盘」等待，同时中优先级线程无锁读日志缓冲"
       },
       "severity": "high",
       "planted": true,
@@ -3280,11 +3432,12 @@
     },
     {
       "sample_id": "sample_E153",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 22,
         "function": "producer",
-        "description": "持锁等待慢速消费者（sleep 模拟背压）"
+        "file": "sample_E153.cpp",
+        "notes": "持锁等待慢速消费者（sleep 模拟背压）"
       },
       "severity": "high",
       "planted": true,
@@ -3301,11 +3454,12 @@
     },
     {
       "sample_id": "sample_E154",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 22,
         "function": "do_rpc",
-        "description": "持锁执行 RPC（sleep 模拟往返），高优先级线程等锁"
+        "file": "sample_E154.cpp",
+        "notes": "持锁执行 RPC（sleep 模拟往返），高优先级线程等锁"
       },
       "severity": "high",
       "planted": true,
@@ -3322,11 +3476,12 @@
     },
     {
       "sample_id": "sample_E155",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 22,
         "function": "driver_thread",
-        "description": "「中断处理器」形态的线程直接获取用户态锁，与持锁线程并发"
+        "file": "sample_E155.cpp",
+        "notes": "「中断处理器」形态的线程直接获取用户态锁，与持锁线程并发"
       },
       "severity": "high",
       "planted": true,
@@ -3343,11 +3498,12 @@
     },
     {
       "sample_id": "sample_E156",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 20,
         "function": "rt_consumer",
-        "description": "实时消费者与普通生产者共享同一把无优先级继承的锁"
+        "file": "sample_E156.cpp",
+        "notes": "实时消费者与普通生产者共享同一把无优先级继承的锁"
       },
       "severity": "high",
       "planted": true,
@@ -3364,11 +3520,12 @@
     },
     {
       "sample_id": "sample_E157",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 21,
         "function": "rt_low",
-        "description": "三个「实时」线程共享锁，低优先级持锁者被中优先级压制"
+        "file": "sample_E157.cpp",
+        "notes": "三个「实时」线程共享锁，低优先级持锁者被中优先级压制"
       },
       "severity": "high",
       "planted": true,
@@ -3385,11 +3542,12 @@
     },
     {
       "sample_id": "sample_E158",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 22,
         "function": "loader",
-        "description": "渲染线程等锁，而持锁线程在做同步磁盘预读（sleep 模拟）"
+        "file": "sample_E158.cpp",
+        "notes": "渲染线程等锁，而持锁线程在做同步磁盘预读（sleep 模拟）"
       },
       "severity": "high",
       "planted": true,
@@ -3406,11 +3564,12 @@
     },
     {
       "sample_id": "sample_E159",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 21,
         "function": "cpu_worker",
-        "description": "DMA 完成回调（高优先级）等锁，持锁者在做用户态大块内存整理"
+        "file": "sample_E159.cpp",
+        "notes": "DMA 完成回调（高优先级）等锁，持锁者在做用户态大块内存整理"
       },
       "severity": "high",
       "planted": true,
@@ -3427,11 +3586,12 @@
     },
     {
       "sample_id": "sample_E160",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 21,
         "function": "sampler",
-        "description": "持锁统计线程 + 无锁直写统计数组的高优先级线程"
+        "file": "sample_E160.cpp",
+        "notes": "持锁统计线程 + 无锁直写统计数组的高优先级线程"
       },
       "severity": "high",
       "planted": true,
@@ -3448,11 +3608,12 @@
     },
     {
       "sample_id": "sample_E161",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 22,
         "function": "cfg_parser",
-        "description": "控制线程（高优先级）等锁，配置线程（低优先级）持锁做解析"
+        "file": "sample_E161.cpp",
+        "notes": "控制线程（高优先级）等锁，配置线程（低优先级）持锁做解析"
       },
       "severity": "high",
       "planted": true,
@@ -3469,11 +3630,12 @@
     },
     {
       "sample_id": "sample_E162",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 27,
         "function": "outer_lock_and_join",
-        "description": "持锁调用阻塞型函数（条件变量 wait 之外的阻塞，如 join 别的线程）"
+        "file": "sample_E162.cpp",
+        "notes": "持锁调用阻塞型函数（条件变量 wait 之外的阻塞，如 join 别的线程）"
       },
       "severity": "high",
       "planted": true,
@@ -3490,11 +3652,12 @@
     },
     {
       "sample_id": "sample_E163",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 22,
         "function": "device_wait",
-        "description": "持锁 sleep（等价于持锁等待硬件/外设）"
+        "file": "sample_E163.cpp",
+        "notes": "持锁 sleep（等价于持锁等待硬件/外设）"
       },
       "severity": "high",
       "planted": true,
@@ -3511,11 +3674,12 @@
     },
     {
       "sample_id": "sample_E164",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 24,
         "function": "commit",
-        "description": "持锁回调外部注册的函数，回调内部又发起阻塞请求"
+        "file": "sample_E164.cpp",
+        "notes": "持锁回调外部注册的函数，回调内部又发起阻塞请求"
       },
       "severity": "high",
       "planted": true,
@@ -3532,11 +3696,12 @@
     },
     {
       "sample_id": "sample_E165",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 22,
         "function": "low2",
-        "description": "低优先级线程按「低到高」顺序取两把锁，高优先级线程按相反顺序"
+        "file": "sample_E165.cpp",
+        "notes": "低优先级线程按「低到高」顺序取两把锁，高优先级线程按相反顺序"
       },
       "severity": "high",
       "planted": true,
@@ -3553,11 +3718,12 @@
     },
     {
       "sample_id": "sample_E166",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 25,
         "function": "holder",
-        "description": "持锁等待条件变量（释放的是外层锁，内层锁仍被占）"
+        "file": "sample_E166.cpp",
+        "notes": "持锁等待条件变量（释放的是外层锁，内层锁仍被占）"
       },
       "severity": "high",
       "planted": true,
@@ -3574,11 +3740,12 @@
     },
     {
       "sample_id": "sample_E167",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 21,
         "function": "bulk_tx",
-        "description": "持锁线程做长操作，快路径线程无锁读写同一缓冲区"
+        "file": "sample_E167.cpp",
+        "notes": "持锁线程做长操作，快路径线程无锁读写同一缓冲区"
       },
       "severity": "high",
       "planted": true,
@@ -3595,11 +3762,12 @@
     },
     {
       "sample_id": "sample_E168",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 22,
         "function": "touch_pages",
-        "description": "持锁访问尚未映射的内存（sleep 模拟缺页/换入）"
+        "file": "sample_E168.cpp",
+        "notes": "持锁访问尚未映射的内存（sleep 模拟缺页/换入）"
       },
       "severity": "high",
       "planted": true,
@@ -3616,11 +3784,12 @@
     },
     {
       "sample_id": "sample_E169",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 22,
         "function": "churn",
-        "description": "持锁触发大量内存分配（分配器内部锁 + 缺页）"
+        "file": "sample_E169.cpp",
+        "notes": "持锁触发大量内存分配（分配器内部锁 + 缺页）"
       },
       "severity": "high",
       "planted": true,
@@ -3637,11 +3806,12 @@
     },
     {
       "sample_id": "sample_E170",
-      "defect_type": "lock_priority_inversion",
+      "defect_type": "deadlock",
       "defect_location": {
         "line": 21,
         "function": "sign",
-        "description": "持锁做加密/签名运算（CPU 密集 + 可能换出）"
+        "file": "sample_E170.cpp",
+        "notes": "持锁做加密/签名运算（CPU 密集 + 可能换出）"
       },
       "severity": "high",
       "planted": true,
@@ -3662,7 +3832,8 @@
       "defect_location": {
         "line": 25,
         "function": "worker",
-        "description": "cv.wait(lk) 不带谓词：被唤醒后无条件继续（虚假唤醒）"
+        "file": "sample_E171.cpp",
+        "notes": "cv.wait(lk) 不带谓词：被唤醒后无条件继续（虚假唤醒）"
       },
       "severity": "high",
       "planted": true,
@@ -3683,7 +3854,8 @@
       "defect_location": {
         "line": 24,
         "function": "worker",
-        "description": "多次 wait 共用一个布尔谓词但只在第一次检查"
+        "file": "sample_E172.cpp",
+        "notes": "多次 wait 共用一个布尔谓词但只在第一次检查"
       },
       "severity": "high",
       "planted": true,
@@ -3704,7 +3876,8 @@
       "defect_location": {
         "line": 24,
         "function": "reader",
-        "description": "wait 返回后读取未被锁保护的共享状态（真实数据竞争）"
+        "file": "sample_E173.cpp",
+        "notes": "wait 返回后读取未被锁保护的共享状态（真实数据竞争）"
       },
       "severity": "high",
       "planted": true,
@@ -3725,7 +3898,8 @@
       "defect_location": {
         "line": 25,
         "function": "consumer",
-        "description": "wait 无谓词，且通知与「数据准备」之间的顺序倒置"
+        "file": "sample_E174.cpp",
+        "notes": "wait 无谓词，且通知与「数据准备」之间的顺序倒置"
       },
       "severity": "high",
       "planted": true,
@@ -3746,7 +3920,8 @@
       "defect_location": {
         "line": 26,
         "function": "producer",
-        "description": "通知早于 wait（丢失唤醒）：notify 在 wait 之前发生"
+        "file": "sample_E175.cpp",
+        "notes": "通知早于 wait（丢失唤醒）：notify 在 wait 之前发生"
       },
       "severity": "high",
       "planted": true,
@@ -3767,11 +3942,12 @@
       "defect_location": {
         "line": 27,
         "function": "waiter",
-        "description": "notify_one 只有一个等待者时通知了「错误的那一个」（实际无通知到达）"
+        "file": "sample_E176.cpp",
+        "notes": "notify_one 只有一个等待者时通知了「错误的那一个」（实际无通知到达）"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "catch",
       "expected_detectors": [
         "tsan"
@@ -3788,7 +3964,8 @@
       "defect_location": {
         "line": 24,
         "function": "worker",
-        "description": "谓词在 wait 之前被判断一次就再也不检查（循环外判断）"
+        "file": "sample_E177.cpp",
+        "notes": "谓词在 wait 之前被判断一次就再也不检查（循环外判断）"
       },
       "severity": "high",
       "planted": true,
@@ -3809,7 +3986,8 @@
       "defect_location": {
         "line": 21,
         "function": "submitter",
-        "description": "先 notify 再设置谓词（顺序颠倒），等待者永久阻塞"
+        "file": "sample_E178.cpp",
+        "notes": "先 notify 再设置谓词（顺序颠倒），等待者永久阻塞"
       },
       "severity": "high",
       "planted": true,
@@ -3830,7 +4008,8 @@
       "defect_location": {
         "line": 33,
         "function": "notifier",
-        "description": "三个等待者共用一个谓词但只 notify_one 两次（依赖运气）"
+        "file": "sample_E179.cpp",
+        "notes": "三个等待者共用一个谓词但只 notify_one 两次（依赖运气）"
       },
       "severity": "high",
       "planted": true,
@@ -3851,7 +4030,8 @@
       "defect_location": {
         "line": 33,
         "function": "controller",
-        "description": "notify_all 写成 notify_one（多等待者漏唤醒）"
+        "file": "sample_E180.cpp",
+        "notes": "notify_all 写成 notify_one（多等待者漏唤醒）"
       },
       "severity": "high",
       "planted": true,
@@ -3872,7 +4052,8 @@
       "defect_location": {
         "line": 22,
         "function": "waiter",
-        "description": "等待「计数达到 N」但只 notify 了一次（notify 次数与谓词语义不匹配）"
+        "file": "sample_E181.cpp",
+        "notes": "等待「计数达到 N」但只 notify 了一次（notify 次数与谓词语义不匹配）"
       },
       "severity": "high",
       "planted": true,
@@ -3893,7 +4074,8 @@
       "defect_location": {
         "line": 25,
         "function": "waiter",
-        "description": "谓词标志被无锁写入（真实数据竞争 + 丢失唤醒）"
+        "file": "sample_E182.cpp",
+        "notes": "谓词标志被无锁写入（真实数据竞争 + 丢失唤醒）"
       },
       "severity": "high",
       "planted": true,
@@ -3914,7 +4096,8 @@
       "defect_location": {
         "line": 32,
         "function": "issuer",
-        "description": "条件变量在正确的锁上，但「重复通知」被当作「多次许可」消费"
+        "file": "sample_E183.cpp",
+        "notes": "条件变量在正确的锁上，但「重复通知」被当作「多次许可」消费"
       },
       "severity": "high",
       "planted": true,
@@ -3935,7 +4118,8 @@
       "defect_location": {
         "line": 25,
         "function": "waiter",
-        "description": "wait_for 超时返回后不重新检查谓词，直接继续"
+        "file": "sample_E184.cpp",
+        "notes": "wait_for 超时返回后不重新检查谓词，直接继续"
       },
       "severity": "high",
       "planted": true,
@@ -3956,7 +4140,8 @@
       "defect_location": {
         "line": 25,
         "function": "waiter",
-        "description": "wait_for 超时后走「重试」分支，重试分支无锁读写共享状态"
+        "file": "sample_E185.cpp",
+        "notes": "wait_for 超时后走「重试」分支，重试分支无锁读写共享状态"
       },
       "severity": "high",
       "planted": true,
@@ -3977,7 +4162,8 @@
       "defect_location": {
         "line": 22,
         "function": "waiter",
-        "description": "wait_until 使用绝对时间点，但时间点在锁外计算且早已过期"
+        "file": "sample_E186.cpp",
+        "notes": "wait_until 使用绝对时间点，但时间点在锁外计算且早已过期"
       },
       "severity": "high",
       "planted": true,
@@ -3998,7 +4184,8 @@
       "defect_location": {
         "line": 24,
         "function": "worker",
-        "description": "wait 使用谓词但谓词在 notify 之后才更新（更新与通知顺序颠倒）"
+        "file": "sample_E187.cpp",
+        "notes": "wait 使用谓词但谓词在 notify 之后才更新（更新与通知顺序颠倒）"
       },
       "severity": "high",
       "planted": true,
@@ -4019,7 +4206,8 @@
       "defect_location": {
         "line": 21,
         "function": "waiter",
-        "description": "条件变量配错了 mutex：wait 用 m2，谓词由 m1 保护"
+        "file": "sample_E188.cpp",
+        "notes": "条件变量配错了 mutex：wait 用 m2，谓词由 m1 保护"
       },
       "severity": "high",
       "planted": true,
@@ -4040,7 +4228,8 @@
       "defect_location": {
         "line": 22,
         "function": "waiter",
-        "description": "三个线程各用不同的锁 wait 同一个条件变量"
+        "file": "sample_E189.cpp",
+        "notes": "三个线程各用不同的锁 wait 同一个条件变量"
       },
       "severity": "high",
       "planted": true,
@@ -4061,7 +4250,8 @@
       "defect_location": {
         "line": 24,
         "function": "waiter",
-        "description": "谓词本身是原子的，但伴随数据是非原子的（只同步了标志位）"
+        "file": "sample_E190.cpp",
+        "notes": "谓词本身是原子的，但伴随数据是非原子的（只同步了标志位）"
       },
       "severity": "high",
       "planted": true,
@@ -4082,11 +4272,12 @@
       "defect_location": {
         "line": 27,
         "function": "consumer_b",
-        "description": "多个条件变量共用一个谓词，但只通知了其中一个"
+        "file": "sample_E191.cpp",
+        "notes": "多个条件变量共用一个谓词，但只通知了其中一个"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "miss",
       "expected_detectors": [
         "tsan"
@@ -4103,7 +4294,8 @@
       "defect_location": {
         "line": 24,
         "function": "waiter",
-        "description": "谓词按「边沿」而非「电平」消费：多个等待者共享一次性信号"
+        "file": "sample_E192.cpp",
+        "notes": "谓词按「边沿」而非「电平」消费：多个等待者共享一次性信号"
       },
       "severity": "high",
       "planted": true,
@@ -4124,7 +4316,8 @@
       "defect_location": {
         "line": 27,
         "function": "waiter",
-        "description": "谓词在 notify_all 与 wait 之间被第三方线程清零"
+        "file": "sample_E193.cpp",
+        "notes": "谓词在 notify_all 与 wait 之间被第三方线程清零"
       },
       "severity": "high",
       "planted": true,
@@ -4145,7 +4338,8 @@
       "defect_location": {
         "line": 22,
         "function": "waiter",
-        "description": "谓词在 notify 路径上完全不加锁修改"
+        "file": "sample_E194.cpp",
+        "notes": "谓词在 notify 路径上完全不加锁修改"
       },
       "severity": "high",
       "planted": true,
@@ -4166,7 +4360,8 @@
       "defect_location": {
         "line": 22,
         "function": "waiter",
-        "description": "多个通知者无锁改谓词，等待者在锁内读（竞争 + 唤醒丢失）"
+        "file": "sample_E195.cpp",
+        "notes": "多个通知者无锁改谓词，等待者在锁内读（竞争 + 唤醒丢失）"
       },
       "severity": "high",
       "planted": true,
@@ -4187,7 +4382,8 @@
       "defect_location": {
         "line": 23,
         "function": "waiter",
-        "description": "谓词读取在锁外（wait 返回后解锁再读谓词）"
+        "file": "sample_E196.cpp",
+        "notes": "谓词读取在锁外（wait 返回后解锁再读谓词）"
       },
       "severity": "high",
       "planted": true,
@@ -4208,7 +4404,8 @@
       "defect_location": {
         "line": 28,
         "function": "dispatcher",
-        "description": "notify 在不持锁时调用，且谓词更新也在锁外（通知必丢）"
+        "file": "sample_E197.cpp",
+        "notes": "notify 在不持锁时调用，且谓词更新也在锁外（通知必丢）"
       },
       "severity": "high",
       "planted": true,
@@ -4229,11 +4426,12 @@
       "defect_location": {
         "line": 28,
         "function": "waiter_high",
-        "description": "notify_one 在有多个「不同谓词」的等待者时通知了错误的目标"
+        "file": "sample_E198.cpp",
+        "notes": "notify_one 在有多个「不同谓词」的等待者时通知了错误的目标"
       },
       "severity": "high",
       "planted": true,
-      "expected_verdict": "catch",
+      "expected_verdict": "miss",
       "original_expected_verdict": "miss",
       "expected_detectors": [
         "tsan"
@@ -4250,7 +4448,8 @@
       "defect_location": {
         "line": 24,
         "function": "recursive_worker",
-        "description": "condition_variable_any 与 recursive_mutex 搭配：wait 只释放一层锁"
+        "file": "sample_E199.cpp",
+        "notes": "condition_variable_any 与 recursive_mutex 搭配：wait 只释放一层锁"
       },
       "severity": "high",
       "planted": true,
@@ -4271,7 +4470,8 @@
       "defect_location": {
         "line": 25,
         "function": "worker",
-        "description": "关停流程：先 notify_all 让等待者醒来，但此时状态标志尚未置位"
+        "file": "sample_E200.cpp",
+        "notes": "关停流程：先 notify_all 让等待者醒来，但此时状态标志尚未置位"
       },
       "severity": "high",
       "planted": true,

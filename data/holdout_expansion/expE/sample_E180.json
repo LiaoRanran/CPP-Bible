@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 33,
     "function": "controller",
-    "description": "notify_all 写成 notify_one（多等待者漏唤醒）"
+    "file": "sample_E180.cpp",
+    "notes": "notify_all 写成 notify_one（多等待者漏唤醒）"
   },
   "severity": "high",
   "planted": true,

@@ -2,9 +2,10 @@
   "sample_id": "F074",
   "defect_type": "volatile_misuse",
   "defect_location": {
-    "description": "用 volatile int 做线程间同步标志（缺失 atomic 语义）",
     "line": 5,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F074.cpp",
+    "notes": "用 volatile int 做线程间同步标志（缺失 atomic 语义）"
   },
   "severity": "high",
   "planted": true,

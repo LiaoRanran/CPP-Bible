@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "snd_usbmidi_create",
-    "description": "CVE-2016-2384: snd_usbmidi_create double free（CVE 描述: Double free vulnerability in the snd_usbmidi_create function ... via vectors involving an invalid USB descriptor）。用户态等价模拟。"
+    "file": "sample_G081.cpp",
+    "notes": "CVE-2016-2384: snd_usbmidi_create double free（CVE 描述: Double free vulnerability in the snd_usbmidi_create function ... via vectors involving an invalid USB descriptor）。用户态等价模拟。"
   },
   "severity": "high",
   "planted": true,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 8,
     "function": "main",
-    "description": "std::accumulate 初始值类型错误导致截断"
+    "file": "sample_D127.cpp",
+    "notes": "std::accumulate 初始值类型错误导致截断"
   },
   "severity": "medium",
   "planted": true,

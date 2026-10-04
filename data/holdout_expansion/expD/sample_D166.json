@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 8,
     "function": "main",
-    "description": "多 shared_ptr 共享同一裸指针（补充）"
+    "file": "sample_D166.cpp",
+    "notes": "多 shared_ptr 共享同一裸指针（补充）"
   },
   "severity": "high",
   "planted": true,

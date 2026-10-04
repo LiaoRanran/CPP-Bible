@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "FILE* 未关闭即返回：句柄泄漏，AddressSanitizer 不追踪 FILE（盲区）。",
-  "id": "sample_055",
+  "sample_id": "sample_055",
   "category": "C",
   "defect_location": {
     "line": 5,
     "function": "main",
-    "note": "// <<PLANTED-DEFECT>> 文件句柄未 fclose 即返回 -> 句柄泄漏"
+    "file": "sample_055.cpp",
+    "notes": "// <<PLANTED-DEFECT>> 文件句柄未 fclose 即返回 -> 句柄泄漏"
   },
   "planted": true,
   "source_files": [

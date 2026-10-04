@@ -1,11 +1,12 @@
 {
-  "id": "sample_063",
+  "sample_id": "sample_063",
   "category": "A",
   "defect_type": "uninitialized_read",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "int r = k + 7; // <<PLANTED-DEFECT>> uninitialized read: arithmetic on uninit var"
+    "file": "sample_063.cpp",
+    "notes": "int r = k + 7; // <<PLANTED-DEFECT>> uninitialized read: arithmetic on uninit var"
   },
   "severity": "medium",
   "planted": true,

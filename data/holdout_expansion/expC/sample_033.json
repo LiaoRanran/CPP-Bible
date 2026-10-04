@@ -8,12 +8,13 @@
   "trigger_condition": "异常被抛出时（始终触发）",
   "optimization_sensitivity": "n/a",
   "notes": "异常安全漏洞：分配后抛异常未释放，LeakSanitizer 抓。",
-  "id": "sample_033",
+  "sample_id": "sample_033",
   "category": "C",
   "defect_location": {
     "line": 8,
     "function": "main",
-    "note": "} // <<PLANTED-DEFECT>> 异常路径下 new[] 未释放 -> 泄漏"
+    "file": "sample_033.cpp",
+    "notes": "} // <<PLANTED-DEFECT>> 异常路径下 new[] 未释放 -> 泄漏"
   },
   "planted": true,
   "source_files": [

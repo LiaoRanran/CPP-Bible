@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 24,
     "function": "reader",
-    "description": "wait 返回后读取未被锁保护的共享状态（真实数据竞争）"
+    "file": "sample_E173.cpp",
+    "notes": "wait 返回后读取未被锁保护的共享状态（真实数据竞争）"
   },
   "severity": "high",
   "planted": true,

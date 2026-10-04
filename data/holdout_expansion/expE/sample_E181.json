@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "waiter",
-    "description": "等待「计数达到 N」但只 notify 了一次（notify 次数与谓词语义不匹配）"
+    "file": "sample_E181.cpp",
+    "notes": "等待「计数达到 N」但只 notify 了一次（notify 次数与谓词语义不匹配）"
   },
   "severity": "high",
   "planted": true,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 24,
     "function": "producer",
-    "description": "消费者 acquire 了错误的标志，读到未被保护的载荷"
+    "file": "sample_E018.cpp",
+    "notes": "消费者 acquire 了错误的标志，读到未被保护的载荷"
   },
   "severity": "high",
   "planted": true,

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "peel",
-    "description": "CAS 循环用常量 expected 反复重试，无法取得进展"
+    "file": "sample_E070.cpp",
+    "notes": "CAS 循环用常量 expected 反复重试，无法取得进展"
   },
   "severity": "high",
   "planted": true,

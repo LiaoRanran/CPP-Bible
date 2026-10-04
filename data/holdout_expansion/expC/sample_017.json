@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "对已移动自 unique 的对象继续访问：C++ 允许但结果未指定；无检测器可抓（盲区）。",
-  "id": "sample_017",
+  "sample_id": "sample_017",
   "category": "C",
   "defect_location": {
     "line": 5,
     "function": "main",
-    "note": "(void)*p; // <<PLANTED-DEFECT>> 解引用已移动走的 p（可能为 nullptr）"
+    "file": "sample_017.cpp",
+    "notes": "(void)*p; // <<PLANTED-DEFECT>> 解引用已移动走的 p（可能为 nullptr）"
   },
   "planted": true,
   "source_files": [

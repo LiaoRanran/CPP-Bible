@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G091",
-  "defect_type": "heap_overread",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 23,
     "function": "bjdata_parse_string",
-    "description": "nlohmann/json#3492（已修复）: OSS-Fuzz 报告 parse_bjdata Heap-buffer-overflow READ 1。等价重构：BJData 解析器按声明长度消费输入而不校验剩余空间。"
+    "file": "sample_G091.cpp",
+    "notes": "nlohmann/json#3492（已修复）: OSS-Fuzz 报告 parse_bjdata Heap-buffer-overflow READ 1。等价重构：BJData 解析器按声明长度消费输入而不校验剩余空间。"
   },
   "severity": "high",
   "planted": true,

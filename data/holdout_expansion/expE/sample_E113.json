@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E113",
-  "defect_type": "aba_problem",
+  "defect_type": "atomic_ub",
   "defect_location": {
     "line": 43,
     "function": "main",
-    "description": "无锁栈 pop 后立即 delete 头节点，槽位复用造成 ABA"
+    "file": "sample_E113.cpp",
+    "notes": "无锁栈 pop 后立即 delete 头节点，槽位复用造成 ABA"
   },
   "severity": "high",
   "planted": true,

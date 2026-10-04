@@ -86,6 +86,48 @@ python tools/fast_gate.py --all --skip-frontend          # 只动后端时
 承诺，演进目标见 metrics 看板的 `asm_anchor_rate`。各章"本章所有汇编均为真实产物"
 的全称声明均经机校——所在章的全部 asm 块均已锚定，**0 矛盾**。
 
+## 评测数据集与数据质量（676m）
+
+论文的评测集是 `data/holdout_expansion/`（**1042 条扩样标注** + 1094 个 C++ 源文件），
+加上历史层 holdout 41 / corpus 64。**字段规范见 [`data/holdout_expansion/SCHEMA.md`](data/holdout_expansion/SCHEMA.md)，
+数据卡见 [`data/holdout_expansion/DATASHEET.md`](data/holdout_expansion/DATASHEET.md)。**
+
+| 指标 | 值 | 出处 |
+|------|----|------|
+| 扩样样本 | **1042**（expA–expG 七批） | `data/holdout_expansion/*/INDEX.json` |
+| `defect_type` 词表 | **34 项规范词表**（在用 33 项；676m 前是 56 个取值） | `tools/fix_676m_schema.py` |
+| `planted=true` 占比 | **92.9%**（968/1042） | 同上 |
+| 跨批**字节级**重复 | **0** | `data/676k_dedup_results.json` |
+| 跨批**结构近克隆** | **103 对**（4 个批对） | 同上 |
+| 批内**模板克隆率** | **62.2%**（674/1083）⇒ 全库仅 **572** 种结构 | 同上 |
+| 盲化双标注 Cohen's κ | **0.77**（`defect_type`）/ **0.69**（`expected_verdict`）/ **0.71**（`planted`）——**AI 自洽性，非人类 IAA** | `data/676k_relabel_score.json` |
+| 编译抽检 | **217/217 = 100%** | `data/676k_compile_results.json` |
+| 真实来源可追溯 | **74/74**（全部 HTTP 200） | `data/676k_source_results.json` |
+| 检测器盲区 | **38.4%**（1147 样本 × 8 资产） | `data/blindspot_676g_stats.json` |
+
+**检测器深度 Benchmark（676l）摘要**：单检测器 recall **asan 58.5% > ubsan 38.2% > tsan 36.1%
+> compiler-warn 19.1% > cross-compile 15.1% > linker 1.3%**（`wunsequenced` / `compile-time`
+恒 `unknown`）；8 资产**并集 94.21%**；k=1…8 穷举最佳 k=4 = **92.58%**，拐点 **k=5**；
+FD 在 k=4 选到 **86.94%**（比穷举最佳低 5.64pp，对 2000 次随机抽样的百分位 96.6）；
+`linker` 的 10 个 catch **全部**落在 asan/ubsan/tsan 的 10 个 `unknown` 里（**低边际但不可替代**）。
+详见 `data/676l_检测器Benchmark总报告.md`。
+
+**复现命令**：
+
+```bash
+# 数据修复自检（幂等门禁：H1 残留 0、待迁移 0）
+.venv/Scripts/python.exe tools/fix_676m_schema.py --verify
+
+# A5 重算门禁（修正标签后主端点须与 676f 逐位一致）
+.venv/Scripts/python.exe tools/recompute_a5_676m.py --check
+
+# 一键全链路（含上述两步 + 676k 只读审计 + 论文编译）
+bash docker/paper/run_all.sh
+```
+
+> **两个必须同读的限定**：① 92.9% 的样本是人工植入，本数据集测的是**仪器**而非真实缺陷分布；
+> ② 62.2% 的批内模板克隆率意味着**有效独立样本量远小于 1042**，且**不可用于训练模型**。
+
 ## 快速开始
 
 ```bash
@@ -145,7 +187,8 @@ bash tools/generate_pdf.sh --by-part   # PDF（分卷）
 1. **第一年四件地基**（`_arch_v34` 战略结论）
    - ✅ 许可与协作包（本文件 + `LICENSE` + `DCO.md` + `CONTRIBUTING.md` + `CODE_OF_CONDUCT.md` + `.github/` 模板）
    - ✅ 判决形式规格 v1（[`docs/verdict_formal_spec_v1.md`](docs/verdict_formal_spec_v1.md)）——为后续 Rust + Verus 形式化做准备
-   - ✅ 元验证论文（NeurIPS 2027 Datasets & Benchmarks 投稿稿 v1.1）：`research/latex/queyi_neurips2027_v1.1.tex`（正文 9 页 / 全稿 29 页）；同批交付可复现化改造——一键复算 `bash docker/paper/run_all.sh`、手册 [`REPRODUCE.md`](REPRODUCE.md)、数字审计 `tools/verify_paper_numbers.py`（118 条检察 / 0 硬伤）、种子审计 `tools/seed_audit_676h.py`（实验类未固定种子 0）
+   - ✅ 元验证论文（NeurIPS 2027 Datasets & Benchmarks 投稿稿 v1.1）：`research/latex/queyi_neurips2027_v1.1.tex`（正文 9 页 / 全稿 30 页）；同批交付可复现化改造——一键复算 `bash docker/paper/run_all.sh`、手册 [`REPRODUCE.md`](REPRODUCE.md)、数字审计 `tools/verify_paper_numbers.py`（118 条检察 / 0 硬伤）、种子审计 `tools/seed_audit_676h.py`（实验类未固定种子 0）
+   - ✅ 数据修复 + 实验重算（676m）：34 条挂起样本判据修正、56→34 项统一词表、字段完整性（M1–M5）全过；A5 主端点**逐位不变**（标签修正对主分析零影响），数据质量与检测器 Benchmark 已写入论文附录
    - ✅ 门禁三杠杆（增量选例 / 结果缓存 / 分片）：`tools/test_selector_655.py`、`tools/result_cache_655.py`
 2. **信任根继续独立化**：外部锚（OpenTimestamps 上链）、第三方盲评、独立性从 L2 走向 L3
 3. **知识面扩展**：`draft650` 草稿卡 → 补证据升 `verified`；C 语言与嵌入式域适配

@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "waiter",
-    "description": "谓词在 notify 路径上完全不加锁修改"
+    "file": "sample_E194.cpp",
+    "notes": "谓词在 notify 路径上完全不加锁修改"
   },
   "severity": "high",
   "planted": true,

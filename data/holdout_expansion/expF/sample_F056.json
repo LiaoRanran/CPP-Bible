@@ -2,9 +2,10 @@
   "sample_id": "F056",
   "defect_type": "endianness",
   "defect_location": {
-    "description": "反序列化把 64 位值当 32 位读取（截断 + 端序混淆）",
     "line": 5,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F056.cpp",
+    "notes": "反序列化把 64 位值当 32 位读取（截断 + 端序混淆）"
   },
   "severity": "high",
   "planted": true,

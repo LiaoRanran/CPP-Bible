@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_E126",
-  "defect_type": "aba_problem",
+  "defect_type": "atomic_ub",
   "defect_location": {
     "line": 19,
     "function": "reclaim",
-    "description": "危险指针只发布不重新校验，删除线程无视 hazard 直接回收"
+    "file": "sample_E126.cpp",
+    "notes": "危险指针只发布不重新校验，删除线程无视 hazard 直接回收"
   },
   "severity": "high",
   "planted": true,

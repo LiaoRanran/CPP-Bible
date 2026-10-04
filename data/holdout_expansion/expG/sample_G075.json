@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G075",
-  "defect_type": "state_machine",
+  "defect_type": "logic_error",
   "defect_location": {
     "line": 20,
     "function": "ssh_server_handle_packet",
-    "description": "CVE-2018-10933: libssh 服务端状态机缺陷（CVE 描述: A malicious client could create channels without first performing authentication, resulting in unauthorized access）。状态机逻辑错误 → 诚实标 miss。"
+    "file": "sample_G075.cpp",
+    "notes": "CVE-2018-10933: libssh 服务端状态机缺陷（CVE 描述: A malicious client could create channels without first performing authentication, resulting in unauthorized access）。状态机逻辑错误 → 诚实标 miss。"
   },
   "severity": "high",
   "planted": false,

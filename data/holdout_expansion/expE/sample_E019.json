@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "producer",
-    "description": "两段发布中末段标志用 relaxed，读侧 acquire 后读非原子载荷"
+    "file": "sample_E019.cpp",
+    "notes": "两段发布中末段标志用 relaxed，读侧 acquire 后读非原子载荷"
   },
   "severity": "high",
   "planted": true,

@@ -8,12 +8,13 @@
   "trigger_condition": "无条件",
   "optimization_sensitivity": "n/a",
   "notes": "经非虚析构基类删除派生对象：-Wdelete-non-virtual-dtor（compiler-warn 抓）。",
-  "id": "sample_046",
+  "sample_id": "sample_046",
   "category": "C",
   "defect_location": {
     "line": 6,
     "function": "main",
-    "note": "delete p; // <<PLANTED-DEFECT>> 经非虚析构基类指针删除派生 -> 仅 ~B，~D 不跑"
+    "file": "sample_046.cpp",
+    "notes": "delete p; // <<PLANTED-DEFECT>> 经非虚析构基类指针删除派生 -> 仅 ~B，~D 不跑"
   },
   "planted": true,
   "source_files": [

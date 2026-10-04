@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 24,
     "function": "pipe_buffer_reuse",
-    "description": "CVE-2022-0847 (Dirty Pipe): pipe_buffer.flags 缺少初始化（CVE 描述: the 'flags' member of the new pipe buffer structure was lacking proper initialization ... could thus contain stale values）。用户态等价模拟，可观察越权写入 → 诚实标 miss。"
+    "file": "sample_G085.cpp",
+    "notes": "CVE-2022-0847 (Dirty Pipe): pipe_buffer.flags 缺少初始化（CVE 描述: the 'flags' member of the new pipe buffer structure was lacking proper initialization ... could thus contain stale values）。用户态等价模拟，可观察越权写入 → 诚实标 miss。"
   },
   "severity": "high",
   "planted": true,

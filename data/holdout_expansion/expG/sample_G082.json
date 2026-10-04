@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G082",
-  "defect_type": "race_condition",
+  "defect_type": "data_race",
   "defect_location": {
     "line": 22,
     "function": "n_tty_write",
-    "description": "CVE-2014-0196: n_tty_write 并发写竞争（CVE 描述: does not properly manage tty driver access in the LECHO & !OPOST case ... memory corruption）。用户态等价模拟，TSan 捕获。"
+    "file": "sample_G082.cpp",
+    "notes": "CVE-2014-0196: n_tty_write 并发写竞争（CVE 描述: does not properly manage tty driver access in the LECHO & !OPOST case ... memory corruption）。用户态等价模拟，TSan 捕获。"
   },
   "severity": "high",
   "planted": true,

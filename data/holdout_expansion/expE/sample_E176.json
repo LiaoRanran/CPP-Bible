@@ -4,18 +4,19 @@
   "defect_location": {
     "line": 27,
     "function": "waiter",
-    "description": "notify_one 只有一个等待者时通知了「错误的那一个」（实际无通知到达）"
+    "file": "sample_E176.cpp",
+    "notes": "notify_one 只有一个等待者时通知了「错误的那一个」（实际无通知到达）"
   },
   "severity": "high",
   "planted": true,
-  "expected_verdict": "catch",
+  "expected_verdict": "miss",
   "expected_detectors": [
     "tsan"
   ],
   "trigger_condition": "2 个等待者 + 1 个通知者，只发 notify_one",
   "thread_count": 3,
   "timeout_seconds": 5,
-  "notes": "通知丢失导致部分等待者永久阻塞（超时挂起）。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "notes": "通知丢失导致部分等待者永久阻塞（超时挂起）。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。 【676m 修正：hung_flag 样本真实判据为 miss（sanitizer 挂起超时），原 catch 登记有误】",
   "pooled_verdict": {
     "tsan": "catch"
   },

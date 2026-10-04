@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G033",
-  "defect_type": "heap_overflow",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 13,
     "function": "deliver_data",
-    "description": "CVE-2017-1000257: IMAP FETCH 零字节数据时 deliver-data 收到越界指针（CVE 描述: libcurl would pass on that (non-existing) data with a pointer and the size (zero) ... 可写越界 1 字节）。"
+    "file": "sample_G033.cpp",
+    "notes": "CVE-2017-1000257: IMAP FETCH 零字节数据时 deliver-data 收到越界指针（CVE 描述: libcurl would pass on that (non-existing) data with a pointer and the size (zero) ... 可写越界 1 字节）。"
   },
   "severity": "high",
   "planted": false,

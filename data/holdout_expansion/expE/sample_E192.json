@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 24,
     "function": "waiter",
-    "description": "谓词按「边沿」而非「电平」消费：多个等待者共享一次性信号"
+    "file": "sample_E192.cpp",
+    "notes": "谓词按「边沿」而非「电平」消费：多个等待者共享一次性信号"
   },
   "severity": "high",
   "planted": true,

@@ -4,18 +4,19 @@
   "defect_location": {
     "line": 24,
     "function": "stage1",
-    "description": "三个阶段线程各持一锁并等待下一阶段的锁"
+    "file": "sample_E101.cpp",
+    "notes": "三个阶段线程各持一锁并等待下一阶段的锁"
   },
   "severity": "high",
   "planted": true,
-  "expected_verdict": "catch",
+  "expected_verdict": "miss",
   "expected_detectors": [
     "tsan"
   ],
   "trigger_condition": "3 阶段线程各持一锁等待下一阶段",
   "thread_count": 3,
   "timeout_seconds": 5,
-  "notes": "流水线式环形等待。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。",
+  "notes": "流水线式环形等待。确定性触发。 【调和】标注与实测一致（tsan）。 【复现特性】运行超时(rc=124) ⇒ 阻塞/死锁触发。 【676m 修正：hung_flag 样本真实判据为 miss（sanitizer 挂起超时），原 catch 登记有误】",
   "pooled_verdict": {
     "tsan": "catch"
   },

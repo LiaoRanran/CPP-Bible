@@ -2,9 +2,10 @@
   "sample_id": "F065",
   "defect_type": "endianness",
   "defect_location": {
-    "description": "把 double 的位表示直接当作整数发送，未转换端序",
     "line": 5,
-    "function": "main"
+    "function": "main",
+    "file": "sample_F065.cpp",
+    "notes": "把 double 的位表示直接当作整数发送，未转换端序"
   },
   "severity": "high",
   "planted": true,

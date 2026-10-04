@@ -1,9 +1,10 @@
 {
   "sample_id": "sample_B084",
-  "defect_type": "other_ub",
+  "defect_type": "bit_operation",
   "defect_location": {
-    "line": 5,
-    "function": "main"
+    "line": 13,
+    "function": "main",
+    "file": "sample_B084.cpp"
   },
   "severity": "high",
   "planted": true,

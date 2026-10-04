@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G030",
-  "defect_type": "heap_overflow",
+  "defect_type": "out_of_bounds",
   "defect_location": {
     "line": 19,
     "function": "tftp_receive_packet",
-    "description": "CVE-2019-5436: TFTP 接收代码堆溢出（CVE 描述: A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution）。修复版 blksize 上限 512，本样本保留未限制版本。"
+    "file": "sample_G030.cpp",
+    "notes": "CVE-2019-5436: TFTP 接收代码堆溢出（CVE 描述: A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution）。修复版 blksize 上限 512，本样本保留未限制版本。"
   },
   "severity": "high",
   "planted": false,

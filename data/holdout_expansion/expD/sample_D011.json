@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 9,
     "function": "main",
-    "description": "vector insert 后使用失效迭代器"
+    "file": "sample_D011.cpp",
+    "notes": "vector insert 后使用失效迭代器"
   },
   "severity": "high",
   "planted": true,

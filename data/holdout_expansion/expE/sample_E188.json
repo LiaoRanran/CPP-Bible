@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 21,
     "function": "waiter",
-    "description": "条件变量配错了 mutex：wait 用 m2，谓词由 m1 保护"
+    "file": "sample_E188.cpp",
+    "notes": "条件变量配错了 mutex：wait 用 m2，谓词由 m1 保护"
   },
   "severity": "high",
   "planted": true,

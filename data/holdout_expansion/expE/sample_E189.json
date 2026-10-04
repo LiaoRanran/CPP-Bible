@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 22,
     "function": "waiter",
-    "description": "三个线程各用不同的锁 wait 同一个条件变量"
+    "file": "sample_E189.cpp",
+    "notes": "三个线程各用不同的锁 wait 同一个条件变量"
   },
   "severity": "high",
   "planted": true,

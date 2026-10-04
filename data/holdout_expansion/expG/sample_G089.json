@@ -1,10 +1,11 @@
 {
   "sample_id": "sample_G089",
-  "defect_type": "resource_exhaustion",
+  "defect_type": "logic_error",
   "defect_location": {
     "line": 20,
     "function": "h2_on_settings_flood",
-    "description": "CVE-2019-9512: HTTP/2 SETTINGS flood（CVE 描述: flood of SETTINGS frames ... uncontrolled resource consumption, CWE-400）。资源耗尽类 → 诚实标 miss。"
+    "file": "sample_G089.cpp",
+    "notes": "CVE-2019-9512: HTTP/2 SETTINGS flood（CVE 描述: flood of SETTINGS frames ... uncontrolled resource consumption, CWE-400）。资源耗尽类 → 诚实标 miss。"
   },
   "severity": "medium",
   "planted": true,

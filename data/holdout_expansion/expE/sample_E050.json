@@ -4,7 +4,8 @@
   "defect_location": {
     "line": 19,
     "function": "scale",
-    "description": "std::atomic<short> fetch_mul 溢出（C++17 下为 UB）"
+    "file": "sample_E050.cpp",
+    "notes": "std::atomic<short> fetch_mul 溢出（C++17 下为 UB）"
   },
   "severity": "high",
   "planted": true,
