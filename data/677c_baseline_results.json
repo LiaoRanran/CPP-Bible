@@ -1,0 +1,6191 @@
+{
+ "schema": "queyi-a5-677c-baselines/v1",
+ "generated_by": "tools/analyze_677c_nondegenerate.py",
+ "generated_at": "2026-10-04T12:14:07+08:00",
+ "design": {
+  "seed": 20260930,
+  "multi_seed_runs": 2000,
+  "split": "676f 原切分（派生 571/评估 566）",
+  "matrix": "676f 冻结判定矩阵（未重跑 detect）",
+  "random_convention": "单点 seed=20260930 用于配对检验；2000 次分布报均值/分位",
+  "baselines": [
+   "random",
+   "fd",
+   "static",
+   "frequency",
+   "greedy",
+   "oracle",
+   "info_gain"
+  ],
+  "oracle_note": "oracle 在评估集上穷举选最优 ⇒ 上界参考，不可达方法",
+  "frequency_note": "676f FD 的 fail_hits 操作定义 = 派生集 catch 计数 ⇒ frequency 与 fd 的排序键相同，选择应完全一致（结果可验证）"
+ },
+ "pools": {
+  "A": {
+   "pool_name": "Pool A（严格）",
+   "assets": [
+    "asan",
+    "compiler-warn",
+    "cross-compile",
+    "tsan",
+    "ubsan"
+   ],
+   "k_blocks": {
+    "1": {
+     "three_arm": {
+      "budget_k": 1,
+      "is_primary_k": false,
+      "is_degenerate_k": false,
+      "candidates": [
+       "asan",
+       "compiler-warn",
+       "cross-compile",
+       "tsan",
+       "ubsan"
+      ],
+      "eval_n": 566,
+      "arms": {
+       "fd": {
+        "assets": [
+         "asan"
+        ],
+        "budget_k": 1,
+        "cost_units": 3,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         }
+        ],
+        "k": 187,
+        "n": 566,
+        "point": 0.3303886925795053,
+        "rate_pct": 33.0389,
+        "cp95": [
+         29.1728,
+         37.0831
+        ],
+        "fail_hits_rank": {
+         "asan": 212,
+         "compiler-warn": 76,
+         "cross-compile": 89,
+         "tsan": 132,
+         "ubsan": 139
+        }
+       },
+       "random": {
+        "assets": [
+         "tsan"
+        ],
+        "budget_k": 1,
+        "cost_units": 3,
+        "allocation_table": [
+         {
+          "asset": "tsan",
+          "rank": 1,
+          "cost_units": 3
+         }
+        ],
+        "k": 123,
+        "n": 566,
+        "point": 0.21731448763250882,
+        "rate_pct": 21.7314,
+        "cp95": [
+         18.4004,
+         25.3606
+        ],
+        "seed": 20260930
+       },
+       "static": {
+        "assets": [
+         "compiler-warn"
+        ],
+        "budget_k": 1,
+        "cost_units": 2,
+        "allocation_table": [
+         {
+          "asset": "compiler-warn",
+          "rank": 1,
+          "cost_units": 2
+         }
+        ],
+        "k": 67,
+        "n": 566,
+        "point": 0.11837455830388692,
+        "rate_pct": 11.8375,
+        "cp95": [
+         9.2927,
+         14.7884
+        ]
+       },
+       "fd_full_pool": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn"
+        ],
+        "budget_k": 5,
+        "cost_units": 13,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         }
+        ],
+        "k": 336,
+        "n": 566,
+        "point": 0.5936395759717314,
+        "rate_pct": 59.364,
+        "cp95": [
+         55.1891,
+         63.4405
+        ]
+       }
+      },
+      "paired_tests": {
+       "fd_vs_random": {
+        "n_pairs": 566,
+        "fd_catch": 187,
+        "random_catch": 123,
+        "discordant_a_only": 102,
+        "discordant_b_only": 38,
+        "delta_pp": 11.3074,
+        "delta_ci95_pp": [
+         7.3174,
+         15.2974
+        ],
+        "delta_se_pp": 2.0357,
+        "mcnemar_p": 6.018771766031572e-08,
+        "cohens_h": 0.2548,
+        "ci_crosses_zero": false
+       },
+       "fd_vs_static": {
+        "n_pairs": 566,
+        "fd_catch": 187,
+        "static_catch": 67,
+        "discordant_a_only": 167,
+        "discordant_b_only": 47,
+        "delta_pp": 21.2014,
+        "delta_ci95_pp": [
+         16.4464,
+         25.9565
+        ],
+        "delta_se_pp": 2.4261,
+        "mcnemar_p": 5.82922063844246e-17,
+        "cohens_h": 0.5222,
+        "ci_crosses_zero": false
+       }
+      },
+      "random_multi_seed": {
+       "runs": 2000,
+       "mean_rate_pct": 20.7823,
+       "sd_pp": 7.4792,
+       "min_rate_pct": 11.8375,
+       "max_rate_pct": 33.0389,
+       "percentile_2.5_pct": 11.8375,
+       "percentile_97.5_pct": 33.0389,
+       "fd_strictly_better_frac": 0.7965,
+       "fd_better_or_tie_frac": 1.0,
+       "random_strictly_better_frac": 0.0,
+       "fd_catch": 187,
+       "note": "单点 seed 只用于配对检验；分布才说明 Random 臂的期望位置。"
+      }
+     },
+     "custom_baselines": {
+      "frequency": {
+       "assets": [
+        "asan"
+       ],
+       "rate_pct": 33.0389,
+       "cp95": [
+        29.1728,
+        37.0831
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "frequency_catch": 187,
+        "random_catch": 123,
+        "discordant_a_only": 102,
+        "discordant_b_only": 38,
+        "delta_pp": 11.3074,
+        "delta_ci95_pp": [
+         7.3174,
+         15.2974
+        ],
+        "delta_se_pp": 2.0357,
+        "mcnemar_p": 6.018771766031572e-08,
+        "cohens_h": 0.2548,
+        "ci_crosses_zero": false
+       }
+      },
+      "greedy": {
+       "assets": [
+        "asan"
+       ],
+       "rate_pct": 33.0389,
+       "cp95": [
+        29.1728,
+        37.0831
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "greedy_catch": 187,
+        "random_catch": 123,
+        "discordant_a_only": 102,
+        "discordant_b_only": 38,
+        "delta_pp": 11.3074,
+        "delta_ci95_pp": [
+         7.3174,
+         15.2974
+        ],
+        "delta_se_pp": 2.0357,
+        "mcnemar_p": 6.018771766031572e-08,
+        "cohens_h": 0.2548,
+        "ci_crosses_zero": false
+       }
+      },
+      "oracle": {
+       "assets": [
+        "asan"
+       ],
+       "rate_pct": 33.0389,
+       "cp95": [
+        29.1728,
+        37.0831
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "oracle_catch": 187,
+        "random_catch": 123,
+        "discordant_a_only": 102,
+        "discordant_b_only": 38,
+        "delta_pp": 11.3074,
+        "delta_ci95_pp": [
+         7.3174,
+         15.2974
+        ],
+        "delta_se_pp": 2.0357,
+        "mcnemar_p": 6.018771766031572e-08,
+        "cohens_h": 0.2548,
+        "ci_crosses_zero": false
+       },
+       "oracle_eval_catch": 187
+      },
+      "info_gain": {
+       "assets": [
+        "asan"
+       ],
+       "rate_pct": 33.0389,
+       "cp95": [
+        29.1728,
+        37.0831
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "info_gain_catch": 187,
+        "random_catch": 123,
+        "discordant_a_only": 102,
+        "discordant_b_only": 38,
+        "delta_pp": 11.3074,
+        "delta_ci95_pp": [
+         7.3174,
+         15.2974
+        ],
+        "delta_se_pp": 2.0357,
+        "mcnemar_p": 6.018771766031572e-08,
+        "cohens_h": 0.2548,
+        "ci_crosses_zero": false
+       }
+      }
+     },
+     "fd_vs_each": {
+      "frequency": {
+       "n_pairs": 566,
+       "fd_catch": 187,
+       "frequency_catch": 187,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "greedy": {
+       "n_pairs": 566,
+       "fd_catch": 187,
+       "greedy_catch": 187,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "oracle": {
+       "n_pairs": 566,
+       "fd_catch": 187,
+       "oracle_catch": 187,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "info_gain": {
+       "n_pairs": 566,
+       "fd_catch": 187,
+       "info_gain_catch": 187,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      }
+     },
+     "static_vs_random": {
+      "n_pairs": 566,
+      "static_catch": 67,
+      "random_catch": 123,
+      "discordant_a_only": 57,
+      "discordant_b_only": 113,
+      "delta_pp": -9.894,
+      "delta_ci95_pp": [
+       -14.3348,
+       -5.4532
+      ],
+      "delta_se_pp": 2.2658,
+      "mcnemar_p": 2.095905271766721e-05,
+      "cohens_h": 0.2674,
+      "ci_crosses_zero": false
+     },
+     "ranking": [
+      "fd",
+      "frequency",
+      "greedy",
+      "info_gain",
+      "oracle",
+      "random",
+      "static"
+     ],
+     "fd_random_sets_differ": true,
+     "p_value_family": {
+      "note": "对本 (pool,k) 内 7 个臂 vs Random 单点的 McNemar p 做 BH-FDR",
+      "bh_fdr": {
+       "fd": 6.018771766031572e-08,
+       "static": 3.497532383065476e-16,
+       "frequency": 6.018771766031572e-08,
+       "greedy": 6.018771766031572e-08,
+       "oracle": 6.018771766031572e-08,
+       "info_gain": 6.018771766031572e-08
+      }
+     }
+    },
+    "2": {
+     "three_arm": {
+      "budget_k": 2,
+      "is_primary_k": false,
+      "is_degenerate_k": false,
+      "candidates": [
+       "asan",
+       "compiler-warn",
+       "cross-compile",
+       "tsan",
+       "ubsan"
+      ],
+      "eval_n": 566,
+      "arms": {
+       "fd": {
+        "assets": [
+         "asan",
+         "ubsan"
+        ],
+        "budget_k": 2,
+        "cost_units": 6,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         }
+        ],
+        "k": 255,
+        "n": 566,
+        "point": 0.450530035335689,
+        "rate_pct": 45.053,
+        "cp95": [
+         40.9008,
+         49.2571
+        ],
+        "fail_hits_rank": {
+         "asan": 212,
+         "compiler-warn": 76,
+         "cross-compile": 89,
+         "tsan": 132,
+         "ubsan": 139
+        }
+       },
+       "random": {
+        "assets": [
+         "tsan",
+         "ubsan"
+        ],
+        "budget_k": 2,
+        "cost_units": 6,
+        "allocation_table": [
+         {
+          "asset": "tsan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         }
+        ],
+        "k": 213,
+        "n": 566,
+        "point": 0.3763250883392226,
+        "rate_pct": 37.6325,
+        "cp95": [
+         33.6266,
+         41.7683
+        ],
+        "seed": 20260930
+       },
+       "static": {
+        "assets": [
+         "compiler-warn",
+         "cross-compile"
+        ],
+        "budget_k": 2,
+        "cost_units": 4,
+        "allocation_table": [
+         {
+          "asset": "compiler-warn",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 2,
+          "cost_units": 2
+         }
+        ],
+        "k": 136,
+        "n": 566,
+        "point": 0.24028268551236748,
+        "rate_pct": 24.0283,
+        "cp95": [
+         20.5634,
+         27.7668
+        ]
+       },
+       "fd_full_pool": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn"
+        ],
+        "budget_k": 5,
+        "cost_units": 13,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         }
+        ],
+        "k": 336,
+        "n": 566,
+        "point": 0.5936395759717314,
+        "rate_pct": 59.364,
+        "cp95": [
+         55.1891,
+         63.4405
+        ]
+       }
+      },
+      "paired_tests": {
+       "fd_vs_random": {
+        "n_pairs": 566,
+        "fd_catch": 255,
+        "random_catch": 213,
+        "discordant_a_only": 76,
+        "discordant_b_only": 34,
+        "delta_pp": 7.4205,
+        "delta_ci95_pp": [
+         3.8405,
+         11.0005
+        ],
+        "delta_se_pp": 1.8266,
+        "mcnemar_p": 7.692818848583101e-05,
+        "cohens_h": 0.1508,
+        "ci_crosses_zero": false
+       },
+       "fd_vs_static": {
+        "n_pairs": 566,
+        "fd_catch": 255,
+        "static_catch": 136,
+        "discordant_a_only": 171,
+        "discordant_b_only": 52,
+        "delta_pp": 21.0247,
+        "delta_ci95_pp": [
+         16.1523,
+         25.8971
+        ],
+        "delta_se_pp": 2.486,
+        "mcnemar_p": 5.28473643741216e-16,
+        "cohens_h": 0.4471,
+        "ci_crosses_zero": false
+       }
+      },
+      "random_multi_seed": {
+       "runs": 2000,
+       "mean_rate_pct": 34.9954,
+       "sd_pp": 6.2744,
+       "min_rate_pct": 24.0283,
+       "max_rate_pct": 45.053,
+       "percentile_2.5_pct": 24.0283,
+       "percentile_97.5_pct": 45.053,
+       "fd_strictly_better_frac": 0.8915,
+       "fd_better_or_tie_frac": 1.0,
+       "random_strictly_better_frac": 0.0,
+       "fd_catch": 255,
+       "note": "单点 seed 只用于配对检验；分布才说明 Random 臂的期望位置。"
+      }
+     },
+     "custom_baselines": {
+      "frequency": {
+       "assets": [
+        "asan",
+        "ubsan"
+       ],
+       "rate_pct": 45.053,
+       "cp95": [
+        40.9008,
+        49.2571
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "frequency_catch": 255,
+        "random_catch": 213,
+        "discordant_a_only": 76,
+        "discordant_b_only": 34,
+        "delta_pp": 7.4205,
+        "delta_ci95_pp": [
+         3.8405,
+         11.0005
+        ],
+        "delta_se_pp": 1.8266,
+        "mcnemar_p": 7.692818848583101e-05,
+        "cohens_h": 0.1508,
+        "ci_crosses_zero": false
+       }
+      },
+      "greedy": {
+       "assets": [
+        "asan",
+        "ubsan"
+       ],
+       "rate_pct": 45.053,
+       "cp95": [
+        40.9008,
+        49.2571
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "greedy_catch": 255,
+        "random_catch": 213,
+        "discordant_a_only": 76,
+        "discordant_b_only": 34,
+        "delta_pp": 7.4205,
+        "delta_ci95_pp": [
+         3.8405,
+         11.0005
+        ],
+        "delta_se_pp": 1.8266,
+        "mcnemar_p": 7.692818848583101e-05,
+        "cohens_h": 0.1508,
+        "ci_crosses_zero": false
+       }
+      },
+      "oracle": {
+       "assets": [
+        "asan",
+        "ubsan"
+       ],
+       "rate_pct": 45.053,
+       "cp95": [
+        40.9008,
+        49.2571
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "oracle_catch": 255,
+        "random_catch": 213,
+        "discordant_a_only": 76,
+        "discordant_b_only": 34,
+        "delta_pp": 7.4205,
+        "delta_ci95_pp": [
+         3.8405,
+         11.0005
+        ],
+        "delta_se_pp": 1.8266,
+        "mcnemar_p": 7.692818848583101e-05,
+        "cohens_h": 0.1508,
+        "ci_crosses_zero": false
+       },
+       "oracle_eval_catch": 255
+      },
+      "info_gain": {
+       "assets": [
+        "asan",
+        "ubsan"
+       ],
+       "rate_pct": 45.053,
+       "cp95": [
+        40.9008,
+        49.2571
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "info_gain_catch": 255,
+        "random_catch": 213,
+        "discordant_a_only": 76,
+        "discordant_b_only": 34,
+        "delta_pp": 7.4205,
+        "delta_ci95_pp": [
+         3.8405,
+         11.0005
+        ],
+        "delta_se_pp": 1.8266,
+        "mcnemar_p": 7.692818848583101e-05,
+        "cohens_h": 0.1508,
+        "ci_crosses_zero": false
+       }
+      }
+     },
+     "fd_vs_each": {
+      "frequency": {
+       "n_pairs": 566,
+       "fd_catch": 255,
+       "frequency_catch": 255,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "greedy": {
+       "n_pairs": 566,
+       "fd_catch": 255,
+       "greedy_catch": 255,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "oracle": {
+       "n_pairs": 566,
+       "fd_catch": 255,
+       "oracle_catch": 255,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "info_gain": {
+       "n_pairs": 566,
+       "fd_catch": 255,
+       "info_gain_catch": 255,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      }
+     },
+     "static_vs_random": {
+      "n_pairs": 566,
+      "static_catch": 136,
+      "random_catch": 213,
+      "discordant_a_only": 63,
+      "discordant_b_only": 140,
+      "delta_pp": -13.6042,
+      "delta_ci95_pp": [
+       -18.409,
+       -8.7994
+      ],
+      "delta_se_pp": 2.4515,
+      "mcnemar_p": 6.755683065564974e-08,
+      "cohens_h": 0.2962,
+      "ci_crosses_zero": false
+     },
+     "ranking": [
+      "fd",
+      "frequency",
+      "greedy",
+      "info_gain",
+      "oracle",
+      "random",
+      "static"
+     ],
+     "fd_random_sets_differ": true,
+     "p_value_family": {
+      "note": "对本 (pool,k) 内 7 个臂 vs Random 单点的 McNemar p 做 BH-FDR",
+      "bh_fdr": {
+       "fd": 7.692818848583101e-05,
+       "static": 3.1708418624472955e-15,
+       "frequency": 7.692818848583101e-05,
+       "greedy": 7.692818848583101e-05,
+       "oracle": 7.692818848583101e-05,
+       "info_gain": 7.692818848583101e-05
+      }
+     }
+    },
+    "3": {
+     "three_arm": {
+      "budget_k": 3,
+      "is_primary_k": false,
+      "is_degenerate_k": false,
+      "candidates": [
+       "asan",
+       "compiler-warn",
+       "cross-compile",
+       "tsan",
+       "ubsan"
+      ],
+      "eval_n": 566,
+      "arms": {
+       "fd": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan"
+        ],
+        "budget_k": 3,
+        "cost_units": 9,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         }
+        ],
+        "k": 289,
+        "n": 566,
+        "point": 0.5106007067137809,
+        "rate_pct": 51.0601,
+        "cp95": [
+         46.8572,
+         55.2519
+        ],
+        "fail_hits_rank": {
+         "asan": 212,
+         "compiler-warn": 76,
+         "cross-compile": 89,
+         "tsan": 132,
+         "ubsan": 139
+        }
+       },
+       "random": {
+        "assets": [
+         "tsan",
+         "ubsan",
+         "cross-compile"
+        ],
+        "budget_k": 3,
+        "cost_units": 8,
+        "allocation_table": [
+         {
+          "asset": "tsan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 3,
+          "cost_units": 2
+         }
+        ],
+        "k": 247,
+        "n": 566,
+        "point": 0.4363957597173145,
+        "rate_pct": 43.6396,
+        "cp95": [
+         39.508,
+         47.8379
+        ],
+        "seed": 20260930
+       },
+       "static": {
+        "assets": [
+         "compiler-warn",
+         "cross-compile"
+        ],
+        "budget_k": 2,
+        "cost_units": 4,
+        "allocation_table": [
+         {
+          "asset": "compiler-warn",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 2,
+          "cost_units": 2
+         }
+        ],
+        "k": 136,
+        "n": 566,
+        "point": 0.24028268551236748,
+        "rate_pct": 24.0283,
+        "cp95": [
+         20.5634,
+         27.7668
+        ]
+       },
+       "fd_full_pool": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn"
+        ],
+        "budget_k": 5,
+        "cost_units": 13,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         }
+        ],
+        "k": 336,
+        "n": 566,
+        "point": 0.5936395759717314,
+        "rate_pct": 59.364,
+        "cp95": [
+         55.1891,
+         63.4405
+        ]
+       }
+      },
+      "paired_tests": {
+       "fd_vs_random": {
+        "n_pairs": 566,
+        "fd_catch": 289,
+        "random_catch": 247,
+        "discordant_a_only": 62,
+        "discordant_b_only": 20,
+        "delta_pp": 7.4205,
+        "delta_ci95_pp": [
+         4.3449,
+         10.4961
+        ],
+        "delta_se_pp": 1.5692,
+        "mcnemar_p": 3.714641593828229e-06,
+        "cohens_h": 0.1488,
+        "ci_crosses_zero": false
+       },
+       "fd_vs_static": {
+        "n_pairs": 566,
+        "fd_catch": 289,
+        "static_catch": 136,
+        "discordant_a_only": 200,
+        "discordant_b_only": 47,
+        "delta_pp": 27.0318,
+        "delta_ci95_pp": [
+         22.066,
+         31.9976
+        ],
+        "delta_se_pp": 2.5336,
+        "mcnemar_p": 1.1822360078717395e-23,
+        "cohens_h": 0.5674,
+        "ci_crosses_zero": false
+       }
+      },
+      "random_multi_seed": {
+       "runs": 2000,
+       "mean_rate_pct": 45.2807,
+       "sd_pp": 4.2016,
+       "min_rate_pct": 38.6926,
+       "max_rate_pct": 51.0601,
+       "percentile_2.5_pct": 38.6926,
+       "percentile_97.5_pct": 51.0601,
+       "fd_strictly_better_frac": 0.9055,
+       "fd_better_or_tie_frac": 1.0,
+       "random_strictly_better_frac": 0.0,
+       "fd_catch": 289,
+       "note": "单点 seed 只用于配对检验；分布才说明 Random 臂的期望位置。"
+      }
+     },
+     "custom_baselines": {
+      "frequency": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan"
+       ],
+       "rate_pct": 51.0601,
+       "cp95": [
+        46.8572,
+        55.2519
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "frequency_catch": 289,
+        "random_catch": 247,
+        "discordant_a_only": 62,
+        "discordant_b_only": 20,
+        "delta_pp": 7.4205,
+        "delta_ci95_pp": [
+         4.3449,
+         10.4961
+        ],
+        "delta_se_pp": 1.5692,
+        "mcnemar_p": 3.714641593828229e-06,
+        "cohens_h": 0.1488,
+        "ci_crosses_zero": false
+       }
+      },
+      "greedy": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan"
+       ],
+       "rate_pct": 51.0601,
+       "cp95": [
+        46.8572,
+        55.2519
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "greedy_catch": 289,
+        "random_catch": 247,
+        "discordant_a_only": 62,
+        "discordant_b_only": 20,
+        "delta_pp": 7.4205,
+        "delta_ci95_pp": [
+         4.3449,
+         10.4961
+        ],
+        "delta_se_pp": 1.5692,
+        "mcnemar_p": 3.714641593828229e-06,
+        "cohens_h": 0.1488,
+        "ci_crosses_zero": false
+       }
+      },
+      "oracle": {
+       "assets": [
+        "asan",
+        "tsan",
+        "ubsan"
+       ],
+       "rate_pct": 51.0601,
+       "cp95": [
+        46.8572,
+        55.2519
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "oracle_catch": 289,
+        "random_catch": 247,
+        "discordant_a_only": 62,
+        "discordant_b_only": 20,
+        "delta_pp": 7.4205,
+        "delta_ci95_pp": [
+         4.3449,
+         10.4961
+        ],
+        "delta_se_pp": 1.5692,
+        "mcnemar_p": 3.714641593828229e-06,
+        "cohens_h": 0.1488,
+        "ci_crosses_zero": false
+       },
+       "oracle_eval_catch": 289
+      },
+      "info_gain": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan"
+       ],
+       "rate_pct": 51.0601,
+       "cp95": [
+        46.8572,
+        55.2519
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "info_gain_catch": 289,
+        "random_catch": 247,
+        "discordant_a_only": 62,
+        "discordant_b_only": 20,
+        "delta_pp": 7.4205,
+        "delta_ci95_pp": [
+         4.3449,
+         10.4961
+        ],
+        "delta_se_pp": 1.5692,
+        "mcnemar_p": 3.714641593828229e-06,
+        "cohens_h": 0.1488,
+        "ci_crosses_zero": false
+       }
+      }
+     },
+     "fd_vs_each": {
+      "frequency": {
+       "n_pairs": 566,
+       "fd_catch": 289,
+       "frequency_catch": 289,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "greedy": {
+       "n_pairs": 566,
+       "fd_catch": 289,
+       "greedy_catch": 289,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "oracle": {
+       "n_pairs": 566,
+       "fd_catch": 289,
+       "oracle_catch": 289,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "info_gain": {
+       "n_pairs": 566,
+       "fd_catch": 289,
+       "info_gain_catch": 289,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      }
+     },
+     "static_vs_random": {
+      "n_pairs": 566,
+      "static_catch": 136,
+      "random_catch": 247,
+      "discordant_a_only": 29,
+      "discordant_b_only": 140,
+      "delta_pp": -19.6113,
+      "delta_ci95_pp": [
+       -23.8131,
+       -15.4095
+      ],
+      "delta_se_pp": 2.1438,
+      "mcnemar_p": 1.2035948266494075e-18,
+      "cohens_h": 0.4186,
+      "ci_crosses_zero": false
+     },
+     "ranking": [
+      "fd",
+      "frequency",
+      "greedy",
+      "info_gain",
+      "oracle",
+      "random",
+      "static"
+     ],
+     "fd_random_sets_differ": true,
+     "p_value_family": {
+      "note": "对本 (pool,k) 内 7 个臂 vs Random 单点的 McNemar p 做 BH-FDR",
+      "bh_fdr": {
+       "fd": 3.714641593828229e-06,
+       "static": 7.093416047230437e-23,
+       "frequency": 3.714641593828229e-06,
+       "greedy": 3.714641593828229e-06,
+       "oracle": 3.714641593828229e-06,
+       "info_gain": 3.714641593828229e-06
+      }
+     }
+    },
+    "4": {
+     "three_arm": {
+      "budget_k": 4,
+      "is_primary_k": true,
+      "is_degenerate_k": false,
+      "candidates": [
+       "asan",
+       "compiler-warn",
+       "cross-compile",
+       "tsan",
+       "ubsan"
+      ],
+      "eval_n": 566,
+      "arms": {
+       "fd": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile"
+        ],
+        "budget_k": 4,
+        "cost_units": 11,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         }
+        ],
+        "k": 309,
+        "n": 566,
+        "point": 0.5459363957597173,
+        "rate_pct": 54.5936,
+        "cp95": [
+         50.3886,
+         58.7505
+        ],
+        "fail_hits_rank": {
+         "asan": 212,
+         "compiler-warn": 76,
+         "cross-compile": 89,
+         "tsan": 132,
+         "ubsan": 139
+        }
+       },
+       "random": {
+        "assets": [
+         "tsan",
+         "ubsan",
+         "cross-compile",
+         "asan"
+        ],
+        "budget_k": 4,
+        "cost_units": 11,
+        "allocation_table": [
+         {
+          "asset": "tsan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 3,
+          "cost_units": 2
+         },
+         {
+          "asset": "asan",
+          "rank": 4,
+          "cost_units": 3
+         }
+        ],
+        "k": 309,
+        "n": 566,
+        "point": 0.5459363957597173,
+        "rate_pct": 54.5936,
+        "cp95": [
+         50.3886,
+         58.7505
+        ],
+        "seed": 20260930
+       },
+       "static": {
+        "assets": [
+         "compiler-warn",
+         "cross-compile"
+        ],
+        "budget_k": 2,
+        "cost_units": 4,
+        "allocation_table": [
+         {
+          "asset": "compiler-warn",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 2,
+          "cost_units": 2
+         }
+        ],
+        "k": 136,
+        "n": 566,
+        "point": 0.24028268551236748,
+        "rate_pct": 24.0283,
+        "cp95": [
+         20.5634,
+         27.7668
+        ]
+       },
+       "fd_full_pool": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn"
+        ],
+        "budget_k": 5,
+        "cost_units": 13,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         }
+        ],
+        "k": 336,
+        "n": 566,
+        "point": 0.5936395759717314,
+        "rate_pct": 59.364,
+        "cp95": [
+         55.1891,
+         63.4405
+        ]
+       }
+      },
+      "paired_tests": {
+       "fd_vs_random": {
+        "n_pairs": 566,
+        "fd_catch": 309,
+        "random_catch": 309,
+        "discordant_a_only": 0,
+        "discordant_b_only": 0,
+        "delta_pp": 0.0,
+        "delta_ci95_pp": [
+         0.0,
+         0.0
+        ],
+        "delta_se_pp": 0.0,
+        "mcnemar_p": 1.0,
+        "cohens_h": 0.0,
+        "ci_crosses_zero": false
+       },
+       "fd_vs_static": {
+        "n_pairs": 566,
+        "fd_catch": 309,
+        "static_catch": 136,
+        "discordant_a_only": 200,
+        "discordant_b_only": 27,
+        "delta_pp": 30.5654,
+        "delta_ci95_pp": [
+         25.996,
+         35.1348
+        ],
+        "delta_se_pp": 2.3314,
+        "mcnemar_p": 8.051019899730613e-34,
+        "cohens_h": 0.6382,
+        "ci_crosses_zero": false
+       }
+      },
+      "random_multi_seed": {
+       "runs": 2000,
+       "mean_rate_pct": 52.9862,
+       "sd_pp": 2.5797,
+       "min_rate_pct": 48.7633,
+       "max_rate_pct": 56.0071,
+       "percentile_2.5_pct": 48.7633,
+       "percentile_97.5_pct": 56.0071,
+       "fd_strictly_better_frac": 0.612,
+       "fd_better_or_tie_frac": 0.801,
+       "random_strictly_better_frac": 0.199,
+       "fd_catch": 309,
+       "note": "单点 seed 只用于配对检验；分布才说明 Random 臂的期望位置。"
+      }
+     },
+     "custom_baselines": {
+      "frequency": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "cross-compile"
+       ],
+       "rate_pct": 54.5936,
+       "cp95": [
+        50.3886,
+        58.7505
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "frequency_catch": 309,
+        "random_catch": 309,
+        "discordant_a_only": 0,
+        "discordant_b_only": 0,
+        "delta_pp": 0.0,
+        "delta_ci95_pp": [
+         0.0,
+         0.0
+        ],
+        "delta_se_pp": 0.0,
+        "mcnemar_p": 1.0,
+        "cohens_h": 0.0,
+        "ci_crosses_zero": false
+       }
+      },
+      "greedy": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "compiler-warn"
+       ],
+       "rate_pct": 56.0071,
+       "cp95": [
+        51.807,
+        60.1441
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "greedy_catch": 317,
+        "random_catch": 309,
+        "discordant_a_only": 27,
+        "discordant_b_only": 19,
+        "delta_pp": 1.4134,
+        "delta_ci95_pp": [
+         -0.9323,
+         3.7591
+        ],
+        "delta_se_pp": 1.1968,
+        "mcnemar_p": 0.3019956131896645,
+        "cohens_h": 0.0284,
+        "ci_crosses_zero": true
+       }
+      },
+      "oracle": {
+       "assets": [
+        "asan",
+        "compiler-warn",
+        "tsan",
+        "ubsan"
+       ],
+       "rate_pct": 56.0071,
+       "cp95": [
+        51.807,
+        60.1441
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "oracle_catch": 317,
+        "random_catch": 309,
+        "discordant_a_only": 27,
+        "discordant_b_only": 19,
+        "delta_pp": 1.4134,
+        "delta_ci95_pp": [
+         -0.9323,
+         3.7591
+        ],
+        "delta_se_pp": 1.1968,
+        "mcnemar_p": 0.3019956131896645,
+        "cohens_h": 0.0284,
+        "ci_crosses_zero": true
+       },
+       "oracle_eval_catch": 317
+      },
+      "info_gain": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "cross-compile"
+       ],
+       "rate_pct": 54.5936,
+       "cp95": [
+        50.3886,
+        58.7505
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "info_gain_catch": 309,
+        "random_catch": 309,
+        "discordant_a_only": 0,
+        "discordant_b_only": 0,
+        "delta_pp": 0.0,
+        "delta_ci95_pp": [
+         0.0,
+         0.0
+        ],
+        "delta_se_pp": 0.0,
+        "mcnemar_p": 1.0,
+        "cohens_h": 0.0,
+        "ci_crosses_zero": false
+       }
+      }
+     },
+     "fd_vs_each": {
+      "frequency": {
+       "n_pairs": 566,
+       "fd_catch": 309,
+       "frequency_catch": 309,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "greedy": {
+       "n_pairs": 566,
+       "fd_catch": 309,
+       "greedy_catch": 317,
+       "discordant_a_only": 19,
+       "discordant_b_only": 27,
+       "delta_pp": -1.4134,
+       "delta_ci95_pp": [
+        -3.7591,
+        0.9323
+       ],
+       "delta_se_pp": 1.1968,
+       "mcnemar_p": 0.3019956131896645,
+       "cohens_h": 0.0284,
+       "ci_crosses_zero": true
+      },
+      "oracle": {
+       "n_pairs": 566,
+       "fd_catch": 309,
+       "oracle_catch": 317,
+       "discordant_a_only": 19,
+       "discordant_b_only": 27,
+       "delta_pp": -1.4134,
+       "delta_ci95_pp": [
+        -3.7591,
+        0.9323
+       ],
+       "delta_se_pp": 1.1968,
+       "mcnemar_p": 0.3019956131896645,
+       "cohens_h": 0.0284,
+       "ci_crosses_zero": true
+      },
+      "info_gain": {
+       "n_pairs": 566,
+       "fd_catch": 309,
+       "info_gain_catch": 309,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      }
+     },
+     "static_vs_random": {
+      "n_pairs": 566,
+      "static_catch": 136,
+      "random_catch": 309,
+      "discordant_a_only": 27,
+      "discordant_b_only": 200,
+      "delta_pp": -30.5654,
+      "delta_ci95_pp": [
+       -35.1348,
+       -25.996
+      ],
+      "delta_se_pp": 2.3314,
+      "mcnemar_p": 8.051019899730613e-34,
+      "cohens_h": 0.6382,
+      "ci_crosses_zero": false
+     },
+     "ranking": [
+      "greedy",
+      "oracle",
+      "fd",
+      "frequency",
+      "info_gain",
+      "random",
+      "static"
+     ],
+     "fd_random_sets_differ": false,
+     "p_value_family": {
+      "note": "对本 (pool,k) 内 7 个臂 vs Random 单点的 McNemar p 做 BH-FDR",
+      "bh_fdr": {
+       "fd": 1.0,
+       "static": 4.830611939838368e-33,
+       "frequency": 1.0,
+       "greedy": 0.603991226379329,
+       "oracle": 0.603991226379329,
+       "info_gain": 1.0
+      }
+     }
+    }
+   }
+  },
+  "B": {
+   "pool_name": "Pool B（中等）",
+   "assets": [
+    "asan",
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "tsan",
+    "ubsan"
+   ],
+   "k_blocks": {
+    "1": {
+     "three_arm": {
+      "budget_k": 1,
+      "is_primary_k": false,
+      "is_degenerate_k": false,
+      "candidates": [
+       "asan",
+       "compiler-warn",
+       "cross-compile",
+       "linker",
+       "tsan",
+       "ubsan"
+      ],
+      "eval_n": 566,
+      "arms": {
+       "fd": {
+        "assets": [
+         "asan"
+        ],
+        "budget_k": 1,
+        "cost_units": 3,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         }
+        ],
+        "k": 187,
+        "n": 566,
+        "point": 0.3303886925795053,
+        "rate_pct": 33.0389,
+        "cp95": [
+         29.1728,
+         37.0831
+        ],
+        "fail_hits_rank": {
+         "asan": 212,
+         "compiler-warn": 76,
+         "cross-compile": 89,
+         "linker": 6,
+         "tsan": 132,
+         "ubsan": 139
+        }
+       },
+       "random": {
+        "assets": [
+         "linker"
+        ],
+        "budget_k": 1,
+        "cost_units": 2,
+        "allocation_table": [
+         {
+          "asset": "linker",
+          "rank": 1,
+          "cost_units": 2
+         }
+        ],
+        "k": 4,
+        "n": 566,
+        "point": 0.007067137809187279,
+        "rate_pct": 0.7067,
+        "cp95": [
+         0.1929,
+         1.7995
+        ],
+        "seed": 20260930
+       },
+       "static": {
+        "assets": [
+         "compiler-warn"
+        ],
+        "budget_k": 1,
+        "cost_units": 2,
+        "allocation_table": [
+         {
+          "asset": "compiler-warn",
+          "rank": 1,
+          "cost_units": 2
+         }
+        ],
+        "k": 67,
+        "n": 566,
+        "point": 0.11837455830388692,
+        "rate_pct": 11.8375,
+        "cp95": [
+         9.2927,
+         14.7884
+        ]
+       },
+       "fd_full_pool": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn",
+         "linker"
+        ],
+        "budget_k": 6,
+        "cost_units": 15,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 6,
+          "cost_units": 2
+         }
+        ],
+        "k": 340,
+        "n": 566,
+        "point": 0.6007067137809188,
+        "rate_pct": 60.0707,
+        "cp95": [
+         55.9036,
+         64.1321
+        ]
+       }
+      },
+      "paired_tests": {
+       "fd_vs_random": {
+        "n_pairs": 566,
+        "fd_catch": 187,
+        "random_catch": 4,
+        "discordant_a_only": 187,
+        "discordant_b_only": 4,
+        "delta_pp": 32.3322,
+        "delta_ci95_pp": [
+         28.3562,
+         36.3081
+        ],
+        "delta_se_pp": 2.0286,
+        "mcnemar_p": 3.497717214973568e-50,
+        "cohens_h": 1.0564,
+        "ci_crosses_zero": false
+       },
+       "fd_vs_static": {
+        "n_pairs": 566,
+        "fd_catch": 187,
+        "static_catch": 67,
+        "discordant_a_only": 167,
+        "discordant_b_only": 47,
+        "delta_pp": 21.2014,
+        "delta_ci95_pp": [
+         16.4464,
+         25.9565
+        ],
+        "delta_se_pp": 2.4261,
+        "mcnemar_p": 5.82922063844246e-17,
+        "cohens_h": 0.5222,
+        "ci_crosses_zero": false
+       }
+      },
+      "random_multi_seed": {
+       "runs": 2000,
+       "mean_rate_pct": 17.6443,
+       "sd_pp": 10.0398,
+       "min_rate_pct": 0.7067,
+       "max_rate_pct": 33.0389,
+       "percentile_2.5_pct": 0.7067,
+       "percentile_97.5_pct": 33.0389,
+       "fd_strictly_better_frac": 0.83,
+       "fd_better_or_tie_frac": 1.0,
+       "random_strictly_better_frac": 0.0,
+       "fd_catch": 187,
+       "note": "单点 seed 只用于配对检验；分布才说明 Random 臂的期望位置。"
+      }
+     },
+     "custom_baselines": {
+      "frequency": {
+       "assets": [
+        "asan"
+       ],
+       "rate_pct": 33.0389,
+       "cp95": [
+        29.1728,
+        37.0831
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "frequency_catch": 187,
+        "random_catch": 4,
+        "discordant_a_only": 187,
+        "discordant_b_only": 4,
+        "delta_pp": 32.3322,
+        "delta_ci95_pp": [
+         28.3562,
+         36.3081
+        ],
+        "delta_se_pp": 2.0286,
+        "mcnemar_p": 3.497717214973568e-50,
+        "cohens_h": 1.0564,
+        "ci_crosses_zero": false
+       }
+      },
+      "greedy": {
+       "assets": [
+        "asan"
+       ],
+       "rate_pct": 33.0389,
+       "cp95": [
+        29.1728,
+        37.0831
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "greedy_catch": 187,
+        "random_catch": 4,
+        "discordant_a_only": 187,
+        "discordant_b_only": 4,
+        "delta_pp": 32.3322,
+        "delta_ci95_pp": [
+         28.3562,
+         36.3081
+        ],
+        "delta_se_pp": 2.0286,
+        "mcnemar_p": 3.497717214973568e-50,
+        "cohens_h": 1.0564,
+        "ci_crosses_zero": false
+       }
+      },
+      "oracle": {
+       "assets": [
+        "asan"
+       ],
+       "rate_pct": 33.0389,
+       "cp95": [
+        29.1728,
+        37.0831
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "oracle_catch": 187,
+        "random_catch": 4,
+        "discordant_a_only": 187,
+        "discordant_b_only": 4,
+        "delta_pp": 32.3322,
+        "delta_ci95_pp": [
+         28.3562,
+         36.3081
+        ],
+        "delta_se_pp": 2.0286,
+        "mcnemar_p": 3.497717214973568e-50,
+        "cohens_h": 1.0564,
+        "ci_crosses_zero": false
+       },
+       "oracle_eval_catch": 187
+      },
+      "info_gain": {
+       "assets": [
+        "asan"
+       ],
+       "rate_pct": 33.0389,
+       "cp95": [
+        29.1728,
+        37.0831
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "info_gain_catch": 187,
+        "random_catch": 4,
+        "discordant_a_only": 187,
+        "discordant_b_only": 4,
+        "delta_pp": 32.3322,
+        "delta_ci95_pp": [
+         28.3562,
+         36.3081
+        ],
+        "delta_se_pp": 2.0286,
+        "mcnemar_p": 3.497717214973568e-50,
+        "cohens_h": 1.0564,
+        "ci_crosses_zero": false
+       }
+      }
+     },
+     "fd_vs_each": {
+      "frequency": {
+       "n_pairs": 566,
+       "fd_catch": 187,
+       "frequency_catch": 187,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "greedy": {
+       "n_pairs": 566,
+       "fd_catch": 187,
+       "greedy_catch": 187,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "oracle": {
+       "n_pairs": 566,
+       "fd_catch": 187,
+       "oracle_catch": 187,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "info_gain": {
+       "n_pairs": 566,
+       "fd_catch": 187,
+       "info_gain_catch": 187,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      }
+     },
+     "static_vs_random": {
+      "n_pairs": 566,
+      "static_catch": 67,
+      "random_catch": 4,
+      "discordant_a_only": 67,
+      "discordant_b_only": 4,
+      "delta_pp": 11.1307,
+      "delta_ci95_pp": [
+       8.3607,
+       13.9007
+      ],
+      "delta_se_pp": 1.4133,
+      "mcnemar_p": 8.735848890519047e-16,
+      "cohens_h": 0.5341,
+      "ci_crosses_zero": false
+     },
+     "ranking": [
+      "fd",
+      "frequency",
+      "greedy",
+      "info_gain",
+      "oracle",
+      "static",
+      "random"
+     ],
+     "fd_random_sets_differ": true,
+     "p_value_family": {
+      "note": "对本 (pool,k) 内 7 个臂 vs Random 单点的 McNemar p 做 BH-FDR",
+      "bh_fdr": {
+       "fd": 4.1972606579682814e-50,
+       "static": 5.82922063844246e-17,
+       "frequency": 4.1972606579682814e-50,
+       "greedy": 4.1972606579682814e-50,
+       "oracle": 4.1972606579682814e-50,
+       "info_gain": 4.1972606579682814e-50
+      }
+     }
+    },
+    "2": {
+     "three_arm": {
+      "budget_k": 2,
+      "is_primary_k": false,
+      "is_degenerate_k": false,
+      "candidates": [
+       "asan",
+       "compiler-warn",
+       "cross-compile",
+       "linker",
+       "tsan",
+       "ubsan"
+      ],
+      "eval_n": 566,
+      "arms": {
+       "fd": {
+        "assets": [
+         "asan",
+         "ubsan"
+        ],
+        "budget_k": 2,
+        "cost_units": 6,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         }
+        ],
+        "k": 255,
+        "n": 566,
+        "point": 0.450530035335689,
+        "rate_pct": 45.053,
+        "cp95": [
+         40.9008,
+         49.2571
+        ],
+        "fail_hits_rank": {
+         "asan": 212,
+         "compiler-warn": 76,
+         "cross-compile": 89,
+         "linker": 6,
+         "tsan": 132,
+         "ubsan": 139
+        }
+       },
+       "random": {
+        "assets": [
+         "linker",
+         "ubsan"
+        ],
+        "budget_k": 2,
+        "cost_units": 5,
+        "allocation_table": [
+         {
+          "asset": "linker",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         }
+        ],
+        "k": 133,
+        "n": 566,
+        "point": 0.23498233215547704,
+        "rate_pct": 23.4982,
+        "cp95": [
+         20.0629,
+         27.2128
+        ],
+        "seed": 20260930
+       },
+       "static": {
+        "assets": [
+         "compiler-warn",
+         "cross-compile"
+        ],
+        "budget_k": 2,
+        "cost_units": 4,
+        "allocation_table": [
+         {
+          "asset": "compiler-warn",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 2,
+          "cost_units": 2
+         }
+        ],
+        "k": 136,
+        "n": 566,
+        "point": 0.24028268551236748,
+        "rate_pct": 24.0283,
+        "cp95": [
+         20.5634,
+         27.7668
+        ]
+       },
+       "fd_full_pool": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn",
+         "linker"
+        ],
+        "budget_k": 6,
+        "cost_units": 15,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 6,
+          "cost_units": 2
+         }
+        ],
+        "k": 340,
+        "n": 566,
+        "point": 0.6007067137809188,
+        "rate_pct": 60.0707,
+        "cp95": [
+         55.9036,
+         64.1321
+        ]
+       }
+      },
+      "paired_tests": {
+       "fd_vs_random": {
+        "n_pairs": 566,
+        "fd_catch": 255,
+        "random_catch": 133,
+        "discordant_a_only": 126,
+        "discordant_b_only": 4,
+        "delta_pp": 21.5548,
+        "delta_ci95_pp": [
+         18.0284,
+         25.0811
+        ],
+        "delta_se_pp": 1.7992,
+        "mcnemar_p": 1.7228568300638692e-32,
+        "cohens_h": 0.4595,
+        "ci_crosses_zero": false
+       },
+       "fd_vs_static": {
+        "n_pairs": 566,
+        "fd_catch": 255,
+        "static_catch": 136,
+        "discordant_a_only": 171,
+        "discordant_b_only": 52,
+        "delta_pp": 21.0247,
+        "delta_ci95_pp": [
+         16.1523,
+         25.8971
+        ],
+        "delta_se_pp": 2.486,
+        "mcnemar_p": 5.28473643741216e-16,
+        "cohens_h": 0.4471,
+        "ci_crosses_zero": false
+       }
+      },
+      "random_multi_seed": {
+       "runs": 2000,
+       "mean_rate_pct": 30.6105,
+       "sd_pp": 9.323,
+       "min_rate_pct": 12.5442,
+       "max_rate_pct": 45.053,
+       "percentile_2.5_pct": 12.5442,
+       "percentile_97.5_pct": 45.053,
+       "fd_strictly_better_frac": 0.926,
+       "fd_better_or_tie_frac": 1.0,
+       "random_strictly_better_frac": 0.0,
+       "fd_catch": 255,
+       "note": "单点 seed 只用于配对检验；分布才说明 Random 臂的期望位置。"
+      }
+     },
+     "custom_baselines": {
+      "frequency": {
+       "assets": [
+        "asan",
+        "ubsan"
+       ],
+       "rate_pct": 45.053,
+       "cp95": [
+        40.9008,
+        49.2571
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "frequency_catch": 255,
+        "random_catch": 133,
+        "discordant_a_only": 126,
+        "discordant_b_only": 4,
+        "delta_pp": 21.5548,
+        "delta_ci95_pp": [
+         18.0284,
+         25.0811
+        ],
+        "delta_se_pp": 1.7992,
+        "mcnemar_p": 1.7228568300638692e-32,
+        "cohens_h": 0.4595,
+        "ci_crosses_zero": false
+       }
+      },
+      "greedy": {
+       "assets": [
+        "asan",
+        "ubsan"
+       ],
+       "rate_pct": 45.053,
+       "cp95": [
+        40.9008,
+        49.2571
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "greedy_catch": 255,
+        "random_catch": 133,
+        "discordant_a_only": 126,
+        "discordant_b_only": 4,
+        "delta_pp": 21.5548,
+        "delta_ci95_pp": [
+         18.0284,
+         25.0811
+        ],
+        "delta_se_pp": 1.7992,
+        "mcnemar_p": 1.7228568300638692e-32,
+        "cohens_h": 0.4595,
+        "ci_crosses_zero": false
+       }
+      },
+      "oracle": {
+       "assets": [
+        "asan",
+        "ubsan"
+       ],
+       "rate_pct": 45.053,
+       "cp95": [
+        40.9008,
+        49.2571
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "oracle_catch": 255,
+        "random_catch": 133,
+        "discordant_a_only": 126,
+        "discordant_b_only": 4,
+        "delta_pp": 21.5548,
+        "delta_ci95_pp": [
+         18.0284,
+         25.0811
+        ],
+        "delta_se_pp": 1.7992,
+        "mcnemar_p": 1.7228568300638692e-32,
+        "cohens_h": 0.4595,
+        "ci_crosses_zero": false
+       },
+       "oracle_eval_catch": 255
+      },
+      "info_gain": {
+       "assets": [
+        "asan",
+        "ubsan"
+       ],
+       "rate_pct": 45.053,
+       "cp95": [
+        40.9008,
+        49.2571
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "info_gain_catch": 255,
+        "random_catch": 133,
+        "discordant_a_only": 126,
+        "discordant_b_only": 4,
+        "delta_pp": 21.5548,
+        "delta_ci95_pp": [
+         18.0284,
+         25.0811
+        ],
+        "delta_se_pp": 1.7992,
+        "mcnemar_p": 1.7228568300638692e-32,
+        "cohens_h": 0.4595,
+        "ci_crosses_zero": false
+       }
+      }
+     },
+     "fd_vs_each": {
+      "frequency": {
+       "n_pairs": 566,
+       "fd_catch": 255,
+       "frequency_catch": 255,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "greedy": {
+       "n_pairs": 566,
+       "fd_catch": 255,
+       "greedy_catch": 255,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "oracle": {
+       "n_pairs": 566,
+       "fd_catch": 255,
+       "oracle_catch": 255,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "info_gain": {
+       "n_pairs": 566,
+       "fd_catch": 255,
+       "info_gain_catch": 255,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      }
+     },
+     "static_vs_random": {
+      "n_pairs": 566,
+      "static_catch": 136,
+      "random_catch": 133,
+      "discordant_a_only": 90,
+      "discordant_b_only": 87,
+      "delta_pp": 0.53,
+      "delta_ci95_pp": [
+       -4.0768,
+       5.1368
+      ],
+      "delta_se_pp": 2.3504,
+      "mcnemar_p": 0.880559917404157,
+      "cohens_h": 0.0125,
+      "ci_crosses_zero": true
+     },
+     "ranking": [
+      "fd",
+      "frequency",
+      "greedy",
+      "info_gain",
+      "oracle",
+      "static",
+      "random"
+     ],
+     "fd_random_sets_differ": true,
+     "p_value_family": {
+      "note": "对本 (pool,k) 内 7 个臂 vs Random 单点的 McNemar p 做 BH-FDR",
+      "bh_fdr": {
+       "fd": 2.067428196076643e-32,
+       "static": 5.28473643741216e-16,
+       "frequency": 2.067428196076643e-32,
+       "greedy": 2.067428196076643e-32,
+       "oracle": 2.067428196076643e-32,
+       "info_gain": 2.067428196076643e-32
+      }
+     }
+    },
+    "3": {
+     "three_arm": {
+      "budget_k": 3,
+      "is_primary_k": false,
+      "is_degenerate_k": false,
+      "candidates": [
+       "asan",
+       "compiler-warn",
+       "cross-compile",
+       "linker",
+       "tsan",
+       "ubsan"
+      ],
+      "eval_n": 566,
+      "arms": {
+       "fd": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan"
+        ],
+        "budget_k": 3,
+        "cost_units": 9,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         }
+        ],
+        "k": 289,
+        "n": 566,
+        "point": 0.5106007067137809,
+        "rate_pct": 51.0601,
+        "cp95": [
+         46.8572,
+         55.2519
+        ],
+        "fail_hits_rank": {
+         "asan": 212,
+         "compiler-warn": 76,
+         "cross-compile": 89,
+         "linker": 6,
+         "tsan": 132,
+         "ubsan": 139
+        }
+       },
+       "random": {
+        "assets": [
+         "linker",
+         "ubsan",
+         "compiler-warn"
+        ],
+        "budget_k": 3,
+        "cost_units": 7,
+        "allocation_table": [
+         {
+          "asset": "linker",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 3,
+          "cost_units": 2
+         }
+        ],
+        "k": 166,
+        "n": 566,
+        "point": 0.29328621908127206,
+        "rate_pct": 29.3286,
+        "cp95": [
+         25.6059,
+         33.2687
+        ],
+        "seed": 20260930
+       },
+       "static": {
+        "assets": [
+         "compiler-warn",
+         "cross-compile",
+         "linker"
+        ],
+        "budget_k": 3,
+        "cost_units": 6,
+        "allocation_table": [
+         {
+          "asset": "compiler-warn",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 2,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 3,
+          "cost_units": 2
+         }
+        ],
+        "k": 140,
+        "n": 566,
+        "point": 0.24734982332155478,
+        "rate_pct": 24.735,
+        "cp95": [
+         21.2317,
+         28.5043
+        ]
+       },
+       "fd_full_pool": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn",
+         "linker"
+        ],
+        "budget_k": 6,
+        "cost_units": 15,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 6,
+          "cost_units": 2
+         }
+        ],
+        "k": 340,
+        "n": 566,
+        "point": 0.6007067137809188,
+        "rate_pct": 60.0707,
+        "cp95": [
+         55.9036,
+         64.1321
+        ]
+       }
+      },
+      "paired_tests": {
+       "fd_vs_random": {
+        "n_pairs": 566,
+        "fd_catch": 289,
+        "random_catch": 166,
+        "discordant_a_only": 155,
+        "discordant_b_only": 32,
+        "delta_pp": 21.7314,
+        "delta_ci95_pp": [
+         17.3476,
+         26.1153
+        ],
+        "delta_se_pp": 2.2367,
+        "mcnemar_p": 1.4559888845125056e-20,
+        "cohens_h": 0.4474,
+        "ci_crosses_zero": false
+       },
+       "fd_vs_static": {
+        "n_pairs": 566,
+        "fd_catch": 289,
+        "static_catch": 140,
+        "discordant_a_only": 200,
+        "discordant_b_only": 51,
+        "delta_pp": 26.3251,
+        "delta_ci95_pp": [
+         21.2858,
+         31.3644
+        ],
+        "delta_se_pp": 2.5711,
+        "mcnemar_p": 4.899321005270347e-22,
+        "cohens_h": 0.5509,
+        "ci_crosses_zero": false
+       }
+      },
+      "random_multi_seed": {
+       "runs": 2000,
+       "mean_rate_pct": 40.5721,
+       "sd_pp": 7.0443,
+       "min_rate_pct": 24.735,
+       "max_rate_pct": 51.0601,
+       "percentile_2.5_pct": 24.735,
+       "percentile_97.5_pct": 51.0601,
+       "fd_strictly_better_frac": 0.95,
+       "fd_better_or_tie_frac": 1.0,
+       "random_strictly_better_frac": 0.0,
+       "fd_catch": 289,
+       "note": "单点 seed 只用于配对检验；分布才说明 Random 臂的期望位置。"
+      }
+     },
+     "custom_baselines": {
+      "frequency": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan"
+       ],
+       "rate_pct": 51.0601,
+       "cp95": [
+        46.8572,
+        55.2519
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "frequency_catch": 289,
+        "random_catch": 166,
+        "discordant_a_only": 155,
+        "discordant_b_only": 32,
+        "delta_pp": 21.7314,
+        "delta_ci95_pp": [
+         17.3476,
+         26.1153
+        ],
+        "delta_se_pp": 2.2367,
+        "mcnemar_p": 1.4559888845125056e-20,
+        "cohens_h": 0.4474,
+        "ci_crosses_zero": false
+       }
+      },
+      "greedy": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan"
+       ],
+       "rate_pct": 51.0601,
+       "cp95": [
+        46.8572,
+        55.2519
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "greedy_catch": 289,
+        "random_catch": 166,
+        "discordant_a_only": 155,
+        "discordant_b_only": 32,
+        "delta_pp": 21.7314,
+        "delta_ci95_pp": [
+         17.3476,
+         26.1153
+        ],
+        "delta_se_pp": 2.2367,
+        "mcnemar_p": 1.4559888845125056e-20,
+        "cohens_h": 0.4474,
+        "ci_crosses_zero": false
+       }
+      },
+      "oracle": {
+       "assets": [
+        "asan",
+        "tsan",
+        "ubsan"
+       ],
+       "rate_pct": 51.0601,
+       "cp95": [
+        46.8572,
+        55.2519
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "oracle_catch": 289,
+        "random_catch": 166,
+        "discordant_a_only": 155,
+        "discordant_b_only": 32,
+        "delta_pp": 21.7314,
+        "delta_ci95_pp": [
+         17.3476,
+         26.1153
+        ],
+        "delta_se_pp": 2.2367,
+        "mcnemar_p": 1.4559888845125056e-20,
+        "cohens_h": 0.4474,
+        "ci_crosses_zero": false
+       },
+       "oracle_eval_catch": 289
+      },
+      "info_gain": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan"
+       ],
+       "rate_pct": 51.0601,
+       "cp95": [
+        46.8572,
+        55.2519
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "info_gain_catch": 289,
+        "random_catch": 166,
+        "discordant_a_only": 155,
+        "discordant_b_only": 32,
+        "delta_pp": 21.7314,
+        "delta_ci95_pp": [
+         17.3476,
+         26.1153
+        ],
+        "delta_se_pp": 2.2367,
+        "mcnemar_p": 1.4559888845125056e-20,
+        "cohens_h": 0.4474,
+        "ci_crosses_zero": false
+       }
+      }
+     },
+     "fd_vs_each": {
+      "frequency": {
+       "n_pairs": 566,
+       "fd_catch": 289,
+       "frequency_catch": 289,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "greedy": {
+       "n_pairs": 566,
+       "fd_catch": 289,
+       "greedy_catch": 289,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "oracle": {
+       "n_pairs": 566,
+       "fd_catch": 289,
+       "oracle_catch": 289,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "info_gain": {
+       "n_pairs": 566,
+       "fd_catch": 289,
+       "info_gain_catch": 289,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      }
+     },
+     "static_vs_random": {
+      "n_pairs": 566,
+      "static_catch": 140,
+      "random_catch": 166,
+      "discordant_a_only": 57,
+      "discordant_b_only": 83,
+      "delta_pp": -4.5936,
+      "delta_ci95_pp": [
+       -8.6734,
+       -0.5139
+      ],
+      "delta_se_pp": 2.0816,
+      "mcnemar_p": 0.03423566187319414,
+      "cohens_h": 0.1035,
+      "ci_crosses_zero": false
+     },
+     "ranking": [
+      "fd",
+      "frequency",
+      "greedy",
+      "info_gain",
+      "oracle",
+      "random",
+      "static"
+     ],
+     "fd_random_sets_differ": true,
+     "p_value_family": {
+      "note": "对本 (pool,k) 内 7 个臂 vs Random 单点的 McNemar p 做 BH-FDR",
+      "bh_fdr": {
+       "fd": 1.4559888845125056e-20,
+       "static": 2.939592603162208e-21,
+       "frequency": 1.4559888845125056e-20,
+       "greedy": 1.4559888845125056e-20,
+       "oracle": 1.4559888845125056e-20,
+       "info_gain": 1.4559888845125056e-20
+      }
+     }
+    },
+    "4": {
+     "three_arm": {
+      "budget_k": 4,
+      "is_primary_k": true,
+      "is_degenerate_k": false,
+      "candidates": [
+       "asan",
+       "compiler-warn",
+       "cross-compile",
+       "linker",
+       "tsan",
+       "ubsan"
+      ],
+      "eval_n": 566,
+      "arms": {
+       "fd": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile"
+        ],
+        "budget_k": 4,
+        "cost_units": 11,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         }
+        ],
+        "k": 309,
+        "n": 566,
+        "point": 0.5459363957597173,
+        "rate_pct": 54.5936,
+        "cp95": [
+         50.3886,
+         58.7505
+        ],
+        "fail_hits_rank": {
+         "asan": 212,
+         "compiler-warn": 76,
+         "cross-compile": 89,
+         "linker": 6,
+         "tsan": 132,
+         "ubsan": 139
+        }
+       },
+       "random": {
+        "assets": [
+         "linker",
+         "ubsan",
+         "compiler-warn",
+         "cross-compile"
+        ],
+        "budget_k": 4,
+        "cost_units": 9,
+        "allocation_table": [
+         {
+          "asset": "linker",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 3,
+          "cost_units": 2
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         }
+        ],
+        "k": 223,
+        "n": 566,
+        "point": 0.39399293286219084,
+        "rate_pct": 39.3993,
+        "cp95": [
+         35.3499,
+         43.56
+        ],
+        "seed": 20260930
+       },
+       "static": {
+        "assets": [
+         "compiler-warn",
+         "cross-compile",
+         "linker"
+        ],
+        "budget_k": 3,
+        "cost_units": 6,
+        "allocation_table": [
+         {
+          "asset": "compiler-warn",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 2,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 3,
+          "cost_units": 2
+         }
+        ],
+        "k": 140,
+        "n": 566,
+        "point": 0.24734982332155478,
+        "rate_pct": 24.735,
+        "cp95": [
+         21.2317,
+         28.5043
+        ]
+       },
+       "fd_full_pool": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn",
+         "linker"
+        ],
+        "budget_k": 6,
+        "cost_units": 15,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 6,
+          "cost_units": 2
+         }
+        ],
+        "k": 340,
+        "n": 566,
+        "point": 0.6007067137809188,
+        "rate_pct": 60.0707,
+        "cp95": [
+         55.9036,
+         64.1321
+        ]
+       }
+      },
+      "paired_tests": {
+       "fd_vs_random": {
+        "n_pairs": 566,
+        "fd_catch": 309,
+        "random_catch": 223,
+        "discordant_a_only": 117,
+        "discordant_b_only": 31,
+        "delta_pp": 15.1943,
+        "delta_ci95_pp": [
+         11.1719,
+         19.2168
+        ],
+        "delta_se_pp": 2.0523,
+        "mcnemar_p": 5.924261607141074e-13,
+        "cohens_h": 0.3056,
+        "ci_crosses_zero": false
+       },
+       "fd_vs_static": {
+        "n_pairs": 566,
+        "fd_catch": 309,
+        "static_catch": 140,
+        "discordant_a_only": 200,
+        "discordant_b_only": 31,
+        "delta_pp": 29.8587,
+        "delta_ci95_pp": [
+         25.2058,
+         34.5115
+        ],
+        "delta_se_pp": 2.3739,
+        "mcnemar_p": 1.8915021013313463e-31,
+        "cohens_h": 0.6217,
+        "ci_crosses_zero": false
+       }
+      },
+      "random_multi_seed": {
+       "runs": 2000,
+       "mean_rate_pct": 48.4019,
+       "sd_pp": 4.9416,
+       "min_rate_pct": 39.3993,
+       "max_rate_pct": 56.0071,
+       "percentile_2.5_pct": 39.3993,
+       "percentile_97.5_pct": 56.0071,
+       "fd_strictly_better_frac": 0.87,
+       "fd_better_or_tie_frac": 0.9405,
+       "random_strictly_better_frac": 0.0595,
+       "fd_catch": 309,
+       "note": "单点 seed 只用于配对检验；分布才说明 Random 臂的期望位置。"
+      }
+     },
+     "custom_baselines": {
+      "frequency": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "cross-compile"
+       ],
+       "rate_pct": 54.5936,
+       "cp95": [
+        50.3886,
+        58.7505
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "frequency_catch": 309,
+        "random_catch": 223,
+        "discordant_a_only": 117,
+        "discordant_b_only": 31,
+        "delta_pp": 15.1943,
+        "delta_ci95_pp": [
+         11.1719,
+         19.2168
+        ],
+        "delta_se_pp": 2.0523,
+        "mcnemar_p": 5.924261607141074e-13,
+        "cohens_h": 0.3056,
+        "ci_crosses_zero": false
+       }
+      },
+      "greedy": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "compiler-warn"
+       ],
+       "rate_pct": 56.0071,
+       "cp95": [
+        51.807,
+        60.1441
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "greedy_catch": 317,
+        "random_catch": 223,
+        "discordant_a_only": 117,
+        "discordant_b_only": 23,
+        "delta_pp": 16.6078,
+        "delta_ci95_pp": [
+         12.7457,
+         20.4699
+        ],
+        "delta_se_pp": 1.9705,
+        "mcnemar_p": 2.3310651653913176e-16,
+        "cohens_h": 0.3341,
+        "ci_crosses_zero": false
+       }
+      },
+      "oracle": {
+       "assets": [
+        "asan",
+        "compiler-warn",
+        "tsan",
+        "ubsan"
+       ],
+       "rate_pct": 56.0071,
+       "cp95": [
+        51.807,
+        60.1441
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "oracle_catch": 317,
+        "random_catch": 223,
+        "discordant_a_only": 117,
+        "discordant_b_only": 23,
+        "delta_pp": 16.6078,
+        "delta_ci95_pp": [
+         12.7457,
+         20.4699
+        ],
+        "delta_se_pp": 1.9705,
+        "mcnemar_p": 2.3310651653913176e-16,
+        "cohens_h": 0.3341,
+        "ci_crosses_zero": false
+       },
+       "oracle_eval_catch": 317
+      },
+      "info_gain": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "cross-compile"
+       ],
+       "rate_pct": 54.5936,
+       "cp95": [
+        50.3886,
+        58.7505
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "info_gain_catch": 309,
+        "random_catch": 223,
+        "discordant_a_only": 117,
+        "discordant_b_only": 31,
+        "delta_pp": 15.1943,
+        "delta_ci95_pp": [
+         11.1719,
+         19.2168
+        ],
+        "delta_se_pp": 2.0523,
+        "mcnemar_p": 5.924261607141074e-13,
+        "cohens_h": 0.3056,
+        "ci_crosses_zero": false
+       }
+      }
+     },
+     "fd_vs_each": {
+      "frequency": {
+       "n_pairs": 566,
+       "fd_catch": 309,
+       "frequency_catch": 309,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "greedy": {
+       "n_pairs": 566,
+       "fd_catch": 309,
+       "greedy_catch": 317,
+       "discordant_a_only": 19,
+       "discordant_b_only": 27,
+       "delta_pp": -1.4134,
+       "delta_ci95_pp": [
+        -3.7591,
+        0.9323
+       ],
+       "delta_se_pp": 1.1968,
+       "mcnemar_p": 0.3019956131896645,
+       "cohens_h": 0.0284,
+       "ci_crosses_zero": true
+      },
+      "oracle": {
+       "n_pairs": 566,
+       "fd_catch": 309,
+       "oracle_catch": 317,
+       "discordant_a_only": 19,
+       "discordant_b_only": 27,
+       "delta_pp": -1.4134,
+       "delta_ci95_pp": [
+        -3.7591,
+        0.9323
+       ],
+       "delta_se_pp": 1.1968,
+       "mcnemar_p": 0.3019956131896645,
+       "cohens_h": 0.0284,
+       "ci_crosses_zero": true
+      },
+      "info_gain": {
+       "n_pairs": 566,
+       "fd_catch": 309,
+       "info_gain_catch": 309,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      }
+     },
+     "static_vs_random": {
+      "n_pairs": 566,
+      "static_catch": 140,
+      "random_catch": 223,
+      "discordant_a_only": 0,
+      "discordant_b_only": 83,
+      "delta_pp": -14.6643,
+      "delta_ci95_pp": [
+       -17.5786,
+       -11.75
+      ],
+      "delta_se_pp": 1.4869,
+      "mcnemar_p": 2.0679515313825724e-25,
+      "cohens_h": 0.3161,
+      "ci_crosses_zero": false
+     },
+     "ranking": [
+      "greedy",
+      "oracle",
+      "fd",
+      "frequency",
+      "info_gain",
+      "random",
+      "static"
+     ],
+     "fd_random_sets_differ": true,
+     "p_value_family": {
+      "note": "对本 (pool,k) 内 7 个臂 vs Random 单点的 McNemar p 做 BH-FDR",
+      "bh_fdr": {
+       "fd": 5.924261607141074e-13,
+       "static": 1.1349012607988078e-30,
+       "frequency": 5.924261607141074e-13,
+       "greedy": 4.662130330782635e-16,
+       "oracle": 4.662130330782635e-16,
+       "info_gain": 5.924261607141074e-13
+      }
+     }
+    },
+    "5": {
+     "three_arm": {
+      "budget_k": 5,
+      "is_primary_k": false,
+      "is_degenerate_k": false,
+      "candidates": [
+       "asan",
+       "compiler-warn",
+       "cross-compile",
+       "linker",
+       "tsan",
+       "ubsan"
+      ],
+      "eval_n": 566,
+      "arms": {
+       "fd": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn"
+        ],
+        "budget_k": 5,
+        "cost_units": 13,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         }
+        ],
+        "k": 336,
+        "n": 566,
+        "point": 0.5936395759717314,
+        "rate_pct": 59.364,
+        "cp95": [
+         55.1891,
+         63.4405
+        ],
+        "fail_hits_rank": {
+         "asan": 212,
+         "compiler-warn": 76,
+         "cross-compile": 89,
+         "linker": 6,
+         "tsan": 132,
+         "ubsan": 139
+        }
+       },
+       "random": {
+        "assets": [
+         "linker",
+         "ubsan",
+         "compiler-warn",
+         "cross-compile",
+         "tsan"
+        ],
+        "budget_k": 5,
+        "cost_units": 12,
+        "allocation_table": [
+         {
+          "asset": "linker",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 3,
+          "cost_units": 2
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "tsan",
+          "rank": 5,
+          "cost_units": 3
+         }
+        ],
+        "k": 280,
+        "n": 566,
+        "point": 0.49469964664310956,
+        "rate_pct": 49.47,
+        "cp95": [
+         45.2747,
+         53.6708
+        ],
+        "seed": 20260930
+       },
+       "static": {
+        "assets": [
+         "compiler-warn",
+         "cross-compile",
+         "linker"
+        ],
+        "budget_k": 3,
+        "cost_units": 6,
+        "allocation_table": [
+         {
+          "asset": "compiler-warn",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 2,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 3,
+          "cost_units": 2
+         }
+        ],
+        "k": 140,
+        "n": 566,
+        "point": 0.24734982332155478,
+        "rate_pct": 24.735,
+        "cp95": [
+         21.2317,
+         28.5043
+        ]
+       },
+       "fd_full_pool": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn",
+         "linker"
+        ],
+        "budget_k": 6,
+        "cost_units": 15,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 6,
+          "cost_units": 2
+         }
+        ],
+        "k": 340,
+        "n": 566,
+        "point": 0.6007067137809188,
+        "rate_pct": 60.0707,
+        "cp95": [
+         55.9036,
+         64.1321
+        ]
+       }
+      },
+      "paired_tests": {
+       "fd_vs_random": {
+        "n_pairs": 566,
+        "fd_catch": 336,
+        "random_catch": 280,
+        "discordant_a_only": 60,
+        "discordant_b_only": 4,
+        "delta_pp": 9.894,
+        "delta_ci95_pp": [
+         7.2464,
+         12.5416
+        ],
+        "delta_se_pp": 1.3509,
+        "mcnemar_p": 7.36304463580525e-14,
+        "cohens_h": 0.199,
+        "ci_crosses_zero": false
+       },
+       "fd_vs_static": {
+        "n_pairs": 566,
+        "fd_catch": 336,
+        "static_catch": 140,
+        "discordant_a_only": 200,
+        "discordant_b_only": 4,
+        "delta_pp": 34.629,
+        "delta_ci95_pp": [
+         30.5888,
+         38.6692
+        ],
+        "delta_se_pp": 2.0614,
+        "mcnemar_p": 5.559787001072584e-54,
+        "cohens_h": 0.7181,
+        "ci_crosses_zero": false
+       }
+      },
+      "random_multi_seed": {
+       "runs": 2000,
+       "mean_rate_pct": 54.6002,
+       "sd_pp": 3.1369,
+       "min_rate_pct": 49.47,
+       "max_rate_pct": 59.364,
+       "percentile_2.5_pct": 49.47,
+       "percentile_97.5_pct": 59.364,
+       "fd_strictly_better_frac": 0.8385,
+       "fd_better_or_tie_frac": 1.0,
+       "random_strictly_better_frac": 0.0,
+       "fd_catch": 336,
+       "note": "单点 seed 只用于配对检验；分布才说明 Random 臂的期望位置。"
+      }
+     },
+     "custom_baselines": {
+      "frequency": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "cross-compile",
+        "compiler-warn"
+       ],
+       "rate_pct": 59.364,
+       "cp95": [
+        55.1891,
+        63.4405
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "frequency_catch": 336,
+        "random_catch": 280,
+        "discordant_a_only": 60,
+        "discordant_b_only": 4,
+        "delta_pp": 9.894,
+        "delta_ci95_pp": [
+         7.2464,
+         12.5416
+        ],
+        "delta_se_pp": 1.3509,
+        "mcnemar_p": 7.36304463580525e-14,
+        "cohens_h": 0.199,
+        "ci_crosses_zero": false
+       }
+      },
+      "greedy": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "compiler-warn",
+        "cross-compile"
+       ],
+       "rate_pct": 59.364,
+       "cp95": [
+        55.1891,
+        63.4405
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "greedy_catch": 336,
+        "random_catch": 280,
+        "discordant_a_only": 60,
+        "discordant_b_only": 4,
+        "delta_pp": 9.894,
+        "delta_ci95_pp": [
+         7.2464,
+         12.5416
+        ],
+        "delta_se_pp": 1.3509,
+        "mcnemar_p": 7.36304463580525e-14,
+        "cohens_h": 0.199,
+        "ci_crosses_zero": false
+       }
+      },
+      "oracle": {
+       "assets": [
+        "asan",
+        "compiler-warn",
+        "cross-compile",
+        "tsan",
+        "ubsan"
+       ],
+       "rate_pct": 59.364,
+       "cp95": [
+        55.1891,
+        63.4405
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "oracle_catch": 336,
+        "random_catch": 280,
+        "discordant_a_only": 60,
+        "discordant_b_only": 4,
+        "delta_pp": 9.894,
+        "delta_ci95_pp": [
+         7.2464,
+         12.5416
+        ],
+        "delta_se_pp": 1.3509,
+        "mcnemar_p": 7.36304463580525e-14,
+        "cohens_h": 0.199,
+        "ci_crosses_zero": false
+       },
+       "oracle_eval_catch": 336
+      },
+      "info_gain": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "cross-compile",
+        "compiler-warn"
+       ],
+       "rate_pct": 59.364,
+       "cp95": [
+        55.1891,
+        63.4405
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "info_gain_catch": 336,
+        "random_catch": 280,
+        "discordant_a_only": 60,
+        "discordant_b_only": 4,
+        "delta_pp": 9.894,
+        "delta_ci95_pp": [
+         7.2464,
+         12.5416
+        ],
+        "delta_se_pp": 1.3509,
+        "mcnemar_p": 7.36304463580525e-14,
+        "cohens_h": 0.199,
+        "ci_crosses_zero": false
+       }
+      }
+     },
+     "fd_vs_each": {
+      "frequency": {
+       "n_pairs": 566,
+       "fd_catch": 336,
+       "frequency_catch": 336,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "greedy": {
+       "n_pairs": 566,
+       "fd_catch": 336,
+       "greedy_catch": 336,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "oracle": {
+       "n_pairs": 566,
+       "fd_catch": 336,
+       "oracle_catch": 336,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "info_gain": {
+       "n_pairs": 566,
+       "fd_catch": 336,
+       "info_gain_catch": 336,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      }
+     },
+     "static_vs_random": {
+      "n_pairs": 566,
+      "static_catch": 140,
+      "random_catch": 280,
+      "discordant_a_only": 0,
+      "discordant_b_only": 140,
+      "delta_pp": -24.735,
+      "delta_ci95_pp": [
+       -28.2896,
+       -21.1804
+      ],
+      "delta_se_pp": 1.8136,
+      "mcnemar_p": 1.4349296274686257e-42,
+      "cohens_h": 0.5191,
+      "ci_crosses_zero": false
+     },
+     "ranking": [
+      "fd",
+      "frequency",
+      "greedy",
+      "info_gain",
+      "oracle",
+      "random",
+      "static"
+     ],
+     "fd_random_sets_differ": true,
+     "p_value_family": {
+      "note": "对本 (pool,k) 内 7 个臂 vs Random 单点的 McNemar p 做 BH-FDR",
+      "bh_fdr": {
+       "fd": 7.36304463580525e-14,
+       "static": 3.33587220064355e-53,
+       "frequency": 7.36304463580525e-14,
+       "greedy": 7.36304463580525e-14,
+       "oracle": 7.36304463580525e-14,
+       "info_gain": 7.36304463580525e-14
+      }
+     }
+    }
+   }
+  },
+  "C": {
+   "pool_name": "Pool C（宽松）",
+   "assets": [
+    "asan",
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "tsan",
+    "ubsan"
+   ],
+   "k_blocks": {
+    "1": {
+     "three_arm": {
+      "budget_k": 1,
+      "is_primary_k": false,
+      "is_degenerate_k": false,
+      "candidates": [
+       "asan",
+       "compiler-warn",
+       "cross-compile",
+       "linker",
+       "tsan",
+       "ubsan"
+      ],
+      "eval_n": 566,
+      "arms": {
+       "fd": {
+        "assets": [
+         "asan"
+        ],
+        "budget_k": 1,
+        "cost_units": 3,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         }
+        ],
+        "k": 187,
+        "n": 566,
+        "point": 0.3303886925795053,
+        "rate_pct": 33.0389,
+        "cp95": [
+         29.1728,
+         37.0831
+        ],
+        "fail_hits_rank": {
+         "asan": 212,
+         "compiler-warn": 76,
+         "cross-compile": 89,
+         "linker": 6,
+         "tsan": 132,
+         "ubsan": 139
+        }
+       },
+       "random": {
+        "assets": [
+         "linker"
+        ],
+        "budget_k": 1,
+        "cost_units": 2,
+        "allocation_table": [
+         {
+          "asset": "linker",
+          "rank": 1,
+          "cost_units": 2
+         }
+        ],
+        "k": 4,
+        "n": 566,
+        "point": 0.007067137809187279,
+        "rate_pct": 0.7067,
+        "cp95": [
+         0.1929,
+         1.7995
+        ],
+        "seed": 20260930
+       },
+       "static": {
+        "assets": [
+         "compiler-warn"
+        ],
+        "budget_k": 1,
+        "cost_units": 2,
+        "allocation_table": [
+         {
+          "asset": "compiler-warn",
+          "rank": 1,
+          "cost_units": 2
+         }
+        ],
+        "k": 67,
+        "n": 566,
+        "point": 0.11837455830388692,
+        "rate_pct": 11.8375,
+        "cp95": [
+         9.2927,
+         14.7884
+        ]
+       },
+       "fd_full_pool": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn",
+         "linker"
+        ],
+        "budget_k": 6,
+        "cost_units": 15,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 6,
+          "cost_units": 2
+         }
+        ],
+        "k": 340,
+        "n": 566,
+        "point": 0.6007067137809188,
+        "rate_pct": 60.0707,
+        "cp95": [
+         55.9036,
+         64.1321
+        ]
+       }
+      },
+      "paired_tests": {
+       "fd_vs_random": {
+        "n_pairs": 566,
+        "fd_catch": 187,
+        "random_catch": 4,
+        "discordant_a_only": 187,
+        "discordant_b_only": 4,
+        "delta_pp": 32.3322,
+        "delta_ci95_pp": [
+         28.3562,
+         36.3081
+        ],
+        "delta_se_pp": 2.0286,
+        "mcnemar_p": 3.497717214973568e-50,
+        "cohens_h": 1.0564,
+        "ci_crosses_zero": false
+       },
+       "fd_vs_static": {
+        "n_pairs": 566,
+        "fd_catch": 187,
+        "static_catch": 67,
+        "discordant_a_only": 167,
+        "discordant_b_only": 47,
+        "delta_pp": 21.2014,
+        "delta_ci95_pp": [
+         16.4464,
+         25.9565
+        ],
+        "delta_se_pp": 2.4261,
+        "mcnemar_p": 5.82922063844246e-17,
+        "cohens_h": 0.5222,
+        "ci_crosses_zero": false
+       }
+      },
+      "random_multi_seed": {
+       "runs": 2000,
+       "mean_rate_pct": 17.6443,
+       "sd_pp": 10.0398,
+       "min_rate_pct": 0.7067,
+       "max_rate_pct": 33.0389,
+       "percentile_2.5_pct": 0.7067,
+       "percentile_97.5_pct": 33.0389,
+       "fd_strictly_better_frac": 0.83,
+       "fd_better_or_tie_frac": 1.0,
+       "random_strictly_better_frac": 0.0,
+       "fd_catch": 187,
+       "note": "单点 seed 只用于配对检验；分布才说明 Random 臂的期望位置。"
+      }
+     },
+     "custom_baselines": {
+      "frequency": {
+       "assets": [
+        "asan"
+       ],
+       "rate_pct": 33.0389,
+       "cp95": [
+        29.1728,
+        37.0831
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "frequency_catch": 187,
+        "random_catch": 4,
+        "discordant_a_only": 187,
+        "discordant_b_only": 4,
+        "delta_pp": 32.3322,
+        "delta_ci95_pp": [
+         28.3562,
+         36.3081
+        ],
+        "delta_se_pp": 2.0286,
+        "mcnemar_p": 3.497717214973568e-50,
+        "cohens_h": 1.0564,
+        "ci_crosses_zero": false
+       }
+      },
+      "greedy": {
+       "assets": [
+        "asan"
+       ],
+       "rate_pct": 33.0389,
+       "cp95": [
+        29.1728,
+        37.0831
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "greedy_catch": 187,
+        "random_catch": 4,
+        "discordant_a_only": 187,
+        "discordant_b_only": 4,
+        "delta_pp": 32.3322,
+        "delta_ci95_pp": [
+         28.3562,
+         36.3081
+        ],
+        "delta_se_pp": 2.0286,
+        "mcnemar_p": 3.497717214973568e-50,
+        "cohens_h": 1.0564,
+        "ci_crosses_zero": false
+       }
+      },
+      "oracle": {
+       "assets": [
+        "asan"
+       ],
+       "rate_pct": 33.0389,
+       "cp95": [
+        29.1728,
+        37.0831
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "oracle_catch": 187,
+        "random_catch": 4,
+        "discordant_a_only": 187,
+        "discordant_b_only": 4,
+        "delta_pp": 32.3322,
+        "delta_ci95_pp": [
+         28.3562,
+         36.3081
+        ],
+        "delta_se_pp": 2.0286,
+        "mcnemar_p": 3.497717214973568e-50,
+        "cohens_h": 1.0564,
+        "ci_crosses_zero": false
+       },
+       "oracle_eval_catch": 187
+      },
+      "info_gain": {
+       "assets": [
+        "asan"
+       ],
+       "rate_pct": 33.0389,
+       "cp95": [
+        29.1728,
+        37.0831
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "info_gain_catch": 187,
+        "random_catch": 4,
+        "discordant_a_only": 187,
+        "discordant_b_only": 4,
+        "delta_pp": 32.3322,
+        "delta_ci95_pp": [
+         28.3562,
+         36.3081
+        ],
+        "delta_se_pp": 2.0286,
+        "mcnemar_p": 3.497717214973568e-50,
+        "cohens_h": 1.0564,
+        "ci_crosses_zero": false
+       }
+      }
+     },
+     "fd_vs_each": {
+      "frequency": {
+       "n_pairs": 566,
+       "fd_catch": 187,
+       "frequency_catch": 187,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "greedy": {
+       "n_pairs": 566,
+       "fd_catch": 187,
+       "greedy_catch": 187,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "oracle": {
+       "n_pairs": 566,
+       "fd_catch": 187,
+       "oracle_catch": 187,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "info_gain": {
+       "n_pairs": 566,
+       "fd_catch": 187,
+       "info_gain_catch": 187,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      }
+     },
+     "static_vs_random": {
+      "n_pairs": 566,
+      "static_catch": 67,
+      "random_catch": 4,
+      "discordant_a_only": 67,
+      "discordant_b_only": 4,
+      "delta_pp": 11.1307,
+      "delta_ci95_pp": [
+       8.3607,
+       13.9007
+      ],
+      "delta_se_pp": 1.4133,
+      "mcnemar_p": 8.735848890519047e-16,
+      "cohens_h": 0.5341,
+      "ci_crosses_zero": false
+     },
+     "ranking": [
+      "fd",
+      "frequency",
+      "greedy",
+      "info_gain",
+      "oracle",
+      "static",
+      "random"
+     ],
+     "fd_random_sets_differ": true,
+     "p_value_family": {
+      "note": "对本 (pool,k) 内 7 个臂 vs Random 单点的 McNemar p 做 BH-FDR",
+      "bh_fdr": {
+       "fd": 4.1972606579682814e-50,
+       "static": 5.82922063844246e-17,
+       "frequency": 4.1972606579682814e-50,
+       "greedy": 4.1972606579682814e-50,
+       "oracle": 4.1972606579682814e-50,
+       "info_gain": 4.1972606579682814e-50
+      }
+     }
+    },
+    "2": {
+     "three_arm": {
+      "budget_k": 2,
+      "is_primary_k": false,
+      "is_degenerate_k": false,
+      "candidates": [
+       "asan",
+       "compiler-warn",
+       "cross-compile",
+       "linker",
+       "tsan",
+       "ubsan"
+      ],
+      "eval_n": 566,
+      "arms": {
+       "fd": {
+        "assets": [
+         "asan",
+         "ubsan"
+        ],
+        "budget_k": 2,
+        "cost_units": 6,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         }
+        ],
+        "k": 255,
+        "n": 566,
+        "point": 0.450530035335689,
+        "rate_pct": 45.053,
+        "cp95": [
+         40.9008,
+         49.2571
+        ],
+        "fail_hits_rank": {
+         "asan": 212,
+         "compiler-warn": 76,
+         "cross-compile": 89,
+         "linker": 6,
+         "tsan": 132,
+         "ubsan": 139
+        }
+       },
+       "random": {
+        "assets": [
+         "linker",
+         "ubsan"
+        ],
+        "budget_k": 2,
+        "cost_units": 5,
+        "allocation_table": [
+         {
+          "asset": "linker",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         }
+        ],
+        "k": 133,
+        "n": 566,
+        "point": 0.23498233215547704,
+        "rate_pct": 23.4982,
+        "cp95": [
+         20.0629,
+         27.2128
+        ],
+        "seed": 20260930
+       },
+       "static": {
+        "assets": [
+         "compiler-warn",
+         "cross-compile"
+        ],
+        "budget_k": 2,
+        "cost_units": 4,
+        "allocation_table": [
+         {
+          "asset": "compiler-warn",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 2,
+          "cost_units": 2
+         }
+        ],
+        "k": 136,
+        "n": 566,
+        "point": 0.24028268551236748,
+        "rate_pct": 24.0283,
+        "cp95": [
+         20.5634,
+         27.7668
+        ]
+       },
+       "fd_full_pool": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn",
+         "linker"
+        ],
+        "budget_k": 6,
+        "cost_units": 15,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 6,
+          "cost_units": 2
+         }
+        ],
+        "k": 340,
+        "n": 566,
+        "point": 0.6007067137809188,
+        "rate_pct": 60.0707,
+        "cp95": [
+         55.9036,
+         64.1321
+        ]
+       }
+      },
+      "paired_tests": {
+       "fd_vs_random": {
+        "n_pairs": 566,
+        "fd_catch": 255,
+        "random_catch": 133,
+        "discordant_a_only": 126,
+        "discordant_b_only": 4,
+        "delta_pp": 21.5548,
+        "delta_ci95_pp": [
+         18.0284,
+         25.0811
+        ],
+        "delta_se_pp": 1.7992,
+        "mcnemar_p": 1.7228568300638692e-32,
+        "cohens_h": 0.4595,
+        "ci_crosses_zero": false
+       },
+       "fd_vs_static": {
+        "n_pairs": 566,
+        "fd_catch": 255,
+        "static_catch": 136,
+        "discordant_a_only": 171,
+        "discordant_b_only": 52,
+        "delta_pp": 21.0247,
+        "delta_ci95_pp": [
+         16.1523,
+         25.8971
+        ],
+        "delta_se_pp": 2.486,
+        "mcnemar_p": 5.28473643741216e-16,
+        "cohens_h": 0.4471,
+        "ci_crosses_zero": false
+       }
+      },
+      "random_multi_seed": {
+       "runs": 2000,
+       "mean_rate_pct": 30.6105,
+       "sd_pp": 9.323,
+       "min_rate_pct": 12.5442,
+       "max_rate_pct": 45.053,
+       "percentile_2.5_pct": 12.5442,
+       "percentile_97.5_pct": 45.053,
+       "fd_strictly_better_frac": 0.926,
+       "fd_better_or_tie_frac": 1.0,
+       "random_strictly_better_frac": 0.0,
+       "fd_catch": 255,
+       "note": "单点 seed 只用于配对检验；分布才说明 Random 臂的期望位置。"
+      }
+     },
+     "custom_baselines": {
+      "frequency": {
+       "assets": [
+        "asan",
+        "ubsan"
+       ],
+       "rate_pct": 45.053,
+       "cp95": [
+        40.9008,
+        49.2571
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "frequency_catch": 255,
+        "random_catch": 133,
+        "discordant_a_only": 126,
+        "discordant_b_only": 4,
+        "delta_pp": 21.5548,
+        "delta_ci95_pp": [
+         18.0284,
+         25.0811
+        ],
+        "delta_se_pp": 1.7992,
+        "mcnemar_p": 1.7228568300638692e-32,
+        "cohens_h": 0.4595,
+        "ci_crosses_zero": false
+       }
+      },
+      "greedy": {
+       "assets": [
+        "asan",
+        "ubsan"
+       ],
+       "rate_pct": 45.053,
+       "cp95": [
+        40.9008,
+        49.2571
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "greedy_catch": 255,
+        "random_catch": 133,
+        "discordant_a_only": 126,
+        "discordant_b_only": 4,
+        "delta_pp": 21.5548,
+        "delta_ci95_pp": [
+         18.0284,
+         25.0811
+        ],
+        "delta_se_pp": 1.7992,
+        "mcnemar_p": 1.7228568300638692e-32,
+        "cohens_h": 0.4595,
+        "ci_crosses_zero": false
+       }
+      },
+      "oracle": {
+       "assets": [
+        "asan",
+        "ubsan"
+       ],
+       "rate_pct": 45.053,
+       "cp95": [
+        40.9008,
+        49.2571
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "oracle_catch": 255,
+        "random_catch": 133,
+        "discordant_a_only": 126,
+        "discordant_b_only": 4,
+        "delta_pp": 21.5548,
+        "delta_ci95_pp": [
+         18.0284,
+         25.0811
+        ],
+        "delta_se_pp": 1.7992,
+        "mcnemar_p": 1.7228568300638692e-32,
+        "cohens_h": 0.4595,
+        "ci_crosses_zero": false
+       },
+       "oracle_eval_catch": 255
+      },
+      "info_gain": {
+       "assets": [
+        "asan",
+        "ubsan"
+       ],
+       "rate_pct": 45.053,
+       "cp95": [
+        40.9008,
+        49.2571
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "info_gain_catch": 255,
+        "random_catch": 133,
+        "discordant_a_only": 126,
+        "discordant_b_only": 4,
+        "delta_pp": 21.5548,
+        "delta_ci95_pp": [
+         18.0284,
+         25.0811
+        ],
+        "delta_se_pp": 1.7992,
+        "mcnemar_p": 1.7228568300638692e-32,
+        "cohens_h": 0.4595,
+        "ci_crosses_zero": false
+       }
+      }
+     },
+     "fd_vs_each": {
+      "frequency": {
+       "n_pairs": 566,
+       "fd_catch": 255,
+       "frequency_catch": 255,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "greedy": {
+       "n_pairs": 566,
+       "fd_catch": 255,
+       "greedy_catch": 255,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "oracle": {
+       "n_pairs": 566,
+       "fd_catch": 255,
+       "oracle_catch": 255,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "info_gain": {
+       "n_pairs": 566,
+       "fd_catch": 255,
+       "info_gain_catch": 255,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      }
+     },
+     "static_vs_random": {
+      "n_pairs": 566,
+      "static_catch": 136,
+      "random_catch": 133,
+      "discordant_a_only": 90,
+      "discordant_b_only": 87,
+      "delta_pp": 0.53,
+      "delta_ci95_pp": [
+       -4.0768,
+       5.1368
+      ],
+      "delta_se_pp": 2.3504,
+      "mcnemar_p": 0.880559917404157,
+      "cohens_h": 0.0125,
+      "ci_crosses_zero": true
+     },
+     "ranking": [
+      "fd",
+      "frequency",
+      "greedy",
+      "info_gain",
+      "oracle",
+      "static",
+      "random"
+     ],
+     "fd_random_sets_differ": true,
+     "p_value_family": {
+      "note": "对本 (pool,k) 内 7 个臂 vs Random 单点的 McNemar p 做 BH-FDR",
+      "bh_fdr": {
+       "fd": 2.067428196076643e-32,
+       "static": 5.28473643741216e-16,
+       "frequency": 2.067428196076643e-32,
+       "greedy": 2.067428196076643e-32,
+       "oracle": 2.067428196076643e-32,
+       "info_gain": 2.067428196076643e-32
+      }
+     }
+    },
+    "3": {
+     "three_arm": {
+      "budget_k": 3,
+      "is_primary_k": false,
+      "is_degenerate_k": false,
+      "candidates": [
+       "asan",
+       "compiler-warn",
+       "cross-compile",
+       "linker",
+       "tsan",
+       "ubsan"
+      ],
+      "eval_n": 566,
+      "arms": {
+       "fd": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan"
+        ],
+        "budget_k": 3,
+        "cost_units": 9,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         }
+        ],
+        "k": 289,
+        "n": 566,
+        "point": 0.5106007067137809,
+        "rate_pct": 51.0601,
+        "cp95": [
+         46.8572,
+         55.2519
+        ],
+        "fail_hits_rank": {
+         "asan": 212,
+         "compiler-warn": 76,
+         "cross-compile": 89,
+         "linker": 6,
+         "tsan": 132,
+         "ubsan": 139
+        }
+       },
+       "random": {
+        "assets": [
+         "linker",
+         "ubsan",
+         "compiler-warn"
+        ],
+        "budget_k": 3,
+        "cost_units": 7,
+        "allocation_table": [
+         {
+          "asset": "linker",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 3,
+          "cost_units": 2
+         }
+        ],
+        "k": 166,
+        "n": 566,
+        "point": 0.29328621908127206,
+        "rate_pct": 29.3286,
+        "cp95": [
+         25.6059,
+         33.2687
+        ],
+        "seed": 20260930
+       },
+       "static": {
+        "assets": [
+         "compiler-warn",
+         "cross-compile",
+         "linker"
+        ],
+        "budget_k": 3,
+        "cost_units": 6,
+        "allocation_table": [
+         {
+          "asset": "compiler-warn",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 2,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 3,
+          "cost_units": 2
+         }
+        ],
+        "k": 140,
+        "n": 566,
+        "point": 0.24734982332155478,
+        "rate_pct": 24.735,
+        "cp95": [
+         21.2317,
+         28.5043
+        ]
+       },
+       "fd_full_pool": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn",
+         "linker"
+        ],
+        "budget_k": 6,
+        "cost_units": 15,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 6,
+          "cost_units": 2
+         }
+        ],
+        "k": 340,
+        "n": 566,
+        "point": 0.6007067137809188,
+        "rate_pct": 60.0707,
+        "cp95": [
+         55.9036,
+         64.1321
+        ]
+       }
+      },
+      "paired_tests": {
+       "fd_vs_random": {
+        "n_pairs": 566,
+        "fd_catch": 289,
+        "random_catch": 166,
+        "discordant_a_only": 155,
+        "discordant_b_only": 32,
+        "delta_pp": 21.7314,
+        "delta_ci95_pp": [
+         17.3476,
+         26.1153
+        ],
+        "delta_se_pp": 2.2367,
+        "mcnemar_p": 1.4559888845125056e-20,
+        "cohens_h": 0.4474,
+        "ci_crosses_zero": false
+       },
+       "fd_vs_static": {
+        "n_pairs": 566,
+        "fd_catch": 289,
+        "static_catch": 140,
+        "discordant_a_only": 200,
+        "discordant_b_only": 51,
+        "delta_pp": 26.3251,
+        "delta_ci95_pp": [
+         21.2858,
+         31.3644
+        ],
+        "delta_se_pp": 2.5711,
+        "mcnemar_p": 4.899321005270347e-22,
+        "cohens_h": 0.5509,
+        "ci_crosses_zero": false
+       }
+      },
+      "random_multi_seed": {
+       "runs": 2000,
+       "mean_rate_pct": 40.5721,
+       "sd_pp": 7.0443,
+       "min_rate_pct": 24.735,
+       "max_rate_pct": 51.0601,
+       "percentile_2.5_pct": 24.735,
+       "percentile_97.5_pct": 51.0601,
+       "fd_strictly_better_frac": 0.95,
+       "fd_better_or_tie_frac": 1.0,
+       "random_strictly_better_frac": 0.0,
+       "fd_catch": 289,
+       "note": "单点 seed 只用于配对检验；分布才说明 Random 臂的期望位置。"
+      }
+     },
+     "custom_baselines": {
+      "frequency": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan"
+       ],
+       "rate_pct": 51.0601,
+       "cp95": [
+        46.8572,
+        55.2519
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "frequency_catch": 289,
+        "random_catch": 166,
+        "discordant_a_only": 155,
+        "discordant_b_only": 32,
+        "delta_pp": 21.7314,
+        "delta_ci95_pp": [
+         17.3476,
+         26.1153
+        ],
+        "delta_se_pp": 2.2367,
+        "mcnemar_p": 1.4559888845125056e-20,
+        "cohens_h": 0.4474,
+        "ci_crosses_zero": false
+       }
+      },
+      "greedy": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan"
+       ],
+       "rate_pct": 51.0601,
+       "cp95": [
+        46.8572,
+        55.2519
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "greedy_catch": 289,
+        "random_catch": 166,
+        "discordant_a_only": 155,
+        "discordant_b_only": 32,
+        "delta_pp": 21.7314,
+        "delta_ci95_pp": [
+         17.3476,
+         26.1153
+        ],
+        "delta_se_pp": 2.2367,
+        "mcnemar_p": 1.4559888845125056e-20,
+        "cohens_h": 0.4474,
+        "ci_crosses_zero": false
+       }
+      },
+      "oracle": {
+       "assets": [
+        "asan",
+        "tsan",
+        "ubsan"
+       ],
+       "rate_pct": 51.0601,
+       "cp95": [
+        46.8572,
+        55.2519
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "oracle_catch": 289,
+        "random_catch": 166,
+        "discordant_a_only": 155,
+        "discordant_b_only": 32,
+        "delta_pp": 21.7314,
+        "delta_ci95_pp": [
+         17.3476,
+         26.1153
+        ],
+        "delta_se_pp": 2.2367,
+        "mcnemar_p": 1.4559888845125056e-20,
+        "cohens_h": 0.4474,
+        "ci_crosses_zero": false
+       },
+       "oracle_eval_catch": 289
+      },
+      "info_gain": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan"
+       ],
+       "rate_pct": 51.0601,
+       "cp95": [
+        46.8572,
+        55.2519
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "info_gain_catch": 289,
+        "random_catch": 166,
+        "discordant_a_only": 155,
+        "discordant_b_only": 32,
+        "delta_pp": 21.7314,
+        "delta_ci95_pp": [
+         17.3476,
+         26.1153
+        ],
+        "delta_se_pp": 2.2367,
+        "mcnemar_p": 1.4559888845125056e-20,
+        "cohens_h": 0.4474,
+        "ci_crosses_zero": false
+       }
+      }
+     },
+     "fd_vs_each": {
+      "frequency": {
+       "n_pairs": 566,
+       "fd_catch": 289,
+       "frequency_catch": 289,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "greedy": {
+       "n_pairs": 566,
+       "fd_catch": 289,
+       "greedy_catch": 289,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "oracle": {
+       "n_pairs": 566,
+       "fd_catch": 289,
+       "oracle_catch": 289,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "info_gain": {
+       "n_pairs": 566,
+       "fd_catch": 289,
+       "info_gain_catch": 289,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      }
+     },
+     "static_vs_random": {
+      "n_pairs": 566,
+      "static_catch": 140,
+      "random_catch": 166,
+      "discordant_a_only": 57,
+      "discordant_b_only": 83,
+      "delta_pp": -4.5936,
+      "delta_ci95_pp": [
+       -8.6734,
+       -0.5139
+      ],
+      "delta_se_pp": 2.0816,
+      "mcnemar_p": 0.03423566187319414,
+      "cohens_h": 0.1035,
+      "ci_crosses_zero": false
+     },
+     "ranking": [
+      "fd",
+      "frequency",
+      "greedy",
+      "info_gain",
+      "oracle",
+      "random",
+      "static"
+     ],
+     "fd_random_sets_differ": true,
+     "p_value_family": {
+      "note": "对本 (pool,k) 内 7 个臂 vs Random 单点的 McNemar p 做 BH-FDR",
+      "bh_fdr": {
+       "fd": 1.4559888845125056e-20,
+       "static": 2.939592603162208e-21,
+       "frequency": 1.4559888845125056e-20,
+       "greedy": 1.4559888845125056e-20,
+       "oracle": 1.4559888845125056e-20,
+       "info_gain": 1.4559888845125056e-20
+      }
+     }
+    },
+    "4": {
+     "three_arm": {
+      "budget_k": 4,
+      "is_primary_k": true,
+      "is_degenerate_k": false,
+      "candidates": [
+       "asan",
+       "compiler-warn",
+       "cross-compile",
+       "linker",
+       "tsan",
+       "ubsan"
+      ],
+      "eval_n": 566,
+      "arms": {
+       "fd": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile"
+        ],
+        "budget_k": 4,
+        "cost_units": 11,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         }
+        ],
+        "k": 309,
+        "n": 566,
+        "point": 0.5459363957597173,
+        "rate_pct": 54.5936,
+        "cp95": [
+         50.3886,
+         58.7505
+        ],
+        "fail_hits_rank": {
+         "asan": 212,
+         "compiler-warn": 76,
+         "cross-compile": 89,
+         "linker": 6,
+         "tsan": 132,
+         "ubsan": 139
+        }
+       },
+       "random": {
+        "assets": [
+         "linker",
+         "ubsan",
+         "compiler-warn",
+         "cross-compile"
+        ],
+        "budget_k": 4,
+        "cost_units": 9,
+        "allocation_table": [
+         {
+          "asset": "linker",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 3,
+          "cost_units": 2
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         }
+        ],
+        "k": 223,
+        "n": 566,
+        "point": 0.39399293286219084,
+        "rate_pct": 39.3993,
+        "cp95": [
+         35.3499,
+         43.56
+        ],
+        "seed": 20260930
+       },
+       "static": {
+        "assets": [
+         "compiler-warn",
+         "cross-compile",
+         "linker"
+        ],
+        "budget_k": 3,
+        "cost_units": 6,
+        "allocation_table": [
+         {
+          "asset": "compiler-warn",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 2,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 3,
+          "cost_units": 2
+         }
+        ],
+        "k": 140,
+        "n": 566,
+        "point": 0.24734982332155478,
+        "rate_pct": 24.735,
+        "cp95": [
+         21.2317,
+         28.5043
+        ]
+       },
+       "fd_full_pool": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn",
+         "linker"
+        ],
+        "budget_k": 6,
+        "cost_units": 15,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 6,
+          "cost_units": 2
+         }
+        ],
+        "k": 340,
+        "n": 566,
+        "point": 0.6007067137809188,
+        "rate_pct": 60.0707,
+        "cp95": [
+         55.9036,
+         64.1321
+        ]
+       }
+      },
+      "paired_tests": {
+       "fd_vs_random": {
+        "n_pairs": 566,
+        "fd_catch": 309,
+        "random_catch": 223,
+        "discordant_a_only": 117,
+        "discordant_b_only": 31,
+        "delta_pp": 15.1943,
+        "delta_ci95_pp": [
+         11.1719,
+         19.2168
+        ],
+        "delta_se_pp": 2.0523,
+        "mcnemar_p": 5.924261607141074e-13,
+        "cohens_h": 0.3056,
+        "ci_crosses_zero": false
+       },
+       "fd_vs_static": {
+        "n_pairs": 566,
+        "fd_catch": 309,
+        "static_catch": 140,
+        "discordant_a_only": 200,
+        "discordant_b_only": 31,
+        "delta_pp": 29.8587,
+        "delta_ci95_pp": [
+         25.2058,
+         34.5115
+        ],
+        "delta_se_pp": 2.3739,
+        "mcnemar_p": 1.8915021013313463e-31,
+        "cohens_h": 0.6217,
+        "ci_crosses_zero": false
+       }
+      },
+      "random_multi_seed": {
+       "runs": 2000,
+       "mean_rate_pct": 48.4019,
+       "sd_pp": 4.9416,
+       "min_rate_pct": 39.3993,
+       "max_rate_pct": 56.0071,
+       "percentile_2.5_pct": 39.3993,
+       "percentile_97.5_pct": 56.0071,
+       "fd_strictly_better_frac": 0.87,
+       "fd_better_or_tie_frac": 0.9405,
+       "random_strictly_better_frac": 0.0595,
+       "fd_catch": 309,
+       "note": "单点 seed 只用于配对检验；分布才说明 Random 臂的期望位置。"
+      }
+     },
+     "custom_baselines": {
+      "frequency": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "cross-compile"
+       ],
+       "rate_pct": 54.5936,
+       "cp95": [
+        50.3886,
+        58.7505
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "frequency_catch": 309,
+        "random_catch": 223,
+        "discordant_a_only": 117,
+        "discordant_b_only": 31,
+        "delta_pp": 15.1943,
+        "delta_ci95_pp": [
+         11.1719,
+         19.2168
+        ],
+        "delta_se_pp": 2.0523,
+        "mcnemar_p": 5.924261607141074e-13,
+        "cohens_h": 0.3056,
+        "ci_crosses_zero": false
+       }
+      },
+      "greedy": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "compiler-warn"
+       ],
+       "rate_pct": 56.0071,
+       "cp95": [
+        51.807,
+        60.1441
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "greedy_catch": 317,
+        "random_catch": 223,
+        "discordant_a_only": 117,
+        "discordant_b_only": 23,
+        "delta_pp": 16.6078,
+        "delta_ci95_pp": [
+         12.7457,
+         20.4699
+        ],
+        "delta_se_pp": 1.9705,
+        "mcnemar_p": 2.3310651653913176e-16,
+        "cohens_h": 0.3341,
+        "ci_crosses_zero": false
+       }
+      },
+      "oracle": {
+       "assets": [
+        "asan",
+        "compiler-warn",
+        "tsan",
+        "ubsan"
+       ],
+       "rate_pct": 56.0071,
+       "cp95": [
+        51.807,
+        60.1441
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "oracle_catch": 317,
+        "random_catch": 223,
+        "discordant_a_only": 117,
+        "discordant_b_only": 23,
+        "delta_pp": 16.6078,
+        "delta_ci95_pp": [
+         12.7457,
+         20.4699
+        ],
+        "delta_se_pp": 1.9705,
+        "mcnemar_p": 2.3310651653913176e-16,
+        "cohens_h": 0.3341,
+        "ci_crosses_zero": false
+       },
+       "oracle_eval_catch": 317
+      },
+      "info_gain": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "cross-compile"
+       ],
+       "rate_pct": 54.5936,
+       "cp95": [
+        50.3886,
+        58.7505
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "info_gain_catch": 309,
+        "random_catch": 223,
+        "discordant_a_only": 117,
+        "discordant_b_only": 31,
+        "delta_pp": 15.1943,
+        "delta_ci95_pp": [
+         11.1719,
+         19.2168
+        ],
+        "delta_se_pp": 2.0523,
+        "mcnemar_p": 5.924261607141074e-13,
+        "cohens_h": 0.3056,
+        "ci_crosses_zero": false
+       }
+      }
+     },
+     "fd_vs_each": {
+      "frequency": {
+       "n_pairs": 566,
+       "fd_catch": 309,
+       "frequency_catch": 309,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "greedy": {
+       "n_pairs": 566,
+       "fd_catch": 309,
+       "greedy_catch": 317,
+       "discordant_a_only": 19,
+       "discordant_b_only": 27,
+       "delta_pp": -1.4134,
+       "delta_ci95_pp": [
+        -3.7591,
+        0.9323
+       ],
+       "delta_se_pp": 1.1968,
+       "mcnemar_p": 0.3019956131896645,
+       "cohens_h": 0.0284,
+       "ci_crosses_zero": true
+      },
+      "oracle": {
+       "n_pairs": 566,
+       "fd_catch": 309,
+       "oracle_catch": 317,
+       "discordant_a_only": 19,
+       "discordant_b_only": 27,
+       "delta_pp": -1.4134,
+       "delta_ci95_pp": [
+        -3.7591,
+        0.9323
+       ],
+       "delta_se_pp": 1.1968,
+       "mcnemar_p": 0.3019956131896645,
+       "cohens_h": 0.0284,
+       "ci_crosses_zero": true
+      },
+      "info_gain": {
+       "n_pairs": 566,
+       "fd_catch": 309,
+       "info_gain_catch": 309,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      }
+     },
+     "static_vs_random": {
+      "n_pairs": 566,
+      "static_catch": 140,
+      "random_catch": 223,
+      "discordant_a_only": 0,
+      "discordant_b_only": 83,
+      "delta_pp": -14.6643,
+      "delta_ci95_pp": [
+       -17.5786,
+       -11.75
+      ],
+      "delta_se_pp": 1.4869,
+      "mcnemar_p": 2.0679515313825724e-25,
+      "cohens_h": 0.3161,
+      "ci_crosses_zero": false
+     },
+     "ranking": [
+      "greedy",
+      "oracle",
+      "fd",
+      "frequency",
+      "info_gain",
+      "random",
+      "static"
+     ],
+     "fd_random_sets_differ": true,
+     "p_value_family": {
+      "note": "对本 (pool,k) 内 7 个臂 vs Random 单点的 McNemar p 做 BH-FDR",
+      "bh_fdr": {
+       "fd": 5.924261607141074e-13,
+       "static": 1.1349012607988078e-30,
+       "frequency": 5.924261607141074e-13,
+       "greedy": 4.662130330782635e-16,
+       "oracle": 4.662130330782635e-16,
+       "info_gain": 5.924261607141074e-13
+      }
+     }
+    },
+    "5": {
+     "three_arm": {
+      "budget_k": 5,
+      "is_primary_k": false,
+      "is_degenerate_k": false,
+      "candidates": [
+       "asan",
+       "compiler-warn",
+       "cross-compile",
+       "linker",
+       "tsan",
+       "ubsan"
+      ],
+      "eval_n": 566,
+      "arms": {
+       "fd": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn"
+        ],
+        "budget_k": 5,
+        "cost_units": 13,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         }
+        ],
+        "k": 336,
+        "n": 566,
+        "point": 0.5936395759717314,
+        "rate_pct": 59.364,
+        "cp95": [
+         55.1891,
+         63.4405
+        ],
+        "fail_hits_rank": {
+         "asan": 212,
+         "compiler-warn": 76,
+         "cross-compile": 89,
+         "linker": 6,
+         "tsan": 132,
+         "ubsan": 139
+        }
+       },
+       "random": {
+        "assets": [
+         "linker",
+         "ubsan",
+         "compiler-warn",
+         "cross-compile",
+         "tsan"
+        ],
+        "budget_k": 5,
+        "cost_units": 12,
+        "allocation_table": [
+         {
+          "asset": "linker",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 3,
+          "cost_units": 2
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "tsan",
+          "rank": 5,
+          "cost_units": 3
+         }
+        ],
+        "k": 280,
+        "n": 566,
+        "point": 0.49469964664310956,
+        "rate_pct": 49.47,
+        "cp95": [
+         45.2747,
+         53.6708
+        ],
+        "seed": 20260930
+       },
+       "static": {
+        "assets": [
+         "compiler-warn",
+         "cross-compile",
+         "linker"
+        ],
+        "budget_k": 3,
+        "cost_units": 6,
+        "allocation_table": [
+         {
+          "asset": "compiler-warn",
+          "rank": 1,
+          "cost_units": 2
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 2,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 3,
+          "cost_units": 2
+         }
+        ],
+        "k": 140,
+        "n": 566,
+        "point": 0.24734982332155478,
+        "rate_pct": 24.735,
+        "cp95": [
+         21.2317,
+         28.5043
+        ]
+       },
+       "fd_full_pool": {
+        "assets": [
+         "asan",
+         "ubsan",
+         "tsan",
+         "cross-compile",
+         "compiler-warn",
+         "linker"
+        ],
+        "budget_k": 6,
+        "cost_units": 15,
+        "allocation_table": [
+         {
+          "asset": "asan",
+          "rank": 1,
+          "cost_units": 3
+         },
+         {
+          "asset": "ubsan",
+          "rank": 2,
+          "cost_units": 3
+         },
+         {
+          "asset": "tsan",
+          "rank": 3,
+          "cost_units": 3
+         },
+         {
+          "asset": "cross-compile",
+          "rank": 4,
+          "cost_units": 2
+         },
+         {
+          "asset": "compiler-warn",
+          "rank": 5,
+          "cost_units": 2
+         },
+         {
+          "asset": "linker",
+          "rank": 6,
+          "cost_units": 2
+         }
+        ],
+        "k": 340,
+        "n": 566,
+        "point": 0.6007067137809188,
+        "rate_pct": 60.0707,
+        "cp95": [
+         55.9036,
+         64.1321
+        ]
+       }
+      },
+      "paired_tests": {
+       "fd_vs_random": {
+        "n_pairs": 566,
+        "fd_catch": 336,
+        "random_catch": 280,
+        "discordant_a_only": 60,
+        "discordant_b_only": 4,
+        "delta_pp": 9.894,
+        "delta_ci95_pp": [
+         7.2464,
+         12.5416
+        ],
+        "delta_se_pp": 1.3509,
+        "mcnemar_p": 7.36304463580525e-14,
+        "cohens_h": 0.199,
+        "ci_crosses_zero": false
+       },
+       "fd_vs_static": {
+        "n_pairs": 566,
+        "fd_catch": 336,
+        "static_catch": 140,
+        "discordant_a_only": 200,
+        "discordant_b_only": 4,
+        "delta_pp": 34.629,
+        "delta_ci95_pp": [
+         30.5888,
+         38.6692
+        ],
+        "delta_se_pp": 2.0614,
+        "mcnemar_p": 5.559787001072584e-54,
+        "cohens_h": 0.7181,
+        "ci_crosses_zero": false
+       }
+      },
+      "random_multi_seed": {
+       "runs": 2000,
+       "mean_rate_pct": 54.6002,
+       "sd_pp": 3.1369,
+       "min_rate_pct": 49.47,
+       "max_rate_pct": 59.364,
+       "percentile_2.5_pct": 49.47,
+       "percentile_97.5_pct": 59.364,
+       "fd_strictly_better_frac": 0.8385,
+       "fd_better_or_tie_frac": 1.0,
+       "random_strictly_better_frac": 0.0,
+       "fd_catch": 336,
+       "note": "单点 seed 只用于配对检验；分布才说明 Random 臂的期望位置。"
+      }
+     },
+     "custom_baselines": {
+      "frequency": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "cross-compile",
+        "compiler-warn"
+       ],
+       "rate_pct": 59.364,
+       "cp95": [
+        55.1891,
+        63.4405
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "frequency_catch": 336,
+        "random_catch": 280,
+        "discordant_a_only": 60,
+        "discordant_b_only": 4,
+        "delta_pp": 9.894,
+        "delta_ci95_pp": [
+         7.2464,
+         12.5416
+        ],
+        "delta_se_pp": 1.3509,
+        "mcnemar_p": 7.36304463580525e-14,
+        "cohens_h": 0.199,
+        "ci_crosses_zero": false
+       }
+      },
+      "greedy": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "compiler-warn",
+        "cross-compile"
+       ],
+       "rate_pct": 59.364,
+       "cp95": [
+        55.1891,
+        63.4405
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "greedy_catch": 336,
+        "random_catch": 280,
+        "discordant_a_only": 60,
+        "discordant_b_only": 4,
+        "delta_pp": 9.894,
+        "delta_ci95_pp": [
+         7.2464,
+         12.5416
+        ],
+        "delta_se_pp": 1.3509,
+        "mcnemar_p": 7.36304463580525e-14,
+        "cohens_h": 0.199,
+        "ci_crosses_zero": false
+       }
+      },
+      "oracle": {
+       "assets": [
+        "asan",
+        "compiler-warn",
+        "cross-compile",
+        "tsan",
+        "ubsan"
+       ],
+       "rate_pct": 59.364,
+       "cp95": [
+        55.1891,
+        63.4405
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "oracle_catch": 336,
+        "random_catch": 280,
+        "discordant_a_only": 60,
+        "discordant_b_only": 4,
+        "delta_pp": 9.894,
+        "delta_ci95_pp": [
+         7.2464,
+         12.5416
+        ],
+        "delta_se_pp": 1.3509,
+        "mcnemar_p": 7.36304463580525e-14,
+        "cohens_h": 0.199,
+        "ci_crosses_zero": false
+       },
+       "oracle_eval_catch": 336
+      },
+      "info_gain": {
+       "assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "cross-compile",
+        "compiler-warn"
+       ],
+       "rate_pct": 59.364,
+       "cp95": [
+        55.1891,
+        63.4405
+       ],
+       "paired_vs_random": {
+        "n_pairs": 566,
+        "info_gain_catch": 336,
+        "random_catch": 280,
+        "discordant_a_only": 60,
+        "discordant_b_only": 4,
+        "delta_pp": 9.894,
+        "delta_ci95_pp": [
+         7.2464,
+         12.5416
+        ],
+        "delta_se_pp": 1.3509,
+        "mcnemar_p": 7.36304463580525e-14,
+        "cohens_h": 0.199,
+        "ci_crosses_zero": false
+       }
+      }
+     },
+     "fd_vs_each": {
+      "frequency": {
+       "n_pairs": 566,
+       "fd_catch": 336,
+       "frequency_catch": 336,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "greedy": {
+       "n_pairs": 566,
+       "fd_catch": 336,
+       "greedy_catch": 336,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "oracle": {
+       "n_pairs": 566,
+       "fd_catch": 336,
+       "oracle_catch": 336,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      },
+      "info_gain": {
+       "n_pairs": 566,
+       "fd_catch": 336,
+       "info_gain_catch": 336,
+       "discordant_a_only": 0,
+       "discordant_b_only": 0,
+       "delta_pp": 0.0,
+       "delta_ci95_pp": [
+        0.0,
+        0.0
+       ],
+       "delta_se_pp": 0.0,
+       "mcnemar_p": 1.0,
+       "cohens_h": 0.0,
+       "ci_crosses_zero": false
+      }
+     },
+     "static_vs_random": {
+      "n_pairs": 566,
+      "static_catch": 140,
+      "random_catch": 280,
+      "discordant_a_only": 0,
+      "discordant_b_only": 140,
+      "delta_pp": -24.735,
+      "delta_ci95_pp": [
+       -28.2896,
+       -21.1804
+      ],
+      "delta_se_pp": 1.8136,
+      "mcnemar_p": 1.4349296274686257e-42,
+      "cohens_h": 0.5191,
+      "ci_crosses_zero": false
+     },
+     "ranking": [
+      "fd",
+      "frequency",
+      "greedy",
+      "info_gain",
+      "oracle",
+      "random",
+      "static"
+     ],
+     "fd_random_sets_differ": true,
+     "p_value_family": {
+      "note": "对本 (pool,k) 内 7 个臂 vs Random 单点的 McNemar p 做 BH-FDR",
+      "bh_fdr": {
+       "fd": 7.36304463580525e-14,
+       "static": 3.33587220064355e-53,
+       "frequency": 7.36304463580525e-14,
+       "greedy": 7.36304463580525e-14,
+       "oracle": 7.36304463580525e-14,
+       "info_gain": 7.36304463580525e-14
+      }
+     }
+    }
+   }
+  }
+ }
+}

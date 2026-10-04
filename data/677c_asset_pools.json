@@ -1,0 +1,606 @@
+{
+ "schema": "queyi-a5-677c-pools/v1",
+ "generated_by": "tools/analyze_677c_nondegenerate.py",
+ "generated_at": "2026-10-04T12:13:47+08:00",
+ "n_samples": 1137,
+ "inputs": {
+  "matrix": "data/a5_676f_detection_matrix.json",
+  "manifest": "data/a5_676f_sample_manifest.json",
+  "matrix_generated_at": "2026-10-04T01:41:28+08:00",
+  "detector_sha256_16": "4c7a9e3d8a35faa6"
+ },
+ "asset_stats": {
+  "asan": {
+   "full_pool": {
+    "catch": 399,
+    "unknown": 10,
+    "miss": 728,
+    "n": 1137,
+    "catch_rate_pct": 35.0923,
+    "unknown_rate_pct": 0.8795
+   },
+   "derivation": {
+    "catch": 212,
+    "unknown": 6,
+    "miss": 353,
+    "n": 571,
+    "catch_rate_pct": 37.1278,
+    "unknown_rate_pct": 1.0508
+   },
+   "evaluation": {
+    "catch": 187,
+    "unknown": 4,
+    "miss": 375,
+    "n": 566,
+    "catch_rate_pct": 33.0389,
+    "unknown_rate_pct": 0.7067
+   }
+  },
+  "compile-time": {
+   "full_pool": {
+    "catch": 0,
+    "unknown": 1137,
+    "miss": 0,
+    "n": 1137,
+    "catch_rate_pct": 0.0,
+    "unknown_rate_pct": 100.0
+   },
+   "derivation": {
+    "catch": 0,
+    "unknown": 571,
+    "miss": 0,
+    "n": 571,
+    "catch_rate_pct": 0.0,
+    "unknown_rate_pct": 100.0
+   },
+   "evaluation": {
+    "catch": 0,
+    "unknown": 566,
+    "miss": 0,
+    "n": 566,
+    "catch_rate_pct": 0.0,
+    "unknown_rate_pct": 100.0
+   }
+  },
+  "compiler-warn": {
+   "full_pool": {
+    "catch": 143,
+    "unknown": 0,
+    "miss": 994,
+    "n": 1137,
+    "catch_rate_pct": 12.577,
+    "unknown_rate_pct": 0.0
+   },
+   "derivation": {
+    "catch": 76,
+    "unknown": 0,
+    "miss": 495,
+    "n": 571,
+    "catch_rate_pct": 13.31,
+    "unknown_rate_pct": 0.0
+   },
+   "evaluation": {
+    "catch": 67,
+    "unknown": 0,
+    "miss": 499,
+    "n": 566,
+    "catch_rate_pct": 11.8375,
+    "unknown_rate_pct": 0.0
+   }
+  },
+  "cross-compile": {
+   "full_pool": {
+    "catch": 170,
+    "unknown": 38,
+    "miss": 929,
+    "n": 1137,
+    "catch_rate_pct": 14.9516,
+    "unknown_rate_pct": 3.3421
+   },
+   "derivation": {
+    "catch": 89,
+    "unknown": 17,
+    "miss": 465,
+    "n": 571,
+    "catch_rate_pct": 15.5867,
+    "unknown_rate_pct": 2.9772
+   },
+   "evaluation": {
+    "catch": 81,
+    "unknown": 21,
+    "miss": 464,
+    "n": 566,
+    "catch_rate_pct": 14.311,
+    "unknown_rate_pct": 3.7102
+   }
+  },
+  "linker": {
+   "full_pool": {
+    "catch": 10,
+    "unknown": 0,
+    "miss": 1127,
+    "n": 1137,
+    "catch_rate_pct": 0.8795,
+    "unknown_rate_pct": 0.0
+   },
+   "derivation": {
+    "catch": 6,
+    "unknown": 0,
+    "miss": 565,
+    "n": 571,
+    "catch_rate_pct": 1.0508,
+    "unknown_rate_pct": 0.0
+   },
+   "evaluation": {
+    "catch": 4,
+    "unknown": 0,
+    "miss": 562,
+    "n": 566,
+    "catch_rate_pct": 0.7067,
+    "unknown_rate_pct": 0.0
+   }
+  },
+  "tsan": {
+   "full_pool": {
+    "catch": 255,
+    "unknown": 10,
+    "miss": 872,
+    "n": 1137,
+    "catch_rate_pct": 22.4274,
+    "unknown_rate_pct": 0.8795
+   },
+   "derivation": {
+    "catch": 132,
+    "unknown": 6,
+    "miss": 433,
+    "n": 571,
+    "catch_rate_pct": 23.1173,
+    "unknown_rate_pct": 1.0508
+   },
+   "evaluation": {
+    "catch": 123,
+    "unknown": 4,
+    "miss": 439,
+    "n": 566,
+    "catch_rate_pct": 21.7314,
+    "unknown_rate_pct": 0.7067
+   }
+  },
+  "ubsan": {
+   "full_pool": {
+    "catch": 268,
+    "unknown": 10,
+    "miss": 859,
+    "n": 1137,
+    "catch_rate_pct": 23.5708,
+    "unknown_rate_pct": 0.8795
+   },
+   "derivation": {
+    "catch": 139,
+    "unknown": 6,
+    "miss": 426,
+    "n": 571,
+    "catch_rate_pct": 24.3433,
+    "unknown_rate_pct": 1.0508
+   },
+   "evaluation": {
+    "catch": 129,
+    "unknown": 4,
+    "miss": 433,
+    "n": 566,
+    "catch_rate_pct": 22.7915,
+    "unknown_rate_pct": 0.7067
+   }
+  },
+  "wunsequenced": {
+   "full_pool": {
+    "catch": 0,
+    "unknown": 1137,
+    "miss": 0,
+    "n": 1137,
+    "catch_rate_pct": 0.0,
+    "unknown_rate_pct": 100.0
+   },
+   "derivation": {
+    "catch": 0,
+    "unknown": 571,
+    "miss": 0,
+    "n": 571,
+    "catch_rate_pct": 0.0,
+    "unknown_rate_pct": 100.0
+   },
+   "evaluation": {
+    "catch": 0,
+    "unknown": 566,
+    "miss": 0,
+    "n": 566,
+    "catch_rate_pct": 0.0,
+    "unknown_rate_pct": 100.0
+   }
+  }
+ },
+ "unknown_based_degeneracy": {
+  "asan": {
+   "unknown_rate_pct": 0.8795,
+   "always_unknown": false
+  },
+  "compile-time": {
+   "unknown_rate_pct": 100.0,
+   "always_unknown": true
+  },
+  "compiler-warn": {
+   "unknown_rate_pct": 0.0,
+   "always_unknown": false
+  },
+  "cross-compile": {
+   "unknown_rate_pct": 3.3421,
+   "always_unknown": false
+  },
+  "linker": {
+   "unknown_rate_pct": 0.0,
+   "always_unknown": false
+  },
+  "tsan": {
+   "unknown_rate_pct": 0.8795,
+   "always_unknown": false
+  },
+  "ubsan": {
+   "unknown_rate_pct": 0.8795,
+   "always_unknown": false
+  },
+  "wunsequenced": {
+   "unknown_rate_pct": 100.0,
+   "always_unknown": true
+  }
+ },
+ "preregistered_degeneracy_catch_rate_5pct": {
+  "compile-time": {
+   "catch_rate_pct": 0.0,
+   "flag": "degenerate_constant",
+   "why": "catch 率 0.0% 越出 [5%, 95%]"
+  },
+  "linker": {
+   "catch_rate_pct": 0.8795,
+   "flag": "degenerate_constant",
+   "why": "catch 率 0.8795% 越出 [5%, 95%]"
+  },
+  "wunsequenced": {
+   "catch_rate_pct": 0.0,
+   "flag": "degenerate_constant",
+   "why": "catch 率 0.0% 越出 [5%, 95%]"
+  }
+ },
+ "prompt_expectation_vs_data": {
+  "expectation": "卡片预期 linker 高 unknown（>50%），Pool A 预期 5 资产",
+  "actual": "linker unknown=0.00%（10 catch + 1127 miss）⇒ 仅按 unknown 阈值时 A/B/C 三池定义塌缩为同一 6 资产集合",
+  "resolution": "Pool A 叠加预注册 catch 率 5% 下限（与论文 E4 勘误、676f 并列分析口径一致）⇒ 5 资产；B/C 保持卡片字面定义 ⇒ 都是 6 资产（B≡C 如实记录）"
+ },
+ "pools": {
+  "A": {
+   "name": "Pool A（严格）",
+   "rule": "unknown_rate < 30% 且 catch_rate >= 5%（预注册产量下限）",
+   "assets": [
+    "asan",
+    "compiler-warn",
+    "cross-compile",
+    "tsan",
+    "ubsan"
+   ],
+   "rationale": "同时剔除恒 unknown（wunsequenced/compile-time）与低产资产（linker catch 0.88%<5%）；候选集与 676f 预注册并列分析完全一致，可直接对账",
+   "k_range": [
+    1,
+    4
+   ],
+   "n_candidates": 5,
+   "k_where_single_point_differs": [
+    1,
+    2,
+    3
+   ],
+   "validation": [
+    {
+     "k": 1,
+     "fd_assets": [
+      "asan"
+     ],
+     "random_single_assets": [
+      "tsan"
+     ],
+     "single_point_sets_differ": true,
+     "p_random_draw_equals_fd_set": 0.2,
+     "note": "单点 Random 是 seed=20260930 的一次抽样；结构性差异概率 = 1/C(n,k)"
+    },
+    {
+     "k": 2,
+     "fd_assets": [
+      "asan",
+      "ubsan"
+     ],
+     "random_single_assets": [
+      "tsan",
+      "ubsan"
+     ],
+     "single_point_sets_differ": true,
+     "p_random_draw_equals_fd_set": 0.1,
+     "note": "单点 Random 是 seed=20260930 的一次抽样；结构性差异概率 = 1/C(n,k)"
+    },
+    {
+     "k": 3,
+     "fd_assets": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "random_single_assets": [
+      "tsan",
+      "ubsan",
+      "cross-compile"
+     ],
+     "single_point_sets_differ": true,
+     "p_random_draw_equals_fd_set": 0.1,
+     "note": "单点 Random 是 seed=20260930 的一次抽样；结构性差异概率 = 1/C(n,k)"
+    },
+    {
+     "k": 4,
+     "fd_assets": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "cross-compile"
+     ],
+     "random_single_assets": [
+      "tsan",
+      "ubsan",
+      "cross-compile",
+      "asan"
+     ],
+     "single_point_sets_differ": false,
+     "p_random_draw_equals_fd_set": 0.2,
+     "note": "单点 Random 是 seed=20260930 的一次抽样；结构性差异概率 = 1/C(n,k)"
+    }
+   ],
+   "fd_rank_full": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile",
+    "compiler-warn"
+   ]
+  },
+  "B": {
+   "name": "Pool B（中等）",
+   "rule": "unknown_rate < 50% 且 catch_rate >= 0.5%",
+   "assets": [
+    "asan",
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "tsan",
+    "ubsan"
+   ],
+   "rationale": "放宽产量下限到 0.5%，容纳 linker（unknown=0% 但 catch 仅 0.88%）",
+   "k_range": [
+    1,
+    5
+   ],
+   "n_candidates": 6,
+   "k_where_single_point_differs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "validation": [
+    {
+     "k": 1,
+     "fd_assets": [
+      "asan"
+     ],
+     "random_single_assets": [
+      "linker"
+     ],
+     "single_point_sets_differ": true,
+     "p_random_draw_equals_fd_set": 0.166667,
+     "note": "单点 Random 是 seed=20260930 的一次抽样；结构性差异概率 = 1/C(n,k)"
+    },
+    {
+     "k": 2,
+     "fd_assets": [
+      "asan",
+      "ubsan"
+     ],
+     "random_single_assets": [
+      "linker",
+      "ubsan"
+     ],
+     "single_point_sets_differ": true,
+     "p_random_draw_equals_fd_set": 0.066667,
+     "note": "单点 Random 是 seed=20260930 的一次抽样；结构性差异概率 = 1/C(n,k)"
+    },
+    {
+     "k": 3,
+     "fd_assets": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "random_single_assets": [
+      "linker",
+      "ubsan",
+      "compiler-warn"
+     ],
+     "single_point_sets_differ": true,
+     "p_random_draw_equals_fd_set": 0.05,
+     "note": "单点 Random 是 seed=20260930 的一次抽样；结构性差异概率 = 1/C(n,k)"
+    },
+    {
+     "k": 4,
+     "fd_assets": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "cross-compile"
+     ],
+     "random_single_assets": [
+      "linker",
+      "ubsan",
+      "compiler-warn",
+      "cross-compile"
+     ],
+     "single_point_sets_differ": true,
+     "p_random_draw_equals_fd_set": 0.066667,
+     "note": "单点 Random 是 seed=20260930 的一次抽样；结构性差异概率 = 1/C(n,k)"
+    },
+    {
+     "k": 5,
+     "fd_assets": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "cross-compile",
+      "compiler-warn"
+     ],
+     "random_single_assets": [
+      "linker",
+      "ubsan",
+      "compiler-warn",
+      "cross-compile",
+      "tsan"
+     ],
+     "single_point_sets_differ": true,
+     "p_random_draw_equals_fd_set": 0.166667,
+     "note": "单点 Random 是 seed=20260930 的一次抽样；结构性差异概率 = 1/C(n,k)"
+    }
+   ],
+   "fd_rank_full": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile",
+    "compiler-warn",
+    "linker"
+   ]
+  },
+  "C": {
+   "name": "Pool C（宽松）",
+   "rule": "仅剔除 unknown_rate=100% 的恒 unknown 资产",
+   "assets": [
+    "asan",
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "tsan",
+    "ubsan"
+   ],
+   "rationale": "评审的字面要求：只去掉两个恒 unknown 资产，其余全保留",
+   "k_range": [
+    1,
+    5
+   ],
+   "n_candidates": 6,
+   "k_where_single_point_differs": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "validation": [
+    {
+     "k": 1,
+     "fd_assets": [
+      "asan"
+     ],
+     "random_single_assets": [
+      "linker"
+     ],
+     "single_point_sets_differ": true,
+     "p_random_draw_equals_fd_set": 0.166667,
+     "note": "单点 Random 是 seed=20260930 的一次抽样；结构性差异概率 = 1/C(n,k)"
+    },
+    {
+     "k": 2,
+     "fd_assets": [
+      "asan",
+      "ubsan"
+     ],
+     "random_single_assets": [
+      "linker",
+      "ubsan"
+     ],
+     "single_point_sets_differ": true,
+     "p_random_draw_equals_fd_set": 0.066667,
+     "note": "单点 Random 是 seed=20260930 的一次抽样；结构性差异概率 = 1/C(n,k)"
+    },
+    {
+     "k": 3,
+     "fd_assets": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "random_single_assets": [
+      "linker",
+      "ubsan",
+      "compiler-warn"
+     ],
+     "single_point_sets_differ": true,
+     "p_random_draw_equals_fd_set": 0.05,
+     "note": "单点 Random 是 seed=20260930 的一次抽样；结构性差异概率 = 1/C(n,k)"
+    },
+    {
+     "k": 4,
+     "fd_assets": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "cross-compile"
+     ],
+     "random_single_assets": [
+      "linker",
+      "ubsan",
+      "compiler-warn",
+      "cross-compile"
+     ],
+     "single_point_sets_differ": true,
+     "p_random_draw_equals_fd_set": 0.066667,
+     "note": "单点 Random 是 seed=20260930 的一次抽样；结构性差异概率 = 1/C(n,k)"
+    },
+    {
+     "k": 5,
+     "fd_assets": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "cross-compile",
+      "compiler-warn"
+     ],
+     "random_single_assets": [
+      "linker",
+      "ubsan",
+      "compiler-warn",
+      "cross-compile",
+      "tsan"
+     ],
+     "single_point_sets_differ": true,
+     "p_random_draw_equals_fd_set": 0.166667,
+     "note": "单点 Random 是 seed=20260930 的一次抽样；结构性差异概率 = 1/C(n,k)"
+    }
+   ],
+   "fd_rank_full": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile",
+    "compiler-warn",
+    "linker"
+   ]
+  }
+ },
+ "honest_notes": [
+  "退化统计用了全池率（含评估集）：这是池**构成**设计决策（676f 并列分析同口径），不是逐样本选择泄漏；逐样本选择只用派生集。",
+  "Pool A 的候选集与 676f co_primary_excl_degenerate 完全一致 ⇒ 其结果应逐位复现 676f 并列分析（在 a5 stage 做了对账）。",
+  "k=|A| 时三臂恒等于全池，属预算退化，不进扫描（676f is_degenerate_k 同口径）。"
+ ]
+}
