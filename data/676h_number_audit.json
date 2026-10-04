@@ -1,6 +1,6 @@
 {
   "schema": "queyi-676h/number-audit",
-  "generated_at": "2026-10-04T09:16:21+08:00",
+  "generated_at": "2026-10-04T09:23:46+08:00",
   "tex": "research/latex/queyi_neurips2027_v1.1.tex",
   "sources": {
     "current_numbers": "data/current_numbers.json",
@@ -96,9 +96,9 @@
             901,
             988,
             1087,
-            1532,
-            1575,
-            1592
+            1537,
+            1580,
+            1597
           ],
           "snippet": "he same samples}, \\emph{expanded} holdout recall is \\textbf{82.9\\% (34/41, 95\\% CI [67.9, 92.8])}, of which the \\emph{primar"
         },
@@ -114,7 +114,7 @@
             901,
             988,
             1087,
-            1592
+            1597
           ],
           "snippet": "samples}, \\emph{expanded} holdout recall is \\textbf{82.9\\% (34/41, 95\\% CI [67.9, 92.8])}, of which the \\emph{primary pre-rev"
         },
@@ -156,9 +156,9 @@
             901,
             988,
             1087,
-            1532,
-            1575,
-            1592
+            1537,
+            1580,
+            1597
           ],
           "kind": "value"
         },
@@ -175,7 +175,7 @@
             901,
             988,
             1087,
-            1592
+            1597
           ],
           "kind": "value"
         },
@@ -237,7 +237,7 @@
             970,
             981,
             1087,
-            1250
+            1255
           ],
           "snippet": " post-reveal additions; corpus measurable recall is \\textbf{62.5\\% (40/64, [49.5, 74.3])} (layered read: sanitizer 85.3\\%, c"
         },
@@ -253,7 +253,7 @@
             835,
             901,
             1087,
-            1607
+            1612
           ],
           "snippet": "veal additions; corpus measurable recall is \\textbf{62.5\\% (40/64, [49.5, 74.3])} (layered read: sanitizer 85.3\\%, compiler-w"
         },
@@ -297,7 +297,7 @@
             970,
             981,
             1087,
-            1250
+            1255
           ],
           "kind": "value"
         },
@@ -314,7 +314,7 @@
             835,
             901,
             1087,
-            1607
+            1612
           ],
           "kind": "value"
         },
@@ -360,7 +360,7 @@
             535,
             624,
             816,
-            1250
+            1255
           ],
           "snippet": "/41), D3 external corpus \\textbf{62.5\\%} measurable (40/64; 52.6\\% all-sample), and D4 16 machine cards (unsigned). The A/B/"
         }
@@ -379,7 +379,7 @@
             535,
             624,
             816,
-            1250
+            1255
           ],
           "kind": "value"
         }
@@ -411,7 +411,7 @@
             495,
             829,
             833,
-            1508
+            1513
           ],
           "snippet": "pile 16.7\\%), versus a \\emph{static caliber arm} at \\textbf{2.4\\%}/\\textbf{17.2\\%} ($\\Delta$ \\textbf{+80.5pp} / \\textbf{+45"
         },
@@ -457,7 +457,7 @@
             495,
             829,
             833,
-            1508
+            1513
           ],
           "kind": "value"
         },
@@ -519,7 +519,7 @@
             488,
             495,
             834,
-            1230
+            1235
           ],
           "snippet": "f{+45.3pp}) and an instrument-level random proxy at \\textbf{9.8\\%}/\\textbf{21.9\\%} ($\\Delta$ \\textbf{+73.2pp} / \\textbf{+40"
         },
@@ -564,7 +564,7 @@
             488,
             495,
             834,
-            1230
+            1235
           ],
           "kind": "value"
         },
@@ -1099,7 +1099,7 @@
           "lines": [
             835,
             964,
-            1592
+            1597
           ],
           "snippet": ".8]} & \\textbf{62.5\\% (40/64) [49.5, 74.3]} & 100\\% (6/6) & 0.0\\% (0/11) [0.0, 28.5] \\\\ $\\Delta$(static$\\to$FD) & \\textbf{+80.5pp} ["
         },
@@ -1117,15 +1117,15 @@
             912,
             964,
             1087,
-            1233,
-            1419,
-            1420,
-            1421,
-            1422,
-            1446,
-            1467,
-            1474,
-            1592
+            1238,
+            1424,
+            1425,
+            1426,
+            1427,
+            1451,
+            1472,
+            1479,
+            1597
           ],
           "snippet": "ets Random draws \\emph{the same four}, so $\\Delta{=}\\textbf{0.0}$pp---A5 isolates ``do not fund assets that cannot inform,'"
         }
@@ -1139,7 +1139,7 @@
           "lines": [
             835,
             964,
-            1592
+            1597
           ],
           "kind": "value"
         },
@@ -1158,15 +1158,15 @@
             912,
             964,
             1087,
-            1233,
-            1419,
-            1420,
-            1421,
-            1422,
-            1446,
-            1467,
-            1474,
-            1592
+            1238,
+            1424,
+            1425,
+            1426,
+            1427,
+            1451,
+            1472,
+            1479,
+            1597
           ],
           "kind": "value"
         }
@@ -1241,8 +1241,8 @@
           "count": 3,
           "lines": [
             834,
-            1309,
-            1563
+            1314,
+            1568
           ],
           "snippet": "agger$ (proxy) & 9.8\\% (4/41) [2.7, 23.1] & 21.9\\% (14/64) [12.5, 34.0] & N/A & --- \\\\ \\textbf{FD (failure-driven)} & \\textb"
         }
@@ -1255,8 +1255,8 @@
           "count": 3,
           "lines": [
             834,
-            1309,
-            1563
+            1314,
+            1568
           ],
           "kind": "value"
         }
@@ -1530,7 +1530,7 @@
             986,
             996,
             1057,
-            1561
+            1566
           ],
           "snippet": " ratio 38.4\\%; 15/70 types $>50\\%$ blind; union of 6 assets 61.6\\% vs best single 35.6\\% (\\S\\ref{app:blindspot}) \\\\ \\midru"
         },
@@ -1540,7 +1540,7 @@
           "lines": [
             964,
             1057,
-            1440
+            1445
           ],
           "snippet": "equired & $\\pm$5pp needs $n{=}236/378$; $\\pm$10pp needs $61/97$; $\\Delta{=}15$pp needs $n\\approx103$--173 (paired)---\\text"
         }
@@ -1557,7 +1557,7 @@
             986,
             996,
             1057,
-            1561
+            1566
           ],
           "kind": "value"
         },
@@ -1568,7 +1568,7 @@
           "lines": [
             964,
             1057,
-            1440
+            1445
           ],
           "kind": "value"
         }
@@ -1602,7 +1602,7 @@
             901,
             988,
             1087,
-            1592
+            1597
           ],
           "snippet": "samples}, \\emph{expanded} holdout recall is \\textbf{82.9\\% (34/41, 95\\% CI [67.9, 92.8])}, of which the \\emph{primary pre-rev"
         },
@@ -1649,7 +1649,7 @@
             901,
             988,
             1087,
-            1592
+            1597
           ],
           "kind": "value"
         },
@@ -1866,7 +1866,7 @@
           "lines": [
             62,
             728,
-            1309
+            1314
           ],
           "snippet": "read: sanitizer 85.3\\%, compiler-warn 50.0\\%, cross-compile 16.7\\%), versus a \\emph{static caliber arm} at \\textbf{2.4\\%}/\\t"
         },
@@ -1926,7 +1926,7 @@
           "lines": [
             62,
             728,
-            1309
+            1314
           ],
           "kind": "value"
         },
@@ -2036,7 +2036,7 @@
             535,
             624,
             816,
-            1250
+            1255
           ],
           "snippet": "/41), D3 external corpus \\textbf{62.5\\%} measurable (40/64; 52.6\\% all-sample), and D4 16 machine cards (unsigned). The A/B/"
         }
@@ -2064,7 +2064,7 @@
             535,
             624,
             816,
-            1250
+            1255
           ],
           "kind": "value"
         }
@@ -2107,9 +2107,9 @@
             922,
             947,
             1009,
-            1230,
-            1251,
-            1441
+            1235,
+            1256,
+            1446
           ],
           "snippet": "ndix (app:humanize); the main text is compressed to stay at 9 pages. %  v1.0 (673a): all numbers synced to the authoritat"
         },
@@ -2165,9 +2165,9 @@
             922,
             947,
             1009,
-            1230,
-            1251,
-            1441
+            1235,
+            1256,
+            1446
           ],
           "kind": "value"
         },
@@ -2811,10 +2811,10 @@
             718,
             995,
             999,
-            1490,
-            1506,
-            1523,
-            1568
+            1495,
+            1511,
+            1528,
+            1573
           ],
           "snippet": " on the official \\textbf{C++ Core Guidelines} gives \\textbf{44.0\\%} over 50 snippets (verbatim 28.6\\%, reconstructed UB 80"
         },
@@ -2833,13 +2833,13 @@
             995,
             999,
             1065,
-            1228,
-            1230,
-            1231,
-            1232,
-            1300,
-            1309,
-            1469
+            1233,
+            1235,
+            1236,
+            1237,
+            1305,
+            1314,
+            1474
           ],
           "snippet": "read: sanitizer 85.3\\%, compiler-warn 50.0\\%, cross-compile 16.7\\%), versus a \\emph{static caliber arm} at \\textbf{2.4\\%}/"
         },
@@ -2860,13 +2860,13 @@
             982,
             996,
             999,
-            1206,
-            1229,
-            1468,
+            1211,
+            1234,
             1473,
-            1493,
-            1502,
-            1613
+            1478,
+            1498,
+            1507,
+            1618
           ],
           "snippet": "capability $\\mathcal{C}$ (\\S\\ref{app:related}). \\paragraph{(7) Closest 2026 work (metric evolution and self-evolving veri"
         }
@@ -2891,10 +2891,10 @@
             718,
             995,
             999,
-            1490,
-            1506,
-            1523,
-            1568
+            1495,
+            1511,
+            1528,
+            1573
           ],
           "kind": "value"
         },
@@ -2914,13 +2914,13 @@
             995,
             999,
             1065,
-            1228,
-            1230,
-            1231,
-            1232,
-            1300,
-            1309,
-            1469
+            1233,
+            1235,
+            1236,
+            1237,
+            1305,
+            1314,
+            1474
           ],
           "kind": "value"
         },
@@ -2942,13 +2942,13 @@
             982,
             996,
             999,
-            1206,
-            1229,
-            1468,
+            1211,
+            1234,
             1473,
-            1493,
-            1502,
-            1613
+            1478,
+            1498,
+            1507,
+            1618
           ],
           "kind": "value"
         }
@@ -2980,13 +2980,13 @@
             910,
             938,
             963,
-            1372,
-            1389,
-            1434,
-            1447,
-            1468,
-            1617,
-            1665
+            1377,
+            1394,
+            1439,
+            1452,
+            1473,
+            1622,
+            1670
           ],
           "snippet": "htarrow$ holds everywhere''. Current state (audit): \\textbf{26} boundary cards, provenance complete \\textbf{26/26}, \\textb"
         },
@@ -2995,7 +2995,7 @@
           "count": 2,
           "lines": [
             352,
-            1372
+            1377
           ],
           "snippet": "t): \\textbf{26} boundary cards, provenance complete \\textbf{26/26}, \\textbf{semantic scope complete 0/26}---the mechanism is "
         },
@@ -3007,9 +3007,9 @@
             910,
             938,
             963,
-            1372,
-            1389,
-            1665
+            1377,
+            1394,
+            1670
           ],
           "snippet": "ce complete \\textbf{26/26}, \\textbf{semantic scope complete 0/26}---the mechanism is in place but scope backfill is essentia"
         }
@@ -3027,13 +3027,13 @@
             910,
             938,
             963,
-            1372,
-            1389,
-            1434,
-            1447,
-            1468,
-            1617,
-            1665
+            1377,
+            1394,
+            1439,
+            1452,
+            1473,
+            1622,
+            1670
           ],
           "kind": "value"
         },
@@ -3043,7 +3043,7 @@
           "count": 2,
           "lines": [
             352,
-            1372
+            1377
           ],
           "kind": "value"
         },
@@ -3056,9 +3056,9 @@
             910,
             938,
             963,
-            1372,
-            1389,
-            1665
+            1377,
+            1394,
+            1670
           ],
           "kind": "value"
         }
@@ -3106,7 +3106,7 @@
           "form": "90.0",
           "count": 1,
           "lines": [
-            1228
+            1233
           ],
           "snippet": " corpus $n{=}16$) the main endpoint read holdout FD \\textbf{90.0\\%} (18/20) vs.\\ Random \\textbf{35.0\\%} (7/20), $\\Delta{=}\\m"
         },
@@ -3114,7 +3114,7 @@
           "form": "18/20",
           "count": 1,
           "lines": [
-            1229
+            1234
           ],
           "snippet": "n{=}16$) the main endpoint read holdout FD \\textbf{90.0\\%} (18/20) vs.\\ Random \\textbf{35.0\\%} (7/20), $\\Delta{=}\\mathbf{+55."
         },
@@ -3127,8 +3127,8 @@
             917,
             1083,
             1116,
-            1229,
-            1283
+            1234,
+            1288
           ],
           "snippet": " degrade to \\texttt{unknown}, external recall falls \\textbf{35.0\\%$\\to$10.0\\%}, and the guard stays green. \\textbf{(3) ``Cha"
         },
@@ -3136,7 +3136,7 @@
           "form": "7/20",
           "count": 1,
           "lines": [
-            1229
+            1234
           ],
           "snippet": "out FD \\textbf{90.0\\%} (18/20) vs.\\ Random \\textbf{35.0\\%} (7/20), $\\Delta{=}\\mathbf{+55.0}$pp (CI [+33.2, +76.8], $p{=}9.8\\"
         },
@@ -3147,7 +3147,7 @@
             621,
             917,
             1116,
-            1283
+            1288
           ],
           "snippet": " \\texttt{unknown}, external recall falls \\textbf{35.0\\%$\\to$10.0\\%}, and the guard stays green. \\textbf{(3) ``Changed code w"
         },
@@ -3155,7 +3155,7 @@
           "form": "+55.0pp",
           "count": 1,
           "lines": [
-            1229
+            1234
           ],
           "snippet": "8/20) vs.\\ Random \\textbf{35.0\\%} (7/20), $\\Delta{=}\\mathbf{+55.0}$pp (CI [+33.2, +76.8], $p{=}9.8\\times10^{-4}$, $b{=}11$, $c{=}"
         },
@@ -3163,7 +3163,7 @@
           "form": "9.8\\times10^{-4}",
           "count": 1,
           "lines": [
-            1230
+            1235
           ],
           "snippet": "7/20), $\\Delta{=}\\mathbf{+55.0}$pp (CI [+33.2, +76.8], $p{=}9.8\\times10^{-4}$, $b{=}11$, $c{=}0$, $h{=}1.23$), and corpus FD \\textbf{81."
         },
@@ -3171,7 +3171,7 @@
           "form": "1.23",
           "count": 1,
           "lines": [
-            1230
+            1235
           ],
           "snippet": ".2, +76.8], $p{=}9.8\\times10^{-4}$, $b{=}11$, $c{=}0$, $h{=}1.23$), and corpus FD \\textbf{81.3\\%} (13/16) vs.\\ \\textbf{37.5\\"
         }
@@ -3183,7 +3183,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1228
+            1233
           ],
           "kind": "value"
         },
@@ -3192,7 +3192,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1229
+            1234
           ],
           "kind": "value"
         },
@@ -3206,8 +3206,8 @@
             917,
             1083,
             1116,
-            1229,
-            1283
+            1234,
+            1288
           ],
           "kind": "value"
         },
@@ -3216,7 +3216,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1229
+            1234
           ],
           "kind": "value"
         },
@@ -3228,7 +3228,7 @@
             621,
             917,
             1116,
-            1283
+            1288
           ],
           "kind": "value"
         },
@@ -3244,7 +3244,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1229
+            1234
           ],
           "kind": "value"
         },
@@ -3260,7 +3260,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1230
+            1235
           ],
           "kind": "value"
         },
@@ -3269,7 +3269,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1230
+            1235
           ],
           "kind": "value"
         }
@@ -3294,8 +3294,8 @@
           "form": "55.0",
           "count": 2,
           "lines": [
-            1229,
-            1491
+            1234,
+            1496
           ],
           "snippet": "/20) vs.\\ Random \\textbf{35.0\\%} (7/20), $\\Delta{=}\\mathbf{+55.0}$pp (CI [+33.2, +76.8], $p{=}9.8\\times10^{-4}$, $b{=}11$, $"
         }
@@ -3321,8 +3321,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1229,
-            1491
+            1234,
+            1496
           ],
           "kind": "value"
         },
@@ -3368,12 +3368,12 @@
             963,
             987,
             988,
-            1227,
-            1435,
-            1524,
-            1568,
-            1613,
-            1630
+            1232,
+            1440,
+            1529,
+            1573,
+            1618,
+            1635
           ],
           "snippet": "emph{primary pre-reveal blind} subset is \\textbf{81.0\\% (17/21, [58.1, 94.6])} and the remaining 20 are post-reveal additi"
         },
@@ -3396,11 +3396,11 @@
             983,
             988,
             1065,
-            1228,
-            1229,
-            1232,
-            1388,
-            1434
+            1233,
+            1234,
+            1237,
+            1393,
+            1439
           ],
           "snippet": " is \\textbf{81.0\\% (17/21, [58.1, 94.6])} and the remaining 20 are post-reveal additions; corpus measurable recall is \\tex"
         },
@@ -3436,7 +3436,7 @@
           "count": 2,
           "lines": [
             571,
-            1440
+            1445
           ],
           "snippet": " the held-out split ($n{=}566\\gg138$). At $k{=}4$ against a 2000-draw random distribution, FD \\textbf{54.6\\%} vs.\\ Random \\t"
         },
@@ -3462,8 +3462,8 @@
             908,
             1026,
             1089,
-            1231,
-            1309
+            1236,
+            1314
           ],
           "snippet": ".2pp} / \\textbf{+40.6pp}); exact McNemar $p\\le3.0\\times10^{-8}$ and $\\Delta$ lower bound $\\ge$28.6pp. \\textbf{Limitations"
         },
@@ -3514,12 +3514,12 @@
             963,
             987,
             988,
-            1227,
-            1435,
-            1524,
-            1568,
-            1613,
-            1630
+            1232,
+            1440,
+            1529,
+            1573,
+            1618,
+            1635
           ],
           "kind": "value"
         },
@@ -3543,11 +3543,11 @@
             983,
             988,
             1065,
-            1228,
-            1229,
-            1232,
-            1388,
-            1434
+            1233,
+            1234,
+            1237,
+            1393,
+            1439
           ],
           "kind": "value"
         },
@@ -3585,7 +3585,7 @@
           "count": 2,
           "lines": [
             571,
-            1440
+            1445
           ],
           "kind": "value"
         },
@@ -3612,8 +3612,8 @@
             908,
             1026,
             1089,
-            1231,
-            1309
+            1236,
+            1314
           ],
           "kind": "value"
         },
@@ -3672,11 +3672,11 @@
             622,
             675,
             984,
-            1266,
-            1298,
-            1300,
-            1391,
-            1662
+            1271,
+            1303,
+            1305,
+            1396,
+            1667
           ],
           "snippet": " stayed on the old caliber while the paper reported \\textbf{81.2\\% (13/16)}---a number that \\emph{never appeared in any arti"
         },
@@ -3685,8 +3685,8 @@
           "count": 3,
           "lines": [
             279,
-            1230,
-            1300
+            1235,
+            1305
           ],
           "snippet": "on the old caliber while the paper reported \\textbf{81.2\\% (13/16)}---a number that \\emph{never appeared in any artifact}---a"
         },
@@ -3694,7 +3694,7 @@
           "form": "37.5",
           "count": 1,
           "lines": [
-            1231
+            1236
           ],
           "snippet": "}1.23$), and corpus FD \\textbf{81.3\\%} (13/16) vs.\\ \\textbf{37.5\\%} (6/16), $\\Delta{=}\\mathbf{+43.8}$pp (CI [+13.9, +73.6], "
         },
@@ -3702,7 +3702,7 @@
           "form": "6/16",
           "count": 1,
           "lines": [
-            1231
+            1236
           ],
           "snippet": "and corpus FD \\textbf{81.3\\%} (13/16) vs.\\ \\textbf{37.5\\%} (6/16), $\\Delta{=}\\mathbf{+43.8}$pp (CI [+13.9, +73.6], $p{=}0.03"
         },
@@ -3710,7 +3710,7 @@
           "form": "37.5",
           "count": 1,
           "lines": [
-            1231
+            1236
           ],
           "snippet": "}1.23$), and corpus FD \\textbf{81.3\\%} (13/16) vs.\\ \\textbf{37.5\\%} (6/16), $\\Delta{=}\\mathbf{+43.8}$pp (CI [+13.9, +73.6], "
         },
@@ -3718,7 +3718,7 @@
           "form": "6/16",
           "count": 1,
           "lines": [
-            1231
+            1236
           ],
           "snippet": "and corpus FD \\textbf{81.3\\%} (13/16) vs.\\ \\textbf{37.5\\%} (6/16), $\\Delta{=}\\mathbf{+43.8}$pp (CI [+13.9, +73.6], $p{=}0.03"
         },
@@ -3726,7 +3726,7 @@
           "form": "+43.8pp",
           "count": 1,
           "lines": [
-            1231
+            1236
           ],
           "snippet": "3\\%} (13/16) vs.\\ \\textbf{37.5\\%} (6/16), $\\Delta{=}\\mathbf{+43.8}$pp (CI [+13.9, +73.6], $p{=}0.039$, $b{=}8$, $c{=}1$, $h{=}0.9"
         },
@@ -3734,7 +3734,7 @@
           "form": "0.039",
           "count": 1,
           "lines": [
-            1231
+            1236
           ],
           "snippet": "6/16), $\\Delta{=}\\mathbf{+43.8}$pp (CI [+13.9, +73.6], $p{=}0.039$, $b{=}8$, $c{=}1$, $h{=}0.93$). At $n{=}20/16\\ll138$ those"
         },
@@ -3742,7 +3742,7 @@
           "form": "0.93",
           "count": 1,
           "lines": [
-            1232
+            1237
           ],
           "snippet": "$pp (CI [+13.9, +73.6], $p{=}0.039$, $b{=}8$, $c{=}1$, $h{=}0.93$). At $n{=}20/16\\ll138$ those magnitudes were interval-read"
         }
@@ -3760,11 +3760,11 @@
             622,
             675,
             984,
-            1266,
-            1298,
-            1300,
-            1391,
-            1662
+            1271,
+            1303,
+            1305,
+            1396,
+            1667
           ],
           "kind": "value"
         },
@@ -3774,8 +3774,8 @@
           "count": 3,
           "lines": [
             279,
-            1230,
-            1300
+            1235,
+            1305
           ],
           "kind": "value"
         },
@@ -3784,7 +3784,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1231
+            1236
           ],
           "kind": "value"
         },
@@ -3793,7 +3793,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1231
+            1236
           ],
           "kind": "value"
         },
@@ -3802,7 +3802,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1231
+            1236
           ],
           "kind": "value"
         },
@@ -3811,7 +3811,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1231
+            1236
           ],
           "kind": "value"
         },
@@ -3820,7 +3820,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1231
+            1236
           ],
           "kind": "value"
         },
@@ -3836,7 +3836,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1231
+            1236
           ],
           "kind": "value"
         },
@@ -3845,7 +3845,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1232
+            1237
           ],
           "kind": "value"
         }
@@ -3925,12 +3925,12 @@
             970,
             981,
             988,
-            1227,
-            1309,
-            1472,
-            1532,
-            1593,
-            1599
+            1232,
+            1314,
+            1477,
+            1537,
+            1598,
+            1604
           ],
           "snippet": "{=}41/64$); the \\emph{true} B3 ran once on an older $n{=}21/48$ denominator, and after the expanded-sample re-estimate the"
         },
@@ -3949,13 +3949,13 @@
             995,
             999,
             1065,
-            1228,
-            1230,
-            1231,
-            1232,
-            1300,
-            1309,
-            1469
+            1233,
+            1235,
+            1236,
+            1237,
+            1305,
+            1314,
+            1474
           ],
           "snippet": "read: sanitizer 85.3\\%, compiler-warn 50.0\\%, cross-compile 16.7\\%), versus a \\emph{static caliber arm} at \\textbf{2.4\\%}/"
         },
@@ -3991,7 +3991,7 @@
           "count": 2,
           "lines": [
             571,
-            1440
+            1445
           ],
           "snippet": " the held-out split ($n{=}566\\gg138$). At $k{=}4$ against a 2000-draw random distribution, FD \\textbf{54.6\\%} vs.\\ Random \\t"
         },
@@ -4017,8 +4017,8 @@
             908,
             1026,
             1089,
-            1231,
-            1309
+            1236,
+            1314
           ],
           "snippet": ".2pp} / \\textbf{+40.6pp}); exact McNemar $p\\le3.0\\times10^{-8}$ and $\\Delta$ lower bound $\\ge$28.6pp. \\textbf{Limitations"
         },
@@ -4063,12 +4063,12 @@
             970,
             981,
             988,
-            1227,
-            1309,
-            1472,
-            1532,
-            1593,
-            1599
+            1232,
+            1314,
+            1477,
+            1537,
+            1598,
+            1604
           ],
           "kind": "value"
         },
@@ -4088,13 +4088,13 @@
             995,
             999,
             1065,
-            1228,
-            1230,
-            1231,
-            1232,
-            1300,
-            1309,
-            1469
+            1233,
+            1235,
+            1236,
+            1237,
+            1305,
+            1314,
+            1474
           ],
           "kind": "value"
         },
@@ -4132,7 +4132,7 @@
           "count": 2,
           "lines": [
             571,
-            1440
+            1445
           ],
           "kind": "value"
         },
@@ -4159,8 +4159,8 @@
             908,
             1026,
             1089,
-            1231,
-            1309
+            1236,
+            1314
           ],
           "kind": "value"
         },
@@ -4214,13 +4214,14 @@
       "matches": [
         {
           "form": "1137",
-          "count": 5,
+          "count": 6,
           "lines": [
             569,
-            1234,
-            1394,
-            1400,
-            1406
+            1135,
+            1239,
+            1399,
+            1405,
+            1411
           ],
           "snippet": "old}. It has now \\textbf{run at full scale} (676f): a real $1137\\times8$ per-asset matrix, every cell a real \\texttt{detect}"
         },
@@ -4229,7 +4230,7 @@
           "count": 2,
           "lines": [
             570,
-            1401
+            1406
           ],
           "snippet": "} call, failure-hits from a disjoint derivation split ($n{=}571$), evaluation on the held-out split ($n{=}566\\gg138$). At $"
         },
@@ -4246,16 +4247,16 @@
             907,
             912,
             964,
-            1401,
-            1427,
-            1433,
-            1434,
-            1435,
-            1436,
-            1446,
-            1512,
-            1538,
-            1655
+            1406,
+            1432,
+            1438,
+            1439,
+            1440,
+            1441,
+            1451,
+            1517,
+            1543,
+            1660
           ],
           "snippet": " budget-matched control now \\emph{runs at full scale} ($n{=}566$ evaluation): FD \\textbf{54.6\\%} vs.\\ Random \\textbf{30.6\\%"
         },
@@ -4263,7 +4264,7 @@
           "form": "1063",
           "count": 1,
           "lines": [
-            1404
+            1409
           ],
           "snippet": " evaluation (no filesystem order dependence). Composition: $1063$ \\texttt{planted=true} / $74$ \\texttt{planted=false}; famil"
         },
@@ -4277,13 +4278,13 @@
             814,
             835,
             901,
-            1404,
-            1495,
-            1504,
-            1524,
-            1526,
-            1569,
-            1570
+            1409,
+            1500,
+            1509,
+            1529,
+            1531,
+            1574,
+            1575
           ],
           "snippet": "; corpus measurable recall is \\textbf{62.5\\% (40/64, [49.5, 74.3])} (layered read: sanitizer 85.3\\%, compiler-warn 50.0\\%,"
         },
@@ -4306,11 +4307,11 @@
             964,
             987,
             1116,
-            1196,
-            1283,
-            1284,
-            1400,
-            1420
+            1201,
+            1288,
+            1289,
+            1405,
+            1425
           ],
           "snippet": ", boundary provenance, supply-chain integrity---has \\textbf{10} gates; we register red rather than block. Tiering separate"
         }
@@ -4320,13 +4321,14 @@
         {
           "form": "1137",
           "found": true,
-          "count": 5,
+          "count": 6,
           "lines": [
             569,
-            1234,
-            1394,
-            1400,
-            1406
+            1135,
+            1239,
+            1399,
+            1405,
+            1411
           ],
           "kind": "value"
         },
@@ -4336,7 +4338,7 @@
           "count": 2,
           "lines": [
             570,
-            1401
+            1406
           ],
           "kind": "value"
         },
@@ -4354,16 +4356,16 @@
             907,
             912,
             964,
-            1401,
-            1427,
-            1433,
-            1434,
-            1435,
-            1436,
-            1446,
-            1512,
-            1538,
-            1655
+            1406,
+            1432,
+            1438,
+            1439,
+            1440,
+            1441,
+            1451,
+            1517,
+            1543,
+            1660
           ],
           "kind": "value"
         },
@@ -4372,7 +4374,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1404
+            1409
           ],
           "kind": "value"
         },
@@ -4387,13 +4389,13 @@
             814,
             835,
             901,
-            1404,
-            1495,
-            1504,
-            1524,
-            1526,
-            1569,
-            1570
+            1409,
+            1500,
+            1509,
+            1529,
+            1531,
+            1574,
+            1575
           ],
           "kind": "value"
         },
@@ -4417,11 +4419,11 @@
             964,
             987,
             1116,
-            1196,
-            1283,
-            1284,
-            1400,
-            1420
+            1201,
+            1288,
+            1289,
+            1405,
+            1425
           ],
           "kind": "value"
         }
@@ -4448,9 +4450,9 @@
           "lines": [
             72,
             572,
-            1433,
-            1446,
-            1470
+            1438,
+            1451,
+            1475
           ],
           "snippet": "emph{runs at full scale} ($n{=}566$ evaluation): FD \\textbf{54.6\\%} vs.\\ Random \\textbf{30.6\\%} (\\textbf{+24.0}pp, $p{=}2.3\\"
         },
@@ -4458,8 +4460,8 @@
           "form": "309/566",
           "count": 2,
           "lines": [
-            1433,
-            1446
+            1438,
+            1451
           ],
           "snippet": "riven) & asan, ubsan, tsan, cross-compile & \\textbf{54.6\\% (309/566) [50.4, 58.8]} & --- \\\\ Random (budget-matched) & wunsequen"
         },
@@ -4474,10 +4476,10 @@
             747,
             907,
             912,
-            1434,
-            1447,
-            1469,
-            1470
+            1439,
+            1452,
+            1474,
+            1475
           ],
           "snippet": "{=}566$ evaluation): FD \\textbf{54.6\\%} vs.\\ Random \\textbf{30.6\\%} (\\textbf{+24.0}pp, $p{=}2.3\\times10^{-41}$) and vs.\\ Sta"
         },
@@ -4485,7 +4487,7 @@
           "form": "173/566",
           "count": 1,
           "lines": [
-            1434
+            1439
           ],
           "snippet": "& wunsequenced, cross-compile, tsan, compile-time & 30.6\\% (173/566) [26.8, 34.5] & $\\Delta{=}\\mathbf{+24.0}$pp [+20.5, +27.5],"
         },
@@ -4495,7 +4497,7 @@
           "lines": [
             73,
             573,
-            1435
+            1440
           ],
           "snippet": "{+24.0}pp, $p{=}2.3\\times10^{-41}$) and vs.\\ Static \\textbf{24.7\\%} (\\textbf{+29.9}pp, robust in the parallel analysis). \\te"
         },
@@ -4503,7 +4505,7 @@
           "form": "140/566",
           "count": 1,
           "lines": [
-            1435
+            1440
           ],
           "snippet": "ompiler-warn, cross-compile, linker, wunsequenced & 24.7\\% (140/566) [21.2, 28.5] & $\\Delta{=}\\mathbf{+29.9}$pp [+25.2, +34.5],"
         },
@@ -4511,10 +4513,10 @@
           "form": "60.1",
           "count": 5,
           "lines": [
-            1436,
-            1472,
-            1473,
-            1474
+            1441,
+            1477,
+            1478,
+            1479
           ],
           "snippet": "00,c{=}31$, $h{=}0.62$ \\\\ full pool ($k{=}8$) & all eight & 60.1\\% (340/566) [55.9, 64.1] & ceiling reference \\\\ \\bottomrule"
         },
@@ -4522,7 +4524,7 @@
           "form": "340/566",
           "count": 1,
           "lines": [
-            1436
+            1441
           ],
           "snippet": "1$, $h{=}0.62$ \\\\ full pool ($k{=}8$) & all eight & 60.1\\% (340/566) [55.9, 64.1] & ceiling reference \\\\ \\bottomrule \\end{tabul"
         }
@@ -4536,9 +4538,9 @@
           "lines": [
             72,
             572,
-            1433,
-            1446,
-            1470
+            1438,
+            1451,
+            1475
           ],
           "kind": "value"
         },
@@ -4547,8 +4549,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1433,
-            1446
+            1438,
+            1451
           ],
           "kind": "value"
         },
@@ -4564,10 +4566,10 @@
             747,
             907,
             912,
-            1434,
-            1447,
-            1469,
-            1470
+            1439,
+            1452,
+            1474,
+            1475
           ],
           "kind": "value"
         },
@@ -4576,7 +4578,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1434
+            1439
           ],
           "kind": "value"
         },
@@ -4587,7 +4589,7 @@
           "lines": [
             73,
             573,
-            1435
+            1440
           ],
           "kind": "value"
         },
@@ -4596,7 +4598,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1435
+            1440
           ],
           "kind": "value"
         },
@@ -4605,10 +4607,10 @@
           "found": true,
           "count": 5,
           "lines": [
-            1436,
-            1472,
-            1473,
-            1474
+            1441,
+            1477,
+            1478,
+            1479
           ],
           "kind": "value"
         },
@@ -4617,7 +4619,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1436
+            1441
           ],
           "kind": "value"
         }
@@ -4645,9 +4647,9 @@
             72,
             572,
             747,
-            1434,
-            1513,
-            1538
+            1439,
+            1518,
+            1543
           ],
           "snippet": "n): FD \\textbf{54.6\\%} vs.\\ Random \\textbf{30.6\\%} (\\textbf{+24.0}pp, $p{=}2.3\\times10^{-41}$) and vs.\\ Static \\textbf{24.7\\%} ("
         },
@@ -4658,8 +4660,8 @@
             72,
             573,
             747,
-            1434,
-            1470
+            1439,
+            1475
           ],
           "snippet": "54.6\\%} vs.\\ Random \\textbf{30.6\\%} (\\textbf{+24.0}pp, $p{=}2.3\\times10^{-41}$) and vs.\\ Static \\textbf{24.7\\%} (\\textbf{+29.9}pp, robust"
         },
@@ -4667,7 +4669,7 @@
           "form": "0.49",
           "count": 1,
           "lines": [
-            1434
+            1439
           ],
           "snippet": "0.5, +27.5], $p{=}2.3\\times10^{-41}$, $b{=}136,c{=}0$, $h{=}0.49$ \\\\ Static & compiler-warn, cross-compile, linker, wunseque"
         }
@@ -4682,9 +4684,9 @@
             72,
             572,
             747,
-            1434,
-            1513,
-            1538
+            1439,
+            1518,
+            1543
           ],
           "kind": "value"
         },
@@ -4703,8 +4705,8 @@
             72,
             573,
             747,
-            1434,
-            1470
+            1439,
+            1475
           ],
           "kind": "value"
         },
@@ -4713,7 +4715,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1434
+            1439
           ],
           "kind": "value"
         },
@@ -4750,7 +4752,7 @@
             684,
             747,
             907,
-            1435
+            1440
           ],
           "snippet": ".3\\times10^{-41}$) and vs.\\ Static \\textbf{24.7\\%} (\\textbf{+29.9}pp, robust in the parallel analysis). \\textbf{But the Random c"
         },
@@ -4760,7 +4762,7 @@
           "lines": [
             747,
             907,
-            1435
+            1440
           ],
           "snippet": "p{=}2.3{\\times}10^{-41}$), vs Static \\textbf{+29.9}pp ($p{=}1.9{\\times}10^{-31}$); Static contrast survives the parallel analysis (\\textbf{"
         },
@@ -4768,7 +4770,7 @@
           "form": "0.62",
           "count": 1,
           "lines": [
-            1435
+            1440
           ],
           "snippet": ".2, +34.5], $p{=}1.9\\times10^{-31}$, $b{=}200,c{=}31$, $h{=}0.62$ \\\\ full pool ($k{=}8$) & all eight & 60.1\\% (340/566) [55."
         }
@@ -4785,7 +4787,7 @@
             684,
             747,
             907,
-            1435
+            1440
           ],
           "kind": "value"
         },
@@ -4803,7 +4805,7 @@
           "lines": [
             747,
             907,
-            1435
+            1440
           ],
           "kind": "value"
         },
@@ -4812,7 +4814,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1435
+            1440
           ],
           "kind": "value"
         }
@@ -4837,7 +4839,7 @@
           "form": "97.6",
           "count": 1,
           "lines": [
-            1440
+            1445
           ],
           "snippet": "mpled random draws, FD is \\emph{strictly} better in \\textbf{97.6\\%} of them (random mean 40.2\\%, SD 9.3pp); the single seed "
         },
@@ -4845,7 +4847,7 @@
           "form": "40.2",
           "count": 1,
           "lines": [
-            1441
+            1446
           ],
           "snippet": "ph{strictly} better in \\textbf{97.6\\%} of them (random mean 40.2\\%, SD 9.3pp); the single seed is used only for the paired t"
         },
@@ -4853,7 +4855,7 @@
           "form": "9.3",
           "count": 1,
           "lines": [
-            1441
+            1446
           ],
           "snippet": "} better in \\textbf{97.6\\%} of them (random mean 40.2\\%, SD 9.3pp); the single seed is used only for the paired test.  \\par"
         },
@@ -4862,7 +4864,7 @@
           "count": 2,
           "lines": [
             571,
-            1440
+            1445
           ],
           "snippet": " the held-out split ($n{=}566\\gg138$). At $k{=}4$ against a 2000-draw random distribution, FD \\textbf{54.6\\%} vs.\\ Random \\t"
         }
@@ -4874,7 +4876,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1440
+            1445
           ],
           "kind": "value"
         },
@@ -4883,7 +4885,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1441
+            1446
           ],
           "kind": "value"
         },
@@ -4892,7 +4894,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1441
+            1446
           ],
           "kind": "value"
         },
@@ -4902,7 +4904,7 @@
           "count": 2,
           "lines": [
             571,
-            1440
+            1445
           ],
           "kind": "value"
         }
@@ -4937,15 +4939,15 @@
             912,
             964,
             1087,
-            1233,
-            1419,
-            1420,
-            1421,
-            1422,
-            1446,
-            1467,
-            1474,
-            1592
+            1238,
+            1424,
+            1425,
+            1426,
+            1427,
+            1451,
+            1472,
+            1479,
+            1597
           ],
           "snippet": "ets Random draws \\emph{the same four}, so $\\Delta{=}\\textbf{0.0}$pp---A5 isolates ``do not fund assets that cannot inform,'"
         },
@@ -4959,12 +4961,12 @@
             913,
             1027,
             1085,
-            1446,
-            1467,
-            1474,
-            1486,
-            1487,
-            1496
+            1451,
+            1472,
+            1479,
+            1491,
+            1492,
+            1501
           ],
           "snippet": "criterion} labeling making the score an upper bound ($F_1{=}1.0$); unblinded expansion. Three threats omitted by v1.0: \\tex"
         },
@@ -4977,7 +4979,7 @@
             747,
             907,
             912,
-            1447
+            1452
           ],
           "snippet": "two degenerate assets, FD-vs-Static \\emph{grows} to \\textbf{+30.6}pp while FD-vs-Random collapses to \\textbf{0.0}pp ($p{=}1.0$)-"
         },
@@ -4985,7 +4987,7 @@
           "form": "8.1\\times10^{-34}",
           "count": 1,
           "lines": [
-            1447
+            1452
           ],
           "snippet": "t \\emph{grows} to \\textbf{+30.6}pp (CI [+26.0, +35.1], $p{=}8.1\\times10^{-34}$).  \\paragraph{What the contrast actually identifies (a con"
         },
@@ -4996,12 +4998,12 @@
             72,
             572,
             747,
-            1434,
-            1457,
-            1470,
-            1471,
-            1513,
-            1538
+            1439,
+            1462,
+            1475,
+            1476,
+            1518,
+            1543
           ],
           "snippet": "): FD \\textbf{54.6\\%} vs.\\ Random \\textbf{30.6\\%} (\\textbf{+24.0}pp, $p{=}2.3\\times10^{-41}$) and vs.\\ Static \\textbf{24.7\\%"
         }
@@ -5023,15 +5025,15 @@
             912,
             964,
             1087,
-            1233,
-            1419,
-            1420,
-            1421,
-            1422,
-            1446,
-            1467,
-            1474,
-            1592
+            1238,
+            1424,
+            1425,
+            1426,
+            1427,
+            1451,
+            1472,
+            1479,
+            1597
           ],
           "kind": "value"
         },
@@ -5046,12 +5048,12 @@
             913,
             1027,
             1085,
-            1446,
-            1467,
-            1474,
-            1486,
-            1487,
-            1496
+            1451,
+            1472,
+            1479,
+            1491,
+            1492,
+            1501
           ],
           "kind": "value"
         },
@@ -5065,7 +5067,7 @@
             747,
             907,
             912,
-            1447
+            1452
           ],
           "kind": "value"
         },
@@ -5081,7 +5083,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1447
+            1452
           ],
           "kind": "value"
         },
@@ -5093,12 +5095,12 @@
             72,
             572,
             747,
-            1434,
-            1457,
-            1470,
-            1471,
-            1513,
-            1538
+            1439,
+            1462,
+            1475,
+            1476,
+            1518,
+            1543
           ],
           "kind": "value"
         },
@@ -5130,7 +5132,7 @@
           "form": "+33.0",
           "count": 1,
           "lines": [
-            1467
+            1472
           ],
           "snippet": "$\\Delta$pp & 95\\% CI & $p$ \\\\ \\midrule 1 & 33.0\\% & 0.0\\% & +33.0 & [+29.2, +36.9] & $1.0\\times10^{-56}$ \\\\ 2 & 45.1\\% & 14.3"
         },
@@ -5138,7 +5140,7 @@
           "form": "1.0\\times10^{-56}",
           "count": 1,
           "lines": [
-            1467
+            1472
           ],
           "snippet": " \\\\ \\midrule 1 & 33.0\\% & 0.0\\% & +33.0 & [+29.2, +36.9] & $1.0\\times10^{-56}$ \\\\ 2 & 45.1\\% & 14.3\\% & +30.7 & [+26.2, +35.3] & $7.8\\tim"
         },
@@ -5146,7 +5148,7 @@
           "form": "33.0",
           "count": 2,
           "lines": [
-            1467
+            1472
           ],
           "snippet": " & FD & Random & $\\Delta$pp & 95\\% CI & $p$ \\\\ \\midrule 1 & 33.0\\% & 0.0\\% & +33.0 & [+29.2, +36.9] & $1.0\\times10^{-56}$ \\\\"
         },
@@ -5164,15 +5166,15 @@
             912,
             964,
             1087,
-            1233,
-            1419,
-            1420,
-            1421,
-            1422,
-            1446,
-            1467,
-            1474,
-            1592
+            1238,
+            1424,
+            1425,
+            1426,
+            1427,
+            1451,
+            1472,
+            1479,
+            1597
           ],
           "snippet": "ets Random draws \\emph{the same four}, so $\\Delta{=}\\textbf{0.0}$pp---A5 isolates ``do not fund assets that cannot inform,'"
         },
@@ -5180,7 +5182,7 @@
           "form": "+30.7",
           "count": 1,
           "lines": [
-            1468
+            1473
           ],
           "snippet": "29.2, +36.9] & $1.0\\times10^{-56}$ \\\\ 2 & 45.1\\% & 14.3\\% & +30.7 & [+26.2, +35.3] & $7.8\\times10^{-35}$ \\\\ 3 & 51.1\\% & 30.6"
         },
@@ -5188,7 +5190,7 @@
           "form": "7.8\\times10^{-35}",
           "count": 1,
           "lines": [
-            1468
+            1473
           ],
           "snippet": "0^{-56}$ \\\\ 2 & 45.1\\% & 14.3\\% & +30.7 & [+26.2, +35.3] & $7.8\\times10^{-35}$ \\\\ 3 & 51.1\\% & 30.6\\% & +20.5 & [+16.5, +24.5] & $2.2\\tim"
         },
@@ -5196,7 +5198,7 @@
           "form": "45.1",
           "count": 1,
           "lines": [
-            1468
+            1473
           ],
           "snippet": "0.0\\% & +33.0 & [+29.2, +36.9] & $1.0\\times10^{-56}$ \\\\ 2 & 45.1\\% & 14.3\\% & +30.7 & [+26.2, +35.3] & $7.8\\times10^{-35}$ \\"
         },
@@ -5204,7 +5206,7 @@
           "form": "14.3",
           "count": 1,
           "lines": [
-            1468
+            1473
           ],
           "snippet": "33.0 & [+29.2, +36.9] & $1.0\\times10^{-56}$ \\\\ 2 & 45.1\\% & 14.3\\% & +30.7 & [+26.2, +35.3] & $7.8\\times10^{-35}$ \\\\ 3 & 51."
         },
@@ -5214,9 +5216,9 @@
           "lines": [
             573,
             747,
-            1434,
-            1469,
-            1470
+            1439,
+            1474,
+            1475
           ],
           "snippet": ".\\ Random \\textbf{30.6\\%} ($\\Delta{=}\\mathbf{+24.0}$pp, CI [+20.5, +27.5], $p{=}2.3\\times10^{-41}$) and vs.\\ Static \\textbf{2"
         },
@@ -5224,7 +5226,7 @@
           "form": "51.1",
           "count": 1,
           "lines": [
-            1469
+            1474
           ],
           "snippet": "4.3\\% & +30.7 & [+26.2, +35.3] & $7.8\\times10^{-35}$ \\\\ 3 & 51.1\\% & 30.6\\% & +20.5 & [+16.5, +24.5] & $2.2\\times10^{-22}$ \\"
         },
@@ -5239,10 +5241,10 @@
             747,
             907,
             912,
-            1434,
-            1447,
-            1469,
-            1470
+            1439,
+            1452,
+            1474,
+            1475
           ],
           "snippet": "{=}566$ evaluation): FD \\textbf{54.6\\%} vs.\\ Random \\textbf{30.6\\%} (\\textbf{+24.0}pp, $p{=}2.3\\times10^{-41}$) and vs.\\ Sta"
         },
@@ -5253,9 +5255,9 @@
             72,
             572,
             747,
-            1434,
-            1513,
-            1538
+            1439,
+            1518,
+            1543
           ],
           "snippet": "n): FD \\textbf{54.6\\%} vs.\\ Random \\textbf{30.6\\%} (\\textbf{+24.0}pp, $p{=}2.3\\times10^{-41}$) and vs.\\ Static \\textbf{24.7\\%} ("
         },
@@ -5266,12 +5268,12 @@
             72,
             572,
             747,
-            1434,
-            1457,
-            1470,
-            1471,
-            1513,
-            1538
+            1439,
+            1462,
+            1475,
+            1476,
+            1518,
+            1543
           ],
           "snippet": "n): FD \\textbf{54.6\\%} vs.\\ Random \\textbf{30.6\\%} (\\textbf{+24.0}pp, $p{=}2.3\\times10^{-41}$) and vs.\\ Static \\textbf{24.7\\%"
         },
@@ -5282,8 +5284,8 @@
             72,
             573,
             747,
-            1434,
-            1470
+            1439,
+            1475
           ],
           "snippet": "54.6\\%} vs.\\ Random \\textbf{30.6\\%} (\\textbf{+24.0}pp, $p{=}2.3\\times10^{-41}$) and vs.\\ Static \\textbf{24.7\\%} (\\textbf{+29.9}pp, robust"
         },
@@ -5293,9 +5295,9 @@
           "lines": [
             72,
             572,
-            1433,
-            1446,
-            1470
+            1438,
+            1451,
+            1475
           ],
           "snippet": "emph{runs at full scale} ($n{=}566$ evaluation): FD \\textbf{54.6\\%} vs.\\ Random \\textbf{30.6\\%} (\\textbf{+24.0}pp, $p{=}2.3\\"
         },
@@ -5310,10 +5312,10 @@
             747,
             907,
             912,
-            1434,
-            1447,
-            1469,
-            1470
+            1439,
+            1452,
+            1474,
+            1475
           ],
           "snippet": "{=}566$ evaluation): FD \\textbf{54.6\\%} vs.\\ Random \\textbf{30.6\\%} (\\textbf{+24.0}pp, $p{=}2.3\\times10^{-41}$) and vs.\\ Sta"
         },
@@ -5321,7 +5323,7 @@
           "form": "+20.7",
           "count": 1,
           "lines": [
-            1471
+            1476
           ],
           "snippet": "20.5, +27.5] & $2.3\\times10^{-41}$ \\\\ 5 & 59.4\\% & 38.7\\% & +20.7 & [+17.3, +24.0] & $1.2\\times10^{-35}$ \\\\ 6 & 60.1\\% & 48.8"
         },
@@ -5329,7 +5331,7 @@
           "form": "1.2\\times10^{-35}",
           "count": 1,
           "lines": [
-            1471
+            1476
           ],
           "snippet": "0^{-41}$ \\\\ 5 & 59.4\\% & 38.7\\% & +20.7 & [+17.3, +24.0] & $1.2\\times10^{-35}$ \\\\ 6 & 60.1\\% & 48.8\\% & +11.3 & [+8.7, +13.9] & $1.1\\time"
         },
@@ -5337,7 +5339,7 @@
           "form": "59.4",
           "count": 1,
           "lines": [
-            1471
+            1476
           ],
           "snippet": "textbf{+24.0} & [+20.5, +27.5] & $2.3\\times10^{-41}$ \\\\ 5 & 59.4\\% & 38.7\\% & +20.7 & [+17.3, +24.0] & $1.2\\times10^{-35}$ \\"
         },
@@ -5345,7 +5347,7 @@
           "form": "38.7",
           "count": 1,
           "lines": [
-            1471
+            1476
           ],
           "snippet": "4.0} & [+20.5, +27.5] & $2.3\\times10^{-41}$ \\\\ 5 & 59.4\\% & 38.7\\% & +20.7 & [+17.3, +24.0] & $1.2\\times10^{-35}$ \\\\ 6 & 60."
         },
@@ -5353,7 +5355,7 @@
           "form": "+11.3",
           "count": 1,
           "lines": [
-            1472
+            1477
           ],
           "snippet": "17.3, +24.0] & $1.2\\times10^{-35}$ \\\\ 6 & 60.1\\% & 48.8\\% & +11.3 & [+8.7, +13.9] & $1.1\\times10^{-19}$ \\\\ 7 & 60.1\\% & 49.5\\"
         },
@@ -5361,7 +5363,7 @@
           "form": "1.1\\times10^{-19}",
           "count": 1,
           "lines": [
-            1472
+            1477
           ],
           "snippet": "10^{-35}$ \\\\ 6 & 60.1\\% & 48.8\\% & +11.3 & [+8.7, +13.9] & $1.1\\times10^{-19}$ \\\\ 7 & 60.1\\% & 49.5\\% & +10.6 & [+8.1, +13.1] & $1.7\\time"
         },
@@ -5369,10 +5371,10 @@
           "form": "60.1",
           "count": 5,
           "lines": [
-            1436,
-            1472,
-            1473,
-            1474
+            1441,
+            1477,
+            1478,
+            1479
           ],
           "snippet": "00,c{=}31$, $h{=}0.62$ \\\\ full pool ($k{=}8$) & all eight & 60.1\\% (340/566) [55.9, 64.1] & ceiling reference \\\\ \\bottomrule"
         },
@@ -5381,9 +5383,9 @@
           "count": 4,
           "lines": [
             607,
-            1472,
-            1532,
-            1593
+            1477,
+            1537,
+            1598
           ],
           "snippet": "y), FD \\textbf{82.9\\% (34/41)} beats clang-analyzer \\textbf{48.8\\% (20/41)} and cppcheck \\textbf{41.5\\% (17/41)} on holdout "
         },
@@ -5391,7 +5393,7 @@
           "form": "+10.6",
           "count": 1,
           "lines": [
-            1473
+            1478
           ],
           "snippet": "+8.7, +13.9] & $1.1\\times10^{-19}$ \\\\ 7 & 60.1\\% & 49.5\\% & +10.6 & [+8.1, +13.1] & $1.7\\times10^{-18}$ \\\\ 8 & 60.1\\% & 60.1\\"
         },
@@ -5399,7 +5401,7 @@
           "form": "1.7\\times10^{-18}",
           "count": 1,
           "lines": [
-            1473
+            1478
           ],
           "snippet": "10^{-19}$ \\\\ 7 & 60.1\\% & 49.5\\% & +10.6 & [+8.1, +13.1] & $1.7\\times10^{-18}$ \\\\ 8 & 60.1\\% & 60.1\\% & 0.0 & [0.0, 0.0] & 1.0 \\\\ \\bottom"
         },
@@ -5407,10 +5409,10 @@
           "form": "60.1",
           "count": 5,
           "lines": [
-            1436,
-            1472,
-            1473,
-            1474
+            1441,
+            1477,
+            1478,
+            1479
           ],
           "snippet": "00,c{=}31$, $h{=}0.62$ \\\\ full pool ($k{=}8$) & all eight & 60.1\\% (340/566) [55.9, 64.1] & ceiling reference \\\\ \\bottomrule"
         },
@@ -5424,7 +5426,7 @@
             814,
             835,
             901,
-            1473
+            1478
           ],
           "snippet": "itions; corpus measurable recall is \\textbf{62.5\\% (40/64, [49.5, 74.3])} (layered read: sanitizer 85.3\\%, compiler-warn 50."
         },
@@ -5432,7 +5434,7 @@
           "form": "0.0, 0.0",
           "count": 1,
           "lines": [
-            1474
+            1479
           ],
           "snippet": "13.1] & $1.7\\times10^{-18}$ \\\\ 8 & 60.1\\% & 60.1\\% & 0.0 & [0.0, 0.0] & 1.0 \\\\ \\bottomrule \\end{tabular} \\end{center}  \\paragrap"
         },
@@ -5440,10 +5442,10 @@
           "form": "60.1",
           "count": 5,
           "lines": [
-            1436,
-            1472,
-            1473,
-            1474
+            1441,
+            1477,
+            1478,
+            1479
           ],
           "snippet": "00,c{=}31$, $h{=}0.62$ \\\\ full pool ($k{=}8$) & all eight & 60.1\\% (340/566) [55.9, 64.1] & ceiling reference \\\\ \\bottomrule"
         },
@@ -5451,10 +5453,10 @@
           "form": "60.1",
           "count": 5,
           "lines": [
-            1436,
-            1472,
-            1473,
-            1474
+            1441,
+            1477,
+            1478,
+            1479
           ],
           "snippet": "00,c{=}31$, $h{=}0.62$ \\\\ full pool ($k{=}8$) & all eight & 60.1\\% (340/566) [55.9, 64.1] & ceiling reference \\\\ \\bottomrule"
         }
@@ -5473,7 +5475,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1467
+            1472
           ],
           "kind": "value"
         },
@@ -5489,7 +5491,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1467
+            1472
           ],
           "kind": "value"
         },
@@ -5498,7 +5500,7 @@
           "found": true,
           "count": 2,
           "lines": [
-            1467
+            1472
           ],
           "kind": "value"
         },
@@ -5517,15 +5519,15 @@
             912,
             964,
             1087,
-            1233,
-            1419,
-            1420,
-            1421,
-            1422,
-            1446,
-            1467,
-            1474,
-            1592
+            1238,
+            1424,
+            1425,
+            1426,
+            1427,
+            1451,
+            1472,
+            1479,
+            1597
           ],
           "kind": "value"
         },
@@ -5541,7 +5543,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1468
+            1473
           ],
           "kind": "value"
         },
@@ -5557,7 +5559,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1468
+            1473
           ],
           "kind": "value"
         },
@@ -5566,7 +5568,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1468
+            1473
           ],
           "kind": "value"
         },
@@ -5575,7 +5577,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1468
+            1473
           ],
           "kind": "value"
         },
@@ -5593,9 +5595,9 @@
           "lines": [
             573,
             747,
-            1434,
-            1469,
-            1470
+            1439,
+            1474,
+            1475
           ],
           "kind": "value"
         },
@@ -5618,7 +5620,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1469
+            1474
           ],
           "kind": "value"
         },
@@ -5634,10 +5636,10 @@
             747,
             907,
             912,
-            1434,
-            1447,
-            1469,
-            1470
+            1439,
+            1452,
+            1474,
+            1475
           ],
           "kind": "value"
         },
@@ -5649,9 +5651,9 @@
             72,
             572,
             747,
-            1434,
-            1513,
-            1538
+            1439,
+            1518,
+            1543
           ],
           "kind": "value"
         },
@@ -5663,12 +5665,12 @@
             72,
             572,
             747,
-            1434,
-            1457,
-            1470,
-            1471,
-            1513,
-            1538
+            1439,
+            1462,
+            1475,
+            1476,
+            1518,
+            1543
           ],
           "kind": "value"
         },
@@ -5687,8 +5689,8 @@
             72,
             573,
             747,
-            1434,
-            1470
+            1439,
+            1475
           ],
           "kind": "value"
         },
@@ -5699,9 +5701,9 @@
           "lines": [
             72,
             572,
-            1433,
-            1446,
-            1470
+            1438,
+            1451,
+            1475
           ],
           "kind": "value"
         },
@@ -5717,10 +5719,10 @@
             747,
             907,
             912,
-            1434,
-            1447,
-            1469,
-            1470
+            1439,
+            1452,
+            1474,
+            1475
           ],
           "kind": "value"
         },
@@ -5736,7 +5738,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1471
+            1476
           ],
           "kind": "value"
         },
@@ -5752,7 +5754,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1471
+            1476
           ],
           "kind": "value"
         },
@@ -5761,7 +5763,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1471
+            1476
           ],
           "kind": "value"
         },
@@ -5770,7 +5772,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1471
+            1476
           ],
           "kind": "value"
         },
@@ -5786,7 +5788,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1472
+            1477
           ],
           "kind": "value"
         },
@@ -5802,7 +5804,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1472
+            1477
           ],
           "kind": "value"
         },
@@ -5811,10 +5813,10 @@
           "found": true,
           "count": 5,
           "lines": [
-            1436,
-            1472,
-            1473,
-            1474
+            1441,
+            1477,
+            1478,
+            1479
           ],
           "kind": "value"
         },
@@ -5824,9 +5826,9 @@
           "count": 4,
           "lines": [
             607,
-            1472,
-            1532,
-            1593
+            1477,
+            1537,
+            1598
           ],
           "kind": "value"
         },
@@ -5842,7 +5844,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1473
+            1478
           ],
           "kind": "value"
         },
@@ -5858,7 +5860,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1473
+            1478
           ],
           "kind": "value"
         },
@@ -5867,10 +5869,10 @@
           "found": true,
           "count": 5,
           "lines": [
-            1436,
-            1472,
-            1473,
-            1474
+            1441,
+            1477,
+            1478,
+            1479
           ],
           "kind": "value"
         },
@@ -5885,7 +5887,7 @@
             814,
             835,
             901,
-            1473
+            1478
           ],
           "kind": "value"
         },
@@ -5908,7 +5910,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1474
+            1479
           ],
           "kind": "value"
         },
@@ -5924,10 +5926,10 @@
           "found": true,
           "count": 5,
           "lines": [
-            1436,
-            1472,
-            1473,
-            1474
+            1441,
+            1477,
+            1478,
+            1479
           ],
           "kind": "value"
         },
@@ -5936,10 +5938,10 @@
           "found": true,
           "count": 5,
           "lines": [
-            1436,
-            1472,
-            1473,
-            1474
+            1441,
+            1477,
+            1478,
+            1479
           ],
           "kind": "value"
         }
@@ -5964,7 +5966,7 @@
           "form": "+58.1",
           "count": 1,
           "lines": [
-            1486
+            1491
           ],
           "snippet": "_{\\text{Bonferroni}}$ \\\\ \\midrule undefined behavior & 43 & +58.1 & $1.0\\times10^{-6}$ & $1.0\\times10^{-6}$ \\\\ memory safety "
         },
@@ -5972,8 +5974,8 @@
           "form": "1.0\\times10^{-6}",
           "count": 3,
           "lines": [
-            1486,
-            1487
+            1491,
+            1492
           ],
           "snippet": "onferroni}}$ \\\\ \\midrule undefined behavior & 43 & +58.1 & $1.0\\times10^{-6}$ & $1.0\\times10^{-6}$ \\\\ memory safety & 49 & +46.9 & $1.0\\"
         },
@@ -5981,8 +5983,8 @@
           "form": "1.0\\times10^{-6}",
           "count": 3,
           "lines": [
-            1486,
-            1487
+            1491,
+            1492
           ],
           "snippet": "onferroni}}$ \\\\ \\midrule undefined behavior & 43 & +58.1 & $1.0\\times10^{-6}$ & $1.0\\times10^{-6}$ \\\\ memory safety & 49 & +46.9 & $1.0\\"
         },
@@ -5991,8 +5993,8 @@
           "count": 3,
           "lines": [
             805,
-            1231,
-            1486
+            1236,
+            1491
           ],
           "snippet": " different denominator). The 669d table (87.5/82.4/82.4 and 43.8/37.8/35.0) is \\emph{retired}: its denominators are the pr"
         }
@@ -6011,7 +6013,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1486
+            1491
           ],
           "kind": "value"
         },
@@ -6020,8 +6022,8 @@
           "found": true,
           "count": 3,
           "lines": [
-            1486,
-            1487
+            1491,
+            1492
           ],
           "kind": "value"
         },
@@ -6030,8 +6032,8 @@
           "found": true,
           "count": 3,
           "lines": [
-            1486,
-            1487
+            1491,
+            1492
           ],
           "kind": "value"
         },
@@ -6041,8 +6043,8 @@
           "count": 3,
           "lines": [
             805,
-            1231,
-            1486
+            1236,
+            1491
           ],
           "kind": "value"
         }
@@ -6067,7 +6069,7 @@
           "form": "+46.9",
           "count": 1,
           "lines": [
-            1487
+            1492
           ],
           "snippet": "\\times10^{-6}$ & $1.0\\times10^{-6}$ \\\\ memory safety & 49 & +46.9 & $1.0\\times10^{-6}$ & $3.0\\times10^{-6}$ \\\\ legacy & 47 & "
         },
@@ -6075,8 +6077,8 @@
           "form": "1.0\\times10^{-6}",
           "count": 3,
           "lines": [
-            1486,
-            1487
+            1491,
+            1492
           ],
           "snippet": "onferroni}}$ \\\\ \\midrule undefined behavior & 43 & +58.1 & $1.0\\times10^{-6}$ & $1.0\\times10^{-6}$ \\\\ memory safety & 49 & +46.9 & $1.0\\"
         },
@@ -6084,7 +6086,7 @@
           "form": "3.0\\times10^{-6}",
           "count": 1,
           "lines": [
-            1487
+            1492
           ],
           "snippet": "{-6}$ \\\\ memory safety & 49 & +46.9 & $1.0\\times10^{-6}$ & $3.0\\times10^{-6}$ \\\\ legacy & 47 & +36.2 & $5.6\\times10^{-5}$ & $1.7\\times10"
         },
@@ -6098,8 +6100,8 @@
             814,
             835,
             901,
-            1473,
-            1487
+            1478,
+            1492
           ],
           "snippet": "itions; corpus measurable recall is \\textbf{62.5\\% (40/64, [49.5, 74.3])} (layered read: sanitizer 85.3\\%, compiler-warn 5"
         }
@@ -6118,7 +6120,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1487
+            1492
           ],
           "kind": "value"
         },
@@ -6127,8 +6129,8 @@
           "found": true,
           "count": 3,
           "lines": [
-            1486,
-            1487
+            1491,
+            1492
           ],
           "kind": "value"
         },
@@ -6137,7 +6139,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1487
+            1492
           ],
           "kind": "value"
         },
@@ -6152,8 +6154,8 @@
             814,
             835,
             901,
-            1473,
-            1487
+            1478,
+            1492
           ],
           "kind": "value"
         }
@@ -6178,7 +6180,7 @@
           "form": "+36.2",
           "count": 1,
           "lines": [
-            1488
+            1493
           ],
           "snippet": " & $1.0\\times10^{-6}$ & $3.0\\times10^{-6}$ \\\\ legacy & 47 & +36.2 & $5.6\\times10^{-5}$ & $1.7\\times10^{-4}$ \\\\ stl & 100 & +1"
         },
@@ -6186,7 +6188,7 @@
           "form": "5.6\\times10^{-5}",
           "count": 1,
           "lines": [
-            1488
+            1493
           ],
           "snippet": "imes10^{-6}$ & $3.0\\times10^{-6}$ \\\\ legacy & 47 & +36.2 & $5.6\\times10^{-5}$ & $1.7\\times10^{-4}$ \\\\ stl & 100 & +15.0 & $1.7\\times10^{"
         },
@@ -6194,8 +6196,8 @@
           "form": "1.7\\times10^{-4}",
           "count": 2,
           "lines": [
-            1488,
-            1489
+            1493,
+            1494
           ],
           "snippet": "imes10^{-6}$ \\\\ legacy & 47 & +36.2 & $5.6\\times10^{-5}$ & $1.7\\times10^{-4}$ \\\\ stl & 100 & +15.0 & $1.7\\times10^{-4}$ & $6.7\\times10^{"
         },
@@ -6203,7 +6205,7 @@
           "form": "47",
           "count": 1,
           "lines": [
-            1488
+            1493
           ],
           "snippet": "+46.9 & $1.0\\times10^{-6}$ & $3.0\\times10^{-6}$ \\\\ legacy & 47 & +36.2 & $5.6\\times10^{-5}$ & $1.7\\times10^{-4}$ \\\\ stl & "
         }
@@ -6222,7 +6224,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1488
+            1493
           ],
           "kind": "value"
         },
@@ -6231,7 +6233,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1488
+            1493
           ],
           "kind": "value"
         },
@@ -6240,8 +6242,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1488,
-            1489
+            1493,
+            1494
           ],
           "kind": "value"
         },
@@ -6250,7 +6252,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1488
+            1493
           ],
           "kind": "value"
         }
@@ -6275,7 +6277,7 @@
           "form": "+15.0",
           "count": 1,
           "lines": [
-            1489
+            1494
           ],
           "snippet": ".2 & $5.6\\times10^{-5}$ & $1.7\\times10^{-4}$ \\\\ stl & 100 & +15.0 & $1.7\\times10^{-4}$ & $6.7\\times10^{-4}$ \\\\ real world & 4"
         },
@@ -6283,8 +6285,8 @@
           "form": "1.7\\times10^{-4}",
           "count": 2,
           "lines": [
-            1488,
-            1489
+            1493,
+            1494
           ],
           "snippet": "imes10^{-6}$ \\\\ legacy & 47 & +36.2 & $5.6\\times10^{-5}$ & $1.7\\times10^{-4}$ \\\\ stl & 100 & +15.0 & $1.7\\times10^{-4}$ & $6.7\\times10^{"
         },
@@ -6292,7 +6294,7 @@
           "form": "6.7\\times10^{-4}",
           "count": 1,
           "lines": [
-            1489
+            1494
           ],
           "snippet": "\\times10^{-4}$ \\\\ stl & 100 & +15.0 & $1.7\\times10^{-4}$ & $6.7\\times10^{-4}$ \\\\ real world & 44 & +29.5 & $5.4\\times10^{-4}$ & $2.7\\tim"
         },
@@ -6307,10 +6309,10 @@
             643,
             833,
             835,
-            1421,
-            1422,
-            1489,
-            1643
+            1426,
+            1427,
+            1494,
+            1648
           ],
           "snippet": "=7.6cm, height=4.5cm,   ybar, bar width=7pt,   ymin=0, ymax=100,   ylabel={Recall (\\%)},   symbolic x coords={holdout, corp"
         }
@@ -6329,7 +6331,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1489
+            1494
           ],
           "kind": "value"
         },
@@ -6338,8 +6340,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1488,
-            1489
+            1493,
+            1494
           ],
           "kind": "value"
         },
@@ -6348,7 +6350,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1489
+            1494
           ],
           "kind": "value"
         },
@@ -6364,10 +6366,10 @@
             643,
             833,
             835,
-            1421,
-            1422,
-            1489,
-            1643
+            1426,
+            1427,
+            1494,
+            1648
           ],
           "kind": "value"
         }
@@ -6392,7 +6394,7 @@
           "form": "+29.5",
           "count": 1,
           "lines": [
-            1490
+            1495
           ],
           "snippet": "1.7\\times10^{-4}$ & $6.7\\times10^{-4}$ \\\\ real world & 44 & +29.5 & $5.4\\times10^{-4}$ & $2.7\\times10^{-3}$ \\\\ optimization s"
         },
@@ -6400,7 +6402,7 @@
           "form": "5.4\\times10^{-4}",
           "count": 1,
           "lines": [
-            1490
+            1495
           ],
           "snippet": "10^{-4}$ & $6.7\\times10^{-4}$ \\\\ real world & 44 & +29.5 & $5.4\\times10^{-4}$ & $2.7\\times10^{-3}$ \\\\ optimization sensitive & 20 & +55."
         },
@@ -6412,10 +6414,10 @@
             718,
             995,
             999,
-            1490,
-            1506,
-            1523,
-            1568
+            1495,
+            1511,
+            1528,
+            1573
           ],
           "snippet": " on the official \\textbf{C++ Core Guidelines} gives \\textbf{44.0\\%} over 50 snippets (verbatim 28.6\\%, reconstructed UB 80"
         }
@@ -6434,7 +6436,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1490
+            1495
           ],
           "kind": "value"
         },
@@ -6443,7 +6445,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1490
+            1495
           ],
           "kind": "value"
         },
@@ -6463,10 +6465,10 @@
             718,
             995,
             999,
-            1490,
-            1506,
-            1523,
-            1568
+            1495,
+            1511,
+            1528,
+            1573
           ],
           "kind": "value"
         }
@@ -6491,7 +6493,7 @@
           "form": "+55.0pp",
           "count": 1,
           "lines": [
-            1229
+            1234
           ],
           "snippet": "8/20) vs.\\ Random \\textbf{35.0\\%} (7/20), $\\Delta{=}\\mathbf{+55.0}$pp (CI [+33.2, +76.8], $p{=}9.8\\times10^{-4}$, $b{=}11$, $c{=}"
         },
@@ -6499,8 +6501,8 @@
           "form": "+55.0",
           "count": 2,
           "lines": [
-            1229,
-            1491
+            1234,
+            1496
           ],
           "snippet": "8/20) vs.\\ Random \\textbf{35.0\\%} (7/20), $\\Delta{=}\\mathbf{+55.0}$pp (CI [+33.2, +76.8], $p{=}9.8\\times10^{-4}$, $b{=}11$, $"
         },
@@ -6523,11 +6525,11 @@
             983,
             988,
             1065,
-            1228,
-            1229,
-            1232,
-            1388,
-            1434
+            1233,
+            1234,
+            1237,
+            1393,
+            1439
           ],
           "snippet": " is \\textbf{81.0\\% (17/21, [58.1, 94.6])} and the remaining 20 are post-reveal additions; corpus measurable recall is \\tex"
         }
@@ -6539,7 +6541,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1229
+            1234
           ],
           "kind": "value"
         },
@@ -6548,8 +6550,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1229,
-            1491
+            1234,
+            1496
           ],
           "kind": "value"
         },
@@ -6587,11 +6589,11 @@
             983,
             988,
             1065,
-            1228,
-            1229,
-            1232,
-            1388,
-            1434
+            1233,
+            1234,
+            1237,
+            1393,
+            1439
           ],
           "kind": "value"
         }
@@ -6616,7 +6618,7 @@
           "form": "+45.0",
           "count": 1,
           "lines": [
-            1492
+            1497
           ],
           "snippet": "10^{-3}$ & $1.1\\times10^{-2}$ \\\\ conditional trigger & 20 & +45.0 & $6.1\\times10^{-3}$ & $4.3\\times10^{-2}$ \\\\ concurrency & "
         },
@@ -6639,11 +6641,11 @@
             983,
             988,
             1065,
-            1228,
-            1229,
-            1232,
-            1388,
-            1434
+            1233,
+            1234,
+            1237,
+            1393,
+            1439
           ],
           "snippet": " is \\textbf{81.0\\% (17/21, [58.1, 94.6])} and the remaining 20 are post-reveal additions; corpus measurable recall is \\tex"
         }
@@ -6662,7 +6664,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1492
+            1497
           ],
           "kind": "value"
         },
@@ -6700,11 +6702,11 @@
             983,
             988,
             1065,
-            1228,
-            1229,
-            1232,
-            1388,
-            1434
+            1233,
+            1234,
+            1237,
+            1393,
+            1439
           ],
           "kind": "value"
         }
@@ -6729,7 +6731,7 @@
           "form": "+7.3pp",
           "count": 1,
           "lines": [
-            1502
+            1507
           ],
           "snippet": "} is the largest group ($n{=}109$) with the smallest gain ($+7.3$pp)---FD's advantage is concentrated in UB / memory / legacy, "
         },
@@ -6737,8 +6739,8 @@
           "form": "+7.3",
           "count": 2,
           "lines": [
-            1493,
-            1502
+            1498,
+            1507
           ],
           "snippet": "1\\times10^{-3}$ & $4.3\\times10^{-2}$ \\\\ concurrency & 109 & +7.3 & $9.6\\times10^{-3}$ & $8.6\\times10^{-2}$ \\\\ language seman"
         },
@@ -6746,8 +6748,8 @@
           "form": "109",
           "count": 2,
           "lines": [
-            1493,
-            1501
+            1498,
+            1506
           ],
           "snippet": " & $6.1\\times10^{-3}$ & $4.3\\times10^{-2}$ \\\\ concurrency & 109 & +7.3 & $9.6\\times10^{-3}$ & $8.6\\times10^{-2}$ \\\\ languag"
         }
@@ -6759,7 +6761,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1502
+            1507
           ],
           "kind": "value"
         },
@@ -6768,8 +6770,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1493,
-            1502
+            1498,
+            1507
           ],
           "kind": "value"
         },
@@ -6792,8 +6794,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1493,
-            1501
+            1498,
+            1506
           ],
           "kind": "value"
         }
@@ -6818,7 +6820,7 @@
           "form": "+17.8",
           "count": 1,
           "lines": [
-            1494
+            1499
           ],
           "snippet": "s10^{-3}$ & $8.6\\times10^{-2}$ \\\\ language semantics & 45 & +17.8 & $9.6\\times10^{-3}$ & $8.6\\times10^{-2}$ \\\\ embedded & 74 "
         },
@@ -6830,9 +6832,9 @@
             479,
             496,
             836,
-            1468,
-            1492,
-            1494
+            1473,
+            1497,
+            1499
           ],
           "snippet": ".4\\%}/\\textbf{17.2\\%} ($\\Delta$ \\textbf{+80.5pp} / \\textbf{+45.3pp}) and an instrument-level random proxy at \\textbf{9.8\\%"
         }
@@ -6851,7 +6853,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1494
+            1499
           ],
           "kind": "value"
         },
@@ -6878,9 +6880,9 @@
             479,
             496,
             836,
-            1468,
-            1492,
-            1494
+            1473,
+            1497,
+            1499
           ],
           "kind": "value"
         }
@@ -6905,8 +6907,8 @@
           "form": "+8.1",
           "count": 2,
           "lines": [
-            1473,
-            1495
+            1478,
+            1500
           ],
           "snippet": ".9] & $1.1\\times10^{-19}$ \\\\ 7 & 60.1\\% & 49.5\\% & +10.6 & [+8.1, +13.1] & $1.7\\times10^{-18}$ \\\\ 8 & 60.1\\% & 60.1\\% & 0.0 "
         },
@@ -6920,13 +6922,13 @@
             814,
             835,
             901,
-            1404,
-            1495,
-            1504,
-            1524,
-            1526,
-            1569,
-            1570
+            1409,
+            1500,
+            1509,
+            1529,
+            1531,
+            1574,
+            1575
           ],
           "snippet": "; corpus measurable recall is \\textbf{62.5\\% (40/64, [49.5, 74.3])} (layered read: sanitizer 85.3\\%, compiler-warn 50.0\\%,"
         }
@@ -6945,8 +6947,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1473,
-            1495
+            1478,
+            1500
           ],
           "kind": "value"
         },
@@ -6975,13 +6977,13 @@
             814,
             835,
             901,
-            1404,
-            1495,
-            1504,
-            1524,
-            1526,
-            1569,
-            1570
+            1409,
+            1500,
+            1509,
+            1529,
+            1531,
+            1574,
+            1575
           ],
           "kind": "value"
         }
@@ -7006,7 +7008,7 @@
           "form": "+6.7pp",
           "count": 1,
           "lines": [
-            1500
+            1505
           ],
           "snippet": "DR at $0.05$; \\emph{odr/link} does not ($n{=}15$, $\\Delta{=}+6.7$pp, $p{=}1$), and \\emph{concurrency} is the largest group ($n{"
         },
@@ -7014,8 +7016,8 @@
           "form": "+6.7",
           "count": 2,
           "lines": [
-            1496,
-            1500
+            1501,
+            1505
           ],
           "snippet": "3.4\\times10^{-2}$ & $3.4\\times10^{-1}$ \\\\ odr / link & 15 & +6.7 & $1.0$ & $1.0$ \\\\ \\bottomrule \\end{tabular} \\end{center} T"
         },
@@ -7031,15 +7033,15 @@
             964,
             1063,
             1115,
-            1282,
-            1418,
-            1489,
-            1496,
-            1500,
-            1511,
-            1526,
-            1537,
-            1564
+            1287,
+            1423,
+            1494,
+            1501,
+            1505,
+            1516,
+            1531,
+            1542,
+            1569
           ],
           "snippet": ", never claimed), D1 re-injection \\textbf{6/6} (coverage 12/15), D2 blind holdout \\textbf{82.9\\%} (34/41), D3 external cor"
         }
@@ -7051,7 +7053,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1500
+            1505
           ],
           "kind": "value"
         },
@@ -7060,8 +7062,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1496,
-            1500
+            1501,
+            1505
           ],
           "kind": "value"
         },
@@ -7092,15 +7094,15 @@
             964,
             1063,
             1115,
-            1282,
-            1418,
-            1489,
-            1496,
-            1500,
-            1511,
-            1526,
-            1537,
-            1564
+            1287,
+            1423,
+            1494,
+            1501,
+            1505,
+            1516,
+            1531,
+            1542,
+            1569
           ],
           "kind": "value"
         }
@@ -7132,14 +7134,14 @@
             835,
             964,
             1087,
-            1230,
-            1472,
-            1479,
-            1586,
-            1592,
-            1593,
-            1594,
-            1629
+            1235,
+            1477,
+            1484,
+            1591,
+            1597,
+            1598,
+            1599,
+            1634
           ],
           "snippet": "rified, machine-verified\\}, measured \\textbf{31} ($23+3+5$; 11 drafts excluded). $\\Rightarrow$ \\textbf{VC $=$ 31/42 $=$ 73"
         }
@@ -7158,14 +7160,14 @@
             835,
             964,
             1087,
-            1230,
-            1472,
-            1479,
-            1586,
-            1592,
-            1593,
-            1594,
-            1629
+            1235,
+            1477,
+            1484,
+            1591,
+            1597,
+            1598,
+            1599,
+            1634
           ],
           "kind": "value"
         }
@@ -7191,7 +7193,7 @@
           "form": "64.7",
           "count": 1,
           "lines": [
-            1505
+            1510
           ],
           "snippet": "se} samples ($34$ in the evaluation split) FD reads \\textbf{64.7\\%} (22/34) vs.\\ Random 35.3\\%, $\\Delta{=}\\mathbf{+29.4}$pp "
         },
@@ -7199,7 +7201,7 @@
           "form": "22/34",
           "count": 1,
           "lines": [
-            1505
+            1510
           ],
           "snippet": "es ($34$ in the evaluation split) FD reads \\textbf{64.7\\%} (22/34) vs.\\ Random 35.3\\%, $\\Delta{=}\\mathbf{+29.4}$pp (CI [+14.1"
         },
@@ -7207,7 +7209,7 @@
           "form": "+29.4pp",
           "count": 1,
           "lines": [
-            1506
+            1511
           ],
           "snippet": "extbf{64.7\\%} (22/34) vs.\\ Random 35.3\\%, $\\Delta{=}\\mathbf{+29.4}$pp (CI [+14.1, +44.7], $p{=}2.0\\times10^{-3}$, $b{=}10,c{=}0$)"
         },
@@ -7215,7 +7217,7 @@
           "form": "2.0\\times10^{-3}",
           "count": 1,
           "lines": [
-            1506
+            1511
           ],
           "snippet": "5.3\\%, $\\Delta{=}\\mathbf{+29.4}$pp (CI [+14.1, +44.7], $p{=}2.0\\times10^{-3}$, $b{=}10,c{=}0$); on \\texttt{planted=true} ($532$ evaluate"
         },
@@ -7223,8 +7225,8 @@
           "form": "35.3",
           "count": 2,
           "lines": [
-            1468,
-            1505
+            1473,
+            1510
           ],
           "snippet": ".0\\times10^{-56}$ \\\\ 2 & 45.1\\% & 14.3\\% & +30.7 & [+26.2, +35.3] & $7.8\\times10^{-35}$ \\\\ 3 & 51.1\\% & 30.6\\% & +20.5 & [+1"
         }
@@ -7236,7 +7238,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1505
+            1510
           ],
           "kind": "value"
         },
@@ -7245,7 +7247,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1505
+            1510
           ],
           "kind": "value"
         },
@@ -7254,7 +7256,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1506
+            1511
           ],
           "kind": "value"
         },
@@ -7270,7 +7272,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1506
+            1511
           ],
           "kind": "value"
         },
@@ -7279,8 +7281,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1468,
-            1505
+            1473,
+            1510
           ],
           "kind": "value"
         }
@@ -7306,7 +7308,7 @@
           "form": "53.9",
           "count": 1,
           "lines": [
-            1507
+            1512
           ],
           "snippet": "{=}0$); on \\texttt{planted=true} ($532$ evaluated) FD reads 53.9\\% (287/532) vs.\\ 30.3\\%, $\\Delta{=}\\mathbf{+23.7}$pp (CI [+"
         },
@@ -7314,7 +7316,7 @@
           "form": "287/532",
           "count": 1,
           "lines": [
-            1507
+            1512
           ],
           "snippet": "on \\texttt{planted=true} ($532$ evaluated) FD reads 53.9\\% (287/532) vs.\\ 30.3\\%, $\\Delta{=}\\mathbf{+23.7}$pp (CI [+20.1, +27.3"
         },
@@ -7322,7 +7324,7 @@
           "form": "+23.7pp",
           "count": 1,
           "lines": [
-            1508
+            1513
           ],
           "snippet": "d) FD reads 53.9\\% (287/532) vs.\\ 30.3\\%, $\\Delta{=}\\mathbf{+23.7}$pp (CI [+20.1, +27.3], $p{=}2.4\\times10^{-38}$). The direction"
         },
@@ -7330,7 +7332,7 @@
           "form": "2.4\\times10^{-38}",
           "count": 1,
           "lines": [
-            1508
+            1513
           ],
           "snippet": "0.3\\%, $\\Delta{=}\\mathbf{+23.7}$pp (CI [+20.1, +27.3], $p{=}2.4\\times10^{-38}$). The direction is the same on real defects, but with $n{="
         },
@@ -7338,7 +7340,7 @@
           "form": "30.3",
           "count": 1,
           "lines": [
-            1507
+            1512
           ],
           "snippet": "nted=true} ($532$ evaluated) FD reads 53.9\\% (287/532) vs.\\ 30.3\\%, $\\Delta{=}\\mathbf{+23.7}$pp (CI [+20.1, +27.3], $p{=}2.4"
         }
@@ -7350,7 +7352,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1507
+            1512
           ],
           "kind": "value"
         },
@@ -7359,7 +7361,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1507
+            1512
           ],
           "kind": "value"
         },
@@ -7368,7 +7370,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1508
+            1513
           ],
           "kind": "value"
         },
@@ -7384,7 +7386,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1508
+            1513
           ],
           "kind": "value"
         },
@@ -7393,7 +7395,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1507
+            1512
           ],
           "kind": "value"
         }
@@ -7418,8 +7420,8 @@
           "form": "35.1",
           "count": 2,
           "lines": [
-            1415,
-            1447
+            1420,
+            1452
           ],
           "snippet": "atch rate & unknown rate & verdict \\\\ \\midrule asan & 399 & 35.1\\% & 0.88\\% & usable \\\\ ubsan & 268 & 23.6\\% & 0.88\\% & usab"
         },
@@ -7427,7 +7429,7 @@
           "form": "399",
           "count": 1,
           "lines": [
-            1415
+            1420
           ],
           "snippet": "ch & catch rate & unknown rate & verdict \\\\ \\midrule asan & 399 & 35.1\\% & 0.88\\% & usable \\\\ ubsan & 268 & 23.6\\% & 0.88\\%"
         },
@@ -7435,10 +7437,10 @@
           "form": "0.88",
           "count": 4,
           "lines": [
-            1415,
-            1416,
-            1417,
-            1420
+            1420,
+            1421,
+            1422,
+            1425
           ],
           "snippet": " & unknown rate & verdict \\\\ \\midrule asan & 399 & 35.1\\% & 0.88\\% & usable \\\\ ubsan & 268 & 23.6\\% & 0.88\\% & usable \\\\ tsa"
         },
@@ -7456,21 +7458,21 @@
             912,
             964,
             1087,
-            1233,
-            1419,
-            1420,
-            1421,
-            1422,
-            1446,
-            1467,
-            1474,
-            1592
+            1238,
+            1424,
+            1425,
+            1426,
+            1427,
+            1451,
+            1472,
+            1479,
+            1597
           ],
           "snippet": "ets Random draws \\emph{the same four}, so $\\Delta{=}\\textbf{0.0}$pp---A5 isolates ``do not fund assets that cannot inform,'"
         },
         {
           "form": "0",
-          "count": 169,
+          "count": 170,
           "lines": [
             75,
             126,
@@ -7506,10 +7508,10 @@
             643,
             833,
             835,
-            1421,
-            1422,
-            1489,
-            1643
+            1426,
+            1427,
+            1494,
+            1648
           ],
           "snippet": "=7.6cm, height=4.5cm,   ybar, bar width=7pt,   ymin=0, ymax=100,   ylabel={Recall (\\%)},   symbolic x coords={holdout, corp"
         },
@@ -7517,7 +7519,7 @@
           "form": "12.6",
           "count": 1,
           "lines": [
-            1419
+            1424
           ],
           "snippet": "e & 170 & 15.0\\% & 3.34\\% & usable \\\\ compiler-warn & 143 & 12.6\\% & 0.0\\% & usable \\\\ linker & 10 & 0.88\\% & 0.0\\% & usable"
         },
@@ -7525,7 +7527,7 @@
           "form": "143",
           "count": 1,
           "lines": [
-            1419
+            1424
           ],
           "snippet": "compile & 170 & 15.0\\% & 3.34\\% & usable \\\\ compiler-warn & 143 & 12.6\\% & 0.0\\% & usable \\\\ linker & 10 & 0.88\\% & 0.0\\% &"
         },
@@ -7533,8 +7535,8 @@
           "form": "15.0",
           "count": 2,
           "lines": [
-            1418,
-            1489
+            1423,
+            1494
           ],
           "snippet": "stable, see \\S\\ref{app:blindspot}) \\\\ cross-compile & 170 & 15.0\\% & 3.34\\% & usable \\\\ compiler-warn & 143 & 12.6\\% & 0.0\\%"
         },
@@ -7543,7 +7545,7 @@
           "count": 2,
           "lines": [
             1050,
-            1418
+            1423
           ],
           "snippet": ") \\\\ \\midrule Two independent proportions & 0.35$\\to$0.50 & 170 \\\\ Two independent proportions & 0.35$\\to$0.55 & 96 \\\\ Two "
         },
@@ -7551,7 +7553,7 @@
           "form": "3.34",
           "count": 1,
           "lines": [
-            1418
+            1423
           ],
           "snippet": "ee \\S\\ref{app:blindspot}) \\\\ cross-compile & 170 & 15.0\\% & 3.34\\% & usable \\\\ compiler-warn & 143 & 12.6\\% & 0.0\\% & usable"
         },
@@ -7559,7 +7561,7 @@
           "form": "0.9",
           "count": 1,
           "lines": [
-            1564
+            1569
           ],
           "snippet": " 22.9\\%, compiler-warn 12.5\\%, cross-compile 10.6\\%, linker 0.9\\%. \\textbf{High-blind-spot bands} ($>50\\%$ miss$+$unknown, "
         },
@@ -7582,11 +7584,11 @@
             964,
             987,
             1116,
-            1196,
-            1283,
-            1284,
-            1400,
-            1420
+            1201,
+            1288,
+            1289,
+            1405,
+            1425
           ],
           "snippet": ", boundary provenance, supply-chain integrity---has \\textbf{10} gates; we register red rather than block. Tiering separate"
         },
@@ -7594,7 +7596,7 @@
           "form": "22.4",
           "count": 1,
           "lines": [
-            1417
+            1422
           ],
           "snippet": "e \\\\ ubsan & 268 & 23.6\\% & 0.88\\% & usable \\\\ tsan & 255 & 22.4\\% & 0.88\\% & usable (3/180 unstable, see \\S\\ref{app:blindsp"
         },
@@ -7602,7 +7604,7 @@
           "form": "255",
           "count": 1,
           "lines": [
-            1417
+            1422
           ],
           "snippet": " usable \\\\ ubsan & 268 & 23.6\\% & 0.88\\% & usable \\\\ tsan & 255 & 22.4\\% & 0.88\\% & usable (3/180 unstable, see \\S\\ref{app:"
         },
@@ -7610,10 +7612,10 @@
           "form": "0.88",
           "count": 4,
           "lines": [
-            1415,
-            1416,
-            1417,
-            1420
+            1420,
+            1421,
+            1422,
+            1425
           ],
           "snippet": " & unknown rate & verdict \\\\ \\midrule asan & 399 & 35.1\\% & 0.88\\% & usable \\\\ ubsan & 268 & 23.6\\% & 0.88\\% & usable \\\\ tsa"
         },
@@ -7621,7 +7623,7 @@
           "form": "23.6",
           "count": 1,
           "lines": [
-            1416
+            1421
           ],
           "snippet": "rule asan & 399 & 35.1\\% & 0.88\\% & usable \\\\ ubsan & 268 & 23.6\\% & 0.88\\% & usable \\\\ tsan & 255 & 22.4\\% & 0.88\\% & usabl"
         },
@@ -7629,7 +7631,7 @@
           "form": "268",
           "count": 1,
           "lines": [
-            1416
+            1421
           ],
           "snippet": "\\ \\midrule asan & 399 & 35.1\\% & 0.88\\% & usable \\\\ ubsan & 268 & 23.6\\% & 0.88\\% & usable \\\\ tsan & 255 & 22.4\\% & 0.88\\% "
         },
@@ -7637,10 +7639,10 @@
           "form": "0.88",
           "count": 4,
           "lines": [
-            1415,
-            1416,
-            1417,
-            1420
+            1420,
+            1421,
+            1422,
+            1425
           ],
           "snippet": " & unknown rate & verdict \\\\ \\midrule asan & 399 & 35.1\\% & 0.88\\% & usable \\\\ ubsan & 268 & 23.6\\% & 0.88\\% & usable \\\\ tsa"
         },
@@ -7658,21 +7660,21 @@
             912,
             964,
             1087,
-            1233,
-            1419,
-            1420,
-            1421,
-            1422,
-            1446,
-            1467,
-            1474,
-            1592
+            1238,
+            1424,
+            1425,
+            1426,
+            1427,
+            1451,
+            1472,
+            1479,
+            1597
           ],
           "snippet": "ets Random draws \\emph{the same four}, so $\\Delta{=}\\textbf{0.0}$pp---A5 isolates ``do not fund assets that cannot inform,'"
         },
         {
           "form": "0",
-          "count": 169,
+          "count": 170,
           "lines": [
             75,
             126,
@@ -7708,10 +7710,10 @@
             643,
             833,
             835,
-            1421,
-            1422,
-            1489,
-            1643
+            1426,
+            1427,
+            1494,
+            1648
           ],
           "snippet": "=7.6cm, height=4.5cm,   ybar, bar width=7pt,   ymin=0, ymax=100,   ylabel={Recall (\\%)},   symbolic x coords={holdout, corp"
         }
@@ -7723,8 +7725,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1415,
-            1447
+            1420,
+            1452
           ],
           "kind": "value"
         },
@@ -7733,7 +7735,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1415
+            1420
           ],
           "kind": "value"
         },
@@ -7742,10 +7744,10 @@
           "found": true,
           "count": 4,
           "lines": [
-            1415,
-            1416,
-            1417,
-            1420
+            1420,
+            1421,
+            1422,
+            1425
           ],
           "kind": "value"
         },
@@ -7764,22 +7766,22 @@
             912,
             964,
             1087,
-            1233,
-            1419,
-            1420,
-            1421,
-            1422,
-            1446,
-            1467,
-            1474,
-            1592
+            1238,
+            1424,
+            1425,
+            1426,
+            1427,
+            1451,
+            1472,
+            1479,
+            1597
           ],
           "kind": "value"
         },
         {
           "form": "0",
           "found": true,
-          "count": 169,
+          "count": 170,
           "lines": [
             75,
             126,
@@ -7816,10 +7818,10 @@
             643,
             833,
             835,
-            1421,
-            1422,
-            1489,
-            1643
+            1426,
+            1427,
+            1494,
+            1648
           ],
           "kind": "value"
         },
@@ -7828,7 +7830,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1419
+            1424
           ],
           "kind": "value"
         },
@@ -7837,7 +7839,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1419
+            1424
           ],
           "kind": "value"
         },
@@ -7846,8 +7848,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1418,
-            1489
+            1423,
+            1494
           ],
           "kind": "value"
         },
@@ -7857,7 +7859,7 @@
           "count": 2,
           "lines": [
             1050,
-            1418
+            1423
           ],
           "kind": "value"
         },
@@ -7866,7 +7868,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1418
+            1423
           ],
           "kind": "value"
         },
@@ -7875,7 +7877,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1564
+            1569
           ],
           "kind": "value"
         },
@@ -7899,11 +7901,11 @@
             964,
             987,
             1116,
-            1196,
-            1283,
-            1284,
-            1400,
-            1420
+            1201,
+            1288,
+            1289,
+            1405,
+            1425
           ],
           "kind": "value"
         },
@@ -7912,7 +7914,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1417
+            1422
           ],
           "kind": "value"
         },
@@ -7921,7 +7923,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1417
+            1422
           ],
           "kind": "value"
         },
@@ -7930,10 +7932,10 @@
           "found": true,
           "count": 4,
           "lines": [
-            1415,
-            1416,
-            1417,
-            1420
+            1420,
+            1421,
+            1422,
+            1425
           ],
           "kind": "value"
         },
@@ -7942,7 +7944,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1416
+            1421
           ],
           "kind": "value"
         },
@@ -7951,7 +7953,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1416
+            1421
           ],
           "kind": "value"
         },
@@ -7960,10 +7962,10 @@
           "found": true,
           "count": 4,
           "lines": [
-            1415,
-            1416,
-            1417,
-            1420
+            1420,
+            1421,
+            1422,
+            1425
           ],
           "kind": "value"
         },
@@ -7982,22 +7984,22 @@
             912,
             964,
             1087,
-            1233,
-            1419,
-            1420,
-            1421,
-            1422,
-            1446,
-            1467,
-            1474,
-            1592
+            1238,
+            1424,
+            1425,
+            1426,
+            1427,
+            1451,
+            1472,
+            1479,
+            1597
           ],
           "kind": "value"
         },
         {
           "form": "0",
           "found": true,
-          "count": 169,
+          "count": 170,
           "lines": [
             75,
             126,
@@ -8034,10 +8036,10 @@
             643,
             833,
             835,
-            1421,
-            1422,
-            1489,
-            1643
+            1426,
+            1427,
+            1494,
+            1648
           ],
           "kind": "value"
         }
@@ -8068,8 +8070,8 @@
             649,
             688,
             908,
-            1522,
-            1559
+            1527,
+            1564
           ],
           "snippet": "rument boundary; A5's remaining gap (both measured).} Over $1147$ samples \\textbf{38.4\\%} are blind spots ($15$ of $70$ type"
         },
@@ -8077,8 +8079,8 @@
           "form": "707",
           "count": 2,
           "lines": [
-            1522,
-            1560
+            1527,
+            1565
           ],
           "snippet": "capability boundary.} Over the $1147$-sample matrix: catch $707$, miss $440$, unknown $0$ $\\Rightarrow$ blind-spot ratio \\t"
         },
@@ -8086,8 +8088,8 @@
           "form": "440",
           "count": 2,
           "lines": [
-            1522,
-            1560
+            1527,
+            1565
           ],
           "snippet": "oundary.} Over the $1147$-sample matrix: catch $707$, miss $440$, unknown $0$ $\\Rightarrow$ blind-spot ratio \\textbf{38.4\\%"
         },
@@ -8098,8 +8100,8 @@
             649,
             688,
             908,
-            1523,
-            1560
+            1528,
+            1565
           ],
           "snippet": "remaining gap (both measured).} Over $1147$ samples \\textbf{38.4\\%} are blind spots ($15$ of $70$ types exceed $50\\%$), so e"
         }
@@ -8114,8 +8116,8 @@
             649,
             688,
             908,
-            1522,
-            1559
+            1527,
+            1564
           ],
           "kind": "value"
         },
@@ -8124,8 +8126,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1522,
-            1560
+            1527,
+            1565
           ],
           "kind": "value"
         },
@@ -8134,8 +8136,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1522,
-            1560
+            1527,
+            1565
           ],
           "kind": "value"
         },
@@ -8147,8 +8149,8 @@
             649,
             688,
             908,
-            1523,
-            1560
+            1528,
+            1565
           ],
           "kind": "value"
         }
@@ -8175,7 +8177,7 @@
           "count": 2,
           "lines": [
             908,
-            1561
+            1566
           ],
           "snippet": " ratio 38.4\\%; 15/70 types $>50\\%$ blind; union of 6 assets 61.6\\% vs best single 35.6\\% (\\S\\ref{app:blindspot}) \\\\ \\midrule"
         },
@@ -8183,8 +8185,8 @@
           "form": "707",
           "count": 2,
           "lines": [
-            1522,
-            1560
+            1527,
+            1565
           ],
           "snippet": "capability boundary.} Over the $1147$-sample matrix: catch $707$, miss $440$, unknown $0$ $\\Rightarrow$ blind-spot ratio \\t"
         },
@@ -8193,8 +8195,8 @@
           "count": 3,
           "lines": [
             908,
-            1561,
-            1563
+            1566,
+            1568
           ],
           "snippet": "ypes $>50\\%$ blind; union of 6 assets 61.6\\% vs best single 35.6\\% (\\S\\ref{app:blindspot}) \\\\ \\midrule $\\times$ not supporte"
         }
@@ -8207,7 +8209,7 @@
           "count": 2,
           "lines": [
             908,
-            1561
+            1566
           ],
           "kind": "value"
         },
@@ -8216,8 +8218,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1522,
-            1560
+            1527,
+            1565
           ],
           "kind": "value"
         },
@@ -8227,8 +8229,8 @@
           "count": 3,
           "lines": [
             908,
-            1561,
-            1563
+            1566,
+            1568
           ],
           "kind": "value"
         }
@@ -8254,8 +8256,8 @@
           "count": 3,
           "lines": [
             908,
-            1561,
-            1563
+            1566,
+            1568
           ],
           "snippet": "ypes $>50\\%$ blind; union of 6 assets 61.6\\% vs best single 35.6\\% (\\S\\ref{app:blindspot}) \\\\ \\midrule $\\times$ not supporte"
         },
@@ -8263,7 +8265,7 @@
           "form": "23.5",
           "count": 1,
           "lines": [
-            1563
+            1568
           ],
           "snippet": "ble by any one asset. Coverage by asset: asan 35.6\\%, ubsan 23.5\\%, tsan 22.9\\%, compiler-warn 12.5\\%, cross-compile 10.6\\%,"
         },
@@ -8271,7 +8273,7 @@
           "form": "22.9",
           "count": 1,
           "lines": [
-            1563
+            1568
           ],
           "snippet": "e asset. Coverage by asset: asan 35.6\\%, ubsan 23.5\\%, tsan 22.9\\%, compiler-warn 12.5\\%, cross-compile 10.6\\%, linker 0.9\\%"
         },
@@ -8280,8 +8282,8 @@
           "count": 3,
           "lines": [
             834,
-            1309,
-            1563
+            1314,
+            1568
           ],
           "snippet": "agger$ (proxy) & 9.8\\% (4/41) [2.7, 23.1] & 21.9\\% (14/64) [12.5, 34.0] & N/A & --- \\\\ \\textbf{FD (failure-driven)} & \\textb"
         },
@@ -8289,8 +8291,8 @@
           "form": "10.6",
           "count": 2,
           "lines": [
-            1473,
-            1564
+            1478,
+            1569
           ],
           "snippet": "8.7, +13.9] & $1.1\\times10^{-19}$ \\\\ 7 & 60.1\\% & 49.5\\% & +10.6 & [+8.1, +13.1] & $1.7\\times10^{-18}$ \\\\ 8 & 60.1\\% & 60.1\\"
         },
@@ -8298,7 +8300,7 @@
           "form": "0.9",
           "count": 1,
           "lines": [
-            1564
+            1569
           ],
           "snippet": " 22.9\\%, compiler-warn 12.5\\%, cross-compile 10.6\\%, linker 0.9\\%. \\textbf{High-blind-spot bands} ($>50\\%$ miss$+$unknown, "
         },
@@ -8316,15 +8318,15 @@
             912,
             964,
             1087,
-            1233,
-            1419,
-            1420,
-            1421,
-            1422,
-            1446,
-            1467,
-            1474,
-            1592
+            1238,
+            1424,
+            1425,
+            1426,
+            1427,
+            1451,
+            1472,
+            1479,
+            1597
           ],
           "snippet": "ets Random draws \\emph{the same four}, so $\\Delta{=}\\textbf{0.0}$pp---A5 isolates ``do not fund assets that cannot inform,'"
         },
@@ -8342,15 +8344,15 @@
             912,
             964,
             1087,
-            1233,
-            1419,
-            1420,
-            1421,
-            1422,
-            1446,
-            1467,
-            1474,
-            1592
+            1238,
+            1424,
+            1425,
+            1426,
+            1427,
+            1451,
+            1472,
+            1479,
+            1597
           ],
           "snippet": "ets Random draws \\emph{the same four}, so $\\Delta{=}\\textbf{0.0}$pp---A5 isolates ``do not fund assets that cannot inform,'"
         }
@@ -8363,8 +8365,8 @@
           "count": 3,
           "lines": [
             908,
-            1561,
-            1563
+            1566,
+            1568
           ],
           "kind": "value"
         },
@@ -8373,7 +8375,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1563
+            1568
           ],
           "kind": "value"
         },
@@ -8382,7 +8384,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1563
+            1568
           ],
           "kind": "value"
         },
@@ -8392,8 +8394,8 @@
           "count": 3,
           "lines": [
             834,
-            1309,
-            1563
+            1314,
+            1568
           ],
           "kind": "value"
         },
@@ -8402,8 +8404,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1473,
-            1564
+            1478,
+            1569
           ],
           "kind": "value"
         },
@@ -8412,7 +8414,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1564
+            1569
           ],
           "kind": "value"
         },
@@ -8431,15 +8433,15 @@
             912,
             964,
             1087,
-            1233,
-            1419,
-            1420,
-            1421,
-            1422,
-            1446,
-            1467,
-            1474,
-            1592
+            1238,
+            1424,
+            1425,
+            1426,
+            1427,
+            1451,
+            1472,
+            1479,
+            1597
           ],
           "kind": "value"
         },
@@ -8458,15 +8460,15 @@
             912,
             964,
             1087,
-            1233,
-            1419,
-            1420,
-            1421,
-            1422,
-            1446,
-            1467,
-            1474,
-            1592
+            1238,
+            1424,
+            1425,
+            1426,
+            1427,
+            1451,
+            1472,
+            1479,
+            1597
           ],
           "kind": "value"
         }
@@ -8492,8 +8494,8 @@
           "form": "41.0",
           "count": 2,
           "lines": [
-            1523,
-            1568
+            1528,
+            1573
           ],
           "snippet": "ot ratio \\textbf{38.4\\%}. It is \\emph{not} uniform: \\textbf{41.0\\%} [38.0, 44.1] on \\texttt{planted=true} versus \\textbf{21."
         },
@@ -8501,8 +8503,8 @@
           "form": "38.0, 44.1",
           "count": 2,
           "lines": [
-            1523,
-            1568
+            1528,
+            1573
           ],
           "snippet": "\\textbf{38.4\\%}. It is \\emph{not} uniform: \\textbf{41.0\\%} [38.0, 44.1] on \\texttt{planted=true} versus \\textbf{21.6\\%} [13.8, 32."
         },
@@ -8510,8 +8512,8 @@
           "form": "21.6",
           "count": 2,
           "lines": [
-            1524,
-            1568
+            1529,
+            1573
           ],
           "snippet": "1.0\\%} [38.0, 44.1] on \\texttt{planted=true} versus \\textbf{21.6\\%} [13.8, 32.3] on the $74$ real defects---self-authored de"
         },
@@ -8519,8 +8521,8 @@
           "form": "13.8, 32.3",
           "count": 2,
           "lines": [
-            1524,
-            1568
+            1529,
+            1573
           ],
           "snippet": "8.0, 44.1] on \\texttt{planted=true} versus \\textbf{21.6\\%} [13.8, 32.3] on the $74$ real defects---self-authored defects are \\emph"
         },
@@ -8534,13 +8536,13 @@
             814,
             835,
             901,
-            1404,
-            1495,
-            1504,
-            1524,
-            1526,
-            1569,
-            1570
+            1409,
+            1500,
+            1509,
+            1529,
+            1531,
+            1574,
+            1575
           ],
           "snippet": "; corpus measurable recall is \\textbf{62.5\\% (40/64, [49.5, 74.3])} (layered read: sanitizer 85.3\\%, compiler-warn 50.0\\%,"
         }
@@ -8552,8 +8554,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1523,
-            1568
+            1528,
+            1573
           ],
           "kind": "value"
         },
@@ -8562,8 +8564,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1523,
-            1568
+            1528,
+            1573
           ],
           "kind": "value"
         },
@@ -8572,8 +8574,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1524,
-            1568
+            1529,
+            1573
           ],
           "kind": "value"
         },
@@ -8582,8 +8584,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1524,
-            1568
+            1529,
+            1573
           ],
           "kind": "value"
         },
@@ -8598,13 +8600,13 @@
             814,
             835,
             901,
-            1404,
-            1495,
-            1504,
-            1524,
-            1526,
-            1569,
-            1570
+            1409,
+            1500,
+            1509,
+            1529,
+            1531,
+            1574,
+            1575
           ],
           "kind": "value"
         }
@@ -8632,9 +8634,9 @@
           "lines": [
             502,
             728,
-            1141,
-            1229,
-            1473
+            1146,
+            1234,
+            1478
           ],
           "snippet": ". FPR is \\textbf{0.0\\%} (0/11 controls): the pre-673u value 18.2\\% (2/11) came from a constant-catch detector bug (since f"
         },
@@ -8645,8 +8647,8 @@
             481,
             649,
             908,
-            1526,
-            1564
+            1531,
+            1569
           ],
           "snippet": "s,17.2) (defect,100)}; \\addplot[fill=orange!40, draw=orange!70!black] coordinates {(holdout,9.8) (corpus,21.9) (defect,0)}"
         },
@@ -8664,11 +8666,11 @@
             728,
             908,
             947,
-            1241,
-            1386,
-            1433,
-            1526,
-            1564
+            1246,
+            1391,
+            1438,
+            1531,
+            1569
           ],
           "snippet": "9.5, 74.3])} (layered read: sanitizer 85.3\\%, compiler-warn 50.0\\%, cross-compile 16.7\\%), versus a \\emph{static caliber a"
         }
@@ -8682,9 +8684,9 @@
           "lines": [
             502,
             728,
-            1141,
-            1229,
-            1473
+            1146,
+            1234,
+            1478
           ],
           "kind": "value"
         },
@@ -8696,8 +8698,8 @@
             481,
             649,
             908,
-            1526,
-            1564
+            1531,
+            1569
           ],
           "kind": "value"
         },
@@ -8716,11 +8718,11 @@
             728,
             908,
             947,
-            1241,
-            1386,
-            1433,
-            1526,
-            1564
+            1246,
+            1391,
+            1438,
+            1531,
+            1569
           ],
           "kind": "value"
         }
@@ -8773,9 +8775,9 @@
           "form": "180",
           "count": 3,
           "lines": [
-            1417,
-            1533,
-            1571
+            1422,
+            1538,
+            1576
           ],
           "snippet": "0.88\\% & usable \\\\ tsan & 255 & 22.4\\% & 0.88\\% & usable (3/180 unstable, see \\S\\ref{app:blindspot}) \\\\ cross-compile & 170"
         },
@@ -8784,11 +8786,11 @@
           "count": 6,
           "lines": [
             829,
-            1473,
-            1488,
-            1489,
-            1534,
-            1572
+            1478,
+            1493,
+            1494,
+            1539,
+            1577
           ],
           "snippet": "ntering \\footnotesize \\begin{tabular}{@{}lp{2.7cm}p{2.4cm}p{1.7cm}p{1.5cm}@{}} \\toprule System & Blind holdout (CP 95\\%) & "
         }
@@ -8828,9 +8830,9 @@
           "found": true,
           "count": 3,
           "lines": [
-            1417,
-            1533,
-            1571
+            1422,
+            1538,
+            1576
           ],
           "kind": "value"
         },
@@ -8840,11 +8842,11 @@
           "count": 6,
           "lines": [
             829,
-            1473,
-            1488,
-            1489,
-            1534,
-            1572
+            1478,
+            1493,
+            1494,
+            1539,
+            1577
           ],
           "kind": "value"
         }
@@ -8870,9 +8872,9 @@
           "count": 4,
           "lines": [
             607,
-            1472,
-            1532,
-            1593
+            1477,
+            1537,
+            1598
           ],
           "snippet": "y), FD \\textbf{82.9\\% (34/41)} beats clang-analyzer \\textbf{48.8\\% (20/41)} and cppcheck \\textbf{41.5\\% (17/41)} on holdout "
         },
@@ -8881,7 +8883,7 @@
           "count": 2,
           "lines": [
             607,
-            1593
+            1598
           ],
           "snippet": "textbf{82.9\\% (34/41)} beats clang-analyzer \\textbf{48.8\\% (20/41)} and cppcheck \\textbf{41.5\\% (17/41)} on holdout ($p{=}1.2"
         },
@@ -8890,7 +8892,7 @@
           "count": 2,
           "lines": [
             608,
-            1593
+            1598
           ],
           "snippet": "/41)} and cppcheck \\textbf{41.5\\% (17/41)} on holdout ($p{=}1.2\\times10^{-4}$ / $1.5\\times10^{-5}$), while on corpus FD \\textbf{62.5\\% ("
         }
@@ -8903,9 +8905,9 @@
           "count": 4,
           "lines": [
             607,
-            1472,
-            1532,
-            1593
+            1477,
+            1537,
+            1598
           ],
           "kind": "value"
         },
@@ -8915,7 +8917,7 @@
           "count": 2,
           "lines": [
             607,
-            1593
+            1598
           ],
           "kind": "value"
         },
@@ -8925,7 +8927,7 @@
           "count": 2,
           "lines": [
             608,
-            1593
+            1598
           ],
           "kind": "value"
         }
@@ -8951,7 +8953,7 @@
           "count": 2,
           "lines": [
             607,
-            1594
+            1599
           ],
           "snippet": "clang-analyzer \\textbf{48.8\\% (20/41)} and cppcheck \\textbf{41.5\\% (17/41)} on holdout ($p{=}1.2\\times10^{-4}$ / $1.5\\times1"
         },
@@ -8960,7 +8962,7 @@
           "count": 2,
           "lines": [
             607,
-            1594
+            1599
           ],
           "snippet": "alyzer \\textbf{48.8\\% (20/41)} and cppcheck \\textbf{41.5\\% (17/41)} on holdout ($p{=}1.2\\times10^{-4}$ / $1.5\\times10^{-5}$),"
         },
@@ -8969,7 +8971,7 @@
           "count": 2,
           "lines": [
             608,
-            1594
+            1599
           ],
           "snippet": "extbf{41.5\\% (17/41)} on holdout ($p{=}1.2\\times10^{-4}$ / $1.5\\times10^{-5}$), while on corpus FD \\textbf{62.5\\% (40/64)} only \\emph{ti"
         }
@@ -8982,7 +8984,7 @@
           "count": 2,
           "lines": [
             607,
-            1594
+            1599
           ],
           "kind": "value"
         },
@@ -8992,7 +8994,7 @@
           "count": 2,
           "lines": [
             607,
-            1594
+            1599
           ],
           "kind": "value"
         },
@@ -9002,7 +9004,7 @@
           "count": 2,
           "lines": [
             608,
-            1594
+            1599
           ],
           "kind": "value"
         }
@@ -9028,7 +9030,7 @@
           "count": 2,
           "lines": [
             609,
-            1609
+            1614
           ],
           "snippet": "D \\textbf{62.5\\% (40/64)} only \\emph{ties} cppcheck \\textbf{54.7\\% (35/64)} ($p{=}0.383$); all 8 reverse pairs are compile-t"
         },
@@ -9037,7 +9039,7 @@
           "count": 2,
           "lines": [
             609,
-            1609
+            1614
           ],
           "snippet": "f{62.5\\% (40/64)} only \\emph{ties} cppcheck \\textbf{54.7\\% (35/64)} ($p{=}0.383$); all 8 reverse pairs are compile-time-visib"
         },
@@ -9046,7 +9048,7 @@
           "count": 2,
           "lines": [
             609,
-            1609
+            1614
           ],
           "snippet": "4)} only \\emph{ties} cppcheck \\textbf{54.7\\% (35/64)} ($p{=}0.383$); all 8 reverse pairs are compile-time-visible or path-not"
         }
@@ -9059,7 +9061,7 @@
           "count": 2,
           "lines": [
             609,
-            1609
+            1614
           ],
           "kind": "value"
         },
@@ -9069,7 +9071,7 @@
           "count": 2,
           "lines": [
             609,
-            1609
+            1614
           ],
           "kind": "value"
         },
@@ -9079,7 +9081,7 @@
           "count": 2,
           "lines": [
             609,
-            1609
+            1614
           ],
           "kind": "value"
         }
@@ -9104,7 +9106,7 @@
           "form": "+7.8pp",
           "count": 1,
           "lines": [
-            1613
+            1618
           ],
           "snippet": "ta{=}+28.1$pp but pair $(b,c){=}(23,5)$; cppcheck $\\Delta{=}+7.8$pp [$-6.1$, 21.7] (CI crosses 0).  \\paragraph{Layered (corpus)"
         },
@@ -9112,7 +9114,7 @@
           "form": "-6.1, 21.7",
           "count": 1,
           "lines": [
-            1613
+            1618
           ],
           "snippet": "$pp but pair $(b,c){=}(23,5)$; cppcheck $\\Delta{=}+7.8$pp [$-6.1$, 21.7] (CI crosses 0).  \\paragraph{Layered (corpus).} sanitizer: "
         }
@@ -9124,7 +9126,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1613
+            1618
           ],
           "kind": "value"
         },
@@ -9133,7 +9135,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1613
+            1618
           ],
           "kind": "value"
         },
@@ -9165,8 +9167,8 @@
           "form": "9.1\\% (1/11)",
           "count": 2,
           "lines": [
-            1593,
-            1594
+            1598,
+            1599
           ],
           "snippet": "/11) & --- \\\\ clang-analyzer-* (StrictA) & 48.8\\% & 20/41 & 9.1\\% (1/11) & $1.2\\times10^{-4}$ \\\\ cppcheck (error+warning) & 41.5\\% &"
         },
@@ -9174,8 +9176,8 @@
           "form": "1/11",
           "count": 2,
           "lines": [
-            1593,
-            1594
+            1598,
+            1599
           ],
           "snippet": "--- \\\\ clang-analyzer-* (StrictA) & 48.8\\% & 20/41 & 9.1\\% (1/11) & $1.2\\times10^{-4}$ \\\\ cppcheck (error+warning) & 41.5\\% "
         }
@@ -9187,8 +9189,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1593,
-            1594
+            1598,
+            1599
           ],
           "kind": "value"
         },
@@ -9197,8 +9199,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1593,
-            1594
+            1598,
+            1599
           ],
           "kind": "value"
         }
@@ -9223,8 +9225,8 @@
           "form": "9.1\\% (1/11)",
           "count": 2,
           "lines": [
-            1593,
-            1594
+            1598,
+            1599
           ],
           "snippet": "/11) & --- \\\\ clang-analyzer-* (StrictA) & 48.8\\% & 20/41 & 9.1\\% (1/11) & $1.2\\times10^{-4}$ \\\\ cppcheck (error+warning) & 41.5\\% &"
         },
@@ -9232,8 +9234,8 @@
           "form": "1/11",
           "count": 2,
           "lines": [
-            1593,
-            1594
+            1598,
+            1599
           ],
           "snippet": "--- \\\\ clang-analyzer-* (StrictA) & 48.8\\% & 20/41 & 9.1\\% (1/11) & $1.2\\times10^{-4}$ \\\\ cppcheck (error+warning) & 41.5\\% "
         }
@@ -9245,8 +9247,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1593,
-            1594
+            1598,
+            1599
           ],
           "kind": "value"
         },
@@ -9255,8 +9257,8 @@
           "found": true,
           "count": 2,
           "lines": [
-            1593,
-            1594
+            1598,
+            1599
           ],
           "kind": "value"
         }
@@ -9281,7 +9283,7 @@
           "form": "+34.1pp",
           "count": 1,
           "lines": [
-            1599
+            1604
           ],
           "snippet": "$\\subset$ FD catches; $\\Delta(\\text{FD}{-}\\text{StrictA}){=}+34.1$pp [19.6, 48.7].  \\paragraph{Corpus ($n{=}64$, controls $n{=}3"
         },
@@ -9289,7 +9291,7 @@
           "form": "19.6, 48.7",
           "count": 1,
           "lines": [
-            1599
+            1604
           ],
           "snippet": "FD catches; $\\Delta(\\text{FD}{-}\\text{StrictA}){=}+34.1$pp [19.6, 48.7].  \\paragraph{Corpus ($n{=}64$, controls $n{=}3$).} \\begin{"
         },
@@ -9297,7 +9299,7 @@
           "form": "(14,0)",
           "count": 1,
           "lines": [
-            1598
+            1603
           ],
           "snippet": "bottomrule \\end{tabular} \\end{center} StrictA pair $(b,c){=}(14,0)$ $\\Rightarrow$ tool catches $\\subset$ FD catches; $\\Delta(\\"
         }
@@ -9309,7 +9311,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1599
+            1604
           ],
           "kind": "value"
         },
@@ -9318,7 +9320,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1599
+            1604
           ],
           "kind": "value"
         },
@@ -9327,7 +9329,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1598
+            1603
           ],
           "kind": "value"
         }
@@ -9352,7 +9354,7 @@
           "form": "34.4",
           "count": 1,
           "lines": [
-            1608
+            1613
           ],
           "snippet": "eyi) & 62.5\\% & 40/64 & --- \\\\ clang-analyzer-* (StrictA) & 34.4\\% & 22/64 & $9.1\\times10^{-4}$ \\\\ cppcheck (error+warning) "
         },
@@ -9360,7 +9362,7 @@
           "form": "22/64",
           "count": 1,
           "lines": [
-            1608
+            1613
           ],
           "snippet": ".5\\% & 40/64 & --- \\\\ clang-analyzer-* (StrictA) & 34.4\\% & 22/64 & $9.1\\times10^{-4}$ \\\\ cppcheck (error+warning) & 54.7\\% &"
         },
@@ -9368,7 +9370,7 @@
           "form": "+28.1pp",
           "count": 1,
           "lines": [
-            1613
+            1618
           ],
           "snippet": "\\\\ \\bottomrule \\end{tabular} \\end{center} StrictA $\\Delta{=}+28.1$pp but pair $(b,c){=}(23,5)$; cppcheck $\\Delta{=}+7.8$pp [$-6."
         },
@@ -9376,7 +9378,7 @@
           "form": "(23,5)",
           "count": 1,
           "lines": [
-            1613
+            1618
           ],
           "snippet": "} \\end{center} StrictA $\\Delta{=}+28.1$pp but pair $(b,c){=}(23,5)$; cppcheck $\\Delta{=}+7.8$pp [$-6.1$, 21.7] (CI crosses 0)."
         },
@@ -9384,7 +9386,7 @@
           "form": "9.1\\times10^{-4}",
           "count": 1,
           "lines": [
-            1608
+            1613
           ],
           "snippet": "/64 & --- \\\\ clang-analyzer-* (StrictA) & 34.4\\% & 22/64 & $9.1\\times10^{-4}$ \\\\ cppcheck (error+warning) & 54.7\\% & 35/64 & 0.383 (tie)"
         }
@@ -9396,7 +9398,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1608
+            1613
           ],
           "kind": "value"
         },
@@ -9405,7 +9407,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1608
+            1613
           ],
           "kind": "value"
         },
@@ -9414,7 +9416,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1613
+            1618
           ],
           "kind": "value"
         },
@@ -9423,7 +9425,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1613
+            1618
           ],
           "kind": "value"
         },
@@ -9432,7 +9434,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1608
+            1613
           ],
           "kind": "value"
         }
@@ -9457,7 +9459,7 @@
           "form": "2 / 0 / 1",
           "count": 1,
           "lines": [
-            1618
+            1623
           ],
           "snippet": " 26; compiler-warn: FD 9 / cppcheck 8 (tie); cross-compile: 2 / 0 / 1 ($n{=}12$, all three fail).  \\paragraph{The 8 reverse pairs"
         },
@@ -9473,13 +9475,13 @@
             834,
             911,
             964,
-            1309,
-            1383,
-            1385,
-            1419,
-            1563,
-            1618,
-            1626
+            1314,
+            1388,
+            1390,
+            1424,
+            1568,
+            1623,
+            1631
           ],
           "snippet": "nly, never claimed), D1 re-injection \\textbf{6/6} (coverage 12/15), D2 blind holdout \\textbf{82.9\\%} (34/41), D3 external "
         },
@@ -9487,7 +9489,7 @@
           "form": "FD 29 vs clang-analyzer 17 / cppcheck 26",
           "count": 1,
           "lines": [
-            1617
+            1622
           ],
           "snippet": "] (CI crosses 0).  \\paragraph{Layered (corpus).} sanitizer: FD 29 vs clang-analyzer 17 / cppcheck 26; compiler-warn: FD 9 / cppcheck 8 (tie); cross-compile: 2 /"
         },
@@ -9495,7 +9497,7 @@
           "form": "FD 9 / cppcheck 8",
           "count": 1,
           "lines": [
-            1617
+            1622
           ],
           "snippet": "r: FD 29 vs clang-analyzer 17 / cppcheck 26; compiler-warn: FD 9 / cppcheck 8 (tie); cross-compile: 2 / 0 / 1 ($n{=}12$, all three fail)."
         },
@@ -9503,7 +9505,7 @@
           "form": "2 / 0 / 1",
           "count": 1,
           "lines": [
-            1618
+            1623
           ],
           "snippet": " 26; compiler-warn: FD 9 / cppcheck 8 (tie); cross-compile: 2 / 0 / 1 ($n{=}12$, all three fail).  \\paragraph{The 8 reverse pairs"
         }
@@ -9529,7 +9531,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1618
+            1623
           ],
           "kind": "value"
         },
@@ -9546,13 +9548,13 @@
             834,
             911,
             964,
-            1309,
-            1383,
-            1385,
-            1419,
-            1563,
-            1618,
-            1626
+            1314,
+            1388,
+            1390,
+            1424,
+            1568,
+            1623,
+            1631
           ],
           "kind": "value"
         },
@@ -9561,7 +9563,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1617
+            1622
           ],
           "kind": "value"
         },
@@ -9570,7 +9572,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1617
+            1622
           ],
           "kind": "value"
         },
@@ -9579,7 +9581,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1618
+            1623
           ],
           "kind": "value"
         }
@@ -9611,10 +9613,10 @@
             643,
             833,
             835,
-            1421,
-            1422,
-            1489,
-            1643
+            1426,
+            1427,
+            1494,
+            1648
           ],
           "snippet": "=7.6cm, height=4.5cm,   ybar, bar width=7pt,   ymin=0, ymax=100,   ylabel={Recall (\\%)},   symbolic x coords={holdout, corp"
         },
@@ -9629,10 +9631,10 @@
             643,
             833,
             835,
-            1421,
-            1422,
-            1489,
-            1643
+            1426,
+            1427,
+            1494,
+            1648
           ],
           "snippet": "=7.6cm, height=4.5cm,   ybar, bar width=7pt,   ymin=0, ymax=100,   ylabel={Recall (\\%)},   symbolic x coords={holdout, corp"
         }
@@ -9658,10 +9660,10 @@
             643,
             833,
             835,
-            1421,
-            1422,
-            1489,
-            1643
+            1426,
+            1427,
+            1494,
+            1648
           ],
           "kind": "value"
         },
@@ -9684,10 +9686,10 @@
             643,
             833,
             835,
-            1421,
-            1422,
-            1489,
-            1643
+            1426,
+            1427,
+            1494,
+            1648
           ],
           "kind": "value"
         },
@@ -9744,8 +9746,8 @@
             908,
             1026,
             1089,
-            1231,
-            1309
+            1236,
+            1314
           ],
           "snippet": ".2pp} / \\textbf{+40.6pp}); exact McNemar $p\\le3.0\\times10^{-8}$ and $\\Delta$ lower bound $\\ge$28.6pp. \\textbf{Limitations"
         }
@@ -9775,8 +9777,8 @@
             908,
             1026,
             1089,
-            1231,
-            1309
+            1236,
+            1314
           ],
           "kind": "value"
         }
@@ -9953,14 +9955,14 @@
             410,
             1112,
             1113,
-            1141,
-            1417,
-            1469,
-            1505,
-            1563,
-            1581,
-            1608,
-            1631
+            1146,
+            1422,
+            1474,
+            1510,
+            1568,
+            1586,
+            1613,
+            1636
           ],
           "snippet": " 95\\% CI [58.0, 86.1]). Per-domain: conc 3/3, hist 1/1, mem 22/24, ub 5/6, \\textbf{lang 0/8} $\\Rightarrow$ domain VC $=$ 4"
         },
@@ -9978,11 +9980,11 @@
             728,
             908,
             947,
-            1241,
-            1386,
-            1433,
-            1526,
-            1564
+            1246,
+            1391,
+            1438,
+            1531,
+            1569
           ],
           "snippet": "9.5, 74.3])} (layered read: sanitizer 85.3\\%, compiler-warn 50.0\\%, cross-compile 16.7\\%), versus a \\emph{static caliber a"
         },
@@ -9999,7 +10001,7 @@
             985,
             986,
             1082,
-            1405
+            1410
           ],
           "snippet": "texttt{-O0}+\\texttt{-O2}) moved recall \\textbf{66.7\\% $\\to$ 87.5\\% with the detector unchanged}---\\emph{the caliber change"
         },
@@ -10017,16 +10019,16 @@
             917,
             1083,
             1116,
-            1229,
-            1283,
-            1290,
-            1415,
-            1447,
-            1468,
-            1471,
-            1505,
-            1561,
-            1563
+            1234,
+            1288,
+            1295,
+            1420,
+            1452,
+            1473,
+            1476,
+            1510,
+            1566,
+            1568
           ],
           "snippet": "ldout,82.9) (corpus,62.5) (defect,100)}; \\addplot[fill=gray!35, draw=gray!60!black] coordinates {(holdout,2.4) (corpus,17."
         },
@@ -10042,15 +10044,15 @@
             964,
             1063,
             1115,
-            1282,
-            1418,
-            1489,
-            1496,
-            1500,
-            1511,
-            1526,
-            1537,
-            1564
+            1287,
+            1423,
+            1494,
+            1501,
+            1505,
+            1516,
+            1531,
+            1542,
+            1569
           ],
           "snippet": ", never claimed), D1 re-injection \\textbf{6/6} (coverage 12/15), D2 blind holdout \\textbf{82.9\\%} (34/41), D3 external cor"
         },
@@ -10090,14 +10092,14 @@
             410,
             1112,
             1113,
-            1141,
-            1417,
-            1469,
-            1505,
-            1563,
-            1581,
-            1608,
-            1631
+            1146,
+            1422,
+            1474,
+            1510,
+            1568,
+            1586,
+            1613,
+            1636
           ],
           "kind": "value"
         },
@@ -10116,11 +10118,11 @@
             728,
             908,
             947,
-            1241,
-            1386,
-            1433,
-            1526,
-            1564
+            1246,
+            1391,
+            1438,
+            1531,
+            1569
           ],
           "kind": "value"
         },
@@ -10138,7 +10140,7 @@
             985,
             986,
             1082,
-            1405
+            1410
           ],
           "kind": "value"
         },
@@ -10157,16 +10159,16 @@
             917,
             1083,
             1116,
-            1229,
-            1283,
-            1290,
-            1415,
-            1447,
-            1468,
-            1471,
-            1505,
-            1561,
-            1563
+            1234,
+            1288,
+            1295,
+            1420,
+            1452,
+            1473,
+            1476,
+            1510,
+            1566,
+            1568
           ],
           "kind": "value"
         },
@@ -10183,15 +10185,15 @@
             964,
             1063,
             1115,
-            1282,
-            1418,
-            1489,
-            1496,
-            1500,
-            1511,
-            1526,
-            1537,
-            1564
+            1287,
+            1423,
+            1494,
+            1501,
+            1505,
+            1516,
+            1531,
+            1542,
+            1569
           ],
           "kind": "value"
         },
@@ -10230,8 +10232,8 @@
           "lines": [
             594,
             705,
-            1383,
-            1385
+            1388,
+            1390
           ],
           "snippet": "l anchor.} An LLM judge arm (\\textbf{GLM-4}) caught \\textbf{12/12} errors vs.\\ FD's 6/12 on the same subset but produced \\tex"
         },
@@ -10250,7 +10252,7 @@
           "lines": [
             595,
             706,
-            1386
+            1391
           ],
           "snippet": "rors vs.\\ FD's 6/12 on the same subset but produced \\textbf{4/8 false positives} (\\textbf{50\\%}) on controls---\\emph{more s"
         },
@@ -10282,8 +10284,8 @@
           "lines": [
             594,
             705,
-            1383,
-            1385
+            1388,
+            1390
           ],
           "kind": "value"
         },
@@ -10304,7 +10306,7 @@
           "lines": [
             595,
             706,
-            1386
+            1391
           ],
           "kind": "value"
         },
@@ -10350,7 +10352,7 @@
           "count": 2,
           "lines": [
             707,
-            1388
+            1393
           ],
           "snippet": "0.50; exact McNemar favours the LLM, $b{=}0$, $c{=}6$, $p{=}0.031$). \\textbf{All four pre-registered hypotheses failed}: the "
         }
@@ -10370,7 +10372,7 @@
           "count": 2,
           "lines": [
             707,
-            1388
+            1393
           ],
           "kind": "value"
         }
@@ -10412,7 +10414,7 @@
             914,
             986,
             1084,
-            1384
+            1389
           ],
           "snippet": "d below; their current values are: D0 core mutation \\textbf{96.5\\%} (self-justification only, never claimed), D1 re-injectio"
         }
@@ -10440,7 +10442,7 @@
             914,
             986,
             1084,
-            1384
+            1389
           ],
           "kind": "value"
         },
@@ -10561,15 +10563,15 @@
             964,
             1063,
             1115,
-            1282,
-            1418,
-            1489,
-            1496,
-            1500,
-            1511,
-            1526,
-            1537,
-            1564
+            1287,
+            1423,
+            1494,
+            1501,
+            1505,
+            1516,
+            1531,
+            1542,
+            1569
           ],
           "snippet": ", never claimed), D1 re-injection \\textbf{6/6} (coverage 12/15), D2 blind holdout \\textbf{82.9\\%} (34/41), D3 external cor"
         }
@@ -10609,15 +10611,15 @@
             964,
             1063,
             1115,
-            1282,
-            1418,
-            1489,
-            1496,
-            1500,
-            1511,
-            1526,
-            1537,
-            1564
+            1287,
+            1423,
+            1494,
+            1501,
+            1505,
+            1516,
+            1531,
+            1542,
+            1569
           ],
           "kind": "value"
         }
@@ -10640,7 +10642,7 @@
           "count": 2,
           "lines": [
             1050,
-            1418
+            1423
           ],
           "snippet": ") \\\\ \\midrule Two independent proportions & 0.35$\\to$0.50 & 170 \\\\ Two independent proportions & 0.35$\\to$0.55 & 96 \\\\ Two "
         }
@@ -10653,7 +10655,7 @@
           "count": 2,
           "lines": [
             1050,
-            1418
+            1423
           ],
           "kind": "value"
         },
@@ -10688,7 +10690,7 @@
             986,
             1051,
             1084,
-            1384
+            1389
           ],
           "snippet": "d below; their current values are: D0 core mutation \\textbf{96.5\\%} (self-justification only, never claimed), D1 re-inject"
         }
@@ -10706,7 +10708,7 @@
             986,
             1051,
             1084,
-            1384
+            1389
           ],
           "kind": "value"
         },
@@ -10860,10 +10862,10 @@
           "lines": [
             964,
             1055,
-            1434,
-            1512,
-            1537,
-            1653
+            1439,
+            1517,
+            1542,
+            1658
           ],
           "snippet": "pm$10pp needs $61/97$; $\\Delta{=}15$pp needs $n\\approx103$--173 (paired)---\\textbf{A5 now has $n{=}566$ and clears this}, s"
         }
@@ -10877,10 +10879,10 @@
           "lines": [
             964,
             1055,
-            1434,
-            1512,
-            1537,
-            1653
+            1439,
+            1517,
+            1542,
+            1658
           ],
           "kind": "value"
         },
@@ -10928,7 +10930,7 @@
             970,
             981,
             1087,
-            1250
+            1255
           ],
           "snippet": " post-reveal additions; corpus measurable recall is \\textbf{62.5\\% (40/64, [49.5, 74.3])} (layered read: sanitizer 85.3\\%, c"
         },
@@ -10968,7 +10970,7 @@
             970,
             981,
             1087,
-            1250
+            1255
           ],
           "kind": "value"
         },
@@ -11503,7 +11505,7 @@
           "form": "105",
           "count": 1,
           "lines": [
-            1227
+            1232
           ],
           "snippet": "3p/673u, kept for the audit trail).} On the then-available $105$-sample matrix ($840$ real \\texttt{detect} calls; derivatio"
         },
@@ -11511,7 +11513,7 @@
           "form": "840",
           "count": 1,
           "lines": [
-            1227
+            1232
           ],
           "snippet": " audit trail).} On the then-available $105$-sample matrix ($840$ real \\texttt{detect} calls; derivation holdout $n{=}21$ / "
         },
@@ -11537,8 +11539,8 @@
             908,
             1026,
             1089,
-            1231,
-            1309
+            1236,
+            1314
           ],
           "snippet": ".2pp} / \\textbf{+40.6pp}); exact McNemar $p\\le3.0\\times10^{-8}$ and $\\Delta$ lower bound $\\ge$28.6pp. \\textbf{Limitations"
         }
@@ -11550,7 +11552,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1227
+            1232
           ],
           "kind": "value"
         },
@@ -11559,7 +11561,7 @@
           "found": true,
           "count": 1,
           "lines": [
-            1227
+            1232
           ],
           "kind": "value"
         },
@@ -11586,8 +11588,8 @@
             908,
             1026,
             1089,
-            1231,
-            1309
+            1236,
+            1314
           ],
           "kind": "value"
         }
@@ -11646,9 +11648,9 @@
     }
   ],
   "coverage_summary": {
-    "total": 1432,
+    "total": 1436,
     "by_class": {
-      "claim": 1197,
+      "claim": 1199,
       "method_constant": 42,
       "external_literature": 10,
       "structural": 9,
@@ -11660,7 +11662,7 @@
       "unclassified": 25,
       "batch_id": 19,
       "logic_constant": 9,
-      "design_constant": 16,
+      "design_constant": 18,
       "thirdparty_audit": 1,
       "erratum_retired": 2,
       "repro_command": 30,
@@ -11699,147 +11701,147 @@
       "snippet": "/ advice 7} (total 67). By kind: fact 61 / pedagogy 5 / meta 1. Fields:"
     },
     {
-      "line": 1140,
+      "line": 1145,
       "token": "2",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "runtime); the script re-derives them \\emph{from landed artifacts} instead. (2) E9's driver script is"
     },
     {
-      "line": 1405,
+      "line": 1410,
       "token": "200",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,"
     },
     {
-      "line": 1405,
+      "line": 1410,
       "token": "219",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,"
     },
     {
-      "line": 1405,
+      "line": 1410,
       "token": "149",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,"
     },
     {
-      "line": 1405,
+      "line": 1410,
       "token": "95",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,"
     },
     {
-      "line": 1405,
+      "line": 1410,
       "token": "99",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,"
     },
     {
-      "line": 1405,
+      "line": 1410,
       "token": "90",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,"
     },
     {
-      "line": 1405,
+      "line": 1410,
       "token": "88",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,"
     },
     {
-      "line": 1468,
+      "line": 1473,
       "token": "2",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "2 & 45.1\\% & 14.3\\% & +30.7 & [+26.2, +35.3] & $7.8\\times10^{-35}$ \\\\"
     },
     {
-      "line": 1469,
+      "line": 1474,
       "token": "24.5",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "3 & 51.1\\% & 30.6\\% & +20.5 & [+16.5, +24.5] & $2.2\\times10^{-22}$ \\\\"
     },
     {
-      "line": 1469,
+      "line": 1474,
       "token": "2.2",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "3 & 51.1\\% & 30.6\\% & +20.5 & [+16.5, +24.5] & $2.2\\times10^{-22}$ \\\\"
     },
     {
-      "line": 1470,
+      "line": 1475,
       "token": "27.5",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "\\textbf{4} & \\textbf{54.6\\%} & \\textbf{30.6\\%} & \\textbf{+24.0} & [+20.5, +27.5] & $2.3\\times10^{-41}$ \\\\"
     },
     {
-      "line": 1471,
+      "line": 1476,
       "token": "5",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "5 & 59.4\\% & 38.7\\% & +20.7 & [+17.3, +24.0] & $1.2\\times10^{-35}$ \\\\"
     },
     {
-      "line": 1471,
+      "line": 1476,
       "token": "17.3",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "5 & 59.4\\% & 38.7\\% & +20.7 & [+17.3, +24.0] & $1.2\\times10^{-35}$ \\\\"
     },
     {
-      "line": 1490,
+      "line": 1495,
       "token": "2.7",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "real world & 44 & +29.5 & $5.4\\times10^{-4}$ & $2.7\\times10^{-3}$ \\\\"
     },
     {
-      "line": 1491,
+      "line": 1496,
       "token": "2",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "optimization sensitive & 20 & +55.0 & $1.8\\times10^{-3}$ & $1.1\\times10^{-2}$ \\\\"
     },
     {
-      "line": 1492,
+      "line": 1497,
       "token": "6.1",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "conditional trigger & 20 & +45.0 & $6.1\\times10^{-3}$ & $4.3\\times10^{-2}$ \\\\"
     },
     {
-      "line": 1492,
+      "line": 1497,
       "token": "2",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "conditional trigger & 20 & +45.0 & $6.1\\times10^{-3}$ & $4.3\\times10^{-2}$ \\\\"
     },
     {
-      "line": 1493,
+      "line": 1498,
       "token": "2",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "concurrency & 109 & +7.3 & $9.6\\times10^{-3}$ & $8.6\\times10^{-2}$ \\\\"
     },
     {
-      "line": 1494,
+      "line": 1499,
       "token": "2",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
       "snippet": "language semantics & 45 & +17.8 & $9.6\\times10^{-3}$ & $8.6\\times10^{-2}$ \\\\"
     },
     {
-      "line": 1495,
+      "line": 1500,
       "token": "2",
       "class": "unclassified",
       "note": "未归类（需人工确认）",
@@ -12148,7 +12150,7 @@
         "snippet": "T16 & \\textbf{small-sample poisoning}: \\textbf{250} malicious samples (0.00016\\% of tokens) reliably plant a backdoor---"
       },
       {
-        "line": 1201,
+        "line": 1206,
         "token": "2",
         "snippet": "2 mutation-guided LLM testing & ACH~\\cite{foster2025ach}; MUTGEN~\\cite{wang2025mutgen}; Cleverest~\\cite{liu2025cleverest"
       }
@@ -12195,7 +12197,7 @@
         "snippet": "\\cmark\\ supported & A detector's capability boundary can be mapped and published & 1147-sample $\\times$ 8-asset matrix; "
       },
       {
-        "line": 1443,
+        "line": 1448,
         "token": "5",
         "snippet": "\\paragraph{Pre-registered parallel analysis (5 usable assets, $k{=}4$).}"
       }
@@ -12217,27 +12219,27 @@
         "snippet": "T15 & \\textbf{untrusted LLM channel}: prompt injection / adversarial input (CVE-2025-59145 CamoLeak, CVSS 9.6; indirect-"
       },
       {
-        "line": 1161,
+        "line": 1166,
         "token": "2025",
         "snippet": "\\paragraph{Nearest neighbours added in v1.1 (2025--2026; metadata checked against arXiv).}"
       },
       {
-        "line": 1161,
+        "line": 1166,
         "token": "2026",
         "snippet": "\\paragraph{Nearest neighbours added in v1.1 (2025--2026; metadata checked against arXiv).}"
       },
       {
-        "line": 1166,
+        "line": 1171,
         "token": "2025",
         "snippet": "\\caption{Six 2025--2026 neighbours. None of them is our object of study: they evolve items, judges,"
       },
       {
-        "line": 1166,
+        "line": 1171,
         "token": "2026",
         "snippet": "\\caption{Six 2025--2026 neighbours. None of them is our object of study: they evolve items, judges,"
       },
       {
-        "line": 1241,
+        "line": 1246,
         "token": "2024",
         "snippet": "EU Regulation 2024/1689 (AI Act), Article 50 imposes transparency obligations on generative AI"
       }
@@ -12354,17 +12356,17 @@
         "snippet": "A5 & random-budget control & H: below A0 & $\\Delta$ detection vs.\\ A0 & \\textbf{run at full scale (676f)}: $n{=}566$ eva"
       },
       {
-        "line": 1230,
+        "line": 1235,
         "token": "81.3",
         "snippet": "$p{=}9.8\\times10^{-4}$, $b{=}11$, $c{=}0$, $h{=}1.23$), and corpus FD \\textbf{81.3\\%} (13/16) vs.\\"
       },
       {
-        "line": 1231,
+        "line": 1236,
         "token": "13.9",
         "snippet": "\\textbf{37.5\\%} (6/16), $\\Delta{=}\\mathbf{+43.8}$pp (CI [+13.9, +73.6], $p{=}0.039$, $b{=}8$,"
       },
       {
-        "line": 1231,
+        "line": 1236,
         "token": "73.6",
         "snippet": "\\textbf{37.5\\%} (6/16), $\\Delta{=}\\mathbf{+43.8}$pp (CI [+13.9, +73.6], $p{=}0.039$, $b{=}8$,"
       }
@@ -12386,22 +12388,22 @@
         "snippet": "\\textbf{28} are double-compiler confirmed, over \\textbf{147} real compilations. \\emph{Ledger}: a"
       },
       {
-        "line": 1143,
+        "line": 1148,
         "token": "5",
         "snippet": "(4) The OTS time anchor is a zero-attestation placeholder. (5) macOS cannot reproduce the corpus"
       },
       {
-        "line": 1205,
+        "line": 1210,
         "token": "6",
         "snippet": "6 LLM code error taxonomy & All Smoke No Alarm~\\cite{banik2026allsmoke}; Uncovering Weaknesses~\\cite{lian2024uncovering}"
       },
       {
-        "line": 1268,
+        "line": 1273,
         "token": "5",
         "snippet": "(5) \\emph{L0 blocking / L1 advisory}: split, because all-blocking makes people loosen assertions to"
       },
       {
-        "line": 1271,
+        "line": 1276,
         "token": "6",
         "snippet": "(6) \\emph{Self-authored planted defects vs.\\ real defects only}: self-authored, because collecting"
       }
@@ -12450,37 +12452,37 @@
         "snippet": "Internal & meta-Goodhart; budget selection bias; code changed without rerun & caliber three-step discipline; range self-"
       },
       {
-        "line": 1287,
+        "line": 1292,
         "token": "437",
         "snippet": "Engineering incidents (resolved; none affects a scientific conclusion). \\emph{Tectonic downloads truncated twice}---we s"
       },
       {
-        "line": 1304,
+        "line": 1309,
         "token": "5",
         "snippet": "turn the guard red (5/5 do), and every voided value must state where it went. \\emph{Residual, not"
       },
       {
-        "line": 1304,
+        "line": 1309,
         "token": "5",
         "snippet": "turn the guard red (5/5 do), and every voided value must state where it went. \\emph{Residual, not"
       },
       {
-        "line": 1338,
+        "line": 1343,
         "token": "58",
         "snippet": "behaviour and boundaries with 58 tests. \\emph{Lesson:} raise the reproduction bar before promoting a"
       },
       {
-        "line": 1472,
+        "line": 1477,
         "token": "6",
         "snippet": "6 & 60.1\\% & 48.8\\% & +11.3 & [+8.7, +13.9] & $1.1\\times10^{-19}$ \\\\"
       },
       {
-        "line": 1472,
+        "line": 1477,
         "token": "13.9",
         "snippet": "6 & 60.1\\% & 48.8\\% & +11.3 & [+8.7, +13.9] & $1.1\\times10^{-19}$ \\\\"
       },
       {
-        "line": 1473,
+        "line": 1478,
         "token": "13.1",
         "snippet": "7 & 60.1\\% & 49.5\\% & +10.6 & [+8.1, +13.1] & $1.7\\times10^{-18}$ \\\\"
       }
@@ -12507,107 +12509,107 @@
         "snippet": "/ advice 7} (total 67). By kind: fact 61 / pedagogy 5 / meta 1. Fields:"
       },
       {
-        "line": 1140,
+        "line": 1145,
         "token": "2",
         "snippet": "runtime); the script re-derives them \\emph{from landed artifacts} instead. (2) E9's driver script is"
       },
       {
-        "line": 1405,
+        "line": 1410,
         "token": "200",
         "snippet": "stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,"
       },
       {
-        "line": 1405,
+        "line": 1410,
         "token": "219",
         "snippet": "stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,"
       },
       {
-        "line": 1405,
+        "line": 1410,
         "token": "149",
         "snippet": "stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,"
       },
       {
-        "line": 1405,
+        "line": 1410,
         "token": "95",
         "snippet": "stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,"
       },
       {
-        "line": 1405,
+        "line": 1410,
         "token": "99",
         "snippet": "stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,"
       },
       {
-        "line": 1405,
+        "line": 1410,
         "token": "90",
         "snippet": "stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,"
       },
       {
-        "line": 1405,
+        "line": 1410,
         "token": "88",
         "snippet": "stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,"
       },
       {
-        "line": 1468,
+        "line": 1473,
         "token": "2",
         "snippet": "2 & 45.1\\% & 14.3\\% & +30.7 & [+26.2, +35.3] & $7.8\\times10^{-35}$ \\\\"
       },
       {
-        "line": 1469,
+        "line": 1474,
         "token": "24.5",
         "snippet": "3 & 51.1\\% & 30.6\\% & +20.5 & [+16.5, +24.5] & $2.2\\times10^{-22}$ \\\\"
       },
       {
-        "line": 1469,
+        "line": 1474,
         "token": "2.2",
         "snippet": "3 & 51.1\\% & 30.6\\% & +20.5 & [+16.5, +24.5] & $2.2\\times10^{-22}$ \\\\"
       },
       {
-        "line": 1470,
+        "line": 1475,
         "token": "27.5",
         "snippet": "\\textbf{4} & \\textbf{54.6\\%} & \\textbf{30.6\\%} & \\textbf{+24.0} & [+20.5, +27.5] & $2.3\\times10^{-41}$ \\\\"
       },
       {
-        "line": 1471,
+        "line": 1476,
         "token": "5",
         "snippet": "5 & 59.4\\% & 38.7\\% & +20.7 & [+17.3, +24.0] & $1.2\\times10^{-35}$ \\\\"
       },
       {
-        "line": 1471,
+        "line": 1476,
         "token": "17.3",
         "snippet": "5 & 59.4\\% & 38.7\\% & +20.7 & [+17.3, +24.0] & $1.2\\times10^{-35}$ \\\\"
       },
       {
-        "line": 1490,
+        "line": 1495,
         "token": "2.7",
         "snippet": "real world & 44 & +29.5 & $5.4\\times10^{-4}$ & $2.7\\times10^{-3}$ \\\\"
       },
       {
-        "line": 1491,
+        "line": 1496,
         "token": "2",
         "snippet": "optimization sensitive & 20 & +55.0 & $1.8\\times10^{-3}$ & $1.1\\times10^{-2}$ \\\\"
       },
       {
-        "line": 1492,
+        "line": 1497,
         "token": "6.1",
         "snippet": "conditional trigger & 20 & +45.0 & $6.1\\times10^{-3}$ & $4.3\\times10^{-2}$ \\\\"
       },
       {
-        "line": 1492,
+        "line": 1497,
         "token": "2",
         "snippet": "conditional trigger & 20 & +45.0 & $6.1\\times10^{-3}$ & $4.3\\times10^{-2}$ \\\\"
       },
       {
-        "line": 1493,
+        "line": 1498,
         "token": "2",
         "snippet": "concurrency & 109 & +7.3 & $9.6\\times10^{-3}$ & $8.6\\times10^{-2}$ \\\\"
       },
       {
-        "line": 1494,
+        "line": 1499,
         "token": "2",
         "snippet": "language semantics & 45 & +17.8 & $9.6\\times10^{-3}$ & $8.6\\times10^{-2}$ \\\\"
       },
       {
-        "line": 1495,
+        "line": 1500,
         "token": "2",
         "snippet": "embedded & 74 & +8.1 & $3.4\\times10^{-2}$ & $3.4\\times10^{-1}$ \\\\"
       }
@@ -12704,7 +12706,7 @@
         "snippet": "\\texttt{676}, \\texttt{67610} & 676g blind-spot sampling & \\texttt{data/blindspot\\_676g\\_runner.py} \\\\"
       },
       {
-        "line": 1336,
+        "line": 1341,
         "token": "638",
         "snippet": "compatibility check exist). (E) did not exist: 638 modules, zero cyclic SCCs, zero self-loops."
       }
@@ -12731,27 +12733,27 @@
         "snippet": "\\cmark\\ supported & Provenance chain fully auditable & 5 Merkle roots consistent; 452-event ledger unchanged; provenance"
       },
       {
-        "line": 1253,
+        "line": 1258,
         "token": "2",
         "snippet": "(2) \\emph{Merkle tree vs.\\ hash chain}: Merkle, because inclusion proofs let a third party verify"
       },
       {
-        "line": 1406,
+        "line": 1411,
         "token": "30",
         "snippet": "ODR 30, conditional 40, optimization 40. Every cell of the $1137\\times8$ matrix is a real"
       },
       {
-        "line": 1406,
+        "line": 1411,
         "token": "40",
         "snippet": "ODR 30, conditional 40, optimization 40. Every cell of the $1137\\times8$ matrix is a real"
       },
       {
-        "line": 1451,
+        "line": 1456,
         "token": "2",
         "snippet": "constant-\\texttt{unknown} on every sample ($|D|{=}2$ here). Failure-driven ranking is built from"
       },
       {
-        "line": 1553,
+        "line": 1558,
         "token": "2",
         "snippet": "(2) aggregate to \\emph{type $\\times$ asset} coverage, plus a \\emph{complementarity} analysis"
       }
@@ -12808,32 +12810,42 @@
         "snippet": "\\texttt{676}, \\texttt{67610} & 676g blind-spot sampling & \\texttt{data/blindspot\\_676g\\_runner.py} \\\\"
       },
       {
-        "line": 1135,
+        "line": 1136,
+        "token": "1080",
+        "snippet": "recomputation; \\textbf{1080 recomputed, 0 mismatched}, 57 skipped as inline/out-of-repo)."
+      },
+      {
+        "line": 1136,
+        "token": "57",
+        "snippet": "recomputation; \\textbf{1080 recomputed, 0 mismatched}, 57 skipped as inline/out-of-repo)."
+      },
+      {
+        "line": 1140,
         "token": "20260930",
         "snippet": "\\texttt{sha256('20260930':sample\\_id)} ascending, even positions $\\to$ derivation, odd $\\to$"
       },
       {
-        "line": 1309,
+        "line": 1314,
         "token": "2",
         "snippet": "Random$^{\\dagger}$ corpus $=4.2\\%$ (2/48); an executable rerun gave \\textbf{16.7\\% (8/48)}---a 12.5pp"
       },
       {
-        "line": 1311,
+        "line": 1316,
         "token": "5",
         "snippet": "expansion, when FD actually used 5 (asan/ubsan/compiler-warn/cross-compile/tsan); a budget-matched"
       },
       {
-        "line": 1312,
+        "line": 1317,
         "token": "2",
         "snippet": "arm draws as many as the budget says, so hits moved 2$\\to$8. \\emph{Fix:} make the executable,"
       },
       {
-        "line": 1402,
+        "line": 1407,
         "token": "20260930",
         "snippet": "$(source\\_batch, defect\\_group)$ stratum, order by \\texttt{sha256('20260930':sample\\_id)} ascending,"
       },
       {
-        "line": 1436,
+        "line": 1441,
         "token": "55.9",
         "snippet": "full pool ($k{=}8$) & all eight & 60.1\\% (340/566) [55.9, 64.1] & ceiling reference \\\\"
       }
@@ -12986,36 +12998,36 @@
     ],
     "cited_context": [
       {
-        "line": 1204,
+        "line": 1209,
         "token": "5",
         "snippet": "5 formal verification $+$ LLM & seL4~\\cite{klein2009sel4}; CompCert~\\cite{leroy2009compcert}; LLVM+Lean~\\cite{liao2026ll"
       }
     ],
     "external_regulation": [
       {
-        "line": 1241,
+        "line": 1246,
         "token": "1689",
         "snippet": "EU Regulation 2024/1689 (AI Act), Article 50 imposes transparency obligations on generative AI"
       }
     ],
     "sample_id": [
       {
-        "line": 1627,
+        "line": 1632,
         "token": "06",
         "snippet": "d3e-06 & compiler-warn & UndefinedBinaryOperatorResult & uninitvar \\\\"
       },
       {
-        "line": 1628,
+        "line": 1633,
         "token": "06",
         "snippet": "d3-06 & compiler-warn & UndefinedBinaryOperatorResult & uninitvar \\\\"
       },
       {
-        "line": 1632,
+        "line": 1637,
         "token": "25",
         "snippet": "d3-25 & sanitizer & security.ArrayBound & arrayIndexOutOfBounds \\\\"
       },
       {
-        "line": 1633,
+        "line": 1638,
         "token": "32",
         "snippet": "d3-32 & compiler-warn & --- & missingReturn \\\\"
       }
